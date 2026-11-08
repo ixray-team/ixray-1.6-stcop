@@ -108,6 +108,7 @@ TEMPLATE_SPECIALIZATION
 void CStateGroupAttackAbstract::execute()
 {
 	bool	can_attack_on_move	=	this->object->can_attack_on_move();
+	const bool enemy_in_car		=	this->object->IsEnemyInCar();
 	CEntityAlive* enemy	= const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
 
 	bool const enemy_is_actor = enemy != nullptr && enemy->cast_actor() != nullptr;
@@ -212,7 +213,7 @@ void CStateGroupAttackAbstract::execute()
 		}
 
 		// установить целевое состояние
-		if ( !can_attack_on_move && b_melee )
+		if ( (!can_attack_on_move || enemy_in_car) && b_melee )
 		{  
 			// check if enemy is behind me for a long time
 			// [TODO] make specific state and replace run_away state (to avoid rotation jumps)
@@ -234,7 +235,7 @@ void CStateGroupAttackAbstract::execute()
 					this->object->anim_end_reinit();
 				}
 			
-				this->select_state(can_attack_on_move ? eStateAttack_Attack_On_Run : eStateAttack_Run);
+				this->select_state((can_attack_on_move && !enemy_in_car) ? eStateAttack_Attack_On_Run : eStateAttack_Run);
 			} 
 			else
 			{

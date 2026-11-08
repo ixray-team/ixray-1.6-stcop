@@ -60,7 +60,9 @@ void CMeleeChecker::on_hit_attempt(bool hit_success)
 
 bool	CMeleeChecker::can_start_melee (const CEntityAlive *enemy)
 {
-	if ( !m_object->EnemyMan.see_enemy_now(enemy) )
+	// A car body hides the actor from the visual check. The car-surface
+	// distance is authoritative while the enemy is inside a vehicle.
+	if ( !m_object->IsEnemyInCar() && !m_object->EnemyMan.see_enemy_now(enemy) )
 	{
 		return false;
 	}

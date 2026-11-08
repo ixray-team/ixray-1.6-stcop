@@ -56,6 +56,15 @@ namespace
 	constexpr float WaterParticleMaxDistance = 70.f;
 	// Do not wake a return bone for sub-milliradian joint noise.
 	constexpr float ReturnBoneAngleEpsilon = 0.001f;
+	// The physics interface does not expose an element's inertia, so the
+	// default damping is derived from a nominal vehicle cabin inertia. This
+	// keeps the return critically damped instead of oscillating, which an
+	// explicit torque proportional to the spring stiffness would do at large
+	// return_force values.
+	constexpr float ReturnBoneNominalInertia = 56.f;
+	// Prefix for the client-side car runtime state; an old save starts with
+	// the fuel float instead, which cannot collide with this value.
+	constexpr u32 CarRuntimeStateMagic = 0x43415253; // "CARS"
 
 	bool ParticleEffectExists(const char* Name)
 	{
@@ -137,6 +146,7 @@ CCar::CCar()
 	m_exhaust_particles	= DefaultExhaustParticles;
 	m_nitro_particles = "";
 	m_pop_particles = "";
+	renderable.pROS_IgnoreFoliage = true;
 	m_car_sound			= new SCarSound(this);
 
 	CarCameraDirection.set(0.f,0.f,0.f);
@@ -465,22 +475,60 @@ bool CCar::IsMyCar() const
 
 void CCar::save(NET_Packet& output_packet)
 {
+	SyncServerRuntimeState();
 	inherited::save(output_packet);
+	output_packet.w_u32(CarRuntimeStateMagic);
+	output_packet.w_u8(b_engine_on ? 1 : 0);
+	output_packet.w_u8(m_lights.IsOn() ? 1 : 0);
 	save_data(m_fuel, output_packet);
 }
 
 void CCar::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
+
+	const intptr_t Start = input_packet.tell();
+	if (input_packet.elapsed() >= intptr_t(sizeof(u32)) &&
+		input_packet.r_u32() == CarRuntimeStateMagic)
+	{
+		m_saved_engine_on = input_packet.r_u8() != 0;
+		m_saved_lights_on = input_packet.r_u8() != 0;
+		m_has_saved_runtime_state = true;
+	}
+	else
+	{
+		// Save made before engine/light persistence: rewind to the fuel value.
+		input_packet.seek(Start);
+	}
+
 	load_data(m_fuel, input_packet);
 }
 
 void CCar::Serialize(ISaveObject& Object)
 {
+	if (Object.IsSave())
+		SyncServerRuntimeState();
+
 	BEGIN_CHUNK(Object, "CCar::Serialize")
 	{
 		inherited::Serialize(Object);
 		Object << m_fuel;
+
+		// Keep the new fields in their own chunk so saves created before
+		// engine/light persistence remain loadable.
+		BEGIN_CHUNK(Object, "CCar::runtime_state")
+		{
+			u8 EngineOn = b_engine_on ? 1 : 0;
+			u8 LightsOn = m_lights.IsOn() ? 1 : 0;
+			Object << EngineOn << LightsOn;
+
+			if (!Object.IsSave())
+			{
+				m_saved_engine_on = EngineOn != 0;
+				m_saved_lights_on = LightsOn != 0;
+				m_has_saved_runtime_state = true;
+			}
+		}
 	}
 }
 
@@ -1333,6 +1381,21 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 	CInventoryOwner::net_Spawn(DC);
 	Engine.Sheduler.Register(this, TRUE);
 
+	// An offline car has no game-object save data, so fall back to the engine
+	// and light state stored on the ALife server object.
+	if (!m_has_saved_runtime_state && co != nullptr && (co->Engine != 0 || co->Light != 0))
+	{
+		m_saved_engine_on = co->Engine != 0;
+		m_saved_lights_on = co->Light != 0;
+		m_has_saved_runtime_state = true;
+	}
+
+	if (m_has_saved_runtime_state)
+	{
+		m_has_saved_runtime_state = false;
+		RestoreEngineAndLights(m_saved_engine_on, m_saved_lights_on);
+	}
+
 	return							(CScriptEntity::net_Spawn(DC) && R);
 	
 }
@@ -1590,7 +1653,11 @@ void CCar::ApplyBonePhysicsParams(IKinematics* K, CInifile* ini)
 					{
 						const float ReturnForce = ini->r_float(b_name, "return_force");
 						if (ReturnForce > 0.f)
-							return_bones.push_back(SReturnBone(Bone.second.joint, Bone.second.element, ReturnForce));
+						{
+							const float DefaultDamping = 2.f * sqrtf(ReturnForce * ReturnBoneNominalInertia);
+							const float ReturnDamping = READ_IF_EXISTS(ini, r_float, b_name, "return_damping", DefaultDamping);
+							return_bones.push_back(SReturnBone(Bone.second.joint, Bone.second.element, ReturnForce, ReturnDamping));
+						}
 					}
 				}
 			}
@@ -1833,6 +1900,7 @@ void CCar::BindSuspension(const char* Section, u16 BoneId, IKinematics* K, CInif
 
 void	CCar::net_Destroy()
 {
+	SyncServerRuntimeState();
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
@@ -2124,6 +2192,15 @@ void CCar::RemoveGrassSpheres()
 }
 void CCar::UpdateCL				( )
 {
+	// Apply saved engine/light state here as well as in net_Spawn. Depending on
+	// the serialization path the client chunk may arrive after net_Spawn, and
+	// then the car would keep b_engine_on but never call SCarSound::Drive().
+	if (m_has_saved_runtime_state)
+	{
+		m_has_saved_runtime_state = false;
+		RestoreEngineAndLights(m_saved_engine_on, m_saved_lights_on);
+	}
+
 	// Clear a boost value left by input from a previous frame. Input normally
 	// sets m_steer_boost_frame to the current frame before UpdateCL runs; if
 	// no steering key was held, the stale value must not be displayed.
@@ -2134,6 +2211,32 @@ void CCar::UpdateCL				( )
 
 	inherited::UpdateCL();
 	CExplosive::UpdateCL();
+
+	// Keep the server object in sync so an offline car still has the engine
+	// and light state when the game is saved.
+	if (Device.dwTimeGlobal - m_last_server_state_sync >= 1000)
+	{
+		m_last_server_state_sync = Device.dwTimeGlobal;
+		SyncServerRuntimeState();
+	}
+
+	// A running engine restored from a save can outlive the loading screen.
+	// Retry the exhaust particles for a few frames until the particle system
+	// is ready; the sound loops retry themselves from UpdateDrive().
+	if (m_restore_engine_effects_attempts > 0)
+	{
+		--m_restore_engine_effects_attempts;
+
+		bool ExhaustsPlaying = true;
+		for (auto& Exhaust : m_exhausts)
+		{
+			if (Exhaust.p_pgobject && !Exhaust.p_pgobject->IsPlaying())
+				ExhaustsPlaying = false;
+		}
+
+		if (!ExhaustsPlaying)
+			PlayExhausts();
+	}
 
 	// Exit must run outside the physics step: detach_Vehicle can recreate the
 	// actor character, and destroying it during CPHWorld::Step asserts.
@@ -4080,6 +4183,21 @@ void CCar::Drive()
 	e_state_drive = drive;
 }
 
+void CCar::SyncServerRuntimeState()
+{
+	if (!IsGameTypeSingle() || Level().Server == nullptr)
+		return;
+
+	if (CSE_Abstract* DC = Level().Server->ID_to_entity(ID()))
+	{
+		if (CSE_ALifeCar* Secar = smart_cast<CSE_ALifeCar*>(DC))
+		{
+			Secar->Engine = b_engine_on ? 1 : 0;
+			Secar->Light = m_lights.IsOn() ? 1 : 0;
+		}
+	}
+}
+
 void CCar::StartEngine()
 {
 	if(b_engine_on || b_starting) return;
@@ -4099,6 +4217,53 @@ void CCar::StartEngine()
 	m_current_engine_power = 0.f;
 	m_current_rpm_brp_n = 1.f;
 	Starter();
+	SyncServerRuntimeState();
+}
+
+void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
+{
+	if (EngineOn)
+	{
+		// Resume a running engine without replaying the starter sequence.
+		if (!b_engine_on)
+		{
+			m_current_rpm = m_min_rpm;
+			m_current_engine_power = 0.f;
+			m_current_rpm_brp_n = 1.f;
+
+			// The sound scales belong to the live engine state. A car restored
+			// from a save must start from the idle scale instead of inheriting
+			// a value from an earlier spawn of the same object.
+			m_engine_drive = 0.f;
+			m_engine_state_scale = 0.f;
+			m_engine_state_scale_last = 0.f;
+			m_idle_state_scale = 0.f;
+			m_idle_state_scale_last = 0.f;
+		}
+
+		b_engine_on = true;
+		b_starting = false;
+
+		// Always (re)enter the drive sound state. SCarSound::Init() resets
+		// eCarSound to sndOff when the car is spawned, so the reset can happen
+		// after this restore depending on the spawn/serialization order.
+		if (m_car_sound != nullptr)
+			m_car_sound->Drive();
+
+		// The sound and particle subsystems can still be suspended while the
+		// level is loading. Start the exhausts on the first game frames after
+		// net_Spawn instead of dropping the Play() calls here.
+		m_restore_engine_effects_attempts = 30;
+	}
+	else if (b_engine_on)
+	{
+		StopEngine();
+	}
+
+	if (LightsOn != m_lights.IsOn())
+		m_lights.SwitchHeadLights();
+
+	SyncServerRuntimeState();
 }
 
 float CCar::EngineStartSuccessChance() const
@@ -4137,6 +4302,7 @@ void CCar::StopEngine()
 	b_engine_on=false;
 	UpdatePower();//set engine friction;
 	m_current_rpm=0.f;
+	SyncServerRuntimeState();
 }
 
 void CCar::Stall()
@@ -4147,6 +4313,7 @@ void CCar::Stall()
 	b_engine_on=false;
 	UpdatePower();//set engine friction;
 	m_current_rpm=0.f;
+	SyncServerRuntimeState();
 }
 
 void CCar::SwitchEngine()
@@ -5530,7 +5697,7 @@ void CCar::PhDataUpdate(float step)
 	const bool Slip = UpdateWheelPhysics();
 	UpdateTractionAndSuspension(Slip);
 	UpdateWaterDrag(step);
-	UpdateReturnBones();
+	UpdateReturnBones(step);
 }
 
 void CCar::UpdatePhDataObjects()
@@ -5794,17 +5961,37 @@ void CCar::UpdateEngineShake()
 	}
 }
 
-void CCar::UpdateReturnBones()
+void CCar::UpdateReturnBones(float step)
 {
-	if (!m_pPhysicsShell || !m_pPhysicsShell->isActive())
+	if (!m_pPhysicsShell || !m_pPhysicsShell->isActive() || step <= 0.f)
 		return;
 
-	for (const SReturnBone& ReturnBone : return_bones)
+	// setTorque() overwrites the body torque and ODE keeps it until the next
+	// setTorque() call. Always apply a value for every return element, even
+	// zero, so torque from the previous step is not left running.
+	xr_map<CPhysicsElement*, Fvector> Torques;
+
+	for (SReturnBone& ReturnBone : return_bones)
 	{
 		CPhysicsJoint* Joint = ReturnBone.joint;
 		CPhysicsElement* Element = ReturnBone.element;
-		if (Joint == nullptr || Element == nullptr || !Joint->bActive || !Element->isActive())
+		if (Element == nullptr)
 			continue;
+
+		auto It = Torques.find(Element);
+		if (It == Torques.end())
+		{
+			Fvector Zero;
+			Zero.set(0.f, 0.f, 0.f);
+			It = Torques.insert(std::make_pair(Element, Zero)).first;
+		}
+		Fvector& Torque = It->second;
+
+		if (Joint == nullptr || !Joint->bActive || !Element->isActive())
+		{
+			ReturnBone.has_previous_angle = false;
+			continue;
+		}
 
 		// Hinge2 exposes the wheel spin rate instead of a second angle, sliders
 		// return a linear position and balls report no angle at all.
@@ -5814,22 +6001,42 @@ void CCar::UpdateReturnBones()
 		// full_control always drives three AMotor axes even if the IK data
 		// contains more limit entries; hinge has a single angular axis.
 		const u16 AxisCount = Joint->eType == CPhysicsJoint::full_control ? 3 : 1;
-		Fvector Torque = { 0.f, 0.f, 0.f };
+		bool AllAnglesValid = true;
 		for (u16 AxisNum = 0; AxisNum < AxisCount; ++AxisNum)
 		{
-			const float Angle = Joint->GetAxisAngle(AxisNum);
-			if (!_valid(Angle) || fabsf(Angle) < ReturnBoneAngleEpsilon)
+			const float Angle = angle_normalize_signed(Joint->GetAxisAngle(AxisNum));
+			if (!_valid(Angle))
+			{
+				AllAnglesValid = false;
+				continue;
+			}
+
+			// dJointGetAMotorAngleRate is not implemented in ODE, so derive
+			// the rate from the previous physics step instead.
+			float Rate = 0.f;
+			if (ReturnBone.has_previous_angle)
+				Rate = angle_normalize_signed(Angle - ReturnBone.previous_angle[AxisNum]) / step;
+
+			ReturnBone.previous_angle[AxisNum] = Angle;
+
+			if (fabsf(Angle) < ReturnBoneAngleEpsilon && fabsf(Rate) < ReturnBoneAngleEpsilon)
 				continue;
 
 			Fvector Axis;
 			Joint->GetAxisDirDynamic(AxisNum, Axis);
-			Torque.mad(Axis, -Angle * ReturnBone.force);
+			// ODE measures hinge and AMotor angles opposite to the second
+			// element rotation, so a positive torque about the axis pulls the
+			// angle back to zero.
+			Torque.mad(Axis, Angle * ReturnBone.force + Rate * ReturnBone.damping);
 		}
 
-		if (Torque.magnitude() < EPS_L)
-			continue;
+		ReturnBone.has_previous_angle = AllAnglesValid;
+	}
 
-		Element->setTorque(Torque);
+	for (const auto& Pair : Torques)
+	{
+		if (Pair.first != nullptr)
+			Pair.first->setTorque(Pair.second);
 	}
 }
 

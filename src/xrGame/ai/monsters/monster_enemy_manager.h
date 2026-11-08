@@ -10,6 +10,9 @@ class CMonsterEnemyManager {
 	
 	Fvector				position;
 	Fvector				CarAwarePosition;
+	Fvector				CarAwareVertexPosition;
+	u32					CarAwareVertex;
+	u32					CarAwareVertexTime;
 	u32					vertex;
 	u32					time_last_seen;
 

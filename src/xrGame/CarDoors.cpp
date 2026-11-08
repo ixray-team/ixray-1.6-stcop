@@ -25,7 +25,14 @@ bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 	xr_map   <u16,SDoor>::iterator i=m_doors.find(element);
 	if(i!=m_doors.end())
 	{
-		i->second.Hit(P);
+		// A door without a physics joint cannot open or visually break.
+		// Damaging it only flips the logical state and can reach a null
+		// joint in Break(); keep such doors intact regardless of
+		// [damage_items].
+		if (i->second.joint != nullptr)
+		{
+			i->second.Hit(P);
+		}
 		return true;
 	}
 	else return false;
@@ -35,8 +42,14 @@ void CCar::SDoor::Init()
 	update=false;
 	float OpenTorqueFactor = pcar->m_doors_torque_factor;
 	float OpenVelFactor = pcar->m_doors_vel_factor;
-	joint= pcar->bone_map.find(bone_id)->second.joint;
-	if(!joint) return;
+	joint = pcar->bone_map.find(bone_id)->second.joint;
+	if (joint == nullptr || joint->PSecond_element() == nullptr)
+	{
+		// A door bone without a usable hinge can still be damaged and broken;
+		// keep it as a non-physical door instead of dereferencing null later.
+		joint = nullptr;
+		return;
+	}
 	R_ASSERT2(dJointGetType(joint->GetDJoint())==dJointTypeHinge,"Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
 	joint->SetBackRef(&joint);
 	dJointGetHingeAxis(joint->GetDJoint(), (float*)&default_hinge_axis);
@@ -445,6 +458,13 @@ void CCar::SDoor::NeutralTorque(float atorque)
 void CCar::SDoor::ClosedToOpening(bool obuser)
 {
 	if (state != closed) return;
+
+	// Some doors have no physics joint (for example, a door bone without a
+	// hinge in the model). They can still be damaged and broken; only the
+	// physics part of the opening must be skipped.
+	if (joint == nullptr || joint->PSecond_element() == nullptr)
+		return;
+
 	IKinematics* pKinematics = PKinematics(pcar->Visual());
 	Fmatrix door_form; pKinematics->Bone_GetAnimPos(door_form, u16(bone_id), u8(-1), false);
 	door_form.mulA_43(pcar->XFORM());
@@ -942,6 +962,15 @@ void CCar::SDoor::SaveNetState(NET_Packet& P)
 
 void CCar::SDoor::RestoreNetState(const CSE_ALifeCar::SDoorState& a_state)
 {
+	// Doors without a physics joint are invulnerable and always closed;
+	// ignore a broken/opened state that may have been written by an older
+	// build.
+	if (joint == nullptr)
+	{
+		state = closed;
+		return;
+	}
+
 	eState lstate=eState(a_state.open_state);
 	if (lstate == closed)
 	{
@@ -1017,6 +1046,13 @@ void CCar::SDoor::Break()
 
 void CCar::SDoor::ApplyDamage(u16 level)
 {
+	// Non-physical doors are not damageable; this also covers a broken state
+	// restored from an old save.
+	if (joint == nullptr)
+	{
+		return;
+	}
+
 	inherited::ApplyDamage(level);
 	switch(level)
 	{

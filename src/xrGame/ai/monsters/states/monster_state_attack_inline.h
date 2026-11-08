@@ -86,15 +86,16 @@ TEMPLATE_SPECIALIZATION
 void CStateMonsterAttackAbstract::execute()
 {
 	bool	can_attack_on_move		=	this->object->can_attack_on_move();
+	const bool enemy_in_car			=	this->object->IsEnemyInCar();
 
 	if		(check_home_point())		this->select_state(eStateAttack_MoveToHomePoint);
 	else if (check_steal_state())		this->select_state(eStateAttack_Steal);
 	else if (check_camp_state()) 		this->select_state(eStateAttackCamp);
 	else if (check_find_enemy_state()) 	this->select_state(eStateAttack_FindEnemy);
 	else if (check_run_away_state()) 	this->select_state(eStateAttack_RunAway);
-	else if (!can_attack_on_move && 
+	else if (!enemy_in_car && !can_attack_on_move &&
 			 check_run_attack_state())	this->select_state(eStateAttack_RunAttack);
-	else if ( can_attack_on_move )			this->select_state(eStateAttack_Attack_On_Run);
+	else if (!enemy_in_car && can_attack_on_move)	this->select_state(eStateAttack_Attack_On_Run);
 	else
 	{
 		// определить тип атаки

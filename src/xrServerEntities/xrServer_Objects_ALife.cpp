@@ -2205,6 +2205,10 @@ CSE_ALifeCar::CSE_ALifeCar				(const char* caSection) : CSE_ALifeDynamicObjectVi
 	m_flags.set					(flSwitchOffline,false);
 	health						=1.0f;
 	fuel						=pSettings->read_if_exists<float>(caSection, "fuel_tank", 10.0f);
+	Engine						=0;
+	Light						=0;
+	Owner						=ALife::INVALID_OBJECT_ID;
+	Transmission				=0;
 }
 
 CSE_ALifeCar::~CSE_ALifeCar				()
@@ -2314,6 +2318,14 @@ void CSE_ALifeCar::STATE_Serialize(ISaveObject& Object)
 		if (health > 1.0f) {
 			health /= 100.0f;
 		}
+	}
+
+	// Persist the engine and headlight state on the server object as well.
+	// The game object exists only while the car is online, so without this an
+	// offline car would lose its running engine in a save.
+	BEGIN_CHUNK(Object,"CSE_ALifeCar::runtime_state")
+	{
+		Object << Engine << Light;
 	}
 }
 

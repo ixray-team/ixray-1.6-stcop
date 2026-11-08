@@ -983,6 +983,10 @@ void CActor::OnChangeVisual()
 	m_current_legs_blend = nullptr;
 	m_current_torso_blend = nullptr;
 	m_current_jump_blend = nullptr;
+
+	// The new visual has fresh bone instances and animation data. If the actor
+	// is currently sitting in a car, reinstall the vehicle callbacks and idles.
+	ReapplyVehicleVisual();
 };
 
 void	CActor::ChangeVisual			( shared_str NewVisual )

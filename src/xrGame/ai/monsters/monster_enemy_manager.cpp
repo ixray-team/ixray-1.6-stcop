@@ -45,6 +45,8 @@ CMonsterEnemyManager::CMonsterEnemyManager()
 	danger_type						= eNone;
 	my_vertex_enemy_last_seen		= u32(-1);
 	enemy_vertex_enemy_last_seen	= u32(-1);
+	CarAwareVertex					= u32(-1);
+	CarAwareVertexTime				= 0;
 	m_time_updated					= 0;
 	m_time_start_see_enemy			= 0;
 }
@@ -234,6 +236,8 @@ void CMonsterEnemyManager::reinit()
 
 	my_vertex_enemy_last_seen		= monster->ai_location().level_vertex_id();
 	enemy_vertex_enemy_last_seen	= u32(-1);
+	CarAwareVertex					= u32(-1);
+	CarAwareVertexTime				= 0;
 
 	m_time_updated				= 0;
 	m_time_start_see_enemy		= 0;
@@ -453,6 +457,40 @@ const Fvector& CMonsterEnemyManager::GetKnownEnemyPosition(const CEntityAlive* T
 
 u32 CMonsterEnemyManager::GetTrackingVertex()
 {
+	if (monster->IsEnemyInCar())
+	{
+		// The actor's own vertex is under the car, so pathing to it makes the
+		// monster push the car. Use a graph vertex just outside the car surface
+		// the monster is actually approaching.
+		const Fvector CarPoint = monster->GetEnemyAttackPosition();
+		Fvector CarCenter = CarPoint;
+		if (CObject* CarObject = monster->GetEnemyCarObject())
+			CarCenter = CarObject->Position();
+
+		Fvector Outward;
+		Outward.sub(CarPoint, CarCenter);
+		Outward.y = 0.f;
+		if (Outward.magnitude() < EPS_L)
+		{
+			Outward.sub(monster->Position(), CarCenter);
+			Outward.y = 0.f;
+		}
+		Outward.normalize_safe();
+
+		Fvector NavPoint = CarPoint;
+		NavPoint.mad(Outward, 1.f);
+
+		if (!CarAwareVertexTime || Device.dwTimeGlobal - CarAwareVertexTime >= 250 ||
+			CarAwareVertexPosition.distance_to_sqr(NavPoint) > 1.f)
+		{
+			CarAwareVertexTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+			CarAwareVertexPosition = NavPoint;
+			CarAwareVertex = CControlPathBuilder::find_nearest_vertex(
+				monster->ai_location().level_vertex_id(), NavPoint, 10.f);
+		}
+		if (ai().level_graph().valid_vertex_id(CarAwareVertex))
+			return CarAwareVertex;
+	}
 	if (enemy && (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
 		monster->EnemyTrackingLive || monster->HasCloseSightCombat(enemy)))
 	{
@@ -465,6 +503,13 @@ const Fvector& CMonsterEnemyManager::GetNavigationPosition()
 {
 	const Fvector& Observed = GetTrackingPosition();
 	const u32 Vertex = GetTrackingVertex();
+	if (monster->IsEnemyInCar())
+	{
+		NavigationPosition = ai().level_graph().valid_vertex_id(Vertex) ? ai().level_graph().vertex_position(Vertex) : Observed;
+		NavigationVertex = Vertex;
+		NavigationCheckTime = 0;
+		return NavigationPosition;
+	}
 	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
 		(ai().level_graph().valid_vertex_id(Vertex) && ai().level_graph().inside(Vertex, Observed) &&
 		 std::abs(Observed.y - ai().level_graph().vertex_plane_y(Vertex, Observed.x, Observed.z)) <= 1.f))

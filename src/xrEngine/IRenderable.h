@@ -15,6 +15,7 @@ public:
 		IRenderVisual*					visual						;
 		IRender_ObjectSpecific*			pROS						;
 		bool							pROS_Allowed				;
+		bool							pROS_IgnoreFoliage			;
 	}	renderable;
 
 public:

@@ -7,9 +7,44 @@
 #include "../../xrEngine/EngineAPI.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/xr_object.h"
+#include "../../xrEngine/GameMtlLib.h"
+#include "../../xrCore/Collision/xrCDB.h"
+#include "../../xrCore/Collision/xr_collide_defs.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
+
+namespace
+{
+	struct SNoFoliageQuery
+	{
+		bool IgnoreFoliage;
+		bool Hit;
+	};
+
+	bool NoFoliageRayCallback(collide::rq_result& Result, LPVOID Params)
+	{
+		SNoFoliageQuery* Query = static_cast<SNoFoliageQuery*>(Params);
+
+		if (Query->IgnoreFoliage && Result.O == nullptr && Result.element >= 0)
+		{
+			const CDB::TRI& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
+			const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
+			if (Material != nullptr && (Material->Flags.test(SGameMtl::flPassable) || Material->Flags.test(SGameMtl::flActorObstacle)))
+			{
+				const char* Name = Material->m_Name.c_str();
+				if (Name != nullptr && (!xr_strcmp(Name, "materials\\bush") || !xr_strcmp(Name, "materials\\bush_sux") ||
+					!xr_strcmp(Name, "materials\\leaves") || !xr_strcmp(Name, "materials\\foliage")))
+				{
+					return true;
+				}
+			}
+		}
+
+		Query->Hit = true;
+		return false;
+	}
+}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -464,7 +499,19 @@ void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
 		{
 			result_sun += ::Random.randI(lt_hemisamples / 4, lt_hemisamples / 2);
 			Fvector	direction; direction.set(sun->direction).invert().normalize();
-			sun_value = !(g_pGameLevel->ObjectSpace.RayTest(position, direction, 500.f, collide::rqtBoth, &cache_sun, _object)) ? 1.f : 0.f;
+
+			if (_object != nullptr && _object->renderable.pROS_IgnoreFoliage)
+			{
+				SNoFoliageQuery Query = { true, false };
+				collide::rq_results RQR;
+				collide::ray_defs RD(position, direction, 500.f, CDB::OPT_CULL, collide::rqtBoth);
+				g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, NoFoliageRayCallback, &Query, nullptr, _object);
+				sun_value = Query.Hit ? 0.f : 1.f;
+			}
+			else
+			{
+				sun_value = !(g_pGameLevel->ObjectSpace.RayTest(position, direction, 500.f, collide::rqtBoth, &cache_sun, _object)) ? 1.f : 0.f;
+			}
 		}
 	}
 }
@@ -485,8 +532,18 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 
 			// take sample
 			Fvector	direction;	direction.set	(hdir[sample][0],hdir[sample][1],hdir[sample][2]).normalize	();
-			//.			result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtBoth,&cache[sample],_object);
-			result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtStatic,&cache[sample],_object);
+			if (_object != nullptr && _object->renderable.pROS_IgnoreFoliage)
+			{
+				SNoFoliageQuery Query = { true, false };
+				collide::rq_results RQR;
+				collide::ray_defs RD(position, direction, 50.f, CDB::OPT_CULL, collide::rqtStatic);
+				g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, NoFoliageRayCallback, &Query, nullptr, _object);
+				result[sample] = !Query.Hit;
+			}
+			else
+			{
+				result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtStatic,&cache[sample],_object);
+			}
 			//	Msg				("%d:-- %s",sample,result[sample]?"true":"false");
 		}
 	}
