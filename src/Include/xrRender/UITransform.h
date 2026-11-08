@@ -26,6 +26,19 @@ struct UITransform2D
 		Y = (XX * OldY - YX * OldX) / Det;
 	}
 
+	UITransform2D Inverted() const
+	{
+		const float Det = XX * YY - XY * YX;
+		UITransform2D Result;
+		Result.XX = YY / Det;
+		Result.XY = -XY / Det;
+		Result.YX = -YX / Det;
+		Result.YY = XX / Det;
+		Result.TX = -(Result.XX * TX + Result.XY * TY);
+		Result.TY = -(Result.YX * TX + Result.YY * TY);
+		return Result;
+	}
+
 	UITransform2D Compose(const UITransform2D& Local) const
 	{
 		UITransform2D Result;

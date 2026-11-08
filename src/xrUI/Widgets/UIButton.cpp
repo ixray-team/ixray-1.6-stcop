@@ -113,7 +113,7 @@ void CUIButton::DrawTexture()
 			m_UIStaticItem.SetSize(Fvector2().set(m_UIStaticItem.GetTextureRect().width(), m_UIStaticItem.GetTextureRect().height()));
 
 		if( Heading() )
-			m_UIStaticItem.Render( GetHeading() );
+			m_UIStaticItem.Render(GetHeading(), IsAspectRatioCorrectionActive());
 		else
 			m_UIStaticItem.Render();		
 	}

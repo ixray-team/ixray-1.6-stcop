@@ -122,9 +122,9 @@ bool CUIStatic::HitTestUntransformed(const Fvector2& Position)
 		m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x / 2.0f, Size.y / 2.0f);
 	if (BackgroundVisible)
 	{
-		const bool ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
-		const float ScaleX = ScreenSpace ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
-		const float ScaleY = ScreenSpace ? UI().ClientToScreenScaledY(1.0f) : 1.0f;
+		const bool PhysicalRotation = UI().m_currentPointType != IUIRender::pttLIT && !IsAspectRatioCorrectionActive();
+		const float ScaleX = PhysicalRotation ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
+		const float ScaleY = PhysicalRotation ? UI().ClientToScreenScaledY(1.0f) : 1.0f;
 		const float X = (Position.x - Origin.x - m_UIStaticItem.vHeadingOffset.x - Pivot.x) * ScaleX;
 		const float Y = (Position.y - Origin.y - m_UIStaticItem.vHeadingOffset.y - Pivot.y) * ScaleY;
 		const float Cos = std::cos(m_fHeading);
@@ -133,7 +133,8 @@ bool CUIStatic::HitTestUntransformed(const Fvector2& Position)
 		const float LocalY = (X * Sin + Y * Cos) / ScaleY + Pivot.y;
 		return LocalX >= 0.0f && LocalY >= 0.0f && LocalX <= Size.x && LocalY <= Size.y;
 	}
-	const float X = (Position.x - Origin.x - m_TextureOffset.x - m_UIStaticItem.vHeadingOffset.x - Pivot.x) / UI().get_current_kx();
+	const float KX = IsAspectRatioCorrectionActive() ? 1.0f : UI().get_current_kx();
+	const float X = (Position.x - Origin.x - m_TextureOffset.x - m_UIStaticItem.vHeadingOffset.x - Pivot.x) / KX;
 	const float Y = Position.y - Origin.y - m_TextureOffset.y - m_UIStaticItem.vHeadingOffset.y - Pivot.y;
 	const float Cos = std::cos(m_fHeading);
 	const float Sin = std::sin(m_fHeading);
@@ -285,13 +286,14 @@ void CUIStatic::DrawBackground()
 	Fvector2 Origin;
 	GetAbsolutePos(Origin);
 	const Fvector2 Size = GetWndSize();
-	Fvector2 Pivot = m_UIStaticItem.uFlags.test(CUIStaticItem::flValidHeadingPivot) ?
-		m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x / 2.0f, Size.y / 2.0f);
+	Fvector2 Pivot = m_UIStaticItem.uFlags.test(CUIStaticItem::flValidHeadingPivot) ? m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x / 2.0f, Size.y / 2.0f);
 	if (Heading())
 	{
 		Origin.add(m_UIStaticItem.vHeadingOffset);
 	}
 	Pivot.add(Origin);
+	const Fvector2 LogicalPivot = Pivot;
+	const bool CorrectedAspect = IsAspectRatioCorrectionActive();
 	UI().ClientToScreenScaled(Pivot);
 
 	sPoly2D Polygon;
@@ -304,16 +306,19 @@ void CUIStatic::DrawBackground()
 	const float Sin = std::sin(m_fHeading);
 	for (auto& Vertex : Polygon)
 	{
+		if (Heading() && CorrectedAspect)
+		{
+			Vertex.rotate_pt(LogicalPivot, Cos, Sin, 1.0f);
+		}
 		UI().ClientToScreenScaled(Vertex.pt);
-		if (Heading())
+		if (Heading() && !CorrectedAspect)
 		{
 			Vertex.rotate_pt(Pivot, Cos, Sin, 1.0f);
 		}
 	}
 
 	sPoly2D Clipped;
-	sPoly2D* Result = UI().m_currentPointType == IUIRender::pttLIT ?
-		UI().ScreenFrustumLIT().ClipPoly(Polygon, Clipped) : UI().ScreenFrustum().ClipPoly(Polygon, Clipped);
+	sPoly2D* Result = UI().m_currentPointType == IUIRender::pttLIT ? UI().ScreenFrustumLIT().ClipPoly(Polygon, Clipped) : UI().ScreenFrustum().ClipPoly(Polygon, Clipped);
 	if (!Result || Result->size() < 3)
 	{
 		return;
@@ -411,7 +416,7 @@ void CUIStatic::DrawTexturePass(u32 color, const Fvector2& extraOffset)
 	m_UIStaticItem.SetTextureColor(color);
 
 	if (Heading())
-		m_UIStaticItem.Render(GetHeading());
+		m_UIStaticItem.Render(GetHeading(), IsAspectRatioCorrectionActive());
 	else
 		m_UIStaticItem.Render();
 

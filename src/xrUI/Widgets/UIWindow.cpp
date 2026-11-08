@@ -417,7 +417,7 @@ void CUIWindow::UpdateSmoothRotation()
 	RotationSmoothingPending = TreeHeadingPending || LocalPending;
 }
 
-UITransform2D CUIWindow::GetLocalTreeTransform()
+UITransform2D CUIWindow::GetLocalRotationTransform()
 {
 	UITransform2D Result;
 	if (!RotationEnabled || (TreeHeading == 0.0f && TreeOffset.x == 0.0f && TreeOffset.y == 0.0f))
@@ -443,10 +443,82 @@ UITransform2D CUIWindow::GetLocalTreeTransform()
 	return Result;
 }
 
+bool CUIWindow::IsAspectRatioCorrectionActive() const
+{
+	if (UI().m_currentPointType == IUIRender::pttLIT)
+	{
+		return false;
+	}
+	for (const CUIWindow* Window = this; Window; Window = Window->GetParent())
+	{
+		if (Window->UseAspectRatioCorrection)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+UITransform2D CUIWindow::BuildTreeTransform(const UITransform2D& Parent)
+{
+	if (!IsAspectRatioCorrectionActive())
+	{
+		return Parent.Compose(GetLocalRotationTransform());
+	}
+	UITransform2D Aspect;
+	// A branch inherits its parent's correction; repeated flags do not multiply it.
+	if (UseAspectRatioCorrection && (!GetParent() || !GetParent()->IsAspectRatioCorrectionActive()))
+	{
+		const float Factor = UI().get_current_kx();
+		if (std::isfinite(Factor) && Factor > EPS_S)
+		{
+			Fvector2 ParentOrigin = {0.0f, 0.0f};
+			if (GetParent())
+			{
+				GetParent()->GetAbsolutePos(ParentOrigin);
+			}
+			Aspect.XX = Factor;
+			Aspect.TX = UI().ClientToScreenScaledX(ParentOrigin.x) * (1.0f - Factor);
+		}
+	}
+	UITransform2D Result = Parent.Compose(Aspect);
+	if (RotationEnabled && (TreeHeading != 0.0f || TreeOffset.x != 0.0f || TreeOffset.y != 0.0f))
+	{
+		Fvector2 Pivot;
+		GetAbsolutePos(Pivot);
+		Pivot.add(TreePivot);
+		UI().ClientToScreenScaled(Pivot);
+		Result.Apply(Pivot.x, Pivot.y);
+		const float OffsetX = UI().ClientToScreenScaledX(TreeOffset.x);
+		const float OffsetY = UI().ClientToScreenScaledY(TreeOffset.y);
+		const float Cos = std::cos(TreeHeading), Sin = std::sin(TreeHeading);
+		UITransform2D Rotation;
+		Rotation.XX = Cos;
+		Rotation.XY = Sin;
+		Rotation.YX = -Sin;
+		Rotation.YY = Cos;
+		Rotation.TX = Pivot.x - Cos * Pivot.x - Sin * Pivot.y + Result.XX * OffsetX + Result.XY * OffsetY;
+		Rotation.TY = Pivot.y + Sin * Pivot.x - Cos * Pivot.y + Result.YX * OffsetX + Result.YY * OffsetY;
+		// Apply rotation after aspect correction to keep the corrected axes perpendicular.
+		Result = Rotation.Compose(Result);
+	}
+	return Result;
+}
+
+UITransform2D CUIWindow::GetLocalTreeTransform()
+{
+	if (!IsAspectRatioCorrectionActive())
+	{
+		return GetLocalRotationTransform();
+	}
+	const UITransform2D Parent = GetParent() ? GetParent()->GetTreeTransform() : UITransform2D{};
+	return Parent.Inverted().Compose(BuildTreeTransform(Parent));
+}
+
 UITransform2D CUIWindow::GetTreeTransform()
 {
-	const UITransform2D Local = GetLocalTreeTransform();
-	return GetParent() ? GetParent()->GetTreeTransform().Compose(Local) : Local;
+	const UITransform2D Parent = GetParent() ? GetParent()->GetTreeTransform() : UITransform2D{};
+	return BuildTreeTransform(Parent);
 }
 
 void CUIWindow::DrawWithTransform()

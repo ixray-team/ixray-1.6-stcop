@@ -58,6 +58,9 @@ private:
 	Fvector2 TreePivot = {0.0f, 0.0f};
 	Fvector2 TreeOffset = {0.0f, 0.0f};
 	bool RotationEnabled = true;
+	bool UseAspectRatioCorrection = false;
+	UITransform2D GetLocalRotationTransform();
+	UITransform2D BuildTreeTransform(const UITransform2D& Parent);
 	UITransform2D GetLocalTreeTransform();
 	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
 	xr_vector<CUIWindow*> ChildDrawOrder;
@@ -72,6 +75,8 @@ public:
 	bool ToBack();
 	void SetTreeHeading(float Angle, const Fvector2& Pivot, const Fvector2& Offset);
 	void SetSmothRotate(bool Enabled, float Factor);
+	void SetUseAspectRatioCorrection(bool Enabled) { UseAspectRatioCorrection = Enabled; }
+	bool IsAspectRatioCorrectionActive() const;
 	virtual void EnableHeading(bool Enabled) { RotationEnabled = Enabled; }
 	bool IsHeadingEnabled() const { return RotationEnabled; }
 	UITransform2D GetTreeTransform();

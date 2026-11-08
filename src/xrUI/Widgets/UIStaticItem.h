@@ -31,6 +31,7 @@ public:
 	void			Init					(const char* tex, const char* sh, float left, float top);
 	void			Render					();
 	void			Render					(float angle);
+	void Render(float Angle, bool CorrectedAspect);
 	void ResetOriginalRect() { uFlags.set(flValidTextureRect, false); }
 
 	IC void			SetPos					(float left, float top)			{vPos.set(left,top);}
@@ -56,5 +57,5 @@ public:
 
 private:
 	   void			RenderInternal			(const Fvector2& pos);
-	   void			RenderInternal			(float angle);
+	   void			RenderInternal			(float angle, bool CorrectedAspect = false);
 };

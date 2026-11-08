@@ -106,7 +106,7 @@ void CUIStaticItem::RenderInternal(const Fvector2& in_pos)
 	}
 }
 
-void CUIStaticItem::RenderInternal(float angle)
+void CUIStaticItem::RenderInternal(float angle, bool CorrectedAspect)
 {
 	Fvector2		ts;
 	Fvector2		hp;
@@ -140,7 +140,7 @@ void CUIStaticItem::RenderInternal(float angle)
 	LTt.set(TextureRect.x1/ts.x+hp.x, TextureRect.y1/ts.y+hp.y);
 	RBt.set(TextureRect.x2/ts.x+hp.x, TextureRect.y2/ts.y+hp.y);
 
-	float kx =	UI().get_current_kx();
+	float kx = CorrectedAspect ? 1.0f : UI().get_current_kx();
 
 	// clip poly
 	sPoly2D								S; 
@@ -191,12 +191,17 @@ void CUIStaticItem::Render()
 
 void CUIStaticItem::Render(float angle)
 {
-	VERIFY						(g_bRendering);
+	Render(angle, false);
+}
 
-	UIRender->SetShader			(*hShader);
-	UIRender->StartPrimitive	(32, IUIRender::ptTriList, UI().m_currentPointType);
-	RenderInternal				(angle);
-	UIRender->FlushPrimitive	();
+void CUIStaticItem::Render(float Angle, bool CorrectedAspect)
+{
+	VERIFY(g_bRendering);
+
+	UIRender->SetShader(*hShader);
+	UIRender->StartPrimitive(32, IUIRender::ptTriList, UI().m_currentPointType);
+	RenderInternal(Angle, CorrectedAspect);
+	UIRender->FlushPrimitive();
 }
 
 
