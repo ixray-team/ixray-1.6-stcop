@@ -74,7 +74,18 @@ target_link_libraries(LevelEditor PUBLIC xrScripts)
 target_link_libraries(LevelEditor PUBLIC imgui_node_editor)
 target_link_libraries(LevelEditor PUBLIC xrSE_Factory)
 target_link_libraries(LevelEditor PUBLIC PCore)
-target_link_libraries(LevelEditor PRIVATE miniz)
+target_link_libraries(LevelEditor PRIVATE archive_static)
+
+add_custom_command(TARGET LevelEditor POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:LevelEditor>/licenses"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${IXRAY_PACKAGE_ARCHIVE_SOURCE_DIR}/COPYING" "$<TARGET_FILE_DIR:LevelEditor>/licenses/libarchive.txt"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${IXRAY_PACKAGE_LZMA_SOURCE_DIR}/COPYING" "$<TARGET_FILE_DIR:LevelEditor>/licenses/liblzma.txt"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${IXRAY_PACKAGE_ZLIB_SOURCE_DIR}/LICENSE" "$<TARGET_FILE_DIR:LevelEditor>/licenses/zlib.txt"
+    VERBATIM
+)
 target_link_libraries(LevelEditor PUBLIC "Shell32.lib")
 add_dependencies(LevelEditor xrGame)
 

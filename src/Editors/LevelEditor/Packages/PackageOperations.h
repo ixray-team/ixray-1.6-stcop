@@ -1,6 +1,9 @@
 #pragma once
 
 #include "PackageStore.h"
+#include "PackageImport.h"
+#include "PackageDependencies.h"
+#include "PackageComparison.h"
 #include <atomic>
 #include "PackageThread.h"
 
@@ -16,7 +19,12 @@ public:
 		Update,
 		Remove,
 		SyncCatalog,
-		CheckUpdates
+		CheckUpdates,
+		PrepareImport,
+		CheckImportDependencies,
+		SelectImportDependencies,
+		CompareImportFile,
+		Import
 	};
 	struct Result
 	{
@@ -24,11 +32,16 @@ public:
 		PackageInfo Package;
 		xr_string Message;
 		xr_string CheckedCommit;
+		ImportPlan Import;
+		ImportReport ImportSummary;
+		DependencyReport Dependencies;
+		AssetComparison Comparison;
+		bool HasDependencyResult = false;
 		bool IsSuccess = false;
 	};
 	PackageOperations(PackageStore& Store, PackageCatalog& Catalog, const PackageThread::Launcher& Launch = {});
 	~PackageOperations();
-	bool Start(Action Operation, const PackageInfo& Info, bool IsFromCatalog, xr_string& Error);
+	bool Start(Action Operation, const PackageInfo& Info, bool IsFromCatalog, xr_string& Error, const ImportPlan& ImportRequest = {}, const xr_vector<ImportRoot>& ImportRoots = {}, size_t FileIndex = std::numeric_limits<size_t>::max());
 	bool Poll(Result& Output);
 	void Cancel();
 	PackageProgress GetProgress() const;

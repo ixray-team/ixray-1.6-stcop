@@ -804,7 +804,7 @@ void UIMainMenuForm::Draw()
 
 				if (ImGui::IsItemHovered())
 				{
-					ImGui::SetTooltip(Plug->Desc.c_str());
+					ImGui::SetTooltip("%s", Plug->Desc.c_str());
 				}
 			}
 			ImGui::EndMenu();

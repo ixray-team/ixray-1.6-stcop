@@ -60,6 +60,9 @@ public:
 	static void InvalidateIcon(const xr_string& FullPath);
 	// Releases the shared icons while the device is alive
 	static void ClearIcons();
+	// Shared type icons only; does not load previews from asset files.
+	static ImTextureID GetTypeIcon(const xr_string& Type);
+	static void NotifyFilesChanged() { ++FileRevision; }
 	virtual void Draw() override;
 	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
 	void DrawHeader();
@@ -83,8 +86,8 @@ public:
 	virtual void ResetEnd();
 
 	void RemoveCustomIcon(const xr_string&);
-	void LoadCustomIcons();
-	void LoadBaseIcons();
+	static void LoadCustomIcons();
+	static void LoadBaseIcons();
 
 private:
 	void CollectAllFolder();
@@ -152,6 +155,8 @@ private:
 	// Icon database shared by every content browser: a file icon is created once
 	static xr_hash_map<xr_string, IconData> Icons;
 	static CParticlePreviewCache ParticlePreviews;
+	static u64 FileRevision;
+	u64 LastFileRevision = 0;
 
 	xr_hash_map<xr_string, void*> ParticlesCache;
 	xr_hash_map<xr_string, xr_string> ExtDesc;

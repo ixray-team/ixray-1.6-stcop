@@ -57,6 +57,7 @@ bool Copy(const xr_path& Source, const xr_path& Target, xr_string& Error, bool I
 	}
 	std::error_code Code;
 	PackageProgress Current{"Copying package files"};
+	Current.FilesTotal = Paths.size();
 	if (Progress)
 	{
 		for (const auto& Relative : Paths)
@@ -100,17 +101,17 @@ bool Copy(const xr_path& Source, const xr_path& Target, xr_string& Error, bool I
 			}
 			Current.Detail = Relative;
 			const auto PreviousBytes = Current.BytesCompleted;
-			ProgressCallback FileProgress;
+			ProgressCallback FileProgressLambda;
 			if (Progress)
 			{
 				Progress(Current);
-				FileProgress = [&](const PackageProgress& Value)
+				FileProgressLambda = [&](const PackageProgress& Value)
 				{
 					Current.BytesCompleted = PreviousBytes + Value.BytesCompleted;
 					Progress(Current);
 				};
 			}
-			if (!CopyBytes(Input, Output, Error, Stop, FileProgress))
+			if (!CopyBytes(Input, Output, Error, Stop, FileProgressLambda))
 			{
 				return false;
 			}
@@ -123,6 +124,14 @@ bool Copy(const xr_path& Source, const xr_path& Target, xr_string& Error, bool I
 			if (!Code)
 			{
 				std::filesystem::permissions(Destination, Permissions, Code);
+			}
+			if (!Code)
+			{
+				++Current.FilesCompleted;
+				if (Progress)
+				{
+					Progress(Current);
+				}
 			}
 		}
 	}
@@ -217,11 +226,17 @@ bool Files(const xr_path& Root, xr_vector<xr_string>& Result, xr_string& Error, 
 
 namespace Details
 {
+bool IsArchivePath(const xr_path& Path)
+{
+	const auto Extension = Lower(Utf8(Path.extension()));
+	return Extension == ".zip" || Extension == ".7z";
+}
+
 bool NormalizeLocalSource(PackageInfo& Info, xr_string& Error)
 {
 	if (Info.LocalPath.empty() || !Presentation::IsUtf8(Info.LocalPath) || Info.Source == PackageSource::GitHub)
 	{
-		return Fail(Error, "Select a local package folder or ZIP file.");
+		return Fail(Error, "Select a local package folder or ZIP/7z archive.");
 	}
 	xr_path Path = FromUtf8(Info.LocalPath);
 	std::error_code Code;
@@ -234,9 +249,9 @@ bool NormalizeLocalSource(PackageInfo& Info, xr_string& Error)
 	{
 		return Fail(Error, "The original local package source is missing or inaccessible.");
 	}
-	if (Info.Source == PackageSource::Zip && Lower(Utf8(Path.extension())) != ".zip")
+	if (Info.Source == PackageSource::Archive && !IsArchivePath(Path))
 	{
-		return Fail(Error, "Select a .zip archive.");
+		return Fail(Error, "Select a .zip or .7z archive.");
 	}
 	Info.LocalPath = Utf8(Path);
 	if (Info.LocalPath.size() >= 4096)
@@ -446,9 +461,9 @@ namespace Details
 {
 bool ParseSource(const xr_string& Name, PackageSource& Source)
 {
-	for (PackageSource Candidate : {PackageSource::GitHub, PackageSource::Folder, PackageSource::Zip})
+	for (PackageSource Candidate : {PackageSource::GitHub, PackageSource::Folder, PackageSource::Archive})
 	{
-		if (Name == SourceName(Candidate))
+		if (Name == SourceName(Candidate) || (Candidate == PackageSource::Archive && Name == "zip"))
 		{
 			Source = Candidate;
 			return true;
@@ -466,7 +481,7 @@ const char* SourceName(PackageSource Source)
 	{
 		case PackageSource::GitHub: return "github";
 		case PackageSource::Folder: return "folder";
-		case PackageSource::Zip: return "zip";
+		case PackageSource::Archive: return "archive";
 	}
 	return "";
 }
@@ -606,7 +621,7 @@ bool PackageStore::InstallCheckout(const xr_path& Checkout, const PackageInfo& S
 			const xr_path Storage = Join(Root, Directory);
 			if (Details::SamePath(Original, Storage) || Details::IsWithin(Original, Storage) || Details::IsWithin(Storage, Original))
 			{
-				return Details::Fail(Error, "Local sources cannot overlap SDK package storage. Select the original folder or ZIP outside managed packages.");
+				return Details::Fail(Error, "Local sources cannot overlap SDK package storage. Select the original folder or archive outside managed packages.");
 			}
 		}
 	}
@@ -1239,6 +1254,17 @@ bool PackageStore::Manifest(const xr_path& Checkout, PackageInfo& Info, xr_path&
 	if (!IsCheckoutRoot && !Details::IsWithin(Content, Checkout))
 	{
 		return Details::Fail(Error, "Package content escapes the repository.");
+	}
+	const auto ContentStatus = std::filesystem::symlink_status(Content, Code);
+	if (Code == std::errc::no_such_file_or_directory || (!Code && !std::filesystem::exists(ContentStatus)))
+	{
+		Error = "package.json content directory was not found: " + ContentName + ". Set content to an existing folder inside the package.";
+		return false;
+	}
+	if (Code || !std::filesystem::is_directory(ContentStatus))
+	{
+		Error = "package.json content must name an accessible directory without symbolic links: " + ContentName;
+		return false;
 	}
 	xr_vector<xr_string> Paths;
 	if (!Details::Files(Content, Paths, Error, true, Stop))

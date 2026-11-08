@@ -73,10 +73,10 @@ inline bool IsUtf8(const xr_string& Text)
 	return true;
 }
 
-inline bool IsUtf8Path(const std::filesystem::path& Path)
+inline bool IsUtf8Path(const xr_path& Path)
 {
 	const auto& Native = Path.native();
-	if constexpr (sizeof(std::filesystem::path::value_type) == 1)
+	if constexpr (sizeof(xr_path::value_type) == 1)
 	{
 		xr_string Bytes;
 		Bytes.assign(reinterpret_cast<const char*>(Native.data()), Native.size());
@@ -87,7 +87,7 @@ inline bool IsUtf8Path(const std::filesystem::path& Path)
 		for (size_t Index = 0; Index < Native.size(); ++Index)
 		{
 			const auto Value = static_cast<u32>(Native[Index]);
-			if constexpr (sizeof(std::filesystem::path::value_type) == 2)
+			if constexpr (sizeof(xr_path::value_type) == 2)
 			{
 				if (Value >= 0xd800 && Value <= 0xdbff)
 				{

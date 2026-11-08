@@ -166,7 +166,7 @@ void DrawDocument(const xr_string& Text, const char* EmptyMessage, bool IsMarkdo
 		}
 		const auto Lines = std::count(Code.begin(), Code.end(), '\n') + 1;
 		ImGui::PushID(++Block);
-		ImGui::BeginChild("Code", {0, std::min(200.0f, ImGui::GetTextLineHeightWithSpacing() * Lines + 12)}, ImGuiChildFlags_Borders, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::BeginChild("Code", {0, std::min(200.0f, ImGui::GetTextLineHeightWithSpacing() * Lines + ImGui::GetStyle().WindowPadding.y * 2)}, ImGuiChildFlags_Borders, ImGuiWindowFlags_HorizontalScrollbar);
 		ImGui::TextUnformatted(Code.c_str());
 		ImGui::EndChild();
 		ImGui::PopID();

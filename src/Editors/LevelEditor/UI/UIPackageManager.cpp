@@ -4,7 +4,9 @@
 #include "../Packages/PackageMarkdown.h"
 #include "../Plugins/PluginManager.h"
 #include "../Plugins/PluginsUIRun.h"
+#include "../Editor/Utils/ContentView.h"
 #include <cfloat>
+#include <SDL3/SDL_dialog.h>
 
 UIPackageManager* UIPackageManager::Form = nullptr;
 
@@ -39,16 +41,25 @@ static float TextPadding()
 static bool PaddedSelectable(const char* Label, bool IsSelected, float Height = 0)
 {
 	const auto Position = ImGui::GetCursorScreenPos();
+	const float PaddingY = ImGui::GetStyle().CellPadding.y;
 	ImGui::PushID(Label);
-	const bool IsPressed = ImGui::Selectable("##PaddedRow", IsSelected, ImGuiSelectableFlags_None, {0, Height});
+	const bool IsPressed = ImGui::Selectable("##PaddedRow", IsSelected, ImGuiSelectableFlags_None, {0, Height > 0 ? Height : ImGui::GetTextLineHeight() + PaddingY * 2});
 	ImGui::PopID();
 	const auto Bounds = ImGui::GetItemRectMax();
 	const float Padding = TextPadding();
 	auto* DrawList = ImGui::GetWindowDrawList();
 	DrawList->PushClipRect({Position.x + Padding, Position.y}, {std::max(Position.x + Padding, Bounds.x - Padding), Bounds.y}, true);
-	DrawList->AddText({Position.x + Padding, Position.y}, ImGui::GetColorU32(ImGuiCol_Text), Label);
+	DrawList->AddText({Position.x + Padding, Position.y + PaddingY}, ImGui::GetColorU32(ImGuiCol_Text), Label);
 	DrawList->PopClipRect();
 	return IsPressed;
+}
+
+static void BeginPane(const char* Name, const ImVec2& Size, bool PadSides = false)
+{
+	const auto Padding = ImGui::GetStyle().WindowPadding;
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(PadSides ? Padding.x : 0, Padding.y));
+	ImGui::BeginChild(Name, Size, ImGuiChildFlags_AlwaysUseWindowPadding);
+	ImGui::PopStyleVar();
 }
 
 static const char* KindLabel(SdkPackages::PackageKind Kind)
@@ -67,7 +78,7 @@ static const char* SourceLabel(SdkPackages::PackageSource Source)
 	{
 		case SdkPackages::PackageSource::GitHub: return "GitHub";
 		case SdkPackages::PackageSource::Folder: return "Local folder";
-		case SdkPackages::PackageSource::Zip: return "ZIP archive";
+		case SdkPackages::PackageSource::Archive: return "ZIP / 7z archive";
 	}
 	return "Package source";
 }
@@ -146,6 +157,7 @@ void UIPackageManager::Refresh(bool ResetChecks)
 
 void UIPackageManager::Poll()
 {
+	PollLocalSource();
 	SdkPackages::PackageOperations::Result Result;
 	if (Operations.Poll(Result))
 	{
@@ -155,7 +167,12 @@ void UIPackageManager::Poll()
 			CheckedCommits.clear();
 		}
 		const auto& Info = Result.Package;
-		if ((Result.IsSuccess || Result.Operation == Action::CheckUpdates) && Result.Operation != Action::SyncCatalog && Info.Source == SdkPackages::PackageSource::GitHub)
+		if (Result.Operation == Action::CompareImportFile)
+		{
+			ImportComparison = std::move(Result.Comparison);
+			ComparisonError = Result.IsSuccess ? xr_string{} : Result.Message;
+		}
+		if ((Result.IsSuccess || Result.Operation == Action::CheckUpdates) && Result.Operation != Action::SyncCatalog && Result.Operation != Action::CompareImportFile && Info.Source == SdkPackages::PackageSource::GitHub)
 		{
 			const auto Key = PackageWindow::RevisionKey(Info);
 			const xr_string Commit = Result.Operation == Action::CheckUpdates ? Result.CheckedCommit : Result.Operation == Action::Remove ? xr_string{}
@@ -170,7 +187,73 @@ void UIPackageManager::Poll()
 			}
 		}
 		IsSucceeded = Result.IsSuccess;
-		const bool HasChanged = Result.IsSuccess && Result.Operation != Action::SyncCatalog && Result.Operation != Action::CheckUpdates;
+		const bool HasChanged = Result.IsSuccess && (Result.Operation == Action::Install || Result.Operation == Action::Update || Result.Operation == Action::Remove);
+		if (Result.IsSuccess && Result.Operation == Action::PrepareImport)
+		{
+			ImportPlan = std::move(Result.Import);
+			CanReplaceImportFiles = false;
+			ShowExistingImportFiles = false;
+			IsImportDetailsExpanded = false;
+			ShouldCloseImportDialog = false;
+			ShouldOpenImportComparison = false;
+			ComparisonIndex = std::numeric_limits<size_t>::max();
+			ImportComparison = {};
+			ComparisonError.clear();
+			ImportDependencies = {};
+			IsDependencyCheckCurrent = false;
+			DependencyCheckError.clear();
+			ShouldShowImportDependencies = false;
+			BuildImportTree();
+			ShouldOpenImportDialog = true;
+		}
+		if (Result.Operation == Action::CheckImportDependencies || Result.Operation == Action::SelectImportDependencies)
+		{
+			if (Result.IsSuccess && Result.Operation == Action::SelectImportDependencies)
+			{
+				ImportPlan = std::move(Result.Import);
+			}
+			ImportDependencies = std::move(Result.Dependencies);
+			IsDependencyCheckCurrent = Result.HasDependencyResult;
+			DependencyCheckError = Result.IsSuccess ? xr_string{} : Result.Message;
+			ShouldShowImportDependencies = true;
+		}
+		if (Result.Operation == Action::Import && !Result.ImportSummary.PackageName.empty())
+		{
+			ImportReport = std::move(Result.ImportSummary);
+			ShouldCloseImportDialog = true;
+			ShouldOpenImportReport = !ImportReport.IsSuccess;
+			size_t ImportedFiles = 0;
+			xr_vector<xr_path> Changed;
+			for (const auto& File : ImportReport.Files)
+			{
+				if (File.Outcome == SdkPackages::ImportOutcome::Added || File.Outcome == SdkPackages::ImportOutcome::Replaced)
+				{
+					++ImportedFiles;
+				}
+				if (File.Outcome == SdkPackages::ImportOutcome::Added || File.Outcome == SdkPackages::ImportOutcome::Replaced || File.Outcome == SdkPackages::ImportOutcome::Failed)
+				{
+					if (!File.Destination.empty())
+					{
+						Changed.push_back(File.Destination);
+					}
+				}
+			}
+			if (ImportReport.IsSuccess)
+			{
+				string128 Summary;
+				xr_sprintf(Summary, "Imported %zu files.", ImportedFiles);
+				Message = Summary;
+			}
+			if (!Changed.empty())
+			{
+				SdkPackages::PackageImporter::RefreshFilesystem(Changed);
+				CContentView::NotifyFilesChanged();
+			}
+			if (!ImportReport.Path.empty())
+			{
+				Msg("* [Packages] Import report: %s", SdkPackages::Utf8(ImportReport.Path).c_str());
+			}
+		}
 		NeedsPluginRefresh |= HasChanged && Info.Kind == SdkPackages::PackageKind::Plugin;
 		const bool HasInstalledPackage = Result.IsSuccess && Result.Operation == Action::Install;
 		if (HasInstalledPackage)
@@ -180,7 +263,10 @@ void UIPackageManager::Poll()
 			Search[0] = '\0';
 		}
 		IsBusy = false;
-		Refresh(false);
+		if (Result.Operation != Action::CompareImportFile)
+		{
+			Refresh(false);
+		}
 		if (HasInstalledPackage)
 		{
 			const auto Selected = std::find_if(Packages.begin(), Packages.end(), [&](const auto& Row)
@@ -193,7 +279,7 @@ void UIPackageManager::Poll()
 		Msg("%s [Packages] %s", IsSucceeded ? "*" : "!", Message.c_str());
 	}
 	// Reinitialization invalidates pointers retained by open plugin windows.
-	if (NeedsPluginRefresh && !EContext.UI->HasWindow<CPluginUIRun>())
+	if (NeedsPluginRefresh && !IsBusy && !EContext.UI->HasWindow<CPluginUIRun>())
 	{
 		CPluginsManagers::Instance().Reinit();
 		NeedsPluginRefresh = false;
@@ -207,7 +293,7 @@ void UIPackageManager::Start(Action Operation, const SdkPackages::PackageInfo& I
 		return;
 	}
 	xr_string Error;
-	if (!Operations.Start(Operation, Info, IsFromCatalog, Error))
+	if (!Operations.Start(Operation, Info, IsFromCatalog, Error, (Operation == Action::Import || Operation == Action::CheckImportDependencies || Operation == Action::SelectImportDependencies || Operation == Action::CompareImportFile) ? ImportPlan : SdkPackages::ImportPlan{}, Operation == Action::PrepareImport ? SdkPackages::PackageImporter::CaptureRoots() : xr_vector<SdkPackages::ImportRoot>{}, Operation == Action::CompareImportFile ? ComparisonIndex : std::numeric_limits<size_t>::max()))
 	{
 		Message = Error;
 		IsSucceeded = false;
@@ -215,46 +301,60 @@ void UIPackageManager::Start(Action Operation, const SdkPackages::PackageInfo& I
 	}
 	IsBusy = true;
 	IsSucceeded = true;
-	Message = Operation == Action::SyncCatalog ? "Synchronizing SDK catalog..." : Operation == Action::CheckUpdates				  ? "Checking for package updates..."
-																			  : Operation == Action::Remove						  ? "Removing package..."
-																			  : Info.Source == SdkPackages::PackageSource::GitHub ? "Downloading package from GitHub..."
-																																  : "Reading local package...";
+	Message = Operation == Action::CompareImportFile ? "Comparing file contents" : Operation == Action::SelectImportDependencies   ? "Selecting level dependencies..."
+																			   : Operation == Action::CheckImportDependencies	   ? "Checking level dependencies..."
+																			   : Operation == Action::PrepareImport				   ? "Preparing asset import..."
+																			   : Operation == Action::Import					   ? "Importing selected assets..."
+																			   : Operation == Action::SyncCatalog				   ? "Synchronizing SDK catalog..."
+																			   : Operation == Action::CheckUpdates				   ? "Checking for package updates..."
+																			   : Operation == Action::Remove					   ? "Removing package..."
+																			   : Info.Source == SdkPackages::PackageSource::GitHub ? "Downloading package from GitHub..."
+																																   : "Reading local package...";
 }
 
 void UIPackageManager::Draw()
 {
+	const auto& Style = ImGui::GetStyle();
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(std::max(10.0f, Style.WindowPadding.x), std::max(8.0f, Style.WindowPadding.y)));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(std::max(6.0f, Style.CellPadding.x), std::max(3.0f, Style.CellPadding.y)));
 	ImGui::SetNextWindowSize({1180, 720}, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints({940, 520}, {FLT_MAX, FLT_MAX});
 	if (ImGui::Begin("Package Manager", &bOpen))
 	{
 		DrawToolbar();
 		ImGui::Separator();
-		const float FooterHeight = ImGui::GetTextLineHeightWithSpacing() * 4;
+		const float FooterHeight = ImGui::GetTextLineHeightWithSpacing() * 4 + ImGui::GetStyle().WindowPadding.y * 2;
 		ImGui::BeginChild("PackageBrowser", {0, -FooterHeight});
 		const float PaneHeight = ImGui::GetContentRegionAvail().y;
-		if (ImGui::BeginTable("PackageColumns", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit))
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+		const bool HasColumns = ImGui::BeginTable("PackageColumns", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoPadOuterX);
+		if (HasColumns)
 		{
 			ImGui::TableSetupColumn("Navigation", ImGuiTableColumnFlags_WidthFixed, 175);
 			ImGui::TableSetupColumn("Packages", ImGuiTableColumnFlags_WidthFixed, 300);
 			ImGui::TableSetupColumn("Details", ImGuiTableColumnFlags_WidthStretch);
 			ImGui::TableNextRow();
+		}
+		ImGui::PopStyleVar();
+		if (HasColumns)
+		{
 			ImGui::TableSetColumnIndex(0);
-			ImGui::BeginChild("PackageNavigation", {0, PaneHeight});
+			PackageWindow::BeginPane("PackageNavigation", {0, PaneHeight});
 			DrawNavigation();
 			ImGui::EndChild();
 			ImGui::TableSetColumnIndex(1);
-			ImGui::BeginChild("PackageList", {0, PaneHeight});
+			PackageWindow::BeginPane("PackageList", {0, PaneHeight});
 			DrawList();
 			ImGui::EndChild();
 			ImGui::TableSetColumnIndex(2);
-			ImGui::BeginChild("PackageDetails", {0, PaneHeight});
+			PackageWindow::BeginPane("PackageDetails", {0, PaneHeight}, true);
 			DrawDetails();
 			ImGui::EndChild();
 			ImGui::EndTable();
 		}
 		ImGui::EndChild();
 		ImGui::Separator();
-		ImGui::BeginChild("PackageStatus", {0, 0});
+		PackageWindow::BeginPane("PackageStatus", {0, 0});
 		if (IsBusy)
 		{
 			const auto Progress = Operations.GetProgress();
@@ -263,6 +363,11 @@ void UIPackageManager::Draw()
 			{
 				ImGui::SameLine();
 				ImGui::TextDisabled("(%zu / %zu completed; %zu active)", Progress.PackagesCompleted, Progress.PackageCount, Progress.ActivePackages);
+			}
+			else if (Progress.FilesTotal)
+			{
+				ImGui::SameLine();
+				ImGui::TextDisabled("(%zu / %zu files)", Progress.FilesCompleted, Progress.FilesTotal);
 			}
 			if (!Progress.Detail.empty())
 			{
@@ -275,14 +380,23 @@ void UIPackageManager::Draw()
 			if (Progress.BytesTotal)
 			{
 				string128 Label;
-				xr_sprintf(Label, "%.2f / %.2f MiB", static_cast<double>(Progress.BytesCompleted) / (1024 * 1024), static_cast<double>(Progress.BytesTotal) / (1024 * 1024));
 				const float Fraction = std::min(1.0f, static_cast<float>(Progress.BytesCompleted) / static_cast<float>(Progress.BytesTotal));
+				xr_sprintf(Label, "%.0f%% | %.2f / %.2f MiB", Fraction * 100, static_cast<double>(Progress.BytesCompleted) / (1024 * 1024), static_cast<double>(Progress.BytesTotal) / (1024 * 1024));
 				ImGui::ProgressBar(Fraction, {-1, 0}, Label);
+			}
+			else if (Progress.FilesTotal)
+			{
+				const float Fraction = std::min(1.0f, static_cast<float>(Progress.FilesCompleted) / static_cast<float>(Progress.FilesTotal));
+				ImGui::ProgressBar(Fraction, {-1, 0});
+			}
+			else
+			{
+				ImGui::ProgressBar(-static_cast<float>(ImGui::GetTime()), {-1, 0}, "Working...");
 			}
 		}
 		else if (Message.empty())
 		{
-			ImGui::TextDisabled("%zu packages available / %zu installed in this SDK", Packages.size(), Installed.size());
+			ImGui::TextDisabled("%zu packages available / %zu in your SDK library", Packages.size(), Installed.size());
 		}
 		else
 		{
@@ -307,8 +421,11 @@ void UIPackageManager::Draw()
 			ShouldOpenAddDialog = false;
 		}
 		DrawAddDialog();
+		DrawImportDialog();
+		DrawImportReport();
 	}
 	ImGui::End();
+	ImGui::PopStyleVar(2);
 }
 
 void UIPackageManager::DrawToolbar()
@@ -324,8 +441,14 @@ void UIPackageManager::DrawToolbar()
 		Start(Action::SyncCatalog, {});
 	}
 	ImGui::EndDisabled();
-	ImGui::SameLine();
-	ImGui::TextDisabled("Shared SDK library");
+	if (!ImportReport.PackageName.empty() && !IsBusy)
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Last import report"))
+		{
+			ShouldOpenImportReport = true;
+		}
+	}
 	if (IsBusy)
 	{
 		ImGui::SameLine();
@@ -413,7 +536,7 @@ void UIPackageManager::DrawList()
 		{
 			SelectedKey = Row->Key;
 		}
-		ImGui::SetCursorPosY(RowY + ImGui::GetTextLineHeightWithSpacing());
+		ImGui::SetCursorPosY(RowY + ImGui::GetStyle().CellPadding.y + ImGui::GetTextLineHeightWithSpacing());
 		ImGui::SetCursorPosX(PackageWindow::TextPadding());
 		if (!Row->IsMetadataAvailable)
 		{
@@ -421,8 +544,8 @@ void UIPackageManager::DrawList()
 		}
 		else
 		{
-			ImGui::TextDisabled("%s / %s", Info.Version.c_str(), Row->IsInstalled ? "Installed" : Row->HasSourceConflict ? "ID conflict"
-																														 : "Available");
+			ImGui::TextDisabled("%s / %s", Info.Version.c_str(), Row->IsInstalled ? (Info.Kind == SdkPackages::PackageKind::Assets ? (Info.Source == SdkPackages::PackageSource::GitHub ? "Downloaded" : "Added") : "Installed") : Row->HasSourceConflict ? "ID conflict"
+																																																														  : "Available");
 		}
 		ImGui::SetCursorPosY(RowY + RowHeight + ImGui::GetStyle().ItemSpacing.y);
 		ImGui::PopID();
@@ -430,9 +553,11 @@ void UIPackageManager::DrawList()
 	if (Visible.empty())
 	{
 		ImGui::SetCursorPosX(PackageWindow::TextPadding());
-		ImGui::TextWrapped(Search[0] ? "No packages match this search." : ActiveView == SdkPackages::CatalogView::My	  ? "No packages installed. Browse All packages or add one with +."
+		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - PackageWindow::TextPadding());
+		ImGui::TextWrapped(Search[0] ? "No packages match this search." : ActiveView == SdkPackages::CatalogView::My	  ? "Your library is empty. Browse All packages or add one with +."
 																	  : ActiveView == SdkPackages::CatalogView::Community ? "No community packages in this catalog yet."
 																														  : "No packages in this view.");
+		ImGui::PopTextWrapPos();
 	}
 	ImGui::EndChild();
 }
@@ -446,7 +571,7 @@ void UIPackageManager::DrawDetails()
 		ImGui::Spacing();
 		ImGui::TextUnformatted("Your SDK library");
 		ImGui::Separator();
-		ImGui::TextWrapped("Browse SDK tools and asset collections, or add a package from GitHub, a local folder or ZIP.");
+		ImGui::TextWrapped("Browse SDK tools and asset collections, or add a package from GitHub, a local folder or archive.");
 		return;
 	}
 	const auto& Row = *Selected;
@@ -483,22 +608,37 @@ void UIPackageManager::DrawDetails()
 	const bool IsCurrent = Row.IsInstalled && UpdateState == SdkPackages::PackageUpdateState::Current;
 	const bool HasCheckedRevision = Checked != CheckedCommits.end() && SdkPackages::GitSource::IsCommit(Checked->second);
 	const bool IsUnknown = Row.IsInstalled && UpdateState == SdkPackages::PackageUpdateState::Unknown && !HasCheckedRevision;
-	const char* ActionLabel = !Row.IsInstalled ? "Install package" : IsCurrent																										  ? "Up to date"
-																 : IsUnknown																										  ? "Check updates"
-																 : (UpdateState == SdkPackages::PackageUpdateState::Local || UpdateState == SdkPackages::PackageUpdateState::Unknown) ? "Reload package"
-																																													  : "Update package";
-	ImGui::BeginDisabled(IsCurrent);
-	if (ImGui::Button(ActionLabel))
+	const bool IsAsset = Info.Kind == SdkPackages::PackageKind::Assets;
+	if (IsAsset && Row.IsInstalled)
 	{
-		Start(!Row.IsInstalled ? Action::Install : IsUnknown ? Action::CheckUpdates
-															 : Action::Update,
-			  Info,
-			  Row.HasCatalogEntry);
+		if (ImGui::Button("Import"))
+		{
+			Start(Action::PrepareImport, Info);
+		}
 	}
-	ImGui::EndDisabled();
-	if (IsCurrent && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	if (!Row.IsInstalled || !IsAsset || Info.Source == SdkPackages::PackageSource::GitHub)
 	{
-		ImGui::SetTooltip("Installed revision matches the last catalog sync or update check.");
+		if (IsAsset && Row.IsInstalled)
+		{
+			ImGui::SameLine();
+		}
+		const char* ActionLabel = !Row.IsInstalled ? (IsAsset ? "Download" : "Install package") : IsCurrent																										   ? "Up to date"
+																							  : IsUnknown																										   ? "Check updates"
+																							  : (UpdateState == SdkPackages::PackageUpdateState::Local || UpdateState == SdkPackages::PackageUpdateState::Unknown) ? (IsAsset ? "Reload download" : "Reload package")
+																																																				   : (IsAsset ? "Download update" : "Update package");
+		ImGui::BeginDisabled(IsCurrent);
+		if (ImGui::Button(ActionLabel))
+		{
+			Start(!Row.IsInstalled ? Action::Install : IsUnknown ? Action::CheckUpdates
+																 : Action::Update,
+				  Info,
+				  Row.HasCatalogEntry);
+		}
+		ImGui::EndDisabled();
+		if (IsCurrent && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			ImGui::SetTooltip("Installed revision matches the last catalog sync or update check.");
+		}
 	}
 	if (Row.IsInstalled && Info.Source == SdkPackages::PackageSource::GitHub && !IsUnknown)
 	{
@@ -511,7 +651,7 @@ void UIPackageManager::DrawDetails()
 	if (Row.IsInstalled)
 	{
 		ImGui::SameLine();
-		if (ImGui::Button("Remove package"))
+		if (ImGui::Button(IsAsset && Info.Source == SdkPackages::PackageSource::GitHub ? "Remove download" : "Remove package"))
 		{
 			ImGui::OpenPopup("Remove managed package?");
 		}
@@ -519,7 +659,7 @@ void UIPackageManager::DrawDetails()
 	if (ImGui::BeginPopupModal("Remove managed package?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Remove %s?", Info.Name.c_str());
-		ImGui::TextUnformatted("Only this package's directory will be removed. Locally changed files prevent removal.");
+		ImGui::TextWrapped("%s", IsAsset ? "The downloaded package will be removed. Imported files are kept." : "Only this package's directory will be removed. Locally changed files prevent removal.");
 		if (ImGui::Button("Remove"))
 		{
 			Start(Action::Remove, Info);
@@ -545,7 +685,7 @@ void UIPackageManager::DrawDetails()
 			ImGui::Spacing();
 			const char* Channel = Row.Channel == SdkPackages::CatalogChannel::Official ? "Official" : Row.Channel == SdkPackages::CatalogChannel::Community ? "Community"
 																																							: "Custom source";
-			ImGui::TextDisabled("%s / %s", Channel, Row.IsInstalled ? "Installed" : "Available");
+			ImGui::TextDisabled("%s / %s", Channel, Row.IsInstalled ? (IsAsset ? (Info.Source == SdkPackages::PackageSource::GitHub ? "Downloaded" : "Added") : "Installed") : "Available");
 			if (!Row.Category.empty())
 			{
 				ImGui::Text("Category: %s", Row.Category.c_str());
@@ -576,7 +716,7 @@ void UIPackageManager::DrawDetails()
 			ImGui::Spacing();
 			if (Info.Kind == SdkPackages::PackageKind::Assets)
 			{
-				ImGui::TextWrapped("Stored in the shared SDK library after installation. Asset importing into projects will be added later.");
+				ImGui::TextWrapped("Download to your shared SDK library, then choose Import to select files for the current SDK. Download updates and removal keep imported files unchanged.");
 			}
 			else if (Info.Kind == SdkPackages::PackageKind::Plugin)
 			{
@@ -618,10 +758,10 @@ void UIPackageManager::DrawSourceMenu()
 {
 	if (ImGui::BeginPopup("PackageSources"))
 	{
-		for (auto Source : {SdkPackages::PackageSource::GitHub, SdkPackages::PackageSource::Folder, SdkPackages::PackageSource::Zip})
+		for (auto Source : {SdkPackages::PackageSource::GitHub, SdkPackages::PackageSource::Folder, SdkPackages::PackageSource::Archive})
 		{
 			const char* Label = Source == SdkPackages::PackageSource::GitHub ? "Install from GitHub..." : Source == SdkPackages::PackageSource::Folder ? "Install from folder..."
-																																					   : "Install from ZIP...";
+																																					   : "Install from archive...";
 			if (ImGui::MenuItem(Label))
 			{
 				AddSource = Source;
@@ -638,6 +778,7 @@ void UIPackageManager::DrawAddDialog()
 	ImGui::SetNextWindowSizeConstraints({480, 280}, {FLT_MAX, FLT_MAX});
 	if (ImGui::BeginPopupModal("Add package"))
 	{
+		ImGui::BeginDisabled(LocalSelection != nullptr);
 		const bool IsGitHub = AddSource == SdkPackages::PackageSource::GitHub;
 		ImGui::TextUnformatted(PackageWindow::SourceLabel(AddSource));
 		ImGui::Separator();
@@ -657,33 +798,25 @@ void UIPackageManager::DrawAddDialog()
 		}
 		else
 		{
-			ImGui::TextUnformatted(AddSource == SdkPackages::PackageSource::Folder ? "Package folder or package.json" : "ZIP file");
+			ImGui::TextUnformatted(AddSource == SdkPackages::PackageSource::Folder ? "Package folder or package.json" : "ZIP or 7z file");
 			const float BrowseWidth = ImGui::CalcTextSize("Browse...").x + ImGui::GetStyle().FramePadding.x * 2;
 			ImGui::SetNextItemWidth(-BrowseWidth - ImGui::GetStyle().ItemSpacing.x);
 			ImGui::InputText("##LocalPackagePath", LocalPath, sizeof(LocalPath));
 			ImGui::SameLine();
 			if (ImGui::Button("Browse..."))
 			{
-				xr_path Initial = SdkPackages::Presentation::IsUtf8(LocalPath) ? SdkPackages::FromUtf8(LocalPath) : PackageWindow::SdkRoot();
-				std::error_code Code;
-				if (!std::filesystem::is_directory(Initial, Code))
-				{
-					Initial = Initial.parent_path();
-				}
-				if (Initial.empty() || !std::filesystem::is_directory(Initial, Code))
-				{
-					Initial = PackageWindow::SdkRoot();
-				}
-				LoadBrowser(Initial);
-				ImGui::OpenPopup("Select package source");
+				ChooseLocalSource();
 			}
-			ImGui::TextWrapped("The package must contain package.json. The original folder or ZIP is kept in place.");
-			DrawLocalBrowser();
+			ImGui::TextWrapped("The package must contain package.json. The original folder or archive is kept in place.");
+			if (!LocalSourceError.empty())
+			{
+				ImGui::TextWrapped("%s", LocalSourceError.c_str());
+			}
 		}
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::BeginDisabled(IsBusy || (IsGitHub ? RepositoryUrl[0] == '\0' : LocalPath[0] == '\0'));
-		if (ImGui::Button("Install package"))
+		if (ImGui::Button(AddSource == SdkPackages::PackageSource::GitHub && SelectedKind == 1 ? "Download package" : "Add package"))
 		{
 			SdkPackages::PackageInfo Info;
 			Info.Url = RepositoryUrl;
@@ -703,143 +836,74 @@ void UIPackageManager::DrawAddDialog()
 		{
 			ImGui::CloseCurrentPopup();
 		}
-		ImGui::EndPopup();
-	}
-}
-
-void UIPackageManager::LoadBrowser(const xr_path& Directory)
-{
-	std::error_code Code;
-	const xr_path Resolved = std::filesystem::canonical(Directory, Code);
-	if (Code || !std::filesystem::is_directory(Resolved, Code) || Code)
-	{
-		BrowserError = "Cannot open this directory.";
-		return;
-	}
-	const auto Text = SdkPackages::Utf8(Resolved);
-	if (Text.size() >= sizeof(BrowserLocation))
-	{
-		BrowserError = "Directory path is too long.";
-		return;
-	}
-	BrowserDirectory = Resolved;
-	BrowserSelection.clear();
-	BrowserError.clear();
-	xr_strcpy(BrowserLocation, Text.c_str());
-	BrowserEntries.clear();
-	xr_dir_iter Iter(Resolved, Code), End;
-	for (; !Code && Iter != End; Iter.increment(Code))
-	{
-		const auto Status = Iter->symlink_status(Code);
-		if (Code)
-		{
-			break;
-		}
-		if (std::filesystem::is_symlink(Status) || !SdkPackages::Presentation::IsUtf8Path(Iter->path()))
-		{
-			continue;
-		}
-		const bool IsDirectory = std::filesystem::is_directory(Status);
-		if (IsDirectory || (AddSource == SdkPackages::PackageSource::Zip && std::filesystem::is_regular_file(Status) && SdkPackages::Details::Lower(SdkPackages::Utf8(Iter->path().extension())) == ".zip"))
-		{
-			BrowserEntries.push_back({Iter->path(), IsDirectory});
-		}
-		if (BrowserEntries.size() >= 10000)
-		{
-			BrowserError = "Directory list is limited to 10000 entries. Enter a more specific path above.";
-			break;
-		}
-	}
-	if (Code)
-	{
-		BrowserError = "Some directory entries could not be read.";
-	}
-	std::sort(BrowserEntries.begin(), BrowserEntries.end(), [](const auto& Left, const auto& Right)
-			  {
-		if (Left.IsDirectory != Right.IsDirectory) { return Left.IsDirectory; }
-		return SdkPackages::Details::Lower(SdkPackages::Utf8(Left.Path)) < SdkPackages::Details::Lower(SdkPackages::Utf8(Right.Path)); });
-}
-
-void UIPackageManager::DrawLocalBrowser()
-{
-	ImGui::SetNextWindowSize({720, 520}, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints({620, 420}, {FLT_MAX, FLT_MAX});
-	if (ImGui::BeginPopupModal("Select package source"))
-	{
-		ImGui::SetNextItemWidth(-125);
-		const bool ShouldOpenPath = ImGui::InputText("##BrowserDirectory", BrowserLocation, sizeof(BrowserLocation), ImGuiInputTextFlags_EnterReturnsTrue);
-		ImGui::SameLine();
-		if (ImGui::Button("Open") || ShouldOpenPath)
-		{
-			if (SdkPackages::Presentation::IsUtf8(BrowserLocation))
-			{
-				LoadBrowser(SdkPackages::FromUtf8(BrowserLocation));
-			}
-			else
-			{
-				BrowserError = "Directory path must be valid UTF-8.";
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Up") && BrowserDirectory.has_parent_path())
-		{
-			LoadBrowser(BrowserDirectory.parent_path());
-		}
-		ImGui::TextDisabled("Double-click a folder to open it.");
-		ImGui::Separator();
-		ImGui::BeginChild("LocalPackageEntries", {0, -100}, ImGuiChildFlags_Borders);
-		xr_path NextDirectory;
-		for (const auto& Entry : BrowserEntries)
-		{
-			const xr_string Name = (Entry.IsDirectory ? xr_string("[Folder] ") : xr_string()) + SdkPackages::Utf8(static_cast<const std::filesystem::path&>(Entry.Path).filename());
-			ImGui::PushID(SdkPackages::Utf8(Entry.Path).c_str());
-			if (ImGui::Selectable(Name.c_str(), !Entry.IsDirectory && BrowserSelection == Entry.Path, ImGuiSelectableFlags_AllowDoubleClick))
-			{
-				if (Entry.IsDirectory && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-				{
-					NextDirectory = Entry.Path;
-				}
-				if (!Entry.IsDirectory)
-				{
-					BrowserSelection = Entry.Path;
-				}
-			}
-			ImGui::PopID();
-		}
-		ImGui::EndChild();
-		if (!NextDirectory.empty())
-		{
-			LoadBrowser(NextDirectory);
-		}
-		if (!BrowserError.empty())
-		{
-			ImGui::TextWrapped("%s", BrowserError.c_str());
-		}
-		const bool IsFolder = AddSource == SdkPackages::PackageSource::Folder;
-		std::error_code Code;
-		const bool HasManifest = std::filesystem::is_regular_file(SdkPackages::Join(BrowserDirectory, "package.json"), Code);
-		ImGui::TextWrapped("%s", IsFolder ? (HasManifest ? "Package manifest found in this folder." : "Open the package folder containing package.json.") : "Select a ZIP archive from this folder.");
-		const auto Selected = IsFolder ? BrowserDirectory : BrowserSelection;
-		ImGui::BeginDisabled(IsFolder ? !HasManifest : Selected.empty());
-		if (ImGui::Button(IsFolder ? "Use this folder" : "Use ZIP archive"))
-		{
-			const auto Path = SdkPackages::Utf8(Selected);
-			if (Path.size() < sizeof(LocalPath))
-			{
-				xr_strcpy(LocalPath, Path.c_str());
-				ImGui::CloseCurrentPopup();
-			}
-			else
-			{
-				BrowserError = "Package path is too long.";
-			}
-		}
 		ImGui::EndDisabled();
-		ImGui::SameLine();
-		if (ImGui::Button("Cancel"))
-		{
-			ImGui::CloseCurrentPopup();
-		}
 		ImGui::EndPopup();
 	}
+}
+
+void UIPackageManager::ChooseLocalSource()
+{
+	if (LocalSelection)
+	{
+		return;
+	}
+	LocalSourceError.clear();
+	LocalSelection = xr_make_shared<SourceSelection>();
+	auto Context = xr_make_unique<xr_shared_ptr<SourceSelection>>(LocalSelection);
+	const auto SelectionLambda = [](void* UserData, const char* const* Files, int)
+	{
+		xr_unique_ptr<xr_shared_ptr<SourceSelection>> Owner(static_cast<xr_shared_ptr<SourceSelection>*>(UserData));
+		auto& Selection = **Owner;
+		if (!Files)
+		{
+			Selection.Error = SDL_GetError();
+		}
+		else if (Files[0])
+		{
+			Selection.Path = Files[0];
+		}
+		Selection.IsReady.store(true, std::memory_order_release);
+	};
+	xr_path InitialPath = LocalPath[0] && SdkPackages::Presentation::IsUtf8(LocalPath) ? SdkPackages::FromUtf8(LocalPath) : PackageWindow::SdkRoot();
+	std::error_code Code;
+	if (!std::filesystem::is_directory(InitialPath, Code))
+	{
+		InitialPath = InitialPath.parent_path();
+	}
+	if (InitialPath.empty() || !std::filesystem::is_directory(InitialPath, Code))
+	{
+		InitialPath = PackageWindow::SdkRoot();
+	}
+	const auto Initial = SdkPackages::Utf8(InitialPath);
+	auto* Window = SDL_GetWindowFromID(static_cast<SDL_WindowID>(reinterpret_cast<uintptr_t>(ImGui::GetMainViewport()->PlatformHandle)));
+	if (AddSource == SdkPackages::PackageSource::Folder)
+	{
+		SDL_ShowOpenFolderDialog(SelectionLambda, Context.release(), Window, Initial.c_str(), false);
+	}
+	else
+	{
+		static const SDL_DialogFileFilter Filters[] = {{"ZIP / 7z", "zip;7z"}};
+		SDL_ShowOpenFileDialog(SelectionLambda, Context.release(), Window, Filters, 1, Initial.c_str(), false);
+	}
+}
+
+void UIPackageManager::PollLocalSource()
+{
+	if (!LocalSelection || !LocalSelection->IsReady.load(std::memory_order_acquire))
+	{
+		return;
+	}
+	LocalSourceError = LocalSelection->Error;
+	if (!LocalSelection->Path.empty())
+	{
+		if (LocalSelection->Path.size() < sizeof(LocalPath))
+		{
+			xr_strcpy(LocalPath, LocalSelection->Path.c_str());
+		}
+		else
+		{
+			LocalSourceError = "Package path is too long.";
+		}
+	}
+	LocalSelection.reset();
 }

@@ -38,7 +38,7 @@ void CPluginUIRun::Draw()
 				continue;
 			}
 
-			ImGui::Text(Desc.c_str());
+			ImGui::TextUnformatted(Desc.c_str());
 			ImGui::InputText(("##" + Arg).c_str(), InputPlugin->InputArgsValues[Arg], 256);
 
 			ImGui::SameLine();

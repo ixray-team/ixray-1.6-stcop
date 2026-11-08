@@ -2044,10 +2044,6 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse, bool NeedMou
 	{
 		xrSRWLockGuard g(m_files_lock);
 		files_it	I 	= m_files.lower_bound(desc);
-		if (I == m_files.end())
-		{
-			return;
-		}
 		
 		size_t base_len			= xr_strlen(full_path);
 		for (; I != m_files.end(); )

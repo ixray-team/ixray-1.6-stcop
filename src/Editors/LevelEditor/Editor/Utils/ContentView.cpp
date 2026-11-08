@@ -19,11 +19,31 @@ CContentView* GContentView = nullptr;
 
 xr_hash_map<xr_string, CContentView::IconData> CContentView::Icons;
 CParticlePreviewCache CContentView::ParticlePreviews;
+u64 CContentView::FileRevision = 0;
 
 void CContentView::ClearIcons()
 {
 	ParticlePreviews.Clear();
 	Icons.clear();
+}
+
+ImTextureID CContentView::GetTypeIcon(const xr_string& Type)
+{
+	if (!Icons.contains("Folder"))
+	{
+		LoadBaseIcons();
+	}
+	auto Found = Icons.find(Type);
+	if (Found == Icons.end() || !Found->second.Icon)
+	{
+		Found = Icons.find("file");
+	}
+	if (Found == Icons.end() || !Found->second.Icon)
+	{
+		return nullptr;
+	}
+	auto* View = Found->second.Icon->get_SRView();
+	return View ? View->GetRawSRV() : nullptr;
 }
 
 void CContentView::InvalidateIcon(const xr_string& FullPath)
@@ -290,6 +310,15 @@ void CContentView::DrawLayout()
 
 void CContentView::Draw()
 {
+	if (LastFileRevision != FileRevision)
+	{
+		LastFileRevision = FileRevision;
+		DirCollection.clear();
+		if (!IsFindResult && !IsSpawnElement && !IsParticles)
+		{
+			NeedRescan = true;
+		}
+	}
 	if (IsWndDestroyed)
 		return;
 

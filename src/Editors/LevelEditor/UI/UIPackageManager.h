@@ -27,9 +27,23 @@ private:
 	void LoadCardDocuments(const SdkPackages::PackageRow& Row);
 	void DrawAddDialog();
 	void DrawSourceMenu();
-	void DrawLocalBrowser();
-	void LoadBrowser(const xr_path& Directory);
+	void ChooseLocalSource();
+	void PollLocalSource();
+	void BuildImportTree();
+	void DrawImportDialog();
+	void DrawImportDetails(bool HasLevelSelection, float Height);
+	void DrawImportComparison();
+	void DrawImportReport();
+	void DrawImportDependencies(float Height);
+	void InvalidateImportDependencies();
 	bool Matches(const SdkPackages::PackageRow& Row) const;
+	struct ImportNode
+	{
+		xr_map<xr_string, ImportNode> Folders;
+		xr_vector<size_t> Files;
+		xr_vector<size_t> Leaves;
+	};
+	void DrawImportNode(ImportNode& Node);
 
 	static UIPackageManager* Form;
 	SdkPackages::PackageStore Store;
@@ -49,20 +63,40 @@ private:
 	bool NeedsPluginRefresh = false;
 	bool ShouldOpenAddDialog = false;
 	bool ShouldOpenSourceMenu = false;
+	bool ShouldOpenImportDialog = false;
+	bool ShouldOpenImportReport = false;
+	bool ShouldCloseImportDialog = false;
+	bool ShowExistingImportFiles = false;
+	bool IsImportDetailsExpanded = false;
+	bool ShouldOpenImportComparison = false;
+	bool ShowOnlyComparisonDifferences = true;
+	size_t ComparisonIndex = std::numeric_limits<size_t>::max();
+	SdkPackages::AssetComparison ImportComparison;
+	xr_string ComparisonError;
+	bool CanReplaceImportFiles = false;
+	bool IsDependencyCheckCurrent = false;
+	bool ShouldShowImportDependencies = false;
+	bool ShowOnlyDependencyProblems = true;
+	xr_string DependencyCheckError;
+	SdkPackages::DependencyReport ImportDependencies;
+	SdkPackages::ImportPlan ImportPlan;
+	SdkPackages::ImportReport ImportReport;
+	ImportNode ImportTree;
 	bool IsSortDescending = false;
 	SdkPackages::CatalogView ActiveView = SdkPackages::CatalogView::All;
 	SdkPackages::PackageSource AddSource = SdkPackages::PackageSource::GitHub;
-	struct BrowserEntry
+	class SourceSelection final
 	{
-		xr_path Path;
-		bool IsDirectory;
+	public:
+		SourceSelection() = default;
+		~SourceSelection() = default;
+		xr_atomic_bool IsReady = false;
+		xr_string Path;
+		xr_string Error;
 	};
-	xr_path BrowserDirectory;
-	xr_path BrowserSelection;
-	xr_vector<BrowserEntry> BrowserEntries;
-	xr_string BrowserError;
+	xr_shared_ptr<SourceSelection> LocalSelection;
+	xr_string LocalSourceError;
 	char LocalPath[4096] = {};
-	char BrowserLocation[4096] = {};
 	char RepositoryUrl[1024] = {};
 	char Revision[256] = {};
 	char Search[128] = {};

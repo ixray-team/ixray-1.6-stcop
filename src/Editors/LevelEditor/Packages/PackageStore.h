@@ -55,7 +55,7 @@ enum class PackageSource
 {
 	GitHub,
 	Folder,
-	Zip
+	Archive
 };
 
 struct PackageInfo
@@ -104,6 +104,8 @@ bool IsWithin(const xr_path& Path, const xr_path& Parent);
 
 bool SamePath(const xr_path& First, const xr_path& Second);
 
+bool IsArchivePath(const xr_path& Path);
+
 bool NormalizeLocalSource(PackageInfo& Info, xr_string& Error);
 
 bool Files(const xr_path& Root, xr_vector<xr_string>& Result, xr_string& Error, bool IgnoreRepository = false, std::stop_token Stop = {});
@@ -119,6 +121,8 @@ class ScopedDirectory final
 public:
 	explicit ScopedDirectory(const xr_path& Path)
 		: Path(Path) {}
+	ScopedDirectory(const ScopedDirectory&) = delete;
+	ScopedDirectory& operator=(const ScopedDirectory&) = delete;
 	~ScopedDirectory()
 	{
 		if (!Keep)

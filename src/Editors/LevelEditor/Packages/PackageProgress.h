@@ -15,6 +15,8 @@ struct PackageProgress
 	u64 BytesTotal = 0;
 	size_t PackagesCompleted = 0;
 	size_t ActivePackages = 0;
+	size_t FilesCompleted = 0;
+	size_t FilesTotal = 0;
 };
 using ProgressCallback = std::function<void(const PackageProgress&)>;
 } // namespace SdkPackages
