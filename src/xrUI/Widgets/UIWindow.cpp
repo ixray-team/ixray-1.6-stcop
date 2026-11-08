@@ -176,7 +176,6 @@ CUIWindow::~CUIWindow()
 }
 
 
-
 void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler)
 {
 	AddSelfCallback(Event, Handler, luabind::object{});
@@ -348,7 +347,7 @@ void CUIWindow::SetTreeHeading(float Angle, const Fvector2& Pivot, const Fvector
 	TreeOffset = Offset;
 	if (ShouldSmoothRotate())
 	{
-		TreeHeadingPending = TreeHeadingProgress != static_cast<double>(Angle);
+		TreeHeadingPending = TreeHeadingProgress != Angle;
 		if (TreeHeadingPending)
 		{
 			QueueSmoothRotation();
@@ -385,14 +384,14 @@ void CUIWindow::SetSmothRotate(bool Enabled, float Factor)
 bool CUIWindow::AdvanceSmoothHeading(double& Current, float Target, float Blend)
 {
 	constexpr double AngleEpsilon = 0.0001;
-	const double Difference = static_cast<double>(Target) - Current;
+	const double Difference = Target - Current;
 	if (Blend >= 1.0f || std::abs(Difference) <= AngleEpsilon)
 	{
 		Current = Target;
 		return false;
 	}
-	Current += Difference * static_cast<double>(Blend);
-	if (std::abs(static_cast<double>(Target) - Current) <= AngleEpsilon)
+	Current += Difference * Blend;
+	if (std::abs(Target - Current) <= AngleEpsilon)
 	{
 		Current = Target;
 		return false;
@@ -413,8 +412,9 @@ void CUIWindow::UpdateSmoothRotation()
 	}
 	LastSmoothRotateFrame = Device.dwFrame;
 	// Convert sharpness into an exponential time response, independent of frame rate.
+	const double Factor = SmoothRotateFactor;
 	const float Blend = ShouldSmoothRotate() ?
-		static_cast<float>(-std::expm1(std::log1p(-static_cast<double>(SmoothRotateFactor)) * 60.0 * Delta)) : 1.0f;
+		static_cast<float>(-std::expm1(std::log1p(-Factor) * 60.0 * Delta)) : 1.0f;
 	if (TreeHeadingPending)
 	{
 		TreeHeadingPending = AdvanceSmoothHeading(TreeHeadingProgress, TargetTreeHeading, Blend);
@@ -542,8 +542,27 @@ void CUIWindow::DrawWithTransform()
 		~RestoreTransform() { Render->Transform2D = Previous; }
 	} Restore{UIRender, UIRender->Transform2D};
 	UIRender->Transform2D = GetTreeTransform();
+	CUIStatic* Static = ui_cast_static();
+	const bool NeedsLayer = Static && Static->BorderEnabled;
+	if (NeedsLayer)
+	{
+		UI().RenderFont();
+	}
+	struct RoundedScope
+	{
+		bool Active;
+		~RoundedScope()
+		{
+			if (Active)
+			{
+				UI().RenderFont();
+				UIRender->EndRoundedRect();
+			}
+		}
+	} Scope{NeedsLayer && UIRender->BeginRoundedRect(Static->GetBorderRect())};
 	Draw();
 }
+
 
 bool CUIWindow::HitTestUntransformed(const Fvector2& Position)
 {
@@ -567,7 +586,7 @@ Fvector2 CUIWindow::ToUntransformedPoint(const Fvector2& Position)
 
 bool CUIWindow::HitTest(const Fvector2& Position)
 {
-	return HitTestUntransformed(ToUntransformedPoint(Position));
+	return IsInsideRoundedClips(Position) && HitTestUntransformed(ToUntransformedPoint(Position));
 }
 
 bool CUIWindow::DispatchMouseAction(float X, float Y, EUIMessages Action)
@@ -583,6 +602,14 @@ bool CUIWindow::DispatchMouseAction(float X, float Y, EUIMessages Action)
 	X = (X + InputOrigin.x) * ScaleX;
 	Y = (Y + InputOrigin.y) * ScaleY;
 	GetLocalTreeTransform().ApplyInverse(X, Y);
+	Fvector2 ScreenPoint = {X, Y};
+	GetTreeTransform().Apply(ScreenPoint.x, ScreenPoint.y);
+	ScreenPoint.x /= ScaleX;
+	ScreenPoint.y /= ScaleY;
+	if (Action != WINDOW_LBUTTON_UP && Action != WINDOW_RBUTTON_UP && Action != WINDOW_CBUTTON_UP && !IsInsideRoundedClips(ScreenPoint))
+	{
+		return false;
+	}
 	X = X / ScaleX - InputOrigin.x;
 	Y = Y / ScaleY - InputOrigin.y;
 	return OnMouseAction(X, Y, Action);
@@ -882,7 +909,7 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 		}
 		else
 		{
-			if (w->IsShown() && (w->HitTest(ScreenPoint) || w->CUIWindow::HitTestUntransformed(w->ToUntransformedPoint(ScreenPoint))))
+			if (w->IsShown() && w->IsInsideRoundedClips(ScreenPoint) && (w->HitTest(ScreenPoint) || w->CUIWindow::HitTestUntransformed(w->ToUntransformedPoint(ScreenPoint))))
 			{
 				if (w->IsEnabled())
 				{
@@ -928,7 +955,7 @@ void CUIWindow::OnMouseUp(int mouse_btn){
 
 CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
 {
-	if (!IsShown() || !IsEnabled())
+	if (!IsShown() || !IsEnabled() || !IsInsideRoundedClips(Position))
 	{
 		return nullptr;
 	}
@@ -1554,5 +1581,22 @@ UI_API bool fit_infownd_in_rect(CUIWindow* wInfo, Frect & stick_to_rect, Frect f
 		rect.set(rect.x1, stick_to_rect.y1, rect.x2, stick_to_rect.y1 + wInfo->GetHeight());
 
 	wInfo->SetWndPos(rect.lt);
+	return true;
+}
+
+bool CUIWindow::IsInsideRoundedClips(const Fvector2& Position)
+{
+	const float X = UI().ClientToScreenScaledX(Position.x);
+	const float Y = UI().ClientToScreenScaledY(Position.y);
+	for (CUIWindow* Window = this; Window; Window = Window->GetParent())
+	{
+		if (CUIStatic* Static = Window->ui_cast_static(); Static && Static->BorderEnabled)
+		{
+			if (!Static->GetBorderRect().Contains(X, Y))
+			{
+				return false;
+			}
+		}
+	}
 	return true;
 }

@@ -61,6 +61,8 @@ public:
 	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) { return nullptr; };
 
 	virtual void FlushPrimitive() = 0;
+	virtual bool BeginRoundedRect(const UIRoundedRect& Rect) { return false; }
+	virtual void EndRoundedRect() {}
 
 	virtual const char*	UpdateShaderName(const char* tex_name, const char* sh_name) = 0;
 

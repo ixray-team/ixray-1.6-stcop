@@ -14,6 +14,8 @@ void dxUIRender::CreateUIGeom()
 
 void dxUIRender::DestroyUIGeom()
 {
+	VERIFY(RoundedDepth == 0);
+	RoundedLayers.clear();
 	hGeom_L = nullptr;
 	hGeom_TL = nullptr;
 	hGeom_LIT = nullptr;
@@ -34,6 +36,7 @@ void dxUIRender::SetAlphaRef(int aref)
 
 void dxUIRender::SetScissor(Irect* rect)
 {
+	ScissorEnabled = rect != nullptr;
 	if (rect) 
 	{
 		copy_scissor.set(*rect);

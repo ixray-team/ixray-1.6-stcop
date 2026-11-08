@@ -83,6 +83,7 @@ public:
 	bool IsHeadingEnabled() const { return RotationEnabled; }
 	UITransform2D GetTreeTransform();
 	bool HitTest(const Fvector2& Position);
+	bool IsInsideRoundedClips(const Fvector2& Position);
 	void DrawWithTransform();
 	bool DispatchMouseAction(float X, float Y, EUIMessages Action);
 				CUIWindow						();

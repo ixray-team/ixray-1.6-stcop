@@ -72,7 +72,7 @@ void CUIStatic::SetHeading(float Angle)
 	TargetHeading = Angle;
 	if (ShouldSmoothRotate())
 	{
-		HeadingPending = HeadingProgress != static_cast<double>(Angle);
+		HeadingPending = HeadingProgress != Angle;
 		if (HeadingPending)
 		{
 			QueueSmoothRotation();
@@ -97,6 +97,13 @@ void CUIStatic::UpdateSmoothHeading(float Blend)
 
 bool CUIStatic::HitTestUntransformed(const Fvector2& Position)
 {
+	if (BorderEnabled)
+	{
+		Fvector2 Point;
+		UI().ClientToScreenScaled(Point, Position.x, Position.y);
+		GetTreeTransform().Apply(Point.x, Point.y);
+		return GetBorderRect().Contains(Point.x, Point.y);
+	}
 	const bool TextureVisible = m_bTextureEnable && GetShader() && GetShader()->inited();
 	const bool BackgroundVisible = !TextureVisible && color_get_A(BackgroundColor) != 0;
 	if (!Heading() || (!TextureVisible && !BackgroundVisible))
@@ -632,4 +639,85 @@ void CUIStatic::SetTextIfNodeExist(const char* txt)
 		return;
 
 	TextItemControl()->SetText(txt);
+}
+
+void CUIStatic::SetBorder(float Thickness, float Radius, u32 Color)
+{
+	BorderEnabled = true;
+	BorderThickness = std::isfinite(Thickness) ? std::max(Thickness, 0.0f) : 0.0f;
+	BorderRadius = std::isfinite(Radius) ? std::max(Radius, 0.0f) : 0.0f;
+	BorderColor = Color;
+}
+
+UIRoundedRect CUIStatic::GetBorderRect()
+{
+	UIRoundedRect Rect;
+	const bool TextureVisible = m_bTextureEnable && GetShader() && GetShader()->inited();
+	Fvector2 Size = GetWndSize();
+	if (TextureVisible)
+	{
+		if (!m_bStretchTexture)
+		{
+			Size.set(m_UIStaticItem.GetTextureRect().width(), m_UIStaticItem.GetTextureRect().height());
+		}
+		else if (Heading() && m_UIStaticItem.GetFixedLTWhileHeading())
+		{
+			std::swap(Size.x, Size.y);
+		}
+	}
+	Rect.Width = std::max(Size.x, 0.0f);
+	Rect.Height = std::max(Size.y, 0.0f);
+	const float Limit = std::min(Rect.Width, Rect.Height) * 0.5f;
+	Rect.Radius = std::min(BorderRadius, Limit);
+	Rect.Thickness = std::min(BorderThickness, Limit);
+	Rect.Color = BorderColor;
+	Rect.ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
+	const float ScaleX = Rect.ScreenSpace ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
+	const float ScaleY = Rect.ScreenSpace ? UI().ClientToScreenScaledY(1.0f) : 1.0f;
+	Fvector2 Origin;
+	GetAbsolutePos(Origin);
+	if (TextureVisible)
+	{
+		Origin.add(m_TextureOffset);
+	}
+	UITransform2D Local;
+	Local.XX = ScaleX;
+	Local.YY = ScaleY;
+	Local.TX = Origin.x * ScaleX;
+	Local.TY = Origin.y * ScaleY;
+	if (Heading())
+	{
+		const Fvector2 Pivot = m_UIStaticItem.uFlags.test(CUIStaticItem::flValidHeadingPivot) ? m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x * 0.5f, Size.y * 0.5f);
+		const float Cos = std::cos(m_fHeading), Sin = std::sin(m_fHeading);
+		const bool CorrectedAspect = IsAspectRatioCorrectionActive();
+		const float KX = TextureVisible && !CorrectedAspect ? UI().get_current_kx() : 1.0f;
+		// Textures retain the legacy aspect correction; solid backgrounds rotate in draw space.
+		Local.XX = ScaleX * KX * Cos;
+		Local.XY = (TextureVisible || CorrectedAspect ? ScaleX * KX : ScaleY) * Sin;
+		Local.YX = -(TextureVisible || CorrectedAspect ? ScaleY : ScaleX) * Sin;
+		Local.YY = ScaleY * Cos;
+		Local.TX += (Pivot.x + m_UIStaticItem.vHeadingOffset.x) * ScaleX - Local.XX * Pivot.x - Local.XY * Pivot.y;
+		Local.TY += (Pivot.y + m_UIStaticItem.vHeadingOffset.y) * ScaleY - Local.YX * Pivot.x - Local.YY * Pivot.y;
+	}
+	Rect.Transform = GetTreeTransform().Compose(Local);
+	if (Rect.ScreenSpace)
+	{
+		// A circle in logical UI coordinates becomes an ellipse on widescreen displays.
+		// Evaluate the rounded contour in physical units while preserving its corners and pivot.
+		const float AxisX = std::hypot(Rect.Transform.XX, Rect.Transform.YX);
+		const float AxisY = std::hypot(Rect.Transform.XY, Rect.Transform.YY);
+		if (AxisX > EPS_S && AxisY > EPS_S)
+		{
+			Rect.Width *= AxisX;
+			Rect.Height *= AxisY;
+			Rect.Transform.XX /= AxisX;
+			Rect.Transform.YX /= AxisX;
+			Rect.Transform.XY /= AxisY;
+			Rect.Transform.YY /= AxisY;
+			const float PhysicalLimit = std::min(Rect.Width, Rect.Height) * 0.5f;
+			Rect.Radius = std::min(BorderRadius * ScaleY, PhysicalLimit);
+			Rect.Thickness = std::min(BorderThickness * ScaleY, PhysicalLimit);
+		}
+	}
+	return Rect;
 }

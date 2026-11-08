@@ -647,6 +647,7 @@ void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
 
 void CRHI::SetViewport(RHIViewport& VP)
 {
+	Viewport = VP;
 	DevicePtr->SetViewport(VP);
 }
 

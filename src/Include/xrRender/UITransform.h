@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+#include <cmath>
 
 struct UITransform2D
 {
@@ -49,5 +51,34 @@ struct UITransform2D
 		Result.TX = XX * Local.TX + XY * Local.TY + TX;
 		Result.TY = YX * Local.TX + YY * Local.TY + TY;
 		return Result;
+	}
+};
+
+// Coordinates are in control units; Transform maps them into the current UI draw space.
+struct UIRoundedRect
+{
+	UITransform2D Transform;
+	float Width = 0.0f, Height = 0.0f;
+	float Radius = 0.0f, Thickness = 0.0f;
+	u32 Color = 0;
+	bool ScreenSpace = true;
+
+	bool Contains(float X, float Y) const
+	{
+		if (Width <= 0.0f || Height <= 0.0f)
+		{
+			return false;
+		}
+		const float Det = Transform.XX * Transform.YY - Transform.XY * Transform.YX;
+		if (!std::isfinite(Det) || std::abs(Det) < 1e-12f)
+		{
+			return false;
+		}
+		Transform.ApplyInverse(X, Y);
+		const float HalfX = Width * 0.5f, HalfY = Height * 0.5f;
+		const float QX = std::abs(X - HalfX) - (HalfX - Radius);
+		const float QY = std::abs(Y - HalfY) - (HalfY - Radius);
+		const float DX = std::max(QX, 0.0f), DY = std::max(QY, 0.0f);
+		return std::sqrt(DX * DX + DY * DY) + std::min(std::max(QX, QY), 0.0f) <= Radius;
 	}
 };

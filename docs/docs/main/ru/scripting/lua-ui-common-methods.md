@@ -48,7 +48,8 @@ retval: (void)
 `IsCursorOverWindow(true)` учитывает вложенность и перекрытие;
 без аргумента проверяется попадание в прямоугольник при обновлении.
 Обе проверки наведения и события входа/выхода учитывают поворот контрола
-и его родителей. Прозрачные пиксели текстуры не учитываются.
+и его родителей, а также отсечение скруглёнными контурами.
+Прозрачные пиксели текстуры не учитываются.
 
 ```lua
 --// Показать или скрыть контрол.
@@ -156,6 +157,13 @@ child:SetUseAspectRatioCorrection(false) -- Коррекция окна прод
 window:SetUseAspectRatioCorrection(false) -- Оба собственных флага выключены.
 ```
 
+#### Локальный поворот
+
+```lua
+control:EnableHeading(true)
+control:SetHeading(math.rad(45))
+```
+
 #### Видимость
 
 ```lua
@@ -182,7 +190,7 @@ control:ToBack()
 ```lua
 control:SetWndSize(vector2():set(200, 100))
 control:SetTreeHeading(
-    ffx_angle_utils.degrees_to_radians(45),
+    math.rad(45),
     vector2():set(100, 100),
     vector2():set(0, 0)
 )
@@ -192,16 +200,8 @@ control:EnableHeading(true)
 #### Локальный угол дочернего элемента
 
 ```lua
-child:SetHeading(ffx_angle_utils.degrees_to_radians(15))
 child:EnableHeading(true)
-
-control:SetWndSize(vector2():set(200, 100))
-control:SetTreeHeading(
-    ffx_angle_utils.degrees_to_radians(45),
-    vector2():set(100, 100),
-    vector2():set(0, 0)
-)
-control:EnableHeading(true)
+child:SetHeading(math.rad(15))
 ```
 
 #### Отключение обоих поворотов
@@ -216,7 +216,7 @@ control:EnableHeading(false)
 control:EnableHeading(true)
 control:SetSmothRotate(true, 0.1)
 control:SetTreeHeading(
-    ffx_angle_utils.degrees_to_radians(90),
+    math.rad(90),
     vector2():set(100, 100),
     vector2():set(0, 0)
 )
@@ -227,12 +227,12 @@ control:SetTreeHeading(
 ```lua
 control:EnableHeading(true)
 control:SetSmothRotate(true, 0.1)
-control:SetHeading(ffx_angle_utils.degrees_to_radians(90))
+control:SetHeading(math.rad(90))
 ```
 
 #### Мгновенный поворот
 
 ```lua
 control:SetSmothRotate(true, 1.0)
-control:SetHeading(ffx_angle_utils.degrees_to_radians(45))
+control:SetHeading(math.rad(45))
 ```

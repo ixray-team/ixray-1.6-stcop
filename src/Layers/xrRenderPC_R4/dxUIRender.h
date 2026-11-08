@@ -26,6 +26,8 @@ public:
 	virtual u32 VBuffMaxSize() override;
 
 	virtual void FlushPrimitive() override;
+	bool BeginRoundedRect(const UIRoundedRect& Rect) override;
+	void EndRoundedRect() override;
 
 	virtual const char*	UpdateShaderName(const char* tex_name, const char* sh_name) override;
 
@@ -38,6 +40,35 @@ public:
 	virtual void zb_enable(u32 val) override;
 
 private:
+	struct RoundedLayer
+	{
+		ref_texture Background, Content;
+		ref_shader Shader;
+		IRHISurface* BackgroundSurface = nullptr;
+		IRHISurface* ContentSurface = nullptr;
+		IRHIRenderTargetView* ContentView = nullptr;
+		IRHIRenderTargetView* SavedTargets[RHI_MAX_RENDER_TARGETS] = {};
+		IRHIDepthStencilView* SavedDepth = nullptr;
+		IRHISurface* DepthSurface = nullptr;
+		IRHIDepthStencilView* DepthView = nullptr;
+		RHIViewport Viewport;
+		Irect Scissor;
+		Irect Bounds;
+		bool ScissorEnabled = false;
+		UIRoundedRect Rect;
+		Fvector4 Inverse[3];
+		Fvector4 DepthZ, DepthW;
+		Fmatrix World, View, Projection;
+		ERHI_CULLMODE CullMode;
+		u32 Width = 0, Height = 0, Samples = 0;
+		u32 DepthWidth = 0, DepthHeight = 0;
+		ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
+		ERHI_FORMAT DepthFormat = ERHI_FORMAT::UNKNOWN;
+		~RoundedLayer();
+		void ReleaseResources();
+	};
+	xr_vector<xr_unique_ptr<RoundedLayer>> RoundedLayers;
+	size_t RoundedDepth = 0;
 	ref_geom		hGeom_L;
 	ref_geom		hGeom_TL;
 	ref_geom		hGeom_LIT;
@@ -59,6 +90,7 @@ private:
 	FVF::LIT*		LIT_pv;
 
 	Irect copy_scissor = {};
+	bool ScissorEnabled = false;
 };
 
 extern dxUIRender	UIRenderImpl;

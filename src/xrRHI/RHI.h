@@ -119,6 +119,7 @@ public:
 	void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type);
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
 	void SetViewport(RHIViewport& VP);
+	const RHIViewport& GetViewport() const { return Viewport; }
 	void SetScissorRect(Irect* R);
 
 	void SetUnorderedAccessViews(IRHIUnorderedAccessView* View, u32 ID, bool bForce = false);
@@ -166,6 +167,7 @@ public:
 	CAMDAntiLag* DriverAntiLag = nullptr;
 
 private:
+	RHIViewport Viewport;
 	void* Shaders[RHI_SHADERS_TYPE_SIZE];
 };
 
