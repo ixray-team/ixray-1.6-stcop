@@ -403,6 +403,11 @@ bool CMonsterEnemyManager::is_enemy(const CEntityAlive *obj)
 
 const Fvector&   CMonsterEnemyManager::get_enemy_position ()
 {
+	if (monster->IsEnemyInCar())
+	{
+		CarAwarePosition = monster->GetEnemyAttackPosition();
+		return CarAwarePosition;
+	}
 	if (enemy && monster->EnemyTrackingLive &&
 		EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
 	{
@@ -413,6 +418,11 @@ const Fvector&   CMonsterEnemyManager::get_enemy_position ()
 
 const Fvector& CMonsterEnemyManager::GetTrackingPosition()
 {
+	if (monster->IsEnemyInCar())
+	{
+		CarAwarePosition = monster->GetEnemyAttackPosition();
+		return CarAwarePosition;
+	}
 	if (enemy && (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
 		monster->EnemyTrackingLive || monster->HasCloseSightCombat(enemy)))
 	{

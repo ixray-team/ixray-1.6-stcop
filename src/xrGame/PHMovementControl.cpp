@@ -192,6 +192,33 @@ void CPHMovementControl::UpdateCollisionDamage( )
 	const ICollisionDamageInfo* di=m_character->CollisionDamageInfo();
  	fContactSpeed=di->ContactVelocity();
 
+	// A monster attacking the actor inside a car must not kill itself by
+	// running into the body. Ramming with a moving car still hurts it.
+	if (pObject && pObject->cast_base_monster())
+	{
+		constexpr float SafeCarCollisionSpeed = 5.f;
+		CObject* InitiatorObject = di->DamageInitiator();
+		CGameObject* Initiator = InitiatorObject != nullptr ? InitiatorObject->cast_game_object() : nullptr;
+		if (Initiator != nullptr && Initiator->IsDrivenByActor())
+		{
+			float CarSpeed = 0.f;
+			if (CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(Initiator))
+			{
+				if (Holder->PPhysicsShell() != nullptr)
+				{
+					Fvector Velocity;
+					Holder->PPhysicsShell()->get_LinearVel(Velocity);
+					CarSpeed = Velocity.magnitude() * 3.6f;
+				}
+			}
+			if (CarSpeed < SafeCarCollisionSpeed)
+			{
+				fContactSpeed = 0.f;
+				return;
+			}
+		}
+	}
+
 	if(block_damage_step_end!=u64(-1))
 	{
 		if( physics_world()->StepsNum() < block_damage_step_end )

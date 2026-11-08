@@ -280,6 +280,15 @@ void CPseudoGigant::on_threaten_execute()
 	if (!pA)
 		return;
 
+		if (pA->IsInCar() && pA->IsMutantBiteBlocked())
+		{
+			const float dist_to_car = pA->GetCarNearestPoint(Position()).distance_to(Position());
+			float hit_value = m_kick_damage - m_kick_damage * dist_to_car / m_threaten_dist_max;
+			clamp(hit_value, 0.f, 1.f);
+			pA->HitCar(this, hit_value, 0.f, Direction(), ALife::eHitTypeStrike);
+			return;
+		}
+
 		if (pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJump || pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcFall)
 			return;
 

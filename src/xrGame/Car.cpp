@@ -31,6 +31,7 @@
 #include "game_object_space.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "../xrPhysics/ODE/PHActivationShape.h"
+#include "../xrPhysics/PHCollideValidator.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
 
@@ -1283,6 +1284,27 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 	}
 
 	CPHSkeleton::Spawn(e);
+
+	// The scraper is a separate shell that follows the car. Put it into the
+	// same collision group as the car body, otherwise the two shells collide
+	// with each other and the contact damage receiver treats every overlap as
+	// a strike against the car. Characters and ragdolls stay in other groups,
+	// so the scraper still pushes them away.
+	if (characters_scraper_shell != nullptr && m_pPhysicsShell != nullptr)
+	{
+		CGID ScraperGroup;
+		if (m_pPhysicsShell->IsGroupObject())
+		{
+			ScraperGroup = m_pPhysicsShell->GetCLGroup();
+		}
+		else
+		{
+			ScraperGroup = RegisterGroup();
+			m_pPhysicsShell->RegisterToCLGroup(ScraperGroup);
+		}
+		characters_scraper_shell->RegisterToCLGroup(ScraperGroup);
+	}
+
 	setEnabled						(TRUE);
 	setVisible						(TRUE);
 	PKinematics(Visual())->CalculateBones_Invalidate();
@@ -2790,6 +2812,26 @@ void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
 	UI().Font().pFontStat->OutNext		("Velocity:      [%3.2f]",velocity.magnitude());
 
 #endif
+}
+
+void CCar::HitFrom(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type)
+{
+	if (getDestroy())
+		return;
+
+	NET_Packet packet;
+	SHit hit;
+	hit.GenHeader(GE_HIT, ID());
+	hit.whoID = who != nullptr ? who->ID() : ID();
+	hit.weaponID = who != nullptr ? who->ID() : ID();
+	hit.dir = dir;
+	hit.power = value;
+	hit.boneID = BI_NONE;
+	hit.p_in_bone_space.set(0.f, 0.f, 0.f);
+	hit.impulse = impulse;
+	hit.hit_type = hit_type;
+	hit.Write_Packet(packet);
+	u_EventSend(packet);
 }
 
 //void CCar::Hit(float P,Fvector &dir,CObject * who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
@@ -6689,6 +6731,28 @@ void CCar::CloseTrunkBone()
 		b_start_close_recursive = true;
 		b_start_open_recursive = false;
 	}
+}
+
+Fvector CCar::GetNearestPoint(const Fvector& Point) const
+{
+	Fbox Box = BoundingBox();
+	if (!Box.is_valid())
+		return Position();
+
+	Fmatrix Inv;
+	Inv.invert(XFORM());
+
+	Fvector Local;
+	Inv.transform_tiny(Local, Point);
+
+	Fvector Closest = Local;
+	clamp(Closest.x, Box.min.x, Box.max.x);
+	clamp(Closest.y, Box.min.y, Box.max.y);
+	clamp(Closest.z, Box.min.z, Box.max.z);
+
+	Fvector World;
+	XFORM().transform_tiny(World, Closest);
+	return World;
 }
 
 Fvector CCar::TrunkBoneWorldPos()

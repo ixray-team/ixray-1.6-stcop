@@ -148,6 +148,7 @@ public:
 	virtual CHolderCustom*				cast_holder_custom			() override {return nullptr;}
 	virtual CBaseMonster*				cast_base_monster			() override {return nullptr;}
 	virtual CCar*						cast_car					() override {return nullptr;}
+	virtual bool						IsDrivenByActor			() const {return false;}
 	virtual CMissile					*cast_missile				() override {return nullptr;}
 	virtual CExplosiveRocket			*cast_explosive_rocket		() override {return nullptr;}
 	virtual CGrenade					*cast_grenade				() override {return nullptr;}

@@ -8,6 +8,11 @@
 
 float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 {
+	// The actor is inside the car, so the monster must stop at the car body,
+	// not at the actor's hidden position.
+	if (m_object->IsEnemyInCar())
+		return m_object->GetEnemyAttackPosition().distance_to(m_object->Position());
+
 	float dist = enemy->Position().distance_to	(m_object->Position());
 	if (dist > MAX_TRACE_ENEMY_RANGE)			return dist;
 

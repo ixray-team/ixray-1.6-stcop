@@ -1040,6 +1040,30 @@ bool   CBaseMonster::check_eated_corpse_draggable()
 // CBaseMonster's  Atack on Move
 //-------------------------------------------------------------------
 
+bool CBaseMonster::IsEnemyInCar()
+{
+	const CEntityAlive* Enemy = EnemyMan.get_enemy();
+	CActor* Actor = Enemy != nullptr ? const_cast<CEntityAlive*>(Enemy)->cast_actor() : nullptr;
+	return Actor != nullptr && Actor->IsInCar();
+}
+
+CObject* CBaseMonster::GetEnemyCarObject()
+{
+	const CEntityAlive* Enemy = EnemyMan.get_enemy();
+	CActor* Actor = Enemy != nullptr ? const_cast<CEntityAlive*>(Enemy)->cast_actor() : nullptr;
+	return Actor != nullptr ? Actor->GetCarObject() : nullptr;
+}
+
+Fvector CBaseMonster::GetEnemyAttackPosition()
+{
+	const CEntityAlive* Enemy = EnemyMan.get_enemy();
+	CActor* Actor = Enemy != nullptr ? const_cast<CEntityAlive*>(Enemy)->cast_actor() : nullptr;
+	if (Actor != nullptr && Actor->IsInCar())
+		return Actor->GetCarNearestPoint(Position());
+
+	return Enemy != nullptr ? Enemy->Position() : Position();
+}
+
 bool   CBaseMonster::can_attack_on_move()
 {
 	return override_if_debug("aom_enabled", m_attack_on_move_params.enabled);

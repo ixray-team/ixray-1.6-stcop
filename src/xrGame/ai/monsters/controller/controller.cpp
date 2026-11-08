@@ -737,8 +737,16 @@ void CController::set_mental_state(EMentalState state)
 
 void   CController::HitEntity (const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
 {
-	if (pEntity == Actor() && hit_type == ALife::eHitTypeWound && Actor()->IsMutantBiteBlocked())
+	const bool bPhysicalHit =
+		hit_type == ALife::eHitTypeWound ||
+		hit_type == ALife::eHitTypeStrike ||
+		hit_type == ALife::eHitTypePhysicStrike;
+
+	if (pEntity == Actor() && bPhysicalHit && Actor()->IsMutantBiteBlocked())
+	{
+		Actor()->HitCar(this, fDamage, impulse, dir, hit_type);
 		return;
+	}
 
 	if ( pEntity == Actor() && !GodMode() )
 	{
@@ -797,7 +805,9 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 				CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
 				VERIFY(!ce);
 
-				Fvector src_pos = Actor()->cam_Active()->vPosition;
+				// The car drives the actor camera manager, not the actor's
+				// cameras, so use the manager position for the psi pull.
+				Fvector src_pos = Actor()->Cameras().Position();
 				Fvector target_pos = Position();
 				target_pos.y += 1.2f;
 
@@ -828,12 +838,15 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 				if (control_hit_sound.is_playing()) control_hit_sound.stop();
 				control_hit_sound.play_at_pos(Actor(), pos);
 
-				dir.sub(src_pos, target_pos);
-				dir.normalize();
-				float h, p;
-				dir.getHP(h, p);
-				dir.setHP(h, p + PI_DIV_3);
-				Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
+				if (!Actor()->IsInCar())
+				{
+					dir.sub(src_pos, target_pos);
+					dir.normalize();
+					float h, p;
+					dir.getHP(h, p);
+					dir.setHP(h, p + PI_DIV_3);
+					Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
+				}
 
 				if (m_sound_tube_prepare.is_playing())	m_sound_tube_prepare.stop();
 

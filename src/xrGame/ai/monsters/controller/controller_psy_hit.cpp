@@ -741,7 +741,10 @@ void CControllerPsyHit::death_glide_start()
 		CEffectorCam* ce = pActor->Cameras().GetCamEffector(eCEControllerPsyHit);
 		VERIFY(!ce);
 
-		Fvector src_pos = pActor->cam_Active()->vPosition;
+		// While the actor is in a car, the car updates the actor camera manager
+		// directly and the actor's own cameras stay stale. Use the manager
+		// position so the psi pull starts from the visible camera.
+		Fvector src_pos = pActor->Cameras().Position();
 		Fvector target_pos = m_object->Position();
 		target_pos.y += 1.2f;
 
@@ -764,12 +767,18 @@ void CControllerPsyHit::death_glide_start()
 
 		smart_cast<CController*>(m_object)->draw_fire_particles();
 
-		dir.sub(src_pos, target_pos);
-		dir.normalize();
-		float h, p;
-		dir.getHP(h, p);
-		dir.setHP(h, p + PI_DIV_3);
-		pActor->character_physics_support()->movement()->ApplyImpulse(dir, pActor->GetMass() * 530.f);
+		// The actor's physics character is destroyed while driving, so an
+		// impulse would only pile up in vExternalImpulse and kick the actor
+		// after leaving the car.
+		if (!pActor->IsInCar())
+		{
+			dir.sub(src_pos, target_pos);
+			dir.normalize();
+			float h, p;
+			dir.getHP(h, p);
+			dir.setHP(h, p + PI_DIV_3);
+			pActor->character_physics_support()->movement()->ApplyImpulse(dir, pActor->GetMass() * 530.f);
+		}
 
 		set_sound_state(eStart);
 	}
