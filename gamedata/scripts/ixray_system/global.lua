@@ -873,6 +873,17 @@ function lerp(a, b, t)
     return a + (b - a) * t
 end
 
+function lerp_range(source_min, source_max, source_value, target_min, target_max)
+    if source_min == source_max then
+        return target_min
+    end
+
+    local factor = (source_value - source_min) / (source_max - source_min)
+    factor = math.max(0, math.min(1, factor))
+
+    return target_min + (target_max - target_min) * factor
+end
+
 function trim(s)
 	return string.gsub(s, "^%s*(.-)%s*$", "%1")
 end
