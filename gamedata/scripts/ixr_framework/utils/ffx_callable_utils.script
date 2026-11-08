@@ -291,3 +291,48 @@ function sandbox_exec(file_name, function_name, ...)
 		return
 	end
 end
+
+--// Bind self and namespace lookup without changing the source function's environment.
+function set_code_owner(object, method)
+    local object_type = type(object)
+    assert(object_type == "table" or object_type == "userdata", "set_code_owner: object must be a table or userdata")
+    assert(type(method) == "function", "set_code_owner: method must be a function")
+
+    local native = debug.getinfo(method, "S").what == "C"
+    local bind_self = native and object_type == "userdata" or not native and debug.getlocal(method, 1) == "self"
+    local callable = method
+
+    if not native then
+        callable = assert(loadstring(string.dump(method), "=set_code_owner"))
+        local index = 1
+        while debug.getupvalue(method, index) do
+            debug.upvaluejoin(callable, index, method, index)
+            index = index + 1
+        end
+
+        local original_environment = getfenv(method)
+        local environment = setmetatable({self = object}, {
+            __index = function(_, name)
+                local value = object[name]
+                if value ~= nil then
+                    return value
+                end
+                return original_environment[name]
+            end,
+            __newindex = function(_, name, value)
+                object[name] = value
+            end
+        })
+        setfenv(callable, environment)
+    end
+
+    if bind_self then
+        return function(...)
+            return callable(object, ...)
+        end
+    end
+
+    return function(...)
+        return callable(...)
+    end
+end
