@@ -445,6 +445,9 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		CEntity		*pEntityNC	= const_cast<CEntity*>(pEntity);
 		VERIFY		(pEntityNC);
 
+		if (pEntityNC == Actor() && hit_type == ALife::eHitTypeWound && Actor()->IsMutantBiteBlocked())
+			return;
+
 		NET_Packet	l_P;
 		SHit		HS;
 		HS.GenHeader(GE_HIT, pEntityNC->ID());													//		u_EventGen	(l_P,GE_HIT, pEntityNC->ID());
@@ -796,6 +799,9 @@ void CBaseMonster::Hit_Psy(CObject *object, float value)
 
 void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse)
 {
+	if (object == Actor() && Actor()->IsMutantBiteBlocked())
+		return;
+
 	NET_Packet	P;
 	SHit		HS;
 	HS.GenHeader(GE_HIT, object->ID());														//	u_EventGen	(P,GE_HIT, object->ID());

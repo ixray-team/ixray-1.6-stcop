@@ -129,6 +129,7 @@ public:
 	virtual CCharacterPhysicsSupport*	character_physics_support	() const override {return m_pPhysics_support;}
 	virtual CPHDestroyable*				ph_destroyable				() override;
 			CHolderCustom*				Holder						() const {return m_holder;}
+	bool						IsMutantBiteBlocked		() const;
 
 	virtual xr_vector<xr_string>		GetKnownPortions() const override;
 	virtual xr_vector<xr_string>		GetKnownPortionDialogs(shared_str id) const override;

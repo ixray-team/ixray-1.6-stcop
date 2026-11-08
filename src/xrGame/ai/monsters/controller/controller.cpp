@@ -737,6 +737,9 @@ void CController::set_mental_state(EMentalState state)
 
 void   CController::HitEntity (const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
 {
+	if (pEntity == Actor() && hit_type == ALife::eHitTypeWound && Actor()->IsMutantBiteBlocked())
+		return;
+
 	if ( pEntity == Actor() && !GodMode() )
 	{
 		Actor()->conditions().PowerHit(m_stamina_hit, false);

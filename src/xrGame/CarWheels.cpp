@@ -125,8 +125,15 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 			// from vehicles.ltx as a contact override.
 			cp.surface_flotation = 1.f;
 			cphc.SetFlotation(OwnerIsFirst, SurfaceMaterial, 1.f);
-			if (cp.pwheel && cp.pwheel->car)
-				cp.pwheel->car->WheelsInWater = true;
+			if (cp.pwheel)
+			{
+				// The down-ray probe in UpdateWaterDrag() refreshes this on the
+				// same step, but a wheel touching the surface must not use rain
+				// friction for its other contacts.
+				cp.pwheel->InWater = true;
+				if (cp.pwheel->car)
+					cp.pwheel->car->WheelsInWater = true;
+			}
 		}
 
 		const bool LevelContact = (cphc.GetObject(!OwnerIsFirst) == nullptr);
@@ -148,7 +155,14 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 		sp.mu						=		MaterialFriction								;
 		sp.mu						*=		cp.mu_factor									;
 		if (material_2 || !material_1)
-			sp.mu						*=		cp.friction_rain_factor * cp.friction_nitro_factor;
+		{
+			// Rain only wets the tire. A wheel touching or submerged in water
+			// is already handled by the water drag and must keep its grip.
+			const bool WheelInWater = LiquidSurface || (cp.pwheel && cp.pwheel->InWater);
+			if (!WheelInWater)
+				sp.mu					*=		cp.friction_rain_factor;
+			sp.mu						*=		cp.friction_nitro_factor;
+		}
 		if (cp.pwheel->car && cp.pwheel && material_2 && material_1 && !material_2->Flags.test(SGameMtl::flPassable) && !material_1->Flags.test(SGameMtl::flPassable))
 		{
 			cp.pwheel->car->m_last_contact_time = Device.dwTimeGlobal;
@@ -674,8 +688,12 @@ void CCar::SWheelSteer::Init()
 	CBoneData& bone_data= pKinematics->LL_GetData(u16(pwheel->bone_id));
 	switch(bone_data.IK_data.type)
 	{
-	case jtWheel:	
-		pos_right= pwheel->car->bone_map.find(pwheel->bone_id)->second.element->mXFORM.i.y;//.dotproduct(pwheel->car->m_root_transform.j);
+	case jtWheel:
+		// Use the bind-space steering axis. The physics element transform is
+		// already rotated with the car, so its world-space Y component flips
+		// when a car is loaded rolled over and reverses the nonlinear steering
+		// direction.
+		pos_right = pwheel->car->bones_bind_forms[pwheel->bone_id].i.y;
 		break;
 
 	default: NODEFAULT;

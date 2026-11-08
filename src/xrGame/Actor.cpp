@@ -515,6 +515,12 @@ void CActor::SetActorDirection(float dir)
 	this->cam_Active()->Set(dir, 0.0f, 0.0f);
 }
 
+bool CActor::IsMutantBiteBlocked() const
+{
+	CCar* car = m_holder != nullptr ? m_holder->cast_car() : nullptr;
+	return car != nullptr && !car->AllowMutantBiteInCar();
+}
+
 void CActor::Load	(const char* section )
 {
 	// Msg						("Loading actor: %s",section);
