@@ -299,6 +299,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 - [ ] AWD/RWD, руль, тормоза, ручник, ABS, дифференциал, подвеска, burnout/drift/wheelie.
 - [ ] Колёса: звук, частицы, wallmarks, повреждение, два уровня здоровья.
 - [ ] Двери: open/close/use/switch, broken handle, spring/lamba/vertical, рекурсивные двери, авто-закрытие.
+- [x] Коллизия машины с трупами сохранена; scraper отталкивает персонажей и ragdoll-трупы.
 - [x] Анимация водителя включается и выключается сразу по итоговому состоянию руления, включая комбинации клавиш.
 - [x] Звук шин останавливается для каждого колеса отдельно; состояние заноса сбрасывается при потере контакта.
 - [ ] Багажник: открытие/закрытие, `CUICarBodyWnd`, `trunk_capacity`/`trunk_distance`, `ShowTrunk`/`OpenTrunkBone`/`CloseTrunkBone`/`TrunkBoneWorldPos`.

@@ -314,8 +314,15 @@ void CCarTurret::cam_Update(float fov)
     camera->vNormal = m_cam_xform.j;
     camera->vPosition = m_cam_xform.c;
 	camera->f_fov = fov;
-	m_pcar->OwnerActor()->Cameras().UpdateFromCamera(camera);
-	m_pcar->OwnerActor()->Cameras().ApplyDevice(Device.fViewportNear);
+	if (Level().Cameras().GetCamEffector(cefDemo))
+	{
+		Level().Cameras().UpdateFromCamera(camera);
+	}
+	else
+	{
+		m_pcar->OwnerActor()->Cameras().UpdateFromCamera(camera);
+		m_pcar->OwnerActor()->Cameras().ApplyDevice(Device.fViewportNear);
+	}
 }
 
 void CCarTurret::OnMouseMove(int dx, int dy)

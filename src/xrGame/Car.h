@@ -438,6 +438,7 @@ public:
 		float								tire_particle_scale;
 		float								tire_particle_scale_min;
 		float								tire_particle_scale_max;
+		u32									WaterParticleTime;
 		float								max_control_velocity;
 		// The drive motor was switched to zero-velocity axle friction while
 		// the wheel had no ground contact. Restore the drive target on landing.
@@ -524,6 +525,7 @@ virtual void ApplyDamage			(u16 level);
 			break_wheel = false;
 			steer_wheel = false;
 			tire_drive_source = nullptr;
+			WaterParticleTime = 0;
 			WheelFlags = {0};
 			max_control_velocity = 0.f;
 			AirborneFriction = false;
