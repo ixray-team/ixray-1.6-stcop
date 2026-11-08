@@ -274,8 +274,10 @@ static void HudMotionPlayerPlayAdditive(CHudItem* hud_item, attachable_hud_item*
 
 	item->AdditivePlaying = true;
 	item->AdditiveOverlay = false;
-	item->RetargetPlaying = false;
-	item->RetargetLayerPlaying = false;
+	item->RetargetPlaying = true;
+	item->RetargetLayerPlaying = true;
+	item->RetargetMotion = state.AdditiveMotion;
+	item->RetargetReferenceMotion = state.AdditiveReference.valid() ? state.AdditiveReference : state.AdditiveMotion;
 
 	state.Item = hud_item;
 	state.Motion = state.AdditiveName;
