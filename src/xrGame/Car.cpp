@@ -48,6 +48,11 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 namespace
 {
 	constexpr const char* DefaultExhaustParticles = "vehiclefx\\exhaust_1";
+	constexpr u32 WaterParticleInterval = 100;
+	constexpr u32 WaterParticleIntervalJitter = 50;
+	constexpr float WaterParticleMinSpeed = 0.2f;
+	constexpr float WaterParticleMinImmersion = 0.02f;
+	constexpr float WaterParticleMaxDistance = 70.f;
 
 	bool ParticleEffectExists(const char* Name)
 	{
@@ -1330,7 +1335,7 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 	CPhysicsShellHolder *WHO = smart_cast<CPhysicsShellHolder*>(l_pUD2->ph_ref_object);
 	Collided_object = ME ? ME : WHO ? WHO : NULL;
 	CGameObject* Collided_gobject = smart_cast<CGameObject*>(Collided_object);
-	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_actor())
+	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_actor() || Collided_gobject->cast_car() || Collided_gobject->cast_inventory_item())
 	{
 		do_colide = false;
 		return;
@@ -1439,32 +1444,44 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		return;
 
 	characters_scraper_shell = P_create_Shell();
-	Fsphere RootSphere;
-	RootSphere.set(Fvector().set(0, 1, 0), 0.1f);
 	CPhysicsElement* RootElement = P_create_Element();
-	RootElement->add_Sphere(RootSphere);
-	characters_scraper_shell->add_Element(RootElement);
+	bool HasGeometry = false;
 
-	const float ZOffsets[] = { -0.7f, 0.f, 0.7f };
-	for (float ZOffset : ZOffsets)
+	// Build a compound from the car bone boxes instead of one visual AABB.
+	// The AABB includes empty corners outside the bodywork and makes the car
+	// push nearby ragdolls from several metres away.
+	for (auto& Bone : bone_map)
 	{
-		Fvector Center = bind_center;
-		Center.z += Radius() * ZOffset;
+		const u16 BoneId = Bone.first;
+		if (BoneId >= bones_bind_forms.size())
+			continue;
 
-		Fsphere Sphere;
-		Sphere.set(Center, Radius() * 0.5f);
-		CPhysicsElement* JointElement = P_create_Element();
-		JointElement->add_Sphere(Sphere);
-		characters_scraper_shell->add_Element(JointElement);
+		Fobb BoneBox = K->LL_GetBox(BoneId);
+		if (BoneBox.m_halfsize.magnitude() < EPS_L)
+			continue;
 
-		CPhysicsJoint* Joint = P_create_Joint(CPhysicsJoint::ball, RootElement, JointElement);
-		Joint->SetAnchorVsSecondElement(0.f, 0.f, 0.f);
-		Joint->SetJointSDfactors(1000.f, 1000.f);
-		characters_scraper_shell->add_Joint(Joint);
+		Fobb LocalBox;
+		LocalBox.transform(BoneBox, bones_bind_forms[BoneId]);
+		LocalBox.m_halfsize.add(0.05f);
+
+		RootElement->add_Box(LocalBox);
+		HasGeometry = true;
 	}
 
-	characters_scraper_shell->SetIgnoreDynamic();
+	if (!HasGeometry)
+	{
+		Fobb FallbackBox;
+		BoundingBox().get_CD(FallbackBox.m_translate, FallbackBox.m_halfsize);
+		FallbackBox.m_halfsize.add(0.15f);
+		FallbackBox.m_rotate.identity();
+		RootElement->add_Box(FallbackBox);
+	}
+
+	characters_scraper_shell->add_Element(RootElement);
+
 	characters_scraper_shell->SetIgnoreStatic();
+	// Do not call SetIgnoreDynamic(): characters and ragdolls are dynamic
+	// shells too. The contact callback rejects the car itself and items.
 	characters_scraper_shell->set_ApplyByGravity(FALSE);
 	characters_scraper_shell->setMass(50.f);
 	characters_scraper_shell->SetMaterial(K->LL_GetData(K->LL_GetBoneRoot()).game_mtl_idx);
@@ -6106,17 +6123,40 @@ void CCar::UpdateWaterDrag(float step)
 
 	const Fvector CarVelocity = GetVelocity();
 	const float Speed = CarVelocity.magnitude();
-	if (Speed < EPS_L)
-		return;
 
 	const float Mass = m_pPhysicsShell->getMass();
 	if (Mass <= 0.f)
 		return;
 
+	if (Speed < EPS_L)
+	{
+		// A car can be stationary in deep water while the wheels are still
+		// spinning. Keep the water probe and the surface splash active for
+		// that case; drag itself will be zero below.
+		bool WheelsSpinning = false;
+		for (auto& WheelEntry : m_wheels_map)
+		{
+			SWheel& Wheel = WheelEntry.second;
+			if (!Wheel.joint || !Wheel.joint->bActive)
+				continue;
+
+			const float Radius = Wheel.radius > 0.f ? Wheel.radius : 0.3f;
+			if (std::abs(Wheel.GetDriveAngleRate()) * Radius > WaterParticleMinSpeed)
+			{
+				WheelsSpinning = true;
+				break;
+			}
+		}
+
+		if (!WheelsSpinning)
+			return;
+	}
+
 	collide::rq_results Results;
 	const Fvector Down = { 0.f, -1.f, 0.f };
 	float DragFactorSum = 0.f;
 	float Flotation = 1.f;
+	IKinematics* Kinematics = PKinematics(Visual());
 
 	for (auto& WheelEntry : m_wheels_map)
 	{
@@ -6145,6 +6185,7 @@ void CCar::UpdateWaterDrag(float step)
 		Level().ObjectSpace.RayQuery(Results, Ray, nullptr, nullptr, nullptr, this);
 
 		SGameMtl* WaterMaterial = nullptr;
+		u16 WaterMaterialIdx = u16(-1);
 		float WheelWaterY = -flt_max;
 		for (auto It = Results.r_begin(); It != Results.r_end(); ++It)
 		{
@@ -6158,6 +6199,7 @@ void CCar::UpdateWaterDrag(float step)
 
 			WheelWaterY = From.y - It->range;
 			WaterMaterial = Material;
+			WaterMaterialIdx = Tri.material;
 			break;
 		}
 
@@ -6171,7 +6213,50 @@ void CCar::UpdateWaterDrag(float step)
 		if (Immersion > 1.f)
 			Immersion = 1.f;
 
-		WheelsInWater = true;
+		if (Speed > EPS_L)
+			WheelsInWater = true;
+
+		// A physics contact with the water surface only exists while a wheel
+		// crosses it, so a car driving in water would otherwise splash only
+		// on entry. Keep spawning the wheel/water collision effect while the
+		// wheel is submerged and either the car or the wheel is moving.
+		const float WheelSurfaceSpeed = std::abs(Wheel.GetDriveAngleRate()) * Radius;
+		if ((Speed > WaterParticleMinSpeed || WheelSurfaceSpeed > WaterParticleMinSpeed)
+			&& Immersion > WaterParticleMinImmersion
+			&& Device.dwTimeGlobal >= Wheel.WaterParticleTime)
+		{
+			Wheel.WaterParticleTime = Device.dwTimeGlobal + WaterParticleInterval + ::Random.randI(0, WaterParticleIntervalJitter);
+
+			const float DistanceSqr = Device.vCameraPosition.distance_to_sqr(Center);
+			if (Kinematics && DistanceSqr < _sqr(WaterParticleMaxDistance))
+			{
+				const u16 WheelMaterialIdx = Kinematics->LL_GetData(Wheel.bone_id).game_mtl_idx;
+				if (WheelMaterialIdx < GMLib.GetMaterials().size())
+				{
+					SGameMtlPair* MaterialPair = GMLib.GetMaterialPair(WheelMaterialIdx, WaterMaterialIdx);
+					if (MaterialPair && !MaterialPair->CollideParticles.empty())
+					{
+						Fvector Velocity;
+						Element->get_LinearVel(Velocity);
+
+						Fmatrix ParticleXform = Element->XFORM();
+						if (Velocity.magnitude() > EPS_L)
+							ParticleXform.k = Fvector(Velocity).normalize().invert();
+
+						ParticleXform.c.set(Center.x, WheelWaterY, Center.z);
+
+						const float EffectSpeed = std::max(Speed, WheelSurfaceSpeed);
+						const float ParticleScale = 0.7f + 0.3f * std::min(EffectSpeed / 10.f, 1.f);
+						ParticleXform.i.mul(ParticleScale);
+						ParticleXform.j.mul(ParticleScale);
+						ParticleXform.k.mul(ParticleScale);
+
+						const shared_str& ParticleName = MaterialPair->CollideParticles[::Random.randI(0, MaterialPair->CollideParticles.size())];
+						Level().ph_commander().add_call(new CPHOnesCondition(), new CCarParticlesPlayCall(ParticleXform, Velocity, *ParticleName));
+					}
+				}
+			}
+		}
 
 		// The drag factor follows the submerged part of the wheel: 0 when it
 		// only touches the surface, 1 when it is fully submerged.

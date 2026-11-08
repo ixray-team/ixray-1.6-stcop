@@ -279,9 +279,11 @@ public:
 		VERIFY(RC_dest_sampler == C->destination);
 		VERIFY(RC_dx10texture == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
-		VERIFY(T);
 
-		float mtl = T->m_material;
+		// Some material passes can leave an optional sampler unbound while a
+		// camera transition is rebuilding render state. A missing texture
+		// must not crash the whole renderer; use a neutral material instead.
+		float mtl = T ? T->m_material : 0.5f;
 
 #ifdef	DEBUG_DRAW
 		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	

@@ -18,6 +18,7 @@
 #include "level.h"
 #include "../xrEngine/cameramanager.h"
 #include "../xrEngine/camerabase.h"
+#include "../xrEngine/GameMtlLib.h"
 bool CCar::HUDView() const		
 {
 	return active_camera->tag==EctFirstCam;
@@ -30,6 +31,10 @@ float rs_car_cam_angle = 6.f;
 
 namespace
 {
+	constexpr float CarCameraGroundClearance = 0.3f;
+	constexpr float CarCameraWaterClearance = 0.3f;
+	constexpr float CarCameraWaterProbeHeight = 20.f;
+
 	float AngleInertionVarLimited(float Src, float Tgt, float MinSpeed, float MaxSpeed, float Clmp, float SpeedLimit, float Dt)
 	{
 		Tgt = angle_normalize_signed(Tgt);
@@ -45,6 +50,107 @@ namespace
 		float DCH = clampr(DH, -Clmp, Clmp);
 		Src -= DH - DCH;
 		return Src;
+	}
+
+	bool GetCameraGroundY(const Fvector& Position, const Fvector& Reference, float& GroundY)
+	{
+		const Fbox& Bounds = Level().ObjectSpace.GetBoundingVolume();
+		const float ProbeHeight = 0.5f;
+		const Fvector Down = Fvector().set(0.f, -1.f, 0.f);
+
+		Fvector From = Position;
+		From.y = Reference.y + ProbeHeight;
+
+		collide::rq_result RQ;
+		float Range = From.y - Bounds.min.y;
+		if (Range > EPS && Level().ObjectSpace.RayPick(From, Down, Range, collide::rqtStatic, RQ, nullptr))
+		{
+			GroundY = From.y - RQ.range;
+			return true;
+		}
+
+		// A steep slope under the camera may put the local probe below the
+		// surface. Retry from above the whole level to recover the top surface.
+		From.y = Bounds.max.y;
+		Range = From.y - Bounds.min.y;
+		if (Range > EPS && Level().ObjectSpace.RayPick(From, Down, Range, collide::rqtStatic, RQ, nullptr))
+		{
+			GroundY = From.y - RQ.range;
+			return true;
+		}
+
+		return false;
+	}
+
+	void ClampCameraAboveGround(Fvector& Position, const Fvector& Reference)
+	{
+		// The car center rests above the ground. Points at or above it can
+		// only be underground on an uphill slope, which the camera trace
+		// already handles.
+		if (Position.y >= Reference.y)
+			return;
+
+		float GroundY = 0.f;
+		if (!GetCameraGroundY(Position, Reference, GroundY))
+			return;
+
+		const float MinY = GroundY + CarCameraGroundClearance;
+		if (Position.y < MinY)
+			Position.y = MinY;
+	}
+
+	bool GetCameraWaterY(const Fvector& Position, const Fvector& Reference, CObject* Ignore, float& WaterY)
+	{
+		Fvector From = Position;
+		From.y = std::max(Position.y, Reference.y) + CarCameraWaterProbeHeight;
+
+		// Only the water surface above the camera matters. Stop the probe a
+		// little below the camera so water below a bridge or a shoreline does
+		// not lift the camera through the geometry above it.
+		const float Bottom = Position.y - CarCameraWaterClearance - 0.5f;
+		const float Range = From.y - Bottom;
+		if (Range <= EPS)
+			return false;
+
+		collide::rq_results Results;
+		const collide::ray_defs Ray(From, Fvector().set(0.f, -1.f, 0.f), Range, 0, collide::rqtStatic);
+		Level().ObjectSpace.RayQuery(Results, Ray, nullptr, nullptr, nullptr, Ignore);
+
+		bool Found = false;
+		float BestRange = Range;
+		for (auto It = Results.r_begin(); It != Results.r_end(); ++It)
+		{
+			if (It->O || It->element < 0)
+				continue;
+
+			const CDB::TRI& Tri = Level().ObjectSpace.GetStaticTris()[It->element];
+			SGameMtl* Material = GMLib.GetMaterialByIdx(Tri.material);
+			if (!Material || !Material->Flags.test(SGameMtl::flLiquid))
+				continue;
+
+			if (It->range < BestRange)
+			{
+				BestRange = It->range;
+				Found = true;
+			}
+		}
+
+		if (!Found)
+			return false;
+
+		WaterY = From.y - BestRange;
+		return true;
+	}
+
+	void ClampCameraAboveWater(Fvector& Position, const Fvector& Reference, CObject* Ignore)
+	{
+		float WaterY = 0.f;
+		if (!GetCameraWaterY(Position, Reference, Ignore, WaterY))
+			return;
+
+		const float MinY = WaterY + CarCameraWaterClearance;
+		if (Position.y < MinY)
+			Position.y = MinY;
 	}
 }
 
@@ -84,6 +190,13 @@ void	CCar::cam_Update			(float dt, float fov)
 	}
 
 	XFORM().transform_tiny(P, m_camera_position[active_camera->tag]);
+
+	const bool ThirdPersonCamera = active_camera->tag != EctFirstCam && active_camera->tag != EctFiveCam;
+	if (ThirdPersonCamera)
+	{
+		ClampCameraAboveGround(P, XFORM().c);
+		ClampCameraAboveWater(P, XFORM().c, this);
+	}
 
 	float car_fov = fov;
 	if (rs_car_fov_effects)// && GetVelocity().dotproduct(XFORM().k) > 0.f)
@@ -198,6 +311,12 @@ void	CCar::cam_Update			(float dt, float fov)
 	active_camera->f_fov = car_fov;
 	active_camera->Update(P, Da);
 
+	if (ThirdPersonCamera)
+	{
+		ClampCameraAboveGround(active_camera->vPosition, XFORM().c);
+		ClampCameraAboveWater(active_camera->vPosition, XFORM().c, this);
+	}
+
 	if((active_camera->tag == EctFirstCam) && rs_car_cam_inert && Device.dwTimeGlobal - m_dwAttachTime > 50)
 	{
 		float time = float(Device.dwTimeGlobal - m_dwAttachTime) / 1000.f;
@@ -242,10 +361,17 @@ void	CCar::cam_Update			(float dt, float fov)
 	}
 	//if (active_camera->tag == ectFirst)
 	//{
-		if(OwnerActor())
+		if (OwnerActor())
 		{
-			OwnerActor()->Cameras().UpdateFromCamera(active_camera);
-			OwnerActor()->Cameras().ApplyDevice(Device.fViewportNear);
+			if (Level().Cameras().GetCamEffector(cefDemo))
+			{
+				Level().Cameras().UpdateFromCamera(active_camera);
+			}
+			else
+			{
+				OwnerActor()->Cameras().UpdateFromCamera(active_camera);
+				OwnerActor()->Cameras().ApplyDevice(Device.fViewportNear);
+			}
 		}
 	//}
 	//else
