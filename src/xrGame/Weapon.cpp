@@ -5473,17 +5473,18 @@ s32 CWeapon::GetAutoAimPeriod() const
 
 static bool is_visible_by_thermovisor(const CObject* pointer)
 {
-	if (smart_cast<CAI_Crow*>(pointer))
+	auto mut = const_cast<CObject*>(pointer);
+	if (smart_cast<CAI_Crow*>(mut))
 	{
 		return true;
 	}
 
-	if (smart_cast<CAI_Bloodsucker*>(pointer))
+	if (smart_cast<CAI_Bloodsucker*>(mut))
 	{
 		return false;
 	}
 
-	return ((pointer != nullptr) ? !!const_cast<CObject*>(pointer)->cast_entity_alive() : false);
+	return ((pointer != nullptr) ? mut->cast_entity_alive() : false);
 }
 
 bool CWeapon::IsAutoAimHaveTarget()
