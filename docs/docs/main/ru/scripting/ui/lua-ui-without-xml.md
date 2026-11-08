@@ -9,6 +9,8 @@
 * `CreateScriptWindow`
 * `GetCurrentDialogHolder`
 * `TopInputReceiver`
+* `GetMainMenuWindow`
+* `IsMainMenuActive`
 * `AddDialogToRender`
 * `RemoveDialogToRender`
 * `ShowDialog`
@@ -57,6 +59,22 @@ retval: (CDialogHolder | nil) - держатель активного меню, 
 --// Получить верхнее окно, принимающее ввод.
 holder:TopInputReceiver()
 retval: (CUIDialogWnd | nil) - текущий получатель ввода; nil, если стек пуст
+```
+
+### Доступ к главному меню
+
+Возвращает существующее окно меню без изменения его скрипта.
+Активность меню проверяется отдельно через `IsMainMenuActive`.
+После пересоздания меню получите ссылку заново.
+
+```lua
+--// Получить существующее корневое скриптовое окно главного меню.
+GetMainMenuWindow()
+retval: (CUIScriptWnd | nil) - существующее окно; nil, если подходящего окна нет
+
+--// Проверить активность главного меню.
+IsMainMenuActive()
+retval: (boolean) - true, если главное меню активно
 ```
 
 ### Отрисовка, ввод и время жизни
@@ -242,6 +260,33 @@ window:ShowDialog(false)
 ```lua
 window:HideDialog()
 window = nil
+```
+
+#### Самостоятельный статик без окна
+
+Статик добавляется в отрисовку без захвата ввода. Ссылка сохраняется до удаления.
+
+```lua
+local holder = GetCurrentDialogHolder()
+assert(holder, "Интерфейс недоступен")
+
+local control = CUIStatic()
+control:SetWndPos(vector2():set(0, 0))
+control:SetWndSize(vector2():set(300, 60))
+control:SetFont(GetFontLetterica16Russian())
+control:SetText("Text")
+control:SetTextColor(GetARGB(255, 255, 255, 255))
+
+-- Сохраняем ссылку на статик, пока он отображается.
+ui_state = { holder = holder, control = control }
+holder:AddDialogToRender(control)
+```
+
+#### Удаление самостоятельного статика
+
+```lua
+ui_state.holder:RemoveDialogToRender(ui_state.control)
+ui_state = nil
 ```
 
 #### Обновление окна
