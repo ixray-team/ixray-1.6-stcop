@@ -34,7 +34,7 @@ bool CStateMonsterAttackMeleeAbstract::check_start_conditions()
 {
 	return (
 		this->object->MeleeChecker.can_start_melee(this->object->EnemyMan.get_enemy()) &&
-		this->object->EnemyMan.see_enemy_now()
+		(this->object->EnemyMan.see_enemy_now() || this->object->IsEnemyInCar())
 	);
 }
 

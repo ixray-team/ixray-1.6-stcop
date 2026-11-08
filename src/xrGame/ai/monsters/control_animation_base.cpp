@@ -705,7 +705,8 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 	// hidden actor position.
 	Fvector d;
 	d.sub(m_object->GetEnemyAttackPosition(),m_object->Position());
-	if (d.magnitude() > params.dist) 
+	const float attack_distance = d.magnitude();
+	if (attack_distance > params.dist || attack_distance < EPS_L)
 		should_hit = false;
 	
 	// проверка на  Field-Of-Hit
@@ -736,13 +737,20 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 		enemy->Center(enemy_center);
 		Fvector dir;
 		dir.sub(enemy_center, C);
-		dir.normalize();
-		collide::rq_results RQR;
-		collide::ray_defs RD(C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth);
-		ray_query_param params(m_object, enemy);
-		params.m_car = Car;
-		Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
-		should_hit = params.m_can_hit_enemy;
+		if (dir.magnitude() < EPS_L)
+		{
+			should_hit = false;
+		}
+		else
+		{
+			dir.normalize();
+			collide::rq_results RQR;
+			collide::ray_defs RD(C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth);
+			ray_query_param params(m_object, enemy);
+			params.m_car = Car;
+			Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
+			should_hit = params.m_can_hit_enemy;
+		}
 	}
 
 	if (should_hit) 

@@ -313,6 +313,26 @@ void CCar::SCarSound::UpdateDrive()
 {
 	VERIFY(!physics_world()->Processing());
 
+	// UpdateStarting() is the usual place that starts the looped sounds, but a
+	// running engine restored from a save skips the starter. Starting them here
+	// also recovers if the first play happened while the sound was suspended
+	// during level loading.
+	if (pcar->b_engine_on)
+	{
+		auto PlayLoop = [this](ref_sound& sound)
+		{
+			if (sound._p && !sound.is_playing())
+				sound.play(pcar, sm_Looped | sm_NoOCC);
+		};
+
+		PlayLoop(snd_engine);
+		PlayLoop(snd_turbo);
+		PlayLoop(snd_idle);
+		PlayLoop(snd_engine_decel);
+		PlayLoop(snd_engine_heavy);
+		PlayLoop(snd_blower);
+	}
+
 	if (pcar->m_sound)
 	{
 		float sound_torque = 0.f;
@@ -674,8 +694,17 @@ void CCar::SCarSound::Update()
 	VERIFY(!physics_world()->Processing());
 	if (eCarSound == sndOff)
 	{
-		pcar->m_engine_state_scale = pcar->m_engine_state_scale_min;
-		return;
+		// Init() resets the sound state when the car is spawned. A restored
+		// running engine must not stay silent if that reset happened after
+		// RestoreEngineAndLights() or if the first play was lost while the
+		// sound subsystem was still loading.
+		if (!pcar->b_engine_on)
+		{
+			pcar->m_engine_state_scale = pcar->m_engine_state_scale_min;
+			return;
+		}
+
+		Drive();
 	}
 	switch (eCarSound)
 	{
@@ -821,6 +850,13 @@ void CCar::SCarSound::Drive()
 	VERIFY(!physics_world()->Processing());
 	if(eCarSound==sndOff) SwitchOn();
 	SwitchState(sndDrive);
+
+	// A resumed engine skips the starter sequence. Do not leave a stale
+	// starter/stop one-shot playing over the looped engine sounds.
+	if (snd_engine_start._p && snd_engine_start.is_playing())
+		snd_engine_start.stop_deffered(CarDeferredStopFade);
+	if (snd_engine_stop._p && snd_engine_stop.is_playing())
+		snd_engine_stop.stop_deffered(CarDeferredStopFade);
 }
 
 void CCar::SCarSound::TransmissionSwitch()

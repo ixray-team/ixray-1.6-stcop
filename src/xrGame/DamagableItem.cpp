@@ -10,6 +10,15 @@ CDamagableItem::CDamagableItem()
 
 u16 CDamagableItem::DamageLevel()
 {
+	// A zero max health means the part is configured as indestructible.
+	// Without this guard Health() / m_max_health is 0/0 and the resulting
+	// damage level is undefined (it differed between Debug and the user's
+	// build and could break a door on the first hit).
+	if (m_max_health <= 0.f)
+	{
+		return 0;
+	}
+
 	float health = Health();
 	if (health < 0.f)
 	{
@@ -70,6 +79,13 @@ void CDamagableHealthItem::Repair()
 
 void CDamagableHealthItem::Hit(float P)
 {
+	// Zero max health is the config convention for an indestructible part
+	// (used for most car doors and wheels in the addon).
+	if (m_max_health <= 0.f)
+	{
+		return;
+	}
+
 	if (m_level_applied == m_levels_num)
 	{
 		return;

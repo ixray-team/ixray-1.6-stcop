@@ -251,6 +251,13 @@ bool enemy_inaccessible (CBaseMonster * const object)
 	{
 		return true;
 	}
+
+	// The car surface is not expected to be close to one graph vertex. The
+	// car-aware tracking vertex is the navigation point validated above.
+	if (object->IsEnemyInCar())
+	{
+		return false;
+	}
 	Fvector const enemy_vert_pos = ai().level_graph().vertex_position(EnemyVertex);
 	
 	float const xz_dist_to_vertex	=	enemy_vert_pos.distance_to_xz(enemy_pos);

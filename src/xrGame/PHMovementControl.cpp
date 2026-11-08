@@ -199,6 +199,17 @@ void CPHMovementControl::UpdateCollisionDamage( )
 		constexpr float SafeCarCollisionSpeed = 5.f;
 		CObject* InitiatorObject = di->DamageInitiator();
 		CGameObject* Initiator = InitiatorObject != nullptr ? InitiatorObject->cast_game_object() : nullptr;
+		// The character scraper that follows a car is not a physics object of
+		// its own; contacts with it are reported as the actor. The hidden actor
+		// body must not hurt a monster through the car.
+		if (CActor* InitiatorActor = InitiatorObject != nullptr ? InitiatorObject->cast_actor() : nullptr)
+		{
+			if (InitiatorActor->IsInCar())
+			{
+				fContactSpeed = 0.f;
+				return;
+			}
+		}
 		if (Initiator != nullptr && Initiator->IsDrivenByActor())
 		{
 			float CarSpeed = 0.f;

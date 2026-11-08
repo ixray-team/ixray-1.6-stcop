@@ -101,6 +101,63 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	this->callback(GameObject::eAttachVehicle)(car->lua_game_object());
 }
 
+void CActor::ReapplyVehicleVisual()
+{
+	if (m_holder == nullptr)
+	{
+		return;
+	}
+
+	CCar* car = m_holder->cast_car();
+	if (car == nullptr)
+	{
+		return;
+	}
+
+	IKinematicsAnimated* V = Visual() != nullptr ? Visual()->dcast_PKinematicsAnimated() : nullptr;
+	IKinematics* pK = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
+	if (V == nullptr || pK == nullptr)
+	{
+		return;
+	}
+
+	// OnChangeVisual() rebuilds the animation collections and reinstalls the
+	// default bone callbacks. While the actor is sitting in a car the normal
+	// head callback and standing idles must not come back: restore the vehicle
+	// callback and the steering idles, as attach_Vehicle() would do.
+	ResetCallbacks();
+
+	const u16 HeadBone = pK->LL_BoneID("bip01_head");
+	if (HeadBone != BI_NONE)
+	{
+		pK->LL_GetBoneInstance(HeadBone).set_callback(bctPhysics, VehicleHeadCallback, this);
+	}
+
+	SVehicleAnimCollection& Anims = m_vehicle_anims->m_vehicles_type_collections[car->DriverAnimationType()];
+	switch (car->e_state_steer)
+	{
+	case CCar::right:
+		V->PlayCycle(Anims.steer_right, false);
+		break;
+	case CCar::left:
+		V->PlayCycle(Anims.steer_left, false);
+		break;
+	default:
+		V->PlayCycle(Anims.idles[0], false);
+		V->PlayCycle(Anims.idles[1], false);
+		break;
+	}
+
+	m_current_head.invalidate();
+	m_current_legs.invalidate();
+	m_current_torso.invalidate();
+	m_current_legs_blend = nullptr;
+	m_current_torso_blend = nullptr;
+	m_current_jump_blend = nullptr;
+
+	m_holderID = car->ID();
+}
+
 void CActor::detach_Vehicle()
 {
 	if (m_holder == nullptr)
@@ -213,9 +270,15 @@ void CActor::on_requested_spawn(CObject* object)
 		return;
 	}
 
-	// Restore the actor torso from the car heading. Without this, a save made
-	// while looking south can load with the actor/camera facing the opposite way.
+	// While attached, the torso yaw is relative to the car: the car transform
+	// already provides the world heading, and VehicleHeadCallback applies the
+	// torso as a bone-space offset. Writing the car world yaw here rotated the
+	// head sideways after loading a save. The saved camera direction is restored
+	// by the car camera update itself.
 	Fvector xyz;
 	car->XFORM().getXYZi(xyz);
-	r_torso.yaw = xyz.y;
+	r_model_yaw = xyz.y;
+	r_model_yaw_dest = r_model_yaw;
+	r_model_yaw_delta = 0.f;
+	r_torso.yaw = 0.f;
 }

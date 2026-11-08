@@ -366,7 +366,9 @@ const char* mov_state[] ={
 };
 void CActor::g_SetAnimation( u32 mstate_rl )
 {
-	if (m_bAnimOverride)
+	// A visual change can call this while the actor is sitting in a car.
+	// In that case the steering idles and VehicleHeadCallback own the skeleton.
+	if (m_bAnimOverride || (m_holder != nullptr && m_holder->cast_car() != nullptr))
 		return;
 
 	if (!g_Alive()) {

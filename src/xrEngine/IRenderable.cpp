@@ -11,6 +11,7 @@ IRenderable::IRenderable()
 	renderable.visual					= nullptr;
 	renderable.pROS						= nullptr;
 	renderable.pROS_Allowed				= true;
+	renderable.pROS_IgnoreFoliage		= false;
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering; 

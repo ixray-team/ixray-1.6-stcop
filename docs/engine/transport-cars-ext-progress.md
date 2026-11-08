@@ -557,7 +557,100 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - Проверка: autotest с разгоном `veh_zaz968` до ~50 км/ч. До исправления — 120 `CollisionHit` с `src=INVALID` и падение здоровья с `1.0` до `0.3`; после исправления — 0 попаданий и здоровье `1.0` на всём разгоне.
 - Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
 
+### Этап 42: сохранение состояния двигателя и фар
+
+- Состояние двигателя (`b_engine_on`) и головных фар (`m_lights.IsOn()`) сохраняется в клиентских данных машины.
+- Legacy-путь `CCar::save()`/`CCar::load()`: после `inherited::save()` пишется маркер `CarRuntimeStateMagic` (`0x43415253`, "CARS"), затем два байта состояния и только потом топливо. При загрузке маркер проверяется; если его нет (старый сейв), чтение перематывается назад и топливо читается в старом формате. Благодаря префиксу маркер не пересекается с данными script binder, которые идут после блока `CCar::save()`.
+- Новый путь `CCar::Serialize()`: состояние лежит в отдельном вложенном чанке `CCar::runtime_state`; в старых сейвах этого чанка нет, поэтому они загружаются без ошибок.
+- При загрузке флаги сначала складываются в `m_saved_engine_on`, `m_saved_lights_on`, `m_has_saved_runtime_state`, а применяются в конце `CCar::net_Spawn()`, когда уже созданы физический shell, звуки и источники света.
+- Включённый двигатель восстанавливается без повторного проигрывания стартера: `b_engine_on = true`, `b_starting = false`, `m_current_rpm = m_min_rpm`, `m_current_engine_power = 0`, `m_car_sound->Drive()`.
+- Головные фары включаются/выключаются через `CCarLights::SwitchHeadLights()` только при отличии сохранённого состояния от текущего.
+- Проверка: autotest с сохранением и загрузкой `veh_zaz968` при включённых двигателе и фарах — в логе `save engine=1 lights=1`, после загрузки `load engine=1 lights=1`, `restore request engine=1 lights=1`, `restored engine=1 lights=1`. Контрольный прогон без включения двигателя/фар даёт те же самые Debug-ассерты `CPHElement::Deactivate` при выгрузке уровня, то есть они не связаны с новым состоянием.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 43: крах при поломке двери без физического joint
+
+- Воспроизведение: `veh_brdm` в режиме полёта врезался в стену; `DoorHit()` → `CDamagableHealthItem::Hit()` → `SDoor::Break()` → `SDoor::ClosedToOpening()` падал на `joint->PSecond_element()->SetAirResistance(...)`, потому что `joint` был `nullptr`.
+- Причина: `SDoor::Init()` возвращается раньше, если для кости двери нет физического hinge. Такая дверь остаётся в `m_doors` и может получить урон; `Break()` вызывает `ClosedToOpening()`, а там проверки `joint` не было.
+- В `SDoor::ClosedToOpening()` добавлена проверка `joint` и `joint->PSecond_element()`: дверь без физического hinge всё равно помечается сломанной, но физическая часть открытия пропускается.
+- В `SDoor::Init()` joint без второго элемента теперь считается непригодным: `joint` сбрасывается в `nullptr`, чтобы последующие проверки `if (!joint)` корректно отсекали такую дверь.
+- Заодно убран случайный символ `w` в начале строки `SetAirResistance` в рабочей копии (он ломал сборку).
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 44: `[damage_items] = 0` — явная неуязвимость
+
+- Значение в `[damage_items]` передаётся в `CDamagableHealthItem::Init(value, 1)` и является **максимальным здоровьем** части, а не коэффициентом иммунитета. `0` означает нулевое здоровье, а не «бесконечное».
+- В старом коде `CDamagableItem::DamageLevel()` считал `Health() / m_max_health`; при `m_max_health = 0` получалось `0/0` (NaN). Преобразование NaN в `u16` — неопределённое поведение: в одной сборке получался уровень 0 (деталь не ломалась), в другой — уровень 1, и дверь ломалась с первого удара.
+- Теперь `m_max_health <= 0` обрабатывается явно: `CDamagableHealthItem::Hit()` сразу возвращается, а `CDamagableItem::DamageLevel()` возвращает 0. Это приводит конфиги `[damage_items]` в соответствие с их смыслом: `0` = деталь неуязвима.
+- Это касается в первую очередь `left_door`/`right_door` у `veh_brdm` и дверей/колёс других машин, где в `[damage_items]` стоит `0`. Двери без физического сустава с положительным здоровьем (например, `back_bamper` по умолчанию) по-прежнему защищены проверкой в `SDoor::ClosedToOpening()`.
+- Проверка: прямой `hit` по `left_door` `veh_brdm` (`power = 10`, `strike`) — дверь не ломается; в логе до исправления `DamageLevel` давал `ratio=-nan(ind)`, после — деталь пропускает урон.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 45: двери без физического сустава неуязвимы
+
+- `CCar::DoorHit()` больше не вызывает `SDoor::Hit()` для двери с `joint == nullptr`. Такая дверь не может открыться или визуально сломаться, поэтому урон ей бессмысленен и лишь раньше приводил к `SDoor::Break()` и падению на null joint.
+- `SDoor::ApplyDamage()` также игнорирует уровни урона при `joint == nullptr` — это закрывает путь через `CDamagableItem::HitEffect()` для старых сейвов и любых косвенных вызовов.
+- `SDoor::RestoreNetState()` для двери без сустава принудительно ставит `state = closed`: старое сохранение с записанным `broken`/`opened` не оставит такую дверь в некорректном состоянии.
+- Теперь `[damage_items]` для дверей без сустава фактически не важен: они не ломаются независимо от значения. Для дверей с суставом настройка работает как раньше.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 46: возврат кабины и устойчивость `return_force`
+
+- Причина краха Kamaz в Debug: `CPHJoint::GetAxisAngleRate()` для `full_control` вызывает ODE `dJointGetAMotorAngleRate()`, которая не реализована и завершает процесс (`0xC0000409`). Теперь скорость угла для `hinge`/`full_control` считается конечной разностью нормализованного угла за физический шаг, без ODE rate API.
+- Причина «кабина не возвращается»: знак момента был перевёрнут относительно соглашения ODE. Углы `dJointGetHingeAngle()` и AMotor Euler измеряются противоположно повороту второго элемента, поэтому `-angle * return_force` работал как антипружина: уводил кабину от bind-позы, а при `return_force = 1000000` раскачивал всю машину.
+- `UpdateReturnBones(step)` теперь применяет `+angle * return_force + rate * return_damping` вдоль каждой оси, суммирует моменты по элементу и каждый шаг пишет момент (включая нулевой), чтобы не оставлять старый момент в ODE.
+- `return_damping` можно задать в секции кости; по умолчанию берётся `2 * sqrt(return_force * 56)` — критическое демпфирование для типичной кабины. Это предотвращает численную раскачку при больших `return_force`.
+- Проверка: `veh_kamaz`, `[kabina] return_force = 1000000`; после импульса `apply_force(0, 0, 500000)` угол кабины отклонялся до ~0.036 рад и возвращался к ~0.0056 рад менее чем за секунду. Угловая скорость машины не превышала ~0.09 рад/с, вращения не было, краха нет. Остаточные ~0.0056 рад — равновесие пружины с весом кабины.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 47: звук двигателя и выхлоп после загрузки
+
+- Причина: `RestoreEngineAndLights()` вызывается в конце `net_Spawn()`, когда при загрузке уровня звуковая и партикловая подсистемы ещё могут быть приостановлены. Вызовы `play()`/`Play()` молча отбрасывались, а `UpdateDrive()` для `snd_idle` только регулировал громкость и не запускал цикл.
+- `SCarSound::UpdateDrive()` теперь при `b_engine_on` проверяет и запускает зацикленные звуки (`snd_engine`, `snd_turbo`, `snd_idle`, `snd_engine_decel`, `snd_engine_heavy`, `snd_blower`). Это самовосстанавливающийся путь: цикл запустится на первом физическом обновлении после того, как звук станет доступен.
+- `PlayExhausts()` больше не вызывается из `net_Spawn()`. `RestoreEngineAndLights()` выставляет `m_restore_engine_effects_attempts = 30`, а `CCar::UpdateCL()` в первых кадрах после загрузки запускает выхлоп, когда частицы ещё не играют.
+- Проверка: autotest с реальным сохранением и загрузкой `veh_kamaz` при включённом двигателе. В логе на `net_Spawn`: `idle_play=0` (вызовы при загрузке отброшены); на первом игровом кадре: `idle_play=1`, `engine_play=1`, `idle_vol=1.0`, `exhaust=1/1`.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 48: мутанты атакуют машину, а не толкают её
+
+- Причина «мутанты бегают и толкают машину»: `CMonsterEnemyManager::GetTrackingVertex()` возвращал вершину актора под машиной, поэтому `CStateMonsterAttackRun` и групповые attack-run состояния вели мутанта в корпус, а `enemy_inaccessible()` считал цель недоступной.
+- `GetTrackingVertex()` для врага в машине теперь кэширует вершину level graph, смещённую на 1 м наружу от ближайшей точки корпуса; `GetNavigationPosition()` для такого случая возвращает позицию этой вершины; `enemy_inaccessible()` не применяет проверку «точка далеко от вершины» к машине.
+- Для врага в машине отключены `Attack_On_Run` и `RunAttack`: обычные и групповые состояния атаки переключаются на `AttackRun` → `Melee`. `CMeleeChecker::can_start_melee()` доверяет дистанции до корпуса, а `CStateMonsterAttackMelee` не требует видимости актора через корпус.
+- Подавлен урон мутанту от контакта с character scraper: такие контакты приходят с инициатором-актором, поэтому `CPHMovementControl::UpdateCollisionDamage()` обнуляет контакт, если актор находится в машине. Контакт с самой машиной на скорости выше 5 км/ч по-прежнему может задавить мутанта.
+- В `CControlAnimationBase::check_hit()` добавлена защита от нулевого направления: при совпадении центров мутанта и цели луч не строится, вместо `normalize()` проверяется дистанция.
+- Проверка: autotest со спавном `veh_zaz968`, двух `m_dog_e` и `m_boar_e` при акторе в машине — собаки и кабан переходят в `eStateAttack_Melee`/`ACT_ATTACK`, 15 попаданий по машине за 20 с (до правок — 2–6), ни один мутант не потерял здоровье от контакта; `RESULT: PASS`, `errors=0`.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 49: проверка LA
+
+- В LA/Lua-AI (`mob_combat.script`, остальные `mob_*`, `bind_monster.script`, `se_monster.script`) нет веток для машины, `vehicle`, `holder` или `in_car`: система «мутант атакует машину» там не реализована.
+- В репозитории отсутствуют LA-скрипты `ph_car.script`, `bind_car.script` и `la_utils.script`; они только упоминаются в документации и перехватчиках. Текущая реализация — C++ в `base_monster`, `monster_enemy_manager`, `melee_checker`, `group_state_attack` и `PHMovementControl`.
+
+### Этап 50: состояние двигателя и фар для офлайн-машины
+
+- Раньше состояние двигателя и фар сохранялось только в клиентских данных машины. Если машина была офлайн в момент сохранения, игрового объекта не было, и после загрузки она появлялась с выключенным двигателем. Отсюда «иногда со звуком, иногда без».
+- `CSE_ALifeCar` теперь хранит `Engine`/`Light` в собственном `STATE_Serialize` (отдельный чанк `CSE_ALifeCar::runtime_state`) и инициализирует поля в конструкторе.
+- `CCar::SyncServerRuntimeState()` синхронизирует состояние с ALife-объектом: раз в секунду в `UpdateCL()`, при старте/остановке двигателя, при `net_Destroy()` и при сохранении. Так состояние попадает в серверный объект даже если машина уходит в офлайн.
+- В `CCar::net_Spawn()` клиентское состояние по-прежнему приоритетно. Если его нет (машина была офлайн), используется `co->Engine`/`co->Light`.
+- Проверка: autotest с сохранением/загрузкой `veh_zaz968` при включённом двигателе — перед сохранением `client engine=1 server engine=1`, после загрузки `restore engine=1 lights=1`, серверный объект снова `engine=1`. Debug-ассерты `CPHElement::Deactivate` при выгрузке уровня — известные, воспроизводятся и без нового состояния.
+- Проверки: Debug/Release/RelWithDebInfo (xrEngine, xrGame, xrRender_R4) собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 51: машина не чернеет внутри куста
+
+- Причина: `CROS_impl::calc_sun_value()` и `calc_sky_hemi_value()` трассируют лучи от центра объекта. Если машина стоит внутри куста, лучи упираются в статическую листву, `sun_value` и `hemi_value` становятся нулевыми, и динамическая модель машины рисуется чёрной (у неё нет статической lightmap).
+- В `IRenderable::renderable` добавлен флаг `pROS_IgnoreFoliage`; `CCar` включает его для себя.
+- Для таких объектов `CROS_impl` использует `RayQuery` с callback'ом, который пропускает статические материалы `materials\bush`, `materials\bush_sux`, `materials\leaves`, `materials\foliage` и останавливается на первом твёрдом попадании. Для остальных объектов сохранён быстрый `RayTest` с кэшем.
+- Проверки: Debug/Release/RelWithDebInfo (xrEngine, xrGame, xrRender_R4) собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`. Требуется ручная проверка: машина полностью внутри куста, день и ночь, с включёнными и выключенными фарами — модель не должна становиться полностью чёрной.
+
 ## Следующие шаги
 
 1. Гейт C: повторная ручная проверка камеры, посадки/высадки, дверей и багажника.
 2. UI, 3D-приборы, Lua, MP, save/load.
+
+### Этап 52: надёжный звук двигателя и анимация водителя после загрузки
+
+- Причина пропажи звука: `SCarSound::Init()` при спавне сбрасывает `eCarSound` в `sndOff`, а сохранённое состояние могло восстанавливаться до или после этого сброса. `RestoreEngineAndLights()` теперь всегда входит в `sndDrive`, даже если `b_engine_on` уже установлен; `CCar::UpdateCL()` применяет отложенное состояние из чанка, если оно пришло после `net_Spawn`; `SCarSound::Update()` при `b_engine_on` и `sndOff` сам вызывает `Drive()`. `Drive()` останавливает залипшие `snd_engine_start`/`snd_engine_stop`.
+- Причина поломки анимации: `OnChangeVisual()` пересоздаёт `m_vehicle_anims` и возвращает обычные bone callbacks, поэтому после загрузки (смена визуала или аутфита) актёр стоял в машине и смотрел вбок до первого поворота. Добавлен `CActor::ReapplyVehicleVisual()`: после `OnChangeVisual()` он снова ставит `VehicleHeadCallback`, проигрывает `steering_torso_idle`/`steering_legs_idle` (или текущий steering-цикл) и сбрасывает кэш анимаций. `g_SetAnimation()` не перебивает машину, пока актёр сидит в ней.
+- `on_requested_spawn()` больше не пишет мировой yaw машины в `r_torso.yaw`: в машине yaw торса относительный, мировой yaw хранится в `r_model_yaw`.
+- Проверка: autotest с реальным save/load `veh_zaz968` — после загрузки `restore engine=1`, `sound=sndDrive`, `idle_play=1`, `idle_vol=1.0`, `eng_play=1`; после принудительного `OnChangeVisual()` в машине `vehicle_head=1`, обычная анимация не перебивает steering idle. Debug `CPHElement::Deactivate isActive()` при выгрузке уровня — прежние assert'ы, не связанные с изменением.
+- Проверка: сборка Debug/Release/RelWithDebInfo (xrEngine, xrGame, xrRender_R4); общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.

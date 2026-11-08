@@ -242,7 +242,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						UpdateWheelieBoost		();
 	void						UpdateDriftBoost			();
 	void						UpdateEngineShake		();
-	void						UpdateReturnBones		();
+	void						UpdateReturnBones		(float step);
 	void						UpdateSteeringWheels		();
 	void						UpdateSteerAnimation		();
 	bool						UpdateWheelPhysics		();
@@ -311,6 +311,15 @@ public:
 	bool b_starting;
 // 	bool b_stalling;
 	bool b_breaks;
+
+	// Engine and headlight state are loaded from the client object chunk before
+	// the car finishes net_Spawn; keep them pending until the physics shell,
+	// sounds and lights are initialized.
+	bool m_saved_engine_on = false;
+	bool m_saved_lights_on = false;
+	bool m_has_saved_runtime_state = false;
+	u32 m_restore_engine_effects_attempts = 0;
+	u32 m_last_server_state_sync = 0;
 
 	u32	 m_dwStartTime;
 	u32	 m_dwAttachTime;
@@ -406,11 +415,21 @@ public:
 		CPhysicsJoint* joint;
 		CPhysicsElement* element;
 		float force;
-		SReturnBone(CPhysicsJoint* joint_ = nullptr, CPhysicsElement* element_ = nullptr, float force_ = 0.f)
+		float damping;
+		// ODE has no angle rate for full_control AMotors, so the rate is
+		// differentiated from the previous step.
+		float previous_angle[3];
+		bool has_previous_angle;
+		SReturnBone(CPhysicsJoint* joint_ = nullptr, CPhysicsElement* element_ = nullptr, float force_ = 0.f, float damping_ = 0.f)
 		{
 			joint = joint_;
 			element = element_;
 			force = force_;
+			damping = damping_;
+			previous_angle[0] = 0.f;
+			previous_angle[1] = 0.f;
+			previous_angle[2] = 0.f;
+			has_previous_angle = false;
 		}
 	};
 	xr_vector<SReturnBone> return_bones;
@@ -1215,6 +1234,8 @@ private:
 	void				 Drive								()	;
 	void				 Starter							()	;
 	void				 StartEngine						()	;
+	void				 RestoreEngineAndLights				(bool EngineOn, bool LightsOn);
+	void				 SyncServerRuntimeState				();
 	float				 EngineStartSuccessChance			() const;
 	void				 Stall								()	;
 	void				 Clutch								()	;
