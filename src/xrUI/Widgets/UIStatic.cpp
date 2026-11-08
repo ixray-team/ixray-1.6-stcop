@@ -270,9 +270,9 @@ bool CUIStatic::InitTextureEx(const char* texture, const char* shader, bool fata
     return result;
 }
 
-void CUIStatic::SetBackgroundColor(int R, int G, int B, int A)
+void CUIStatic::SetBackgroundColorARGB(int A, int R, int G, int B)
 {
-	BackgroundColor = color_rgba(std::clamp(R, 0, 255), std::clamp(G, 0, 255), std::clamp(B, 0, 255), std::clamp(A, 0, 255));
+	BackgroundColor = color_argb(std::clamp(A, 0, 255), std::clamp(R, 0, 255), std::clamp(G, 0, 255), std::clamp(B, 0, 255));
 }
 
 void CUIStatic::DrawBackground()
