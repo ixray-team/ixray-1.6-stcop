@@ -37,7 +37,7 @@ bool flying_solid_hit(const collide::rq_result& hit, LPVOID data)
     // retain collision so occupied perches are not treated as free.
     if (!hit.IsStatic())
     {
-        const auto* flyer = smart_cast<CFlyingMonster*>(hit.GetDynamic());
+        const auto* flyer = smart_cast<CFlyingMonster*>(const_cast<CObject*>(hit.GetDynamic()));
         if (flyer && flyer->g_Alive() && !flyer->flight().NeedsGroundCollision(flyer->Position()))
         {
 	        return true;
