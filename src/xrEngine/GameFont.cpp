@@ -446,8 +446,8 @@ void CGameFont::MasterOut(
 
 	rs.x = (bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX);
 	rs.y = (bUseCoords ? (bScaleCoords ? (DI2PY(_y)) : _y) : fCurrentY);
-	rs.c = dwCurrentColor;
-	rs.gradientColor = dwGradientColor;
+	rs.c = UIRender ? UIRender->ApplyOpacity(dwCurrentColor) : dwCurrentColor;
+	rs.gradientColor = UIRender ? UIRender->ApplyOpacity(dwGradientColor) : dwGradientColor;
 	rs.height = fCurrentHeight;
 	rs.align = eCurrentAlignment;
 	rs.gradient = fGradientEnabled;
@@ -478,7 +478,7 @@ void CGameFont::MasterOut(
 			};
 
 			String outline = rs;
-			outline.c = dwOutlineColor;
+			outline.c = UIRender ? UIRender->ApplyOpacity(dwOutlineColor) : dwOutlineColor;
 			outline.gradient = false;
 
 			for (const auto& [dx, dy] : outline_offsets)

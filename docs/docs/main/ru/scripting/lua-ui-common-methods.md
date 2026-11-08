@@ -13,6 +13,8 @@
 * `SetSmothRotate`
 * `EnableHeading`
 * `SetUseAspectRatioCorrection`
+* `SetOpacity`
+* `SetTreeOpacity`
 
 #### Описание методов:
 
@@ -39,6 +41,28 @@
 control:SetUseAspectRatioCorrection(enabled)
 args:
   enabled (boolean) - true включает коррекцию; false отключает собственный флаг; по умолчанию false
+retval: (void)
+```
+
+### Прозрачность
+
+Доступны у `CUIWindow` и его наследников.
+Личный множитель действует только на оформление выбранного контрола.
+Множитель дерева действует также на всех потомков.
+Оба хранятся отдельно, по умолчанию равны `1` и не изменяют альфу в цветах.
+Множители вложенных веток перемножаются, сохраняя личные настройки контролов.
+
+```lua
+--// Задать личный множитель непрозрачности.
+control:SetOpacity(value)
+args:
+  value (number) - множитель от 0 до 1; по умолчанию 1
+retval: (void)
+
+--// Задать множитель непрозрачности текущего контрола и всех потомков.
+control:SetTreeOpacity(value)
+args:
+  value (number) - множитель от 0 до 1; по умолчанию 1
 retval: (void)
 ```
 

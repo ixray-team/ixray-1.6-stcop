@@ -146,6 +146,8 @@ void CUIWindow::script_register(lua_State *L)
 		.def("AddSelfCallback", SelfCallbackWithObject)
 		.def("SetTreeHeading", &CUIWindow::SetTreeHeading)
 		.def("SetSmothRotate", &CUIWindow::SetSmothRotate)
+		.def("SetOpacity", &CUIWindow::SetOpacity)
+		.def("SetTreeOpacity", &CUIWindow::SetTreeOpacity)
 		.def("EnableHeading", &CUIWindow::EnableHeading)
 		.def("SetUseAspectRatioCorrection", &CUIWindow::SetUseAspectRatioCorrection)
 		.def("ToFront", &CUIWindow::ToFront)
@@ -229,13 +231,15 @@ void CUIWindow::script_register(lua_State *L)
 		.def(							constructor<>())
 		.def("SetWidth",				&CUIFrameWindow::SetWidth)
 		.def("SetHeight",				&CUIFrameWindow::SetHeight)
-		.def("SetColor",				&CUIFrameWindow::SetTextureColor),
+		.def("SetColor",				&CUIFrameWindow::SetTextureColor)
+		.def("SetBackgroundOpacity", &CUIFrameWindow::SetBackgroundOpacity),
 
 		class_<CUIFrameLineWnd, CUIWindow>("CUIFrameLineWnd")
 		.def(							constructor<>())
 		.def("SetWidth",				&CUIFrameLineWnd::SetWidth)
 		.def("SetHeight",				&CUIFrameLineWnd::SetHeight)
-		.def("SetColor",				&CUIFrameLineWnd::SetTextureColor),
+		.def("SetColor",				&CUIFrameLineWnd::SetTextureColor)
+		.def("SetBackgroundOpacity", &CUIFrameLineWnd::SetBackgroundOpacity),
 
 		class_<CUIStackPanel, CUIWindow>("CUIStackPanel")
 		.def(							constructor<>())

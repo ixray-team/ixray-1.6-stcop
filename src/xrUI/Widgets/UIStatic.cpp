@@ -277,8 +277,30 @@ bool CUIStatic::InitTextureEx(const char* texture, const char* shader, bool fata
     return result;
 }
 
+void CUIStatic::SetBackgroundOpacity(float Value)
+{
+	if (m_bTextureEnable && GetShader() && GetShader()->inited())
+	{
+		SetTextureColor(UIColors::WithAlpha(GetTextureColor(), Value));
+	}
+	else if (BackgroundColorAssigned)
+	{
+		BackgroundColor = UIColors::WithAlpha(BackgroundColor, Value);
+	}
+}
+
+void CUIStatic::SetBorderOpacity(float Value)
+{
+	if (!BorderEnabled)
+	{
+		return;
+	}
+	BorderColor = UIColors::WithAlpha(BorderColor, Value);
+}
+
 void CUIStatic::SetBackgroundColorARGB(int A, int R, int G, int B)
 {
+	BackgroundColorAssigned = true;
 	BackgroundColor = color_argb(std::clamp(A, 0, 255), std::clamp(R, 0, 255), std::clamp(G, 0, 255), std::clamp(B, 0, 255));
 }
 
@@ -670,7 +692,7 @@ UIRoundedRect CUIStatic::GetBorderRect()
 	const float Limit = std::min(Rect.Width, Rect.Height) * 0.5f;
 	Rect.Radius = std::min(BorderRadius, Limit);
 	Rect.Thickness = std::min(BorderThickness, Limit);
-	Rect.Color = BorderColor;
+	Rect.Color = UIColors::ScaleAlpha(BorderColor, UIRender->VertexOpacity);
 	Rect.ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
 	const float ScaleX = Rect.ScreenSpace ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
 	const float ScaleY = Rect.ScreenSpace ? UI().ClientToScreenScaledY(1.0f) : 1.0f;

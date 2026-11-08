@@ -533,15 +533,57 @@ UITransform2D CUIWindow::GetTreeTransform()
 	return BuildTreeTransform(Parent);
 }
 
+void CUIWindow::SetOpacity(float Value)
+{
+	OpacityValue = std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f;
+}
+
+void CUIWindow::SetTreeOpacity(float Value)
+{
+	TreeOpacityValue = std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f;
+}
+
+float CUIWindow::GetTreeOpacityProduct() const
+{
+	float Result = 1.0f;
+	for (const CUIWindow* Window = this; Window; Window = Window->GetParent())
+	{
+		Result *= Window->TreeOpacityValue;
+	}
+	return Result;
+}
+
+float CUIWindow::GetRenderComponentOpacity() const
+{
+	const float TreeOpacity = GetTreeOpacityProduct();
+	return TreeOpacity > 0.0f ? UIRender->VertexOpacity / TreeOpacity : 0.0f;
+}
+
 void CUIWindow::DrawWithTransform()
 {
+	DrawWithTransform(1.0f);
+}
+
+void CUIWindow::DrawWithTransform(float ComponentOpacity)
+{
+	const float TreeOpacity = GetTreeOpacityProduct();
+	if (TreeOpacity <= 0.0f)
+	{
+		return;
+	}
 	struct RestoreTransform
 	{
 		IUIRender* Render;
 		UITransform2D Previous;
-		~RestoreTransform() { Render->Transform2D = Previous; }
-	} Restore{UIRender, UIRender->Transform2D};
+		float PreviousOpacity;
+		~RestoreTransform()
+		{
+			Render->Transform2D = Previous;
+			Render->VertexOpacity = PreviousOpacity;
+		}
+	} Restore{UIRender, UIRender->Transform2D, UIRender->VertexOpacity};
 	UIRender->Transform2D = GetTreeTransform();
+	UIRender->VertexOpacity = OpacityValue * TreeOpacity * ComponentOpacity;
 	CUIStatic* Static = ui_cast_static();
 	const bool NeedsLayer = Static && Static->BorderEnabled;
 	if (NeedsLayer)
@@ -562,7 +604,6 @@ void CUIWindow::DrawWithTransform()
 	} Scope{NeedsLayer && UIRender->BeginRoundedRect(Static->GetBorderRect())};
 	Draw();
 }
-
 
 bool CUIWindow::HitTestUntransformed(const Fvector2& Position)
 {

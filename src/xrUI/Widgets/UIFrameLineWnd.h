@@ -8,6 +8,7 @@ class UI_API CUIFrameLineWnd:
 {
 	typedef CUIWindow inherited;
 public:
+	void SetBackgroundOpacity(float Value);
 	enum RectSegment
 	{
 		flFirst = 0, // Left or top

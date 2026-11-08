@@ -104,7 +104,7 @@ template <class T>
 void CUIInteractiveBackground<T>::Draw()
 {
 	if (m_states[S_Current])
-        m_states[S_Current]->Draw();
+        m_states[S_Current]->DrawWithTransform(GetRenderComponentOpacity());
 }
 
 template <class T>

@@ -232,7 +232,7 @@ void CUI3dStatic::Draw()
 		::Render->add_Visual(pCurrentVisual, true);
 
 		Fcolor static_color { };
-		static_color.set(GetTextureColor());
+		static_color.set(UIRender->ApplyOpacity(GetTextureColor()));
 
 		::Render->set_UI(false);
 		::Render->RenderUI(&static_color);

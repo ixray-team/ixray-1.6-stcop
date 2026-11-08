@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIFrameLineWnd.h"
 #include "UITextureMaster.h"
+#include "../../Include/xrRender/UIShader.h"
 
 CUIFrameLineWnd::CUIFrameLineWnd()
 	: bHorizontal(true),
@@ -238,4 +239,13 @@ bool  CUIFrameLineWnd::inc_pos(Frect& rect, int counter, int i, Fvector2& LTp, F
 	if(bHorizontal) rect.lt.x = RBp.x;
 	else			rect.lt.y = RBp.y;
 	return			true;
+}
+
+void CUIFrameLineWnd::SetBackgroundOpacity(float Value)
+{
+	if (!m_bTextureVisible || !m_shader->inited())
+	{
+		return;
+	}
+	m_texture_color = UIColors::WithAlpha(m_texture_color, Value);
 }

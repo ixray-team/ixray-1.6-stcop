@@ -184,7 +184,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 							icon.rect = rect;
 							icon.pos = {X, Y};
 							icon.sz = owner.sizeOfImage(rect);
-							icon.alpha = color_get_A(owner.dwCurrentColor);
+							icon.alpha = color_get_A(str.c);
 							icon.Transform = str.Transform;
 
 							IconsToRender.push_back(icon);
@@ -215,7 +215,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 							icon.rect = rect;
 							icon.pos = {X, Y};
 							icon.sz = owner.sizeOfImage(rect);
-							icon.alpha = color_get_A(owner.dwCurrentColor);
+							icon.alpha = color_get_A(str.c);
 							icon.Transform = str.Transform;
 
 							IconsToRender.push_back(icon);

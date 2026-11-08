@@ -157,10 +157,10 @@ end
 control:AddSelfCallback(ui_events.MOUSE_LEFT_CLICK, object.on_click, object)
 ```
 
+
 #### Проверка наведения
 
 ```lua
-local visible = control:IsShown()
 local hovered = control:IsCursorOverWindow(true)
 ```
 

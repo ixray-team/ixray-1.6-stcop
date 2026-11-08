@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIFrameWindow.h"
 #include "UITextureMaster.h"
+#include "../../Include/xrRender/UIShader.h"
 #include "UIStatic.h"
 
 void draw_rect(Fvector2 LTp, Fvector2 RBp, Fvector2 LTt, Fvector2 RBt, u32 clr, Fvector2 const& ts);
@@ -333,3 +334,12 @@ void CUIFrameWindow::draw_tile_rect(Frect rect, int i, Fvector2 const& ts)
 	}
 }
 
+
+void CUIFrameWindow::SetBackgroundOpacity(float Value)
+{
+	if (!m_bTextureVisible || !m_shader->inited())
+	{
+		return;
+	}
+	m_texture_color = UIColors::WithAlpha(m_texture_color, Value);
+}

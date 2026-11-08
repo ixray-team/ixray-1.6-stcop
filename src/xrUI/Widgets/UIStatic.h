@@ -41,6 +41,7 @@ private:
 	CUIVectorBinding _svgBinding;
 	bool MouseEventsEnabled = false;
 	u32 BackgroundColor = 0;
+	bool BackgroundColorAssigned = false;
 	bool BorderEnabled = false;
 	float BorderThickness = 0.0f, BorderRadius = 0.0f;
 	u32 BorderColor = 0;
@@ -68,6 +69,8 @@ public:
 	virtual void SetTextST(const char* txt) { TextItemControl()->SetTextST(txt); }
 	void SetBackgroundColorARGB(int A, int R, int G, int B);
 	void SetBorder(float Thickness, float Radius, u32 Color);
+	virtual void SetBackgroundOpacity(float Value);
+	void SetBorderOpacity(float Value);
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 	void InitSVG(CUIXml& xml_doc, const char* path, int index) override;
 	bool isSVGPresented(void) const override;

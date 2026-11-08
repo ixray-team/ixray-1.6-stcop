@@ -7,6 +7,7 @@ class UI_API CUIFrameWindow: public CUIWindow,
 {
 	typedef CUIWindow inherited;
 public:
+	void SetBackgroundOpacity(float Value);
 					CUIFrameWindow				();
 
 	virtual void	SetTextureRect				(const Frect& r)	{};

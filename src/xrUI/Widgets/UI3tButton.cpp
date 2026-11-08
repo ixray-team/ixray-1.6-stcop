@@ -229,15 +229,15 @@ void CUI3tButton::DrawTexture()
 		if ( m_background )				
 		{
 			m_background->SetStretchTexture(true);
-			m_background->DrawWithTransform();
+			m_background->DrawWithTransform(GetRenderComponentOpacity());
 		}
 		else if ( m_back_frameline )	
 		{	
-			m_back_frameline->DrawWithTransform();
+			m_back_frameline->DrawWithTransform(GetRenderComponentOpacity());
 		}
 		else if (m_back_framewindow)
 		{
-			m_back_framewindow->DrawWithTransform();
+			m_back_framewindow->DrawWithTransform(GetRenderComponentOpacity());
 		}
 	}
 }
@@ -333,4 +333,32 @@ void CUI3tButton::SetBtnStaticClrH(u32 clr)
 void CUI3tButton::SetHighlighted(bool val)
 {
 	m_bForceHighlight = val;
+}void CUI3tButton::SetBackgroundOpacity(float Value)
+{
+	if (!m_bTextureEnable)
+	{
+		inherited::SetBackgroundOpacity(Value);
+		return;
+	}
+	auto SetStates = [Value](auto* Background)
+	{
+		if (!Background)
+		{
+			return;
+		}
+		for (const IBState State : {S_Enabled, S_Disabled, S_Highlighted, S_Touched})
+		{
+			if (auto* Control = Background->Get(State))
+			{
+				Control->SetBackgroundOpacity(Value);
+			}
+		}
+	};
+	SetStates(m_background);
+	SetStates(m_back_frameline);
+	SetStates(m_back_framewindow);
+	if (!m_background && !m_back_frameline && !m_back_framewindow)
+	{
+		inherited::SetBackgroundOpacity(Value);
+	}
 }

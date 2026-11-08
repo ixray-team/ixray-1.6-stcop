@@ -1,4 +1,4 @@
-# UI без XML и объявления Lua-класса
+# UI без XML и объявления класса
 
 > [!IMPORTANT]
 > **Статус**: Поддерживается<br>
@@ -34,14 +34,14 @@
 
 ### Создание скриптового окна
 
-Создаёт `CUIScriptWnd` без Lua-класса. Для отображения вызовите
+Создаёт `CUIScriptWnd` без класса. Для отображения вызовите
 `ShowDialog(false)` или `Show(true)` и `AddDialogToRender`.
 Сохраняйте ссылку на окно, пока оно используется.
 
 ```lua
---// Создать скриптовое окно без объявления Lua-класса. Само в отрисовку не добавляется.
+--// Создать скриптовое окно без объявления класса. Само в отрисовку не добавляется.
 CreateScriptWindow()
-retval: (CUIScriptWnd) - новое окно; сохраняйте Lua-ссылку, пока оно используется
+retval: (CUIScriptWnd) - новое окно; сохраняйте ссылку, пока оно используется
 ```
 
 ### Получение держателя UI
@@ -66,7 +66,7 @@ retval: (CUIDialogWnd | nil) - текущий получатель ввода; n
 Перед освобождением ссылки снимите самостоятельный объект с отрисовки.
 
 При выгрузке актора или HUD окна снимаются с отрисовки, скрываются и отключаются.
-Сохранённые Lua-ссылки остаются действительными, в том числе при `keep_lua`.
+Сохранённые ссылки остаются действительными, в том числе при `keep_lua`.
 Для повторного отображения добавьте окно в новый HUD.
 
 ```lua
@@ -79,7 +79,7 @@ retval: (void)
 --// Снять объект с отрисовки и обновления.
 holder:RemoveDialogToRender(control)
 args:
-  control (CUIWindow) - ранее добавленный объект; вызовите до освобождения Lua-ссылки
+  control (CUIWindow) - ранее добавленный объект; вызовите до освобождения ссылки
 retval: (void)
 
 --// Открыть интерактивный диалог.
@@ -114,7 +114,7 @@ retval: (CUIStatic | nil) - прикреплённый статик с сист�
 
 --// Создать самостоятельный статик без XML и без родителя.
 CUIStatic()
-retval: (CUIStatic) - новый статик; сохраняйте Lua-ссылку, пока он используется
+retval: (CUIStatic) - новый статик; сохраняйте ссылку, пока он используется
 
 --// Задать автоматическое удаление контрола родителем.
 control:SetAutoDelete(enabled)
@@ -226,67 +226,28 @@ retval: (void)
 
 #### Окно без класса с контролами без XML
 
-Первый контрол меняет текст при одиночном и двойном клике.
-`Close` скрывает окно. `close_window()` закрывает окно и освобождает ссылку.
-
 ```lua
-function close_window()
-    if not ui_state then
-        return
-    end
+window = CreateScriptWindow()
+window:SetWndSize(vector2():set(1024, 768))
 
-    ui_state.window:HideDialog()
-    ui_state = nil
-end
+local xml = CScriptXmlInit()
+local control = xml:InitNoXmlStatic("control", 30, 30, 300, 40, window)
+control:SetText("Text")
 
-function show_window()
-    close_window()
-    assert(GetCurrentDialogHolder(), "Интерфейс недоступен")
-
-    local window = CreateScriptWindow()
-    window:SetWndPos(vector2():set(0, 0))
-    window:SetWndSize(vector2():set(1024, 768))
-    window:SetStopAnyMove(false)
-
-    local xml = CScriptXmlInit()
-    local control = xml:InitNoXmlStatic("control", 30, 30, 350, 45, window)
-    control:SetFont(GetFontLetterica16Russian())
-    control:SetText("Click")
-    control:SetTextColor(GetARGB(255, 255, 255, 255))
-
-    control:AddSelfCallback(ui_events.MOUSE_LEFT_CLICK, function(control)
-        control:SetText("Left click")
-    end)
-
-    control:AddSelfCallback(ui_events.MOUSE_DOUBLE_CLICK, function(control)
-        control:SetText("Double click")
-    end)
-
-    local close_control = xml:InitNoXmlStatic("close", 30, 100, 350, 45, window)
-    close_control:SetFont(GetFontLetterica16Russian())
-    close_control:SetText("Close")
-    close_control:SetTextColor(GetARGB(255, 255, 255, 255))
-    close_control:AddSelfCallback(ui_events.MOUSE_LEFT_CLICK, function(control)
-        control:GetParent():HideDialog()
-    end)
-
-    ui_state = { window = window }
-    window:ShowDialog(false)
-end
-
-show_window()
+window:ShowDialog(false)
 ```
 
 #### Закрытие и освобождение
 
 ```lua
-close_window()
+window:HideDialog()
+window = nil
 ```
 
 #### Обновление окна
 
 ```lua
-ui_state.window:AddSelfCallback(ui_events.WINDOW_UPDATE, function(window)
+window:AddSelfCallback(ui_events.WINDOW_UPDATE, function(window)
     -- Обновление окна.
 end)
 ```

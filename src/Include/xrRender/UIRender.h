@@ -3,12 +3,36 @@
 #pragma once
 #include "UITransform.h"
 
+namespace UIColors
+{
+inline u32 ScaleAlpha(u32 Color, float Factor)
+{
+	if (Factor >= 1.0f)
+	{
+		return Color;
+	}
+	const u32 Alpha = static_cast<u32>(((Color >> 24) & 255) * Factor + 0.5f);
+	return (Color & 0x00ffffff) | (Alpha << 24);
+}
+
+inline u32 WithAlpha(u32 Color, float Value)
+{
+	const float Factor = std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f;
+	return ScaleAlpha(Color | 0xff000000, Factor);
+}
+} // namespace UIColors
+
 class IUIShader;
 
 class IUIRender
 {
 public:
 	UITransform2D Transform2D;
+	float VertexOpacity = 1.0f;
+	u32 ApplyOpacity(u32 Color) const
+	{
+		return UIColors::ScaleAlpha(Color, VertexOpacity);
+	}
 
 	enum	ePrimitiveType
 	{

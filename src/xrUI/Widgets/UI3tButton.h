@@ -13,6 +13,7 @@ class UI_API CUI3tButton :
 public:
 					CUI3tButton					();
 	virtual			~CUI3tButton				();
+	void SetBackgroundOpacity(float Value) override;
 	// appearance
 
 	virtual	void 	InitButton					(Fvector2 pos, Fvector2 size);

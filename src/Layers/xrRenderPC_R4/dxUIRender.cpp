@@ -116,13 +116,14 @@ void** dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePoint
 
 void dxUIRender::FlushPrimitive()
 {
-	if (!Transform2D.IsIdentity())
+	if (!Transform2D.IsIdentity() || VertexOpacity < 1.0f)
 	{
 		auto TransformVertices = [this](auto* Begin, auto* End)
 		{
 			for (auto* Vertex = Begin; Vertex != End; ++Vertex)
 			{
 				Transform2D.Apply(Vertex->p.x, Vertex->p.y);
+				Vertex->color = ApplyOpacity(Vertex->color);
 			}
 		};
 		switch (m_PointType)

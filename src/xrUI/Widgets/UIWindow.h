@@ -47,6 +47,9 @@ private:
 	struct SelfCallbackState;
 	xr_shared_ptr<SelfCallbackState> SelfCallbacks;
 	bool DispatchSelfCallbacks(s16 Event);
+	float OpacityValue = 1.0f;
+	float TreeOpacityValue = 1.0f;
+	float GetTreeOpacityProduct() const;
 	float TreeHeading = 0.0f;
 	float TargetTreeHeading = 0.0f;
 	double TreeHeadingProgress = 0.0;
@@ -73,6 +76,8 @@ public:
 	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler, const luabind::object& Object);
 	bool SendMessageToTarget(s16 Event, void* Data = nullptr);
 	void DetachFromDialogHolders();
+	void SetOpacity(float Value);
+	void SetTreeOpacity(float Value);
 	bool ToFront();
 	bool ToBack();
 	void SetTreeHeading(float Angle, const Fvector2& Pivot, const Fvector2& Offset);
@@ -85,6 +90,7 @@ public:
 	bool HitTest(const Fvector2& Position);
 	bool IsInsideRoundedClips(const Fvector2& Position);
 	void DrawWithTransform();
+	void DrawWithTransform(float ComponentOpacity);
 	bool DispatchMouseAction(float X, float Y, EUIMessages Action);
 				CUIWindow						();
 	virtual		~CUIWindow						();
@@ -250,6 +256,7 @@ public:
 	CExpression             m_expression;
 	xrCriticalSection csUi;
 protected:
+	float GetRenderComponentOpacity() const;
 	bool ProcessMouseAction(float X, float Y, EUIMessages& MouseAction);
 	virtual bool HitTestUntransformed(const Fvector2& Position);
 	Fvector2 ToUntransformedPoint(const Fvector2& Position);
