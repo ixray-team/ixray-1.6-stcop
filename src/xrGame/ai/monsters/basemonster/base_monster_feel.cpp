@@ -445,6 +445,23 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		CEntity		*pEntityNC	= const_cast<CEntity*>(pEntity);
 		VERIFY		(pEntityNC);
 
+		// While the actor is driving, the monster attacks the car instead of
+		// reaching through its body. The car handles the hit as a normal
+		// physical strike, and the actor takes no damage.
+		if (CActor* Actor = pEntityNC->cast_actor())
+		{
+			const bool bPhysicalHit =
+				hit_type == ALife::eHitTypeWound ||
+				hit_type == ALife::eHitTypeStrike ||
+				hit_type == ALife::eHitTypePhysicStrike;
+
+			if (bPhysicalHit && Actor->IsInCar() && Actor->IsMutantBiteBlocked())
+			{
+				Actor->HitCar(this, fDamage, impulse, hit_dir, hit_type);
+				return;
+			}
+		}
+
 		if (pEntityNC == Actor() && hit_type == ALife::eHitTypeWound && Actor()->IsMutantBiteBlocked())
 			return;
 
@@ -782,6 +799,8 @@ void CBaseMonster::SetAttackEffector()
 
 void CBaseMonster::Hit_Psy(CObject *object, float value)
 {
+	// Psychic damage is not stopped by the car body: the controller attacks
+	// the mind directly, so the actor takes it even while driving.
 	NET_Packet		P;
 	SHit			HS;
 	HS.GenHeader		(GE_HIT, object->ID());				//					//	u_EventGen		(P,GE_HIT, object->ID());				//
@@ -799,8 +818,11 @@ void CBaseMonster::Hit_Psy(CObject *object, float value)
 
 void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse)
 {
-	if (object == Actor() && Actor()->IsMutantBiteBlocked())
+	if (object == Actor() && Actor()->IsInCar() && Actor()->IsMutantBiteBlocked())
+	{
+		Actor()->HitCar(this, value, impulse, dir, ALife::eHitTypeWound);
 		return;
+	}
 
 	NET_Packet	P;
 	SHit		HS;

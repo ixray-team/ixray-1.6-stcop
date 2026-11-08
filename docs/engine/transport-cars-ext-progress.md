@@ -529,6 +529,34 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - В `veh_kamaz_u_05.ltx` в `[kabina]` добавлен пример `return_force = 10000`.
 - Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest, stage 3 и спавн `veh_kamaz` — `RESULT: PASS`, `errors=0`.
 
+### Этап 39: мутанты атакуют машину, а не игрока в ней
+
+- Пока игрок в машине, `CMonsterEnemyManager::GetTrackingPosition()` и `get_enemy_position()` возвращают ближайшую точку на bounding box машины. Мутанты идут к корпусу, а не к скрытой позиции игрока внутри салона.
+- `CMeleeChecker::distance_to_enemy()` для такого случая считает дистанцию до корпуса машины, поэтому ближняя атака начинается снаружи, до физического контакта.
+- `CControlAnimationBase::check_hit()` использует точку на корпусе для проверки дистанции и FOV, а трассировка луча принимает попадание в объект машины.
+- Удар ближнего боя перенаправляется в машину через `CActor::HitCar()` и `CCar::HitFrom()`, если `allow_mutant_bite_in_car = false` (по умолчанию). Если параметр включён, укус по игроку сохраняется. Перенаправление добавлено в `CBaseMonster::HitEntity()`, `Hit_Wound()`, атаку крыс, `CController::HitEntity()` и специальный удар псевдогиганта. Перенаправляются только физические типы удара (`wound`, `strike`, `physic_strike`); психический урон в машине не блокируется.
+- Психическая атака контроллера проходит через корпус машины: `Hit_Psy` больше не возвращается сразу, если игрок за рулём. Это касается прямого удара `control_hit()` (30 ед.) и урона трубы `m_tube_damage` в `death_glide_end()`.
+- Столкновение мутанта с машиной, за рулём которой сидит игрок, больше не наносит мутанту урон, если машина движется медленнее 5 км/ч. Быстрая машина по-прежнему может задавить мутанта.
+- Проверка: autotest со спавном `veh_zaz968` и `m_dog_e` рядом с игроком в машине — собака атаковала машину (`power=0.15`), контакта с корпусом не было, `RESULT: PASS`, `errors=0`.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 40: пси-атака контроллера в машине
+
+- `CBaseMonster::Hit_Psy()` больше не блокируется при `IsInCar()`. Пси-урон контроллера проходит через машину и попадает в актёра, как и на открытом воздухе.
+- `CBaseMonster::HitEntity()` и `CController::HitEntity()` перенаправляют в машину только физические удары (`eHitTypeWound`, `eHitTypeStrike`, `eHitTypePhysicStrike`). Остальные типы, включая `eHitTypeTelepatic`, идут в актёра.
+- Камера «присасывания» `CControllerPsyHitCamEffector` теперь стартует из `CActor::Cameras().Position()`, а не из `cam_Active()->vPosition`. В машине `CActor::cam_Update()` выходит раньше, а `CCar::cam_Update()` обновляет камеру машины через `OwnerActor()->Cameras().UpdateFromCamera()`; поэтому `cam_Active()` содержит устаревшую позицию до посадки. Исправлено и в одиночной игре (`death_glide_start`), и в MP (`GE_CONTROLLER_PSY_FIRE`).
+- Импульс от пси-удара не применяется, пока игрок в машине: физический персонаж актёра уничтожается при `attach_Vehicle`, и импульс только накапливался бы в `vExternalImpulse` до выхода из машины.
+- Проверка: autotest со спавном `veh_zaz968` и `m_controller_e` рядом с игроком в машине — контроллер применил трубу (`tube_damage = 0.25`), `Hit_Psy` сработал при `in_car=1`, `cam_mgr` отличался от устаревшего `cam_active`, `RESULT: PASS`, `errors=0`.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
+### Этап 41: scraper больше не наносит машине урон о собственный корпус
+
+- `CPhysicsShell* characters_scraper_shell` — отдельная оболочка, которая следует за машиной и выталкивает персонажей и ragdoll'ы. Она не была зарегистрирована в collision-группе основного shell машины, поэтому ODE создавала контакты между scraper и корпусом. `DamageReceiverCollisionCallback` получал такие контакты с `source_id = INVALID_OBJECT_ID`, а `CPHCollisionDamageReceiver::CollisionHit` превращал их в `eHitTypeStrike`.
+- На скорости контактная энергия превышала `collision_hit_threshold` (у `veh_zaz968` — `0.20`), и машина получала повторный strike-урон каждый физический шаг: здоровье падало с `1.0` до `0.3` примерно за секунду, затем срабатывал `CDelayedActionFuse` и машина взрывалась.
+- В `CCar::net_Spawn()` после `CPHSkeleton::Spawn(e)` scraper регистрируется в той же `CLGroup`, что и `m_pPhysicsShell`. Если у основного shell группы нет (модель без `[collide] not_collide_parts`), группа создаётся через `RegisterGroup()` и в неё регистрируются обе оболочки. Персонажи и ragdoll'ы не являются group-объектами, поэтому scraper продолжает их выталкивать.
+- Проверка: autotest с разгоном `veh_zaz968` до ~50 км/ч. До исправления — 120 `CollisionHit` с `src=INVALID` и падение здоровья с `1.0` до `0.3`; после исправления — 0 попаданий и здоровье `1.0` на всём разгоне.
+- Проверки: Debug/Release/RelWithDebInfo собраны; общий autotest и stage 3 — `RESULT: PASS`, `errors=0`.
+
 ## Следующие шаги
 
 1. Гейт C: повторная ручная проверка камеры, посадки/высадки, дверей и багажника.

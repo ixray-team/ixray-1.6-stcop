@@ -28,21 +28,25 @@ void CAI_Rat::Exec_Action(float /**dt/**/)
 			if (memory().enemy().selected() && memory().enemy().selected()->g_Alive() && (dwTime - m_dwStartAttackTime > m_dwHitInterval)) {
 				m_bActionStarted = true;
 				m_dwStartAttackTime = dwTime;
-				Fvector tDirection;
 				Fvector position_in_bone_space;
 				position_in_bone_space.set(0.f,0.f,0.f);
-				tDirection.sub(memory().enemy().selected()->Position(),this->Position());
-				vfNormalizeSafe(tDirection);
 				
 				if (this->Local() && memory().enemy().selected()) {
 					CEntityAlive	*entity_alive = const_cast<CEntityAlive*>(memory().enemy().selected());
 					VERIFY			(entity_alive);
 
-					if (entity_alive == Actor() && Actor()->IsMutantBiteBlocked())
-						break;
+					CActor* Actor = entity_alive->cast_actor();
+					const bool InCar = Actor != nullptr && Actor->IsInCar();
+					const bool BlockedInCar = InCar && Actor->IsMutantBiteBlocked();
+					CObject* Car = BlockedInCar ? Actor->GetCarObject() : nullptr;
+
+					const Fvector Target = InCar ? Actor->GetCarNearestPoint(Position()) : entity_alive->Position();
+					Fvector tDirection;
+					tDirection.sub(Target, this->Position());
+					vfNormalizeSafe(tDirection);
 
 //					entity_alive->Hit(m_fHitPower,tDirection,this,0,position_in_bone_space,0);
-					auto			id_to = entity_alive->ID();
+					auto			id_to = Car != nullptr ? Car->ID() : entity_alive->ID();
 					auto			id_from = ID();
 					NET_Packet	l_P;
 					SHit		HS;
@@ -51,7 +55,7 @@ void CAI_Rat::Exec_Action(float /**dt/**/)
 					HS.weaponID			= (id_from);				//					l_P.w_u16	(id_from);
 					HS.dir				= (tDirection);				//					l_P.w_dir	(tDirection);
 					HS.power			= (m_fHitPower);			//					l_P.w_float	(m_fHitPower);
-					HS.boneID			= (0);						//					l_P.w_s16	(0);
+					HS.boneID			= (Car != nullptr ? BI_NONE : 0);	//					l_P.w_s16	(0);
 					HS.p_in_bone_space	= (position_in_bone_space);	//					l_P.w_vec3	(position_in_bone_space);
 					HS.impulse			= (0.f);					//					l_P.w_float	(0.f);
 					HS.hit_type			= (ALife::eHitTypeWound);	//					l_P.w_u16	((u16)ALife::eHitTypeWound);

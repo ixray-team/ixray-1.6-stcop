@@ -32,6 +32,7 @@
 #include "../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 
 class CCharacterPhysicsSupport;
+class CCar;
 class CMonsterCorpseCoverEvaluator;
 class CCoverEvaluatorFarFromEnemy;
 class CCoverEvaluatorCloseToEnemy;
@@ -199,6 +200,10 @@ public:
 															 bool				draw_hit_marks = true);
 
 	virtual	void			HitEntityInJump					(const CEntity *pEntity) {}
+
+	bool					IsEnemyInCar					();
+	CObject*				GetEnemyCarObject				();
+	Fvector					GetEnemyAttackPosition			();
 
 	virtual void			on_before_sell					(CInventoryItem *item) override;
 	virtual bool			unlimited_ammo					() override { return false; }

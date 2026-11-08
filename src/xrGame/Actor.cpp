@@ -515,9 +515,37 @@ void CActor::SetActorDirection(float dir)
 	this->cam_Active()->Set(dir, 0.0f, 0.0f);
 }
 
+CCar* CActor::GetCar() const
+{
+	return m_holder != nullptr ? m_holder->cast_car() : nullptr;
+}
+
+bool CActor::IsInCar() const
+{
+	return GetCar() != nullptr;
+}
+
+CObject* CActor::GetCarObject() const
+{
+	return GetCar();
+}
+
+Fvector CActor::GetCarNearestPoint(const Fvector& Point) const
+{
+	CCar* Car = GetCar();
+	return Car != nullptr ? Car->GetNearestPoint(Point) : Position();
+}
+
+void CActor::HitCar(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type) const
+{
+	CCar* Car = GetCar();
+	if (Car != nullptr)
+		Car->HitFrom(who, value, impulse, dir, hit_type);
+}
+
 bool CActor::IsMutantBiteBlocked() const
 {
-	CCar* car = m_holder != nullptr ? m_holder->cast_car() : nullptr;
+	CCar* car = GetCar();
 	return car != nullptr && !car->AllowMutantBiteInCar();
 }
 

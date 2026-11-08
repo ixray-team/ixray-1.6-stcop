@@ -9,6 +9,7 @@ class CMonsterEnemyManager {
 	const CEntityAlive	*enemy;
 	
 	Fvector				position;
+	Fvector				CarAwarePosition;
 	u32					vertex;
 	u32					time_last_seen;
 

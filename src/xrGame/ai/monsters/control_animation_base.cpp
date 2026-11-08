@@ -647,11 +647,13 @@ class ray_query_param {
 public:
 	const CBaseMonster* m_holder;
 	const CEntityAlive* m_enemy;
+	const CObject* m_car;
 	bool m_can_hit_enemy;
 
 	IC ray_query_param(const CBaseMonster* holder, const CEntityAlive* enemy) {
 		m_holder = holder;
 		m_enemy = enemy;
+		m_car = nullptr;
 		m_can_hit_enemy = false;
 	}
 };
@@ -666,6 +668,10 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 		if (monster == param->m_holder)
 		{
 			return true;
+		}
+		else if (param->m_car && result.O == param->m_car)
+		{
+			param->m_can_hit_enemy = true;
 		}
 		else if (entity_alive == param->m_enemy)
 		{
@@ -694,9 +700,11 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 	m_object->sound().play	(MonsterSound::eMonsterSoundAttackHit);
 
 	bool should_hit = true;
-	// определить дистанцию до врага
+	// The actor inside a car is hit through the car body. Use the car surface
+	// for distance and facing checks so the monster does not have to reach the
+	// hidden actor position.
 	Fvector d;
-	d.sub(enemy->Position(),m_object->Position());
+	d.sub(m_object->GetEnemyAttackPosition(),m_object->Position());
 	if (d.magnitude() > params.dist) 
 		should_hit = false;
 	
@@ -721,7 +729,8 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 
 	CEntityAlive* not_const_enemy = const_cast<CEntityAlive*>(enemy);
 	const CActor* pA = not_const_enemy != nullptr ? not_const_enemy->cast_actor() : nullptr;
-	if (should_hit && pA) {
+	CObject* Car = m_object->GetEnemyCarObject();
+	if (should_hit && (pA || Car)) {
 		Fvector C, enemy_center;
 		m_object->Center(C);
 		enemy->Center(enemy_center);
@@ -731,6 +740,7 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 		collide::rq_results RQR;
 		collide::ray_defs RD(C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth);
 		ray_query_param params(m_object, enemy);
+		params.m_car = Car;
 		Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
 		should_hit = params.m_can_hit_enemy;
 	}

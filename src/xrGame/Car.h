@@ -1394,6 +1394,7 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 			bool WheelHit								(float P,s16 element,ALife::EHitType hit_type);
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:
+	void					HitFrom						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
 	float					GetRepairAmount			() const		{ return RepairAmount; }
@@ -1434,6 +1435,7 @@ public:
 // 	bool					All_Doors_closed			();
 	SDoor*					GetNearestDoor				(Fvector look_pos, Fvector look_dir, bool special = false);
 	u16						GetNearestBone				(Fvector look_pos, Fvector look_dir, float &range, bool trunk_test = false);
+	Fvector					GetNearestPoint				(const Fvector& Point) const;
 	Fvector					GetBindCenter				(){return bind_center;}
 
 	bool					b_start_open_recursive;
@@ -1627,6 +1629,7 @@ public:
 	virtual IDamageSource		*cast_IDamageSource			() override	{return this;}
 	virtual CHolderCustom		*cast_holder_custom			() override	{return this;}
 	virtual CCar*				cast_car					() override	{return this;}
+	virtual bool				IsDrivenByActor			() const override {return IsMyCar();}
 	virtual CInventoryOwner		*cast_inventory_owner		() override	{return this;}
 	virtual bool				is_ai_obstacle				() const override {return true;}
 

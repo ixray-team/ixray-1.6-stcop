@@ -31,6 +31,7 @@ class CInfoPortion;
 struct GAME_NEWS_DATA;
 class CActorCondition;
 class CAI_Stalker;
+class CCar;
 class CInventoryItem;
 class CCustomOutfit;
 class CGameTaskRegistryWrapper;
@@ -129,6 +130,11 @@ public:
 	virtual CCharacterPhysicsSupport*	character_physics_support	() const override {return m_pPhysics_support;}
 	virtual CPHDestroyable*				ph_destroyable				() override;
 			CHolderCustom*				Holder						() const {return m_holder;}
+			CCar*						GetCar						() const;
+			bool						IsInCar						() const;
+			CObject*					GetCarObject				() const;
+			Fvector						GetCarNearestPoint			(const Fvector& Point) const;
+			void						HitCar						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type) const;
 	bool						IsMutantBiteBlocked		() const;
 
 	virtual xr_vector<xr_string>		GetKnownPortions() const override;
