@@ -29,6 +29,9 @@
     <string id="car_use">
         <text>Použití ($$ACTION_USE$$)</text>
     </string>
+    <string id="st_car_refuel">
+        <text>Natankovat</text>
+    </string>
 
     <string id="st_freemp">
         <text>Volný</text>

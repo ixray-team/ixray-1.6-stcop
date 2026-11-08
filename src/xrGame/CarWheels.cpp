@@ -182,6 +182,16 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 
 void  CCar::SWheel::WheellCollisionCallback(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2)
 {
+	// The character scraper is a separate physics shell belonging to this car.
+	// It must not feed wheel contact, traction or tire-sound state: otherwise
+	// the scraper's contacts with the car itself keep the wheels "on ground"
+	// and retrigger tire loops (especially after it was enabled for corpses).
+	if (cphc.HasObjectCallback(bo1, &CCar::CollisionDetectionCallback)
+		|| cphc.HasObjectCallback(!bo1, &CCar::CollisionDetectionCallback))
+	{
+		return;
+	}
+
 	dContact& c = cphc.Native();
 	dxGeomUserData					*ud1			=			retrieveGeomUserData(c.geom.g1)	;
 	dxGeomUserData					*ud2			=			retrieveGeomUserData(c.geom.g2)	;
@@ -384,7 +394,7 @@ void CCar::SWheel::Play(Fvector c_pos, u16 m1_id, u16 m2_id, bool tire_fulleffec
 				wheelspeedfreq = sinf(0.5f * PI * powf(wheelspeedfreq, 0.5f));
 
 				clamp(wheelspeedvol, 0.0f, 1.f);
-				clamp(wheelspeedfreq, 0.0f, 2.f);
+				clamp(wheelspeedfreq, 0.1f, 2.f);
 
 				ref_sound* pSound = car->GetTireSound(m1_id, m2_id);
 				if (pSound && pSound->_p)
@@ -398,14 +408,23 @@ void CCar::SWheel::Play(Fvector c_pos, u16 m1_id, u16 m2_id, bool tire_fulleffec
 
 					if (tire_drive._p)
 					{
-						if (!tire_drive.is_playing())
-							tire_drive.play_at_pos(car, wheel_center, sm_Looped);
-
-						if (tire_drive.is_playing())
+						const bool WheelStopped = car->GetSpeedKmH() < 1.f && fabsf(GetDriveAngleRate()) * radius < 0.5f;
+						if (WheelStopped || wheelspeedvol < 0.01f)
 						{
-							tire_drive.set_volume(wheelspeedvol);
-							tire_drive.set_frequency(wheelspeedfreq);
-							tire_drive.set_position(wheel_center);
+							// Do not keep a silent looped source alive at standstill.
+							tire_drive.stop();
+						}
+						else
+						{
+							if (!tire_drive.is_playing())
+								tire_drive.play_at_pos(car, wheel_center, sm_Looped);
+
+							if (tire_drive.is_playing())
+							{
+								tire_drive.set_volume(wheelspeedvol);
+								tire_drive.set_frequency(wheelspeedfreq);
+								tire_drive.set_position(wheel_center);
+							}
 						}
 					}
 				}

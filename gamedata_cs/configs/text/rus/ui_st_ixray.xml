@@ -984,6 +984,9 @@
 	<string id="st_repair">
 		<text>починить</text>
 	</string>
+	<string id="st_car_refuel">
+		<text>Заправить</text>
+	</string>
 	<string id="kb_alter_zoom">
 		<text>Резервный прицел</text>
 	</string>

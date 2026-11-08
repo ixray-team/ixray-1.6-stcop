@@ -243,6 +243,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						UpdateDriftBoost			();
 	void						UpdateEngineShake		();
 	void						UpdateSteeringWheels		();
+	void						UpdateSteerAnimation		();
 	bool						UpdateWheelPhysics		();
 	struct SWheel;
 	void						UpdateWheelSuspension		(SWheel& Wheel);
@@ -499,6 +500,7 @@ public:
 				float			GetSteerAngleRate();
 				float			GetSteerAngle();
 				void			Neutral();
+				bool			IsDamaged			() { return Health() < m_max_health; }
 				enum eWheelType
 				{
 					wheel          = (1 << 0),
@@ -670,6 +672,7 @@ virtual void ApplyDamage			(u16 level);
 		void Use();
 		void Switch();
 		void Init();
+		bool IsDamaged() { return state == broken || Health() < m_max_health; }
 		void Open();
 		void Close();
 		void Break();
@@ -824,8 +827,13 @@ private:
 	xr_vector<CCarTurret*>	m_car_weapons;
 	float					m_steer_angle;
 	float					m_wheel_angle;
+	s8						m_steer_anim_state = 0;
 	float					m_steer_factor;
 	bool					m_repairing;
+	float					RepairAmount = 0.2f;
+	shared_str				RepairItem;
+	shared_str				RefuelItem;
+	float					RefuelAmount = -1.f;
 	u16						m_bone_trunk;
 	CCameraBase*			camera[EctMaxCam];
 	CCameraBase*			active_camera;
@@ -937,7 +945,7 @@ private:
 	float					m_slip_sliding_threshold;
 	float					m_vel_sliding_threshold;
 	float					m_axle_friction;
-	u32						m_last_contact_time;
+	u32						m_last_contact_time = 0;
 	u32						m_hit_engine_time;
 	float					m_slip_start_time;
 	float					m_steer_boost;
@@ -1371,6 +1379,14 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 public:
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
+	float					GetRepairAmount			() const		{ return RepairAmount; }
+	const shared_str&		GetRepairItem			() const		{ return RepairItem; }
+	const shared_str&		GetRefuelItem			() const		{ return RefuelItem; }
+	float					GetRefuelAmount			() const		{ return RefuelAmount; }
+	bool					HasDamagedParts			();
+	bool					RepairFromItem				();
+	float					GetFuelAmount			() const		{ return m_fuel; }
+	float					AddFuelAmount			(float amount)	{ return AddFuel(amount); }
 	virtual bool			allowWeapon					() const		{return true;};
 	virtual bool			HUDView						() const;
 	virtual Fvector			ExitPosition				(){return m_exit_position;}
