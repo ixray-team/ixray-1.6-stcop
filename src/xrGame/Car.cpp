@@ -431,6 +431,11 @@ void CCar::reload		(LPCSTR section)
 		m_memory->reload	(section);
 	// fuel load
 	m_fuel_tank = READ_IF_EXISTS(pSettings, r_float, section, "fuel_tank", 10.f);
+	RepairAmount = READ_IF_EXISTS(pSettings, r_float, section, "repair_amount", 0.2f);
+	clamp(RepairAmount, 0.f, 1.f);
+	RepairItem = READ_IF_EXISTS(pSettings, r_string, section, "repair_item", "");
+	RefuelItem = READ_IF_EXISTS(pSettings, r_string, section, "refuel_item", "");
+	RefuelAmount = READ_IF_EXISTS(pSettings, r_float, section, "refuel_amount", -1.f);
 	m_fuel_consumption = READ_IF_EXISTS(pSettings, r_float, section, "fuel_consumption", 0.0005f);
 	m_fuel_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_speed_factor", 2.f);
 	m_fuel_speed_optimal = READ_IF_EXISTS(pSettings, r_float, section, "fuel_speed_optimal", 50.f);
@@ -1997,6 +2002,7 @@ void CCar::UpdateEx			(float fov)
 	#endif
 
 	VisualUpdate(fov);
+	UpdateSteerAnimation();
 	for (CCarTurret* CWPB : m_car_weapons)
 	{
 		CWPB->UpdateCL();
@@ -2226,7 +2232,6 @@ void CCar::DrawCarInfo()
 	Font->OutNext("Fuel consumption/100km:[%3.2f]", 100.f * 3600.f * m_fuel_consumption_current / (GetSpeedKmH() + EPS));
 	Font->OutNext("curr_slip_sliding:          %f", m_current_slip_sliding);
 	Font->OutNext("handbrake_rpm_clutch_factor:%f", m_current_rpm_brp_n);
-	Font->OutNext("last_contact_time:           %d", int(m_last_contact_time));
 	const float SteerDisplayDt = Device.fTimeDelta > EPS ? Device.fTimeDelta : 1.f;
 	const float RawSteerBoost = (m_steer_boost_frame == Device.dwFrame) ? m_steer_boost : 0.f;
 	const float SteerBoostDisplay = (GetSpeedKmH() > 10.f && m_steer_speed_boost && !b_burnout)
@@ -2932,6 +2937,57 @@ void CCar::RepairDamageItems()
 	}
 }
 
+bool CCar::HasDamagedParts()
+{
+	for (auto& door : m_doors)
+	{
+		if (door.second.IsDamaged())
+			return true;
+	}
+	for (auto& wheel : m_wheels_map)
+	{
+		if (wheel.second.IsDamaged())
+			return true;
+	}
+	return false;
+}
+
+bool CCar::RepairFromItem()
+{
+	bool Repaired = false;
+
+	const float MaxHealth = GetMaxHealth();
+	if (MaxHealth > 0.f)
+	{
+		const float OldHealth = GetfHealth();
+		if (OldHealth < MaxHealth)
+		{
+			float Fraction = RepairAmount;
+			clamp(Fraction, 0.f, 1.f);
+			const float Amount = MaxHealth * Fraction;
+			if (Amount > 0.f)
+			{
+				float NewHealth = OldHealth + Amount;
+				if (NewHealth > MaxHealth)
+					NewHealth = MaxHealth;
+
+				SetfHealth(NewHealth);
+				Repaired = true;
+			}
+		}
+	}
+
+	// A repair item always restores doors and wheels completely, even when the
+	// body health is only partially restored or is already full.
+	if (HasDamagedParts())
+	{
+		RepairDamageItems();
+		Repaired = true;
+	}
+
+	return Repaired;
+}
+
 float CCar::SetfHealth(float value)
 {
 	float result = CEntity::SetfHealth(value);
@@ -3001,6 +3057,7 @@ bool CCar::attach_Actor(CGameObject* actor)
 	m_exit_car_time = 0;
 	m_exit_door_bone = BI_NONE;
 	m_dwAttachTime = Device.dwTimeGlobal;
+	m_steer_anim_state = 0;
 	if(CPHDestroyable::Destroyed()) return false;
 	CHolderCustom::attach_Actor(actor);
 	Owner()->setVisible(0);
@@ -5700,6 +5757,28 @@ void CCar::UpdateSteeringWheels()
 	//if (nonsteer_size > 0)
 }
 
+void CCar::UpdateSteerAnimation()
+{
+	CActor* Driver = OwnerActor();
+	if (Driver == nullptr)
+		return;
+
+	// Use the effective steering state, not the raw key events: this keeps the
+	// animation in sync when both steering keys are pressed or one is released.
+	// The idle transition is immediate, as in the original input-driven code.
+	s8 NewState = 0;
+	if (e_state_steer == right)
+		NewState = 1;
+	else if (e_state_steer == left)
+		NewState = -1;
+
+	if (NewState == m_steer_anim_state)
+		return;
+
+	m_steer_anim_state = NewState;
+	Driver->steer_Vehicle(float(NewState));
+}
+
 bool CCar::UpdateWheelPhysics()
 {
 	bool Slip = false;
@@ -5801,7 +5880,10 @@ void CCar::UpdateWheelDownforce(SWheel& Wheel)
 
 void CCar::UpdateWheelTireSound(SWheel& Wheel)
 {
-	if (!mb_traction && Wheel.tire_drive._p)
+	const u32 ContactAge = Device.dwTimeGlobal - Wheel.collision_params.last_contact_time;
+	const bool WheelAirborne = ContactAge > 100;
+	const bool WheelStopped = GetSpeedKmH() < 1.f && fabsf(Wheel.GetDriveAngleRate()) * Wheel.radius < 0.5f;
+	if ((WheelAirborne || WheelStopped) && Wheel.tire_drive._p)
 	{
 		Wheel.UpdateSounds();
 		Wheel.tire_drive.stop();
@@ -5927,7 +6009,15 @@ bool CCar::UpdateWheelTraction(SWheel& Wheel)
 void CCar::UpdateWheelTractionTimeout(SWheel& Wheel)
 {
 	if (Device.dwTimeGlobal - Wheel.collision_params.last_contact_time > 50)
+	{
 		Wheel.collision_params.traction = false;
+		// Do not keep stale slip state after the wheel leaves the ground: it
+		// would retrigger skid sounds on landing.
+		Wheel.collision_params.buxe = false;
+		Wheel.collision_params.breaking = false;
+		Wheel.collision_params.breaking_abs = false;
+		Wheel.collision_params.slide = false;
+	}
 }
 
 void CCar::UpdateWheelAirborneFriction(SWheel& Wheel)

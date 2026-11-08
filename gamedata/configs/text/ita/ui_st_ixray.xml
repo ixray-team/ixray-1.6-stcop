@@ -29,6 +29,9 @@
     <string id="car_use">
         <text>Usa ($$ACTION_USE$$)</text>
     </string>
+    <string id="st_car_refuel">
+        <text>Rifornisci</text>
+    </string>
 
     <string id="st_freemp">
         <text>Libero</text>

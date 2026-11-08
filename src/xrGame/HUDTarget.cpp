@@ -27,6 +27,7 @@
 #include "Actor.h"
 #include "game_cl_single.h"
 #include "../xrEngine/CameraBase.h"
+#include "Car.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
@@ -297,6 +298,19 @@ void CHUDTarget::Render()
 			accumulatedTime -= HIDE_INFO_SPEED * Device.fTimeDelta;
 		}
 		clamp(accumulatedTime,0.f,1.f);
+	}
+
+	// A seated actor keeps the on-foot crosshair fallback even when no weapon
+	// is active. Hide only the crosshair in cars unless a turret is active.
+	if (Actor->Holder() != nullptr)
+	{
+		if (CCar* Car = Actor->Holder()->cast_car())
+		{
+			if (!Car->HasWeaponActive())
+			{
+				return;
+			}
+		}
 	}
 
 	HUDCrosshair.cross_color = C;

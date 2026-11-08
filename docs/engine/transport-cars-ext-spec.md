@@ -239,7 +239,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 - Старые сохранения и миграция.
 - `bind_car.script`, `ph_car.script`, `ui_car_buy/ui_car_trunk/ui_car_info`, `la_utils` и прочий LA-скриптовый слой.
 - AI-вождение (`ph_car`), патрули, стрельба AI с турели.
-- Покупка, ремонт и заправка через UI/диалоги; `repair_amount` читается, но игрового ремонта нет.
+- Покупка через UI/диалоги; ремонт и заправка через инвентарь машины реализованы (`repair_item` / `refuel_item` / `refuel_amount` в `vehicles.ltx`).
 - Пассажирские места, несколько владельцев, пассажирские камеры/анимации.
 - FMOD-радио и DSP-плейлист.
 - Collision-сферы травы (`Device.m_detcollslots`) и деформация травы.
@@ -299,12 +299,16 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 - [ ] AWD/RWD, руль, тормоза, ручник, ABS, дифференциал, подвеска, burnout/drift/wheelie.
 - [ ] Колёса: звук, частицы, wallmarks, повреждение, два уровня здоровья.
 - [ ] Двери: open/close/use/switch, broken handle, spring/lamba/vertical, рекурсивные двери, авто-закрытие.
+- [x] Анимация водителя включается и выключается сразу по итоговому состоянию руления, включая комбинации клавиш.
+- [x] Звук шин останавливается для каждого колеса отдельно; состояние заноса сбрасывается при потере контакта.
 - [ ] Багажник: открытие/закрытие, `CUICarBodyWnd`, `trunk_capacity`/`trunk_distance`, `ShowTrunk`/`OpenTrunkBone`/`CloseTrunkBone`/`TrunkBoneWorldPos`.
+- [x] Ремонт и заправка из инвентаря машины: `repair_item` / `refuel_item` / `refuel_amount` в `vehicles.ltx`; только когда актёр находится в машине и скорость не выше 1 км/ч; полный ремонт дверей и колёс при каждом использовании; SP, MP-события запланированы.
 - [ ] Свет: headlights/stoplights/reverselights/indoorlights/enginelights; переключение; свечение; отсутствие flare не считается багом.
 - [ ] Турель: активация, наведение, fire, auto fire, боезапас, ракеты (если есть в конфиге); машина без турели работает.
 - [ ] Урон: кузов/колесо/дверь; уровни повреждений; damage particles; взрыв; destroyed; водитель не застревает.
 - [ ] Звук: engine start/stop/idle/drive, transmission, gas/brake/valve/turbo/decel/heavy/blower/nitro/whine/horn/pop, двери; интерьерная громкость.
 - [ ] HUD: здоровье, топливо, скорость, RPM, передача, лампы; 3D-приборы (speedometer/tachometer/fuel/temp/gear/clock) анимируются.
+- [x] Прицел в машине скрыт, пока не активна турель с оружием.
 - [ ] Save/load: позиция, здоровье, топливо, двери, колёса; transient state сброшен; старый сейв отклонён.
 - [ ] Lua: текущий API и алиасы; `ph_minigun`-подобный сценарий турели; `usable_bones`; `on_use_trunk` при наличии.
 - [ ] Краевые конфиги: удалить `[car_sound]`, `[lights]`, `[mounted_weapon_definition]`, `[damage_particles]`, `[transmission_gear_ratio]` по одному; машина спавнится, пишет предупреждения, не падает.

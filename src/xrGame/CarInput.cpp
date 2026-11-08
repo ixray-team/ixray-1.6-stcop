@@ -271,8 +271,8 @@ void CCar::OnKeyboardPress(int cmd)
 		case kCROUCH:	TransmissionDown();			break;
 		case kFWD:		PressForward();				break;
 		case kBACK:		PressBack();				break;
-		case kR_STRAFE:	PressRight();				if (OwnerActor()) OwnerActor()->steer_Vehicle(1);break;
-		case kL_STRAFE:	PressLeft();				if (OwnerActor()) OwnerActor()->steer_Vehicle(-1);break;
+		case kR_STRAFE:	PressRight();				UpdateSteerAnimation();	break;
+		case kL_STRAFE:	PressLeft();				UpdateSteerAnimation();	break;
 		case kJUMP:		PressBreaks();				break;
 		case kDROP:			m_car_sound->Horn(true);	break;
 		case kDETECTOR:	SwitchEngine(); SwitchEngineDoors();	break;
@@ -327,8 +327,8 @@ void	CCar::OnKeyboardRelease(int cmd)
 		case kSPRINT_TOGGLE: b_nitro_engage = false; break;
 		case kFWD:		ReleaseForward();			break;
 		case kBACK:		ReleaseBack();				break;
-		case kL_STRAFE:	ReleaseLeft();				if (OwnerActor()) OwnerActor()->steer_Vehicle(0);	break;
-		case kR_STRAFE:	ReleaseRight();				if (OwnerActor()) OwnerActor()->steer_Vehicle(0);	break;
+		case kL_STRAFE:	ReleaseLeft();				UpdateSteerAnimation();	break;
+		case kR_STRAFE:	ReleaseRight();				UpdateSteerAnimation();	break;
 		case kDROP: m_car_sound->Horn(false); break;
 		case kJUMP:		ReleaseBreaks();			break;
 		case kWPN_FIRE:
@@ -542,7 +542,7 @@ void CCar::ReleaseInput()
 	ReleaseRight();
 	m_car_sound->Horn(false);
 	ReleaseBreaks();
-	if (OwnerActor()) OwnerActor()->steer_Vehicle(0);
+	UpdateSteerAnimation();
 }
 
 bool CCar::bfAssignMovement(CScriptEntityAction *tpEntityAction)
@@ -748,8 +748,7 @@ void CCar::OnGamepadAxisMove(int id, Fvector2 value)
 			ReleaseRight();
 		}
 
-		if (OwnerActor())
-			OwnerActor()->steer_Vehicle(value.x);
+		UpdateSteerAnimation();
 	}
 	else if (id == 1)
 	{

@@ -14,6 +14,7 @@ class CUIPropertiesBox;
 class CUIActorMenu;
 class CInventory;
 class CInventoryBox;
+class CCar;
 class CTrade;
 class CUIDragDropReferenceList;
 class CUIProgressBar;
@@ -105,6 +106,11 @@ protected:
 	void						PropertiesBoxForTrade		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForUpgrade		(PIItem item, bool& b_show);
 	void						PropertiesBoxForRepair		(PIItem item, bool& b_show);
+	void						PropertiesBoxForCar			(PIItem item, bool& b_show);
+	bool						CanUseCarActions			(CCar* Car);
+	bool						TryCarRepair				(CUICellItem* cell_item);
+	bool						TryCarRefuel				(CUICellItem* cell_item);
+	bool						ConsumeCarItem				(CUICellItem* cell_item);
 	bool						CanMoveToPartner			(PIItem pItem);
 	bool						CanSetItemToList			(PIItem item, CUIDragDropListEx* l, u16& ret_slot);
 

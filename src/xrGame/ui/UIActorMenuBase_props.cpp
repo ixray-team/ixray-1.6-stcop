@@ -14,8 +14,42 @@
 #include "../ai_object_location.h"
 #include "../game_sv_single.h"
 #include "../InventoryWeaponSlotLayout.h"
+#include "../Car.h"
+#include "../Actor.h"
 
 void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
+
+namespace
+{
+CCar* GetActorCar()
+{
+	CActor* ActorPtr = Actor();
+	CHolderCustom* Holder = ActorPtr ? ActorPtr->Holder() : nullptr;
+	return Holder ? Holder->cast_car() : nullptr;
+}
+
+bool IsCarRepairItem(const CCar* Car, const char* Section)
+{
+	if (Car == nullptr || Section == nullptr)
+		return false;
+
+	const shared_str& RepairItem = Car->GetRepairItem();
+	return RepairItem.size() > 0 && xr_strcmp(RepairItem, Section) == 0;
+}
+
+float GetCarRefuelAmount(const CCar* Car, const char* Section)
+{
+	if (Car == nullptr || Section == nullptr)
+		return 0.f;
+
+	const shared_str& RefuelItem = Car->GetRefuelItem();
+	if (RefuelItem.size() == 0 || xr_strcmp(RefuelItem, Section) != 0)
+		return 0.f;
+
+	const float Amount = Car->GetRefuelAmount();
+	return Amount < 0.f ? 10.f : Amount;
+}
+}
 
 void CUIActorMenuBase::TryHidePropertiesBox()
 {
@@ -57,6 +91,7 @@ void CUIActorMenuBase::ActivatePropertiesBox()
 		PropertiesBoxForPlaying(item, b_show);
 		PropertiesBoxForParse(item, b_show);
 		PropertiesBoxForDrop(cell_item, item, b_show);
+		PropertiesBoxForCar(item, b_show);
 	}
 	else if(m_currMenuMode == mmUpgrade) 
 	{
@@ -585,6 +620,146 @@ void CUIActorMenuBase::PropertiesBoxForRepair(PIItem item, bool& b_show)
 	}
 }
 
+void CUIActorMenuBase::PropertiesBoxForCar(PIItem item, bool& b_show)
+{
+	if (!IsGameTypeSingle() || !item)
+		return;
+
+	CCar* Car = GetActorCar();
+	if (!CanUseCarActions(Car))
+		return;
+
+	CUICellItem* Cell = CurrentItem();
+	if (!Cell || !Cell->OwnerList())
+		return;
+
+	const bool InActorBag = GetActorList() && GetActorList()->IsOwner(Cell);
+	const bool InCarBag = GetPartnerList() && GetPartnerList()->IsOwner(Cell);
+	if (!InActorBag && !InCarBag)
+		return;
+
+	const char* Section = item->m_section_id.c_str();
+
+	if (IsCarRepairItem(Car, Section)
+		&& (Car->GetfHealth() < Car->GetMaxHealth() || Car->HasDamagedParts()))
+	{
+		m_UIPropertiesBox->AddItem("st_repair", nullptr, INVENTORY_CAR_REPAIR_ACTION);
+		b_show = true;
+	}
+
+	if (GetCarRefuelAmount(Car, Section) > 0.f && Car->GetFuelAmount() < Car->m_fuel_tank)
+	{
+		m_UIPropertiesBox->AddItem("st_car_refuel", nullptr, INVENTORY_CAR_REFUEL_ACTION);
+		b_show = true;
+	}
+}
+
+bool CUIActorMenuBase::CanUseCarActions(CCar* Car)
+{
+	if (Car == nullptr || Car->getDestroy() || Car->b_exploded)
+		return false;
+
+	// Do not allow repairs or refuelling while the car is moving.
+	if (Car->GetSpeedKmH() > 1.f)
+		return false;
+
+	// Repair and refuel are available while the actor is inside the car. In
+	// the car trunk UI the displayed partner must be that same car.
+	if (m_currMenuMode == mmInventory)
+		return true;
+
+	return m_currMenuMode == mmDeadBodySearch && GetPartner() == Car;
+}
+
+bool CUIActorMenuBase::ConsumeCarItem(CUICellItem* cell_item)
+{
+	if (!cell_item || !cell_item->OwnerList())
+		return false;
+
+	PIItem Item = (PIItem)cell_item->m_pData;
+	if (!Item)
+		return false;
+
+	CUIDragDropListEx* List = cell_item->OwnerList();
+	SetCurrentItem(nullptr);
+
+	if (cell_item->ChildsCount() > 0)
+	{
+		// The cell represents a stack. Pop one child, destroy that item and
+		// keep the rest of the stack in place.
+		CUICellItem* Consumed = cell_item->PopChild(nullptr);
+		if (!Consumed)
+			return false;
+
+		PIItem ConsumedItem = (PIItem)Consumed->m_pData;
+		Consumed->SetOwnerList(nullptr);
+		ConsumedItem->object().DestroyObject();
+		delete_data(Consumed);
+	}
+	else
+	{
+		CUICellItem* Removed = List->RemoveItem(cell_item, false);
+		Item->object().DestroyObject();
+		delete_data(Removed);
+	}
+
+	UpdateItemsPlace();
+	UpdateConditionProgressBars();
+	return true;
+}
+
+bool CUIActorMenuBase::TryCarRepair(CUICellItem* cell_item)
+{
+	if (!IsGameTypeSingle() || !cell_item)
+		return false;
+
+	PIItem Item = (PIItem)cell_item->m_pData;
+	CCar* Car = GetActorCar();
+	if (!Item || !CanUseCarActions(Car))
+		return false;
+
+	if (!IsCarRepairItem(Car, Item->m_section_id.c_str()))
+		return false;
+	if (Car->GetfHealth() >= Car->GetMaxHealth() && !Car->HasDamagedParts())
+		return false;
+	if (!Car->RepairFromItem())
+		return false;
+
+	if (!ConsumeCarItem(cell_item))
+		return false;
+
+	PlaySnd(eItemUse);
+
+	// TODO MP: apply and consume the item through a server event.
+	return true;
+}
+
+bool CUIActorMenuBase::TryCarRefuel(CUICellItem* cell_item)
+{
+	if (!IsGameTypeSingle() || !cell_item)
+		return false;
+
+	PIItem Item = (PIItem)cell_item->m_pData;
+	CCar* Car = GetActorCar();
+	if (!Item || !CanUseCarActions(Car))
+		return false;
+
+	const float Amount = GetCarRefuelAmount(Car, Item->m_section_id.c_str());
+	if (Amount <= 0.f || Car->GetFuelAmount() >= Car->m_fuel_tank)
+		return false;
+
+	if (Car->AddFuelAmount(Amount) <= 0.f)
+		return false;
+
+	if (!ConsumeCarItem(cell_item))
+		return false;
+
+	PlaySnd(eItemUse);
+
+	// TODO MP: apply and consume the item through a server event.
+	return true;
+}
+
 void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 {
 	PIItem item	= CurrentIItem();
@@ -845,6 +1020,16 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			TryRepairItem(this,0);
 			return;
 			break;
+		}
+	case INVENTORY_CAR_REPAIR_ACTION:
+		{
+			TryCarRepair(cell_item);
+			return;
+		}
+	case INVENTORY_CAR_REFUEL_ACTION:
+		{
+			TryCarRefuel(cell_item);
+			return;
 		}
 	case INVENTORY_UPGRADE:
 	{

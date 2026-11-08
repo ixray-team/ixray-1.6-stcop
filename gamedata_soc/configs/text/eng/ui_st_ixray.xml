@@ -984,6 +984,9 @@
 	<string id="st_repair">
 		<text>repair</text>
 	</string>
+	<string id="st_car_refuel">
+		<text>refuel</text>
+	</string>
 	<string id="kb_alter_zoom">
 		<text>Backup sights</text>
 	</string>
