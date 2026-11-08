@@ -219,7 +219,10 @@ retval: (void)
 
 ### Подписки и события
 
-`AddSelfCallback` не требует имени и `Register`. Обработчик получает контрол.
+`AddSelfCallback` не требует имени и `Register`.
+Без объекта обработчик получает контрол-источник первым аргументом.
+С объектом вызов имеет вид `handler(object, control)`: объект становится `self`,
+контрол-источник передаётся вторым аргументом. `nil` равносилен отсутствию объекта.
 Подписки удаляются при уничтожении контрола. Для именованного `AddCallback`
 сначала вызовите `Register(control, name)`.
 
@@ -298,6 +301,14 @@ control:AddSelfCallback(event, handler)
 args:
   event (number) - значение из ui_events; доступность события зависит от класса контрола
   handler (function) - обработчик function(control); получает контрол-источник; результат не используется
+retval: (void)
+
+--// Подписаться на собственное событие с объектом обработчика.
+control:AddSelfCallback(event, handler, object)
+args:
+  event (number) - значение события из ui_events
+  handler (function) - обработчик function(self, control); результат не используется
+  object (any, optional) - объект обработчика; передаётся первым аргументом; nil равносилен отсутствию аргумента
 retval: (void)
 
 --// Задать получателя именованных событий контрола.
@@ -454,6 +465,18 @@ end)
 control:AddSelfCallback(ui_events.MOUSE_DOUBLE_CLICK, function(control)
     control:SetText("Double click")
 end)
+```
+
+#### Подписка на метод объекта
+
+```lua
+local object = {}
+
+function object:on_click(control)
+    self.source = control
+end
+
+control:AddSelfCallback(ui_events.MOUSE_LEFT_CLICK, object.on_click, object)
 ```
 
 #### Обновление окна

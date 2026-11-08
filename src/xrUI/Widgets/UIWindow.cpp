@@ -179,13 +179,25 @@ CUIWindow::~CUIWindow()
 
 void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler)
 {
+	AddSelfCallback(Event, Handler, luabind::object{});
+}
+
+void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler, const luabind::object& Object)
+{
 	if (!SelfCallbacks)
 	{
 		SelfCallbacks = xr_make_shared<SelfCallbackState>();
 	}
 	SelfCallbackState::Subscription Subscription;
 	Subscription.Event = Event;
-	Subscription.Handler.set(Handler);
+	if (Object.is_valid() && Object.type() != LUA_TNIL)
+	{
+		Subscription.Handler.set(Handler, Object);
+	}
+	else
+	{
+		Subscription.Handler.set(Handler);
+	}
 	SelfCallbacks->Subscriptions.push_back(Subscription);
 	if (Event == WINDOW_UPDATE)
 	{
@@ -193,20 +205,20 @@ void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler
 	}
 	switch (Event)
 	{
-	case STATIC_MOUSE_LEFT_CLICK:
-	case STATIC_MOUSE_DOUBLE_CLICK:
-	case STATIC_MOUSE_RIGHT_CLICK:
-	case STATIC_MOUSE_DRAG:
-	case STATIC_MOUSE_MOVE:
-	case STATIC_MOUSE_WHEEL_UP:
-	case STATIC_MOUSE_WHEEL_DOWN:
-		if (CUIStatic* Static = ui_cast_static())
-		{
-			Static->EnableMouseEvents(true);
-		}
-		break;
-	default:
-		break;
+		case STATIC_MOUSE_LEFT_CLICK:
+		case STATIC_MOUSE_DOUBLE_CLICK:
+		case STATIC_MOUSE_RIGHT_CLICK:
+		case STATIC_MOUSE_DRAG:
+		case STATIC_MOUSE_MOVE:
+		case STATIC_MOUSE_WHEEL_UP:
+		case STATIC_MOUSE_WHEEL_DOWN:
+			if (CUIStatic* Static = ui_cast_static())
+			{
+				Static->EnableMouseEvents(true);
+			}
+			break;
+		default:
+			break;
 	}
 }
 

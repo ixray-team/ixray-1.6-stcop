@@ -108,6 +108,9 @@ using namespace luabind;
 #pragma optimize("s",on)
 void CUIWindow::script_register(lua_State *L)
 {
+	using CallbackHandler = luabind::functor<void>;
+	void (CUIWindow::*SelfCallback)(s16, const CallbackHandler&) = &CUIWindow::AddSelfCallback;
+	void (CUIWindow::*SelfCallbackWithObject)(s16, const CallbackHandler&, const luabind::object&) = &CUIWindow::AddSelfCallback;
 	module(L)
 	[
 		def("GetARGB",					&GetARGB),
@@ -139,7 +142,8 @@ void CUIWindow::script_register(lua_State *L)
 
 		class_<CUIWindow, CUIActionRepeatersOwner>("CUIWindow")
 		.def(							constructor<>())
-		.def("AddSelfCallback", &CUIWindow::AddSelfCallback)
+		.def("AddSelfCallback", SelfCallback)
+		.def("AddSelfCallback", SelfCallbackWithObject)
 		.def("SetTreeHeading", &CUIWindow::SetTreeHeading)
 		.def("SetSmothRotate", &CUIWindow::SetSmothRotate)
 		.def("EnableHeading", &CUIWindow::EnableHeading)

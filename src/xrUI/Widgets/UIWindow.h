@@ -31,6 +31,7 @@ class CDialogHolder;
 
 namespace luabind
 {
+	class object;
 	template <typename TResult> class functor;
 }
 
@@ -69,6 +70,7 @@ private:
 
 public:
 	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler);
+	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler, const luabind::object& Object);
 	bool SendMessageToTarget(s16 Event, void* Data = nullptr);
 	void DetachFromDialogHolders();
 	bool ToFront();
