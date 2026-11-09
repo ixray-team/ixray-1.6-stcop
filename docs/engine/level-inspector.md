@@ -1,11 +1,11 @@
 # Level Inspector
 
-Руководство по возможностям, управлению, источникам данных и ограничениям инструмента находится на сайте: [Level Inspector](../docs/main/ru/utilities/level-inspector.md).
+The guide to the tool's features, controls, data sources and limitations is on the website: [Level Inspector](../docs/main/ru/utilities/level-inspector.md) (in Russian).
 
-## Проверка после сборки
+## Post-build checks
 
-- Загрузить уровень, открыть **Game → Level Inspector** и проверить переключение захвата мыши клавишей Alt.
-- Включить объекты, зоны и выбор; навести камеру на объект и зону, проверить сведения и кнопку **Copy**.
-- Проверить отображение путей, графов и фильтров точек маршрута.
-- Проверить отображение скелета объекта и HUD, коллизий, HOM и SOM на уровне, где эти данные есть.
-- Проверить обе клавиши на вкладке **Debug** в режимах удержания и переключения.
+- Load a level, open **Game → Level Inspector** and check that Alt toggles mouse capture.
+- Turn on objects, zones and selection; point the camera at an object and a zone, check the details and the **Copy** button.
+- Check the display of paths, graphs and patrol point filters.
+- Check the display of the object skeleton and HUD, collision, HOM and SOM on a level that has this data.
+- Check both keys on the **Debug** tab in hold and toggle modes.
