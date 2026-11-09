@@ -34,6 +34,7 @@ file(GLOB XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/alife_space.cpp"
     "../../xrServerEntities/PHNetState.cpp"
     "../../xrServerEntities/PHSynchronize.cpp"
+    "../../xrServerEntities/ShapeData.cpp"
     "../../xrServerEntities/smart_cast.cpp"
     "../../xrServerEntities/smart_cast_stats.cpp"
     "../../xrServerEntities/xrServer_Objects.cpp"
@@ -132,7 +133,8 @@ target_include_directories(xrLevelBuilder PRIVATE
     "${XLB_EMBREE}/build/native/include/"
 )
 target_link_directories(xrLevelBuilder PRIVATE "${IXRAY_SDK_LIB}/")
-target_compile_definitions(xrLevelBuilder PRIVATE AI_COMPILER)
+# ImGui backends are built into this executable.
+target_compile_definitions(xrLevelBuilder PRIVATE AI_COMPILER IMGUI_IMPL_API=)
 
 # Each part keeps its own defines and precompiled header
 set_source_files_properties(${UTILS_FORMS_SOURCE_FILES} PROPERTIES

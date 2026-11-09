@@ -32,6 +32,8 @@ set_source_files_properties(
 )
 
 # Project defines
+# ImGui backends are built into this executable.
+target_compile_definitions(xrCompress PRIVATE IMGUI_IMPL_API=)
 if (WIN32)
     target_compile_definitions(xrCompress PRIVATE _USRDLL)
 endif()
