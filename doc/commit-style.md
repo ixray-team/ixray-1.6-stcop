@@ -11,6 +11,7 @@ The project accepts commit standard for transparency and comprehension of the ch
 ## General rules
 
 - Commit messages must be written in English.
+- Do not use English articles (`a`, `an`, `the`) in commit message headers.
 - Each commit message should be structured to answer the question: __"If this commit is applied, it will..."__
 - The message must start with a verb in the infinitive form without the `to` particle
 - No flags like `[Fix]`, `[UPDATE]`, or other tags should be included. The verb should directly describe the action performed
@@ -90,6 +91,11 @@ Unit tests cover edge cases for user input to ensure stability and prevent crash
 ```
 
 ## Common mistakes to avoid
+
+- __Using articles in headers:__
+
+  - Incorrect: `Add the in-game Cinema Editor`
+  - Correct: `Add in-game Cinema Editor`
 
 - __Using tags or brackets:__
 
