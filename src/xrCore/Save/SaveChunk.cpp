@@ -323,7 +323,7 @@ void CSaveChunk::CopySubchunks(CSaveChunk* Chunk)
 		auto VerificationFind = _subchunks.find(element.first);
 		if (VerificationFind != _subchunks.end())
 		{
-			VERIFY(VerificationFind == _subchunks.end(), "There is already a subchunk with name", element.first.c_str());
+			VERIFY3(VerificationFind == _subchunks.end(), "There is already a subchunk with name", element.first.c_str());
 			continue;
 		}
 		_subchunks[element.first] = (CSaveChunk*)element.second->MakeCopy();

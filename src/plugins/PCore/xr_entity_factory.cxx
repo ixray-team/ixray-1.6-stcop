@@ -45,7 +45,7 @@ public:
 			xr_entity_factory();
 			~xr_entity_factory();
 	cse_abstract*	create(const char* name);
-	xr_clsid*		get_entity_clsid(const char* name);
+	const xr_clsid*	get_entity_clsid(const char* name);
 	void		load_system_ini(const char* game_config);
 private:
 	void		init();
@@ -334,23 +334,24 @@ cse_abstract* xr_entity_factory::create(const char* name)
 	return 0;
 }
 
-xr_clsid* xr_entity_factory::get_entity_clsid(const char* name)
+const xr_clsid* xr_entity_factory::get_entity_clsid(const char* name)
 {
 	if (m_system_ini == 0)
+	{
 		m_system_ini = new xr_ini_file(PA_GAME_CONFIG, "system.ltx");
-  
-	if (m_system_ini->section_exist(name)) {
+	}
+
+	if (m_system_ini->section_exist(name))
+	{
 		xr_clsid clsid(m_system_ini->r_clsid(name, "class"));
-		std::vector<factory_item_base*>::iterator it = lower_bound_if(
-				m_clsids.begin(), m_clsids.end(), clsid_pred2(clsid));
+		std::vector<factory_item_base*>::iterator it = lower_bound_if(m_clsids.begin(), m_clsids.end(), clsid_pred2(clsid));
 		if (it != m_clsids.end() && (*it)->clsid() == clsid)
 		{
-			xr_clsid* temp = &clsid;
-			return temp;
+			return &(*it)->clsid();
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void xr_entity_factory::load_system_ini(const char* game_config)
@@ -369,7 +370,7 @@ void xray_re::load_system_ini(const char* game_config)
 	g_entity_factory.load_system_ini(game_config);
 }
 
-xr_clsid* xray_re::get_entity_clsid(const char *name)
+const xr_clsid* xray_re::get_entity_clsid(const char* name)
 {
 	return g_entity_factory.get_entity_clsid(name);
 }
