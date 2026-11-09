@@ -7,6 +7,7 @@
 
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
+class CCar;
 
 XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CBurer final : public CBaseMonster, public CTelekinesis, public ITelekineticEnemy
@@ -29,6 +30,7 @@ public:
 
 		u32 time_last_update;
 		const CEntityAlive* enemy;
+		xr_vector<u16> pushed_cars;
 
 		GraviObject()
 		{
@@ -44,6 +46,7 @@ public:
 			target_pos = tp;
 			time_last_update = Device.dwTimeGlobal;
 			enemy = e;
+			pushed_cars.clear();
 		}
 
 		void deactivate()
@@ -80,6 +83,7 @@ public:
 		float radius;
 		float impulse_to_objects;
 		float impulse_to_enemy;
+		float impulse_to_car;
 		float hit_power;
 	} gravi;
 
@@ -159,6 +163,8 @@ public:
 
 	void UpdateGraviObject();
 	void UpdateGraviObjectCL();
+	void HitGraviCar(CCar* Car, const Fvector& WavePos);
+	void PushGraviCar(CCar* Car, const Fvector& WavePos);
 
 	void StartGraviPrepare();
 	void StopGraviPrepare();
