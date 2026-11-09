@@ -468,7 +468,6 @@ public:
 	bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override;
 
 	IRHISurface* texture_load(const char*	fname, u32& msize, bool bStaging = false);
-	ERHI_FORMAT PeekTextureFormat(const char* Name);
 
 	HRESULT							shader_compile			(
 		const char*							name,

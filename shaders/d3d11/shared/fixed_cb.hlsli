@@ -69,6 +69,7 @@ CBUFFER_END
 CBUFFER(CBMaterial, 3)
 	float4 dt_params;
 	float m_AlphaRef;
+	uint BaseIsBC1;
 	float4 m_lmap[2];
 	float4 tfactor;
 CBUFFER_END

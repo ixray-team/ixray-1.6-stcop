@@ -57,6 +57,7 @@ namespace Hlsl
 using Hlsl::CBFrame, Hlsl::CBView, Hlsl::CBObject, Hlsl::CBMaterial, Hlsl::CBLight, Hlsl::CBPass, Hlsl::CBSkin;
 using Hlsl::CBPost, Hlsl::CBDetail, Hlsl::CBFluid, Hlsl::CBUIIcon, Hlsl::CBVisor, Hlsl::CBEditor, Hlsl::CBDraw;
 static_assert(sizeof(CBDraw) == 96);
+static_assert(offsetof(CBMaterial, m_lmap) == 32);
 
 class RENDER_API CShaderConstants
 {

@@ -81,9 +81,10 @@ void main(p_bumped_new I,
 	#else
 		clip(M.Color.w - def_aref);
 	#endif
-	#ifdef USE_DXT1_HACK
+	if (BaseIsBC1)
+	{
 		M.Color.xyz *= M.Color.w > 0.0f ? rcp(M.Color.w) : 0.0f;
-	#endif
+	}
 #endif
 
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)

@@ -155,6 +155,10 @@ void GfxCmdList::SetTextures(STextureList* _T)
 		{
 			Textures[Kind][Slot] = Surface;
 			Surface->bind(Stage);
+			if (Stage == 0)
+			{
+				Constants.Write<CBMaterial>().BaseIsBC1 = Surface->BindsBC1() ? 1u : 0u;
+			}
 			if (Surface->IsLoadPending())
 			{
 				PendingTextureMask[Kind] |= Bit;

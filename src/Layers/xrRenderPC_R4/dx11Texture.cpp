@@ -79,31 +79,6 @@ namespace
 	}
 }
 
-ERHI_FORMAT CRender::PeekTextureFormat(const char* Name)
-{
-	PROF_EVENT(__FUNCTION__);
-	string_path TextureName = {};
-	xr_strcpy(TextureName, Name);
-	fix_texture_name(TextureName);
-
-	string_path FileName = {};
-	if (!FindTextureFile(FileName, TextureName))
-	{
-		return ERHI_FORMAT::UNKNOWN;
-	}
-
-	IReader* Reader = FS.r_open(FileName);
-	if (Reader == nullptr)
-	{
-		return ERHI_FORMAT::UNKNOWN;
-	}
-
-	RHITextureMetadata Metadata = {};
-	const HRESULT Result = GRHI->GetDDSMetadata(Reader->pointer(), Reader->length(), Metadata);
-	FS.r_close(Reader);
-	return SUCCEEDED(Result) ? (ERHI_FORMAT)Metadata.format : ERHI_FORMAT::UNKNOWN;
-}
-
 IRHISurface* CRender::texture_load(const char* name, u32& out_size, bool staging)
 {
 	R_ASSERT(name && name[0]);

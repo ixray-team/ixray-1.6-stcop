@@ -64,7 +64,7 @@ public:
 		WaitForLoad();
 		return pSurface ? pSurface->GetFormat() : ERHI_FORMAT::UNKNOWN;
 	}
-	ERHI_FORMAT PeekFormat();
+	bool BindsBC1() const;
 
 	void								video_Sync		(u32 _time){m_play_time=_time;}
 	void								video_Play		(bool looped, u32 _time=0xFFFFFFFF);

@@ -439,17 +439,20 @@ void CTexture::WaitForLoad()
 	}
 }
 
-ERHI_FORMAT CTexture::PeekFormat()
+bool CTexture::BindsBC1() const
 {
+	const IRHISurface* Surface = ShowsPlaceholder() ? Placeholder->pSurface : pSurface;
+	if (!Surface && !m_pSRView && Placeholder && Sampled2D.load(std::memory_order_acquire))
 	{
-		xrCriticalSectionGuard Guard(LoadGuard);
-		if ((!LoadTask || LoadDone.load(std::memory_order_acquire)) && pSurface)
-		{
-			return pSurface->GetFormat();
-		}
+		Surface = Placeholder->pSurface;
+	}
+	if (!Surface)
+	{
+		return false;
 	}
 
-	return RImplementation.PeekTextureFormat(*cName);
+	const ERHI_FORMAT Format = Surface->GetFormat();
+	return Format >= ERHI_FORMAT::BC1_TYPELESS && Format < ERHI_FORMAT::BC2_TYPELESS;
 }
 
 void CTexture::LoadImpl()
