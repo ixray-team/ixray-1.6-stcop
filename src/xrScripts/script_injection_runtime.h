@@ -14,32 +14,9 @@ assert(type(upvaluejoin) == "function", "script injection requires debug.upvalue
 
 local contexts, owners = {}, {}
 local api = {}
-local callable_ids = setmetatable({}, {__mode = "k"})
-local next_callable_id = 0
-local function callable_id(method)
-    local id = callable_ids[method]
-    if not id then
-        next_callable_id = next_callable_id + 1
-        id = "callable:" .. next_callable_id
-        callable_ids[method] = id
-    end
-    return id
-end
-local overrides_pending = false
-function api.has_new_overrides()
-    local pending = overrides_pending
-    overrides_pending = false
-    return pending
-end
-function api.resolve_injected_method(method)
-    assert(type(method) == "function", "expected a function reference")
-    return method, false
-end
 local function track_replacement(previous, installed)
     if type(previous) == "function" and type(installed) == "function" and previous ~= installed then
-        callable_id(previous)
         installed = replace_references(previous, installed)
-        overrides_pending = true
     end
     return installed
 end
@@ -52,48 +29,6 @@ local function identifier(name)
 end
 local function check_name(name)
     assert(identifier(name), "expected a Lua identifier")
-end
-function api.get_callable_info(callable)
-    if type(callable) == "function" then
-        local info = getinfo(callable, "S")
-        local name = tostring(callable)
-        if info.what ~= "C" and info.linedefined > 0 then
-            name = info.source:gsub("^@", "") .. ":" .. info.linedefined
-        end
-        return {
-            name_string = name,
-            memory_id = callable_id(callable),
-            pure_callable = callable,
-            string_callable = nil,
-            uptime_microseconds = 0
-        }
-    end
-    local namespace, method
-    if type(callable) == "string" then
-        local parts = ffx_string_utils.explode(callable, ".")
-        assert(#parts >= 2, "expected namespace.method")
-        method = parts[#parts]
-        parts[#parts] = nil
-        namespace = concat(parts, ".")
-    elseif type(callable) == "table" then
-        namespace, method = callable[1], callable[2]
-        assert(callable[3] == nil, "string_callable must contain namespace and method")
-    else
-        error("expected a function, qualified name or {namespace, method}")
-    end
-    check_name(method)
-    assert(type(namespace) == "string" and namespace ~= "", "expected a namespace name")
-    local parts = ffx_string_utils.explode(namespace, ".")
-    for _, part in ipairs(parts) do check_name(part) end
-    assert(concat(parts, ".") == namespace, "invalid namespace name")
-    local path = namespace .. "." .. method
-    return {
-        name_string = path,
-        memory_id = path,
-        pure_callable = nil,
-        string_callable = {namespace, method},
-        uptime_microseconds = 0
-    }
 end
 local function context(target)
     local methods = class_table(target)

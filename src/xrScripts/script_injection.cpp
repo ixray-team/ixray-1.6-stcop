@@ -56,10 +56,7 @@ bool Initialize(lua_State* L)
 		"override_or_create_method",
 		"override_or_create_local_variable",
 		"get_local_variables",
-		"get_local_functions",
-		"get_callable_info",
-		"resolve_injected_method",
-		"has_new_overrides"
+		"get_local_functions"
 	};
 	for (const char* Name : Exports)
 	{
