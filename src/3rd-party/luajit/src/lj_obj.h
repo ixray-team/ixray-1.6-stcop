@@ -444,10 +444,11 @@ typedef struct GCupval {
 
 /* -- Function object (closures) ------------------------------------------ */
 
-/* Common header for functions. env should be at same offset in GCudata. */
+/* Common header for functions. env should be at same offset in GCudata.
+** keyid contains pointer bits for hashing only, not a traced GC reference. */
 #define GCfuncHeader \
   GCHeader; uint8_t ffid; uint8_t nupvalues; \
-  GCRef env; GCRef gclist; MRef pc
+  GCRef env; GCRef gclist; MRef pc; GCRef keyid
 
 typedef struct GCfuncC {
   GCfuncHeader;

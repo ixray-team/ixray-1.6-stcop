@@ -15,6 +15,7 @@
 #include <luajit.h>
 #endif
 #include "script_process.h"
+#include "script_injection.h"
 
 const char*	file_header = "\
 local function script_name() \
@@ -83,6 +84,11 @@ void CScriptStorage::reinit	()
 
 	// Lua Plugins
 	lua_init_ext(lua());
+	if (!ScriptInjection::Initialize(lua()))
+	{
+		Msg("! Cannot initialize script injection: %s", lua_tostring(lua(), -1));
+		lua_pop(lua(), 1);
+	}
 }
 
 int CScriptStorage::vscript_log(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, va_list marker)
@@ -327,39 +333,7 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
 			return		(false);
 
 		xr_sprintf(insert, header, caNameSpaceName, a, b);
-		u32				str_len = xr_strlen(insert);
-		size_t const total_size = str_len + tSize;
-		LPSTR			script = 0;
-		bool dynamic_allocation = false;
-
-#ifdef IXR_WINDOWS
-		__try 
-		{
-#endif
-			if (total_size < 768 * 1024)
-				script = (LPSTR)_alloca(total_size);
-			else {
-				script = (LPSTR)Memory.mem_alloc(total_size);
-				dynamic_allocation = true;
-			}
-#ifdef IXR_WINDOWS
-		}
-		__except (GetExceptionCode() == STATUS_STACK_OVERFLOW)
-		{
-			int							errcode = _resetstkoflw();
-			R_ASSERT2(errcode, "Could not reset the stack after \"Stack overflow\" exception!");
-			script = (LPSTR)Memory.mem_alloc(total_size);
-			dynamic_allocation = true;
-		};
-#endif
-
-		xr_strcpy(script, total_size, insert);
-		CopyMemory(script + str_len, caBuffer, u32(tSize));
-
-		l_iErrorCode = luaL_loadbuffer(L, script, tSize + str_len, caScriptName);
-
-		if (dynamic_allocation)
-			xr_free(script);
+		l_iErrorCode = ScriptInjection::LoadNamespace(L, insert, caBuffer, tSize, caScriptName);
 	}
 	else
 	{

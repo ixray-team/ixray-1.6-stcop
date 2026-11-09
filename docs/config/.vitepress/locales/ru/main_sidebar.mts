@@ -124,6 +124,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Экспорт enum', link: '/scripting/exported-enums' },
       { text: 'Lua: Callbacks', link: '/scripting/lua-callbacks' },
       { text: 'Новые функции', link: '/scripting/new-functions' },
+      { text: 'Точечная подмена методов', link: '/scripting/script-injection' },
       { text: 'Фокусировка камеры', link: '/scripting/camera-focus' },
       {
         text: 'UI',

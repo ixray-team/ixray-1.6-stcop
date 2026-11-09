@@ -120,6 +120,7 @@ add_custom_command(
             -o ${LUAJIT_BUILD_FOLDER}/src/lj_bcdef.h
             ${GENDEF_INPUT_FILES}
     OUTPUT ${LUAJIT_BUILD_FOLDER}/src/lj_bcdef.h
+    DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     COMMENT "Generating lj_bcdef.h..."
     WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
 )
@@ -130,6 +131,7 @@ add_custom_command(
         -o ${LUAJIT_BUILD_FOLDER}/src/lj_ffdef.h
         ${GENDEF_INPUT_FILES}
     OUTPUT ${LUAJIT_BUILD_FOLDER}/src/lj_ffdef.h
+    DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     COMMENT "Generating lj_ffdef.h..."
     WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
 )
@@ -140,6 +142,7 @@ add_custom_command(
         -o ${LUAJIT_BUILD_FOLDER}/src/lj_libdef.h
         ${GENDEF_INPUT_FILES}
     OUTPUT ${LUAJIT_BUILD_FOLDER}/src/lj_libdef.h
+    DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     COMMENT "Generating lj_libdef.h..."
     WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
 )
@@ -150,6 +153,7 @@ add_custom_command(
         -o ${LUAJIT_BUILD_FOLDER}/src/lj_recdef.h
         ${GENDEF_INPUT_FILES}
     OUTPUT ${LUAJIT_BUILD_FOLDER}/src/lj_recdef.h
+    DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     COMMENT "Generating lj_recdef.h..."
     WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
 )
@@ -160,6 +164,7 @@ add_custom_command(
         -o ${LUAJIT_BUILD_FOLDER}/src/jit/vmdef.lua
         ${GENDEF_INPUT_FILES}
     OUTPUT ${LUAJIT_BUILD_FOLDER}/src/jit/vmdef.lua
+    DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     COMMENT "Generating vmdef.lua..."
     WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
 )
@@ -171,6 +176,7 @@ add_custom_command(
         -o ${LUAJIT_BUILD_FOLDER}/src/lj_folddef.h
         ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     OUTPUT ${LUAJIT_BUILD_FOLDER}/src/lj_folddef.h
+    DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
     COMMENT "Generating lj_folddef.h..."
     WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
 )
@@ -191,7 +197,8 @@ if(WIN32)
             -m ${LUAJIT_VM_MODE}
             -o ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/$<CONFIG>/lj_vm.obj
         OUTPUT ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/$<CONFIG>/lj_vm.obj
-        COMMENT "Generating lj_vm.obj..."
+        DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
+    COMMENT "Generating lj_vm.obj..."
         WORKING_DIRECTORY ${LUAJIT_ROOT_FOLDER}
     )
 
@@ -207,7 +214,8 @@ elseif(UNIX)
             -m ${LUAJIT_VM_MODE}
             -o ${LUAJIT_BUILD_FOLDER}/src/lj_vm.S
         OUTPUT ${LUAJIT_BUILD_FOLDER}/src/lj_vm.S
-        COMMENT "Generating lj_vm.S..."
+        DEPENDS buildvm ${GENDEF_INPUT_FILES} ${LUAJIT_ROOT_FOLDER}/src/lj_opt_fold.c
+    COMMENT "Generating lj_vm.S..."
     )
 
     add_custom_target(${PROJECT_NAME}

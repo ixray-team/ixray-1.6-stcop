@@ -114,6 +114,7 @@ GCfunc *lj_func_newC(lua_State *L, MSize nelems, GCtab *env)
   fn->c.gct = ~LJ_TFUNC;
   fn->c.ffid = FF_C;
   fn->c.nupvalues = (uint8_t)nelems;
+  setgcref(fn->c.keyid, obj2gco(fn));
   /* NOBARRIER: The GCfunc is new (marked white). */
   setmref(fn->c.pc, &G(L)->bc_cfunc_ext);
   setgcref(fn->c.env, obj2gco(env));
@@ -127,6 +128,7 @@ static GCfunc *func_newL(lua_State *L, GCproto *pt, GCtab *env)
   fn->l.gct = ~LJ_TFUNC;
   fn->l.ffid = FF_LUA;
   fn->l.nupvalues = 0;  /* Set to zero until upvalues are initialized. */
+  setgcref(fn->l.keyid, obj2gco(fn));
   /* NOBARRIER: Really a setgcref. But the GCfunc is new (marked white). */
   setmref(fn->l.pc, proto_bc(pt));
   setgcref(fn->l.env, obj2gco(env));
@@ -179,6 +181,26 @@ GCfunc *lj_func_newL_gc(lua_State *L, GCproto *pt, GCfuncL *parent)
     setgcref(fn->l.uvptr[i], obj2gco(uv));
   }
   fn->l.nupvalues = (uint8_t)nuv;
+  return fn;
+}
+
+GCfunc *lj_func_clone(lua_State *L, GCfunc *source)
+{
+  GCfunc *fn;
+  MSize i;
+  if (isluafunc(source)) {
+    fn = func_newL(L, funcproto(source), tabref(source->l.env));
+    for (i = 0; i < source->l.nupvalues; i++)
+      setgcrefr(fn->l.uvptr[i], source->l.uvptr[i]);
+    fn->l.nupvalues = source->l.nupvalues;
+  } else {
+    fn = lj_func_newC(L, source->c.nupvalues, tabref(source->c.env));
+    fn->c.ffid = source->c.ffid;
+    fn->c.f = source->c.f;
+    setmrefr(fn->c.pc, source->c.pc);
+    for (i = 0; i < source->c.nupvalues; i++)
+      copyTV(L, &fn->c.upvalue[i], &source->c.upvalue[i]);
+  }
   return fn;
 }
 

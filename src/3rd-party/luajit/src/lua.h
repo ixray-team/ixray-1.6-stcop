@@ -154,6 +154,10 @@ LUA_API void	       *(lua_touserdata) (lua_State *L, int idx);
 LUA_API lua_State      *(lua_tothread) (lua_State *L, int idx);
 LUA_API const void     *(lua_topointer) (lua_State *L, int idx);
 
+/* Replace Lua-held references with a clone of 'to', also stored in its slot.
+** Active frames finish their original bodies; future calls use the clone. */
+LUA_API void lua_replacefunction (lua_State *L, int from, int to);
+
 
 /*
 ** push functions (C -> stack)

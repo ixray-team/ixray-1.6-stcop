@@ -26,6 +26,13 @@ static Node *hashkey(const GCtab *t, cTValue *key)
     return hashnum(t, key);
   else if (tvisbool(key))
     return hashmask(t, boolV(key));
+  else if (tvisfunc(key)) {
+    GCRef identity = funcV(key)->c.keyid;
+#if LJ_GC64
+    identity.gcptr64 |= ((uint64_t)LJ_TFUNC << 47);
+#endif
+    return hashgcref(t, identity);
+  }
   else
     return hashgcref(t, key->gcr);
   /* Only hash 32 bits of lightuserdata on a 64 bit CPU. Good enough? */

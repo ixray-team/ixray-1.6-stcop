@@ -1329,6 +1329,16 @@ static TRef rec_idx_key(jit_State *J, RecordIndex *ix, IRRef *rbref,
 {
   TRef key;
   GCtab *t = tabV(&ix->tabv);
+  /* Replaced function keys retain their original hash bucket. The generic
+  ** JIT HREF hashes pointer bits, so only this uncommon indexing operation
+  ** stays interpreted. Ordinary calls and table iteration remain JIT-able. */
+  if (tvisfunc(&ix->keyv)) {
+    TRef identity;
+    if (gcrefu(funcV(&ix->keyv)->c.keyid) != (uintptr_t)funcV(&ix->keyv))
+      lj_trace_err(J, LJ_TRERR_NYITMIX);
+    identity = emitir(IRT(IR_FLOAD, IRT_PGC), ix->key, IRFL_FUNC_KEYID);
+    emitir(IRTG(IR_EQ, IRT_PGC), identity, ix->key);
+  }
   ix->oldv = lj_tab_get(J->L, t, &ix->keyv);  /* Lookup previous value. */
   *rbref = 0;
   rbguard->irt = 0;

@@ -25,6 +25,7 @@
 #include "lj_vm.h"
 #include "lj_strscan.h"
 #include "lj_strfmt.h"
+#include "luajit.h"
 
 /* -- Common helper functions --------------------------------------------- */
 
@@ -66,6 +67,96 @@ static LJ_AINLINE TValue *index2adr_check(lua_State *L, int idx)
   TValue *o = index2adr(L, idx);
   lj_checkapi(o != niltv(L), "invalid stack slot %d", idx);
   return o;
+}
+
+/* Rebind ordinary references without changing executing frame functions. */
+static int replacefunc_value(lua_State *L, TValue *value, GCfunc *from, GCfunc *to)
+{
+  if (tvisfunc(value) && funcV(value) == from) {
+    setfuncV(L, value, to);
+    return 1;
+  }
+  return 0;
+}
+
+static void replacefunc_thread(lua_State *L, lua_State *th, GCfunc *from, GCfunc *to)
+{
+  TValue *bot = tvref(th->stack), *top = th->top, *frame, *value;
+  for (frame = th->base-1; frame > bot+LJ_FR2; frame = frame_prev(frame)) {
+    GCfunc *fn = frame_func(frame);
+    TValue *ftop = frame;
+    if (isluafunc(fn)) ftop += funcproto(fn)->framesize;
+    if (ftop >= top) top = ftop+1;
+  }
+  if (top > tvref(th->maxstack)) top = tvref(th->maxstack);
+  frame = th->base-1;
+  value = top;
+  while (value > bot+1+LJ_FR2) {
+    --value;
+    if (frame > bot+LJ_FR2 && value == frame) {
+      value -= LJ_FR2;
+      frame = frame_prev(frame);
+    } else {
+      replacefunc_value(L, value, from, to);
+    }
+  }
+}
+
+LUA_API void lua_replacefunction(lua_State *L, int fromidx, int toidx)
+{
+  global_State *g = G(L);
+  GCobj *object;
+  GCfunc *from, *to;
+  GCupval *uv;
+  MSize i;
+  cTValue *old = index2adr(L, fromidx), *replacement = index2adr(L, toidx);
+  if (!tvisfunc(old) || !tvisfunc(replacement)) {
+    lua_pushliteral(L, "lua_replacefunction expects two functions");
+    lua_error(L);
+  }
+  if (funcV(old) == funcV(replacement)) return;
+  to = lj_func_clone(L, funcV(replacement));
+  setfuncV(L, index2adr(L, toidx), to);
+  /* Retire compiled references once, never on ordinary function calls. */
+  luaJIT_setmode(L, 0, LUAJIT_MODE_ENGINE|LUAJIT_MODE_FLUSH);
+  from = funcV(index2adr(L, fromidx));
+  to = funcV(index2adr(L, toidx));
+  /* Keep hash nodes and iterator positions in place, including function keys. */
+  setgcrefr(to->c.keyid, from->c.keyid);
+  for (object = gcref(g->gc.root); object; object = gcnext(object)) {
+    if (isdead(g, object)) continue;
+    if (object->gch.gct == ~LJ_TTAB) {
+      GCtab *t = gco2tab(object);
+      Node *node = noderef(t->node);
+      int changed = 0;
+      for (i = 0; i < t->asize; i++)
+        changed |= replacefunc_value(L, &tvref(t->array)[i], from, to);
+      for (i = 0; i <= t->hmask; i++) {
+        changed |= replacefunc_value(L, &node[i].key, from, to);
+        changed |= replacefunc_value(L, &node[i].val, from, to);
+      }
+      if (changed) lj_gc_objbarriert(L, t, to);
+    } else if (object->gch.gct == ~LJ_TFUNC) {
+      GCfunc *fn = gco2func(object);
+      if (!isluafunc(fn)) {
+        int changed = 0;
+        for (i = 0; i < fn->c.nupvalues; i++)
+          changed |= replacefunc_value(L, &fn->c.upvalue[i], from, to);
+        if (changed) lj_gc_objbarrier(L, fn, to);
+      }
+    } else if (object->gch.gct == ~LJ_TUPVAL) {
+      uv = &object->uv;
+      if (replacefunc_value(L, uvval(uv), from, to))
+        lj_gc_objbarrier(L, uv, to);
+    } else if (object->gch.gct == ~LJ_TTHREAD) {
+      replacefunc_thread(L, &object->th, from, to);
+    }
+  }
+  replacefunc_thread(L, mainthread(g), from, to);
+  for (uv = uvnext(&g->uvhead); uv != &g->uvhead; uv = uvnext(uv))
+    replacefunc_value(L, uvval(uv), from, to);
+  replacefunc_value(L, &g->tmptv, from, to);
+  replacefunc_value(L, &g->tmptv2, from, to);
 }
 
 static TValue *index2adr_stack(lua_State *L, int idx)
@@ -1098,6 +1189,11 @@ LUA_API const char *lua_setupvalue(lua_State *L, int idx, int n)
     L->top--;
     copyTV(L, val, L->top);
     lj_gc_barrier(L, o, L->top);
+    if (o->gch.gct == (uint8_t)~LJ_TUPVAL && o->uv.immutable) {
+      /* An external write invalidates constants recorded from this upvalue. */
+      o->uv.immutable = 0;
+      luaJIT_setmode(L, 0, LUAJIT_MODE_ENGINE|LUAJIT_MODE_FLUSH);
+    }
   }
   return name;
 }
