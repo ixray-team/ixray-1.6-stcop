@@ -205,68 +205,87 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 		);
 	}
 
-	CImGuiManager::Instance().Subscribe
-	(
+	CImGuiManager::Instance().Subscribe(
 		"CutsceneAdjust",
-		CImGuiManager::ERenderPriority::eMedium, [this]
+		CImGuiManager::ERenderPriority::eMedium,
+		[this]
 		{
-			if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::CutsceneAdjust)]) {
+			static bool EnableAdjust = false;
+			auto& CutsceneManager = CCutsceneManager::GetInstance();
+			auto& IsOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::CutsceneAdjust)];
+			if (!IsOpen)
+			{
+				EnableAdjust = false;
+				CutsceneManager.SetAdjust(false);
 				return;
 			}
 
 			extern bool hud_adj_crosshair;
-			static bool EnableAdjust = false;
 
-			if (ImGui::Begin("CutsceneAdjust", &Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]))
+			if (ImGui::Begin("CutsceneAdjust", &IsOpen))
 			{
 				ImGui::Checkbox("Enable", &EnableAdjust);
 
-				if (EnableAdjust != CCutsceneManager::GetInstance().GetAdjust()) {
+				if (EnableAdjust != CCutsceneManager::GetInstance().GetAdjust())
+				{
 					CCutsceneManager::GetInstance().SetAdjust(EnableAdjust);
 				}
 
-				if (!EnableAdjust) {
+				if (!EnableAdjust)
+				{
 					ImGui::End();
 					return;
 				}
-				if (ImGui::Button("Save")) {
+				if (ImGui::Button("Save"))
+				{
 					CCutsceneManager::GetInstance().SaveAdjust();
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Reset")) {
+				if (ImGui::Button("Reset"))
+				{
 					CCutsceneManager::GetInstance().ResetAdjust();
 				}
 
-				const auto& Cutscenes = pSettings->r_section("cutscenes");
-
-				const bool PrevCapture = ImGui::GetIO().WantCaptureKeyboard;
-				ImGui::GetIO().WantCaptureKeyboard = true;
-				ImGui::BeginListBox("Cutscenes");
-				static u64 current_part_idx = 0;
-				for (u64 i = 0; i < Cutscenes.Data.size(); ++i) {
-					const bool is_selected = (current_part_idx == i);
-					if (ImGui::Selectable(Cutscenes.Data[i].first.c_str(), is_selected, ImGuiSelectableFlags_SelectOnNav)) {
-						current_part_idx = i;
-					}
-					if (is_selected) { 
-						ImGui::SetItemDefaultFocus(); 
-						CCutsceneManager::GetInstance().SetAdjustSection(Cutscenes.Data[i].first);
-					}
-				}
-				ImGui::GetIO().WantCaptureKeyboard = PrevCapture;
-				ImGui::EndListBox();
-
+				if (pSettings->section_exist("cutscenes"))
 				{
-					auto flag = ImGuiTreeNodeFlags_DefaultOpen;
-					if (ImGui::TreeNodeEx("Objects"))
+					const auto& Cutscenes = pSettings->r_section("cutscenes");
+
+					const bool PrevCapture = ImGui::GetIO().WantCaptureKeyboard;
+					ImGui::GetIO().WantCaptureKeyboard = true;
+					ImGui::BeginListBox("Cutscenes");
+					static u64 current_part_idx = 0;
+					for (u64 i = 0; i < Cutscenes.Data.size(); ++i)
 					{
-						CCutsceneManager::GetInstance().DrawData();
-						ImGui::TreePop();
+						const bool is_selected = (current_part_idx == i);
+						if (ImGui::Selectable(Cutscenes.Data[i].first.c_str(), is_selected, ImGuiSelectableFlags_SelectOnNav))
+						{
+							current_part_idx = i;
+						}
+						if (is_selected)
+						{
+							ImGui::SetItemDefaultFocus();
+							CCutsceneManager::GetInstance().SetAdjustSection(Cutscenes.Data[i].first);
+						}
+					}
+					ImGui::GetIO().WantCaptureKeyboard = PrevCapture;
+					ImGui::EndListBox();
+
+					{
+						auto flag = ImGuiTreeNodeFlags_DefaultOpen;
+						if (ImGui::TreeNodeEx("Objects"))
+						{
+							CCutsceneManager::GetInstance().DrawData();
+							ImGui::TreePop();
+						}
 					}
 				}
-
 			}
 			ImGui::End();
+			if (!IsOpen)
+			{
+				EnableAdjust = false;
+				CutsceneManager.SetAdjust(false);
+			}
 		}
 	);
 #endif
