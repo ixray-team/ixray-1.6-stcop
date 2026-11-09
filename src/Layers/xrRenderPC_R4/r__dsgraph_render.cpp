@@ -54,7 +54,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 						mapNormalPS&		ps			= Ngs.val;
 						for (mapNormalPS::TNode& Nps : ps)
 						{
-							GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
+							RCache.set_PS(Nps.key);
 							mapNormalCS&		cs			= Nps.val.mapCS;
 							GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
 							GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
@@ -127,7 +127,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 					mapMatrixPS&		ps			= Ngs.val;
 					for (mapMatrixPS::TNode& Nps : ps)
 					{
-						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
+						RCache.set_PS(Nps.key);
 						mapMatrixCS&		cs			= Nps.val.mapCS;
 						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
 						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);

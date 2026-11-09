@@ -105,6 +105,9 @@ private:
 	SConstantList*					C;
 
 	// Lists-expanded
+	u32								PixelTexture2DSlots = 0;
+	u32								BoundPixelTexture2DSlots = 0;
+	u32								PlaceholderTextureSlots = 0;
 	CTexture*						textures_ps	[mtMaxPixelShaderTextures];	// stages
 	CTexture*						textures_vs	[mtMaxVertexShaderTextures];	// 4 vs
 	CTexture*						textures_gs	[mtMaxGeometryShaderTextures];	// 4 vs
@@ -192,7 +195,12 @@ public:
 
 	ICF  void						set_Format			(SDeclaration* _decl);
 
-	ICF void						set_PS				(const ref_ps& _ps)					{ GRHI->SetShader(_ps->ps, ERHI_SHADER_TYPE::PS); }
+	ICF void set_PS(const ref_ps& PixelShader) { set_PS(PixelShader._get()); }
+	ICF void set_PS(SPS* PixelShader)
+	{
+		PixelTexture2DSlots = PixelShader->Texture2DSlots;
+		GRHI->SetShader(PixelShader->ps, ERHI_SHADER_TYPE::PS);
+	}
 	ICF void						set_GS				(const ref_gs& _gs)					{ GRHI->SetShader(_gs->gs, ERHI_SHADER_TYPE::GS); }
 	ICF void						set_HS				(const ref_hs& _hs)					{ GRHI->SetShader(_hs->sh, ERHI_SHADER_TYPE::HS); }
 	ICF void						set_DS				(const ref_ds& _ds)					{ GRHI->SetShader(_ds->sh, ERHI_SHADER_TYPE::DS); }

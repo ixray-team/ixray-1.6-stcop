@@ -51,6 +51,7 @@ struct RENDER_API SPS : public xr_resource_uniq
 	SShaderCompileState					CompileState;
 	ID3DPixelShader*					ps;
 	R_constant_table					constants;
+	u32 Texture2DSlots = 0;
 	virtual ~SPS			() override;
 };
 typedef	resptr_core<SPS,resptr_base<SPS> > ref_ps;

@@ -59,6 +59,9 @@ void CBackend::Invalidate	()
 	ctable						= nullptr;
 
 	T							= nullptr;
+	PixelTexture2DSlots = 0;
+	BoundPixelTexture2DSlots = 0;
+	PlaceholderTextureSlots = 0;
 	M							= nullptr;
 	C							= nullptr;
 
@@ -111,17 +114,22 @@ void CBackend::Invalidate	()
 void CBackend::set_Textures(STextureList* _T)
 {
 	PROF_EVENT("set_Textures");
-	if (T == _T)	return;
+	const u32 ChangedPixelTexture2DSlots = PixelTexture2DSlots ^ BoundPixelTexture2DSlots;
+	if (T == _T && !PlaceholderTextureSlots && !ChangedPixelTexture2DSlots)
+	{
+		return;
+	}
 	T = _T;
+	BoundPixelTexture2DSlots = PixelTexture2DSlots;
 	//	If resources weren't set at all we should clear from resource #0.
-	int _last_ps = -1;
+	u32 UsedPixelTextures = 0;
 	int _last_vs = -1;
 	int _last_gs = -1;
 	int _last_hs = -1;
 	int _last_ds = -1;
 	int _last_cs = -1;
-	STextureList::iterator	_it = _T->begin();
-	STextureList::iterator	_end = _T->end();
+	STextureList::iterator	_it = _T ? _T->begin() : STextureList::iterator();
+	STextureList::iterator	_end = _T ? _T->end() : STextureList::iterator();
 
 	for (; _it != _end; _it++)
 	{
@@ -132,13 +140,26 @@ void CBackend::set_Textures(STextureList* _T)
 		if (load_id < CTexture::rstVertex)
 		{
 			//	Set up pixel shader resources
-			VERIFY(load_id < mtMaxPixelShaderTextures);
-			// ordinary pixel surface
-			if ((int)load_id > _last_ps)		_last_ps = load_id;
-			if (textures_ps[load_id] != load_surf)
+			if (load_id >= mtMaxPixelShaderTextures)
+			{
+				VERIFY(!"Invalid pixel texture slot");
+				continue;
+			}
+			const u32 Slot = 1u << load_id;
+			UsedPixelTextures |= Slot;
+			if (textures_ps[load_id] != load_surf || ((PlaceholderTextureSlots | ChangedPixelTexture2DSlots) & Slot))
 			{
 				textures_ps[load_id] = load_surf;
-				if (load_surf)
+				PlaceholderTextureSlots &= ~Slot;
+				if (!load_surf)
+				{
+					GRHI->ShaderResourceCache->SetPSResource(load_id, nullptr);
+				}
+				else if ((PixelTexture2DSlots & Slot) && load_surf->BindPlaceholder(load_id))
+				{
+					PlaceholderTextureSlots |= Slot;
+				}
+				else
 				{
 					load_surf->bind(load_id);
 				}
@@ -234,14 +255,15 @@ void CBackend::set_Textures(STextureList* _T)
 			else VERIFY("Invalid enum");
 	}
 
-	// clear remaining stages (PS)
-	for (++_last_ps; _last_ps < mtMaxPixelShaderTextures; _last_ps++)
+	// Clear pixel slots omitted by the new list, including slots below its highest binding.
+	PlaceholderTextureSlots &= UsedPixelTextures;
+	for (u32 Slot = 0; Slot < mtMaxPixelShaderTextures; ++Slot)
 	{
-		if (!textures_ps[_last_ps])
-			continue;
-
-		textures_ps[_last_ps] = nullptr;
-		GRHI->ShaderResourceCache->SetPSResource(_last_ps, nullptr);
+		if (!(UsedPixelTextures & (1u << Slot)) && textures_ps[Slot])
+		{
+			textures_ps[Slot] = nullptr;
+			GRHI->ShaderResourceCache->SetPSResource(Slot, nullptr);
+		}
 	}
 	// clear remaining stages (VS)
 	for (++_last_vs; _last_vs < mtMaxVertexShaderTextures; _last_vs++)

@@ -99,7 +99,7 @@ namespace R_dsgraph
 	using gs_type = ID3DGeometryShader*;
 	using hs_type = ID3D11HullShader*;
 	using ds_type = ID3D11DomainShader*;
-	using ps_type = ID3DPixelShader*;
+	using ps_type = SPS*;
 
 	// NORMAL
 	using mapNormalDirect = xr_vector<_NormalItem,render_allocator::helper<_NormalItem>::result>;

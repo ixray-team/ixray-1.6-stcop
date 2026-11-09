@@ -985,6 +985,7 @@ static HRESULT create_shader(
 	HRESULT		_result = E_FAIL;
 	if(pTarget[0] == 'p') {
 		SPS* sps_result = (SPS*)result;
+		sps_result->Texture2DSlots = 0;
 		_result = RDevice->CreatePixelShader(buffer, buffer_size, 0, &sps_result->ps);
 		if(!SUCCEEDED(_result)) {
 			Msg("! PS: %s", file_name);
@@ -1001,6 +1002,25 @@ static HRESULT create_shader(
 		if(SUCCEEDED(_result) && pReflection) {
 			//	Let constant table parse it's data
 			sps_result->constants.parse(pReflection, RC_dest_pixel);
+
+			D3D11_SHADER_DESC ShaderDesc = {};
+			if (SUCCEEDED(pReflection->GetDesc(&ShaderDesc)))
+			{
+				for (u32 Index = 0; Index < ShaderDesc.BoundResources; ++Index)
+				{
+					D3D11_SHADER_INPUT_BIND_DESC Resource = {};
+					if (FAILED(pReflection->GetResourceBindingDesc(Index, &Resource)) ||
+						Resource.Type != D3D_SIT_TEXTURE || Resource.Dimension != D3D_SRV_DIMENSION_TEXTURE2D)
+					{
+						continue;
+					}
+
+					for (u32 Slot = Resource.BindPoint; Slot < Resource.BindPoint + Resource.BindCount && Slot < CBackend::mtMaxPixelShaderTextures; ++Slot)
+					{
+						sps_result->Texture2DSlots |= 1u << Slot;
+					}
+				}
+			}
 
 			_RELEASE(pReflection);
 		}

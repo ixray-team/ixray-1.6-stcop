@@ -38,6 +38,7 @@ CTexture::CTexture		()
 
 CTexture::~CTexture()
 {
+	can_unload = true;
 	Unload();
 	DEV->_DeleteTexture(this);
 }
@@ -137,8 +138,30 @@ void CTexture::PostLoad	()
 void CTexture::apply_load(u32 dwStage)
 {
 	Load();
-
 	bind(dwStage);
+}
+
+bool CTexture::BindPlaceholder(u32 Slot)
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	if (!Placeholder || IsExternalSurface)
+	{
+		return false;
+	}
+
+	if (LoadTask && LoadDone.load(std::memory_order_acquire))
+	{
+		FinishLoading();
+		PostLoad();
+	}
+
+	if (!LoadTask && (!flags.bLoaded || pSurface || !seqDATA.empty()))
+	{
+		return false;
+	}
+
+	GRHI->ShaderResourceCache->SetPSResource(Slot, Placeholder->m_pSRView);
+	return true;
 }
 
 void CTexture::ProcessStaging()
@@ -352,14 +375,28 @@ bool CTexture::StartLoading()
 	}
 
 	Preload();
+	if (!Placeholder)
+	{
+		CTexture* Shared = DEV->GetTexturePlaceholder();
+		if (Shared != this)
+		{
+			Placeholder._set(Shared);
+		}
+	}
+	LoadDone.store(false, std::memory_order_relaxed);
+	LoadCancelled.store(false, std::memory_order_relaxed);
 	LoadTask = xr_make_unique<xr_task_group>(ETaskPriority::Background);
 	auto LoadLambda = [this]()
 	{
-		PROF_EVENT("CTexture::LoadAsync");
-		LoadImpl();
+		if (!LoadCancelled.load(std::memory_order_acquire))
+		{
+			PROF_EVENT("CTexture::LoadAsync");
+			LoadImpl();
+		}
+		LoadDone.store(true, std::memory_order_release);
 	};
-	LoadTask->run(LoadLambda);
 	IsLoading.store(true, std::memory_order_release);
+	LoadTask->run(LoadLambda);
 	return true;
 }
 
@@ -387,13 +424,17 @@ bool CTexture::CanCacheShadow(bool& Pending, u64& Revision)
 	return pSurface && m_pSRView && !flags.bUser && !pAVI && !pTheora && seqDATA.empty();
 }
 
-void CTexture::FinishLoading()
+void CTexture::FinishLoading(bool Discard)
 {
 	if (LoadTask)
 	{
+		if (Discard)
+		{
+			LoadCancelled.store(true, std::memory_order_release);
+		}
 		LoadTask->wait();
 		LoadTask.reset();
-		if (!flags.bLoaded)
+		if (!flags.bLoaded && !Discard)
 		{
 			// A cancelled parent task may prevent the queued load from starting.
 			LoadImpl();
@@ -415,7 +456,7 @@ ERHI_FORMAT CTexture::PeekFormat()
 {
 	{
 		xrCriticalSectionGuard Guard(LoadGuard);
-		if (!LoadTask && pSurface)
+		if ((!LoadTask || LoadDone.load(std::memory_order_acquire)) && pSurface)
 		{
 			return pSurface->GetFormat();
 		}
@@ -596,7 +637,7 @@ void CTexture::LoadImpl()
 void CTexture::Unload()
 {
 	xrCriticalSectionGuard Guard(LoadGuard);
-	FinishLoading();
+	FinishLoading(true);
 	if (!can_unload) return;
 	ShadowCacheRevision.fetch_add(1, std::memory_order_relaxed);
 	flags.bLoaded = false;

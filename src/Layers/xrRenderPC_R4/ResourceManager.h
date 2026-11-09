@@ -105,6 +105,8 @@ private:
 	xr_vector<Shader*>									v_shaders;
 	
 	xr_vector<ref_texture>								m_necessary;
+	ref_texture TexturePlaceholder;
+	void CreateTexturePlaceholder();
 
 	// misc
 	xrCriticalSection creationGuard;
@@ -135,6 +137,7 @@ public:
 
 	// Low level resource creation
 	CTexture*						_CreateTexture		(const char* Name);
+	CTexture* GetTexturePlaceholder() const { return TexturePlaceholder._get(); }
 	void							_DeleteTexture		(const CTexture* T);
 
 	CMatrix*						_CreateMatrix		(const char* Name);

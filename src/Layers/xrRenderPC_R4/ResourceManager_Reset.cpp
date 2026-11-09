@@ -101,6 +101,7 @@ CResourceManager::~CResourceManager		()
 {
 	WaitForTextureLoading();
 	DestroyNecessaryTextures	();
+	TexturePlaceholder = nullptr;
 #ifdef DEBUG
 	Dump(false);
 #endif
