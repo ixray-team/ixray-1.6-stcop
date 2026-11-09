@@ -47,6 +47,7 @@ void setup_luabind_allocator()
 
 SEFactory_Create* create_entity = 0;
 SEFactory_Destroy* destroy_entity = 0;
+SEFactory_SetSpawnWriteVersion* set_spawn_write_version = nullptr;
 
 static HMODULE hFactory;
 
@@ -62,6 +63,7 @@ void InitialFactory() {
 
 	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
 	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
+	set_spawn_write_version = (SEFactory_SetSpawnWriteVersion*)GetProcAddress(hFactory, "set_spawn_write_version");	R_ASSERT(set_spawn_write_version);
 }
 
 void DestroyFactory()

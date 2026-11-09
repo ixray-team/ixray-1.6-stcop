@@ -13,6 +13,7 @@
 #include "xrServer_Objects_ALife_All.h"
 #include "../xrAI.h"
 #include "server_entity_wrapper.h"
+#include "../factory_api.h"
 #include "../Graph/graph_engine.h"
 #include "patrol_path_storage.h"
 #include "../../UI/CompilersUI.h"
@@ -187,6 +188,7 @@ void CGameSpawnConstructor::save_spawn(const char* output)
 
 	const u16 SpawnVersion = SpawnWrite::TargetVersion(gCompilerMode.AI_SpawnTarget);
 	SpawnWrite::ScopedVersion SpawnWriteVersion(SpawnVersion);
+	const u16 PreviousFactoryVersion = set_spawn_write_version(SpawnVersion);
 	if (SpawnVersion != SPAWN_VERSION)
 	{
 		Msg("~ Writing all.spawn as spawn version %u", SpawnVersion);
@@ -221,6 +223,8 @@ void CGameSpawnConstructor::save_spawn(const char* output)
 	stream.open_chunk				(4);
 	m_game_graph->save				(stream);
 	stream.close_chunk				();
+
+	set_spawn_write_version(PreviousFactoryVersion);
 
 	stream.save_to					(*spawn_name(output));
 }
