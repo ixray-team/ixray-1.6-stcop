@@ -54,103 +54,6 @@ void CRender::BeginMainCollect(bool ZFill)
 	GraphMain.OwnsView = true;
 }
 
-// The static hierarchy needs the current camera, so it cannot start before FrameMove. Started
-// here it runs next to the sun cascades on PreRenderThread and to everything the primary thread
-// does before the main scene: reflections, item UI, targets.
-void CRender::PrepareMainScene()
-{
-	MainScenePrepared = false;
-	// The Z prefill collects its own scene in the same portal traverser
-	if (!ps_r__common_flags.test(RFLAG_MT_MAIN_STATIC) || Device.IsEditorMode() || ps_r2_ls_flags.test(R2FLAG_ZFILL) || !pLastSector)
-	{
-		return;
-	}
-
-	HOM.Enable();
-	TraverseMainSectors(false);
-
-	GraphView View = MakeGraphView(PHASE_NORMAL);
-	View.Distortion = o.distortion_enabled;
-	View.PassMask[0] = true;
-	View.PassMask[1] = true;
-	View.PassMask[2] = true;
-	LaunchMainStatic(View, true, Sectors.size() <= 1);
-	MainScenePrepared = true;
-}
-
-void CRender::TraverseMainSectors(bool ZFill)
-{
-	Fmatrix mftrans;
-	if (ZFill)
-	{
-		Fmatrix m_project;
-		m_project.build_projection(
-			deg2rad(Device.fFOV/* *Device.fASPECT*/),
-			Device.fASPECT, Device.fViewportNear,
-			ps_r2_zfill * g_pGamePersistent->Environment().CurrentEnv->far_plane);
-		mftrans.mul(m_project, Device.mView);
-	}
-	else
-	{
-		mftrans = Device.mFullTransform;
-	}
-
-	// Traverse sector/portal structure
-	if (Sectors.size() > 1)
-	{
-		GraphMain.PortalTraverser.ViewportNear = Device.fViewportNear;
-		GraphMain.PortalTraverser.prepare_local_clips((u32)Sectors.size(), (u32)Portals.size());
-		GraphMain.PortalTraverser.traverse
-			(
-			pLastSector,
-			ViewBase,
-			vLastCameraPos,
-			mftrans,
-			CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE
-			//. disabled scissoring (HW.Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
-			);
-	}
-}
-
-void CRender::LaunchMainStatic(const GraphView& View, bool ForwardTogether, bool SingleSector)
-{
-	MainStaticRunning = false;
-	if (!ps_r__common_flags.test(RFLAG_MT_MAIN_STATIC) || !psDeviceFlags.test(rsDrawStatic) || psDeviceFlags.test(rsClearBB) || LightingModeIsStaticRender() || g_StaticTraversalStats.IsRequested())
-	{
-		return;
-	}
-
-	GraphMainStatic.Begin(View);
-	GraphMainStatic.ViewParams.TrackStats = false;
-	GraphMainStatic.CollectForwardTogether = ForwardTogether;
-	MainStaticRunning = true;
-
-	MainStaticTask.run([this, SingleSector]()
-	{
-		if (SingleSector)
-		{
-			GraphMainStatic.View = &ViewBase;
-			GraphMainStatic.add_Static(((CSector*)Sectors[0])->root(), ViewBase.getMask());
-			GraphMainStatic.View = nullptr;
-			return;
-		}
-
-		GraphMainStatic.CaptureStaticFrom(GraphMain.PortalTraverser);
-	});
-}
-
-void CRender::JoinMainStatic()
-{
-	if (!MainStaticRunning)
-	{
-		return;
-	}
-
-	MainStaticTask.wait();
-	MainStaticRunning = false;
-	GraphMain.TakeStatic(GraphMainStatic);
-}
-
 void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 {
 	GPU_EVENT(render_main);
@@ -209,13 +112,32 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 				}
 			}
 		}
-		if (!MainScenePrepared)
+		Fmatrix mftrans;
+		if(zfill)
 		{
-			TraverseMainSectors(zfill);
-
-			GraphView StaticView = GraphMain.ViewParams;
-			std::copy(std::begin(GraphMain.pmask), std::end(GraphMain.pmask), StaticView.PassMask);
-			LaunchMainStatic(StaticView, GraphMain.CollectForwardTogether, dont_test_sectors);
+			Fmatrix m_project;
+			m_project.build_projection(
+				deg2rad(Device.fFOV/* *Device.fASPECT*/), 
+				Device.fASPECT, Device.fViewportNear,
+				ps_r2_zfill * g_pGamePersistent->Environment().CurrentEnv->far_plane);
+			mftrans.mul(m_project,Device.mView);
+		}
+		else
+			mftrans = Device.mFullTransform;
+		// Traverse sector/portal structure
+		if (!dont_test_sectors)
+		{
+			GraphMain.PortalTraverser.ViewportNear = Device.fViewportNear;
+			GraphMain.PortalTraverser.prepare_local_clips((u32)Sectors.size(), (u32)Portals.size());
+			GraphMain.PortalTraverser.traverse
+				(
+				pLastSector,
+				ViewBase,
+				vLastCameraPos,
+				mftrans,
+				CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE
+				//. disabled scissoring (HW.Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
+				);
 		}
 
 		// Dynamic objects are collected before static geometry: worker threads calculate their
@@ -224,7 +146,7 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 		GraphMain.SkeletonUpdates.Launch();
 
 		// Determine visibility for static geometry hierrarhy
-		if(!MainStaticRunning && psDeviceFlags.test(rsDrawStatic))
+		if(psDeviceFlags.test(rsDrawStatic))
 		{
 			PROF_EVENT("add_static")
 
@@ -271,8 +193,6 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 		PROF_EVENT("add_dynamic")
 		GraphMain.SkeletonUpdates.Wait();
 		RenderMainDynamic();
-		JoinMainStatic();
-		MainScenePrepared = false;
 
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
 		{
@@ -642,8 +562,6 @@ void CRender::Render()
 		prepare_sun_collect(Device.dwFrame);
 		collect_sun_graphs();
 	}
-
-	PrepareMainScene();
 
 	// Reflections can sample the captures before this frame's sun pass.
 	Cmd.Constants.UpdateSunShadows();

@@ -444,43 +444,13 @@ void R_dsgraph_structure::Traverse()
 
 void R_dsgraph_structure::CaptureStatic()
 {
-	CaptureStaticFrom(PortalTraverser);
-}
-
-void R_dsgraph_structure::TakeStatic(R_dsgraph_structure& Static)
-{
-	PROF_EVENT("take_static");
-	for (u32 Priority = 0; Priority < 2; ++Priority)
-	{
-		for (u32 Pass = 0; Pass < SHADER_PASSES_MAX; ++Pass)
-		{
-			VERIFY(mapNormalPasses[Priority][Pass].size() == 0);
-			mapNormalPasses[Priority][Pass].swap(Static.mapNormalPasses[Priority][Pass]);
-		}
-	}
-
-	// Sorted lists hold the dynamic objects too and are drawn in distance order
-	const auto Merge = [](auto& To, auto& From)
-	{
-		From.traverseRL([&To](auto* Node) { To.insertInAnyWay(Node->key, Node->val); });
-		From.clear();
-	};
-	Merge(mapSorted, Static.mapSorted);
-	Merge(mapDistort, Static.mapDistort);
-	Merge(mapEmissive, Static.mapEmissive);
-	Merge(mapWmark, Static.mapWmark);
-	Merge(mapLOD, Static.mapLOD);
-}
-
-void R_dsgraph_structure::CaptureStaticFrom(CPortalTraverser& Traverser)
-{
 	PROF_EVENT("add_static");
 	if (psDeviceFlags.test(rsDrawStatic))
 	{
-		for (IRender_Sector* Item : Traverser.r_sectors)
+		for (IRender_Sector* Item : PortalTraverser.r_sectors)
 		{
 			CSector* Sector = (CSector*)Item;
-			for (CFrustum& Frustum : Traverser.local_frustums[Sector->index])
+			for (CFrustum& Frustum : PortalTraverser.local_frustums[Sector->index])
 			{
 				View = &Frustum;
 				add_Static(Sector->root(), Frustum.getMask());

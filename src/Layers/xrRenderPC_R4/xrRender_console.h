@@ -293,7 +293,6 @@ enum
 	RFLAG_MT_MODEL_LOAD = (1 << 23),
 	R4FLAG_GTAO_HQ = (1 << 24),
 	R4FLAG_SSLR_HQ = (1 << 25),
-	RFLAG_MT_MAIN_STATIC = (1 << 26),
 };
 
 // Registers the renderer console commands. The game calls it when the renderer is loaded;

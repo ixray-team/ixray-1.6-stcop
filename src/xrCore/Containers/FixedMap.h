@@ -310,13 +310,6 @@ public:
 	}
 	u32 allocated() { return this->limit; }
 	void clear() { pool = 0; }
-
-	void swap(FixedMAP& Other)
-	{
-		std::swap(nodes, Other.nodes);
-		std::swap(pool, Other.pool);
-		std::swap(limit, Other.limit);
-	}
 	TNode* begin() { return nodes; }
 	TNode* end() { return nodes + pool; }
 	TNode* last() { return nodes + limit; } // for setup only

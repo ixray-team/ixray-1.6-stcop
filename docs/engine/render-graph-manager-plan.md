@@ -11,9 +11,9 @@ Paths below are for this branch, with the `src/Layers/xrRenderPC_R4/` prefix omi
 | 1–2. View snapshot, cascades without waiting | Committed (`00e3592d27`) |
 | 3–6. `Begin`, `Build`, `CollectGraphs`, `GraphRain` on the worker, each pass has its own graph, one main-scene collection | Committed (`d425ce2772`) |
 | Icons in `GraphUI`, view snapshot for `GraphMain` | Committed (`8c55fdea9f`) |
-| `IDSGraphManager` interface for `xrGame` | Committed (`42357ce0ea`) |
+| `IDSGraphManager` interface for `xrGame` | Done |
 | 7. Stable shadow statics | Not done: no measurable benefit |
-| 8. More work on workers | Not committed: `r__mt_main_static`, no gain so far |
+| 8. More work on workers | Not started |
 
 Differences from what is described below:
 
@@ -25,26 +25,7 @@ Differences from what is described below:
 
 **Stage 7.** `r4_spot_shadow_cache` already stores the list of statics without portal traversal, and the depth. With the flashlight in modes 0, 1 and 2 the frame takes 1.68, 1.69 and 1.78 ms. A separate CPU graph cache would duplicate this. A scene with static lamps was not measured, so the decision can be revisited on one.
 
-**Stage 8.** The main scene needs the current camera, so its statics cannot start before `FrameMove`, and dynamics cannot be collected during `OnFrame` (section 4). The only remaining option was tested: the main scene's statics are collected on a worker into a separate graph in parallel with dynamics on the main thread, then `mapNormalPasses` are swapped and the sorted lists are merged. Alternating measurement against `42357ce0ea`:
-
-| Scene | Runs | `calc`, ms | `total`, ms | p95, ms |
-| --- | --- | --- | --- | --- |
-| Zaton | 6 and 6 | 0.318 → 0.392 | 1.50 → 1.57 | 2.42 → 2.68 |
-| Limansk, CS | 3 and 3 | 0.457 → 0.432 | 2.82 → 2.61, ranges overlap | 3.68 → 3.62 |
-| Army Warehouses, CS | 3 and 3 | 0.222 → 0.249 | 1.04 → 1.07 | 1.46 → 1.82 |
-
-Collection already takes a small share of the frame, and the task launch and merge eat up the savings.
-
-Second option: statics start right after `Calculate`, alongside the cascades on `PreRenderThread` and everything the main thread does before the main scene. Command `r__mt_main_static`, measured in one binary, `total` on / off, markup: median and p95, ms.
-
-| Scene | Runs | Median | p95 |
-| --- | --- | --- | --- |
-| Zaton | 6 and 6 | 1.224 / 1.233 | 1.67 / 1.77 |
-| Limansk, CS | 3 and 3 | 3.03 / 2.37 | 3.92 / 2.86 |
-| Army Warehouses, CS | 3 and 3 | 1.00 / 1.00 | 2.22 / 1.30 |
-| Hospital, CS | 3 and 2 | 0.47 / 0.49 | 0.67 / 0.65 |
-
-No gain; worse on Limansk and the warehouses, cause not found. Not checked: `IXRAY_ASAN`, Debug, render scenarios with the second option, projector shadows.
+**Stage 8.** `render_main` takes 0.22 ms out of the 2.2 ms frame on the tested scene. The main scene needs the current camera, so its statics cannot start before `FrameMove`, and dynamics cannot be collected during `OnFrame` (section 4). Revisit on a heavy scene.
 
 **Check of stages 3–6** on Zaton: draw calls and polygons match `594f1f4cc2` in the scenarios clear weather, rain, sun cache, `r2_zfill`, without `r2_exp_splitscene`, flashlight, shadow cache 1 and 2, static lighting with and without the flashlight. `disconnect` and `vid_restart` without crashes. `total_ms` 1.26–1.46 ms versus 1.11–1.18 ms. Not checked in the autotest: 3D scope, puddle reflections (`R4FLAG_PUDDLES`), `decor_object`, a heavy scene.
 
