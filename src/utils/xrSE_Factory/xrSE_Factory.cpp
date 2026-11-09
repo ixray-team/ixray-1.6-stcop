@@ -37,6 +37,13 @@ extern "C"
 		F_entity_Destroy(object);
 		abstract = 0;
 	}
+	FACTORY_API u16 __cdecl set_spawn_write_version(u16 Version)
+	{
+		const u16 Previous = g_SpawnWriteVersion;
+		g_SpawnWriteVersion = Version;
+		return Previous;
+	}
+
 	FACTORY_API void __cdecl reload()
 	{
 		if (fp_data.counter)

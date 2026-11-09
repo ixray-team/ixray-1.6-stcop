@@ -189,6 +189,8 @@ CInifile &CSE_Abstract::spawn_ini			()
 	return						(*m_ini_file);
 }
 	
+u16 g_SpawnWriteVersion = SPAWN_VERSION;
+
 void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 {
 	// generic
@@ -200,9 +202,19 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 	tNetPacket.w_vec3			(o_Position		);
 	tNetPacket.w_vec3			(o_Angle		);
 	tNetPacket.w_u16			(RespawnTime	);
-	tNetPacket.w_u16(ID&0xffff);
-	tNetPacket.w_u16(ID_Parent&0xffff);
-	tNetPacket.w_u16(ID_Phantom&0xffff);
+	const bool U16ObjectID = SpawnWrite::UseU16ObjectID();
+	if (U16ObjectID)
+	{
+		SpawnWrite::ObjectID(tNetPacket, ID);
+		SpawnWrite::ObjectID(tNetPacket, ID_Parent);
+		SpawnWrite::ObjectID(tNetPacket, ID_Phantom);
+	}
+	else
+	{
+		tNetPacket.w_u16(ID & 0xffff);
+		tNetPacket.w_u16(ID_Parent & 0xffff);
+		tNetPacket.w_u16(ID_Phantom & 0xffff);
+	}
 
 	s_flags.set					(M_SPAWN_VERSION,true);
 	if (bLocal)
@@ -210,11 +222,14 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 	else
 		tNetPacket.w_u16		(u16(s_flags.flags&~(M_SPAWN_OBJECT_LOCAL|M_SPAWN_OBJECT_ASPLAYER)));
 	
-	tNetPacket.w_u16			(SPAWN_VERSION);
+	tNetPacket.w_u16			(g_SpawnWriteVersion);
 
-	tNetPacket.w_u16			(ID>>16);
-	tNetPacket.w_u16			(ID_Parent>>16);
-	tNetPacket.w_u16			(ID_Phantom>>16);
+	if (!U16ObjectID)
+	{
+		tNetPacket.w_u16(ID >> 16);
+		tNetPacket.w_u16(ID_Parent >> 16);
+		tNetPacket.w_u16(ID_Phantom >> 16);
+	}
 
 	tNetPacket.w_u16			(m_gameType.m_GameType.get());
 	
@@ -298,7 +313,7 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 		tNetPacket.r_u16(m_wVersion);
 	}
 
-	if (m_wVersion >= 134)
+	if (m_wVersion >= SPAWN_VERSION_U32_ID)
 	{
 		ID = (tNetPacket.r_u16() << 16)&0xffff0000;
 		ID |= OldType_ID;

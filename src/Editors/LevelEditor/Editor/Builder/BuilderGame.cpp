@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../xrServerEntities/xrServer_Objects.h"
 
 bool sort_fog_vol(EFogVolume* fv1, EFogVolume* fv2)
 {
@@ -12,7 +13,18 @@ bool SceneBuilder::BuildGame()
     F.envmodif.stream.w_u32(u32(SPAWNPOINT_VERSION));
     F.envmodif.stream.close_chunk();
 
-    if (!Scene->ExportGame(&F))				return false;
+    {
+        const u16 SpawnVersion = SpawnWrite::TargetVersion(Scene->SpawnTarget);
+        SEFactorySpawnVersionScope SpawnWriteVersion(SpawnVersion);
+        if (SpawnVersion != SPAWN_VERSION)
+        {
+            Msg("~ Writing level.spawn as spawn version %u", SpawnVersion);
+        }
+        if (!Scene->ExportGame(&F))
+        {
+            return false;
+        }
+    }
 
     bool bRes = true;
     // save spawn

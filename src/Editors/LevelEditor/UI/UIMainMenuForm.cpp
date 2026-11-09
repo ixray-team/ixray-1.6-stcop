@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../xrServerEntities/xrServer_Objects.h"
 #include "Coder/UICoderForm.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
 
@@ -350,6 +351,24 @@ void UIMainMenuForm::Draw()
 			{
 				DrawMenuItem("Make All", COMMAND_BUILD);
 				ImGui::Checkbox("Compile AI Map as Legacy", &Scene->IsAIMapDefaultLegacy);
+				if (Scene->SpawnTarget >= SpawnWrite::TargetCount)
+				{
+					Scene->SpawnTarget = 0;
+				}
+				ImGui::Text("Spawn format:");
+				ImGui::SetNextItemWidth(220.0f);
+				if (ImGui::BeginCombo("##SpawnFormat", SpawnWrite::Targets[Scene->SpawnTarget].Name))
+				{
+					for (u32 Index = 0; Index < SpawnWrite::TargetCount; ++Index)
+					{
+						if (ImGui::Selectable(SpawnWrite::Targets[Index].Name, Index == Scene->SpawnTarget))
+						{
+							Scene->SpawnTarget = Index;
+						}
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::SetItemTooltip("Format of level.spawn written by Make Game. Use an older format for compilers of older engines.");
 				ImGui::Separator();
 				DrawMenuItem("Make Game", COMMAND_MAKE_GAME);
 				DrawMenuItem("Make Puddles", COMMAND_MAKE_PUDDLES);

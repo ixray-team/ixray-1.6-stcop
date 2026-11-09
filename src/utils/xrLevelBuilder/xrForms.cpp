@@ -924,6 +924,7 @@ void SaveCompilerCfg()
 	Serializer->Write("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
 	Serializer->Write("AI_FreeMPBuild", gCompilerMode.AI_FreeMPBuild);
 	Serializer->Write("AI_AutoRegisterLevels", gCompilerMode.AI_AutoRegisterLevels);
+	Serializer->Write("AI_SpawnTarget", gCompilerMode.AI_SpawnTarget);
 	Serializer->Write("AI_StartActor", gCompilerMode.AI_StartActor);
 	Serializer->Write("AI_spawn_name", gCompilerMode.AI_spawn_name);
 	Serializer->Write("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
@@ -1005,6 +1006,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Serializer->Read("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
 	Serializer->Read("AI_FreeMPBuild", gCompilerMode.AI_FreeMPBuild);
 	Serializer->Read("AI_AutoRegisterLevels", gCompilerMode.AI_AutoRegisterLevels);
+	Serializer->Read("AI_SpawnTarget", gCompilerMode.AI_SpawnTarget);
 	Serializer->Read("AI_StartActor", gCompilerMode.AI_StartActor);
 	Serializer->Read("AI_spawn_name", gCompilerMode.AI_spawn_name);
 	Serializer->Read("AI_BuildLevel", gCompilerMode.AI_BuildLevel);

@@ -6,6 +6,7 @@ extern "C"
 	__declspec(dllimport) ISE_Abstract* __stdcall create_entity(const char* section);
 	__declspec(dllimport) void __stdcall destroy_entity(ISE_Abstract*& abstract);
 	__declspec(dllimport) void __cdecl reload();
+	__declspec(dllimport) u16 __cdecl set_spawn_write_version(u16 Version);
 }
 
 __declspec(dllimport) void SEFactoryEntry();
@@ -38,4 +39,9 @@ void XrSEFactoryManager::destroy_entity(CSE_Abstract*& abstract)
 void XrSEFactoryManager::reload()
 {
 	::reload();
+}
+
+u16 XrSEFactoryManager::SetSpawnWriteVersion(u16 Version)
+{
+	return ::set_spawn_write_version(Version);
 }

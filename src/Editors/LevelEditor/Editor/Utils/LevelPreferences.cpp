@@ -184,6 +184,7 @@ void CLevelPreferences::Load()
 		GetSafe(*scene, "ValidLod", Scene->IsValidateLODs);
 		GetSafe(*scene, "ValidMake", Scene->IsValidateAtMake);
 		GetSafe(*scene, "AIMapDefaultLegacy", Scene->IsAIMapDefaultLegacy);
+		GetSafe(*scene, "SpawnTarget", Scene->SpawnTarget);
 	}
 }
 
@@ -227,6 +228,7 @@ void CLevelPreferences::Save()
 	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
 	JSONData["Scene"]["ValidNames"] = Scene->IsValidateDublicateNames;
 	JSONData["Scene"]["AIMapDefaultLegacy"] = Scene->IsAIMapDefaultLegacy;
+	JSONData["Scene"]["SpawnTarget"] = Scene->SpawnTarget;
 
 	SceneToolsMapPairIt _I 	= Scene->FirstTool();
 	SceneToolsMapPairIt _E 	= Scene->LastTool();

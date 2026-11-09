@@ -909,6 +909,24 @@ void DrawAIConfig()
 	ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
 	ImGui::SetItemTooltip("Skip the space restrictor connectivity check.");
 
+	if (gCompilerMode.AI_SpawnTarget >= GetSpawnTargetCount())
+	{
+		gCompilerMode.AI_SpawnTarget = 0;
+	}
+	ImGui::Text("Spawn format:");
+	if (ImGui::BeginCombo("##SpawnFormat", GetSpawnTargetName(gCompilerMode.AI_SpawnTarget)))
+	{
+		for (u32 Index = 0; Index < GetSpawnTargetCount(); ++Index)
+		{
+			if (ImGui::Selectable(GetSpawnTargetName(Index), Index == gCompilerMode.AI_SpawnTarget))
+			{
+				gCompilerMode.AI_SpawnTarget = Index;
+			}
+		}
+		ImGui::EndCombo();
+	}
+	ImGui::SetItemTooltip("Format of all.spawn objects. Use an older format to run the spawn on older engines.");
+
 	ImGui::Checkbox("FreeMP Build", &gCompilerMode.AI_FreeMPBuild);
 	ImGui::SetItemTooltip("Save alife.spawn into the actor level folder for FreeMP.");
 

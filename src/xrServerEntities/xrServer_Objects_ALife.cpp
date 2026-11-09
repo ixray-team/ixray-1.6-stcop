@@ -476,7 +476,10 @@ void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ		(m_ini_string);
 	tNetPacket.w_u32			(m_story_id);
 	tNetPacket.w_u32			(m_spawn_story_id);
-	tNetPacket.w_stringZ		(m_script_story_ID);
+	if (g_SpawnWriteVersion > 134)
+	{
+		tNetPacket.w_stringZ(m_script_story_ID);
+	}
 }
 
 void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
@@ -710,14 +713,14 @@ void CSE_ALifeGroupAbstract::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	m_bCreateSpawnPositions		= !!dwDummy;
 	tNetPacket.r_u16			(m_wCount);
 	if (m_wVersion > 19)
-		load_data				(m_tpMembers,tNetPacket);
+		SpawnRead::ObjectIDs(tNetPacket, m_wVersion, m_tpMembers);
 };
 
 void CSE_ALifeGroupAbstract::STATE_Write	(NET_Packet	&tNetPacket)
 {
 	tNetPacket.w_u32			(m_bCreateSpawnPositions);
 	tNetPacket.w_u16			(m_wCount);
-	save_data					(m_tpMembers,tNetPacket);
+	SpawnWrite::ObjectIDs(tNetPacket, m_tpMembers);
 };
 
 void CSE_ALifeGroupAbstract::UPDATE_Read	(NET_Packet	&tNetPacket)
@@ -1299,7 +1302,7 @@ void CSE_ALifeObjectPhysic::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 
 		if (m_wVersion>56)
 		{
-			if (m_wVersion < 130)
+			if (m_wVersion < SPAWN_VERSION_U32_ID)
 			{
 				u16 ID;
 				tNetPacket.r_u16(ID);

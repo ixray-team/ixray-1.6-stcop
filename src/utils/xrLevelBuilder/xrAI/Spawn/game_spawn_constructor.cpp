@@ -171,9 +171,26 @@ void CGameSpawnConstructor::verify_level_changers	()
 	VERIFY2									(m_level_changers.empty(),"Some of the level changers setup incorrectly");
 }
 
+u32 GetSpawnTargetCount()
+{
+	return SpawnWrite::TargetCount;
+}
+
+const char* GetSpawnTargetName(u32 Index)
+{
+	return Index < SpawnWrite::TargetCount ? SpawnWrite::Targets[Index].Name : SpawnWrite::Targets[0].Name;
+}
+
 void CGameSpawnConstructor::save_spawn(const char* output)
 {
 	CMemoryWriter					stream;
+
+	const u16 SpawnVersion = SpawnWrite::TargetVersion(gCompilerMode.AI_SpawnTarget);
+	SpawnWrite::ScopedVersion SpawnWriteVersion(SpawnVersion);
+	if (SpawnVersion != SPAWN_VERSION)
+	{
+		Msg("~ Writing all.spawn as spawn version %u", SpawnVersion);
+	}
 
 	m_spawn_header.m_version		= XRAI_CURRENT_VERSION;
 	m_spawn_header.m_guid			= generate_guid();

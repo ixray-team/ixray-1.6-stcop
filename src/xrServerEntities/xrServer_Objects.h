@@ -171,6 +171,107 @@
 // 134	 CSE_ALifeItemWeaponMagazinedWGL	added m_bGrenadeMode
 //------------------------------------------------------------------------------
 #define SPAWN_VERSION u16(135)
+// Last spawn version written by engines with u16 object IDs.
+#define SPAWN_VERSION_LAST_U16_ID u16(134)
+// First spawn version that stores u32 object IDs.
+#define SPAWN_VERSION_U32_ID u16(SPAWN_VERSION_LAST_U16_ID + 1)
+
+// Spawn version used by Spawn_Write and the STATE/UPDATE writers.
+// Tools lower it to build spawn files for older engines; keep it at SPAWN_VERSION otherwise.
+extern u16 g_SpawnWriteVersion;
+
+namespace SpawnWrite
+{
+	struct Target
+	{
+		u16 Version;
+		const char* Name;
+	};
+
+	// Spawn formats the tools can build, current first.
+	inline constexpr Target Targets[] = {
+		{SPAWN_VERSION, "IXRay (u32 object IDs)"},
+		{SPAWN_VERSION_LAST_U16_ID, "u16 object IDs (older engines)"},
+	};
+
+	inline constexpr u32 TargetCount = sizeof(Targets) / sizeof(Targets[0]);
+
+	inline u16 TargetVersion(u32 Index)
+	{
+		return Index < TargetCount ? Targets[Index].Version : SPAWN_VERSION;
+	}
+
+	inline bool UseU16ObjectID()
+	{
+		return g_SpawnWriteVersion <= SPAWN_VERSION_LAST_U16_ID;
+	}
+
+	inline void ObjectID(NET_Packet& Packet, ALife::_OBJECT_ID ID)
+	{
+		if (UseU16ObjectID())
+		{
+			R_ASSERT2(ID == ALife::INVALID_OBJECT_ID || ID < 0xffff, "Object ID does not fit the u16 spawn format of the target engine");
+			Packet.w_u16(ID == ALife::INVALID_OBJECT_ID ? u16(0xffff) : u16(ID));
+		}
+		else
+		{
+			Packet.w_u32(ID);
+		}
+	}
+
+	inline void ObjectIDs(NET_Packet& Packet, const xr_vector<ALife::_OBJECT_ID>& IDs)
+	{
+		Packet.w_u32(u32(IDs.size()));
+		for (ALife::_OBJECT_ID ID : IDs)
+		{
+			ObjectID(Packet, ID);
+		}
+	}
+
+	// Sets the write version for the lifetime of the object.
+	class ScopedVersion
+	{
+	public:
+		explicit ScopedVersion(u16 Version) : Previous(g_SpawnWriteVersion)
+		{
+			g_SpawnWriteVersion = Version;
+		}
+
+		~ScopedVersion()
+		{
+			g_SpawnWriteVersion = Previous;
+		}
+
+		ScopedVersion(const ScopedVersion&) = delete;
+		ScopedVersion& operator=(const ScopedVersion&) = delete;
+
+	private:
+		u16 Previous;
+	};
+}
+
+namespace SpawnRead
+{
+	inline ALife::_OBJECT_ID ObjectID(NET_Packet& Packet, u16 Version)
+	{
+		if (Version < SPAWN_VERSION_U32_ID)
+		{
+			u16 ID = Packet.r_u16();
+			return ID == 0xffff ? ALife::INVALID_OBJECT_ID : ID;
+		}
+
+		return Packet.r_u32();
+	}
+
+	inline void ObjectIDs(NET_Packet& Packet, u16 Version, xr_vector<ALife::_OBJECT_ID>& IDs)
+	{
+		IDs.resize(Packet.r_u32());
+		for (ALife::_OBJECT_ID& ID : IDs)
+		{
+			ID = ObjectID(Packet, Version);
+		}
+	}
+}
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape,ISE_Shape,CShapeData)
 public:
