@@ -220,7 +220,10 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			//*/
 		}
 
-		ai().get_alife()->objects().TriggerActions(EAlifeActionCallbackType::CESpawned, E->ID);
+		if (auto* Alife = ai().get_alife())
+		{
+			Alife->objects().TriggerActions(EAlifeActionCallbackType::CESpawned, E->ID);
+		}
 	}
 
 	/*if (E->s_flags.is(M_SPAWN_UPDATE)) {
