@@ -450,7 +450,7 @@ bool CParticleTool::Load(const char* name)
 }
 
 
-bool CParticleTool::Save(bool bAsXR)
+bool CParticleTool::Save(bool bAsXR, bool bOriginalFormat)
 {
 	VERIFY			(m_bReady);
 
@@ -475,7 +475,7 @@ bool CParticleTool::Save(bool bAsXR)
 	bool bRes			= false;
 	if(bAsXR)
 	{
-		bRes 			= RImplementation.PSLibrary.Save();
+		bRes 			= bOriginalFormat ? RImplementation.PSLibrary.SaveOriginal() : RImplementation.PSLibrary.Save();
 	}else
 	{
 		bRes 			= RImplementation.PSLibrary.Save2();

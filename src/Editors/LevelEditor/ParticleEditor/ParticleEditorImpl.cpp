@@ -952,6 +952,82 @@ bool CPSLibrary::Save(const char* nm)
 
     return F.save_to(nm);
 }
+
+bool CPSLibrary::SaveOriginal()
+{
+    xr_string temp_fn;
+    if (EFS.GetSaveName("$game_data$", temp_fn))
+    {
+        return SaveOriginal(temp_fn.c_str());
+    }
+
+    return false;
+}
+
+bool CPSLibrary::SaveOriginal(const char* nm)
+{
+    CMemoryWriter F;
+    u32 DroppedActions = 0;
+
+    {
+        PAPI::ActionWrite::ScopedVersion WriteVersion(PAPI::ParticleActionVersion::Original);
+
+        F.open_chunk(PS::Chunks::VERSION);
+        F.w_enum(PS::Version::Original);
+        F.close_chunk();
+
+        F.open_chunk(PS::Chunks::ORIGINAL_SECONDGEN);
+        u32 chunk_id = 0;
+        for (PS::CPEDef* Def : m_PEDs)
+        {
+            for (const EParticleAction* Action : Def->m_EActionList)
+            {
+                if (Action != nullptr && !PAPI::ActionWrite::IsOriginalAction(Action->type))
+                {
+                    Msg("! Effect [%s]: action [%s] is not supported by the original engine and was dropped", Def->Name(), Action->actionName.c_str());
+                    DroppedActions++;
+                }
+            }
+
+            // Effects without editor actions keep the action list they were loaded with.
+            if (!Def->m_EActionList.empty())
+            {
+                Def->CompileEditorActions();
+            }
+
+            F.open_chunk(chunk_id++);
+            Def->Save(F);
+            F.close_chunk();
+        }
+        F.close_chunk();
+
+        F.open_chunk(PS::Chunks::ORIGINAL_THIRDGEN);
+        chunk_id = 0;
+        for (PS::CPGDef* Def : m_PGDs)
+        {
+            F.open_chunk(chunk_id++);
+            Def->Save(F);
+            F.close_chunk();
+        }
+        F.close_chunk();
+    }
+
+    // Restore the action lists compiled for this engine.
+    for (PS::CPEDef* Def : m_PEDs)
+    {
+        if (!Def->m_EActionList.empty())
+        {
+            Def->CompileEditorActions();
+        }
+    }
+
+    if (DroppedActions != 0 || !m_PACDs.empty())
+    {
+        Msg("~ Original particles.xr: dropped %u actions and %u anim curves", DroppedActions, u32(m_PACDs.size()));
+    }
+
+    return F.save_to(nm);
+}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -959,6 +1035,9 @@ bool CPSLibrary::Save(const char* nm)
 //------------------------------------------------------------------------------
 void PS::CPEDef::CompileEditorActions()
 {
+	// Actions unknown to the original engine are left out of its action list.
+	const bool OriginalOnly = PAPI::ActionWrite::UseOriginalFormat();
+
 	m_Actions.clear();
 	m_Actions.w_u32(m_EActionList.size());
 
@@ -967,6 +1046,10 @@ void PS::CPEDef::CompileEditorActions()
 	{
 		if (Action != nullptr && Action->flags.is(EParticleAction::flEnabled))
 		{
+			if (OriginalOnly && !PAPI::ActionWrite::IsOriginalAction(Action->type))
+			{
+				continue;
+			}
 			Action->Compile(m_Actions);
 			Count++;
 		}
@@ -997,9 +1080,23 @@ namespace
 
 		void SaveActions(PS::CPEDef& Def, IWriter& F) override
 		{
-			F.w_u32(Def.m_EActionList.size());
+			const bool OriginalOnly = PAPI::ActionWrite::UseOriginalFormat();
+			u32 Count = 0;
+			for (const EParticleAction* Action : Def.m_EActionList)
+			{
+				if (!OriginalOnly || PAPI::ActionWrite::IsOriginalAction(Action->type))
+				{
+					Count++;
+				}
+			}
+
+			F.w_u32(Count);
 			for (EParticleAction* Action : Def.m_EActionList)
 			{
+				if (OriginalOnly && !PAPI::ActionWrite::IsOriginalAction(Action->type))
+				{
+					continue;
+				}
 				VERIFY(PAPI::IsValidAction(Action->type));
 				F.w_u32(Action->type);
 				Action->Save(F);

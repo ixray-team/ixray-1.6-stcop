@@ -105,6 +105,8 @@ public:
 	bool ShadowInstancingEnabled = true;
 	// Set while shadow casters are collected
 	bool ShadowCollect = false;
+	// When set, the scene passes draw only this object at the origin (LOD capture)
+	CEditableObject* IsolatedObject = nullptr;
 
 	void BeginFrame();
 	void Clear();

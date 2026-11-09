@@ -140,6 +140,11 @@ void UIMainMenuForm::Draw()
 				{
 					Particles->Save(true);
 				}
+				if (ImGui::MenuItemI("Save .xr (original format)", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Particles->Save(true, true);
+				}
+				ImGui::SetItemTooltip("Writes particles.xr for the original engine. Binders, animators and anim curves are dropped.");
 			}
 			else if (UIShaderEditorForm::IsActive())
 			{

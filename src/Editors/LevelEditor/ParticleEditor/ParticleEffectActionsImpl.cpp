@@ -515,8 +515,70 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 	}
 
 }
+bool EParticleAction::IsOriginalValue(const AnsiString& Name) const
+{
+	for (const SOrder& Order : orders)
+	{
+		if (Name == Order.name)
+		{
+			return Order.min_version <= EVersion::Original;
+		}
+	}
+	return false;
+}
+
+void EParticleAction::SaveOriginal(IWriter& F)
+{
+	F.w_enum(EVersion::Original);
+	F.w_stringZ(actionName);
+	F.w_u32(flags.get());
+
+	// The original editor reads the values grouped by type and sorted by name, which is the order of the maps.
+	for (const auto& [Name, Value] : floats)
+	{
+		if (IsOriginalValue(Name))
+		{
+			F.w_float(Value.val);
+		}
+	}
+	for (const auto& [Name, Value] : vectors)
+	{
+		if (IsOriginalValue(Name))
+		{
+			F.w_fvector3(Value.val);
+		}
+	}
+	for (const auto& [Name, Value] : domains)
+	{
+		if (IsOriginalValue(Name))
+		{
+			Value.Save(F);
+		}
+	}
+	for (const auto& [Name, Value] : bools)
+	{
+		if (IsOriginalValue(Name))
+		{
+			F.w_u8(Value.val);
+		}
+	}
+	for (const auto& [Name, Value] : ints)
+	{
+		if (IsOriginalValue(Name))
+		{
+			F.w_s32(Value.val);
+		}
+	}
+}
+
 void 	EParticleAction::Save		(IWriter& F)
 {
+	if (PAPI::ActionWrite::UseOriginalFormat())
+	{
+		SaveOriginal(F);
+		return;
+	}
+
 	F.w_enum(EVersion::Current);
 	F.w_stringZ(actionName);
 	F.w_u32(flags.get());

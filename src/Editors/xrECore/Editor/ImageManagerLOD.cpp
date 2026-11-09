@@ -5,6 +5,7 @@
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "ui_main.h"
+#include "EditorSceneSubmit.h"
 #include "../Layers/xrRenderPC_R4/SH_RT.h"
 #include "../xrEngine/xrHemisphere.h"
 
@@ -146,7 +147,43 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 			continue;
 		}
 
-		const u32 Key = PixelsVec[0];
+		// The background color after the scene pipeline: the corner closest to magenta. The object can cover
+		// some corners (a wide object seen from the side), so the first pixel alone is not enough
+		auto MagentaDistance = [](u32 Color)
+		{
+			const int R = int((Color >> 16) & 0xFF);
+			const int G = int((Color >> 8) & 0xFF);
+			const int B = int(Color & 0xFF);
+			return (255 - R) + G + (255 - B);
+		};
+
+		const u32 Corners[4] =
+		{
+			PixelsVec[0],
+			PixelsVec[FrameW - 1],
+			PixelsVec[(FrameH - 1) * FrameW],
+			PixelsVec[(FrameH - 1) * FrameW + FrameW - 1]
+		};
+
+		u32 Key = 0x00FF00FF;
+		int BestDistance = MagentaDistance(Key) + 3 * 255;
+		for (u32 Corner : Corners)
+		{
+			const int Distance = MagentaDistance(Corner);
+			if (Distance < BestDistance)
+			{
+				BestDistance = Distance;
+				Key = Corner;
+			}
+		}
+
+		// The ortho frame fits the box exactly: a box-like object covers all four corners
+		constexpr int MaxKeyDistance = 96;
+		if (BestDistance > MaxKeyDistance)
+		{
+			Key = 0x00FF00FF;
+		}
+
 		auto IsKey = [Key, KeyTolerance](u32 Color)
 		{
 			for (u32 Shift = 0; Shift < 24; Shift += 8)
@@ -233,7 +270,11 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     float dR = bb.getradius();
     float d2R = dR * 2.f;
 
+    // The capture renders this object alone at the origin: in the Level Editor the scene holds the whole level
+    CEditableObject* SavedIsolated = GEditorSceneSubmit.IsolatedObject;
+    GEditorSceneSubmit.IsolatedObject = OBJECT;
     CreateLODSamples(bb, lod_pixels, LOD_IMAGE_SIZE, LOD_IMAGE_SIZE);
+    GEditorSceneSubmit.IsolatedObject = SavedIsolated;
 
     float tN = 0.f, tH = 0.f, tT = 0.f, tR = 0.f;
 

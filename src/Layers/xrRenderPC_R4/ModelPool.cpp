@@ -171,8 +171,16 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName, bool allow_r
 	
 	// Actual loading
 	IReader* data = FS.r_open(fn);
-	ogf_header H;
-	data->r_chunk_safe(OGF_HEADER,&H,sizeof(H));
+	ogf_header H = {};
+	if (data == nullptr || !data->r_chunk_safe(OGF_HEADER, &H, sizeof(H)))
+	{
+		if (data != nullptr)
+		{
+			FS.r_close(data);
+		}
+		Debug.fatal(DEBUG_INFO, "Invalid or empty model file '%s'.", fn);
+		return nullptr;
+	}
 	V = Instance_Create(H.type);
 	V->Load(N,data,0);
 	FS.r_close(data);
@@ -192,8 +200,12 @@ dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data, bool
 	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
 	
-	ogf_header			H;
-	data->r_chunk_safe	(OGF_HEADER,&H,sizeof(H));
+	ogf_header			H = {};
+	if (!data->r_chunk_safe(OGF_HEADER, &H, sizeof(H)))
+	{
+		Debug.fatal(DEBUG_INFO, "Invalid model '%s': missing OGF header.", name);
+		return nullptr;
+	}
 	V = Instance_Create (H.type);
 	V->Load				(name,data,0);
 

@@ -76,8 +76,6 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 
 	xr_vector<SDL_MessageBoxButtonData> ButtonsList;
 
-	int buttonid = -1;
-
 	if (btn == mbYes || btn == mbOK)
 	{
 		ButtonsList.push_back(details::btnOk);
@@ -113,18 +111,50 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 		R_ASSERT(0);
 	}
 
+	// Escape: Cancel, else No, else the first button
+	const int DefaultResult = ButtonsList.empty() ? (int)mrNone : ButtonsList.front().buttonID;
+	int CancelResult = DefaultResult;
+	for (const SDL_MessageBoxButtonData& Button : ButtonsList)
+	{
+		if (Button.buttonID == mrCancel || (Button.buttonID == mrNo && CancelResult != mrCancel))
+		{
+			CancelResult = Button.buttonID;
+		}
+	}
+
+	// The editor UI box: a system one can be put under the editor window
+	if (GUIManager != nullptr)
+	{
+		xr_vector<XrMessageBoxButton> Buttons;
+		for (const SDL_MessageBoxButtonData& Button : ButtonsList)
+		{
+			Buttons.push_back({ Button.text, Button.buttonID });
+		}
+
+		const int Result = GUIManager->ShowModalMessage(Title, text, Buttons.data(), (u32)Buttons.size(), DefaultResult, CancelResult);
+		if (Result >= 0)
+		{
+			return (TMsgDlgButtons)Result;
+		}
+	}
+
+	// Not the main thread or no device yet: a system box owned by the editor window
 	const SDL_MessageBoxData messageboxContainer =
 	{
-		(u32)Flags,												/* .flags */
-		nullptr,												/* .window */
-		Title,													/* .title */
-		text,													/* .message */
-		(int)ButtonsList.size(),	/* .numbuttons */
-		ButtonsList.data(),										/* .buttons */
-		nullptr													/* .colorScheme */
+		(u32)Flags,							/* .flags */
+		g_AppInfo.Window,					/* .window */
+		Title,								/* .title */
+		text,								/* .message */
+		(int)ButtonsList.size(),			/* .numbuttons */
+		ButtonsList.data(),					/* .buttons */
+		nullptr								/* .colorScheme */
 	};
 
-	SDL_ShowMessageBox(&messageboxContainer, &buttonid);
+	int buttonid = -1;
+	if (!SDL_ShowMessageBox(&messageboxContainer, &buttonid) || buttonid < 0)
+	{
+		buttonid = CancelResult;
+	}
 
 	return (TMsgDlgButtons)buttonid;
 }

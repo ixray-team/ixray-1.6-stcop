@@ -142,7 +142,10 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 				R_ASSERT(W);
 				if (!P->Export(*W, 1))
 				{
-					ELog.DlgMsg(mtError, "Invalid breakable object.");
+					// Do not leave a truncated OGF behind: the game would fail to load it
+					FS.w_close(W);
+					FS.file_delete(fn.c_str());
+					ELog.DlgMsg(mtError, "Invalid breakable object '%s'.", sn);
 					bResult = false;
 					break;
 				}

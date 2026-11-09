@@ -111,6 +111,19 @@ void XrUIManager::Initialize(HWND hWnd, const char* ini_path)
 
 void XrUIManager::Destroy()
 {
+	ReleaseFrameSnapshot();
+
+	if (ModalContext != nullptr)
+	{
+		ImGuiContext* MainContext = ImGui::GetCurrentContext();
+		ImGui::SetCurrentContext(ModalContext);
+		RHIUtils::ImGui::Destroy();
+		ImGui_ImplSDL3_Shutdown();
+		ImGui::DestroyContext(ModalContext);
+		ModalContext = nullptr;
+		ImGui::SetCurrentContext(MainContext);
+	}
+
 	RHIUtils::ImGui::Destroy();
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
@@ -141,6 +154,7 @@ void XrUIManager::EndFrame()
 {
 	ImGui::Render();
 	RHIUtils::ImGui::DrawData();
+	CaptureFrameSnapshot();
 
 	for (size_t i = ActualWindows.size(); i > 0; i--)
 	{
@@ -174,7 +188,73 @@ void XrUIManager::ResetBegin()
 		Ptr->ResetBegin();
 	}
 
+	ReleaseFrameSnapshot();
 	RHIUtils::ImGui::Reset();
+}
+
+void XrUIManager::ReleaseFrameSnapshot()
+{
+	if (FrameSnapshotSRV != nullptr)
+	{
+		FrameSnapshotSRV->Release();
+		FrameSnapshotSRV = nullptr;
+	}
+
+	if (FrameSnapshot != nullptr)
+	{
+		FrameSnapshot->Release();
+		FrameSnapshot = nullptr;
+	}
+
+	HasFrameSnapshot = false;
+}
+
+void XrUIManager::CaptureFrameSnapshot()
+{
+	HasFrameSnapshot = false;
+	if (GRHI == nullptr || GRHI->DevicePtr == nullptr || GRHI->DevicePtr->SwapChainRTV == nullptr)
+	{
+		return;
+	}
+
+	IRHISurface* BackBuffer = GRHI->DevicePtr->SwapChainRTV->GetSurface();
+	if (BackBuffer == nullptr || BackBuffer->GetWidth() == 0 || BackBuffer->GetHeight() == 0)
+	{
+		return;
+	}
+
+	// Recreate on resize
+	if (FrameSnapshot != nullptr && (FrameSnapshot->GetWidth() != BackBuffer->GetWidth() || FrameSnapshot->GetHeight() != BackBuffer->GetHeight() || FrameSnapshot->GetFormat() != BackBuffer->GetFormat()))
+	{
+		ReleaseFrameSnapshot();
+	}
+
+	if (FrameSnapshot == nullptr)
+	{
+		IRHITextureFactory* Factory = GRHI->DevicePtr->GetTextureFactory();
+		if (Factory == nullptr)
+		{
+			return;
+		}
+
+		RHITextureDesc Desc(BackBuffer->GetWidth(), BackBuffer->GetHeight(), BackBuffer->GetFormat());
+		Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+		FrameSnapshot = Factory->CreateRenderTarget(Desc);
+		if (FrameSnapshot == nullptr)
+		{
+			return;
+		}
+
+		FrameSnapshotSRV = Factory->CreateShaderResourceView(FrameSnapshot, nullptr);
+		if (FrameSnapshotSRV == nullptr)
+		{
+			ReleaseFrameSnapshot();
+			return;
+		}
+	}
+
+	GRHI->DevicePtr->CopySurface(FrameSnapshot, BackBuffer);
+	HasFrameSnapshot = true;
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
@@ -388,6 +468,237 @@ void XrUIManager::Draw()
 	//ImGui::EndFrame();
 
 	//EndFrame();
+}
+
+int XrUIManager::ShowModalMessage(const char* Title, const char* Text, const XrMessageBoxButton* Buttons, u32 Count, int DefaultResult, int CancelResult)
+{
+	ImGuiContext* MainContext = ImGui::GetCurrentContext();
+	if (InModalMessage || Count == 0 || MainContext == nullptr || !SDL_IsMainThread())
+	{
+		return -1;
+	}
+
+	if (GRHI == nullptr || GRHI->DevicePtr == nullptr || GRHI->DevicePtr->SwapChainRTV == nullptr || g_AppInfo.Window == nullptr)
+	{
+		return -1;
+	}
+
+	InModalMessage = true;
+
+	// The theme and the DPI scale of the editor
+	const ImGuiStyle MainStyle = ImGui::GetStyle();
+
+	if (ModalContext == nullptr)
+	{
+		ModalContext = ImGui::CreateContext();
+		ImGui::SetCurrentContext(ModalContext);
+
+		ImGuiIO& IO = ImGui::GetIO();
+		IO.IniFilename = nullptr;
+		IO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		IO.ConfigDpiScaleFonts = true;
+
+		// The font atlas belongs to the renderer backend of its context: load the editor font again
+		ImFont* Font = nullptr;
+		if (!ImCurrentFont.empty())
+		{
+			string_path FullPath;
+			xr_string FontName = "editors\\" + ImCurrentFont;
+			FS.update_path(FullPath, _game_fonts_, FontName.data());
+			if (FS.TryLoad(FullPath))
+			{
+				ImFontConfig FontConfig = {};
+				FontConfig.OversampleH = 3;
+				Font = IO.Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::FontSize), &FontConfig);
+			}
+		}
+
+		if (Font == nullptr)
+		{
+			Font = IO.Fonts->AddFontDefault();
+		}
+
+		IO.FontDefault = Font;
+
+		ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
+		RHIUtils::ImGui::Init();
+	}
+	else
+	{
+		ImGui::SetCurrentContext(ModalContext);
+	}
+
+	ImGui::GetStyle() = MainStyle;
+
+	// Editor strings are in the ANSI code page
+	const xr_string TitleText = Platform::ANSI_TO_UTF8(xr_string(Title && Title[0] ? Title : "Message")) + "###XrModalMessage";
+	const xr_string BodyText = Platform::ANSI_TO_UTF8(xr_string(Text ? Text : ""));
+
+	const SDL_WindowID MainWindowID = SDL_GetWindowID(g_AppInfo.Window);
+	int Result = CancelResult;
+	bool IsDone = false;
+	bool IsFirstFrame = true;
+
+	while (!IsDone)
+	{
+		SDL_Event Event;
+		while (SDL_PollEvent(&Event))
+		{
+			if (Event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && Event.window.windowID == MainWindowID)
+			{
+				Result = CancelResult;
+				IsDone = true;
+			}
+			else if (Event.type == SDL_EVENT_QUIT)
+			{
+				// Keep it for the main loop
+				SDL_PushEvent(&Event);
+				Result = CancelResult;
+				IsDone = true;
+				break;
+			}
+
+			ImGui_ImplSDL3_ProcessEvent(&Event);
+		}
+
+		if (IsDone)
+		{
+			break;
+		}
+
+		ImGui_ImplSDL3_NewFrame();
+		RHIUtils::ImGui::NewFrame();
+		ImGui::NewFrame();
+
+		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+
+		// The last editor frame under the dimmed modal background
+		if (HasFrameSnapshot && FrameSnapshotSRV != nullptr)
+		{
+			ImGui::GetBackgroundDrawList()->AddImage((ImTextureID)FrameSnapshotSRV->GetRawSRV(), Viewport->Pos, ImVec2(Viewport->Pos.x + Viewport->Size.x, Viewport->Pos.y + Viewport->Size.y));
+		}
+
+		ImGui::SetNextWindowPos(Viewport->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+		if (IsFirstFrame)
+		{
+			ImGui::OpenPopup("###XrModalMessage");
+		}
+
+		ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.f, 0.f, 0.f, 0.45f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(ScaleByDpi(18.f), ScaleByDpi(14.f)));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, ScaleByDpi(8.f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ScaleByDpi(4.f));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(ScaleByDpi(12.f), ScaleByDpi(6.f)));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ScaleByDpi(8.f), ScaleByDpi(10.f)));
+
+		const ImGuiWindowFlags Flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
+		if (ImGui::BeginPopupModal(TitleText.c_str(), nullptr, Flags))
+		{
+			const float MinWidth = ScaleByDpi(320.f);
+			const float WrapWidth = std::max(MinWidth, std::min(ScaleByDpi(560.f), Viewport->Size.x * 0.6f));
+			const float TextWidth = std::min(ImGui::CalcTextSize(BodyText.c_str()).x, WrapWidth);
+
+			ImGui::Dummy(ImVec2(0.f, ScaleByDpi(2.f)));
+			ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + WrapWidth);
+			ImGui::TextUnformatted(BodyText.c_str());
+			ImGui::PopTextWrapPos();
+
+			ImGui::Dummy(ImVec2(std::max(MinWidth, TextWidth), ScaleByDpi(6.f)));
+
+			// Buttons on the right, the default one is accented
+			const ImGuiStyle& Style = ImGui::GetStyle();
+			const float ButtonWidth = ScaleByDpi(96.f);
+			float RowWidth = 0.f;
+			for (u32 Index = 0; Index < Count; ++Index)
+			{
+				RowWidth += std::max(ButtonWidth, ImGui::CalcTextSize(Buttons[Index].Label).x + Style.FramePadding.x * 2.f);
+			}
+			RowWidth += Style.ItemSpacing.x * float(Count - 1);
+
+			const float Offset = ImGui::GetContentRegionAvail().x - RowWidth;
+			if (Offset > 0.f)
+			{
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + Offset);
+			}
+
+			for (u32 Index = 0; Index < Count; ++Index)
+			{
+				if (Index > 0)
+				{
+					ImGui::SameLine();
+				}
+
+				const float Width = std::max(ButtonWidth, ImGui::CalcTextSize(Buttons[Index].Label).x + Style.FramePadding.x * 2.f);
+				const bool IsDefault = Buttons[Index].Result == DefaultResult;
+				if (IsDefault)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Button, Style.Colors[ImGuiCol_ButtonActive]);
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Style.Colors[ImGuiCol_ButtonHovered]);
+				}
+
+				const bool IsPressed = ImGui::Button(Buttons[Index].Label, ImVec2(Width, 0.f));
+
+				if (IsDefault)
+				{
+					ImGui::PopStyleColor(2);
+				}
+
+				if (IsPressed)
+				{
+					Result = Buttons[Index].Result;
+					IsDone = true;
+				}
+
+				if (Buttons[Index].Result == DefaultResult)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			if (!IsDone && !IsFirstFrame)
+			{
+				if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
+				{
+					Result = CancelResult;
+					IsDone = true;
+				}
+				else if (!ImGui::IsAnyItemFocused() && (ImGui::IsKeyPressed(ImGuiKey_Enter, false) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter, false)))
+				{
+					Result = DefaultResult;
+					IsDone = true;
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+
+		ImGui::PopStyleVar(6);
+		ImGui::PopStyleColor();
+
+		ImGui::Render();
+
+		IRHIRenderTargetView* SwapChainRTV = GRHI->DevicePtr->SwapChainRTV;
+		const ImVec4 Background = MainStyle.Colors[ImGuiCol_WindowBg];
+		const float ClearColor[4] = { Background.x * 0.6f, Background.y * 0.6f, Background.z * 0.6f, 1.f };
+		GRHI->DevicePtr->ClearTarget(SwapChainRTV->GetRawRTV(), ClearColor);
+		GRHI->DevicePtr->SetRenderTargets(1, &SwapChainRTV, nullptr);
+		RHIUtils::ImGui::DrawData();
+		GRHI->Present();
+
+		IsFirstFrame = false;
+		SDL_Delay(5);
+	}
+
+	ImGui::SetCurrentContext(MainContext);
+
+	// The editor context did not see the keys and the buttons released in the box
+	ImGui::GetIO().ClearInputKeys();
+	ImGui::GetIO().ClearInputMouse();
+
+	InModalMessage = false;
+	return Result;
 }
 
 #if 0

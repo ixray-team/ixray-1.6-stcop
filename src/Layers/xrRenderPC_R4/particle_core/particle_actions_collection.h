@@ -16,6 +16,45 @@ namespace PAPI{
 		Current = MAX - 1,
 	};
 	
+	// Version used by the action writers.
+	// Tools lower it to Original to build particles.xr for the original engine; keep it at Current otherwise.
+	extern RENDER_API ParticleActionVersion g_ParticleActionWriteVersion;
+
+	namespace ActionWrite
+	{
+		inline bool UseOriginalFormat()
+		{
+			return g_ParticleActionWriteVersion == ParticleActionVersion::Original;
+		}
+
+		// Binders and animators do not exist in the original engine.
+		inline bool IsOriginalAction(PActionEnum Type)
+		{
+			return Type < PABindVelocityValueID;
+		}
+
+		// Sets the write version for the lifetime of the object.
+		class ScopedVersion
+		{
+		public:
+			explicit ScopedVersion(ParticleActionVersion Version) : Previous(g_ParticleActionWriteVersion)
+			{
+				g_ParticleActionWriteVersion = Version;
+			}
+
+			~ScopedVersion()
+			{
+				g_ParticleActionWriteVersion = Previous;
+			}
+
+			ScopedVersion(const ScopedVersion&) = delete;
+			ScopedVersion& operator=(const ScopedVersion&) = delete;
+
+		private:
+			ParticleActionVersion Previous;
+		};
+	}
+
 	struct ParticleHolder;
 	struct ParticleAction
 	{

@@ -67,23 +67,21 @@ bool ESceneObjectTool::Validate(bool full_test)
                 xr_string lod_name = E->GetLODTextureName();
                 xr_string l_name = lod_name.c_str();
                 string_path fn;
-                int age, age_nm;
-
                 FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
-                age = FS.get_file_age(fn);
+                const bool HasLod = FS.exist(fn);
 
-                if (age == -1)
+                if (!HasLod)
                     Msg("! There is no texture '%s'", fn);
 
                 l_name += "_nm";
 
                 FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
-                age_nm = FS.get_file_age(fn);
+                const bool HasLodNm = FS.exist(fn);
 
-                if (age_nm == -1)
+                if (!HasLodNm)
                     Msg("! There is no texture '%s'", fn);
 
-                if (age_nm == -1 || age == -1)
+                if (!HasLod || !HasLodNm)
                     bRes = false;
             }
         }
@@ -99,13 +97,14 @@ bool ESceneObjectTool::IsLODTextureMissing(CEditableObject* Object) const
 	string_path FileName;
 	FS.update_path(FileName, _game_textures_, EFS.ChangeFileExt(LodName, ".dds").c_str());
 
-	if (FS.get_file_age(FileName) == -1)
+	// get_file_age() returns LLONG_MAX, not -1, for a missing file
+	if (!FS.exist(FileName))
 	{
 		return true;
 	}
 
 	FS.update_path(FileName, _game_textures_, EFS.ChangeFileExt(LodName + "_nm", ".dds").c_str());
-	return FS.get_file_age(FileName) == -1;
+	return !FS.exist(FileName);
 }
 
 void ESceneObjectTool::MakeMissingLODs(bool HighQuality)

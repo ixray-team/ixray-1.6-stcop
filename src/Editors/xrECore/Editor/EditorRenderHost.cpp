@@ -110,7 +110,7 @@ namespace
 		{
 			PROF_EVENT("EditorRenderHost::PrepareScene")
 			GEditorSceneSubmit.BeginPrepared();
-			if (Tools)
+			if (Tools && GEditorSceneSubmit.IsolatedObject == nullptr)
 			{
 				Tools->PrepareScene();
 			}
@@ -121,7 +121,11 @@ namespace
 		{
 			// Same scene code as the overlay pass; the submit draw pass routes surfaces and
 			// models to the scene graph and skips the helper draws.
-			if (Tools)
+			if (CEditableObject* Isolated = GEditorSceneSubmit.IsolatedObject)
+			{
+				Isolated->RenderSingle(nullptr, Fidentity);
+			}
+			else if (Tools)
 			{
 				Tools->Render();
 			}
@@ -139,13 +143,17 @@ namespace
 
 		CDetailManager* GetSceneDetails() override
 		{
-			return Tools ? Tools->GetSceneDetails() : nullptr;
+			return (Tools && GEditorSceneSubmit.IsolatedObject == nullptr) ? Tools->GetSceneDetails() : nullptr;
 		}
 
 		void SubmitShadowCasters() override
 		{
 			GEditorSceneSubmit.ShadowCollect = true;
-			if (Tools)
+			if (CEditableObject* Isolated = GEditorSceneSubmit.IsolatedObject)
+			{
+				Isolated->RenderSingle(nullptr, Fidentity);
+			}
+			else if (Tools)
 			{
 				Tools->SubmitShadowCasters();
 			}

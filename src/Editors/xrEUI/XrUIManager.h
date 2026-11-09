@@ -1,5 +1,8 @@
 #pragma once
 
+class IRHISurface;
+class IRHIShaderResourceView;
+
 enum TShiftState_
 {
 	ssNone = 0,
@@ -11,6 +14,14 @@ enum TShiftState_
 };
 using TShiftState = int;
 inline int UIToolBarSize = 28;
+
+struct XrMessageBoxButton
+{
+	const char* Label = "";
+	int Result = 0;
+};
+
+struct ImGuiContext;
 
 class XREUI_API XrUIManager
 {
@@ -45,6 +56,11 @@ public:
 	virtual bool IsPlayInEditor() { return false; }
 	void ApplyShortCutInput(DWORD Key);
 
+	// Blocks in its own loop and draws the box with the editor UI, so it stays on top of the editor window.
+	// Enter picks DefaultResult, Escape picks CancelResult. Returns -1 when it cannot be shown
+	// (not the main thread, no swapchain, another box is open): the caller falls back to a system box
+	int ShowModalMessage(const char* Title, const char* Text, const XrMessageBoxButton* Buttons, u32 Count, int DefaultResult, int CancelResult);
+
 	float GetScaleDpi() const { return m_ScaleDpi; }
 	float ScaleByDpi(float value) const { return value * m_ScaleDpi; }
 
@@ -63,6 +79,18 @@ private:
 	xr_vector<IEditorWnd*> NextWindows;
 
 	string_path m_name_ini;
+
+	// The message box loop can run inside a frame of the main context: it draws with a context of its own
+	ImGuiContext* ModalContext = nullptr;
+	bool InModalMessage = false;
+
+	// Copy of the last editor frame: the message box draws it as a background
+	IRHISurface* FrameSnapshot = nullptr;
+	IRHIShaderResourceView* FrameSnapshotSRV = nullptr;
+	bool HasFrameSnapshot = false;
+
+	void CaptureFrameSnapshot();
+	void ReleaseFrameSnapshot();
 
 public: 
 	template<typename T> 

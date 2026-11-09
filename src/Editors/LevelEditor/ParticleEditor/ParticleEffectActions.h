@@ -205,7 +205,10 @@ public:
     virtual void 	Save2		(CInifile& ini, const shared_str& sect);
     virtual void 	Render		(const Fmatrix& parent);
 private:
-	
+	// Writes the non-chunked action data read by the original editor.
+	void SaveOriginal(IWriter& F);
+	bool IsOriginalValue(const AnsiString& Name) const;
+
 	template <int count>
 	const char* GenerateKey_Extended(char (&buff)[count], const char* type, const char* sect_ref, const char* id)
 	{

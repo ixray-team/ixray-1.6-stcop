@@ -157,7 +157,8 @@ public:
 
     virtual bool		Load				(const char* name);
     virtual bool		Save				(const char* name, bool bInternal=false){R_ASSERT(0);return true;};
-    		bool		Save				(bool bAsXR);
+    		// bOriginalFormat writes the .xr library for the original engine.
+    		bool		Save				(bool bAsXR, bool bOriginalFormat = false);
     virtual void		Reload				();
     
     virtual void		OnDeviceCreate		();

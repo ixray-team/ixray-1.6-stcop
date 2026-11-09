@@ -40,6 +40,8 @@ public:
 	RENDER_API bool LoadExtended(IReader& F);
 	
     bool Save(const char* nm);
+	// Writes the library in the format of the original engine: binders, animators and anim curves are dropped.
+	bool SaveOriginal(const char* nm);
 
 	// individuals INI
 	RENDER_API bool Load2();
@@ -82,6 +84,7 @@ public:
 
     RENDER_API void		Reload			();
     bool				Save			();
+    bool				SaveOriginal	();
 
 	RENDER_API virtual PS::CPGDef const* const*	particles_group_begin	() const override;
 	RENDER_API virtual PS::CPGDef const* const*	particles_group_end		() const override;

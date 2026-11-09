@@ -12,8 +12,18 @@ void ParticleAction::Load	(IReader& F)
 		Version = F.r_enum<ParticleActionVersion>();
 	}
 }
+RENDER_API ParticleActionVersion PAPI::g_ParticleActionWriteVersion = ParticleActionVersion::Current;
+
 void ParticleAction::Save	(IWriter& F)
 {
+	if (ActionWrite::UseOriginalFormat())
+	{
+		// The original engine has neither the extensions flag nor the version field.
+		F.w_u32			(m_Flags.get() & ~u32(EXTENSIONS));
+		F.w_u32			(type);
+		return;
+	}
+
 	m_Flags.set(EXTENSIONS, true);
 	F.w_u32			(m_Flags.get());
     F.w_u32			(type);
@@ -385,13 +395,24 @@ void PASource::Save			(IWriter& F)
     F.w(&position,sizeof(pDomain));
     F.w(&velocity,sizeof(pDomain));
     F.w(&rot,sizeof(pDomain));
-	F.w_u8(AlighRotVelocityToVelocity);
-	F.w(&rot_vel,sizeof(pDomain));
+	// Rotation velocity, random alpha and the second alpha are extensions.
+	const bool OriginalFormat = ActionWrite::UseOriginalFormat();
+	if (!OriginalFormat)
+	{
+		F.w_u8(AlighRotVelocityToVelocity);
+		F.w(&rot_vel,sizeof(pDomain));
+	}
     F.w(&size,sizeof(pDomain));
     F.w(&color,sizeof(pDomain));
-	F.w_u8(random_alpha);
+	if (!OriginalFormat)
+	{
+		F.w_u8(random_alpha);
+	}
 	F.w_float(alpha);
-	F.w_float(alpha2);
+	if (!OriginalFormat)
+	{
+		F.w_float(alpha2);
+	}
 	F.w_float(particle_rate);
 	F.w_float(age);
 	F.w_float(age_sigma);

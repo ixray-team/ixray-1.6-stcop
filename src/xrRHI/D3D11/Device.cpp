@@ -178,8 +178,8 @@ void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* cons
 
 	for (u32 i = 0; i < NumViews; i++)
 	{
-		s_RTV[i] = ppRenderTargetViews[i] ? (ID3D11RenderTargetView*)ppRenderTargetViews[i]->GetRawRTV() : nullptr;
-		s_UAV[i] = ppRenderUAViews[i] ? (ID3D11UnorderedAccessView*)ppRenderUAViews[i]->GetRaw() : nullptr;
+		s_RTV[i] = (ppRenderTargetViews && ppRenderTargetViews[i]) ? (ID3D11RenderTargetView*)ppRenderTargetViews[i]->GetRawRTV() : nullptr;
+		s_UAV[i] = (ppRenderUAViews && ppRenderUAViews[i]) ?(ID3D11UnorderedAccessView*)ppRenderUAViews[i]->GetRaw() : nullptr;
 	}
 
 	ID3D11DepthStencilView* dsv = DepthStencilView ? (ID3D11DepthStencilView*)DepthStencilView->GetRawDSV() : nullptr;
