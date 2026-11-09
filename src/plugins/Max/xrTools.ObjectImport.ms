@@ -423,6 +423,8 @@ fn load_object f fname filesize LoadMesh LoadSkin =
 				
 				--format "section [id = 0x%, size=%] at %\t\t|" (bit.intashex sectionId) SectionSize (StartPos-8)
 				
+				IsSharedChunk = (sectionId == 0x0908) -- SURFACES_SHARED
+				if IsSharedChunk then sectionId = 0x0907
 				case sectionId of
 				(
 					0x7777:
@@ -768,13 +770,12 @@ fn load_object f fname filesize LoadMesh LoadSkin =
 																	
 																	for i = 1 to NumVMREFS do
 																	(
-																			Cnt = readbyte f
+																			Cnt = readbyte f #unsigned
 																			XTable[i] = #()
 																			for j = 1 to Cnt do 
 																			(
 																				v1 = readlong f #unsigned
 																				v2 = readlong f #unsigned
-																				if v1 > 88 then (v1 = 0 ; v2 = 0)
 																				XTable[i][j] = #(v1, v2)
 																			)
 																	)
@@ -859,9 +860,19 @@ fn load_object f fname filesize LoadMesh LoadSkin =
 																
 																for i = 1 to NumVMREFS do
 																(
-																		j = XTable[i][1][1] + 1
-																		k = XTable[i][1][2] + 1
-																		meshop.setMapVert m 1 i VTable[j][k]
+																		uv = [0,0,0]
+																		-- find the UV entry among vmref points (weights may come first)
+																		for pt in XTable[i] do
+																		(
+																			j = pt[1] + 1
+																			k = pt[2] + 1
+																			if j >= 1 and j <= VTable.count and BoneNamesList[j] == undefined and VTable[j] != undefined and k >= 1 and k <= VTable[j].count and (classof VTable[j][k]) == Point3 then
+																			(
+																				uv = VTable[j][k]
+																				exit
+																			)
+																		)
+																		meshop.setMapVert m 1 i uv
 																)
 																
 															)																
@@ -894,12 +905,11 @@ fn load_object f fname filesize LoadMesh LoadSkin =
 										
 										for i = 1 to NUM_MATERIALS do
 										(
-												MaterialName = readstring f --; format "\t\tmaterial %: %\n" (i-1) MaterialName
+												IsSharedMtl = if IsSharedChunk then ((readbyte f #unsigned) != 0) else false
+												MaterialName = readstring f
 												MatNameList[i] = MaterialName
-												EngineMaterial = readstring f --; format "\t\t\tEngineMaterial: %\n" EngineMaterial
-												CompileMaterial = readstring f --; format "\t\t\tCompileMaterial: %\n" CompileMaterial
-												GameMaterial = readstring f --; format "\t\t\tGameMaterial: %\n" GameMaterial
-												FileNameMaterial = readstring f --; format "\t\t\tFileNameMaterial: %\n" FileNameMaterial
+												if IsSharedMtl then (EngineMaterial = ""; CompileMaterial = ""; GameMaterial = ""; FileNameMaterial = ""; format "shared material '%' has no texture in file\n" MaterialName)
+												else (EngineMaterial = readstring f; CompileMaterial = readstring f; GameMaterial = readstring f; FileNameMaterial = readstring f)
 												unkMatStr = readstring f --; format "\t\t\tunkMatStr: %\n" unkMatStr
 												MaterialDoubleSide = readlong f --; format "\t\t\tDouble side : %\n" MaterialDoubleSide 
 												MaterialUnkLong1 = readlong f --; format "\t\t\tMaterialUnkLong1 : 0x%\n" (bit.intashex MaterialUnkLong1)
@@ -940,8 +950,10 @@ fn load_object f fname filesize LoadMesh LoadSkin =
 																MatList[i] = standard name:MaterialName
 															
 													if MaterialDoubleSide != 0 then MatList[i].twoSided = true
+													if FileNameMaterial != "" then
+													(
 													MatList[i].DiffuseMap = bitmaptexture filename:(TexPath + "\\" + FileNameMaterial + ".dds")
-													
+
 													MatList[i].DiffuseMap.monoOutput = 0
 													MatList[i].DiffuseMap.RGBOutput = 0
 													MatList[i].DiffuseMap.alphasource = 2
@@ -953,8 +965,9 @@ fn load_object f fname filesize LoadMesh LoadSkin =
 															MatList[i].opacityMap.RGBOutput = 1
 															MatList[i].opacityMap.alphasource = 0
 													)
-												
+
 													showTextureMap MatList[i] true
+													)
 												)
 												else MatList[i] = chema
 										)
