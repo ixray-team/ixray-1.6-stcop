@@ -491,6 +491,7 @@ struct attachable_hud_item final
 	float							LeftFollowTurn = 1.f;
 	Fvector							LeftFollowMove = { 1.f, 1.f, 1.f };
 	float							LeftFollowMoveRot = 1.f;
+	Fvector							AimLeftElbowOffset = {};
 	float							HandSwayInertia = 0.08f;
 	float							HandSwayDamping = 0.6f;
 	Fvector							TurnPivotLook = {};

@@ -28,6 +28,7 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Arms and IK", "left_hand_ik_blend", "left_hand_ik_blend", &g_rig.left_hand_ik_blend, nullptr, 1, false, 0.005f },
 	{ "Arms and IK", "left_hand_finger_grip", "left_hand_finger_grip", &g_rig.left_hand_finger_grip, nullptr, 1, false, 0.01f },
 	{ "Arms and IK", "left_hand_attach_blend", "left_hand_attach_blend", &g_rig.left_hand_attach_blend, nullptr, 1, false, 0.005f },
+	{ "Arms and IK", "aim_left_elbow_offset", "aim_left_elbow_offset", &g_rig.aim_left_elbow_offset.x, nullptr, 3, false, 0.001f },
 
 	{ "Inertia and sway", "turn_sway_smooth", nullptr, &g_rig.turn_sway_smooth, nullptr, 1, false, 0.002f },
 	{ "Inertia and sway", "inertia_speed", nullptr, &g_rig.inertia_speed, nullptr, 1, false, 0.01f },
@@ -760,7 +761,7 @@ static void rig_rotate_bone(IKinematics* model, u16 bone, const Fvector& pivot, 
 	CCameraRig::TransformBone(model, bone, delta);
 }
 
-void CCameraRig::SolveLimb(IKinematics* model, const u16* chain, const Fmatrix& target, float weight)
+void CCameraRig::SolveLimb(IKinematics* model, const u16* chain, const Fmatrix& target, float weight, const Fvector& PoleOffset)
 {
 	if (weight <= EPS || chain[0] == BI_NONE || chain[1] == BI_NONE || chain[2] == BI_NONE)
 	{
@@ -785,7 +786,7 @@ void CCameraRig::SolveLimb(IKinematics* model, const u16* chain, const Fmatrix& 
 	const float reach = std::clamp(length, std::abs(upper - lower) + EPS_L, upper + lower - EPS_L);
 
 	Fvector pole;
-	pole.sub(joint, root);
+	pole.sub(joint, root).add(PoleOffset);
 	pole.mad(dir, -pole.dotproduct(dir));
 	if (pole.square_magnitude() <= EPS_S)
 	{
@@ -946,6 +947,7 @@ static const SHudRigField g_hud_rig_fields[] =
 	{ "left_hand_follow_move_rot", &attachable_hud_item::LeftFollowMoveRot, nullptr, 0.f, 1.f },
 	{ "left_hand_bob_pos", nullptr, &attachable_hud_item::LeftBobPos },
 	{ "left_hand_bob_rot", nullptr, &attachable_hud_item::LeftBobRot },
+	{ "aim_left_elbow_offset", nullptr, &attachable_hud_item::AimLeftElbowOffset },
 	{ "hand_sway_inertia", &attachable_hud_item::HandSwayInertia, nullptr, 0.f },
 	{ "hand_sway_damping", &attachable_hud_item::HandSwayDamping, nullptr, 0.f },
 	{ "turn_pivot_look", nullptr, &attachable_hud_item::TurnPivotLook },
@@ -3166,6 +3168,7 @@ void player_hud::HandsIkSolve(SHandsIkFrame& F)
 	}
 
 	const bool attach_pose = has_attach && item->LeftHandAttachBlend > 0.f && item->LeftHandAttachRefValid && attach_weight > 0.f;
+	const Fvector ElbowOffset = Fvector().mul(item->AimLeftElbowOffset, item->m_parent_hud_item->GetAimFactor());
 
 	F.ArmBones = left_arm_subtree();
 	F.AttachPose = attach_pose;
@@ -3246,14 +3249,14 @@ void player_hud::HandsIkSolve(SHandsIkFrame& F)
 		Fmatrix target;
 		target.rotation(q_blend);
 		target.c.lerp(left_target.c, attach_target.c, target_weight);
-		CCameraRig::SolveLimb(model, LeftIkChain, target, 1.f);
+		CCameraRig::SolveLimb(model, LeftIkChain, target, 1.f, ElbowOffset);
 	}
 	else
 	{
-		CCameraRig::SolveLimb(model, LeftIkChain, left_target, 1.f);
+		CCameraRig::SolveLimb(model, LeftIkChain, left_target, 1.f, ElbowOffset);
 		if (has_attach && target_weight > 0.f)
 		{
-			CCameraRig::SolveLimb(model, LeftIkChain, attach_target, target_weight);
+			CCameraRig::SolveLimb(model, LeftIkChain, attach_target, target_weight, ElbowOffset);
 		}
 	}
 }

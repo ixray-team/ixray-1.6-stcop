@@ -47,6 +47,7 @@ struct SCameraRigParams
 	Fvector	aim_reload_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_offset_rot = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_push_pos = { 0.f, 0.f, 0.f };
+	Fvector	aim_left_elbow_offset = { 0.f, 0.f, 0.f };
 	float	aim_reload_zoom_out	= 0.f, aim_reload_pose_inertia = 0.15f, aim_reload_pose_inertia_out = 0.05f;
 	Fvector	crouch_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	crouch_hud_offset_rot = { 0.f, 0.f, 0.f };
@@ -143,7 +144,7 @@ public:
 	static float			LookHalfLife	(const attachable_hud_item* item);
 	static float			LookDamping		(const attachable_hud_item* item);
 	static void				TransformBone	(IKinematics* model, u16 bone, const Fmatrix& delta);
-	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight);
+	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight, const Fvector& PoleOffset = Fvector().set(0.f, 0.f, 0.f));
 
 	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb = { 1.f, 1.f, 1.f }, const Fvector& scale_pos = { 1.f, 1.f, 1.f });
 	void					StopChannel		(ECameraRigChannel channel);
