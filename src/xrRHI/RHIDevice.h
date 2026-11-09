@@ -69,7 +69,7 @@ public:
 	// OutRowPitch: number of bytes per row written into Dst (may be Width*4)
 	virtual bool ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch) = 0;
 
-	// Render Taget setup
+	// Render target setup. A null ppRenderUAViews binds no UAVs.
 	virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIUnorderedAccessView* const* ppRenderUAViews) = 0;
 	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;
 
