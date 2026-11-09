@@ -29,7 +29,6 @@
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "stdafx.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
@@ -1003,6 +1002,12 @@ namespace IMGUIZMO_NAMESPACE
    bool IsUsing()
    {
       return (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID)) || gContext.mbUsingBounds;
+   }
+
+   OPERATION GetUsingOperation()
+   {
+      const int type = gContext.mCurrentOperation;
+      return !IsUsing() ? OPERATION(0) : IsTranslateType(type) ? TRANSLATE : IsRotateType(type) ? ROTATE : SCALE;
    }
 
    bool IsUsingViewManipulate()
