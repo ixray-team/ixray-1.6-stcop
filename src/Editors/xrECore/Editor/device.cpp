@@ -11,6 +11,7 @@
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 #include "../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
+#include "../Layers/xrRenderPC_R4/StateManager/dx10SamplerStateCache.h"
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
 #include "device_win_custom.h"
@@ -331,7 +332,8 @@ void CEditorRenderDevice::_Create(IReader* F)
 
 	// General Render States
     _SetupStates		();
-    
+
+	SSManager.Create();
     RImplementation.Imm().OnDeviceCreate		();
 	DEV->OnDeviceCreate	(F);
 	::RImplementation.OnDeviceCreate	();
@@ -374,6 +376,7 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 
 	RImplementation.Imm().OnDeviceDestroy		();
 	::RImplementation.OnDeviceDestroy	();
+	SSManager.Destroy();
 }
 
 //---------------------------------------------------------------------------

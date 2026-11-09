@@ -1,6 +1,7 @@
 #pragma once
+#include "../RenderAPI.h"
 
-class dx10SamplerStateCache
+class RENDER_API dx10SamplerStateCache
 {
 public:
 	void Create();
@@ -18,5 +19,5 @@ private:
 	float MipLodBias = 0.0f;
 };
 
-extern dx10SamplerStateCache SSManager;
+extern RENDER_API dx10SamplerStateCache SSManager;
 
