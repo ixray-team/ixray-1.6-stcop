@@ -1,0 +1,15 @@
+# Replace import prefix
+file(READ
+    ${CMAKE_INSTALL_PREFIX}/lib/cmake/luajit-@LUAJIT_VERSION_MAJOR@.@LUAJIT_VERSION_MINOR@/LuaJITTargets.cmake
+    LUAJIT_TARGETS_CONTENT
+)
+string(REGEX REPLACE
+    "set\\(_IMPORT_PREFIX \"[^\"]*\"\\)"
+    "set(_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_DIR}/../../..\")"
+    LUAJIT_TARGETS_CONTENT
+    ${LUAJIT_TARGETS_CONTENT}
+)
+file(WRITE
+    ${CMAKE_INSTALL_PREFIX}/lib/cmake/luajit-@LUAJIT_VERSION_MAJOR@.@LUAJIT_VERSION_MINOR@/LuaJITTargets.cmake
+    ${LUAJIT_TARGETS_CONTENT}
+)

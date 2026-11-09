@@ -1,0 +1,46 @@
+#include <windows.h>
+
+#ifndef DEBUG
+#define VER_DEBUG 0
+#else
+#define VER_DEBUG VS_FF_DEBUG
+#endif
+
+#define VER_PRIVATEBUILD 0x0L
+#define VER_PRERELEASE 0x0L
+
+#define LUAJIT_VERSION_STRING "@LUAJIT_VERSION@"
+#define LUAJIT_VERSION_CSV @LUAJIT_VERSION_MAJOR@,@LUAJIT_VERSION_MINOR@,@LUAJIT_VERSION_PATCH@
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION LUAJIT_VERSION_CSV
+    PRODUCTVERSION LUAJIT_VERSION_CSV
+    FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+    FILEFLAGS (VER_PRIVATEBUILD | VER_PRERELEASE | VER_DEBUG)
+    FILEOS VOS_NT_WINDOWS32
+    FILETYPE VFT_DLL
+    FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        // English (US), Unicode
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comment", "Mike Pall"
+            VALUE "CompanyName", "Mike Pall"
+            VALUE "FileDescription", "Just-in-time compiler for Lua\0"
+            VALUE "FileVersion", LUAJIT_VERSION_CSV
+            VALUE "InternalName", "lua\0"
+            VALUE "LegalCopyright", "Copyright (C) 2005-2021 Mike Pall\0"
+            VALUE "OriginalFilename", "lua@LUAJIT_NODOTABI_VERSION@\0"
+            VALUE "ProductName", "LuaJIT"
+            VALUE "ProductVersion", LUAJIT_VERSION_STRING
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        // English (US), Unicode
+        VALUE "Translation", 0x409, 1200
+    END
+END

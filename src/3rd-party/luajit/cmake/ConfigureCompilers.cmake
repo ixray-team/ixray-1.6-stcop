@@ -1,0 +1,10 @@
+# Include compilers configs
+if(LINUX AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    include(Compilers/LinuxClang)
+elseif(LINUX AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    include(Compilers/LinuxGcc)
+elseif(APPLE AND CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+    include(Compilers/DarwinAppleClang)
+elseif(WIN32 AND MSVC)
+    include(Compilers/WindowsMsvc)
+endif()

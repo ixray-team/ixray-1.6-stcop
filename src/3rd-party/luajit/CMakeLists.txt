@@ -1,0 +1,48 @@
+cmake_minimum_required(VERSION 3.18)
+
+project(LuaJIT)
+
+set(LUA_COMMAND "" CACHE FILEPATH "Path to Lua interpreter")
+set(LUAJIT_TARGET_ARCH "" CACHE STRING "Target architecture of LuaJIT")
+
+option(LUAJIT_ENABLE_APPLICATION "Enable building LuaJIT application" OFF)
+option(LUAJIT_ENABLE_INSTALL "Enable install target for LuaJIT" ON)
+
+set(CMAKE_C_STANDARD 90)
+set(CMAKE_C_STANDARD_REQUIRED 90)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
+
+set(CMAKE_SKIP_RPATH FALSE)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
+include(GNUInstallDirs)
+
+set(LUAJIT_VERSION_MAJOR 2)
+set(LUAJIT_VERSION_MINOR 1)
+set(LUAJIT_VERSION_PATCH 0)
+set(LUAJIT_PRERELEASE_POSTFIX -beta3)
+set(LUAJIT_VERSION ${LUAJIT_VERSION_MAJOR}.${LUAJIT_VERSION_MINOR}${LUAJIT_PRERELEASE_POSTFIX})
+
+set(LUAJIT_ABI_VERSION 5.1)
+set(LUAJIT_NODOTABI_VERSION 51)
+
+set(LUAJIT_ROOT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
+set(LUAJIT_BUILD_FOLDER ${CMAKE_CURRENT_BINARY_DIR})
+
+include(DetectArchitecture)
+include(ConfigureCompilers)
+
+find_package(LibM REQUIRED)
+find_package(LibDl REQUIRED)
+
+include(EmbedManifest)
+include(GenerateSymbols)
+
+add_subdirectory(src/host)
+add_subdirectory(src)
+
+include(InstallLuaJIT)

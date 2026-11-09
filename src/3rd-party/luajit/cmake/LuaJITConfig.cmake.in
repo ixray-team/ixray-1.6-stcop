@@ -1,0 +1,37 @@
+@PACKAGE_INIT@
+
+# Include targets config
+include(${CMAKE_CURRENT_LIST_DIR}/LuaJITTargets.cmake)
+
+# Set aliases for all possible targets
+if(TARGET LuaJIT::libluajit)
+    add_library(LuaJIT::Library ALIAS LuaJIT::libluajit)
+endif()
+if(TARGET LuaJIT::luajit)
+    add_executable(LuaJIT::Application ALIAS LuaJIT::luajit)
+endif()
+
+# Set default components list
+if(NOT LuaJIT_FIND_COMPONENTS)
+    set(LuaJIT_FIND_COMPONENTS Library)
+    foreach(component IN LISTS LuaJIT_FIND_COMPONENTS)
+        set(LuaJIT_FIND_REQUIRED_${component} TRUE)
+        message(STATUS "Found LuaJIT::${component}")
+    endforeach()
+endif()
+
+# Find components
+foreach(component IN ITEMS ${LuaJIT_FIND_COMPONENTS})
+    if(NOT TARGET LuaJIT::${component})
+        set(LuaJIT_${component}_FOUND FALSE)
+        if(LuaJIT_FIND_REQUIRED_${component})
+            message(FATAL_ERROR "Could NOT find LuaJIT::${component}")
+        endif()
+    else()
+        set(LuaJIT_${component}_FOUND TRUE)
+        message(STATUS "Found LuaJIT::${component}")
+    endif()
+endforeach()
+
+# Define package as found
+set(LuaJIT_FOUND TRUE)
