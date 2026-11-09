@@ -140,25 +140,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install LLVM/Clang 18 and libc++
+      - name: Install LLVM/Clang 20 and libc++
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 18
+          sudo ./llvm.sh 20
           sudo apt-get update
-          sudo apt-get install -y clang-18 lldb-18 lld-18 libc++-18-dev libc++abi-18-dev
+          sudo apt-get install -y clang-20 lldb-20 lld-20 libc++-20-dev libc++abi-20-dev
 
-      - name: Set Clang 18 as default
+      - name: Set Clang 20 as default
         run: |
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100
-          sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-18 100
-          sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-18 100
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
+          sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-20 100
+          sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-20 100
           
       - name: Verify versions
         run: |
-          clang++-18 --version
-          ls -l /usr/include/c++/v1  # Проверка наличия libc++18
+          clang++-20 --version
+          dpkg-query --show libc++-20-dev libc++abi-20-dev
         
       - name: Install SDL3 Linux build dependencies
         run: |
@@ -196,8 +196,8 @@ jobs:
             -S . \
             -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
             -G "Ninja Multi-Config" \
-            -DCMAKE_C_COMPILER=clang-18 \
-            -DCMAKE_CXX_COMPILER=clang++-18 \
+            -DCMAKE_C_COMPILER=clang-20 \
+            -DCMAKE_CXX_COMPILER=clang++-20 \
             -DIXRAY_UTILS=ON \
             -DIXRAY_CI=ON \
             -DIXRAY_PROFILER=OFF
