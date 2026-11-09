@@ -330,7 +330,7 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
 	GenerateGameMessage (P);
 	P.w_u32				(PLAYER_CHANGE_TEAM);
 	P << ps_who->GameID;
-	P.w_u16				(ps_who->team);
+	P.w_u16				(OldTeam);
 	P.w_u16				(team);
 	u_EventSend(P);
 /////////////////////////////////////////////////////////
