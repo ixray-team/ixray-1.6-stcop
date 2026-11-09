@@ -40,7 +40,10 @@ CLightProjector::~CLightProjector()
 
 void CLightProjector::set_object	(IRenderable* O)
 {
-	if ((0==O) || (receivers.size()>=P_o_count))	current		= 0;
+	if ((O == nullptr) || (O->renderable.visual == nullptr) || (receivers.size() >= P_o_count))
+	{
+		current = nullptr;
+	}
 	else
 	{
 		if (!O->renderable_ShadowReceive() || RImplementation.val_bInvisible || ((CROS_impl*)O->renderable_ROS())->shadow_recv_frame==Device.dwFrame)	

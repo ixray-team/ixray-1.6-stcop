@@ -90,7 +90,10 @@ CLightShadows::~CLightShadows()
 
 void CLightShadows::set_object	(IRenderable* O)
 {
-	if (0==O)	current		= 0;
+	if ((O == nullptr) || (O->renderable.visual == nullptr))
+	{
+		current = nullptr;
+	}
 	else 
 	{
 		if (!O->renderable_ShadowGenerate()	|| RImplementation.val_bHUD || ((CROS_impl*)O->renderable_ROS())->shadow_gen_frame==Device.dwFrame)
