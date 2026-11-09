@@ -316,6 +316,7 @@ void CGamePersistent::UpdateGameType()
 void CGamePersistent::OnGameEnd	()
 {
 	CinemaFilmMaker_Shutdown();
+	CinemaEditor_Shutdown();
 	Cinema::ShutdownPlayer();
 	Dof.Reset();
 	inherited::OnGameEnd				();

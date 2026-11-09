@@ -183,6 +183,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Cutscene Adjust", nullptr, &States[static_cast<u8>(EditorUI::CutsceneAdjust)]);
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
+					ImGui::MenuItem("Cinema Editor", nullptr, &States[static_cast<u8>(EditorUI::Game_CinemaEditor)]);
 					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
 					ImGui::MenuItem("Detail Layers Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_DetailLayersEditor)]);
 					ImGui::MenuItem("AI Grid Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_AIGridEditor)]);

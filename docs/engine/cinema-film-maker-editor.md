@@ -4,6 +4,7 @@ The panel and timeline can be moved outside the game window, including to anothe
 
 An in-game editor for staging shots and scenes with NPCs. You can place "dummies", move them into position, pick their model and pose, put an item in their hands and build a sequence of animations.
 
+Its rewrite, the [Cinema Editor](cinema-editor.md) (**Game → Editors → Cinema Editor**), is built beside it; both stay available until the new editor reaches parity, and the new one imports this editor's scenes.
 
 Opening: **Game → Cinema Film Maker Editor**. To work with the mouse in the world, press `Alt` (release/capture the cursor). The editor window can be closed; placed NPCs stay in the world and keep animating.
 
