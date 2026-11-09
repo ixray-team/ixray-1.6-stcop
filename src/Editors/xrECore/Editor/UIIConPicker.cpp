@@ -5,8 +5,7 @@ UIIconPicker* UIIconPicker::Form = nullptr;
 
 UIIconPicker::UIIconPicker()
 {
-
-	Icons["ed_nodata"] = { DEV->_CreateTexture("ed\\ed_nodata"),	true };
+	Icons["ed_nodata"] = DEV->_CreateTexture("ed\\ed_nodata");
 }
 
 UIIconPicker::~UIIconPicker()

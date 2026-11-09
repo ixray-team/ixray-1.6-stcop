@@ -54,7 +54,11 @@ void CEStats::Show()
     }
 
     // calc FPS & TPS
-    GfxCmdList::_stats& DPS = RImplementation.Imm().stat;
+	u32 DrawCalls = 0;
+	u32 Vertices = 0;
+	u32 Polygons = 0;
+	u32 StaticDrawCalls = 0;
+	EDevice->m_pRender->GetCacheStats(DrawCalls, Vertices, Polygons, StaticDrawCalls);
     if (EDevice->fTimeDelta > EPS_S)
     {
         float fps = 1.f / EDevice->fTimeDelta;
@@ -64,7 +68,7 @@ void CEStats::Show()
 
         if (RenderTOTAL.result > EPS_S)
         {
-            fTPS = fInv * fTPS + fOne * float(DPS.polys) / (RenderTOTAL.result * 1000.f);
+			fTPS = fInv * fTPS + fOne * float(Polygons) / (RenderTOTAL.result * 1000.f);
             fRFPS = fInv * fRFPS + fOne * 1000.f / RenderTOTAL.result;
         }
     }
@@ -72,9 +76,9 @@ void CEStats::Show()
     // Show them
     if (psDeviceFlags.is(rsStatistic))
     {
-        lastDPS_verts = DPS.verts;
-        lastDPS_polys = DPS.polys;
-        lastDPS_calls = DPS.calls;
+		lastDPS_verts = Vertices;
+		lastDPS_polys = Polygons;
+		lastDPS_calls = DrawCalls;
 
         auto& env = g_pGamePersistent->Environment();
         float time = g_pGameLevel ? g_pGameLevel->GetEnvironmentGameDayTimeSec() : env.GetGameTime();
@@ -98,9 +102,9 @@ void CEStats::Show()
         F.OutSkip();
         F.SetColor(0xDDDDDDDD);
         F.OutNext("TPS:          %2.2f M", fTPS);
-        F.OutNext("VERT:         %d", DPS.verts);
-        F.OutNext("POLY:         %d", DPS.polys);
-        F.OutNext("DIP/DP:       %d", DPS.calls);
+		F.OutNext("VERT:         %d", Vertices);
+		F.OutNext("POLY:         %d", Polygons);
+		F.OutNext("DIP/DP:       %d", DrawCalls);
         F.OutNext("SH/T/M/C:     %d/%d/%d/%d", dwShader_Codes, dwShader_Textures, dwShader_Matrices, dwShader_Constants);
         F.OutNext("Skeletons:    %2.2fms, %d", Animation.result, Animation.count);
         F.OutNext("Skinning:     %2.2fms", RenderDUMP_SKIN.result);
@@ -151,10 +155,6 @@ void CEStats::Show()
     }
     dwShader_Codes = dwShader_Textures = dwShader_Matrices = dwShader_Constants = 0;
     dwSND_Played = dwSND_Allocated = 0;
-
-    DPS.polys = 0;
-    DPS.verts = 0;
-    DPS.calls = 0;
 
     dwLevelSelFaceCount = 0;
     dwLevelSelVertexCount = 0;
