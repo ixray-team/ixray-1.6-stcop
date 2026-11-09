@@ -70,6 +70,17 @@ struct editor_notify_data {
 };
 
 //*** Motion Data *********************************************************************************
+template <typename T>
+class CMotionKeys
+{
+	const T* Keys = nullptr;
+
+public:
+	void Set(const void* Source) { Keys = static_cast<const T*>(Source); }
+	const T& operator[](size_t Index) const { return Keys[Index]; }
+	bool operator!() const { return Keys == nullptr; }
+};
+
 class 	ENGINE_API	CMotion
 {
 	struct
@@ -78,11 +89,11 @@ class 	ENGINE_API	CMotion
 		u32				_count 	: 24;
     };
 public:
-    ref_smem<CKeyQR>	_keysR;
-	ref_smem<CKeyQR32>	_keysR32;
-    ref_smem<CKeyQT8>	_keysT8;
-    ref_smem<CKeyQT16>	_keysT16;
-    ref_smem<CKeyQT32>	_keysT32;
+	CMotionKeys<CKeyQR>		_keysR;
+	CMotionKeys<CKeyQR32>	_keysR32;
+	CMotionKeys<CKeyQT8>	_keysT8;
+	CMotionKeys<CKeyQT16>	_keysT16;
+	CMotionKeys<CKeyQT32>	_keysT32;
 
 	Fvector				_initT;
     Fvector				_sizeT;
@@ -97,15 +108,7 @@ public:
 
 	float				GetLength			(){ return float(_count)*SAMPLE_SPF; }
 
-	u32					mem_usage			(){ 
-		u32 sz			= sizeof(*this);
-		if (_keysR.size()) sz += _keysR.size()*sizeof(CKeyQR)/_keysR.ref_count();
-		if (_keysT8.size()) sz += _keysT8.size()*sizeof(CKeyQT8)/_keysT8.ref_count();
-		if (_keysT16.size()) sz += _keysT16.size()*sizeof(CKeyQT16)/_keysT16.ref_count();
-		if (_keysR32.size()) sz += _keysR32.size() * sizeof(CKeyQR32) / _keysR32.ref_count();
-		if (_keysT32.size()) sz += _keysT32.size() * sizeof(CKeyQT32) / _keysT32.ref_count();
-		return			sz;
-	}
+	u32					mem_usage			(){ return sizeof(*this); }
 };
 
 class ENGINE_API motion_marks
@@ -225,12 +228,22 @@ struct 	ENGINE_API	motions_value
 
 	shared_str			m_id;
 
+	IReader*			SourceFile = nullptr;
+	IReader*			KeysChunk = nullptr;
+	void*				KeysCopy = nullptr;
+
+						motions_value		() = default;
+						~motions_value		();
+						motions_value		(const motions_value&) = delete;
+	motions_value&		operator=			(const motions_value&) = delete;
 
 	bool				load				(const char* N, IReader *data, vecBones* bones);
 	MotionVec*			bone_motions		(shared_str bone_name);
 
-	u32					mem_usage			(){ 
+	u32					mem_usage			(){
 		u32 sz			=	sizeof(*this)+(u32)m_motion_map.size()*6+m_partition.mem_usage();
+		if (KeysChunk)
+			sz			+=	u32(KeysChunk->length());
         for (MotionDefVecIt it=m_mdefs.begin(); it!=m_mdefs.end(); it++)
 			sz			+=	it->mem_usage();
 		for (BoneMotionMapIt bm_it=m_motions.begin(); bm_it!=m_motions.end(); bm_it++)

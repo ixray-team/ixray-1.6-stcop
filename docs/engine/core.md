@@ -14,6 +14,8 @@ Ordinary, sized and nothrow new/delete use `Memory`; standard over-aligned new/d
 
 `shared_str` is an interned pointer. Use it for section names and keys. `Memory.mem_compact()` is called during device create/destroy, precache completion, and some AI/ALife operations.
 
+`ref_smem` / `smem_container` (`src/xrCore/memory/xrsharedmem.h`) deduplicate blocks by CRC under one lock: every `dock` copies the data and inserts into a sorted vector. Skinned vertices, bone ids, index replicas and monster settings still use it. Animation keys do not: `CMotion` tracks are `CMotionKeys` views into the `OGF_S_MOTIONS` chunk owned by their `motions_value` (`src/xrEngine/SkeletonMotions.*`), the same idea as `CDetailManager` keeping `level.details` open for `dtSlots`. A `.omf` opened by `motions_container::dock_file` stays open (memory-mapped when it is a loose file above 16 KB or stored uncompressed in an archive, on the heap otherwise) until `motions_container::clean` deletes the value; the destructor closes the chunk, then the file. Motions embedded in an `.ogf`, and every load in editor mode (the editor overwrites `.omf` files that a mapping would lock), copy the chunk once into `KeysCopy`. Keys keep the file's byte alignment, so they are read only with scalar loads.
+
 Containers: `xr_vector`, `xr_map`, `xr_hash_map`, `xr_string`. Map in [doc/code-style-cpp.md](../../doc/code-style-cpp.md).
 
 ## Files
