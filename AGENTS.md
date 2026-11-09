@@ -38,7 +38,7 @@ Terrain is an editor heightmap converted to ordinary static level meshes. Implic
 
 `CApplication::Run` → `BeginPlay` → `InitEngine` → `MigrateToGameWindow` → `EngineLoopAndDestroy` → `Device.Run` → `message_loop` (SDL, then `on_idle`).
 
-`on_idle` (`src/xrEngine/device.cpp`): if `g_loading_events` is non-empty, run one functor and `LoadDraw`. Else launch `PreRenderThread` (`seqParallelRender`, rain, particles), run `FrameMove` (`seqFrame`, then `SkeletonsLaunch` starts `SkeletonThread` for the skeletons rendered last frame; see [docs/engine/rendering.md](docs/engine/rendering.md)) on the primary thread, launch `GameThread` (scheduler, `seqFrameMT`, `seqParallel` including level scripts/GC, sound events), and process `seqRender` on the primary thread. Wait for secondary tasks and `SkeletonsWait` before `EndRender`.
+`on_idle` (`src/xrEngine/device.cpp`): if `g_loading_events` is non-empty, run one functor and `LoadDraw`. Else launch `PreRenderThread` (`seqParallelRender`, rain, particles), run `FrameMove` (`seqFrame`) on the primary thread, launch `GameThread` (scheduler, `seqFrameMT`, `seqParallel` including level scripts/GC, sound events), and process `seqRender` on the primary thread. Wait for secondary tasks before `EndRender`.
 
 `NEW_INSTANCE(clsid)` → `xrFactory_Create` in `xrGame`.
 

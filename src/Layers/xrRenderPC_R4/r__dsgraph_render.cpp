@@ -478,7 +478,6 @@ void R_dsgraph_structure::BuildFull(const GraphView& NewView, CObject* Ignore)
 	}
 
 	Traverse();
-	// Worker threads calculate the skeletons while the static hierarchy is traversed
 	CollectDynamic();
 	CaptureStatic();
 	if (psDeviceFlags.test(rsDrawDynamic))
@@ -494,7 +493,6 @@ void R_dsgraph_structure::CollectDynamic()
 		View = &ViewParams.Frustum;
 		CollectSubspaceDynamic();
 		View = nullptr;
-		SkeletonUpdates.Launch();
 	}
 	else
 	{
@@ -506,7 +504,6 @@ void R_dsgraph_structure::CaptureDynamic(CObject* Ignore)
 {
 	PROF_EVENT("add_dynamic")
 	RImplementation.set_Object(0, this);
-	SkeletonUpdates.Wait();
 
 	for (const SubspaceItem& Item : SubspaceDynamic)
 	{
@@ -569,7 +566,7 @@ void R_dsgraph_structure::CollectSubspaceDynamic()
 				{
 					if (CKinematics* pKin = PCKinematics((dxRender_Visual*)renderable->renderable.visual))
 					{
-						SkeletonUpdates.Add(pKin);
+						pKin->CalculateBones(true);
 					}
 				}
 			}

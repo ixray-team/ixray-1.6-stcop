@@ -69,8 +69,6 @@ private:
 	typedef FHierrarhyVisual	inherited;
 	friend class				CBoneData;
 	friend class				CSkeletonX;
-	friend class				SkeletonBatch;
-	friend class				SkeletonScheduler;
 
 
 	xr_vector<shared_str>		L_parents;
@@ -125,11 +123,9 @@ protected:
 	s32							UCalc_Visibox			;
 	u32							Visibox_frame = 0;
 	u32							TracksTime = 0;			// RDEVICE.dwTimeGlobal of the last OnCalculateBones
-	u32							BatchMarker = 0;		// SkeletonBatch that already holds this skeleton
-	xr_atomic_u32				CalculatedTime = 0;
-	xr_atomic_u32				ScheduledTime = 0;
-	xr_atomic_u32				TrackFrame = 0;
+	// Guards bone calculation and bone reads that need a whole matrix. See SkeletonRigid.cpp for the wait rules.
 	xrCriticalSection			UCalc_Mutex;
+	xrCriticalSection			UCalc_Mutex2;
 
 	VisMask						visimask;
     
@@ -214,8 +210,17 @@ public:
 	ICF virtual Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id) override {	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF virtual const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const override {	return LL_GetBoneInstance(bone_id).mTransform;					}
 
-	virtual void					_BCL	LL_GetBoneLocalPosition(u16 bone_id, Fvector& result) override;
-	virtual void					_BCL	LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result) override;
+	virtual void					_BCL	LL_GetBoneLocalPosition(u16 bone_id, Fvector& result) override
+	{
+		xrCriticalSectionGuard g(UCalc_Mutex);
+		result = LL_GetBoneInstance(bone_id).mTransform.c;
+	}
+
+	virtual void					_BCL	LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result) override
+	{
+		xrCriticalSectionGuard g(UCalc_Mutex);
+		result = LL_GetBoneInstance(bone_id).mTransform;
+	}
 
 	ICF virtual void				_BCL	LL_GetBoneWorldPosition	(u16 bone_id, const Fmatrix& xform, Fvector& result) override
 	{
@@ -277,11 +282,7 @@ public:
 
 	virtual u16						_BCL	LL_GetBoneRoot		() override {	return iRoot;													}
 	virtual void							LL_SetBoneRoot		(u16 bone_id) override
-	{
-		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		iRoot = bone_id;
-	}
+	{ VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));	iRoot=bone_id;					}
 
     virtual bool					_BCL	LL_GetBoneVisible	(u16 bone_id) override
     { 
@@ -290,11 +291,7 @@ public:
 	virtual void							LL_SetBoneVisible	(u16 bone_id, bool val, bool bRecursive) override;
 	virtual VisMask					_BCL	LL_GetBonesVisible	() override {	return visimask;	}
 	virtual void							LL_SetBonesVisible	(VisMask mask) override;
-	virtual void							LL_SetBonesVisibleAll() override
-	{
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		visimask.set_all();
-	}
+	virtual void							LL_SetBonesVisibleAll() override { visimask.set_all(); };
 
 	virtual void					LL_SetSimpleBoneVisible	(u16 bone_id, bool val) override;
 	virtual bool					LL_GetSimpleBoneVisible	(u16 bone_id) override;
@@ -305,26 +302,13 @@ public:
 	virtual void					CalculateBones				(bool bForceExact	=	false) override;		// Recalculate skeleton
 	// Advances animation tracks for this frame without bone calculation. Track callbacks run on the calling thread.
 	void							PrepareBones				();
-	void							SyncScheduled				();
 	virtual void							CalculateBones_Invalidate	() override;
 	virtual void							Callback					(UpdateCallback C, void* Param) override
-	{
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		Update_Callback = C;
-		Update_Callback_Param = Param;
-	}
+	{	Update_Callback	= C; Update_Callback_Param	= Param;	}
 
 	//	Callback: data manipulation
-	virtual void					SetUpdateCallback(UpdateCallback pCallback) override
-	{
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		Update_Callback = pCallback;
-	}
-	virtual void					SetUpdateCallbackParam(void* pCallbackParam) override
-	{
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		Update_Callback_Param = pCallbackParam;
-	}
+	virtual void					SetUpdateCallback(UpdateCallback pCallback) override {Update_Callback = pCallback;}
+	virtual void					SetUpdateCallbackParam(void* pCallbackParam) override {Update_Callback_Param = pCallbackParam;}
 
 	virtual void					LL_SetShader(LPCSTR sh_name) override;
 	virtual void					LL_RestoreShader() override;

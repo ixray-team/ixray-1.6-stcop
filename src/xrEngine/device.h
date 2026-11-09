@@ -240,9 +240,6 @@ public:
 	xr_delegate<void()> LuaGC;
 	xr_delegate<void()> BeginGraphCollect;
 	xr_delegate<void()> CollectGraphs;
-	xr_delegate<void()> SkeletonsLaunch;
-	xr_delegate<void()> SkeletonsCalculate;
-	xr_delegate<void()> SkeletonsWait;
 
 	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;
 	ICF void callback(u32 cb_time, const std::function<void()>& func)
@@ -301,7 +298,6 @@ public:
 	//XRayWorkerThread GCThread;
 	XRayWorkerThread PreRenderThread;
 	XRayWorkerThread GameThread;
-	XRayWorkerThread SkeletonThread;
 
 	ICF void remove_from_seq_parallel(const xr_delegate<void()>& delegate)
 	{

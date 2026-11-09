@@ -3,7 +3,6 @@
 
 
 #include 	"SkeletonCustom.h"
-#include	"SkeletonLock.h"
 
 extern int	psSkeletonUpdate;
 
@@ -11,54 +10,19 @@ extern int	psSkeletonUpdate;
 void check_kinematics(CKinematics* _k, const char* s);
 #endif
 
-// ::Random is shared by all threads; same generator as CRandom
-static thread_local u32 g_SkeletonRandomState = 1;
-
-static s32 SkeletonRandom(s32 Max)
-{
-	g_SkeletonRandomState = g_SkeletonRandomState * 214013u + 2531011u;
-	const s32 Value = s32((g_SkeletonRandomState >> 16) & 0x7fff);
-	return Max > 0 ? Value % Max : 0;
-}
-
-void CKinematics::AdvanceTracks()
-{
-	// Once per game tick, even when a track callback calculates this skeleton again
-	if (TracksTime == RDEVICE.dwTimeGlobal)
-		return;
-
-	TracksTime = RDEVICE.dwTimeGlobal;
-	OnCalculateBones();
-}
-
-void CKinematics::PrepareBones()
-{
-	if (CalculatedTime.load(std::memory_order_acquire) == RDEVICE.dwTimeGlobal)
-		return;
-
-	SkeletonLock Lock(UCalc_Mutex, true);
-	if (!Lock.IsLocked() || RDEVICE.dwTimeGlobal == UCalc_Time)
-		return;
-
-	AdvanceTracks();
-}
-
 void CKinematics::CalculateBones(bool bForceExact)
 {
 	PROF_EVENT("CKinematics::CalculateBones");
 	// early out.
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
-	if (CalculatedTime.load(std::memory_order_acquire) == RDEVICE.dwTimeGlobal)
+	if (RDEVICE.dwTimeGlobal == UCalc_Time)
 		return;	// early out for "fast" update
 
-	SkeletonLock Lock(UCalc_Mutex, true);
-	if (!Lock.IsLocked() || RDEVICE.dwTimeGlobal == UCalc_Time)
-		return;
+	xrCriticalSectionGuard guard(&UCalc_Mutex);
+	OnCalculateBones();
 
-	AdvanceTracks();
-
-	if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
+	if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	
 		return;	// early out for "slow" update
 
 	if (Update_Visibility)
@@ -76,18 +40,18 @@ void CKinematics::CalculateBones(bool bForceExact)
 	RDEVICE.Statistic->Animation.Begin();
 #endif
 
-	CalculateBoneHierarchy(bones->at(iRoot),&Fidentity);
+	Bone_Calculate(bones->at(iRoot),&Fidentity);
 #ifdef DEBUG
 	check_kinematics				(this, dbg_name.c_str() );
 	RDEVICE.Statistic->Animation.End	();
 #endif
 	VERIFY( LL_GetBonesVisible()._visimask.flags !=0 );
 	// Calculate BOXes/Spheres if needed
-	UCalc_Visibox++;
-	if (UCalc_Visibox>=psSkeletonUpdate)
+	UCalc_Visibox++; 
+	if (UCalc_Visibox>=psSkeletonUpdate) 
 	{
 		// mark
-		UCalc_Visibox = -SkeletonRandom(psSkeletonUpdate-1);
+		UCalc_Visibox = -(::Random.randI(psSkeletonUpdate-1));
 
 		CalculateBBox();
 
@@ -111,29 +75,6 @@ void CKinematics::CalculateBones(bool bForceExact)
 	//
 	if (Update_Callback)
 		Update_Callback(this);
-
-	CalculatedTime.store(UCalc_Time, std::memory_order_release);
-}
-
-void CKinematics::SyncScheduled()
-{
-	const u32 Time = ScheduledTime.load(std::memory_order_relaxed);
-	if (Time != 0 && Time == RDEVICE.dwTimeGlobal && CalculatedTime.load(std::memory_order_acquire) != Time)
-	{
-		CalculateBones(true);
-	}
-}
-
-void CKinematics::LL_GetBoneLocalPosition(u16 bone_id, Fvector& result)
-{
-	SkeletonLock Lock(UCalc_Mutex, false);
-	result = LL_GetBoneInstance(bone_id).mTransform.c;
-}
-
-void CKinematics::LL_GetBoneLocalTransform(u16 bone_id, Fmatrix& result)
-{
-	SkeletonLock Lock(UCalc_Mutex, false);
-	result = LL_GetBoneInstance(bone_id).mTransform;
 }
 
 #ifdef DEBUG
@@ -142,9 +83,9 @@ void check_kinematics(CKinematics* _k, const char* s)
 	CKinematics* K = _k;
 	Fmatrix&	MrootBone		= K->LL_GetBoneInstance(K->LL_GetBoneRoot()).mTransform;
 	if(MrootBone.c.y >10000)
-	{
+	{	
 		Msg("all bones transform:--------[%s]",s);
-
+		
 		for(u16 ii=0; ii<K->LL_BoneCount();++ii){
 			Fmatrix tr;
 
@@ -178,7 +119,7 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 		{
 			BuildBoneMatrix( bd, bi, parent, channel_mask );
 #ifndef MASTER_GOLD
-			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" );
+			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" ); 
 #endif // #ifndef MASTER_GOLD
 			if (bi.callback())
 			{
@@ -195,7 +136,6 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 void CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)
 {
 	R_ASSERT(id<LL_BoneCount());
-	SkeletonLock Lock(UCalc_Mutex, false);
 	CBoneInstance bi = bone_instances[id];
 	Fvector last_c = bi.mTransform.c;
 	BoneChain_Calculate(&LL_GetData(id),bi,mask_channel,ignore_callbacks);
@@ -208,18 +148,14 @@ void CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool igno
 
 void CKinematics::Bone_Calculate(CBoneData* bd, Fmatrix *parent)
 {
-	SkeletonLock Lock(UCalc_Mutex, true);
-	if (Lock.IsLocked())
-		CalculateBoneHierarchy(bd, parent);
-}
-
-void CKinematics::CalculateBoneHierarchy(const CBoneData* bd, const Fmatrix* parent)
-{
-	CBoneInstance &BONE_INST = bone_instances[bd->GetSelfID()];
+	xrCriticalSectionGuard guard(&UCalc_Mutex2);
+	u16 SelfID = bd->GetSelfID();
+	CBoneInstance &BONE_INST = bone_instances[SelfID];
 	CLBone( bd, BONE_INST, parent, u8(-1) );
 	// Calculate children
-	for (const CBoneData* BD : bd->children)
-		CalculateBoneHierarchy(BD, &BONE_INST.mTransform);
+	for (CBoneData* BD : bd->children)
+		Bone_Calculate(BD, &BONE_INST.mTransform);
+
 }
 
 void CKinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance &bi, u8 mask_channel, bool ignore_callbacks)
@@ -235,7 +171,7 @@ void CKinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance &bi, u8
 	if(SelfID==LL_GetBoneRoot())
 	{
 		CLBone( bd, bi, &Fidentity, mask_channel );
-		//restore callback
+		//restore callback	
 		bi.set_callback( bi.callback_type(), bc, bi.callback_param(), ow );
 		return;
 	}

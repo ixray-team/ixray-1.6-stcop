@@ -811,7 +811,6 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 		{
 			// Add all children, doesn't perform any tests
 			CKinematics * pV = (CKinematics*)pVisual;
-			pV->SyncScheduled();
 			bool _use_lod = false;
 			if (pV->m_lod)				
 			{

@@ -2,7 +2,6 @@
 #include "SkinningPass.h"
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"
-#include "SkeletonScheduler.h"
 #include "PackedVertex.h"
 #include "dxRenderDeviceRender.h"
 
@@ -93,7 +92,6 @@ void SkinningPass::Request(CSkeletonX& Mesh, const Fmatrix& World)
 
 void SkinningPass::Snapshot(CKinematics& Kinematics, const Fmatrix& World)
 {
-	g_SkeletonScheduler.Track(&Kinematics);
 	Kinematics.CalculateBones(true);
 	Kinematics.StoreVisualMatrix(World);
 }

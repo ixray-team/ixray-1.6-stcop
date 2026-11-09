@@ -293,11 +293,6 @@ void CRenderDevice::on_idle		()
 	PreRenderThread.Wait();
 	GameThread.Wait();
 
-	if (SkeletonsWait)
-	{
-		SkeletonsWait();
-	}
-
 	Device.EndRender();
 	
 #ifdef IXRAY_PROFILER_TRACY
@@ -439,7 +434,6 @@ void CRenderDevice::Run()
 
 	PreRenderThread.Stop();
 	GameThread.Stop();
-	SkeletonThread.Stop();
 	//GCThread.Stop();
 
 	DetailsTask.wait();
@@ -597,11 +591,6 @@ void CRenderDevice::FrameMove()
 			PROF_EVENT("------ [OnFrame phase] ------")
 		   Device.seqFrame.Process<&pureFrame::OnFrame>();
 		}
-
-		if (SkeletonsLaunch)
-		{
-			SkeletonsLaunch();
-		}
 		g_bLoaded = true;
 	}
 	Statistic->EngineTOTAL.End();
@@ -611,8 +600,7 @@ CRenderDevice::CRenderDevice() :
 	dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr), 
 	//GCThread(XRay::Engine::GCThread, "X-Ray GC Thread"),
 	PreRenderThread(XRay::Engine::PreRenderThread, "X-Ray PreRender Thread", EThreadRole::PreRender),
-	GameThread(XRay::Engine::GameThread, "X-Ray Game Thread", EThreadRole::Game),
-	SkeletonThread(XRay::Engine::SkeletonThread, "X-Ray Skeleton Thread", EThreadRole::PreRender)
+	GameThread(XRay::Engine::GameThread, "X-Ray Game Thread", EThreadRole::Game)
 {
 	b_is_Active = true;
 	b_is_Ready = false;

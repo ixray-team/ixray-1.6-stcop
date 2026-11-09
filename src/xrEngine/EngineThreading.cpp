@@ -118,14 +118,6 @@ void XRay::Engine::GameThread()
 	Device.SecondaryTasks.wait();
 }
 
-void XRay::Engine::SkeletonThread()
-{
-	if (Device.SkeletonsCalculate)
-	{
-		Device.SkeletonsCalculate();
-	}
-}
-
 extern volatile bool quiting;
 
 void XRay::Engine::GCThread()

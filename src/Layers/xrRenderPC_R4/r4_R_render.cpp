@@ -140,10 +140,8 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 				);
 		}
 
-		// Dynamic objects are collected before static geometry: worker threads calculate their
-		// skeletons while the static hierarchy is traversed
+		// Dynamic objects are collected before static geometry
 		CollectMainDynamic(deffered, dont_test_sectors);
-		GraphMain.SkeletonUpdates.Launch();
 
 		// Determine visibility for static geometry hierrarhy
 		if(psDeviceFlags.test(rsDrawStatic))
@@ -191,7 +189,6 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 			}
 		}
 		PROF_EVENT("add_dynamic")
-		GraphMain.SkeletonUpdates.Wait();
 		RenderMainDynamic();
 
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
@@ -308,7 +305,7 @@ void CRender::CollectMainRenderable(ISpatial* spatial, bool deffered, bool Parti
 						pKin = PCKinematics((dxRender_Visual*)renderable->renderable.visual);
 						if (pKin)
 						{
-							GraphMain.SkeletonUpdates.Add(pKin);
+							pKin->CalculateBones(true);
 						}
 					}
 					Render = true;

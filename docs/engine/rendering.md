@@ -32,29 +32,6 @@ Accessors that need real data (`get_Width`, `get_Height`, `get_Format`, `isUser`
 
 The R4 `render.experemental.target_res` command is registered during renderer console initialization, before any background texture load. Texture loading never registers console commands from a worker.
 
-## Skeleton updates
-
-Skeletons of a frame are calculated on one dedicated thread, `X-Ray Skeleton Thread` (`CRenderDevice::SkeletonThread`), in parallel with rendering and the game thread. The renderer drives it through `SkeletonScheduler` (`src/Layers/xrRenderPC_R4/SkeletonScheduler.cpp`) and the `Device.SkeletonsLaunch` / `SkeletonsCalculate` / `SkeletonsWait` delegates:
-
-1. Render passes track every skeleton they calculate (`SkeletonBatch::Add`, `SkinningPass::Snapshot`).
-2. `FrameMove` launches the thread at the end of the OnFrame phase: objects are updated, the destroy queue is processed (`CObjectList::Update`), and non-MT physics and `g_hud->OnFrame` have run. A destroyed object's visual departs on the primary thread before this point, and `CKinematics::Depart` / the destructor remove the skeleton from the scheduler. `Launch` takes the skeletons tracked during the previous frame, calls `CKinematics::PrepareBones` for them on the primary thread (animation tracks and their blend callbacks reach game and script code, and the game thread is not running yet), marks them with `ScheduledTime`, and starts the thread, which calls `CalculateBones(true)` for each.
-3. `on_idle` joins the thread (`SkeletonsWait`) after the pre-render and game threads, before the frame ends. Renderer destroy, device reset (`reset_begin`) and `level_Unload` join it too.
-
-`r__mt_skeletons off` disables the thread and the `SkeletonBatch` workers: render passes calculate every skeleton on the primary thread.
-
-Render passes still collect visible dynamic objects before static geometry and launch `R_dsgraph_structure::SkeletonUpdates` (`SkeletonBatch`) for skeletons that are not calculated yet (new in view this frame, or not yet reached by the skeleton thread). Worker threads calculate those while the primary thread traverses static geometry; `Wait` lets the primary thread take the rest. Wallmarks, lights, glows and `renderable_Render` then run on the primary thread in the original traversal order.
-
-Synchronization:
-
-- `UCalc_Mutex` is the only skeleton lock. A thread that is calculating a skeleton never waits for another one: a nested `CalculateBones` or `Bone_Calculate` on a skeleton owned by another thread is skipped, and `LL_GetBoneLocalPosition` / `LL_GetBoneLocalTransform` read the current matrices unlocked. This avoids cycles between neighbouring NPCs whose IK rays hit each other's collision forms. For the same reason `CCF_Skeleton::BuildState` copies the bone matrices before it takes its build lock. Physics shell activation in `CPHElement::BonesCallBack` is serialized, because it moves ODE bodies in a shared space.
-- `UCalc_Time` is set when a calculation starts. `CalculatedTime` is published (release) after the hierarchy, the bounds and the visual callbacks; the unlocked early-out of `CalculateBones` / `PrepareBones` and `SkeletonBatch::Add` test only `CalculatedTime`, so nobody reads half-calculated bones of a skeleton that another thread is calculating.
-- `CKinematics::SyncScheduled` runs before `add_leafs_Dynamic` reads a skeleton's children and bounds: if the skeleton thread has not finished it, the render thread calculates it under the lock, and the thread then skips it. `Visibility_Update` changes the children list during a calculation.
-- Changes of animation state take `UCalc_Mutex` and wait for it: cycles and FX (`LL_PlayCycle`, `LL_PlayFX`, `LL_FadeCycle`, `LL_CloseCycle`, `LL_UpdateTracks`), channel factors, inertialization, blend and track callbacks, bone visibility and root, `Update_Callback`. Blend readers (`LL_PartBlend*`, `LL_IterateBlends`) and bone-chain evaluations (`Bone_GetAnimPos`, `LL_GetBoneTransformMasked`, `LL_GetMotionBoneTransform`) take it as readers.
-- `CBoneInstance::set_callback`, `reset_callback` and `set_callback_overwrite` take the lock of the owning skeleton (`CBoneInstance::construct(&UCalc_Mutex)`), so a callback and its parameter never change while the skeleton thread calls them. Copies of a bone instance carry no lock.
-- `CModelPool::Delete` queues deletions while the thread runs; `CRender::OnFrame` deletes the queue in the next OnFrame phase, before the next launch. A skeleton freed outside the pool waits for the thread in `SkeletonScheduler::Forget`.
-
-Rules for callbacks that run on the skeleton thread (bone callbacks, `Update_Callback`, IK): they must not start animations, change bone callbacks or free visuals of another skeleton, because they would wait for its lock while holding their own. Not covered by the locks: game code that writes `CBlend` fields through a returned pointer, or reads `LL_GetTransform` / `getVisData` of a skeleton without `CalculateBones` while the thread calculates it, reads or writes unsynchronized data, as it did with the `SkeletonBatch` workers before.
-
 ## R4 dynamic frame
 
 `CRender::Render` in `src/Layers/xrRenderPC_R4/r4_R_render.cpp` is reached from `seqRender`.

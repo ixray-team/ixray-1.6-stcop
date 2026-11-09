@@ -4,7 +4,6 @@
 #include "../../xrCore/Collision/ISpatial.h"
 #include "../../xrCore/Containers/_stl_extensions.h"
 #include "r__dsgraph_types.h"
-#include "SkeletonBatch.h"
 
 #ifdef RENDER_API_IMPORTS
 class CSector;
@@ -147,9 +146,6 @@ public:
 		CFrustum*		Frustum;
 	};
 	xr_vector<SubspaceItem>										SubspaceDynamic;
-
-	// Skeletons of the current pass, calculated while static geometry is traversed
-	SkeletonBatch												SkeletonUpdates;
 
 	bool b_loaded;
 	CPortalTraverser PortalTraverser;

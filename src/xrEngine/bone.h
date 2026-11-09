@@ -29,81 +29,38 @@ public:
 	Fmatrix				mRenderTransform_old;				// final x-form matrix (model_base -> bone -> model) old
 	Fmatrix				mRenderTransform_tmp;				// final x-form matrix (model_base -> bone -> model) temp
 private:
-	class OwnerLockRef
-	{
-	public:
-		OwnerLockRef() = default;
-		OwnerLockRef(const OwnerLockRef&) {}
-		OwnerLockRef& operator=(const OwnerLockRef&) { return *this; }
-
-		xrCriticalSection* Lock = nullptr;
-	};
-
-	class CallbackGuard
-	{
-	public:
-		explicit CallbackGuard(xrCriticalSection* InLock) : Lock(InLock)
-		{
-			if (Lock != nullptr)
-			{
-				Lock->Enter();
-			}
-		}
-
-		~CallbackGuard()
-		{
-			if (Lock != nullptr)
-			{
-				Lock->Leave();
-			}
-		}
-
-		CallbackGuard(const CallbackGuard&) = delete;
-		CallbackGuard& operator=(const CallbackGuard&) = delete;
-
-	private:
-		xrCriticalSection* Lock;
-	};
-
 	BoneCallback		Callback;
 	void*				Callback_Param;
 	bool				Callback_overwrite;					// performance hint - don't calc anims
-	u32					Callback_type;
-	OwnerLockRef		OwnerLock;
+	u32					Callback_type;	
 public:
-	float				param			[MAX_BONE_PARAMS];	//
+	float				param			[MAX_BONE_PARAMS];	// 
 	//
 	// methods
 public:
 	IC	BoneCallback	_BCL	callback()					{ return  Callback; }
 	IC	void*			_BCL	callback_param()			{ return Callback_Param;	}
 	IC	bool			_BCL	callback_overwrite()		{ return Callback_overwrite; }					// performance hint - don't calc anims
-	IC	u32				_BCL	callback_type()				{ return Callback_type; }
+	IC	u32				_BCL	callback_type()				{ return Callback_type; }	
 public:
-	IC void				_BCL	construct(xrCriticalSection* InOwnerLock = nullptr);
+	IC void				_BCL	construct();
 
 	void	_BCL set_callback	(u32 Type, BoneCallback C, void* Param,  bool overwrite=false)
-	{
-		CallbackGuard		Guard(OwnerLock.Lock);
-		Callback			= C;
-		Callback_Param		= Param;
+	{	
+		Callback			= C; 
+		Callback_Param		= Param; 
 		Callback_overwrite	= overwrite;
 		Callback_type		= Type;
 	}
 
 	void	_BCL reset_callback()
 	{
-		CallbackGuard		Guard(OwnerLock.Lock);
-		Callback			= 0;
-		Callback_Param		= 0;
+		Callback			= 0; 
+		Callback_Param		= 0; 
 		Callback_overwrite	= false;
 		Callback_type		= 0;
 	}
-	void		_BCL		set_callback_overwrite(bool v)
-	{
-		CallbackGuard		Guard(OwnerLock.Lock);
-		Callback_overwrite	= v;
-	}
+	void		_BCL		set_callback_overwrite(bool v){ Callback_overwrite = v; }
 
 	void				set_param		(u32 idx, float data);
 	float				get_param		(u32 idx);
@@ -532,10 +489,9 @@ enum EBoneCallbackType{
 };
 
 
-IC void		CBoneInstance::construct	(xrCriticalSection* InOwnerLock)
+IC void		CBoneInstance::construct	()
 {
 	ZeroMemory					(this,sizeof(*this));
-	OwnerLock.Lock				= InOwnerLock;
 	mTransform.identity			();
 
 	mRenderTransform.identity	();

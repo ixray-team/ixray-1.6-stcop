@@ -14,7 +14,6 @@
 #include "3DFluid/dx103DFluidVolume.h"
 
 #include "FHierrarhyVisual.h"
-#include "SkeletonScheduler.h"
 #include "LegacyVertexElement.h"
 
 namespace
@@ -411,7 +410,6 @@ void CRender::level_Unload()
 	// The pre-render stage runs in parallel with FrameMove, where a disconnect unloads the level.
 	// It walks the sectors and static visuals deleted here.
 	Device.PreRenderThread.Wait();
-	g_SkeletonScheduler.Wait();
 	ResetSunShadowCache();
 	if (0==g_pGameLevel)		return;
 	if (!GraphMain.b_loaded)

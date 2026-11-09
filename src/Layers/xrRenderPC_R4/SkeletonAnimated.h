@@ -230,16 +230,8 @@ public:
 	void						LL_SetInertialization	(float time) override;
 	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
 	void						LL_ResetInertialization	() override;
-	void						LL_SetSmoothBlend		(bool enabled) override
-	{
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		SmoothBlend = enabled;
-	}
-	void						LL_InertializePart		(u16 part, float time, u8 channel) override
-	{
-		xrCriticalSectionGuard Guard(UCalc_Mutex);
-		InertialMarkPart(part, time, channel);
-	}
+	void						LL_SetSmoothBlend		(bool enabled) override { SmoothBlend = enabled; }
+	void						LL_InertializePart		(u16 part, float time, u8 channel) override { InertialMarkPart(part, time, channel); }
 	bool						LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result) override;
 	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;
 };
