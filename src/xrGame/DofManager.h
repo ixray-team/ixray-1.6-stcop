@@ -98,6 +98,9 @@ public:
 	void Update(float Delta);
 	void Reset();
 	void GetCurrent(Fvector& Result) const;
+	void SetCinema(const Fvector4* Values);
+	float GetKernel(float Default) const { return HasCinema ? Cinema.w : Default; }
+	const Fvector& GetBase() const { return Base; }
 
 	static void LoadHud(SHudDofSource& Source, const shared_str& Section, bool Usable = false);
 	static void LoadItem(SHudDofSource& Source, const shared_str& Section);
@@ -126,4 +129,6 @@ private:
 	bool HasEffector = false;
 	bool Pickable = false;
 	bool HadRequest = false;
+	Fvector4 Cinema = {};
+	bool HasCinema = false;
 };

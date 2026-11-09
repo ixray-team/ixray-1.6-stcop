@@ -20,6 +20,7 @@ void GfxCmdList::OnFrameBegin	()
 		if (!EditorMode)
 		{
 			RImplementation.SyncMotionVectors();
+			RImplementation.SyncDof();
 		}
 		if (Heap)
 		{

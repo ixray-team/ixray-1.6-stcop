@@ -490,7 +490,7 @@ void CDofManager::Blend(const Fvector& Values, float Rate, float Delta)
 
 void CDofManager::Update(float Delta)
 {
-	if (!Defaults || g_dedicated_server)
+	if (!Defaults || g_dedicated_server || HasCinema)
 	{
 		return;
 	}
@@ -512,8 +512,22 @@ void CDofManager::Update(float Delta)
 	}
 }
 
+void CDofManager::SetCinema(const Fvector4* Values)
+{
+	HasCinema = Values && _valid(*Values) && Values->x < Values->y && Values->y < Values->z && Values->w >= 0.0f;
+	if (!HasCinema)
+	{
+		return;
+	}
+	Cinema = *Values;
+	Current = From = Target = Fvector().set(Cinema.x, Cinema.y, Cinema.z);
+	Progress = 1.0f;
+	HadRequest = false;
+}
+
 void CDofManager::Reset()
 {
+	HasCinema = false;
 	Zones.clear();
 	Pickable = false;
 	HasEffector = false;

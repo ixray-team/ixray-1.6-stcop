@@ -296,7 +296,7 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 
 		//	Set up variable
 		Fvector2 vDofKernel;
-		const float DofKernelSize = ps_r2_dof_kernel_size * (1.0f + (g_DofLensKernelScale - 1.0f) * LensDofFactor);
+		const float DofKernelSize = g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size) * (1.0f + (g_DofLensKernelScale - 1.0f) * LensDofFactor);
 		vDofKernel.set(0.5f / Device.TargetWidth, 0.5f / Device.TargetHeight);
 		vDofKernel.mul(DofKernelSize);
 

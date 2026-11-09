@@ -85,6 +85,7 @@ public:
 		u32 SslrHq : 1;
 		u32 dx11_enable_tessellation : 1;
 		u32 dx11_disable_motion_vectors : 1;
+		u32 DofCompiled : 1;
 		u32 dx11_allow_wboit_transparency : 1;
 	} o;
 
@@ -596,6 +597,7 @@ public:
 	bool							NeedMotionVectors			() const;
 	bool							MotionVectorsDisabled		() const;
 	void							SyncMotionVectors			();
+	void							SyncDof						();
 	void							SyncReflections				();
 
 	virtual bool					InIndoor					() override { return pLastSector!=pOutdoorSector; };
