@@ -94,6 +94,7 @@ using HDC = void*;
 #define S_OK 0x00000000
 #define S_FALSE 0x10000000
 #define E_FAIL 0x80004005
+#define E_NOTIMPL ((HRESULT)(int32_t)0x80004001u)
 
 #define xr_strerror(errno, buffer, bufferSize) strerror_r(errno, buffer, sizeof(buffer))
 #define xr_interface class
