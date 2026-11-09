@@ -64,7 +64,7 @@ void CImGuiManager::InitPlatform()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	ImGuiStyle& Style = ImGui::GetStyle();
 	XRay::ImGui::MakeEditorTheme();
@@ -205,11 +205,14 @@ void CImGuiManager::Render()
 			CommandData.Function();
 		}
 
-		if (!CaptureInputs)
+		if (!IsCapturingInputs())
 		{
 			for (auto& Window : ImGui::GetCurrentContext()->Windows) 
 			{
-				Window->Flags |= ImGuiWindowFlags_NoInputs;
+				if (Window->Viewport == ImGui::GetMainViewport())
+				{
+					Window->Flags |= ImGuiWindowFlags_NoInputs;
+				}
 			}
 		}
 	}
@@ -229,7 +232,9 @@ void CImGuiManager::Render()
 
 void CImGuiManager::UpdateCapture()
 {
-    static bool keyProcessed = false;
+	HasPlatformWindowFocus = SDL_GetKeyboardFocus() != g_AppInfo.Window && IsFocused();
+
+	static bool keyProcessed = false;
 
     if (ImGui::IsKeyDown(ImGuiMod_Alt))
     {
@@ -256,7 +261,7 @@ void CImGuiManager::UpdateCapture()
     }
 
 	ImGuiIO& IO = ImGui::GetIO();
-    if (CaptureInputs || g_dedicated_server)
+	if (IsCapturingInputs() || g_dedicated_server)
 	{
 		IO.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
 		SDL_ShowCursor();
@@ -270,7 +275,30 @@ void CImGuiManager::UpdateCapture()
 
 bool CImGuiManager::IsCapturingInputs() const
 {
-	return CaptureInputs;
+	return CaptureInputs || (DrawUIRender && HasPlatformWindowFocus);
+}
+
+bool CImGuiManager::IsFocused() const
+{
+	SDL_Window* FocusedWindow = SDL_GetKeyboardFocus();
+	if (!FocusedWindow)
+	{
+		return false;
+	}
+
+	if (FocusedWindow == g_AppInfo.Window)
+	{
+		return true;
+	}
+
+#ifdef IXR_WINDOWS
+	if (ImGui::GetCurrentContext())
+	{
+		return ImGui::FindViewportByPlatformHandle((void*)(size_t)SDL_GetWindowID(FocusedWindow)) != nullptr;
+	}
+#endif
+
+	return false;
 }
 
 void CImGuiManager::NewPlatformFrame() const

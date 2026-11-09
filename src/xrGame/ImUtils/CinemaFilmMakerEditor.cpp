@@ -4757,9 +4757,9 @@ static SProjectedPoint ProjectWorld(const Fvector& world)
 		return result;
 	}
 
-	const ImGuiIO& io = ImGui::GetIO();
-	result.Screen.x = (clip.x + 1.0f) * 0.5f * io.DisplaySize.x;
-	result.Screen.y = (1.0f - clip.y) * 0.5f * io.DisplaySize.y;
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	result.Screen.x = Viewport->Pos.x + (clip.x + 1.0f) * 0.5f * Viewport->Size.x;
+	result.Screen.y = Viewport->Pos.y + (1.0f - clip.y) * 0.5f * Viewport->Size.y;
 	result.Visible = true;
 	return result;
 }
@@ -4767,14 +4767,15 @@ static SProjectedPoint ProjectWorld(const Fvector& world)
 static bool MouseRay(Fvector& origin, Fvector& direction)
 {
 	const ImGuiIO& io = ImGui::GetIO();
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 
-	if (io.DisplaySize.x <= 0.0f || io.DisplaySize.y <= 0.0f)
+	if (Viewport->Size.x <= 0.0f || Viewport->Size.y <= 0.0f)
 	{
 		return false;
 	}
 
-	const float ndcX = (io.MousePos.x / io.DisplaySize.x) * 2.0f - 1.0f;
-	const float ndcY = 1.0f - (io.MousePos.y / io.DisplaySize.y) * 2.0f;
+	const float ndcX = ((io.MousePos.x - Viewport->Pos.x) / Viewport->Size.x) * 2.0f - 1.0f;
+	const float ndcY = 1.0f - ((io.MousePos.y - Viewport->Pos.y) / Viewport->Size.y) * 2.0f;
 
 	Fvector nearPoint = {};
 	Fvector farPoint = {};
@@ -14327,7 +14328,7 @@ void CCinemaFilmMakerManager::DrawLightTab()
 	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		const ImVec2 mouse = ImGui::GetIO().MousePos;
-		ImGui::GetForegroundDrawList()->AddText(ImVec2(mouse.x + 16.0f, mouse.y + 16.0f), ImGui::GetColorU32(ImGuiCol_Text), "Pick scene color | Esc / right-click: cancel");
+		ImGui::GetForegroundDrawList(ImGui::GetMainViewport())->AddText(ImVec2(mouse.x + 16.0f, mouse.y + 16.0f), ImGui::GetColorU32(ImGuiCol_Text), "Pick scene color | Esc / right-click: cancel");
 		if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
 			LightColorPicking = false;
@@ -17907,7 +17908,9 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		}
 	}
 	const bool mouseOverUi = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
-	const bool canInteract = capturing && !mouseOverUi && !ImGui::IsAnyItemActive();
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const bool IsOverGame = ImGui::IsMouseHoveringRect(Viewport->Pos, ImVec2(Viewport->Pos.x + Viewport->Size.x, Viewport->Pos.y + Viewport->Size.y), false);
+	const bool canInteract = capturing && IsOverGame && !mouseOverUi && !ImGui::IsAnyItemActive();
 
 	if (MasterClipSelection.size() == 1 && MasterClipAnchor.Type == 4 && MasterClipAnchor.Object >= 0 && MasterClipAnchor.Object < static_cast<s32>(Cameras.size()) &&
 		MasterClipSelection.front() == MasterClipAnchor)

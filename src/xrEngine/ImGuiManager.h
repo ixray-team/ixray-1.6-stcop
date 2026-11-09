@@ -27,6 +27,7 @@ private:
 
 	bool DrawUIRender = true;
 	bool CaptureInputs = false;
+	bool HasPlatformWindowFocus = false;
 
 public:
 	ImGuiCallback PlatformInitCallback = nullptr;
@@ -53,6 +54,7 @@ public:
 
 	void UpdateCapture();
 	bool IsCapturingInputs() const;
+	bool IsFocused() const;
 
 	void NewPlatformFrame() const;
 	void NewHardwareFrame() const;

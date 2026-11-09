@@ -230,14 +230,14 @@ static void HudAdjustRenderOverlays()
 	if (!hud_adj_show_golden_ratio && !hud_adj_show_center_lines)
 		return;
 
-	ImGuiIO& io = ImGui::GetIO();
-	const float screen_w = io.DisplaySize.x;
-	const float screen_h = io.DisplaySize.y;
+	ImGuiViewport* const Viewport = ImGui::GetMainViewport();
+	const float screen_w = Viewport->Size.x;
+	const float screen_h = Viewport->Size.y;
 
 	if (screen_w <= 0.0f || screen_h <= 0.0f)
 		return;
 
-	ImDrawList* draw_list = ImGui::GetForegroundDrawList();
+	ImDrawList* draw_list = ImGui::GetForegroundDrawList(Viewport);
 	if (!draw_list)
 		return;
 
@@ -277,7 +277,7 @@ static void HudAdjustRenderOverlays()
 				nx = screen_w - nx;
 			if (hud_adj_golden_ratio_flip_v)
 				ny = screen_h - ny;
-			return ImVec2(nx, ny);
+			return ImVec2(Viewport->Pos.x + nx, Viewport->Pos.y + ny);
 		};
 
 		auto draw_transformed_line = [&](ImVec2 p1, ImVec2 p2, ImU32 lcol, float th)
@@ -413,8 +413,8 @@ static void HudAdjustRenderOverlays()
 		const float cx = screen_w * 0.5f;
 		const float cy = screen_h * 0.5f;
 
-		draw_list->AddLine(ImVec2(cx, 0.0f), ImVec2(cx, screen_h), col, hud_adj_center_lines_thickness);
-		draw_list->AddLine(ImVec2(0.0f, cy), ImVec2(screen_w, cy), col, hud_adj_center_lines_thickness);
+		draw_list->AddLine(ImVec2(Viewport->Pos.x + cx, Viewport->Pos.y), ImVec2(Viewport->Pos.x + cx, Viewport->Pos.y + screen_h), col, hud_adj_center_lines_thickness);
+		draw_list->AddLine(ImVec2(Viewport->Pos.x, Viewport->Pos.y + cy), ImVec2(Viewport->Pos.x + screen_w, Viewport->Pos.y + cy), col, hud_adj_center_lines_thickness);
 	}
 }
 

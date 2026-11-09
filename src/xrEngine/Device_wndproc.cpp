@@ -200,12 +200,15 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	switch (Event.type)
 	{
 		case SDL_EVENT_WINDOW_MOUSE_ENTER:
-		{	OnWM_Activate(true, false);
-			break;
-		}
 		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 		{
-			OnWM_Activate(false, false);
+#ifdef IXR_WINDOWS
+			if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				break;
+			}
+#endif
+			OnWM_Activate(Event.type == SDL_EVENT_WINDOW_MOUSE_ENTER, false);
 			break;
 		}
 		case SDL_EVENT_WINDOW_SHOWN:

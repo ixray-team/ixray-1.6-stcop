@@ -15,6 +15,8 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [actor-light-perception.md](actor-light-perception.md) | Gunslinger torch detection, AI memory integration, caching |
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
+| [imgui-windows.md](imgui-windows.md) | In-game ImGui panels: detached desktop windows, input and checks |
+| [hud-adjust.md](hud-adjust.md) | In-game Hud Adjust: controls, export and screen guides |
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
 | [level-inspector.md](level-inspector.md) | In-game Level Inspector: modder guide and checks |
 | [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs and particles, held items, animation playlists, scene save/load |
