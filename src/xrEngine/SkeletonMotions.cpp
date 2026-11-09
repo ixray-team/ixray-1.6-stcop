@@ -186,6 +186,17 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 	IReader* MS = data->open_chunk(OGF_S_MOTIONS);
 	if (!MS) return false;
 
+	VERIFY(KeysChunk == nullptr);
+	if (SourceFile == nullptr)
+	{
+		const size_t Length = size_t(MS->length());
+		KeysCopy = xr_malloc(Length);
+		memcpy(KeysCopy, MS->pointer(), Length);
+		MS->close();
+		MS = new IReader(KeysCopy, Length);
+	}
+	KeysChunk = MS;
+
 	u32 dwCNT = 0;
 	MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
 	VERIFY(dwCNT<0x3FFF); // MotionID 2 bit - slot, 14 bit - motion index
@@ -220,22 +231,20 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 			{
 				if (M.test_flag(flRKeyAbsent))
 				{
-					CKeyQR32* r = (CKeyQR32*)MS->pointer();
-					u32 crc_q = crc32(r, sizeof(CKeyQR32));
-					M._keysR32.create(crc_q, 1, r);
+					M._keysR32.Set(MS->pointer());
 					MS->advance(1 * sizeof(CKeyQR32));
 				}
 				else
 				{
-					u32 crc_q = MS->r_u32();
-					M._keysR32.create(crc_q, dwLen, (CKeyQR32*)MS->pointer());
+					MS->advance(sizeof(u32));
+					M._keysR32.Set(MS->pointer());
 					MS->advance(dwLen * sizeof(CKeyQR32));
 				}
 
 				if (M.test_flag(flTKeyPresent))
 				{
-					u32 crc_t = MS->r_u32();
-					M._keysT32.create(crc_t, dwLen, (CKeyQT32*)MS->pointer());
+					MS->advance(sizeof(u32));
+					M._keysT32.Set(MS->pointer());
 					MS->advance(dwLen * sizeof(CKeyQT32));
 				}
 				else
@@ -247,29 +256,27 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 			{
 				if (M.test_flag(flRKeyAbsent))
 				{
-					CKeyQR* r = (CKeyQR*)MS->pointer();
-					u32 crc_q = crc32(r, sizeof(CKeyQR));
-					M._keysR.create(crc_q, 1, r);
+					M._keysR.Set(MS->pointer());
 					MS->advance(1 * sizeof(CKeyQR));
 				}
 				else
 				{
-					u32 crc_q = MS->r_u32();
-					M._keysR.create(crc_q, dwLen, (CKeyQR*)MS->pointer());
+					MS->advance(sizeof(u32));
+					M._keysR.Set(MS->pointer());
 					MS->advance(dwLen * sizeof(CKeyQR));
 				}
 
 				if (M.test_flag(flTKeyPresent))
 				{
-					u32 crc_t = MS->r_u32();
+					MS->advance(sizeof(u32));
 					if (M.test_flag(flTKey16IsBit))
 					{
-						M._keysT16.create(crc_t, dwLen, (CKeyQT16*)MS->pointer());
+						M._keysT16.Set(MS->pointer());
 						MS->advance(dwLen * sizeof(CKeyQT16));
 					}
 					else
 					{
-						M._keysT8.create(crc_t, dwLen, (CKeyQT8*)MS->pointer());
+						M._keysT8.Set(MS->pointer());
 						MS->advance(dwLen * sizeof(CKeyQT8));
 					};
 
@@ -308,12 +315,21 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 				}
 				std::ranges::sort(bones_notifies.order);
 			}
+			notify_data->close();
 		}
 	}
 	//	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);
-	MS->close();
 
 	return bRes;
+}
+
+motions_value::~motions_value()
+{
+	if (KeysChunk != nullptr)
+		KeysChunk->close();
+	xr_free(KeysCopy);
+	if (SourceFile != nullptr)
+		FS.r_close(SourceFile);
 }
 
 MotionVec* motions_value::bone_motions(shared_str bone_name)
@@ -396,16 +412,20 @@ motions_value* motions_container::Dock(shared_str Key, vecBones* Bones, IReader*
 	if (Reader == nullptr && FileName != nullptr)
 		Reader = FS.r_open(FileName);
 
+	const bool KeepFile = Reader != Data && !Device.IsEditorMode();
+
 	motions_value* Result = nullptr;
 	if (Reader != nullptr)
 	{
 		Result = new motions_value();
 		Result->m_dwReference = 0;
+		if (KeepFile)
+			Result->SourceFile = Reader;
 		if (!Result->load(Key.c_str(), Reader, Bones))
 			xr_delete(Result);
 	}
 
-	if (Reader != Data)
+	if (Reader != Data && !KeepFile)
 		FS.r_close(Reader);
 
 	Entry->Value = Result;
