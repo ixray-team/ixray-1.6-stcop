@@ -301,6 +301,30 @@ bool CImGuiManager::IsFocused() const
 	return false;
 }
 
+void CImGuiManager::SetMouseLook(bool IsEnabled)
+{
+	MouseLook = IsEnabled && CaptureInputs;
+	MouseLookDelta = ImVec2(0.0f, 0.0f);
+}
+
+bool CImGuiManager::IsMouseLook() const
+{
+	return MouseLook && CaptureInputs;
+}
+
+void CImGuiManager::AddMouseLook(float X, float Y)
+{
+	MouseLookDelta.x += IsMouseLook() ? X : 0.0f;
+	MouseLookDelta.y += IsMouseLook() ? Y : 0.0f;
+}
+
+ImVec2 CImGuiManager::TakeMouseLook()
+{
+	const ImVec2 Delta = MouseLookDelta;
+	MouseLookDelta = ImVec2(0.0f, 0.0f);
+	return Delta;
+}
+
 void CImGuiManager::NewPlatformFrame() const
 {
 #ifdef IXR_WINDOWS

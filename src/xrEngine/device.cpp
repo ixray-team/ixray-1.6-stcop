@@ -178,8 +178,10 @@ void CRenderDevice::on_idle		()
 	const bool Focus = !s_StartupActive && !Minimized && SDL_GetKeyboardFocus() == g_AppInfo.Window &&
 					   !CImGuiManager::Instance().IsCapturingInputs() && (psDeviceFlags.test(rsFullscreen) || !IsMainMenuActive);
 
-	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && !Autotest::Active() && Focus);
-	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && !Autotest::Active() && Focus);
+	const bool IsLooking = CImGuiManager::Instance().IsMouseLook();
+	const bool IsRelative = IsLooking || (Focus && !CImGuiManager::Instance().IsCapturingInputs());
+	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && !Autotest::Active() && (Focus || IsLooking));
+	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && !Autotest::Active() && IsRelative);
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 

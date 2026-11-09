@@ -263,6 +263,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		}
 		case SDL_EVENT_MOUSE_MOTION:
 		{
+			CImGuiManager::Instance().AddMouseLook(Event.motion.xrel, Event.motion.yrel);
 			if (!pInput->GetControllerMode())
 			{
 				pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
