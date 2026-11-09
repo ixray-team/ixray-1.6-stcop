@@ -47,7 +47,7 @@ void dxUIRender::SetScissor(Irect* rect)
 void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 {
 	CTexture* T = RImplementation.Imm().GetTexture(0);
-	res.set(float(T->get_Width()),float(T->get_Height()));
+	res.set(float(std::max(T->get_Width(), 1u)), float(std::max(T->get_Height(), 1u)));
 }
 
 const char* dxUIRender::UpdateShaderName(const char* tex_name, const char* sh_name)

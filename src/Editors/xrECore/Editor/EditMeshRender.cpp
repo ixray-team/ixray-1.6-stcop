@@ -24,6 +24,23 @@ static void NormalBasis(const Fvector& N, Fvector& T, Fvector& B)
 	B.crossproduct(N, T);
 }
 
+static bool FaceTangent(const Fvector& P0, const Fvector& P1, const Fvector& P2, const Fvector2* UV, Fvector& T, Fvector& B)
+{
+	const Fvector E1 = Fvector().sub(P1, P0);
+	const Fvector E2 = Fvector().sub(P2, P0);
+	const Fvector2 D1 = { UV[1].x - UV[0].x, UV[1].y - UV[0].y };
+	const Fvector2 D2 = { UV[2].x - UV[0].x, UV[2].y - UV[0].y };
+	const float Det = D1.x * D2.y - D2.x * D1.y;
+	if (std::abs(Det) < 1e-12f)
+	{
+		return false;
+	}
+	const float R = 1.0f / Det;
+	T.mad(Fvector().mul(E1, D2.y * R), E2, -D1.y * R);
+	B.mad(Fvector().mul(E2, D1.x * R), E1, -D2.x * R);
+	return true;
+}
+
 //----------------------------------------------------
 void CEditableMesh::GenerateRenderBuffers(bool Quiet)
 {
@@ -217,6 +234,7 @@ u32 CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_fa
 	const u32 dwTexCnt = ((dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 
 	u32 Count = 0;
+	Fvector Normals[3];
 	auto ProcessVertex = [&](const st_FaceVert& fv, u32 norm_id, bool invert_normal)
 	{
 		VERIFY2(fv.pindex < (int)m_Vertices.size(), "- Face index out of range");
@@ -283,11 +301,30 @@ u32 CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_fa
 			m_TexGen(uv, fv.pindex, N);
 		}
 
-		Fvector T, B;
-		NormalBasis(N, T, B);
-		VertexPacking::EncodeFrame(V, N, T, B);
-
+		Normals[Count % 3] = N;
 		++Count;
+	};
+
+	bool Clamped = false;
+	auto EncodeFace = [&]() {
+		PackedVertex* F = Vertices + Count - 3;
+		const Fvector2* FaceUV = UV + Count - 3;
+		Fvector FaceT, FaceB;
+		const bool HasUV = FaceTangent(F[0].P, F[1].P, F[2].P, FaceUV, FaceT, FaceB);
+
+		Fvector2 Offset;
+		Clamped |= !VertexPacking::UVRecenter(FaceUV, 3, Offset);
+		for (u32 k = 0; k < 3; ++k)
+		{
+			const Fvector& N = Normals[(Count - 3 + k) % 3];
+			Fvector T = FaceT, B = FaceB;
+			if (!HasUV)
+			{
+				NormalBasis(N, T, B);
+			}
+			VertexPacking::EncodeFrame(F[k], N, T, B);
+			VertexPacking::EncodeFitUV(F[k], FaceUV[k], Offset);
+		}
 	};
 
 	for (int fl_i = start_face; fl_i < start_face + num_face; ++fl_i)
@@ -306,6 +343,7 @@ u32 CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_fa
 		{
 			ProcessVertex(face.pv[k], f_index * 3 + k, false);
 		}
+		EncodeFace();
 
 		// Back (2-sided)
 		if (surf->_flags().is(SSurfaceData::sf2Sided))
@@ -314,13 +352,14 @@ u32 CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_fa
 			{
 				ProcessVertex(face.pv[k], f_index * 3 + k, true);
 			}
+
+			EncodeFace();
 		}
 	}
 
-	const Fvector2 Offset = VertexPacking::FitUV(UV, Count, Quiet ? nullptr : m_Name.c_str());
-	for (u32 Index = 0; Index < Count; ++Index)
+	if (Clamped && !Quiet)
 	{
-		VertexPacking::EncodeFitUV(Vertices[Index], UV[Index], Offset);
+		Msg("! %s: face uv span exceeds the [-32, 32) vertex range, uv clamped", m_Name.c_str());
 	}
 	return Count;
 }
@@ -609,10 +648,15 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 			const st_SVert* SV = &m_SVertices[face_lst[Face] * 3];
 			const Fvector2 UV[3] = { SV[0].uv, SV[1].uv, SV[2].uv };
 			const Fvector2 Offset = VertexPacking::FitUV(UV, 3, nullptr);
+			Fvector FaceT, FaceB;
+			const bool HasUV = FaceTangent(SV[0].offs, SV[1].offs, SV[2].offs, UV, FaceT, FaceB);
 			for (u32 k = 0; k < 3; ++k, ++V)
 			{
-				Fvector P{}, N{}, T{}, B{}, BindT, BindB, X;
-				NormalBasis(SV[k].norm, BindT, BindB);
+				Fvector P{}, N{}, T{}, B{}, BindT = FaceT, BindB = FaceB, X;
+				if (!HasUV)
+				{
+					NormalBasis(SV[k].norm, BindT, BindB);
+				}
 				for (const st_SVert::bone& Bone : SV[k].bones)
 				{
 					const Fmatrix& M = Bones[Bone.id]->_RenderTransform();

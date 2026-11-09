@@ -439,6 +439,17 @@ void CTexture::WaitForLoad()
 	}
 }
 
+void CTexture::EnsureLoaded()
+{
+	if (flags.bLoaded)
+	{
+		WaitForLoad();
+		return;
+	}
+
+	Load();
+}
+
 bool CTexture::BindsBC1() const
 {
 	const IRHISurface* Surface = ShowsPlaceholder() ? Placeholder->pSurface : pSurface;

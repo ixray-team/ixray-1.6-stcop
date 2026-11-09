@@ -35,6 +35,7 @@ public:
 	bool CanCacheShadow(bool& Pending, u64& Revision);
 	u64 GetShadowCacheRevision() const { return ShadowCacheRevision.load(std::memory_order_relaxed); }
 	void WaitForLoad();
+	void EnsureLoaded();
 	bool IsLoadPending() const { return IsLoading.load(std::memory_order_acquire); }
 	void AllowPlaceholder() { Sampled2D.store(true, std::memory_order_release); }
 	void								PostLoad		();
@@ -51,13 +52,13 @@ public:
 	}
 	IC u32 get_Width()
 	{
-		WaitForLoad();
-		return pSurface->GetWidth();
+		EnsureLoaded();
+		return pSurface ? pSurface->GetWidth() : 0;
 	}
 	IC u32 get_Height()
 	{
-		WaitForLoad();
-		return pSurface->GetHeight();
+		EnsureLoaded();
+		return pSurface ? pSurface->GetHeight() : 0;
 	}
 	IC ERHI_FORMAT get_Format()
 	{
