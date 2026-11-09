@@ -5,7 +5,7 @@
 #include "CustomTools/UIPostProcess.h"
 
 #include "../../xrECore/Editor/EditMesh.h"
-#include "../../xrEUI/ImGuizmo.h"
+#include "ImGuizmo.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
 #include "IconsFontAwesome7.h"
 #include "../Editor/Utils/ContentView.h"

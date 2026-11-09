@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIRenderForm.h"
 #include "ui_main.h"
-#include "../xrEUI/ImGuizmo.h"
+#include "ImGuizmo.h"
 #include <imgui_internal.h>
 
 static int GlobalViewportIndex = 0;

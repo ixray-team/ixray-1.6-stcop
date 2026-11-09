@@ -3,7 +3,7 @@
 #include "../xrECore/Editor/EditorChooseEvents.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 
-#include "../xrEUI/ImGuizmo.h"
+#include "ImGuizmo.h"
 
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
 #include "Editor/Utils/GitIntegration.h"

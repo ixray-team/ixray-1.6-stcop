@@ -2,7 +2,7 @@
 #include "ActorEditor.h"
 
 #include "ActorManipulator.h"
-#include "../../xrEUI/ImGuizmo.h"
+#include "ImGuizmo.h"
 
 CActorManipulator g_ActorManipulator;
 
