@@ -7,6 +7,7 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 #include "SkeletonCustom.h"
+#include "SkeletonScheduler.h"
 #include "LightTrack.h"
 #include "dxRenderDeviceRender.h"
 #include "dxWallMarkArray.h"
@@ -217,10 +218,18 @@ void CRender::create()
 	}
 
 	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
+	Device.SkeletonsLaunch = xr_make_delegate(&g_SkeletonScheduler, &SkeletonScheduler::Launch);
+	Device.SkeletonsCalculate = xr_make_delegate(&g_SkeletonScheduler, &SkeletonScheduler::Calculate);
+	Device.SkeletonsWait = xr_make_delegate(&g_SkeletonScheduler, &SkeletonScheduler::Wait);
 }
 
 void CRender::destroy() 
 {
+	g_SkeletonScheduler.Wait();
+	Device.SkeletonsLaunch = nullptr;
+	Device.SkeletonsCalculate = nullptr;
+	Device.SkeletonsWait = nullptr;
+
 	ResetSunShadowCache();
 	// Release the editor's lazily created brush resources while the device is still
 	// alive - their destructors dereference DEV, which is null by DLL detach time.
@@ -315,6 +324,7 @@ R_dsgraph_structure& CRender::BuildPassGraph(GfxCmdList& Cmd, const GraphView& V
 void CRender::reset_begin() {
 	// The pre-render stage runs in parallel with FrameMove, where a reset can start
 	Device.PreRenderThread.Wait();
+	g_SkeletonScheduler.Wait();
 	ResetSunShadowCache();
 	// Its compute pass reads the scene depth target, which is recreated
 	if (Device.IsEditorMode())

@@ -26,6 +26,7 @@ void CRenderDevice::Destroy()
 {
 	PreRenderThread.Stop();
 	GameThread.Stop();
+	SkeletonThread.Stop();
 
 	DetailsTask.wait();
 	SecondaryTasks.wait();

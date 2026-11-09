@@ -2,6 +2,7 @@
 
 #include "SkeletonBatch.h"
 #include "SkeletonCustom.h"
+#include "SkeletonScheduler.h"
 
 // Batches are filled on the rendering thread only
 static u32 g_SkeletonBatchMarker = 0;
@@ -34,7 +35,9 @@ void SkeletonBatch::Add(CKinematics* Skeleton)
 		Marker = g_SkeletonBatchMarker;
 	}
 
-	if (Skeleton->BatchMarker == Marker || Skeleton->UCalc_Time == RDEVICE.dwTimeGlobal)
+	g_SkeletonScheduler.Track(Skeleton);
+
+	if (Skeleton->BatchMarker == Marker || Skeleton->CalculatedTime.load(std::memory_order_acquire) == RDEVICE.dwTimeGlobal)
 	{
 		return;
 	}

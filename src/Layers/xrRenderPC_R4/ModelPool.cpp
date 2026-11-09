@@ -16,6 +16,7 @@
 #include "SkeletonX.h"
 #include "FHierrarhyVisual.h"
 #include "SkeletonAnimated.h"
+#include "SkeletonScheduler.h"
 
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
@@ -614,6 +615,7 @@ extern  xr_atomic_bool ENGINE_API g_bRendering;
 void	CModelPool::DeleteInternal	(dxRender_Visual* &V, bool bDiscard)
 {
 	VERIFY					(!g_bRendering);
+	VERIFY					(!g_SkeletonScheduler.IsRunning());
     if (!V)					return;
 	V->Depart				();
 	if (bDiscard||g_ForceDiscard){
@@ -656,7 +658,7 @@ void CModelPool::Delete(dxRender_Visual* &V, bool bDiscard)
 	if (nullptr==V)
 		return;
 
-	if (g_bRendering || (g_AppInfo.MainThread && !g_AppInfo.IsPrimaryThread()))
+	if (g_bRendering || g_SkeletonScheduler.IsRunning() || (g_AppInfo.MainThread && !g_AppInfo.IsPrimaryThread()))
 	{
 		xrCriticalSectionGuard Guard(PoolLock);
 		ModelsToDelete.emplace_back(V, bDiscard);

@@ -3,6 +3,7 @@
 #include "dxDebugRender.h"
 
 #include	"SkeletonX.h"
+#include	"SkeletonScheduler.h"
 #include "../../xrEngine/Fmesh.h"
 
 #include "../../xrEngine/Render.h"
@@ -94,6 +95,7 @@ CKinematics::CKinematics()
 
 CKinematics::~CKinematics	()
 {
+	g_SkeletonScheduler.Forget(this);
 	IBoneInstances_Destroy	();
 	// wallmarks
 	ClearWallmarks			();
@@ -118,7 +120,7 @@ void	CKinematics::IBoneInstances_Create()
 	u32				size	= (u32)bones->size();
 	bone_instances			=xr_alloc<CBoneInstance>(size);
 	for (u32 i=0; i<size; i++)
-		bone_instances[i].construct();
+		bone_instances[i].construct(&UCalc_Mutex);
 }
 
 void	CKinematics::IBoneInstances_Destroy()
@@ -432,6 +434,7 @@ void CKinematics::CalculateBones_Invalidate	()
 {
 	xrCriticalSectionGuard guard(&UCalc_Mutex);
 	UCalc_Time		= 0x0;
+	CalculatedTime.store(0, std::memory_order_release);
 	UCalc_Visibox	= psSkeletonUpdate;
 }
 
@@ -440,7 +443,7 @@ void CKinematics::Spawn			()
 	inherited::Spawn			();
 	// bones
 	for (u32 i=0; i<bones->size(); i++)
-		bone_instances[i].construct();
+		bone_instances[i].construct(&UCalc_Mutex);
 	Update_Callback				= nullptr;
 	CalculateBones_Invalidate	();
 	// wallmarks
@@ -451,6 +454,7 @@ void CKinematics::Spawn			()
 
 void CKinematics::Depart		()
 {
+	g_SkeletonScheduler.Forget(this);
 	inherited::Depart			();
 	// wallmarks
 	ClearWallmarks				();
@@ -502,6 +506,7 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 	if (bone_id == BI_NONE || bone_id >= LL_BoneCount())
 		return;
 
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	visimask.set(bone_id, val);
 
 	if(!visimask.is(bone_id))
@@ -531,6 +536,7 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 
 void CKinematics::LL_SetBonesVisible(VisMask mask)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	visimask.zero();
 	for(u32 b = 0; b < bones->size(); b++)
 	{
@@ -582,6 +588,7 @@ void CKinematics::Visibility_Update()
 
 void CKinematics::LL_SetSimpleBoneVisible(u16 bone_id, bool val)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	for (u32 c_it = 0; c_it < children.size(); c_it++)
 	{
 		CSkeletonX* _c = static_cast<CSkeletonX*>(children[c_it]);

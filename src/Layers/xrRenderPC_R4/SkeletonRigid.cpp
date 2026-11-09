@@ -3,15 +3,13 @@
 
 
 #include 	"SkeletonCustom.h"
+#include	"SkeletonLock.h"
 
 extern int	psSkeletonUpdate;
 
 #ifdef DEBUG
 void check_kinematics(CKinematics* _k, const char* s);
 #endif
-
-// Skeletons whose bones this thread is calculating right now
-static thread_local u32 g_SkeletonUpdateDepth = 0;
 
 // ::Random is shared by all threads; same generator as CRandom
 static thread_local u32 g_SkeletonRandomState = 1;
@@ -22,61 +20,6 @@ static s32 SkeletonRandom(s32 Max)
 	const s32 Value = s32((g_SkeletonRandomState >> 16) & 0x7fff);
 	return Max > 0 ? Value % Max : 0;
 }
-
-// Bone and visual callbacks read other skeletons (IK ray picks hit collision forms, NPCs look at
-// the actor). Two threads that calculate neighbouring skeletons could then wait for each other.
-// A thread inside a calculation therefore never waits for another skeleton: an update is skipped,
-// because its owner is calculating it right now, and a read takes the current matrices unlocked.
-class SkeletonLock
-{
-public:
-	SkeletonLock(xrCriticalSection& InMutex, bool InUpdate) :
-		Mutex(InMutex),
-		Update(InUpdate)
-	{
-		if (g_SkeletonUpdateDepth == 0)
-		{
-			Mutex.Enter();
-			Locked = true;
-		}
-		else
-		{
-			Locked = Mutex.TryEnter();
-		}
-
-		if (Locked && Update)
-		{
-			++g_SkeletonUpdateDepth;
-		}
-	}
-
-	~SkeletonLock()
-	{
-		if (!Locked)
-		{
-			return;
-		}
-
-		if (Update)
-		{
-			--g_SkeletonUpdateDepth;
-		}
-		Mutex.Leave();
-	}
-
-	SkeletonLock(const SkeletonLock&) = delete;
-	SkeletonLock& operator=(const SkeletonLock&) = delete;
-
-	bool IsLocked() const
-	{
-		return Locked;
-	}
-
-private:
-	xrCriticalSection& Mutex;
-	bool Update;
-	bool Locked = false;
-};
 
 void CKinematics::AdvanceTracks()
 {
@@ -90,7 +33,7 @@ void CKinematics::AdvanceTracks()
 
 void CKinematics::PrepareBones()
 {
-	if (RDEVICE.dwTimeGlobal == UCalc_Time)
+	if (CalculatedTime.load(std::memory_order_acquire) == RDEVICE.dwTimeGlobal)
 		return;
 
 	SkeletonLock Lock(UCalc_Mutex, true);
@@ -106,11 +49,10 @@ void CKinematics::CalculateBones(bool bForceExact)
 	// early out.
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
-	if (RDEVICE.dwTimeGlobal == UCalc_Time)
+	if (CalculatedTime.load(std::memory_order_acquire) == RDEVICE.dwTimeGlobal)
 		return;	// early out for "fast" update
 
 	SkeletonLock Lock(UCalc_Mutex, true);
-	// Another thread calculates the bones right now, or has done it while this one waited
 	if (!Lock.IsLocked() || RDEVICE.dwTimeGlobal == UCalc_Time)
 		return;
 
@@ -169,6 +111,17 @@ void CKinematics::CalculateBones(bool bForceExact)
 	//
 	if (Update_Callback)
 		Update_Callback(this);
+
+	CalculatedTime.store(UCalc_Time, std::memory_order_release);
+}
+
+void CKinematics::SyncScheduled()
+{
+	const u32 Time = ScheduledTime.load(std::memory_order_relaxed);
+	if (Time != 0 && Time == RDEVICE.dwTimeGlobal && CalculatedTime.load(std::memory_order_acquire) != Time)
+	{
+		CalculateBones(true);
+	}
 }
 
 void CKinematics::LL_GetBoneLocalPosition(u16 bone_id, Fvector& result)
@@ -242,6 +195,7 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 void CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)
 {
 	R_ASSERT(id<LL_BoneCount());
+	SkeletonLock Lock(UCalc_Mutex, false);
 	CBoneInstance bi = bone_instances[id];
 	Fvector last_c = bi.mTransform.c;
 	BoneChain_Calculate(&LL_GetData(id),bi,mask_channel,ignore_callbacks);

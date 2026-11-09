@@ -4,6 +4,7 @@
 #include "SkeletonAnimated.h"
 #include "AnimationKeyCalculate.h"
 #include "SkeletonX.h"
+#include "SkeletonLock.h"
 #include "ModelPool.h"
 #include "../../xrCore/BackgroundLoad.h"
 
@@ -137,11 +138,13 @@ void	CKinematicsAnimated::LL_DumpBlends_dbg	( )
 
 u32	CKinematicsAnimated::LL_PartBlendsCount	( u32 bone_part_id )
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	return blend_cycle(bone_part_id).size();
 }
 
 CBlend*	CKinematicsAnimated::LL_PartBlend	( u32 bone_part_id, u32 n  )
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	if( LL_PartBlendsCount(bone_part_id)<=n )
 		return nullptr;
 	return blend_cycle(bone_part_id)[ n ];
@@ -149,6 +152,7 @@ CBlend*	CKinematicsAnimated::LL_PartBlend	( u32 bone_part_id, u32 n  )
 
 void	CKinematicsAnimated::LL_IterateBlends( IterateBlendsCallback &callback )
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	CBlend *I=blend_pool.begin(), *E=blend_pool.end();
 	for (; I!=E; I++)
 		if (I->blend_state() != CBlend::eFREE_SLOT) callback(*I);
@@ -216,6 +220,7 @@ MotionID CKinematicsAnimated::ID_Cycle	(const char*  N)
 }
 void	CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel /*= (1<<0)*/)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	BlendSVec&	Blend		= blend_cycles[part];
 	
 	for (u32 I=0; I<Blend.size(); I++)
@@ -232,6 +237,7 @@ void	CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
 }
 void	CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	if (BI_NONE==part)		return;
 	if (part>=MAX_PARTS)	return;
 
@@ -335,6 +341,7 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 }
 CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam,u8 channel/*=0*/ )
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	// validate and unroll
 	if (!motion_ID.valid())	return nullptr;
 	if (BI_NONE==part)		{
@@ -517,6 +524,7 @@ CBlend*	CKinematicsAnimated::PlayFX			(const char*  N, float power_scale)
 
 CBlend*	CKinematicsAnimated::LL_PlayFX		(u16 bone, MotionID motion_ID, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	if (!motion_ID.valid())	return nullptr;
 	if (blend_fx.size()>=MAX_BLENDED) return nullptr;
 	if (BI_NONE==bone)		bone = iRoot;
@@ -551,6 +559,7 @@ void	CKinematicsAnimated::DestroyCycle	(CBlend &B)
 void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_blends )
 {
 	PROF_EVENT("CKinematicsAnimated::LL_UpdateTracks")
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	BlendSVecIt I,E;
 	// Cycles
 	for (u16 part=0; part<MAX_PARTS; part++)
@@ -757,6 +766,7 @@ void CKinematicsAnimated::ChannelFactorsStartup()
 }
 void	CKinematicsAnimated::LL_SetChannelFactor (u16	channel,float factor)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	channels.set_factor( channel, factor );
 }
 void CKinematicsAnimated::IBlend_Startup	()
@@ -1174,6 +1184,7 @@ namespace Inertialization
 
 void CKinematicsAnimated::LL_SetInertialization(float time)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	m_InertialTime = std::max(time, 0.f);
 	if (m_InertialTime <= 0.f)
 	{
@@ -1200,6 +1211,8 @@ bool CKinematicsAnimated::LL_GetMotionBoneTransform(MotionID motion, float time,
 	{
 		return false;
 	}
+
+	SkeletonLock Lock(UCalc_Mutex, false);
 
 	xr_vector<u16> chain;
 	for (u16 id = bone; id != BI_NONE; id = LL_GetData(id).GetParentID())
@@ -1234,6 +1247,7 @@ bool CKinematicsAnimated::LL_GetMotionBoneTransform(MotionID motion, float time,
 
 void CKinematicsAnimated::LL_SetInertializationBone(u16 bone, bool enabled)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	if (bone < m_InertialBones.size())
 	{
 		SInertialBone& S = m_InertialBones[bone];
@@ -1252,6 +1266,7 @@ bool CKinematicsAnimated::LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, F
 		return false;
 	}
 
+	SkeletonLock Lock(UCalc_Mutex, false);
 	CBoneInstance instance = bone_instances[bone];
 	BoneChain_Calculate(&LL_GetData(bone), instance, channel_mask, true);
 	result.set(instance.mTransform);
@@ -1260,6 +1275,7 @@ bool CKinematicsAnimated::LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, F
 
 void CKinematicsAnimated::LL_ResetInertialization()
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	for (SInertialBone& S : m_InertialBones)
 	{
 		S.Valid = false;
@@ -1429,11 +1445,13 @@ IBlendDestroyCallback* CKinematicsAnimated::GetBlendDestroyCallback()
 
 void CKinematicsAnimated::SetUpdateTracksCalback(IUpdateTracksCallback* callback)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	m_update_tracks_callback = callback;
 }
 
 void CKinematicsAnimated::SetBlendDestroyCallback(IBlendDestroyCallback* cb)
 {
+	xrCriticalSectionGuard Guard(UCalc_Mutex);
 	m_blend_destroy_callback = cb;
 }
 
