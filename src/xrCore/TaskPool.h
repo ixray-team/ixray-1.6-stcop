@@ -1,5 +1,7 @@
 #pragma once
 #include <functional>
+#include <type_traits>
+#include <utility>
 
 
 enum class ETaskPriority : u8
@@ -20,7 +22,48 @@ class xr_task_group;
 
 namespace TaskPool
 {
+#if defined(__cpp_lib_move_only_function) && __cpp_lib_move_only_function >= 202110L
 	using TaskBody = std::move_only_function<void()>;
+#else
+	// Some C++23 standard libraries still lack move_only_function.
+	class TaskBody final
+	{
+	public:
+		TaskBody() = default;
+		~TaskBody() = default;
+
+		TaskBody(TaskBody&&) noexcept = default;
+		TaskBody& operator=(TaskBody&&) noexcept = default;
+		TaskBody(const TaskBody&) = delete;
+		TaskBody& operator=(const TaskBody&) = delete;
+
+		template <typename Callable>
+			requires(!std::is_same_v<std::decay_t<Callable>, TaskBody> && std::is_invocable_r_v<void, std::decay_t<Callable>&>)
+		TaskBody(Callable&& Body)
+		{
+			using StoredCallable = std::decay_t<Callable>;
+			if constexpr (std::is_copy_constructible_v<StoredCallable>)
+			{
+				Function = std::forward<Callable>(Body);
+			}
+			else
+			{
+				Function = [BodyPtr = xr_make_shared<StoredCallable>(std::forward<Callable>(Body))]()
+				{
+					std::invoke(*BodyPtr);
+				};
+			}
+		}
+
+		void operator()()
+		{
+			Function();
+		}
+
+	private:
+		std::function<void()> Function;
+	};
+#endif
 	struct TaskNode;
 
 	XRCORE_API void Initialize();
