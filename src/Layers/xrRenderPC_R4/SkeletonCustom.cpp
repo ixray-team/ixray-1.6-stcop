@@ -987,6 +987,12 @@ void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
 			}
 		}
 
+		if (Hair.IsUsed())
+		{
+			Hair.Resolve([this](const char* Name) { return LL_BoneID(Name); }, [this](u16 Id) -> const Fobb& { return LL_GetData(Id).obb; });
+			Hair.Update(world_matrix, bone_instances, u16(bones->size()), dwFirstRenderFrame == 0 || RDEVICE.dwFrame - dwFirstRenderFrame > 1);
+		}
+
 		dwFirstRenderFrame = RDEVICE.dwFrame;
 	}
 }
