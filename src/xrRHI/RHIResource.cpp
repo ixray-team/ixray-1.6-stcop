@@ -281,7 +281,8 @@ static HRESULT ReflectImpl(TReflection* reflection, RHIShaderReflection& out_ref
 	for (u32 resource_idx = 0; resource_idx < shader.BoundResources && SUCCEEDED(result); ++resource_idx) {
 		TBinding desc = {};
 		result = reflection->GetResourceBindingDesc(resource_idx, &desc);
-		out_reflection.Resources[resource_idx] = { desc.Name, static_cast<ERHI_SHADER_RESOURCE_TYPE>(desc.Type), desc.BindPoint, desc.BindCount };
+		out_reflection.Resources[resource_idx] = { desc.Name, static_cast<ERHI_SHADER_RESOURCE_TYPE>(desc.Type), desc.BindPoint, desc.BindCount,
+			static_cast<ERHI_SRV_DIMENSION>(desc.Dimension) };
 	}
 	for (u32 input_idx = 0; input_idx < shader.InputParameters && SUCCEEDED(result); ++input_idx) {
 		TSignature desc = {};

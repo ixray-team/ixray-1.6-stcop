@@ -93,6 +93,8 @@ private:
 	
 	xr_vector<ref_texture>								m_necessary;
 	xr_vector<ref_texture>								PinnedTextures;
+	ref_texture											TexturePlaceholder;
+	void CreateTexturePlaceholder();
 
 	// misc
 	xrCriticalSection creationGuard;
@@ -128,6 +130,7 @@ public:
 	ref_texture						_CreateTexture		(const char* Name);
 	// For code that keeps only the surface: the texture stays until the manager is destroyed
 	CTexture*						_GetPinnedTexture	(const char* Name);
+	CTexture*						_GetTexturePlaceholder() const { return TexturePlaceholder._get(); }
 	void							_DeleteTexture		(const CTexture* T);
 
 	CMatrix*						_CreateMatrix		(const char* Name);

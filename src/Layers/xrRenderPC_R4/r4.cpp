@@ -764,6 +764,24 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
+		sps_result->Texture2DSlots = 0;
+		RHIShaderReflection reflection;
+		if (SUCCEEDED(GRHI->ReflectShader(buffer, buffer_size, reflection)))
+		{
+			for (const RHIShaderResourceDesc& Resource : reflection.Resources)
+			{
+				if (Resource.Type != ERHI_SHADER_RESOURCE_TYPE::TEXTURE || Resource.Dimension != ERHI_SRV_DIMENSION::TEXTURE2D)
+				{
+					continue;
+				}
+
+				for (u32 Slot = Resource.BindPoint; Slot < Resource.BindPoint + Resource.BindCount && Slot < 64; ++Slot)
+				{
+					sps_result->Texture2DSlots |= 1ull << Slot;
+				}
+			}
+		}
+
 		_result = S_OK;
 	}
 	else if(pTarget[0] == 'v') {

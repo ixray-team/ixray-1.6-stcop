@@ -50,6 +50,7 @@ void GfxCmdList::UnbindComputeTextures()
 	GRHI->ShaderResourceCache->Apply();
 	std::memset(Textures[5], 0, sizeof(Textures[5]));
 	TextureMask[5] = 0;
+	PendingTextureMask[5] = 0;
 }
 
 void GfxCmdList::Invalidate	()
@@ -98,6 +99,8 @@ void GfxCmdList::Invalidate	()
 
 	std::memset(Textures, 0, sizeof(Textures));
 	std::memset(TextureMask, 0, sizeof(TextureMask));
+	std::memset(PendingTextureMask, 0, sizeof(PendingTextureMask));
+	HasPendingTextures = false;
 	for (u32 m_it =0; m_it< 8;)		matrices	[m_it++]	= nullptr;
 }
 
@@ -123,13 +126,14 @@ void GfxCmdList::SetResource(ERHI_SHADER_TYPE Stage, u32 Slot, IRHIShaderResourc
 	const u32 Kind = u32(Stage);
 	Textures[Kind][Slot] = nullptr;
 	TextureMask[Kind] &= ~(1ull << Slot);
+	PendingTextureMask[Kind] &= ~(1ull << Slot);
 	(GRHI->ShaderResourceCache->*StageResource[Kind])(Slot, View);
 }
 
 void GfxCmdList::SetTextures(STextureList* _T)
 {
 	PROF_EVENT("set_Textures");
-	if (T == _T)
+	if (T == _T && !HasPendingTextures)
 	{
 		return;
 	}
@@ -140,19 +144,29 @@ void GfxCmdList::SetTextures(STextureList* _T)
 	{
 		const u32 Kind = Stage / CTexture::rstVertex;
 		const u32 Slot = Stage % CTexture::rstVertex;
+		const u64 Bit = 1ull << Slot;
 		CTexture* Surface = Texture._get();
 		if (!Surface)
 		{
 			continue;
 		}
-		Used[Kind] |= 1ull << Slot;
-		if (Textures[Kind][Slot] != Surface)
+		Used[Kind] |= Bit;
+		if (Textures[Kind][Slot] != Surface || (PendingTextureMask[Kind] & Bit))
 		{
 			Textures[Kind][Slot] = Surface;
 			Surface->bind(Stage);
+			if (Surface->IsLoadPending())
+			{
+				PendingTextureMask[Kind] |= Bit;
+			}
+			else
+			{
+				PendingTextureMask[Kind] &= ~Bit;
+			}
 		}
 	}
 
+	HasPendingTextures = false;
 	for (u32 Kind = 0; Kind < 6; ++Kind)
 	{
 		for (u64 Stale = TextureMask[Kind] & ~Used[Kind]; Stale; Stale &= Stale - 1)
@@ -162,6 +176,8 @@ void GfxCmdList::SetTextures(STextureList* _T)
 			(GRHI->ShaderResourceCache->*StageResource[Kind])(Slot, nullptr);
 		}
 		TextureMask[Kind] = Used[Kind];
+		PendingTextureMask[Kind] &= Used[Kind];
+		HasPendingTextures |= PendingTextureMask[Kind] != 0;
 	}
 }
 

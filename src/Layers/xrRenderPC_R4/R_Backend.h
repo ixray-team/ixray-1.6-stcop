@@ -74,6 +74,8 @@ private:
 	// Lists-expanded
 	CTexture*						Textures[6][mtMaxPixelShaderTextures] = {};
 	u64								TextureMask[6] = {};
+	u64								PendingTextureMask[6] = {};
+	bool							HasPendingTextures = false;
 	CMatrix*						matrices	[8	];	// matrices are supported only for FFP
 
 	// Cached Device.IsEditorMode(); enables editor-only per-pass state (texture matrices).

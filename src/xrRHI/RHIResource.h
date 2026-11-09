@@ -130,6 +130,7 @@ struct RHIShaderResourceDesc
 	ERHI_SHADER_RESOURCE_TYPE Type;
 	u32 BindPoint;
 	u32 BindCount;
+	ERHI_SRV_DIMENSION Dimension;
 };
 
 struct RHIShaderInputDesc

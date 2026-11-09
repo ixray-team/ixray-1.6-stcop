@@ -114,6 +114,17 @@ ref_pass CResourceManager::_CreatePass(const SPass& proto)
 	P->T = proto.T;
 	P->M = proto.M;
 
+	if (P->T && P->ps)
+	{
+		for (const auto& [Stage, Texture] : *P->T)
+		{
+			if (Texture && Stage < 64 && (P->ps->Texture2DSlots & (1ull << Stage)))
+			{
+				Texture->AllowPlaceholder();
+			}
+		}
+	}
+
 	v_passes.push_back(P);
 	return v_passes.back();
 }

@@ -126,6 +126,22 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 	}
 
 	m_textures_description.Load				();
+	CreateTexturePlaceholder				();
+}
+
+void CResourceManager::CreateTexturePlaceholder()
+{
+	if (TexturePlaceholder)
+	{
+		return;
+	}
+
+	ref_texture Texture = _CreateTexture("ed\\ed_not_existing_texture");
+	Texture->Load();
+	Texture->can_unload = false;
+
+	xrCriticalSectionGuard Guard(creationGuard);
+	TexturePlaceholder = Texture;
 }
 
 void CResourceManager::ED_ReloadLibrary(IReader* F)

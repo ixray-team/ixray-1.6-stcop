@@ -48,6 +48,7 @@ struct RENDER_API SPS : public xr_resource_uniq
 {
 	SShaderCompileState					CompileState;
 	RHIObject*					ps;
+	u64							Texture2DSlots = 0;
 	virtual ~SPS			() override;
 };
 typedef	resptr_core<SPS,resptr_base<SPS> > ref_ps;

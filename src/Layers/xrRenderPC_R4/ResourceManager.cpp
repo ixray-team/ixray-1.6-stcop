@@ -422,7 +422,6 @@ static bool DeferredTextureLoadEnabled()
 
 void CResourceManager::DeferredUpload()
 {
-	WaitForTextureLoading();
 	if (!RDEVICE.b_is_Ready)
 	{
 		return;
@@ -449,7 +448,6 @@ void CResourceManager::DeferredUpload()
 			Texture->Load();
 		}
 	}
-	WaitForTextureLoading();
 
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)GfxCmdList::GetWidth(), (u32)GfxCmdList::GetHeight());
@@ -458,7 +456,6 @@ void CResourceManager::DeferredUpload()
 void CResourceManager::DeferredUnload() 
 {
 	xrCriticalSectionGuard Guard(creationGuard);
-	WaitForTextureLoading();
 	if (!RDEVICE.b_is_Ready)
 		return;
 
@@ -517,13 +514,16 @@ ref_shader CResourceManager::_CreateShader(Shader* InShader)
 void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
 {
 	xrCriticalSectionGuard Guard(creationGuard);
-	WaitForTextureLoading();
 	m_base=c_base=m_lmaps=c_lmaps=0;
 
 	map_Texture::iterator I = m_textures.begin	();
 	map_Texture::iterator E = m_textures.end	();
 	for (; I!=E; I++)
 	{
+		if (I->second->IsLoadPending())
+		{
+			continue;
+		}
 		u32 m = I->second->flags.MemoryUsage;
 		if (strstr(I->first,"lmap"))
 		{
@@ -578,14 +578,16 @@ void CResourceManager::_GetVideoMemoryUsage(u64& RenderTargets, u64& ShadowMaps,
 
 	for (const auto& [Name, Texture] : m_textures)
 	{
-		Textures += Texture->flags.MemoryUsage;
+		if (!Texture->IsLoadPending())
+		{
+			Textures += Texture->flags.MemoryUsage;
+		}
 	}
 }
 
 void CResourceManager::_DumpMemoryUsage		()
 {
 	xrCriticalSectionGuard Guard(creationGuard);
-	WaitForTextureLoading();
 	xr_multimap<u32,std::pair<u32,shared_str> >		mtex	;
 
 	// sort
@@ -594,6 +596,10 @@ void CResourceManager::_DumpMemoryUsage		()
 		map_Texture::iterator E = m_textures.end	();
 		for (; I!=E; I++)
 		{
+			if (I->second->IsLoadPending())
+			{
+				continue;
+			}
 			u32			m = I->second->flags.MemoryUsage;
 			shared_str	n = I->second->cName;
 			mtex.insert (std::make_pair(m,std::make_pair((u32)I->second->dwReference,n) ));
