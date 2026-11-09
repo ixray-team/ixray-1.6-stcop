@@ -3,6 +3,7 @@
 #include "GamePersistent.h"
 #include "LevelStartInfo.h"
 #include "ImUtils/ImUtils.h"
+#include "Cinema/CinemaApi.h"
 #include "../xrEngine/Fmesh.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/GameMtlLib.h"
@@ -315,6 +316,7 @@ void CGamePersistent::UpdateGameType()
 void CGamePersistent::OnGameEnd	()
 {
 	CinemaFilmMaker_Shutdown();
+	Cinema::ShutdownPlayer();
 	Dof.Reset();
 	inherited::OnGameEnd				();
 
@@ -557,6 +559,8 @@ void CGamePersistent::UpdateParticles()
 void CGamePersistent::destroy_particles(bool all_particles)
 {
 	PROF_EVENT(__FUNCTION__);
+	Device.PreRenderThread.Wait();
+	Cinema::EndPlayerLevel();
 	ps_needtoplay.clear();
 
 	// delete active particles

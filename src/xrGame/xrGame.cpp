@@ -14,6 +14,7 @@
 #include "../xrEngine/xr_level_controller.h"
 
 #include "ImUtils/ImUtils.h"
+#include "Cinema/CinemaApi.h"
 
 void CCC_RegisterCommands	();
 void RegisterExpressionDelegates();
@@ -131,6 +132,7 @@ extern "C"
 	DLL_API void __cdecl xrGameRenderPreDestroy()
 	{
 		CinemaFilmMaker_Shutdown();
+		Cinema::ShutdownPlayer();
 		CDynamicWallmarkRegistry::Instance().ClearWallmarks();
 	}
 
