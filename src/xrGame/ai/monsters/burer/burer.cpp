@@ -22,6 +22,7 @@
 #include "../../../ActorCondition.h"
 #include "../../../../xrEngine/xr_level_controller.h"
 #include "../../../Weapon.h"
+#include "../../../Car.h"
 
 #include "../../../../xrCore/math/_vector3d_ext.h"
 #include "../control_direction_base.h"
@@ -130,6 +131,7 @@ void CBurer::Load(const char* section)
 	gravi.radius = pSettings->r_float(section, "Gravi_Radius");
 	gravi.impulse_to_objects = pSettings->r_float(section, "Gravi_Impulse_To_Objects");
 	gravi.impulse_to_enemy = pSettings->r_float(section, "Gravi_Impulse_To_Enemy");
+	gravi.impulse_to_car = pSettings->read_if_exists<float>(section, "Gravi_Impulse_To_Car", 4.f);
 	gravi.hit_power = pSettings->r_float(section, "Gravi_Hit_Power");
 
 	weight_to_stamina_hit = pSettings->read_if_exists<float>(section, "weight_to_stamina_hit", 0.02f);
@@ -480,9 +482,41 @@ void CBurer::UpdateGraviObject()
 
 	float trace_dist = float(gravi.step);
 
+	// The wave must not use the generic mass-scaled impulse against a car:
+	// Gravi_Impulse_To_Objects is a full velocity change (60 m/s by default),
+	// so applying it to the car shell launches the whole vehicle. Cars are
+	// skipped in the impulse loop below and handled here with a controlled
+	// damage-only hit when the wave reaches the enemy car.
+	CObject* EnemyCar = IsEnemyInCar() ? GetEnemyCarObject() : nullptr;
+
+	// The wave target is the actor position inside the car. The car shape may
+	// start or end the trace inside the wave, so check the proximity directly
+	// as well. The enemy car takes a single damage-only hit and the wave ends.
+	if (EnemyCar != nullptr && new_pos.distance_to(EnemyCar->Position()) <= EnemyCar->Radius() + gravi.radius)
+	{
+		if (CCar* Car = EnemyCar->cast_car())
+		{
+			HitGraviCar(Car, new_pos);
+		}
+
+		gravi_object.deactivate();
+		return;
+	}
+
 	collide::rq_result l_rq;
 	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, nullptr))
 	{
+		if (EnemyCar != nullptr && l_rq.O == EnemyCar && l_rq.range < trace_dist)
+		{
+			if (CCar* Car = EnemyCar->cast_car())
+			{
+				HitGraviCar(Car, new_pos);
+			}
+
+			gravi_object.deactivate();
+			return;
+		}
+
 		CEntityAlive* casted_enemy = const_cast<CEntityAlive*>(gravi_object.enemy);
 		const CObject* enemy = casted_enemy->dcast_CObject();
 		if ((l_rq.O == enemy) && (l_rq.range < trace_dist))
@@ -557,6 +591,15 @@ void CBurer::UpdateGraviObject()
 			continue;
 		}
 
+		// Gravi_Impulse_To_Objects is applied as a velocity, not as a force
+		// scaled to the object mass. A car would be thrown across the map by
+		// the wave; give every car a single weak push per wave instead.
+		if (CCar* Car = obj->cast_car())
+		{
+			PushGraviCar(Car, gravi_object.cur_pos);
+			continue;
+		}
+
 		Fvector dir_;
 		dir_.sub(obj->Position(), gravi_object.cur_pos);
 		dir_.normalize();
@@ -573,6 +616,51 @@ void CBurer::UpdateGraviObject()
 	else
 	{
 		::Sound->play_at_pos(sound_gravi_wave, 0, snd_pos);
+	}
+}
+
+void CBurer::HitGraviCar(CCar* Car, const Fvector& WavePos)
+{
+	if (Car == nullptr)
+	{
+		return;
+	}
+
+	Fvector car_dir;
+	car_dir.sub(Car->Position(), WavePos);
+	car_dir.normalize();
+
+	// HitFrom sends a hit event with BI_NONE, so its impulse argument does not
+	// move the car body. Apply a separate weak push to keep the hit visual and
+	// physical without throwing the vehicle across the map.
+	Car->HitFrom(this, gravi.hit_power, 0.f, car_dir, ALife::eHitTypeStrike);
+	PushGraviCar(Car, WavePos);
+}
+
+void CBurer::PushGraviCar(CCar* Car, const Fvector& WavePos)
+{
+	if (Car == nullptr)
+	{
+		return;
+	}
+
+	const u16 CarId = Car->ID();
+	for (u16 PushedId : gravi_object.pushed_cars)
+	{
+		if (PushedId == CarId)
+		{
+			return;
+		}
+	}
+
+	gravi_object.pushed_cars.push_back(CarId);
+
+	if (CPhysicsShell* CarShell = Car->PPhysicsShell())
+	{
+		Fvector car_dir;
+		car_dir.sub(Car->Position(), WavePos);
+		car_dir.normalize();
+		CarShell->applyImpulse(car_dir, gravi.impulse_to_car * CarShell->getMass());
 	}
 }
 
