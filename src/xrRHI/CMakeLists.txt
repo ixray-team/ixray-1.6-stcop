@@ -46,6 +46,7 @@ else()
 endif()
 
 # xrRHI project
+set_source_files_properties(Private/DxcAPI.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 add_library(xrRHI SHARED ${XRHI_SRC_FILES})
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRHI PRIVATE "${IXRAY_SDK_INC}")
@@ -106,3 +107,4 @@ target_link_libraries(xrRHI PUBLIC xrCore)
 target_link_libraries(xrRHI PUBLIC imgui)
 target_link_libraries(xrRHI PRIVATE DirectX::Mesh)
 target_link_libraries(xrRHI PRIVATE DirectX::Tex)
+target_link_libraries(xrRHI PRIVATE DXC::Headers)

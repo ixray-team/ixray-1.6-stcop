@@ -54,6 +54,8 @@ Unity errors point at the batch, not the `.cpp`. Set `IXRAY_UNITYBUILD=OFF` to m
 
 Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet, except DLSS 310.9.1: CMake downloads the official NVIDIA release tag archive, verifies SHA-256, and extracts it into `build/dep/DLSS-310.9.1`. Offline builds require the extracted SDK or the cached `build/dep/DLSS-310.9.1.zip` archive. The release DLL and `DLSS-LICENSE.txt` are copied to the output directory. SDL: window and input. Audio playback uses OpenAL.
 
+DXC public headers on Linux and macOS are downloaded from DirectXShaderCompiler `v1.8.2505.1` into the build directory's `_deps_header_only/dxc/` cache; Windows uses the Windows SDK headers. DXC is compiled separately from the DXVK/DXMT headers to keep their COM declarations independent. The compiler is loaded at runtime as `dxcompiler.dll`, `libdxcompiler.so`, or `libdxcompiler.dylib`; native libraries must be available on the platform's shared-library search path when DXIL compilation or reflection is needed. Windows also requires the matching `dxil.dll` validator. D3D11 uses the existing DXBC compiler without requiring a DXC runtime library.
+
 ## xrLevelBuilder CUDA/OptiX
 
 Enable the NVIDIA backend to download its build dependencies automatically:

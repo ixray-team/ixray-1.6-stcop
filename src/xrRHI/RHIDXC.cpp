@@ -1,38 +1,64 @@
 #include "RHI.h"
 #include "RHIDXC.h"
-#include <dxcapi.h>
+#include "Private/DxcAPI.h"
 #include <algorithm>
 #include <string>
 
-struct RHIDxc
+class RHIDxc final
 {
-	IDxcUtils* Utils = nullptr;
-	IDxcCompiler3* Compiler = nullptr;
+public:
+	RHIDxc()
+	{
+#ifdef IXR_WINDOWS
+		// Keep the validator loaded until the compiler and its COM objects are released.
+		Validator = SDL_LoadObject("dxil.dll");
+		if (!Validator)
+		{
+			Msg("! dxil.dll is missing; using DXBC shaders instead of unsigned DXIL");
+			return;
+		}
+		const char* LibraryName = "dxcompiler.dll";
+#elif defined(IXR_APPLE_SERIES)
+		const char* LibraryName = "libdxcompiler.dylib";
+#else
+		const char* LibraryName = "libdxcompiler.so";
+#endif
+		Module = SDL_LoadObject(LibraryName);
+		auto Create = Module ? SDL_LoadFunction(Module, "DxcCreateInstance") : nullptr;
+		if (FAILED(DxcAPI::Create(Create, Utils, Compiler)))
+		{
+			Msg("! %s is missing or incompatible; DXIL shaders cannot be compiled", LibraryName);
+		}
+	}
+
+	~RHIDxc()
+	{
+		Compiler.Reset();
+		Utils.Reset();
+		if (Module)
+		{
+			SDL_UnloadObject(Module);
+		}
+		if (Validator)
+		{
+			SDL_UnloadObject(Validator);
+		}
+	}
+
+	RHIDxc(const RHIDxc&) = delete;
+	RHIDxc& operator=(const RHIDxc&) = delete;
+
+	DxcObject Utils;
+	DxcObject Compiler;
+
+private:
+	SDL_SharedObject* Validator = nullptr;
+	SDL_SharedObject* Module = nullptr;
 };
 
 static RHIDxc& Dxc()
 {
-	static RHIDxc dxc = []
-	{
-		RHIDxc result;
-		// DXC loads the external validator when its DLL is initialized.
-		// Keep it loaded so compiled containers receive a runtime-valid signature.
-		static const HMODULE validator = LoadLibraryA("dxil.dll");
-		if (!validator)
-		{
-			Msg("! dxil.dll is missing; using DXBC shaders instead of unsigned DXIL");
-			return result;
-		}
-		HMODULE module = LoadLibraryA("dxcompiler.dll");
-		auto create = module ? (DxcCreateInstanceProc)GetProcAddress(module, "DxcCreateInstance") : nullptr;
-		if (!create || FAILED(create(CLSID_DxcUtils, IID_PPV_ARGS(&result.Utils))) ||
-			FAILED(create(CLSID_DxcCompiler, IID_PPV_ARGS(&result.Compiler))))
-		{
-			Msg("! dxcompiler.dll is missing or incompatible; DXIL shaders cannot be compiled");
-			result = {};
-		}
-		return result;
-	}();
+	static RHIDxc dxc;
 	return dxc;
 }
 
@@ -139,16 +165,15 @@ bool RHI_IsUnsignedDXIL(const void* code, size_t size)
 	return true;
 }
 
-HRESULT RHI_DxcCompile(const void* source, size_t size, const char* name, const RHIShaderMacro* macros, IRHIShaderInclude* include,
-	const char* entry, const char* target, u32 flags, RHIBlob** out_code, RHIBlob** out_errors)
+HRESULT RHI_DxcCompile(const void* source, size_t size, const char* name, const RHIShaderMacro* macros, IRHIShaderInclude* include, const char* entry, const char* target, u32 flags, RHIBlob** out_code, RHIBlob** out_errors)
 {
 	auto& dxc = Dxc();
-	if (!dxc.Compiler)
+	if (!dxc.Compiler.Get())
 	{
 		return E_FAIL;
 	}
 	const std::wstring shaderTarget = std::wstring(1, wchar_t(target[0])) + L"s_6_0";
-	std::vector<std::wstring> arguments = { L"-E", std::wstring(entry, entry + strlen(entry)), L"-T", shaderTarget, L"-HV", L"2018", L"-flegacy-resource-reservation" };
+	std::vector<std::wstring> arguments = {L"-E", std::wstring(entry, entry + strlen(entry)), L"-T", shaderTarget, L"-HV", L"2018", L"-flegacy-resource-reservation"};
 	if (flags & RHI_SHADER_PACK_MATRIX_ROW_MAJOR)
 	{
 		arguments.push_back(L"-Zpr");
@@ -171,7 +196,7 @@ HRESULT RHI_DxcCompile(const void* source, size_t size, const char* name, const 
 		const std::string define = std::string("-D") + macros[macro_idx].Name + "=" + (macros[macro_idx].Definition ? macros[macro_idx].Definition : "1");
 		arguments.emplace_back(define.begin(), define.end());
 	}
-	std::vector<LPCWSTR> pointers;
+	xr_vector<const wchar_t*> pointers;
 	for (const auto& argument : arguments)
 	{
 		pointers.push_back(argument.c_str());
@@ -179,48 +204,35 @@ HRESULT RHI_DxcCompile(const void* source, size_t size, const char* name, const 
 	std::string expanded;
 	xr_vector<std::string> stack;
 	ExpandIncludes(include, static_cast<const char*>(source), size, name, expanded, stack);
-	DxcBuffer buffer = { expanded.data(), expanded.size(), DXC_CP_ACP };
-	IDxcResult* result = nullptr;
-	HRESULT status = dxc.Compiler->Compile(&buffer, pointers.data(), UINT32(pointers.size()), nullptr, IID_PPV_ARGS(&result));
+	DxcObject Code;
+	DxcObject Errors;
+	HRESULT status = DxcAPI::Compile(dxc.Compiler, expanded.data(), expanded.size(), pointers.data(), pointers.size(), Code, Errors);
+	if (FAILED(status) && Errors.Size() > 1)
+	{
+		*out_errors = MakeBlob(Errors.Data(), Errors.Size());
+	}
 	if (SUCCEEDED(status))
 	{
-		result->GetStatus(&status);
-	}
-	IDxcBlobUtf8* errors = nullptr;
-	if (result && FAILED(status) && SUCCEEDED(result->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&errors), nullptr)) && errors && errors->GetStringLength())
-	{
-		*out_errors = MakeBlob(errors->GetStringPointer(), errors->GetStringLength() + 1);
-	}
-	IDxcBlob* object = nullptr;
-	if (SUCCEEDED(status) && SUCCEEDED(result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&object), nullptr)) && object)
-	{
-		if (RHI_IsUnsignedDXIL(object->GetBufferPointer(), object->GetBufferSize()))
+		if (RHI_IsUnsignedDXIL(Code.Data(), Code.Size()))
 		{
-			Msg("! DXC produced unsigned DXIL for '%s'; using DXBC instead. Check dxil.dll compatibility", name);
+			Msg("! DXC produced unsigned DXIL for '%s'; using DXBC instead. Check DXIL validator compatibility", name);
 			status = E_FAIL;
 		}
 		else
 		{
-			*out_code = MakeBlob(object->GetBufferPointer(), object->GetBufferSize());
+			*out_code = MakeBlob(Code.Data(), Code.Size());
 		}
 	}
-	else if (SUCCEEDED(status))
-	{
-		status = E_FAIL;
-	}
-	if (object) object->Release();
-	if (errors) errors->Release();
-	if (result) result->Release();
 	return status;
 }
 
 HRESULT RHI_DxcReflect(const void* code, size_t size, ID3D12ShaderReflection** out_reflection)
 {
 	auto& dxc = Dxc();
-	if (!dxc.Utils)
+	if (!dxc.Utils.Get())
 	{
 		return E_FAIL;
 	}
-	DxcBuffer buffer = { code, size, 0 };
-	return dxc.Utils->CreateReflection(&buffer, IID_PPV_ARGS(out_reflection));
+	const auto& InterfaceId = __uuidof(ID3D12ShaderReflection);
+	return DxcAPI::Reflect(dxc.Utils, code, size, &InterfaceId, reinterpret_cast<void**>(out_reflection));
 }

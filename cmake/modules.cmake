@@ -59,6 +59,7 @@ endif()
 include("${CMAKE_MODULE_PATHEX}/VKD3D.cmake")
 
 # Headers only libraries
+include("${CMAKE_MODULE_PATHEX}/DXC.cmake")
 include("${CMAKE_MODULE_PATHEX}/FastDynamicCast.cmake")
 include("${CMAKE_MODULE_PATHEX}/magic_enum.cmake")
 include("${CMAKE_MODULE_PATHEX}/sse2neon.cmake")
