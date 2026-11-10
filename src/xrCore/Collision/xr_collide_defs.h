@@ -116,6 +116,6 @@ namespace collide
 		ICF rqVec &r_results() { return results; }
 
 	};
-	typedef bool rq_callback(rq_result& result, LPVOID user_data);
-	typedef bool test_callback(const ray_defs& rd, CObject* object, LPVOID user_data);
+	typedef bool rq_callback(rq_result& result, void* user_data);
+	typedef bool test_callback(const ray_defs& rd, CObject* object, void* user_data);
 };

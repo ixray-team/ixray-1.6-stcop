@@ -175,7 +175,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 //--------------------------------------------------------------------------------
 // RayQuery
 //--------------------------------------------------------------------------------
-bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
+bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, void* user_data, collide::test_callback* tb, CObject* ignore_object)
 {
 	// initialize query
 	dest.r_clear();

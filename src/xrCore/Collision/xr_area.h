@@ -46,7 +46,7 @@ public:
 	bool								RayPick				( const Fvector &start, const Fvector &dir, float range, collide::rq_target tgt, collide::rq_result& R, CObject* ignore_object );
 
 	// General collision query
-	bool								RayQuery			( collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
+	bool								RayQuery			( collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, void* user_data, collide::test_callback* tb, CObject* ignore_object);
 	bool								RayQuery			( collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
 
 	ICF xr_vector<CDB::TRI>&			GetStaticTris		() { Static.wait_loading(); return Static.get_tris();	}
