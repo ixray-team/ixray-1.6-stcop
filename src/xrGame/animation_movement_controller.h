@@ -41,6 +41,7 @@ virtual		~animation_movement_controller		( );
 			void	NewBlend					( CBlend* B, const Fmatrix &new_matrix, bool local_animation );
 			bool	IsActive					( ) const ;
 			void	OnFrame						( );
+			void	RestoreTime(const Fmatrix& StartTransform, float Time);
 private:
 			void	GetInitalPositionBlenSpeed	( );
 			void	animation_root_position		( Fmatrix &pos  );

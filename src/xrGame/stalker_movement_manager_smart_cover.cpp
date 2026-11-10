@@ -26,6 +26,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "Inventory.h"
 #include "Weapon.h"
+#include "animation_movement_controller.h"
 
 namespace smart_cover {
 	shared_str	transform_vertex(shared_str const &vertex_id, bool const &in);
@@ -70,6 +71,11 @@ void stalker_movement_manager_smart_cover::update	(u32 time_delta)
 {
 	if (object().getDestroy())
 		return;
+
+	if (SavedSmartCover && object().g_Alive())
+	{
+		RestoreSmartCover();
+	}
 
 	VERIFY							(object().g_Alive());
 	VERIFY							(!current_params().cover() || current_params().cover_loophole());
@@ -499,6 +505,138 @@ bool stalker_movement_manager_smart_cover::default_behaviour	() const
 		return						(true);
 
 	return							(false);
+}
+
+namespace SmartCoverSerialization
+{
+	constexpr u32 LegacyMagic = 0x31564353; // SCV1
+	constexpr u32 Magic = 0x32564353; // SCV2, an optional block before script-binder data.
+}
+
+void stalker_movement_manager_smart_cover::SaveSmartCover(NET_Packet& Packet) const
+{
+	const auto* Controller = object().animation_movement();
+	if (!object().g_Alive() || (!m_current.cover() && !m_entering_smart_cover_with_animation) || !Controller || !Controller->IsActive())
+	{
+		return;
+	}
+
+	Packet.w_u32(SmartCoverSerialization::Magic);
+	Packet.w_stringZ(m_current.cover_id());
+	Packet.w_stringZ(m_current.cover() ? m_current.cover_loophole_id() : "");
+	Packet.w_stringZ(m_target.cover_id());
+	Packet.w_stringZ(m_target.cover() ? m_target.cover_loophole_id() : "");
+	Packet.w_stringZ(m_enter_cover_id);
+	Packet.w_stringZ(m_enter_loophole_id);
+	Packet.w_u8(m_entering_smart_cover_with_animation);
+	Packet.w_u32(m_current.m_body_state);
+	Packet.w_u32(m_target.m_body_state);
+	Packet.w_u32(Controller->ControlBlend()->motionID.val);
+	Packet.w_float(Controller->ControlBlend()->timeCurrent);
+	Packet.w(&object().XFORM(), sizeof(Fmatrix));
+	Packet.w(&Controller->start_transform(), sizeof(Fmatrix));
+	u32 ReadyPose = u32(-1);
+	u32 AnimationTarget = u32(-1);
+	if (m_current.cover())
+	{
+		m_animation_selector->CapturePlan(ReadyPose, AnimationTarget);
+	}
+	Packet.w_u32(ReadyPose);
+	Packet.w_u32(AnimationTarget);
+}
+
+void stalker_movement_manager_smart_cover::LoadSmartCover(IReader& Packet)
+{
+	SavedSmartCover.reset();
+	// Older saves continue directly with script-binder data; preserve its cursor.
+	if (Packet.elapsed() < sizeof(u32))
+	{
+		return;
+	}
+	const auto Offset = Packet.tell();
+	const auto Magic = Packet.r_u32();
+	if (Magic != SmartCoverSerialization::Magic && Magic != SmartCoverSerialization::LegacyMagic)
+	{
+		Packet.seek(Offset);
+		return;
+	}
+
+	auto State = xr_make_unique<SmartCoverSave>();
+	Packet.r_stringZ(State->Cover);
+	Packet.r_stringZ(State->Loophole);
+	Packet.r_stringZ(State->TargetCover);
+	Packet.r_stringZ(State->TargetLoophole);
+	Packet.r_stringZ(State->EntryCover);
+	Packet.r_stringZ(State->EntryLoophole);
+	State->Entering = Packet.r_u8() != 0;
+	State->BodyState = static_cast<MonsterSpace::EBodyState>(Packet.r_u32());
+	State->TargetBodyState = static_cast<MonsterSpace::EBodyState>(Packet.r_u32());
+	State->Motion.val = Packet.r_u32();
+	State->Time = Packet.r_float();
+	Packet.r(&State->Transform, sizeof(Fmatrix));
+	Packet.r(&State->StartTransform, sizeof(Fmatrix));
+	if (Magic == SmartCoverSerialization::Magic)
+	{
+		State->ReadyPose = Packet.r_u32();
+		State->AnimationTarget = Packet.r_u32();
+	}
+	SavedSmartCover = std::move(State);
+}
+
+void stalker_movement_manager_smart_cover::RestoreSmartCover()
+{
+	// Covers and script schemes are registered by the first movement update.
+	auto State = std::move(SavedSmartCover);
+	m_current.cover_id(State->Cover);
+	if (m_current.cover())
+	{
+		m_current.cover_loophole_id(State->Loophole);
+	}
+	m_target.cover_id(State->TargetCover);
+	if (m_target.cover())
+	{
+		m_target.cover_loophole_id(State->TargetLoophole);
+	}
+	m_enter_cover_id = State->EntryCover;
+	m_enter_loophole_id = State->EntryLoophole;
+	m_current.m_body_state = State->BodyState;
+	m_target.m_body_state = State->TargetBodyState;
+	m_entering_smart_cover_with_animation = State->Entering;
+	m_path.clear();
+	m_current_transition = nullptr;
+	m_current_transition_animation = nullptr;
+
+	object().ForceTransform(State->Transform);
+	on_smart_cover_enter();
+	object().animation().global().reset();
+	if (State->Entering)
+	{
+		m_enter_animation = State->Motion;
+		object().animation().global().target_matrix(State->StartTransform);
+		object().animation().global_selector(CStalkerAnimationManager::AnimationSelector(this, &stalker_movement_manager_smart_cover::select_animation));
+		object().animation().global_callback(CStalkerAnimationManager::AnimationCallback(this, &stalker_movement_manager_smart_cover::on_animation_end));
+		object().animation().update();
+	}
+	else
+	{
+		bind_global_selector();
+		// The entry direction can differ from the root orientation after entering.
+		// Keep the saved basis even if the planner picks a different idle animation.
+		object().animation().global().target_matrix(State->StartTransform);
+		if (State->ReadyPose == u32(-1) && State->Motion)
+		{
+			m_animation_selector->InferPlan(State->Motion, State->ReadyPose, State->AnimationTarget);
+		}
+		m_animation_selector->initialize(State->ReadyPose, State->AnimationTarget);
+	}
+
+	auto* Controller = object().animation_movement();
+	if (Controller && Controller->IsActive())
+	{
+		const bool SameMotion = Controller->ControlBlend()->motionID == State->Motion;
+		const float ResumeTime = SameMotion ? State->Time : 0.f;
+		Controller->RestoreTime(State->StartTransform, ResumeTime);
+	}
 }
 
 bool stalker_movement_manager_smart_cover::in_smart_cover		() const

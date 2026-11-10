@@ -11,6 +11,7 @@
 #include "ai_monster_space.h"
 #include "ai_space.h"
 #include "level_graph.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "../xrServerEntities/object_broker.h"
 
 using smart_cover::detail::parse_string;
@@ -53,6 +54,21 @@ smart_cover::action::action(luabind::object const &description)
 smart_cover::action::~action()
 {
 	delete_data(m_animations);
+}
+
+bool smart_cover::action::HasAnimation(IKinematicsAnimated& Skeleton, MotionID Motion) const
+{
+	for (const auto& Entry : m_animations)
+	{
+		for (const auto& Name : *Entry.second)
+		{
+			if (Skeleton.ID_Cycle_Safe(Name.c_str()) == Motion)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 void smart_cover::action::add_animation(const char* type, luabind::object const& table)
 {

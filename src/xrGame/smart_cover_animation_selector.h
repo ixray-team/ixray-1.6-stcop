@@ -44,7 +44,9 @@ public:
 
 							animation_selector	(CAI_Stalker *object);
 							~animation_selector	();
-		void				initialize			();
+		void				initialize(u32 ReadyPose = u32(-1), u32 Target = u32(-1));
+		void CapturePlan(u32& ReadyPose, u32& Target) const;
+		void InferPlan(MotionID Motion, u32& ReadyPose, u32& Target) const;
 		void				execute				();
 		void				finalize			();
 		MotionID 	select_animation	(bool &animation_movement_controller);

@@ -1147,6 +1147,7 @@ void CAI_Stalker::save (NET_Packet &packet)
 	inherited::save			(packet);
 	CInventoryOwner::save	(packet);
 	brain().save			(packet);
+	movement().SaveSmartCover(packet);
 }
 
 void CAI_Stalker::load (IReader &packet)		
@@ -1154,6 +1155,7 @@ void CAI_Stalker::load (IReader &packet)
 	inherited::load			(packet);
 	CInventoryOwner::load	(packet);
 	brain().load			(packet);
+	movement().LoadSmartCover(packet);
 }
 
 void CAI_Stalker::load_critical_wound_bones()

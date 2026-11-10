@@ -53,6 +53,8 @@ public:
 	virtual	void				remove_links			(CObject *object);
 			void		cleanup_after_animation_selector();
 			bool				in_smart_cover			() const;
+			void SaveSmartCover(NET_Packet& Packet) const;
+			void LoadSmartCover(IReader& Packet);
 	inline	bool				check_can_kill_enemy	() const;
 	inline	void				check_can_kill_enemy	(bool value);
 
@@ -181,6 +183,27 @@ private:
 
 private:
 	LoopholePath				m_path;
+	class SmartCoverSave
+	{
+	public:
+		shared_str Cover;
+		shared_str Loophole;
+		shared_str TargetCover;
+		shared_str TargetLoophole;
+		shared_str EntryCover;
+		shared_str EntryLoophole;
+		Fmatrix Transform;
+		Fmatrix StartTransform;
+		MotionID Motion;
+		float Time = 0.f;
+		u32 ReadyPose = u32(-1);
+		u32 AnimationTarget = u32(-1);
+		MonsterSpace::EBodyState BodyState = MonsterSpace::eBodyStateStand;
+		MonsterSpace::EBodyState TargetBodyState = MonsterSpace::eBodyStateStand;
+		bool Entering = false;
+	};
+	xr_unique_ptr<SmartCoverSave> SavedSmartCover;
+	void RestoreSmartCover();
 	LoopholePath				m_temp_loophole_path;
 	target_selector_type*		m_target_selector;
 	animation_selector_type*	m_animation_selector;

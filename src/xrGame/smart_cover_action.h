@@ -13,6 +13,9 @@
 #include "ai_monster_space.h"
 #include "../xrCore/Containers/associative_vector.h"
 
+class IKinematicsAnimated;
+struct MotionID;
+
 namespace smart_cover{
 
 class action final
@@ -45,6 +48,7 @@ public:
 	IC	bool		const	&movement			() const;
 	IC	Fvector		const	&target_position	() const;
 	IC	Animations	const	&animations			(shared_str const& cover_id, shared_str const &id) const;
+	bool HasAnimation(IKinematicsAnimated& Skeleton, MotionID Motion) const;
 
 private:
 		void				add_animation		(const char* animation_type, luabind::object const &table);

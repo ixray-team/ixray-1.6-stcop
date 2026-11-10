@@ -266,6 +266,16 @@ void animation_movement_controller::NewBlend(CBlend* B, const Fmatrix& new_matri
 		m_poses_blending = poses_blending(Fidentity, Fidentity, -1.f);
 }
 
+void animation_movement_controller::RestoreTime(const Fmatrix& StartTransform, float Time)
+{
+	m_startObjXForm = StartTransform;
+	clamp(Time, 0.f, std::max(0.f, m_control_blend->timeTotal - SAMPLE_SPF));
+	m_control_blend->timeCurrent = Time;
+	m_poses_blending = poses_blending(Fidentity, Fidentity, -1.f);
+	OnFrame();
+	m_pKinematicsC->CalculateBones_Invalidate();
+}
+
 void animation_movement_controller::DBG_verify_position_not_chaged() const
 {
 #ifdef	DEBUG

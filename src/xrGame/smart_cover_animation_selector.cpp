@@ -18,6 +18,7 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "Inventory.h"
 #include "smart_cover.h"
+#include "smart_cover_loophole.h"
 #include "HudItem.h"
 
 float	g_smart_cover_animation_speed_factor = 1.f;
@@ -42,9 +43,66 @@ animation_selector::~animation_selector				()
 	xr_delete			(m_planner);
 }
 
-void animation_selector::initialize					()
+namespace
+{
+	using namespace StalkerDecisionSpace;
+	constexpr EWorldProperties CoverReadyPoses[] = { eWorldPropertyReadyToIdle, eWorldPropertyReadyToLookout, eWorldPropertyReadyToFire, eWorldPropertyReadyToFireNoLookout };
+	constexpr EWorldProperties CoverPoseTargets[] = { eWorldPropertyLoopholeIdle, eWorldPropertyLookedOut, eWorldPropertyLoopholeFire, eWorldPropertyLoopholeFireNoLookout };
+	constexpr const char* CoverPoseActions[] = { "idle", "lookout", "fire", "fire_no_lookout" };
+}
+
+void animation_selector::CapturePlan(u32& ReadyPose, u32& Target) const
+{
+	ReadyPose = u32(-1);
+	Target = u32(-1);
+	if (!m_planner->initialized())
+	{
+		return;
+	}
+	for (u32 Index = 0; Index < std::size(CoverReadyPoses); ++Index)
+	{
+		if (m_planner->property_storage()->property(CoverReadyPoses[Index]))
+		{
+			ReadyPose = Index;
+			break;
+		}
+	}
+	if (!m_planner->target_state().conditions().empty())
+	{
+		Target = m_planner->target_state().conditions().front().condition();
+	}
+}
+
+void animation_selector::InferPlan(MotionID Motion, u32& ReadyPose, u32& Target) const
+{
+	const auto* Loophole = m_object->movement().current_params().cover_loophole();
+	const auto& Actions = Loophole->actions();
+	for (u32 Index = 0; Index < std::size(CoverPoseActions); ++Index)
+	{
+		const auto Action = Actions.find(CoverPoseActions[Index]);
+		if (Action != Actions.end() && Action->second->HasAnimation(*m_skeleton_animated, Motion))
+		{
+			ReadyPose = Index;
+			Target = CoverPoseTargets[Index];
+			return;
+		}
+	}
+}
+
+void animation_selector::initialize(u32 ReadyPose, u32 Target)
 {
 	m_planner->initialize		();
+	if (ReadyPose < std::size(CoverReadyPoses))
+	{
+		for (u32 Index = 0; Index < std::size(CoverReadyPoses); ++Index)
+		{
+			m_planner->property_storage()->set_property(CoverReadyPoses[Index], Index == ReadyPose);
+		}
+	}
+	if (Target != u32(-1))
+	{
+		m_planner->target(static_cast<StalkerDecisionSpace::EWorldProperties>(Target));
+	}
 
 	// we need this, since we could change bone callbacks
 	// which needs animation blends
