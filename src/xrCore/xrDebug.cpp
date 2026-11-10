@@ -23,10 +23,10 @@ XRCORE_API xrDebug Debug;
 
 static bool	error_after_dialog = false;
 
-void xrDebug::gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info, u32 const assertion_info_size)
+void xrDebug::gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, int line, const char* function, char* assertion_info, u32 const assertion_info_size)
 {
-	LPSTR				buffer_base = assertion_info;
-	LPSTR				buffer = assertion_info;
+	char* buffer_base = assertion_info;
+	char* buffer = assertion_info;
 	int assertion_size	= (int)assertion_info_size;
 	const char*				endline = "\n";
 	const char*				prefix = "[error]";
@@ -147,7 +147,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info, sizeof(assertion_info) );
 
 	const char*				endline = "\r\n";
-	LPSTR				buffer = assertion_info + xr_strlen(assertion_info);
+	char* buffer = assertion_info + xr_strlen(assertion_info);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"%sPress CANCEL to abort execution%s",endline,endline);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press TRY AGAIN to continue execution%s",endline);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press CONTINUE to continue execution and ignore all the errors of this type%s%s",endline,endline);
@@ -428,6 +428,8 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		// The full dump takes seconds while the other threads run on: the process may end before it is written.
 		// A small dump with the stacks goes first, next to it.
+		const bool IsFullDump = strstr(Core.Params, "-full_dump") != nullptr;
+		if (IsFullDump)
 		{
 			string_path SmallDumpPath;
 			xr_strcpy(SmallDumpPath, szDumpPath);
@@ -443,7 +445,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 		}
 
 		// write the dump
-		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
+		MINIDUMP_TYPE dump_flags = IsFullDump ? MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo) : MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithThreadInfo);
 
 		bool bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
 		if (bOK)
@@ -620,7 +622,7 @@ void _terminate()
 	);
 
 	const char* endline = "\r\n";
-	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
+	char* buffer = assertion_info + xr_strlen(assertion_info);
 	buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
 	extern XRCORE_API bool ignore_error_window;
