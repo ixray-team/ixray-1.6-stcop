@@ -656,7 +656,7 @@ void SlotLabel(string64& Out, Param Id, u8 Layer, const Object* Target = nullptr
 void Test(KeyHit& Hit, const ImVec2& Mouse, const ImVec2& Point, u32 Target, u8 Component, u32 Index, u8 Kind)
 {
 	const float Distance = std::max(std::fabs(Mouse.x - Point.x), std::fabs(Mouse.y - Point.y));
-	const float Score = Kind ? Distance - KeyZone : Distance;
+	const float Score = Kind ? Distance - KeyZone : Distance <= KeyRadius ? -KeyZone - 1.0f : Distance;
 	if (Distance <= KeyZone && Score < Hit.Score)
 	{
 		Hit = { Target, Component, Index, Kind, Score, true, Point };

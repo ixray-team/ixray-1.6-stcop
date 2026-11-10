@@ -84,6 +84,12 @@ enum class Param : u8
 	DofBlur,
 	DofAperture,
 	DofLength,
+	DofPoint,
+	DofLimit,
+	DofSqueeze,
+	DofSpeed,
+	DofTransition,
+	DofSwirl,
 	CameraSmooth,
 	PoseWeight,
 	BoneRotation,
@@ -556,6 +562,12 @@ struct CameraBlock
 	bool IsAutofocus = false;
 	float Aperture = 4.0f;
 	float FocalLength = 0.0f;
+	float Point[2] = { 0.5f, 0.5f };
+	float Limit = 0.0f;
+	float Squeeze = 1.0f;
+	float FocusTime = 0.1f;
+	float TransitionTime = 0.0f;
+	float Swirl = 0.0f;
 	float Smooth = 0.0f;
 	float Tension = 1.0f;
 	bool IsShortTurn = false;

@@ -2681,6 +2681,15 @@ void Editor::DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool Has
 		{
 			ParamRow(Core, Ids, Block, Param::DofAperture, 0, 0.05f, "f/%.1f", 1, 4.0f);
 			ParamRow(Core, Ids, Block, Param::DofLength, 0, 0.5f, "%.0f mm", 1, 0.0f);
+			ParamRow(Core, Ids, Block, Param::DofSqueeze, 0, 0.01f, "%.2fx", 1, 1.0f);
+			ParamRow(Core, Ids, Block, Param::DofSwirl, 0, 0.01f, "%.2f", 1, 0.0f);
+			ParamRow(Core, Ids, Block, Param::DofLimit, 0, 0.1f, "%.0f px", 1, 0.0f);
+			ParamRow(Core, Ids, Block, Param::DofTransition, 0, 0.01f, "%.2f s", 1, 0.0f);
+			if (Shot.IsAutofocus && Shot.Dof == DofMode::Manual)
+			{
+				ParamRow(Core, Ids, Block, Param::DofPoint, 0, 0.005f, "%.2f", 3, 0.5f);
+				ParamRow(Core, Ids, Block, Param::DofSpeed, 0, 0.01f, "%.2f s", 1, 0.1f);
+			}
 		}
 		else
 		{

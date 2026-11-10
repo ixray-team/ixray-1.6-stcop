@@ -1387,10 +1387,12 @@ void Player::OutputDof(const CameraSample& Lens)
 	{
 		const float Share = std::clamp(Lens.Weight, 0.0f, 1.0f);
 		const CameraPose& Lead = IsLate && (!IsEarly || Share >= 0.5f) ? Lens.B : Lens.A;
-		Fvector4 Mixed = Lead.Lens;
+		Fvector4 Mixed = Lead.Lens, Shape = Lead.Shape, Timing = Lead.Timing;
 		if (IsEarly && IsLate)
 		{
 			Mixed.lerp(Lens.A.Lens, Lens.B.Lens, Share);
+			Shape.lerp(Lens.A.Shape, Lens.B.Shape, Share);
+			Timing.lerp(Lens.A.Timing, Lens.B.Timing, Share);
 		}
 		SDofCameraSettings Settings;
 		Settings.Mode = Lead.Lens.w > 0.5f ? EDofMode::Autofocus : EDofMode::Manual;
@@ -1398,7 +1400,12 @@ void Player::OutputDof(const CameraSample& Lens)
 		Settings.ManualFocalLength = Lead.Lens.y > 0.0f;
 		Settings.FocalLength = Settings.ManualFocalLength ? Mixed.y : Settings.FocalLength;
 		Settings.FocusDistance = Mixed.z;
-		Settings.IsInstant = Settings.Mode == EDofMode::Manual;
+		Settings.FocusPoint.set(Shape.x, Shape.y);
+		Settings.MaxRadius = Shape.z;
+		Settings.Squeeze = Shape.w;
+		Settings.FocusTime = Settings.Mode == EDofMode::Autofocus ? Timing.x : 0.0f;
+		Settings.TransitionTime = Timing.y;
+		Settings.Swirl = Timing.z;
 		Dof.SetForced(false);
 		Dof.SetCinema(nullptr);
 		Dof.SetCinemaCamera(&Settings);

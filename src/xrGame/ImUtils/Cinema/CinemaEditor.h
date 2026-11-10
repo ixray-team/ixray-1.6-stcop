@@ -202,9 +202,9 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 		return Id >= Param::ShakeInfluence && Clip.Row == Layer ? Shaken[static_cast<u32>(Id) - static_cast<u32>(Param::ShakeInfluence)] : nullptr;
 	}
 	CameraBlock& Shot = Target.Camera.Blocks[Block];
-	float* const Shots[] = { &Shot.Position[Component], &Shot.Rotation[Component], &Shot.TimeScale, &Shot.Fov, &Shot.Focus, &Shot.FocusOffset, &Shot.NearRange, &Shot.FarRange, &Shot.Blur, &Shot.Aperture, &Shot.FocalLength, &Shot.Smooth };
-	const u32 At = Id <= Param::Rotation ? static_cast<u32>(Id) : Id == Param::TimeScale ? 2 : Id == Param::Fov ? 3 : Id >= Param::DofFocus && Id <= Param::CameraSmooth ? 4 + static_cast<u32>(Id) - static_cast<u32>(Param::DofFocus) : 12;
-	return At < 12 ? Shots[At] : nullptr;
+	float* const Shots[] = { &Shot.Position[Component], &Shot.Rotation[Component], &Shot.TimeScale, &Shot.Fov, &Shot.Focus, &Shot.FocusOffset, &Shot.NearRange, &Shot.FarRange, &Shot.Blur, &Shot.Aperture, &Shot.FocalLength, &Shot.Point[Component & 1], &Shot.Limit, &Shot.Squeeze, &Shot.FocusTime, &Shot.TransitionTime, &Shot.Swirl, &Shot.Smooth };
+	const u32 At = Id <= Param::Rotation ? static_cast<u32>(Id) : Id == Param::TimeScale ? 2 : Id == Param::Fov ? 3 : Id >= Param::DofFocus && Id <= Param::CameraSmooth ? 4 + static_cast<u32>(Id) - static_cast<u32>(Param::DofFocus) : 18;
+	return At < 18 ? Shots[At] : nullptr;
 }
 
 inline float TargetStart(const Object& Target, s32 Block)

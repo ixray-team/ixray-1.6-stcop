@@ -1225,6 +1225,23 @@ void ReadCamera(const CInifile& Ini, const char* Section, Object& Rig, u32 Versi
 			Block.FocalLength = Sanitize(Glass[2], 0.0f, 1000.0f, 0.0f);
 			Block.IsAutofocus = Glass[3] != 0.0f;
 		}
+		float Bokeh[6] = { 0.5f, 0.5f, 0.0f, 1.0f, 0.1f, 0.0f };
+		xr_sprintf(Line, "block_%03u_bokeh", Index);
+		if (Ini.line_exist(Section, Line) && ReadFloats(Ini, Section, Line, Bokeh, 6, Notes))
+		{
+			Block.Point[0] = Sanitize(Bokeh[0], 0.0f, 1.0f, 0.5f);
+			Block.Point[1] = Sanitize(Bokeh[1], 0.0f, 1.0f, 0.5f);
+			Block.Limit = Sanitize(Bokeh[2], 0.0f, 40.0f, 0.0f);
+			Block.Squeeze = Sanitize(Bokeh[3], 1.0f, 2.0f, 1.0f);
+			Block.FocusTime = Sanitize(Bokeh[4], 0.0f, 10.0f, 0.1f);
+			Block.TransitionTime = Sanitize(Bokeh[5], 0.0f, 10.0f, 0.0f);
+		}
+		float Swirl = 0.0f;
+		xr_sprintf(Line, "block_%03u_swirl", Index);
+		if (Ini.line_exist(Section, Line) && ReadFloats(Ini, Section, Line, &Swirl, 1, Notes))
+		{
+			Block.Swirl = Sanitize(Swirl, 0.0f, 1.0f, 0.0f);
+		}
 		float Smooth = 0.0f;
 		xr_sprintf(Line, "block_%03u_smooth", Index);
 		if (ReadFloats(Ini, Section, Line, &Smooth, 1, Notes))
@@ -2016,6 +2033,16 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 		{
 			xr_sprintf(Line, "block_%03u_lens", Index);
 			Write(Ini, Section, Line, Block.IsPhysical ? 1.0f : 0.0f, Block.Aperture, Block.FocalLength, Block.IsAutofocus ? 1.0f : 0.0f);
+		}
+		if (Block.Point[0] != Fresh.Point[0] || Block.Point[1] != Fresh.Point[1] || Block.Limit != Fresh.Limit || Block.Squeeze != Fresh.Squeeze || Block.FocusTime != Fresh.FocusTime || Block.TransitionTime != Fresh.TransitionTime)
+		{
+			xr_sprintf(Line, "block_%03u_bokeh", Index);
+			Write(Ini, Section, Line, Block.Point[0], Block.Point[1], Block.Limit, Block.Squeeze, Block.FocusTime, Block.TransitionTime);
+		}
+		if (Block.Swirl != Fresh.Swirl)
+		{
+			xr_sprintf(Line, "block_%03u_swirl", Index);
+			Write(Ini, Section, Line, Block.Swirl);
 		}
 		if (Block.Smooth != Fresh.Smooth)
 		{

@@ -53,6 +53,8 @@ struct CameraPose
 	float Fov = 0.0f;
 	Fvector4 Dof = {};
 	Fvector4 Lens = {};
+	Fvector4 Shape = {};
+	Fvector4 Timing = {};
 	bool HasDof = false;
 	bool IsPhysical = false;
 };
