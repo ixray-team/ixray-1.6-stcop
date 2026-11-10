@@ -12,6 +12,7 @@ namespace ImGui
 }
 
 extern ENGINE_API float psImGuiScale;
+extern ENGINE_API int psImGuiDockWindow;
 
 class ENGINE_API CImGuiManager
 {
@@ -30,6 +31,7 @@ private:
 	bool DrawUIRender = true;
 	bool CaptureInputs = false;
 	bool HasPlatformWindowFocus = false;
+	CTimer PlatformTimer;
 	bool MouseLook = false;
 	ImGuiStyle BaseStyle;
 	float AppliedScale = 0.0f;

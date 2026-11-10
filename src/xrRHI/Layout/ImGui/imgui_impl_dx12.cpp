@@ -59,7 +59,7 @@
 
 // DirectX
 #include <d3d12.h>
-#include <dxgi1_4.h>
+#include <dxgi1_5.h>
 #include <d3dcompiler.h>
 #ifdef _MSC_VER
 #pragma comment(lib, "d3dcompiler") // Automatically link with d3dcompiler.lib as we are using D3DCompile() below.
@@ -173,6 +173,7 @@ struct ImGui_ImplDX12_FrameContext
     ID3D12CommandAllocator*         CommandAllocator;
     ID3D12Resource*                 RenderTarget;
     D3D12_CPU_DESCRIPTOR_HANDLE     RenderTargetCpuDescriptors;
+    UINT64                          FenceValue;
 };
 
 // Helper structure we store in the void* RendererUserData field of each ImGuiViewport to easily retrieve our backend data.
@@ -188,6 +189,7 @@ struct ImGui_ImplDX12_ViewportData
     ID3D12Fence*                    Fence;
     UINT64                          FenceSignaledValue;
     HANDLE                          FenceEvent;
+    UINT                            SwapFlags;
     UINT                            NumFramesInFlight;
     ImGui_ImplDX12_FrameContext*    FrameCtx;
 
@@ -204,6 +206,7 @@ struct ImGui_ImplDX12_ViewportData
         Fence = nullptr;
         FenceSignaledValue = 0;
         FenceEvent = nullptr;
+        SwapFlags = 0;
         NumFramesInFlight = num_frames_in_flight;
         FrameCtx = new ImGui_ImplDX12_FrameContext[NumFramesInFlight];
         FrameIndex = UINT_MAX;
@@ -213,6 +216,7 @@ struct ImGui_ImplDX12_ViewportData
         {
             FrameCtx[i].CommandAllocator = nullptr;
             FrameCtx[i].RenderTarget = nullptr;
+            FrameCtx[i].FenceValue = 0;
 
             // Create buffers with a default size (they will later be grown as needed)
             FrameRenderBuffers[i].IndexBuffer = nullptr;
@@ -1134,6 +1138,17 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
     res = ::CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
     IM_ASSERT(res == S_OK);
 
+    BOOL tearing = FALSE;
+    IDXGIFactory5* dxgi_factory5 = nullptr;
+    if (SUCCEEDED(dxgi_factory->QueryInterface(IID_PPV_ARGS(&dxgi_factory5))))
+    {
+        if (FAILED(dxgi_factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &tearing, sizeof(tearing))))
+            tearing = FALSE;
+        dxgi_factory5->Release();
+    }
+    sd1.Flags = tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+    vd->SwapFlags = sd1.Flags;
+
     IDXGISwapChain1* swap_chain = nullptr;
     res = dxgi_factory->CreateSwapChainForHwnd(vd->CommandQueue, hwnd, &sd1, nullptr, nullptr, &swap_chain);
     IM_ASSERT(res == S_OK);
@@ -1233,7 +1248,7 @@ static void ImGui_ImplDX12_SetWindowSize(ImGuiViewport* viewport, ImVec2 size)
     if (vd->SwapChain)
     {
         ID3D12Resource* back_buffer = nullptr;
-        vd->SwapChain->ResizeBuffers(0, (UINT)size.x, (UINT)size.y, DXGI_FORMAT_UNKNOWN, 0);
+        vd->SwapChain->ResizeBuffers(0, (UINT)size.x, (UINT)size.y, DXGI_FORMAT_UNKNOWN, vd->SwapFlags);
         for (UINT i = 0; i < bd->numFramesInFlight; i++)
         {
             vd->SwapChain->GetBuffer(i, IID_PPV_ARGS(&back_buffer));
@@ -1263,6 +1278,13 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
     // Draw
     ID3D12GraphicsCommandList* cmd_list = vd->CommandList;
 
+    // Wait only for the frame that last used this allocator and its buffers, not for the frame just submitted.
+    if (vd->Fence->GetCompletedValue() < frame_context->FenceValue)
+    {
+        ::WaitForSingleObject(vd->FenceEvent, 0);
+        vd->Fence->SetEventOnCompletion(frame_context->FenceValue, vd->FenceEvent);
+        ::WaitForSingleObject(vd->FenceEvent, INFINITE);
+    }
     frame_context->CommandAllocator->Reset();
     cmd_list->Reset(frame_context->CommandAllocator, nullptr);
     cmd_list->ResourceBarrier(1, &barrier);
@@ -1281,15 +1303,14 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
     vd->CommandQueue->Wait(vd->Fence, vd->FenceSignaledValue);
     vd->CommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&cmd_list);
     vd->CommandQueue->Signal(vd->Fence, ++vd->FenceSignaledValue);
+    frame_context->FenceValue = vd->FenceSignaledValue;
 }
 
 static void ImGui_ImplDX12_SwapBuffers(ImGuiViewport* viewport, void*)
 {
     ImGui_ImplDX12_ViewportData* vd = (ImGui_ImplDX12_ViewportData*)viewport->RendererUserData;
 
-    vd->SwapChain->Present(0, 0);
-    while (vd->Fence->GetCompletedValue() < vd->FenceSignaledValue)
-        ::SwitchToThread();
+    vd->SwapChain->Present(0, (vd->SwapFlags & DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING) ? DXGI_PRESENT_ALLOW_TEARING : 0);
 }
 
 void ImGui_ImplDX12_InitPlatformInterface()

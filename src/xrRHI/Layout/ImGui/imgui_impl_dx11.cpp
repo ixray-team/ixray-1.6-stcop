@@ -38,6 +38,7 @@
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 #include <d3d11.h>
+#include <dxgi1_5.h>
 #include "imgui_impl_dx11.h"
 
 // DirectX
@@ -602,8 +603,9 @@ struct ImGui_ImplDX11_ViewportData
 {
 	IDXGISwapChain*                 SwapChain;
 	ID3D11RenderTargetView*         RTView;
+	UINT                            Flags;
 
-	ImGui_ImplDX11_ViewportData()   { SwapChain = nullptr; RTView = nullptr; }
+	ImGui_ImplDX11_ViewportData()   { SwapChain = nullptr; RTView = nullptr; Flags = 0; }
 	~ImGui_ImplDX11_ViewportData()  { IM_ASSERT(SwapChain == nullptr && RTView == nullptr); }
 };
 
@@ -628,14 +630,29 @@ static void ImGui_ImplDX11_CreateWindow(ImGuiViewport* viewport)
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.BufferCount = 1;
+	BOOL tearing = FALSE;
+	IDXGIFactory5* factory5 = nullptr;
+	if (SUCCEEDED(bd->pFactory->QueryInterface(IID_PPV_ARGS(&factory5))))
+	{
+		if (FAILED(factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &tearing, sizeof(tearing))))
+			tearing = FALSE;
+		factory5->Release();
+	}
+	sd.BufferCount = 2;
 	sd.OutputWindow = hwnd;
 	sd.Windowed = true;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags = 0;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	sd.Flags = tearing ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
 	IM_ASSERT(vd->SwapChain == nullptr && vd->RTView == nullptr);
-	bd->pFactory->CreateSwapChain(bd->pd3dDevice, &sd, &vd->SwapChain);
+	if (FAILED(bd->pFactory->CreateSwapChain(bd->pd3dDevice, &sd, &vd->SwapChain)) || vd->SwapChain == nullptr)
+	{
+		sd.BufferCount = 1;
+		sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		sd.Flags = 0;
+		bd->pFactory->CreateSwapChain(bd->pd3dDevice, &sd, &vd->SwapChain);
+	}
+	vd->Flags = sd.Flags;
 
 	// Create the render target
 	if (vd->SwapChain)
@@ -675,7 +692,7 @@ static void ImGui_ImplDX11_SetWindowSize(ImGuiViewport* viewport, ImVec2 size)
 	if (vd->SwapChain)
 	{
 		ID3D11Texture2D* pBackBuffer = nullptr;
-		vd->SwapChain->ResizeBuffers(0, (UINT)size.x, (UINT)size.y, DXGI_FORMAT_UNKNOWN, 0);
+		vd->SwapChain->ResizeBuffers(0, (UINT)size.x, (UINT)size.y, DXGI_FORMAT_UNKNOWN, vd->Flags);
 		vd->SwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
 		if (pBackBuffer == nullptr) { fprintf(stderr, "ImGui_ImplDX11_SetWindowSize() failed creating buffers.\n"); return; }
 		bd->pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &vd->RTView);
@@ -699,7 +716,7 @@ static void ImGui_ImplDX11_RenderWindow(ImGuiViewport* viewport, void*)
 static void ImGui_ImplDX11_SwapBuffers(ImGuiViewport* viewport, void*)
 {
 	ImGui_ImplDX11_ViewportData* vd = (ImGui_ImplDX11_ViewportData*)viewport->RendererUserData;
-	vd->SwapChain->Present(0, 0); // Present without vsync
+	vd->SwapChain->Present(0, (vd->Flags & DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING) ? DXGI_PRESENT_ALLOW_TEARING : 0); // Present without vsync
 }
 
 static void ImGui_ImplDX11_InitPlatformInterface()

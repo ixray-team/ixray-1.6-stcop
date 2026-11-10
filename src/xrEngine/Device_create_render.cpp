@@ -149,6 +149,11 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				//ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
 				
 				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
+				bool IsDockWindow = psImGuiDockWindow != 0;
+				ImGui::Separator();
+				ImGui::MenuItem("Dock window", nullptr, &IsDockWindow);
+				ImGui::SetItemTooltip("An empty window to drag onto another screen and dock panels into");
+				psImGuiDockWindow = IsDockWindow ? 1 : 0;
 				
 				// TODO: Необходима доработка
 				// ImGui::MenuItem("Effectors", nullptr, &States[static_cast<u8>(EditorUI::CameraEffectors)]);
@@ -304,6 +309,23 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
+
+		if (psImGuiDockWindow)
+		{
+			static ImVec2 TitleMin, TitleMax;
+			static bool IsTitleHeld = false;
+			IsTitleHeld = ImGui::IsMouseDown(ImGuiMouseButton_Left) && (IsTitleHeld || (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsMouseHoveringRect(TitleMin, TitleMax, false)));
+			bool IsDockWindow = true;
+			ImGui::SetNextWindowSize(ImVec2(1280.0f, 720.0f), ImGuiCond_FirstUseEver);
+			if (ImGui::Begin("Dock window", &IsDockWindow, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | (IsTitleHeld ? 0 : ImGuiWindowFlags_NoMove)))
+			{
+				ImGui::DockSpace(ImGui::GetID("DockWindowSpace"));
+			}
+			TitleMin = ImGui::GetWindowPos();
+			TitleMax = ImVec2(TitleMin.x + ImGui::GetWindowSize().x, TitleMin.y + ImGui::GetFrameHeight());
+			ImGui::End();
+			psImGuiDockWindow = IsDockWindow ? 1 : 0;
+		}
 	});
 #ifdef DEBUG_DRAW
 	ImManager.Subscribe("Profiler", CImGuiManager::ERenderPriority::eLow, DrawProfilerOverlay);

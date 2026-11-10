@@ -187,7 +187,11 @@ void CImGuiManager::AfterRender()
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
+		if (PlatformTimer.GetElapsed_mcs() >= 1000000 / 60)
+		{
+			PlatformTimer.Start();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 	}
 #endif
 }
@@ -322,6 +326,7 @@ void CImGuiManager::SetMouseLook(bool IsEnabled)
 }
 
 float psImGuiScale = 1.0f;
+int psImGuiDockWindow = 0;
 
 bool CImGuiManager::IsButtonHeld(bool IsMiddle) const
 {
