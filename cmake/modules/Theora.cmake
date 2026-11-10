@@ -34,8 +34,8 @@ elseif(NOT WIN32)
                 ${THEORA_INSTALL_DIR}/lib/libtheora.a
                 ${THEORA_INSTALL_DIR}/include/theora/theora.h
             COMMAND ${CMAKE_COMMAND} -E make_directory ${THEORA_BUILD_DIR}
+            COMMAND ${CMAKE_COMMAND} -DTHEORA_BUILD_DIR=${THEORA_BUILD_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/DownloadTheora.cmake
             COMMAND cd ${THEORA_BUILD_DIR} &&
-                wget -q -nc https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.gz &&
                 tar -xzf libtheora-1.1.1.tar.gz &&
                 cd libtheora-1.1.1 &&
                 CC=${CMAKE_C_COMPILER}
