@@ -602,21 +602,17 @@ void STelekineticWeaponObject::debug_draw()
 
 	shared_str time_to_shoot_end;
 
-	switch (weapon->IsWorking())
+	if (weapon->IsWorking())
 	{
-		case true:
-		{
-			u32 shot_interval = static_cast<u32>(weapon->getRPM() * 1000.f);
-			u32 shot_time = weapon_next_phase_time - weapon_phase_start_time;
-			u32 doing_shoots = shot_time / shot_interval;
+		u32 shot_interval = static_cast<u32>(weapon->getRPM() * 1000.f);
+		u32 shot_time = weapon_next_phase_time - weapon_phase_start_time;
+		u32 doing_shoots = shot_time / shot_interval;
 
-			time_to_shoot_end = shared_str().printf("Time to shoot end: %u, doing %u shots", weapon_next_phase_time - time(), doing_shoots);
-		}
-		break;
-
-		case false:
-			time_to_shoot_end = shared_str().printf("Time to start shoot: %u", weapon_next_phase_time - time());
-			break;
+		time_to_shoot_end = shared_str().printf("Time to shoot end: %u, doing %u shots", weapon_next_phase_time - time(), doing_shoots);
+	}
+	else
+	{
+		time_to_shoot_end = shared_str().printf("Time to start shoot: %u", weapon_next_phase_time - time());
 	}
 
 	shared_str main_text = shared_str().printf(
