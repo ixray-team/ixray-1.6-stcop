@@ -9,6 +9,7 @@
 #include "../xrCore/FTimer.h"
 #include "Stats.h"
 #include <functional>
+#include <atomic>
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -94,6 +95,7 @@ public:
 	u32										dwTimeDelta;
 	u32										dwTimeGlobal;
 	u32										dwTimeContinual;
+	float									FixedDelta = 0.0f;
 
 	xr_vector<Fmatrix*> m_trees_poses_pm;
 	xr_vector<Fmatrix*> m_trees_poses_st;
@@ -123,6 +125,18 @@ public:
 	Fmatrix									mView_old;
 	Fmatrix									mProject_old;
 	Fmatrix									mFullTransform_old;
+	u32										CutFrame = u32(-1);
+	void MarkCameraCut() { CutFrame = dwFrame; }
+	bool IsCameraCut() const { return CutFrame == dwFrame; }
+	struct GradeOverride
+	{
+		u32 Frame = u32(-8);
+		u32 Mask = 0;
+		float Value[4] = {};
+		float Amount[4] = {};
+	};
+	GradeOverride PostGrade;
+	float Grade(u32 Bit, float Game) const { return dwFrame - PostGrade.Frame <= 1 && ((PostGrade.Mask >> Bit) & 1) ? Game + (PostGrade.Value[Bit] - Game) * PostGrade.Amount[Bit] : Game; }
 
 	Fmatrix									mView_hud;
 	Fmatrix									mProject_hud;
@@ -143,6 +157,8 @@ protected:
 	u32										Timer_MM_Delta;
 	CTimer_paused							Timer;
 	CTimer_paused							TimerGlobal;
+	alignas(8) std::atomic<s64>							GlobalShift{0};
+	u64										LastGlobal = 0;
 public:
 
 // Registrators
@@ -268,7 +284,7 @@ public:
 
 	// Mode control
 	IC	 CTimer_paused* GetTimerGlobal		()	{ return &TimerGlobal;								}
-	u32	 TimerAsync							()	{ return TimerGlobal.GetElapsed_ms();				}
+	u32	 TimerAsync							()	{ return static_cast<u32>((static_cast<s64>(TimerGlobal.GetElapsed_mcs()) + GlobalShift.load(std::memory_order_relaxed)) / 1000); }
 	u32	 TimerAsync_MMT						()	{ return TimerMM.GetElapsed_ms() +	Timer_MM_Delta; }
 
 	// Creation & Destroying

@@ -1,159 +1,94 @@
-// Layered reconstruction inspired by AMD FidelityFX DOF:
-// https://gpuopen.com/manuals/fidelityfx_sdk/techniques/depth-of-field/#combination-pass
-// Full-resolution slight defocus follows the EEVEE resolve idea (independent IXR implementation):
-// https://github.com/blender/blender/blob/v4.3.2/source/blender/draw/engines/eevee_next/shaders/eevee_depth_of_field_resolve_comp.glsl
-// The small full-resolution gather retains Dennis Gustafsson's Voxagon spiral:
-// https://blog.voxagon.se/2018/05/04/bokeh-depth-of-field-in-single-pass.html
 #ifndef DOF_H_INCLUDED
 #define DOF_H_INCLUDED
 
-#include "dof_bokeh.hlsli"
-#include "shared\post_cb.hlsli"
+#ifndef USE_DOF
 
-#ifdef USE_DOF
-Texture2D<float4> s_dof_near : register(t27);
-Texture2D<float4> s_dof_far : register(t28);
-Texture2D<float4> s_dof_metadata : register(t29);
-Texture2D<float> s_dof_coc : register(t30);
+float3 dof(float2 center)
+{
+    float3 img = s_image.Sample(smp_rtlinear, center).xyz;
+    return img;
+}
+
+#else //	USE_DOF
+
+// x - near y - focus z - far w - sky distance
+#include "shared\post_cb.hlsli"
 Texture2D<float> s_dof_scope_mask : register(t26);
 
-DofLayers SampleDofBlur(float2 TexCoord, float CenterDepth, float CenterRadius, bool CenterIsNear)
+float DOFFactor(float depth)
 {
-	uint Width, Height;
-	s_dof_near.GetDimensions(Width, Height);
-	float2 Pixel = TexCoord * float2(Width, Height) - 0.5f;
-	int2 Base = int2(floor(Pixel));
-	float2 Fraction = frac(Pixel);
-	DofLayers O;
-	O.Near = 0.0f;
-	O.Far = 0.0f;
-	[unroll]
-	for (int Y = 0; Y < 2; ++Y)
-	{
-		[unroll]
-		for (int X = 0; X < 2; ++X)
-		{
-			int2 SamplePixel = clamp(Base + int2(X, Y), int2(0, 0), int2(Width, Height) - 1);
-			float Weight = (X == 0 ? 1.0f - Fraction.x : Fraction.x) * (Y == 0 ? 1.0f - Fraction.y : Fraction.y);
-			float4 Metadata = s_dof_metadata.Load(int3(SamplePixel, 0));
-			// Circular near already contains spread; source metadata cannot identify its contributors.
-			// HUD/world source rejection is applied before the complex convolution.
-			O.Near += s_dof_near.Load(int3(SamplePixel, 0)) * Weight;
-
-			float FarWeight = Weight;
-			if (DofIsHud(CenterDepth) && !DofIsHud(Metadata.y) && !CenterIsNear)
-			{
-				FarWeight = 0.0f;
-			}
-			else if (DofIsBackground(CenterDepth, Metadata.y))
-			{
-				FarWeight *= smoothstep(0.5f, 1.5f, CenterRadius);
-			}
-			O.Far += s_dof_far.Load(int3(SamplePixel, 0)) * FarWeight;
-		}
-	}
-	// Far alpha remains validity. Near RGB remains premultiplied by opacity.
-	O.Far.rgb /= max(O.Far.a, EPS_S);
-	return O;
-}
-#endif
-
-float3 dof(float2 CenterUV)
-{
-	float3 SharpColor = s_image.SampleLevel(smp_rtlinear, CenterUV, 0).rgb;
-#ifdef USE_DOF
-	if (s_dof_scope_mask.SampleLevel(smp_nofilter, CenterUV, 0) > 0.5f)
-	{
-		return SharpColor;
-	}
-
-	float CenterDepth = s_position.SampleLevel(smp_nofilter, CenterUV, 0).x;
-	float CenterCoC = s_dof_coc.SampleLevel(smp_nofilter, CenterUV, 0);
-	float CenterRadius = abs(CenterCoC);
-	float PixelScale = dof_combine_params.z;
-	float SmallRadius = min(PixelScale, dof_combine_params.w);
-	DofLayers Blurred = SampleDofBlur(CenterUV, CenterDepth, CenterRadius, DofIsNear(CenterCoC, CenterDepth));
-
-	// Conservative support query: a sharp receiver may still be covered by small near disks.
-	uint Width, Height;
-	s_dof_metadata.GetDimensions(Width, Height);
-	float2 Extent = (SmallRadius + 0.5f) / dof_combine_params.xy;
-	uint2 SourceSize = uint2(dof_combine_params.xy);
-	uint2 ReducedSize = uint2(Width, Height);
-	uint2 FirstSource = uint2(clamp(floor((CenterUV - Extent) * dof_combine_params.xy), 0.0f, dof_combine_params.xy - 1.0f));
-	uint2 LastSource = uint2(clamp(floor((CenterUV + Extent) * dof_combine_params.xy), 0.0f, dof_combine_params.xy - 1.0f));
-	// Invert the integer downsample partition, including non-divisible dimensions.
-	int2 First = int2(((FirstSource + 1) * ReducedSize + SourceSize - 1) / SourceSize) - 1;
-	int2 Last = int2(((LastSource + 1) * ReducedSize + SourceSize - 1) / SourceSize) - 1;
-	bool HasNear = false;
-	[loop]
-	for (int Y = First.y; Y <= Last.y; ++Y)
-	{
-		[loop]
-		for (int X = First.x; X <= Last.x; ++X)
-		{
-			HasNear = HasNear || s_dof_metadata.Load(int3(X, Y, 0)).z > 0.0f;
-		}
-	}
-
-	float4 SmallNear = 0.0f;
-	float4 SmallFar = 0.0f;
-	float Normalization = 0.0f;
-	float LargeBlend = DofLargeWeight(CenterRadius, PixelScale);
-	if (HasNear || (CenterRadius > 0.0f && LargeBlend < 1.0f))
-	{
-		float Radius = 0.0f;
-		float Angle = 0.0f;
-		float2 MinUV = 0.5f / dof_combine_params.xy;
-		[loop]
-		while (Radius < SmallRadius + 0.5f)
-		{
-			float2 SampleUV = clamp(CenterUV + float2(cos(Angle), sin(Angle)) * Radius / dof_combine_params.xy, MinUV, 1.0f - MinUV);
-			float SampleCoC = s_dof_coc.SampleLevel(smp_nofilter, SampleUV, 0);
-			float SampleDepth = s_position.SampleLevel(smp_nofilter, SampleUV, 0).x;
-			float SampleRadius = abs(SampleCoC);
-			float VisibleRadius = DofVisibleRadius(SampleRadius, CenterRadius, CenterDepth, SampleDepth);
-			float Coverage = DofCoverage(VisibleRadius, Radius);
-			float4 Sample = float4(s_image.SampleLevel(smp_nofilter, SampleUV, 0).rgb, 1.0f);
-			if (DofIsNear(SampleCoC, SampleDepth))
-			{
-				float Weight = Coverage * DofSampleWeight(SampleRadius) * (1.0f - DofLargeWeight(SampleRadius, PixelScale));
-				SmallNear += Sample * Weight;
-			}
-			else if (!DofIsHud(CenterDepth) || DofIsHud(SampleDepth))
-			{
-				float Weight = (Radius == 0.0f ? 1.0f : Coverage) * DofSampleWeight(SampleRadius);
-				SmallFar += Sample * Weight;
-			}
-			Normalization += DofCoverage(SmallRadius, Radius) * DofSampleWeight(SmallRadius);
-			if (Radius == 0.0f)
-			{
-				Radius = DofRadScale;
-			}
-			else
-			{
-				Radius += DofRadScale / Radius;
-				Angle += DofGoldenAngle;
-			}
-		}
-	}
-
-	// Small and reduced near weights partition each source disk. Combine before clamping opacity.
-	float4 Near = Blurred.Near + SmallNear / max(Normalization, EPS_S);
-	float Opacity = saturate(Near.a);
-	float3 NearColor = Near.rgb / max(Near.a, EPS_S);
-	float3 SmallColor = SmallFar.a > EPS_S ? SmallFar.rgb / SmallFar.a : SharpColor;
-	float3 BaseColor = lerp(SharpColor, SmallColor, smoothstep(0.5f, 1.0f, CenterRadius));
-	if (Blurred.Far.a > EPS_S)
-	{
-		// Fill behind a partially transparent foreground instead of retaining its sharp silhouette.
-		float FarBlend = DofIsNear(CenterCoC, CenterDepth) && Opacity > EPS_S ? 1.0f : LargeBlend;
-		BaseColor = lerp(BaseColor, Blurred.Far.rgb, FarBlend);
-	}
-	return lerp(BaseColor, NearColor, Opacity);
-#else
-	return SharpColor;
-#endif
+    float dist_to_focus = depth - dof_params.y;
+    float blur_far = saturate(dist_to_focus * rcp(max(dof_params.z - dof_params.y, EPS_S)));
+    float blur_near = saturate(dist_to_focus * rcp(min(dof_params.x - dof_params.y, -EPS_S)));
+    float blur = blur_near + blur_far;
+    blur *= blur;
+    return blur;
 }
 
-#endif
+float sampleDepth(float2 center)
+{
+    // Read raw point-sampled depth: filtering or reprojection loses HUD coverage.
+    float P = s_position.SampleLevel(smp_nofilter, center, 0).x;
+    // HUD occupies the 0..0.02 viewport range and must stay in focus.
+    // Returning focus also prevents HUD colors from contributing to scene blur.
+    if (P < 0.02f)
+    {
+        return dof_params.y;
+    }
+    return P > 0.9999f ? dof_params.w : (m_P._34 * rcp(P - m_P._33));
+}
+
+#define MAXCOF 7.h
+#define EPSDEPTH 0.0001h
+
+float3 dof(float2 center)
+{
+	// The lens samples the sharp scene. Only its surroundings receive weapon DOF.
+	if (s_dof_scope_mask.SampleLevel(smp_nofilter, center, 0) > 0.5f)
+	{
+		return s_image.Sample(smp_rtlinear, center).xyz;
+	}
+    // Scale tap offsets based on render target size
+    float depth = sampleDepth(center);
+    float blur = DOFFactor(depth);
+    if (blur == 0.0f)
+    {
+        return s_image.Sample(smp_rtlinear, center).xyz;
+    }
+    float2 scale = 0.5f * screen_res.zw * dof_kernel.z * blur;
+
+    // poisson
+    float2 o[12];
+    o[0] = float2(-0.326212f, -0.405810f) * scale;
+    o[1] = float2(-0.840144f, -0.073580f) * scale;
+    o[2] = float2(-0.695914f, 0.457137f) * scale;
+    o[3] = float2(-0.203345f, 0.620716f) * scale;
+    o[4] = float2(0.962340f, -0.194983f) * scale;
+    o[5] = float2(0.473434f, -0.480026f) * scale;
+    o[6] = float2(0.519456f, 0.767022f) * scale;
+    o[7] = float2(0.185461f, -0.893124f) * scale;
+    o[8] = float2(0.507431f, 0.064425f) * scale;
+    o[9] = float2(0.896420f, 0.412458f) * scale;
+    o[10] = float2(-0.321940f, -0.932615f) * scale;
+    o[11] = float2(-0.791559f, -0.597710f) * scale;
+
+    float3 sum = s_image.Sample(smp_nofilter, center).xyz;
+    float contrib = 1.h;
+
+    [unroll]
+    for (int i = 0; i < 12; i++)
+    {
+        float2 tap = center + o[i];
+        float3 tap_color = s_image.Sample(smp_nofilter, tap).xyz;
+        float tap_depth = sampleDepth(tap);
+        float tap_contrib = DOFFactor(tap_depth);
+		tap_contrib *= 1.0f - s_dof_scope_mask.SampleLevel(smp_nofilter, tap, 0);
+        sum += tap_color * tap_contrib;
+        contrib += tap_contrib;
+    }
+
+    return float3(sum / contrib);
+}
+
+#endif //	USE_DOF
+#endif //	DOF_H_INCLUDED

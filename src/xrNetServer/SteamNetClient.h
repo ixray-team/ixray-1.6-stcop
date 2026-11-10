@@ -49,15 +49,14 @@ protected:
 	virtual void	DestroyConnection() override;
 	virtual	void	SendTo_LL(void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) override;
 
-	virtual bool	GetPendingMessagesCount(DWORD& dwPending) override;
+	virtual bool GetPendingMessagesCount(u32& dwPending) override;
 	virtual bool	SendPingMessage(MSYS_PING& clPing) override;
 
 public:
-	virtual	bool	GetServerAddress(ip_address& pAddress, DWORD* pPort)  override;
+	virtual bool GetServerAddress(ip_address& pAddress, u32* pPort) override;
 
 	virtual bool	HasSessionName() { return GameDescriptionReceived(); }
 
 	// statistic
 	virtual	void	UpdateStatistic()  override;
 };
-

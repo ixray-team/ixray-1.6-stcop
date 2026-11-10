@@ -1121,7 +1121,7 @@ bool CWeaponKnife::SelectBestHitVictim(Fvector const & f_pos,
 	return !m_spartial_query_res.empty();
 }
 
-bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
+bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, void* this_ptr)
 {
 	CWeaponKnife*	me = static_cast<CWeaponKnife*>(this_ptr);
 	if (result.O && (result.O->ID() != me->m_except_id))
@@ -1143,7 +1143,7 @@ CObject* CWeaponKnife::TryPick(Fvector const & start_pos, Fvector const & dir, f
 		m_ray_query_results,
 		tmp_rdefs,
 		&CWeaponKnife::RayQueryCallback,
-		static_cast<LPVOID>(this),
+		static_cast<void*>(this),
 		nullptr,
 		nullptr
 	);

@@ -31,7 +31,7 @@ public:
 	};
 
 public:
-	virtual void Load(LPCSTR N, IReader* data, u32 dwFlags) override;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags) override;
 	virtual void Copy(CDS0_RenderVisual* pFrom) override;
 
 	CDS0_TreeVisual(void);
@@ -44,7 +44,7 @@ class CDS0_TreeVisual_ST : public CDS0_TreeVisual
 public:
 	CDS0_TreeVisual_ST(void);
 	virtual ~CDS0_TreeVisual_ST(void) override;
-	virtual void	Load(LPCSTR N, IReader* data, u32 dwFlags) override;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags) override;
 	virtual void	Copy(CDS0_RenderVisual* pFrom) override;
 };
 
@@ -57,6 +57,6 @@ private:
 public:
 	CDS0_TreeVisual_PM(void);
 	virtual ~CDS0_TreeVisual_PM(void) override;
-	virtual void	Load(LPCSTR N, IReader* data, u32 dwFlags) override;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags) override;
 	virtual void	Copy(CDS0_RenderVisual* pFrom) override;
 };

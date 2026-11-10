@@ -48,9 +48,9 @@ public:
 	virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) override;
 
 	// Low level interface
-	virtual u16 LL_BoneID(LPCSTR B) override;
+	virtual u16 LL_BoneID(const char* B) override;
 	virtual u16 LL_BoneID(const shared_str& B) override;
-	virtual LPCSTR LL_BoneName_dbg(u16 ID) override;
+	virtual const char* LL_BoneName_dbg(u16 ID) override;
 
 	virtual CInifile* LL_UserData() override { return pUserData; }
 	virtual accel* LL_Bones() override { return bone_map_N; }

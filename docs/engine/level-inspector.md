@@ -9,3 +9,5 @@ The guide to the tool's features, controls, data sources and limitations is on t
 - Check the display of paths, graphs and patrol point filters.
 - Check the display of the object skeleton and HUD, collision, HOM and SOM on a level that has this data.
 - Check both keys on the **Debug** tab in hold and toggle modes.
+
+Repeat object and zone picking on Windows and macOS in Debug and RelWithDebInfo, including clicks on empty space. The selected object and reported hit should follow the cursor.

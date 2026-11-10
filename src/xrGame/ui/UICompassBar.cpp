@@ -476,7 +476,7 @@ void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindo
     }
 }
 
-void CUICompassBar::ParseCardinalMarkerConfig(CUIXml& uiXml, LPCSTR path, SCompassCardinalMarkerConfig& cfg, int index) const
+void CUICompassBar::ParseCardinalMarkerConfig(CUIXml& uiXml, const char* path, SCompassCardinalMarkerConfig& cfg, int index) const
 {
     if (!uiXml.NavigateToNode(path, index))
     {
@@ -495,7 +495,7 @@ void CUICompassBar::ParseCardinalMarkerConfig(CUIXml& uiXml, LPCSTR path, SCompa
 }
 
 CUIStatic* CUICompassBar::CreateCardinalMarker(CUIXml& uiXml, const SCompassCardinalMarkerConfig& cfg,
-    LPCSTR colorPath) const
+    const char* colorPath) const
 {
     if (!cfg.texture.size())
     {
@@ -628,8 +628,7 @@ void CUICompassBar::ApplyCardinalMarkerLayout(SCompassCardinalEntry& entry)
         GetCardinalTextBottom(entry) + offsetY));
 }
 
-bool CUICompassBar::InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, LPCSTR groupPath,
-    LPCSTR directionNode, float defaultY, float defaultW, float defaultH,
+bool CUICompassBar::InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const char* groupPath, const char* directionNode, float defaultY, float defaultW, float defaultH,
     const SCompassCardinalMarkerConfig& defaultMarkerCfg)
 {
     string_path childPath;
@@ -760,7 +759,7 @@ bool CUICompassBar::InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR
     return true;
 }
 
-bool CUICompassBar::InitCardinalPointEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, int pointIndex,
+bool CUICompassBar::InitCardinalPointEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, int pointIndex,
     float defaultY, float defaultW, float defaultH, const SCompassCardinalMarkerConfig& defaultMarkerCfg)
 {
     (void)pointIndex;
@@ -933,7 +932,7 @@ bool CUICompassBar::InitCardinalPointEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, L
     return true;
 }
 
-void CUICompassBar::InitGeneratedLabels(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath,
+void CUICompassBar::InitGeneratedLabels(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath,
     float defaultY, float defaultW, float defaultH, const SCompassCardinalMarkerConfig& defaultMarkerCfg)
 {
     float mainY = defaultY;
@@ -986,7 +985,7 @@ void CUICompassBar::InitGeneratedLabels(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCS
     }
 }
 
-bool CUICompassBar::InitLabelFromDesc(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, const SCompassLabelDesc& desc,
+bool CUICompassBar::InitLabelFromDesc(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const SCompassLabelDesc& desc,
     float defaultY, float defaultW, float defaultH, float degreeY,
     const SCompassCardinalMarkerConfig& defaultMarkerCfg)
 {

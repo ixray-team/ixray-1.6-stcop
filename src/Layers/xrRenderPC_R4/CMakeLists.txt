@@ -93,3 +93,5 @@ target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")
 #	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 #	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_DX11_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 #)
+
+ixray_split_compile(xrRender_R4)

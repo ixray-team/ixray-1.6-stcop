@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "pch_script.h"
+#include <magic_enum/magic_enum.hpp>
 #include "script_binder_object_wrapper.h"
 #include "script_game_object.h"
 #include "xrServer_Objects_ALife.h"

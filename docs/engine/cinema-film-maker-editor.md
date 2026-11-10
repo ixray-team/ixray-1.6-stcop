@@ -267,3 +267,5 @@ Besides resetting single values, **More → Reset editor settings** resets every
 22. Give an NPC a name of 127 characters, duplicate its clip several times (clip context menu → **Duplicate**) and open the settings of each copy: no crash; the names shown are cut to fit the name field.
 23. Save a scene with a few muted or grouped tracks: saving completes without a stall, and the `[scene]` section lists `master_track_*` keys only for tracks that are muted, grouped, collapsed or parented. Load it in this build and in the previous build: track mute, groups and collapse are the same.
 24. In windowed mode, move the panel and timeline to another monitor and check input and playback. Move the game window across the desktop and check object picking, gizmos and the scene color picker inside its image; clicks outside the game image must not select scene objects. Repeat in Debug and RelWithDebInfo.
+
+After animation portability changes, repeat playlist playback, pause, stop and looping on Windows and macOS in Debug and RelWithDebInfo. Confirm that clip completion advances to the next playlist entry.

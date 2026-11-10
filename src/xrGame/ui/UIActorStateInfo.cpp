@@ -39,7 +39,7 @@
 
 namespace
 {
-Fvector2 ParseSize2(LPCSTR value, Fvector2 def)
+Fvector2 ParseSize2(const char* value, Fvector2 def)
 {
 	Fvector2 result = def;
 	if (!value || !value[0])
@@ -61,7 +61,7 @@ Fvector2 ParseSize2(LPCSTR value, Fvector2 def)
 	return result;
 }
 
-u32 ParseColor4(LPCSTR value, u32 def)
+u32 ParseColor4(const char* value, u32 def)
 {
 	if (!value || !value[0])
 	{
@@ -91,7 +91,7 @@ u32 ParseColor4(LPCSTR value, u32 def)
 	return def;
 }
 
-CGameFont* ResolveFont(LPCSTR fontName)
+CGameFont* ResolveFont(const char* fontName)
 {
 	if (fontName && fontName[0])
 	{
@@ -103,7 +103,7 @@ CGameFont* ResolveFont(LPCSTR fontName)
 	return UI().Font().GetFont(LETTERICA16_FONT_NAME);
 }
 
-ETextAlignment ParseTextAlign(LPCSTR value, ETextAlignment def)
+ETextAlignment ParseTextAlign(const char* value, ETextAlignment def)
 {
 	if (!value || !value[0])
 	{
@@ -129,7 +129,7 @@ struct StateRowSlot
 	bool autoIconWidth = false;
 };
 
-bool ParseStateRowSlotType(LPCSTR name, EStateRowSlot& out)
+bool ParseStateRowSlotType(const char* name, EStateRowSlot& out)
 {
 	if (!name || !name[0])
 	{
@@ -141,10 +141,10 @@ bool ParseStateRowSlotType(LPCSTR name, EStateRowSlot& out)
 	return false;
 }
 
-void ParseStateRowSlots(LPCSTR columns, LPCSTR layout, float valueWidth, float iconWidth, xr_vector<StateRowSlot>& out)
+void ParseStateRowSlots(const char* columns, const char* layout, float valueWidth, float iconWidth, xr_vector<StateRowSlot>& out)
 {
 	out.clear();
-	LPCSTR source = (columns && columns[0]) ? columns : ((layout && layout[0]) ? layout : "icon,caption,value");
+	const char* source = (columns && columns[0]) ? columns : ((layout && layout[0]) ? layout : "icon,caption,value");
 	const int count = _GetItemCount(source);
 	for (int i = 0; i < count; ++i)
 	{
@@ -258,7 +258,7 @@ void ParseStateRowSlots(LPCSTR columns, LPCSTR layout, float valueWidth, float i
 	}
 }
 
-bool ReadOptionalFloatAttr(tinyxml2::XMLElement* element, LPCSTR name, float& out)
+bool ReadOptionalFloatAttr(tinyxml2::XMLElement* element, const char* name, float& out)
 {
 	if (!element || !name || !element->Attribute(name))
 	{
@@ -268,7 +268,7 @@ bool ReadOptionalFloatAttr(tinyxml2::XMLElement* element, LPCSTR name, float& ou
 	return true;
 }
 
-bool ResolveOptionalFloat(tinyxml2::XMLElement* element, LPCSTR name, bool hasDefault, float defaultValue, float& out)
+bool ResolveOptionalFloat(tinyxml2::XMLElement* element, const char* name, bool hasDefault, float defaultValue, float& out)
 {
 	if (ReadOptionalFloatAttr(element, name, out))
 	{
@@ -288,10 +288,10 @@ struct OptionalFloat
 	float value = 0.f;
 };
 
-OptionalFloat ReadOptionalFloatFromXml(CUIXml& xml, LPCSTR path, LPCSTR attrib)
+OptionalFloat ReadOptionalFloatFromXml(CUIXml& xml, const char* path, const char* attrib)
 {
 	OptionalFloat result;
-	LPCSTR raw = xml.ReadAttrib(path, 0, attrib, nullptr);
+	const char* raw = xml.ReadAttrib(path, 0, attrib, nullptr);
 	if (raw && raw[0])
 	{
 		result.set = true;
@@ -430,7 +430,7 @@ void ui_actor_state_wnd::init_list_from_xml(CUIXml& xml)
 		child;
 		child = child->NextSiblingElement())
 	{
-		LPCSTR tag = child->Name();
+		const char* tag = child->Name();
 		if (!tag)
 		{
 			continue;
@@ -457,7 +457,7 @@ void ui_actor_state_wnd::init_list_from_xml(CUIXml& xml)
 			separator->SetWndSize(Fvector2().set(listWidth, height));
 			separator->SetWndPos(Fvector2().set(0.f, 0.f));
 
-			LPCSTR texture = child->Attribute("texture");
+			const char* texture = child->Attribute("texture");
 			if (!texture || !texture[0])
 			{
 				texture = "ui_inGame2_inventory_progress_bar";
@@ -471,7 +471,7 @@ void ui_actor_state_wnd::init_list_from_xml(CUIXml& xml)
 	xml.SetLocalRoot(storedRoot);
 }
 
-ui_actor_state_wnd::EStateType ui_actor_state_wnd::ParseStateType(LPCSTR name)
+ui_actor_state_wnd::EStateType ui_actor_state_wnd::ParseStateType(const char* name)
 {
 	if (!name || !name[0])
 	{
@@ -516,7 +516,7 @@ void ui_actor_state_row::init_from_xml(CUIXml& xml, XML_NODE* node, float rowWid
 		set_hint_wnd(hintWnd);
 	}
 
-	LPCSTR hint = element->Attribute("hint_text");
+	const char* hint = element->Attribute("hint_text");
 	if (!hint || !hint[0])
 	{
 		hint = element->Attribute("caption");
@@ -532,19 +532,19 @@ void ui_actor_state_row::init_from_xml(CUIXml& xml, XML_NODE* node, float rowWid
 	const u32 captionColor = ParseColor4(element->Attribute("caption_color"), defaults.captionColor);
 	const u32 valueColor = ParseColor4(element->Attribute("value_color"), defaults.valueColor);
 	m_magnitude = element->FloatAttribute("value_magnitude", defaults.magnitude);
-	LPCSTR format = element->Attribute("value_format");
+	const char* format = element->Attribute("value_format");
 	m_format = (format && format[0]) ? format : defaults.format;
-	LPCSTR fontName = element->Attribute("font");
+	const char* fontName = element->Attribute("font");
 	CGameFont* font = ResolveFont((fontName && fontName[0]) ? fontName : defaults.font);
 
 	const float pad = element->Attribute("pad") ? element->FloatAttribute("pad") : defaults.pad;
 	const float valueWidth = element->Attribute("value_width") ? element->FloatAttribute("value_width") : defaults.valueWidth;
-	LPCSTR layout = element->Attribute("layout");
+	const char* layout = element->Attribute("layout");
 	if (!layout || !layout[0])
 	{
 		layout = defaults.layout;
 	}
-	LPCSTR columns = element->Attribute("columns");
+	const char* columns = element->Attribute("columns");
 	if (!columns || !columns[0])
 	{
 		columns = defaults.columns;
@@ -595,7 +595,7 @@ void ui_actor_state_row::init_from_xml(CUIXml& xml, XML_NODE* node, float rowWid
 	m_caption->SetTextColor(captionColor);
 	m_caption->SetTextAlignment(captionAlign);
 	m_caption->SetVTextAlignment(valCenter);
-	LPCSTR caption = element->Attribute("caption");
+	const char* caption = element->Attribute("caption");
 	if (caption && caption[0])
 	{
 		m_caption->SetTextST(caption);
@@ -651,7 +651,7 @@ void ui_actor_state_row::init_from_xml(CUIXml& xml, XML_NODE* node, float rowWid
 			m_icon->Show(true);
 			m_icon->SetWndPos(Fvector2().set(posX, posY));
 			m_icon->SetWndSize(Fvector2().set(sizeX, sizeY));
-			LPCSTR iconTex = element->Attribute("icon");
+			const char* iconTex = element->Attribute("icon");
 			if (iconTex && iconTex[0])
 			{
 				m_icon->InitTexture(iconTex);

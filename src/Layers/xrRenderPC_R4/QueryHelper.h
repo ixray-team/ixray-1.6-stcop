@@ -9,7 +9,7 @@ IC HRESULT CreateQuery ( RHIObject **ppQuery, D3DQUERYTYPE Type)
 	return GRHI->CreateOcclusionQuery(ppQuery);
 }
 
-IC HRESULT GetData( RHIObject *pQuery, void *pData, UINT DataSize, u32 Flags = 0)
+IC HRESULT GetData(RHIObject* pQuery, void* pData, u32 DataSize, u32 Flags = 0)
 {
 	//	Use D3Dxx_ASYNC_GETDATA_DONOTFLUSH for prevent flushing
 	return GRHI->GetQueryData(pQuery, pData, DataSize, Flags);
@@ -28,4 +28,4 @@ IC HRESULT EndQuery( RHIObject *pQuery)
 }
 
 
-#endif	//	QueryHelper_included
+#endif //	QueryHelper_included

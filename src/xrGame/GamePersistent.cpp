@@ -4,9 +4,6 @@
 #include "LevelStartInfo.h"
 #include "ImUtils/ImUtils.h"
 #include "Cinema/CinemaApi.h"
-#ifdef DEBUG_DRAW
-#include "ImUtils/DofSetup.h"
-#endif
 #include "../xrEngine/Fmesh.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/GameMtlLib.h"
@@ -715,9 +712,6 @@ extern CUISequencer * g_tutorial2;
 void CGamePersistent::OnFrame()
 {
 	PROF_EVENT("CGamePersistent OnFrame");
-#ifdef DEBUG_DRAW
-	ProcessDofSetupFrame(Dof);
-#endif
 	if(Device.dwPrecacheFrame==5 && m_intro_event.empty())
 	{
 		m_intro_event.bind			(this,&CGamePersistent::game_loaded);

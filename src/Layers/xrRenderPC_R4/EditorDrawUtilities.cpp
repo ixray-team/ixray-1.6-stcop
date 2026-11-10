@@ -1228,9 +1228,9 @@ void CEditorDrawUtilities::OutText(const Fvector& pos, const char* text, u32 col
 		p.y = (float)iFloor(_y2real(-p.y));
 
 		m_Font->SetColor(shadow_color);
-		m_Font->Out(p.x, p.y, (LPSTR)text);
+		m_Font->Out(p.x, p.y, (char*)text);
 		m_Font->SetColor(color);
-		m_Font->Out(p.x - 1, p.y - 1, (LPSTR)text);
+		m_Font->Out(p.x - 1, p.y - 1, (char*)text);
 	}
 }
 

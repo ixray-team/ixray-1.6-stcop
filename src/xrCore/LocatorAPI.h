@@ -114,12 +114,12 @@ public:
 	u32							dwOpenCounter;
 
 private:
-			void				check_cached_files	(LPSTR fname, const u32 &fname_size, const file &desc, const char* &source_name);
+			void check_cached_files(char* fname, const u32& fname_size, const file& desc, const char*& source_name);
 
-			void				file_from_cache_impl(IReader *&R, LPSTR fname, const file &desc);
-			void				file_from_cache_impl(CStreamReader *&R, LPSTR fname, const file &desc);
+			void file_from_cache_impl(IReader*& R, char* fname, const file& desc);
+	void file_from_cache_impl(CStreamReader*& R, char* fname, const file& desc);
 	template <typename T>
-			void				file_from_cache		(T *&R, LPSTR fname, const u32 &fname_size, const file &desc, const char* &source_name);
+			void file_from_cache(T*& R, char* fname, const u32& fname_size, const file& desc, const char*& source_name);
 
 			void				file_from_archive	(IReader *&R, const char* fname, const file &desc);
 			void				file_from_archive	(CStreamReader *&R, const char* fname, const file &desc);
@@ -217,9 +217,9 @@ public:
     time_t 						get_file_age		(const char* nm);
     void 						set_file_age		(const char* nm, time_t age);
 
-	xr_vector<LPSTR>*			file_list_open		(const char* initial, const char* folder,	u32 flags=FS_ListFiles);
-	xr_vector<LPSTR>*			file_list_open		(const char* path,					u32 flags=FS_ListFiles);
-	void						file_list_close		(xr_vector<LPSTR>* &lst);
+	xr_vector<char*>* file_list_open(const char* initial, const char* folder, u32 flags = FS_ListFiles);
+	xr_vector<char*>* file_list_open(const char* path, u32 flags = FS_ListFiles);
+	void file_list_close(xr_vector<char*>*& lst);
 
     bool						path_exist			(const char* path);
     FS_Path*					get_path			(const char* path);

@@ -112,7 +112,7 @@ public:
 	virtual ~game_sv_mp				() override;
 	void				Create					(shared_str &options) override;
 	void				OnPlayerConnect			(ClientID id_who) override;
-	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
+	void OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID) override;
 	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target, bool bForced = false) override {return true;};			// true=allow ownership, false=denied
 	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_target) override {};
 	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA){};
@@ -232,4 +232,3 @@ public:
 	virtual game_sv_freemp* cast_game_sv_freemp() override { return nullptr; }
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-

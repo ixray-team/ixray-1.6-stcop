@@ -3,28 +3,27 @@
 #include "../../Cinema/CinemaSceneIo.h"
 #include "../../Cinema/CinemaShake.h"
 #include "../../../xrRHI/RHI.h"
+#include "../../../xrEngine/Environment.h"
+#include "../../../xrEngine/IGame_Persistent.h"
 
 namespace Cinema::InspectorUi
 {
 constexpr const char* Modes[6] = { "Linear", "Ease in", "Ease out", "Ease in-out", "Bezier", "Hold" };
-constexpr const char* Tangents[3] = { "Auto", "Aligned", "Broken" };
-constexpr const char* ShapeNames[3] = { "Tension", "Continuity", "Bias" };
 constexpr const char* DofModes[3] = { "Off", "Manual", "Focus on object" };
-constexpr float PoseKey::*ShapeFields[3] = { &PoseKey::Tension, &PoseKey::Continuity, &PoseKey::Bias };
 constexpr u32 Rates[4] = { 24, 25, 30, 60 };
 constexpr float ListWidth = 360.0f;
-constexpr const char* GizmoLabels[5] = { "T", "R", "S", "", "TRS" };
-constexpr const char* GizmoNames[5] = { "Translate", "Rotate", "Scale", "Range", "Universal" };
-constexpr const char* StepNames[4] = { "Move step", "Rotate step", "Scale step", "Range step" };
-constexpr const char* StepFormats[4] = { "%.2f m", "%.1f deg", "%.2f", "%.2f m" };
-constexpr float StepLo[4] = { 0.01f, 0.5f, 0.01f, 0.01f }, StepHi[4] = { 10.0f, 180.0f, 1.0f, 10.0f };
+constexpr const char* LibraryFile = "cinema_editor\\cinema_library.ltx";
+constexpr const char* LibraryKinds[5] = { "model", "item", "animation", "effect", "texture" };
+constexpr s32 LibrarySlots[8] = { 0, 1, 2, -1, -1, 3, 4, -1 };
+constexpr u32 MaxFavourites = 1024, MaxFolders = 64, MaxFolderItems = 256;
+constexpr size_t MaxLibrarySize = 256u << 10;
 constexpr const char* LinkProblems[5] = { "Parent is missing: hidden", "Bone is missing: the origin is used", "Look at target is missing: ignored", "Look bone is missing: the origin is used", "Parent is missing: the block passes through" };
 
 float ValueAt(const Object& Target, s32 Block, Param Id, u8 Layer, u8 Component, float Time)
 {
 	const float Static = *StaticField(const_cast<Object&>(Target), Block, Id, Layer, Component);
 	const Lane* Found = Curves::FindLane(LaneList(Target, Block), Id, Layer);
-	return Found ? Curves::Result(Found->Curves[Component], Time - TargetStart(Target, Block), Static, Info(Id)) : Static;
+	return Found ? Curves::Result(Found->Curves[Component], LaneLocal(Target, Block, Id, Time), Static, Info(Id)) : Static;
 }
 
 KeyState StateAt(const Object& Target, s32 Block, Param Id, u8 Layer, float Time, float HalfFrame)
@@ -32,17 +31,12 @@ KeyState StateAt(const Object& Target, s32 Block, Param Id, u8 Layer, float Time
 	const Lane* Found = Curves::FindLane(LaneList(Target, Block), Id, Layer);
 	for (u8 Component = 0; Found && Component < Info(Id).Components; ++Component)
 	{
-		if (Curves::KeyAt(Found->Curves[Component], Time - TargetStart(Target, Block), HalfFrame) != u32(-1))
+		if (Curves::KeyAt(Found->Curves[Component], LaneLocal(Target, Block, Id, Time), HalfFrame) != u32(-1))
 		{
 			return KeyState::OnKey;
 		}
 	}
 	return Found ? KeyState::Animated : KeyState::Static;
-}
-
-float& PoseField(PoseKey& Pose, Param Id, u8 Component)
-{
-	return (Id == Param::Rotation ? Pose.Rotation : Pose.Position)[Component];
 }
 
 void Diamond(ImDrawList* List, const ImVec2& Centre, float Radius, u32 Color, bool IsFilled)
@@ -130,14 +124,18 @@ void Editor::DrawInspector(Player& Core)
 		return;
 	}
 	const ImGuiViewport* View = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(View->Pos.x + View->Size.x * 0.76f, View->WorkPos.y), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(View->Size.x * 0.24f, View->Pos.y + View->Size.y * 0.72f - View->WorkPos.y), ImGuiCond_FirstUseEver);
-	const bool IsVisible = ImGui::Begin("Inspector###CinemaInspector", &Settings.ShowInspector, ImGuiWindowFlags_NoNavInputs);
+	ImGui::SetNextWindowPos(ImVec2(View->Pos.x + View->Size.x * 0.76f, View->WorkPos.y), LayoutCond());
+	ImGui::SetNextWindowSize(ImVec2(View->Size.x * 0.24f, View->Pos.y + View->Size.y * (ShowAnimator ? 0.6f : 0.72f) - View->WorkPos.y), LayoutCond());
+	if (LayoutReset)
+	{
+		ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
+	}
+	const bool IsVisible = ImGui::Begin(ShowAnimator ? "Inspector###CinemaInspectorAnimation" : "Inspector###CinemaInspector", &Settings.ShowInspector, ImGuiWindowFlags_NoNavInputs);
 	IsOwnWindowFocused |= ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 	ViewRight = ImGui::GetWindowPos().x;
 	std::erase_if(PinnedIds, [&Core](u32 Id) { return !Find(Core.Data, Id); });
 	IsPinned = IsPinned && !PinnedIds.empty();
-	xr_vector<u32>* const Lists[4] = { &InspectActors, &InspectCameras, &InspectLights, &InspectParticles };
+	xr_vector<u32>* const Lists[7] = { &InspectActors, &InspectCameras, &InspectLights, &InspectParticles, &InspectDecals, &InspectWeathers, &InspectPosts };
 	for (xr_vector<u32>* List : Lists)
 	{
 		List->clear();
@@ -151,6 +149,21 @@ void Editor::DrawInspector(Player& Core)
 	}
 	if (!IsVisible)
 	{
+		ImGui::End();
+		return;
+	}
+	if (ShowAnimator)
+	{
+		const Object* Posed = Find(Core.Data, AnimObject);
+		if (Posed && Posed->Type == ObjectType::Actor)
+		{
+			ImGui::TextUnformatted(DisplayName(Posed));
+			DrawPoseSection(Core, *Posed);
+		}
+		else
+		{
+			ImGui::TextDisabled("Select an actor to animate.");
+		}
 		ImGui::End();
 		return;
 	}
@@ -178,7 +191,7 @@ void Editor::DrawInspector(Player& Core)
 	OffsetValue = ImGui::IsItemActive() ? OffsetValue : 0.0f;
 	EndRow(KeyState::None);
 	ImGui::EndDisabled();
-	const bool HasLightPin = InspectActors.empty(), HasParticlePin = HasLightPin && InspectLights.empty(), HasCameraPin = HasParticlePin && InspectParticles.empty();
+	const bool HasLightPin = InspectActors.empty(), HasParticlePin = HasLightPin && InspectLights.empty(), HasDecalPin = HasParticlePin && InspectParticles.empty(), HasWeatherPin = HasDecalPin && InspectDecals.empty(), HasPostPin = HasWeatherPin && InspectWeathers.empty(), HasCameraPin = HasPostPin && InspectPosts.empty();
 	if (HasCameraPin && InspectCameras.empty())
 	{
 		DrawSceneSection(Core);
@@ -186,6 +199,10 @@ void Editor::DrawInspector(Player& Core)
 	if (!InspectActors.empty())
 	{
 		DrawActorSection(Core, InspectActors);
+	}
+	if (const Object* Posed = InspectActors.size() == 1 ? Find(Core.Data, InspectActors[0]) : nullptr)
+	{
+		DrawPoseSection(Core, *Posed);
 	}
 	if (!InspectLights.empty())
 	{
@@ -195,9 +212,1031 @@ void Editor::DrawInspector(Player& Core)
 	{
 		DrawParticleSection(Core, InspectParticles, HasParticlePin);
 	}
+	if (!InspectDecals.empty())
+	{
+		DrawDecalSection(Core, InspectDecals, HasDecalPin);
+	}
+	if (!InspectWeathers.empty())
+	{
+		DrawWeatherSection(Core, InspectWeathers, HasWeatherPin);
+	}
+	if (!InspectPosts.empty())
+	{
+		DrawPostSection(Core, InspectPosts, HasPostPin);
+	}
 	if (!InspectCameras.empty())
 	{
 		DrawCameraSection(Core, InspectCameras, HasCameraPin);
+	}
+	ImGui::End();
+}
+
+void Editor::DrawRigSection(const ActorRuntime& Runtime)
+{
+	if (RigObject != PoseObject || !ImGui::TreeNode(Rig.HasOverride ? "Rig (override)" : "Rig (auto)"))
+	{
+		return;
+	}
+	const auto Pick = [&](const char* Label, u16& Bone)
+	{
+		ImGui::SetNextItemWidth(-ImGui::GetFontSize() * 5.0f);
+		if (ImGui::BeginCombo(Label, Bone != BI_NONE ? Runtime.BoneName(Bone) : "None", ImGuiComboFlags_HeightLarge))
+		{
+			for (u16 Id = 0; Id < Runtime.BoneCount(); ++Id)
+			{
+				if (Runtime.BoneName(Id) && ImGui::Selectable(Runtime.BoneName(Id), Id == Bone))
+				{
+					Bone = Id;
+				}
+			}
+			ImGui::EndCombo();
+		}
+	};
+	for (u32 Control = 0; Control < RigControlCount; ++Control)
+	{
+		Pick(RigControlKeys[Control], Rig.Controls[Control]);
+	}
+	for (u32 Chain = 0; Chain < RigChainCount; ++Chain)
+	{
+		ImGui::PushID(static_cast<s32>(Chain));
+		ImGui::TextUnformatted(RigChainKeys[Chain]);
+		Pick("##Root", Rig.Chains[Chain][0]);
+		Pick("##Middle", Rig.Chains[Chain][1]);
+		Pick("##End", Rig.Chains[Chain][2]);
+		ImGui::PopID();
+	}
+	if (ImGui::Button("Save rig"))
+	{
+		SaveRig();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Auto rig"))
+	{
+		string_path Path;
+		RigPath(Path);
+		if (FS.exist(Path))
+		{
+			FS.file_delete(Path);
+		}
+		BuildRig(Runtime, RigVisual);
+	}
+	ImGui::TreePop();
+}
+
+void Editor::DrawPoseSection(Player& Core, const Object& Target)
+{
+	if (!IsPosing || !ImGui::CollapsingHeader("Posing", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return;
+	}
+	ImGui::PushID("Posing");
+	PoseIds.assign(1, Target.Id);
+	const xr_vector<u32>& Ids = PoseIds;
+	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
+	const xr_vector<PoseRow>& Rows = Target.Actor.Poses;
+	ActivePose = Rows.empty() ? 0 : std::min<u32>(ActivePose, static_cast<u32>(Rows.size() - 1));
+	const bool IsCompact = ShowAnimator;
+	if (IsCompact)
+	{
+		DrawBoneValues(Core, Target);
+		ImGui::SeparatorText("IK");
+		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
+		{
+			const u16* Chain = RigObject == Target.Id ? Rig.Chains[Limb] : nullptr;
+			const bool HasChain = Chain && std::find(Chain, Chain + 3, BI_NONE) == Chain + 3;
+			bool IsOn = IkOf(Target, IkBlock(Target))[Limb].IsOn;
+			ImGui::PushID(static_cast<s32>(Limb));
+			if (Limb & 1)
+			{
+				ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.5f);
+			}
+			ImGui::BeginDisabled(!HasChain && !IsOn);
+			if (ImGui::Checkbox(RigChainKeys[Limb], &IsOn))
+			{
+				SetIk(Core, Target, Limb, IsOn);
+			}
+			ImGui::EndDisabled();
+			ImGui::SetItemTooltip(HasChain ? "On: the limb follows its target and pole handles in the game view. Off: its bones are posed one by one" : "The rig of this model has no such limb (Rig and tools -> Rig)");
+			ImGui::PopID();
+		}
+		ImGui::SeparatorText("Select");
+		constexpr const char* SetNames[7] = { "Arm L", "Arm R", "Leg L", "Leg R", "Spine", "Fingers L", "Fingers R" };
+		for (u32 Set = 0; Set < 7; ++Set)
+		{
+			if (Set % 4)
+			{
+				ImGui::SameLine();
+			}
+			if (ImGui::SmallButton(SetNames[Set]))
+			{
+				SelectSet(Set, ImGui::GetIO().KeyCtrl || ImGui::GetIO().KeyShift);
+			}
+		}
+		ImGui::SetItemTooltip("Selects every control of that part; Ctrl or Shift adds to the selection");
+		ImGui::Checkbox("Bone lines", &ShowBoneLines);
+		ImGui::SetItemTooltip("Off: only the rig's controls are drawn and picked. On: every bone is drawn as a line and can be picked");
+		if (!ImGui::TreeNode("Rig and tools"))
+		{
+			ImGui::PopID();
+			return;
+		}
+	}
+	for (u32 Row = 0; !IsCompact && Row < Rows.size(); ++Row)
+	{
+		ImGui::PushID(static_cast<s32>(Row));
+		string32 Title;
+		xr_sprintf(Title, "Pose %u", Row + 1u);
+		if (ImGui::RadioButton(Title, ActivePose == Row))
+		{
+			ActivePose = Row;
+		}
+		ImGui::SetItemTooltip("Active pose row");
+		ImGui::SameLine();
+		const bool IsAdd = Rows[Row].Mode == RowMode::Add;
+		if (ImGui::Button(IsAdd ? "Add" : "Override"))
+		{
+			Edit(Core, Target.Id, "Pose row mode")->Actor.Poses[Row].Mode = IsAdd ? RowMode::Override : RowMode::Add;
+		}
+		ImGui::SetItemTooltip("Mode");
+		ImGui::SameLine();
+		bool IsMuted = Rows[Row].IsMuted;
+		if (ImGui::Checkbox("M", &IsMuted))
+		{
+			Edit(Core, Target.Id, "Mute pose row")->Actor.Poses[Row].IsMuted = IsMuted;
+		}
+		ImGui::SetItemTooltip("Mute");
+		ImGui::SameLine();
+		const bool IsRemoved = ImGui::Button("x");
+		ImGui::SetItemTooltip("Remove pose row");
+		ParamRow(Core, Ids, -1, Param::PoseWeight, static_cast<u8>(Row), 0.01f, "%.2f", 1, 1.0f);
+		ImGui::PopID();
+		if (IsRemoved)
+		{
+			RemovePoseRow(Core, Target.Id, Row);
+			break;
+		}
+	}
+	if (!IsCompact && Rows.size() < MaxPoseRows && ImGui::Button("+ Pose row"))
+	{
+		Object* Item = Edit(Core, Target.Id, "Add pose row");
+		Item->Actor.Poses.emplace_back();
+		ActivePose = static_cast<u32>(Item->Actor.Poses.size() - 1);
+	}
+	if (!Runtime || !Runtime->BoneCount())
+	{
+		if (IsCompact)
+		{
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+		return;
+	}
+	ImGui::SetNextItemWidth(-1.0f);
+	ImGui::InputTextWithHint("##PoseBoneFilter", "Filter bones", PoseBoneFilter, sizeof(PoseBoneFilter));
+	ImGui::BeginChild("##Bones", ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 10.0f), ImGuiChildFlags_Borders);
+	for (u16 Bone = 0; Bone < Runtime->BoneCount(); ++Bone)
+	{
+		const char* Name = Runtime->BoneName(Bone);
+		if (!Name || (PoseBoneFilter[0] && !ImStristr(Name, nullptr, PoseBoneFilter, nullptr)))
+		{
+			continue;
+		}
+		u32 Depth = 0;
+		for (u16 Parent = Runtime->BoneParent(Bone); Parent < Runtime->BoneCount() && Depth < 64; Parent = Runtime->BoneParent(Parent))
+		{
+			++Depth;
+		}
+		const auto Found = std::find(SelectedBones.begin(), SelectedBones.end(), Bone);
+		ImGui::PushID(Bone);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (PoseBoneFilter[0] ? 0.0f : static_cast<float>(Depth) * ImGui::GetFontSize() * 0.5f));
+		if (ImGui::Selectable(Name, Found != SelectedBones.end()))
+		{
+			ImGui::GetIO().KeyCtrl ? (Found == SelectedBones.end() ? SelectedBones.push_back(Bone) : (void)SelectedBones.erase(Found)) : SelectedBones.assign(1, Bone);
+		}
+		ImGui::PopID();
+	}
+	ImGui::EndChild();
+	DrawRigSection(*Runtime);
+	if (ImGui::TreeNodeEx("IK", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
+		{
+			const IkLimb& Setup = IkOf(Target, IkBlock(Target))[Limb];
+			const u16* Chain = RigObject == Target.Id ? Rig.Chains[Limb] : nullptr;
+			const bool HasChain = Chain && std::find(Chain, Chain + 3, BI_NONE) == Chain + 3;
+			const bool HasLanes = std::any_of(LaneList(Target, IkBlock(Target)).begin(), LaneList(Target, IkBlock(Target)).end(), [Limb](const Lane& Track) { return Track.Id >= Param::IkTarget && Track.Id <= Param::IkPole && Track.Layer == Limb; });
+			bool IsOn = Setup.IsOn;
+			ImGui::PushID(static_cast<s32>(Limb));
+			ImGui::BeginDisabled(!HasChain && !IsOn);
+			if (ImGui::Checkbox(RigChainKeys[Limb], &IsOn))
+			{
+				SetIk(Core, Target, Limb, IsOn);
+			}
+			ImGui::EndDisabled();
+			ImGui::SetItemTooltip("IK");
+			if (Setup.IsOn)
+			{
+				ImGui::SameLine();
+				ImGui::BeginDisabled(HasLanes);
+				if (ImGui::Button(Setup.Space == IkSpace::World ? "World" : "Actor"))
+				{
+					SwitchIkSpace(Core, Target, Limb);
+				}
+				ImGui::EndDisabled();
+				ImGui::SetItemTooltip("Space");
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkWeight, static_cast<u8>(Limb), 0.01f, "%.2f", 1, 1.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkTarget, static_cast<u8>(Limb), 0.005f, "%.3f", 0, 0.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkTurn, static_cast<u8>(Limb), 0.5f, "%.1f", 0, 0.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkPole, static_cast<u8>(Limb), 0.005f, "%.3f", 0, 0.0f);
+			}
+			ImGui::PopID();
+		}
+		ImGui::TreePop();
+	}
+	DrawConstraints(Core, Target);
+	const s32 Block = PoseBlock(Target);
+	if (Block >= 0 && !IsCompact)
+	{
+		ImGui::TextDisabled("Bones go to the clip \"%s\" (Animator)", Target.Actor.Clips[ClipIndex(Block)].Name.c_str());
+	}
+	if (!IsCompact)
+	{
+		DrawBoneValues(Core, Target);
+	}
+	ImGui::BeginDisabled(SelectedBones.empty());
+	if (ImGui::Button("Key pose"))
+	{
+		KeyBones(Core);
+	}
+	ImGui::SetItemTooltip("Key pose (F)");
+	ImGui::SameLine();
+	if (ImGui::Button("Reset"))
+	{
+		ResetBones(Core);
+	}
+	ImGui::SetItemTooltip("Reset bones");
+	ImGui::EndDisabled();
+	ImGui::BeginDisabled((Block < 0 && ActivePose >= Rows.size()) || RigObject != Target.Id);
+	if (ImGui::Button("Mirror"))
+	{
+		MirrorBones(Core, true);
+	}
+	ImGui::SetItemTooltip("Mirror pose");
+	ImGui::SameLine();
+	if (ImGui::Button("Paste opposite"))
+	{
+		MirrorBones(Core, false);
+	}
+	ImGui::SetItemTooltip("Paste opposite");
+	ImGui::EndDisabled();
+	DrawPoseLibrary(Core);
+	if (IsCompact)
+	{
+		ImGui::TreePop();
+	}
+	ImGui::PopID();
+}
+
+void Editor::SelectSet(u32 Set, bool IsAdding)
+{
+	constexpr s8 Sets[7][6] = { { 14, 3, -1, -1, -1, -1 }, { 15, 4, -1, -1, -1, -1 }, { 5, 16, -1, -1, -1, -1 }, { 6, 17, -1, -1, -1, -1 }, { 0, 11, 12, 1, 13, 2 }, { 18, 19, 20, 21, 22, -1 }, { 23, 24, 25, 26, 27, -1 } };
+	if (RigObject != PoseObject || Set >= 7)
+	{
+		return;
+	}
+	if (!IsAdding)
+	{
+		SelectedBones.clear();
+	}
+	const auto Add = [this](u16 Bone)
+	{
+		if (Bone != BI_NONE && !IsBoneShared(Bone) && std::find(SelectedBones.begin(), SelectedBones.end(), Bone) == SelectedBones.end())
+		{
+			SelectedBones.push_back(Bone);
+		}
+	};
+	for (s8 Control : Sets[Set])
+	{
+		Add(Control >= 0 ? Rig.Controls[Control] : BI_NONE);
+	}
+	for (u32 Link = 0; Set < RigChainCount && Link < 3; ++Link)
+	{
+		Add(Rig.Chains[Set][Link]);
+	}
+}
+
+void Editor::DrawBoneValues(Player& Core, const Object& Target)
+{
+	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
+	const xr_vector<PoseRow>& Rows = Target.Actor.Poses;
+	const s32 Block = PoseBlock(Target);
+	if (!Runtime || SelectedBones.size() != 1 || (Block < 0 && ActivePose >= Rows.size()))
+	{
+		if (ShowAnimator)
+		{
+			ImGui::TextDisabled(SelectedBones.size() > 1 ? "Several bones are selected." : "Select a bone to see its values.");
+		}
+		return;
+	}
+	const xr_vector<PoseBone>& Bones = Block < 0 ? Rows[ActivePose].Bones : TrackOf(Target, Block).Bones;
+	const char* Name = Runtime->BoneName(SelectedBones[0]);
+	const auto Entry = std::find_if(Bones.begin(), Bones.end(), [Name](const PoseBone& Item) { return !xr_strcmp(Item.Name, Name); });
+	if (ShowAnimator)
+	{
+		ImGui::TextUnformatted(Name ? Name : "");
+	}
+	if (Entry == Bones.end())
+	{
+		if (ShowAnimator)
+		{
+			ImGui::TextDisabled("Not posed yet: move it in the game view.");
+		}
+		return;
+	}
+	const u32 Index = static_cast<u32>(Entry - Bones.begin());
+	const u8 Layer = Block < 0 ? PoseLayer(ActivePose, Index) : static_cast<u8>(Index);
+	ParamRow(Core, PoseIds, Block, Param::BoneRotation, Layer, 0.5f, "%.1f", 7, 0.0f);
+	ParamRow(Core, PoseIds, Block, Param::BonePosition, Layer, 0.005f, "%.3f", 7, 0.0f);
+	ParamRow(Core, PoseIds, Block, Param::BoneScale, Layer, 0.005f, "%.3f", 7, 1.0f);
+}
+
+bool Editor::ReadPoseValue(const Object& Item, u16 Bone, PoseValue& Out) const
+{
+	const Player* Core = FindPlayer();
+	const ActorRuntime* Runtime = Core ? Core->FindActor(Item.Id) : nullptr;
+	const char* Name = Runtime ? Runtime->BoneName(Bone) : nullptr;
+	const s32 Block = PoseBlock(Item);
+	if (!Name || (Block < 0 && ActivePose >= Item.Actor.Poses.size()))
+	{
+		return false;
+	}
+	Out = PoseValue { Name };
+	const xr_vector<PoseBone>& Bones = Block < 0 ? Item.Actor.Poses[ActivePose].Bones : TrackOf(Item, Block).Bones;
+	const auto Entry = std::find_if(Bones.begin(), Bones.end(), [&Out](const PoseBone& Other) { return Other.Name == Out.Bone; });
+	if (Entry == Bones.end())
+	{
+		return true;
+	}
+	const float Local = PoseLocal(*Core, Item);
+	const u32 Index = static_cast<u32>(Entry - Bones.begin());
+	const u8 Layer = Block < 0 ? PoseLayer(ActivePose, Index) : static_cast<u8>(Index);
+	const xr_vector<Lane>& Tracks = LaneList(Item, Block);
+	Out.Turn = Curves::LaneVector(Tracks, Param::BoneRotation, Local, Entry->Rotation, Layer);
+	Out.Shift = Curves::LaneVector(Tracks, Param::BonePosition, Local, Entry->Offset, Layer);
+	Out.Size = Curves::LaneVector(Tracks, Param::BoneScale, Local, Entry->Scale, Layer);
+	return true;
+}
+
+void Editor::WritePoses(Player& Core, const char* Label, const xr_vector<PoseValue>& Values, bool IsMirrored)
+{
+	const ActorRuntime* Runtime = Core.FindActor(PoseObject);
+	Object* Item = Runtime && !Values.empty() ? Edit(Core, PoseObject, Label) : nullptr;
+	if (!Item)
+	{
+		return;
+	}
+	u32 Missing = 0, Side = 0;
+	for (u16 Bone = 0; IsMirrored && Bone < Rig.Mirror.size(); ++Bone)
+	{
+		Fmatrix A, B;
+		if (Rig.Mirror[Bone] != BI_NONE && Runtime->RestModel(Bone, A) && Runtime->RestModel(Rig.Mirror[Bone], B))
+		{
+			const Fvector Gap = Fvector().sub(A.c, B.c);
+			Side = std::fabs(Gap[2]) > std::fabs(Gap[Side]) ? 2 : std::fabs(Gap[1]) > std::fabs(Gap[Side]) ? 1 : Side;
+		}
+	}
+	for (const PoseValue& Value : Values)
+	{
+		const u16 From = Runtime->FindBone(Value.Bone);
+		const u16 To = IsMirrored && From < Rig.Mirror.size() && Rig.Mirror[From] != BI_NONE ? Rig.Mirror[From] : From;
+		Fmatrix FromRest, ToRest;
+		const bool HasFrames = !IsMirrored || (Runtime->RestModel(From, FromRest) && Runtime->RestModel(To, ToRest));
+		const s32 Layer = To != BI_NONE && HasFrames ? EnsurePoseBone(*Item, Runtime->BoneName(To)) : -1;
+		Missing += Layer < 0;
+		if (Layer < 0)
+		{
+			continue;
+		}
+		PoseValue Result = Value;
+		if (IsMirrored)
+		{
+			Fmatrix Flip = Fidentity, Map, Back, Delta;
+			Flip.i.x = Side == 0 ? -1.0f : 1.0f;
+			Flip.j.y = Side == 1 ? -1.0f : 1.0f;
+			Flip.k.z = Side == 2 ? -1.0f : 1.0f;
+			FromRest.c.set(0.0f, 0.0f, 0.0f);
+			ToRest.c.set(0.0f, 0.0f, 0.0f);
+			Back.invert(ToRest);
+			Map.mul_43(Back, Flip);
+			Map.mulB_43(FromRest);
+			Back.invert(Map);
+			Delta.setHPB(deg2rad(Value.Turn.x), deg2rad(Value.Turn.y), deg2rad(Value.Turn.z));
+			Delta.c = Value.Shift;
+			Delta.mulA_43(Map);
+			Delta.mulB_43(Back);
+			Fvector Angles;
+			Delta.getHPB(Angles);
+			Result.Turn.set(rad2deg(Angles.x), rad2deg(Angles.y), rad2deg(Angles.z));
+			Result.Shift = Delta.c;
+			const Fvector* Axes[3] = { &Map.i, &Map.j, &Map.k };
+			for (u32 Axis = 0; Axis < 3; ++Axis)
+			{
+				const Fvector& Column = *Axes[Axis];
+				const u32 Target = std::fabs(Column.z) > std::fabs(Column.x) && std::fabs(Column.z) > std::fabs(Column.y) ? 2 : std::fabs(Column.y) > std::fabs(Column.x) ? 1 : 0;
+				Result.Size[Target] = Value.Size[Axis];
+			}
+		}
+		for (u8 Axis = 0; Axis < 3; ++Axis)
+		{
+			WriteParam(Core, *Item, PoseBlock(*Item), Param::BoneRotation, static_cast<u8>(Layer), Axis, Result.Turn[Axis]);
+			WriteParam(Core, *Item, PoseBlock(*Item), Param::BonePosition, static_cast<u8>(Layer), Axis, std::clamp(Result.Shift[Axis], -10.0f, 10.0f));
+			WriteParam(Core, *Item, PoseBlock(*Item), Param::BoneScale, static_cast<u8>(Layer), Axis, std::clamp(Result.Size[Axis], 0.01f, 100.0f));
+		}
+	}
+	if (Missing)
+	{
+		SetStatus(true, "%u bones were skipped: missing on this model, without rest frames, or past 64 per pose row.", Missing);
+	}
+}
+
+void Editor::MirrorBones(Player& Core, bool IsSwap)
+{
+	const Object* Item = Find(Core.Data, PoseObject);
+	const ActorRuntime* Runtime = Item ? Core.FindActor(PoseObject) : nullptr;
+	const s32 Block = Item ? PoseBlock(*Item) : -1;
+	if (!Runtime || (Block < 0 && ActivePose >= Item->Actor.Poses.size()) || RigObject != PoseObject)
+	{
+		return;
+	}
+	const xr_vector<PoseBone>& Posed = Block < 0 ? Item->Actor.Poses[ActivePose].Bones : TrackOf(*Item, Block).Bones;
+	xr_vector<u16> Picked = SelectedBones;
+	for (u32 Index = 0; SelectedBones.empty() && Index < Posed.size(); ++Index)
+	{
+		const u16 Bone = Runtime->FindBone(Posed[Index].Name);
+		Bone != BI_NONE ? Picked.push_back(Bone) : (void)0;
+	}
+	PoseScratch.clear();
+	for (u16 Bone : Picked)
+	{
+		const u16 Other = Bone < Rig.Mirror.size() ? Rig.Mirror[Bone] : BI_NONE;
+		PoseValue Value;
+		if ((IsSwap || Other != BI_NONE) && ReadPoseValue(*Item, Bone, Value))
+		{
+			PoseScratch.push_back(Value);
+		}
+		const bool IsListed = std::find(Picked.begin(), Picked.end(), Other) != Picked.end();
+		if (IsSwap && Other != BI_NONE && !IsListed && ReadPoseValue(*Item, Other, Value))
+		{
+			PoseScratch.push_back(Value);
+		}
+	}
+	WritePoses(Core, IsSwap ? "Mirror pose" : "Paste opposite", PoseScratch, true);
+}
+
+void Editor::LoadPoseLibrary()
+{
+	IsPoseLibraryRead = true;
+	PoseLibrary.clear();
+	string_path Path;
+	FS.update_path(Path, "$app_data_root$", "cinema\\poses.ltx");
+	const CReaderGuarded File(FS.exist(Path) ? FS.r_open(Path) : nullptr);
+	xr_string Error = "the file is larger than 1 MiB";
+	if (!File)
+	{
+		return;
+	}
+	if (static_cast<size_t>(File->length()) > 1048576 || !Io::PreScan(*File, Error))
+	{
+		Msg("! Cinema editor: %s is ignored: %s", Path, Error.c_str());
+		return;
+	}
+	File->seek(0);
+	const CInifile Ini(&*File, nullptr);
+	for (const CInifile::Sect& Section : Ini.sections())
+	{
+		if (PoseLibrary.size() >= MaxNamedPoses)
+		{
+			break;
+		}
+		NamedPose& Pose = PoseLibrary.emplace_back();
+		Pose.Name = Section.Name.c_str();
+		Pose.Bones.clear();
+		for (const CInifile::Item& Line : Section.Data)
+		{
+			float Values[9] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f };
+			const u32 Count = Line.second.size() ? static_cast<u32>(_GetItemCount(Line.second.c_str())) : 0;
+			string64 Part;
+			for (u32 Index = 0; Count == 9 && Index < 9; ++Index)
+			{
+				Values[Index] = static_cast<float>(atof(_GetItem(Line.second.c_str(), static_cast<int>(Index), Part)));
+			}
+			if (Count != 9 || Pose.Bones.size() >= MaxPoseBones || !std::all_of(std::begin(Values), std::end(Values), [](float Value) { return std::isfinite(Value); }))
+			{
+				Msg("! Cinema editor: %s: [%s] %s is not 9 numbers or the pose has more than 64 bones, skipped", Path, Pose.Name.c_str(), Line.first.c_str());
+				continue;
+			}
+			PoseValue& Bone = Pose.Bones.emplace_back();
+			Bone.Bone = Line.first;
+			Bone.Turn.set(std::clamp(Values[0], -3600.0f, 3600.0f), std::clamp(Values[1], -3600.0f, 3600.0f), std::clamp(Values[2], -3600.0f, 3600.0f));
+			Bone.Shift.set(std::clamp(Values[3], -10.0f, 10.0f), std::clamp(Values[4], -10.0f, 10.0f), std::clamp(Values[5], -10.0f, 10.0f));
+			Bone.Size.set(std::clamp(Values[6], 0.01f, 100.0f), std::clamp(Values[7], 0.01f, 100.0f), std::clamp(Values[8], 0.01f, 100.0f));
+		}
+	}
+	std::sort(PoseLibrary.begin(), PoseLibrary.end(), [](const NamedPose& A, const NamedPose& B) { return A.Name < B.Name; });
+}
+
+void Editor::SavePoseLibrary()
+{
+	CInifile Ini(nullptr, false, false, false);
+	for (const NamedPose& Pose : PoseLibrary)
+	{
+		for (const PoseValue& Bone : Pose.Bones)
+		{
+			string512 Text;
+			xr_sprintf(Text, "%g, %g, %g, %g, %g, %g, %g, %g, %g", Bone.Turn.x, Bone.Turn.y, Bone.Turn.z, Bone.Shift.x, Bone.Shift.y, Bone.Shift.z, Bone.Size.x, Bone.Size.y, Bone.Size.z);
+			Ini.w_string(Pose.Name.c_str(), Bone.Bone.c_str(), Text);
+		}
+	}
+	string_path Path;
+	FS.update_path(Path, "$app_data_root$", "cinema\\poses.ltx");
+	xr_string Error;
+	if (!Io::SaveIni(Ini, Path, Error))
+	{
+		SetStatus(true, "%s", Error.c_str());
+	}
+}
+
+void Editor::DrawPoseLibrary(Player& Core)
+{
+	if (!ImGui::TreeNodeEx("Pose library"))
+	{
+		return;
+	}
+	if (!IsPoseLibraryRead)
+	{
+		LoadPoseLibrary();
+	}
+	const Object* Item = Find(Core.Data, PoseObject);
+	const ActorRuntime* Runtime = Item ? Core.FindActor(PoseObject) : nullptr;
+	ImGui::SetNextItemWidth(std::max(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Save").x - 3.0f * ImGui::GetStyle().FramePadding.x, 1.0f));
+	ImGui::InputTextWithHint("##PoseName", "Pose name", PoseName, sizeof(PoseName));
+	ImGui::SameLine();
+	const bool IsNamed = PoseName[0] && Io::IniSafe(PoseName);
+	ImGui::BeginDisabled(!IsNamed || !Runtime || ActivePose >= Item->Actor.Poses.size() || PoseLibrary.size() >= MaxNamedPoses);
+	if (ImGui::Button("Save"))
+	{
+		const auto Found = std::find_if(PoseLibrary.begin(), PoseLibrary.end(), [this](const NamedPose& Pose) { return Pose.Name == PoseName; });
+		NamedPose& Pose = Found == PoseLibrary.end() ? PoseLibrary.emplace_back() : *Found;
+		Pose = NamedPose { PoseName };
+		for (const PoseBone& Entry : Item->Actor.Poses[ActivePose].Bones)
+		{
+			const u16 Bone = Runtime->FindBone(Entry.Name);
+			const bool IsPicked = SelectedBones.empty() || std::find(SelectedBones.begin(), SelectedBones.end(), Bone) != SelectedBones.end();
+			PoseValue Value;
+			if (IsPicked && Bone != BI_NONE && ReadPoseValue(*Item, Bone, Value))
+			{
+				Pose.Bones.push_back(Value);
+			}
+		}
+		std::sort(PoseLibrary.begin(), PoseLibrary.end(), [](const NamedPose& A, const NamedPose& B) { return A.Name < B.Name; });
+		SavePoseLibrary();
+		SetStatus(false, "Pose saved");
+	}
+	ImGui::EndDisabled();
+	ImGui::SetItemTooltip("Save pose");
+	s32 Removed = -1;
+	for (u32 Index = 0; Index < PoseLibrary.size(); ++Index)
+	{
+		const NamedPose& Pose = PoseLibrary[Index];
+		ImGui::PushID(static_cast<s32>(Index));
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("%s (%u)", Pose.Name.c_str(), static_cast<u32>(Pose.Bones.size()));
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!Runtime);
+		if (ImGui::Button("Apply"))
+		{
+			WritePoses(Core, "Apply pose", Pose.Bones, false);
+		}
+		ImGui::SetItemTooltip("Apply");
+		ImGui::SameLine();
+		ImGui::BeginDisabled(RigObject != PoseObject);
+		if (ImGui::Button("Mirrored"))
+		{
+			WritePoses(Core, "Apply pose mirrored", Pose.Bones, true);
+		}
+		ImGui::EndDisabled();
+		ImGui::SetItemTooltip("Apply mirrored");
+		ImGui::EndDisabled();
+		ImGui::SameLine();
+		Removed = ImGui::Button("x") ? static_cast<s32>(Index) : Removed;
+		ImGui::SetItemTooltip("Delete pose");
+		ImGui::PopID();
+	}
+	if (Removed >= 0)
+	{
+		PoseLibrary.erase(PoseLibrary.begin() + Removed);
+		SavePoseLibrary();
+	}
+	ImGui::TreePop();
+}
+
+void Editor::SetIk(Player& Core, const Object& Target, u32 Limb, bool IsOn)
+{
+	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
+	const u16* Chain = Rig.Chains[Limb];
+	Fmatrix Root, Joint, End;
+	const bool HasPose = Runtime && RigObject == Target.Id && Runtime->BoneWorld(Chain[0], Fidentity, Root) && Runtime->BoneWorld(Chain[1], Fidentity, Joint) && Runtime->BoneWorld(Chain[2], Fidentity, End);
+	if (IsOn && !HasPose)
+	{
+		return;
+	}
+	IkLimb& Item = IkOf(*Edit(Core, Target.Id, IsOn ? "IK on" : "IK off"), IkBlock(Target))[Limb];
+	Item.IsOn = IsOn;
+	IkHandle = IsOn ? IkHandle : -1;
+	if (!IsOn)
+	{
+		return;
+	}
+	Fvector Angles, Line, Bend;
+	End.getHPB(Angles);
+	Line.sub(End.c, Root.c).normalize_safe();
+	Bend.sub(Joint.c, Root.c);
+	Bend.mad(Line, -Bend.dotproduct(Line)).normalize_safe();
+	for (u32 Link = 0; Link < 3; ++Link)
+	{
+		Item.Bones[Link] = Runtime->BoneName(Chain[Link]);
+	}
+	Item.Space = IkSpace::Actor;
+	Item.Weight = 1.0f;
+	Item.Target = End.c;
+	Item.Turn.set(rad2deg(Angles.x), rad2deg(Angles.y), rad2deg(Angles.z));
+	Item.Pole.mad(Joint.c, Bend, 0.5f);
+}
+
+void Editor::SwitchIkSpace(Player& Core, const Object& Target, u32 Limb)
+{
+	const ObjectState* State = Core.FindState(Target.Id);
+	if (!State)
+	{
+		return;
+	}
+	IkLimb& Item = IkOf(*Edit(Core, Target.Id, "IK space"), IkBlock(Target))[Limb];
+	const bool IsWorld = Item.Space == IkSpace::World;
+	Fmatrix Change, Goal;
+	IsWorld ? Change.invert(State->World) : Change.set(State->World);
+	Goal.setHPB(deg2rad(Item.Turn.x), deg2rad(Item.Turn.y), deg2rad(Item.Turn.z));
+	Goal.c = Item.Target;
+	Goal.mulA_43(Change);
+	Goal.i.normalize_safe();
+	Goal.j.normalize_safe();
+	Goal.k.normalize_safe();
+	Fvector Angles;
+	Goal.getHPB(Angles);
+	Item.Target = Goal.c;
+	Item.Turn.set(rad2deg(Angles.x), rad2deg(Angles.y), rad2deg(Angles.z));
+	Change.transform_tiny(Item.Pole);
+	Item.Space = IsWorld ? IkSpace::Actor : IkSpace::World;
+}
+
+void Editor::DrawConstraints(Player& Core, const Object& Target)
+{
+	if (!ImGui::TreeNodeEx("Constraints", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return;
+	}
+	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
+	const xr_vector<BoneConstraint>& Rules = Target.Actor.Constraints;
+	s32 Removed = -1;
+	for (u32 Slot = 0; Slot < Rules.size(); ++Slot)
+	{
+		const BoneConstraint& Rule = Rules[Slot];
+		const bool IsMissing = (Rule.Target.ObjectId && !Find(Core.Data, Rule.Target.ObjectId)) || (Runtime && Runtime->FindBone(Rule.Bone) == BI_NONE);
+		ImGui::PushID(static_cast<s32>(Slot));
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextColored(IsMissing ? ErrorColor : ImGui::GetStyleColorVec4(ImGuiCol_Text), "%s", Rule.Bone.size() ? Rule.Bone.c_str() : "(no bone)");
+		ImGui::SameLine();
+		bool IsMuted = Rule.IsMuted;
+		if (ImGui::Checkbox("M", &IsMuted))
+		{
+			Edit(Core, Target.Id, IsMuted ? "Mute constraint" : "Unmute constraint")->Actor.Constraints[Slot].IsMuted = IsMuted;
+		}
+		ImGui::SetItemTooltip("Mute");
+		ImGui::SameLine();
+		Removed = ImGui::Button("x") ? static_cast<s32>(Slot) : Removed;
+		ImGui::SetItemTooltip("Remove constraint");
+		s32 Kind = static_cast<s32>(Rule.Kind);
+		BeginRow("Kind", false, false);
+		const bool IsKindChanged = ImGui::Combo("##Kind", &Kind, "Point\0" "Orient\0" "Parent\0" "Aim\0");
+		EndRow(KeyState::None);
+		AttachLink Link = Rule.Target;
+		BeginRow("Target", false, false);
+		bool IsPicked = AttachCombo(Core, "##Target", Target.Id, Link);
+		EndRow(KeyState::None);
+		BeginRow("Target bone", false, false);
+		IsPicked = BoneCombo(Core, "##Bone", Link) || IsPicked;
+		EndRow(KeyState::None);
+		if (IsKindChanged)
+		{
+			Edit(Core, Target.Id, "Constraint kind")->Actor.Constraints[Slot].Kind = static_cast<ConstraintKind>(Kind);
+			CaptureConstraint(Core, Target.Id, Slot, false);
+		}
+		if (IsPicked && !(Link == Rule.Target) && Link.ObjectId != Target.Id && (Link.ObjectId == Rule.Target.ObjectId || CanAttach(Core.Data, Target.Id, Link.ObjectId)))
+		{
+			Edit(Core, Target.Id, "Constraint target")->Actor.Constraints[Slot].Target = Link;
+			CaptureConstraint(Core, Target.Id, Slot, false);
+		}
+		else if (IsPicked && !(Link == Rule.Target))
+		{
+			SetStatus(true, "The constraint cannot point there: it would form a loop or a chain deeper than %u.", MaxAttachDepth);
+		}
+		ParamRow(Core, PoseIds, -1, Param::ConstraintWeight, static_cast<u8>(Slot), 0.01f, "%.2f", 1, 1.0f);
+		BeginRow("Offset", false, false);
+		if (ImGui::Button("Keep pose"))
+		{
+			CaptureConstraint(Core, Target.Id, Slot, false);
+		}
+		ImGui::SetItemTooltip("Keep pose");
+		ImGui::SameLine();
+		ImGui::BeginDisabled(Rule.Kind == ConstraintKind::Aim);
+		if (ImGui::Button("Snap"))
+		{
+			CaptureConstraint(Core, Target.Id, Slot, true);
+		}
+		ImGui::EndDisabled();
+		ImGui::SetItemTooltip("Snap");
+		EndRow(KeyState::None);
+		ImGui::PopID();
+	}
+	if (Removed >= 0)
+	{
+		Object& Item = *Edit(Core, Target.Id, "Remove constraint");
+		const u8 Slot = static_cast<u8>(Removed);
+		std::erase_if(Item.Lanes, [Slot](const Lane& Track) { return Track.Id == Param::ConstraintWeight && Track.Layer == Slot; });
+		for (Lane& Track : Item.Lanes)
+		{
+			Track.Layer = static_cast<u8>(Track.Id == Param::ConstraintWeight && Track.Layer > Slot ? Track.Layer - 1 : Track.Layer);
+		}
+		Item.Actor.Constraints.erase(Item.Actor.Constraints.begin() + Removed);
+		SelectedKeys.clear();
+		Slots.clear();
+	}
+	ImGui::BeginDisabled(SelectedBones.size() != 1 || !Runtime || Rules.size() >= MaxConstraints);
+	if (ImGui::Button("+ Constraint", ImVec2(-FLT_MIN, 0.0f)))
+	{
+		BoneConstraint& Rule = Edit(Core, Target.Id, "Add constraint")->Actor.Constraints.emplace_back();
+		Rule.Bone = Runtime->BoneName(SelectedBones[0]);
+	}
+	ImGui::EndDisabled();
+	ImGui::SetItemTooltip("Add constraint");
+	ImGui::TreePop();
+}
+
+void Editor::CaptureConstraint(Player& Core, u32 Id, u32 Slot, bool IsSnap)
+{
+	const ActorRuntime* Runtime = Core.FindActor(Id);
+	const ObjectState* State = Core.FindState(Id);
+	BoneConstraint& Rule = Edit(Core, Id, IsSnap ? "Snap constraint" : "Keep pose")->Actor.Constraints[Slot];
+	Fmatrix Goal, Bone, Back;
+	Rule.Shift.set(0.0f, 0.0f, 0.0f);
+	Rule.Turn.set(0.0f, 0.0f, 0.0f);
+	if (IsSnap || !Runtime || !State || !Core.LinkFrame(Rule.Target, Goal) || !Runtime->BoneWorld(Runtime->FindBone(Rule.Bone), State->World, Bone))
+	{
+		return;
+	}
+	Bone.i.normalize_safe();
+	Bone.j.normalize_safe();
+	Bone.k.normalize_safe();
+	if (Rule.Kind == ConstraintKind::Aim)
+	{
+		Fvector Direction;
+		Direction.sub(Goal.c, Bone.c).normalize_safe();
+		Back.invert(Bone);
+		Back.transform_dir(Rule.Shift, Direction);
+		Rule.Shift.normalize_safe();
+		return;
+	}
+	Fmatrix Offset;
+	Back.invert(Goal);
+	Offset.mul_43(Back, Bone);
+	Fvector Angles;
+	Offset.getHPB(Angles);
+	Rule.Shift = Offset.c;
+	Rule.Turn.set(rad2deg(Angles.x), rad2deg(Angles.y), rad2deg(Angles.z));
+}
+
+void Editor::KeyBones(Player& Core)
+{
+	const ActorRuntime* Runtime = Core.FindActor(PoseObject);
+	Object* Item = Runtime && !SelectedBones.empty() ? Edit(Core, PoseObject, "Key pose") : nullptr;
+	const bool WasAutoKey = IsAutoKey;
+	IsAutoKey = true;
+	for (u32 Index = 0; Item && Index < SelectedBones.size(); ++Index)
+	{
+		const s32 Layer = EnsurePoseBone(*Item, Runtime->BoneName(SelectedBones[Index]));
+		if (Layer < 0)
+		{
+			continue;
+		}
+		const float Local = PoseLocal(Core, *Item);
+		const s32 Block = PoseBlock(*Item);
+		const xr_vector<Lane>& Tracks = LaneList(*Item, Block);
+		const PoseBone& Entry = *BoneEntry(*Item, Block, static_cast<u8>(Layer));
+		const Fvector Turn = Curves::LaneVector(Tracks, Param::BoneRotation, Local, Entry.Rotation, static_cast<u8>(Layer));
+		const Fvector Shift = Curves::LaneVector(Tracks, Param::BonePosition, Local, Entry.Offset, static_cast<u8>(Layer));
+		const Fvector Size = Curves::LaneVector(Tracks, Param::BoneScale, Local, Entry.Scale, static_cast<u8>(Layer));
+		for (u8 Axis = 0; Axis < 3; ++Axis)
+		{
+			WriteParam(Core, *Item, Block, Param::BoneRotation, static_cast<u8>(Layer), Axis, Turn[Axis]);
+			WriteParam(Core, *Item, Block, Param::BonePosition, static_cast<u8>(Layer), Axis, Shift[Axis]);
+			WriteParam(Core, *Item, Block, Param::BoneScale, static_cast<u8>(Layer), Axis, Size[Axis]);
+		}
+	}
+	IsAutoKey = WasAutoKey;
+}
+
+void Editor::ResetBones(Player& Core)
+{
+	const ActorRuntime* Runtime = Core.FindActor(PoseObject);
+	Object* Item = Runtime && !SelectedBones.empty() ? Edit(Core, PoseObject, "Reset bones") : nullptr;
+	if (const s32 Block = Item ? PoseBlock(*Item) : -1; Block >= 0)
+	{
+		ClipTrack& Clip = TrackOf(*Item, Block);
+		for (u32 Bone = 0; Bone < Clip.Bones.size(); ++Bone)
+		{
+			if (std::any_of(SelectedBones.begin(), SelectedBones.end(), [&](u16 Picked) { return !xr_strcmp(Clip.Bones[Bone].Name, Runtime->BoneName(Picked)); }))
+			{
+				Clip.Bones[Bone] = PoseBone { Clip.Bones[Bone].Name };
+				std::erase_if(Clip.Lanes, [Bone](const Lane& Track) { return Track.Layer == Bone; });
+			}
+		}
+		AnimKeys.clear();
+		return;
+	}
+	for (u32 Row = 0; Item && Row < Item->Actor.Poses.size(); ++Row)
+	{
+		xr_vector<PoseBone>& Bones = Item->Actor.Poses[Row].Bones;
+		for (u32 Bone = 0; Bone < Bones.size(); ++Bone)
+		{
+			const bool IsPicked = std::any_of(SelectedBones.begin(), SelectedBones.end(), [&](u16 Picked) { return !xr_strcmp(Bones[Bone].Name, Runtime->BoneName(Picked)); });
+			if (!IsPicked)
+			{
+				continue;
+			}
+			Bones[Bone].Rotation.set(0.0f, 0.0f, 0.0f);
+			Bones[Bone].Offset.set(0.0f, 0.0f, 0.0f);
+			Bones[Bone].Scale.set(1.0f, 1.0f, 1.0f);
+			const u8 Layer = PoseLayer(Row, Bone);
+			std::erase_if(Item->Lanes, [Layer](const Lane& Track) { return IsBoneParam(Track.Id) && Track.Layer == Layer; });
+		}
+	}
+	SelectedKeys.clear();
+}
+
+void Editor::RemovePoseRow(Player& Core, u32 Id, u32 Row)
+{
+	Object* Item = Edit(Core, Id, "Remove pose row");
+	if (!Item || Row >= Item->Actor.Poses.size())
+	{
+		return;
+	}
+	std::erase_if(Item->Lanes, [Row](const Lane& Track) { return (Track.Id == Param::PoseWeight && Track.Layer == Row) || (IsBoneParam(Track.Id) && Track.Layer / MaxPoseBones == Row); });
+	for (Lane& Track : Item->Lanes)
+	{
+		const bool IsBone = IsBoneParam(Track.Id);
+		Track.Layer = static_cast<u8>(Track.Id == Param::PoseWeight && Track.Layer > Row ? Track.Layer - 1 : IsBone && Track.Layer / MaxPoseBones > Row ? Track.Layer - MaxPoseBones : Track.Layer);
+	}
+	Item->Actor.Poses.erase(Item->Actor.Poses.begin() + Row);
+	ActivePose = Item->Actor.Poses.empty() ? 0 : std::min<u32>(ActivePose, static_cast<u32>(Item->Actor.Poses.size() - 1));
+	SelectedKeys.clear();
+	Slots.clear();
+}
+
+void Editor::DrawShots(Player& Core)
+{
+	if (!Settings.ShowShots)
+	{
+		return;
+	}
+	const ImGuiViewport* View = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(View->Pos.x + View->Size.x * 0.48f, View->WorkPos.y), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(View->Size.x * 0.14f, View->Size.y * 0.4f), ImGuiCond_FirstUseEver);
+	if (!ImGui::Begin("Shots & Markers###CinemaShots", &Settings.ShowShots, ImGuiWindowFlags_NoNavInputs))
+	{
+		ImGui::End();
+		return;
+	}
+	const Object* Rig = FindCamera(Core.Data);
+	xr_vector<Marker>& Markers = Core.Data.Header.Markers;
+	const u32 Rate = Core.Data.Header.FrameRate;
+	const bool IsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+	const auto Row = [&](s32 Index, bool IsMarker, const char* Name, float Time)
+	{
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::PushID(Index * 2 + IsMarker);
+		const bool IsRenaming = ShotRename == Index && IsShotMarker == IsMarker;
+		if (IsRenaming)
+		{
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (!ImGui::IsAnyItemActive())
+			{
+				ImGui::SetKeyboardFocusHere();
+			}
+			ImGui::InputText("##Name", ShotBuffer, sizeof(ShotBuffer), ImGuiInputTextFlags_AutoSelectAll);
+			const bool IsDone = ImGui::IsItemDeactivated();
+			if (IsDone && !ImGui::IsKeyPressed(ImGuiKey_Escape, false))
+			{
+				if (IsMarker)
+				{
+					Undo.Begin("Rename marker");
+					Undo.TouchHeader(Core.Data);
+					Markers[Index].Name = ShotBuffer;
+				}
+				else
+				{
+					Edit(Core, Rig->Id, "Rename shot")->Camera.Blocks[Index].Name = ShotBuffer;
+				}
+			}
+			ShotRename = IsDone ? -1 : ShotRename;
+		}
+		else if (ImGui::Selectable(Name, ShotRow == Index && IsShotMarker == IsMarker, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowDoubleClick))
+		{
+			ShotRow = Index;
+			IsShotMarker = IsMarker;
+			Core.Seek(Time);
+			if (!IsMarker)
+			{
+				Selected.assign(1, Rig->Id);
+				FocusObject = Rig->Id;
+				FocusBlock = Index;
+				Focus = FocusKind::Block;
+			}
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				ShotRename = Index;
+				xr_strcpy(ShotBuffer, Name);
+			}
+		}
+		ImGui::PopID();
+	};
+	string32 At, Span;
+	if (Rig && ImGui::BeginTable("##Shots", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+	{
+		ImGui::TableSetupColumn("Name");
+		ImGui::TableSetupColumn("Start");
+		ImGui::TableSetupColumn("Length");
+		ImGui::TableSetupColumn("FOV");
+		ImGui::TableSetupColumn("DOF");
+		ImGui::TableHeadersRow();
+		for (u32 Index = 0; Index < Rig->Camera.Blocks.size(); ++Index)
+		{
+			const CameraBlock& Shot = Rig->Camera.Blocks[Index];
+			string64 Label;
+			xr_sprintf(Label, "%s", Shot.Name.size() ? Shot.Name.c_str() : "");
+			if (!Label[0])
+			{
+				xr_sprintf(Label, "Shot %u", Index + 1);
+			}
+			Row(static_cast<s32>(Index), false, Label, Rig->Span.Start + Shot.Start);
+			Timecode(At, Rig->Span.Start + Shot.Start, Rate);
+			Timecode(Span, Shot.Length, Rate);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(At);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(Span);
+			ImGui::TableNextColumn();
+			Shot.Fov > 0.0f ? ImGui::Text("%.0f", Shot.Fov) : ImGui::TextDisabled("Game");
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(InspectorUi::DofModes[static_cast<u32>(Shot.Dof)]);
+		}
+		ImGui::EndTable();
+	}
+	ImGui::Spacing();
+	if (ImGui::BeginTable("##Markers", 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
+	{
+		ImGui::TableSetupColumn("Marker");
+		ImGui::TableSetupColumn("Time");
+		ImGui::TableHeadersRow();
+		for (u32 Index = 0; Index < Markers.size(); ++Index)
+		{
+			Row(static_cast<s32>(Index), true, Markers[Index].Name.c_str(), Markers[Index].Time);
+			Timecode(At, Markers[Index].Time, Rate);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(At);
+		}
+		ImGui::EndTable();
+	}
+	if (IsFocused && ShotRename < 0 && ShotRow >= 0 && ImGui::IsKeyPressed(ImGuiKey_Delete, false) && !ImGui::IsAnyItemActive())
+	{
+		if (IsShotMarker)
+		{
+			RemoveMarker(Core, ShotRow);
+		}
+		else if (Rig && ShotRow < static_cast<s32>(Rig->Camera.Blocks.size()))
+		{
+			RemoveBlock(Core, Rig->Id, ShotRow);
+		}
+		ShotRow = -1;
 	}
 	ImGui::End();
 }
@@ -424,6 +1463,30 @@ void Editor::DrawSceneSection(Player& Core)
 		Header.FrameRate = Action == RowAction::Reset ? 30 : InspectorUi::Rates[std::clamp(Choice, 0, 3)];
 	}
 	EndRow(KeyState::None);
+	float* const Jumps[2] = { &Header.CutDistance, &Header.CutAngle };
+	for (u32 Index = 0; Index < 2; ++Index)
+	{
+		const float Usual = Index ? 45.0f : 5.0f;
+		const RowAction Reset = BeginRow(Index ? "Cut angle" : "Cut distance", *Jumps[Index] != Usual, false);
+		float Value = *Jumps[Index];
+		if (ImGui::DragFloat(Index ? "##CutAngle" : "##CutDistance", &Value, Index ? 1.0f : 0.1f, 0.0f, Index ? 180.0f : 1000.0f, Index ? "%.0f deg" : "%.1f m", ImGuiSliderFlags_AlwaysClamp) || Reset == RowAction::Reset)
+		{
+			Undo.Begin("Cut threshold");
+			Undo.TouchHeader(Core.Data);
+			*Jumps[Index] = Reset == RowAction::Reset ? Usual : Value;
+		}
+		EndRow(KeyState::None);
+	}
+	const RowAction World = BeginRow("World follows camera", Header.IsWorldFollowing, false);
+	bool IsFollowing = Header.IsWorldFollowing;
+	if (ImGui::Checkbox("##WorldFollows", &IsFollowing) || World == RowAction::Reset)
+	{
+		Undo.Begin("World follows camera");
+		Undo.TouchHeader(Core.Data);
+		Header.IsWorldFollowing = World != RowAction::Reset && IsFollowing;
+	}
+	ImGui::SetItemTooltip("While a shot is on screen the game brings NPCs and objects to life around the camera instead of the player; the player's surroundings sleep meanwhile");
+	EndRow(KeyState::None);
 }
 
 void Editor::DrawActorSection(Player& Core, const xr_vector<u32>& Ids)
@@ -445,6 +1508,7 @@ void Editor::DrawActorSection(Player& Core, const xr_vector<u32>& Ids)
 	{
 		LoadPresets();
 		PresetDraft.Setup = Setup;
+		PresetDraft.Setup.Constraints.clear();
 		PresetDraft.Setup.Position.set(0.0f, 0.0f, 0.0f);
 		PresetDraft.Setup.Rotation.set(0.0f, 0.0f, 0.0f);
 		float Lead = MaxTime;
@@ -491,7 +1555,6 @@ void Editor::DrawActorSection(Player& Core, const xr_vector<u32>& Ids)
 	ClipRow(Core, Ids);
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		DrawGizmoRow(true);
 		ParamRow(Core, Ids, -1, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
 		ParamRow(Core, Ids, -1, Param::Rotation, 0, 0.5f, "%.1f", 6, 0.0f);
 		ParamRow(Core, Ids, -1, Param::Scale, 0, 0.01f, "%.2f", 7, 1.0f);
@@ -501,6 +1564,16 @@ void Editor::DrawActorSection(Player& Core, const xr_vector<u32>& Ids)
 	if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ParamRow(Core, Ids, -1, Param::TimeScale, 0, 0.01f, "%.2f", 1, 1.0f);
+		const Object* Held = Ids.size() == 1 ? Find(Core.Data, Ids[0]) : nullptr;
+		if (Held && Held->Actor.Hud.size() && Held->Attach.Parent.ObjectId)
+		{
+			bool IsLinked = Held->Actor.IsHudLinked;
+			if (ImGui::Checkbox("Follow hands animation", &IsLinked))
+			{
+				Edit(Core, Ids[0], IsLinked ? "Link item animation" : "Unlink item animation")->Actor.IsHudLinked = IsLinked;
+			}
+			ImGui::SetItemTooltip("Linked: the animation rows of this item copy the rows of the hands (same times, trims and speed, the item animation of the same name). Untick to unlink and edit the rows of the item on their own");
+		}
 		BeginRow("Add", false, false);
 		if (Chooser(Core, ChooserKind::Animation, "##Add", "+ Animation...", Ids, Source, Name))
 		{
@@ -573,7 +1646,139 @@ void Editor::DrawActorSection(Player& Core, const xr_vector<u32>& Ids)
 		}
 		ImGui::EndDisabled();
 	}
+	if (Ids.size() == 1 && ImGui::CollapsingHeader("Shaders"))
+	{
+		DrawLookSection(Core, Primary);
+	}
 	DrawBlockSection(Core, Primary);
+}
+
+void Editor::DrawLookSection(Player& Core, const Object& Target)
+{
+	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
+	const xr_vector<ActorLook>& Looks = Target.Actor.Looks;
+	const u32 Count = std::max(static_cast<u32>(Looks.size()), 1u);
+	const float Size = ImGui::GetFrameHeight(), Spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+	const float Local = std::clamp(Core.Time - Target.Span.Start, 0.0f, Target.Span.Length);
+	const u32 Shown = std::min(Curves::LookAt(Target.Lanes, Local), Count - 1);
+	const auto LookCombo = [Count](const char* Id, u32 Current, u32& Picked)
+	{
+		string32 Label;
+		const auto Name = [&Label](u32 Look) { xr_sprintf(Label, Look ? "Look %u" : "Look %u (default)", Look + 1); return Label; };
+		bool IsPicked = false;
+		if (ImGui::BeginCombo(Id, Name(Current)))
+		{
+			for (u32 Look = 0; Look < Count; ++Look)
+			{
+				IsPicked = ImGui::Selectable(Name(Look), Look == Current) ? (Picked = Look, true) : IsPicked;
+			}
+			ImGui::EndCombo();
+		}
+		return IsPicked;
+	};
+	LookEdit = std::min(LookEdit, Count - 1);
+	BeginRow("Edit", false, false);
+	ImGui::SetNextItemWidth(std::max(RowWidth - 2.0f * (Size + Spacing), 1.0f));
+	LookCombo("##Look", LookEdit, LookEdit);
+	ImGui::SameLine(0.0f, Spacing);
+	ImGui::BeginDisabled(Count >= MaxLooks);
+	const bool ShouldAdd = ImGui::Button("+", ImVec2(Size, 0.0f));
+	ImGui::EndDisabled();
+	ImGui::SetItemTooltip("Add look");
+	ImGui::SameLine(0.0f, Spacing);
+	ImGui::BeginDisabled(Looks.empty());
+	const bool ShouldRemove = ImGui::Button("x", ImVec2(Size, 0.0f));
+	ImGui::EndDisabled();
+	ImGui::SetItemTooltip("Remove look");
+	EndRow(KeyState::None);
+	if (ShouldAdd)
+	{
+		Edit(Core, Target.Id, "Add look")->Actor.Looks.resize(Count + 1);
+		LookEdit = Count;
+	}
+	if (ShouldRemove)
+	{
+		Object& Item = *Edit(Core, Target.Id, "Remove look");
+		Item.Actor.Looks.erase(Item.Actor.Looks.begin() + LookEdit);
+		for (Lane& Track : Item.Lanes)
+		{
+			for (u32 Index = 0; Track.Id == Param::Look && Index < Track.Curves[0].Keys.size(); ++Index)
+			{
+				float& Value = Track.Curves[0].Keys[Index].Value;
+				const float Look = std::round(Value);
+				Value = Look == static_cast<float>(LookEdit) ? 0.0f : Look > static_cast<float>(LookEdit) ? Look - 1.0f : Look;
+			}
+		}
+		return;
+	}
+	u32 Picked = Shown;
+	BeginRow("At playhead", false, false);
+	ImGui::BeginDisabled(Count < 2);
+	if (LookCombo("##Shown", Shown, Picked))
+	{
+		const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
+		Curve& Part = Curves::EnsureLane(Edit(Core, Target.Id, "Key look")->Lanes, Param::Look, 0).Curves[0];
+		if (Part.Keys.empty() && Local > HalfFrame)
+		{
+			Curves::SetKey(Part, 0.0f, 0.0f, HalfFrame);
+		}
+		Curves::SetKey(Part, Local, static_cast<float>(Picked), HalfFrame);
+		for (Key& Entry : Part.Keys)
+		{
+			Entry.Mode = Interp::Hold;
+		}
+	}
+	ImGui::EndDisabled();
+	EndRow(KeyState::None);
+	const auto SetSurface = [&](u32 Surface, bool IsShader, const shared_str& Value)
+	{
+		xr_vector<ActorLook>& All = Edit(Core, Target.Id, IsShader ? "Surface shader" : "Surface texture")->Actor.Looks;
+		All.resize(std::max<size_t>(All.size(), LookEdit + 1));
+		xr_vector<SurfaceShader>& List = All[LookEdit].Surfaces;
+		auto Found = std::find_if(List.begin(), List.end(), [Surface](const SurfaceShader& Item) { return Item.Surface == Surface; });
+		Found = Found == List.end() ? List.insert(List.end(), SurfaceShader { static_cast<u8>(Surface) }) : Found;
+		(IsShader ? Found->Shader : Found->Texture) = Value;
+		if (!Found->Shader.size() && !Found->Texture.size())
+		{
+			List.erase(Found);
+		}
+	};
+	ChooserOwners.assign(1, Target.Id);
+	shared_str Shader, Texture, Source, Name;
+	for (u32 Surface = 0; Runtime && Surface < ItemSurfaceBase + MaxLookSurfaces; ++Surface)
+	{
+		if (!Runtime->SurfaceNames(Surface, Shader, Texture))
+		{
+			Surface = Surface < ItemSurfaceBase ? ItemSurfaceBase - 1 : ItemSurfaceBase + MaxLookSurfaces;
+			continue;
+		}
+		const SurfaceShader* Entry = LookEdit < Looks.size() ? FindSurface(Looks[LookEdit], Surface) : nullptr;
+		const bool IsShader = Entry && Entry->Shader.size(), IsTexture = Entry && Entry->Texture.size();
+		const shared_str ShownShader = IsShader ? Entry->Shader : Shader, ShownTexture = IsTexture ? Entry->Texture : Texture;
+		const bool IsKnown = !IsShader || std::binary_search(Core.Shaders().begin(), Core.Shaders().end(), ShownShader, ShaderLess);
+		string32 Caption;
+		xr_sprintf(Caption, Surface < ItemSurfaceBase ? "Surface %u" : "Item surface %u", Surface % ItemSurfaceBase + 1);
+		ImGui::PushID(static_cast<s32>(Surface));
+		RowAction Action = BeginRow(Caption, IsShader, false);
+		ImGui::PushStyleColor(ImGuiCol_Text, IsKnown ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : ErrorColor);
+		const bool IsShaderPicked = Chooser(Core, ChooserKind::Shader, "##Shader", ShownShader.c_str(), ChooserOwners, Source, Name);
+		ImGui::PopStyleColor();
+		ImGui::SetItemTooltip(IsKnown ? "Shader" : "Shader (not in shaders.xr, the original is used)");
+		EndRow(KeyState::None);
+		if (IsShaderPicked || Action == RowAction::Reset)
+		{
+			SetSurface(Surface, true, Action == RowAction::Reset ? shared_str() : Source);
+		}
+		Action = BeginRow("Texture", IsTexture, false);
+		const bool IsTexturePicked = Chooser(Core, ChooserKind::Texture, "##Texture", ShownTexture.c_str(), ChooserOwners, Source, Name);
+		ImGui::SetItemTooltip("Texture");
+		EndRow(KeyState::None);
+		if (IsTexturePicked || Action == RowAction::Reset)
+		{
+			SetSurface(Surface, false, Action == RowAction::Reset ? shared_str() : Source);
+		}
+		ImGui::PopID();
+	}
 }
 
 bool Editor::PartsCombo(Player& Core, const Object& Target, u8 Layer, float Width)
@@ -733,6 +1938,12 @@ void Editor::DrawBlockSection(Player& Core, const Object& Target)
 	Value.FadeIn = Action == RowAction::Reset ? 0.0f : Value.FadeIn;
 	Value.FadeOut = Action == RowAction::Reset ? 0.0f : Value.FadeOut;
 	EndRow(KeyState::None);
+	if (Index >= 0 && RowOf(Target.Actor, Layer).Mode == RowMode::Add && (Value.In > 0.0f || Value.Speed < 0.0f))
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ErrorColor);
+		ImGui::TextWrapped("Adds from the animation's first frame");
+		ImGui::PopStyleColor();
+	}
 	Action = BeginRow("Crossfade", Value.BlendEase != Interp::EaseInOut, false);
 	ImGui::SetNextItemWidth(Half);
 	ImGui::BeginDisabled();
@@ -789,7 +2000,6 @@ void Editor::DrawLightSection(Player& Core, const xr_vector<u32>& Ids, bool HasP
 	ClipRow(Core, Ids);
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		DrawGizmoRow(true, true, IsParamShown(Primary, Param::Rotation));
 		ParamRow(Core, Ids, -1, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
 		if (IsParamShown(Primary, Param::Rotation))
 		{
@@ -833,6 +2043,233 @@ void Editor::DrawLightSection(Player& Core, const xr_vector<u32>& Ids, bool HasP
 	ImGui::PopID();
 }
 
+void Editor::DrawDecalSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin)
+{
+	const Object& Primary = *Find(Core.Data, Ids[0]);
+	const DecalData& Setup = Primary.Decal;
+	shared_str Source, Name;
+	ImGui::PushID("Decal");
+	DrawHeader(Core, Ids, HasPin);
+	const bool IsKnown = !Setup.Shader.size() || std::binary_search(Core.Shaders().begin(), Core.Shaders().end(), Setup.Shader, ShaderLess);
+	BeginRow("Texture", false, false);
+	if (Chooser(Core, ChooserKind::Texture, "##Texture", Setup.Texture.size() ? Setup.Texture.c_str() : "None", Ids, Source, Name))
+	{
+		for (u32 Id : Ids)
+		{
+			Object* Item = Edit(Core, Id, "Decal texture");
+			Item->Decal.Texture = Source;
+			Item->Name = Item->IsNameLocked ? Item->Name : DefaultName(*Item);
+		}
+	}
+	EndRow(KeyState::None);
+	RowAction Action = BeginRow("Shader", Setup.Shader.size() != 0, false);
+	ImGui::PushStyleColor(ImGuiCol_Text, IsKnown ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : ErrorColor);
+	const bool IsShaderPicked = Chooser(Core, ChooserKind::Shader, "##Shader", Setup.Shader.size() ? Setup.Shader.c_str() : "effects\\wallmark", Ids, Source, Name);
+	ImGui::PopStyleColor();
+	EndRow(KeyState::None);
+	if (IsShaderPicked || Action == RowAction::Reset)
+	{
+		for (u32 Id : Ids)
+		{
+			Edit(Core, Id, "Decal shader")->Decal.Shader = Action == RowAction::Reset ? shared_str() : Source;
+		}
+	}
+	Action = BeginRow("Stamp", Setup.IsStamp, false);
+	bool IsStamp = Setup.IsStamp;
+	if (ImGui::Checkbox("##Stamp", &IsStamp) || Action == RowAction::Reset)
+	{
+		for (u32 Id : Ids)
+		{
+			Edit(Core, Id, "Decal stamp")->Decal.IsStamp = IsStamp && Action != RowAction::Reset;
+		}
+	}
+	ImGui::SetItemTooltip("Stamp");
+	EndRow(KeyState::None);
+	ImGui::BeginDisabled(!g_pGameLevel);
+	if (Setup.IsStamp && ImGui::Button("Clear stamps", ImVec2(-FLT_MIN, 0.0f)))
+	{
+		::Render->clear_static_wallmarks();
+	}
+	ImGui::EndDisabled();
+	ClipRow(Core, Ids);
+	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ParamRow(Core, Ids, -1, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
+		ParamRow(Core, Ids, -1, Param::Rotation, 0, 0.5f, "%.1f", 6, 0.0f);
+		ParamRow(Core, Ids, -1, Param::DecalWidth, 0, 0.01f, "%.2f", 0, 0.5f);
+		ParamRow(Core, Ids, -1, Param::DecalHeight, 0, 0.01f, "%.2f", 0, 0.5f);
+		KeyRow(Core, Ids);
+	}
+	DrawAttach(Core, Ids, -1);
+	ImGui::PopID();
+}
+
+void Editor::DrawWeatherSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin)
+{
+	struct Row
+	{
+		Param Id;
+		const char* Group;
+		float Speed;
+		const char* Format;
+	};
+	static constexpr Row Rows[16] = {
+		{ Param::WeatherTime, "Time", 0.05f, "%.2f h" }, { Param::SunHeading, "Sun", 0.5f, "%.1f" }, { Param::SunHeight, nullptr, 0.5f, "%.1f" }, { Param::SunColor, nullptr, 0.01f, "%.2f" },
+		{ Param::SunBrightness, nullptr, 0.01f, "%.2f" }, { Param::SunShafts, nullptr, 0.01f, "%.2f" }, { Param::AmbientColor, "Light", 0.01f, "%.2f" }, { Param::HemiColor, nullptr, 0.01f, "%.2f" },
+		{ Param::FogColor, "Fog", 0.01f, "%.2f" }, { Param::FogDensity, nullptr, 0.01f, "%.2f" }, { Param::FogDistance, nullptr, 1.0f, "%.0f m" }, { Param::FarPlane, nullptr, 1.0f, "%.0f m" },
+		{ Param::RainDensity, "Rain and wind", 0.01f, "%.2f" }, { Param::WindSpeed, nullptr, 1.0f, "%.0f" }, { Param::WindDirection, nullptr, 1.0f, "%.0f" }, { Param::SkyRotation, "Sky", 1.0f, "%.0f" }
+	};
+	const Object& Primary = *Find(Core.Data, Ids[0]);
+	const WeatherData& Setup = Primary.Weather;
+	ImGui::PushID("Weather");
+	DrawHeader(Core, Ids, HasPin);
+	BeginRow("Weather", false, false);
+	const shared_str* Picked = nullptr;
+	const shared_str Game;
+	if (ImGui::BeginCombo("##Cycle", Setup.Cycle.size() ? Setup.Cycle.c_str() : "Game weather"))
+	{
+		if (ImGui::Selectable("Game weather", !Setup.Cycle.size()))
+		{
+			Picked = &Game;
+		}
+		for (const auto& Entry : g_pGamePersistent->Environment().WeatherCycles)
+		{
+			if (ImGui::Selectable(Entry.first.c_str(), Entry.first == Setup.Cycle))
+			{
+				Picked = &Entry.first;
+			}
+		}
+		ImGui::EndCombo();
+	}
+	EndRow(KeyState::None);
+	for (u32 Index = 0; Picked && Index < Ids.size(); ++Index)
+	{
+		Object* Item = Edit(Core, Ids[Index], "Weather");
+		Item->Weather.Cycle = *Picked;
+		Item->Name = Item->IsNameLocked ? Item->Name : DefaultName(*Item);
+	}
+	BeginRow("Fade in, out", Setup.FadeIn != 0.0f || Setup.FadeOut != 0.0f, false);
+	float Fades[2] = { Setup.FadeIn, Setup.FadeOut };
+	if (ImGui::DragFloat2("##Fades", Fades, 0.05f, 0.0f, 600.0f, "%.2f s", ImGuiSliderFlags_AlwaysClamp))
+	{
+		for (u32 Id : Ids)
+		{
+			WeatherData& Edited = Edit(Core, Id, "Weather fade")->Weather;
+			Edited.FadeIn = Fades[0];
+			Edited.FadeOut = Fades[1];
+		}
+	}
+	EndRow(KeyState::None);
+	ClipRow(Core, Ids);
+	bool IsOpen = false;
+	for (const Row& Line : Rows)
+	{
+		IsOpen = Line.Group ? ImGui::CollapsingHeader(Line.Group, ImGuiTreeNodeFlags_DefaultOpen) : IsOpen;
+		if (!IsOpen)
+		{
+			continue;
+		}
+		const u32 Bit = 1u << (static_cast<u32>(Line.Id) - static_cast<u32>(Param::WeatherTime));
+		bool IsOn = (Setup.Mask & Bit) != 0;
+		ImGui::PushID(static_cast<s32>(Line.Id));
+		if (ImGui::Checkbox("##On", &IsOn))
+		{
+			for (u32 Id : Ids)
+			{
+				u32& Mask = Edit(Core, Id, "Weather override")->Weather.Mask;
+				Mask = IsOn ? Mask | Bit : Mask & ~Bit;
+			}
+		}
+		ImGui::SetItemTooltip("Ticked: the scene sets this value. Unticked: it comes from the weather.");
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!IsWeatherSet(Setup, Primary.Lanes, Line.Id));
+		ParamRow(Core, Ids, -1, Line.Id, 0, Line.Speed, Line.Format, 0, *WeatherField(const_cast<WeatherData&>(Setup), Line.Id, 0));
+		ImGui::EndDisabled();
+		ImGui::PopID();
+	}
+	ImGui::PopID();
+}
+
+void Editor::DrawPostSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin)
+{
+	struct Row
+	{
+		Param Id;
+		const char* Group;
+		float Speed;
+		const char* Format;
+	};
+	static constexpr Row Rows[16] = {
+		{ Param::PostFade, "Fade", 0.01f, "%.2f" }, { Param::PostFadeColor, nullptr, 0.01f, "%.2f" },
+		{ Param::PostBase, "Color", 0.005f, "%.3f" }, { Param::PostAdd, nullptr, 0.005f, "%.3f" }, { Param::PostGray, nullptr, 0.01f, "%.2f" }, { Param::PostGrayColor, nullptr, 0.005f, "%.3f" },
+		{ Param::PostBlur, "Image", 0.01f, "%.2f" }, { Param::PostDualityH, nullptr, 0.001f, "%.3f" }, { Param::PostDualityV, nullptr, 0.001f, "%.3f" },
+		{ Param::PostNoise, "Noise", 0.01f, "%.2f" }, { Param::PostGrain, nullptr, 0.01f, "%.2f" }, { Param::PostNoiseFps, nullptr, 1.0f, "%.0f" },
+		{ Param::PostExposure, "Grade", 0.02f, "%.2f" }, { Param::PostBloom, nullptr, 0.005f, "%.3f" }, { Param::PostTonemap, nullptr, 0.01f, "%.2f" }, { Param::PostMiddleGray, nullptr, 0.01f, "%.2f" }
+	};
+	const Object& Primary = *Find(Core.Data, Ids[0]);
+	const PostData& Setup = Primary.Post;
+	const u32 FadeBit = 1u << (static_cast<u32>(Param::PostFade) - static_cast<u32>(Param::PostBase)), GrayBit = 1u << (static_cast<u32>(Param::PostGray) - static_cast<u32>(Param::PostBase));
+	ImGui::PushID("Post");
+	DrawHeader(Core, Ids, HasPin);
+	BeginRow("Preset", false, false);
+	const float Width = (RowWidth - 2.0f * ImGui::GetStyle().ItemInnerSpacing.x) / 3.0f;
+	const s32 Picked = ImGui::Button("Fade out", ImVec2(Width, 0.0f)) ? 0 : (ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x), ImGui::Button("Fade in", ImVec2(Width, 0.0f))) ? 1 : (ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x), ImGui::Button("Black & white", ImVec2(Width, 0.0f))) ? 2 : -1;
+	EndRow(KeyState::None);
+	for (u32 Index = 0; Picked >= 0 && Index < Ids.size(); ++Index)
+	{
+		Object& Item = *Edit(Core, Ids[Index], "Post preset");
+		Item.Post.Mask |= Picked == 2 ? GrayBit : FadeBit;
+		Item.Post.Gray = Picked == 2 ? 1.0f : Item.Post.Gray;
+		if (Picked < 2)
+		{
+			Curve& Ramp = Curves::EnsureLane(Item.Lanes, Param::PostFade, 0).Curves[0];
+			Ramp.Keys.clear();
+			Curves::SetKey(Ramp, 0.0f, Picked ? 1.0f : 0.0f, 1e-4f);
+			Curves::SetKey(Ramp, Item.Span.Length, Picked ? 0.0f : 1.0f, 1e-4f);
+		}
+	}
+	BeginRow("Fade in, out", Setup.FadeIn != 0.0f || Setup.FadeOut != 0.0f, false);
+	float Fades[2] = { Setup.FadeIn, Setup.FadeOut };
+	if (ImGui::DragFloat2("##Fades", Fades, 0.05f, 0.0f, 600.0f, "%.2f s", ImGuiSliderFlags_AlwaysClamp))
+	{
+		for (u32 Id : Ids)
+		{
+			PostData& Edited = Edit(Core, Id, "Post fade")->Post;
+			Edited.FadeIn = Fades[0];
+			Edited.FadeOut = Fades[1];
+		}
+	}
+	EndRow(KeyState::None);
+	ClipRow(Core, Ids);
+	bool IsOpen = false;
+	for (const Row& Line : Rows)
+	{
+		IsOpen = Line.Group ? ImGui::CollapsingHeader(Line.Group, ImGuiTreeNodeFlags_DefaultOpen) : IsOpen;
+		if (!IsOpen)
+		{
+			continue;
+		}
+		const u32 Bit = 1u << (static_cast<u32>(Line.Id) - static_cast<u32>(Param::PostBase));
+		bool IsOn = (Setup.Mask & Bit) != 0;
+		ImGui::PushID(static_cast<s32>(Line.Id));
+		if (ImGui::Checkbox("##On", &IsOn))
+		{
+			for (u32 Id : Ids)
+			{
+				u32& Mask = Edit(Core, Id, "Post override")->Post.Mask;
+				Mask = IsOn ? Mask | Bit : Mask & ~Bit;
+			}
+		}
+		ImGui::SetItemTooltip("Ticked: the scene sets this value. Unticked: the game's own value shows.");
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!IsPostSet(Setup, Primary.Lanes, Line.Id));
+		ParamRow(Core, Ids, -1, Line.Id, 0, Line.Speed, Line.Format, 0, *PostField(const_cast<PostData&>(Setup), Line.Id, 0));
+		ImGui::EndDisabled();
+		ImGui::PopID();
+	}
+	ImGui::PopID();
+}
+
 void Editor::DrawParticleSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin)
 {
 	const Object& Primary = *Find(Core.Data, Ids[0]);
@@ -854,7 +2291,6 @@ void Editor::DrawParticleSection(Player& Core, const xr_vector<u32>& Ids, bool H
 	ClipRow(Core, Ids);
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		DrawGizmoRow(true);
 		ParamRow(Core, Ids, -1, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
 		ParamRow(Core, Ids, -1, Param::Rotation, 0, 0.5f, "%.1f", 6, 0.0f);
 		ParamRow(Core, Ids, -1, Param::Size, 0, 0.01f, "%.2f", 1, 1.0f);
@@ -992,10 +2428,6 @@ void Editor::DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool Has
 	const float Spacing = ImGui::GetStyle().ItemInnerSpacing.x;
 	ImGui::PushID("Camera");
 	DrawHeader(Core, Ids, HasPin);
-	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		DrawGizmoRow(false);
-	}
 	if (FocusObject == Rig.Id && FocusBlock >= ShakeBase && HasOwner(Rig, FocusBlock))
 	{
 		DrawShake(Core, Ids, FocusBlock);
@@ -1067,8 +2499,8 @@ void Editor::DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool Has
 		}
 		EndRow(KeyState::None);
 	}
-	PoseRow(Core, Ids, Block, Param::Position);
-	PoseRow(Core, Ids, Block, Param::Rotation);
+	ParamRow(Core, Ids, Block, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
+	ParamRow(Core, Ids, Block, Param::Rotation, 0, 0.5f, "%.1f", 6, 0.0f);
 	ImGui::BeginDisabled(Core.View() == ViewSource::Global);
 	if (ImGui::Button("Key from view", ImVec2(-FLT_MIN, 0.0f)))
 	{
@@ -1079,55 +2511,34 @@ void Editor::DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool Has
 	const u32 Near = Cache ? PoseKeyAt(Shot, *Cache, Core.Time - TargetStart(Rig, Block), 0.5f / static_cast<float>(Rate)) : u32(-1);
 	const u32 At = Near != u32(-1) || TangentBlock != Block || TangentKey < 0 || TangentKey >= static_cast<s32>(Shot.Keys.size()) ? Near : static_cast<u32>(TangentKey);
 	const PoseKey Pose = At == u32(-1) ? PoseKey {} : Shot.Keys[At];
-	const auto Write = [this, &Core, &Rig, Block, At](const char* Label) -> PoseKey& { return Edit(Core, Rig.Id, Label)->Camera.Blocks[Block].Keys[At]; };
 	ImGui::SeparatorText("Pose key");
 	ImGui::BeginDisabled(At == u32(-1));
 	BeginRow("Interpolation", false, false);
 	s32 Mode = static_cast<s32>(Pose.Mode);
 	if (ImGui::Combo("##Mode", &Mode, InspectorUi::Modes, 6))
 	{
-		Write("Interpolation").Mode = static_cast<Interp>(Mode);
+		Cameras::ModeAt(Edit(Core, Rig.Id, "Interpolation")->Camera.Blocks[Block], Pose.Time, static_cast<Interp>(Mode), 1e-4f);
 	}
 	EndRow(KeyState::None);
-	Action = BeginRow("Tangent", Pose.Tangent != TangentMode::Auto, false);
-	s32 Tangent = static_cast<s32>(Pose.Tangent);
-	if (ImGui::Combo("##Tangent", &Tangent, InspectorUi::Tangents, 3) || Action == RowAction::Reset)
-	{
-		PoseKey& Item = Write("Tangent");
-		Fvector In, Out;
-		if (Item.Tangent == TangentMode::Auto && Cache && Cache->Path.Handles(At, In, Out))
-		{
-			Item.InHandle = In;
-			Item.OutHandle = Out;
-		}
-		Item.Tangent = Action == RowAction::Reset ? TangentMode::Auto : static_cast<TangentMode>(Tangent);
-	}
-	EndRow(KeyState::None);
-	for (u32 Index = 0; Index < 3; ++Index)
-	{
-		ImGui::PushID(static_cast<s32>(Index));
-		float Shape = Pose.*InspectorUi::ShapeFields[Index];
-		Action = BeginRow(InspectorUi::ShapeNames[Index], Shape != 0.0f, false);
-		if (ImGui::DragFloat("##Shape", &Shape, 0.01f, -1.0f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp) || Action == RowAction::Reset)
-		{
-			Write(InspectorUi::ShapeNames[Index]).*InspectorUi::ShapeFields[Index] = Action == RowAction::Reset ? 0.0f : std::clamp(Shape, -1.0f, 1.0f);
-		}
-		EndRow(KeyState::None);
-		ImGui::PopID();
-	}
-	ImGui::BeginDisabled(!Pose.HasTangent());
-	if (ImGui::Button("Reset tangents", ImVec2(-FLT_MIN, 0.0f)))
-	{
-		PoseKey& Item = Write("Reset tangents");
-		Item.Tangent = TangentMode::Auto;
-		Item.Tension = Item.Continuity = Item.Bias = 0.0f;
-		Item.InHandle.set(0.0f, 0.0f, 0.0f);
-		Item.OutHandle.set(0.0f, 0.0f, 0.0f);
-	}
-	ImGui::EndDisabled();
 	ImGui::EndDisabled();
 	ParamRow(Core, Ids, Block, Param::Fov, 0, 0.1f, "%.1f", 1, 0.0f);
+	HorizontalFovRow(Core, Ids, Block);
 	ParamRow(Core, Ids, Block, Param::TimeScale, 0, 0.01f, "%.2f", 1, 1.0f);
+	ParamRow(Core, Ids, Block, Param::CameraSmooth, 0, 0.01f, "%.2f s", 1, 0.0f);
+	Action = BeginRow("Path tension", Shot.Tension != 1.0f, false);
+	float Tension = Shot.Tension;
+	if (ImGui::DragFloat("##Tension", &Tension, 0.01f, 0.1f, 3.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp) || Action == RowAction::Reset)
+	{
+		Edit(Core, Rig.Id, "Path tension")->Camera.Blocks[Block].Tension = Action == RowAction::Reset ? 1.0f : Tension;
+	}
+	EndRow(KeyState::None);
+	Action = BeginRow("Shortest turn", Shot.IsShortTurn, false);
+	bool IsShortTurn = Shot.IsShortTurn;
+	if (ImGui::Checkbox("##ShortTurn", &IsShortTurn) || Action == RowAction::Reset)
+	{
+		Edit(Core, Rig.Id, "Shortest turn")->Camera.Blocks[Block].IsShortTurn = Action != RowAction::Reset && IsShortTurn;
+	}
+	EndRow(KeyState::None);
 	if (ImGui::CollapsingHeader("Depth of field", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		Action = BeginRow("Mode", Shot.Dof != DofMode::Off, false);
@@ -1282,36 +2693,20 @@ void Editor::DrawShake(Player& Core, const xr_vector<u32>& Ids, s32 Owner)
 	ImGui::PopID();
 }
 
-void Editor::PoseRow(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param Id)
+void Editor::HorizontalFovRow(Player& Core, const xr_vector<u32>& Ids, s32 Block)
 {
-	const ParamInfo& Meta = Info(Id);
-	const Object& Rig = *Find(Core.Data, Ids[0]);
-	const CameraBlock& Shot = Rig.Camera.Blocks[Block];
-	PoseKey Pose;
-	u32 At = u32(-1);
-	const BlockCache* Cache = PoseAt(Core, Shot, Block, Core.Time - TargetStart(Rig, Block), Pose, At);
-	float Values[3] = {};
-	for (u8 Component = 0; Component < 3; ++Component)
+	const ParamInfo& Meta = Info(Param::Fov);
+	const float Stored = InspectorUi::ValueAt(*Find(Core.Data, Ids[0]), Block, Param::Fov, 0, 0, Core.Time), Aspect = FrameAspect();
+	const float Shown = rad2deg(2.0f * std::atan(std::tan(deg2rad(0.5f * (Stored > 0.0f ? Stored : GameFov()))) * Aspect));
+	float Value = Shown;
+	BeginRow("Horizontal FOV", false, false);
+	const bool IsChanged = ImGui::DragFloat("##Value", &Value, 0.1f, 1.0f, 179.0f, Stored > 0.0f ? "%.1f" : "Game", ImGuiSliderFlags_AlwaysClamp) && Value != Shown;
+	const float Vertical = std::clamp(rad2deg(2.0f * std::atan(std::tan(deg2rad(0.5f * Value)) / Aspect)), Meta.Min, Meta.Max);
+	for (u32 Index = 0; IsChanged && Index < Ids.size(); ++Index)
 	{
-		Values[Component] = InspectorUi::PoseField(Pose, Id, Component);
+		WriteParam(Core, *Edit(Core, Ids[Index], Meta.Label), Block, Param::Fov, 0, 0, Vertical);
 	}
-	BeginRow(Meta.Label, false, false);
-	ImGui::BeginDisabled(!Cache);
-	if (ImGui::DragScalarN("##Value", ImGuiDataType_Float, Values, 3, Id == Param::Rotation ? 0.5f : 0.01f, &Meta.Min, &Meta.Max, Id == Param::Rotation ? "%.1f" : "%.2f", ImGuiSliderFlags_AlwaysClamp))
-	{
-		for (u8 Component = 0; Component < 3; ++Component)
-		{
-			if (Values[Component] != InspectorUi::PoseField(Pose, Id, Component))
-			{
-				WriteParam(Core, *Edit(Core, Rig.Id, Meta.Label), Block, Id, 0, Component, Values[Component]);
-			}
-		}
-	}
-	ImGui::EndDisabled();
-	if (EndRow(Shot.Keys.empty() ? KeyState::Static : At != u32(-1) ? KeyState::OnKey : KeyState::Animated))
-	{
-		ToggleKey(Core, Ids, Block, Id, 0);
-	}
+	EndRow(KeyState::None);
 }
 
 void Editor::ParamRow(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param Id, u8 Layer, float Speed, const char* Format, u8 ResetMask, float Default)
@@ -1365,7 +2760,7 @@ void Editor::ParamRow(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param 
 		if (Action == RowAction::RemoveAnimation)
 		{
 			Object& Item = *Edit(Core, TargetId, "Remove animation");
-			RemoveLane(Item, Block, Id, Layer, Core.Time - TargetStart(Item, Block));
+			RemoveLane(Item, Block, Id, Layer, LaneLocal(Item, Block, Id, Core.Time));
 		}
 		if ((IsChanged || Action != RowAction::None) && Id == Param::TimeScale)
 		{
@@ -1441,6 +2836,11 @@ void Editor::DrawAttach(Player& Core, const xr_vector<u32>& Ids, s32 Block)
 	Value.IsRollLocked = Value.IsRollLocked && Action != RowAction::Reset;
 	Value.IsPitchLocked = Value.IsPitchLocked && Action != RowAction::Reset;
 	EndRow(KeyState::None);
+	if (Links.Parent.ObjectId)
+	{
+		ParamRow(Core, Ids, Block, Param::AttachWeight, 0, 0.01f, "%.2f", 1, 1.0f);
+		Value.Weight = Links.Weight;
+	}
 	Action = BeginRow("Look at", Links.LookAt.ObjectId != 0, false);
 	AttachCombo(Core, "##Target", Primary.Id, Value.LookAt);
 	Value.LookAt = Action == RowAction::Reset ? AttachLink {} : Value.LookAt;
@@ -1587,51 +2987,6 @@ bool Editor::CanAttach(const Scene& Data, u32 From, u32 To)
 	return !To || (From != To && AttachCheck.Build(Data, From, To));
 }
 
-void Editor::DrawGizmoRow(bool HasScale, bool IsRange, bool HasRotate)
-{
-	const ImGuiStyle& Style = ImGui::GetStyle();
-	const u32 Count = HasScale ? 3 : 2;
-	const u32 Shown = static_cast<u32>(GizmoShown);
-	const float Size = 1.5f * ImGui::GetFrameHeight(), Spacing = Style.ItemInnerSpacing.x;
-	bool& IsLocal = GizmoItems.size() > 1 ? IsGizmoLocalMulti : IsGizmoLocalSingle;
-	BeginRow("Gizmo", false, false);
-	for (u32 Index = 0; Index <= Count; ++Index)
-	{
-		const u32 Mode = Index ? Index - 1 : static_cast<u32>(GizmoMode::Universal);
-		ImGui::BeginDisabled(Mode == 1 && !HasRotate);
-		ImGui::PushStyleColor(ImGuiCol_Button, Style.Colors[Shown == Mode ? ImGuiCol_ButtonActive : ImGuiCol_FrameBg]);
-		if (ImGui::Button(InspectorUi::GizmoLabels[Mode], ImVec2(Index ? Size : 1.5f * Size, 0.0f)))
-		{
-			Gizmo = static_cast<GizmoMode>(Mode);
-		}
-		ImGui::PopStyleColor();
-		ImGui::SetItemTooltip("%s", InspectorUi::GizmoNames[Mode == 2 && IsRange ? 3u : Mode]);
-		ImGui::EndDisabled();
-		ImGui::SameLine(0.0f, Spacing);
-	}
-	if (ImGui::Button(IsLocal ? "Local" : "World", ImVec2(std::max(RowWidth - (Count + 1.5f) * (Size + Spacing), 1.0f), 0.0f)))
-	{
-		IsLocal = !IsLocal;
-	}
-	EndRow(KeyState::None);
-	float* const Steps[4] = { &Settings.MoveStep, &Settings.RotateStep, &Settings.ScaleStep, &Settings.RangeStep };
-	BeginRow("Steps", false, false);
-	for (u32 Index = 0; Index < Count; ++Index)
-	{
-		const u32 Slot = Index == 2 && IsRange ? 3u : Index;
-		if (Index)
-		{
-			ImGui::SameLine(0.0f, Spacing);
-		}
-		ImGui::PushID(static_cast<s32>(Slot));
-		ImGui::SetNextItemWidth((RowWidth - (Count - 1) * Spacing) / Count);
-		ImGui::DragFloat("##Step", Steps[Slot], InspectorUi::StepLo[Slot], InspectorUi::StepLo[Slot], InspectorUi::StepHi[Slot], InspectorUi::StepFormats[Slot], ImGuiSliderFlags_AlwaysClamp);
-		ImGui::SetItemTooltip("%s", InspectorUi::StepNames[Slot]);
-		ImGui::PopID();
-	}
-	EndRow(KeyState::None);
-}
-
 RowAction Editor::BeginRow(const char* Name, bool IsOverridden, bool HasLane)
 {
 	ImGui::PushID(Name);
@@ -1740,6 +3095,7 @@ void Editor::BuildLibrary()
 		return;
 	}
 	IsLibraryBuilt = IsFilterDirty = true;
+	ReadLibrary();
 	ModelFiles.clear();
 	ItemSections.clear();
 	OmfFiles.clear();
@@ -1760,6 +3116,134 @@ void Editor::BuildLibrary()
 	{
 		InspectorUi::SortNames(*Names);
 	}
+}
+
+void Editor::ReadLibrary()
+{
+	string_path Path;
+	FS.update_path(Path, Io::LegacyAlias, InspectorUi::LibraryFile);
+	const CReaderGuarded File(FS.exist(Path) ? FS.r_open(Path) : nullptr);
+	xr_string Error = "the file is larger than 256 KiB";
+	if (!File)
+	{
+		return;
+	}
+	if (static_cast<size_t>(File->length()) > InspectorUi::MaxLibrarySize || !Io::PreScan(*File, Error))
+	{
+		Msg("! Cinema editor: %s is ignored: %s", Path, Error.c_str());
+		return;
+	}
+	File->seek(0);
+	const CInifile Ini(&*File, nullptr);
+	string64 Section, Line;
+	const auto ReadItems = [&](xr_vector<xr_string>& Out, u32 Cap)
+	{
+		for (u32 Index = 0; Index < Cap; ++Index)
+		{
+			xr_sprintf(Line, "item_%04u", Index);
+			const char* Text = Ini.read_if_exists<str_c>(Section, Line, nullptr);
+			if (!Text)
+			{
+				break;
+			}
+			if (Io::IniSafe(Text) && std::find(Out.begin(), Out.end(), Text) == Out.end())
+			{
+				Out.push_back(Text);
+			}
+		}
+	};
+	for (u32 Slot = 0; Slot < 5; ++Slot)
+	{
+		xr_sprintf(Section, "fav_%s", InspectorUi::LibraryKinds[Slot]);
+		ReadItems(Library[Slot].Favourites, InspectorUi::MaxFavourites);
+		for (u32 Folder = 0; Folder < InspectorUi::MaxFolders; ++Folder)
+		{
+			xr_sprintf(Section, "folder_%s_%03u", InspectorUi::LibraryKinds[Slot], Folder);
+			const char* Name = Ini.section_exist(Section) ? Ini.read_if_exists<str_c>(Section, "name", nullptr) : nullptr;
+			if (!Name || !Io::IniSafe(Name))
+			{
+				break;
+			}
+			LibraryFolder& Item = Library[Slot].Folders.emplace_back();
+			Item.Name = Name;
+			ReadItems(Item.Items, InspectorUi::MaxFolderItems);
+		}
+	}
+}
+
+void Editor::WriteLibrary()
+{
+	CInifile Ini(nullptr, false, false, false);
+	string64 Section, Line;
+	for (u32 Slot = 0; Slot < 5; ++Slot)
+	{
+		xr_sprintf(Section, "fav_%s", InspectorUi::LibraryKinds[Slot]);
+		for (u32 Index = 0; Index < Library[Slot].Favourites.size(); ++Index)
+		{
+			xr_sprintf(Line, "item_%04u", Index);
+			Ini.w_string(Section, Line, Library[Slot].Favourites[Index].c_str());
+		}
+		for (u32 Folder = 0; Folder < Library[Slot].Folders.size(); ++Folder)
+		{
+			const LibraryFolder& Item = Library[Slot].Folders[Folder];
+			xr_sprintf(Section, "folder_%s_%03u", InspectorUi::LibraryKinds[Slot], Folder);
+			Ini.w_string(Section, "name", Item.Name.c_str());
+			for (u32 Index = 0; Index < Item.Items.size(); ++Index)
+			{
+				xr_sprintf(Line, "item_%04u", Index);
+				Ini.w_string(Section, Line, Item.Items[Index].c_str());
+			}
+		}
+	}
+	string_path Path;
+	xr_string Error;
+	FS.update_path(Path, Io::LegacyAlias, InspectorUi::LibraryFile);
+	if (!Io::SaveIni(Ini, Path, Error))
+	{
+		SetStatus(true, "%s", Error.c_str());
+	}
+}
+
+void Editor::ReleasePreview()
+{
+	if (PreviewView)
+	{
+		PreviewView->Release();
+	}
+	if (PreviewSurface)
+	{
+		PreviewSurface->Release();
+	}
+	PreviewView = nullptr;
+	PreviewSurface = nullptr;
+	PreviewName = shared_str();
+}
+
+void Editor::PreviewTexture(const shared_str& Texture)
+{
+	if (Texture == PreviewName || !GRHI || GRHI->APILevel != D3D11)
+	{
+		return;
+	}
+	ReleasePreview();
+	PreviewName = Texture;
+	string_path File;
+	xr_sprintf(File, "%s.dds", Texture.c_str());
+	u32 Size = 0;
+	PreviewSurface = ::Render->load_texture(File, Size);
+	if (!PreviewSurface)
+	{
+		return;
+	}
+	RHIShaderResourceViewDesc Desc;
+	Desc.MipLevels = 1;
+	Desc.Format = PreviewSurface->GetFormat();
+	Desc.MostDetailedMip = 0;
+	Desc.ViewDimension = ERHI_SRV_DIMENSION::TEXTURE2D;
+	Desc.FirstArraySlice = 0;
+	Desc.ArraySize = 1;
+	Desc.ElementWidth = 0;
+	PreviewView = GRHI->CreateShaderResourceView(PreviewSurface, &Desc);
 }
 
 bool Editor::Chooser(Player& Core, ChooserKind Kind, const char* Label, const char* Preview, const xr_vector<u32>& Owners, shared_str& Source, shared_str& Name)
@@ -1799,10 +3283,91 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 	{
 		LoadPresets();
 	}
-	const xr_vector<shared_str>* const Lists[7] = { &ModelFiles, &ItemSections, &OmfFiles, &OmfFiles, &PresetNames, &EffectNames, &TextureFiles };
+	const xr_vector<shared_str>* const Lists[8] = { &ModelFiles, &ItemSections, &OmfFiles, &OmfFiles, &PresetNames, &EffectNames, &TextureFiles, &Core.Shaders() };
 	const xr_vector<shared_str>& Files = *Lists[static_cast<u32>(Shown)];
 	const size_t Sources = Shown == ChooserKind::Animation && Runtime ? Runtime->Sources.size() : 0;
 	char* Filter = Filters[static_cast<u32>(Shown)];
+	const s32 Slot = InspectorUi::LibrarySlots[static_cast<u32>(Shown)];
+	LibraryShelf* Shelf = Slot >= 0 ? &Library[Slot] : nullptr;
+	u8 Scope = Shelf ? Scopes[Slot] : 0;
+	Scope = Shelf && Scope < Shelf->Folders.size() + 2 ? Scope : 0;
+	const auto ScopeName = [&](u32 Index) { return Index == 0 ? "All" : Index == 1 ? "Favourites" : Shelf->Folders[Index - 2].Name.c_str(); };
+	if (Shelf)
+	{
+		ImGui::SetNextItemWidth(InspectorUi::ListWidth);
+		if (ImGui::BeginCombo("##Scope", ScopeName(Scope)))
+		{
+			for (u32 Index = 0; Index < Shelf->Folders.size() + 2; ++Index)
+			{
+				if (ImGui::Selectable(ScopeName(Index), Index == Scope))
+				{
+					Scope = static_cast<u8>(Index);
+					IsFilterDirty = true;
+				}
+			}
+			if (ImGui::Selectable("New folder...") && Shelf->Folders.size() < InspectorUi::MaxFolders)
+			{
+				FolderAction = 1;
+				FolderEdited = -1;
+				MenuKey.clear();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::SetItemTooltip("Shelf");
+		if (Scope >= 2 && ImGui::IsItemClicked(ImGuiMouseButton_Right))
+		{
+			FolderAction = 2;
+		}
+		Scopes[Slot] = Scope;
+	}
+	if (FolderAction == 1)
+	{
+		xr_strcpy(FolderName, FolderEdited >= 0 && Shelf && FolderEdited < static_cast<s32>(Shelf->Folders.size()) ? Shelf->Folders[FolderEdited].Name.c_str() : "");
+		ImGui::OpenPopup("##FolderName");
+	}
+	if (FolderAction == 2)
+	{
+		ImGui::OpenPopup("##FolderMenu");
+	}
+	FolderAction = 0;
+	if (ImGui::BeginPopup("##FolderMenu"))
+	{
+		if (ImGui::MenuItem("Rename...") && Shelf && Scope >= 2)
+		{
+			FolderAction = 1;
+			FolderEdited = Scope - 2;
+		}
+		if (ImGui::MenuItem("Delete") && Shelf && Scope >= 2)
+		{
+			Shelf->Folders.erase(Shelf->Folders.begin() + (Scope - 2));
+			Scopes[Slot] = 0;
+			IsFilterDirty = true;
+			WriteLibrary();
+		}
+		ImGui::EndPopup();
+	}
+	if (ImGui::BeginPopup("##FolderName"))
+	{
+		if (ImGui::IsWindowAppearing())
+		{
+			ImGui::SetKeyboardFocusHere();
+		}
+		const bool IsDone = ImGui::InputTextWithHint("##Folder", "Folder name", FolderName, sizeof(FolderName), ImGuiInputTextFlags_EnterReturnsTrue);
+		if (IsDone && Shelf && FolderName[0] && Io::IniSafe(FolderName))
+		{
+			const bool IsNew = FolderEdited < 0 || FolderEdited >= static_cast<s32>(Shelf->Folders.size());
+			LibraryFolder& Item = IsNew ? Shelf->Folders.emplace_back() : Shelf->Folders[FolderEdited];
+			Item.Name = FolderName;
+			if (IsNew && !MenuKey.empty())
+			{
+				Item.Items.push_back(MenuKey);
+			}
+			WriteLibrary();
+			IsFilterDirty = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	ImGui::SetNextItemWidth(InspectorUi::ListWidth);
 	const bool IsEnter = ImGui::InputTextWithHint("##Filter", "Filter", Filter, sizeof(Filters[0]), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CallbackHistory, [](ImGuiInputTextCallbackData*) { return 0; }) || ImGui::IsKeyPressed(ImGuiKey_Enter, false);
 	IsFilterDirty |= ImGui::IsItemEdited();
@@ -1818,12 +3383,15 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 		FilteredSources = Sources;
 		ChooserCursor = 0;
 		Ranked.clear();
-		const auto Add = [this, Filter](u32 Code, const char* Text, const char* Pack)
+		const xr_vector<xr_string>* Inside = Shelf && Scope >= 2 ? &Shelf->Folders[Scope - 2].Items : Shelf && Scope == 1 ? &Shelf->Favourites : nullptr;
+		const auto Add = [&](u32 Code, const char* Text, const char* Pack)
 		{
 			const u32 Rank = InspectorUi::MatchRank(Filter, Text, Pack);
-			if (Rank != u32(-1))
+			LibraryKey = Pack ? xr_string(Pack) + "|" + Text : xr_string(Text);
+			const bool IsFavourite = Shelf && std::find(Shelf->Favourites.begin(), Shelf->Favourites.end(), LibraryKey) != Shelf->Favourites.end();
+			if (Rank != u32(-1) && (!Inside || std::find(Inside->begin(), Inside->end(), LibraryKey) != Inside->end()))
 			{
-				Ranked.push_back((static_cast<u64>(Rank) << 32) | Code);
+				Ranked.push_back((static_cast<u64>(IsFavourite ? 0u : 1u) << 63) | (static_cast<u64>(Rank & 0x3FFFFFFFu) << 32) | Code);
 			}
 		};
 		for (u32 Index = 0; Shown != ChooserKind::Animation && Index < Files.size(); ++Index)
@@ -1868,13 +3436,13 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 	};
 	const auto ClipOf = [&](u32 Code) { return Shown == ChooserKind::Animation && (Code >> 16) < Sources && (Code & 0xFFFFu) < Runtime->Sources[Code >> 16].Clips.size() ? &Runtime->Sources[Code >> 16].Clips[Code & 0xFFFFu].Name : nullptr; };
 	bool IsPicked = false;
-	if ((Shown == ChooserKind::Item || Shown == ChooserKind::Texture) && ImGui::Selectable("None"))
+	if ((Shown == ChooserKind::Item || Shown == ChooserKind::Texture || Shown == ChooserKind::Shader) && ImGui::Selectable(Shown != ChooserKind::Item && Runtime ? "Original" : "None"))
 	{
 		Source = Name = shared_str();
 		IsPicked = true;
 	}
 	IsChooserOpen = true;
-	bool ShouldOpenPack = false;
+	bool ShouldOpenRow = false;
 	s32 Chosen = IsEnter && ChooserCursor < Count ? ChooserCursor : -1;
 	const float Split = InspectorUi::ListWidth * (Shown == ChooserKind::Animation ? 0.55f : Shown == ChooserKind::Preset ? 0.8f : 1.0f);
 	ImGui::BeginChild("##List", ImVec2(InspectorUi::ListWidth, 16.0f * ImGui::GetTextLineHeightWithSpacing()));
@@ -1896,10 +3464,38 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 			{
 				ImGui::SetScrollHereY();
 			}
-			Chosen = ImGui::Selectable("##Row", IsCursor, Shown == ChooserKind::Pack ? ImGuiSelectableFlags_NoAutoClosePopups : ImGuiSelectableFlags_None) && IsListed ? Row : Chosen;
-			const ImRect Box(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
-			const float Middle = Box.Min.x + Split - ImGui::GetStyle().ItemSpacing.x;
-			const bool IsHovered = ImGui::IsItemHovered(Shown == ChooserKind::Model ? ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay : ImGuiHoveredFlags_None) || (IsCursor && Move);
+			const bool IsPressed = ImGui::Selectable("##Row", IsCursor, ImGuiSelectableFlags_NoAutoClosePopups);
+			const float Star = Shelf ? ImGui::GetFontSize() : 0.0f;
+			const ImRect Box(ImVec2(ImGui::GetItemRectMin().x + ImGui::GetStyle().ItemSpacing.x + Star, ImGui::GetItemRectMin().y), ImGui::GetItemRectMax());
+			const bool IsStar = IsPressed && ImGui::GetIO().MousePos.x < Box.Min.x;
+			Chosen = IsPressed && !IsStar && IsListed ? Row : Chosen;
+			const float Middle = Box.Min.x + Split - Star - ImGui::GetStyle().ItemSpacing.x;
+			const bool IsHovered = ImGui::IsItemHovered(Shown == ChooserKind::Model || Shown == ChooserKind::Texture ? ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay : ImGuiHoveredFlags_None) || (IsCursor && Move);
+			if (Shelf && IsListed)
+			{
+				LibraryKey = Animation ? xr_string(Runtime->Sources[Code >> 16].Id.c_str()) + "|" + Animation->c_str() : xr_string(Files[Code].c_str());
+				const auto Found = std::find(Shelf->Favourites.begin(), Shelf->Favourites.end(), LibraryKey);
+				const bool IsFavourite = Found != Shelf->Favourites.end();
+				ImVec4 color = IsFavourite ? ImVec4(1.0f, 0.8f, 0.2f, 1.0f) : ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
+				// , IsFavourite || ImGui::IsItemHovered() ? 1.0f : 0.0f
+				ImGui::GetWindowDrawList()->AddText(ImVec2(Box.Min.x - Star, Box.Min.y), ImGui::GetColorU32(color), "*");
+				if (IsStar && (IsFavourite || Shelf->Favourites.size() < InspectorUi::MaxFavourites))
+				{
+					IsFavourite ? (void)Shelf->Favourites.erase(Found) : Shelf->Favourites.push_back(LibraryKey);
+					WriteLibrary();
+					IsFilterDirty = true;
+				}
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+				{
+					MenuKey = LibraryKey;
+					MenuPack = shared_str();
+					ShouldOpenRow = true;
+				}
+			}
+			if (Shown == ChooserKind::Texture && IsListed && IsHovered)
+			{
+				PreviewTexture(Files[Code]);
+			}
 			if (Animation)
 			{
 				const shared_str& Pack = Runtime->Sources[Code >> 16].Id;
@@ -1910,10 +3506,10 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 				{
 					Core.SetAudition(Owner, Pack, *Animation);
 				}
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Right) && Omf::IsOmfPath(Pack))
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 				{
-					MenuPack = Pack;
-					ShouldOpenPack = true;
+					MenuPack = Omf::IsOmfPath(Pack) ? Pack : shared_str();
+					ShouldOpenRow = true;
 				}
 			}
 			else if (IsListed)
@@ -1929,19 +3525,59 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 			ImGui::PopID();
 		}
 	}
-	if (ShouldOpenPack)
+	if (ShouldOpenRow)
 	{
-		ImGui::OpenPopup("##Pack");
+		ImGui::OpenPopup("##Row");
 	}
-	if (ImGui::BeginPopup("##Pack"))
+	if (ImGui::BeginPopup("##Row"))
 	{
-		if (ImGui::MenuItem("Remove pack"))
+		if (Shelf && ImGui::BeginMenu("Add to folder"))
+		{
+			for (LibraryFolder& Folder : Shelf->Folders)
+			{
+				const bool HasItem = std::find(Folder.Items.begin(), Folder.Items.end(), MenuKey) != Folder.Items.end();
+				if (ImGui::MenuItem(Folder.Name.c_str(), nullptr, HasItem, !HasItem && Folder.Items.size() < InspectorUi::MaxFolderItems))
+				{
+					Folder.Items.push_back(MenuKey);
+					WriteLibrary();
+				}
+			}
+			if (ImGui::MenuItem("New folder...", nullptr, false, Shelf->Folders.size() < InspectorUi::MaxFolders))
+			{
+				FolderAction = 1;
+				FolderEdited = -1;
+			}
+			ImGui::EndMenu();
+		}
+		if (Shelf && Scope >= 2 && ImGui::MenuItem("Remove from folder"))
+		{
+			std::erase(Shelf->Folders[Scope - 2].Items, MenuKey);
+			WriteLibrary();
+			IsFilterDirty = true;
+		}
+		if (MenuPack.size() && ImGui::MenuItem("Remove pack"))
 		{
 			SetPack(MenuPack, false);
 		}
 		ImGui::EndPopup();
 	}
 	ImGui::EndChild();
+	if (Shown == ChooserKind::Texture)
+	{
+		const bool HasPreview = PreviewView && PreviewSurface;
+		const float Side = 128.0f, Width = HasPreview ? static_cast<float>(PreviewSurface->GetWidth()) : 1.0f, Height = HasPreview ? static_cast<float>(PreviewSurface->GetHeight()) : 1.0f, Scale = Side / std::max({ Width, Height, 1.0f });
+		const ImVec2 Corner = ImGui::GetCursorScreenPos(), Size(Width * Scale, Height * Scale), Offset((Side - Width * Scale) * 0.5f, (Side - Height * Scale) * 0.5f);
+		ImGui::Dummy(ImVec2(Side, Side));
+		ImDrawList* List = ImGui::GetWindowDrawList();
+		List->AddRectFilled(Corner, ImVec2(Corner.x + Side, Corner.y + Side), ImGui::GetColorU32(ImGuiCol_FrameBg));
+		if (HasPreview)
+		{
+			List->AddImage(PreviewView->GetRawSRV(), ImVec2(Corner.x + Offset.x, Corner.y + Offset.y), ImVec2(Corner.x + Offset.x + Size.x, Corner.y + Offset.y + Size.y));
+			ImGui::SameLine();
+			ImGui::TextDisabled("%s\n%ux%u", PreviewName.c_str(), PreviewSurface->GetWidth(), PreviewSurface->GetHeight());
+		}
+		ImGui::Dummy(ImVec2(0.0f, ImGui::GetStyle().ItemSpacing.y));
+	}
 	if (const shared_str* Animation = Chosen >= 0 ? ClipOf(Filtered[Chosen]) : nullptr)
 	{
 		Source = Runtime->Sources[Filtered[Chosen] >> 16].Id;
@@ -2009,7 +3645,7 @@ void Editor::ToggleKey(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param
 			UseGameFov(Item, Block, Id);
 		}
 		Lane& Track = Curves::EnsureLane(Lanes, Id, Layer);
-		const float Local = Core.Time - TargetStart(Item, Block);
+		const float Local = LaneLocal(Item, Block, Id, Core.Time);
 		bool IsEmpty = true;
 		for (u8 Component = 0; Component < Info(Id).Components; ++Component)
 		{
@@ -2042,28 +3678,24 @@ void Editor::ToggleKey(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param
 void Editor::WriteParam(Player& Core, Object& Target, s32 Block, Param Id, u8 Layer, u8 Component, float NewValue, bool IsTotal)
 {
 	const ParamInfo& Meta = Info(Id);
-	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate), Local = Core.Time - TargetStart(Target, Block);
-	const bool IsPose = Block >= 0 && Id <= Param::Rotation;
+	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate), Local = LaneLocal(Target, Block, Id, Core.Time);
 	if (IsAutoKey)
 	{
 		UseGameFov(Target, Block, Id);
 	}
-	PoseKey Pose;
-	u32 KeyIndex = u32(-1);
-	const BlockCache* Cache = IsPose ? PoseAt(Core, Target.Camera.Blocks[Block], Block, Local, Pose, KeyIndex) : nullptr;
-	float* Static = IsPose ? &InspectorUi::PoseField(Pose, Id, Component) : StaticField(Target, Block, Id, Layer, Component);
-	if (!Static || (IsPose && !Cache))
+	float* Static = StaticField(Target, Block, Id, Layer, Component);
+	if (!Static)
 	{
 		return;
 	}
-	const Lane* Found = IsPose ? nullptr : Curves::FindLane(LaneList(Target, Block), Id, Layer);
+	const Lane* Found = Curves::FindLane(LaneList(Target, Block), Id, Layer);
 	const Curve* Existing = Found ? &Found->Curves[Component] : nullptr;
-	KeyIndex = Existing ? Curves::KeyAt(*Existing, Local, HalfFrame) : KeyIndex;
-	const bool HasKeys = IsPose ? !Target.Camera.Blocks[Block].Keys.empty() : Existing && !Existing->Keys.empty();
+	const u32 KeyIndex = Existing ? Curves::KeyAt(*Existing, Local, HalfFrame) : u32(-1);
+	const bool HasKeys = Existing && !Existing->Keys.empty();
 	auto Latch = std::find_if(Latches.begin(), Latches.end(), [&](const WriteLatch& Item) { return Item.ObjectId == Target.Id && Item.Block == Block && Item.Id == Id && Item.Layer == Layer && Item.Component == Component; });
 	if (Latch == Latches.end())
 	{
-		const WriteKind Kind = IsAutoKey ? (Core.IsPlaying ? WriteKind::Record : WriteKind::Insert) : !HasKeys ? (IsPose ? WriteKind::Insert : WriteKind::Static) : KeyIndex != u32(-1) ? WriteKind::OnKey : WriteKind::Offset;
+		const WriteKind Kind = IsAutoKey ? (Core.IsPlaying ? WriteKind::Record : WriteKind::Insert) : !HasKeys ? WriteKind::Static : KeyIndex != u32(-1) ? WriteKind::OnKey : WriteKind::Offset;
 		const float Current = Existing ? Curves::Value(*Existing, Local, *Static) : *Static;
 		Latch = Latches.insert(Latches.end(), WriteLatch { Target.Id, static_cast<s16>(Block), Id, Layer, Component, Kind, KeyIndex, Local, Local - 1.0f, Current, Current });
 	}
@@ -2080,35 +3712,22 @@ void Editor::WriteParam(Player& Core, Object& Target, s32 Block, Param Id, u8 La
 		*Static = Shift(*Static);
 		return;
 	}
-	if (IsPose)
+	Curve& Source = Curves::EnsureLane(LaneList(Target, Block), Id, Layer).Curves[Component];
+	if (Latch->Kind == WriteKind::OnKey && Latch->KeyIndex < Source.Keys.size())
 	{
-		CameraBlock& Shot = Target.Camera.Blocks[Block];
-		for (u32 Index = 0; Index < Shot.Keys.size(); ++Index)
-		{
-			float& Field = InspectorUi::PoseField(Shot.Keys[Index], Id, Component);
-			Field = Latch->Kind == WriteKind::Offset || (Latch->Kind == WriteKind::OnKey && Index == Latch->KeyIndex) ? Shift(Field) : Field;
-		}
-		if (Latch->Kind == WriteKind::Insert)
-		{
-			*Static = Shift(*Static);
-			PutPose(Shot, *Cache, Local, HalfFrame, Pose);
-		}
+		Source.Keys[Latch->KeyIndex].Value = Shift(Source.Keys[Latch->KeyIndex].Value);
 	}
-	else
+	for (u32 Index = 0; Latch->Kind == WriteKind::Offset && Index < Source.Keys.size(); ++Index)
 	{
-		Curve& Source = Curves::EnsureLane(LaneList(Target, Block), Id, Layer).Curves[Component];
-		if (Latch->Kind == WriteKind::OnKey && Latch->KeyIndex < Source.Keys.size())
-		{
-			Source.Keys[Latch->KeyIndex].Value = Shift(Source.Keys[Latch->KeyIndex].Value);
-		}
-		for (u32 Index = 0; Latch->Kind == WriteKind::Offset && Index < Source.Keys.size(); ++Index)
-		{
-			Source.Keys[Index].Value = Shift(Source.Keys[Index].Value);
-		}
-		if (Latch->Kind == WriteKind::Insert)
-		{
-			Curves::SetKey(Source, Local, Shift(Curves::Value(Source, Local, *Static)), HalfFrame);
-		}
+		Source.Keys[Index].Value = Shift(Source.Keys[Index].Value);
+	}
+	if (Latch->Kind == WriteKind::Insert)
+	{
+		Curves::SetKey(Source, Local, Shift(Curves::Value(Source, Local, *Static)), HalfFrame);
+	}
+	if (Block >= 0 && Block < ShakeBase)
+	{
+		Cameras::Rebuild(Target.Camera.Blocks[Block]);
 	}
 	Record(Core, *Latch);
 }
@@ -2120,43 +3739,28 @@ void Editor::Record(Player& Core, WriteLatch& Latch)
 	{
 		return;
 	}
-	const float Local = Core.Time - TargetStart(*Target, Latch.Block);
-	const float Length = OwnerLength(*Target, Latch.Block);
-	if (!(Local >= 0.0f && Local <= Length))
+	const float Moment = Core.Time - TargetStart(*Target, Latch.Block);
+	if (!(Moment >= 0.0f && Moment <= OwnerLength(*Target, Latch.Block)))
 	{
 		return;
 	}
+	const float Local = LaneLocal(*Target, Latch.Block, Latch.Id, Core.Time);
 	const float From = Local < Latch.Last ? Local : std::max(Latch.Begin, Latch.Last), HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
 	const bool IsDue = Local < Latch.Last || Local >= Latch.Last + 0.1f || !Core.IsPlaying;
 	Latch.Last = IsDue ? Local : Latch.Last;
-	if (Latch.Block < 0 || Latch.Id > Param::Rotation)
-	{
-		Curve& Source = Curves::EnsureLane(LaneList(*Target, Latch.Block), Latch.Id, Latch.Layer).Curves[Latch.Component];
-		std::erase_if(Source.Keys, [From, Local](const Key& Item) { return Item.Time > From && Item.Time < Local; });
-		if (IsDue)
-		{
-			Curves::SetKey(Source, Local, Latch.Value, HalfFrame);
-		}
-		if (Latch.Id == Param::TimeScale)
-		{
-			Refit(Core, *Target);
-		}
-		return;
-	}
-	CameraBlock& Shot = Target->Camera.Blocks[Latch.Block];
-	PoseKey Pose;
-	u32 At = u32(-1);
-	const BlockCache* Cache = PoseAt(Core, Shot, Latch.Block, Local, Pose, At);
-	if (!Cache)
-	{
-		return;
-	}
-	const float Lo = Cameras::PathTime(Shot, *Cache, From), Hi = Cameras::PathTime(Shot, *Cache, Local);
-	std::erase_if(Shot.Keys, [Lo, Hi](const PoseKey& Item) { return Item.Time > Lo && Item.Time < Hi; });
+	Curve& Source = Curves::EnsureLane(LaneList(*Target, Latch.Block), Latch.Id, Latch.Layer).Curves[Latch.Component];
+	std::erase_if(Source.Keys, [From, Local](const Key& Item) { return Item.Time > From && Item.Time < Local; });
 	if (IsDue)
 	{
-		InspectorUi::PoseField(Pose, Latch.Id, Latch.Component) = Latch.Value;
-		PutPose(Shot, *Cache, Local, HalfFrame, Pose);
+		Curves::SetKey(Source, Local, Latch.Value, HalfFrame);
+	}
+	if (Latch.Id == Param::TimeScale)
+	{
+		Refit(Core, *Target);
+	}
+	if (Latch.Block >= 0 && Latch.Block < ShakeBase)
+	{
+		Cameras::Rebuild(Target->Camera.Blocks[Latch.Block]);
 	}
 }
 }

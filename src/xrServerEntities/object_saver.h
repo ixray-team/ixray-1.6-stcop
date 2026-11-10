@@ -72,7 +72,7 @@ struct CSaver {
 		}
 	};
 
-	IC	static void save_data(LPSTR data, M &stream, const P &p)
+	IC static void save_data(char* data, M& stream, const P& p)
 	{
 		stream.w_stringZ				(data);
 	}

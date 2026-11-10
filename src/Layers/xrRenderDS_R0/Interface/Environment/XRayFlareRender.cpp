@@ -12,7 +12,7 @@ void CDS0_FlareRender::Copy(IFlareRender & _in)
 {
 }
 
-void CDS0_FlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
+void CDS0_FlareRender::CreateShader(const char* sh_name, const char* tex_name)
 {
 }
 

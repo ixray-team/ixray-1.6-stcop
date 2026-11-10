@@ -19,7 +19,7 @@ class CHM_Static
 	{
 		float		data	[dhm_precision][dhm_precision];
 		
-		BOOL		bReady;
+		s32 bReady;
 		int			x,z;
 		
 		IC			void		set		(int _x, int _z)	{ x=_x; z=_z; }

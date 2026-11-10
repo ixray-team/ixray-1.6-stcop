@@ -33,7 +33,7 @@ private:
 
 public:
 			SRotation const			offsets						(shared_str const &animation_id) const;
-			void					load						(LPCSTR section);
+			void load(const char* section);
 
 };
 

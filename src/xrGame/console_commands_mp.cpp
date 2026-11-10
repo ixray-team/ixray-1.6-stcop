@@ -284,11 +284,11 @@ public:
 #endif // DEBUG
 
 
-extern	void	WriteCDKey_ToRegistry		(LPSTR cdkey);
+extern void WriteCDKey_ToRegistry(char* cdkey);
 
 class CCC_GSCDKey: public CCC_String{
 public:
-						CCC_GSCDKey		(const char* N, LPSTR V, int _size) : CCC_String(N, V, _size)  { bEmptyArgsHandled = true; };
+						CCC_GSCDKey(const char* N, char* V, int _size) : CCC_String(N, V, _size) { bEmptyArgsHandled = true; };
 
 	virtual void		Execute			(const char* arguments) override
 						{
@@ -481,7 +481,7 @@ static xrClientData* exclude_command_initiator(const char* args)
 	}
 	return nullptr;
 };
-static char const * exclude_raid_from_args(const char* args, LPSTR dest, size_t dest_size)
+static char const* exclude_raid_from_args(const char* args, char* dest, size_t dest_size)
 {
 	strncpy_s(dest, dest_size, args, dest_size - 1);
 	char* tmp_str = strrchr(dest, ' ');
@@ -1081,7 +1081,7 @@ public:
 			return;
 
 		string1024				digits;
-		LPSTR					p = buff+len-1;
+		char* p = buff + len - 1;
 		while(isdigit(*p))
 		{
 			if (p == buff) break;
@@ -1146,7 +1146,7 @@ public:
 			return;
 
 		string1024				digits;
-		LPSTR					p = buff+len-1;
+		char* p = buff + len - 1;
 		while(isdigit(*p))
 		{
 			if (p == buff) break;
@@ -1234,7 +1234,7 @@ public:
 				if (g_dedicated_server && l_pC->ID == Level().Server->GetServerClient()->ID)
 					return;
 				ip_address			Address;
-				DWORD dwPort		= 0;
+				u32 dwPort = 0;
 				Level().Server->GetClientAddress(client->ID, Address, &dwPort);
 				string512 tmp_string;
 				xr_sprintf(tmp_string, "- (player session id : %u), (name : %s), (ip: %s), (ping: %u), (money: %d);", client->ID.value(),
@@ -1804,7 +1804,7 @@ public:
 	virtual void	Execute					(const char* args) override
 					{
 		ip_address Address;
-		DWORD dwPort = 0;
+		u32 dwPort = 0;
 		
 		Level().GetServerAddress(Address, &dwPort);
 

@@ -67,3 +67,5 @@ if (IXRAY_MP AND IXRAY_MP_SQL)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libssl-1_1-x64.dll ${IXRAY_OUTPUT}
     )
 endif()
+
+ixray_split_compile(xrNetServer)

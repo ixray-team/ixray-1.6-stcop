@@ -72,7 +72,7 @@ public:
 	};
 
 private:
-	LPSTR							s_name_replace;
+	char* s_name_replace;
 
 public:
 	bool							net_Ready;

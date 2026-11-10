@@ -83,7 +83,7 @@ private:
 			void			update_round_states		(EStateType stt_type, float initial, float max_power);
 
 public:
-			static EStateType ParseStateType		( LPCSTR name );
+			static EStateType ParseStateType(const char* name);
 
 private:
 	friend class ui_actor_state_row;
@@ -109,14 +109,14 @@ public:
 		u32 captionColor = 0;
 		u32 valueColor = 0;
 		float magnitude = 100.f;
-		LPCSTR format = "%d%%";
-		LPCSTR font = nullptr;
-		LPCSTR layout = "icon,caption,value";
-		LPCSTR columns = nullptr;
+		const char* format = "%d%%";
+		const char* font = nullptr;
+		const char* layout = "icon,caption,value";
+		const char* columns = nullptr;
 		float pad = 4.f;
 		float valueWidth = 42.f;
-		LPCSTR captionAlign = "left";
-		LPCSTR valueAlign = "right";
+		const char* captionAlign = "left";
+		const char* valueAlign = "right";
 		bool hasCaptionX = false;
 		float captionX = 0.f;
 		bool hasCaptionY = false;

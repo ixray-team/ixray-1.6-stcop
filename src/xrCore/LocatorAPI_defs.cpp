@@ -49,7 +49,7 @@ FS_Path::~FS_Path	()
 	xr_free	(m_Add);
 	xr_free	(m_DefExt);
 	xr_free	(m_FilterCaption);
-	for (LPSTR Retired : m_Retired)
+	for (char* Retired : m_Retired)
 	{
 		xr_free(Retired);
 	}
@@ -58,7 +58,7 @@ FS_Path::~FS_Path	()
 void FS_Path::_set(const char* add)
 {
 	R_ASSERT		(add);
-	LPSTR			NewAdd = xr_strlwr(xr_strdup(add));
+	char* NewAdd = xr_strlwr(xr_strdup(add));
 
 	string_path		temp;
 	xr_strconcat(temp,m_Root,NewAdd);
@@ -71,7 +71,7 @@ void FS_Path::_set(const char* add)
 	xr_strcpy(temp, Platform::ValidPath(temp));
 #endif
 
-	LPSTR			NewPath = xr_strlwr(xr_strdup(temp));
+	char* NewPath = xr_strlwr(xr_strdup(temp));
 
 	std::atomic_thread_fence(std::memory_order_release);
 	if (m_Add != nullptr)

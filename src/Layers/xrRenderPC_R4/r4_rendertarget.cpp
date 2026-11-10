@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
+#include <magic_enum/magic_enum.hpp>
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"
@@ -235,7 +236,7 @@ Ivector	vpack			(Fvector src)
 	return		ipck;
 }
 
-void	generate_jitter	(DWORD*	dest, u32 elem_count)
+void generate_jitter(u32* dest, u32 elem_count)
 {
 	const	int		cmax		= 8;
 	FixedVector<Ivector2,cmax>		samples;
@@ -828,19 +829,17 @@ CRenderTarget::CRenderTarget()
 		rt_dof_focus.create(r2_RT_dof_focus, FW, FH, fmt);
 		rt_dof_focus_prev.create(r2_RT_dof_focus_prev, FW, FH, fmt);
 
-		// Zero marks uninitialized focus history; the first valid sample seeds it.
-		Cmd.ClearTarget(rt_dof_focus->pRT, ERTColor::Transparent);
-		Cmd.ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Transparent);
+		Cmd.ClearTarget(rt_dof_focus->pRT, ERTColor::Gray);
+		Cmd.ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Gray);
 		//fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
 		u32 CoCW = Device.TargetWidth, CoCH = Device.TargetHeight;
 		rt_dof_coc.create(r2_RT_dof_coc, CoCW, CoCH, fmt);
 		rt_dof_coc_prev.create(r2_RT_dof_coc_prev, CoCW, CoCH, fmt);
 
-		CreateDofBlurTargets(Cmd);
+		fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
+		rt_dof_blur1.create(r2_RT_dof_blur1, CoCW, CoCH, fmt);
 
 		CreateEffectSQ<CBlender_new_dof>(s_dof_coc);
-		CBlender_new_dof BlurBlender(true);
-		s_dof_blur1.create(&BlurBlender);
 	}
 
 	s_ssao.create(b_ssao, "r2\\ssao");
@@ -903,7 +902,7 @@ CRenderTarget::CRenderTarget()
 					for (u32 x=0; x<TEX_material_LdotN; x++)
 					{
 						u16*	p	=	(u16*)		
-							(LPBYTE (subData.Data)
+							((u8*)(subData.Data)
 							+ slice*subData.DepthPitch
 							+ y*subData.RowPitch + x*2);
 						float	ld	=	float(x)	/ float	(TEX_material_LdotN-1);
@@ -979,11 +978,11 @@ CRenderTarget::CRenderTarget()
 			{
 				for(u32 x = 0; x < TEX_jitter; x++)
 				{
-					DWORD data[TEX_jitter_count];
+					u32 data[TEX_jitter_count];
 					generate_jitter(data, TEX_jitter_count);
 					for(u32 it = 0; it < TEX_jitter_count; it++)
 					{
-						u32* p = (u32*)(LPBYTE(subData[it].Data) + y * subData[it].DataSize + x * 4);
+						u32* p = (u32*)((u8*)(subData[it].Data) + y * subData[it].DataSize + x * 4);
 						*p = data[it];
 					}
 				}

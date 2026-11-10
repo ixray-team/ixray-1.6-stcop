@@ -283,10 +283,7 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 	phase_bloom_downsample(Cmd);
 	phase_bloom_upsample(Cmd);
 	phase_new_luminance(Cmd);
-	if (LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_DOF))
-	{
-		phase_new_dof(Cmd);
-	}
+	phase_new_dof(Cmd);
 
 	u_setrt(Cmd, rt_Back_Buffer, 0, 0, 0);
 	RImplementation.rmNormal();
@@ -308,15 +305,10 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 
 		DrawPassSQ(Cmd, s_combine, 2, [&]
 		{
-			if (LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_DOF))
-			{
-				const float Width = float(Device.TargetWidth);
-				const float Height = float(Device.TargetHeight);
-				const float PixelScale = std::max(Width / float(rt_dof_blur1->dwWidth), Height / float(rt_dof_blur1->dwHeight));
-				Cmd.Constants.Write<CBPost>().dof_combine_params.set(Width, Height, PixelScale, g_DofMaxRadius);
-			}
+			Cmd.Constants.Write<CBPost>().dof_params.set(dof.x, dof.y, dof.z, ps_r2_dof_sky);
+			Cmd.Constants.Write<CBPost>().dof_kernel.set(vDofKernel.x, vDofKernel.y, DofKernelSize);
 			Cmd.Constants.Write<CBPost>().autoexposure_params.set(ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
-			Cmd.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
+			Cmd.Constants.Write<CBPost>().bloom_params.set(Device.Grade(1, ps_r2_bloom_amount), ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, Device.Grade(0, 0.f));
 			Cmd.Constants.Write<CBPost>().tonemap_params.set(ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
 			Cmd.Constants.Write<CBPost>().bloom_tint.set(ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
 			Cmd.Constants.Write<CBPost>().spp_params.set(ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f, ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f, 0.0f, 0.0f);

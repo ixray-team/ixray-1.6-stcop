@@ -283,9 +283,9 @@ shared_str door::get_initiators_ids	( ) const
 	for ( ; i != e; ++i )
 		buffer_size				+= xr_strlen((*i)->get_name()) + 2;
 
-	LPSTR const result			= (LPSTR)_alloca(buffer_size);
+	char* const result = (char*)_alloca(buffer_size);
 	*result						= 0;
-	LPSTR j						= result;
+	char* j = result;
 	for ( i = m_initiators.begin(); i != e; ++i ) {
 		u32 const length		= xr_strlen((*i)->get_name());
 		Memory.mem_copy			( j, (*i)->get_name(), length );

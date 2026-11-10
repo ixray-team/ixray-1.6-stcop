@@ -65,9 +65,9 @@ protected:
 	/////////////////////////////////////////////////
 public:
 	virtual CHolderCustom	*cast_holder_custom	()				{return this;}
-	virtual void			Load				(LPCSTR section);
+	virtual void Load(const char* section);
 
-	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
+	virtual s32 net_Spawn(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
 	virtual void			net_Export			(NET_Packet& P);	// export to server
 	virtual void			net_Import			(NET_Packet& P);	// import from server
@@ -77,7 +77,7 @@ public:
 
 	virtual void			renderable_Render(IDSGraphManager* DM);
 
-	virtual	BOOL			UsedAI_Locations	(){return FALSE;}
+	virtual s32 UsedAI_Locations() { return FALSE; }
 
 	// control functions
 	virtual void			OnMouseMove			(int x, int y);

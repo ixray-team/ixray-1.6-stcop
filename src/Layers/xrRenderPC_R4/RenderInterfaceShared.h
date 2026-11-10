@@ -21,7 +21,7 @@ ref_shader CRender::getShaderShared(shared_str id)
 		xr_stack_string128 ShaderName = id.c_str();
 		auto SplitPos = ShaderName.find("/");
 		ShaderName[SplitPos] = '\0';
-		LPCSTR Textures = ShaderName.c_str()+SplitPos+1;
+		const char* Textures = ShaderName.c_str() + SplitPos + 1;
 		auto Shader = dxRenderDeviceRender::Instance().Resources->Create(
 			ShaderName.c_str(),
 			Textures
@@ -202,9 +202,7 @@ StaticWallmarkHandle::WallmarkHandlePtr CRender::add_DynamicWallmark(const wm_sh
 
 	dxUIShader* pShader = (dxUIShader*)&*S;
 	auto wm = Wallmarks->AddStaticWallmark(T, V, P, pShader->hShader, w, h, r, Flags8(StaticWallmarkHandle::flHandler | StaticWallmarkHandle::flForceSpawn));
-	VERIFY(wm);
-
-	return wm->handler;
+	return wm ? wm->handler : nullptr;
 }
 
 void CRender::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)

@@ -14,6 +14,7 @@
 #include "../xrEngine/xr_level_controller.h"
 
 #include "ImUtils/ImUtils.h"
+#include "../xrEngine/ImGuiManager.h"
 #include "Cinema/CinemaApi.h"
 
 void CCC_RegisterCommands	();
@@ -33,7 +34,7 @@ void LoadCallbackGlobals(bool& flag, const char*& value, const char* section)
 };
 
 extern void RegisterImGuiInGame();
-static LPVOID __cdecl luabind_allocator(
+static void* __cdecl luabind_allocator(
 	luabind::memory_allocation_function_parameter const,
 	void const* const pointer,
 	size_t const size
@@ -41,7 +42,7 @@ static LPVOID __cdecl luabind_allocator(
 {
 	if (!size) 
 	{
-		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
+		void* non_const_pointer = const_cast<void*>(pointer);
 		xr_free(non_const_pointer);
 		return	(0);
 	}
@@ -51,7 +52,7 @@ static LPVOID __cdecl luabind_allocator(
 		return	(Memory.mem_alloc(size));
 	}
 
-	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
+	void* non_const_pointer = const_cast<void*>(pointer);
 	return (Memory.mem_realloc(non_const_pointer, size));
 }
 
@@ -133,6 +134,7 @@ extern "C"
 	{
 		CinemaFilmMaker_Shutdown();
 		CinemaEditor_Shutdown();
+		CImGuiManager::Instance().HiddenCallback = nullptr;
 		Cinema::ShutdownPlayer();
 		CDynamicWallmarkRegistry::Instance().ClearWallmarks();
 	}

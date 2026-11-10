@@ -41,6 +41,10 @@ Stages 1–5 are in `src/xrEngine/x_ray.cpp`. Stages between them are in `CAppli
 
 Stage 4 order: `InitSound1` (`-nosound`) → `execUserScript` (`default_controls`, config file) → `InitSound2` → `-start` / `-load` → `CFontManager` → `Device.InitRenderDevice(Engine.External.GetAPI())` (creates `GRHI`; D3D11 for R4, D3D9 otherwise) → `Device.Create`.
 
+For the game, the `vid_mode` resolution list is enumerated on the first main-thread request for options or console suggestions, not while creating the render device. Reading `vid_mode` from the configuration does not need that list. The editor retains its existing eager enumeration. An early request before the render interface exists, or a first request from another thread, receives an empty list; a later main-thread request retries. Once populated, the list remains cached until render-device destruction, so display changes after that point are not reflected until restart.
+
+Post-build check (Debug, then Debug and RelWithDebInfo): compare `EngineLoadStage4`, `InitRenderDevice` and time to the first main-menu frame in cold and warm `startup.opt` captures. Confirm mode enumeration no longer occurs inside game render-device initialization; driver initialization may move work between calls. Open graphics settings and console `vid_mode` suggestions, verify the supported resolutions and current selection, change resolution and apply `vid_restart`, then restart and confirm the saved value. Check windowed and fullscreen modes, multiple displays, and exit without opening settings. The first settings request may still incur enumeration latency. Check the editor separately and load a level to verify rendering.
+
 Stage 5:
 
 ```text

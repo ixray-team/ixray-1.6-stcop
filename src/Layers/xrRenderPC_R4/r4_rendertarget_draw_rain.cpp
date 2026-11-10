@@ -7,8 +7,8 @@ void CRenderTarget::draw_rain(GfxCmdList& Cmd, light& RainSetup)
 	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	float fWetnessFactor = g_pGamePersistent->Environment().wetness_factor;
 
-	const UINT tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
-	const UINT tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
+	const u32 tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
+	const u32 tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
 
 	Fvector L_dir;
 	Fvector W_dirX;

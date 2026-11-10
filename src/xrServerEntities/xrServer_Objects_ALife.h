@@ -389,7 +389,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger,CSE_ALifeSpaceRestrictor)
 	shared_str						m_caLevelToChange;
 	shared_str						m_caLevelPointToChange;
 	bool							m_bSilentMode;
-	LPSTR							destLeveName;
+	char* destLeveName;
 
 									CSE_ALifeLevelChanger		(const char* caSection);
 virtual ~CSE_ALifeLevelChanger		() override;
@@ -645,7 +645,7 @@ virtual ~CSE_ALifeTeamBaseZone	() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTeamCaptureZone, CSE_ALifeSpaceRestrictor)
-CSE_ALifeTeamCaptureZone(LPCSTR caSection);
+CSE_ALifeTeamCaptureZone(const char* caSection);
 virtual ~CSE_ALifeTeamCaptureZone() override;
 
 u8								m_team;

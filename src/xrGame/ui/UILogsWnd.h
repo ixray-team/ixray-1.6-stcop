@@ -98,7 +98,7 @@ private:
 	CUIWindow::WINDOW_LIST&	ItemsCacheForType	(bool forNews);
 	CUIWindow*			CreateItem			(bool forNews);
 	CUIWindow*			ItemFromCache		(bool forNews);
-	void				InitScrollList		(LPCSTR nodeName, CUIScrollView*& outList, CUIWindow* parent = nullptr);
+	void InitScrollList(const char* nodeName, CUIScrollView*& outList, CUIWindow* parent = nullptr);
 	void				InitColumnFrames	();
 	CUIScrollView*		ActiveScrollList	();
 	void				ClearListToCache	(CUIScrollView* list, bool forNews);

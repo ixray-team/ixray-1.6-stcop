@@ -16,15 +16,7 @@ CBUFFER(CBPost, 7)
 	float4 tonemap_params;
 	float4 bloom_tint;
 	float4 spp_params;
-	float4 dof_params; // x - focal length (mm), y - f-number, z - sensor height (m), w - output height
-	float4 dof_combine_params; // xy - output size, z - output pixels per blur pixel, w - maximum radius
-	float4 dof_focus_params; // x - frame blend, y - manual mode, z - manual/fallback distance (m), w - minimum focus (m)
-	float4 dof_focus_point; // xy - target UV, zw - unused
-	float4 dof_classic; // xyz - near, focus, far (m), w - sky distance (m)
-	float4 dof_rt_size; // xy - reduced size, zw - reduced texel size
-	float4 dof_blur_params; // xy - output texel size, z - output pixels per blur pixel, w - maximum output radius
-	float4 dof_downsample_params; // xy - source size, zw - reduced size
-	float4 dof_tile_params; // xy - tile count, zw - inverse tile count (8x8 reduced texels per tile)
+	float4 dof_params;
 	float4 static_color;
 	float4 ui_has_background;
 	float4 RainDensity;
@@ -48,7 +40,7 @@ CBUFFER(CBPost, 7)
 	float puddle_constants;
 	float sharpening_intensity;
 	float NightVisionInterference;
-	float3 dof_kernel; // x - classic radius (output pixels), y - unused, z - radius limit
+	float3 dof_kernel;
 CBUFFER_END
 
 #endif

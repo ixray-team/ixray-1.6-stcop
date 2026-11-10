@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <magic_enum/magic_enum.hpp>
 #include "LevelInspector.h"
 #include "GamePersistent.h"
 #include "Level.h"
@@ -3280,7 +3281,7 @@ void LevelInspector::DrawObjectsInfo()
 	Level().ObjectSpace.RayQuery(
 	RQR, 
 	RD,
-	[](collide::rq_result & result, LPVOID params) -> bool
+	[](collide::rq_result& result, void* params) -> bool
 	{
 		collide::rq_result* RQ = (collide::rq_result*)params;
 
@@ -3296,7 +3297,7 @@ void LevelInspector::DrawObjectsInfo()
 		return false;
 	},
 	&RQ,
-	[](const collide::ray_defs& rd, CObject* object, LPVOID params) -> bool
+	[](const collide::ray_defs& rd, CObject* object, void* params) -> bool
 	{
 		if (object && (object->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{

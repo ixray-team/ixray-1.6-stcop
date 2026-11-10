@@ -435,7 +435,7 @@ bool CScriptEngine::function_object(const char* function_to_call, luabind::objec
 
 	parse_script_namespace	(function_to_call,name_space,sizeof(name_space),function,sizeof(function));
 	if (xr_strcmp(name_space,"_G")) {
-		LPSTR				file_name = strchr(name_space,'.');
+		char* file_name = strchr(name_space, '.');
 		if (!file_name)
 			process_file	(name_space);
 		else {

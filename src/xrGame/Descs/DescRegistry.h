@@ -37,26 +37,6 @@ public:
 		Storage.clear();
 	}
 
-	// The caller must exclude frame readers. Keep descriptor addresses stable.
-	static void ReloadCached()
-	{
-		xr_vector<shared_str> Sections;
-		{
-			xrSRWLockGuard Guard(Lock, true);
-			for (const auto& [Section, Desc] : Storage)
-			{
-				Sections.push_back(Section);
-			}
-		}
-		for (const auto& Section : Sections)
-		{
-			TDesc Replacement;
-			Replacement.Load(Section);
-			xrSRWLockGuard Guard(Lock);
-			*Storage.at(Section) = std::move(Replacement);
-		}
-	}
-
 private:
 	inline static xr_hash_map<shared_str, xr_unique_ptr<TDesc>> Storage;
 	inline static xrSRWLock Lock;

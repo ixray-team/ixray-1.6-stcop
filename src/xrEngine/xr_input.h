@@ -164,7 +164,7 @@ public:
 
 	void						unacquire();
 	void						acquire();
-	bool						get_dik_name(int dik, LPSTR dest, int dest_sz);
+	bool get_dik_name(int dik, char* dest, int dest_sz);
 
 	void						feedback(u16 s1, u16 s2, float time);
 

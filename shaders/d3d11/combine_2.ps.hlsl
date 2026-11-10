@@ -65,6 +65,8 @@ float3 main(PSInputFullscreen I) : SV_Target
     Color.rgb += bloom_params.x * Bloom.rgb;
 #endif
     
+    Color.rgb *= exp2(bloom_params.w);
+
 #ifdef USE_NEW_ADAPT 
 	// new adapt should work fine with vanilla tonemapping operator
     float adaptation_mult = 1.0f; // just in case we want to tweak the avg ratio

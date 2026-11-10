@@ -8,7 +8,6 @@
 
 #include "StdAfx.h"
 #include "alife_object_registry.h"
-#include "../xrEngine/EngineApp.h"
 #include "ai_debug.h"
 #include "../xrEngine/EngineApp.h"
 

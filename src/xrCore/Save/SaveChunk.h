@@ -25,7 +25,7 @@ public:
 	virtual ~CSaveChunk() override;
 
 	void SetChunkName(shared_str ChunkName) {IVERIFY(!_chunkName.size()); _chunkName = ChunkName;}
-	LPCSTR GetChunkName() const { return _chunkName.c_str(); }
+	const char* GetChunkName() const { return _chunkName.c_str(); }
 	u16 GetArrStackSize() const { return _currentArrayStack.size(); }
 
 	virtual ISaveable* GetCurrentElement() override { return nullptr; };
@@ -63,7 +63,7 @@ public:
 	void w_u8(u8 a);
 	void w_s8(s8 a);
 	void w_string(shared_str S);
-	void w_string_long(LPCSTR S);
+	void w_string_long(const char* S);
 	
 	void CopySubchunks(CSaveChunk* Chunk);
 	void AttachSubchunk(CSaveChunk* Chunk); // Make copy of chunk and attach copy as a subchunk

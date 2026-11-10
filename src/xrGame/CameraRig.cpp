@@ -761,7 +761,7 @@ static void rig_rotate_bone(IKinematics* model, u16 bone, const Fvector& pivot, 
 	CCameraRig::TransformBone(model, bone, delta);
 }
 
-void CCameraRig::SolveLimb(IKinematics* model, const u16* chain, const Fmatrix& target, float weight)
+void CCameraRig::SolveLimb(IKinematics* model, const u16* chain, const Fmatrix& target, float weight, const Fvector* pole_target)
 {
 	if (weight <= EPS || chain[0] == BI_NONE || chain[1] == BI_NONE || chain[2] == BI_NONE)
 	{
@@ -786,7 +786,7 @@ void CCameraRig::SolveLimb(IKinematics* model, const u16* chain, const Fmatrix& 
 	const float reach = std::clamp(length, std::abs(upper - lower) + EPS_L, upper + lower - EPS_L);
 
 	Fvector pole;
-	pole.sub(joint, root);
+	pole.sub(pole_target ? *pole_target : joint, root);
 	pole.mad(dir, -pole.dotproduct(dir));
 	if (pole.square_magnitude() <= EPS_S)
 	{

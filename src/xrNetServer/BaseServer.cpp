@@ -568,7 +568,7 @@ bool BaseServer::HasBandwidth(IClient * C)
 	if (psNET_ServerUpdate != 0 && (dwTime - C->dwTime_LastUpdate) > dwInterval)
 	{
 		//check queue for "empty" state
-		DWORD dwPending;
+		u32 dwPending;
 		if (!GetClientPendingMessagesCount(C->ID.value(), dwPending))
 		{
 			return false;

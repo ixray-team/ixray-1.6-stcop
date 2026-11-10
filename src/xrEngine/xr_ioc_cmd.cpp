@@ -4,6 +4,7 @@
 #include "x_ray.h"
 #include "xr_ioc_cmd.h"
 #include "CameraManager.h"
+#include "ImGuiManager.h"
 #include "Environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
@@ -13,6 +14,8 @@
 #include "GamepadService.h"
 #include "xr_object.h"
 #include "../xrCore/BackgroundLoad.h"
+
+xr_token* GetVideoModeList();
 
 xr_token* vid_quality_token = nullptr;
 
@@ -311,12 +314,7 @@ void CCC_SaveCFG::Execute(const char* args)
 
 	if (b_allow)
 	{
-		IWriter* F = FS.w_open_ex(cfg_full_name);
-		if (!F)
-		{
-			Msg("!Cannot store config file [%s]", cfg_full_name);
-			return;
-		}
+		IWriter* F = FS.w_open(cfg_full_name);
 		for (auto& val : Console->Commands | std::views::values)
 		{
 			val->Save(F);
@@ -383,7 +381,7 @@ class CCC_Start : public IConsole_Command
 			sscanf(strstr(args,name)+xr_strlen(name),"(%4095[^)])",dest);
 	}
 
-	void	protect_Name_strlwr( LPSTR str )
+	void protect_Name_strlwr(char* str)
 	{
  		string4096	out;
 		xr_strcpy( out, sizeof(out), str );
@@ -496,7 +494,7 @@ public :
 		xr_sprintf(S,sizeof(S),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]); 
 	}
 
-	virtual xr_token* GetToken() override {return vid_mode_token;}
+	virtual xr_token* GetToken() override { return GetVideoModeList(); }
 
 	virtual void	Info	(TInfo& I) override
 	{	
@@ -897,6 +895,7 @@ void CCC_Register()
 	CMD1(CCC_VidMode, "vid_mode");
 	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
 	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
+	CMD4(CCC_Float, "imgui_scale", &psImGuiScale, 0.5f, 3.0f);
 	CMD3(CCC_Token, "vid_scale_mode", &ps_proxy_r_scale_mode, qscale_mode_token);
 	CMD3(CCC_Token, "r_dlss_model", &ps_r_dlss_model, dlss_model_token);
 	CMD4(CCC_Float, "vram_textures_mb", &ps_vram_textures_mb, 0.f, 65536.f);

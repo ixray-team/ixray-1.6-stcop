@@ -31,7 +31,7 @@ public:
 	virtual void				OnPlayerReady(ClientID id_who) override;
 	virtual void				OnPlayerConnect(ClientID id_who) override;
 	virtual void				OnPlayerConnectFinished(ClientID id_who) override;
-	void				OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
+	void OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID) override;
 	virtual void				OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
 	virtual		void				OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID);
 	virtual void				OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) override;

@@ -43,7 +43,7 @@ struct PickContext
 	bool IgnoreActorObstacles = true;
 };
 
-static bool PickCallback(collide::rq_result& Result, LPVOID Data)
+static bool PickCallback(collide::rq_result& Result, void* Data)
 {
 	auto& Context = *static_cast<PickContext*>(Data);
 	const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];

@@ -211,7 +211,7 @@ CUILogsWnd::~CUILogsWnd()
 	delete_data(_itemsCacheTalk);
 }
 
-void CUILogsWnd::InitScrollList(LPCSTR nodeName, CUIScrollView*& outList, CUIWindow* parent)
+void CUILogsWnd::InitScrollList(const char* nodeName, CUIScrollView*& outList, CUIWindow* parent)
 {
 	CUIWindow* attachParent = parent ? parent : this;
 

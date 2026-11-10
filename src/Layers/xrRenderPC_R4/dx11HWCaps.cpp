@@ -9,8 +9,8 @@ RENDER_API CHWCaps Caps;
 void CHWCaps::Update()
 {
 	// ***************** GEOMETRY
-	DWORD cnt = 256;
-	clamp<DWORD>(cnt, 0, 256);
+	u32 cnt = 256;
+	clamp<u32>(cnt, 0, 256);
 	geometry.dwRegisters = cnt;
 
 	// ***************** PIXEL processing

@@ -66,6 +66,47 @@ CRHI::LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, E
     return DevicePtr->LoadDDS(data, size, usage, bind_flags, cpu_flags, lod, fallback, out_surface);
 }
 
+HRESULT CRHI::EncodeJpeg(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_vector<u8>& Out)
+{
+	Out.clear();
+	DirectX::ScratchImage Image;
+	HRESULT Result = Image.Initialize2D(DXGI_FORMAT_B8G8R8A8_UNORM, Width, Height, 1, 1);
+	if (FAILED(Result))
+	{
+		return Result;
+	}
+	const DirectX::Image* Frame = Image.GetImage(0, 0, 0);
+	for (u32 Row = 0; Row < Height; ++Row)
+	{
+		u8* Line = Frame->pixels + size_t(Row) * Frame->rowPitch;
+		memcpy(Line, Pixels + size_t(Row) * Pitch, size_t(Width) * 4);
+		for (u32 Pixel = 0; Pixel < Width; ++Pixel)
+		{
+			Line[Pixel * 4 + 3] = 0xff;
+#ifndef IXR_WINDOWS
+			std::swap(Line[Pixel * 4], Line[Pixel * 4 + 2]);
+#endif
+		}
+	}
+#ifdef IXR_WINDOWS
+	DirectX::Blob Encoded;
+	Result = DirectX::SaveToWICMemory(*Frame, DirectX::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, Encoded);
+	if (SUCCEEDED(Result))
+	{
+		const u8* Begin = static_cast<const u8*>(Encoded.GetBufferPointer());
+		Out.assign(Begin, Begin + Encoded.GetBufferSize());
+	}
+	return Result;
+#else
+	const auto Append = [](void* Context, void* Data, int Size)
+	{
+		const u8* Begin = static_cast<const u8*>(Data);
+		static_cast<xr_vector<u8>*>(Context)->insert(static_cast<xr_vector<u8>*>(Context)->end(), Begin, Begin + Size);
+	};
+	return stbi_write_jpg_to_func(Append, &Out, static_cast<int>(Width), static_cast<int>(Height), 4, Frame->pixels, 90) ? S_OK : E_FAIL;
+#endif
+}
+
 HRESULT
 CRHI::EncodeRenderTarget(IRHIRenderTargetView* target, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data)
 {

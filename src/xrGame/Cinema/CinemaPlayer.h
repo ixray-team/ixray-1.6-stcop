@@ -38,14 +38,24 @@ public:
 	void RequestAttach(u32 ObjectId, s32 Block, const Attachment& NewAttach);
 	bool HasRequests() const { return !FitRequests.empty() || !AttachRequests.empty(); }
 	const ActorRuntime* FindActor(u32 ObjectId) const;
+	void PreviewClip(u32 ObjectId, s32 Clip, float Time);
+	bool BakeClip(u32 ObjectId, s32 Clip, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts);
+	u32 BakeSource(u32 ObjectId, const shared_str& Source, const shared_str& Name, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts);
 	const LightRuntime* FindLight(u32 ObjectId) const;
 	const ParticleRuntime* FindParticle(u32 ObjectId) const;
+	const DecalRuntime* FindDecal(u32 ObjectId) const;
 	const BlockCache* FindCameraBlock(u32 Block) const;
 	const ObjectState* FindState(u32 ObjectId) const;
 	ViewSource View() const { return CurrentView; }
+	bool IsCutBetween(float From, float To) const;
 	bool IsSilent(const Object& Item) const { return Item.IsMuted || (!Soloed.empty() && std::find(Soloed.begin(), Soloed.end(), Item.Id) == Soloed.end()); }
 	void EndLevel();
 	void RestoreDofSwitch();
+	void GhostBones(u32 ObjectId, float At, xr_vector<Fvector>& Lines);
+	bool BakeMotion(u32 ObjectId, float From, u32 Frames, bool IsPoseOnly, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts);
+	bool PathPoint(u32 ObjectId, float At, Fvector& Point) const;
+	const xr_vector<shared_str>& Shaders();
+	bool LinkFrame(const AttachLink& Link, Fmatrix& Out) const { u8 Problems = 0; return Frame(Link, Out, Problems, 0); }
 	Scene Data;
 	xr_vector<u32> Soloed;
 	float Time = 0.0f, PlayStart = 0.0f, Speed = 1.0f;
@@ -81,15 +91,23 @@ private:
 	void RefreshLinks();
 	void Convert(const AttachRequest& Request);
 	void EvaluateObjects(float At, const u8* Mask);
+	void EvaluateLinked(u32 Index, float At);
 	void PoseActor(u32 Index, float At, bool IsNeeded);
 	void PoseCamera(u32 Index, float At);
 	void PoseLight(u32 Index, float At, bool IsDrawn);
 	void PoseParticle(u32 Index, float At, bool IsDrawn);
+	void PoseDecal(u32 Index, float At, bool IsDrawn);
+	void Stamp(DecalRuntime& Runtime, const Fmatrix& World, float Size);
 	float PoseTransform(u32 Index, float At, const Fvector& Position, const Fvector& Rotation);
 	void DropRuntimes();
 	void Resolve(const Attachment& Links, bool IsActor, LinkFrames& Out) const;
+	void Unhook(const Attachment& Links, const xr_vector<Lane>& Lanes, float Start, float Local, LinkFrames& Out);
+	bool FrameAt(const AttachLink& Link, float At, Fmatrix& Out);
 	bool Frame(const AttachLink& Link, Fmatrix& Out, u8& Problems, u8 BoneProblem) const;
 	void OutputCamera();
+	void OutputWeather();
+	void OutputPost();
+	bool IsCut(const CameraPose& From, s32 FromBlock, const CameraPose& To, s32 ToBlock) const;
 	void OutputDof(const CameraSample& Lens);
 	void FlushCamera();
 	void Release();
@@ -102,8 +120,10 @@ private:
 	xr_vector<xr_unique_ptr<ActorRuntime>> Actors;
 	xr_vector<xr_unique_ptr<LightRuntime>> Lights;
 	xr_vector<xr_unique_ptr<ParticleRuntime>> Emitters;
+	xr_vector<xr_unique_ptr<DecalRuntime>> Decals;
 	xr_vector<u32> RuntimeIds;
 	float Played = 0.0f;
+	float EvaluationTime = 0.0f;
 	xr_vector<u32> FitRequests;
 	xr_vector<AttachRequest> AttachRequests;
 	xr_vector<BlockCache> CameraCache;
@@ -123,8 +143,12 @@ private:
 	CEffectorCam* Effector = nullptr;
 	ViewSource CurrentView = ViewSource::None;
 	bool IsEditorOpen = false, IsEditorCamera = false, IsDofForced = false;
-	CameraPose EditorPose;
+	CameraPose EditorPose, LastPose;
+	s32 LastBlock = -1;
+	bool HasLastPose = false;
 	u32 RetargetIndex = 0;
+	xr_vector<shared_str> ShaderNames;
+	bool IsShadersRead = false;
 };
 
 Player* FindPlayer();

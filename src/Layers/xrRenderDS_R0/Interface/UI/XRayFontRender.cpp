@@ -10,7 +10,7 @@ CDS0_FontRender::~CDS0_FontRender()
 {
 }
 
-void CDS0_FontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
+void CDS0_FontRender::Initialize(const char* cShader, const char* cTexture)
 {
 }
 

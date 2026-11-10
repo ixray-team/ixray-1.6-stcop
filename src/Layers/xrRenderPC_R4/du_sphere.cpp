@@ -100,7 +100,7 @@ Fvector du_sphere_vertices[DU_SPHERE_NUMVERTEX]={
     {0.5927f,	-0.8054f,	0.0000  }
 };
 
-WORD du_sphere_faces[DU_SPHERE_NUMFACES*3]={
+u16 du_sphere_faces[DU_SPHERE_NUMFACES * 3] = {
     14,	12,    0,
     72,   13,   12,
     14,   72,   12,
@@ -346,7 +346,7 @@ Fvector du_sphere_verticesl[DU_SPHERE_NUMVERTEXL]={
     {0, 		-0.951056f,	0.309018f },
 };
 
-WORD du_sphere_lines[DU_SPHERE_NUMLINES*2]={
+u16 du_sphere_lines[DU_SPHERE_NUMLINES * 2] = {
 	0, 		1,
 	1, 		2,
 	2, 		3,

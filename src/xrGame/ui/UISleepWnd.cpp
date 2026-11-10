@@ -31,9 +31,9 @@
 
 namespace
 {
-constexpr LPCSTR kParams = "sleep_params";
-constexpr LPCSTR kPreset = "sleep_preset_btn";
-constexpr LPCSTR kStrip = "sleep_hours_strip";
+constexpr const char* kParams = "sleep_params";
+constexpr const char* kPreset = "sleep_preset_btn";
+constexpr const char* kStrip = "sleep_hours_strip";
 
 float LevelGameHours()
 {
@@ -56,13 +56,19 @@ void ChangeGameTimeHours(u32 hours)
 	game->alife().time_manager().change_game_time(secs * 1000);
 }
 
-shared_str AttrStr(CUIXml& xml, LPCSTR path, LPCSTR a, const shared_str& fb)
+shared_str AttrStr(CUIXml& xml, const char* path, const char* a, const shared_str& fb)
 {
-	LPCSTR v = xml.ReadAttrib(path, 0, a, nullptr);
+	const char* v = xml.ReadAttrib(path, 0, a, nullptr);
 	return (v && v[0]) ? shared_str(v) : fb;
 }
-bool AttrBool(CUIXml& xml, LPCSTR path, LPCSTR a, bool fb) { return xml.ReadAttribInt(path, 0, a, fb ? 1 : 0) != 0; }
-LPCSTR ResolveFmt(const shared_str& key) { return (!key || key.size() == 0) ? "%s" : *g_pStringTable->translate(key); }
+bool AttrBool(CUIXml& xml, const char* path, const char* a, bool fb)
+{
+	return xml.ReadAttribInt(path, 0, a, fb ? 1 : 0) != 0;
+}
+const char* ResolveFmt(const shared_str& key)
+{
+	return (!key || key.size() == 0) ? "%s" : *g_pStringTable->translate(key);
+}
 
 bool LuaPcall(lua_State* L, int argc, int nres)
 {
@@ -72,7 +78,7 @@ bool LuaPcall(lua_State* L, int argc, int nres)
 	return false;
 }
 
-int PushMgr(lua_State* L, LPCSTR module, LPCSTR getter)
+int PushMgr(lua_State* L, const char* module, const char* getter)
 {
 	if (!L || !g_pGameLevel || !Level().game) return 0;
 	const luabind::object globals = luabind::get_globals(L);
@@ -85,15 +91,19 @@ int PushMgr(lua_State* L, LPCSTR module, LPCSTR getter)
 	return lua_gettop(L);
 }
 
-void SetBool(lua_State* L, int tbl, LPCSTR f, bool v) { lua_pushboolean(L, v ? 1 : 0); lua_setfield(L, tbl, f); }
-bool GetBool(lua_State* L, int tbl, LPCSTR f, bool def = false)
+void SetBool(lua_State* L, int tbl, const char* f, bool v)
+{
+	lua_pushboolean(L, v ? 1 : 0);
+	lua_setfield(L, tbl, f);
+}
+bool GetBool(lua_State* L, int tbl, const char* f, bool def = false)
 {
 	lua_getfield(L, tbl, f);
 	const bool v = lua_isboolean(L, -1) ? (lua_toboolean(L, -1) != 0) : def;
 	lua_pop(L, 1);
 	return v;
 }
-shared_str GetStr(lua_State* L, int tbl, LPCSTR f)
+shared_str GetStr(lua_State* L, int tbl, const char* f)
 {
 	lua_getfield(L, tbl, f);
 	shared_str v;
@@ -110,7 +120,7 @@ void ForceWeather(lua_State* L, int mgr)
 	LuaPcall(L, 1, 0);
 }
 
-void CallXrEffect(LPCSTR fn)
+void CallXrEffect(const char* fn)
 {
 	CActor* actor = Actor();
 	CGameObject* go = actor ? actor->cast_game_object() : nullptr;
@@ -121,7 +131,7 @@ void CallXrEffect(LPCSTR fn)
 	f(ao, luabind::object(), luabind::object());
 }
 
-void ScriptCb(LPCSTR name, int hours)
+void ScriptCb(const char* name, int hours)
 {
 	lua_State* L = ai().script_engine().lua();
 	if (!L) return;
@@ -132,7 +142,7 @@ void ScriptCb(LPCSTR name, int hours)
 	LuaPcall(L, 2, 0);
 }
 
-void AddPP(LPCSTR fn, int id)
+void AddPP(const char* fn, int id)
 {
 	if (CActor* a = Actor())
 	{
@@ -154,7 +164,7 @@ void GiveTutorialSleep()
 void CreateSleepCover(CUIXml& xml, CUIWindow* parent)
 {
 	if (!xml.NavigateToNode("static_cover", 0)) return;
-	LPCSTR coverTex = xml.Read("static_cover:texture", 0, nullptr);
+	const char* coverTex = xml.Read("static_cover:texture", 0, nullptr);
 	bool nine = false;
 	if (coverTex && coverTex[0])
 	{
@@ -188,11 +198,11 @@ void SetupPanorama(shared_str tex, CUIStatic* s0, CUIStatic* s1, Frect& outTex, 
 
 void LoadSleepSounds(CUIXml& xml, ref_sound snd[], u8 count)
 {
-	static constexpr LPCSTR keys[] = {
+	static constexpr const char* keys[] = {
 		"snd_open", "snd_close", "snd_sleep", "snd_cancel", "snd_track", "snd_preset", "snd_warning"
 	};
 	for (u8 i = 0, n = std::min(count, u8(std::size(keys))); i < n; ++i)
-		if (LPCSTR name = xml.ReadAttrib(kParams, 0, keys[i], nullptr); name && name[0])
+		if (const char* name = xml.ReadAttrib(kParams, 0, keys[i], nullptr); name && name[0])
 			snd[i].create(name, st_Effect, sg_SourceType);
 }
 
@@ -256,7 +266,7 @@ public:
 	}
 };
 
-static void AddCamCB(CUISleepWnd* owner, LPCSTR fn, int id)
+static void AddCamCB(CUISleepWnd* owner, const char* fn, int id)
 {
 	CActor* a = Actor();
 	if (!a || !owner) return;
@@ -281,17 +291,21 @@ void CUISleepWnd::LoadSleepParams(CUIXml& xml)
 		return;
 	}
 	auto& p = m_params;
-	auto str = [&](LPCSTR a, shared_str& dst) { dst = AttrStr(xml, kParams, a, dst); };
-	auto bol = [&](LPCSTR a, bool fb) { return AttrBool(xml, kParams, a, fb); };
-	auto i32 = [&](LPCSTR a, int fb) { return xml.ReadAttribInt(kParams, 0, a, fb); };
-	auto flt = [&](LPCSTR a, float fb) { return xml.ReadAttribFlt(kParams, 0, a, fb); };
+	auto str = [&](const char* a, shared_str& dst)
+	{ dst = AttrStr(xml, kParams, a, dst); };
+	auto bol = [&](const char* a, bool fb)
+	{ return AttrBool(xml, kParams, a, fb); };
+	auto i32 = [&](const char* a, int fb)
+	{ return xml.ReadAttribInt(kParams, 0, a, fb); };
+	auto flt = [&](const char* a, float fb)
+	{ return xml.ReadAttribFlt(kParams, 0, a, fb); };
 
 	str("panorama_texture", p.panoramaTexture);
 	p.panoramaHours = std::max(1, i32("panorama_hours", p.panoramaHours));
-	if (LPCSTR bind = xml.ReadAttrib(kParams, 0, "panorama_bind", nullptr); bind && bind[0])
+	if (const char* bind = xml.ReadAttrib(kParams, 0, "panorama_bind", nullptr); bind && bind[0])
 		p.panoramaBindWake = (0 == xr_strcmp(bind, "wake"));
 	p.panoramaSmoothSpeed = std::max(0.f, flt("panorama_smooth_speed", p.panoramaSmoothSpeed));
-	if (LPCSTR fit = xml.ReadAttrib(kParams, 0, "panorama_scale", nullptr); fit && fit[0])
+	if (const char* fit = xml.ReadAttrib(kParams, 0, "panorama_scale", nullptr); fit && fit[0])
 		p.panoramaNativeScale = (0 == xr_strcmp(fit, "native"));
 	p.panoramaTexScale = std::max(1.f, flt("panorama_tex_scale", p.panoramaTexScale));
 	p.panoramaWrap = bol("panorama_wrap", true);
@@ -317,8 +331,8 @@ void CUISleepWnd::LoadSleepParams(CUIXml& xml)
 	str("fmt_time_now", p.fmtTimeNow);
 	str("fmt_sleep_duration", p.fmtSleepDuration);
 	str("fmt_wake_time", p.fmtWakeTime);
-	if (LPCSTR sep = xml.ReadAttrib(kParams, 0, "time_separator", nullptr); sep && sep[0]) p.timeSeparator = sep[0];
-	if (LPCSTR prec = xml.ReadAttrib(kParams, 0, "time_precision", nullptr))
+	if (const char* sep = xml.ReadAttrib(kParams, 0, "time_separator", nullptr); sep && sep[0]) p.timeSeparator = sep[0];
+	if (const char* prec = xml.ReadAttrib(kParams, 0, "time_precision", nullptr))
 		p.timePrecision = (0 == xr_strcmp(prec, "hours")) ? 0 : (0 == xr_strcmp(prec, "seconds") ? 2 : 1);
 	p.trackSmoothSpeed = flt("track_smooth_speed", p.trackSmoothSpeed);
 	m_paramsBase = m_params;
@@ -358,7 +372,7 @@ void CUISleepWnd::Init(CUIXml& xml)
 	if (m_timeTrack) m_trackVisual = float(m_timeTrack->GetIValue());
 	m_trackTarget = m_trackVisual;
 
-	auto bindBtn = [&](LPCSTR node, void (CUISleepWnd::*cb)(CUIWindow*, void*))
+	auto bindBtn = [&](const char* node, void (CUISleepWnd::*cb)(CUIWindow*, void*))
 	{
 		CUI3tButton* btn = UIHelper::Create3tButton(xml, node, m_background);
 		Register(btn);
@@ -370,10 +384,10 @@ void CUISleepWnd::Init(CUIXml& xml)
 	m_stTimeNow = UIHelper::CreateStatic(xml, "st_time_now", m_background, false);
 	m_stSleepDuration = UIHelper::CreateStatic(xml, "st_sleep_duration", m_background, false);
 	m_stWakeTime = UIHelper::CreateStatic(xml, "st_wake_time", m_background, false);
-	auto overrideFmt = [&](LPCSTR node, shared_str& dst)
+	auto overrideFmt = [&](const char* node, shared_str& dst)
 	{
 		if (!xml.NavigateToNode(node, 0)) return;
-		if (LPCSTR fmt = xml.ReadAttrib(node, 0, "format", nullptr); fmt && fmt[0]) dst = fmt;
+		if (const char* fmt = xml.ReadAttrib(node, 0, "format", nullptr); fmt && fmt[0]) dst = fmt;
 	};
 	overrideFmt("st_time_now", m_params.fmtTimeNow);
 	overrideFmt("st_sleep_duration", m_params.fmtSleepDuration);
@@ -408,7 +422,8 @@ void CUISleepWnd::BuildHourLabels(CUIXml& xml)
 
 	if (xml.NavigateToNode(kStrip, 0))
 	{
-		auto flt = [&](LPCSTR a, float fb) { return xml.ReadAttribFlt(kStrip, 0, a, fb); };
+		auto flt = [&](const char* a, float fb)
+		{ return xml.ReadAttribFlt(kStrip, 0, a, fb); };
 		int count = xml.ReadAttribInt(kStrip, 0, "count", 24);
 		clamp(count, 1, 24);
 		const float x = flt("x", 0.f), y = flt("y", 0.f), w = flt("width", 0.f), h = flt("height", 15.f);
@@ -518,7 +533,7 @@ void CUISleepWnd::ClearSleepSessionOverrides()
 	ApplySessionOverrides();
 }
 
-void CUISleepWnd::SetSleepBlocked(bool blocked, LPCSTR warningText)
+void CUISleepWnd::SetSleepBlocked(bool blocked, const char* warningText)
 {
 	m_sleepBlocked = blocked;
 	m_sleepBlockedWarning = (warningText && warningText[0]) ? shared_str(warningText) : shared_str{};
@@ -545,7 +560,7 @@ void CUISleepWnd::RebuildPresetButtons()
 	CUIXml xml;
 	const bool hasXml = xml.Load(CONFIG_PATH, UI_PATH, "ui_sleep_dialog.xml") && xml.NavigateToNode(kPreset, 0);
 	float curX = m_presetTplPos.x;
-	LPCSTR suffix = *g_pStringTable->translate(m_params.hourLabelSuffix);
+	const char* suffix = *g_pStringTable->translate(m_params.hourLabelSuffix);
 
 	for (int h : m_presetHours)
 	{
@@ -715,7 +730,7 @@ void CUISleepWnd::RefreshHourLabels()
 	if (base == m_lastHourLabelBase) return;
 	m_lastHourLabelBase = base;
 
-	LPCSTR suffix = *g_pStringTable->translate(m_params.hourLabelSuffix);
+	const char* suffix = *g_pStringTable->translate(m_params.hourLabelSuffix);
 	for (u32 i = 0; i < m_hourLabels.size(); ++i)
 	{
 		CUIStatic* st = m_hourLabels[i];
@@ -738,7 +753,8 @@ void CUISleepWnd::UpdateTimeInfo()
 	const u64 now = Level().GetGameTime();
 	const u64 wake = now + u64(hours) * 3600ull * 1000ull;
 	string256 buf;
-	auto setSt = [&](CUIStatic* st, LPCSTR text) { if (st) st->TextItemControl()->SetText(text); };
+	auto setSt = [&](CUIStatic* st, const char* text)
+	{ if (st) st->TextItemControl()->SetText(text); };
 	if (m_stTimeNow)
 	{
 		xr_sprintf(buf, ResolveFmt(m_params.fmtTimeNow), *GetTimeAsString(now, prec, m_params.timeSeparator, true));

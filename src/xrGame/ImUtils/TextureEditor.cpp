@@ -1,5 +1,6 @@
 
 #include "StdAfx.h"
+#include <magic_enum/magic_enum.hpp>
 #include "../Level.h"
 #include "../Actor.h"
 #include "../alife_simulator.h"

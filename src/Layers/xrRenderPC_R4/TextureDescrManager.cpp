@@ -11,9 +11,9 @@ static shared_str NormalizeTexKey(const shared_str& Name)
 #endif
 }
 
-void fix_texture_thm_name(LPSTR fn)
+void fix_texture_thm_name(char* fn)
 {
-	LPSTR _ext = strext(fn);
+	char* _ext = strext(fn);
 	if(  _ext					&&
 	  (0==_stricmp(_ext,".tga")	||
 		0==_stricmp(_ext,".thm")	||
@@ -404,4 +404,3 @@ bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*
 	}
 	return false;
 }
-

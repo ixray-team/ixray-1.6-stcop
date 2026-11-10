@@ -2,9 +2,9 @@
 
 namespace Cinema
 {
-inline constexpr u32 FormatVersion = 13;
+inline constexpr u32 FormatVersion = 19;
 inline constexpr u32 MaxObjects = 1024, MaxFolders = 256, MaxBlocks = 256, MaxPacks = 64;
-inline constexpr u32 MaxLaneKeys = 4096, MaxPoseKeys = 1024, MaxShakes = 32, MaxLayer = 31, MaxLanes = 16, MaxShakeClips = 256, MaxShakeRows = 8, MaxActorLayers = 7, MaxAddRows = 4;
+inline constexpr u32 MaxLaneKeys = 4096, MaxPoseKeys = 1024, MaxShakes = 32, MaxLayer = 31, MaxLanes = 544, MaxShakeClips = 256, MaxShakeRows = 8, MaxActorLayers = 7, MaxAddRows = 4, MaxPoseRows = 4, MaxPoseBones = 64;
 inline constexpr u32 MaxNameBytes = 127, MaxIdentifier = 255, MaxAttachDepth = 8, MaxMarkers = 256, MaxTextureBytes = 239;
 inline constexpr float MaxTime = 3600.0f, MinLength = 0.01f, MaxLoops = 1000.0f, MaxCameraBlend = 10.0f;
 inline constexpr float MaxPreroll = 10.0f, PrerollStep = 1.0f / 30.0f;
@@ -14,7 +14,10 @@ enum class ObjectType : u8
 	Actor,
 	Camera,
 	Light,
-	Particle
+	Particle,
+	Decal,
+	Weather,
+	Post
 };
 
 enum class DofMode : u8
@@ -79,6 +82,52 @@ enum class Param : u8
 	DofNear,
 	DofFar,
 	DofBlur,
+	CameraSmooth,
+	PoseWeight,
+	BoneRotation,
+	BonePosition,
+	BoneScale,
+	AttachWeight,
+	Look,
+	IkTarget,
+	IkTurn,
+	IkPole,
+	IkWeight,
+	ConstraintWeight,
+	DecalWidth,
+	DecalHeight,
+	WeatherTime,
+	SunHeading,
+	SunHeight,
+	SunColor,
+	SunBrightness,
+	SunShafts,
+	AmbientColor,
+	HemiColor,
+	FogColor,
+	FogDensity,
+	FogDistance,
+	FarPlane,
+	RainDensity,
+	WindSpeed,
+	WindDirection,
+	SkyRotation,
+	PostBase,
+	PostAdd,
+	PostGrayColor,
+	PostGray,
+	PostBlur,
+	PostDualityH,
+	PostDualityV,
+	PostNoise,
+	PostGrain,
+	PostNoiseFps,
+	PostFade,
+	PostFadeColor,
+	PostExposure,
+	PostBloom,
+	PostTonemap,
+	PostMiddleGray,
 	ShakeInfluence,
 	ShakePositionScale,
 	ShakeSpeed,
@@ -92,6 +141,7 @@ struct Key
 	Interp Mode = Interp::EaseInOut;
 	float InTime = 0.0f, InValue = 0.0f;
 	float OutTime = 0.0f, OutValue = 0.0f;
+	bool IsBroken = false;
 
 	bool operator==(const Key&) const = default;
 };
@@ -109,6 +159,8 @@ struct Curve
 {
 	xr_vector<Key> Keys;
 	Generator Gen;
+	u8 Pre = 0;
+	u8 Post = 0;
 
 	bool operator==(const Curve&) const = default;
 };
@@ -145,6 +197,7 @@ struct Attachment
 	bool IsRollLocked = false, IsPitchLocked = false;
 	AttachLink LookAt;
 	bool IsYawOnly = false;
+	float Weight = 1.0f;
 
 	bool operator==(const Attachment&) const = default;
 };
@@ -183,10 +236,155 @@ struct ActorLayer
 	bool operator==(const ActorLayer&) const = default;
 };
 
+struct PoseBone
+{
+	shared_str Name;
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Offset = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Scale = Fvector().set(1.0f, 1.0f, 1.0f);
+
+	bool operator==(const PoseBone&) const = default;
+};
+
+inline bool IsBoneParam(Param Id)
+{
+	return Id == Param::BoneRotation || Id == Param::BonePosition || Id == Param::BoneScale;
+}
+
+inline constexpr u32 MaxLooks = 16, MaxLookSurfaces = 64, ItemSurfaceBase = 64;
+
+struct SurfaceShader
+{
+	u8 Surface = 0;
+	shared_str Shader;
+	shared_str Texture;
+
+	bool operator==(const SurfaceShader&) const = default;
+};
+
+struct ActorLook
+{
+	xr_vector<SurfaceShader> Surfaces;
+
+	bool operator==(const ActorLook&) const = default;
+};
+
+inline const SurfaceShader* FindSurface(const ActorLook& Look, u32 Surface)
+{
+	const auto Found = std::find_if(Look.Surfaces.begin(), Look.Surfaces.end(), [Surface](const SurfaceShader& Item) { return Item.Surface == Surface; });
+	return Found == Look.Surfaces.end() ? nullptr : &*Found;
+}
+
+inline constexpr u32 MaxIkLimbs = 4;
+
+enum class IkSpace : u8
+{
+	Actor,
+	World
+};
+
+struct IkLimb
+{
+	shared_str Bones[3];
+	bool IsOn = false;
+	IkSpace Space = IkSpace::Actor;
+	float Weight = 1.0f;
+	Fvector Target = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Turn = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Pole = Fvector().set(0.0f, 0.0f, 0.0f);
+
+	bool operator==(const IkLimb&) const = default;
+};
+
+inline constexpr u32 MaxConstraints = 16;
+
+enum class ConstraintKind : u8
+{
+	Point,
+	Orient,
+	Parent,
+	Aim
+};
+
+struct BoneConstraint
+{
+	shared_str Bone;
+	ConstraintKind Kind = ConstraintKind::Parent;
+	AttachLink Target;
+	bool IsMuted = false;
+	float Weight = 1.0f;
+	Fvector Shift = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Turn = Fvector().set(0.0f, 0.0f, 0.0f);
+
+	bool operator==(const BoneConstraint&) const = default;
+};
+
+struct PoseRow
+{
+	RowMode Mode = RowMode::Add;
+	bool IsMuted = false;
+	float Weight = 1.0f;
+	xr_vector<PoseBone> Bones;
+
+	bool operator==(const PoseRow&) const = default;
+};
+
+struct ClipTrack
+{
+	RowMode Mode = RowMode::Override;
+	xr_vector<PoseBone> Bones;
+	xr_vector<Lane> Lanes;
+
+	bool operator==(const ClipTrack&) const = default;
+};
+
+struct ClipLayer : ClipTrack
+{
+	shared_str Name;
+	float Weight = 1.0f;
+	bool IsMuted = false;
+
+	bool operator==(const ClipLayer&) const = default;
+};
+
+struct AnimClip : ClipTrack
+{
+	shared_str Name;
+	float Length = 1.0f;
+	bool IsLinked = false;
+	xr_vector<ClipLayer> Layers;
+	IkLimb Ik[MaxIkLimbs];
+	xr_vector<Lane> IkLanes;
+
+	bool operator==(const AnimClip&) const = default;
+};
+
+inline constexpr u32 MaxClipLayers = 8;
+
+inline constexpr u32 MaxClips = 64, MaxClipBones = 128;
+inline constexpr const char* ClipSource = "clip";
+
+inline bool IsClipBlock(const shared_str& Source)
+{
+	return Source.size() && !xr_strcmp(Source.c_str(), ClipSource);
+}
+
+inline s32 FindClip(const xr_vector<AnimClip>& Clips, const shared_str& Name)
+{
+	const auto Found = std::find_if(Clips.begin(), Clips.end(), [&Name](const AnimClip& Item) { return Item.Name == Name; });
+	return Found == Clips.end() ? -1 : static_cast<s32>(Found - Clips.begin());
+}
+
+inline u8 PoseLayer(u32 Row, u32 Bone)
+{
+	return static_cast<u8>(Row * MaxPoseBones + Bone);
+}
+
 struct ActorData
 {
 	shared_str Visual;
 	shared_str Item;
+	shared_str Hud;
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fvector Scale = Fvector().set(1.0f, 1.0f, 1.0f);
@@ -195,7 +393,13 @@ struct ActorData
 	xr_vector<shared_str> Packs;
 	ActorLayer Base;
 	xr_vector<ActorLayer> Layers;
+	xr_vector<PoseRow> Poses;
+	xr_vector<AnimClip> Clips;
+	xr_vector<ActorLook> Looks;
+	IkLimb Ik[MaxIkLimbs];
+	xr_vector<BoneConstraint> Constraints;
 	bool IsRelative = false;
+	bool IsHudLinked = false;
 
 	bool operator==(const ActorData&) const = default;
 };
@@ -334,6 +538,12 @@ struct CameraBlock
 	float NearRange = 2.0f;
 	float FarRange = 20.0f;
 	float Blur = 5.0f;
+	float Smooth = 0.0f;
+	float Tension = 1.0f;
+	bool IsShortTurn = false;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	xr_string Name;
 	AttachLink FocusTarget;
 	xr_vector<PoseKey> Keys;
 	xr_vector<Lane> Lanes;
@@ -390,6 +600,98 @@ struct ParticleData
 	bool operator==(const ParticleData&) const = default;
 };
 
+struct DecalData
+{
+	shared_str Texture;
+	shared_str Shader;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	float Width = 0.5f;
+	float Height = 0.5f;
+	bool IsStamp = false;
+
+	bool operator==(const DecalData&) const = default;
+};
+
+struct WeatherData
+{
+	shared_str Cycle;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	u32 Mask = 0;
+	float FadeIn = 0.0f;
+	float FadeOut = 0.0f;
+	float TimeOfDay = 12.0f;
+	float SunHeading = 0.0f;
+	float SunHeight = 45.0f;
+	Fvector SunColor = Fvector().set(1.0f, 1.0f, 1.0f);
+	float SunBrightness = 1.0f;
+	float SunShafts = 0.3f;
+	Fvector AmbientColor = Fvector().set(0.1f, 0.1f, 0.1f);
+	Fvector HemiColor = Fvector().set(0.5f, 0.5f, 0.5f);
+	Fvector FogColor = Fvector().set(0.5f, 0.5f, 0.5f);
+	float FogDensity = 0.5f;
+	float FogDistance = 400.0f;
+	float FarPlane = 600.0f;
+	float RainDensity = 0.0f;
+	float WindSpeed = 0.0f;
+	float WindDirection = 0.0f;
+	float SkyRotation = 0.0f;
+
+	bool operator==(const WeatherData&) const = default;
+};
+
+inline float* WeatherField(WeatherData& Setup, Param Id, u8 Component)
+{
+	const u8 Axis = Component < 3 ? Component : 0;
+	float* const Fields[16] = { &Setup.TimeOfDay, &Setup.SunHeading, &Setup.SunHeight, &Setup.SunColor[Axis], &Setup.SunBrightness, &Setup.SunShafts, &Setup.AmbientColor[Axis], &Setup.HemiColor[Axis], &Setup.FogColor[Axis], &Setup.FogDensity, &Setup.FogDistance, &Setup.FarPlane, &Setup.RainDensity, &Setup.WindSpeed, &Setup.WindDirection, &Setup.SkyRotation };
+	return Fields[static_cast<u32>(Id) - static_cast<u32>(Param::WeatherTime)];
+}
+
+inline bool IsWeatherSet(const WeatherData& Setup, const xr_vector<Lane>& Lanes, Param Id)
+{
+	return ((Setup.Mask >> (static_cast<u32>(Id) - static_cast<u32>(Param::WeatherTime))) & 1) || std::any_of(Lanes.begin(), Lanes.end(), [Id](const Lane& Item) { return Item.Id == Id; });
+}
+
+struct PostData
+{
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	u32 Mask = 0;
+	float FadeIn = 0.0f;
+	float FadeOut = 0.0f;
+	Fvector Base = Fvector().set(0.5f, 0.5f, 0.5f);
+	Fvector Add = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector GrayColor = Fvector().set(0.333f, 0.333f, 0.333f);
+	float Gray = 0.0f;
+	float Blur = 0.0f;
+	float DualityH = 0.0f;
+	float DualityV = 0.0f;
+	float Noise = 0.0f;
+	float Grain = 1.0f;
+	float NoiseFps = 30.0f;
+	float Fade = 0.0f;
+	Fvector FadeColor = Fvector().set(0.0f, 0.0f, 0.0f);
+	float Exposure = 0.0f;
+	float Bloom = 0.04f;
+	float Tonemap = 1.0f;
+	float MiddleGray = 1.0f;
+
+	bool operator==(const PostData&) const = default;
+};
+
+inline float* PostField(PostData& Setup, Param Id, u8 Component)
+{
+	const u8 Axis = Component < 3 ? Component : 0;
+	float* const Fields[16] = { &Setup.Base[Axis], &Setup.Add[Axis], &Setup.GrayColor[Axis], &Setup.Gray, &Setup.Blur, &Setup.DualityH, &Setup.DualityV, &Setup.Noise, &Setup.Grain, &Setup.NoiseFps, &Setup.Fade, &Setup.FadeColor[Axis], &Setup.Exposure, &Setup.Bloom, &Setup.Tonemap, &Setup.MiddleGray };
+	return Fields[static_cast<u32>(Id) - static_cast<u32>(Param::PostBase)];
+}
+
+inline bool IsPostSet(const PostData& Setup, const xr_vector<Lane>& Lanes, Param Id)
+{
+	return ((Setup.Mask >> (static_cast<u32>(Id) - static_cast<u32>(Param::PostBase))) & 1) || std::any_of(Lanes.begin(), Lanes.end(), [Id](const Lane& Item) { return Item.Id == Id; });
+}
+
 struct Object
 {
 	u32 Id = 0;
@@ -406,6 +708,9 @@ struct Object
 	CameraData Camera;
 	LightData Light;
 	ParticleData Particle;
+	DecalData Decal;
+	WeatherData Weather;
+	PostData Post;
 	Attachment Attach;
 
 	bool operator==(const Object&) const = default;
@@ -431,6 +736,9 @@ struct Marker
 struct SceneHeader
 {
 	u32 FrameRate = 30;
+	float CutDistance = 5.0f;
+	float CutAngle = 45.0f;
+	bool IsWorldFollowing = false;
 	u32 NextColor = 0;
 	xr_vector<Folder> Folders;
 	xr_vector<Marker> Markers;
@@ -504,7 +812,7 @@ inline Object* FindCamera(Scene& Data)
 
 inline void EnsureCamera(Scene& Data)
 {
-	if (FindCamera(Data) || Data.Objects.size() >= MaxObjects)
+	if (FindCamera(Data))
 	{
 		return;
 	}
@@ -528,7 +836,7 @@ inline void EnsureCamera(Scene& Data)
 
 inline Fvector* PlacementOf(Object& Target, u32 Kind)
 {
-	Fvector* const Fields[4][2] = { { &Target.Actor.Position, &Target.Actor.Rotation }, { nullptr, nullptr }, { &Target.Light.Position, &Target.Light.Rotation }, { &Target.Particle.Position, &Target.Particle.Rotation } };
+	Fvector* const Fields[7][2] = { { &Target.Actor.Position, &Target.Actor.Rotation }, { nullptr, nullptr }, { &Target.Light.Position, &Target.Light.Rotation }, { &Target.Particle.Position, &Target.Particle.Rotation }, { &Target.Decal.Position, &Target.Decal.Rotation }, { &Target.Weather.Position, &Target.Weather.Rotation }, { &Target.Post.Position, &Target.Post.Rotation } };
 	return Fields[static_cast<u32>(Target.Type)][Kind];
 }
 
@@ -605,6 +913,10 @@ void ForEachLink(const Object& Item, const TVisit& Visit)
 {
 	Visit(Item.Attach.Parent.ObjectId);
 	Visit(Item.Attach.LookAt.ObjectId);
+	for (const BoneConstraint& Rule : Item.Actor.Constraints)
+	{
+		Visit(Rule.Target.ObjectId);
+	}
 	for (const CameraBlock& Shot : Item.Camera.Blocks)
 	{
 		Visit(Shot.Attach.Parent.ObjectId);

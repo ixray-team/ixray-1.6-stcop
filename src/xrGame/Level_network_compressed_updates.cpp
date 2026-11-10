@@ -8,7 +8,7 @@ void CLevel::ProcessCompressedUpdate(NET_Packet& P, u8 const compress_type)
 {
 	constexpr u32 Coeff = 2;
 	constexpr u32 FinalSize = NET_PacketSizeLimit*Coeff;
-	thread_local xr_vector<BYTE> Pool(FinalSize);
+	thread_local xr_vector<u8> Pool(FinalSize);
 	NET_Packet	uncompressed_packet;
 	u16 next_size;
 	P.r_u16(next_size);

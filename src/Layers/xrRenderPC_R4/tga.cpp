@@ -24,13 +24,13 @@ void TGAdesc::maketga( IWriter& fs ){
 	fs.w(&hdr, sizeof(hdr) );
 
 	if( format==IMG_24B ){
-		BYTE ab_buffer[4]={0,0,0,0};
+		u8 ab_buffer[4] = {0, 0, 0, 0};
 		int  real_sl = ((width*3)) & 3;
 		int  ab_size = real_sl ? 4-real_sl : 0 ;
 		for( int j=0; j<height; j++){
-			BYTE *p = (BYTE*)data + scanlenght*j;
+			u8* p = (u8*)data + scanlenght * j;
 			for( int i=0; i<width; i++){
-				BYTE buffer[3] = {p[0],p[1],p[2]};
+				u8 buffer[3] = {p[0], p[1], p[2]};
 				fs.w(buffer, 3 );
 				p+=4;
 			}
@@ -43,9 +43,9 @@ void TGAdesc::maketga( IWriter& fs ){
 		else {
 			// bad pitch, it seems :(
 			for( int j=0; j<height; j++){
-				BYTE *p = (BYTE*)data + scanlenght*j;
+				u8* p = (u8*)data + scanlenght * j;
 				for( int i=0; i<width; i++){
-					BYTE buffer[4] = {p[0],p[1],p[2],p[3]};
+					u8 buffer[4] = {p[0], p[1], p[2], p[3]};
 					fs.w(buffer, 4 );
 					p+=4;
 				}

@@ -467,6 +467,13 @@ void CCameraManager::UpdatePPEffectors()
 		pp_affected = pp_identity;
 	}
 
+	if (Device.dwFrame - PostFrame <= 1)
+	{
+		pp_affected.add(PostInfo);
+		pp_affected.sub(pp_identity);
+		pp_affected.normalize();
+	}
+
 	if (!positive(pp_affected.noise.grain))
 		pp_affected.noise.grain = pp_identity.noise.grain;
 
@@ -556,4 +563,10 @@ void CCameraManager::Dump()
 	Log("CCameraManager::Dump::vDirection = ",_T);
 	Log("CCameraManager::Dump::vNormal    = ",_U);
 	Log("CCameraManager::Dump::vRight     = ",_R);
+}
+
+void CCameraManager::SetPost(const SPPInfo& Info)
+{
+	PostInfo = Info;
+	PostFrame = Device.dwFrame;
 }

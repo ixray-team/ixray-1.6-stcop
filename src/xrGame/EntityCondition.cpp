@@ -797,7 +797,7 @@ void CEntityCondition::Serialize(ISaveObject& Object)
 	}
 }
 
-void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
+void CEntityCondition::SConditionChangeV::load(const char* sect, const char* prefix)
 {
 	string256				str;
 	m_fV_Circumspection		= 0.01f;
@@ -889,4 +889,3 @@ void SBooster::Load(const shared_str& sect, EBoostParams type)
 		default: NODEFAULT;	
 	}
 }
-

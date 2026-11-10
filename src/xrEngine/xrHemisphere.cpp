@@ -534,7 +534,7 @@ Fvector hemi_3[196]
 	{+0.3971,	+0.0952,	-0.2885	},
 };
 
-void ENGINE_API xrHemisphereBuild	(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)
+void ENGINE_API xrHemisphereBuild(int quality, float energy, xrHemisphereIterator* iterator, void* param)
 {
 	const Fvector* hemi=0;
 	int h_count		= xrHemisphereVertices(quality,hemi); VERIFY(h_count>0);

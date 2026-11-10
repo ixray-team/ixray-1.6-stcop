@@ -86,7 +86,7 @@ protected:
 
 	bool                Sync_Thread();
 	void                Sync_Average();
-	virtual bool        GetPendingMessagesCount(DWORD& dwPending) { return true; };
+	virtual bool GetPendingMessagesCount(u32& dwPending) { return true; };
 	virtual bool        SendPingMessage(MSYS_PING& clPing) { return true; };
 
 	virtual	void        SendTo_LL(void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) {}
@@ -131,7 +131,7 @@ public:
 	virtual	const char*      GetMsgId2Name(u16 ID) { return ""; }
 	virtual void        OnSessionTerminate(const char* reason) {};
 
-	virtual	bool        GetServerAddress(ip_address& pAddress, DWORD* pPort) { return false; }
+	virtual bool GetServerAddress(ip_address& pAddress, u32* pPort) { return false; }
 
 	// time management
 	IC u32              timeServer() { return TimeGlobal(device_timer) + net_TimeDelta + net_TimeDelta_User; }
@@ -147,4 +147,3 @@ public:
 	IClientStatistic&		GetStatistic() { return  net_Statistic; }
 	virtual	void			  UpdateStatistic() {}
 };
-

@@ -84,10 +84,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_normal", r2_RT_N);
 		C.r_dx10Texture("s_image", r2_RT_generic);
-		C.r_dx10Texture("s_dof_near", R4_RT_DOF_DOWNSAMPLE);
-		C.r_dx10Texture("s_dof_far", r2_RT_dof_blur3);
-		C.r_dx10Texture("s_dof_metadata", R4_RT_DOF_DOWNSAMPLE_DEPTH);
-		C.r_dx10Texture("s_dof_coc", r2_RT_dof_coc);
 		C.r_dx10Texture("s_dof_scope_mask", r2_RT_dof_scope_mask);
 		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
 		C.r_dx10Texture("s_bloom", r2_RT_bloomA2);

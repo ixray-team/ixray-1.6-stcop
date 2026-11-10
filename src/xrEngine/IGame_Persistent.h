@@ -13,27 +13,6 @@
 class IRenderVisual;
 class IMainMenu;
 extern ENGINE_API bool g_dedicated_server;
-extern ENGINE_API u32 g_NewDofMode;
-
-enum class EDofMode : u32
-{
-	Autofocus = 0,
-	Static = 1,
-	Manual = 2
-};
-
-// Physical camera targets shared by the game and renderer. Distances are in meters, focal length in millimeters.
-struct SDofCameraSettings
-{
-	EDofMode Mode = EDofMode::Autofocus;
-	float FNumber = 4.0f;
-	bool ManualFocalLength = false;
-	float FocalLength = 10.0f;
-	float FocusTime = 0.1f;
-	Fvector2 FocusPoint = {0.5f, 0.495f};
-	float FocusDistance = 1.4f;
-	float TransitionTime = 0.1f;
-};
 
 class ENGINE_API IGame_Persistent : 
 	public DLL_Pure,
@@ -124,10 +103,9 @@ public:
 
 	virtual void					UpdateGameType		() {};
 	virtual void					GetCurrentDof		(Fvector3& dof){dof.set(-1.4f, 0.0f, 250.f);};
-	virtual float GetDofOverrideWeight() const { return 0.0f; }
-	virtual void GetDofCameraSettings(SDofCameraSettings& /*Settings*/) const {}
 	virtual void					SetBaseDof			(const Fvector3& dof){};
 	virtual float					GetDofKernel		(float Default) { return Default; }
+	virtual bool					IsDofForced			() const { return false; }
 	virtual void					OnSectorChanged		(int sector){};
 	virtual void					OnAssetsChanged		();
 

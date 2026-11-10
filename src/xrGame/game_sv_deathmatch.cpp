@@ -744,7 +744,7 @@ void game_sv_Deathmatch::OnPlayerReady(ClientID id)
 }
 
 
-void game_sv_Deathmatch::OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
+void game_sv_Deathmatch::OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID)
 {
 	inherited::OnPlayerDisconnect	(id_who, Name, GameID);
 };

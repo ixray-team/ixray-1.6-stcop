@@ -78,7 +78,7 @@ u16 NET_Compressor::compressed_size	(const u32 &count)
 XRNETSERVER_API bool g_net_compressor_enabled		= false;
 XRNETSERVER_API bool g_net_compressor_gather_stats	= false;
 
-u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const u32 &count)
+u16 NET_Compressor::Compress(u8* dest, const u32& dest_size, u8* src, const u32& count)
 {
 	SCompressorStats::SStatPacket* _p = nullptr;
 	bool b_compress_packet = (count>36);
@@ -174,7 +174,7 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
 
 
 
-u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, const u32 &count)
+u16 NET_Compressor::Decompress(u8* dest, const u32& dest_size, u8* src, const u32& count)
 {
 	VERIFY(dest);
 	VERIFY(src);

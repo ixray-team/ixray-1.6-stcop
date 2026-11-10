@@ -458,7 +458,7 @@ void CPHWorld::FrameStep(dReal step)
 	if (ph_console::g_bDebugDumpPhysicsStep && it_number > 20)
 		Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %d !!!", it_number);
 
-	for (UINT i = 0; i < it_number; ++i)
+	for (u32 i = 0; i < it_number; ++i)
 		Step();
 
 	b_processing = false;

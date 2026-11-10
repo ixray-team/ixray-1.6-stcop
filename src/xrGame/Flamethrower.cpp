@@ -59,7 +59,7 @@ void CFlamethrower::net_Destroy()
 	inherited::net_Destroy();
 }
 
-void CFlamethrower::SetAnimFlag(u32 flag, LPCSTR anim_name)
+void CFlamethrower::SetAnimFlag(u32 flag, const char* anim_name)
 {
 	if (pSettings->line_exist(hud_sect, anim_name))
 		psWpnAnimsFlag.set(flag, TRUE);
@@ -67,7 +67,7 @@ void CFlamethrower::SetAnimFlag(u32 flag, LPCSTR anim_name)
 		psWpnAnimsFlag.set(flag, FALSE);
 }
 
-void CFlamethrower::Load(LPCSTR section)
+void CFlamethrower::Load(const char* section)
 {
 	inherited::Load(section);
 
@@ -125,7 +125,7 @@ void CFlamethrower::Load(LPCSTR section)
 
 	// load ammo classes
 	m_ammoTypes.clear();
-	LPCSTR				S = pSettings->r_string(section, "ammo_class");
+	const char* S = pSettings->r_string(section, "ammo_class");
 	if (S && S[0])
 	{
 		string128		_ammoItem;
@@ -345,7 +345,7 @@ int CFlamethrower::CheckAmmoBeforeReload(u8& v_ammoType)
 		return 0;
 	}
 
-	LPCSTR tmp_sect_name = m_ammoTypes[v_ammoType].c_str();
+	const char* tmp_sect_name = m_ammoTypes[v_ammoType].c_str();
 
 	if (!tmp_sect_name)
 	{
@@ -400,7 +400,7 @@ void CFlamethrower::ReloadMagazine()
 		if (m_ammoTypes.size() <= AmmoType.MagazineType)
 			return;
 
-		LPCSTR tmp_sect_name = m_ammoTypes[AmmoType.MagazineType].c_str();
+		const char* tmp_sect_name = m_ammoTypes[AmmoType.MagazineType].c_str();
 
 		if (!tmp_sect_name)
 			return;
@@ -1130,7 +1130,7 @@ void CFlamethrower::Serialize(ISaveObject& Object)
 	}
 }
 
-void CFlamethrower::SpawnFuelCanister(float Condition, LPCSTR ammoSect, ALife::_OBJECT_ID ParentID)
+void CFlamethrower::SpawnFuelCanister(float Condition, const char* ammoSect, ALife::_OBJECT_ID ParentID)
 {
 	if (OnClient())	return;
 	m_bAmmoWasSpawned = true;
@@ -1213,13 +1213,13 @@ bool CFlamethrower::GetBriefInfo(II_BriefInfo& info)
 
 	if (ae != 0 && m_magazine.size() != 0)
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
+		const char* ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
 		info.name = CStringTable().translate(pSettings->r_string(ammo_type, "inv_name_short"));
 		info.icon = ammo_type;
 	}
 	else
 	{
-		LPCSTR ammo_type = m_ammoTypes[AmmoType.MagazineType].c_str();
+		const char* ammo_type = m_ammoTypes[AmmoType.MagazineType].c_str();
 		info.name = CStringTable().translate(pSettings->r_string(ammo_type, "inv_name_short"));
 		info.icon = ammo_type;
 	}
@@ -1231,11 +1231,11 @@ bool CFlamethrower::IsMisfire() const
 	return m_is_overheated;
 }
 
-bool CFlamethrower::install_upgrade_impl(LPCSTR section, bool test)
+bool CFlamethrower::install_upgrade_impl(const char* section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
 
-	LPCSTR str;
+	const char* str;
 
 	// sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
 	bool result2 = process_if_exists_set(section, "snd_draw", str, test);
@@ -1289,7 +1289,7 @@ void CFlamethrower::FireBullet(const Fvector& pos,
 }
 
 // AVO: for custom added sounds check if sound exists
-bool CFlamethrower::WeaponSoundExist(LPCSTR section, LPCSTR sound_name, bool log) const
+bool CFlamethrower::WeaponSoundExist(const char* section, const char* sound_name, bool log) const
 {
 	const char* str;
 	bool sec_exist = process_if_exists_set(section, sound_name, str, true);
