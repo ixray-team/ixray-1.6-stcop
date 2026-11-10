@@ -529,7 +529,7 @@ void MouseRayFromPoint(Fvector& direction)
 	direction.normalize();
 }
 
-ICF static bool GetPickDist_Callback(const collide::rq_result& result, LPVOID params)
+ICF static bool GetPickDist_Callback(const collide::rq_result& result, void* params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
 

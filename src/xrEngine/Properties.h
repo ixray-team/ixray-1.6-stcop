@@ -96,7 +96,7 @@ public:
 };
 
 // Writers
-IC void		xrPWRITE		(IWriter& fs, u32 ID, const char* name, LPCVOID data, u32 size )
+IC void		xrPWRITE		(IWriter& fs, u32 ID, const char* name, const void* data, u32 size )
 {
 	fs.w_u32			(ID);
 	fs.w_stringZ		(name);
