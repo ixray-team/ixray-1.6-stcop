@@ -45,8 +45,15 @@ if(WIN32)
     list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/DirectXTexD3D11Native\\.cpp$")
 endif()
 
+if(NOT APPLE)
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/MacMetalBridge\\.mm$")
+endif()
+
 # xrRHI project
-set_source_files_properties(Private/DxcAPI.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+set_source_files_properties(Private/DxcAPI.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON SKIP_PRECOMPILE_HEADERS ON)
+if(APPLE)
+	set_source_files_properties(D3D11/MacMetalBridge.mm PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+endif()
 add_library(xrRHI SHARED ${XRHI_SRC_FILES})
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRHI PRIVATE "${IXRAY_SDK_INC}")
