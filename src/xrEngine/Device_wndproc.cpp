@@ -3,6 +3,7 @@
 #include "GamepadService.h"
 #include "imgui_impl_sdl3.h"
 #include "XR_IOConsole.h"
+#include "../xrCore/Kernel/AccessibilityShortcutGuard.h"
 #include "IInputReceiver.h"
 #include "string_table.h"
 #include "IGame_Persistent.h"
@@ -206,6 +207,16 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 		{
 			OnWM_Activate(false, false);
+			break;
+		}
+		case SDL_EVENT_WINDOW_FOCUS_GAINED:
+		{
+			AccessibilityShortcutGuard::Instance().Suppress();
+			break;
+		}
+		case SDL_EVENT_WINDOW_FOCUS_LOST:
+		{
+			AccessibilityShortcutGuard::Instance().Restore();
 			break;
 		}
 		case SDL_EVENT_WINDOW_SHOWN:

@@ -37,11 +37,6 @@ extern	void	Intro_DSHOW			( void* fn );
 XRCORE_API	const char*	build_date;
 XRCORE_API	u32		build_id;
 
-#ifdef MASTER_GOLD
-#	define NO_MULTI_INSTANCES
-#endif // #ifdef MASTER_GOLD
-
-
 static const char* month_id[12] =
 {
 	"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
@@ -277,109 +272,6 @@ ENGINE_API void EngineLoopAndDestroy()
 	destroyEngine();
 }
 
-#ifdef IXR_WINDOWS
-#define dwStickyKeysStructSize sizeof( STICKYKEYS )
-#define dwFilterKeysStructSize sizeof( FILTERKEYS )
-#define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
-
-struct damn_keys_filter {
-	bool bScreenSaverState;
-
-	// Sticky & Filter & Toggle keys
-
-	STICKYKEYS StickyKeysStruct;
-	FILTERKEYS FilterKeysStruct;
-	TOGGLEKEYS ToggleKeysStruct;
-
-	DWORD dwStickyKeysFlags;
-	DWORD dwFilterKeysFlags;
-	DWORD dwToggleKeysFlags;
-
-	damn_keys_filter	()
-	{
-		// Screen saver stuff
-
-		bScreenSaverState = false;
-
-		// Saveing current state
-		SystemParametersInfo( SPI_GETSCREENSAVEACTIVE , 0 , ( PVOID ) &bScreenSaverState , 0 );
-
-		if ( bScreenSaverState )
-			// Disable screensaver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , false , nullptr , 0 );
-
-		dwStickyKeysFlags = 0;
-		dwFilterKeysFlags = 0;
-		dwToggleKeysFlags = 0;
-
-
-		ZeroMemory( &StickyKeysStruct , dwStickyKeysStructSize );
-		ZeroMemory( &FilterKeysStruct , dwFilterKeysStructSize );
-		ZeroMemory( &ToggleKeysStruct , dwToggleKeysStructSize );
-
-		StickyKeysStruct.cbSize = dwStickyKeysStructSize;
-		FilterKeysStruct.cbSize = dwFilterKeysStructSize;
-		ToggleKeysStruct.cbSize = dwToggleKeysStructSize;
-
-		// Saving current state
-		SystemParametersInfo( SPI_GETSTICKYKEYS , dwStickyKeysStructSize , ( PVOID ) &StickyKeysStruct , 0 );
-		SystemParametersInfo( SPI_GETFILTERKEYS , dwFilterKeysStructSize , ( PVOID ) &FilterKeysStruct , 0 );
-		SystemParametersInfo( SPI_GETTOGGLEKEYS , dwToggleKeysStructSize , ( PVOID ) &ToggleKeysStruct , 0 );
-
-		if ( StickyKeysStruct.dwFlags & SKF_AVAILABLE ) {
-			// Disable StickyKeys feature
-			dwStickyKeysFlags = StickyKeysStruct.dwFlags;
-			StickyKeysStruct.dwFlags = 0;
-			SystemParametersInfo( SPI_SETSTICKYKEYS , dwStickyKeysStructSize , ( PVOID ) &StickyKeysStruct , 0 );
-		}
-
-		if ( FilterKeysStruct.dwFlags & FKF_AVAILABLE ) {
-			// Disable FilterKeys feature
-			dwFilterKeysFlags = FilterKeysStruct.dwFlags;
-			FilterKeysStruct.dwFlags = 0;
-			SystemParametersInfo( SPI_SETFILTERKEYS , dwFilterKeysStructSize , ( PVOID ) &FilterKeysStruct , 0 );
-		}
-
-		if ( ToggleKeysStruct.dwFlags & TKF_AVAILABLE ) {
-			// Disable FilterKeys feature
-			dwToggleKeysFlags = ToggleKeysStruct.dwFlags;
-			ToggleKeysStruct.dwFlags = 0;
-			SystemParametersInfo( SPI_SETTOGGLEKEYS , dwToggleKeysStructSize , ( PVOID ) &ToggleKeysStruct , 0 );
-		}
-	}
-
-	~damn_keys_filter	()
-	{
-		if ( bScreenSaverState )
-			// Restoring screen saver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , true , nullptr , 0 );
-
-		if ( dwStickyKeysFlags) {
-			// Restore StickyKeys feature
-			StickyKeysStruct.dwFlags = dwStickyKeysFlags;
-			SystemParametersInfo( SPI_SETSTICKYKEYS , dwStickyKeysStructSize , ( PVOID ) &StickyKeysStruct , 0 );
-		}
-
-		if ( dwFilterKeysFlags ) {
-			// Restore FilterKeys feature
-			FilterKeysStruct.dwFlags = dwFilterKeysFlags;
-			SystemParametersInfo( SPI_SETFILTERKEYS , dwFilterKeysStructSize , ( PVOID ) &FilterKeysStruct , 0 );
-		}
-
-		if ( dwToggleKeysFlags ) {
-			// Restore FilterKeys feature
-			ToggleKeysStruct.dwFlags = dwToggleKeysFlags;
-			SystemParametersInfo( SPI_SETTOGGLEKEYS , dwToggleKeysStructSize , ( PVOID ) &ToggleKeysStruct , 0 );
-		}
-
-	}
-};
-
-#undef dwStickyKeysStructSize
-#undef dwFilterKeysStructSize
-#undef dwToggleKeysStructSize
-#endif
-
 ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 {
 	PROF_EVENT("EngineLoadStage1");
@@ -425,11 +317,6 @@ ENGINE_API const char* GetClipboardErrorMessage()
 ENGINE_API void EngineLoadStage2()
 {
 	PROF_EVENT("EngineLoadStage2");
-
-#ifdef IXR_WINDOWS
-	damn_keys_filter filter;
-	(void)filter;
-#endif
 
 	InitEngine();
 	InitInput();
