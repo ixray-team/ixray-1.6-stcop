@@ -4,6 +4,7 @@
 #include "x_ray.h"
 #include "xr_ioc_cmd.h"
 #include "CameraManager.h"
+#include "ImGuiManager.h"
 #include "Environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
@@ -894,6 +895,7 @@ void CCC_Register()
 	CMD1(CCC_VidMode, "vid_mode");
 	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
 	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
+	CMD4(CCC_Float, "imgui_scale", &psImGuiScale, 0.5f, 3.0f);
 	CMD3(CCC_Token, "vid_scale_mode", &ps_proxy_r_scale_mode, qscale_mode_token);
 	CMD3(CCC_Token, "r_dlss_model", &ps_r_dlss_model, dlss_model_token);
 	CMD4(CCC_Float, "vram_textures_mb", &ps_vram_textures_mb, 0.f, 65536.f);

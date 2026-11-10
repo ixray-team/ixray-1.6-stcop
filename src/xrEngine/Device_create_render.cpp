@@ -267,6 +267,15 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 			}
 
 			ImGui::MenuItem("Click `Alt`");
+			static float ShownScale = 0.0f;
+			ShownScale = ImGui::IsAnyItemActive() && ShownScale > 0.0f ? ShownScale : psImGuiScale;
+			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 7.0f);
+			ImGui::SliderFloat("UI scale", &ShownScale, 0.5f, 3.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			if (ImGui::IsItemDeactivatedAfterEdit())
+			{
+				psImGuiScale = ShownScale;
+			}
+			ImGui::SetItemTooltip("Size of every ImGui window and font; applied when the slider is released (console: imgui_scale)");
 			ImGui::EndMainMenuBar();
 		}
 
