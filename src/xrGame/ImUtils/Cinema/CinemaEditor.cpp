@@ -6,6 +6,7 @@
 #include "../../Cinema/CinemaSceneIo.h"
 #include "../../Cinema/CinemaCamera.h"
 #include "../../../xrEngine/Environment.h"
+#include "../../../xrEngine/IGame_Persistent.h"
 #include "../../../xrEngine/GameMtlLib.h"
 
 namespace Cinema::EditorUi

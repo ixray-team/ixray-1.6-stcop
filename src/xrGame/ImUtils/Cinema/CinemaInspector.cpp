@@ -4,6 +4,7 @@
 #include "../../Cinema/CinemaShake.h"
 #include "../../../xrRHI/RHI.h"
 #include "../../../xrEngine/Environment.h"
+#include "../../../xrEngine/IGame_Persistent.h"
 
 namespace Cinema::InspectorUi
 {

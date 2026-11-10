@@ -1414,6 +1414,7 @@ The old `presets.ltx` (`[preset] version = 1`, sections `[preset_NNN]` with a pl
 10. **New** clears the rows and the title. A level change clears the scene and the title.
 11. Old Cinema Film Maker Editor: the shake Preset combo lists the 9 presets, shakes look as in the previous build, and an old scene with shakes loads without an "invalid preset" warning.
 12. Build Debug with unity build on and off.
+13. Add a weather clip and confirm the inspector lists the available weather presets.
 
 Playback and transport:
 
