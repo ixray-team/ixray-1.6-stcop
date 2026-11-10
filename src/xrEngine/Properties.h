@@ -131,6 +131,7 @@ IC void		xrPREAD_MARKER	(IReader& fs)
 	{ \
 	case xrPID_TOKEN:	fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item));	break; \
 	case xrPID_CLSID:	fs.advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID));			break; \
+	default: break; \
 	}; \
 }
 
