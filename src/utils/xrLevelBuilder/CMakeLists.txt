@@ -226,10 +226,10 @@ if(OPTIX_AVAILABLE)
         COMMENT "Copying NVIDIA runtime artifacts"
         VERBATIM
     )
-    set(XlcNvidiaArtifacts "${XlcCudaDriverLibrary}" "${XlcPtx}" "${XlcPublishedPtx}" "${XlcNvidiaNotice}")
-    set_source_files_properties(${XlcNvidiaArtifacts} PROPERTIES HEADER_FILE_ONLY TRUE)
-    target_sources(xrLevelBuilder PRIVATE ${XlcNvidiaArtifacts})
-    source_group("xrLC/Light/CUDA" FILES ${XlcNvidiaArtifacts})
+    # Build the generated artifacts in a helper target so per-config outputs do not appear as project files
+    add_custom_target(xrLevelBuilderNvidia DEPENDS "${XlcCudaDriverLibrary}" "${XlcPtx}" "${XlcPublishedPtx}" "${XlcNvidiaNotice}")
+    set_target_properties(xrLevelBuilderNvidia PROPERTIES ${IXRAY_FOLDER_UTILS})
+    add_dependencies(xrLevelBuilder xrLevelBuilderNvidia)
 endif()
 
 # Linker list

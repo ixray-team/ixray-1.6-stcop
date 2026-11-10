@@ -19,7 +19,6 @@
 #include "file_transfer.h"
 #include "ui/UIGameTutorial.h"
 #include "ui/UIPdaWnd.h"
-#include "../xrNetServer/NET_AuthCheck.h"
 #include "Actor.h"
 #include "holder_custom.h"
 #include "ai/monsters/ai_monster_squad_manager.h"
@@ -385,14 +384,6 @@ bool CLevel::Connect2Server(const char* options)
 	NET_Packet					P;
 	m_bConnectResultReceived	= false	;
 	m_bConnectResult			= true	;
-
-	if(!psNET_direct_connect)
-	{
-		xr_auth_strings_t	tmp_ignore;
-		xr_auth_strings_t	tmp_check;
-		fill_auth_check_params	(tmp_ignore, tmp_check);
-		FS.auth_generate		(tmp_ignore, tmp_check);
-	}
 
 	if (!Connect(options))		return	false;
 	//---------------------------------------------------------------------------
