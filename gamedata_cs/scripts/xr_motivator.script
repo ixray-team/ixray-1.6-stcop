@@ -211,6 +211,9 @@ function motivator_binder:net_spawn(sobject)
 
 	if self.object:profile_name() == "stc_strelok" then
 		printf("strelok_health [true]")
+		if self.loaded then
+			stc_strelok_health_manager.RecoverFinalLadder(self.object, self.st)
+		end
 		stc_strelok_health_manager.cs_strelok_health(self.object)
 	end
 
