@@ -146,13 +146,20 @@ end
 
 local function make_save_name(caption_id, title_id)
 	local title = game.translate_string(title_id or "")
-	-- Characters rejected by valid_saved_game_name() and control characters
-	title = string.gsub(title, "[%c/\\:%*%?\"<>|%^%%]", " ")
+	-- Replace ASCII punctuation and control characters without changing Cyrillic text
+	title = string.gsub(title, ".", function(char)
+		local byte = string.byte(char)
+		if byte < 32 or byte == 127 or (byte >= 33 and byte <= 47) or
+			(byte >= 58 and byte <= 64) or (byte >= 91 and byte <= 96) or
+			(byte >= 123 and byte <= 126) then
+			return " "
+		end
+		return char
+	end)
 	title = string.gsub(title, "%s+", " ")
-	title = string.gsub(title, "^[%s%.]+", "")
+	title = string.gsub(title, "^%s+", "")
 	title = shorten(title, TITLE_MAX_CHARS)
-	-- Windows drops trailing dots and spaces from file names
-	title = string.gsub(title, "[%s%.,;%-]+$", "")
+	title = string.gsub(title, "%s+$", "")
 
 	local save_name = user_name() .. " - " .. game.translate_string(caption_id)
 	if title ~= "" then
