@@ -28,7 +28,7 @@
 #include <type_traits>
 #include "../Cinema/CinemaShake.h"
 
-CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, void* CallbackParam);
+CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam);
 
 namespace CinemaFilmMaker
 {

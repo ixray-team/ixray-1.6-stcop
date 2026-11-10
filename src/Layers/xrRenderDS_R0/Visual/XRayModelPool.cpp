@@ -118,7 +118,7 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(const char* N, bool allow_regis
 	return V;
 }
 
-CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(const char* name, IReader* data, bool allow_register)
+CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(LPCSTR name, IReader* data, bool allow_register)
 {
 	CDS0_RenderVisual* V;
 
@@ -132,7 +132,7 @@ CDS0_RenderVisual* CDS0_ModelPool::Instance_Load(const char* name, IReader* data
 	return V;
 }
 
-void CDS0_ModelPool::Instance_Register(const char* N, CDS0_RenderVisual* V)
+void		CDS0_ModelPool::Instance_Register(LPCSTR N, CDS0_RenderVisual* V)
 {
 	// Registration
 	ModelDef			M;
@@ -185,7 +185,7 @@ CDS0_ModelPool::~CDS0_ModelPool()
 	xr_delete(g_pMotionsContainer);
 }
 
-CDS0_RenderVisual* CDS0_ModelPool::Instance_Find(const char* N)
+CDS0_RenderVisual* CDS0_ModelPool::Instance_Find(LPCSTR N)
 {
 	CDS0_RenderVisual* Model = 0;
 	xr_vector<ModelDef>::iterator	I;
@@ -234,7 +234,7 @@ CDS0_RenderVisual* CDS0_ModelPool::Create(const char* name, IReader* data)
 	}
 }
 
-CDS0_RenderVisual* CDS0_ModelPool::CreateChild(const char* name, IReader* data)
+CDS0_RenderVisual* CDS0_ModelPool::CreateChild(LPCSTR name, IReader* data)
 {
 	string256 low_name;		VERIFY(xr_strlen(name) < 256);
 	xr_strcpy(low_name, name);	xr_strlwr(low_name);

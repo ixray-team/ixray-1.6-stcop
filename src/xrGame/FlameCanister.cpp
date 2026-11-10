@@ -13,7 +13,7 @@ CFlameCanister::~CFlameCanister(void)
 {
 }
 
-void CFlameCanister::Load(const char* section)
+void CFlameCanister::Load(LPCSTR section)
 {
 	inherited::Load(section);
 

@@ -243,7 +243,7 @@ public:
 	virtual	GenerationLevel			get_generation			()											= 0;
 
 	virtual bool					is_sun_static			() { return false; };
-	virtual u32 get_dx_level() { return 0; };
+	virtual DWORD					get_dx_level			() { return 0;};
 
 	// Loading / Unloading
 	virtual	void					create					()											{};

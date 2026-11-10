@@ -11,8 +11,6 @@ namespace ImGui
 	extern ENGINE_API ImFont* BoldFont;
 }
 
-extern ENGINE_API float psImGuiScale;
-
 class ENGINE_API CImGuiManager
 {
 private:
@@ -31,16 +29,12 @@ private:
 	bool CaptureInputs = false;
 	bool HasPlatformWindowFocus = false;
 	bool MouseLook = false;
-	ImGuiStyle BaseStyle;
-	float AppliedScale = 0.0f;
 	ImVec2 MouseLookDelta = ImVec2(0.0f, 0.0f);
-	u8 MouseLookSkip = 0;
 
 public:
 	ImGuiCallback PlatformInitCallback = nullptr;
 	ImGuiCallback PlatformDestroyCallback = nullptr;
 	ImGuiCallback PlatformNewFrameCallback = nullptr;
-	ImGuiCallback HiddenCallback = nullptr;
 
 public:
 	CImGuiManager() = default;
@@ -65,7 +59,6 @@ public:
 	bool IsFocused() const;
 	void SetMouseLook(bool IsEnabled);
 	bool IsMouseLook() const;
-	bool IsButtonHeld(bool IsMiddle) const;
 	void AddMouseLook(float X, float Y);
 	ImVec2 TakeMouseLook();
 

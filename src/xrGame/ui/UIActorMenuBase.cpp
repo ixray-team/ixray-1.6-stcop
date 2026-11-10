@@ -275,7 +275,7 @@ void CUIActorMenuBase::InitBase(CUIXml& uiXml)
 	::Sound->create						(sounds[eItemUse],		uiXml.Read("snd_item_use",		0,	"interface\\inv_slot"), st_Effect, sg_SourceType);
 	if (uiXml.NavigateToNode("snd_unload_magazine", 0))
 	{
-		const char* snd_unload = uiXml.Read("snd_unload_magazine", 0, "");
+		LPCSTR snd_unload = uiXml.Read("snd_unload_magazine", 0, "");
 		if (snd_unload && snd_unload[0])
 		{
 			::Sound->create(sounds[eUnloadMagazine], snd_unload, st_Effect, sg_SourceType);
@@ -2427,7 +2427,7 @@ void CUIActorMenuBase::SetInventorySortSystem(EInventorySortSystem system)
 	}
 }
 
-void CUIActorMenuBase::SetInventorySortSystemScript(const char* system)
+void CUIActorMenuBase::SetInventorySortSystemScript(LPCSTR system)
 {
 	if (!system || !xr_strlen(system))
 	{
@@ -2443,7 +2443,7 @@ void CUIActorMenuBase::SetInventorySortSystemScript(const char* system)
 	SetInventorySortSystem(EInventorySortSystem::Categories);
 }
 
-const char* CUIActorMenuBase::GetInventorySortSystemScript() const
+LPCSTR CUIActorMenuBase::GetInventorySortSystemScript() const
 {
 	if (m_pInventorySorter && m_pInventorySorter->GetSystem() == EInventorySortSystem::Ordering)
 	{

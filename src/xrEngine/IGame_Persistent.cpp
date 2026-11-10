@@ -13,6 +13,7 @@
 #include "CustomHUD.h"
 
 ENGINE_API IGame_Persistent* g_pGamePersistent = nullptr;
+u32 g_NewDofMode = static_cast<u32>(EDofMode::Autofocus);
 
 bool IsMainMenuActive() { return  g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 

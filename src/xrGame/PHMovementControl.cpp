@@ -1165,7 +1165,7 @@ void CPHMovementControl::UnFreeze()
 		m_character->UnFreeze();
 }
 
-void CPHMovementControl::ActivateBox(u32 id, bool Check /*false*/)
+void CPHMovementControl::ActivateBox(DWORD id, bool Check/*false*/)
 {
 	if (Check && (m_dwCurBox == id))
 		return;
@@ -1180,7 +1180,7 @@ void CPHMovementControl::ActivateBox(u32 id, bool Check /*false*/)
 	m_character->SetBox(size);
 }
 
-void CPHMovementControl::InterpolateBox(u32 id, float k)
+void CPHMovementControl::InterpolateBox		(DWORD id, float k)
 { 
 	if (m_dwCurBox == id) return;
 	if(!m_character||!m_character->Exists()) return;
@@ -1257,7 +1257,7 @@ struct STraceBorderQParams
 	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(false); return p; }
 };
 
-bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, void* params)
+bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
 {
 	STraceBorderQParams& p = *(STraceBorderQParams*)params;
 	u16 mtl_idx = GAMEMTL_NONE_IDX;

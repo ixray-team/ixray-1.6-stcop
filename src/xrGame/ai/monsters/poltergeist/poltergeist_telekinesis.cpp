@@ -64,7 +64,7 @@ CTelekineticPoltergeist::CTelekineticPoltergeist(CPoltergeist* polter) : inherit
 
 CTelekineticPoltergeist::~CTelekineticPoltergeist() = default;
 
-void CTelekineticPoltergeist::load(const char* section)
+void CTelekineticPoltergeist::load(LPCSTR section)
 {
 	inherited::load(section);
 

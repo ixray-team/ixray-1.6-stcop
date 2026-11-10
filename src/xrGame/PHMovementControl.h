@@ -116,7 +116,7 @@ private:
 	u32					trying_times[4];
 	Fvector				trying_poses[4];
 	u64					block_damage_step_end;
-	u32 m_dwCurBox;
+	DWORD				m_dwCurBox;
 
 	float				fMass;
 	float				fMinCrashSpeed;
@@ -193,22 +193,18 @@ public:
 	void				SetNonInteractive			(bool v);
 	void				CalcMaximumVelocity			(Fvector& /**dest/**/, Fvector& /**accel/**/, float /**friction/**/){};
 	void				CalcMaximumVelocity			(float& /**dest/**/, float /**accel/**/, float /**friction/**/){};
-	void ActivateBox(u32 id, bool Check = false);
-	bool ActivateBoxDynamic(u32 id, int num_it = 9, int num_steps = 5, float resolve_depth = 0.01f);
-	virtual void InterpolateBox(u32 id, float k) override;
+	void				ActivateBox					(DWORD id, bool Check = false);
+	bool				ActivateBoxDynamic			(DWORD id,int num_it=9,int num_steps=5,float resolve_depth=0.01f);
+	virtual void				InterpolateBox				(DWORD id,float k) override;
 	EEnvironment		Environment					( )			{ return eEnvironment; }
 	EEnvironment		OldEnvironment				( )			{ return eOldEnvironment; }
 	virtual const Fbox&			Box							( ) override { return aabb; }
-	u32 BoxID() const { return m_dwCurBox; }
+	DWORD				BoxID						( )const	{ return m_dwCurBox;}
 	virtual const Fbox*			Boxes						( ) override {return boxes;}
 	float				FootRadius					( )			;
 	void				CollisionEnable 			(bool enable);
 	void				CollisionDynamicEnable(bool enable);
-	void SetBox(u32 id, const Fbox& BB)
-	{
-		boxes[id].set(BB);
-		aabb.set(BB);
-	}
+	void				SetBox						(DWORD id, const Fbox &BB)	{ boxes[id].set(BB); aabb.set(BB); }
 	void				SetMass						(float M);	
 
 	float				GetMass					()						{ return fMass;	}
@@ -275,7 +271,7 @@ public:
 	void				EnableCharacter			()																		;
 	void				SetOjectContactCallback (ObjectContactCallbackFun* callback)									;
 	void				SetFootCallBack			(ObjectContactCallbackFun* callback)									;
-	static bool BorderTraceCallback(collide::rq_result& result, void* params);
+	static bool			BorderTraceCallback(collide::rq_result& result, LPVOID params);
 	ObjectContactCallbackFun* ObjectContactCallback()			;
 	u16					ContactBone				()				;
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const	;

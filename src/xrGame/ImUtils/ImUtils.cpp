@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "ImUtils.h"
+#include "DofSetup.h"
 #include "../xrEngine/xr_input.h"
 
 clsid_manager* g_pClsidManager;
@@ -99,9 +100,11 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
 		CImGuiManager::Instance().Subscribe("Cinema Film Maker Editor", CImGuiManager::ERenderPriority::eMedium, RenderCinemaFilmMakerEditor);
 		CImGuiManager::Instance().Subscribe("Cinema Editor", CImGuiManager::ERenderPriority::eMedium, RenderCinemaEditor);
-		CImGuiManager::Instance().HiddenCallback = CinemaEditor_DrawHidden;
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
 		CImGuiManager::Instance().Subscribe("Camera Rig", CImGuiManager::ERenderPriority::eMedium, RenderCameraRigEditor);
+#ifdef DEBUG_DRAW
+		CImGuiManager::Instance().Subscribe("DOF setup", CImGuiManager::ERenderPriority::eMedium, RenderDofSetup);
+#endif
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();
@@ -735,6 +738,9 @@ void CImGuiTextureEditor::SImGuiWindowState::Apply(const char* windowName)
 
 void AllEditors_Shutdown()
 {
+#ifdef DEBUG_DRAW
+	ShutdownDofSetup();
+#endif
 	// texture editor
 	{
 		AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{

@@ -17,10 +17,10 @@ public:
 	virtual void  DrawSound(const Fvector& p, float radius, u32 clr) override;
 	virtual void  DrawLineSphere(const Fvector& p, float radius, u32 clr, bool bCross) override;
 
-	virtual void dbgDrawPlacement(const Fvector& p, int sz, u32 clr, const char* caption = 0, u32 clr_font = 0xffffffff) override;
-	virtual void dbgDrawVert(const Fvector& p0, u32 clr, const char* caption = 0) override;
-	virtual void dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, const char* caption = 0) override;
-	virtual void dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, const char* caption = 0) override;
+	virtual void  dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption = 0, u32 clr_font = 0xffffffff) override;
+	virtual void  dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption = 0) override;
+	virtual void  dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, LPCSTR caption = 0) override;
+	virtual void  dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption = 0) override;
 
 	virtual void  DrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, bool bSolid, bool bWire) override;
 	virtual void  DrawLine(const Fvector& p0, const Fvector& p1, u32 clr) override;
@@ -55,7 +55,7 @@ public:
 	virtual void  DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd) override;
 	virtual void  DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale = 1.0f) override;
 
-	virtual void OutText(const Fvector& pos, const char* text, u32 color = 0xFF000000, u32 shadow_color = 0xFF909090) override;
+	virtual void  OutText(const Fvector& pos, LPCSTR text, u32 color = 0xFF000000, u32 shadow_color = 0xFF909090) override;
 
 	virtual void  OnDeviceDestroy() override;
 };

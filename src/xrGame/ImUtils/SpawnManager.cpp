@@ -42,14 +42,14 @@ public:
 		}
 	}
 
-	CUI3dStatic* Get(const char* SectionName)
+	CUI3dStatic* Get(LPCSTR SectionName)
 	{
 		auto [It, IsNew] = Icons.try_emplace(SectionName);
 		auto& Entry = It->second;
 		Entry.LastFrame = Device.dwFrame;
 		if (IsNew)
 		{
-			const char* Visual = pSettings->read_if_exists<str_c>(SectionName, "3d_static_visual_name", pSettings->read_if_exists<str_c>(SectionName, "visual", nullptr));
+			LPCSTR Visual = pSettings->read_if_exists<str_c>(SectionName, "3d_static_visual_name", pSettings->read_if_exists<str_c>(SectionName, "visual", nullptr));
 			Entry.Icon = xr_make_unique<CUI3dStatic>();
 			Entry.Icon->SetIconVisual(Visual);
 			if (Entry.Icon->GetVisual())

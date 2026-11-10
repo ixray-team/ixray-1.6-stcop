@@ -209,7 +209,7 @@ struct STranspParam
 	STranspParam		(collide::ray_cache	*p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold):P(_P),D(_D),f(_f),pray_cache(p),vis(1.f),vis_threshold(_vis_threshold){}
 };
 
-IC bool material_callback(collide::rq_result& result, void* params)
+IC bool material_callback(collide::rq_result& result, LPVOID params)
 {
 	STranspParam* fp= (STranspParam*)params;
 	float vis		= 1.f;
@@ -475,3 +475,4 @@ void CLensFlare::OnDeviceDestroy()
 	//hGeom.destroy();
 	m_pRender->OnDeviceDestroy();
 }
+

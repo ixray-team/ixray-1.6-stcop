@@ -108,16 +108,7 @@ IC int	xr_strcmp	(const shared_str& a, const shared_str& b)
 	else				return xr_strcmp(*a, *b);
 }
 
-IC void xr_strlwr(shared_str& src)
-{
-	if (*src)
-	{
-		char* lp = xr_strdup(*src);
-		xr_strlwr(lp);
-		src = lp;
-		xr_free(lp);
-	}
-}
+IC void	xr_strlwr(shared_str& src) { if (*src) { LPSTR lp = xr_strdup(*src); xr_strlwr(lp); src = lp; xr_free(lp); } }
 
 namespace std
 {

@@ -261,8 +261,8 @@ protected:
 	CUITabControl*				GetSortTabControl			(EInventorySortSystem system, ESortTabsLayoutSlot slot) const;
 	void						HideAllSortTabs			();
 	void						SetInventorySortSystem		(EInventorySortSystem system);
-	void SetInventorySortSystemScript(const char* system);
-	const char* GetInventorySortSystemScript() const;
+	void						SetInventorySortSystemScript(LPCSTR system);
+	LPCSTR						GetInventorySortSystemScript() const;
 
 	void						RepairEffect_CurItem				();
 	virtual void				PerformDisassemble					() {}

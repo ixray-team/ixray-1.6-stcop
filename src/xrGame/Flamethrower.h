@@ -78,7 +78,7 @@ public:
 	CFlamethrower(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	~CFlamethrower() override;
 
-	void Load(const char* section) override;
+	void	Load(LPCSTR section) override;
 	CFlamethrower* cast_flamethrower() override { return this; }
 
 	bool    UseScopeTexture() override;
@@ -149,13 +149,13 @@ public:
 
 	void Serialize(ISaveObject& Object) override;
 
-	void SpawnFuelCanister(float Condition, const char* ammoSect = nullptr, ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
+	void	SpawnFuelCanister(float Condition, LPCSTR ammoSect = nullptr, ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
 
 	void	PlayAnimIdle() override;
 	void	PlayAnimBore() override;
 	shared_str SetCurrentStateAnimation(const shared_str& first_name) override;
 protected:
-	bool install_upgrade_impl(const char* section, bool test) override;
+	bool	install_upgrade_impl(LPCSTR section, bool test) override;
 
 protected:
 	virtual bool	AllowFireWhileWorking() { return false; }
@@ -172,7 +172,7 @@ protected:
 
 protected:
 
-	virtual void SetAnimFlag(u32 flag, const char* anim_name);
+	virtual void    SetAnimFlag(u32 flag, LPCSTR anim_name);
 
 	// ����� ������� ��������, ����� �� ������ �������, ��� ����� ������� ����� �����
 	enum {
@@ -194,7 +194,7 @@ protected:
 
 	Flags32 psWpnAnimsFlag;
 
-	bool WeaponSoundExist(const char* section, const char* sound_name, bool log = false) const;
+	bool WeaponSoundExist(LPCSTR section, LPCSTR sound_name, bool log = false) const;
 
 	float	GetWeaponDeterioration() override;
 

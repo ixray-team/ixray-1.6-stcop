@@ -49,7 +49,7 @@ public:
 	void ClearSleepMute();
 	void ClearSleepSessionOverrides();
 
-	void SetSleepBlocked(bool blocked, const char* warningText = nullptr);
+	void SetSleepBlocked(bool blocked, LPCSTR warningText = nullptr);
 
 	void Update() override;
 	void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;

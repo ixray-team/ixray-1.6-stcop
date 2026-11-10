@@ -10,7 +10,7 @@ float GetDefHitTypeProtection_CurrentOutfit(CCustomOutfit* outfit, int hit_type)
 	return outfit->GetDefHitTypeProtection(ALife::EHitType(hit_type));
 }
 
-float GetHitTypeProtection_CurrentOutfit(CCustomOutfit* outfit, int hit_type, const char* element)
+float GetHitTypeProtection_CurrentOutfit(CCustomOutfit* outfit, int hit_type, LPCSTR element)
 {
 	return outfit->GetHitTypeProtection(ALife::EHitType(hit_type), s16((intptr_t)element));
 }
@@ -20,7 +20,7 @@ float GetDefHitTypeProtection_CurrentHelmet(CHelmet* helm, int hit_type)
 	return helm->GetDefHitTypeProtection(ALife::EHitType(hit_type));
 }
 
-float GetHitTypeProtection_CurrentHelmet(CHelmet* helm, int hit_type, const char* element)
+float GetHitTypeProtection_CurrentHelmet(CHelmet* helm, int hit_type, LPCSTR element)
 {
 	return helm->GetHitTypeProtection(ALife::EHitType(hit_type), s16((intptr_t)element));
 }

@@ -270,7 +270,7 @@ void SteamNetServer::ProcessConnection(SteamNetConnectionStatusChangedCallback_t
 	// Check server password
 	if (!bServerClient)
 	{
-		const char* pServerPass = pInfo->m_info.m_identityRemote.GetGenericString();
+		LPCSTR pServerPass = pInfo->m_info.m_identityRemote.GetGenericString();
 		if (pServerPass != NULL && xr_strcmp(m_server_password.c_str(), pServerPass) != 0)
 		{
 			Msg("[SteamNetServer] Close connection. Incorrect server password");
@@ -438,7 +438,7 @@ void SteamNetServer::DisconnectAll()
 	m_pending_clients.clear();
 }
  
-bool SteamNetServer::DisconnectClient(IClient* C, const char* Reason)
+bool SteamNetServer::DisconnectClient(IClient * C, LPCSTR Reason)
 {
 	if (!C) return false;
 
@@ -447,7 +447,7 @@ bool SteamNetServer::DisconnectClient(IClient* C, const char* Reason)
 	return true;
 }
 
-void SteamNetServer::CloseConnection(HSteamNetConnection connection, enmDisconnectReason nReason, const char* sReason)
+void SteamNetServer::CloseConnection(HSteamNetConnection connection, enmDisconnectReason nReason, LPCSTR sReason)
 {
 	auto player_it = std::find(m_players.cbegin(), m_players.cend(), connection);
 	if (player_it != m_players.cend())
@@ -500,7 +500,7 @@ void SteamNetServer::GetIpAddress(SteamNetConnectionInfo_t & info, ip_address & 
 	out.set(ip_str);
 }
 
-bool SteamNetServer::GetClientAddress(ClientID ID, ip_address& address, u32* pPort)
+bool SteamNetServer::GetClientAddress(ClientID ID, ip_address& address, DWORD* pPort)
 {
 	SteamNetConnectionInfo_t info;
 	if (!m_pInterface->GetConnectionInfo(ID.value(), &info))
@@ -522,7 +522,7 @@ bool SteamNetServer::GetClientAddress(ClientID ID, ip_address& address, u32* pPo
 
 // -----------------------------------------------------------------------------
 
-bool SteamNetServer::GetClientPendingMessagesCount(ClientID ID, u32& dwPending)
+bool SteamNetServer::GetClientPendingMessagesCount(ClientID ID, DWORD & dwPending)
 {
 	R_ASSERT(m_pInterface);
 

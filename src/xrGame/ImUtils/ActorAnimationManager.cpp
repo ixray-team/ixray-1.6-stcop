@@ -16,7 +16,7 @@ struct SAnimationDragPayload
 	bool fx = false;
 };
 
-CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, void* CallbackParam);
+CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam);
 
 static IKinematicsAnimated* ActorKinematics()
 {

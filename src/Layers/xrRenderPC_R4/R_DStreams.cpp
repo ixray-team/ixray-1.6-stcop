@@ -164,7 +164,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 {
 	RHIMappedSubresource MappedSubRes;
 	vOffset = 0;
-	u8* pLockedData = nullptr;
+	BYTE* pLockedData = nullptr;
 
 	// Ensure there is enough space in the VB for this data
 	R_ASSERT(Count);
@@ -197,7 +197,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 
 	ERHI_BUFFER_MAP MapMode = (dwFlags == LOCKFLAGS_APPEND) ? ERHI_BUFFER_MAP::WRITE_NO_OVERWRITE : ERHI_BUFFER_MAP::WRITE_DISCARD;
 	pIB->Map(MapMode, dwFlags, &MappedSubRes);
-	pLockedData = (u8*)MappedSubRes.pData;
+	pLockedData = (BYTE*)MappedSubRes.pData;
 	pLockedData += mPosition * 2;
 
 	VERIFY(pLockedData);

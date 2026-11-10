@@ -166,7 +166,7 @@ void CRender::create()
 	o.SslrHq = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_HQ);
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
-	o.DofCompiled = LightingModeIsDynamicRender() && (ps_r2_ls_flags.test(R2FLAG_DOF) || (g_pGamePersistent && g_pGamePersistent->IsDofForced()));
+	o.DofCompiled = ps_r2_ls_flags.test(R2FLAG_DOF);
 
 	o.dx11_allow_wboit_transparency = LightingModeIsDynamicRender() && !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
@@ -625,6 +625,7 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST), "USE_HASHED_AREF", "1" },
 		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER), "USE_SSLR_ON_WATER", "1" },
 		{ Dynamic && ps_r_sun_shafts > 0, "SUN_SHAFTS_QUALITY", SunShafts },
+		{ true, "Volumetric_Alternative", g_SunShaftsAlternative ? "1" : "0" },
 		{ Dynamic && ps_r_sun_quality > 0, "SUN_QUALITY", SunQuality },
 		{ Dynamic && g_SunContactQuality > 0, "SUN_CONTACT_QUALITY", SunContact },
 		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX), "ALLOW_STEEPPARALLAX", "1" },
@@ -709,7 +710,7 @@ void CRender::SyncMotionVectors()
 
 void CRender::SyncDof()
 {
-	if (o.DofCompiled == (LightingModeIsDynamicRender() && (ps_r2_ls_flags.test(R2FLAG_DOF) || (g_pGamePersistent && g_pGamePersistent->IsDofForced()))))
+	if (o.DofCompiled == ps_r2_ls_flags.test(R2FLAG_DOF))
 		return;
 
 	o.DofCompiled = !o.DofCompiled;
@@ -737,7 +738,7 @@ void CRender::SyncReflections()
 template <typename T>
 static HRESULT create_shader(
 		const char* const pTarget,
-		u32 const* buffer,
+		DWORD const* buffer,
 		u32	const buffer_size,
 		const char* const file_name,
 		T*& result,
@@ -756,7 +757,7 @@ static HRESULT create_shader(
 
 static HRESULT create_shader(
 		const char* const pTarget,
-		u32 const* buffer,
+		DWORD const* buffer,
 		u32	const buffer_size,
 		const char* const file_name,
 		void*& result,
@@ -962,7 +963,7 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 
 class includer : public IRHIShaderInclude {
 public:
-	HRESULT Open(u32 IncludeType, const char* pFileName, const void* pParentData, const void** ppData, u32* pBytes) override
+	HRESULT Open(u32 IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
 	{
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
@@ -987,7 +988,7 @@ public:
 		return	S_OK;
 	}
 
-	HRESULT Close(const void* pData) override
+	HRESULT Close(LPCVOID pData) override
 	{
 		xr_free(pData);
 		return S_OK;
@@ -996,11 +997,11 @@ public:
 
 HRESULT	CRender::shader_compile(
 	const char* name,
-	u32 const* pSrcData,
-	u32 SrcDataLen,
+	DWORD const* pSrcData,
+	UINT SrcDataLen,
 	const char* pFunctionName,
 	const char* pTarget,
-	u32 Flags,
+	DWORD Flags,
 	void*& result,
 	const ShaderExternalMap& Defines)
 {
@@ -1073,7 +1074,7 @@ HRESULT	CRender::shader_compile(
 					inShader->m_crc1 = ShaderCRC;
 					inShader->m_crc2 = CodeSRC;
 
-					_result = create_shader(pTarget, (u32*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
+					_result = create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
 				}
 			}
 		}
@@ -1119,12 +1120,12 @@ HRESULT	CRender::shader_compile(
 			inShader->m_crc1 = crc;
 			inShader->m_crc2 = RealCodeCRC;
 
-			_result = create_shader(pTarget, (u32*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
+			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
 
 		if (pErrorBuf)
 		{
-			Msg("! error: %s\n%s", file_name, (const char*)pErrorBuf->GetBufferPointer());
+			Msg("! error: %s\n%s", file_name, (LPCSTR)pErrorBuf->GetBufferPointer());
 		}
 
 		if (FAILED(_result) && !pErrorBuf)

@@ -380,7 +380,7 @@ void SteamNetClient::UpdateStatistic()
 
 #pragma region pending messages
 
-bool SteamNetClient::GetPendingMessagesCount(u32& dwPending)
+bool SteamNetClient::GetPendingMessagesCount(DWORD& dwPending)
 {
 	R_ASSERT(m_pInterface);
 	R_ASSERT(m_hConnection != k_HSteamNetConnection_Invalid);
@@ -409,7 +409,7 @@ void SteamNetClient::GetIpAddress(SteamNetConnectionInfo_t & info, ip_address & 
 	out.set(ip_str);
 }
 
-bool SteamNetClient::GetServerAddress(ip_address& pAddress, u32* pPort)
+bool SteamNetClient::GetServerAddress(ip_address& pAddress, DWORD* pPort)
 {
 	*pPort = 0;
 

@@ -148,12 +148,6 @@ CWallmarksEngine::static_wallmark*	CWallmarksEngine::static_wm_allocate		()
 // destroy
 void		CWallmarksEngine::static_wm_destroy		(CWallmarksEngine::static_wallmark*	W	)
 {
-	if (W->handler)
-	{
-		W->handler->Reset();
-		W->handler.reset();
-	}
-	W->flags.zero();
 	static_pool.push_back	(W);
 }
 // render
@@ -283,8 +277,6 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal	(CDB::
 
 	// create wallmark
 	static_wallmark* W = static_wm_allocate();
-	W->flags = WMFlags;
-	W->handler = WMFlags.test(StaticWallmarkHandle::flHandler) ? xr_make_shared<StaticWallmarkHandle::CWallmarkHandle>(&W->flags) : nullptr;
 	W->verts.reserve(real_tcnt*3);
 	RecurseTri(0, mView, *W);
 
@@ -471,11 +463,11 @@ void CWallmarksEngine::Render(GfxCmdList& Cmd)
 						}
 						static_wm_render	(W,w_verts);
 					}
-					W->ttl	-= W->flags.test(StaticWallmarkHandle::flTimeToLive) ? 0.1f*Device.fTimeDelta : 0.f;	// visible wallmarks fade much slower
+					W->ttl	-= 0.1f*Device.fTimeDelta;	// visible wallmarks fade much slower
 				} else {
-					W->ttl	-= W->flags.test(StaticWallmarkHandle::flTimeToLive) ? Device.fTimeDelta : 0.f;
+					W->ttl	-= Device.fTimeDelta;
 				}
-				if (W->ttl<=EPS || W->flags.test(StaticWallmarkHandle::flForceRemove)){
+				if (W->ttl<=EPS){	
 					static_wm_destroy	(W);
 					*w_it				= slot->static_items.back();
 					slot->static_items.pop_back();

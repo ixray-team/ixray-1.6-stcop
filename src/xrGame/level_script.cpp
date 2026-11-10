@@ -159,7 +159,7 @@ float get_compass_direction()
 	return compass_angle;
 }
 
-bool actor_in_restrictor(const char* name)
+bool actor_in_restrictor(LPCSTR name)
 {
 	if (!name || !*name)
 	{
@@ -396,7 +396,7 @@ void change_game_time(u32 days, u32 hours, u32 mins)
 	}
 }
 
-void set_game_date_time(const char* date, const char* time)
+void set_game_date_time(LPCSTR date, LPCSTR time)
 {
 	game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
 	if (tpGame && ai().get_alife())
@@ -716,7 +716,7 @@ void iterate_sounds					(const char* prefix, u32 max_count, const CScriptCallbac
 {
 	for (int j=0, N = _GetItemCount(prefix); j<N; ++j) {
 		string_path					fn, s;
-		char* S = (char*)&s;
+		LPSTR						S = (LPSTR)&s;
 		_GetItem					(prefix,j,s);
 		if (FS.exist(fn,_game_sounds_,S,".ogg"))
 			callback				(prefix);

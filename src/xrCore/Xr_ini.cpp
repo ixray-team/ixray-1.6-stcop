@@ -138,6 +138,80 @@ ICF bool item_pred(const CInifile::Item& x, const char* val)
 //------------------------------------------------------------------------------
 //Тело функций Inifile
 //------------------------------------------------------------------------------
+CInifile::CInifile(const char* FileName, const SourceTextMap& Texts, const SourceLists* Lists)
+	: CInifile(static_cast<const char*>(nullptr), true, false, false)
+{
+	xr_strcpy(m_file_name, FileName);
+	IsTrackingSources = true;
+	SourceOverrides = &Texts;
+	SourceListOverrides = Lists;
+	SourceLocations.emplace_back();
+	string_path Path, Folder;
+	_splitpath(FileName, Path, Folder, nullptr, nullptr);
+	xr_strcat(Path, sizeof(Path), Folder);
+	const auto It = Texts.find(FileName);
+	if (It != Texts.end())
+	{
+		IReader Reader(const_cast<char*>(It->second.data()), It->second.size());
+		Load(&Reader, Path);
+	}
+	else
+	{
+		auto Reader = FS.rg_open(FileName);
+		if (Reader)
+		{
+			Load(&*Reader, Path);
+		}
+		else
+		{
+			SourceError = xr_string("Cannot open configuration: ") + FileName;
+		}
+	}
+	SourceOverrides = nullptr;
+	SourceListOverrides = nullptr;
+}
+
+const CInifile::SourceLocation* CInifile::GetSource(const char* Section, const char* Key) const
+{
+	const Sect* Found = r_section_nullable(Section);
+	u32 Id = Found ? Found->SourceId : 0;
+	if (Found && Key)
+	{
+		const auto It = std::lower_bound(Found->Data.begin(), Found->Data.end(), Key, item_pred);
+		Id = It != Found->Data.end() && It->first == Key ? It->SourceId : 0;
+	}
+	return Id && Id < SourceLocations.size() ? &SourceLocations[Id] : nullptr;
+}
+
+const CInifile::SourceLocation* CInifile::GetEditSource(const char* Section, const char* Key) const
+{
+	if (Key)
+	{
+		for (auto It = SourceLocations.rbegin(); It != SourceLocations.rend(); ++It)
+		{
+			if (It->Section == Section && It->Key == Key && It->IsOverride)
+			{
+				return &*It;
+			}
+		}
+		if (const SourceLocation* Source = GetSource(Section, Key); Source && Source->Section == Section)
+		{
+			return Source;
+		}
+	}
+	for (bool IsOverride : {true, false})
+	{
+		for (auto It = SourceLocations.rbegin(); It != SourceLocations.rend(); ++It)
+		{
+			if (It->Section == Section && It->Key.empty() && It->IsOverride == IsOverride)
+			{
+				return &*It;
+			}
+		}
+	}
+	return nullptr;
+}
+
 XRCORE_API bool _parse(char* dest, const char* src)
 {
 	bool bInsideSTR = false;
@@ -294,6 +368,21 @@ CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveA
 
 bool CInifile::Reload()
 {
+	if (IsTrackingSources)
+	{
+		const SourceTextMap Empty;
+		auto Reloaded = xr_make_unique<CInifile>(m_file_name, Empty);
+		if (!Reloaded || !Reloaded->GetSourceError().empty() || !Reloaded->section_count())
+		{
+			return false;
+		}
+		DATA.swap(Reloaded->DATA);
+		SourceTexts.swap(Reloaded->SourceTexts);
+		SourceLocations.swap(Reloaded->SourceLocations);
+		FileLists.swap(Reloaded->FileLists);
+		SourceError.clear();
+		return true;
+	}
 	CInifile Reloaded(m_file_name, true, true, false, 0, AllowIncludeFunc);
 	if (Reloaded.section_count() == 0)
 	{
@@ -303,6 +392,9 @@ bool CInifile::Reload()
 
 	// Keep the object address stable for cached system_ini() references in Lua.
 	DATA.swap(Reloaded.DATA);
+	SourceTexts.swap(Reloaded.SourceTexts);
+	SourceLocations.swap(Reloaded.SourceLocations);
+	FileLists.swap(Reloaded.FileLists);
 	OverrideModifyListData.swap(Reloaded.OverrideModifyListData);
 	FinalData.swap(Reloaded.FinalData);
 	BaseData.swap(Reloaded.BaseData);
@@ -377,6 +469,7 @@ void CInifile::InsertSectionItem(Sect& Section, bool& bDeleteSectionIfEmpty, con
 			if (bShouldInsert)
 			{
 				SectionIt->second = CurrentItem.second;
+				SectionIt->SourceId = CurrentItem.SourceId;
 			}
 		}
 		else
@@ -443,6 +536,7 @@ void CInifile::ApplySectionListModifiers(Sect& Section, Items& SectionItems)
 					}
 				}
 				SectionIt->second = xr_string().Join(SectionItemsList.begin(), SectionItemsList.end(), ',').c_str();
+				SectionIt->SourceId = Entry.SourceId;
 			}
 		}
 	}
@@ -474,6 +568,10 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 
 	std::pair<xr_string, Sect> CurrentSecPair(SectName, Sect(SectName.c_str()));
 	Sect* CurrentSect = &CurrentSecPair.second;
+	if (auto It = BaseData.find(SectName); It != BaseData.end())
+	{
+		CurrentSect->SourceId = It->second.SourceId;
+	}
 
 	const shared_str DeleteMarker = DLTX_DELETE;
 	auto InsertItemWithDelete = [&](const Item& Entry, InsertType Type)
@@ -819,6 +917,7 @@ void CInifile::insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 	if (sect_it != tgt->Data.end() && sect_it->first.equal(I.first))
 	{
 		sect_it->second = I.second;
+		sect_it->SourceId = I.SourceId;
 	}
 	else
 	{
@@ -1838,13 +1937,54 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 
 	F->seek(0);
 	LTXLoad(F, path, BaseData, BaseParentDataMap, false, true, m_file_name[0] ? m_file_name : "<memory>");
+	if (IsTrackingSources)
+	{
+		if (!SourceError.empty())
+		{
+			return;
+		}
+		xr_map<xr_string, u8> Visits;
+		auto VisitLambda = [&](auto&& Self, const xr_string& Name) -> bool
+		{
+			// Match evaluation: parents may have only DLTX overrides or no local definition.
+			if (Visits[Name] == 1)
+			{
+				SourceError = "Cyclic LTX inheritance: " + Name;
+				return false;
+			}
+			if (Visits[Name] == 2)
+			{
+				return true;
+			}
+			Visits[Name] = 1;
+			auto Parents = BaseParentDataMap[Name];
+			auto Overrides = OverrideParentDataMap[Name];
+			MergeParentSet(Parents, Overrides, false);
+			for (const auto& Parent : Parents)
+			{
+				if (!Self(Self, Parent))
+				{
+					return false;
+				}
+			}
+			Visits[Name] = 2;
+			return true;
+		};
+		for (const auto& [Name, Section] : BaseData)
+		{
+			if (!VisitLambda(VisitLambda, Name))
+			{
+				return;
+			}
+		}
+	}
 
 	// Merge base and override data together
 	thread_local xr_vector<xr_string> PreviousEvaluations;
 	PreviousEvaluations.clear();
 	PreviousEvaluations.reserve(64);
 
-	if (!EvaluateSectionsParallel())
+	if (IsTrackingSources || !EvaluateSectionsParallel())
 	{
 		for (auto& [Name, Section] : BaseData)
 		{
@@ -1890,6 +2030,10 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 
 void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile, const char* SourceFileName)
 {
+	if (IsTrackingSources)
+	{
+		SourceTexts.try_emplace(SourceFileName, static_cast<const char*>(F->pointer()) - F->tell(), F->length());
+	}
 	string4096 LTXHelpStr1;
 	string4096 LTXHelpStr2;
 
@@ -1917,17 +2061,40 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 	{
 		if (!AllowIncludeFunc || AllowIncludeFunc(_fn))
 		{
-			IReader* I = FS.r_open(_fn);
-			R_ASSERT3(I, "Can't find include file:", name);
-			if (I == nullptr)
+			if (IsTrackingSources)
 			{
+				if (const auto It = SourceTexts.find(_fn); It != SourceTexts.end())
+				{
+					IReader Reader(const_cast<char*>(It->second.data()), It->second.size());
+					xr_strcpy(DLTXCurrentFileName, name);
+					LTXLoad(&Reader, inc_path, OutputData, ParentDataMap, bOverridesOnly, false, _fn);
+					return;
+				}
+			}
+			if (SourceOverrides)
+			{
+				const auto It = SourceOverrides->find(_fn);
+				if (It != SourceOverrides->end())
+				{
+					IReader Reader(const_cast<char*>(It->second.data()), It->second.size());
+					xr_strcpy(DLTXCurrentFileName, name);
+					LTXLoad(&Reader, inc_path, OutputData, ParentDataMap, bOverridesOnly, false, _fn);
+					return;
+				}
+			}
+			auto I = FS.rg_open(_fn);
+			if (!IsTrackingSources)
+			{
+				R_ASSERT3(I, "Can't find include file:", name);
+			}
+			if (!I)
+			{
+				SourceError = xr_string("Missing include file: ") + _fn;
 				return;
 			}
 
 			strcpy(DLTXCurrentFileName, name);
-			LTXLoad(I, inc_path, OutputData, ParentDataMap, bOverridesOnly, false, _fn);
-
-			FS.r_close(I);
+			LTXLoad(&*I, inc_path, OutputData, ParentDataMap, bOverridesOnly, false, _fn);
 		}
 	};
 
@@ -1943,6 +2110,12 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			{
 				if (!bIsCurrentSectionOverride)
 				{
+					if (IsTrackingSources)
+					{
+						SourceError = "Duplicate section: " + CurrentNameStr;
+						Current = nullptr;
+						return;
+					}
 					Debug.fatal(DEBUG_INFO,
 						"Duplicate section '%s' wasn't marked as an override.\n\nOverride section by prefixing "
 						"it with '!' (![%s]) or give it a unique name.\n\nCheck this file and its DLTX "
@@ -1972,17 +2145,58 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		Current = nullptr;
 	};
 
+	auto ListFilesLambda = [&](FS_FileSet& Files, const char* Directory, const char* Mask)
+	{
+		const xr_string Key = xr_string(Directory) + "|" + Mask;
+		const SourceFileList* Saved = nullptr;
+		if (const auto It = FileLists.find(Key); It != FileLists.end())
+		{
+			Saved = &It->second;
+		}
+		if (!Saved && SourceListOverrides)
+		{
+			if (const auto It = SourceListOverrides->find(Key); It != SourceListOverrides->end())
+			{
+				Saved = &It->second;
+			}
+		}
+		if (Saved)
+		{
+			for (const auto& Name : Saved->Names)
+			{
+				Files.emplace(Name);
+			}
+			if (IsTrackingSources)
+			{
+				FileLists.try_emplace(Key, *Saved);
+			}
+			return;
+		}
+		FS.file_list(Files, Directory, FS_ListFiles, Mask);
+		if (IsTrackingSources)
+		{
+			SourceFileList List;
+			List.Directory = Directory;
+			List.Mask = Mask;
+			for (const auto& File : Files)
+			{
+				List.Names.push_back(File.name);
+			}
+			FileLists.emplace(Key, std::move(List));
+		}
+	};
+
 	auto LoadOverrides = [&](const xr_string& FilePath, const xr_string& FileName)
 	{
 		// Collect all files that could potentially be confused as a root file by our mod files
 		FS_FileSet AmbiguousFiles;
-		FS.file_list(AmbiguousFiles, FilePath.c_str(), FS_ListFiles, (FileName + "_*.ltx").c_str());
+		ListFilesLambda(AmbiguousFiles, FilePath.c_str(), (FileName + "_*.ltx").c_str());
 
 		// Collect all matching mod files
 		FS_FileSet ModFiles;
 		xr_string NormalizedFileName = FileName;
 		xr_strlwr(NormalizedFileName.data());
-		FS.file_list(ModFiles, FilePath.c_str(), FS_ListFiles, ("mod_" + NormalizedFileName + "_*.ltx").c_str());
+		ListFilesLambda(ModFiles, FilePath.c_str(), ("mod_" + NormalizedFileName + "_*.ltx").c_str());
 
 		std::optional<std::regex> NamePattern;
 		xr_vector<xr_unique_ptr<std::regex>> AmbiguousPatterns(AmbiguousFiles.size());
@@ -2050,6 +2264,11 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			ReadLineLambda();
 			if (RawLine.size() >= sizeof(LTXHelpStr1) - 1)
 			{
+				if (IsTrackingSources)
+				{
+					SourceError = xr_string("LTX line is too long: ") + SourceFileName;
+					return;
+				}
 				Debug.fatal(DEBUG_INFO, "! LTX line too long: %s:%u", SourceFileName, ValueLineNumber);
 				return;
 			}
@@ -2087,8 +2306,8 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			continue;
 		}
 
-		char* comm = strchr(LTXHelpStr1, ';');
-		char* comm_1 = strchr(LTXHelpStr1, '/');
+		LPSTR comm = strchr(LTXHelpStr1, ';');
+		LPSTR comm_1 = strchr(LTXHelpStr1, '/');
 
 		if (comm_1 && (*(comm_1 + 1) == '/') && ((!comm) || (comm && (comm_1 < comm))))
 		{
@@ -2136,7 +2355,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 					_splitpath(inc_name, nullptr, nullptr, inc_mask, inc_ext);
 					xr_string mask = xr_string(inc_mask) + inc_ext;
 					xr_strlwr(inc_path);
-					FS.file_list(fset, inc_path, FS_ListFiles, mask.c_str());
+					ListFilesLambda(fset, inc_path, mask.c_str());
 
 					for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
 					{
@@ -2162,6 +2381,11 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		}
 		else if (LTXHelpStr1[0] && strstr(LTXHelpStr1, "!![") == &LTXHelpStr1[0]) // Section delete
 		{
+			if (IsTrackingSources && !strchr(LTXHelpStr1, ']'))
+			{
+				SourceError = xr_string("Invalid section header: ") + SourceFileName;
+				return;
+			}
 			StashCurrentSection();
 
 			if (!bOverridesOnly)
@@ -2173,6 +2397,16 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			Current = &CurrentStorage;
 			*strchr(LTXHelpStr1, ']') = 0;
 			Current->Name = strlwr(&LTXHelpStr1[3]);
+			if (IsTrackingSources)
+			{
+				SourceLocation Source;
+				Source.File = SourceFileName;
+				Source.Section = Current->Name.c_str();
+				Source.Line = Source.EndLine = ValueLineNumber;
+				Source.IsOverride = true;
+				Current->SourceId = static_cast<u32>(SourceLocations.size());
+				SourceLocations.push_back(std::move(Source));
+			}
 
 			bIsCurrentSectionOverride = true;
 
@@ -2186,6 +2420,11 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		}
 		else if ((LTXHelpStr1[0] && (LTXHelpStr1[0] == '[')) || strstr(LTXHelpStr1, "![") == &LTXHelpStr1[0]) // new section ?
 		{
+			if (IsTrackingSources && !strchr(LTXHelpStr1, ']'))
+			{
+				SourceError = xr_string("Invalid section header: ") + SourceFileName;
+				return;
+			}
 			// insert previous filled section
 			StashCurrentSection();
 
@@ -2203,6 +2442,20 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			}
 
 			Current->Name = SecName.c_str();
+			if (IsTrackingSources && bIsCurrentSectionOverride == bOverridesOnly)
+			{
+				SourceLocation Source;
+				Source.File = SourceFileName;
+				Source.Section = SecName;
+				Source.Line = Source.EndLine = ValueLineNumber;
+				Source.IsOverride = bOverridesOnly;
+				if (const char* Parents = strstr(LTXHelpStr1, "]:"))
+				{
+					Source.Parents = Parents + 2;
+				}
+				Current->SourceId = static_cast<u32>(SourceLocations.size());
+				SourceLocations.push_back(std::move(Source));
+			}
 
 			// start new section
 			R_ASSERT3(strchr(LTXHelpStr1, ']'), "Bad ini section found: ", LTXHelpStr1);
@@ -2251,7 +2504,14 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 						{
 							string1024 QuoteError;
 							xr_sprintf(QuoteError, sizeof(QuoteError), "Unclosed LTX quote: %s:%u", SourceFileName, ValueLineNumber);
-							R_ASSERT2(!bInsideSTR, QuoteError);
+							if (IsTrackingSources)
+							{
+								SourceError = QuoteError;
+							}
+							else
+							{
+								R_ASSERT2(!bInsideSTR, QuoteError);
+							}
 
 							F->seek(ValueEnd);
 							LineNumber = NextLineNumber;
@@ -2296,6 +2556,18 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 				Item I;
 				I.first = (name[0] ? name : nullptr);
 				I.second = bIsDelete ? DLTX_DELETE : (LTXHelpStr2[0] ? LTXHelpStr2 : nullptr);
+				if (IsTrackingSources && name[0])
+				{
+					SourceLocation Source;
+					Source.File = SourceFileName;
+					Source.Section = Current->Name.c_str();
+					Source.Key = name;
+					Source.Line = ValueLineNumber;
+					Source.EndLine = std::max(ValueLineNumber, LineNumber - 1);
+					Source.IsOverride = bOverridesOnly;
+					I.SourceId = static_cast<u32>(SourceLocations.size());
+					SourceLocations.push_back(std::move(Source));
+				}
 
 				if (*I.first && I.first.c_str()[0] != '<' && I.first.c_str()[0] != '>' && Current != nullptr && bIsCurrentSectionOverride == bOverridesOnly)
 				{

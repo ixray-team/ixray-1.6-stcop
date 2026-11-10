@@ -11,7 +11,7 @@
 #include "tss.h"
 #include "../../xrEngine/EngineAPI.h"
 
-void fix_texture_name(char* fn);
+void fix_texture_name(LPSTR fn);
 
 // Provide DX9-style wrappers that call the same implementations
 
@@ -88,7 +88,7 @@ void CBlender_Compile::r_dx10Unbind(const char* ResourceName)
 
 void CBlender_Compile::r_ColorWriteEnable(bool cR, bool cG, bool cB, bool cA)
 {
-    u8 Mask = 0;
+    BYTE Mask = 0;
     Mask |= cR ? D3DCOLORWRITEENABLE_RED : 0;
     Mask |= cG ? D3DCOLORWRITEENABLE_GREEN : 0;
     Mask |= cB ? D3DCOLORWRITEENABLE_BLUE : 0;

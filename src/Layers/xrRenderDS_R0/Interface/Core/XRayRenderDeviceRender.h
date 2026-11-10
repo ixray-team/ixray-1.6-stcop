@@ -19,7 +19,7 @@ public:
 	virtual void	DestroyHW() override;
 	//	Init
 	virtual void	SetupStates() override;
-	virtual void OnDeviceCreate(const char* shName) override;
+	virtual void	OnDeviceCreate(LPCSTR shName) override;
 	virtual void	SetupGPU(bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF) override;
 	//	Overdraw
 	virtual void	overdrawBegin() override;

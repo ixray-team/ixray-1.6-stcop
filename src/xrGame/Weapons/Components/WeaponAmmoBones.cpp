@@ -500,33 +500,33 @@ void TAmmoBones::ApplyToModel(IKinematics* Model, xr_span<const SAmmoBonesParams
 	Model->CalculateBones(true);
 }
 
-void TAmmoBones::ApplyDefaultIconBones(IKinematics& Model, const char* SectionName, xr_span<const shared_str> InstalledSections)
+void TAmmoBones::ApplyDefaultIconBones(IKinematics& Model, LPCSTR SectionName, xr_span<const shared_str> InstalledSections)
 {
-	const char* HudSection = WeaponBoneVisibility::ReadString(SectionName, "hud");
+	LPCSTR HudSection = WeaponBoneVisibility::ReadString(SectionName, "hud");
 	for (const auto& Parameters : InstalledSections)
 	{
 		HudSection = pSettings->read_if_exists<str_c>(Parameters, "hud", HudSection);
 	}
-	const auto ReadParameters = [&](const char* Field)
+	const auto ReadParameters = [&](LPCSTR Field)
 	{
-		const char* Parameters = pSettings->section_exist(HudSection) && pSettings->line_exist(HudSection, Field) ? HudSection : SectionName;
+		LPCSTR Parameters = pSettings->section_exist(HudSection) && pSettings->line_exist(HudSection, Field) ? HudSection : SectionName;
 		return WeaponBoneVisibility::ReadString(Parameters, Field);
 	};
 	xr_vector<SAmmoBonesParams> Parameters;
 	const s32 MagazineSize = pSettings->read_if_exists<s32>(SectionName, "ammo_mag_size", 0);
-	const char* Common = ReadParameters("ammo_params_section");
+	LPCSTR Common = ReadParameters("ammo_params_section");
 	if (*Common && pSettings->section_exist(Common))
 	{
 		Parameters.emplace_back().Load(Common, MagazineSize);
 	}
 	else
 	{
-		const char* Ammo = WeaponBoneVisibility::ReadString(SectionName, "ammo_class");
+		LPCSTR Ammo = WeaponBoneVisibility::ReadString(SectionName, "ammo_class");
 		for (int Index = 0, Count = _GetItemCount(Ammo); Index < Count; ++Index)
 		{
 			string64 Field;
 			xr_sprintf(Field, "ammo_params_section_%d", Index);
-			const char* Section = ReadParameters(Field);
+			LPCSTR Section = ReadParameters(Field);
 			if (*Section && pSettings->section_exist(Section))
 			{
 				Parameters.emplace_back(Index).Load(Section, MagazineSize);

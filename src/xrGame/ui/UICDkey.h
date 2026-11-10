@@ -58,6 +58,6 @@ public:
 }; // class CUIMPPlayerName
 
 extern	void	GetCDKey_FromRegistry		(char* cdkey);
-extern void WriteCDKey_ToRegistry(char* cdkey);
+extern	void	WriteCDKey_ToRegistry		(LPSTR cdkey);
 extern	void	GetPlayerName_FromRegistry	(char* name, u32 const name_size);
-extern void WritePlayerName_ToRegistry(char* name);
+extern	void	WritePlayerName_ToRegistry	(LPSTR name);

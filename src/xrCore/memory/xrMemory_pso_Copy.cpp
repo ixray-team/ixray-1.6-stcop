@@ -2,18 +2,18 @@
 
 
 #pragma warning(disable:4995)
-void xrMemCopy_x86(void* dest, const void* src, size_t n)
+void xrMemCopy_x86(LPVOID dest, const void* src, size_t n)
 {
 	memcpy(dest, src, n);
 }
 
 #if defined(IXR_ARM64)
-void xrMemCopy_MMX(void* dest, const void* src, size_t n)
+void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	xrMemCopy_x86(dest, src, n);
 }
 #elif defined(IXR_X64)
-void xrMemCopy_MMX(void* dest, const void* src, size_t n)
+void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	xrMemCopy_x86(dest, src, n);
 }
@@ -39,7 +39,7 @@ void xrMemCopy_MMX(void* dest, const void* src, size_t n)
 //one address per cache line,for a series of cache lines,in a short loop.
 //This is faster than using software prefetch.The technique is great for
 //getting maximum read bandwidth,especially in DDR memory systems.
-void xrMemCopy_MMX(void* dest, const void* src, size_t n)
+void xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	__asm {
 		mov ecx,[n ];							// number of bytes to copy

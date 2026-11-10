@@ -122,21 +122,21 @@ public:
 
     ICF u32 get_windows() const
     {
-        u8 _a, _r, _g, _b;
-		_a = (u8)(a * 255.0f);
-		_r = (u8)(r * 255.0f);
-		_g = (u8)(g * 255.0f);
-		_b = (u8)(b * 255.0f);
+        BYTE _a, _r, _g, _b;
+        _a = (BYTE)(a * 255.0f);
+        _r = (BYTE)(r * 255.0f);
+        _g = (BYTE)(g * 255.0f);
+        _b = (BYTE)(b * 255.0f);
         return ((u32)(_a << 24) | (_b << 16) | (_g << 8) | (_r));
     };
 
     ICF _color& set_windows(u32 dw)
     {
         constexpr float f = 1.0f / 255.0f;
-        a = f * (float)(u8)(dw >> 24);
-		b = f * (float)(u8)(dw >> 16);
-		g = f * (float)(u8)(dw >> 8);
-		r = f * (float)(u8)(dw >> 0);
+        a = f * (float)(BYTE)(dw >> 24);
+        b = f * (float)(BYTE)(dw >> 16);
+        g = f * (float)(BYTE)(dw >> 8);
+        r = f * (float)(BYTE)(dw >> 0);
         return *this;
     };
 

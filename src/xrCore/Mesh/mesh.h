@@ -49,7 +49,7 @@ class MeshTri
 
 private:
 	DlinkDefine(MeshTri,List);
-	u32 dwListId; // For use when doing consistency checks.
+	DWORD		dwListId;	// For use when doing consistency checks.
 
 	void InternalDelete ( bool bBinUnusedEdges );
 
@@ -113,7 +113,7 @@ class MeshEdge
 
 private:
 	DlinkDefine(MeshEdge,List);
-	u32 dwListId; // For use when doing consistency checks.
+	DWORD		dwListId;	// For use when doing consistency checks.
 
 public:
 	MeshPt		*pPt1;
@@ -189,7 +189,7 @@ private:
 	int							iCurProxNum;	// Used with First/NextProx.
 
 	DlinkDefine(MeshPt,List);
-	u32 dwListId; // For use when doing consistency checks.
+	DWORD						dwListId;	// For use when doing consistency checks.
 
 public:
 	MESHPT_APP_DEFINED						// App-defined data.

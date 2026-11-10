@@ -21,7 +21,6 @@ public:
 private:
 	CCreature		*m_object;
 	CAI_Stalker			*m_stalker;
-	bool				InCombat = false;
 
 public:
 						CItemManager	(CCreature *object);

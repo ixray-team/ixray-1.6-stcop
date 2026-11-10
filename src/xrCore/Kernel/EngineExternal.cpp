@@ -1,79 +1,8 @@
 #include "stdafx.h"
 
 #include "EngineExternal.h"
-#include <magic_enum/magic_enum.hpp>
 
 XRCORE_API CEngineExternal* g_pEngineExternal = nullptr;
-
-template<XRay::Concepts::Enum Enum>
-static bool CachedGetSettings(CInifile* File, const char* Type, Enum ID)
-{
-	using ntype = std::underlying_type_t<Enum>;
-	static xr_array<bool, (size_t)Enum::None> Cache = [File, Type]()
-	{
-		xr_array<bool, (size_t)Enum::None> Cache = {};
-		for (ntype i = 0; i < (ntype)Enum::None; i++)
-		{
-			Cache[i] = File->read_if_exists<bool>(Type, magic_enum::enum_name((Enum)i).data(), false);
-		}
-		return Cache;
-	}();
-	return Cache[(ntype)ID];
-}
-
-bool CEngineExternal::operator[](const EEngineExternalUI& ID) const
-{
-	return CachedGetSettings(pOptions, "ui", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalPhysical& ID) const
-{
-	return CachedGetSettings(pOptions, "physics", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalGame& ID) const
-{
-	return CachedGetSettings(pOptions, "gameplay", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalSpawnSupplies& ID) const
-{
-	return CachedGetSettings(pOptions, "spawn_supplies", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalMonstersLogic& ID) const
-{
-	if (!MonsterLogicConfigAvailable)
-	{
-		return false;
-	}
-	const int Override = GetMonsterLogicOverride();
-	if (ID == EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation)
-	{
-		return Override >= 0 ? Override != 0 : MonsterLogicEnabled;
-	}
-	return CachedGetSettings(MonsterLogicOptions, "monsters_logic", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalRender& ID) const
-{
-	return CachedGetSettings(pOptions, "render", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalEnvironment& ID) const
-{
-	return CachedGetSettings(pOptions, "environment", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalSound& ID) const
-{
-	return CachedGetSettings(pOptions, "sound", ID);
-}
-
-bool CEngineExternal::operator[](const EEngineExternalSystem& ID) const
-{
-	return CachedGetSettings(pOptions, "system", ID);
-}
 
 CEngineExternal::CEngineExternal() : 
 	m_platform_type(EEngineExternalPlatform::Unknown),

@@ -33,15 +33,15 @@ void CRenderTarget::phase_new_luminance(GfxCmdList& Cmd)
 		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 		Cmd.SetStencil(false);
 
-		Cmd.Constants.Write<CBPost>().adapt_params.set(ps_r2_autoexposure_min_weight, ps_r2_autoexposure_gaussian, Device.IsCameraCut() ? 1.0f : 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed), 0.f);
+		Cmd.Constants.Write<CBPost>().adapt_params.set(ps_r2_autoexposure_min_weight, ps_r2_autoexposure_gaussian, 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed), 0.f);
 		Cmd.Constants.Write<CBPost>().adapt_params2.set(ps_r2_autoexposure_soft_log_k, ps_r2_autoexposure_soft_limiter, ps_r2_autoexposure_sensitivity, 0.f);
 
 		f_luminance_adapt = 0.9f * f_luminance_adapt + 0.1f * Device.fTimeDelta * ps_r2_tonemap_adaptation;
 
 		Fvector3 Current, Result;
 		Result.set(1, 0, 1);
-		Current.set(Device.Grade(3, ps_r2_tonemap_middlegray), 1.f, ps_r2_tonemap_low_lum);
-		Result.lerp(Result, Current, Device.Grade(2, ps_r2_tonemap_amount));
+		Current.set(ps_r2_tonemap_middlegray, 1.f, ps_r2_tonemap_low_lum);
+		Result.lerp(Result, Current, ps_r2_tonemap_amount);
 
 		Cmd.Constants.Write<CBPost>().MiddleGray.set(Result.x, Result.y, Result.z, f_luminance_adapt);
 	});

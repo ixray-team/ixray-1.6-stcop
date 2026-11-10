@@ -140,6 +140,22 @@ using ShaderExternalMap = xr_string_map<xr_string, xr_string>;
 
 class XRCORE_API CEngineExternal final
 {
+	template<XRay::Concepts::Enum Enum>
+	bool CachedGetSettings(CInifile* File, xr_string_view Type, Enum ID) const
+	{
+		using ntype = std::underlying_type_t<Enum>;
+		static xr_array<bool, (size_t)Enum::None> Cache = [File, &Type]()
+		{
+			xr_array<bool, (size_t)Enum::None> Cache = {};
+			for (ntype i = 0; i < (ntype)Enum::None; i++)
+			{
+				Cache[i] = File->read_if_exists<bool>(Type.data(), magic_enum::enum_name((Enum)i).data(), false);
+			}
+			return Cache;
+		}();
+		return Cache[(ntype)ID];
+	}
+	
 private:
 	std::atomic<int> MonsterLogicOverride{-1};
 	float MonsterEnemySharingCloseRatio = .25f;
@@ -174,15 +190,61 @@ public:
 	EEngineExternalPlatform GetCurrentPlatform();
 	shared_str GetInventoryItemCountPrefix();
 
-	bool operator[](const EEngineExternalUI& ID) const;
-	bool operator[](const EEngineExternalPhysical& ID) const;
-	bool operator[](const EEngineExternalGame& ID) const;
-	bool operator[](const EEngineExternalSpawnSupplies& ID) const;
-	bool operator[](const EEngineExternalMonstersLogic& ID) const;
-	bool operator[](const EEngineExternalRender& ID) const;
-	bool operator[](const EEngineExternalEnvironment& ID) const;
-	bool operator[](const EEngineExternalSound& ID) const;
-	bool operator[](const EEngineExternalSystem& ID) const;
+	ICF bool operator[](const EEngineExternalUI& ID) const
+	{
+		static xr_stack_string16 Type = "ui";
+		return CachedGetSettings<EEngineExternalUI>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalPhysical& ID) const
+	{
+		static xr_stack_string16 Type = "physics";
+		return CachedGetSettings<EEngineExternalPhysical>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalGame& ID) const
+	{
+		static xr_stack_string16 Type = "gameplay";
+		return CachedGetSettings<EEngineExternalGame>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalSpawnSupplies& ID) const
+	{
+		static xr_stack_string16 Type = "spawn_supplies";
+		return CachedGetSettings<EEngineExternalSpawnSupplies>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalMonstersLogic& ID) const
+	{
+		if (!MonsterLogicConfigAvailable)
+		{
+			return false;
+		}
+		const int Override = GetMonsterLogicOverride();
+		if (ID == EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation)
+		{
+			return Override >= 0 ? Override != 0 : MonsterLogicEnabled;
+		}
+		static xr_stack_string16 Type = "monsters_logic";
+		return CachedGetSettings<EEngineExternalMonstersLogic>(MonsterLogicOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalRender& ID) const
+	{
+		static xr_stack_string16 Type = "render";
+		return CachedGetSettings<EEngineExternalRender>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalEnvironment& ID) const {
+		static xr_stack_string16 Type = "environment";
+		return CachedGetSettings<EEngineExternalEnvironment>(pOptions, Type, ID);
+	}
+
+	ICF bool operator[](const EEngineExternalSound& ID) const
+	{
+		static xr_stack_string16 Type = "sound";
+		return CachedGetSettings<EEngineExternalSound>(pOptions, Type, ID);
+	}
 
 	ICF bool operator[](const EEngineExternalPlatform& ID) const
 	{
@@ -190,6 +252,12 @@ public:
 			return false;
 
 		return g_Platforms[static_cast<unsigned char>(ID)] == m_platform_type;
+	}
+	
+	ICF bool operator[](const EEngineExternalSystem& ID) const
+	{
+		static xr_stack_string16 Type = "system";
+		return CachedGetSettings<EEngineExternalSystem>(pOptions, Type, ID);
 	}
 
 	ShaderExternalMap ShadersOptions;

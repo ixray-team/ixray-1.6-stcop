@@ -5,7 +5,7 @@
 
 class CUIXml;
 
-typedef bool (*player_cmp_func)(void* v1, void* v2);
+typedef bool(*player_cmp_func)(LPVOID v1, LPVOID v2);
 
 class CUIStatsPlayerList final : public CUIScrollView
 {

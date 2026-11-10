@@ -35,7 +35,7 @@ void CDS0_RenderDeviceRender::OnDeviceDestroy(bool bKeepTextures)
 	GRenderInterface.destroy();
 }
 
-void CDS0_RenderDeviceRender::OnDeviceCreate(const char* shName)
+void CDS0_RenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
 	GRenderInterface.create();
 }

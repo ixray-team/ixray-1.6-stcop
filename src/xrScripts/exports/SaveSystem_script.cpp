@@ -84,13 +84,11 @@ namespace CSaveChunk_script {
 		return Size;
 	}
 
-	CSaveChunk* BeginChunk(CSaveChunk* Chunk, const char* ChunkName)
-	{
+	CSaveChunk* BeginChunk(CSaveChunk* Chunk, LPCSTR ChunkName) {
 		return Chunk->BeginChunk(ChunkName);
 	}
 
-	CSaveChunk* FindChunk(CSaveChunk* Chunk, const char* ChunkName)
-	{
+	CSaveChunk* FindChunk(CSaveChunk* Chunk, LPCSTR ChunkName) {
 		return Chunk->FindChunk(ChunkName);
 	}
 
@@ -105,8 +103,7 @@ namespace CSaveObject_script
 		return Obj->BeginChunk(Name);
 	}*/
 	
-	bool HasChunk(ISaveObject* Obj, const char* Name)
-{
+	bool HasChunk(ISaveObject* Obj, LPCSTR Name){
 		VERIFY(Obj);
 		return Obj->HasChunk(Name);
 	}
@@ -136,7 +133,7 @@ namespace CSaveObject_script
 #define SaveLog(ToCall)
 #endif
 
-	void ForChunk(ISaveObject* Obj, const char* Name, const luabind::object& func)
+	void ForChunk(ISaveObject* Obj, LPCSTR Name, const luabind::object& func)
 	{
 		SaveLog([&](){Msg("Enter ForChunk [%s]", Name);})
 		I_ASSERT(Obj);
@@ -309,8 +306,7 @@ namespace CSaveObject_script
 
 #undef VALUE_VALIDATION
 	
-	const char* s_stringZ(ISaveObject* Obj, const char* Value)
-	{
+	LPCSTR s_stringZ(ISaveObject* Obj, LPCSTR Value) {
 		SaveLog([&](){Msg("Serialize string");})
 		if (g_pScriptEngine)
 		{
@@ -327,7 +323,7 @@ namespace CSaveObject_script
 					{
 						lua_pushlstring(L, StrData.c_str(), size);
 						size_t lua_len;
-						const char* lua_str = lua_tolstring(L, -1, &lua_len);
+						LPCSTR lua_str = lua_tolstring(L, -1, &lua_len);
 						//lua_pushvalue(L, -1);
 						//int ref = luaL_ref(L, LUA_REGISTRYINDEX);
 						//lua_pop(L, 1);

@@ -526,7 +526,7 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 	Fvector position; _object->Center(position);
 
 	// light-tracing
-	s32 bTraceLights = MODE & IRender_ObjectSpecific::TRACE_LIGHTS;
+	BOOL bTraceLights = MODE & IRender_ObjectSpecific::TRACE_LIGHTS;
 
 	if ((!O->renderable_ShadowGenerate()) && (!O->renderable_ShadowReceive()))
 	{

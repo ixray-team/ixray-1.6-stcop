@@ -56,21 +56,21 @@ void	CDS0_KinematicsAnimated::Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle)
 
 #ifdef DEBUG
 
-std::pair<const char*, const char*> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
+std::pair<LPCSTR, LPCSTR> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID ID)
 {
 	shared_motions& s_mots = m_Motions[ID.slot].motions;
 	accel_map::iterator _I, _E = s_mots.motion_map()->end();
 	for (_I = s_mots.motion_map()->begin(); _I != _E; ++_I)	if (_I->second == ID.idx) return std::make_pair(*_I->first, *s_mots.id());
-	return std::make_pair((const char*)0, (const char*)0);
+	return std::make_pair((LPCSTR)0, (LPCSTR)0);
 }
 
-static const char* name_bool(bool v)
+static LPCSTR name_bool(bool v)
 {
 	static  xr_token token_bool[] = { { "false", 0 }, { "true", 1 } };
 	return get_token_name(token_bool, v);
 }
 
-static const char* name_blend_type(CBlend::ECurvature blend)
+static LPCSTR name_blend_type(CBlend::ECurvature blend)
 {
 	static xr_token token_blend[] =
 	{
@@ -151,17 +151,17 @@ LPCSTR CDS0_KinematicsAnimated::LL_MotionDefName_dbg	(LPVOID ptr)
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-MotionID CDS0_KinematicsAnimated::LL_MotionID(const char* B)
+MotionID CDS0_KinematicsAnimated::LL_MotionID(LPCSTR B)
 {
 	MotionID motion_ID;
 	for (int k = int(m_Motions.size()) - 1; k >= 0; --k) {
 		shared_motions* s_mots = &m_Motions[k].motions;
-		accel_map::iterator I = s_mots->motion_map()->find((char*)(B));
+		accel_map::iterator I = s_mots->motion_map()->find(LPSTR(B));
 		if (I != s_mots->motion_map()->end()) { motion_ID.set(u16(k), I->second); break; }
 	}
 	return motion_ID;
 }
-u16 CDS0_KinematicsAnimated::LL_PartID(const char* B)
+u16 CDS0_KinematicsAnimated::LL_PartID(LPCSTR B)
 {
 	if (0 == m_Partition)	return BI_NONE;
 	for (u16 id = 0; id < MAX_PARTS; id++)
@@ -174,12 +174,12 @@ u16 CDS0_KinematicsAnimated::LL_PartID(const char* B)
 }
 
 // cycles
-MotionID CDS0_KinematicsAnimated::ID_Cycle_Safe(const char* N)
+MotionID CDS0_KinematicsAnimated::ID_Cycle_Safe(LPCSTR  N)
 {
 	MotionID motion_ID;
 	for (int k = int(m_Motions.size()) - 1; k >= 0; --k) {
 		shared_motions* s_mots = &m_Motions[k].motions;
-		accel_map::const_iterator I = s_mots->cycle()->find((char*)(N));
+		accel_map::const_iterator I = s_mots->cycle()->find(LPSTR(N));
 		if (I != s_mots->cycle()->end()) { motion_ID.set(u16(k), I->second); break; }
 	}
 	return motion_ID;
@@ -199,7 +199,7 @@ MotionID CDS0_KinematicsAnimated::ID_Cycle_Safe(shared_str  N)
 	}
 	return motion_ID;
 }
-MotionID CDS0_KinematicsAnimated::ID_Cycle(const char* N)
+MotionID CDS0_KinematicsAnimated::ID_Cycle(LPCSTR  N)
 {
 	MotionID motion_ID = ID_Cycle_Safe(N);	R_ASSERT3(motion_ID.valid(), "! MODEL: can't find cycle: ", N);
 	return motion_ID;
@@ -263,7 +263,7 @@ float CDS0_KinematicsAnimated::get_animation_length(MotionID motion_ID)
 	return							bone_motions->at(motion_ID.idx).GetLength() / anim_speed;
 }
 
-void CDS0_KinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, void* CallbackParam)
+void CDS0_KinematicsAnimated::IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam)
 {
 	VERIFY(B.channel < MAX_CHANNELS);
 	// Setup blend params
@@ -319,7 +319,7 @@ void CDS0_KinematicsAnimated::IFXBlendSetup(CBlend& B, MotionID motion_ID, float
 	B.channel = 0;
 	B.fall_at_end = false;
 }
-CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, void* CallbackParam, u8 channel /*=0*/)
+CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel/*=0*/)
 {
 	// validate and unroll
 	if (!motion_ID.valid())	return 0;
@@ -351,7 +351,7 @@ CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool
 	blend_cycles[part].push_back(B);
 	return		B;
 }
-CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel /*=0*/)
+CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
 {
 	VERIFY(motion_ID.valid());
 	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
@@ -360,13 +360,13 @@ CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool
 		m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->StopAtEnd(),
 		Callback, CallbackParam, channel);
 }
-CBlend* CDS0_KinematicsAnimated::PlayCycle(const char* N, bool bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel /*= 0*/)
+CBlend* CDS0_KinematicsAnimated::PlayCycle(LPCSTR  N, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel  /*= 0*/)
 {
 	MotionID motion_ID = ID_Cycle(N);
 	if (motion_ID.valid())	return PlayCycle(motion_ID, bMixIn, Callback, CallbackParam, channel);
 	else { Debug.fatal(DEBUG_INFO, "! MODEL: can't find cycle: %s", N); return 0; }
 }
-CBlend* CDS0_KinematicsAnimated::PlayCycle(MotionID motion_ID, bool bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel /*= 0*/)
+CBlend* CDS0_KinematicsAnimated::PlayCycle(MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
 	VERIFY(motion_ID.valid());
 	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
@@ -376,7 +376,7 @@ CBlend* CDS0_KinematicsAnimated::PlayCycle(MotionID motion_ID, bool bMixIn, Play
 		Callback, CallbackParam, channel);
 }
 
-CBlend* CDS0_KinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, bool bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel /*= 0*/)
+CBlend* CDS0_KinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
 	VERIFY(motion_ID.valid());
 	CMotionDef* m_def = m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
@@ -387,17 +387,17 @@ CBlend* CDS0_KinematicsAnimated::PlayCycle(u16 partition, MotionID motion_ID, bo
 }
 
 // fx'es
-MotionID CDS0_KinematicsAnimated::ID_FX_Safe(const char* N)
+MotionID CDS0_KinematicsAnimated::ID_FX_Safe(LPCSTR  N)
 {
 	MotionID motion_ID;
 	for (int k = int(m_Motions.size()) - 1; k >= 0; --k) {
 		shared_motions* s_mots = &m_Motions[k].motions;
-		accel_map::iterator I = s_mots->fx()->find((char*)(N));
+		accel_map::iterator I = s_mots->fx()->find(LPSTR(N));
 		if (I != s_mots->fx()->end()) { motion_ID.set(u16(k), I->second); break; }
 	}
 	return motion_ID;
 }
-MotionID CDS0_KinematicsAnimated::ID_FX(const char* N)
+MotionID CDS0_KinematicsAnimated::ID_FX(LPCSTR  N)
 {
 	MotionID motion_ID = ID_FX_Safe(N); R_ASSERT3(motion_ID.valid(), "! MODEL: can't find FX: ", N);
 	return motion_ID;
@@ -412,7 +412,7 @@ CBlend* CDS0_KinematicsAnimated::PlayFX(MotionID motion_ID, float power_scale)
 		m_def->Speed(), m_def->Power() * power_scale);
 }
 
-CBlend* CDS0_KinematicsAnimated::PlayFX_Safe(const char* N, float power_scale)
+CBlend* CDS0_KinematicsAnimated::PlayFX_Safe(LPCSTR N, float power_scale)
 {
 	MotionID motion_ID = ID_FX_Safe(N);
 	if (motion_ID.valid())
@@ -420,7 +420,7 @@ CBlend* CDS0_KinematicsAnimated::PlayFX_Safe(const char* N, float power_scale)
 	return nullptr;
 }
 
-CBlend* CDS0_KinematicsAnimated::PlayFX(const char* N, float power_scale)
+CBlend* CDS0_KinematicsAnimated::PlayFX(LPCSTR  N, float power_scale)
 {
 	MotionID motion_ID = ID_FX(N);
 	return PlayFX(motion_ID, power_scale);

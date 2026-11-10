@@ -23,7 +23,7 @@
 namespace
 {
 constexpr u32 kDefaultMinimapTextureColor = 0x7fffffff;
-constexpr const char* kLevelFramePath = "minimap:level_frame";
+constexpr LPCSTR kLevelFramePath = "minimap:level_frame";
 
 bool HasLevelFrameColorAttribs(CUIXml& uiXml)
 {

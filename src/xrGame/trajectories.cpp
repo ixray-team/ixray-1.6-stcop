@@ -82,7 +82,7 @@ static float trajectory_select_pick_time			(
 	return					(low);
 }
 
-IC bool trajectory_query_callback(collide::rq_result& result, void* params)
+IC bool trajectory_query_callback				(collide::rq_result& result, LPVOID params)
 {
 	*(float*)params					= result.range;
 	return							(false);
@@ -252,3 +252,4 @@ bool trajectory_intersects_geometry	(float							trajectory_time,
 
 	return						false;
 }
+

@@ -4,11 +4,7 @@
 #include "CinemaSceneIo.h"
 #include "../Actor.h"
 #include "../GamePersistent.h"
-#include "../Level.h"
-#include "../ai_space.h"
-#include "../alife_simulator.h"
 #include "../../xrEngine/CameraManager.h"
-#include "../../xrEngine/Environment.h"
 #include "../../xrEngine/XR_IOConsole.h"
 
 namespace Cinema::PlayerLocal
@@ -61,6 +57,22 @@ const Curve& LaneCurve(const xr_vector<Lane>& Lanes, Param Id, u8 Layer)
 	return Found ? Found->Curves[0] : NoCurve;
 }
 
+CameraPose Mix(const CameraSample& Sample)
+{
+	Fquaternion From, To, Turn;
+	From.set(Sample.A.Orientation);
+	To.set(Sample.B.Orientation);
+	Turn.slerp(From, To, std::clamp(Sample.Weight, 0.0f, 1.0f));
+	CameraPose Pose;
+	Fmatrix Mixed;
+	Fvector Moved;
+	Mixed.rotation(Turn.normalize());
+	Mixed.transform_dir(Moved, Sample.Shift);
+	Pose.Orientation.mul(Mixed, Sample.Turn);
+	Pose.Position.lerp(Sample.A.Position, Sample.B.Position, Sample.Weight).add(Moved);
+	return Pose;
+}
+
 template <typename TVisit>
 void ForEachAttachment(const Scene& Data, const TVisit& Visit)
 {
@@ -72,19 +84,6 @@ void ForEachAttachment(const Scene& Data, const TVisit& Visit)
 			Visit(Item.Id, Shot.Attach);
 		}
 	}
-}
-
-void Lock(const Attachment& Links, Fmatrix& Parent)
-{
-	if (!Links.IsRollLocked && !Links.IsPitchLocked)
-	{
-		return;
-	}
-	Fvector Angles;
-	const Fvector Origin = Parent.c;
-	Parent.getHPB(Angles);
-	Parent.setHPB(Angles.x, Links.IsPitchLocked ? 0.0f : Angles.y, Links.IsRollLocked ? 0.0f : Angles.z);
-	Parent.c = Origin;
 }
 
 Fmatrix PoseMatrix(const Fvector& Position, const Fvector& Rotation)
@@ -165,8 +164,6 @@ void Player::OnFrame()
 		Sync();
 		EvaluateObjects(Time, nullptr);
 		OutputCamera();
-		OutputWeather();
-		OutputPost();
 	}
 }
 
@@ -258,22 +255,9 @@ const ActorRuntime* Player::FindActor(u32 ObjectId) const
 	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Actors, ObjectId);
 }
 
-void Player::PreviewClip(u32 ObjectId, s32 Clip, float Time)
-{
-	if (ActorRuntime* Found = const_cast<ActorRuntime*>(FindActor(ObjectId)))
-	{
-		Found->Preview = { Clip, Time, Device.dwFrame };
-	}
-}
-
 const LightRuntime* Player::FindLight(u32 ObjectId) const
 {
 	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Lights, ObjectId);
-}
-
-const DecalRuntime* Player::FindDecal(u32 ObjectId) const
-{
-	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Decals, ObjectId);
 }
 
 const ParticleRuntime* Player::FindParticle(u32 ObjectId) const
@@ -348,7 +332,6 @@ void Player::Sync()
 	PlayerLocal::Reconcile(Actors, Data, ObjectType::Actor, RuntimeIds);
 	PlayerLocal::Reconcile(Lights, Data, ObjectType::Light, RuntimeIds);
 	PlayerLocal::Reconcile(Emitters, Data, ObjectType::Particle, RuntimeIds);
-	PlayerLocal::Reconcile(Decals, Data, ObjectType::Decal, RuntimeIds);
 	const float Step = 1.0f / static_cast<float>(Data.Header.FrameRate);
 	for (Object& Item : Data.Objects)
 	{
@@ -378,10 +361,6 @@ void Player::Sync()
 			Runtime.Apply(Item.Particle);
 			Curves::Refresh(Runtime.SpeedArea, PlayerLocal::LaneCurve(Item.Lanes, Param::Speed, 0), Item.Particle.Speed, Step, Item.Span.Length, Info(Param::Speed));
 		}
-		else if (Item.Type == ObjectType::Decal)
-		{
-			PlayerLocal::RuntimeOf(Decals, Item.Id)->Apply(Item.Decal, Item.Decal.Shader.size() ? Shaders() : ShaderNames);
-		}
 	}
 	for (u32 Id : FitRequests)
 	{
@@ -397,11 +376,14 @@ void Player::Sync()
 	float Length = 0.0f;
 	for (u32 Index = 0; Index < CameraCache.size(); ++Index)
 	{
-		CameraBlock& Block = Rig->Camera.Blocks[Index];
+		const CameraBlock& Block = Rig->Camera.Blocks[Index];
 		BlockCache& Cache = CameraCache[Index];
 		Length = std::max(Length, Block.Start + Block.Length);
-		Cameras::Rebuild(Block);
-		Cache.Keys = Block.Keys;
+		if (Cache.Keys != Block.Keys)
+		{
+			Cache.Keys = Block.Keys;
+			Cache.Path.Build(Block);
+		}
 		Curves::Refresh(Cache.TimeScaleArea, PlayerLocal::LaneCurve(Block.Lanes, Param::TimeScale, 0), Block.TimeScale, Step, Block.Length, Info(Param::TimeScale));
 	}
 	ShakeAreas.resize(Rig ? Rig->Camera.Shakes.size() : 0);
@@ -477,38 +459,44 @@ void Player::Convert(const AttachRequest& Request)
 	}
 	const float HalfFrame = 0.5f / static_cast<float>(Data.Header.FrameRate);
 	const float Start = Target->Span.Start + (IsBlock ? Cameras::BlockStart(Target->Camera, static_cast<u32>(Request.Block)) : 0.0f);
-	xr_vector<Lane>& Lanes = IsBlock ? Target->Camera.Blocks[Request.Block].Lanes : Target->Lanes;
-	const Fvector Zero = Fvector().set(0.0f, 0.0f, 0.0f);
-	Fvector* const Place = IsBlock ? nullptr : PlacementOf(*Target, 0);
-	Fvector* const Turn = IsBlock ? nullptr : PlacementOf(*Target, 1);
+	xr_vector<PoseKey>* Keys = IsBlock ? &Target->Camera.Blocks[Request.Block].Keys : nullptr;
+	Fvector* const Place = PlacementOf(*Target, 0);
+	Fvector* const Turn = PlacementOf(*Target, 1);
 	Times.clear();
-	for (const Lane& Track : Lanes)
+	for (u32 Index = 0; Keys && Index < Keys->size(); ++Index)
 	{
-		for (u32 Component = 0; Track.Id <= Param::Rotation && Component < 3; ++Component)
+		Times.push_back(Start + Cameras::LocalFromPath(Target->Camera.Blocks[Request.Block], CameraCache[Request.Block], (*Keys)[Index].Time));
+	}
+	for (const Lane& Track : Target->Lanes)
+	{
+		for (u32 Component = 0; !IsBlock && Track.Id <= Param::Rotation && Component < 3; ++Component)
 		{
 			for (const Key& Item : Track.Curves[Component].Keys)
 			{
-				Times.push_back(Item.Time);
+				Times.push_back(Start + Item.Time);
 			}
 		}
 	}
-	std::sort(Times.begin(), Times.end());
-	Times.erase(std::unique(Times.begin(), Times.end(), [HalfFrame](float A, float B) { return B - A <= HalfFrame; }), Times.end());
+	if (!IsBlock)
+	{
+		std::sort(Times.begin(), Times.end());
+		Times.erase(std::unique(Times.begin(), Times.end(), [HalfFrame](float A, float B) { return B - A <= HalfFrame; }), Times.end());
+	}
 	const bool IsStatic = !IsBlock && Times.empty();
 	if (IsStatic)
 	{
-		Times.push_back(Time - Start);
+		Times.push_back(Time);
 	}
 	Converted.clear();
 	Fvector Reference = Fvector().set(0.0f, 0.0f, 0.0f);
 	for (u32 Index = 0; Index < Times.size(); ++Index)
 	{
-		EvaluateObjects(Start + (IsBlock ? Cameras::LocalFromPath(Target->Camera.Blocks[Request.Block], Times[Index]) : Times[Index]), Needed.data());
+		EvaluateObjects(Times[Index], Needed.data());
 		LinkFrames Old, New;
 		Resolve(Links, Target->Type == ObjectType::Actor, Old);
 		Resolve(Request.Links, Target->Type == ObjectType::Actor, New);
-		Fvector Position = PlayerLocal::KeyValues(Lanes, Param::Position, Times[Index], Place ? *Place : Zero);
-		Fvector Rotation = PlayerLocal::KeyValues(Lanes, Param::Rotation, Times[Index], Turn ? *Turn : Zero);
+		Fvector Position = Keys ? (*Keys)[Index].Position : PlayerLocal::KeyValues(Target->Lanes, Param::Position, Times[Index] - Start, *Place);
+		Fvector Rotation = Keys ? (*Keys)[Index].Rotation : PlayerLocal::KeyValues(Target->Lanes, Param::Rotation, Times[Index] - Start, *Turn);
 		Reference = Index ? Reference : Rotation;
 		Fmatrix Pose = PlayerLocal::PoseMatrix(Position, Rotation);
 		Spaces::Compose(Old, Pose);
@@ -520,38 +508,39 @@ void Player::Convert(const AttachRequest& Request)
 	}
 	for (u32 Index = 0; Index < Times.size(); ++Index)
 	{
-		if (IsStatic)
+		if (Keys)
+		{
+			(*Keys)[Index].Position = Converted[2 * Index];
+			(*Keys)[Index].Rotation = Converted[2 * Index + 1];
+		}
+		else if (IsStatic)
 		{
 			*Place = Converted[0];
 			*Turn = Converted[1];
 		}
-		for (u32 Kind = 0; !IsStatic && Kind < 2; ++Kind)
+		for (u32 Kind = 0; !Keys && !IsStatic && Kind < 2; ++Kind)
 		{
-			Lane& Track = Curves::EnsureLane(Lanes, static_cast<Param>(Kind), 0);
+			Lane& Track = Curves::EnsureLane(Target->Lanes, static_cast<Param>(Kind), 0);
 			for (u32 Component = 0; Component < 3; ++Component)
 			{
-				PlayerLocal::PutKey(Track.Curves[Component], Times[Index], Converted[2 * Index + Kind][Component], HalfFrame);
+				PlayerLocal::PutKey(Track.Curves[Component], Times[Index] - Start, Converted[2 * Index + Kind][Component], HalfFrame);
 			}
 		}
 	}
-	if (IsBlock)
+	if (Keys)
 	{
-		Cameras::Rebuild(Target->Camera.Blocks[Request.Block]);
-		CameraCache[Request.Block].Keys = Target->Camera.Blocks[Request.Block].Keys;
+		CameraCache[Request.Block].Keys = *Keys;
+		CameraCache[Request.Block].Path.Build(Target->Camera.Blocks[Request.Block]);
 	}
 	Links = Request.Links;
 }
 
 void Player::EvaluateObjects(float At, const u8* Mask)
 {
-	EvaluationTime = At;
 	Shot = CameraSample {};
-	for (u32 Index = 0; Index < States.size(); ++Index)
+	for (u32 Index = 0; !Mask && Index < States.size(); ++Index)
 	{
-		if (!Mask || Mask[Index])
-		{
-			States[Index].IsReady = false;
-		}
+		States[Index].IsReady = false;
 	}
 	for (u32 Index : Graph.Order)
 	{
@@ -567,51 +556,16 @@ void Player::EvaluateObjects(float At, const u8* Mask)
 		else if (Type == ObjectType::Actor)
 		{
 			PoseActor(Index, At, Mask || Graph.IsLinked[Index]);
-			const Object& Item = Data.Objects[Index];
-			if (!Mask && States[Index].IsReady)
-			{
-				ActorAt(Item.Id).Dress(Item, std::clamp(At - Item.Span.Start, 0.0f, Item.Span.Length), Item.Actor.Looks.empty() ? ShaderNames : Shaders());
-			}
 		}
 		else if (Type == ObjectType::Light)
 		{
 			PoseLight(Index, At, !Mask);
 		}
-		else if (Type == ObjectType::Particle)
+		else
 		{
 			PoseParticle(Index, At, !Mask);
 		}
-		else if (Type == ObjectType::Decal)
-		{
-			PoseDecal(Index, At, !Mask);
-		}
 	}
-}
-
-void Player::EvaluateLinked(u32 Index, float At)
-{
-	xr_vector<u8> Mask(States.size(), 0);
-	Mask[Index] = 1;
-	const auto Mark = [this, &Mask](u32 Id)
-	{
-		const s32 Dependency = Graph.IndexOf(Id);
-		if (Dependency >= 0)
-		{
-			Mask[Dependency] = 1;
-		}
-	};
-	for (auto Item = Graph.Order.rbegin(); Item != Graph.Order.rend(); ++Item)
-	{
-		if (Mask[*Item])
-		{
-			ForEachLink(Data.Objects[*Item], Mark);
-		}
-	}
-	const CameraSample PreviousShot = Shot;
-	const float PreviousTime = EvaluationTime;
-	EvaluateObjects(At, Mask.data());
-	Shot = PreviousShot;
-	EvaluationTime = PreviousTime;
 }
 
 void Player::PoseActor(u32 Index, float At, bool IsNeeded)
@@ -620,7 +574,6 @@ void Player::PoseActor(u32 Index, float At, bool IsNeeded)
 	ActorRuntime& Runtime = ActorAt(Item.Id);
 	ObjectState& State = States[Index];
 	Resolve(Item.Attach, true, State.Frames);
-	Unhook(Item.Attach, Item.Lanes, Item.Span.Start, std::clamp(At - Item.Span.Start, 0.0f, Item.Span.Length), State.Frames);
 	State.IsReady = !(State.Frames.Problems & MissingParent) && Runtime.Evaluate(Item, At, Heard(Item.Id), IsNeeded, IsSilent(Item));
 	if (!State.IsReady)
 	{
@@ -635,17 +588,6 @@ void Player::PoseActor(u32 Index, float At, bool IsNeeded)
 	State.World.i.mul(Scale.x);
 	State.World.j.mul(Scale.y);
 	State.World.k.mul(Scale.z);
-	for (u32 Slot = 0; Slot < Setup.Constraints.size(); ++Slot)
-	{
-		const BoneConstraint& Rule = Setup.Constraints[Slot];
-		const float Weight = Rule.IsMuted ? 0.0f : std::clamp(Curves::LaneScalar(Item.Lanes, Param::ConstraintWeight, static_cast<u8>(Slot), Local, Rule.Weight), 0.0f, 1.0f);
-		Fmatrix Goal;
-		if (Weight > 0.0f && Rule.Target.ObjectId != Item.Id && LinkFrame(Rule.Target, Goal))
-		{
-			Runtime.Constrain(Rule, Weight, Goal, State.World);
-		}
-	}
-	Runtime.SolveIk(Item, Local, State.World);
 	Runtime.Place(State.World);
 }
 
@@ -658,9 +600,7 @@ void Player::PoseCamera(u32 Index, float At)
 		BlockCache& Cache = CameraCache[Block];
 		const AttachLink& Focus = Rig.Camera.Blocks[Block].FocusTarget;
 		Fmatrix Point = Fidentity;
-		const CameraBlock& Clip = Rig.Camera.Blocks[Block];
-		Resolve(Clip.Attach, false, Cache.Frames);
-		Unhook(Clip.Attach, Clip.Lanes, Rig.Span.Start + Clip.Start, std::clamp(At - Rig.Span.Start - Clip.Start, 0.0f, Clip.Length), Cache.Frames);
+		Resolve(Rig.Camera.Blocks[Block].Attach, false, Cache.Frames);
 		Cache.HasFocus = Focus.ObjectId && Frame(Focus, Point, Cache.Frames.Problems, MissingFocusBone);
 		Cache.FocusPoint = Point.c;
 		Cache.Frames.Problems |= Focus.ObjectId && !Cache.HasFocus ? MissingFocus : 0;
@@ -669,7 +609,7 @@ void Player::PoseCamera(u32 Index, float At)
 	{
 		Cameras::Sample(Rig, CameraCache, ShakeAreas, ShakeOwners, At, Shot);
 	}
-	const CameraPose Pose = Shot.IsActive ? Cameras::Mix(Shot) : EditorPose;
+	const CameraPose Pose = Shot.IsActive ? PlayerLocal::Mix(Shot) : EditorPose;
 	State.World = Pose.Orientation;
 	State.World.c = Pose.Position;
 	if (!Shot.IsActive && !(IsEditorOpen && IsEditorCamera))
@@ -718,63 +658,6 @@ void Player::PoseParticle(u32 Index, float At, bool IsDrawn)
 	Runtime.Drive({ .World = States[Index].World, .Tau = Tau, .Played = Played, .Rate = Rate, .Preroll = std::clamp(EffectTime, 0.0f, MaxPreroll), .Size = Size, .IsShown = IsLive && Tau >= 0.0f && Tau < Item.Span.Length, .IsAfter = IsLive && Tau >= Item.Span.Length, .ShouldRetrigger = Setup.ShouldRetrigger });
 }
 
-void Player::PoseDecal(u32 Index, float At, bool IsDrawn)
-{
-	const Object& Item = Data.Objects[Index];
-	const DecalData& Setup = Item.Decal;
-	const float Tau = PoseTransform(Index, At, Setup.Position, Setup.Rotation);
-	if (!IsDrawn)
-	{
-		return;
-	}
-	DecalRuntime& Runtime = *PlayerLocal::RuntimeOf(Decals, Item.Id);
-	const float Local = std::clamp(Tau, 0.0f, Item.Span.Length);
-	const bool IsLive = States[Index].IsReady && !IsSilent(Item);
-	const float Width = Curves::LaneScalar(Item.Lanes, Param::DecalWidth, 0, Local, Setup.Width), Height = Curves::LaneScalar(Item.Lanes, Param::DecalHeight, 0, Local, Setup.Height);
-	if (Setup.IsStamp && IsLive && IsPlaying && Runtime.LastTau < 0.0f && Tau >= 0.0f)
-	{
-		Stamp(Runtime, States[Index].World, std::max(Width, Height));
-	}
-	Runtime.LastTau = Tau;
-	Runtime.Drive(States[Index].World, Width, Height, !Setup.IsStamp && IsLive && Tau >= 0.0f && Tau < Item.Span.Length);
-}
-
-void Player::Stamp(DecalRuntime& Runtime, const Fmatrix& World, float Size)
-{
-	IWallMarkArray* Marks = Runtime.Marks();
-	Fvector Up = World.j, Down, Point;
-	Up.normalize_safe();
-	Down.invert(Up);
-	const Fvector Start = Fvector().mad(World.c, Up, 0.5f);
-	u32 Triangle = 0;
-	float Best = 0.0f;
-	const bool IsStatic = Marks && Runtime.Trace(World, Point, Triangle, Best);
-	Best = IsStatic ? Best : 1.0f;
-	const ActorRuntime* Hit = nullptr;
-	for (const xr_unique_ptr<ActorRuntime>& Actor : Actors)
-	{
-		Fsphere Sphere;
-		if (!Marks || !Actor->PickSphere(Sphere))
-		{
-			continue;
-		}
-		const Fvector Gap = Fvector().sub(Sphere.P, Start);
-		const float Along = Gap.dotproduct(Down);
-		const bool IsNear = Along >= 0.0f && Along < Best && Fvector().mad(Gap, Down, -Along).magnitude() < Sphere.R;
-		Hit = IsNear ? Actor.get() : Hit;
-		Best = IsNear ? Along : Best;
-	}
-	IKinematics* Skin = Hit && Hit->Body.renderable.visual ? Hit->Body.renderable.visual->dcast_PKinematics() : nullptr;
-	if (Skin)
-	{
-		::Render->add_SkeletonWallmark(&Hit->Body.renderable.xform, Skin, Marks, Start, Down, Size);
-	}
-	else if (IsStatic)
-	{
-		::Render->add_StaticWallmark(Marks, Point, Size, &Level().ObjectSpace.GetStaticTris()[Triangle], Level().ObjectSpace.GetStaticVerts().data());
-	}
-}
-
 float Player::PoseTransform(u32 Index, float At, const Fvector& Position, const Fvector& Rotation)
 {
 	const Object& Item = Data.Objects[Index];
@@ -782,7 +665,6 @@ float Player::PoseTransform(u32 Index, float At, const Fvector& Position, const 
 	const float Tau = At - Item.Span.Start;
 	const float Local = std::clamp(Tau, 0.0f, Item.Span.Length);
 	Resolve(Item.Attach, false, State.Frames);
-	Unhook(Item.Attach, Item.Lanes, Item.Span.Start, Local, State.Frames);
 	State.World = PlayerLocal::PoseMatrix(Curves::LaneVector(Item.Lanes, Param::Position, Local, Position), Curves::LaneVector(Item.Lanes, Param::Rotation, Local, Rotation));
 	Spaces::Compose(State.Frames, State.World);
 	State.IsReady = !(State.Frames.Problems & MissingParent);
@@ -798,61 +680,14 @@ void Player::Resolve(const Attachment& Links, bool IsActor, LinkFrames& Out) con
 	Out.HasLook = Links.LookAt.ObjectId && Frame(Links.LookAt, Target, Out.Problems, MissingTargetBone);
 	Out.Problems |= (Links.Parent.ObjectId && !Out.HasParent ? MissingParent : 0) | (Links.LookAt.ObjectId && !Out.HasLook ? MissingTarget : 0);
 	Out.Look = Target.c;
-	if (Out.HasParent)
+	if (Out.HasParent && (Links.IsRollLocked || Links.IsPitchLocked))
 	{
-		PlayerLocal::Lock(Links, Out.Parent);
+		Fvector Angles;
+		const Fvector Origin = Out.Parent.c;
+		Out.Parent.getHPB(Angles);
+		Out.Parent.setHPB(Angles.x, Links.IsPitchLocked ? 0.0f : Angles.y, Links.IsRollLocked ? 0.0f : Angles.z);
+		Out.Parent.c = Origin;
 	}
-}
-
-void Player::Unhook(const Attachment& Links, const xr_vector<Lane>& Lanes, float Start, float Local, LinkFrames& Out)
-{
-	const Lane* Track = Curves::FindLane(Lanes, Param::AttachWeight, 0);
-	Out.Weight = std::clamp(Track ? Curves::Value(Track->Curves[0], Local, Links.Weight) : Links.Weight, 0.0f, 1.0f);
-	if (!Out.HasParent || Out.Weight >= 1.0f)
-	{
-		return;
-	}
-	float Freeze = 0.0f;
-	bool IsFound = false;
-	for (u32 At = 0; Track && At < Track->Curves[0].Keys.size(); ++At)
-	{
-		const xr_vector<Key>& Keys = Track->Curves[0].Keys;
-		if (Keys[At].Value < 1.0f || (IsFound && Keys[At].Time > Local))
-		{
-			continue;
-		}
-		Freeze = Keys[At].Mode == Interp::Hold && At + 1 < Keys.size() && Keys[At + 1].Time <= Local ? Keys[At + 1].Time : Keys[At].Time;
-		IsFound = true;
-	}
-	Fmatrix Frozen;
-	if (!FrameAt(Links.Parent, Start + Freeze, Frozen))
-	{
-		return;
-	}
-	PlayerLocal::Lock(Links, Frozen);
-	Fquaternion From, To, Mixed;
-	From.set(Frozen);
-	To.set(Out.Parent);
-	Mixed.slerp(From, To, Out.Weight);
-	const Fvector Origin = Fvector().lerp(Frozen.c, Out.Parent.c, Out.Weight);
-	Out.Parent.rotation(Mixed.normalize());
-	Out.Parent.c = Origin;
-}
-
-bool Player::FrameAt(const AttachLink& Link, float At, Fmatrix& Out)
-{
-	const s32 Index = Graph.IndexOf(Link.ObjectId);
-	if (Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type == ObjectType::Camera)
-	{
-		u8 Problems = 0;
-		return Frame(Link, Out, Problems, 0);
-	}
-	const float PreviousTime = EvaluationTime;
-	EvaluateLinked(static_cast<u32>(Index), At);
-	u8 Problems = 0;
-	const bool IsFramed = Frame(Link, Out, Problems, 0);
-	EvaluateLinked(static_cast<u32>(Index), PreviousTime);
-	return IsFramed;
 }
 
 bool Player::Frame(const AttachLink& Link, Fmatrix& Out, u8& Problems, u8 BoneProblem) const
@@ -995,15 +830,14 @@ void Player::Absolutize(Object& Target, ActorRuntime& Runtime, float Step)
 	}
 	const auto IsValid = [&](const xr_vector<ActorBlock>& Blocks)
 	{
-		float Ends[2] = { -MaxTime, -MaxTime }, Begin = -MaxTime;
+		float Ends[2] = { -MaxTime, -MaxTime };
 		for (const ActorBlock& Block : Blocks)
 		{
 			const float From = static_cast<float>(Curves::LaneArea(Target.Lanes, &Runtime.TimeScaleArea, Param::TimeScale, 0, Block.Start, Setup.TimeScale)), To = From + Runtime.BlockDuration(Block);
-			if (From <= Begin + 1e-4f || To <= Ends[1] + 1e-4f || From < Ends[0] - 1e-4f)
+			if (To < Ends[1] - 1e-4f || From < Ends[0] - 1e-4f)
 			{
 				return false;
 			}
-			Begin = From;
 			Ends[0] = Ends[1];
 			Ends[1] = To;
 		}
@@ -1011,17 +845,11 @@ void Player::Absolutize(Object& Target, ActorRuntime& Runtime, float Step)
 	};
 	const auto ByStart = [](const ActorBlock& A, const ActorBlock& B) { return A.Start < B.Start; };
 	u32 Crowded = 0;
-	u8 Origin[MaxActorLayers + 1];
-	for (u8 Row = 0; Row <= MaxActorLayers; ++Row)
-	{
-		Origin[Row] = Row;
-	}
-	const u8 Created = static_cast<u8>(Setup.Layers.size() + 1);
 	for (u8 Row = 0; Row <= Setup.Layers.size(); ++Row)
 	{
 		for (u32 Index = 1; Index < BlocksOf(Setup, Row).size();)
 		{
-			Built.assign(BlocksOf(Setup, Row).begin() + (Index >= 2 ? Index - 2 : 0), BlocksOf(Setup, Row).begin() + Index + 1);
+			Built.assign(BlocksOf(Setup, Row).begin(), BlocksOf(Setup, Row).begin() + Index + 1);
 			if (IsValid(Built))
 			{
 				++Index;
@@ -1030,28 +858,21 @@ void Player::Absolutize(Object& Target, ActorRuntime& Runtime, float Step)
 			ActorBlock Moved = BlocksOf(Setup, Row)[Index];
 			const ActorBlock& Previous = BlocksOf(Setup, Row)[Index - 1];
 			const float From = static_cast<float>(Curves::LaneArea(Target.Lanes, &Runtime.TimeScaleArea, Param::TimeScale, 0, Moved.Start, Setup.TimeScale));
-			Moved.FadeIn = std::min(std::max(Moved.FadeIn, static_cast<float>(Curves::LaneArea(Target.Lanes, &Runtime.TimeScaleArea, Param::TimeScale, 0, Previous.Start, Setup.TimeScale)) + Runtime.BlockDuration(Previous) - From), Runtime.BlockDuration(Moved));
+			Moved.FadeIn = std::max(Moved.FadeIn, static_cast<float>(Curves::LaneArea(Target.Lanes, &Runtime.TimeScaleArea, Param::TimeScale, 0, Previous.Start, Setup.TimeScale)) + Runtime.BlockDuration(Previous) - From);
 			const ActorLayer& Source = RowOf(Setup, Row);
-			u8 Into = std::max(static_cast<u8>(Row + 1), Created);
+			u8 Into = static_cast<u8>(Row + 1);
 			for (; Into <= Setup.Layers.size(); ++Into)
 			{
-				Built = RowOf(Setup, Into).Blocks;
+				const ActorLayer& Other = RowOf(Setup, Into);
+				Built = Other.Blocks;
 				Built.insert(std::upper_bound(Built.begin(), Built.end(), Moved, ByStart), Moved);
-				if (Origin[Into] == Origin[Row] && IsValid(Built))
+				if (Other.Parts == Source.Parts && Other.Mode == Source.Mode && IsValid(Built))
 				{
 					break;
 				}
 			}
 			if (Into > Setup.Layers.size() && Setup.Layers.size() < MaxActorLayers)
 			{
-				const auto Weight = std::find_if(Target.Lanes.begin(), Target.Lanes.end(), [Row](const Lane& Track) { return Track.Id == Param::LayerWeight && Track.Layer == Row; });
-				if (Weight != Target.Lanes.end() && Target.Lanes.size() < MaxLanes)
-				{
-					Lane Copy = *Weight;
-					Copy.Layer = static_cast<u8>(Setup.Layers.size() + 1);
-					Target.Lanes.push_back(std::move(Copy));
-				}
-				Origin[Setup.Layers.size() + 1] = Origin[Row];
 				ActorLayer Added { Source.Parts, Source.Mode, Source.IsMuted, Source.Weight };
 				for (u16 Part = 0; Source.Parts.empty() && Part < MAX_PARTS; ++Part)
 				{
@@ -1094,11 +915,6 @@ void Player::OutputCamera()
 	const ViewSource Want = IsLegacyOpen ? ViewSource::None : IsGlobal ? ViewSource::Global : IsEditorCamera ? ViewSource::Editor : ViewSource::None;
 	if (Want == ViewSource::None)
 	{
-		if (CurrentView != Want)
-		{
-			Device.MarkCameraCut();
-		}
-		HasLastPose = false;
 		Release();
 		CurrentView = Want;
 		if (!IsEditorOpen)
@@ -1133,260 +949,36 @@ void Player::OutputCamera()
 	{
 		Sample.A = Sample.B = EditorPose;
 	}
-	const CameraPose Pose = Cameras::Mix(Sample);
+	const CameraPose Pose = PlayerLocal::Mix(Sample);
 	Camera->Position = Pose.Position;
 	Camera->Orientation = Pose.Orientation;
 	Camera->FovA = Sample.A.Fov;
 	Camera->FovB = Sample.B.Fov;
 	Camera->Weight = Sample.Weight;
-	const s32 Block = IsGlobal ? Sample.Block : -1;
-	if (CurrentView != Want || !HasLastPose || IsCut(LastPose, LastBlock, Pose, Block))
-	{
-		Device.MarkCameraCut();
-	}
-	if (IsGlobal && Data.Header.IsWorldFollowing && ai().get_alife())
-	{
-		ai().alife().set_switch_centre(Pose.Position);
-	}
-	LastPose = Pose;
-	LastBlock = Block;
-	HasLastPose = true;
 	CurrentView = Want;
-}
-
-void Player::OutputWeather()
-{
-	if (!g_pGamePersistent || !(IsPlaying || IsEditorOpen))
-	{
-		return;
-	}
-	EnvOverride Mixed;
-	float Share = 0.0f, Open = 1.0f;
-	bool IsUsed = false;
-	const auto Layer = [this](const Object& Item)
-	{
-		const auto Group = std::find_if(Data.Header.Folders.begin(), Data.Header.Folders.end(), [&Item](const Folder& Other) { return Other.Id == Item.FolderId; });
-		return Item.FolderId && Group != Data.Header.Folders.end() ? std::pair<u32, u32>(Group->Row, Item.Row + 1) : std::pair<u32, u32>(Item.Row, 0u);
-	};
-	const Object* Order[16];
-	u32 Count = 0;
-	for (const Object& Item : Data.Objects)
-	{
-		const float Local = Time - Item.Span.Start;
-		if (Item.Type != ObjectType::Weather || IsSilent(Item) || Local < 0.0f || Local > Item.Span.Length || Count >= 16)
-		{
-			continue;
-		}
-		u32 At = Count++;
-		for (; At > 0 && Layer(*Order[At - 1]) > Layer(Item); --At)
-		{
-			Order[At] = Order[At - 1];
-		}
-		Order[At] = &Item;
-	}
-	for (u32 Index = 0; Index < Count; ++Index)
-	{
-		const Object& Item = *Order[Index];
-		const WeatherData& Setup = Item.Weather;
-		const float Local = Time - Item.Span.Start;
-		const float In = Setup.FadeIn > 0.0f ? std::clamp(Local / Setup.FadeIn, 0.0f, 1.0f) : 1.0f, Out = Setup.FadeOut > 0.0f ? std::clamp((Item.Span.Length - Local) / Setup.FadeOut, 0.0f, 1.0f) : 1.0f;
-		const float Weight = In * Out;
-		if (!(Weight > 0.0f))
-		{
-			continue;
-		}
-		const auto IsSet = [&](Param Id) { return IsWeatherSet(Setup, Item.Lanes, Id); };
-		const auto Scalar = [&](Param Id) { return Curves::LaneScalar(Item.Lanes, Id, 0, Local, *WeatherField(const_cast<WeatherData&>(Setup), Id, 0)); };
-		const auto Color = [&](Param Id, const Fvector& Static) { return Curves::LaneVector(Item.Lanes, Id, Local, Static); };
-		const auto Blend = [&](u32 Bit, float* Slots, const float* Values, u32 Size)
-		{
-			float& Amount = Mixed.Amount[Bit];
-			for (u32 At = 0; At < Size; ++At)
-			{
-				Slots[At] = Amount > 0.0f ? Slots[At] + (Values[At] - Slots[At]) * Weight : Values[At];
-			}
-			Amount += (1.0f - Amount) * Weight;
-			Mixed.Mask |= 1u << Bit;
-			IsUsed = true;
-		};
-		const auto One = [&](u32 Bit, float& Slot, Param Id, float Scale)
-		{
-			const float Value = Scalar(Id) * Scale;
-			if (IsSet(Id))
-			{
-				Blend(Bit, &Slot, &Value, 1);
-			}
-		};
-		const auto Three = [&](u32 Bit, float* Slot, Param Id, const Fvector& Static)
-		{
-			const Fvector Value = Color(Id, Static);
-			if (IsSet(Id))
-			{
-				Blend(Bit, Slot, &Value.x, 3);
-			}
-		};
-		if (Setup.Cycle.size() || IsSet(Param::WeatherTime))
-		{
-			Share *= 1.0f - Weight;
-			Open *= 1.0f - Weight;
-			if (Weight >= Share)
-			{
-				Share = Weight;
-				Mixed.Cycle = Setup.Cycle;
-				Mixed.Time = IsSet(Param::WeatherTime) ? std::clamp(std::fmod(Scalar(Param::WeatherTime), 24.0f) * 3600.0f, 0.0f, 86399.0f) : -1.0f;
-			}
-			IsUsed = true;
-		}
-		if (IsSet(Param::SunHeading) || IsSet(Param::SunHeight))
-		{
-			float Angles[2] = { Mixed.SunHeading, Mixed.SunHeight };
-			const float Values[2] = { deg2rad(Scalar(Param::SunHeading)), deg2rad(Scalar(Param::SunHeight)) };
-			Blend(0, Angles, Values, 2);
-			Mixed.SunHeading = Angles[0];
-			Mixed.SunHeight = Angles[1];
-		}
-		Three(1, &Mixed.Look.SunColor.x, Param::SunColor, Setup.SunColor);
-		One(2, Mixed.SunBrightness, Param::SunBrightness, 1.0f);
-		One(3, Mixed.Look.SunShafts, Param::SunShafts, 1.0f);
-		Three(4, &Mixed.Look.Ambient.x, Param::AmbientColor, Setup.AmbientColor);
-		Three(5, &Mixed.Look.HemiColor.x, Param::HemiColor, Setup.HemiColor);
-		Three(6, &Mixed.Look.FogColor.x, Param::FogColor, Setup.FogColor);
-		One(7, Mixed.Look.FogDensity, Param::FogDensity, 1.0f);
-		One(8, Mixed.Look.FogDistance, Param::FogDistance, 1.0f);
-		One(9, Mixed.Look.FarPlane, Param::FarPlane, 1.0f);
-		One(10, Mixed.Look.RainDensity, Param::RainDensity, 1.0f);
-		One(11, Mixed.Look.WindVelocity, Param::WindSpeed, 1.0f);
-		One(12, Mixed.Look.WindDirection, Param::WindDirection, PI / 180.0f);
-		One(13, Mixed.Look.SkyRotation, Param::SkyRotation, PI / 180.0f);
-	}
-	if (IsUsed)
-	{
-		Mixed.Weight = 1.0f - Open;
-		Mixed.Frame = Device.dwFrame;
-		g_pGamePersistent->Environment().Override = Mixed;
-	}
-}
-
-void Player::OutputPost()
-{
-	if (!g_pGameLevel || !(IsPlaying || IsEditorOpen))
-	{
-		return;
-	}
-	PostData Look;
-	decltype(Device.PostGrade) Grade;
-	bool IsUsed = false;
-	const auto Layer = [this](const Object& Item)
-	{
-		const auto Group = std::find_if(Data.Header.Folders.begin(), Data.Header.Folders.end(), [&Item](const Folder& Other) { return Other.Id == Item.FolderId; });
-		return Item.FolderId && Group != Data.Header.Folders.end() ? std::pair<u32, u32>(Group->Row, Item.Row + 1) : std::pair<u32, u32>(Item.Row, 0u);
-	};
-	const Object* Order[16];
-	u32 Count = 0;
-	for (const Object& Item : Data.Objects)
-	{
-		const float Local = Time - Item.Span.Start;
-		if (Item.Type != ObjectType::Post || IsSilent(Item) || Local < 0.0f || Local > Item.Span.Length || Count >= 16)
-		{
-			continue;
-		}
-		u32 At = Count++;
-		for (; At > 0 && Layer(*Order[At - 1]) > Layer(Item); --At)
-		{
-			Order[At] = Order[At - 1];
-		}
-		Order[At] = &Item;
-	}
-	for (u32 Index = 0; Index < Count; ++Index)
-	{
-		const Object& Item = *Order[Index];
-		PostData& Setup = const_cast<PostData&>(Item.Post);
-		const float Local = Time - Item.Span.Start;
-		const float In = Setup.FadeIn > 0.0f ? std::clamp(Local / Setup.FadeIn, 0.0f, 1.0f) : 1.0f, Out = Setup.FadeOut > 0.0f ? std::clamp((Item.Span.Length - Local) / Setup.FadeOut, 0.0f, 1.0f) : 1.0f;
-		const float Weight = In * Out;
-		for (u32 Id = static_cast<u32>(Param::PostBase); Weight > 0.0f && Id <= static_cast<u32>(Param::PostMiddleGray); ++Id)
-		{
-			const Param Which = static_cast<Param>(Id);
-			if (!IsPostSet(Setup, Item.Lanes, Which))
-			{
-				continue;
-			}
-			IsUsed = true;
-			const u32 Bit = Id >= static_cast<u32>(Param::PostExposure) ? Id - static_cast<u32>(Param::PostExposure) : 4;
-			if (Bit < 4)
-			{
-				const float Value = Curves::LaneScalar(Item.Lanes, Which, 0, Local, *PostField(Setup, Which, 0));
-				Grade.Value[Bit] = Grade.Amount[Bit] > 0.0f ? Grade.Value[Bit] + (Value - Grade.Value[Bit]) * Weight : Value;
-				Grade.Amount[Bit] += (1.0f - Grade.Amount[Bit]) * Weight;
-				Grade.Mask |= 1u << Bit;
-				continue;
-			}
-			for (u8 Component = 0; Component < Info(Which).Components; ++Component)
-			{
-				const Lane* Track = Curves::FindLane(Item.Lanes, Which, 0);
-				const float Static = *PostField(Setup, Which, Component);
-				float& Slot = *PostField(Look, Which, Component);
-				Slot += ((Track ? Curves::Value(Track->Curves[Component], Local, Static) : Static) - Slot) * Weight;
-			}
-		}
-	}
-	if (!IsUsed)
-	{
-		return;
-	}
-	const float Keep = 1.0f - std::clamp(Look.Fade, 0.0f, 1.0f);
-	SPPInfo Shown;
-	Shown.blur = Look.Blur;
-	Shown.gray = Look.Gray;
-	Shown.duality.set(Look.DualityH, Look.DualityV);
-	Shown.noise.set(Look.Noise, Look.Grain, Look.NoiseFps);
-	Shown.color_base.set(Look.Base.x * Keep, Look.Base.y * Keep, Look.Base.z * Keep);
-	Shown.color_gray.set(Look.GrayColor.x, Look.GrayColor.y, Look.GrayColor.z);
-	Shown.color_add.set(Look.Add.x * Keep + Look.FadeColor.x * (1.0f - Keep), Look.Add.y * Keep + Look.FadeColor.y * (1.0f - Keep), Look.Add.z * Keep + Look.FadeColor.z * (1.0f - Keep));
-	g_pGameLevel->Cameras().SetPost(Shown);
-	Grade.Frame = Device.dwFrame;
-	Device.PostGrade = Grade;
-}
-
-bool Player::IsCut(const CameraPose& From, s32 FromBlock, const CameraPose& To, s32 ToBlock) const
-{
-	const float Moved = From.Position.distance_to(To.Position), Turned = rad2deg(std::acos(std::clamp(From.Orientation.k.dotproduct(To.Orientation.k), -1.0f, 1.0f)));
-	const SceneHeader& Header = Data.Header;
-	return (FromBlock != ToBlock && (Moved > 0.01f || Turned > 0.5f)) || (Header.CutDistance > 0.0f && Moved > Header.CutDistance) || (Header.CutAngle > 0.0f && Turned > Header.CutAngle);
-}
-
-bool Player::IsCutBetween(float From, float To) const
-{
-	const Object* Rig = FindCamera(Data);
-	CameraSample Early, Late;
-	if (!Rig || IsSilent(*Rig))
-	{
-		return false;
-	}
-	Cameras::Sample(*Rig, CameraCache, ShakeAreas, ShakeOwners, From, Early);
-	Cameras::Sample(*Rig, CameraCache, ShakeAreas, ShakeOwners, To, Late);
-	return Early.IsActive != Late.IsActive || (Late.IsActive && IsCut(Cameras::Mix(Early), Early.Block, Cameras::Mix(Late), Late.Block));
 }
 
 void Player::OutputDof(const CameraSample& Lens)
 {
 	CDofManager& Dof = GamePersistent().DofManager();
 	const Fvector& Base = Dof.GetBase();
-	float Lo = 0.0f, Hi = 0.0f;
-	const Fvector4 Rest = Fvector4().set(Base.x, Base.y, Base.z, Console ? Console->GetFloat("r2_dof_kernel", Lo, Hi) : (Lens.B.HasDof ? Lens.B.Dof.w : Lens.A.Dof.w));
+	const Fvector4 Rest = Fvector4().set(Base.x, Base.y, Base.z, Lens.B.HasDof ? Lens.B.Dof.w : Lens.A.Dof.w);
 	Fvector4 Mixed;
 	Mixed.lerp(Lens.A.HasDof ? Lens.A.Dof : Rest, Lens.B.HasDof ? Lens.B.Dof : Rest, std::clamp(Lens.Weight, 0.0f, 1.0f));
 	const bool HasDof = Lens.A.HasDof || Lens.B.HasDof;
-	IsDofForced = IsDofForced || HasDof;
-	Dof.SetForced(IsDofForced);
+	if (HasDof && !IsDofForced && Console && !Console->GetBool("r2_dof_enable"))
+	{
+		IsDofForced = true;
+		Console->Execute("r2_dof_enable 1");
+	}
 	Dof.SetCinema(HasDof ? &Mixed : nullptr);
 }
 
 void Player::RestoreDofSwitch()
 {
-	if (g_pGamePersistent)
+	if (IsDofForced && Console)
 	{
-		GamePersistent().DofManager().SetForced(false);
+		Console->Execute("r2_dof_enable 0");
 	}
 	IsDofForced = false;
 }
@@ -1429,146 +1021,9 @@ void Player::DropRuntimes()
 	Actors.clear();
 	Lights.clear();
 	Emitters.clear();
-	Decals.clear();
 	CameraCache.clear();
 	ShakeAreas.clear();
 	ShakeOwners.clear();
-}
-
-void Player::GhostBones(u32 ObjectId, float At, xr_vector<Fvector>& Lines)
-{
-	const s32 Index = IndexOf(Data, ObjectId);
-	if (Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type != ObjectType::Actor || !FindActor(ObjectId))
-	{
-		return;
-	}
-	EvaluateLinked(static_cast<u32>(Index), At);
-	if (States[Index].IsReady)
-	{
-		ActorAt(ObjectId).Bones(States[Index].World, Lines);
-	}
-	EvaluateLinked(static_cast<u32>(Index), Time);
-}
-
-bool Player::BakeMotion(u32 ObjectId, float From, u32 Frames, bool IsPoseOnly, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts)
-{
-	const s32 Index = IndexOf(Data, ObjectId);
-	if (!Frames || Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type != ObjectType::Actor || !FindActor(ObjectId))
-	{
-		return false;
-	}
-	ActorRuntime& Runtime = ActorAt(ObjectId);
-	Runtime.IsPoseOnly = IsPoseOnly;
-	bool IsDone = true;
-	for (u32 Frame = 0; IsDone && Frame < Frames; ++Frame)
-	{
-		EvaluateLinked(static_cast<u32>(Index), From + static_cast<float>(Frame) / Omf::MotionRate);
-		IsDone = States[Index].IsReady;
-		if (IsDone)
-		{
-			Runtime.Locals(Turns, Shifts);
-		}
-	}
-	Runtime.IsPoseOnly = false;
-	EvaluateLinked(static_cast<u32>(Index), Time);
-	return IsDone;
-}
-
-bool Player::BakeClip(u32 ObjectId, s32 Clip, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts)
-{
-	const s32 Index = IndexOf(Data, ObjectId);
-	if (Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type != ObjectType::Actor || !FindActor(ObjectId) || static_cast<u32>(Clip) >= Data.Objects[Index].Actor.Clips.size())
-	{
-		return false;
-	}
-	ActorRuntime& Runtime = ActorAt(ObjectId);
-	const u32 Frames = std::min(static_cast<u32>(Data.Objects[Index].Actor.Clips[Clip].Length * Omf::MotionRate) + 2, Omf::MaxMotionFrames);
-	Runtime.IsPoseOnly = true;
-	bool IsDone = true;
-	for (u32 Frame = 0; IsDone && Frame < Frames; ++Frame)
-	{
-		Runtime.Preview = { Clip, static_cast<float>(Frame) / Omf::MotionRate, Device.dwFrame };
-		PoseActor(static_cast<u32>(Index), Time, true);
-		IsDone = States[Index].IsReady;
-		if (IsDone)
-		{
-			Runtime.Locals(Turns, Shifts);
-		}
-	}
-	Runtime.IsPoseOnly = false;
-	Runtime.Preview = {};
-	PoseActor(static_cast<u32>(Index), Time, true);
-	return IsDone;
-}
-
-u32 Player::BakeSource(u32 ObjectId, const shared_str& Source, const shared_str& Name, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts)
-{
-	const s32 Index = IndexOf(Data, ObjectId);
-	float Length = 0.0f;
-	if (Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type != ObjectType::Actor || !FindActor(ObjectId) || !ActorAt(ObjectId).SetSolo(Source, Name, Length))
-	{
-		return 0;
-	}
-	ActorRuntime& Runtime = ActorAt(ObjectId);
-	const u32 Frames = std::min(static_cast<u32>(Length * Omf::MotionRate) + 1, Omf::MaxMotionFrames);
-	u32 Done = 0;
-	for (; Done < Frames; ++Done)
-	{
-		Runtime.SoloTime = std::min(static_cast<float>(Done) / Omf::MotionRate, Length);
-		PoseActor(static_cast<u32>(Index), Time, true);
-		if (!States[Index].IsReady)
-		{
-			break;
-		}
-		Runtime.Locals(Turns, Shifts);
-	}
-	Runtime.SoloMotion = MotionID();
-	PoseActor(static_cast<u32>(Index), Time, true);
-	return Done == Frames ? Frames : 0;
-}
-
-const xr_vector<shared_str>& Player::Shaders()
-{
-	if (IsShadersRead)
-	{
-		return ShaderNames;
-	}
-	IsShadersRead = true;
-	IReader* File = FS.r_open(_game_data_, "shaders.xr");
-	IReader* Blenders = File ? File->open_chunk(2) : nullptr;
-	for (u32 Id = 0; IReader* Chunk = Blenders ? Blenders->open_chunk(Id) : nullptr; ++Id)
-	{
-		string128 Name = {};
-		if (Chunk->elapsed() >= static_cast<int>(sizeof(u64) + sizeof(Name)))
-		{
-			Chunk->r_u64();
-			Chunk->r(Name, sizeof(Name));
-			Name[sizeof(Name) - 1] = 0;
-			Name[0] ? ShaderNames.push_back(Name) : (void)0;
-		}
-		Chunk->close();
-	}
-	Blenders ? Blenders->close() : (void)0;
-	File ? FS.r_close(File) : (void)0;
-	std::sort(ShaderNames.begin(), ShaderNames.end(), ShaderLess);
-	ShaderNames.erase(std::unique(ShaderNames.begin(), ShaderNames.end()), ShaderNames.end());
-	return ShaderNames;
-}
-
-bool Player::PathPoint(u32 ObjectId, float At, Fvector& Point) const
-{
-	const s32 Index = IndexOf(Data, ObjectId);
-	const Object* Item = Index >= 0 && static_cast<u32>(Index) < States.size() ? &Data.Objects[Index] : nullptr;
-	const Fvector* Static = Item && Item->Type != ObjectType::Camera ? PlacementOf(*Item, 0) : nullptr;
-	if (!Static || At < Item->Span.Start || At > Item->Span.Start + Item->Span.Length)
-	{
-		return false;
-	}
-	Fmatrix World = Fidentity;
-	World.c = Curves::LaneVector(Item->Lanes, Param::Position, At - Item->Span.Start, *Static);
-	Spaces::Compose(States[Index].Frames, World);
-	Point = World.c;
-	return true;
 }
 
 ActorRuntime& Player::ActorAt(u32 ObjectId)

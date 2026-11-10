@@ -14,7 +14,7 @@ public:
 	virtual		void				Create					(const char* options){};
 	void				Update					() override {inherited::Update();};
 	void				OnPlayerConnect			(ClientID id_who) override;
-	void OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID) override;
+	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
 
 	void				net_Export_State		(NET_Packet& P, ClientID id_to) override;
 	void				OnEvent					(NET_Packet &P, u16 type, u32 time, ClientID sender ) override;

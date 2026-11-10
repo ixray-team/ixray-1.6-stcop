@@ -4,110 +4,6 @@
 
 namespace Cinema::TimelineUi
 {
-struct PresetKey
-{
-	u8 Preset;
-	float Time;
-	float Share;
-	Interp Mode;
-};
-
-constexpr const char* PresetNames[5] = { "Ease in-out", "Overshoot", "Bounce", "Step", "Wiggle" };
-constexpr PresetKey PresetKeys[] = {
-	{ 0, 0.0f, 0.0f, Interp::EaseInOut }, { 0, 1.0f, 1.0f, Interp::EaseInOut },
-	{ 1, 0.0f, 0.0f, Interp::EaseOut }, { 1, 0.6f, 1.2f, Interp::EaseInOut }, { 1, 1.0f, 1.0f, Interp::EaseInOut },
-	{ 2, 0.0f, 1.0f, Interp::EaseIn }, { 2, 0.4f, 0.0f, Interp::EaseOut }, { 2, 0.6f, 0.45f, Interp::EaseIn }, { 2, 0.8f, 0.0f, Interp::EaseOut }, { 2, 0.9f, 0.15f, Interp::EaseIn }, { 2, 1.0f, 0.0f, Interp::Linear },
-	{ 3, 0.0f, 0.0f, Interp::Hold }, { 3, 1.0f / 3.0f, 1.0f / 3.0f, Interp::Hold }, { 3, 2.0f / 3.0f, 2.0f / 3.0f, Interp::Hold }, { 3, 1.0f, 1.0f, Interp::Hold }
-};
-constexpr float ScaleFactors[4] = { 0.5f, 0.75f, 1.5f, 2.0f };
-constexpr const char* ScaleLabels[4] = { "x0.5", "x0.75", "x1.5", "x2" };
-
-void ReverseCurve(Curve& Part)
-{
-	const size_t Count = Part.Keys.size();
-	if (Count < 2)
-	{
-		return;
-	}
-	constexpr Interp Mirror[6] = { Interp::Linear, Interp::EaseOut, Interp::EaseIn, Interp::EaseInOut, Interp::Bezier, Interp::Hold };
-	const float Sum = Part.Keys.front().Time + Part.Keys.back().Time;
-	const Interp Last = Part.Keys.front().Mode;
-	std::reverse(Part.Keys.begin(), Part.Keys.end());
-	for (size_t Index = 0; Index < Count; ++Index)
-	{
-		Key& Item = Part.Keys[Index];
-		Item.Time = Sum - Item.Time;
-		std::swap(Item.InTime, Item.OutTime);
-		std::swap(Item.InValue, Item.OutValue);
-		Item.InTime = -Item.InTime;
-		Item.OutTime = -Item.OutTime;
-		Item.Mode = Index + 1 < Count ? Mirror[static_cast<u32>(Part.Keys[Index + 1].Mode)] : Last;
-	}
-}
-
-void ScaleCurve(Curve& Part, float Factor)
-{
-	const float Pivot = Part.Keys.empty() ? 0.0f : Part.Keys.front().Time;
-	for (Key& Item : Part.Keys)
-	{
-		Item.Time = Pivot + (Item.Time - Pivot) * Factor;
-		Item.InTime *= Factor;
-		Item.OutTime *= Factor;
-	}
-}
-
-void SmoothCurve(Curve& Part, xr_vector<float>& Values)
-{
-	Values.resize(Part.Keys.size());
-	for (size_t Index = 0; Index < Part.Keys.size(); ++Index)
-	{
-		Values[Index] = Part.Keys[Index].Value;
-	}
-	for (size_t Index = 1; Index + 1 < Part.Keys.size(); ++Index)
-	{
-		Part.Keys[Index].Value = 0.25f * Values[Index - 1] + 0.5f * Values[Index] + 0.25f * Values[Index + 1];
-	}
-}
-
-void ReduceCurve(Curve& Part, float Tolerance, xr_vector<std::pair<u32, u32>>& Spans, xr_vector<u8>& Kept)
-{
-	const u32 Count = static_cast<u32>(Part.Keys.size());
-	if (Count < 3)
-	{
-		return;
-	}
-	Kept.assign(Count, 0);
-	Kept.front() = Kept.back() = 1;
-	Spans.assign(1, { 0u, Count - 1 });
-	while (!Spans.empty())
-	{
-		const auto [From, To] = Spans.back();
-		Spans.pop_back();
-		const Key &A = Part.Keys[From], &B = Part.Keys[To];
-		float Worst = Tolerance;
-		u32 Split = 0;
-		for (u32 Index = From + 1; Index < To; ++Index)
-		{
-			const float Error = std::fabs(A.Value + (B.Value - A.Value) * (Part.Keys[Index].Time - A.Time) / std::max(B.Time - A.Time, 1e-6f) - Part.Keys[Index].Value);
-			Split = Error > Worst ? Index : Split;
-			Worst = std::max(Worst, Error);
-		}
-		if (Split)
-		{
-			Kept[Split] = 1;
-			Spans.push_back({ From, Split });
-			Spans.push_back({ Split, To });
-		}
-	}
-	u32 Write = 0;
-	for (u32 Index = 0; Index < Count; ++Index)
-	{
-		Part.Keys[Write] = Part.Keys[Index];
-		Write += Kept[Index];
-	}
-	Part.Keys.resize(Write);
-}
-
 constexpr float Speeds[4] = { 0.25f, 0.5f, 1.0f, 2.0f };
 constexpr const char* SpeedLabels[4] = { "0.25x", "0.5x", "1x", "2x" };
 constexpr float SnapValues[7] = { 1.0f, 2.0f, 5.0f, 10.0f, 0.5f, 1.0f, 5.0f };
@@ -115,24 +11,16 @@ constexpr const char* SnapLabels[7] = { "1 f", "2 f", "5 f", "10 f", "1/2 s", "1
 constexpr u32 FrameTicks[4] = { 1, 2, 5, 10 };
 constexpr u32 SecondTicks[10] = { 1, 2, 5, 10, 30, 60, 120, 300, 600, 1800 };
 constexpr u32 Separator = IM_COL32(0, 0, 0, 140), Shade = IM_COL32(0, 0, 0, 90), Corner = IM_COL32(255, 255, 255, 170);
-constexpr float EdgeZone = 6.0f, MagnetZone = 8.0f, CornerZone = 8.0f, KeyRadius = 4.5f, KeyZone = 6.0f, SegmentZone = 4.0f, SizeZone = 4.0f, PoseRadius = 5.0f, PoseZone = 7.0f, BraceHeight = 6.0f, OverviewHeight = 10.0f, TickRadius = 2.5f, OutZone = 4.0f, GripZone = 5.0f;
+constexpr float EdgeZone = 6.0f, MagnetZone = 8.0f, CornerZone = 8.0f, KeyRadius = 4.5f, KeyZone = 6.0f, SegmentZone = 4.0f, SizeZone = 4.0f, PoseRadius = 5.0f, PoseZone = 7.0f, BraceHeight = 6.0f, TickRadius = 2.5f;
 constexpr DragKind HitDrags[5] = { DragKind::LaneKeys, DragKind::HandleIn, DragKind::HandleOut, DragKind::LaneSegment, DragKind::LaneBend };
 constexpr const char* ShotLabels[8] = { "Move clip", "Trim clip", "Trim clip", "Move clip", "Clip length", "Stretch clip", "Move pose key", "Copy clip" };
 constexpr const char* ShakeLabels[5] = { "Move shake", "Resize shake", "Resize shake", "Fade in", "Fade out" };
 constexpr const char* RowModes[2] = { "Add", "Override" };
-constexpr DragKind BlockParts[8] = { DragKind::None, DragKind::BlockMove, DragKind::BlockIn, DragKind::BlockOut, DragKind::BlockFadeIn, DragKind::BlockFadeOut, DragKind::BlockBlend, DragKind::BlockMove };
-constexpr DragKind ShotParts[8] = { DragKind::None, DragKind::BlockMove, DragKind::BlockIn, DragKind::BlockLength, DragKind::BlockMove, DragKind::BlockMove, DragKind::BlockBlend, DragKind::PoseKey };
-constexpr DragKind ShakeParts[8] = { DragKind::ShakeMove, DragKind::ShakeMove, DragKind::ShakeStart, DragKind::ShakeEnd, DragKind::ShakeFadeIn, DragKind::ShakeFadeOut, DragKind::ShakeMove, DragKind::ShakeMove };
-constexpr const char* PartHints[3][8] = {
-	{ nullptr, "Drag: move, up or down to another row | Ctrl: copy | Shift: no snap", "Drag: trim the start | Ctrl: speed | Shift: no snap", "Drag: trim the end or loop | Shift: hold | Ctrl: speed", "Drag: fade in", "Drag: fade out", "Drag: slide the crossfade | Right-click: ease", nullptr },
-	{ nullptr, "Drag: move | Ctrl: copy | Shift: no snap", "Drag: trim the start | Shift: no snap", "Drag: length | Ctrl: stretch | Shift: no snap", nullptr, nullptr, "Drag: slide the crossfade | Right-click: ease, remove", "Drag: retime the key | Right-click: key menu | Delete: remove" },
-	{ nullptr, "Drag: move, up or down to another row | Ctrl: copy | Shift: no snap", "Drag: trim the start | Shift: no snap", "Drag: trim the end | Shift: no snap", "Drag: fade in", "Drag: fade out", "Drag: slide the crossfade", nullptr }
-};
 constexpr u32 AxisColors[3] = { Rgb(230, 90, 90), Rgb(90, 200, 90), Rgb(90, 140, 230) };
 constexpr const char* AxisNames[2][3] = { { "X", "Y", "Z" }, { "R", "G", "B" } };
 constexpr const char* WaveNames[11] = { "None", "Sine", "Triangle", "Square", "Sawtooth", "Noise stepped", "Noise smooth", "Noise fractal", "Noise Perlin", "Noise continuous", "Oscillator" };
 constexpr const char* ModeNames[6] = { "Linear", "Ease in", "Ease out", "Ease in-out", "Bezier", "Hold" };
-constexpr Param DefaultLanes[7] = { Param::Position, Param::Fov, Param::Intensity, Param::Speed, Param::DecalWidth, Param::WeatherTime, Param::PostFade };
+constexpr Param DefaultLanes[4] = { Param::Position, Param::Fov, Param::Intensity, Param::Speed };
 const Curve EmptyCurve {};
 
 struct KeyHit
@@ -159,166 +47,9 @@ u32 WithAlpha(u32 Color, u32 Alpha)
 	return (Color & 0x00FFFFFFu) | (Alpha << 24);
 }
 
-u8 LabelAxis(u8 Shown)
-{
-	return (Shown & 1) || !Shown ? 0 : (Shown & 2) ? 1 : 2;
-}
-
-float DragRange(Param Id, float Span, float Height)
-{
-	const ParamInfo& Meta = Info(Id);
-	const float Rate = Id == Param::Position ? 0.01f : Id == Param::BonePosition ? 0.002f : Id == Param::Rotation || Id == Param::BoneRotation ? 0.25f : Id == Param::Scale || Id == Param::Size || Id == Param::BoneScale ? 0.005f : (Meta.Max - Meta.Min) / 200.0f;
-	return std::min(Span, Height * Rate);
-}
-
 float Band(float RowHeight)
 {
 	return std::max(5.0f, std::round(0.3f * (RowHeight - 2.0f)));
-}
-
-struct PartBox
-{
-	float Begin = 0.0f;
-	float End = 0.0f;
-	float Top = 0.0f;
-	float Bottom = 0.0f;
-	float In = 0.0f;
-	float Out = 0.0f;
-	float Cross = 0.0f;
-	bool IsLeftFree = true;
-	bool IsRightFree = true;
-	bool HasFades = false;
-};
-
-float GripIn(float Begin, float In)
-{
-	return std::max(In, Begin + EdgeZone + GripZone);
-}
-
-float GripOut(float End, float Out)
-{
-	return std::min(Out, End - EdgeZone - GripZone);
-}
-
-ClipPart PartAt(const PartBox& Box, const ImVec2& Mouse, ImRect& Area)
-{
-	const float Width = Box.End - Box.Begin, Zone = std::min(EdgeZone, 0.25f * Width), X = Mouse.x;
-	if (X < Box.Begin - (Box.IsLeftFree ? OutZone : 0.0f) || X > Box.End + (Box.IsRightFree ? OutZone : 0.0f) || Mouse.y < Box.Top || Mouse.y > Box.Bottom)
-	{
-		return ClipPart::None;
-	}
-	if (X <= Box.Begin + Zone || X >= Box.End - Zone)
-	{
-		const bool IsStart = X <= Box.Begin + Zone;
-		Area = IsStart ? ImRect(Box.Begin, Box.Top, Box.Begin + 2.0f, Box.Bottom) : ImRect(Box.End - 2.0f, Box.Top, Box.End, Box.Bottom);
-		return IsStart ? ClipPart::Start : ClipPart::End;
-	}
-	const bool HasGrips = Box.HasFades && Width >= 4.0f * EdgeZone && Mouse.y - Box.Top <= CornerZone;
-	const float In = GripIn(Box.Begin, Box.In), Out = GripOut(Box.End, Box.Out);
-	if (HasGrips && (std::fabs(X - In) <= GripZone || std::fabs(X - Out) <= GripZone))
-	{
-		const bool IsIn = std::fabs(X - In) <= GripZone;
-		const float At = IsIn ? In : Out;
-		Area = ImRect(At - 3.5f, Box.Top, At + 3.5f, Box.Top + 7.0f);
-		return IsIn ? ClipPart::FadeIn : ClipPart::FadeOut;
-	}
-	const bool IsCross = X < Box.Cross;
-	Area = ImRect(Box.Begin, Box.Top, IsCross ? Box.Cross : Box.End, Box.Bottom);
-	return IsCross ? ClipPart::Cross : ClipPart::Body;
-}
-
-void Grips(ImDrawList* List, const ImRect& Box, float In, float Out)
-{
-	if (Box.GetWidth() < 4.0f * EdgeZone)
-	{
-		return;
-	}
-	for (const float X : { GripIn(Box.Min.x, In), GripOut(Box.Max.x, Out) })
-	{
-		List->AddRectFilled(ImVec2(X - 3.5f, Box.Min.y), ImVec2(X + 3.5f, Box.Min.y + 7.0f), Corner);
-	}
-}
-
-Cover Covers(float A, float B, float C, float D, float Min)
-{
-	const float Slack = 1e-4f;
-	if (D <= A + Slack || C >= B - Slack)
-	{
-		return Cover::Keep;
-	}
-	const bool HasHead = A - C >= Min, HasTail = D - B >= Min;
-	if (C < A - Slack && D >= B - Slack)
-	{
-		return HasHead && HasTail ? Cover::Split : HasHead ? Cover::CutTail : HasTail ? Cover::CutHead : Cover::Remove;
-	}
-	if (C < A - Slack)
-	{
-		return Cover::Keep;
-	}
-	return D <= B + Slack ? Cover::Remove : C <= A + Slack ? (HasTail ? Cover::CutHead : Cover::Remove) : Cover::Keep;
-}
-
-void PlanOverwrite(const xr_vector<Cameras::ClipSpan>& Spans, float A, float B, float Min, xr_vector<u8>& Plan)
-{
-	Plan.assign(Spans.size(), static_cast<u8>(Cover::Keep));
-	s32 Before = -1, After = -1;
-	for (u32 Index = 0; Index < Spans.size(); ++Index)
-	{
-		const float C = Spans[Index].Start, D = C + Spans[Index].Length;
-		const Cover Action = Spans[Index].Length > 0.0f ? Covers(A, B, C, D, Min) : Cover::Keep;
-		Plan[Index] = static_cast<u8>(Action);
-		if (Action != Cover::Keep || !(Spans[Index].Length > 0.0f) || D <= A + 1e-4f || C >= B - 1e-4f)
-		{
-			continue;
-		}
-		const bool IsEarly = C < A;
-		s32& Slot = IsEarly ? Before : After;
-		const bool IsNearer = Slot < 0 || (IsEarly ? C > Spans[Slot].Start : C < Spans[Slot].Start);
-		if (Slot >= 0)
-		{
-			Plan[IsNearer ? Slot : Index] = static_cast<u8>(IsEarly ? Cover::CutTail : Cover::CutHead);
-		}
-		Slot = IsNearer ? static_cast<s32>(Index) : Slot;
-	}
-	if (Before >= 0 && After >= 0 && Spans[Before].Start + Spans[Before].Length > Spans[After].Start + 1e-4f)
-	{
-		Plan[Before] = static_cast<u8>(Cover::CutTail);
-	}
-}
-
-u32 TailOf(const ActorBlock& Block, float Length, float Cut, float Frame, ActorBlock* Parts, float* Offsets)
-{
-	float In = 0.0f, Out = 0.0f;
-	const float Play = Actors::Measure(Block, Length, In, Out);
-	const float Total = Play * std::clamp(Block.Loops, 1.0f, MaxLoops), Width = Total + std::max(Block.Hold, 0.0f);
-	if (!(Play > 0.0f) || !(Cut < Width))
-	{
-		return 0;
-	}
-	const bool IsForward = Block.Speed >= 0.0f, IsPlaying = Cut < Total;
-	const float From = IsForward ? In : Out, To = IsForward ? Out : In;
-	const auto Moment = [From, To, Play](float Offset) { return From + (To - From) * Offset / Play; };
-	const float Phase = IsPlaying ? Cut - Play * std::floor(Cut / Play) : std::max(Play - Frame, 0.0f), Left = Total - Cut;
-	const bool IsSplit = IsPlaying && Left > Play - Phase + 0.5f * Frame;
-	ActorBlock& First = Parts[0] = Block;
-	Offsets[0] = Cut;
-	First.FadeIn = 0.0f;
-	First.Loops = 1.0f;
-	First.Hold = IsSplit ? 0.0f : IsPlaying ? Block.Hold : std::max(Width - Cut - (Play - Phase), 0.0f);
-	(IsForward ? First.In : First.Out) = Moment(Phase);
-	(IsForward ? First.Out : First.In) = IsPlaying && !IsSplit ? Moment(std::min(Phase + Left, Play)) : (IsForward ? First.Out : First.In);
-	First.FadeOut = IsSplit ? 0.0f : First.FadeOut;
-	if (!IsSplit)
-	{
-		return 1;
-	}
-	const float Rest = (Left - Play + Phase) / Play;
-	ActorBlock& Second = Parts[1] = Block;
-	Offsets[1] = Cut + Play - Phase;
-	Second.FadeIn = 0.0f;
-	Second.Loops = std::max(Rest, 1.0f);
-	(IsForward ? Second.Out : Second.In) = Rest < 1.0f ? Moment(Rest * Play) : (IsForward ? Second.Out : Second.In);
-	return 2;
 }
 
 void Label(ImDrawList* List, const ImRect& Box, u32 Color, const char* Text, float Size = 0.0f)
@@ -378,24 +109,6 @@ void Icon(ImDrawList* List, const ImVec2& At, u32 Kind, u32 Color)
 		}
 		return;
 	}
-	if (Kind == static_cast<u32>(ObjectType::Decal))
-	{
-		List->AddRect(ImVec2(At.x - 5.0f, At.y - 5.0f), ImVec2(At.x + 5.0f, At.y + 5.0f), Color, 0.0f, 0, 1.5f);
-		List->AddCircleFilled(At, 2.0f, Color);
-		return;
-	}
-	if (Kind == static_cast<u32>(ObjectType::Post))
-	{
-		List->AddRect(ImVec2(At.x - 6.0f, At.y - 5.0f), ImVec2(At.x + 6.0f, At.y + 5.0f), Color, 0.0f, 0, 1.5f);
-		List->AddTriangleFilled(ImVec2(At.x - 6.0f, At.y + 5.0f), ImVec2(At.x + 6.0f, At.y - 5.0f), ImVec2(At.x + 6.0f, At.y + 5.0f), Color);
-		return;
-	}
-	if (Kind == static_cast<u32>(ObjectType::Weather))
-	{
-		List->AddCircle(ImVec2(At.x + 1.0f, At.y - 1.0f), 4.0f, Color, 0, 1.5f);
-		List->AddLine(ImVec2(At.x - 6.0f, At.y + 5.0f), ImVec2(At.x + 6.0f, At.y + 5.0f), Color, 1.5f);
-		return;
-	}
 	if (Kind == static_cast<u32>(ObjectType::Particle))
 	{
 		for (const ImVec2& Dot : { ImVec2(-4.0f, 3.0f), ImVec2(4.0f, 3.0f), ImVec2(0.0f, -4.0f) })
@@ -423,15 +136,6 @@ void Hatch(ImDrawList* List, const ImRect& Box, u32 Color)
 		List->AddLine(ImVec2(X, Box.Max.y), ImVec2(X + Height, Box.Min.y), Color);
 	}
 	List->PopClipRect();
-}
-
-void Dotted(ImDrawList* List, float From, float To, float Y, u32 Color)
-{
-	const float Lo = std::max(From, List->GetClipRectMin().x - 6.0f), Hi = std::min(To, List->GetClipRectMax().x);
-	for (float X = Lo - std::fmod(Lo - From, 6.0f); X < Hi; X += 6.0f)
-	{
-		List->AddLine(ImVec2(X, Y), ImVec2(std::min(X + 3.0f, To), Y), Color);
-	}
 }
 
 void Boundary(ImDrawList* List, float X, const ImRect& Row)
@@ -463,9 +167,20 @@ bool HasField(const Object& Target, s32 Block, Param Id, u8 Layer)
 	return StaticField(const_cast<Object&>(Target), Block, Id, Layer, 0) != nullptr;
 }
 
-u16 LaneWhere(const Object& Target)
+u8 LaneWhere(const Object& Target)
 {
-	return Target.Type == ObjectType::Camera ? WhereCameraBlock | WhereShakeClip : ObjectWhere[static_cast<u32>(Target.Type)];
+	return Target.Type == ObjectType::Camera ? WhereCameraBlock | WhereShakeClip | WherePose : ObjectWhere[static_cast<u32>(Target.Type)];
+}
+
+bool IsPoseLane(const Object& Target, Param Id)
+{
+	return Target.Type == ObjectType::Camera && Id <= Param::Rotation;
+}
+
+template <typename TPose>
+auto& PoseField(TPose& Pose, Param Id)
+{
+	return Id == Param::Rotation ? Pose.Rotation : Pose.Position;
 }
 
 float Unwrap(float Raw, float Near)
@@ -616,33 +331,11 @@ Key* FindKey(Scene& Data, const KeyRef& Ref)
 	return Part && Ref.Index < Part->Keys.size() ? &Part->Keys[Ref.Index] : nullptr;
 }
 
-void SlotLabel(string64& Out, Param Id, u8 Layer, const Object* Target = nullptr, s32 Block = -1)
+void SlotLabel(string64& Out, Param Id, u8 Layer)
 {
-	if (Id == Param::PoseWeight)
-	{
-		xr_sprintf(Out, "Pose %u weight", Layer + 1u);
-		return;
-	}
-	if (IsBoneParam(Id))
-	{
-		const PoseBone* Joint = Target && HasOwner(*Target, Block) ? BoneEntry(const_cast<Object&>(*Target), Block, Layer) : nullptr;
-		xr_sprintf(Out, "%s %s", Joint ? Joint->Name.c_str() : "Bone", Info(Id).Label);
-		return;
-	}
 	if (Id == Param::LayerWeight)
 	{
 		xr_sprintf(Out, "Animation %u weight", Layer + 1u);
-		return;
-	}
-	if (Id == Param::ConstraintWeight)
-	{
-		const bool IsKnown = Target && Layer < Target->Actor.Constraints.size();
-		xr_sprintf(Out, "%s constraint weight", IsKnown ? Target->Actor.Constraints[Layer].Bone.c_str() : "Bone");
-		return;
-	}
-	if (Id >= Param::IkTarget && Id <= Param::IkWeight)
-	{
-		xr_sprintf(Out, "%s %s", Layer < RigChainCount ? RigChainKeys[Layer] : "Limb", Info(Id).Label);
 		return;
 	}
 	if (Id >= Param::ShakeInfluence)
@@ -700,52 +393,8 @@ void DrawHandle(ImDrawList* List, KeyHit& Hit, const ImVec2& Mouse, const ImVec2
 	Test(Hit, Mouse, Tip, Target, Component, Index, Kind);
 }
 
-void RangeLabels(ImDrawList* List, const ImRect& Rect, float Lo, float Hi, float Top, float Bottom)
-{
-	const u32 Color = ImGui::GetColorU32(ImGuiCol_TextDisabled);
-	if (Lo < 0.0f && Hi > 0.0f)
-	{
-		const float Y = Bottom + Lo / (Hi - Lo) * (Bottom - Top);
-		List->AddLine(ImVec2(Rect.Min.x, Y), ImVec2(Rect.Max.x, Y), WithAlpha(Color, 60u));
-	}
-	string64 Text;
-	const bool IsShort = Rect.GetHeight() < 2.0f * ImGui::GetFontSize();
-	xr_sprintf(Text, IsShort ? "%.3g .. %.3g" : "%.3g", IsShort ? Lo : Hi, Hi);
-	List->AddText(ImVec2(Rect.Min.x + 2.0f, Rect.Min.y), Color, Text);
-	if (!IsShort)
-	{
-		xr_sprintf(Text, "%.3g", Lo);
-		List->AddText(ImVec2(Rect.Min.x + 2.0f, Rect.Max.y - ImGui::GetFontSize()), Color, Text);
-	}
-}
-
-void EndTag(ImDrawList* List, const ImRect& Rect, ImVec2 Point, float Time, float Value, u32 Rate, u32 Color)
-{
-	string32 Code;
-	string64 Text;
-	Timecode(Code, Time, Rate);
-	xr_sprintf(Text, "%s | %.3g", Code, Value);
-	const ImVec2 Size = ImGui::CalcTextSize(Text);
-	Point.x = std::clamp(Point.x + 4.0f, Rect.Min.x, std::max(Rect.Max.x - Size.x, Rect.Min.x));
-	Point.y = std::clamp(Point.y - Size.y - 2.0f, Rect.Min.y, Rect.Max.y - Size.y);
-	List->AddText(Point, Color, Text);
-}
-
-ImVec2 TangentOf(const Curve& Part, u32 At, bool IsOut, float Static)
-{
-	const Key& Head = Part.Keys[IsOut ? At : At - 1];
-	const Key& Item = Part.Keys[At];
-	const float Width = Part.Keys[IsOut ? At + 1 : At].Time - Head.Time, Sign = IsOut ? 1.0f : -1.0f, Step = 0.01f * Width;
-	if (Head.Mode == Interp::Bezier)
-	{
-		return IsOut ? ImVec2(std::clamp(Item.OutTime, 0.0f, Width), Item.OutValue) : ImVec2(std::clamp(Item.InTime, -Width, 0.0f), Item.InValue);
-	}
-	const float Slope = Head.Mode == Interp::Hold || !(Step > 0.0f) ? 0.0f : (Curves::Value(Part, Item.Time + Sign * Step, Static) - Item.Value) / Step;
-	return ImVec2(Sign * Width / 3.0f, Slope * Width / 3.0f);
-}
-
 template <typename TFunc>
-bool PickParam(const char* Name, const char* Preview, u16 Allowed, u8 Layers, const TFunc& IsFree, Param& Picked, u8& PickedLayer)
+bool PickParam(const char* Name, const char* Preview, u8 Allowed, u8 Layers, const TFunc& IsFree, Param& Picked, u8& PickedLayer)
 {
 	constexpr u32 Shakes = static_cast<u32>(Param::ShakeInfluence);
 	bool IsPicked = false;
@@ -844,31 +493,17 @@ namespace Cinema
 void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 {
 	const ImGuiViewport* View = ImGui::GetMainViewport();
-	const bool IsAnimation = ShowAnimator;
-	const float Share = IsAnimation ? 0.4f : 0.28f;
-	ImGui::SetNextWindowPos(ImVec2(View->Pos.x, View->Pos.y + View->Size.y * (1.0f - Share)), LayoutCond());
-	ImGui::SetNextWindowSize(ImVec2(View->Size.x, View->Size.y * Share), LayoutCond());
-	if (LayoutReset)
-	{
-		ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
-	}
+	ImGui::SetNextWindowPos(ImVec2(View->Pos.x, View->Pos.y + View->Size.y * 0.72f), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(View->Size.x, View->Size.y * 0.28f), ImGuiCond_FirstUseEver);
 	string256 Title;
-	xr_sprintf(Title, "%.128s%s###Cinema%s", SceneName.empty() ? "Untitled" : SceneName.c_str(), Core.HasUnsavedChanges ? " *" : "", IsAnimation ? "Animation" : "Timeline");
+	xr_sprintf(Title, "%.128s%s###CinemaTimeline", SceneName.empty() ? "Untitled" : SceneName.c_str(), Core.HasUnsavedChanges ? " *" : "");
 	const bool IsVisible = ImGui::Begin(Title, &IsOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoNavInputs);
 	IsOwnWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-	IsAnimFocused = false;
-	MainBox = ImRect(ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
 	HoverPose = HoverMarker = -1;
 	HoverLaneObject = 0;
 	const float Step = TimelineUi::SnapValues[Settings.SnapStep];
 	SnapGrid = Settings.SnapStep < 4 ? Step / static_cast<float>(Core.Data.Header.FrameRate) : Step;
-	if (IsVisible && IsAnimation)
-	{
-		DrawMenuBar(Core);
-		DrawTransport(Core);
-		DrawAnimatorBody(Core);
-	}
-	else if (IsVisible)
+	if (IsVisible)
 	{
 		DrawMenuBar(Core);
 		DrawTransport(Core);
@@ -877,36 +512,20 @@ void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 		TrackLeft = Origin.x + Settings.HeaderWidth;
 		TrackWidth = std::max(ImGui::GetContentRegionAvail().x - Settings.HeaderWidth, 1.0f);
 		ImGui::SetCursorScreenPos(ImVec2(TrackLeft, Origin.y));
-		if (Core.IsPlaying && Settings.IsFollowing && !IsFollowPaused && (TimeToX(Core.Time) > TrackLeft + 0.9f * TrackWidth || TimeToX(Core.Time) < TrackLeft))
-		{
-			ScrollTime = std::clamp(Core.Time - 0.1f * TrackWidth / Zoom, 0.0f, MaxTime);
-		}
-		DrawRuler(Core, ImRect(TrackLeft, Origin.y, TrackLeft + TrackWidth, Origin.y + TimelineUi::OverviewHeight + TimelineUi::BraceHeight + std::max(RowHeight, ImGui::GetFontSize() + std::round(0.8f * ImGui::GetFontSize()) + 2.0f)));
+		DrawRuler(Core, ImRect(TrackLeft, Origin.y, TrackLeft + TrackWidth, Origin.y + TimelineUi::BraceHeight + std::max(RowHeight, ImGui::GetFontSize() + std::round(0.8f * ImGui::GetFontSize()) + 2.0f)));
 		ImGui::BeginChild("##Rows", ImVec2(0.0f, -ImGui::GetTextLineHeightWithSpacing()), ImGuiChildFlags_None, ImGuiWindowFlags_NoScrollWithMouse);
 		const ImGuiIO& Input = ImGui::GetIO();
 		if (ImGui::IsWindowHovered() && Input.MouseWheel != 0.0f)
 		{
 			const float Pivot = XToTime(Input.MousePos.x);
-			const bool IsOverTracks = Input.MousePos.x >= TrackLeft;
-			IsFollowPaused = IsFollowPaused || (Core.IsPlaying && !Input.KeyShift && IsOverTracks);
-			if (Input.KeyCtrl && !IsOverTracks)
-			{
-				for (const LaneSlot& Slot : Slots)
-				{
-					const float Rows = std::clamp(std::round(SizeOf(Core.Data, Slot.ObjectId, SizeLane, Slot.Id, Slot.Layer) / RowHeight + Input.MouseWheel), 1.0f, MaxLaneSize);
-					std::erase_if(Core.Data.Sizes, [&Slot](const RowSize& Item) { return Item.ObjectId == Slot.ObjectId && Item.Kind == SizeLane && Item.Id == Slot.Id && Item.Layer == Slot.Layer; });
-					Core.Data.Sizes.push_back({ Slot.ObjectId, SizeLane, Slot.Id, Slot.Layer, Rows });
-				}
-				IsLayoutDirty = IsLayoutDirty || !Slots.empty();
-			}
-			else if (Input.KeyCtrl)
-			{
-				ScrollTime = std::clamp(ScrollTime - Input.MouseWheel * 80.0f / Zoom, 0.0f, MaxTime);
-			}
-			else if (!Input.KeyShift && IsOverTracks)
+			if (Input.KeyCtrl)
 			{
 				Zoom = std::clamp(Zoom * std::pow(1.2f, Input.MouseWheel), 4.0f, 2000.0f);
 				ScrollTime = std::clamp(Pivot - (Input.MousePos.x - TrackLeft) / Zoom, 0.0f, MaxTime);
+			}
+			else if (Input.KeyShift)
+			{
+				ScrollTime = std::clamp(ScrollTime - Input.MouseWheel * 80.0f / Zoom, 0.0f, MaxTime);
 			}
 			else
 			{
@@ -986,11 +605,6 @@ void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 			List->AddRect(Marquee.Min, Marquee.Max, ImGui::GetColorU32(ImGuiCol_HeaderActive));
 			List->PopClipRect();
 		}
-		if (DragLimit >= 0.0f && Drag != DragKind::None)
-		{
-			const float X = TimeToX(DragLimit);
-			List->AddLine(ImVec2(X, Input.MousePos.y - 0.5f * RowHeight), ImVec2(X, Input.MousePos.y + 0.5f * RowHeight), ImGui::GetColorU32(ErrorColor), 2.0f);
-		}
 		if (Drag == DragKind::RowMove && HasDragMoved)
 		{
 			const TimelineUi::DropSpot Spot = TimelineUi::Drop(Rows, RowsTop, Input.MousePos.y, IsDragFolder);
@@ -1017,13 +631,7 @@ void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 		DrawMarkers(Core, ImRect(TrackLeft, Top.y, TrackLeft + TrackWidth, Top.y + ImGui::GetWindowHeight()), false);
 		ImGui::EndChild();
 		const ImVec2 Line = ImGui::GetCursorScreenPos();
-		const float Room = ImGui::GetContentRegionAvail().x, Told = Settings.ShowHints && Hint ? ImGui::CalcTextSize(Hint).x + 8.0f : 0.0f;
-		TimelineUi::Label(ImGui::GetWindowDrawList(), ImRect(Line.x - 3.0f, Line.y, Line.x + std::max(Room - Told, 1.0f), Line.y + ImGui::GetTextLineHeight()), ImGui::GetColorU32(IsStatusError ? ErrorColor : ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled)), StatusText.c_str());
-		if (Told > 0.0f)
-		{
-			ImGui::GetWindowDrawList()->AddText(ImVec2(Line.x + Room - Told + 8.0f, Line.y), ImGui::GetColorU32(ImGuiCol_TextDisabled), Hint);
-		}
-		Hint = nullptr;
+		TimelineUi::Label(ImGui::GetWindowDrawList(), ImRect(Line.x - 3.0f, Line.y, Line.x + ImGui::GetContentRegionAvail().x, Line.y + ImGui::GetTextLineHeight()), ImGui::GetColorU32(IsStatusError ? ErrorColor : ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled)), StatusText.c_str());
 		ImGui::Dummy(ImVec2(1.0f, ImGui::GetTextLineHeight()));
 	}
 	ImGui::End();
@@ -1032,7 +640,6 @@ void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 void Editor::DrawTransport(Player& Core)
 {
 	const ImGuiStyle& Style = ImGui::GetStyle();
-	const ImGuiIO& Input = ImGui::GetIO();
 	const auto Flow = [](float Width)
 	{
 		ImGui::SameLine();
@@ -1043,34 +650,21 @@ void Editor::DrawTransport(Player& Core)
 	};
 	const auto Wide = [&Style](const char* Text) { return ImGui::CalcTextSize(Text).x + 2.0f * Style.FramePadding.x; };
 	const auto Check = [&Style](const char* Text) { return ImGui::GetFrameHeight() + Style.ItemInnerSpacing.x + ImGui::CalcTextSize(Text).x; };
-	const bool IsAlone = ShowAnimator && AnimClipIndex >= 0 && !IsAnimFollowing && !Core.IsPlaying;
 	if (ImGui::Button("|<"))
 	{
-		IsAlone ? (void)(AnimTime = 0.0f) : SeekBoth(Core, 0.0f);
+		Core.Seek(0.0f);
 	}
 	ImGui::SetItemTooltip("Start (Home)");
 	Flow(Wide("Pause"));
-	if (ImGui::Button(Core.IsPlaying || (IsAlone && IsAnimPlaying) ? "Pause" : "Play"))
+	if (ImGui::Button(Core.IsPlaying ? "Pause" : "Play"))
 	{
-		IsAlone ? (void)(IsAnimPlaying = !IsAnimPlaying) : PlayPause(Core, Core.IsPlaying);
+		Core.IsPlaying ? Core.Pause() : Core.Play();
 	}
-	ImGui::SetItemTooltip("Play from marker (Space) / Continue (Shift+Space)");
+	ImGui::SetItemTooltip("Play / Pause (Space)");
 	Flow(Wide("Stop"));
 	if (ImGui::Button("Stop"))
 	{
-		IsAnimPlaying = false;
-		AnimTime = IsAlone ? 0.0f : AnimTime;
 		Core.Stop();
-	}
-	ImGui::SetItemTooltip("Stop (Space)");
-	if (!ShowAnimator)
-	{
-		Flow(Check("Follow"));
-		if (ImGui::Checkbox("Follow", &Settings.IsFollowing))
-		{
-			IsFollowPaused = false;
-		}
-		ImGui::SetItemTooltip("Follow");
 	}
 	Flow(Check("Loop"));
 	bool IsLooping = Core.IsLooping;
@@ -1094,51 +688,25 @@ void Editor::DrawTransport(Player& Core)
 		Core.Speed = TimelineUi::Speeds[Choice];
 	}
 	ImGui::SetItemTooltip("Playback speed");
-	if (!ShowAnimator)
+	Flow(Check("Snap") + Style.ItemSpacing.x + ImGui::GetFontSize() * 4.5f);
+	ImGui::Checkbox("Snap", &Settings.IsSnapping);
+	ImGui::SameLine();
+	s32 Step = Settings.SnapStep;
+	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 4.5f);
+	if (ImGui::Combo("##SnapStep", &Step, TimelineUi::SnapLabels, 7))
 	{
-		Flow(Check("Snap") + Style.ItemSpacing.x + ImGui::GetFontSize() * 4.5f);
-		ImGui::Checkbox("Snap", &Settings.IsSnapping);
-		ImGui::SameLine();
-		s32 Step = Settings.SnapStep;
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 4.5f);
-		if (ImGui::Combo("##SnapStep", &Step, TimelineUi::SnapLabels, 7))
-		{
-			Settings.SnapStep = static_cast<u8>(Step);
-		}
-		ImGui::SetItemTooltip("Snap step");
-		Flow(ImGui::GetFontSize() * 6.0f + Style.ItemSpacing.x + Wide("Fit"));
-		const float PlayX = TimeToX(Core.Time);
-		const float AnchorX = PlayX >= TrackLeft && PlayX <= TrackLeft + TrackWidth ? PlayX - TrackLeft : 0.5f * TrackWidth;
-		string32 ZoomText;
-		xr_sprintf(ZoomText, "%.0f px/s##Zoom", Zoom);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-		ImGui::Button(ZoomText, ImVec2(ImGui::GetFontSize() * 6.0f, 0.0f));
-		ImGui::PopStyleColor();
-		if (ImGui::IsItemHovered() || ImGui::IsItemActive())
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
-		}
-		if (ImGui::IsItemActivated())
-		{
-			ZoomAnchor[0] = ScrollTime + AnchorX / Zoom;
-			ZoomAnchor[1] = AnchorX;
-		}
-		if (ImGui::IsItemActive() && Input.MouseDelta.y != 0.0f)
-		{
-			Zoom = std::clamp(Zoom * std::pow(Input.KeyShift ? 1.002f : 1.02f, -Input.MouseDelta.y), 4.0f, 2000.0f);
-			ScrollTime = std::clamp(ZoomAnchor[0] - ZoomAnchor[1] / Zoom, 0.0f, MaxTime);
-			IsFollowPaused = IsFollowPaused || Core.IsPlaying;
-		}
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-		{
-			ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
-		}
-		ImGui::SetItemTooltip("Zoom");
-		ImGui::SameLine();
-		if (ImGui::Button("Fit"))
-		{
-			ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
-		}
+		Settings.SnapStep = static_cast<u8>(Step);
+	}
+	ImGui::SetItemTooltip("Snap step");
+	Flow(ImGui::GetFontSize() * 6.0f + Style.ItemSpacing.x + Wide("Fit"));
+	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 6.0f);
+	ImGui::DragFloat("##Zoom", &Zoom, 1.0f, 4.0f, 2000.0f, "%.0f px/s", ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SetItemTooltip("Zoom");
+	ImGui::SameLine();
+	if (ImGui::Button("Fit"))
+	{
+		Zoom = std::clamp(TrackWidth / std::max(ContentEnd(Core.Data) * 1.05f, 1.0f), 4.0f, 2000.0f);
+		ScrollTime = 0.0f;
 	}
 	Flow(Wide("Auto-key"));
 	ImGui::PushStyleColor(ImGuiCol_Text, IsAutoKey ? ErrorColor : ImGui::GetStyleColorVec4(ImGuiCol_Text));
@@ -1175,48 +743,13 @@ void Editor::SetLooping(Player& Core, bool IsOn)
 	}
 }
 
-void Editor::PlayPause(Player& Core, bool IsContinue)
-{
-	IsFollowPaused = false;
-	if (Core.IsPlaying)
-	{
-		IsContinue ? Core.Pause() : Core.Stop();
-		return;
-	}
-	const float Marker = Core.PlayStart;
-	Core.Seek(IsContinue ? Core.Time : Marker);
-	Core.Play();
-	Core.PlayStart = IsContinue ? Marker : Core.PlayStart;
-}
-
-void Editor::SeekBoth(Player& Core, float Time)
-{
-	Core.Seek(Time);
-	Core.PlayStart = Core.IsPlaying ? Core.PlayStart : Core.Time;
-}
-
-void Editor::ZoomTo(float Lo, float Hi)
-{
-	const float Width = std::max(Hi - Lo, 0.1f);
-	Zoom = std::clamp(TrackWidth / (Width * 1.05f), 4.0f, 2000.0f);
-	ScrollTime = std::clamp(Lo - 0.025f * Width, 0.0f, MaxTime);
-}
-
-void Editor::ZoomAround(float Factor, float Pivot)
-{
-	const float X = std::clamp(TimeToX(Pivot), TrackLeft, TrackLeft + TrackWidth);
-	Zoom = std::clamp(Zoom * Factor, 4.0f, 2000.0f);
-	ScrollTime = std::clamp(Pivot - (X - TrackLeft) / Zoom, 0.0f, MaxTime);
-}
-
-bool Editor::SelectionSpan(const Player& Core, float& Lo, float& Hi) const
+void Editor::LoopSelection(Player& Core)
 {
 	const bool IsKeys = Focus == FocusKind::Keys;
-	Lo = MaxTime;
-	Hi = 0.0f;
+	float Lo = MaxTime, Hi = 0.0f;
 	for (const KeyRef& Ref : SelectedKeys)
 	{
-		const Key* Item = IsKeys ? TimelineUi::FindKey((Cinema::Scene&)Core.Data, Ref) : nullptr;
+		const Key* Item = IsKeys ? TimelineUi::FindKey(Core.Data, Ref) : nullptr;
 		const float At = Item ? TargetStart(*Find(Core.Data, Ref.ObjectId), Ref.Block) + Item->Time : Lo;
 		Lo = std::min(Lo, At);
 		Hi = Item ? std::max(Hi, At) : Hi;
@@ -1227,13 +760,7 @@ bool Editor::SelectionSpan(const Player& Core, float& Lo, float& Hi) const
 		Lo = Item ? std::min(Lo, Item->Span.Start) : Lo;
 		Hi = Item ? std::max(Hi, ClipEnd(*Item)) : Hi;
 	}
-	return Hi > Lo;
-}
-
-void Editor::LoopSelection(Player& Core)
-{
-	float Lo = 0.0f, Hi = 0.0f;
-	if (!SelectionSpan(Core, Lo, Hi))
+	if (!(Hi > Lo))
 	{
 		SetLooping(Core, !Core.IsLooping);
 		return;
@@ -1289,30 +816,23 @@ void Editor::BuildRows(const Scene& Data)
 	}
 }
 
-void Editor::DrawRuler(Player& Core, const ImRect& Full)
+void Editor::DrawRuler(Player& Core, const ImRect& Rect)
 {
-	const ImRect Rect(Full.Min.x, Full.Min.y + TimelineUi::OverviewHeight, Full.Max.x, Full.Max.y);
 	xr_vector<Marker>& Markers = Core.Data.Header.Markers;
 	if (RenameMarker >= 0)
 	{
 		ImGui::SetNextItemAllowOverlap();
 	}
-	ImGui::InvisibleButton("##Ruler", Full.GetSize(), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+	ImGui::InvisibleButton("##Ruler", Rect.GetSize(), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 	CanvasId = ImGui::IsItemActive() ? ImGui::GetItemID() : CanvasId;
 	const ImGuiIO& Input = ImGui::GetIO();
 	const u32 Rate = Core.Data.Header.FrameRate;
 	const bool IsActivated = ImGui::IsItemActivated();
 	const float BraceIn = TimeToX(Core.LoopStart), BraceOut = TimeToX(Core.LoopEnd), Grip = std::min(TimelineUi::EdgeZone, (BraceOut - BraceIn) / 3.0f);
-	const bool IsOverview = ImGui::IsItemHovered() && Input.MousePos.y < Rect.Min.y;
-	const bool IsBrace = ImGui::IsItemHovered() && !IsOverview && Input.MousePos.y < Rect.Min.y + TimelineUi::BraceHeight;
-	const bool IsOverviewDrag = ImGui::IsItemActive() && Drag == DragKind::Scrub && RulerMode >= 3;
-	const float Whole = IsOverviewDrag ? OverviewWhole : std::max({ ContentEnd(Core.Data), ScrollTime + TrackWidth / Zoom, 1.0f });
-	OverviewWhole = Whole;
-	const auto OverX = [&](float Time) { return Full.Min.x + Time / Whole * Full.GetWidth(); };
-	const float ViewIn = OverX(ScrollTime), ViewOut = OverX(ScrollTime + TrackWidth / Zoom), OverTime = (Input.MousePos.x - Full.Min.x) / Full.GetWidth() * Whole;
+	const bool IsBrace = ImGui::IsItemHovered() && Input.MousePos.y < Rect.Min.y + TimelineUi::BraceHeight;
 	const bool IsOnBrace = IsBrace && Core.HasLoopRange && Input.MousePos.x >= BraceIn - TimelineUi::EdgeZone && Input.MousePos.x <= BraceOut + TimelineUi::EdgeZone;
 	const DragKind BraceKind = Input.MousePos.x <= BraceIn + Grip ? DragKind::LoopIn : Input.MousePos.x >= BraceOut - Grip ? DragKind::LoopOut : DragKind::LoopMove;
-	HoverMarker = Drag == DragKind::MarkerMove ? DragMarker : ImGui::IsItemHovered() && !IsBrace && !IsOverview ? MarkerAt(Core.Data.Header, Input.MousePos.x) : -1;
+	HoverMarker = Drag == DragKind::MarkerMove ? DragMarker : ImGui::IsItemHovered() && !IsBrace ? MarkerAt(Core.Data.Header, Input.MousePos.x) : -1;
 	if ((IsOnBrace && BraceKind != DragKind::LoopMove) || Drag == DragKind::LoopIn || Drag == DragKind::LoopOut)
 	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
@@ -1320,12 +840,10 @@ void Editor::DrawRuler(Player& Core, const ImRect& Full)
 	if (IsActivated)
 	{
 		const bool IsLeft = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
-		Drag = IsOverview ? (IsLeft ? DragKind::Scrub : DragKind::None) : !IsLeft ? DragKind::LoopRange : IsOnBrace ? BraceKind : HoverMarker >= 0 ? DragKind::MarkerMove : DragKind::Scrub;
+		Drag = !IsLeft ? DragKind::LoopRange : IsOnBrace ? BraceKind : HoverMarker >= 0 ? DragKind::MarkerMove : DragKind::Scrub;
 		DragMarker = PopupMarker = HoverMarker;
-		DragLoop[0] = IsOverview ? ScrollTime : Core.LoopStart;
-		DragLoop[1] = IsOverview ? ScrollTime + TrackWidth / Zoom : Core.LoopEnd;
-		const float Near = std::fabs(Input.MousePos.x - ViewIn), Far = std::fabs(Input.MousePos.x - ViewOut);
-		RulerMode = static_cast<u8>(!IsOverview ? 0 : Near <= TimelineUi::EdgeZone ? 4 : Far <= TimelineUi::EdgeZone ? 5 : Input.MousePos.x > ViewIn && Input.MousePos.x < ViewOut ? 3 : 6);
+		DragLoop[0] = Core.LoopStart;
+		DragLoop[1] = Core.LoopEnd;
 		HasDragMoved = false;
 		DragIds.clear();
 		CollectSnapTargets(Core, false);
@@ -1343,27 +861,7 @@ void Editor::DrawRuler(Player& Core, const ImRect& Full)
 	}
 	if (ImGui::IsItemActive() && Drag == DragKind::Scrub)
 	{
-		const ImVec2 Pulled(Input.MousePos.x - Input.MouseClickedPos[ImGuiMouseButton_Left].x, Input.MousePos.y - Input.MouseClickedPos[ImGuiMouseButton_Left].y);
-		IsFollowPaused = IsFollowPaused || (Core.IsPlaying && RulerMode);
-		const float In = std::clamp(OverTime, 0.0f, DragLoop[1] - 0.1f), Out = std::clamp(OverTime, DragLoop[0] + 0.1f, MaxTime);
-		switch (RulerMode)
-		{
-		case 0:
-			SeekBoth(Core, Snapped);
-			break;
-		case 3:
-			ScrollTime = std::clamp(DragLoop[0] + Pulled.x / Full.GetWidth() * Whole, 0.0f, MaxTime);
-			break;
-		case 4:
-			ZoomTo(In, DragLoop[1]);
-			break;
-		case 5:
-			ZoomTo(DragLoop[0], Out);
-			break;
-		default:
-			ScrollTime = std::clamp(OverTime - 0.5f * (DragLoop[1] - DragLoop[0]), 0.0f, MaxTime);
-			break;
-		}
+		Core.Seek(Snapped);
 	}
 	if (ImGui::IsItemActive() && Drag == DragKind::LoopRange && ImGui::IsMouseDragging(ImGuiMouseButton_Right, 4.0f))
 	{
@@ -1440,11 +938,6 @@ void Editor::DrawRuler(Player& Core, const ImRect& Full)
 	{
 		Rename(HoverMarker);
 	}
-	else if (ImGui::IsItemHovered() && !IsBrace && !IsOverview && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-	{
-		ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
-		Drag = DragKind::None;
-	}
 	if (ImGui::BeginPopup("##MarkerMenu"))
 	{
 		if (ImGui::MenuItem("Rename", nullptr, false, PopupMarker >= 0))
@@ -1496,25 +989,7 @@ void Editor::DrawRuler(Player& Core, const ImRect& Full)
 		List->AddLine(ImVec2(X, Rect.Min.y + TimelineUi::BraceHeight + (Rect.GetHeight() - TimelineUi::BraceHeight) * 0.5f), ImVec2(X, Rect.Max.y), Text);
 		List->AddText(ImVec2(X + 3.0f, Rect.Min.y + TimelineUi::BraceHeight), Text, Code);
 	}
-	const float Marker = TimeToX(Core.PlayStart);
-	List->AddTriangle(ImVec2(Marker - 5.0f, Rect.Max.y - 8.0f), ImVec2(Marker + 5.0f, Rect.Max.y - 8.0f), ImVec2(Marker, Rect.Max.y - 1.0f), ImGui::GetColorU32(ImGuiCol_Text), 1.5f);
 	List->PopClipRect();
-	List->PushClipRect(Full.Min, ImVec2(Full.Max.x, Rect.Min.y), true);
-	List->AddRectFilled(Full.Min, ImVec2(Full.Max.x, Rect.Min.y), ImGui::GetColorU32(ImGuiCol_WindowBg));
-	for (u32 Index = 0; Index < Core.Data.Objects.size(); ++Index)
-	{
-		const Object& Item = Core.Data.Objects[Index];
-		const float Y = Full.Min.y + 1.0f + static_cast<float>(Index % 4) * 2.0f;
-		List->AddLine(ImVec2(OverX(Item.Span.Start), Y), ImVec2(std::max(OverX(ClipEnd(Item)), OverX(Item.Span.Start) + 1.0f), Y), TimelineUi::WithAlpha(Item.Color, 200u), 1.5f);
-	}
-	List->AddRectFilled(ImVec2(ViewIn, Full.Min.y), ImVec2(std::max(ViewOut, ViewIn + 2.0f), Rect.Min.y), ImGui::GetColorU32(ImGuiCol_Header, 0.35f));
-	List->AddRect(ImVec2(ViewIn, Full.Min.y), ImVec2(std::max(ViewOut, ViewIn + 2.0f), Rect.Min.y), ImGui::GetColorU32(ImGuiCol_HeaderActive));
-	List->AddLine(ImVec2(OverX(Core.Time), Full.Min.y), ImVec2(OverX(Core.Time), Rect.Min.y), ImGui::GetColorU32(ImGuiCol_Text));
-	List->PopClipRect();
-	if (IsOverview && (std::fabs(Input.MousePos.x - ViewIn) <= TimelineUi::EdgeZone || std::fabs(Input.MousePos.x - ViewOut) <= TimelineUi::EdgeZone))
-	{
-		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-	}
 	DrawMarkers(Core, Rect, true);
 	if (RenameMarker < 0 || RenameMarker >= static_cast<s32>(Markers.size()))
 	{
@@ -1724,13 +1199,11 @@ void Editor::HandleTrack(Player& Core, const Object* Target)
 	const bool IsBelow = Input.MousePos.y >= Blocks;
 	DragKind Kind = DragKind::None;
 	s32 Pose = -1;
-	ClipPart Part = ClipPart::None;
-	ImRect Area;
-	const s32 Shot = IsCamera && IsBelow ? CameraHit(Core, *Target, Input.MousePos, Blocks, ImGui::GetItemRectMax().y - 1.0f, Kind, Pose, Part, Area) : -1;
+	const s32 Shot = IsCamera && IsBelow ? CameraHit(Core, *Target, Input.MousePos, Blocks, ImGui::GetItemRectMax().y - 1.0f, Kind, Pose) : -1;
 	const bool IsDerived = Runtime && !Target->Actor.IsRelative && HasClips(Target->Actor);
 	const bool IsEdge = Target && !IsCamera && !IsDerived && std::fabs(X - To) <= TimelineUi::EdgeZone && X > 0.5f * (From + To);
 	const bool IsOnClip = IsEdge || Shot >= 0 || (Target && X >= From && X <= To && !(IsCamera && (IsBelow || Target->Camera.Blocks.empty())));
-	if (IsEdge && ImGui::IsItemHovered())
+	if ((IsEdge || Kind == DragKind::BlockIn || Kind == DragKind::BlockOut || Kind == DragKind::BlockLength) && ImGui::IsItemHovered())
 	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
 	}
@@ -1738,28 +1211,25 @@ void Editor::HandleTrack(Player& Core, const Object* Target)
 	{
 		HoverBlock = Shot;
 		HoverPose = Pose;
-		if (Drag == DragKind::None)
-		{
-			ShowPart(Part, Area, Lighten(Target->Color), 1);
-		}
 	}
 	if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
 		if (Shot >= 0)
 		{
-			Press(Core, Kind == DragKind::BlockBlend ? DragKind::BlockMove : Kind == DragKind::BlockLength && Input.KeyCtrl ? DragKind::BlockStretch : Kind, Target->Id, false);
+			Press(Core, Kind == DragKind::BlockBlend ? DragKind::BlockMove : Kind, Target->Id, false);
 			DragBlock = FocusBlock = Shot;
 			DragPose = Pose;
 			if (Pose >= 0)
 			{
 				SetTangentKey(Core, Shot, Pose);
 			}
+			DragPoseAxis = -1;
 			DragShot = Target->Camera.Blocks[Shot];
+			IsShotCopied = false;
+			const BlockCache* Cache = Core.FindCameraBlock(static_cast<u32>(Shot));
+			DragPath.Build(DragShot);
+			DragArea = Cache ? Cache->TimeScaleArea : Curves::AreaTable {};
 			PinShakes(*Target);
-			DragShots = Target->Camera.Blocks;
-			DragShakes = Target->Camera.Shakes;
-			DragPins = Pins;
-			DragShotIndex = Shot;
 			DragIds.clear();
 			CollectSnapTargets(Core, true);
 			for (u32 Index = 0; Pose >= 0 && Index < Target->Camera.Blocks.size(); ++Index)
@@ -1776,7 +1246,7 @@ void Editor::HandleTrack(Player& Core, const Object* Target)
 			}
 			FocusObject = Target->Id;
 			Focus = FocusKind::Block;
-			if (const BlockCache* Cache = Pose >= 0 ? Core.FindCameraBlock(static_cast<u32>(Shot)) : nullptr)
+			if (Pose >= 0 && Cache)
 			{
 				Core.Seek(TargetStart(*Target, Shot) + Cameras::LocalFromPath(DragShot, *Cache, DragShot.Keys[Pose].Time));
 			}
@@ -1831,7 +1301,7 @@ void Editor::DrawClip(const Player& Core, const Object& Target, const ImRect& Re
 	const bool IsCollapsed = std::find(Expanded.begin(), Expanded.end(), Target.Id) == Expanded.end();
 	for (u32 Index = 0; IsCollapsed && Index < Target.Camera.Blocks.size(); ++Index)
 	{
-		DrawKeyTicks(List, Target.Camera.Blocks[Index].Lanes, Target.Span.Start + Target.Camera.Blocks[Index].Start, Rect.Max.y - 3.5f, Tick, &Target.Camera.Blocks[Index]);
+		DrawKeyTicks(List, Target.Camera.Blocks[Index].Lanes, Target.Span.Start + Target.Camera.Blocks[Index].Start, Rect.Max.y - 3.5f, Tick);
 	}
 	if (IsCollapsed)
 	{
@@ -1852,7 +1322,7 @@ void Editor::DrawClip(const Player& Core, const Object& Target, const ImRect& Re
 	List->PopClipRect();
 }
 
-void Editor::DrawActorBlocks(const Object& Target, const ActorRuntime& Runtime, const ImRect& Rect, u8 Layer, u32 Fill)
+void Editor::DrawActorBlocks(const Object& Target, const ActorRuntime& Runtime, const ImRect& Rect, u8 Layer)
 {
 	const float Length = Runtime.SequenceLength;
 	if (!(Length > 0.0f) || Layer > Target.Actor.Layers.size())
@@ -1892,30 +1362,15 @@ void Editor::DrawActorBlocks(const Object& Target, const ActorRuntime& Runtime, 
 		}
 		TimelineUi::Boundary(List, At(Length), Rect);
 		u32 Expected = 0;
-		float Reach = -1.0f;
+		float Reach = (Layer || !Setup.IsRelative) && !Track.Spans.empty() ? Track.Spans.front().Start : 0.0f;
 		const auto Band = [&Rect](float A, float B) { return ImRect(std::min(A, B), Rect.Min.y, std::max(A, B), Rect.Max.y); };
-		const bool IsGhosted = !Offset && HasDragMoved && (Drag == DragKind::BlockMove || Drag == DragKind::BlockBlend) && DragObject == Target.Id && Layer < DragRows && Layer <= MaxActorLayers && DragBlockStarts[Layer].size() == DragBlocks[Layer].size();
-		for (u32 Index = 0; IsGhosted && Index < DragBlocks[Layer].size(); ++Index)
-		{
-			if (Layer != DragLayer || IsDragCopy || static_cast<s32>(Index) != DragBlock)
-			{
-				const float Early = DragBlockStarts[Layer][Index];
-				const ImRect Ghost = Band(At(Early), At(Early + Runtime.BlockDuration(DragBlocks[Layer][Index])));
-				List->AddRectFilled(Ghost.Min, Ghost.Max, TimelineUi::WithAlpha(Target.Color, 60u), 2.0f);
-				TimelineUi::Hatch(List, Ghost, TimelineUi::Shade);
-			}
-		}
 		for (const BlockSpan& Item : Track.Spans)
 		{
 			const float Begin = At(Item.Start), Played = At(Item.Start + Item.Play * Item.Loops), Finish = At(Item.Start + Item.Duration);
 			const ImRect Box = Band(Begin, Finish), Fade = Band(Begin, At(Item.Start + Item.Overlap));
 			const float In = At(Item.Start + std::min(Item.FadeIn, Item.Duration)), Out = At(Item.Start + Item.Duration - std::min(Item.FadeOut, Item.Duration));
-			List->AddRectFilled(Box.Min, Box.Max, Fill, 2.0f);
 			TimelineUi::Hatch(List, Band(Played, Finish), TimelineUi::Shade);
-			if (Reach >= 0.0f && Item.Start > Reach)
-			{
-				TimelineUi::Dotted(List, At(Reach), Begin, Rect.GetCenter().y, TimelineUi::WithAlpha(Target.Color, 200u));
-			}
+			TimelineUi::Hatch(List, Band(At(Reach), Item.Start > Reach ? Begin : At(Reach)), TimelineUi::Shade);
 			Reach = std::max(Reach, Item.Start + Item.Duration);
 			for (float Lap = 1.0f; Lap < Item.Loops && Lap < MaxLoops && std::fabs(At(Item.Start + Item.Play) - Begin) >= 3.0f; Lap += 1.0f)
 			{
@@ -1929,9 +1384,9 @@ void Editor::DrawActorBlocks(const Object& Target, const ActorRuntime& Runtime, 
 			}
 			List->AddTriangleFilled(Box.Min, ImVec2(In, Box.Min.y), ImVec2(Box.Min.x, Box.Max.y), TimelineUi::Shade);
 			List->AddTriangleFilled(ImVec2(Out, Box.Min.y), ImVec2(Box.Max.x, Box.Min.y), Box.Max, TimelineUi::Shade);
-			if ((FocusObject == Target.Id && FocusLayer == Layer && static_cast<s32>(Item.Block) == FocusBlock) || (IsHovered && Box.Contains(Mouse)))
+			for (const float X : { In, Out })
 			{
-				TimelineUi::Grips(List, Box, In, Out);
+				List->AddRectFilled(ImVec2(X - 2.0f, Box.Min.y), ImVec2(X + 2.0f, Box.Min.y + 4.0f), TimelineUi::Corner);
 			}
 			TimelineUi::Boundary(List, Begin, Rect);
 			TimelineUi::Label(List, Box, Text, Item.Block < Blocks.size() ? Blocks[Item.Block].Name.c_str() : nullptr);
@@ -1959,15 +1414,6 @@ void Editor::DrawCameraBlocks(const Player& Core, const Object& Target, const Im
 	const u32 Text = ImGui::GetColorU32(ImGuiCol_Text), Fill = TimelineUi::WithAlpha(Target.Color, Core.IsSilent(Target) ? 60u : 170u);
 	const xr_vector<CameraBlock>& Blocks = Target.Camera.Blocks;
 	const auto BoxOf = [&](const CameraBlock& Shot) { return ImRect(TimeToX(Target.Span.Start + Shot.Start), Rect.Min.y, TimeToX(Target.Span.Start + Shot.Start + Shot.Length), Rect.Max.y); };
-	for (u32 Index = 0; HasDragMoved && Drag == DragKind::BlockMove && DragObject == Target.Id && Index < DragShots.size(); ++Index)
-	{
-		if (IsDragCopy || static_cast<s32>(Index) != DragShotIndex)
-		{
-			const ImRect Ghost = BoxOf(DragShots[Index]);
-			List->AddRectFilled(Ghost.Min, Ghost.Max, TimelineUi::WithAlpha(Target.Color, 60u));
-			TimelineUi::Hatch(List, Ghost, TimelineUi::Shade);
-		}
-	}
 	for (const CameraBlock& Shot : Blocks)
 	{
 		const ImRect Box = BoxOf(Shot);
@@ -1996,13 +1442,10 @@ void Editor::DrawCameraBlocks(const Player& Core, const Object& Target, const Im
 		{
 			TimelineUi::CutMark(List, Box.Min.x, Rect.Min.y);
 		}
+		List->AddTriangleFilled(Box.Max, ImVec2(Box.Max.x, Box.Max.y - TimelineUi::CornerZone), ImVec2(Box.Max.x - TimelineUi::CornerZone, Box.Max.y), TimelineUi::Separator);
 		if (FocusObject == Target.Id && static_cast<s32>(Index) == FocusBlock)
 		{
 			List->AddRect(Box.Min, Box.Max, Lighten(Target.Color));
-		}
-		if (Shot.Name.size())
-		{
-			TimelineUi::Label(List, ImRect(Box.Min.x + 3.0f, Rect.Min.y, Box.Max.x, Middle - TimelineUi::PoseRadius), Text, Shot.Name.c_str());
 		}
 		if (Shot.Attach.Parent.ObjectId || Shot.Attach.LookAt.ObjectId)
 		{
@@ -2028,7 +1471,7 @@ u8 Editor::SubRows(const Object& Target) const
 {
 	const bool IsDragged = Drag == DragKind::ShakeMove && !IsShakeSlide && DragObject == Target.Id;
 	const bool IsMoved = Drag == DragKind::BlockMove && DragObject == Target.Id;
-	return Target.Type == ObjectType::Camera ? static_cast<u8>(std::min<u32>(ShakeRows(Target.Camera) + (IsDragged ? 1u : 0u), MaxShakeRows)) : Target.Type == ObjectType::Actor ? static_cast<u8>(std::min<u32>(static_cast<u32>(Target.Actor.Layers.size()) + (IsMoved ? 2u : 1u), MaxActorLayers + 1) + Target.Actor.Poses.size()) : 0;
+	return Target.Type == ObjectType::Camera ? static_cast<u8>(std::min<u32>(ShakeRows(Target.Camera) + (IsDragged ? 1u : 0u), MaxShakeRows)) : Target.Type == ObjectType::Actor ? static_cast<u8>(std::min<u32>(static_cast<u32>(Target.Actor.Layers.size()) + (IsMoved ? 2u : 1u), MaxActorLayers + 1)) : 0;
 }
 
 void Editor::DrawSubRow(Player& Core, const Object& Target, u8 Sub, const ImRect& Header, const ImRect& Track)
@@ -2041,8 +1484,7 @@ void Editor::DrawSubRow(Player& Core, const Object& Target, u8 Sub, const ImRect
 	}
 	else if (Target.Type == ObjectType::Actor)
 	{
-		const u8 Layers = static_cast<u8>(SubRows(Target) - Target.Actor.Poses.size());
-		Sub < Layers ? DrawLayerRow(Core, Target, Sub, Header, Track) : DrawPoseRow(Core, Target, static_cast<u8>(Sub - Layers), Header, Track);
+		DrawLayerRow(Core, Target, Sub, Header, Track);
 	}
 	ImGui::PopID();
 }
@@ -2086,8 +1528,6 @@ void Editor::DrawLayerRow(Player& Core, const Object& Target, u8 Layer, const Im
 		if (ImGui::MenuItem("Remove row", nullptr, false, !Target.Actor.Layers.empty()))
 		{
 			RemoveLayer(Core, Target.Id, Layer);
-			ImGui::EndPopup();
-			return;
 		}
 		ImGui::EndPopup();
 	}
@@ -2119,20 +1559,19 @@ void Editor::DrawLayerRow(Player& Core, const Object& Target, u8 Layer, const Im
 	CanvasId = ImGui::IsItemActive() ? ImGui::GetItemID() : CanvasId;
 	const ImRect Clip(TimeToX(Target.Span.Start), Track.Min.y + 1.0f, TimeToX(ClipEnd(Target)), Track.Max.y - 1.0f);
 	List->PushClipRect(Track.Min, Track.Max, true);
+	List->AddRectFilled(Clip.Min, Clip.Max, TimelineUi::WithAlpha(Target.Color, IsOff ? 40u : 110u), 2.0f);
 	if (Runtime)
 	{
-		DrawActorBlocks(Target, *Runtime, Clip, Layer, TimelineUi::WithAlpha(Target.Color, IsOff ? 60u : 170u));
+		DrawActorBlocks(Target, *Runtime, Clip, Layer);
 	}
 	List->PopClipRect();
 	DragKind Kind = DragKind::None;
 	s32 Hit = -1;
 	double Rep = 0.0;
-	ClipPart Part = ClipPart::None;
-	ImRect Area;
-	const s32 Span = Runtime ? BlockHit(Target, *Runtime, Layer, Input.MousePos, Clip, Kind, Hit, Rep, Part, Area) : -1;
-	if (Span >= 0 && Drag == DragKind::None && ImGui::IsItemHovered())
+	const s32 Span = Runtime ? BlockHit(Target, *Runtime, Layer, Input.MousePos, Clip.Min.y, Kind, Hit, Rep) : -1;
+	if (Span >= 0 && Kind != DragKind::BlockMove && ImGui::IsItemHovered())
 	{
-		ShowPart(Part, Area, Lighten(Target.Color), 0);
+		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
 	}
 	if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
@@ -2153,183 +1592,11 @@ u8 Editor::LayerAt(const Scene& Data, const Object& Target, float Y) const
 	const auto Found = std::find_if(Rows.begin(), Rows.end(), [&Target](const RowItem& Item) { return !Item.IsFolder && Item.Id == Target.Id; });
 	float Top = Found == Rows.end() ? FLT_MAX : RowsTop + Found->Y + Found->Track + SizeOf(Data, Target.Id, SizeSub, Param::Position, 0);
 	u8 Layer = 0;
-	while (Layer + 1u + Target.Actor.Poses.size() < SubRows(Target) && Y >= Top)
+	while (Layer + 1u < SubRows(Target) && Y >= Top)
 	{
 		Top += SizeOf(Data, Target.Id, SizeSub, Param::Position, ++Layer);
 	}
 	return Layer;
-}
-
-void Editor::DrawPoseRow(Player& Core, const Object& Target, u8 Row, const ImRect& Header, const ImRect& Track)
-{
-	ImDrawList* List = ImGui::GetWindowDrawList();
-	const ImGuiIO& Input = ImGui::GetIO();
-	const float Size = RowHeight, Caption = ImGui::CalcTextSize("Pose 4 (add)").x + 0.5f * Size, Start = Target.Span.Start, Middle = Track.GetCenter().y;
-	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
-	const bool IsAdd = Target.Actor.Poses[Row].Mode == RowMode::Add, IsMuted = Target.Actor.Poses[Row].IsMuted;
-	const u32 Text = ImGui::GetColorU32(IsMuted || Core.IsSilent(Target) ? ImGuiCol_TextDisabled : ImGuiCol_Text);
-	string32 Name;
-	xr_sprintf(Name, IsAdd ? "Pose %u (add)" : "Pose %u", Row + 1u);
-	TimelineUi::Label(List, ImRect(Header.Min.x, Header.Min.y, Header.Min.x + Caption, Header.Min.y + Size), Text, Name);
-	ImGui::SetCursorScreenPos(Header.Min);
-	ImGui::InvisibleButton("##RowHead", ImVec2(Caption, Size), ImGuiButtonFlags_MouseButtonRight);
-	bool ShouldOpen = ImGui::IsItemClicked(ImGuiMouseButton_Right);
-	PopupTime = ShouldOpen ? Core.Time : PopupTime;
-	ImGui::SetCursorScreenPos(ImVec2(Header.Max.x - 2.0f * Size, Header.Min.y + 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(IsMuted ? ImGuiCol_ButtonActive : ImGuiCol_FrameBg));
-	const bool ShouldMute = ImGui::Button("M", ImVec2(Size - 2.0f, Size - 2.0f));
-	ImGui::PopStyleColor();
-	ImGui::SetItemTooltip("Mute");
-	ImGui::SetCursorScreenPos(ImVec2(Header.Max.x - Size, Header.Min.y + 1.0f));
-	const bool ShouldRemove = ImGui::Button("x", ImVec2(Size - 2.0f, Size - 2.0f));
-	ImGui::SetItemTooltip("Remove pose row");
-	if (ShouldRemove)
-	{
-		RemovePoseRow(Core, Target.Id, Row);
-		return;
-	}
-	if (ShouldMute)
-	{
-		Edit(Core, Target.Id, IsMuted ? "Unmute pose row" : "Mute pose row")->Actor.Poses[Row].IsMuted = !IsMuted;
-	}
-	ImGui::SetCursorScreenPos(Track.Min);
-	ImGui::InvisibleButton("##SubTrack", Track.GetSize(), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-	CanvasId = ImGui::IsItemActive() ? ImGui::GetItemID() : CanvasId;
-	const auto IsOwn = [Row](const Lane& Item) { return IsBoneParam(Item.Id) && Item.Layer / MaxPoseBones == Row; };
-	const float Earliest = XToTime(Track.Min.x) - Start, Latest = XToTime(Track.Max.x) - Start;
-	float Best = TimelineUi::PoseZone, HitTime = 0.0f;
-	KeyRef Hit {};
-	List->PushClipRect(Track.Min, Track.Max, true);
-	List->AddRectFilled(ImVec2(TimeToX(Start), Track.Min.y + 1.0f), ImVec2(TimeToX(ClipEnd(Target)), Track.Max.y - 1.0f), TimelineUi::WithAlpha(Target.Color, IsMuted || Core.IsSilent(Target) ? 60u : 170u), 2.0f);
-	for (const Lane& Item : Target.Lanes)
-	{
-		for (u8 Axis = 0; IsOwn(Item) && Axis < 3; ++Axis)
-		{
-			const xr_vector<Key>& Keys = Item.Curves[Axis].Keys;
-			for (auto Entry = std::lower_bound(Keys.begin(), Keys.end(), Earliest, [](const Key& Other, float Moment) { return Other.Time < Moment; }); Entry != Keys.end() && Entry->Time <= Latest; ++Entry)
-			{
-				const KeyRef Ref { Target.Id, -1, Item.Id, Item.Layer, Axis, static_cast<u32>(Entry - Keys.begin()) };
-				const ImVec2 Point(TimeToX(Start + Entry->Time), Middle);
-				const float Gap = std::fabs(Point.x - Input.MousePos.x);
-				IsKeySelected(Ref) ? List->AddNgonFilled(Point, TimelineUi::PoseRadius, Text, 4) : List->AddNgon(Point, TimelineUi::PoseRadius, Text, 4, 1.5f);
-				if (Gap < Best)
-				{
-					Best = Gap;
-					Hit = Ref;
-					HitTime = Entry->Time;
-				}
-			}
-		}
-	}
-	List->PopClipRect();
-	const bool HasHit = ImGui::IsItemHovered() && Best < TimelineUi::PoseZone;
-	const auto Group = [&]()
-	{
-		KeyGroup.assign(1, Hit);
-		for (const Lane& Item : Target.Lanes)
-		{
-			for (u8 Axis = 0; IsOwn(Item) && Axis < 3; ++Axis)
-			{
-				const KeyRef Ref { Target.Id, -1, Item.Id, Item.Layer, Axis, Curves::KeyAt(Item.Curves[Axis], HitTime, HalfFrame) };
-				if (Ref.Index != u32(-1) && !(Ref == Hit))
-				{
-					KeyGroup.push_back(Ref);
-				}
-			}
-		}
-	};
-	if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !HasHit)
-	{
-		StartBox(DragKind::BoxClips);
-	}
-	else if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		Group();
-		Drag = DragKind::LaneKeys;
-		DragObject = Target.Id;
-		DragKey = Hit;
-		DragKeyStart = *TimelineUi::FindKey(Core.Data, Hit);
-		DragKeyTime = LaneMoment(Target, -1, Hit.Id, HitTime);
-		DragTime = XToTime(Input.MousePos.x);
-		DragOriginY = Input.MousePos.y;
-		DragLaneHeight = DragSpan = 0.0f;
-		IsDragFlat = false;
-		IsDragCopy = Input.KeyCtrl;
-		HasDragMoved = false;
-		WasPressSelected = IsKeySelected(Hit);
-		if (!WasPressSelected)
-		{
-			SelectKeys(Input.KeyCtrl);
-		}
-		Focus = FocusKind::Keys;
-	}
-	if (ImGui::IsItemDeactivated() && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < 16.0f)
-	{
-		PopupTime = std::max(XToTime(Input.MousePos.x), 0.0f);
-		ShouldOpen = !HasHit;
-		if (HasHit)
-		{
-			Group();
-			if (!IsKeySelected(Hit))
-			{
-				SelectKeys(false);
-			}
-			PopupRequest = "##KeyMenu";
-		}
-	}
-	if (ShouldOpen)
-	{
-		ImGui::OpenPopup("##PoseRow");
-	}
-	if (!ImGui::BeginPopup("##PoseRow"))
-	{
-		return;
-	}
-	for (u32 Mode = 0; Mode < 2; ++Mode)
-	{
-		if (ImGui::MenuItem(TimelineUi::RowModes[Mode], nullptr, IsAdd == !Mode) && IsAdd != !Mode)
-		{
-			Edit(Core, Target.Id, "Pose row mode")->Actor.Poses[Row].Mode = Mode ? RowMode::Override : RowMode::Add;
-		}
-	}
-	ImGui::Separator();
-	if (ImGui::MenuItem("Key pose", nullptr, false, !Target.Actor.Poses[Row].Bones.empty()))
-	{
-		Object& Item = *Edit(Core, Target.Id, "Key pose");
-		const float Local = std::clamp(PopupTime - Start, 0.0f, Item.Span.Length);
-		const xr_vector<PoseBone>& Bones = Item.Actor.Poses[Row].Bones;
-		for (u32 Bone = 0; Bone < Bones.size(); ++Bone)
-		{
-			for (Param Id : { Param::BoneRotation, Param::BonePosition, Param::BoneScale })
-			{
-				const u8 Layer = PoseLayer(Row, Bone);
-				const Fvector Value = Curves::LaneVector(Item.Lanes, Id, Local, Id == Param::BoneRotation ? Bones[Bone].Rotation : Id == Param::BonePosition ? Bones[Bone].Offset : Bones[Bone].Scale, Layer);
-				Lane& Line = Curves::EnsureLane(Item.Lanes, Id, Layer);
-				for (u8 Axis = 0; Axis < 3; ++Axis)
-				{
-					Curves::SetKey(Line.Curves[Axis], Local, Value[Axis], HalfFrame);
-				}
-			}
-		}
-	}
-	if (ImGui::MenuItem("Make animation clip", nullptr, false, !Target.Actor.Poses[Row].Bones.empty()))
-	{
-		PoseToClip(Core, Target.Id, Row);
-		ImGui::EndPopup();
-		return;
-	}
-	if (ImGui::MenuItem("Save as animation..."))
-	{
-		MotionObject = Target.Id;
-		MotionRow = Row;
-		NameBuffer[0] = 0;
-		Modal = ModalKind::SaveMotion;
-	}
-	if (ImGui::MenuItem("Remove pose row"))
-	{
-		RemovePoseRow(Core, Target.Id, Row);
-	}
-	ImGui::EndPopup();
 }
 
 void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect& Header, const ImRect& Track)
@@ -2378,8 +1645,7 @@ void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect&
 	CanvasId = ImGui::IsItemActive() ? ImGui::GetItemID() : CanvasId;
 	const bool IsHovered = ImGui::IsItemHovered();
 	s32 Hit = -1;
-	ClipPart Part = ClipPart::None;
-	ImRect Area, CrossArea;
+	DragKind Kind = DragKind::ShakeMove;
 	List->PushClipRect(Track.Min, Track.Max, true);
 	for (u32 Index = 0; Index < Shakes.size(); ++Index)
 	{
@@ -2397,9 +1663,9 @@ void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect&
 		List->AddTriangleFilled(ImVec2(Out, Box.Min.y), ImVec2(Box.Max.x, Box.Min.y), Box.Max, TimelineUi::Shade);
 		List->AddLine(ImVec2(Box.Min.x, Box.Max.y), ImVec2(In, Box.Min.y), TimelineUi::Corner);
 		List->AddLine(ImVec2(Out, Box.Min.y), Box.Max, TimelineUi::Corner);
-		if ((FocusObject == Rig.Id && FocusBlock == ShakeBase + static_cast<s32>(Index)) || (IsHovered && Box.Contains(Input.MousePos)))
+		for (const float X : { In, Out })
 		{
-			TimelineUi::Grips(List, Box, In, Out);
+			List->AddRectFilled(ImVec2(X - 2.0f, Box.Min.y), ImVec2(X + 2.0f, Box.Min.y + 4.0f), TimelineUi::Corner);
 		}
 		TimelineUi::Label(List, Box, ImGui::GetColorU32(IsOff ? ImGuiCol_TextDisabled : ImGuiCol_Text), ShakePresets[std::min<u32>(Clip.Setup.Preset, ShakePresetCount - 1)].Name);
 		DrawKeyTicks(List, Clip.Lanes, Begin, Box.Max.y - 3.5f, TimelineUi::WithAlpha(ImGui::GetColorU32(ImGuiCol_Text), 200u));
@@ -2407,13 +1673,17 @@ void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect&
 		{
 			List->AddRect(Box.Min, Box.Max, Lighten(Rig.Color), 2.0f);
 		}
-		ImRect Mine;
-		const ClipPart Theirs = IsHovered ? TimelineUi::PartAt({ Box.Min.x, Box.Max.x, Box.Min.y, Box.Max.y, In, Out, Box.Min.x, true, true, true }, Input.MousePos, Mine) : ClipPart::None;
-		if (Theirs != ClipPart::None && (Hit < 0 || Part == ClipPart::Body || Theirs != ClipPart::Body))
+		if (!IsHovered || !Box.Contains(Input.MousePos))
+		{
+			continue;
+		}
+		const float Zone = std::min(TimelineUi::EdgeZone, Box.GetWidth() / 3.0f);
+		const bool IsTop = Input.MousePos.y - Box.Min.y <= TimelineUi::CornerZone;
+		const DragKind Found = IsTop && std::fabs(Input.MousePos.x - In) <= TimelineUi::CornerZone ? DragKind::ShakeFadeIn : IsTop && std::fabs(Input.MousePos.x - Out) <= TimelineUi::CornerZone ? DragKind::ShakeFadeOut : Input.MousePos.x - Box.Min.x <= Zone ? DragKind::ShakeStart : Box.Max.x - Input.MousePos.x <= Zone ? DragKind::ShakeEnd : DragKind::ShakeMove;
+		if (Hit < 0 || Kind == DragKind::ShakeMove || Found != DragKind::ShakeMove)
 		{
 			Hit = static_cast<s32>(Index);
-			Part = Theirs;
-			Area = Mine;
+			Kind = Found;
 		}
 	}
 
@@ -2432,21 +1702,16 @@ void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect&
 			List->AddLine(Box.Min, Box.Max, TimelineUi::Corner, 1.5f);
 			List->AddLine(ImVec2(Box.Min.x, Box.Max.y), ImVec2(Box.Max.x, Box.Min.y), TimelineUi::Corner, 1.5f);
 			const float Zone = std::min(TimelineUi::EdgeZone, Box.GetWidth() / 3.0f);
-			if (IsHovered && Box.Contains(Input.MousePos) && Input.MousePos.y - Box.Min.y > TimelineUi::CornerZone && Input.MousePos.x - Box.Min.x > Zone && Box.Max.x - Input.MousePos.x > Zone)
-			{
-				Cross = static_cast<s32>(Other);
-				CrossArea = Box;
-			}
+			Cross = IsHovered && Box.Contains(Input.MousePos) && Input.MousePos.y - Box.Min.y > TimelineUi::CornerZone && Input.MousePos.x - Box.Min.x > Zone && Box.Max.x - Input.MousePos.x > Zone ? static_cast<s32>(Other) : Cross;
+
 		}
 	}
 	List->PopClipRect();
 	Hit = Cross >= 0 ? Cross : Hit;
-	Part = Cross >= 0 ? ClipPart::Cross : Part;
-	Area = Cross >= 0 ? CrossArea : Area;
-	const DragKind Kind = TimelineUi::ShakeParts[static_cast<u32>(Part)];
-	if (Hit >= 0 && Drag == DragKind::None)
+	Kind = Cross >= 0 ? DragKind::ShakeMove : Kind;
+	if (Hit >= 0 && (Kind != DragKind::ShakeMove || Cross >= 0))
 	{
-		ShowPart(Part, Area, Lighten(Rig.Color), 2);
+		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
 	}
 	if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && Hit < 0)
 	{
@@ -2457,9 +1722,9 @@ void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect&
 		Press(Core, Kind, Rig.Id, false);
 		IsShakeSlide = Cross >= 0;
 		IsDragCopy = Kind == DragKind::ShakeMove && Input.KeyCtrl && !IsShakeSlide;
-		DragShakeIndex = DragShakePress = Hit;
+		IsShakeCopied = false;
+		DragShakeIndex = Hit;
 		DragShakeStart = Shakes[Hit];
-		DragShakes = Shakes;
 		DragRow = Row;
 		DragOriginY = Input.MousePos.y;
 		DragIds.clear();
@@ -2482,112 +1747,6 @@ void Editor::DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect&
 	}
 }
 
-void Editor::TrimShake(ShakeClip& Clip, float Trim, float Rate)
-{
-	const double Ahead = Trim > 0.0f ? Curves::LaneArea(Clip.Lanes, nullptr, Param::ShakeSpeed, Clip.Row, Trim, Clip.Setup.Speed) : Trim * Curves::LaneScalar(Clip.Lanes, Param::ShakeSpeed, Clip.Row, 0.0f, Clip.Setup.Speed);
-	TimelineUi::ShiftLanes(Clip.Lanes, 0.0f, -Trim, 0.5f / Rate, true);
-	for (Lane& Track : Clip.Lanes)
-	{
-		for (Curve& Part : Track.Curves)
-		{
-			Part.Gen.Phase += Trim * Part.Gen.Frequency;
-		}
-	}
-	Clip.Setup.Offset = Clip.Setup.IsStretched ? Clip.Setup.Offset : std::clamp(Clip.Setup.Offset + static_cast<float>(Ahead), -MaxTime, MaxTime);
-	Clip.Start += Trim;
-	Clip.Length -= Trim;
-}
-
-void Editor::MoveShake(Player& Core, const Object& Found)
-{
-	const ShakeClip& Base = DragShakeStart;
-	if (DragShakePress < 0 || static_cast<u32>(DragShakePress) >= DragShakes.size())
-	{
-		return;
-	}
-	if (IsDragCopy && DragShakes.size() >= MaxShakeClips)
-	{
-		SetStatus(true, "The camera already has %u shakes.", MaxShakeClips);
-		Drag = DragKind::None;
-		return;
-	}
-	const ImGuiIO& Input = ImGui::GetIO();
-	const float Rate = static_cast<float>(Core.Data.Header.FrameRate), Origin = Found.Span.Start, Slack = 0.25f * RowHeight;
-	const float A = std::max(SnapSpan(Origin + Base.Start + XToTime(Input.MousePos.x) - DragTime, Base.Length, Input.KeyShift) - Origin, 0.0f), B = A + Base.Length;
-	const s32 Home = Base.Row, Aimed = SubAt(Core.Data, Found, Input.MousePos.y);
-	const bool IsLeaving = Aimed != Home && SubAt(Core.Data, Found, Input.MousePos.y + (Aimed > Home ? -Slack : Slack)) != Home;
-	const s32 Row = !IsShakeSlide && IsLeaving ? Aimed : Home;
-	Object& Rig = *Edit(Core, DragObject, IsDragCopy ? "Copy shake" : TimelineUi::ShakeLabels[0]);
-	xr_vector<ShakeClip>& Shakes = Rig.Camera.Shakes;
-	Shakes = DragShakes;
-	SelectedKeys = DragKeyPrevious;
-	s32 Moved = DragShakePress;
-	if (IsDragCopy)
-	{
-		Shakes.push_back(Base);
-		Moved = static_cast<s32>(Shakes.size() - 1);
-	}
-	SpanScratch.clear();
-	for (s32 Index = 0; Index < static_cast<s32>(Shakes.size()); ++Index)
-	{
-		SpanScratch.push_back(Index == Moved || Shakes[Index].Row != Row ? Cameras::ClipSpan { -1.0f, 0.0f } : Cameras::ClipSpan { Shakes[Index].Start, Shakes[Index].Length });
-	}
-	TimelineUi::PlanOverwrite(SpanScratch, A, B, MinLength, CoverPlan);
-	bool IsCut = false;
-	for (s32 Index = static_cast<s32>(CoverPlan.size()); Index-- > 0;)
-	{
-		const Cover Action = static_cast<Cover>(CoverPlan[Index]);
-		if (Action == Cover::Keep)
-		{
-			continue;
-		}
-		const float C = Shakes[Index].Start, D = C + Shakes[Index].Length;
-		const bool HasHead = (Action == Cover::Split || Action == Cover::CutTail) && A - C >= MinLength;
-		const bool HasTail = (Action == Cover::Split || Action == Cover::CutHead) && D - B >= MinLength && (!HasHead || Shakes.size() < MaxShakeClips);
-		IsCut = true;
-		if (HasTail)
-		{
-			ShakeClip Tail = Shakes[Index];
-			TrimShake(Tail, B - C, Rate);
-			Tail.FadeIn = 0.0f;
-			Tail.FadeOut = std::min(Tail.FadeOut, Tail.Length);
-			if (HasHead)
-			{
-				Shakes.push_back(std::move(Tail));
-			}
-			else
-			{
-				Shakes[Index] = std::move(Tail);
-			}
-		}
-		if (HasHead)
-		{
-			Shakes[Index].Length = A - C;
-			Shakes[Index].FadeIn = std::min(Shakes[Index].FadeIn, A - C);
-			Shakes[Index].FadeOut = 0.0f;
-		}
-		if (!HasHead && !HasTail)
-		{
-			Shakes.erase(Shakes.begin() + Index);
-			Moved -= Moved > Index ? 1 : 0;
-		}
-	}
-	if (IsCut)
-	{
-		std::erase_if(SelectedKeys, [&Rig](const KeyRef& Ref) { return Ref.ObjectId == Rig.Id; });
-	}
-	Shakes[Moved].Start = A;
-	SetShakeRow(Shakes[Moved], static_cast<u8>(Row));
-	if (!Cameras::IsShakeFree(Rig.Camera, static_cast<u32>(Moved), static_cast<u8>(Row), A, Base.Length, MaxShakeClips))
-	{
-		Shakes = DragShakes;
-		SelectedKeys = DragKeyPrevious;
-		Moved = DragShakePress;
-	}
-	DragShakeIndex = Moved;
-	FocusBlock = ShakeBase + Moved;
-}
-
 void Editor::DragShake(Player& Core)
 {
 	const Object* Found = Find(Core.Data, DragObject);
@@ -2595,52 +1754,75 @@ void Editor::DragShake(Player& Core)
 	{
 		return;
 	}
-	if (Drag == DragKind::ShakeMove)
+	if (IsDragCopy && !IsShakeCopied && Found->Camera.Shakes.size() >= MaxShakeClips)
 	{
-		MoveShake(Core, *Found);
+		SetStatus(true, "The camera already has %u shakes.", MaxShakeClips);
+		Drag = DragKind::None;
 		return;
 	}
 	const ImGuiIO& Input = ImGui::GetIO();
 	const ShakeClip& Base = DragShakeStart;
 	const float Rate = static_cast<float>(Core.Data.Header.FrameRate), Origin = Found->Span.Start, Delta = XToTime(Input.MousePos.x) - DragTime, End = Base.Start + Base.Length;
 	const bool IsFree = Input.KeyShift;
-	Object& Rig = *Edit(Core, DragObject, TimelineUi::ShakeLabels[static_cast<u32>(Drag) - static_cast<u32>(DragKind::ShakeMove)]);
+	const auto Snap = [this, IsFree, Rate](float Value) { return IsFree || !Settings.IsSnapping ? Value : std::round(Value * Rate) / Rate; };
+	Object& Rig = *Edit(Core, DragObject, IsDragCopy ? "Copy shake" : TimelineUi::ShakeLabels[static_cast<u32>(Drag) - static_cast<u32>(DragKind::ShakeMove)]);
+	if (IsDragCopy && !IsShakeCopied)
+	{
+		Rig.Camera.Shakes.push_back(Base);
+		DragShakeIndex = static_cast<s32>(Rig.Camera.Shakes.size() - 1);
+		FocusBlock = ShakeBase + DragShakeIndex;
+		IsShakeCopied = true;
+	}
+	float Start = Base.Start, Length = Base.Length, FadeIn = Base.FadeIn, FadeOut = Base.FadeOut;
+	s32 Row = Base.Row;
+	if (Drag == DragKind::ShakeMove)
+	{
+		Start = std::max(SnapSpan(Origin + Base.Start + Delta, Base.Length, IsFree) - Origin, 0.0f);
+		Row = IsShakeSlide ? Base.Row : SubAt(Core.Data, *Found, Input.MousePos.y);
+	}
+	else if (Drag == DragKind::ShakeStart)
+	{
+		Start = std::clamp(SnapTime(Origin + Base.Start + Delta, IsFree) - Origin, 0.0f, End - MinLength);
+		Length = End - Start;
+	}
+	else if (Drag == DragKind::ShakeEnd)
+	{
+		Length = std::clamp(SnapTime(Origin + End + Delta, IsFree) - Origin - Start, MinLength, MaxTime - Start);
+	}
+	else if (Drag == DragKind::ShakeFadeIn)
+	{
+		FadeIn = std::clamp(Snap(Base.FadeIn + Delta), 0.0f, Length);
+	}
+	else
+	{
+		FadeOut = std::clamp(Snap(Base.FadeOut - Delta), 0.0f, Length);
+	}
 	ShakeClip& Clip = Rig.Camera.Shakes[DragShakeIndex];
-	if (Drag >= DragKind::ShakeFadeIn)
-	{
-		const float Grown = Drag == DragKind::ShakeFadeIn ? Base.FadeIn + Delta : Base.FadeOut - Delta;
-		(Drag == DragKind::ShakeFadeIn ? Clip.FadeIn : Clip.FadeOut) = std::clamp(IsFree || !Settings.IsSnapping ? Grown : std::round(Grown * Rate) / Rate, 0.0f, Base.Length);
-		return;
-	}
-	const auto Place = [&](float Shift)
-	{
-		const float Start = Drag == DragKind::ShakeStart ? std::clamp(SnapTime(Origin + Base.Start + Shift, IsFree) - Origin, 0.0f, End - MinLength) : Base.Start;
-		const float Length = Drag == DragKind::ShakeStart ? End - Start : std::clamp(SnapTime(Origin + End + Shift, IsFree) - Origin - Start, MinLength, MaxTime - Start);
-		if (!Cameras::IsShakeFree(Rig.Camera, static_cast<u32>(DragShakeIndex), Base.Row, Start, Length, MaxShakeClips))
-		{
-			return false;
-		}
-		Clip = Base;
-		if (Drag == DragKind::ShakeStart)
-		{
-			TrimShake(Clip, Start - Base.Start, Rate);
-		}
-		Clip.Length = Length;
-		return true;
-	};
-	DragLimit = -1.0f;
-	if (Place(Delta))
+	const bool IsSame = Row == Clip.Row && Start == Clip.Start && Length == Clip.Length;
+	if (Drag < DragKind::ShakeFadeIn && !IsSame && !Cameras::IsShakeFree(Rig.Camera, static_cast<u32>(DragShakeIndex), static_cast<u8>(Row), Start, Length, MaxShakeClips))
 	{
 		return;
 	}
-	float Lo = 0.0f, Hi = Delta;
-	for (u32 Step = 0; Step < 12; ++Step)
+	if (Drag == DragKind::ShakeStart)
 	{
-		const float Mid = 0.5f * (Lo + Hi);
-		(Place(Mid) ? Lo : Hi) = Mid;
+		const float Trim = Start - Base.Start;
+		Clip.Lanes = Base.Lanes;
+		TimelineUi::ShiftLanes(Clip.Lanes, 0.0f, -Trim, 0.5f / Rate, true);
+		for (Lane& Track : Clip.Lanes)
+		{
+			for (Curve& Part : Track.Curves)
+			{
+				Part.Gen.Phase += Trim * Part.Gen.Frequency;
+			}
+		}
+		const double Ahead = Trim > 0.0f ? Curves::LaneArea(Base.Lanes, nullptr, Param::ShakeSpeed, Base.Row, Trim, Base.Setup.Speed) : Trim * Curves::LaneScalar(Base.Lanes, Param::ShakeSpeed, Base.Row, 0.0f, Base.Setup.Speed);
+		Clip.Setup.Offset = Base.Setup.IsStretched ? Base.Setup.Offset : std::clamp(Base.Setup.Offset + static_cast<float>(Ahead), -MaxTime, MaxTime);
 	}
-	Place(Lo);
-	DragLimit = Origin + Clip.Start + (Drag == DragKind::ShakeStart ? 0.0f : Clip.Length);
+	Clip.Start = Start;
+	Clip.Length = Length;
+	Clip.FadeIn = FadeIn;
+	Clip.FadeOut = FadeOut;
+	SetShakeRow(Clip, static_cast<u8>(Row));
 }
 
 void Editor::DrawShakeMenu(Player& Core)
@@ -2710,15 +1892,13 @@ void Editor::DrawShakeMenu(Player& Core)
 	ImGui::EndPopup();
 }
 
-s32 Editor::CameraHit(const Player& Core, const Object& Target, const ImVec2& Mouse, float Top, float Bottom, DragKind& Kind, s32& Pose, ClipPart& Part, ImRect& Area) const
+s32 Editor::CameraHit(const Player& Core, const Object& Target, const ImVec2& Mouse, float Top, float Bottom, DragKind& Kind, s32& Pose) const
 {
-	const float Middle = 0.5f * (Top + Bottom), Reach = TimelineUi::PoseRadius + 2.0f;
+	const float Middle = 0.5f * (Top + Bottom);
 	const xr_vector<CameraBlock>& Blocks = Target.Camera.Blocks;
 	float Best = TimelineUi::PoseZone;
-	s32 Found = -1, Keyed = -1;
-	ImVec2 Spot;
+	s32 Found = -1;
 	Pose = -1;
-	Part = ClipPart::None;
 	for (u32 Index = 0; Index < Blocks.size(); ++Index)
 	{
 		const CameraBlock& Shot = Blocks[Index];
@@ -2726,171 +1906,33 @@ s32 Editor::CameraHit(const Player& Core, const Object& Target, const ImVec2& Mo
 		const float Start = Target.Span.Start + Shot.Start;
 		const float Begin = TimeToX(Start), End = TimeToX(Start + Shot.Length);
 		const float Seam = Index > 0 ? TimeToX(Target.Span.Start + Blocks[Index - 1].Start + Blocks[Index - 1].Length) : Begin - 2.0f;
-		const float Next = Index + 1 < Blocks.size() ? TimeToX(Target.Span.Start + Blocks[Index + 1].Start) : End + 2.0f;
 		for (u32 At = 0; Cache && At < Shot.Keys.size(); ++At)
 		{
-			const ImVec2 Point(TimeToX(Start + Cameras::LocalFromPath(Shot, *Cache, Shot.Keys[At].Time)), Middle);
-			const float Distance = std::hypot(Mouse.x - Point.x, Mouse.y - Point.y);
+			const float Distance = std::fabs(Mouse.x - TimeToX(Start + Cameras::LocalFromPath(Shot, *Cache, Shot.Keys[At].Time))) + std::fabs(Mouse.y - Middle);
 			if (Distance <= Best)
 			{
 				Best = Distance;
-				Keyed = static_cast<s32>(Index);
+				Found = static_cast<s32>(Index);
 				Pose = static_cast<s32>(At);
-				Spot = Point;
 			}
 		}
-		ImRect Mine;
-		ClipPart Theirs = TimelineUi::PartAt({ Begin, End, Top, Bottom, Begin, End, Seam > Begin + 1.0f ? Seam : Begin, Seam < Begin - 1.0f, Next > End + 1.0f, false }, Mouse, Mine);
-		if (Index > 0 && std::fabs(Seam - Begin) <= 1.0f && Mouse.x >= Begin && Mouse.x - Begin <= TimelineUi::CornerZone && Mouse.y >= Top && Mouse.y - Top <= TimelineUi::CornerZone)
+		if (Pose < 0 && Mouse.x >= Begin && Mouse.x < End)
 		{
-			Theirs = ClipPart::Cross;
-			Mine = ImRect(Begin - TimelineUi::CornerZone, Top, Begin + TimelineUi::CornerZone, Top + TimelineUi::CornerZone);
-		}
-		if (Theirs != ClipPart::None && !(Part == ClipPart::End && (Theirs == ClipPart::Cross || Theirs == ClipPart::Body)))
-		{
-			Part = Theirs;
-			Area = Mine;
-			Found = static_cast<s32>(Index);
+			const float Zone = std::min(TimelineUi::EdgeZone, (End - Begin) / 3.0f);
+			const bool IsStretch = End - Mouse.x + Bottom - Mouse.y <= TimelineUi::CornerZone;
+			const bool IsTail = Seam > Begin + 1.0f && std::fabs(Mouse.x - Seam) <= Zone && End - Mouse.x > Zone;
+			const bool IsCross = Seam > Begin + 1.0f && Mouse.x > Begin + Zone && Mouse.x < Seam - Zone;
+			const bool IsCut = std::fabs(Seam - Begin) <= 1.0f && Mouse.y - Top <= TimelineUi::CornerZone && Mouse.x - Begin <= TimelineUi::CornerZone;
+			Kind = IsStretch ? DragKind::BlockStretch : End - Mouse.x <= Zone || IsTail ? DragKind::BlockLength : IsCross || IsCut ? DragKind::BlockBlend : Mouse.x - Begin <= Zone ? DragKind::BlockIn : DragKind::BlockMove;
+			Found = static_cast<s32>(Index) - (IsTail && !IsStretch ? 1 : 0);
 		}
 	}
-	const bool IsMiddle = std::fabs(Mouse.y - Middle) <= (Bottom - Top) / 6.0f;
-	if (Pose >= 0 && (IsMiddle || Part == ClipPart::None || Part == ClipPart::Body || Part == ClipPart::Cross))
-	{
-		Part = ClipPart::Key;
-		Found = Keyed;
-		Area = ImRect(Spot.x - Reach, Spot.y - Reach, Spot.x + Reach, Spot.y + Reach);
-	}
-	Pose = Part == ClipPart::Key ? Pose : -1;
-	Kind = TimelineUi::ShotParts[static_cast<u32>(Part)];
+	Kind = Pose >= 0 ? DragKind::PoseKey : Kind;
 	return Found;
-}
-
-void Editor::MoveShot(Player& Core, const Object& Target)
-{
-	const CameraBlock& Base = DragShot;
-	if (DragShotIndex < 0 || static_cast<u32>(DragShotIndex) >= DragShots.size() || (IsDragCopy && DragShots.size() >= MaxBlocks))
-	{
-		return;
-	}
-	const ImGuiIO& Input = ImGui::GetIO();
-	const float Delta = XToTime(Input.MousePos.x) - DragTime;
-	const float A = std::clamp(SnapSpan(Target.Span.Start + Base.Start + Delta, Base.Length, Input.KeyShift) - Target.Span.Start, 0.0f, std::max(MaxTime - Base.Length, 0.0f)), B = A + Base.Length;
-	Object& Rig = *Edit(Core, Target.Id, TimelineUi::ShotLabels[IsDragCopy ? 7u : 0u]);
-	xr_vector<CameraBlock>& Blocks = Rig.Camera.Blocks;
-	s32 Moved = DragShotIndex;
-	const auto Restore = [&]
-	{
-		Blocks = DragShots;
-		Rig.Camera.Shakes = DragShakes;
-		Pins = DragPins;
-		SelectedKeys = DragKeyPrevious;
-		PickFocusBlock = DragPickFocus;
-		Moved = DragShotIndex;
-	};
-	const auto Renumber = [&](s32 From, s32 Step)
-	{
-		for (ShakePin& Pin : Pins)
-		{
-			Pin.Block += Pin.Block >= From ? Step : 0;
-		}
-		Moved += Moved >= From ? Step : 0;
-	};
-	Restore();
-	if (IsDragCopy)
-	{
-		const u32 Pinned = static_cast<u32>(std::min(Pins.size(), Rig.Camera.Shakes.size()));
-		Blocks.insert(Blocks.begin() + Moved + 1, Base);
-		for (u32 Pin = 0; Pin < Pinned; ++Pin)
-		{
-			Pins[Pin].Block += Pins[Pin].Block > Moved ? 1 : 0;
-			if (Pins[Pin].Block == Moved && Rig.Camera.Shakes.size() < MaxShakeClips)
-			{
-				ShakePin Copy = Pins[Pin];
-				Copy.Block = Moved + 1;
-				Pins.push_back(Copy);
-				Rig.Camera.Shakes.push_back(Rig.Camera.Shakes[Pin]);
-			}
-		}
-		++Moved;
-	}
-	SpanScratch.clear();
-	for (s32 Index = 0; Index < static_cast<s32>(Blocks.size()); ++Index)
-	{
-		SpanScratch.push_back(Index == Moved ? Cameras::ClipSpan { -1.0f, 0.0f } : Cameras::ClipSpan { Blocks[Index].Start, Blocks[Index].Length });
-	}
-	TimelineUi::PlanOverwrite(SpanScratch, A, B, MinLength, CoverPlan);
-	bool IsCut = false;
-	for (s32 Index = static_cast<s32>(CoverPlan.size()); Index-- > 0;)
-	{
-		const Cover Action = static_cast<Cover>(CoverPlan[Index]);
-		if (Action == Cover::Keep)
-		{
-			continue;
-		}
-		const float C = Blocks[Index].Start, D = C + Blocks[Index].Length;
-		const bool HasHead = (Action == Cover::Split || Action == Cover::CutTail) && A - C >= MinLength;
-		const bool HasTail = (Action == Cover::Split || Action == Cover::CutHead) && D - B >= MinLength && (!HasHead || Blocks.size() < MaxBlocks);
-		IsCut = true;
-		if (HasTail)
-		{
-			CameraBlock Tail = Blocks[Index];
-			TrimHead(Tail, Blocks[Index], B - C);
-			if (HasHead)
-			{
-				Renumber(Index + 1, 1);
-				Blocks.insert(Blocks.begin() + Index + 1, std::move(Tail));
-			}
-			else
-			{
-				for (ShakePin& Pin : Pins)
-				{
-					Pin.Offset -= Pin.Block == Index ? B - C : 0.0f;
-				}
-				Blocks[Index] = std::move(Tail);
-			}
-		}
-		if (HasHead)
-		{
-			Blocks[Index].Length = A - C;
-		}
-		if (!HasHead && !HasTail)
-		{
-			for (ShakePin& Pin : Pins)
-			{
-				Pin.Offset += Pin.Block == Index ? C : 0.0f;
-				Pin.Block = Pin.Block == Index ? -1 : Pin.Block;
-			}
-			Renumber(Index + 1, -1);
-			Blocks.erase(Blocks.begin() + Index);
-		}
-	}
-	if (IsCut)
-	{
-		std::erase_if(SelectedKeys, [&Rig](const KeyRef& Ref) { return Ref.ObjectId == Rig.Id; });
-		PickFocusBlock = -1;
-	}
-	Blocks[Moved].Start = A;
-	Moved = SortShot(Rig, Moved);
-	SpanScratch.clear();
-	for (const CameraBlock& Item : Blocks)
-	{
-		SpanScratch.push_back({ Item.Start, Item.Length });
-	}
-	if (!Cameras::IsTrackValid(SpanScratch))
-	{
-		Restore();
-	}
-	DragBlock = FocusBlock = Moved;
-	FollowShakes(Rig);
 }
 
 void Editor::DragCameraBlock(Player& Core, const Object& Target)
 {
-	if (Drag == DragKind::BlockMove)
-	{
-		MoveShot(Core, Target);
-		return;
-	}
 	const u32 Count = static_cast<u32>(Target.Camera.Blocks.size()), Index = static_cast<u32>(DragBlock);
 	const BlockCache* Cache = Core.FindCameraBlock(Index);
 	const CameraBlock& Base = DragShot;
@@ -2900,11 +1942,44 @@ void Editor::DragCameraBlock(Player& Core, const Object& Target)
 	}
 	const ImGuiIO& Input = ImGui::GetIO();
 	const float Delta = XToTime(Input.MousePos.x) - DragTime;
-	Object& Rig = *Edit(Core, Target.Id, TimelineUi::ShotLabels[static_cast<u32>(Drag) - static_cast<u32>(DragKind::BlockMove)]);
+	const bool IsMove = Drag == DragKind::BlockMove;
+	const s32 Skip = IsMove && IsDragCopy && !IsShotCopied ? -1 : DragBlock;
+	const float Wanted = IsMove ? SnapSpan(Target.Span.Start + Base.Start + Delta, Base.Length, Input.KeyShift) - Target.Span.Start : 0.0f;
+	const float Moved = IsMove ? FitClip(Target.Camera, Skip, Wanted, Wanted + Base.Length, 0) : 0.0f;
+	if (Moved < 0.0f || (Skip < 0 && Count >= MaxBlocks))
+	{
+		return;
+	}
+	Object& Rig = *Edit(Core, Target.Id, TimelineUi::ShotLabels[IsMove && IsDragCopy ? 7u : static_cast<u32>(Drag) - static_cast<u32>(DragKind::BlockMove)]);
 	xr_vector<CameraBlock>& Blocks = Rig.Camera.Blocks;
+	if (Skip < 0)
+	{
+		Blocks.insert(Blocks.begin() + DragBlock + 1, Base);
+		const u32 Pinned = static_cast<u32>(std::min(Pins.size(), Rig.Camera.Shakes.size()));
+		for (u32 Pin = 0; Pin < Pinned; ++Pin)
+		{
+			Pins[Pin].Block += Pins[Pin].Block > DragBlock ? 1 : 0;
+			if (Pins[Pin].Block == DragBlock && Rig.Camera.Shakes.size() < MaxShakeClips)
+			{
+				ShakePin Copy = Pins[Pin];
+				Copy.Block = DragBlock + 1;
+				Pins.push_back(Copy);
+				Rig.Camera.Shakes.push_back(Rig.Camera.Shakes[Pin]);
+			}
+		}
+		++DragBlock;
+		IsShotCopied = true;
+	}
 	CameraBlock& Shot = Blocks[DragBlock];
 	Shot = Base;
 	const float Start = Rig.Span.Start + Base.Start;
+	if (IsMove)
+	{
+		Shot.Start = Moved;
+		DragBlock = FocusBlock = SortShot(Rig, DragBlock);
+		FollowShakes(Rig);
+		return;
+	}
 	if (Drag == DragKind::BlockIn)
 	{
 		const float End = Base.Start + Base.Length;
@@ -2915,9 +1990,17 @@ void Editor::DragCameraBlock(Player& Core, const Object& Target)
 	if (Drag == DragKind::PoseKey)
 	{
 		const u32 At = static_cast<u32>(DragPose);
-		const float Path = Cameras::PathTime(Base, SnapTime(Start + Cameras::LocalFromPath(Base, Base.Keys[At].Time) + Delta, Input.KeyShift) - Start);
+		const float Local = SnapTime(Start + Cameras::LocalFromPath(Base, *Cache, Base.Keys[At].Time) + Delta, Input.KeyShift) - Start;
 		const float Lo = At > 0 ? Base.Keys[At - 1].Time + 1e-3f : 0.0f, Hi = At + 1 < Base.Keys.size() ? Base.Keys[At + 1].Time - 1e-3f : MaxTime;
-		Cameras::MovePoseAt(Shot, Base.Keys[At].Time, Lo <= Hi ? std::clamp(Path, Lo, Hi) : Base.Keys[At].Time, 1e-4f);
+		IsPoseRetimed = IsPoseRetimed || DragPoseAxis < 0 || std::fabs(Input.MousePos.x - Input.MouseClickedPos[ImGuiMouseButton_Left].x) >= TimelineUi::EdgeZone;
+		Shot.Keys[At].Time = Lo <= Hi && IsPoseRetimed ? std::clamp(Cameras::PathTime(Base, *Cache, Local), Lo, Hi) : Base.Keys[At].Time;
+		if (DragPoseAxis >= 0)
+		{
+			const Param Id = DragPoseAxis < 3 ? Param::Position : Param::Rotation;
+			const u32 Axis = static_cast<u32>(DragPoseAxis % 3);
+			const float Rise = (DragOriginY - Input.MousePos.y) / DragLaneHeight * DragSpan * (Input.KeyShift ? 0.1f : 1.0f);
+			TimelineUi::PoseField(Shot.Keys[At], Id)[Axis] = std::clamp(TimelineUi::PoseField(Base.Keys[At], Id)[Axis] + Rise, Info(Id).Min, Info(Id).Max);
+		}
 		return;
 	}
 	float Last = Base.Keys.empty() ? 0.0f : Base.Keys.back().Time;
@@ -2938,6 +2021,10 @@ void Editor::DragCameraBlock(Player& Core, const Object& Target)
 	{
 		return;
 	}
+	for (PoseKey& Item : Shot.Keys)
+	{
+		Item.Time = std::min(Item.Time * Factor, MaxTime);
+	}
 	for (Lane& Track : Shot.Lanes)
 	{
 		for (Curve& Part : Track.Curves)
@@ -2950,7 +2037,6 @@ void Editor::DragCameraBlock(Player& Core, const Object& Target)
 			}
 		}
 	}
-	Cameras::Rebuild(Shot);
 }
 
 bool Editor::CutShot(Player& Core, s32 Block, float From, float To, bool ShouldApply)
@@ -2971,24 +2057,53 @@ bool Editor::CutShot(Player& Core, s32 Block, float From, float To, bool ShouldA
 	xr_vector<CameraBlock>& Blocks = Edit(Core, Rig->Id, "Split clip")->Camera.Blocks;
 	CameraBlock& First = Blocks[Block];
 	CameraBlock Second = First;
-	const float PathFrom = Cameras::PathTime(First, *Cache, From), PathTo = Cameras::PathTime(First, *Cache, To);
-	for (u32 Index = 0; Index < First.Lanes.size(); ++Index)
+	if (!First.Keys.empty())
 	{
-		const bool IsPath = First.Lanes[Index].Id <= Param::Rotation;
-		const float Lo = IsPath ? PathFrom : From, Hi = IsPath ? PathTo : To;
-		for (u32 Axis = 0; Axis < Info(First.Lanes[Index].Id).Components; ++Axis)
+		const u32 Total = static_cast<u32>(First.Keys.size());
+		Fvector Before, After, Unused;
+		u32 HeadKind = 0, TailKind = 0;
+		const auto PathPose = [&First, Cache](float Local, Fvector& Previous, Fvector& Next, u32& Kind)
 		{
-			Curve& Head = First.Lanes[Index].Curves[Axis];
-			Curve& Tail = Second.Lanes[Index].Curves[Axis];
-			Tail.Gen.Phase += To * Tail.Gen.Frequency;
-			if (!Head.Keys.empty())
-			{
-				TimelineUi::CutKeys(Head.Keys, Tail.Keys, Key { Lo, Curves::Value(Head, Lo, 0.0f) }, Key { Hi, Curves::Value(Head, Hi, 0.0f) });
-			}
+			PoseKey Pose;
+			Fmatrix Turn = Fidentity;
+			Pose.Time = Cameras::PathTime(First, *Cache, Local);
+			Cache->Path.Evaluate(Pose.Time, Pose.Position, Turn);
+			Turn.getHPB(Pose.Rotation);
+			Pose.Rotation.mul(rad2deg(1.0f));
+			Kind = Cache->Path.Split(Pose.Time, Pose.InHandle, Pose.OutHandle, Previous, Next);
+			Pose.Tangent = Kind ? TangentMode::Broken : TangentMode::Auto;
+			return Pose;
+		};
+		const PoseKey Middle = PathPose(From, Before, Unused, HeadKind), Rest = PathPose(To, Unused, After, TailKind);
+		TimelineUi::CutKeys(First.Keys, Second.Keys, Middle, Rest);
+		const auto Pin = [Cache](PoseKey& Item, u32 Index, const Fvector* In, const Fvector* Out)
+		{
+			Fvector Back, Ahead;
+			Cache->Path.Handles(Index, Back, Ahead);
+			Item.InHandle = In ? *In : Back;
+			Item.OutHandle = Out ? *Out : Ahead;
+			Item.Tangent = TangentMode::Broken;
+		};
+		const u32 Head = static_cast<u32>(First.Keys.size()), Tail = static_cast<u32>(Second.Keys.size());
+		if (HeadKind == 2 && Head >= 2)
+		{
+			Pin(First.Keys[Head - 2], Head - 2, nullptr, &Before);
+		}
+		if (TailKind == 2 && Tail >= 2)
+		{
+			Pin(Second.Keys[1], Total - Tail + 1, &After, nullptr);
 		}
 	}
-	Cameras::Rebuild(First);
-	Cameras::Rebuild(Second);
+	for (u32 Index = 0; Index < First.Lanes.size(); ++Index)
+	{
+		Curve& Head = First.Lanes[Index].Curves[0];
+		Curve& Tail = Second.Lanes[Index].Curves[0];
+		Tail.Gen.Phase += To * Tail.Gen.Frequency;
+		if (!Head.Keys.empty())
+		{
+			TimelineUi::CutKeys(Head.Keys, Tail.Keys, Key { From, Curves::Value(Head, From, 0.0f) }, Key { To, Curves::Value(Head, To, 0.0f) });
+		}
+	}
 	Second.Length = Length - To;
 	Second.Start = First.Start + To;
 	First.Length = From;
@@ -3016,7 +2131,7 @@ void Editor::DrawPoseMenu(Player& Core)
 	}
 	const Object* Rig = Find(Core.Data, PopupRow);
 	const bool IsValid = Rig && Rig->Type == ObjectType::Camera && PopupBlock >= 0 && PopupBlock < static_cast<s32>(Rig->Camera.Blocks.size()) && PopupPose >= 0 && PopupPose < static_cast<s32>(Rig->Camera.Blocks[PopupBlock].Keys.size());
-	const auto Target = [this, &Core](const char* Label) -> CameraBlock& { return Edit(Core, PopupRow, Label)->Camera.Blocks[PopupBlock]; };
+	const auto Target = [this, &Core](const char* Label) -> PoseKey& { return Edit(Core, PopupRow, Label)->Camera.Blocks[PopupBlock].Keys[PopupPose]; };
 	if (IsValid && ImGui::MenuItem("Update from view", nullptr, false, Core.View() != ViewSource::Global))
 	{
 		PoseKey Pose;
@@ -3025,8 +2140,9 @@ void Editor::DrawPoseMenu(Player& Core)
 		{
 			ToSpace(Cache->Frames, Pose);
 		}
-		CameraBlock& Item = Target("Update from view");
-		Cameras::SetPoseAt(Item, Item.Keys[PopupPose].Time, Pose.Position, Pose.Rotation, Item.Keys[PopupPose].Mode, 1e-4f);
+		PoseKey& Item = Target("Update from view");
+		Item.Position = Pose.Position;
+		Item.Rotation = Pose.Rotation;
 	}
 	if (IsValid && ImGui::BeginMenu("Interpolation"))
 	{
@@ -3035,8 +2151,7 @@ void Editor::DrawPoseMenu(Player& Core)
 		{
 			if (ImGui::MenuItem(TimelineUi::ModeNames[Mode], nullptr, Current == static_cast<Interp>(Mode)))
 			{
-				CameraBlock& Item = Target("Interpolation");
-				Cameras::ModeAt(Item, Item.Keys[PopupPose].Time, static_cast<Interp>(Mode), 1e-4f);
+				Target("Interpolation").Mode = static_cast<Interp>(Mode);
 			}
 		}
 		ImGui::EndMenu();
@@ -3091,15 +2206,6 @@ void Editor::DrawTimelinePopups(Player& Core)
 			ImGui::EndPopup();
 			return;
 		}
-		if (HasBlock && IsClipBlock(BlocksOf(Target->Actor, PopupLayer)[PopupBlock].Source) && ImGui::MenuItem("Edit animation"))
-		{
-			OpenAnimator(Core, PopupRow, FindClip(Target->Actor.Clips, BlocksOf(Target->Actor, PopupLayer)[PopupBlock].Name));
-		}
-		if (HasBlock && !IsClipBlock(BlocksOf(Target->Actor, PopupLayer)[PopupBlock].Source) && ImGui::MenuItem("Import as keys"))
-		{
-			ImportClip(Core, PopupRow, PopupLayer, static_cast<u32>(PopupBlock));
-		}
-		ImGui::SetItemTooltip("Turns this animation into an editable clip of the Animator and makes the block play it");
 		if (HasBlock && ImGui::Selectable("Replace animation...", false, ImGuiSelectableFlags_NoAutoClosePopups))
 		{
 			IsPopupChoosing = IsChooserFresh = true;
@@ -3133,10 +2239,6 @@ void Editor::DrawTimelinePopups(Player& Core)
 		if (HasShot && ImGui::MenuItem("Split at playhead", nullptr, false, CutShot(Core, PopupBlock, Local, Local, false)))
 		{
 			CutShot(Core, PopupBlock, Local, Local, true);
-		}
-		if (HasShot && ImGui::MenuItem("Even speed", nullptr, false, Target->Camera.Blocks[PopupBlock].Keys.size() > 2))
-		{
-			EvenSpeed(Core, PopupBlock);
 		}
 		if (HasShot && ImGui::MenuItem("Remove clip"))
 		{
@@ -3200,10 +2302,10 @@ void Editor::DrawTimelinePopups(Player& Core)
 		{
 			Fvector Position, Rotation;
 			SpawnPose(Position, Rotation);
-			PopupKind == ChooserKind::Preset ? AddActorFromPreset(Core, Source.c_str(), PopupTime, Position, Rotation) : (void)AddObject(Core, AddedType(PopupKind), Source, PopupTime, Position, Rotation);
+			PopupKind == ChooserKind::Preset ? AddActorFromPreset(Core, Source.c_str(), PopupTime, Position, Rotation) : (void)AddObject(Core, PopupKind == ChooserKind::Effect ? ObjectType::Particle : ObjectType::Actor, Source, PopupTime, Position, Rotation);
 			ImGui::CloseCurrentPopup();
 		}
-		for (u32 Index = 0; !IsPopupChoosing && Index < std::size(AddChoices); ++Index)
+		for (u32 Index = 0; !IsPopupChoosing && Index < 3; ++Index)
 		{
 			if (ImGui::Selectable(AddChoices[Index], false, ImGuiSelectableFlags_NoAutoClosePopups | (Index == 1 && Presets.empty() ? ImGuiSelectableFlags_Disabled : 0)))
 			{
@@ -3214,14 +2316,6 @@ void Editor::DrawTimelinePopups(Player& Core)
 		if (!IsPopupChoosing && ImGui::MenuItem("Light"))
 		{
 			AddLight(Core, PopupTime, Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, 3.0f));
-		}
-		if (!IsPopupChoosing && ImGui::MenuItem("Weather"))
-		{
-			AddWeather(Core, PopupTime);
-		}
-		if (!IsPopupChoosing && ImGui::MenuItem("Post"))
-		{
-			AddPost(Core, PopupTime);
 		}
 		if (!IsPopupChoosing && ImGui::MenuItem("Camera move"))
 		{
@@ -3282,7 +2376,6 @@ void Editor::DrawTimelinePopups(Player& Core)
 	}
 	DrawShakeMenu(Core);
 	DrawKeyMenu(Core);
-	DrawCurveMenu(Core);
 	DrawPoseMenu(Core);
 }
 
@@ -3306,9 +2399,6 @@ void Editor::Press(Player& Core, DragKind Kind, u32 Id, bool IsFolder)
 	DragTime = XToTime(Input.MousePos.x);
 	IsDragFolder = IsFolder;
 	IsDragCopy = (Kind == DragKind::ClipMove || Kind == DragKind::BlockMove) && Input.KeyCtrl;
-	DragKeyPrevious = SelectedKeys;
-	DragPickFocus = PickFocusBlock;
-	DragLimit = -1.0f;
 	HasDragMoved = false;
 	Focus = FocusKind::Objects;
 }
@@ -3350,18 +2440,10 @@ void Editor::UpdateDrag(Player& Core)
 		{
 			SelectedKeys = DragKeyPrevious;
 		}
-		const bool IsBlockMove = (Drag == DragKind::BlockMove || Drag == DragKind::BlockBlend) && HasDragMoved;
-		const Object* Dragged = Find(Core.Data, DragObject);
-		if (HasDragMoved && (Drag == DragKind::BlockMove || Drag == DragKind::ShakeMove))
-		{
-			SelectedKeys = DragKeyPrevious;
-			PickFocusBlock = DragPickFocus;
-		}
-		FocusBlock = Drag == DragKind::ShakeMove && HasDragMoved ? ShakeBase + DragShakePress : IsBlockMove && Dragged && Dragged->Type == ObjectType::Camera ? DragShotIndex : IsBlockMove ? DragBlock : FocusBlock;
-		FocusLayer = IsBlockMove ? DragLayer : FocusLayer;
+		FocusBlock = Drag == DragKind::BlockMove && HasDragMoved ? DragBlock : FocusBlock;
+		FocusLayer = Drag == DragKind::BlockMove && HasDragMoved ? DragLayer : FocusLayer;
 		PruneSelection(Core.Data);
 		Drag = DragKind::None;
-		DragLimit = -1.0f;
 		return;
 	}
 	if (Drag >= DragKind::BoxClips)
@@ -3375,7 +2457,11 @@ void Editor::UpdateDrag(Player& Core)
 		{
 			DropRow(Core);
 		}
-		DragLimit = -1.0f;
+		const Object* Rig = Find(Core.Data, DragObject);
+		if (Drag == DragKind::ShakeMove && IsShakeCopied && Rig && Cameras::SettleShakes(Find(Core.Data, DragObject)->Camera))
+		{
+			SetStatus(true, "Every shake row is taken there; a shake overlaps another.");
+		}
 		if (Drag == DragKind::LaneKeys && !HasDragMoved && WasPressSelected)
 		{
 			SelectKeys(Input.KeyCtrl);
@@ -3563,12 +2649,12 @@ void Editor::StartClipDrag(Player& Core)
 void Editor::CaptureStarts(Scene& Data, bool IsLength)
 {
 	DragStarts.clear();
-	DragClipStarts.clear();
 	for (u32 Id : DragIds)
 	{
 		const Object* Item = Find(Data, Id);
 		const bool IsRig = Item && Item->Type == ObjectType::Camera && !IsLength;
 		float First = Item ? ClipEnd(*Item) : 0.0f;
+		DragClipStarts.clear();
 		for (u32 Index = 0; IsRig && Index < Item->Camera.Blocks.size() + Item->Camera.Shakes.size(); ++Index)
 		{
 			const float Begin = Index < Item->Camera.Blocks.size() ? Item->Camera.Blocks[Index].Start : Item->Camera.Shakes[Index - Item->Camera.Blocks.size()].Start;
@@ -3638,67 +2724,27 @@ s32 Editor::SpanAt(const Object& Target, const ActorRuntime& Runtime, float Loca
 	return Index >= 0 && Spans[Index].Block < BlocksOf(Target.Actor, Layer).size() && Sequence < Spans[Index].Start + Spans[Index].Duration ? Index : -1;
 }
 
-s32 Editor::BlockHit(const Object& Target, const ActorRuntime& Runtime, u8 Layer, const ImVec2& Mouse, const ImRect& Row, DragKind& Kind, s32& Hit, double& Rep, ClipPart& Part, ImRect& Area) const
+s32 Editor::BlockHit(const Object& Target, const ActorRuntime& Runtime, u8 Layer, const ImVec2& Mouse, float Top, DragKind& Kind, s32& Hit, double& Rep) const
 {
+	const float X = Mouse.x;
 	float Sequence = 0.0f;
-	s32 Span = -1;
-	for (const float Shift : { 0.0f, TimelineUi::OutZone, -TimelineUi::OutZone })
-	{
-		Span = Span >= 0 ? Span : SpanAt(Target, Runtime, XToTime(Mouse.x + Shift) - Target.Span.Start, Rep, Sequence, Layer);
-	}
+	const s32 Span = SpanAt(Target, Runtime, XToTime(X) - Target.Span.Start, Rep, Sequence, Layer);
 	if (Span < 0)
 	{
 		return -1;
 	}
-	Hit = Span;
-	if (Rep != 0.0)
-	{
-		Part = ClipPart::Body;
-		Area = Row;
-		Kind = DragKind::BlockMove;
-		return Span;
-	}
 	const xr_vector<BlockSpan>& Spans = Runtime.Track(Layer).Spans;
 	const BlockSpan& Item = Spans[Span];
 	const BlockSpan* Before = Span > 0 && Item.Overlap > 0.0f ? &Spans[Span - 1] : nullptr;
-	const bool IsCrowded = Span + 1 < static_cast<s32>(Spans.size()) && Spans[Span + 1].Overlap > 0.0f;
-	const auto At = [&](float Moment) { return SequenceToX(Target, Runtime, 0.0, Moment); };
-	const auto BoxOf = [&](const BlockSpan& Clip, float Cross, bool IsLeftFree, bool IsRightFree)
-	{
-		const float End = Clip.Start + Clip.Duration;
-		return TimelineUi::PartBox { At(Clip.Start), At(End), Row.Min.y, Row.Max.y, At(Clip.Start + std::min(Clip.FadeIn, Clip.Duration)), At(End - std::min(Clip.FadeOut, Clip.Duration)), Cross, IsLeftFree, IsRightFree, true };
-	};
-	Part = TimelineUi::PartAt(BoxOf(Item, Before ? At(Before->Start + Before->Duration) : 0.0f, !Before, !IsCrowded), Mouse, Area);
-	ImRect Other;
-	const ClipPart Theirs = Before && (Part == ClipPart::Cross || Part == ClipPart::Body) ? TimelineUi::PartAt(BoxOf(*Before, 0.0f, false, false), Mouse, Other) : ClipPart::None;
-	if (Theirs == ClipPart::End || Theirs == ClipPart::FadeOut)
-	{
-		Part = Theirs;
-		Area = Other;
-		Hit = Span - 1;
-	}
-	Kind = TimelineUi::BlockParts[static_cast<u32>(Part)];
-	return Part == ClipPart::None ? -1 : Span;
-}
-
-void Editor::ShowPart(ClipPart Part, const ImRect& Area, u32 Color, u32 Type)
-{
-	ImDrawList* List = ImGui::GetWindowDrawList();
-	const bool IsEdge = Part == ClipPart::Start || Part == ClipPart::End, IsFade = Part == ClipPart::FadeIn || Part == ClipPart::FadeOut;
-	if (Part == ClipPart::Key)
-	{
-		List->AddCircle(Area.GetCenter(), 0.5f * Area.GetWidth(), Color, 0, 1.5f);
-	}
-	else if (IsEdge || IsFade)
-	{
-		List->AddRectFilled(Area.Min, Area.Max, Color);
-	}
-	else
-	{
-		List->AddRect(Area.Min, Area.Max, Color);
-	}
-	ImGui::SetMouseCursor(IsEdge ? ImGuiMouseCursor_ResizeEW : IsFade ? ImGuiMouseCursor_ResizeNWSE : Part == ClipPart::Key ? ImGuiMouseCursor_Arrow : ImGuiMouseCursor_Hand);
-	Hint = TimelineUi::PartHints[Type][static_cast<u32>(Part)];
+	const float Begin = SequenceToX(Target, Runtime, 0.0, Item.Start), Finish = SequenceToX(Target, Runtime, 0.0, Item.Start + Item.Duration);
+	const float Fade = Before ? SequenceToX(Target, Runtime, 0.0, Before->Start + Before->Duration) : Begin;
+	const float Zone = std::min(TimelineUi::EdgeZone, (Finish - Begin) / 3.0f);
+	const bool IsFadeEdge = Before && std::fabs(Fade - X) <= Zone;
+	const float In = SequenceToX(Target, Runtime, 0.0, Item.Start + std::min(Item.FadeIn, Item.Duration)), Out = SequenceToX(Target, Runtime, 0.0, Item.Start + Item.Duration - std::min(Item.FadeOut, Item.Duration));
+	const bool IsTop = Mouse.y - Top <= TimelineUi::CornerZone;
+	Kind = Rep != 0.0 ? DragKind::BlockMove : IsTop && std::fabs(X - In) <= TimelineUi::CornerZone ? DragKind::BlockFadeIn : IsTop && std::fabs(X - Out) <= TimelineUi::CornerZone ? DragKind::BlockFadeOut : X - Begin <= Zone ? DragKind::BlockIn : Finish - X <= Zone || IsFadeEdge ? DragKind::BlockOut : X < Fade ? DragKind::BlockBlend : DragKind::BlockMove;
+	Hit = Kind == DragKind::BlockOut && Finish - X > Zone ? Span - 1 : Span;
+	return Span;
 }
 
 void Editor::PressBlock(Player& Core, const Object& Target, const ActorRuntime& Runtime, u8 Layer, DragKind Kind, s32 Hit, double Rep)
@@ -3774,7 +2820,7 @@ bool Editor::IsTrackValid(const Object& Target, const ActorRuntime& Runtime, con
 	for (u32 Index = 0; Index < Blocks.size(); ++Index)
 	{
 		const float Next = static_cast<float>(AreaAt(Target, Runtime, Target.Span.Start + Blocks[Index].Start)), End = Next + Runtime.BlockDuration(Blocks[Index]);
-		if ((Index && (Next <= Begin + 1e-4f || End <= Ends[1] + 1e-4f)) || (Index > 1 && Next < Ends[0] - 1e-4f))
+		if ((Index && (Next < Begin - 1e-4f || End < Ends[1] - 1e-4f)) || (Index > 1 && Next < Ends[0] - 1e-4f))
 		{
 			return false;
 		}
@@ -3910,164 +2956,78 @@ void Editor::DragActorBlock(Player& Core, const Object& Target, const ActorRunti
 		{
 			BlocksOf(Item.Actor, DragLayer).erase(BlocksOf(Item.Actor, DragLayer).begin() + DragBlock);
 		}
-		const u8 Aimed = std::min<u8>(LayerAt(Core.Data, Target, Input.MousePos.y), static_cast<u8>(Layers + 1));
-		const float Slack = 0.25f * RowHeight;
-		const bool IsLeaving = Aimed != DragLayer && LayerAt(Core.Data, Target, Input.MousePos.y + (Aimed > DragLayer ? -Slack : Slack)) != DragLayer;
-		const auto Drop = [&](u8 Row, float Start)
+		ActorBlock Moved = Base;
+		Moved.Start = std::clamp(std::round((TimeAt(Item, Runtime, At) - Item.Span.Start) * 1e5f) * 1e-5f, 0.0f, MaxTime);
+		const u8 Under = Drag == DragKind::BlockMove ? std::min<u8>(LayerAt(Core.Data, Target, Input.MousePos.y), static_cast<u8>(Layers + 1)) : DragLayer;
+		u8 Into = PlaceRow(Item, Runtime, Under, Moved, false, Drag == DragKind::BlockMove);
+		if (Into > MaxActorLayers)
 		{
-			ActorBlock Moved = Base;
-			Moved.Start = Start;
-			const u8 Into = Overwrite(Item, Runtime, Row, Moved, Frame);
-			if (Into > MaxActorLayers)
-			{
-				return false;
-			}
-			const xr_vector<ActorBlock>& Placed = BlocksOf(Item.Actor, Into);
-			DragValidLayer = FocusLayer = Into;
-			DragValidStart = Start;
-			FocusBlock = static_cast<s32>(std::find(Placed.begin(), Placed.end(), Moved) - Placed.begin());
-			return true;
-		};
-		if (!Drop(Drag == DragKind::BlockMove && IsLeaving ? Aimed : DragLayer, std::clamp(std::round((TimeAt(Item, Runtime, At) - Item.Span.Start) * 1e5f) * 1e-5f, 0.0f, MaxTime)) && !Drop(DragValidLayer, DragValidStart))
-		{
-			BlocksOf(Item.Actor, DragLayer) = DragBlocks[DragLayer];
+			Moved.Start = DragValidStart;
+			Into = PlaceRow(Item, Runtime, DragValidLayer, Moved, false, false);
+			SetStatus(true, "Every animation row is taken there.");
 		}
+		if (Into > MaxActorLayers)
+		{
+			return;
+		}
+		const xr_vector<ActorBlock>& Placed = BlocksOf(Item.Actor, Into);
+		DragValidLayer = FocusLayer = Into;
+		DragValidStart = Moved.Start;
+		FocusBlock = static_cast<s32>(std::find(Placed.begin(), Placed.end(), Moved) - Placed.begin());
 		return;
 	}
 	xr_vector<ActorBlock>& Blocks = BlocksOf(Item.Actor, DragLayer);
+	ActorBlock& Block = Blocks[DragBlock];
 	if (IsFade)
 	{
-		ActorBlock& Block = Blocks[DragBlock];
 		(Drag == DragKind::BlockFadeIn ? Block.FadeIn : Block.FadeOut) = std::clamp(Snap(Drag == DragKind::BlockFadeIn ? Base.FadeIn + Delta : Base.FadeOut - Delta), 0.0f, Width);
 		return;
 	}
+	BlockStarts = DragBlockStarts[DragLayer];
 	const float Speed = std::max(std::fabs(Base.Speed), 0.05f), Out = Base.Out > 0.0f ? std::min(Base.Out, Length) : Length;
 	const bool IsForward = Base.Speed >= 0.0f, IsLeft = Drag == DragKind::BlockIn;
 	const float Played = Width - std::max(Base.Hold, 0.0f), Loops = std::clamp(Base.Loops, 1.0f, MaxLoops);
 	const auto Whole = [Length, Frame](float Value) { return Value >= Length - 0.5f * Frame ? 0.0f : Value; };
-	const auto Trim = [&](float Shift)
+	if (IsDragSpeed)
+	{
+		const float Fill = std::max(Snap(IsLeft ? Played - Delta : Played + Delta), Frame);
+		Block.Speed = std::copysign(std::clamp(Speed * Played / Fill, 0.05f, 4.0f), Base.Speed);
+	}
+	else if (IsLeft && IsForward)
+	{
+		Block.In = std::clamp(Snap(Base.In + Delta * Speed / Loops), 0.0f, Out - Frame);
+	}
+	else if (IsLeft)
+	{
+		Block.Out = Whole(std::clamp(Snap(Out - Delta * Speed / Loops), Base.In + Frame, Length));
+	}
+	else if (Input.KeyShift)
+	{
+		Block.Hold = std::max(Width + Delta - Played, 0.0f);
+	}
+	else if (Loops > 1.0f)
+	{
+		const float Unit = Played / Loops;
+		Block.Loops = std::clamp(Settings.IsSnapping ? Loops + std::round(Delta / Unit) : (Played + Delta) / Unit, 1.0f, MaxLoops);
+	}
+	else
+	{
+		const float Room = (IsForward ? Length - Base.In : Out) / Speed, Wanted = std::max(Played + Delta, Frame);
+		const bool IsLooping = Wanted > Room;
+		Block.Loops = IsLooping ? std::clamp(Settings.IsSnapping ? std::round(Wanted / Room) : Wanted / Room, 1.0f, MaxLoops) : 1.0f;
+		(IsForward ? Block.Out : Block.In) = IsLooping ? 0.0f : IsForward ? Whole(std::clamp(Snap(Base.In + Wanted * Speed), Base.In + Frame, Length)) : std::clamp(Snap(Out - Wanted * Speed), 0.0f, Out - Frame);
+	}
+	BlockStarts[DragBlock] = IsLeft ? std::max(End - Runtime.BlockDuration(Block), 0.0f) : Begin;
+	PlaceBlocks(Item, Runtime, Blocks, BlockStarts);
+	if (!IsTrackValid(Item, Runtime, Blocks))
 	{
 		Blocks = DragBlocks[DragLayer];
-		BlockStarts = DragBlockStarts[DragLayer];
-		ActorBlock& Block = Blocks[DragBlock];
-		if (IsDragSpeed)
-		{
-			const float Fill = std::max(Snap(IsLeft ? Played - Shift : Played + Shift), Frame);
-			Block.Speed = std::copysign(std::clamp(Speed * Played / Fill, 0.05f, 4.0f), Base.Speed);
-		}
-		else if (IsLeft && IsForward)
-		{
-			Block.In = std::clamp(Snap(Base.In + Shift * Speed / Loops), 0.0f, Out - Frame);
-		}
-		else if (IsLeft)
-		{
-			Block.Out = Whole(std::clamp(Snap(Out - Shift * Speed / Loops), Base.In + Frame, Length));
-		}
-		else if (Input.KeyShift)
-		{
-			Block.Hold = std::max(Width + Shift - Played, 0.0f);
-		}
-		else if (Loops > 1.0f)
-		{
-			const float Unit = Played / Loops;
-			Block.Loops = std::clamp(Settings.IsSnapping ? Loops + std::round(Shift / Unit) : (Played + Shift) / Unit, 1.0f, MaxLoops);
-		}
-		else
-		{
-			const float Room = (IsForward ? Length - Base.In : Out) / Speed, Wanted = std::max(Played + Shift, Frame);
-			const bool IsLooping = Wanted > Room;
-			Block.Loops = IsLooping ? std::clamp(Settings.IsSnapping ? std::round(Wanted / Room) : Wanted / Room, 1.0f, MaxLoops) : 1.0f;
-			(IsForward ? Block.Out : Block.In) = IsLooping ? 0.0f : IsForward ? Whole(std::clamp(Snap(Base.In + Wanted * Speed), Base.In + Frame, Length)) : std::clamp(Snap(Out - Wanted * Speed), 0.0f, Out - Frame);
-		}
-		BlockStarts[DragBlock] = IsLeft ? std::max(End - Runtime.BlockDuration(Block), 0.0f) : Begin;
-		PlaceBlocks(Item, Runtime, Blocks, BlockStarts);
-		return IsTrackValid(Item, Runtime, Blocks);
-	};
-	DragLimit = -1.0f;
-	if (!Trim(Delta))
-	{
-		float Lo = 0.0f, Hi = Delta;
-		for (u32 Step = 0; Step < 12; ++Step)
-		{
-			const float Mid = 0.5f * (Lo + Hi);
-			(Trim(Mid) ? Lo : Hi) = Mid;
-		}
-		if (!Trim(Lo))
-		{
-			Blocks = DragBlocks[DragLayer];
-		}
-		DragLimit = TimeAt(Item, Runtime, BlockStarts[DragBlock] + (IsLeft ? 0.0f : Runtime.BlockDuration(Blocks[DragBlock])));
+		SetStatus(true, "Clips on a row may overlap only two at a time and never lie inside another.");
+		return;
 	}
 	FocusBlock = DragBlock;
 	FocusLayer = DragLayer;
 	Refit(Core, Item);
-}
-
-u8 Editor::Overwrite(Object& Item, const ActorRuntime& Runtime, u8 Row, const ActorBlock& Moved, float Frame)
-{
-	ActorData& Setup = Item.Actor;
-	const u32 Rows = static_cast<u32>(Setup.Layers.size()) + 1;
-	const bool IsNew = Row >= Rows;
-	if (IsNew && Rows > MaxActorLayers)
-	{
-		return u8(-1);
-	}
-	const auto SeqOf = [&](const ActorBlock& Other) { return static_cast<float>(AreaAt(Item, Runtime, Item.Span.Start + Other.Start)); };
-	const float A = SeqOf(Moved), B = A + Runtime.BlockDuration(Moved);
-	CutBlocks.clear();
-	BlockStarts.clear();
-	SpanScratch.clear();
-	const xr_vector<ActorBlock>* Source = IsNew ? nullptr : &BlocksOf(Setup, Row);
-	for (u32 Index = 0; Source && Index < Source->size(); ++Index)
-	{
-		SpanScratch.push_back({ SeqOf((*Source)[Index]), Runtime.BlockDuration((*Source)[Index]) });
-	}
-	TimelineUi::PlanOverwrite(SpanScratch, A, B, Frame, CoverPlan);
-	for (u32 Index = 0; Source && Index < Source->size(); ++Index)
-	{
-		const ActorBlock& Block = (*Source)[Index];
-		const float C = SpanScratch[Index].Start, Length = Runtime.MotionLength(Block.Source, Block.Name);
-		const Cover Planned = static_cast<Cover>(CoverPlan[Index]);
-		const Cover Action = Planned == Cover::Split && Source->size() + 3 > MaxBlocks ? Cover::CutTail : Planned;
-		if (Action == Cover::Keep)
-		{
-			CutBlocks.push_back(Block);
-			BlockStarts.push_back(C);
-			continue;
-		}
-		if ((Action == Cover::Split || Action == Cover::CutTail) && A - C >= Frame)
-		{
-			ActorBlock& Head = CutBlocks.emplace_back(Block);
-			Actors::TrimBlock(Head, Length, A - C);
-			Head.FadeOut = 0.0f;
-			BlockStarts.push_back(C);
-		}
-		if (Action == Cover::Split || Action == Cover::CutHead)
-		{
-			ActorBlock Parts[2];
-			float Offsets[2] = {};
-			const u32 Count = TimelineUi::TailOf(Block, Length, B - C, Frame, Parts, Offsets);
-			for (u32 Part = 0; Part < Count; ++Part)
-			{
-				CutBlocks.push_back(Parts[Part]);
-				BlockStarts.push_back(C + Offsets[Part]);
-			}
-		}
-	}
-	const size_t At = static_cast<size_t>(std::upper_bound(BlockStarts.begin(), BlockStarts.end(), A) - BlockStarts.begin());
-	CutBlocks.insert(CutBlocks.begin() + At, Moved);
-	BlockStarts.insert(BlockStarts.begin() + At, A);
-	PlaceBlocks(Item, Runtime, CutBlocks, BlockStarts);
-	if (CutBlocks.size() > MaxBlocks || !IsTrackValid(Item, Runtime, CutBlocks))
-	{
-		return u8(-1);
-	}
-	if (IsNew)
-	{
-		Setup.Layers.push_back(NewRow(&Runtime));
-	}
-	BlocksOf(Setup, IsNew ? static_cast<u8>(Rows) : Row) = CutBlocks;
-	return IsNew ? static_cast<u8>(Rows) : Row;
 }
 
 bool Editor::SplitBlock(Player& Core, u32 Id, s32 Block, bool ShouldApply, u8 Layer)
@@ -4480,7 +3440,11 @@ float Editor::LanesHeight(const Scene& Data, u32 Id) const
 	float Height = RowHeight;
 	for (const LaneSlot& Slot : Slots)
 	{
-		Height += Slot.ObjectId == Id ? SizeOf(Data, Id, SizeLane, Slot.Id, Slot.Layer) : 0.0f;
+		const u8 Count = Slot.ObjectId != Id ? 0 : Slot.IsSplit && Info(Slot.Id).Components == 3 ? 4 : 1;
+		for (u8 Part = 0; Part < Count; ++Part)
+		{
+			Height += SizeOf(Data, Id, static_cast<u8>(SizeLane + Part), Slot.Id, Slot.Layer);
+		}
 	}
 	return Height;
 }
@@ -4594,7 +3558,7 @@ void Editor::DrawLanes(Player& Core, const Object& Target, float Left, float Top
 		{
 			continue;
 		}
-		const s32 Count = 0;
+		const s32 Count = Slot.IsSplit && Info(Slot.Id).Components == 3 ? 3 : 0;
 		const auto Height = [&](s32 Component) { return SizeOf(Core.Data, Target.Id, static_cast<u8>(SizeLane + 1 + Component), Slot.Id, Slot.Layer); };
 		float Total = 0.0f;
 		for (s32 Component = -1; Component < Count; ++Component)
@@ -4614,7 +3578,7 @@ void Editor::DrawLanes(Player& Core, const Object& Target, float Left, float Top
 			SizeEdge(Core, { Target.Id, static_cast<u8>(SizeLane + 1 + Component), Slot.Id, Slot.Layer }, Left, TrackLeft - 4.0f, Y, Bottom);
 			DrawLaneHeader(Core, Target, Slot, Component, ImRect(Left, Y, TrackLeft - 4.0f, Bottom), ShouldRemove);
 			const ImRect Area(TrackLeft, Y + 1.0f, TrackLeft + TrackWidth, Bottom - 1.0f);
-			DrawLane(Core, Target, Slot, Component, Area);
+			TimelineUi::IsPoseLane(Target, Slot.Id) ? DrawPoseLane(Core, Target, Slot, Component, Area) : DrawLane(Core, Target, Slot, Component, Area);
 			ImGui::PopID();
 			Removed = ShouldRemove ? static_cast<s32>(Index) : Removed;
 			Y = Bottom;
@@ -4638,7 +3602,7 @@ void Editor::DrawLanes(Player& Core, const Object& Target, float Left, float Top
 	Object& Item = *Edit(Core, Target.Id, "Remove lane");
 	for (const LaneTarget& Where : LaneTargets)
 	{
-		RemoveLane(Item, Where.Block, Gone.Id, Gone.Layer, LaneLocal(Item, Where.Block, Gone.Id, Core.Time));
+		RemoveLane(Item, Where.Block, Gone.Id, Gone.Layer, Core.Time - Where.Start);
 	}
 	Slots.erase(Slots.begin() + Removed);
 	std::erase_if(SelectedKeys, [&Gone](const KeyRef& Ref) { return Ref.ObjectId == Gone.ObjectId && Ref.Id == Gone.Id && Ref.Layer == Gone.Layer; });
@@ -4653,7 +3617,7 @@ void Editor::DrawLaneHeader(Player& Core, const Object& Target, LaneSlot& Slot, 
 	const ParamInfo& Meta = Info(Slot.Id);
 	const bool IsVector = Meta.Components == 3, IsMain = Component < 0;
 	const s32 Current = TimelineUi::FindTarget(LaneTargets, Target, Slot, Core.Time, true);
-	const float Size = RowHeight, Chip = 0.6f * Size, Lead = IsMain ? (IsVector ? 3.0f * Chip + 2.0f : 0.0f) : 2.0f * Size;
+	const float Size = RowHeight, Lead = IsMain ? (IsVector ? Size : 0.0f) : 2.0f * Size;
 	const float Free = std::max(Rect.GetWidth() - Lead - (Current >= 0 ? Size : 0.0f) - (IsMain ? Size : 0.0f), 2.0f);
 	const float Split = !IsMain ? 0.0f : Current >= 0 ? 0.5f * Free : Free;
 	const auto Place = [&Rect](float X, float ItemWidth)
@@ -4666,27 +3630,18 @@ void Editor::DrawLaneHeader(Player& Core, const Object& Target, LaneSlot& Slot, 
 	{
 		ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(TimelineUi::AxisColors[Component]), "%s", TimelineUi::AxisNames[Slot.Id == Param::Color][Component]);
 	}
-	for (u8 Axis = 0; IsMain && IsVector && Axis < 3; ++Axis)
+	else if (IsVector)
 	{
-		const u8 Bit = static_cast<u8>(1u << Axis);
-		Place(Axis * Chip, 0.0f);
-		ImGui::PushID(Axis);
-		ImGui::PushStyleColor(ImGuiCol_Button, (Slot.Shown & Bit) ? ImGui::ColorConvertU32ToFloat4(TimelineUi::WithAlpha(TimelineUi::AxisColors[Axis], 170)) : ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, ImGui::GetStyle().FramePadding.y));
-		if (ImGui::Button(TimelineUi::AxisNames[Slot.Id == Param::Color][Axis], ImVec2(Chip, Size - 2.0f)))
+		if (ImGui::ArrowButton("##Split", Slot.IsSplit ? ImGuiDir_Down : ImGuiDir_Right))
 		{
-			Slot.Shown = ImGui::GetIO().KeyCtrl ? static_cast<u8>(Slot.Shown ^ Bit) : Slot.Shown == Bit ? u8(7) : Bit;
-			Slot.Shown = Slot.Shown ? Slot.Shown : Bit;
+			Slot.IsSplit = !Slot.IsSplit;
 		}
-		ImGui::PopStyleVar();
-		ImGui::PopStyleColor();
-		ImGui::SetItemTooltip("Show axis");
-		ImGui::PopID();
+		ImGui::SetItemTooltip("Components");
 	}
 	if (IsMain)
 	{
 		string64 Label;
-		TimelineUi::SlotLabel(Label, Slot.Id, Slot.Layer, &Target);
+		TimelineUi::SlotLabel(Label, Slot.Id, Slot.Layer);
 		Param Picked = Slot.Id;
 		u8 PickedLayer = Slot.Layer;
 		Place(Lead, Split);
@@ -4712,7 +3667,7 @@ void Editor::DrawLaneHeader(Player& Core, const Object& Target, LaneSlot& Slot, 
 	Shown.Min = std::clamp(Shown.Min, Meta.Min, Meta.Max);
 	Shown.Max = std::clamp(Shown.Max, Shown.Min, Meta.Max);
 	Generator Value = Shown;
-	const float Range = Meta.Max - Meta.Min, Speed = (Slot.Hi[First] - Slot.Lo[First]) * 0.005f;
+	const float Range = Meta.Max - Meta.Min, Speed = (Slot.Hi - Slot.Lo) * 0.005f;
 	s32 Type = static_cast<s32>(Value.Type);
 	Place(Lead + Split, Free - Split);
 	if (TimelineUi::OpenCombo("##Wave", TimelineUi::WaveNames[Type]))
@@ -4794,8 +3749,7 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 	const ImGuiIO& Input = ImGui::GetIO();
 	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
 	const float Top = Rect.Min.y + 4.0f, Bottom = Rect.Max.y - 4.0f;
-	u8 YAxis = 0;
-	const auto ToY = [&](float Value) { return Bottom - (Value - Slot.Lo[YAxis]) / (Slot.Hi[YAxis] - Slot.Lo[YAxis]) * (Bottom - Top); };
+	const auto ToY = [&Slot, Top, Bottom](float Value) { return Bottom - (Value - Slot.Lo) / (Slot.Hi - Slot.Lo) * (Bottom - Top); };
 	const u8 From = static_cast<u8>(std::max(Component, 0)), To = Component < 0 ? Meta.Components : static_cast<u8>(Component + 1);
 	const bool IsFlat = To - From == 3;
 	ImGui::SetCursorScreenPos(Rect.Min);
@@ -4809,9 +3763,7 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 	TimelineUi::KeyHit Hit;
 
 	const Curve* HotPart = nullptr;
-	u8 HotAxis = 0;
-	s32 HotBlock = -1;
-	float HotStatic = 0.0f, HotFrom = 0.0f, HotTo = 0.0f;
+	float HotStart = 0.0f, HotStatic = 0.0f, HotFrom = 0.0f, HotTo = 0.0f;
 	for (u32 Index = 0; Index < LaneTargets.size(); ++Index)
 	{
 		const LaneTarget& Where = LaneTargets[Index];
@@ -4821,27 +3773,23 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 		}
 		const Lane* Found = Curves::FindLane(LaneList(Target, Where.Block), Slot.Id, Slot.Layer);
 		const float Begin = std::max(TimeToX(Where.Start), Rect.Min.x), End = std::min(TimeToX(Where.Start + Where.Length), Rect.Max.x);
-		const auto TimeAt = [&](float X) { return LaneLocal(Target, Where.Block, Slot.Id, XToTime(X)); };
-		const auto XAt = [&](float Time) { return TimeToX(LaneMoment(Target, Where.Block, Slot.Id, Time)); };
-		const float Earliest = TimeAt(Rect.Min.x - TimelineUi::KeyZone), Latest = TimeAt(Rect.Max.x + TimelineUi::KeyZone);
-		const float Tension = Target.Type == ObjectType::Camera && Slot.Id == Param::Position && Where.Block >= 0 && Where.Block < static_cast<s32>(Target.Camera.Blocks.size()) ? Target.Camera.Blocks[Where.Block].Tension : 1.0f;
+		const float Earliest = XToTime(Rect.Min.x - TimelineUi::KeyZone) - Where.Start, Latest = XToTime(Rect.Max.x + TimelineUi::KeyZone) - Where.Start;
+		const auto TimeAt = [&](float X) { return XToTime(X) - Where.Start; };
 		for (u8 Axis = From; Axis < To; ++Axis)
 		{
-			YAxis = Axis;
 			const Curve& Part = Found ? Found->Curves[Axis] : TimelineUi::EmptyCurve;
 			const float Static = TimelineUi::Fallback(Target, Where.Block, Slot.Id, Slot.Layer, Axis);
-			const bool IsOn = Meta.Components != 3 || ((Slot.Shown >> Axis) & 1);
-			const u32 Color = TimelineUi::WithAlpha(Meta.Components == 3 ? TimelineUi::AxisColors[Axis] : Target.Color, IsOn ? 255u : 60u);
-			const auto YAt = [&](float X) { return ToY(Curves::Value(Part, TimeAt(X), Static, Tension)); };
+			const u32 Color = Meta.Components == 3 ? TimelineUi::AxisColors[Axis] : Target.Color;
+			const auto YAt = [&](float X) { return ToY(Curves::Value(Part, TimeAt(X), Static)); };
 			TimelineUi::Plot(List, Begin, End, YAt, Color, 2.0f);
 			if (Part.Gen.Type != Wave::None)
 			{
-				TimelineUi::Plot(List, Begin, End, [&](float X) { return ToY(Curves::Result(Part, TimeAt(X), Static, Meta, Tension)); }, Lighten(Color), 1.0f);
+				TimelineUi::Plot(List, Begin, End, [&](float X) { return ToY(Curves::Result(Part, TimeAt(X), Static, Meta)); }, Lighten(Color), 1.0f);
 			}
 			const auto Next = std::upper_bound(Part.Keys.begin(), Part.Keys.end(), TimeAt(Input.MousePos.x), [](float Moment, const Key& Item) { return Moment < Item.Time; });
-			if (IsHovered && IsOn && Next != Part.Keys.begin() && Next != Part.Keys.end() && Input.MousePos.x >= Begin && Input.MousePos.x <= End)
+			if (IsHovered && Next != Part.Keys.begin() && Next != Part.Keys.end() && Input.MousePos.x >= Begin && Input.MousePos.x <= End)
 			{
-				const float Left = XAt((Next - 1)->Time), Right = XAt(Next->Time);
+				const float Left = TimeToX(Where.Start + (Next - 1)->Time), Right = TimeToX(Where.Start + Next->Time);
 				float Distance = FLT_MAX;
 				for (float Step = -TimelineUi::SegmentZone; Step <= TimelineUi::SegmentZone; Step += 1.0f)
 				{
@@ -4852,8 +3800,7 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 				{
 					Hit = { Index, Axis, static_cast<u32>(Next - Part.Keys.begin()) - 1, 3, TimelineUi::KeyZone + 1.0f + Distance, true, Input.MousePos };
 					HotPart = &Part;
-					HotAxis = Axis;
-					HotBlock = Where.Block;
+					HotStart = Where.Start;
 					HotStatic = Static;
 					HotFrom = std::max(Left, Begin);
 					HotTo = std::min(Right, End);
@@ -4863,36 +3810,33 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 			for (u32 At = static_cast<u32>(First - Part.Keys.begin()); At < Part.Keys.size() && Part.Keys[At].Time <= Latest; ++At)
 			{
 				const Key& Item = Part.Keys[At];
-				const ImVec2 Point(XAt(Item.Time), ToY(Item.Value));
+				const ImVec2 Point(TimeToX(Where.Start + Item.Time), ToY(Item.Value));
 				const KeyRef Ref { Target.Id, Where.Block, Slot.Id, Slot.Layer, Axis, At };
-				const bool IsPicked = IsOn && IsKeySelected(Ref);
-				const bool IsNear = IsOn && IsHovered && std::fabs(Point.x - Input.MousePos.x) + std::fabs(Point.y - Input.MousePos.y) <= 2.0f * TimelineUi::KeyZone;
-				if (IsOn && Drag == DragKind::BoxKeys && Marquee.Contains(Point))
+				const bool IsPicked = IsKeySelected(Ref);
+				if (Drag == DragKind::BoxKeys && Marquee.Contains(Point))
 				{
 					KeyGroup.push_back(Ref);
 				}
-				for (u8 Side = 1; (IsPicked || IsNear) && Side < 3; ++Side)
+				if (IsPicked && Item.Mode == Interp::Bezier && At + 1 < Part.Keys.size())
 				{
-					if (Side == 2 ? At + 1 < Part.Keys.size() : At > 0)
-					{
-						const ImVec2 Arm = TimelineUi::TangentOf(Part, At, Side == 2, Static);
-						TimelineUi::DrawHandle(List, Hit, Input.MousePos, Point, ImVec2(XAt(Item.Time + Arm.x), ToY(Item.Value + Arm.y)), Index, Axis, At, Side);
-					}
+					const float Width = Part.Keys[At + 1].Time - Item.Time;
+					TimelineUi::DrawHandle(List, Hit, Input.MousePos, Point, ImVec2(TimeToX(Where.Start + Item.Time + std::clamp(Item.OutTime, 0.0f, Width)), ToY(Item.Value + Item.OutValue)), Index, Axis, At, 2);
 				}
-				const u32 Fill = TimelineUi::WithAlpha(IsPicked ? ImGui::GetColorU32(ImGuiCol_Text) : Color, !IsOn ? 60u : Item.Time > Where.Length ? 110u : 255u);
+				if (IsPicked && At > 0 && Part.Keys[At - 1].Mode == Interp::Bezier)
+				{
+					const float Width = Item.Time - Part.Keys[At - 1].Time;
+					TimelineUi::DrawHandle(List, Hit, Input.MousePos, Point, ImVec2(TimeToX(Where.Start + Item.Time + std::clamp(Item.InTime, -Width, 0.0f)), ToY(Item.Value + Item.InValue)), Index, Axis, At, 1);
+				}
+				const u32 Fill = TimelineUi::WithAlpha(IsPicked ? ImGui::GetColorU32(ImGuiCol_Text) : Color, Item.Time > Where.Length ? 110u : 255u);
 				List->AddNgonFilled(Point, TimelineUi::KeyRadius, Fill, 4);
 				List->AddNgon(Point, TimelineUi::KeyRadius, TimelineUi::Separator, 4);
-				if (IsOn)
-				{
-					TimelineUi::Test(Hit, Input.MousePos, Point, Index, Axis, At, 0);
-				}
+				TimelineUi::Test(Hit, Input.MousePos, Point, Index, Axis, At, 0);
 			}
 		}
 	}
 	if (IsHovered && Hit.HasHit && Hit.Handle == 3)
 	{
-		YAxis = HotAxis;
-		TimelineUi::Plot(List, HotFrom, HotTo, [&](float X) { return ToY(Curves::Value(*HotPart, LaneLocal(Target, HotBlock, Slot.Id, XToTime(X)), HotStatic)); }, ImGui::GetColorU32(ImGuiCol_Text), 2.0f);
+		TimelineUi::Plot(List, HotFrom, HotTo, [&](float X) { return ToY(Curves::Value(*HotPart, XToTime(X) - HotStart, HotStatic)); }, ImGui::GetColorU32(ImGuiCol_Text), 2.0f);
 	}
 	else if (IsHovered && Hit.HasHit)
 	{
@@ -4902,62 +3846,25 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 	{
 		ImGui::SetMouseCursor(Hit.Handle == 3 ? ImGuiMouseCursor_ResizeNS : ImGuiMouseCursor_Hand);
 	}
-	for (const LaneTarget& Where : LaneTargets)
-	{
-		const Lane* Found = Rect.GetHeight() >= 2.0f * RowHeight ? Curves::FindLane(LaneList(Target, Where.Block), Slot.Id, Slot.Layer) : nullptr;
-		for (u8 Axis = From; Found && Axis < To; ++Axis)
-		{
-			const xr_vector<Key>& Keys = Found->Curves[Axis].Keys;
-			if (Keys.empty() || (Meta.Components == 3 && !((Slot.Shown >> Axis) & 1)))
-			{
-				continue;
-			}
-			const u32 Color = Meta.Components == 3 ? TimelineUi::AxisColors[Axis] : ImGui::GetColorU32(ImGuiCol_Text);
-			YAxis = Axis;
-			const float Head = LaneMoment(Target, Where.Block, Slot.Id, Keys.front().Time), Tail = LaneMoment(Target, Where.Block, Slot.Id, Keys.back().Time);
-			TimelineUi::EndTag(List, Rect, ImVec2(TimeToX(Head), ToY(Keys.front().Value)), Head, Keys.front().Value, Core.Data.Header.FrameRate, Color);
-			if (Keys.size() > 1)
-			{
-				TimelineUi::EndTag(List, Rect, ImVec2(TimeToX(Tail), ToY(Keys.back().Value)), Tail, Keys.back().Value, Core.Data.Header.FrameRate, Color);
-			}
-			break;
-		}
-	}
-	const u8 Label = TimelineUi::LabelAxis(Meta.Components == 3 ? Slot.Shown : u8(1));
-	TimelineUi::RangeLabels(List, Rect, Slot.Lo[Label], Slot.Hi[Label], Top, Bottom);
 	List->PopClipRect();
 	const bool IsPressed = ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
 	if (IsPressed && Hit.HasHit)
 	{
 		const LaneTarget& Where = LaneTargets[Hit.Target];
 		const KeyRef Ref { Target.Id, Where.Block, Slot.Id, Slot.Layer, Hit.Component, Hit.Index };
-		const Curve* Source = TimelineUi::FindCurve(Core.Data, Ref);
-		const u32 Head = Hit.Handle == 1 ? Hit.Index - 1 : Hit.Index;
-		if ((Hit.Handle == 1 || Hit.Handle == 2) && Source && Head + 1 < Source->Keys.size() && Source->Keys[Head].Mode != Interp::Bezier)
-		{
-			const float Static = TimelineUi::Fallback(Target, Where.Block, Slot.Id, Slot.Layer, Hit.Component);
-			const ImVec2 Out = TimelineUi::TangentOf(*Source, Head, true, Static), In = TimelineUi::TangentOf(*Source, Head + 1, false, Static);
-			Edit(Core, Target.Id, "Tangent");
-			Curve* Live = TimelineUi::FindCurve(Core.Data, Ref);
-			Live->Keys[Head].Mode = Interp::Bezier;
-			Live->Keys[Head].OutTime = Out.x;
-			Live->Keys[Head].OutValue = Out.y;
-			Live->Keys[Head + 1].InTime = In.x;
-			Live->Keys[Head + 1].InValue = In.y;
-		}
 		Drag = TimelineUi::HitDrags[Hit.Handle + (Hit.Handle == 3 && Input.KeyCtrl ? 1 : 0)];
 		DragObject = Target.Id;
 		DragKey = Ref;
 		DragKeyStart = *TimelineUi::FindKey(Core.Data, Ref);
-		DragKeyTime = LaneMoment(Target, Where.Block, Slot.Id, DragKeyStart.Time);
+		DragKeyTime = Where.Start + DragKeyStart.Time;
 		DragTime = XToTime(Input.MousePos.x);
 		DragOriginY = Input.MousePos.y;
 		DragLaneHeight = std::max(Bottom - Top, 1.0f);
-		DragSpan = TimelineUi::DragRange(Slot.Id, Slot.Hi[Ref.Component] - Slot.Lo[Ref.Component], DragLaneHeight);
+		DragSpan = Slot.Hi - Slot.Lo;
 		IsDragFlat = IsFlat;
 		IsDragCopy = Drag == DragKind::LaneKeys && Input.KeyCtrl;
 		HasDragMoved = false;
-		GroupKeys(Target, Where.Block, Slot, static_cast<s32>(Hit.Component), Ref, HalfFrame);
+		GroupKeys(Target, Where.Block, Slot, Hit.Handle ? static_cast<s32>(Hit.Component) : Component, Ref, HalfFrame);
 		WasPressSelected = Drag == DragKind::LaneKeys && IsKeySelected(Ref);
 		if (Hit.Handle == 3)
 		{
@@ -4983,43 +3890,166 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 	if (ImGui::IsItemDeactivated() && Drag == DragKind::BoxKeys && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Left] < TimelineUi::EdgeZone * TimelineUi::EdgeZone && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
 	{
 		const ImVec2 At = Input.MouseClickedPos[ImGuiMouseButton_Left];
-		AddLaneKey(Core, Target, Slot, Component, XToTime(At.x), (Bottom - At.y) / std::max(Bottom - Top, 1.0f));
+		AddLaneKey(Core, Target, Slot, Component, XToTime(At.x), Slot.Lo + (Bottom - At.y) / std::max(Bottom - Top, 1.0f) * (Slot.Hi - Slot.Lo));
 		AddedKeyTime = ImGui::GetTime();
 	}
 	if (ImGui::IsItemDeactivated() && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < 16.0f && Hit.HasHit)
 	{
 		const LaneTarget& Where = LaneTargets[Hit.Target];
-		GroupKeys(Target, Where.Block, Slot, static_cast<s32>(Hit.Component), { Target.Id, Where.Block, Slot.Id, Slot.Layer, Hit.Component, Hit.Index }, HalfFrame);
+		GroupKeys(Target, Where.Block, Slot, Component, { Target.Id, Where.Block, Slot.Id, Slot.Layer, Hit.Component, Hit.Index }, HalfFrame);
 		if (!IsKeySelected(KeyGroup[0]))
 		{
 			SelectKeys(false);
 		}
 		PopupRequest = "##KeyMenu";
 	}
-	if (ImGui::IsItemDeactivated() && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < 16.0f && !Hit.HasHit)
+}
+
+void Editor::DrawPoseLane(Player& Core, const Object& Rig, const LaneSlot& Slot, s32 Component, const ImRect& Rect)
+{
+	const ImGuiIO& Input = ImGui::GetIO();
+	const ParamInfo& Meta = Info(Slot.Id);
+	const float Top = Rect.Min.y + 4.0f, Bottom = Rect.Max.y - 4.0f, Span = Slot.Hi - Slot.Lo;
+	const auto ToY = [&](float Value) { return Bottom - (Value - Slot.Lo) / Span * (Bottom - Top); };
+	const u8 From = static_cast<u8>(std::max(Component, 0)), To = Component < 0 ? 3 : static_cast<u8>(Component + 1);
+	const bool IsRotation = Slot.Id == Param::Rotation;
+	ImGui::SetCursorScreenPos(Rect.Min);
+	ImGui::InvisibleButton("##Lane", Rect.GetSize(), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+	CanvasId = ImGui::IsItemActive() ? ImGui::GetItemID() : CanvasId;
+	const bool IsHovered = ImGui::IsItemHovered() && Drag == DragKind::None;
+	HoverLane(Rig.Id, Slot);
+	ImDrawList* List = ImGui::GetWindowDrawList();
+	List->PushClipRect(Rect.Min, Rect.Max, true);
+	List->AddRectFilled(Rect.Min, Rect.Max, ImGui::GetColorU32(ImGuiCol_FrameBg));
+	TimelineUi::KeyHit Hit;
+	for (u32 Index = 0; Index < Rig.Camera.Blocks.size(); ++Index)
 	{
-		const float At = XToTime(Input.MouseClickedPos[ImGuiMouseButton_Right].x);
-		const s32 Index = TimelineUi::FindTarget(LaneTargets, Target, Slot, At, false);
-		if (Index >= 0)
+		const CameraBlock& Shot = Rig.Camera.Blocks[Index];
+		const float Start = Rig.Span.Start + Shot.Start;
+		const BlockCache* Cache = Core.FindCameraBlock(Index);
+		if (!Cache || Cache->Path.Empty() || Shot.Keys.empty())
 		{
-			CurveMenu = { Target.Id, LaneTargets[Index].Block, Slot.Id, Slot.Layer, Info(Slot.Id).Components == 3 ? Slot.Shown : u8(1), LaneLocal(Target, LaneTargets[Index].Block, Slot.Id, At), 0.25f * (Slot.Hi[TimelineUi::LabelAxis(Slot.Shown)] - Slot.Lo[TimelineUi::LabelAxis(Slot.Shown)]) };
-			PopupRequest = "##CurveMenu";
+			continue;
 		}
+		const float Begin = std::max(TimeToX(Start), Rect.Min.x), End = std::min(TimeToX(Start + Shot.Length), Rect.Max.x);
+		const float Path = Cameras::PathTime(Shot, *Cache, XToTime(Begin) - Start);
+		const auto Before = std::upper_bound(Shot.Keys.begin(), Shot.Keys.end(), Path, [](float Moment, const PoseKey& Item) { return Moment < Item.Time; });
+		for (u8 Axis = From; Axis < To; ++Axis)
+		{
+			const u32 Seed = Before == Shot.Keys.begin() ? 0u : static_cast<u32>(Before - Shot.Keys.begin()) - 1u;
+			float Previous = TimelineUi::PoseField(Shot.Keys[0], Slot.Id)[Axis];
+			for (u32 At = 1; At <= Seed; ++At)
+			{
+				Previous = IsRotation ? TimelineUi::Unwrap(TimelineUi::PoseField(Shot.Keys[At], Slot.Id)[Axis], Previous) : TimelineUi::PoseField(Shot.Keys[At], Slot.Id)[Axis];
+			}
+			TimelineUi::Plot(List, Begin, End, [&](float X)
+			{
+				Fvector Position, Turn;
+				Fmatrix Orientation = Fidentity;
+				Cache->Path.Evaluate(Cameras::PathTime(Shot, *Cache, XToTime(X) - Start), Position, Orientation);
+				Orientation.getHPB(Turn);
+				const float Raw = IsRotation ? rad2deg(Turn[Axis]) : Position[Axis];
+				Previous = IsRotation ? Raw + 360.0f * std::round((Previous - Raw) / 360.0f) : Raw;
+				return ToY(Previous);
+			}, TimelineUi::AxisColors[Axis], 2.0f);
+			float Turned = TimelineUi::PoseField(Shot.Keys[0], Slot.Id)[Axis];
+			for (u32 At = 0; At < Shot.Keys.size(); ++At)
+			{
+				const float Local = Cameras::LocalFromPath(Shot, *Cache, Shot.Keys[At].Time), Raw = TimelineUi::PoseField(Shot.Keys[At], Slot.Id)[Axis];
+				Turned = IsRotation ? TimelineUi::Unwrap(Raw, Turned) : Raw;
+				const ImVec2 Point(TimeToX(Start + Local), ToY(Turned));
+				const bool IsDragged = Drag == DragKind::PoseKey && DragBlock == static_cast<s32>(Index) && DragPose == static_cast<s32>(At);
+				List->AddNgonFilled(Point, TimelineUi::KeyRadius, TimelineUi::WithAlpha(IsDragged ? ImGui::GetColorU32(ImGuiCol_Text) : TimelineUi::AxisColors[Axis], Local > Shot.Length ? 110u : 255u), 4);
+				List->AddNgon(Point, TimelineUi::KeyRadius, TimelineUi::Separator, 4);
+				TimelineUi::Test(Hit, Input.MousePos, Point, Index, Axis, At, 0);
+			}
+		}
+	}
+	if (IsHovered && Hit.HasHit)
+	{
+		List->AddCircle(Hit.Point, TimelineUi::KeyRadius + 3.0f, ImGui::GetColorU32(ImGuiCol_Text));
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		HoverBlock = static_cast<s32>(Hit.Target);
+		HoverPose = static_cast<s32>(Hit.Index);
+	}
+	List->PopClipRect();
+	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
+	if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && Hit.HasHit && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::GetTime() - AddedKeyTime > Input.MouseDoubleClickTime)
+	{
+		RemovePose(Core, static_cast<s32>(Hit.Target), Hit.Index);
+	}
+	else if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && Hit.HasHit)
+	{
+		Press(Core, DragKind::PoseKey, Rig.Id, false);
+		DragBlock = FocusBlock = static_cast<s32>(Hit.Target);
+		DragPose = static_cast<s32>(Hit.Index);
+		DragPoseAxis = (IsRotation ? 3 : 0) + Hit.Component;
+		IsPoseRetimed = false;
+		DragShot = Rig.Camera.Blocks[Hit.Target];
+		DragOriginY = Input.MousePos.y;
+		DragLaneHeight = std::max(Bottom - Top, 1.0f);
+		DragSpan = Span;
+		PinShakes(Rig);
+		DragIds.clear();
+		CollectSnapTargets(Core, true);
+		FocusObject = Rig.Id;
+		Focus = FocusKind::Block;
+	}
+	else if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		StartBox(DragKind::BoxKeys);
+	}
+	if (ImGui::IsItemDeactivated() && Drag == DragKind::BoxKeys && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Left] < TimelineUi::EdgeZone * TimelineUi::EdgeZone && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+	{
+		const ImVec2 At = Input.MouseClickedPos[ImGuiMouseButton_Left];
+		const s32 Block = Cameras::BlockAt(Rig.Camera, XToTime(At.x) - Rig.Span.Start);
+		if (Block < 0)
+		{
+			SetStatus(false, "Pose keys go inside a camera clip.");
+			return;
+		}
+		const float Begin = TargetStart(Rig, Block);
+		DragIds.clear();
+		CollectSnapTargets(Core, true);
+		const float Local = std::clamp(SnapTime(XToTime(At.x), Input.KeyShift), Begin, Begin + Rig.Camera.Blocks[Block].Length) - Begin;
+		PoseKey Pose;
+		u32 Index = 0;
+		const BlockCache* Cache = PoseAt(Core, Rig.Camera.Blocks[Block], Block, Local, Pose, Index);
+		if (!Cache)
+		{
+			return;
+		}
+		Fvector& Field = TimelineUi::PoseField(Pose, Slot.Id);
+		const float Value = std::clamp(Slot.Lo + (Bottom - At.y) / std::max(Bottom - Top, 1.0f) * Span, Meta.Min, Meta.Max);
+		const auto Near = [IsRotation, Value](float Raw) { return IsRotation ? TimelineUi::Unwrap(Raw, Value) : Raw; };
+		const float Values[3] = { Near(Field.x), Near(Field.y), Near(Field.z) };
+		const u8 Axis = TimelineUi::Nearest(Values, From, To, Value);
+		Field[Axis] = IsRotation ? TimelineUi::Unwrap(Value, Field[Axis]) : Value;
+		PutPose(Edit(Core, Rig.Id, "Add pose key")->Camera.Blocks[Block], *Cache, Local, HalfFrame, Pose);
+		FocusObject = Rig.Id;
+		FocusBlock = Block;
+		Focus = FocusKind::Block;
+		AddedKeyTime = ImGui::GetTime();
+	}
+	if (ImGui::IsItemDeactivated() && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Right] < 16.0f && Hit.HasHit)
+	{
+		OpenRowMenu(Rig.Id, false);
+		PopupBlock = static_cast<s32>(Hit.Target);
+		PopupPose = static_cast<s32>(Hit.Index);
+		PopupRequest = "##PoseMenu";
 	}
 }
 
-void Editor::DrawKeyTicks(ImDrawList* List, const xr_vector<Lane>& Lanes, float Start, float Y, u32 Color, const CameraBlock* Path) const
+void Editor::DrawKeyTicks(ImDrawList* List, const xr_vector<Lane>& Lanes, float Start, float Y, u32 Color) const
 {
 	const float Earliest = XToTime(TrackLeft) - Start, Latest = XToTime(TrackLeft + TrackWidth) - Start;
 	for (const Lane& Track : Lanes)
 	{
-		const CameraBlock* Warp = Track.Id <= Param::Rotation ? Path : nullptr;
-		const float Lo = Warp ? Cameras::PathTime(*Warp, Earliest) : Earliest, Hi = Warp ? Cameras::PathTime(*Warp, Latest) : Latest;
 		for (const Curve& Part : Track.Curves)
 		{
-			for (auto Item = std::lower_bound(Part.Keys.begin(), Part.Keys.end(), Lo, [](const Key& Other, float Moment) { return Other.Time < Moment; }); Item != Part.Keys.end() && Item->Time <= Hi; ++Item)
+			for (auto Item = std::lower_bound(Part.Keys.begin(), Part.Keys.end(), Earliest, [](const Key& Other, float Moment) { return Other.Time < Moment; }); Item != Part.Keys.end() && Item->Time <= Latest; ++Item)
 			{
-				List->AddNgonFilled(ImVec2(TimeToX(Start + (Warp ? Cameras::LocalFromPath(*Warp, Item->Time) : Item->Time)), Y), TimelineUi::TickRadius, Color, 4);
+				List->AddNgonFilled(ImVec2(TimeToX(Start + Item->Time), Y), TimelineUi::TickRadius, Color, 4);
 			}
 		}
 	}
@@ -5028,7 +4058,22 @@ void Editor::DrawKeyTicks(ImDrawList* List, const xr_vector<Lane>& Lanes, float 
 void Editor::FitLane(const Object& Target, LaneSlot& Slot)
 {
 	const ParamInfo& Meta = Info(Slot.Id);
-	float Lo[3] = { FLT_MAX, FLT_MAX, FLT_MAX }, Hi[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	float Lo = FLT_MAX, Hi = -FLT_MAX;
+	for (u32 Index = 0; TimelineUi::IsPoseLane(Target, Slot.Id) && Index < Target.Camera.Blocks.size(); ++Index)
+	{
+		const xr_vector<PoseKey>& Keys = Target.Camera.Blocks[Index].Keys;
+		Fvector Near = Keys.empty() ? Fvector().set(0.0f, 0.0f, 0.0f) : TimelineUi::PoseField(Keys[0], Slot.Id);
+		for (const PoseKey& Item : Keys)
+		{
+			const Fvector& Raw = TimelineUi::PoseField(Item, Slot.Id);
+			for (u32 Axis = 0; Axis < 3; ++Axis)
+			{
+				Near[Axis] = Slot.Id == Param::Rotation ? TimelineUi::Unwrap(Raw[Axis], Near[Axis]) : Raw[Axis];
+			}
+			Lo = std::min({ Lo, Near.x, Near.y, Near.z });
+			Hi = std::max({ Hi, Near.x, Near.y, Near.z });
+		}
+	}
 	for (const LaneTarget& Where : LaneTargets)
 	{
 		const Lane* Found = Curves::FindLane(LaneList(Target, Where.Block), Slot.Id, Slot.Layer);
@@ -5043,19 +4088,15 @@ void Editor::FitLane(const Object& Target, LaneSlot& Slot)
 				PartHi = std::max({ PartHi, Item.Value, Item.Value + Item.InValue, Item.Value + Item.OutValue });
 			}
 			const float Amplitude = Part.Gen.Type == Wave::None ? 0.0f : std::fabs(Part.Gen.Amplitude);
-			Lo[Axis] = std::min({ Lo[Axis], PartLo, std::max(PartLo - Amplitude, std::max(Meta.Min, Part.Gen.Min)) });
-			Hi[Axis] = std::max({ Hi[Axis], PartHi, std::min(PartHi + Amplitude, std::min(Meta.Max, Part.Gen.Max)) });
+			Lo = std::min({ Lo, PartLo, std::max(PartLo - Amplitude, std::max(Meta.Min, Part.Gen.Min)) });
+			Hi = std::max({ Hi, PartHi, std::min(PartHi + Amplitude, std::min(Meta.Max, Part.Gen.Max)) });
 		}
 	}
-	const float MinSpan = Slot.Id == Param::Position ? 2.0f : Slot.Id == Param::BonePosition || Slot.Id == Param::BoneScale ? 0.2f : std::min(0.25f * (Meta.Max - Meta.Min), 10.0f);
-	for (u32 Axis = 0; Axis < 3; ++Axis)
-	{
-		const bool IsSeen = Lo[Axis] <= Hi[Axis];
-		const float Middle = IsSeen ? 0.5f * (Lo[Axis] + Hi[Axis]) : Meta.Min + 0.5f * MinSpan, Reach = 0.75f * (IsSeen ? std::max(Hi[Axis] - Lo[Axis], MinSpan) : MinSpan);
-		const float Shift = std::max(Meta.Min - (Middle - Reach), 0.0f) + std::min(Meta.Max - (Middle + Reach), 0.0f);
-		Slot.Lo[Axis] = Middle - Reach + Shift;
-		Slot.Hi[Axis] = Middle + Reach + Shift;
-	}
+	const float MinSpan = std::min(0.25f * (Meta.Max - Meta.Min), 10.0f);
+	const float Middle = Lo <= Hi ? 0.5f * (Lo + Hi) : Meta.Min + 0.5f * MinSpan, Reach = 0.75f * (Lo <= Hi ? std::max(Hi - Lo, MinSpan) : MinSpan);
+	const float Shift = std::max(Meta.Min - (Middle - Reach), 0.0f) + std::min(Meta.Max - (Middle + Reach), 0.0f);
+	Slot.Lo = Middle - Reach + Shift;
+	Slot.Hi = Middle + Reach + Shift;
 	Slot.IsFitted = true;
 }
 
@@ -5071,7 +4112,7 @@ void Editor::AddLaneKey(Player& Core, const Object& Target, const LaneSlot& Slot
 	{
 		const Lane* Track = Curves::FindLane(LaneList(Target, Where.Block), Slot.Id, Slot.Layer);
 		const float Static = TimelineUi::Fallback(Target, Where.Block, Slot.Id, Slot.Layer, 0);
-		return std::fabs(((Track ? Curves::Value(Track->Curves[0], LaneLocal(Target, Where.Block, Slot.Id, Time), Static) : Static) - Slot.Lo[0]) / (Slot.Hi[0] - Slot.Lo[0]) - NewValue);
+		return std::fabs((Track ? Curves::Value(Track->Curves[0], Time - Where.Start, Static) : Static) - NewValue);
 	};
 	for (u32 Other = 0; LaneTargets[Index].Block >= ShakeBase && Other < LaneTargets.size(); ++Other)
 	{
@@ -5084,29 +4125,23 @@ void Editor::AddLaneKey(Player& Core, const Object& Target, const LaneSlot& Slot
 	DragIds.clear();
 	CollectSnapTargets(Core, true);
 	Time = std::clamp(SnapTime(Time, ImGui::GetIO().KeyShift), Found->Start, Found->Start + Found->Length);
-	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate), Local = LaneLocal(Target, Found->Block, Slot.Id, Time);
+	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate), Local = Time - Found->Start;
 	Object& Item = *Edit(Core, Target.Id, "Add key");
 	UseGameFov(Item, Found->Block, Slot.Id);
 	Lane& Track = Curves::EnsureLane(LaneList(Item, Found->Block), Slot.Id, Slot.Layer);
 	const ParamInfo& Meta = Info(Slot.Id);
 	const u8 First = static_cast<u8>(std::max(Component, 0)), Last = Component < 0 ? Meta.Components : static_cast<u8>(Component + 1);
-	float Values[3] = {}, Levels[3] = {};
-	const auto IsOn = [&](u8 Axis) { return Meta.Components != 3 || ((Slot.Shown >> Axis) & 1); };
+	float Values[3] = {};
 	for (u8 Axis = First; Axis < Last; ++Axis)
 	{
-		Values[Axis] = IsOn(Axis) ? Curves::Value(Track.Curves[Axis], Local, TimelineUi::Fallback(Item, Found->Block, Slot.Id, Slot.Layer, Axis)) : FLT_MAX;
-		Levels[Axis] = IsOn(Axis) ? (Values[Axis] - Slot.Lo[Axis]) / (Slot.Hi[Axis] - Slot.Lo[Axis]) : FLT_MAX;
+		Values[Axis] = Curves::Value(Track.Curves[Axis], Local, TimelineUi::Fallback(Item, Found->Block, Slot.Id, Slot.Layer, Axis));
 	}
-	const u8 Picked = TimelineUi::Nearest(Levels, First, Last, NewValue);
+	const u8 Picked = TimelineUi::Nearest(Values, First, Last, NewValue);
 	KeyGroup.clear();
 	for (u8 Axis = First; Axis < Last; ++Axis)
 	{
-		if (!IsOn(Axis) || Axis != Picked)
-		{
-			continue;
-		}
 		Curve& Part = Track.Curves[Axis];
-		Curves::SetKey(Part, Local, std::clamp(Slot.Lo[Axis] + NewValue * (Slot.Hi[Axis] - Slot.Lo[Axis]), Meta.Min, Meta.Max), HalfFrame);
+		Curves::SetKey(Part, Local, Axis == Picked ? std::clamp(NewValue, Meta.Min, Meta.Max) : Values[Axis], HalfFrame);
 		const u32 At = Curves::KeyAt(Part, Local, HalfFrame);
 		if (At != u32(-1))
 		{
@@ -5127,7 +4162,7 @@ void Editor::GroupKeys(const Object& Target, s32 Block, const LaneSlot& Slot, s3
 	for (u8 Axis = 0; Found && Component < 0 && Axis < Info(Slot.Id).Components; ++Axis)
 	{
 		const u32 At = Curves::KeyAt(Found->Curves[Axis], Found->Curves[Hit.Component].Keys[Hit.Index].Time, HalfFrame);
-		if (Axis != Hit.Component && At != u32(-1) && ((Slot.Shown >> Axis) & 1))
+		if (Axis != Hit.Component && At != u32(-1))
 		{
 			KeyGroup.push_back({ Hit.ObjectId, Hit.Block, Hit.Id, Hit.Layer, Axis, At });
 		}
@@ -5193,16 +4228,8 @@ void Editor::DragLane(Player& Core)
 		}
 		else
 		{
-			const float Time = IsIn ? std::clamp(DragKeyStart.InTime + Shift, -Width, 0.0f) : std::clamp(DragKeyStart.OutTime + Shift, 0.0f, Width);
-			const float Value = Sanitize((IsIn ? DragKeyStart.InValue : DragKeyStart.OutValue) + Rise * DragSpan, -100000.0f, 100000.0f, 0.0f);
-			const bool HasOpposite = IsIn ? DragKey.Index + 1 < Part->Keys.size() && Item->Mode == Interp::Bezier : DragKey.Index > 0 && Part->Keys[DragKey.Index - 1].Mode == Interp::Bezier;
-			(IsIn ? Item->InTime : Item->OutTime) = Time;
-			(IsIn ? Item->InValue : Item->OutValue) = Value;
-			Item->IsBroken = Item->IsBroken || Input.KeyCtrl;
-			if (HasOpposite && !Item->IsBroken && std::fabs(Time) > 1e-5f)
-			{
-				(IsIn ? Item->OutValue : Item->InValue) = Sanitize((IsIn ? DragKeyStart.OutTime : DragKeyStart.InTime) * Value / Time, -100000.0f, 100000.0f, 0.0f);
-			}
+			(IsIn ? Item->InTime : Item->OutTime) = IsIn ? std::clamp(DragKeyStart.InTime + Shift, -Width, 0.0f) : std::clamp(DragKeyStart.OutTime + Shift, 0.0f, Width);
+			(IsIn ? Item->InValue : Item->OutValue) = Sanitize((IsIn ? DragKeyStart.InValue : DragKeyStart.OutValue) + Rise * DragSpan, -100000.0f, 100000.0f, 0.0f);
 		}
 		if (DragKey.Id == Param::TimeScale)
 		{
@@ -5237,7 +4264,7 @@ void Editor::BeginKeyMove(Player& Core, const char* Label)
 		{
 			Edit(Core, Ref.ObjectId, Label);
 			const LaneSlot* Slot = FindSlot(Ref.ObjectId, Ref.Id, Ref.Layer);
-			DragCurves.push_back({ Owner, Slot ? TimelineUi::DragRange(Ref.Id, Slot->Hi[Ref.Component] - Slot->Lo[Ref.Component], DragLaneHeight) : DragSpan, *Part });
+			DragCurves.push_back({ Owner, Slot ? Slot->Hi - Slot->Lo : DragSpan, *Part });
 		}
 		DragMoves.push_back({ static_cast<u32>(DragCurves.size() - 1), Ref.Index });
 	}
@@ -5245,7 +4272,7 @@ void Editor::BeginKeyMove(Player& Core, const char* Label)
 	{
 		if (!IsMoved)
 		{
-			SnapTargets.push_back(LaneMoment(*Find(Core.Data, Item.Ref.ObjectId), Item.Ref.Block, Item.Ref.Id, Item.Base.Keys[At].Time));
+			SnapTargets.push_back(TargetStart(*Find(Core.Data, Item.Ref.ObjectId), Item.Ref.Block) + Item.Base.Keys[At].Time);
 		}
 	});
 }
@@ -5259,13 +4286,6 @@ void Editor::MoveKeys(Player& Core, float Shift, float Rise)
 		Latest = std::max(Latest, DragCurves[Move.Source].Base.Keys[Move.Index].Time);
 	}
 	Shift = std::clamp(Shift, -Earliest, MaxTime - Latest);
-	DragTimes.clear();
-	for (const KeyMove& Move : DragMoves)
-	{
-		const LaneDrag& Item = DragCurves[Move.Source];
-		const Object& Owner = *Find(Core.Data, Item.Ref.ObjectId);
-		DragTimes.push_back(std::clamp(LaneLocal(Owner, Item.Ref.Block, Item.Ref.Id, LaneMoment(Owner, Item.Ref.Block, Item.Ref.Id, Item.Base.Keys[Move.Index].Time) + Shift), 0.0f, MaxTime));
-	}
 	for (LaneDrag& Item : DragCurves)
 	{
 		Item.Live = TimelineUi::FindCurve(Core.Data, Item.Ref);
@@ -5282,14 +4302,13 @@ void Editor::MoveKeys(Player& Core, float Shift, float Rise)
 		}
 	});
 	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
-	for (u32 Index = 0; Index < DragMoves.size(); ++Index)
+	for (const KeyMove& Move : DragMoves)
 	{
-		const KeyMove& Move = DragMoves[Index];
 		const LaneDrag& Item = DragCurves[Move.Source];
 		const ParamInfo& Meta = Info(Item.Ref.Id);
 		const bool IsLifted = !IsDragFlat || (Item.Ref.Id == DragKey.Id && Item.Ref.Layer == DragKey.Layer && Item.Ref.Component == DragKey.Component);
 		Key Moved = Item.Base.Keys[Move.Index];
-		Moved.Time = DragTimes[Index];
+		Moved.Time = Moved.Time + Shift;
 		Moved.Value = std::clamp(Moved.Value + (IsLifted ? Rise * Item.Span : 0.0f), Meta.Min, Meta.Max);
 		if (Item.Live)
 		{
@@ -5297,10 +4316,10 @@ void Editor::MoveKeys(Player& Core, float Shift, float Rise)
 		}
 	}
 	SelectedKeys.clear();
-	for (u32 Index = 0; Index < DragMoves.size(); ++Index)
+	for (const KeyMove& Move : DragMoves)
 	{
-		const LaneDrag& Item = DragCurves[DragMoves[Index].Source];
-		const u32 At = Item.Live ? Curves::KeyAt(*Item.Live, DragTimes[Index], 0.0f) : u32(-1);
+		const LaneDrag& Item = DragCurves[Move.Source];
+		const u32 At = Item.Live ? Curves::KeyAt(*Item.Live, Item.Base.Keys[Move.Index].Time + Shift, 0.0f) : u32(-1);
 		if (At != u32(-1))
 		{
 			SelectedKeys.push_back(Item.Ref);
@@ -5336,11 +4355,6 @@ void Editor::DrawKeyMenu(Player& Core)
 		}
 		ImGui::EndMenu();
 	}
-	if (ImGui::MenuItem("Broken tangents", nullptr, First && First->IsBroken, First != nullptr))
-	{
-		const bool IsBroken = !First->IsBroken;
-		ForSelectedKeys(Core, "Tangents", [IsBroken](Object&, const KeyRef& Ref, Curve& Part) { Part.Keys[Ref.Index].IsBroken = IsBroken; });
-	}
 	if (ImGui::MenuItem("Easy ease", nullptr, false, First != nullptr))
 	{
 		ForSelectedKeys(Core, "Easy ease", [](Object&, const KeyRef& Ref, Curve& Part) { Curves::EasyEase(Part, Ref.Index); });
@@ -5348,118 +4362,6 @@ void Editor::DrawKeyMenu(Player& Core)
 	if (ImGui::MenuItem("Remove", "Delete", false, First != nullptr))
 	{
 		RemoveKeys(Core);
-	}
-	ImGui::EndPopup();
-}
-
-template <typename TFunc>
-void Editor::ForMenuCurves(Player& Core, const char* Label, const TFunc& Visit)
-{
-	const Object* Owner = Find(Core.Data, CurveMenu.ObjectId);
-	if (!Owner || !HasOwner(*Owner, CurveMenu.Block))
-	{
-		return;
-	}
-	Object& Item = *Edit(Core, CurveMenu.ObjectId, Label);
-	UseGameFov(Item, CurveMenu.Block, CurveMenu.Id);
-	Lane& Track = Curves::EnsureLane(LaneList(Item, CurveMenu.Block), CurveMenu.Id, CurveMenu.Layer);
-	for (u8 Axis = 0; Axis < Info(CurveMenu.Id).Components; ++Axis)
-	{
-		if ((CurveMenu.Mask >> Axis) & 1)
-		{
-			Visit(Item, Track.Curves[Axis], Axis);
-		}
-	}
-	SelectedKeys.clear();
-	if (CurveMenu.Id == Param::TimeScale)
-	{
-		Refit(Core, Item);
-	}
-}
-
-void Editor::DrawCurveMenu(Player& Core)
-{
-	if (!ImGui::BeginPopup("##CurveMenu"))
-	{
-		return;
-	}
-	const Object* Owner = Find(Core.Data, CurveMenu.ObjectId);
-	const Lane* Track = Owner && HasOwner(*Owner, CurveMenu.Block) ? Curves::FindLane(LaneList(*Owner, CurveMenu.Block), CurveMenu.Id, CurveMenu.Layer) : nullptr;
-	const bool HasKeys = Track && std::any_of(std::begin(Track->Curves), std::end(Track->Curves), [](const Curve& Part) { return !Part.Keys.empty(); });
-	const ParamInfo& Meta = Info(CurveMenu.Id);
-	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
-	if (ImGui::MenuItem("Copy curve", nullptr, false, Track != nullptr))
-	{
-		CurveClip = *Track;
-		HasCurveClip = true;
-	}
-	if (ImGui::MenuItem("Paste curve", nullptr, false, HasCurveClip && Info(CurveClip.Id).Components == Meta.Components))
-	{
-		ForMenuCurves(Core, "Paste curve", [&](Object&, Curve& Part, u8 Axis)
-		{
-			const Curve& Source = CurveClip.Curves[Axis];
-			const float Shift = Source.Keys.empty() ? 0.0f : CurveMenu.Local - Source.Keys.front().Time;
-			for (Key Item : Source.Keys)
-			{
-				Item.Time += Shift;
-				Item.Value = std::clamp(Item.Value, Meta.Min, Meta.Max);
-				Curves::PlaceKey(Part, Item, HalfFrame);
-			}
-			Part.Gen = Source.Gen;
-		});
-	}
-	ImGui::Separator();
-	if (ImGui::MenuItem("Reverse", nullptr, false, HasKeys))
-	{
-		ForMenuCurves(Core, "Reverse curve", [](Object&, Curve& Part, u8) { TimelineUi::ReverseCurve(Part); });
-	}
-	if (ImGui::BeginMenu("Scale time", HasKeys))
-	{
-		for (u32 Index = 0; Index < 4; ++Index)
-		{
-			if (ImGui::MenuItem(TimelineUi::ScaleLabels[Index]))
-			{
-				ForMenuCurves(Core, "Scale time", [Index](Object&, Curve& Part, u8) { TimelineUi::ScaleCurve(Part, TimelineUi::ScaleFactors[Index]); });
-			}
-		}
-		ImGui::EndMenu();
-	}
-	if (ImGui::MenuItem("Smooth keys", nullptr, false, HasKeys))
-	{
-		ForMenuCurves(Core, "Smooth keys", [this](Object&, Curve& Part, u8) { TimelineUi::SmoothCurve(Part, CurveScratch); });
-	}
-	if (ImGui::MenuItem("Reduce keys", nullptr, false, HasKeys))
-	{
-		ForMenuCurves(Core, "Reduce keys", [this](Object&, Curve& Part, u8) { TimelineUi::ReduceCurve(Part, 0.04f * CurveMenu.Amount, RdpSpans, Kept); });
-	}
-	if (ImGui::BeginMenu("Presets"))
-	{
-		for (u8 Preset = 0; Preset < 5; ++Preset)
-		{
-			if (!ImGui::MenuItem(TimelineUi::PresetNames[Preset]))
-			{
-				continue;
-			}
-			ForMenuCurves(Core, "Curve preset", [&](Object& Item, Curve& Part, u8 Axis)
-			{
-				const float Base = Curves::Value(Part, CurveMenu.Local, TimelineUi::Fallback(Item, CurveMenu.Block, CurveMenu.Id, CurveMenu.Layer, Axis));
-				if (Preset == 4)
-				{
-					Part.Gen.Type = Wave::NoiseSmooth;
-					Part.Gen.Amplitude = 0.2f * CurveMenu.Amount;
-					Part.Gen.Frequency = 4.0f;
-					return;
-				}
-				for (const TimelineUi::PresetKey& Step : TimelineUi::PresetKeys)
-				{
-					if (Step.Preset == Preset)
-					{
-						Curves::PlaceKey(Part, Key { CurveMenu.Local + Step.Time, std::clamp(Base + Step.Share * CurveMenu.Amount, Meta.Min, Meta.Max), Step.Mode }, HalfFrame);
-					}
-				}
-			});
-		}
-		ImGui::EndMenu();
 	}
 	ImGui::EndPopup();
 }
@@ -5495,577 +4397,5 @@ void Editor::RemoveLane(Object& Target, s32 Block, Param Id, u8 Layer, float Loc
 		}
 	}
 	Lanes.erase(Lanes.begin() + (Found - Lanes.data()));
-}
-
-const GraphCurve* Editor::GraphCurveOf(const KeyRef& Ref) const
-{
-	const auto Found = std::find_if(GraphCurves.begin(), GraphCurves.end(), [&Ref](const GraphCurve& Item) { return Item.Ref.ObjectId == Ref.ObjectId && Item.Ref.Block == Ref.Block && Item.Ref.Id == Ref.Id && Item.Ref.Layer == Ref.Layer && Item.Ref.Component == Ref.Component; });
-	return Found == GraphCurves.end() ? nullptr : &*Found;
-}
-
-bool Editor::IsGraphHidden(const KeyRef& Ref) const
-{
-	return std::find(GraphHidden.begin(), GraphHidden.end(), Ref) != GraphHidden.end();
-}
-
-void Editor::SnapGraphKeys(Player& Core)
-{
-	GraphStart.clear();
-	for (const KeyRef& Ref : SelectedKeys)
-	{
-		if (const Key* Item = TimelineUi::FindKey(Core.Data, Ref))
-		{
-			GraphStart.push_back({ Ref, Item->Time, Item->Value });
-		}
-	}
-}
-
-void Editor::PlaceGraphKeys(Player& Core, float Shift, float Rise, bool IsView, float Factor, float Pivot)
-{
-	for (const GraphKeyStart& Start : GraphStart)
-	{
-		Object* Owner = Edit(Core, Start.Ref.ObjectId, "Move keys");
-		Curve* Part = Owner ? TimelineUi::FindCurve(Core.Data, Start.Ref) : nullptr;
-		const GraphCurve* Shown = GraphCurveOf(Start.Ref);
-		if (!Part || !Shown || Start.Ref.Index >= Part->Keys.size())
-		{
-			continue;
-		}
-		const ParamInfo& Meta = Info(Start.Ref.Id);
-		const float Unit = IsView && IsGraphNormalized ? Shown->Hi - Shown->Lo : 1.0f, Base = Shown->Start;
-		const auto Neighbour = [&](u32 At, float Fallback) { KeyRef Other = Start.Ref; Other.Index = At; return At < Part->Keys.size() && !IsKeySelected(Other) ? Part->Keys[At].Time : Fallback; };
-		const float Lo = Start.Ref.Index ? Neighbour(Start.Ref.Index - 1, -FLT_MAX) + 1e-3f : -FLT_MAX, Hi = Neighbour(Start.Ref.Index + 1, FLT_MAX) - 1e-3f;
-		Key& Item = Part->Keys[Start.Ref.Index];
-		const float Time = Factor > 0.0f ? Pivot - Base + (Start.Time + Base - Pivot) * Factor : Start.Time + Shift;
-		const float Value = Start.Value + Rise * Unit;
-		Item.Time = std::min(std::max(Time, std::max(Lo, 0.0f)), std::min(Hi, MaxTime));
-		Item.Value = std::clamp(Value, Meta.Min, Meta.Max);
-	}
-}
-
-void Editor::SetGraphTangents(Player& Core, u8 Kind)
-{
-	for (const KeyRef& Ref : SelectedKeys)
-	{
-		Curve* Part = Edit(Core, Ref.ObjectId, "Tangents") ? TimelineUi::FindCurve(Core.Data, Ref) : nullptr;
-		if (!Part || Ref.Index >= Part->Keys.size())
-		{
-			continue;
-		}
-		xr_vector<Key>& Keys = Part->Keys;
-		const u32 At = Ref.Index, Count = static_cast<u32>(Keys.size());
-		Key& Item = Keys[At];
-		const float Before = At ? Item.Time - Keys[At - 1].Time : 0.0f, After = At + 1 < Count ? Keys[At + 1].Time - Item.Time : 0.0f;
-		if (Kind == 2 || Kind == 4 || Kind >= 6)
-		{
-			Item.Mode = Kind == 2 ? Interp::Linear : Kind == 4 ? Interp::Hold : Item.Mode;
-			Item.IsBroken = Kind == 6 || (Kind != 7 && Item.IsBroken);
-			Item.InValue = Kind == 7 && Item.OutTime > 0.0f ? Item.OutValue * Item.InTime / Item.OutTime : Item.InValue;
-			continue;
-		}
-		const ImVec2 In = At ? TimelineUi::TangentOf(*Part, At, false, Item.Value) : ImVec2(), Out = At + 1 < Count ? TimelineUi::TangentOf(*Part, At, true, Item.Value) : ImVec2();
-		const float Prev = At ? Keys[At - 1].Value : Item.Value, Next = At + 1 < Count ? Keys[At + 1].Value : Item.Value;
-		float Slope = Before + After > 0.0f ? (Next - Prev) / (Before + After) : 0.0f;
-		Slope = Kind == 3 || (Kind == 0 && (Item.Value - Prev) * (Next - Item.Value) <= 0.0f) ? 0.0f : Slope;
-		Item.OutTime = Kind == 5 ? Out.x : After / 3.0f;
-		Item.OutValue = Kind == 5 ? Out.y : Slope * After / 3.0f;
-		Item.InTime = Kind == 5 ? In.x : -Before / 3.0f;
-		Item.InValue = Kind == 5 ? In.y : -Slope * Before / 3.0f;
-		Item.OutValue = Kind == 0 ? std::clamp(Item.OutValue, -std::fabs(Next - Item.Value), std::fabs(Next - Item.Value)) : Item.OutValue;
-		Item.InValue = Kind == 0 ? std::clamp(Item.InValue, -std::fabs(Item.Value - Prev), std::fabs(Item.Value - Prev)) : Item.InValue;
-		Item.Mode = Interp::Bezier;
-		if (At && Keys[At - 1].Mode != Interp::Bezier)
-		{
-			Key& Head = Keys[At - 1];
-			Head.Mode = Interp::Bezier;
-			Head.OutTime = Before / 3.0f;
-			Head.OutValue = (Item.Value - Head.Value) / 3.0f;
-		}
-	}
-}
-
-template <typename TVisit>
-void Editor::ForGraphCurves(Player& Core, const char* Label, const TVisit& Visit)
-{
-	for (const GraphCurve& Item : GraphCurves)
-	{
-		const bool IsPicked = std::any_of(SelectedKeys.begin(), SelectedKeys.end(), [&Item](const KeyRef& Ref) { return Ref.ObjectId == Item.Ref.ObjectId && Ref.Block == Item.Ref.Block && Ref.Id == Item.Ref.Id && Ref.Layer == Item.Ref.Layer && Ref.Component == Item.Ref.Component; });
-		Curve* Part = (SelectedKeys.empty() ? !IsGraphHidden(Item.Ref) : IsPicked) && Edit(Core, Item.Ref.ObjectId, Label) ? TimelineUi::FindCurve(Core.Data, Item.Ref) : nullptr;
-		if (Part)
-		{
-			Visit(Item, *Part);
-		}
-	}
-}
-
-void Editor::FrameGraph(Player& Core, bool IsSelection)
-{
-	float Lo[2] = { FLT_MAX, FLT_MAX }, Hi[2] = { -FLT_MAX, -FLT_MAX };
-	const auto Grow = [&](const GraphCurve& Item, const Key& Point)
-	{
-		const float Value = IsGraphNormalized ? (Point.Value - Item.Lo) / (Item.Hi - Item.Lo) : Point.Value;
-		Lo[0] = std::min(Lo[0], Item.Start + Point.Time);
-		Hi[0] = std::max(Hi[0], Item.Start + Point.Time);
-		Lo[1] = std::min(Lo[1], Value);
-		Hi[1] = std::max(Hi[1], Value);
-	};
-	for (const GraphCurve& Item : GraphCurves)
-	{
-		const Curve* Part = IsGraphHidden(Item.Ref) ? nullptr : TimelineUi::FindCurve(Core.Data, Item.Ref);
-		for (u32 At = 0; Part && At < Part->Keys.size(); ++At)
-		{
-			KeyRef Ref = Item.Ref;
-			Ref.Index = At;
-			if (!IsSelection || IsKeySelected(Ref))
-			{
-				Grow(Item, Part->Keys[At]);
-			}
-		}
-	}
-	if (Lo[0] > Hi[0])
-	{
-		return;
-	}
-	const float Width = std::max(Hi[0] - Lo[0], 0.5f), Height = std::max(Hi[1] - Lo[1], IsGraphNormalized ? 0.1f : 0.01f);
-	GraphView[0] = Lo[0] - 0.1f * Width;
-	GraphView[1] = Hi[0] + 0.1f * Width;
-	GraphView[2] = Lo[1] - 0.15f * Height;
-	GraphView[3] = Hi[1] + 0.15f * Height;
-}
-
-void Editor::DrawGraph(Player& Core)
-{
-	IsGraphFocused = false;
-	if (!Settings.ShowGraph)
-	{
-		return;
-	}
-	ImGui::SetNextWindowSize(ImVec2(760.0f, 360.0f), LayoutCond());
-	if (LayoutReset)
-	{
-		ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
-	}
-	if (!ImGui::Begin(ShowAnimator ? "Graph Editor###CinemaGraphAnimation" : "Graph Editor###CinemaGraph", &Settings.ShowGraph, ImGuiWindowFlags_NoNavInputs))
-	{
-		ImGui::End();
-		return;
-	}
-	IsGraphFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-	IsOwnWindowFocused |= IsGraphFocused;
-	const ImGuiIO& Input = ImGui::GetIO();
-	if (!GraphDrag)
-	{
-		GraphCurves.clear();
-	}
-	for (u32 Id : Selected)
-	{
-		const Object* Target = GraphDrag ? nullptr : Find(Core.Data, Id);
-		if (!Target)
-		{
-			continue;
-		}
-		CollectLaneTargets(*Target);
-		if (const s32 Block = PoseBlock(*Target); Block >= 0)
-		{
-			LaneTargets.push_back({ static_cast<s16>(Block), ClipOrigin, Target->Actor.Clips[ClipIndex(Block)].Length });
-		}
-		for (const LaneTarget& Where : LaneTargets)
-		{
-			for (const Lane& Track : LaneList(*Target, Where.Block))
-			{
-				const PoseBone* Joint = Where.Block >= ClipBase ? BoneEntry(const_cast<Object&>(*Target), Where.Block, Track.Layer) : nullptr;
-				const ActorRuntime* Body = Joint && !SelectedBones.empty() ? Core.FindActor(Id) : nullptr;
-				if (Body && std::find(SelectedBones.begin(), SelectedBones.end(), Body->FindBone(Joint->Name)) == SelectedBones.end())
-				{
-					continue;
-				}
-				for (u8 Axis = 0; Axis < Info(Track.Id).Components; ++Axis)
-				{
-					const Curve& Part = Track.Curves[Axis];
-					float Lo = FLT_MAX, Hi = -FLT_MAX;
-					for (const Key& Point : Part.Keys)
-					{
-						Lo = std::min(Lo, Point.Value);
-						Hi = std::max(Hi, Point.Value);
-					}
-					if (!Part.Keys.empty())
-					{
-						GraphCurves.push_back({ { Id, Where.Block, Track.Id, Track.Layer, Axis, 0 }, Where.Start, Lo, std::max(Hi, Lo + 1e-3f), Info(Track.Id).Components == 3 ? TimelineUi::AxisColors[Axis] : Target->Color });
-					}
-				}
-			}
-		}
-	}
-	if (ImGui::Checkbox("Normalize", &IsGraphNormalized))
-	{
-		FrameGraph(Core, false);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Frame") || (IsGraphFocused && !Input.WantTextInput && ImGui::IsKeyChordPressed(ImGuiKey_F)))
-	{
-		FrameGraph(Core, !SelectedKeys.empty());
-	}
-	ImGui::SetItemTooltip("Frame selected (F)");
-	ImGui::SameLine();
-	if (ImGui::Button("All") || (IsGraphFocused && !Input.WantTextInput && ImGui::IsKeyChordPressed(ImGuiKey_A)))
-	{
-		FrameGraph(Core, false);
-	}
-	ImGui::SetItemTooltip("Frame all (A)");
-	static constexpr const char* TangentNames[8] = { "Auto", "Spline", "Linear", "Flat", "Step", "Bezier", "Break", "Unify" };
-	for (u8 Kind = 0; Kind < 8; ++Kind)
-	{
-		ImGui::SameLine(0.0f, Kind ? ImGui::GetStyle().ItemInnerSpacing.x : -1.0f);
-		ImGui::BeginDisabled(SelectedKeys.empty());
-		if (ImGui::Button(TangentNames[Kind]))
-		{
-			SetGraphTangents(Core, Kind);
-		}
-		ImGui::EndDisabled();
-	}
-	static constexpr const char* InfinityNames[5] = { "Constant", "Linear", "Cycle", "Cycle offset", "Oscillate" };
-	for (u8 Side = 0; Side < 2; ++Side)
-	{
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 6.0f);
-		if (ImGui::BeginCombo(Side ? "##Post" : "##Pre", Side ? "Post" : "Pre"))
-		{
-			for (u8 Mode = 0; Mode < 5; ++Mode)
-			{
-				if (ImGui::Selectable(InfinityNames[Mode]))
-				{
-					ForGraphCurves(Core, "Infinity", [Side, Mode](const GraphCurve&, Curve& Part) { (Side ? Part.Post : Part.Pre) = Mode; });
-				}
-			}
-			ImGui::EndCombo();
-		}
-		ImGui::SetItemTooltip(Side ? "Post infinity" : "Pre infinity");
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Euler"))
-	{
-		ForGraphCurves(Core, "Euler filter", [](const GraphCurve& Item, Curve& Part)
-		{
-			for (u32 At = 1; Item.Ref.Id == Param::Rotation && At < Part.Keys.size(); ++At)
-			{
-				Part.Keys[At].Value = Part.Keys[At - 1].Value + std::remainder(Part.Keys[At].Value - Part.Keys[At - 1].Value, 360.0f);
-			}
-		});
-	}
-	ImGui::SetItemTooltip("Euler filter");
-	ImGui::SameLine();
-	if (ImGui::Button("Buffer"))
-	{
-		GraphBuffer.clear();
-		for (const GraphCurve& Item : GraphCurves)
-		{
-			const Curve* Part = IsGraphHidden(Item.Ref) ? nullptr : TimelineUi::FindCurve(Core.Data, Item.Ref);
-			if (Part)
-			{
-				GraphBuffer.push_back({ Item.Ref, *Part });
-			}
-		}
-	}
-	ImGui::SetItemTooltip("Store buffer curves");
-	ImGui::SameLine();
-	ImGui::BeginDisabled(GraphBuffer.empty());
-	if (ImGui::Button("Swap"))
-	{
-		for (GraphBuffered& Stored : GraphBuffer)
-		{
-			Curve* Part = Edit(Core, Stored.Ref.ObjectId, "Swap buffer") ? TimelineUi::FindCurve(Core.Data, Stored.Ref) : nullptr;
-			if (Part)
-			{
-				std::swap(*Part, Stored.Shape);
-			}
-		}
-		SelectedKeys.clear();
-	}
-	ImGui::EndDisabled();
-	ImGui::SetItemTooltip("Swap with buffer");
-	const GraphCurve* Lead = SelectedKeys.empty() ? nullptr : GraphCurveOf(SelectedKeys.front());
-	const Key* LeadKey = Lead ? TimelineUi::FindKey(Core.Data, SelectedKeys.front()) : nullptr;
-	if (LeadKey)
-	{
-		float Fields[2] = { Lead->Start + LeadKey->Time, LeadKey->Value };
-		for (u32 Field = 0; Field < 2; ++Field)
-		{
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 5.0f);
-			const float Was = Fields[Field];
-			const bool IsChanged = ImGui::DragFloat(Field ? "##Value" : "##Time", &Fields[Field], Field ? 0.01f : 1.0f / static_cast<float>(Core.Data.Header.FrameRate), 0.0f, 0.0f, Field ? "%.3f" : "%.3f s");
-			ImGui::SetItemTooltip(Field ? "Value" : "Time");
-			if (ImGui::IsItemActivated())
-			{
-				SnapGraphKeys(Core);
-				GraphField = Was;
-			}
-			if (IsChanged && !GraphStart.empty())
-			{
-				PlaceGraphKeys(Core, Field ? 0.0f : Fields[0] - GraphField, Field ? Fields[1] - GraphField : 0.0f, false, 0.0f, 0.0f);
-			}
-		}
-	}
-	const float ListWidth = std::min(ImGui::GetFontSize() * 12.0f, 0.3f * ImGui::GetContentRegionAvail().x);
-	ImGui::BeginChild("##GraphList", ImVec2(ListWidth, 0.0f), ImGuiChildFlags_Borders);
-	for (u32 Index = 0; Index < GraphCurves.size(); ++Index)
-	{
-		const GraphCurve& Item = GraphCurves[Index];
-		const Object* Owner = Find(Core.Data, Item.Ref.ObjectId);
-		string64 Label;
-		TimelineUi::SlotLabel(Label, Item.Ref.Id, Item.Ref.Layer, Owner, Item.Ref.Block);
-		string256 Line;
-		xr_sprintf(Line, "%s %s %s##%u", DisplayName(Owner), Label, Info(Item.Ref.Id).Components == 3 ? TimelineUi::AxisNames[Item.Ref.Id == Param::Color][Item.Ref.Component] : "", Index);
-		bool IsShown = !IsGraphHidden(Item.Ref);
-		ImGui::PushID(static_cast<s32>(Index));
-		if (ImGui::Checkbox("##Shown", &IsShown))
-		{
-			std::erase(GraphHidden, Item.Ref);
-			if (!IsShown)
-			{
-				GraphHidden.push_back(Item.Ref);
-			}
-		}
-		ImGui::PopID();
-		ImGui::SameLine();
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::ColorConvertU32ToFloat4(Item.Color | 0xFF000000u));
-		if (ImGui::Selectable(Line, false))
-		{
-			GraphHidden.clear();
-			for (const GraphCurve& Other : GraphCurves)
-			{
-				if (&Other != &Item)
-				{
-					GraphHidden.push_back(Other.Ref);
-				}
-			}
-		}
-		ImGui::PopStyleColor();
-	}
-	ImGui::EndChild();
-	ImGui::SameLine();
-	const ImVec2 Corner = ImGui::GetCursorScreenPos(), Size = ImGui::GetContentRegionAvail();
-	const ImRect Canvas(Corner, ImVec2(Corner.x + std::max(Size.x, 8.0f), Corner.y + std::max(Size.y, 8.0f)));
-	ImGui::InvisibleButton("##GraphCanvas", Canvas.GetSize(), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
-	const bool IsHovered = ImGui::IsItemHovered(), IsActive = ImGui::IsItemActive();
-	float* View = GraphView;
-	const auto ToX = [&](float Time) { return Canvas.Min.x + (Time - View[0]) / (View[1] - View[0]) * Canvas.GetWidth(); };
-	const auto ToY = [&](float Value) { return Canvas.Max.y - (Value - View[2]) / (View[3] - View[2]) * Canvas.GetHeight(); };
-	const auto TimeAt = [&](float X) { return View[0] + (X - Canvas.Min.x) / Canvas.GetWidth() * (View[1] - View[0]); };
-	const auto Shown = [this](const GraphCurve& Item, float Value) { return IsGraphNormalized ? (Value - Item.Lo) / (Item.Hi - Item.Lo) : Value; };
-	if (IsHovered && Input.MouseWheel != 0.0f)
-	{
-		const float Factor = std::pow(0.85f, Input.MouseWheel), Time = TimeAt(Input.MousePos.x), Value = View[2] + (Canvas.Max.y - Input.MousePos.y) / Canvas.GetHeight() * (View[3] - View[2]);
-		for (u32 Axis = Input.KeyCtrl ? 1 : 0; Axis < (Input.KeyShift ? 1u : 2u); ++Axis)
-		{
-			const float Pivot = Axis ? Value : Time;
-			View[Axis * 2] = Pivot + (View[Axis * 2] - Pivot) * Factor;
-			View[Axis * 2 + 1] = Pivot + (View[Axis * 2 + 1] - Pivot) * Factor;
-		}
-	}
-	if (IsActive && ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 0.0f))
-	{
-		const float Dt = Input.MouseDelta.x / Canvas.GetWidth() * (View[1] - View[0]), Dv = Input.MouseDelta.y / Canvas.GetHeight() * (View[3] - View[2]);
-		View[0] -= Dt;
-		View[1] -= Dt;
-		View[2] += Dv;
-		View[3] += Dv;
-	}
-	ImDrawList* List = ImGui::GetWindowDrawList();
-	List->PushClipRect(Canvas.Min, Canvas.Max, true);
-	List->AddRectFilled(Canvas.Min, Canvas.Max, ImGui::GetColorU32(ImGuiCol_FrameBg));
-	List->AddLine(ImVec2(Canvas.Min.x, ToY(0.0f)), ImVec2(Canvas.Max.x, ToY(0.0f)), TimelineUi::Separator);
-	List->AddLine(ImVec2(ToX(Core.Time), Canvas.Min.y), ImVec2(ToX(Core.Time), Canvas.Max.y), ImGui::GetColorU32(ImGuiCol_PlotLines));
-	for (const GraphBuffered& Stored : GraphBuffer)
-	{
-		const GraphCurve* Item = GraphCurveOf(Stored.Ref);
-		if (Item && !IsGraphHidden(Item->Ref))
-		{
-			TimelineUi::Plot(List, Canvas.Min.x, Canvas.Max.x, [&](float X) { return ToY(Shown(*Item, Curves::Value(Stored.Shape, TimeAt(X) - Item->Start, 0.0f))); }, ImGui::GetColorU32(ImGuiCol_TextDisabled), 1.0f);
-		}
-	}
-	KeyRef Hot, Tipped;
-	float HotScore = 7.0f, TipScore = 7.0f;
-	u8 TipSide = 0;
-	ImRect Bounds(FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX);
-	for (const GraphCurve& Item : GraphCurves)
-	{
-		const Curve* Part = IsGraphHidden(Item.Ref) ? nullptr : TimelineUi::FindCurve(Core.Data, Item.Ref);
-		if (!Part)
-		{
-			continue;
-		}
-		TimelineUi::Plot(List, Canvas.Min.x, Canvas.Max.x, [&](float X) { return ToY(Shown(Item, Curves::Value(*Part, TimeAt(X) - Item.Start, 0.0f))); }, Item.Color | 0xFF000000u, 2.0f);
-		for (u32 At = 0; At < Part->Keys.size(); ++At)
-		{
-			const Key& Point = Part->Keys[At];
-			KeyRef Ref = Item.Ref;
-			Ref.Index = At;
-			const ImVec2 Spot(ToX(Item.Start + Point.Time), ToY(Shown(Item, Point.Value)));
-			const bool IsPicked = IsKeySelected(Ref);
-			for (u8 Side = 0; IsPicked && Side < 2; ++Side)
-			{
-				if (Side ? At + 1 < Part->Keys.size() : At > 0)
-				{
-					const ImVec2 Arm = TimelineUi::TangentOf(*Part, At, Side == 1, Point.Value);
-					const ImVec2 Tip(ToX(Item.Start + Point.Time + Arm.x), ToY(Shown(Item, Point.Value + Arm.y)));
-					const float Reach = std::fabs(Tip.x - Input.MousePos.x) + std::fabs(Tip.y - Input.MousePos.y);
-					const bool IsHeld = GraphDrag == 3 && GraphTip == Ref && GraphTipSide == Side;
-					if (IsHovered && !GraphDrag && Reach < TipScore)
-					{
-						TipScore = Reach;
-						Tipped = Ref;
-						TipSide = Side;
-					}
-					List->AddLine(Spot, Tip, ImGui::GetColorU32(IsHeld ? ImGuiCol_Text : ImGuiCol_TextDisabled));
-					List->AddCircleFilled(Tip, IsHeld ? 4.0f : 3.0f, ImGui::GetColorU32(IsHeld ? ImGuiCol_Text : ImGuiCol_TextDisabled));
-				}
-			}
-			List->AddNgonFilled(Spot, TimelineUi::KeyRadius, IsPicked ? ImGui::GetColorU32(ImGuiCol_Text) : Item.Color | 0xFF000000u, 4);
-			List->AddNgon(Spot, TimelineUi::KeyRadius, TimelineUi::Separator, 4);
-			const float Score = std::fabs(Spot.x - Input.MousePos.x) + std::fabs(Spot.y - Input.MousePos.y);
-			if (IsHovered && Score < HotScore)
-			{
-				HotScore = Score;
-				Hot = Ref;
-			}
-			if (IsPicked)
-			{
-				Bounds.Add(Spot);
-			}
-			if (GraphDrag == 2 && GraphBox.Contains(Spot))
-			{
-				KeyGroup.push_back(Ref);
-			}
-		}
-	}
-	const ImVec2 Mouse = Input.MousePos;
-	const bool IsWide = Bounds.GetWidth() > 4.0f, IsTall = Bounds.GetHeight() > 4.0f, HasHot = HotScore < 7.0f, HasBox = SelectedKeys.size() > 1 && (IsWide || IsTall);
-	const bool IsNearX = Mouse.x > Bounds.Min.x - 5.0f && Mouse.x < Bounds.Max.x + 5.0f, IsNearY = Mouse.y > Bounds.Min.y - 5.0f && Mouse.y < Bounds.Max.y + 5.0f;
-	const s32 Edge = !HasBox || HasHot ? -1 : IsWide && IsNearY && std::fabs(Mouse.x - Bounds.Min.x) < 5.0f ? 4 : IsWide && IsNearY && std::fabs(Mouse.x - Bounds.Max.x) < 5.0f ? 5 : IsTall && IsNearX && std::fabs(Mouse.y - Bounds.Max.y) < 5.0f ? 6 : IsTall && IsNearX && std::fabs(Mouse.y - Bounds.Min.y) < 5.0f ? 7 : -1;
-	if (HasBox)
-	{
-		List->AddRect(ImVec2(Bounds.Min.x - 3.0f, Bounds.Min.y - 3.0f), ImVec2(Bounds.Max.x + 3.0f, Bounds.Max.y + 3.0f), ImGui::GetColorU32(ImGuiCol_TextDisabled));
-	}
-	if (IsHovered && (HasHot || Edge >= 0))
-	{
-		ImGui::SetMouseCursor(HasHot ? ImGuiMouseCursor_Hand : Edge < 6 ? ImGuiMouseCursor_ResizeEW : ImGuiMouseCursor_ResizeNS);
-	}
-	const bool HasTip = TipScore < 7.0f && TipScore <= HotScore;
-	if (IsHovered && HasTip)
-	{
-		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-	}
-	if (HasTip && ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		GraphDrag = 3;
-		GraphTip = Tipped;
-		GraphTipSide = TipSide;
-	}
-	if (IsActive && GraphDrag == 3)
-	{
-		const GraphCurve* Item = GraphCurveOf(GraphTip);
-		Curve* Part = Item && Edit(Core, GraphTip.ObjectId, "Move tangent") ? TimelineUi::FindCurve(Core.Data, GraphTip) : nullptr;
-		const u32 At = GraphTip.Index, Count = Part ? static_cast<u32>(Part->Keys.size()) : 0;
-		const bool IsOut = GraphTipSide == 1;
-		if (At < Count && (IsOut ? At + 1 < Count : At > 0))
-		{
-			const u32 Head = IsOut ? At : At - 1;
-			Curves::SetMode(*Part, Head, Interp::Bezier);
-			Key& Point = Part->Keys[At];
-			const float Width = Part->Keys[Head + 1].Time - Part->Keys[Head].Time, Sign = IsOut ? 1.0f : -1.0f;
-			const float Level = View[2] + (Canvas.Max.y - Mouse.y) / Canvas.GetHeight() * (View[3] - View[2]);
-			const float Rise = (IsGraphNormalized ? Item->Lo + Level * (Item->Hi - Item->Lo) : Level) - Point.Value;
-			const float Reach = Sign * std::clamp(Sign * (TimeAt(Mouse.x) - Item->Start - Point.Time), 0.01f * Width, Width);
-			(IsOut ? Point.OutTime : Point.InTime) = Reach;
-			(IsOut ? Point.OutValue : Point.InValue) = Rise;
-			Point.IsBroken |= Input.KeyAlt;
-			if (!Point.IsBroken)
-			{
-				(IsOut ? Point.InValue : Point.OutValue) = (IsOut ? Point.InTime : Point.OutTime) * Rise / Reach;
-			}
-		}
-	}
-	if (!HasTip && ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		GraphPress = Mouse;
-		GraphBounds = Bounds;
-		if (HasHot && !IsKeySelected(Hot))
-		{
-			SelectedKeys.resize(Input.KeyCtrl ? SelectedKeys.size() : 0);
-			SelectedKeys.push_back(Hot);
-			std::sort(SelectedKeys.begin(), SelectedKeys.end());
-		}
-		else if (HasHot && Input.KeyCtrl)
-		{
-			std::erase(SelectedKeys, Hot);
-		}
-		Focus = FocusKind::Keys;
-		GraphDrag = HasHot && !Input.KeyCtrl ? 1 : Edge >= 0 ? static_cast<u8>(Edge) : HasHot ? 0 : 2;
-		DragKeyPrevious = SelectedKeys;
-		SnapGraphKeys(Core);
-	}
-	if (GraphDrag && (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
-	{
-		if (GraphDrag == 2)
-		{
-			SelectedKeys = DragKeyPrevious;
-		}
-		else
-		{
-			Undo.Cancel(Core.Data);
-		}
-		GraphDrag = 0;
-	}
-	const float Fine = Input.KeyShift ? 0.1f : 1.0f;
-	const float Shift = (Mouse.x - GraphPress.x) / Canvas.GetWidth() * (View[1] - View[0]) * Fine, Rise = (GraphPress.y - Mouse.y) / Canvas.GetHeight() * (View[3] - View[2]) * Fine;
-	if (IsActive && GraphDrag == 1 && ImGui::IsMouseDragging(ImGuiMouseButton_Left, 3.0f))
-	{
-		PlaceGraphKeys(Core, Shift, Rise, true, 0.0f, 0.0f);
-	}
-	if (IsActive && GraphDrag >= 4 && ImGui::IsMouseDragging(ImGuiMouseButton_Left, 1.0f))
-	{
-		const bool IsTime = GraphDrag < 6;
-		const float From = IsTime ? (GraphDrag == 4 ? GraphBounds.Min.x : GraphBounds.Max.x) : (GraphDrag == 6 ? GraphBounds.Max.y : GraphBounds.Min.y);
-		const float Pivot = IsTime ? (GraphDrag == 4 ? GraphBounds.Max.x : GraphBounds.Min.x) : (GraphDrag == 6 ? GraphBounds.Min.y : GraphBounds.Max.y);
-		const float Factor = std::max((IsTime ? Mouse.x - Pivot : Mouse.y - Pivot) / (From - Pivot), 0.01f);
-		const float PivotValue = View[2] + (Canvas.Max.y - Pivot) / Canvas.GetHeight() * (View[3] - View[2]);
-		if (IsTime)
-		{
-			PlaceGraphKeys(Core, 0.0f, 0.0f, true, Factor, TimeAt(Pivot));
-		}
-		else
-		{
-			for (const GraphKeyStart& Start : GraphStart)
-			{
-				const GraphCurve* Item = GraphCurveOf(Start.Ref);
-				Key* Point = Item && Edit(Core, Start.Ref.ObjectId, "Scale keys") ? TimelineUi::FindKey(Core.Data, Start.Ref) : nullptr;
-				if (Point)
-				{
-					const float Base = IsGraphNormalized ? Item->Lo + PivotValue * (Item->Hi - Item->Lo) : PivotValue;
-					Point->Value = std::clamp(Base + (Start.Value - Base) * Factor, Info(Start.Ref.Id).Min, Info(Start.Ref.Id).Max);
-				}
-			}
-		}
-	}
-	if (GraphDrag == 2)
-	{
-		GraphBox = ImRect(ImMin(GraphPress, Mouse), ImMax(GraphPress, Mouse));
-		List->AddRectFilled(GraphBox.Min, GraphBox.Max, ImGui::GetColorU32(ImGuiCol_Header, 0.4f));
-		std::sort(KeyGroup.begin(), KeyGroup.end());
-		if (Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Left] >= 9.0f)
-		{
-			SelectedKeys.clear();
-			std::set_symmetric_difference(DragKeyPrevious.begin(), Input.KeyCtrl ? DragKeyPrevious.end() : DragKeyPrevious.begin(), KeyGroup.begin(), KeyGroup.end(), std::back_inserter(SelectedKeys));
-		}
-		else if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !Input.KeyCtrl)
-		{
-			SelectedKeys.clear();
-		}
-		KeyGroup.clear();
-	}
-	GraphDrag = ImGui::IsMouseDown(ImGuiMouseButton_Left) ? GraphDrag : 0;
-	List->PopClipRect();
-	ImGui::End();
 }
 }

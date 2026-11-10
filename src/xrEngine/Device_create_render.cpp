@@ -40,20 +40,8 @@ void DrawMainViewport()
 	ImGui::PopStyleVar();
 }
 
-namespace
-{
-	xrCriticalSection VideoModeListLock;
-	xr_token EmptyVideoModeList[] = { { nullptr, -1 } };
-}
-
 void free_vid_mode_list()
 {
-	xrCriticalSectionGuard Guard(VideoModeListLock);
-	if (vid_mode_token == nullptr)
-	{
-		return;
-	}
-
 	for (int i = 0; vid_mode_token[i].name; i++)
 	{
 		xr_free(vid_mode_token[i].name);
@@ -63,19 +51,10 @@ void free_vid_mode_list()
 	vid_mode_token = nullptr;
 }
 
-xr_token* GetVideoModeList()
+void fill_vid_mode_list()
 {
-	xrCriticalSectionGuard Guard(VideoModeListLock);
 	if (vid_mode_token != nullptr)
-	{
-		return vid_mode_token;
-	}
-
-	// Display enumeration is restricted to SDL's main thread. A later request can retry.
-	if (GRHI == nullptr || !SDL_IsMainThread())
-	{
-		return EmptyVideoModeList;
-	}
+		return;
 
 	xr_vector<shared_str> _tmp = GRHI->DisplaySizeArray();
 	u32 _cnt = (u32)_tmp.size() + 1;
@@ -90,14 +69,12 @@ xr_token* GetVideoModeList()
 		vid_mode_token[i].id = i;
 		vid_mode_token[i].name = xr_strdup(*_tmp[i]);
 	}
-
-	return vid_mode_token;
 }
 
 bool CRenderDevice::InitRenderDeviceEditor()
 {
 	GRHI = new CRHI;
-	GetVideoModeList();
+	fill_vid_mode_list();
 
 	if (!GRHI->CreateDevice((ERHI_API_LAYER)g_graphicsAPI))
 	{
@@ -114,6 +91,8 @@ bool CRenderDevice::InitRenderDeviceEditor()
 bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 {
 	PROF_EVENT("InitRenderDevice");
+
+	fill_vid_mode_list();
 #ifdef IXR_WINDOWS
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
@@ -160,6 +139,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 			{
 				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
 				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
+				ImGui::MenuItem("DOF setup", nullptr, &States[static_cast<u8>(EditorUI::Game_DofSetup)]);
 
 				if (ImGui::BeginMenu("World##InGame"))
 				{
@@ -267,15 +247,6 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 			}
 
 			ImGui::MenuItem("Click `Alt`");
-			static float ShownScale = 0.0f;
-			ShownScale = ImGui::IsAnyItemActive() && ShownScale > 0.0f ? ShownScale : psImGuiScale;
-			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 7.0f);
-			ImGui::SliderFloat("UI scale", &ShownScale, 0.5f, 3.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-			if (ImGui::IsItemDeactivatedAfterEdit())
-			{
-				psImGuiScale = ShownScale;
-			}
-			ImGui::SetItemTooltip("Size of every ImGui window and font; applied when the slider is released (console: imgui_scale)");
 			ImGui::EndMainMenuBar();
 		}
 

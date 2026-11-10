@@ -132,7 +132,7 @@ protected:
 	void						ChannelFactorsStartup	();
 	CBlend*						IBlend_Create			();
 private:
-	void IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, void* CallbackParam);
+	void						IBlendSetup				(CBlend& B,u16 part,u8 channel, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam);
 	void						IFXBlendSetup			(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone);
 	virtual void				LoadOmf(const char* path, const char* name);
 	virtual	void				ProcessOmfFiles(const char* omfPath, const char* nameOgf);
@@ -170,8 +170,8 @@ public:
 	virtual u16							LL_PartID		(const char* B) override;
 
 	virtual CBlend*						LL_PlayFX		(u16 bone,		MotionID motion, float blendAccrue,	float blendFalloff, float Speed, float Power) override;
-	virtual CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, void* CallbackParam, u8 channel = 0) override;
-	virtual CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel = 0) override;
+	virtual CBlend*						LL_PlayCycle	(u16 partition, MotionID motion, bool  bMixing,		float blendAccrue,	float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0) override;
+	virtual CBlend*						LL_PlayCycle	(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0) override;
 	virtual void						LL_FadeCycle	(u16 partition, float	falloff, u8 mask_channel = (1<<0)) override;
 	virtual void						LL_CloseCycle	(u16 partition, u8 mask_channel = (1<<0)) override;
 	virtual void						LL_SetChannelFactor (u16 channel,float factor) override;
@@ -188,9 +188,9 @@ public:
 	virtual MotionID					ID_Cycle_Safe	(const char*  N) override;
 	virtual MotionID					ID_Cycle		(shared_str  N) override;
 	virtual MotionID					ID_Cycle_Safe	(shared_str  N) override;
-	virtual CBlend* PlayCycle(const char* N, bool bMixIn = true, PlayCallback Callback = nullptr, void* CallbackParam = nullptr, u8 channel = 0) override;
-	virtual CBlend* PlayCycle(MotionID M, bool bMixIn = true, PlayCallback Callback = nullptr, void* CallbackParam = nullptr, u8 channel = 0) override;
-	virtual CBlend* PlayCycle(u16 partition, MotionID M, bool bMixIn = true, PlayCallback Callback = nullptr, void* CallbackParam = nullptr, u8 channel = 0) override;
+	virtual CBlend*						PlayCycle		(const char*  N,  bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0) override;
+	virtual CBlend*						PlayCycle		(MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0) override;
+	virtual CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0) override;
 	// fx'es
 	virtual MotionID					ID_FX			(const char*  N) override;
 	virtual MotionID					ID_FX_Safe		(const char*  N) override;

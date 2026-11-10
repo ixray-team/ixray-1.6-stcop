@@ -298,8 +298,7 @@ void CTexture::apply_avi(u32 dwStage)
 
 		// AVI
 		R_ASSERT(RowPitch == int(pAVI->m_dwWidth * 4));
-		u8* ptr;
-		pAVI->GetFrame(&ptr);
+		BYTE* ptr; pAVI->GetFrame(&ptr);
 		CopyMemory(InputBuffer, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
 		pSurface->Unlock();
 	}

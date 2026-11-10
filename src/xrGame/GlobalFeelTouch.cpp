@@ -11,7 +11,7 @@ GlobalFeelTouch::~GlobalFeelTouch()
 }
 
 struct delete_predicate_by_time {
-	bool operator()(Feel::Touch::DenyTouch const& left, u32 const expire_time) const
+	bool operator () (Feel::Touch::DenyTouch const & left, DWORD const expire_time) const
 	{
 		if (left.Expire <= expire_time)
 			return true;

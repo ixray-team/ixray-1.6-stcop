@@ -143,7 +143,7 @@ public:
 	static float			LookHalfLife	(const attachable_hud_item* item);
 	static float			LookDamping		(const attachable_hud_item* item);
 	static void				TransformBone	(IKinematics* model, u16 bone, const Fmatrix& delta);
-	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight, const Fvector* pole_target = nullptr);
+	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight);
 
 	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb = { 1.f, 1.f, 1.f }, const Fvector& scale_pos = { 1.f, 1.f, 1.f });
 	void					StopChannel		(ECameraRigChannel channel);

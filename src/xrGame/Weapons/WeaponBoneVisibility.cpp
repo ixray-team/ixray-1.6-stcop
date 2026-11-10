@@ -5,10 +5,10 @@
 
 namespace WeaponBoneVisibility
 {
-const char* ReadString(const char* SectionName, const char* Field)
+LPCSTR ReadString(LPCSTR SectionName, LPCSTR Field)
 {
 	// Empty LTX values are stored as null shared strings, even when the field exists.
-	const char* Value = pSettings->read_if_exists<str_c>(SectionName, Field, nullptr);
+	LPCSTR Value = pSettings->read_if_exists<str_c>(SectionName, Field, nullptr);
 	return Value ? Value : "";
 }
 
@@ -58,31 +58,31 @@ void ApplyAddons(IKinematics& Model, const AddonState& State)
 	}
 }
 
-static void AppendBones(const char* SectionName, const char* Field, xr_vector<shared_str>& Bones)
+static void AppendBones(LPCSTR SectionName, LPCSTR Field, xr_vector<shared_str>& Bones)
 {
 	VisitBoneList(SectionName, Field, false, false, [&](const shared_str& Bone, bool, bool)
 				  { Bones.push_back(Bone); });
 }
 
-static void CollectUpgradeBonesRecursive(const char* SectionName, xr_vector<shared_str>& Bones, xr_hash_set<shared_str>& Visited)
+static void CollectUpgradeBonesRecursive(LPCSTR SectionName, xr_vector<shared_str>& Bones, xr_hash_set<shared_str>& Visited)
 {
 	if (!Visited.emplace(SectionName).second)
 	{
 		return;
 	}
-	const char* Elements = ReadString(SectionName, "elements");
+	LPCSTR Elements = ReadString(SectionName, "elements");
 	for (int Index = 0, Count = _GetItemCount(Elements); Index < Count; ++Index)
 	{
 		string256 Element;
 		_GetItem(Elements, Index, Element);
-		const char* Effects = ReadString(Element, "effects");
+		LPCSTR Effects = ReadString(Element, "effects");
 		for (int EffectIndex = 0, EffectCount = _GetItemCount(Effects); EffectIndex < EffectCount; ++EffectIndex)
 		{
 			string256 Effect;
 			_GetItem(Effects, EffectIndex, Effect);
 			CollectUpgradeBonesRecursive(Effect, Bones, Visited);
 		}
-		const char* Upgrade = pSettings->read_if_exists<str_c>(Element, "section", nullptr);
+		LPCSTR Upgrade = pSettings->read_if_exists<str_c>(Element, "section", nullptr);
 		if (Upgrade && *Upgrade)
 		{
 			AppendBones(Upgrade, "show_bones", Bones);
@@ -90,27 +90,27 @@ static void CollectUpgradeBonesRecursive(const char* SectionName, xr_vector<shar
 	}
 }
 
-void CollectUpgradeBones(const char* SectionName, xr_vector<shared_str>& Bones)
+void CollectUpgradeBones(LPCSTR SectionName, xr_vector<shared_str>& Bones)
 {
 	xr_hash_set<shared_str> Visited;
 	CollectUpgradeBonesRecursive(SectionName, Bones, Visited);
 }
 
-void ConfigureDefault(IKinematics& Model, const char* SectionName)
+void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 {
 	xr_vector<shared_str> InstalledSections;
-	const char* Installed = ReadString(SectionName, "installed_upgrades");
+	LPCSTR Installed = ReadString(SectionName, "installed_upgrades");
 	for (int Index = 0, Count = _GetItemCount(Installed); Index < Count; ++Index)
 	{
 		string256 Upgrade;
 		_GetItem(Installed, Index, Upgrade);
-		const char* Parameters = pSettings->read_if_exists<str_c>(Upgrade, "section", nullptr);
+		LPCSTR Parameters = pSettings->read_if_exists<str_c>(Upgrade, "section", nullptr);
 		if (Parameters && *Parameters)
 		{
 			InstalledSections.emplace_back(Parameters);
 		}
 	}
-	const auto ReadStatus = [&](const char* Field)
+	const auto ReadStatus = [&](LPCSTR Field)
 	{
 		u32 Status = pSettings->read_if_exists<u32>(SectionName, Field, 0);
 		for (const auto& Parameters : InstalledSections)
@@ -119,13 +119,13 @@ void ConfigureDefault(IKinematics& Model, const char* SectionName)
 		}
 		return Status;
 	};
-	const auto ReadDefaultBones = [&](const char* Field)
+	const auto ReadDefaultBones = [&](LPCSTR Field)
 	{
 		xr_vector<shared_str> Bones;
 		AppendBones(SectionName, Field, Bones);
 		return Bones;
 	};
-	const auto ReadInstalledBones = [&](const char* Field)
+	const auto ReadInstalledBones = [&](LPCSTR Field)
 	{
 		xr_vector<shared_str> Bones;
 		for (const auto& Parameters : InstalledSections)
@@ -146,7 +146,7 @@ void ConfigureDefault(IKinematics& Model, const char* SectionName)
 	const auto LauncherHide = ReadInstalledBones("hide_bones_override_when_gl_attached");
 	const auto DefaultLauncherHide = ReadDefaultBones("def_hide_bones_override_when_gl_attached");
 	xr_vector<shared_str> UpgradeHide;
-	const char* Upgrades = ReadString(SectionName, "upgrades");
+	LPCSTR Upgrades = ReadString(SectionName, "upgrades");
 	for (int Index = 0, Count = _GetItemCount(Upgrades); Index < Count; ++Index)
 	{
 		string256 Upgrade;
@@ -157,14 +157,14 @@ void ConfigureDefault(IKinematics& Model, const char* SectionName)
 	ApplyAddons(Model, {.HasScope = ScopeStatus == 1, .HasSilencer = ReadStatus("silencer_status") == 1, .HasLauncher = ReadStatus("grenade_launcher_status") == 1, .DefaultHide = DefaultHide, .DefaultShow = DefaultShow, .UpgradeHide = UpgradeHide, .UpgradeShow = InstalledShow, .InstalledHide = InstalledHide, .InstalledShow = InstalledShow, .OverrideHide = OverrideHide, .SilencerHide = SilencerHide, .DefaultSilencerHide = DefaultSilencerHide, .ScopeHide = ScopeHide, .DefaultScopeHide = DefaultScopeHide, .LauncherHide = LauncherHide, .DefaultLauncherHide = DefaultLauncherHide});
 
 	xr_vector<shared_str> Scopes;
-	const auto AppendScopes = [&](const char* Parameters, u32 Status)
+	const auto AppendScopes = [&](LPCSTR Parameters, u32 Status)
 	{
 		if (Status != 2 && (Parameters == SectionName || Status != 1))
 		{
 			return;
 		}
-		const char* Field = pSettings->line_exist(Parameters, "scopes") ? "scopes" : "scopes_sect";
-		const char* List = ReadString(Parameters, Field);
+		LPCSTR Field = pSettings->line_exist(Parameters, "scopes") ? "scopes" : "scopes_sect";
+		LPCSTR List = ReadString(Parameters, Field);
 		if (!*List || xr_strcmp(List, "none") == 0)
 		{
 			Field = "scopes_sect";

@@ -129,7 +129,7 @@ virtual bool					can_switch_offline	() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemFuel, CSE_ALifeItem)
-	CSE_ALifeItemFuel(const char* caSection);
+	CSE_ALifeItemFuel(LPCSTR caSection);
 virtual ~CSE_ALifeItemFuel() override;
 virtual CSE_ALifeItemFuel* cast_item_fuel() override { return this; }
 virtual bool					can_switch_online() const override;
@@ -224,7 +224,7 @@ virtual CSE_ALifeItemWeapon		*cast_item_weapon	() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemFlamethrower, CSE_ALifeItemWeapon)
-	CSE_ALifeItemFlamethrower(const char* caSection);
+	CSE_ALifeItemFlamethrower(LPCSTR caSection);
 virtual ~CSE_ALifeItemFlamethrower() override;
 
 virtual CSE_ALifeItemFlamethrower* cast_item_flamethrower() override { return this; }

@@ -147,5 +147,3 @@ if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		BUILD_RPATH "$ORIGIN"
 	)
 endif()
-
-ixray_split_compile(xrCore)

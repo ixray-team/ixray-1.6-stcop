@@ -32,7 +32,7 @@ protected:
 
 protected:
 	static	int					vscript_log					(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, va_list marker);
-			bool parse_namespace(const char* caNamespaceName, char* b, u32 const b_size, char* c, u32 const c_size);
+			bool				parse_namespace				(const char* caNamespaceName, LPSTR b, u32 const b_size, LPSTR c, u32 const c_size);
 			bool				do_file						(const char*	caScriptName, const char* caNameSpaceName);
 			void				reinit						();
 

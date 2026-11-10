@@ -154,7 +154,7 @@ struct pred_stri {
 using FvectorVec = xr_vector<Fvector>;	 
 using FvectorIt = FvectorVec::iterator;
 
-using LPSTRVec = xr_vector<char*>;
+using LPSTRVec = xr_vector<LPSTR>;		 
 using LPSTRIt = LPSTRVec::iterator;
 
 using LPCSTRVec = xr_vector<const char*>;	 

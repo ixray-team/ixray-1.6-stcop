@@ -45,21 +45,14 @@ if(WIN32)
     list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/DirectXTexD3D11Native\\.cpp$")
 endif()
 
-if(NOT APPLE)
-	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/MacMetalBridge\\.mm$")
-endif()
-
 # xrRHI project
-set_source_files_properties(Private/DxcAPI.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON SKIP_PRECOMPILE_HEADERS ON)
-if(APPLE)
-	set_source_files_properties(D3D11/MacMetalBridge.mm PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-endif()
+set_source_files_properties(Private/DxcAPI.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 add_library(xrRHI SHARED ${XRHI_SRC_FILES})
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRHI PRIVATE "${IXRAY_SDK_INC}")
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_compile_definitions(xrRHI PRIVATE XR_RHI_EXPORTS IMGUI_IMPL_API=)
-target_precompile_headers(xrRHI PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/RHI.h>")
+set_target_properties(xrRHI PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # Project defines
 target_compile_definitions(xrRHI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
@@ -120,5 +113,3 @@ target_link_libraries(xrRHI PUBLIC imgui)
 target_link_libraries(xrRHI PRIVATE DirectX::Mesh)
 target_link_libraries(xrRHI PRIVATE DirectX::Tex)
 target_link_libraries(xrRHI PRIVATE DXC::Headers)
-
-ixray_split_compile(xrRHI)

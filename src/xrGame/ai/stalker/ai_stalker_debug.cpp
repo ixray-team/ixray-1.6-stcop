@@ -1011,7 +1011,7 @@ public:
 	}
 };
 
-bool _ray_query_callback(collide::rq_result& result, void* params)
+bool _ray_query_callback	(collide::rq_result& result, LPVOID params)
 {
 	ray_query_param						*param = (ray_query_param*)params;
 	param->m_points->push_back			(

@@ -78,7 +78,7 @@ void CALifeSwitchManager::CollectChildrenTree(CSE_ALifeDynamicObject* Object)
 	SavedChildrenTreeData[Object->ID] = Object->children;
 	for (const ALife::_OBJECT_ID ChildID : Object->children)
 	{
-		if (CSE_ALifeDynamicObject* Child = ai().get_alife()->objects().object(ChildID, true))
+		if (CSE_ALifeDynamicObject* Child = ai().get_alife()->objects().object(ChildID))
 		{
 			CollectChildrenTree(Child);
 		}
@@ -239,15 +239,4 @@ void CALifeSwitchManager::switch_object	(CSE_ALifeDynamicObject	*I)
 
 	if (I->redundant())
 		release				(I);
-}
-
-void CALifeSwitchManager::set_switch_centre(const Fvector& centre) const
-{
-	m_switch_centre = centre;
-	m_switch_centre_frame = Device.dwFrame;
-}
-
-const Fvector& CALifeSwitchManager::switch_centre() const
-{
-	return Device.dwFrame - m_switch_centre_frame <= 2 ? m_switch_centre : graph().actor()->o_Position;
 }

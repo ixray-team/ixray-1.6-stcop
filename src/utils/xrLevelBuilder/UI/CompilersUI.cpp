@@ -2,7 +2,6 @@
 
 #include "../../../xrCore/xrCore.h"
 #include "CompilersUI.h"
-#include <magic_enum/magic_enum.hpp>
 #include "../Common/cl_log.h"
 #include "GameLevelsRegistry.h"
 #include <timeapi.h>

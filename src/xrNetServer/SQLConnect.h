@@ -29,7 +29,7 @@ public:
 	struct UserDBProfile
 	{
 		int id;
-		const char* username;
+		LPCSTR username;
 	};
 
 	struct ItemDBState
@@ -55,10 +55,10 @@ public:
 	~DBService();
 	void							Connect();
 	void							Test();
-	void ErrorMsg(const char* function_name, int code, const char* what);
+	void							ErrorMsg(LPCSTR function_name, int code, LPCSTR what);
 
-	int GetUserIdByName(const char* name);
-	UserDBProfile Logon(const char* username, const char* password);
+	int								GetUserIdByName(LPCSTR name);
+	UserDBProfile					Logon(LPCSTR username, LPCSTR password);
 
 	void							UpdateInsertProperty(UserDBProperty data);
 	UserDBProperty					SelectProperty(int id);

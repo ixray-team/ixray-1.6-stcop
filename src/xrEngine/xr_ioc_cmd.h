@@ -771,10 +771,10 @@ public:
 class ENGINE_API CCC_String : public IConsole_Command
 {
 public:
-	char* value;
+	LPSTR			value;
 	int				size;
 
-	CCC_String(const char* N, char* V, int _size = 2) :
+	CCC_String(const char* N, LPSTR V, int _size=2) :
 		IConsole_Command(N),
 		value	(V),
 		size	(_size)
@@ -809,7 +809,7 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static char* FastCommand(const char* command_name, const char* default_value = "\0", int _size = 512)
+	static LPSTR FastCommand(const char* command_name, const char* default_value = "\0", int _size = 512)
 	{
 		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())

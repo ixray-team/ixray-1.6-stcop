@@ -438,7 +438,7 @@ void game_sv_CaptureTheArtefact::OnPlayerConnectFinished(ClientID id_who)
 	xrCData->net_Ready = true;
 }
 
-void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID)
+void game_sv_CaptureTheArtefact::OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
 {
 	CSE_Abstract* actor = m_server->ID_to_entity(GameID);
 	if (!actor)

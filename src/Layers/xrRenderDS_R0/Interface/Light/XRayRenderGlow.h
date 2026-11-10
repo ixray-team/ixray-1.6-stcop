@@ -33,7 +33,7 @@ public:
     }
 
 
-    void set_texture(const char* name) override
+    void set_texture(LPCSTR name) override
     {
     }
 

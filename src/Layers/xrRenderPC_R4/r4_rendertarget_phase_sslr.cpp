@@ -53,8 +53,8 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 	u_setrt(Cmd, (u32)Cmd.GetWidth(), (u32)Cmd.GetHeight(), nullptr, nullptr, nullptr, nullptr);
 
 	//groups
-	const u32 tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
-	const u32 tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
+	const UINT tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
+	const UINT tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
 
 	// Min-Z pyramid for the hierarchical trace (Stachowiak, Stochastic SSR), level 0 comes from PhaseDepthPyramid
 	{

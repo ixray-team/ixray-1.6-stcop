@@ -130,7 +130,7 @@ void nextTexture(char* tex, int texSize, int offset)
 	string_path dir, fn;
 	_splitpath(tex, nullptr, dir, fn, nullptr);
 	xr_strconcat(fn, fn, ".dds");
-	xr_vector<char*>* files = FS.file_list_open(_game_textures_, dir, FS_ListFiles);
+	xr_vector<LPSTR>* files = FS.file_list_open(_game_textures_, dir, FS_ListFiles);
 	if (!files)
 		return;
 	size_t index = 0;
@@ -261,7 +261,7 @@ bool editTexture(const char* label, shared_str& texName)
 
 		if (!initialized) {
 
-			xr_vector<char*>* files = FS.file_list_open(_game_textures_, FS_ListFiles);
+			xr_vector<LPSTR>* files = FS.file_list_open(_game_textures_, FS_ListFiles);
 			xr_vector<xr_string> filtered;
 
 			if (files)

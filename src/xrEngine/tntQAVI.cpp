@@ -260,7 +260,7 @@ bool CAviPlayerCustom::Load (char* fname)
 	return true;
 }
 
-bool CAviPlayerCustom::DecompressFrame(u32 dwFrameNum)
+bool CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
 {
 #ifdef IXR_WINDOWS
 	// получаем элемент индекса
@@ -302,7 +302,7 @@ GetFrame
 
 возвращает true если кадр изменился, иначе false
 */
-bool CAviPlayerCustom::GetFrame(u8** pDest)
+bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 {
 #ifdef IXR_WINDOWS
 	R_ASSERT( pDest );
@@ -352,7 +352,7 @@ bool CAviPlayerCustom::GetFrame(u8** pDest)
 }
 
 // минимум проверок на валидность переданного для преролла кадра - нужна скорость
-void CAviPlayerCustom::PreRoll(u32 dwFrameNum)
+void CAviPlayerCustom::PreRoll( DWORD dwFrameNum )
 {
 #ifdef IXR_WINDOWS
 	int i;
@@ -423,7 +423,7 @@ void CAviPlayerCustom::PreRoll(u32 dwFrameNum)
 #endif
 }
 
-void CAviPlayerCustom::GetSize(u32* dwWidth, u32* dwHeight)
+void CAviPlayerCustom::GetSize(DWORD *dwWidth, DWORD *dwHeight)
 {
 	if( dwWidth )	*dwWidth = m_dwWidth;
 	if( dwHeight )	*dwHeight = m_dwHeight;
@@ -438,10 +438,10 @@ int CAviPlayerCustom::SetSpeed(int nPercent )
 	return	res;
 }
 
-u32 CAviPlayerCustom::CalcFrame()
+DWORD CAviPlayerCustom::CalcFrame()
 {	
 	if(0==m_dwFirstFrameOffset)
 		m_dwFirstFrameOffset = RDEVICE.dwTimeContinual-1;
 
-	return u32(floor((RDEVICE.dwTimeContinual - m_dwFirstFrameOffset) * m_fCurrentRate / 1000.0f)) % m_dwFrameTotal;
+	return DWORD( floor( (RDEVICE.dwTimeContinual-m_dwFirstFrameOffset) * m_fCurrentRate / 1000.0f) ) % m_dwFrameTotal;
 }

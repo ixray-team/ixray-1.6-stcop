@@ -67,5 +67,3 @@ The editor is released in `CGamePersistent::OnAppEnd` before the render device i
 5. Save, reload the level, make sure nodes/links are restored. Then change another area, apply and save again.
 6. Save with the shared button, check the compact native export and the SDK files in a separate copy of the level. Check reverting to the save, applying again, and deletion after a reload.
 7. Open the editor, turn on the brush/grid display and exit with Alt+F4. Repeat after closing the editor window and after leaving the level to the menu: the shader must be released before the render device is destroyed.
-
-Run the surface picking and material capture checks in Debug and RelWithDebInfo on both Windows and macOS. Verify that solid ground is selected while passable surfaces and actor obstacles are skipped.

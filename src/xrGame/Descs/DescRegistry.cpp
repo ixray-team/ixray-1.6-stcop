@@ -14,6 +14,8 @@ void ClearDescRegistries()
 {
 	SHudDofDesc::Registry::Clear();
 	SHudDofDefaults::Registry::Clear();
+	SDofCameraDesc::Registry::Clear();
+	DofSettings::Clear();
 	SHudItemDesc::Registry::Clear();
 	SCustomDetectorDesc::Registry::Clear();
 	SEliteDetectorDesc::Registry::Clear();

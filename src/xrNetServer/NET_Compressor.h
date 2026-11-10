@@ -29,7 +29,7 @@ public:
 	~NET_Compressor();
 
 	u16 compressed_size(const u32& count);
-	u16 Compress(u8* dest, const u32& dest_size, u8* src, const u32& count);   // return size of compressed
-	u16 Decompress(u8* dest, const u32& dest_size, u8* src, const u32& count); // return size of compressed
+	u16 Compress(BYTE* dest, const u32& dest_size, BYTE* src, const u32& count);   // return size of compressed
+	u16 Decompress(BYTE* dest, const u32& dest_size, BYTE* src, const u32& count); // return size of compressed
 	void DumpStats(bool brief);
 };

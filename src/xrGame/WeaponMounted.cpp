@@ -50,7 +50,7 @@ CWeaponMounted::~CWeaponMounted()
 	xr_delete(camera);
 }
 
-void CWeaponMounted::Load(const char* section)
+void	CWeaponMounted::Load(LPCSTR section)
 {
 	inherited::Load(section);
 	CShootingObject::Load	(section);
@@ -69,7 +69,7 @@ void CWeaponMounted::Load(const char* section)
 
 }
 
-s32 CWeaponMounted::net_Spawn(CSE_Abstract* DC)
+BOOL	CWeaponMounted::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeMountedWeapon	*mw	= smart_cast<CSE_ALifeMountedWeapon*>(e);

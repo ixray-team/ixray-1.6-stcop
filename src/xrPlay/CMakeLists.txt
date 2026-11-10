@@ -31,7 +31,7 @@ list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
 add_executable(xrEngine WIN32 ${XPLAY_SOURCE_ALL_FILES})
 target_include_directories(xrEngine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEngine PRIVATE "${IXRAY_SDK_INC}")
-target_precompile_headers(xrEngine PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>")
+set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # Project defines
 target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
@@ -48,5 +48,3 @@ endif()
 if(IXRAY_MP)
     add_dependencies(xrEngine xrGameSpy)
 endif()
-
-ixray_split_compile(xrEngine)

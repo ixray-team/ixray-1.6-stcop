@@ -38,7 +38,7 @@
 LWSTDAPI_(int) StrCmpLogicalW(__in LPCWSTR psz1, __in LPCWSTR psz2);
 
 struct logical_string_predicate {
-	static HRESULT AnsiToUnicode(const char* pszA, void* buffer, u32 const& buffer_size)
+	static HRESULT AnsiToUnicode						(const char* pszA, LPVOID buffer, u32 const& buffer_size)
 	{
 		VERIFY			(pszA);
 		VERIFY			(buffer);
@@ -57,11 +57,11 @@ struct logical_string_predicate {
 	{
 		u32				buffer_size0 = (xr_strlen(first) + 1)*2;
 		LPCWSTR			buffer0 = (LPCWSTR)_alloca(buffer_size0);
-		AnsiToUnicode(first, (void*)buffer0, buffer_size0);
+		AnsiToUnicode	(first, (LPVOID)buffer0, buffer_size0);
 
 		u32				buffer_size1 = (xr_strlen(second) + 1)*2;
 		LPCWSTR			buffer1 = (LPCWSTR)_alloca(buffer_size1);
-		AnsiToUnicode(second, (void*)buffer1, buffer_size1);
+		AnsiToUnicode	(second, (LPVOID)buffer1, buffer_size1);
 
 		return			(StrCmpLogicalW(buffer0, buffer1) < 0);
 	}
@@ -70,11 +70,11 @@ struct logical_string_predicate {
 	{
 		u32				buffer_size0 = (first.size() + 1)*2;
 		LPCWSTR			buffer0 = (LPCWSTR)_alloca(buffer_size0);
-		AnsiToUnicode(first.c_str(), (void*)buffer0, buffer_size0);
+		AnsiToUnicode	(first.c_str(), (LPVOID)buffer0, buffer_size0);
 
 		u32				buffer_size1 = (second.size() + 1)*2;
 		LPCWSTR			buffer1 = (LPCWSTR)_alloca(buffer_size1);
-		AnsiToUnicode(second.c_str(), (void*)buffer1, buffer_size1);
+		AnsiToUnicode	(second.c_str(), (LPVOID)buffer1, buffer_size1);
 
 		return			(StrCmpLogicalW(buffer0, buffer1) < 0);
 	}
@@ -1170,7 +1170,7 @@ void CSE_ALifeLevelChanger::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	if (m_wVersion > 116)
 		m_bSilentMode			= !!tNetPacket.r_u8();
 
-	destLeveName = (char*)m_caLevelPointToChange.c_str();
+	destLeveName = (LPSTR) m_caLevelPointToChange.c_str();
 
 }
 
@@ -2939,7 +2939,7 @@ void CSE_ALifeInventoryBox::FillProps( const char* pref, PropItemVec& values )
 // CSE_ALifeTeamBaseZone
 ////////////////////////////////////////////////////////////////////////////
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeTeamCaptureZone::FillProps(const char* pref, PropItemVec& items)
+void CSE_ALifeTeamCaptureZone::FillProps(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps(pref, items);
 	PHelper().CreateNumeric(items, PrepareKey(pref, *s_name, "team"), &m_team, 0, 16);
@@ -2947,7 +2947,7 @@ void CSE_ALifeTeamCaptureZone::FillProps(const char* pref, PropItemVec& items)
 }
 #endif // #ifndef XRGAME_EXPORTS
 
-CSE_ALifeTeamCaptureZone::CSE_ALifeTeamCaptureZone(const char* caSection) : CSE_ALifeSpaceRestrictor(caSection)
+CSE_ALifeTeamCaptureZone::CSE_ALifeTeamCaptureZone(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)
 {
 	m_team = 0;
 	m_point_name = "";

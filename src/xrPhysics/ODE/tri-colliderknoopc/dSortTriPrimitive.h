@@ -131,7 +131,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 
 	pos_tries.clear	();
 	dReal neg_depth=dInfinity,b_neg_depth=dInfinity;
-	u32 b_count = 0;
+	UINT	b_count		=0			;
 	bool	intersect	=	false	;
 
 #ifdef DEBUG

@@ -121,7 +121,7 @@ static void script_set_sleep_blocked(CUIGameCustom* hud, bool blocked)
 		hud->SetSleepBlocked(blocked, nullptr);
 }
 
-static void script_set_sleep_blocked_warn(CUIGameCustom* hud, bool blocked, const char* warningText)
+static void script_set_sleep_blocked_warn(CUIGameCustom* hud, bool blocked, LPCSTR warningText)
 {
 	if (hud)
 		hud->SetSleepBlocked(blocked, warningText);
@@ -133,7 +133,7 @@ static void script_set_sleep_blocked_free(bool blocked)
 		hud->SetSleepBlocked(blocked, nullptr);
 }
 
-static void script_set_sleep_blocked_warn_free(bool blocked, const char* warningText)
+static void script_set_sleep_blocked_warn_free(bool blocked, LPCSTR warningText)
 {
 	if (CUIGameCustom* hud = CurrentGameUI())
 		hud->SetSleepBlocked(blocked, warningText);

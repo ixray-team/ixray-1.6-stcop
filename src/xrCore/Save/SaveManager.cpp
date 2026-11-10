@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SaveManager.h"
 #include "MemoryBuffer.h"
-#include <magic_enum/magic_enum.hpp>
 
 CSaveManager::CSaveManager()
 {
@@ -227,22 +226,6 @@ void CSaveManager::ConditionalReadBool(IReader* stream, bool& Value)
 	else {
 		stream->r(&Value, sizeof(bool));
 	}
-}
-
-bool CSaveManager::TakeSaveable(ESaveVariableType Type, ISaveable*& Cached)
-{
-	xrCriticalSectionGuard guard(_saveElementsMutex);
-	auto Storage = SaveElementsCache.find(Type);
-	if (!I_ASSERT_M(Storage != SaveElementsCache.end(), "Unable to access cached save element of type [%s]", magic_enum::enum_name(Type).data()))
-	{
-		return false;
-	}
-	if (!Storage->second.empty())
-	{
-		Cached = Storage->second.back();
-		Storage->second.pop_back();
-	}
-	return true;
 }
 
 void CSaveManager::ReleaseSaveable(ISaveable* Elem)

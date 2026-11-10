@@ -127,16 +127,16 @@ ICF char const* xr_strstr(char const* S1, char const* S2)
 	return strstr(S1, S2);
 }
 
-ICF errno_t xr_strcpy(char* destination, size_t const destination_size, const char* source)
+ICF errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, const char* source )
 {
 	return						strncpy_s( destination, destination_size, source, destination_size );
 }
 
-ICF errno_t xr_strcat(char* destination, size_t const buffer_size, const char* source)
+ICF errno_t xr_strcat		( LPSTR destination, size_t const buffer_size, const char* source )
 {
 	size_t const destination_length	= xr_strlen(destination);
-	char* i = destination + destination_length;
-	char* const e = destination + buffer_size - 1;
+	LPSTR i						= destination + destination_length;
+	LPSTR const e				= destination + buffer_size - 1;
 	if ( i > e )
 		return					0;
 
@@ -147,7 +147,7 @@ ICF errno_t xr_strcat(char* destination, size_t const buffer_size, const char* s
 	return						0;
 }
 
-ICF int __cdecl xr_sprintf(char* destination, size_t const buffer_size, const char* format_string, ...)
+ICF int __cdecl xr_sprintf	( LPSTR destination, size_t const buffer_size, const char* format_string, ... )
 {
 	va_list args;
 	va_start					( args, format_string);

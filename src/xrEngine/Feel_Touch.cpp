@@ -17,7 +17,7 @@ bool Touch::feel_touch_contact(CObject* O)
 	return true; 
 }
 
-void Touch::feel_touch_deny(CObject* O, u32 T)
+void Touch::feel_touch_deny(CObject* O, DWORD T)
 {
 	feel_touch_disable.push_back({ O, Device.dwTimeGlobal + T });
 }
@@ -25,7 +25,7 @@ void Touch::feel_touch_deny(CObject* O, u32 T)
 void Touch::feel_touch_update(Fvector& C, float R)
 {
 	// Check if denied objects expire in time
-	u32 dwT = Device.dwTimeGlobal;
+	DWORD dwT = Device.dwTimeGlobal;
 	feel_touch_disable.erase(std::remove_if(feel_touch_disable.begin(), feel_touch_disable.end(),
 			[dwT](const DenyTouch& D) { return D.Expire < dwT; }), feel_touch_disable.end());
 

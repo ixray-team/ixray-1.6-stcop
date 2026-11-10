@@ -34,7 +34,7 @@ extern float gCheckHitK;
 //test callback функция 
 //  object - object for testing
 //return true-тестировать объект / false-пропустить объект
-bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object, void* params)
+bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params)
 {
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;

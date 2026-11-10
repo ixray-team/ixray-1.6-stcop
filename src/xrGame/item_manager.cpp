@@ -101,6 +101,13 @@ bool CItemManager::useful			(const CGameObject *object) const
 
 float CItemManager::do_evaluate		(const CGameObject *object) const
 {
+	VERIFY3					(
+		m_object->movement().restrictions().accessible(
+			object->ai_location().level_vertex_id()
+		),
+		*m_object->cName(),
+		*object->cName()
+	);
 	return					(m_object->evaluate(this,object));
 }
 
@@ -116,13 +123,28 @@ float CItemManager::evaluate		(const CGameObject *object) const
 void CItemManager::update()
 {
 	PROF_EVENT("Memory Manager/items::update")
-	const bool Combat = m_stalker && m_stalker->memory().enemy().selected();
-	if (InCombat && !Combat)
-	{
-		std::erase_if(m_objects, [this](const CGameObject* Item) { return !is_useful(Item); });
-	}
-	InCombat = Combat;
+
+#ifdef DEBUG
+	OBJECTS::const_iterator	I = m_objects.begin();
+	OBJECTS::const_iterator	E = m_objects.end();
+	for ( ; I != E; ++I)
+		VERIFY3				(
+			m_object->movement().restrictions().accessible(
+				(*I)->ai_location().level_vertex_id()
+			),
+			*m_object->cName(),
+			*(*I)->cName()
+		);
+#endif // DEBUG
+
 	inherited::update		();
+
+	VERIFY3					(
+		!selected() ||
+		m_object->movement().restrictions().accessible(selected()->ai_location().level_vertex_id()),
+		*m_object->cName(),
+		selected() ? *selected()->cName() : "<no selected item>"
+	);
 }
 
 void CItemManager::remove_links		(CObject *object)

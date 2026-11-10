@@ -1053,7 +1053,6 @@ void CEnvironment::load		()
 
 void CEnvironment::unload	()
 {
-	Held[0] = Held[1] = Shown[0] = Shown[1] = nullptr;
 	EnvsMapIt _I,_E;
 	// clear weathers
 	_I		= WeatherCycles.begin();
@@ -1087,69 +1086,4 @@ void CEnvironment::unload	()
 
 	m_pRender->OnUnload	();
 //	tonemap				= 0;
-}
-
-void EnvLook::Read(const CEnvDescriptor& Source)
-{
-	SkyColor = Source.sky_color;
-	FogColor = Source.fog_color;
-	Ambient = Source.ambient;
-	SunColor = Source.sun_color;
-	HemiColor = Source.hemi_color;
-	CloudsColor = Source.clouds_color;
-	SkyRotation = Source.sky_rotation;
-	FarPlane = Source.far_plane;
-	FogDensity = Source.fog_density;
-	FogDistance = Source.fog_distance;
-	RainDensity = Source.rain_density;
-	WindVelocity = Source.wind_velocity;
-	WindDirection = Source.wind_direction;
-	SunShafts = Source.m_fSunShaftsIntensity;
-}
-
-void EnvLook::Write(CEnvDescriptor& Target) const
-{
-	Target.sky_color = SkyColor;
-	Target.fog_color = FogColor;
-	Target.ambient = Ambient;
-	Target.sun_color = SunColor;
-	Target.hemi_color = HemiColor;
-	Target.clouds_color = CloudsColor;
-	Target.sky_rotation = SkyRotation;
-	Target.far_plane = FarPlane;
-	Target.fog_density = FogDensity;
-	Target.fog_distance = FogDistance;
-	Target.rain_density = RainDensity;
-	Target.wind_velocity = WindVelocity;
-	Target.wind_direction = WindDirection;
-	Target.m_fSunShaftsIntensity = SunShafts;
-}
-
-void EnvLook::Mix(const CEnvDescriptor& A, const CEnvDescriptor& B, float Weight)
-{
-	EnvLook Early, Late;
-	Early.Read(A);
-	Late.Read(B);
-	Lerp(Early, Late, Weight);
-	FarPlane *= psVisDistance;
-	FogDistance *= psVisDistance;
-}
-
-void EnvLook::Lerp(const EnvLook& A, const EnvLook& B, float Weight)
-{
-	const float Rest = 1.0f - Weight;
-	SkyColor.lerp(A.SkyColor, B.SkyColor, Weight);
-	FogColor.lerp(A.FogColor, B.FogColor, Weight);
-	Ambient.lerp(A.Ambient, B.Ambient, Weight);
-	SunColor.lerp(A.SunColor, B.SunColor, Weight);
-	HemiColor.lerp(A.HemiColor, B.HemiColor, Weight);
-	CloudsColor.lerp(A.CloudsColor, B.CloudsColor, Weight);
-	SkyRotation = Rest * A.SkyRotation + Weight * B.SkyRotation;
-	FarPlane = Rest * A.FarPlane + Weight * B.FarPlane;
-	FogDensity = Rest * A.FogDensity + Weight * B.FogDensity;
-	FogDistance = Rest * A.FogDistance + Weight * B.FogDistance;
-	RainDensity = Rest * A.RainDensity + Weight * B.RainDensity;
-	WindVelocity = Rest * A.WindVelocity + Weight * B.WindVelocity;
-	WindDirection = Rest * A.WindDirection + Weight * B.WindDirection;
-	SunShafts = Rest * A.SunShafts + Weight * B.SunShafts;
 }

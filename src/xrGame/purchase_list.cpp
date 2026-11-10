@@ -45,7 +45,7 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 			{
 				if(Item.first.c_str()[0] == '$')
 				{
-					const char* section_name = Item.first.c_str() + 1;
+					LPCSTR section_name = Item.first.c_str()+1;
 					self(section_name, count, prob);
 					continue;
 				}
@@ -75,7 +75,7 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 		{
 			if(sect.first.c_str()[0] == '$')
 			{
-				const char* section_name = sect.first.c_str() + 1;
+				LPCSTR section_name = sect.first.c_str()+1;
 				ProcessMultipleTradeItemsSettingsFunc(section_name, count, prob);
 				continue;
 			}

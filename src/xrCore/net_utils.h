@@ -35,8 +35,8 @@ struct XRCORE_API IIniFileStream
 	virtual void	__stdcall	r_s32			(s32&)						= 0;
 	virtual void	__stdcall	r_s64			(s64&)						= 0;
 
-	virtual void __stdcall r_string(char* dest, u32 dest_size) = 0;
-	//	virtual void	__stdcall	r_tell			()							= 0;
+	virtual void	__stdcall	r_string		(LPSTR dest, u32 dest_size)	= 0;
+//	virtual void	__stdcall	r_tell			()							= 0;
 //	virtual void	__stdcall	r_seek			(u32 pos)					= 0;
 	virtual void	__stdcall	skip_stringZ	()							= 0;
 };
@@ -61,7 +61,7 @@ if(inistream)\
 // Если это не сработает - ну это пиздец...
 class NET_Packet_byte_vector_pool // Попробовать сделать пулл буферов, мб деаллокация починится и перф улучшится
 {
-	xr_map<size_t, xr_queue<u8*>> buffers;
+	xr_map<size_t, xr_queue<BYTE*>> buffers;
 	xrCriticalSection mutex;
 	
 	NET_Packet_byte_vector_pool() = default;
@@ -82,13 +82,13 @@ public:
 
 	static NET_Packet_byte_vector_pool& GetInstance();
 
-	void Allocate(u8*& Target, size_t& GivenSize, size_t DesiredSize);
-	void Deallocate(u8*& Target, size_t& BufferSize);
+	void Allocate(BYTE*& Target, size_t& GivenSize, size_t DesiredSize);
+	void Deallocate(BYTE*& Target, size_t& BufferSize);
 };
 
 class XRCORE_API NET_Packet_byte_vector
 {
-	u8* Buff = nullptr;
+	BYTE* Buff = nullptr;
 	size_t BuffSize = 0;
 	size_t UsedSize = 0;
 
@@ -104,7 +104,7 @@ public:
 	void reserve(size_t size);
 	void resize(size_t size);
 
-	IC u8* data() const { return Buff; }
+	IC BYTE* data() const { return Buff; }
 	IC void clear(){UsedSize = 0;}
 	IC size_t size() const { return UsedSize; }
 	
@@ -324,13 +324,13 @@ public:
 	void		r_dir			(Fvector& A);
 
 	void		r_sdir			(Fvector& A);
-	void r_stringZ(char* S);
+	void		r_stringZ		(LPSTR S );
 	void		r_stringZ		(xr_string& dest );
 	void 		r_stringZ		(shared_str& dest);
 	
 	void		skip_stringZ	();
 	
-	void r_stringZ_s(char* string, u32 size);
+	void		r_stringZ_s		(LPSTR string, u32 size);
 
 	template <u32 size>
 	inline void	r_stringZ_s		(char (&string)[size])

@@ -1,55 +1,18 @@
 #include "StdAfx.h"
 #include "CinemaEditor.h"
 #include "../../../xrEngine/ImGuiManager.h"
-#include "../../../xrEngine/IInputReceiver.h"
 
 namespace Cinema::ViewportUi
 {
-Curve* PathCurve(CameraBlock& Block, u32 Axis)
-{
-	const auto Found = std::find_if(Block.Lanes.begin(), Block.Lanes.end(), [](const Lane& Item) { return Item.Id == Param::Position && Item.Layer == 0; });
-	return Found == Block.Lanes.end() ? nullptr : &Found->Curves[Axis];
-}
-
-bool TangentAt(const CameraBlock& Block, float Time, Fvector& In, Fvector& Out)
-{
-	for (u32 Axis = 0; Axis < 3; ++Axis)
-	{
-		const Curve* Part = PathCurve(const_cast<CameraBlock&>(Block), Axis);
-		const u32 At = Part ? Curves::KeyAt(*Part, Time, 1e-4f) : u32(-1);
-		if (At == u32(-1))
-		{
-			return false;
-		}
-		const Key& Item = Part->Keys[At];
-		const float Before = At ? (Item.Time - Part->Keys[At - 1].Time) / 3.0f : 0.0f, After = At + 1 < Part->Keys.size() ? (Part->Keys[At + 1].Time - Item.Time) / 3.0f : 0.0f;
-		In[Axis] = At && Part->Keys[At - 1].Mode == Interp::Bezier ? Item.InValue : Curves::Value(*Part, Item.Time - Before, Item.Value) - Item.Value;
-		Out[Axis] = Item.Mode == Interp::Bezier ? Item.OutValue : Curves::Value(*Part, Item.Time + After, Item.Value) - Item.Value;
-	}
-	return true;
-}
-
 constexpr float LookRate = 0.003f, PanRate = 0.0025f, DollyRate = 0.25f, MaxPitch = 1.55f, KeyRadius = 0.12f, ArrowLength = 0.6f;
 constexpr float RollRate = 0.7853982f, FovRate = 30.0f, MinFov = 5.0f, MaxFov = 150.0f;
 constexpr float PickRange = 1000.0f, PickPixels = 32.0f, CubeSize = 128.0f, CubeLength = 8.0f;
-constexpr float MarkerRadius = 0.3f, GrabPixels = 8.0f, HandlePixels = 5.0f, TangentPixels = 12.0f;
+constexpr float MarkerRadius = 0.3f, GrabPixels = 8.0f, HandlePixels = 5.0f;
 constexpr u32 CircleSegments = 24, FaintAlpha = 90;
-constexpr u32 ActorBit = 1u << static_cast<u32>(ObjectType::Actor), SpotBit = 1u << static_cast<u32>(ObjectType::Light), ParticleBit = 1u << static_cast<u32>(ObjectType::Particle), PointBit = 1u << 5;
+constexpr u32 ActorBit = 1u << static_cast<u32>(ObjectType::Actor), SpotBit = 1u << static_cast<u32>(ObjectType::Light), ParticleBit = 1u << static_cast<u32>(ObjectType::Particle), PointBit = 1u << 4;
 constexpr const char* GizmoLabels[3] = { "Move", "Rotate", "Scale" };
-constexpr const char* ToolLabels[4] = { "TRS", "T", "R", "S" };
-constexpr const char* ToolNames[5] = { "Move, rotate and scale (Q)", "Move (W)", "Rotate (E)", "Scale (R)", "Range (R)" };
-constexpr const char* StepNames[4] = { "Move step", "Rotate step", "Scale step", "Range step" };
-constexpr const char* StepFormats[4] = { "%.2f m", "%.1f deg", "%.2f", "%.2f m" };
-constexpr float StepLo[4] = { 0.01f, 0.5f, 0.01f, 0.01f }, StepHi[4] = { 10.0f, 180.0f, 1.0f, 10.0f };
-constexpr const char* FlyHint = "W A S D: move | Space, C: up, down | Q, E: roll | R, T: field of view | Shift: fast | Wheel: speed";
-constexpr const char* GizmoHint = "Ctrl: flip snap | Shift: snap to the surface | Esc: cancel";
-constexpr const char* ViewHint = "Right-drag: fly | Middle-drag: pan | Wheel: dolly | Right-click: menu | Q W E R: gizmo | X: local, world | V: shot, free camera";
-constexpr const char* PathHint = "Drag: move the key | Shift: snap to the surface | Ctrl + click the path: add a key";
-constexpr const char* InsertHint = "Click: add a key here";
-constexpr const char* IkHint = "Drag: move | Click: gizmo for turning and axis moves | Esc: cancel";
-constexpr const char* TangentHint = "Drag: bend the path | Ctrl: break the handles | Shift: fine";
 constexpr ImGuizmo::OPERATION Operations[3] = { ImGuizmo::TRANSLATE, ImGuizmo::ROTATE, ImGuizmo::SCALE };
-constexpr Param ScaleParams[7] = { Param::Scale, Param::Scale, Param::Range, Param::Size, Param::DecalWidth, Param::Scale, Param::Scale };
+constexpr Param ScaleParams[4] = { Param::Scale, Param::Scale, Param::Range, Param::Size };
 
 float Project(const Fvector& Point, ImVec2& Screen)
 {
@@ -62,18 +25,6 @@ float Project(const Fvector& Point, ImVec2& Screen)
 	const ImGuiViewport* Main = ImGui::GetMainViewport();
 	Screen = ImVec2(Main->Pos.x + (Clip.x + 1.0f) * 0.5f * Main->Size.x, Main->Pos.y + (1.0f - Clip.y) * 0.5f * Main->Size.y);
 	return 0.5f * Main->Size.y * Device.mProject._22 / Clip.w;
-}
-
-float RigReach(u32 Control)
-{
-	constexpr float Reach[14] = { 0.25f, 0.22f, 0.14f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.4f, 0.2f, 0.2f, 0.1f };
-	return Control < 14 ? Reach[Control] : 0.0f;
-}
-
-Fvector RigRing(const Fvector& Centre, float Radius, u32 Step)
-{
-	const float Angle = static_cast<float>(Step) * PI_MUL_2 / 24.0f;
-	return Fvector().set(Centre.x + cosf(Angle) * Radius, Centre.y, Centre.z + sinf(Angle) * Radius);
 }
 
 void Line3D(ImDrawList* List, Fvector From, Fvector To, u32 Color)
@@ -122,69 +73,6 @@ bool MouseRay(Fvector& Origin, Fvector& Direction)
 	return true;
 }
 
-struct PathSpot
-{
-	u32 Id = 0;
-	s32 Block = -1;
-	s32 Key = -1;
-	float Time = 0.0f;
-	float Gap = 0.0f;
-	ImVec2 At;
-	Fvector Point;
-};
-
-void Offer(PathSpot& Spot, u32 Id, s32 Block, s32 Key, float Time, const Fvector& Point)
-{
-	const ImVec2 Mouse = ImGui::GetIO().MousePos;
-	ImVec2 Screen;
-	if (!(Project(Point, Screen) > 0.0f))
-	{
-		return;
-	}
-	const float Gap = (Screen.x - Mouse.x) * (Screen.x - Mouse.x) + (Screen.y - Mouse.y) * (Screen.y - Mouse.y);
-	if (Gap < Spot.Gap)
-	{
-		Spot = { Id, Block, Key, Time, Gap, Screen, Point };
-	}
-}
-
-void FitHandles(Lane& Track, const Lane& Base, float Time, float HalfFrame)
-{
-	u32 Now[3], Was[3];
-	float Edge[2] = { -FLT_MAX, FLT_MAX };
-	for (u32 Axis = 0; Axis < 3; ++Axis)
-	{
-		const xr_vector<Key>& Keys = Base.Curves[Axis].Keys;
-		Now[Axis] = Curves::KeyAt(Track.Curves[Axis], Time, HalfFrame);
-		Was[Axis] = Curves::KeyAt(Base.Curves[Axis], Time, HalfFrame);
-		Edge[0] = Was[Axis] != u32(-1) && Was[Axis] > 0 ? std::max(Edge[0], Keys[Was[Axis] - 1].Time) : Edge[0];
-		Edge[1] = Was[Axis] != u32(-1) && Was[Axis] + 1 < Keys.size() ? std::min(Edge[1], Keys[Was[Axis] + 1].Time) : Edge[1];
-	}
-	const auto At = [](const Lane& Source, float Moment) { return Fvector().set(Curves::Value(Source.Curves[0], Moment, 0.0f), Curves::Value(Source.Curves[1], Moment, 0.0f), Curves::Value(Source.Curves[2], Moment, 0.0f)); };
-	const Fvector Old = At(Base, Time), New = At(Track, Time);
-	for (u32 Side = 0; Side < 2; ++Side)
-	{
-		if (!(std::fabs(Edge[Side]) < FLT_MAX))
-		{
-			continue;
-		}
-		const Fvector Far = At(Base, Edge[Side]);
-		const float Chord = Old.distance_to(Far), Ratio = Chord > EPS_L ? std::clamp(New.distance_to(Far) / Chord, 0.05f, 20.0f) : 1.0f;
-		for (u32 Axis = 0; Axis < 3; ++Axis)
-		{
-			xr_vector<Key>& Keys = Track.Curves[Axis].Keys;
-			const xr_vector<Key>& Before = Base.Curves[Axis].Keys;
-			const u32 Mine = Now[Axis], Theirs = Was[Axis];
-			if (Mine == u32(-1) || Theirs == u32(-1) || (Side ? Mine + 1 >= Keys.size() || Theirs + 1 >= Before.size() : !Mine || !Theirs))
-			{
-				continue;
-			}
-			(Side ? Keys[Mine].OutValue : Keys[Mine].InValue) = (Side ? Before[Theirs].OutValue : Before[Theirs].InValue) * Ratio;
-			(Side ? Keys[Mine + 1].InValue : Keys[Mine - 1].OutValue) = (Side ? Before[Theirs + 1].InValue : Before[Theirs - 1].OutValue) * Ratio;
-		}
-	}
-}
-
 Fmatrix Compose(const Fvector (&Values)[3])
 {
 	Fmatrix Result;
@@ -228,7 +116,7 @@ void LinkLines(ImDrawList* List, const LinkFrames& Frames, const Fvector& From, 
 {
 	if (Frames.HasParent)
 	{
-		Line3D(List, From, Frames.Parent.c, Frames.Weight < 1.0f ? (Color & 0x00FFFFFFu) | (FaintAlpha << 24) : Color);
+		Line3D(List, From, Frames.Parent.c, Color);
 	}
 	if (Frames.HasLook)
 	{
@@ -267,13 +155,13 @@ bool AxisPoint(const Fvector& Centre, const Fvector& Axis, float& Along)
 
 const ObjectState* HelperState(const Player& Core, const Object& Item)
 {
-	const ObjectState* State = Item.Type == ObjectType::Light || Item.Type == ObjectType::Particle || Item.Type == ObjectType::Decal ? Core.FindState(Item.Id) : nullptr;
+	const ObjectState* State = Item.Type == ObjectType::Light || Item.Type == ObjectType::Particle ? Core.FindState(Item.Id) : nullptr;
 	return State && State->IsReady ? State : nullptr;
 }
 
 bool IsSkipped(const Object& Item, GizmoMode Mode)
 {
-	return Item.Type >= ObjectType::Weather || (Item.Type == ObjectType::Light && (Mode == GizmoMode::Scale || (Mode == GizmoMode::Rotate && !IsParamShown(Item, Param::Rotation)))) || (Item.Type == ObjectType::Camera && Mode == GizmoMode::Scale);
+	return (Item.Type == ObjectType::Light && (Mode == GizmoMode::Scale || (Mode == GizmoMode::Rotate && !IsParamShown(Item, Param::Rotation)))) || (Item.Type == ObjectType::Camera && Mode == GizmoMode::Scale);
 }
 
 void DrawEffectHelper(ImDrawList* List, const Object& Item, const Fmatrix& World, float Time, u32 Tint)
@@ -297,26 +185,6 @@ void DrawEffectHelper(ImDrawList* List, const Object& Item, const Fmatrix& World
 	if (Item.Type == ObjectType::Light)
 	{
 		Circle3D(List, World.c, Device.vCameraRight, Device.vCameraTop, Range, Color);
-	}
-	if (Item.Type == ObjectType::Decal)
-	{
-		const float Width = 0.5f * Curves::LaneScalar(Item.Lanes, Param::DecalWidth, 0, Local, Item.Decal.Width), Height = 0.5f * Curves::LaneScalar(Item.Lanes, Param::DecalHeight, 0, Local, Item.Decal.Height);
-		Fvector Side = World.i, Front = World.k, Up = World.j;
-		Side.normalize_safe().mul(Width);
-		Front.normalize_safe().mul(Height);
-		Up.normalize_safe().mul(-0.5f);
-		const Fvector Corners[4] = { Fvector().add(World.c, Side).add(Front), Fvector().sub(World.c, Side).add(Front), Fvector().sub(World.c, Side).sub(Front), Fvector().add(World.c, Side).sub(Front) };
-		for (u32 Edge = 0; Edge < 4; ++Edge)
-		{
-			Line3D(List, Corners[Edge], Corners[(Edge + 1) % 4], Color);
-		}
-		Line3D(List, World.c, Fvector().add(World.c, Up), Color);
-		ImVec2 Spot;
-		if (Project(World.c, Spot) > 0.0f)
-		{
-			List->AddText(ImVec2(Spot.x + 6.0f, Spot.y + 2.0f), Color, Item.Name.c_str());
-		}
-		return;
 	}
 	if (!(Scale > 0.0f))
 	{
@@ -376,12 +244,6 @@ void Editor::UseEditorCamera(Player& Core)
 		Device.vCameraDirection.getHP(Yaw, Pitch);
 		EyeFov = IsShot ? std::clamp(Device.fFOV, ViewportUi::MinFov, ViewportUi::MaxFov) : 0.0f;
 		IsEyeValid = true;
-		ShownEye = Eye;
-		ShownYaw = Yaw;
-		ShownPitch = Pitch;
-		ShownRoll = Roll;
-		ShownFov = EyeFov;
-		IsGliding = false;
 	}
 	IsEditorCamera = true;
 	Core.IsLookingThrough = false;
@@ -398,28 +260,15 @@ void Editor::UpdateFly(Player& Core)
 	const bool IsCapturing = CImGuiManager::Instance().IsCapturingInputs();
 	const bool IsFree = IsViewportFree();
 	const bool WasFlying = IsFlying, WasArmed = IsFlyArmed;
-	IsFlyArmed = IsCapturing && (IsFlyArmed ? CImGuiManager::Instance().IsButtonHeld(false) : IsFree && ImGui::IsMouseClicked(ImGuiMouseButton_Right));
-	IsPanning = IsCapturing && (IsPanning ? CImGuiManager::Instance().IsButtonHeld(true) : IsFree && ImGui::IsMouseClicked(ImGuiMouseButton_Middle));
+	IsFlyArmed = IsCapturing && (IsFlyArmed ? ImGui::IsMouseDown(ImGuiMouseButton_Right) : IsFree && ImGui::IsMouseClicked(ImGuiMouseButton_Right));
+	IsPanning = IsCapturing && (IsPanning ? ImGui::IsMouseDown(ImGuiMouseButton_Middle) : IsFree && ImGui::IsMouseClicked(ImGuiMouseButton_Middle));
 	IsFlying = IsFlyArmed && (IsFlying || ImGui::IsMouseDragging(ImGuiMouseButton_Right, 4.0f));
-	ShouldOpenPopup = WasArmed && !IsFlyArmed && !WasFlying;
-	Hint = IsFlying ? ViewportUi::FlyHint : IsGizmoActive || IsGizmoHovered ? (Hint ? Hint : ViewportUi::GizmoHint) : IsFree ? ViewportUi::ViewHint : Hint;
+	ShouldOpenPopup = WasArmed && !IsFlyArmed && !WasFlying && ImGui::IsMouseReleased(ImGuiMouseButton_Right);
 	const Object* Rig = FindCamera(Core.Data);
-	const bool IsRecording = IsFlying && Core.IsPlaying && IsAutoKey && Rig && IsSelected(Rig->Id);
-	if (IsRecording && ImGui::IsKeyPressed(ImGuiKey_Escape, false))
-	{
-		Recorded.clear();
-		IsRecordCancelled = true;
-	}
-	if (WasFlying && !IsFlying && IsAutoKey && Rig && IsSelected(Rig->Id) && !HasRecorded)
+	if (WasFlying && !IsFlying && IsAutoKey && Rig && IsSelected(Rig->Id))
 	{
 		KeyFromView(Core, Core.Time, true);
 	}
-	if (!Recorded.empty() && !IsRecording)
-	{
-		CommitRecording(Core);
-	}
-	HasRecorded = HasRecorded && IsFlying;
-	IsRecordCancelled = IsRecordCancelled && IsFlying;
 
 	const float Wheel = IsFlyArmed || IsFree ? Input.MouseWheel : 0.0f;
 	if ((IsFlying && !WasFlying) || (IsPanning && ImGui::IsMouseClicked(ImGuiMouseButton_Middle)) || (Wheel != 0.0f && !IsFlyArmed))
@@ -431,15 +280,15 @@ void Editor::UpdateFly(Player& Core)
 	if (IsFlying != WasFlying)
 	{
 		CImGuiManager::Instance().SetMouseLook(IsFlying);
+		ImGui::TeleportMousePos(Input.MouseClickedPos[ImGuiMouseButton_Right]);
 	}
 	const auto Axis = [&Input](ImGuiKey Plus, ImGuiKey Minus) { return Input.WantTextInput ? 0.0f : static_cast<float>(ImGui::IsKeyDown(Plus)) - static_cast<float>(ImGui::IsKeyDown(Minus)); };
 	const float Boost = IsFlying ? (Input.KeyShift ? 4.0f : 1.0f) * Input.DeltaTime : 0.0f;
 	if (IsFlying)
 	{
 		const ImVec2 Look = CImGuiManager::Instance().TakeMouseLook();
-		const float Rate = ViewportUi::LookRate * (EyeFov > 0.0f ? EyeFov : GameFov()) / 67.5f * Settings.LookSensitivity;
-		Yaw -= Look.x * Rate;
-		Pitch = std::clamp(Pitch - Look.y * Rate * (psMouseInvert ? -1.0f : 1.0f), -ViewportUi::MaxPitch, ViewportUi::MaxPitch);
+		Yaw -= Look.x * ViewportUi::LookRate;
+		Pitch = std::clamp(Pitch - Look.y * ViewportUi::LookRate, -ViewportUi::MaxPitch, ViewportUi::MaxPitch);
 		Roll = std::remainder(Roll + Axis(ImGuiKey_E, ImGuiKey_Q) * ViewportUi::RollRate * Boost, PI_MUL_2);
 		const float Zoom = Axis(ImGuiKey_T, ImGuiKey_R);
 		EyeFov = Zoom != 0.0f ? std::clamp((EyeFov > 0.0f ? EyeFov : GameFov()) + Zoom * ViewportUi::FovRate * Boost, ViewportUi::MinFov, ViewportUi::MaxFov) : EyeFov;
@@ -461,176 +310,7 @@ void Editor::UpdateFly(Player& Core)
 	{
 		Eye.mad(View.k, Wheel * Settings.FlySpeed * ViewportUi::DollyRate);
 	}
-	if (IsRecording && !IsRecordCancelled)
-	{
-		constexpr u32 MaxSamples = 60 * 600;
-		Recorded.reserve(MaxSamples);
-		const RecordSample* Last = Recorded.empty() ? nullptr : &Recorded.back();
-		const Fvector Turn = Fvector().set(rad2deg(Yaw), rad2deg(Pitch), rad2deg(Roll));
-		RecordSample Sample { Core.Time, Eye, Turn, EyeFov };
-		Sample.Rotation.x = Last ? Last->Rotation.x + std::remainder(Turn.x - Last->Rotation.x, 360.0f) : Turn.x;
-		Sample.Rotation.z = Last ? Last->Rotation.z + std::remainder(Turn.z - Last->Rotation.z, 360.0f) : Turn.z;
-		if (Recorded.size() < MaxSamples && (!Last || Core.Time > Last->Time))
-		{
-			Recorded.push_back(Sample);
-		}
-		HasRecorded = true;
-	}
-	const bool IsInput = IsFlying || IsPanning || Wheel != 0.0f;
-	const float Keep = Settings.FlySmoothing > 0.0f && (IsInput || IsGliding) ? std::exp(-Input.DeltaTime / Settings.FlySmoothing) : 0.0f;
-	const float TurnYaw = std::remainder(ShownYaw - Yaw, PI_MUL_2) * Keep, TurnRoll = std::remainder(ShownRoll - Roll, PI_MUL_2) * Keep;
-	ShownEye.lerp(Eye, ShownEye, Keep);
-	ShownYaw = Yaw + TurnYaw;
-	ShownPitch = Pitch + (ShownPitch - Pitch) * Keep;
-	ShownRoll = Roll + TurnRoll;
-	ShownFov = EyeFov > 0.0f && ShownFov > 0.0f ? EyeFov + (ShownFov - EyeFov) * Keep : EyeFov;
-	IsGliding = Keep > 0.0f && (ShownEye.distance_to_sqr(Eye) > 1e-6f || std::fabs(TurnYaw) + std::fabs(ShownPitch - Pitch) + std::fabs(TurnRoll) > 1e-4f);
-	Fmatrix Shown;
-	Shown.setHPB(ShownYaw, ShownPitch, ShownRoll);
-	Core.SetEditorView(true, IsEditorCamera, ShownEye, Shown, ShownFov);
-}
-
-void Editor::CommitRecording(Player& Core)
-{
-	const u32 Count = static_cast<u32>(Recorded.size());
-	const float Sigma = Settings.RecordSmoothing, Frame = 1.0f / static_cast<float>(Core.Data.Header.FrameRate);
-	Smoothed = Recorded;
-	for (u32 Index = 0; Sigma > 0.0f && Index < Count; ++Index)
-	{
-		RecordSample Sum { Recorded[Index].Time, Fvector().set(0.0f, 0.0f, 0.0f), Fvector().set(0.0f, 0.0f, 0.0f), 0.0f };
-		float Total = 0.0f;
-		for (u32 Other = Index; Other-- > 0 && Recorded[Index].Time - Recorded[Other].Time <= 3.0f * Sigma;)
-		{
-			const float Gap = (Recorded[Index].Time - Recorded[Other].Time) / Sigma, Weight = std::exp(-0.5f * Gap * Gap);
-			Sum.Position.mad(Recorded[Other].Position, Weight);
-			Sum.Rotation.mad(Recorded[Other].Rotation, Weight);
-			Sum.Fov += Recorded[Other].Fov * Weight;
-			Total += Weight;
-		}
-		for (u32 Other = Index; Other < Count && Recorded[Other].Time - Recorded[Index].Time <= 3.0f * Sigma; ++Other)
-		{
-			const float Gap = (Recorded[Other].Time - Recorded[Index].Time) / Sigma, Weight = std::exp(-0.5f * Gap * Gap);
-			Sum.Position.mad(Recorded[Other].Position, Weight);
-			Sum.Rotation.mad(Recorded[Other].Rotation, Weight);
-			Sum.Fov += Recorded[Other].Fov * Weight;
-			Total += Weight;
-		}
-		Smoothed[Index] = { Sum.Time, Sum.Position.div(Total), Sum.Rotation.div(Total), Sum.Fov / Total };
-	}
-	Kept.assign(Count, 0);
-	Kept.front() = Kept.back() = 1;
-	RdpSpans.assign(1, { 0u, Count - 1 });
-	while (!RdpSpans.empty())
-	{
-		const auto [From, To] = RdpSpans.back();
-		RdpSpans.pop_back();
-		float Worst = 1.0f;
-		u32 Split = 0;
-		for (u32 Index = From + 1; Index < To; ++Index)
-		{
-			const float Part = (Smoothed[Index].Time - Smoothed[From].Time) / std::max(Smoothed[To].Time - Smoothed[From].Time, 1e-6f);
-			const Fvector Line = Fvector().lerp(Smoothed[From].Position, Smoothed[To].Position, Part), Angle = Fvector().lerp(Smoothed[From].Rotation, Smoothed[To].Rotation, Part);
-			const float Error = std::max({ Line.distance_to(Smoothed[Index].Position) / 0.01f, std::fabs(Angle.x - Smoothed[Index].Rotation.x) / 0.25f, std::fabs(Angle.y - Smoothed[Index].Rotation.y) / 0.25f, std::fabs(Angle.z - Smoothed[Index].Rotation.z) / 0.25f });
-			Split = Error > Worst ? Index : Split;
-			Worst = std::max(Worst, Error);
-		}
-		if (Split)
-		{
-			Kept[Split] = 1;
-			RdpSpans.push_back({ From, Split });
-			RdpSpans.push_back({ Split, To });
-		}
-	}
-	float FovLo = FLT_MAX, FovHi = -FLT_MAX;
-	for (const RecordSample& Item : Recorded)
-	{
-		FovLo = std::min(FovLo, Item.Fov);
-		FovHi = std::max(FovHi, Item.Fov);
-	}
-	const bool HasFov = FovHi - FovLo > 0.01f && FovLo > 0.0f;
-	Recorded.clear();
-	Undo.Begin("Record camera");
-	const auto OwnerOf = [&](u32 Index)
-	{
-		const Object* Rig = FindCamera(Core.Data);
-		return Rig ? Cameras::BlockAt(Rig->Camera, Smoothed[Index].Time - Rig->Span.Start) : -2;
-	};
-	u32 Written = 0;
-	for (s32 Last = static_cast<s32>(Count) - 1; Last >= 0;)
-	{
-		const s32 Owner = OwnerOf(static_cast<u32>(Last));
-		s32 First = Last;
-		for (s32 Index = Last - 1; Index >= 0 && (!Kept[Index] || OwnerOf(static_cast<u32>(Index)) == Owner); --Index)
-		{
-			First = Kept[Index] ? Index : First;
-		}
-		const Object* Found = FindCamera(Core.Data);
-		const BlockCache* Cache = Owner >= 0 ? Core.FindCameraBlock(static_cast<u32>(Owner)) : nullptr;
-		const float Begin = Smoothed[First].Time, End = Smoothed[Last].Time;
-		if (Found && Owner == -1)
-		{
-			xr_vector<CameraBlock> Shots(1);
-			CameraBlock& Shot = Shots[0];
-			Shot.Length = End - Begin + Frame;
-			Shot.Fov = Smoothed[First].Fov;
-			for (s32 Index = First; Index <= Last && Shot.Keys.size() < MaxPoseKeys; ++Index)
-			{
-				if (Kept[Index])
-				{
-					const RecordSample& Item = Smoothed[Index];
-					Cameras::SetPoseAt(Shot, Item.Time - Begin, Item.Position, Item.Rotation, Interp::Bezier, 0.5f * Frame);
-					HasFov ? Curves::SetKey(Curves::EnsureLane(Shot.Lanes, Param::Fov, 0).Curves[0], Item.Time - Begin, Item.Fov, 0.5f * Frame) : void();
-					++Written;
-				}
-			}
-			InsertShots(Core, Begin, Shots, true);
-		}
-		else if (Found && Cache)
-		{
-			Object& Rig = *Edit(Core, Found->Id, "Record camera");
-			CameraBlock& Shot = Rig.Camera.Blocks[Owner];
-			const float Base = Rig.Span.Start + Shot.Start;
-			const float Lo = Cameras::PathTime(Shot, *Cache, Begin - Base - 0.5f * Frame), Hi = Cameras::PathTime(Shot, *Cache, End - Base + 0.5f * Frame);
-			for (Lane& Track : Shot.Lanes)
-			{
-				for (u32 Axis = 0; Track.Id <= Param::Rotation && Axis < 3; ++Axis)
-				{
-					std::erase_if(Track.Curves[Axis].Keys, [Lo, Hi](const Key& Item) { return Item.Time >= Lo && Item.Time <= Hi; });
-				}
-			}
-			Cameras::Rebuild(Shot);
-			if (HasFov)
-			{
-				UseGameFov(Rig, Owner, Param::Fov);
-			}
-			for (s32 Index = First; Index <= Last; ++Index)
-			{
-				if (Kept[Index])
-				{
-					const RecordSample& Item = Smoothed[Index];
-					PoseKey Pose { 0.0f, Item.Position, Item.Rotation, Interp::Bezier };
-					ToSpace(Cache->Frames, Pose);
-					PutPose(Shot, *Cache, Item.Time - Base, 0.5f * Frame, Pose);
-					HasFov ? Curves::SetKey(Curves::EnsureLane(Shot.Lanes, Param::Fov, 0).Curves[0], Item.Time - Base, Item.Fov, 0.5f * Frame) : void();
-					++Written;
-				}
-			}
-			for (u32 Index = 0; Index < Shot.Keys.size(); ++Index)
-			{
-				const float Moment = Shot.Keys[Index].Time;
-				if (Moment >= Lo && Moment <= Hi)
-				{
-					Cameras::ModeAt(Shot, Moment, Interp::Bezier, 1e-4f);
-				}
-			}
-		}
-		Last = First - 1;
-		while (Last >= 0 && !Kept[Last])
-		{
-			--Last;
-		}
-	}
-	SetStatus(false, "Recorded %u camera keys.", Written);
+	Core.SetEditorView(true, IsEditorCamera, Eye, View, EyeFov);
 }
 
 void Editor::CollectGizmo(const Player& Core, bool HasCamera, GizmoMode Mode)
@@ -769,40 +449,12 @@ void Editor::DrawGizmo(Player& Core)
 		IsGizmoCancelled = true;
 		IsGizmoActive = false;
 	}
-	ImGuizmo::Enable(!IsGizmoCancelled && !IsIkHover && !IsIkDirect && !IsTangentActive && !IsPickingColor && !IsPickingFocus && CImGuiManager::Instance().IsCapturingInputs() && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel));
-	const Object* Posed = IsPosing && SelectedBones.size() == 1 && !IsGizmoActive ? Find(Core.Data, PoseObject) : nullptr;
-	const ActorRuntime* Body = Posed ? Core.FindActor(PoseObject) : nullptr;
-	for (u32 Joint = 0; Body && !SelectedBones.empty() && Joint < 3 * MaxIkLimbs; ++Joint)
-	{
-		const IkLimb& Setup = IkOf(*Posed, IkBlock(*Posed))[Joint / 3];
-		if (Setup.IsOn && Body->FindBone(Setup.Bones[Joint % 3]) == SelectedBones[0])
-		{
-			IkHandle = static_cast<s32>(2 * (Joint / 3) + (Joint % 3 == 2 ? 0 : 1));
-			SelectedBones.clear();
-			SetStatus(false, Joint % 3 == 2 ? "This limb follows its IK target; the target is selected." : "This limb follows its IK target; its pole is selected.");
-		}
-	}
-	if (IsPosing && !SelectedBones.empty())
-	{
-		IkHandle = -1;
-		DrawBoneGizmo(Core);
-		return;
-	}
-	if (IsPosing && IkHandle >= 0)
-	{
-		IsGizmoActive = false;
-		return;
-	}
-	if (IsHandlePicked)
-	{
-		IsGizmoActive = false;
-		return;
-	}
+	ImGuizmo::Enable(!IsGizmoCancelled && !IsTangentActive && !IsPickingColor && !IsPickingFocus && CImGuiManager::Instance().IsCapturingInputs() && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel));
 	u32 Kinds = 0;
 	for (u32 Id : Selected)
 	{
 		const Object* Item = Find(Core.Data, Id);
-		Kinds |= !Item || Item->Type >= ObjectType::Weather ? 0u : IsParamShown(*Item, Param::Rotation) ? 1u << static_cast<u32>(Item->Type) : ViewportUi::PointBit;
+		Kinds |= !Item ? 0u : IsParamShown(*Item, Param::Rotation) ? 1u << static_cast<u32>(Item->Type) : ViewportUi::PointBit;
 	}
 	const bool IsScaleless = Gizmo == GizmoMode::Scale && !(Kinds & (ViewportUi::ActorBit | ViewportUi::ParticleBit));
 	const bool IsRange = IsScaleless && (Kinds & (ViewportUi::SpotBit | ViewportUi::PointBit));
@@ -841,7 +493,7 @@ void Editor::DrawGizmo(Player& Core)
 	const Fmatrix Before = GizmoPivot;
 	const u32 Scale = (Kinds & ViewportUi::ActorBit) && (IsLocal || !IsUniversal) ? ImGuizmo::SCALE : ImGuizmo::SCALEU;
 	const u32 Operation = IsUniversal ? ImGuizmo::TRANSLATE | (Kinds & ~ViewportUi::PointBit ? ImGuizmo::ROTATE : 0u) | (Kinds & (ViewportUi::ActorBit | ViewportUi::ParticleBit) ? Scale : 0u) : Mode == 2 ? Scale : ViewportUi::Operations[Mode];
-	ImGuizmo::Manipulate(reinterpret_cast<const float*>(&Device.mView), reinterpret_cast<const float*>(&Device.mProject), static_cast<ImGuizmo::OPERATION>(Operation), IsLocal ? ImGuizmo::LOCAL : ImGuizmo::WORLD, reinterpret_cast<float*>(&GizmoPivot), nullptr, Input.KeyCtrl != Settings.IsGizmoSnapping ? Snap : nullptr);
+	ImGuizmo::Manipulate(reinterpret_cast<const float*>(&Device.mView), reinterpret_cast<const float*>(&Device.mProject), static_cast<ImGuizmo::OPERATION>(Operation), IsLocal ? ImGuizmo::LOCAL : ImGuizmo::WORLD, reinterpret_cast<float*>(&GizmoPivot), nullptr, Input.KeyCtrl ? nullptr : Snap);
 	IsGizmoHovered = ImGuizmo::IsOver();
 	const bool IsUsing = ImGuizmo::IsUsing();
 	TakePart();
@@ -859,28 +511,6 @@ void Editor::DrawGizmo(Player& Core)
 		}
 	}
 	IsGizmoActive = IsUsing;
-	Fvector Origin, Direction, Hit, Normal;
-	if (IsUsing && GizmoPart == 0 && Input.KeyShift && ViewportUi::MouseRay(Origin, Direction) && StaticRay(Origin, Direction, ViewportUi::PickRange, Hit, Normal))
-	{
-		Fmatrix Start;
-		Start.invert(GizmoInverse);
-		for (GizmoItem& Item : GizmoItems)
-		{
-			const Object* Target = Find(Core.Data, Item.Id);
-			if (!Target || Item.Block >= 0)
-			{
-				continue;
-			}
-			const bool IsLight = Target->Type == ObjectType::Light, IsAligned = Input.KeyCtrl && !IsLight;
-			const Fvector Position = Fvector().sub(Item.Start.c, Start.c).add(Hit).mad(Normal, IsLight ? 0.5f : 0.0f);
-			const Fvector Pose[3] = { Position, FacingRotation(Position, &Normal), Item.Values[2] };
-			Fmatrix World = IsAligned ? ViewportUi::Compose(Pose) : Item.Start;
-			World.c = Position;
-			PutWorld(Core, Item, World, IsAligned ? 3u : 1u);
-		}
-		GizmoPivot.c = Hit;
-		return;
-	}
 	for (GizmoItem& Item : GizmoItems)
 	{
 		Fmatrix Relative, Moved = GizmoPivot, Started = Item.Start;
@@ -966,9 +596,9 @@ void Editor::DrawTangents(Player& Core)
 	const ImGuiIO& Input = ImGui::GetIO();
 	const Object* Rig = FindCamera(Core.Data);
 	const s32 Block = Rig && Settings.ShowHelpers && Core.View() != ViewSource::Global ? HelperBlock(Core, *Rig) : -1;
-	const BlockCache* Cache = Block >= 0 && (Block == TangentBlock || IsSelected(Rig->Id)) ? Core.FindCameraBlock(static_cast<u32>(Block)) : nullptr;
-	const CameraBlock* Shot = Cache ? &Rig->Camera.Blocks[Block] : nullptr;
-	const s32 Count = Shot ? static_cast<s32>(Shot->Keys.size()) : 0;
+	const BlockCache* Cache = Block >= 0 && Block == TangentBlock ? Core.FindCameraBlock(static_cast<u32>(Block)) : nullptr;
+	const xr_vector<PoseKey>* Keys = Cache ? &Rig->Camera.Blocks[Block].Keys : nullptr;
+	const s32 Count = Keys ? static_cast<s32>(Keys->size()) : 0;
 	IsTangentCancelled = IsTangentCancelled && ImGui::IsMouseDown(ImGuiMouseButton_Left);
 	if (IsTangentActive && (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
 	{
@@ -976,202 +606,88 @@ void Editor::DrawTangents(Player& Core)
 		IsTangentActive = false;
 		IsTangentCancelled = true;
 	}
-	IsHandlePicked = IsHandlePicked && Shot && IsSelected(Rig->Id) && Block == TangentBlock && TangentKey >= 0 && TangentKey < Count;
-	if (!Shot)
+	if (TangentKey < 0 || TangentKey >= Count)
 	{
-		IsTangentActive = IsHandleOver = false;
+		IsTangentActive = false;
 		return;
 	}
 	const bool IsFree = !IsGizmoHovered && IsViewportFree();
-	const float Tension = Shot->Tension;
-	const u32 Color = Lighten(Rig->Color), Picked = IM_COL32(255, 255, 255, 255);
-	float Best = ViewportUi::TangentPixels * ViewportUi::TangentPixels;
-	s32 HoverKey = -1;
-	u8 HoverSide = 0;
-	ImVec2 HoverAt;
-	for (s32 At = 0; At < Count; ++At)
+	const u32 Color = Lighten(Rig->Color);
+	const s32 Owners[4] = { TangentKey, TangentKey, TangentKey - 1, TangentKey + 1 };
+	const u8 Sides[4] = { 0, 1, 1, 0 };
+	float Best = ViewportUi::GrabPixels * ViewportUi::GrabPixels;
+	s32 Grab = -1;
+	Fvector GrabTip = Fvector().set(0.0f, 0.0f, 0.0f);
+	for (u32 Index = 0; Index < 4; ++Index)
 	{
+		const s32 At = Owners[Index], Segment = Sides[Index] ? At : At - 1;
 		Fvector In, Out;
-		for (u8 Side = 0; Side < 2 && ViewportUi::TangentAt(*Shot, Shot->Keys[At].Time, In, Out); ++Side)
+		if (At < 0 || At >= Count || Segment < 0 || Segment + 1 >= Count || (*Keys)[Segment].Mode != Interp::Bezier || !Cache->Path.Handles(static_cast<u32>(At), In, Out))
 		{
-			if (Side ? At + 1 >= Count : At == 0)
-			{
-				continue;
-			}
-			Fvector Base = Shot->Keys[At].Position, Tip = Fvector().mad(Base, Side ? Out : In, Tension);
-			Fmatrix Turn = Fidentity, Spin = Fidentity;
-			ViewportUi::Place(Cache->Frames, Base, Turn);
-			ViewportUi::Place(Cache->Frames, Tip, Spin);
-			const bool IsPicked = IsHandlePicked && At == TangentKey && Side == DragTangentSide;
-			ViewportUi::Line3D(Overlay, Base, Tip, IsPicked ? Picked : Color);
-			ImVec2 Screen;
-			if (!(ViewportUi::Project(Tip, Screen) > 0.0f))
-			{
-				continue;
-			}
-			Overlay->AddCircleFilled(Screen, IsPicked ? 7.0f : 6.0f, IsPicked ? Picked : Color);
-			Overlay->AddCircle(Screen, IsPicked ? 7.0f : 6.0f, IM_COL32(0, 0, 0, 200));
-			const float Gap = (Screen.x - Input.MousePos.x) * (Screen.x - Input.MousePos.x) + (Screen.y - Input.MousePos.y) * (Screen.y - Input.MousePos.y);
-			if (Gap < Best)
-			{
-				Best = Gap;
-				HoverKey = At;
-				HoverSide = Side;
-				HoverAt = Screen;
-			}
+			continue;
+		}
+		Fvector Base = (*Keys)[At].Position, Tip = Fvector().add(Base, Sides[Index] ? Out : In);
+		Fmatrix Turn = Fidentity;
+		ViewportUi::Place(Cache->Frames, Base, Turn);
+		ViewportUi::Place(Cache->Frames, Tip, Turn);
+		ViewportUi::Line3D(Overlay, Base, Tip, Color);
+		ImVec2 Screen;
+		if (!(ViewportUi::Project(Tip, Screen) > 0.0f))
+		{
+			continue;
+		}
+		Overlay->AddCircleFilled(Screen, ViewportUi::HandlePixels, Color);
+		const float Gap = (Screen.x - Input.MousePos.x) * (Screen.x - Input.MousePos.x) + (Screen.y - Input.MousePos.y) * (Screen.y - Input.MousePos.y);
+		if (Gap < Best)
+		{
+			Best = Gap;
+			Grab = static_cast<s32>(Index);
+			GrabTip = Tip;
 		}
 	}
-	if (HoverKey >= 0 && IsFree && !IsTangentActive)
+	if (!IsTangentActive && !IsTangentCancelled && Grab >= 0 && IsFree && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
-		Overlay->AddCircle(HoverAt, 10.0f, IM_COL32(255, 220, 60, 255), 0, 2.0f);
+		DragTangentKey = Owners[Grab];
+		DragTangentSide = Sides[Grab];
+		TangentBase = (*Keys)[DragTangentKey];
+		Cache->Path.Handles(static_cast<u32>(DragTangentKey), TangentIn, TangentOut);
+		TangentStart = DragTangentSide ? TangentOut : TangentIn;
+		TangentPlane = GrabTip;
+		IsTangentActive = true;
 	}
-	if (!IsTangentActive && !IsTangentCancelled && IsFree && HoverKey >= 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		SetTangentKey(Core, Block, HoverKey);
-		DragTangentSide = HoverSide;
-		TangentBase = Shot->Keys[HoverKey];
-		if (ViewportUi::TangentAt(*Shot, TangentBase.Time, TangentIn, TangentOut))
-		{
-			Fmatrix Turn = Fidentity;
-			IsTangentActive = true;
-			IsBreakPress = Input.KeyCtrl;
-			TangentStart = DragTangentSide ? TangentOut : TangentIn;
-			TangentGrab.mad(TangentBase.Position, TangentStart, Tension);
-			ViewportUi::Place(Cache->Frames, TangentGrab, Turn);
-		}
-	}
-	IsTangentActive = IsTangentActive && ImGui::IsMouseDown(ImGuiMouseButton_Left) && TangentKey >= 0 && TangentKey < Count;
-	IsHandlePicked = IsTangentActive;
-	IsHandleOver = false;
-	IsGizmoHovered = IsGizmoHovered || (HoverKey >= 0 && IsFree) || IsTangentActive;
-	Hint = (HoverKey >= 0 && IsFree) || IsTangentActive ? ViewportUi::TangentHint : Hint;
+	IsGizmoHovered = IsGizmoHovered || (Grab >= 0 && IsFree) || IsTangentActive;
+	IsTangentActive = IsTangentActive && ImGui::IsMouseDown(ImGuiMouseButton_Left) && DragTangentKey < Count;
 	Fvector Origin, Direction;
-	if (!IsTangentActive || !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 2.0f) || !ViewportUi::MouseRay(Origin, Direction) || std::fabs(Direction.dotproduct(Device.vCameraDirection)) < EPS)
+	const Fvector Normal = Device.vCameraDirection;
+	if (!IsTangentActive || !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 3.0f) || !ViewportUi::MouseRay(Origin, Direction) || !(std::fabs(Direction.dotproduct(Normal)) > EPS_S))
 	{
 		return;
 	}
 	Fmatrix Point = Fidentity;
-	Point.c.mad(Origin, Direction, Fvector().sub(TangentGrab, Origin).dotproduct(Device.vCameraDirection) / Direction.dotproduct(Device.vCameraDirection));
+	Point.c.mad(Origin, Direction, Fvector().sub(TangentPlane, Origin).dotproduct(Normal) / Direction.dotproduct(Normal));
 	Spaces::Decompose(Cache->Frames, Point);
-	Fvector Offset = Fvector().sub(Point.c, TangentBase.Position).div(Tension);
+	Fvector Offset = Fvector().sub(Point.c, TangentBase.Position);
 	Offset = Input.KeyShift ? Fvector().lerp(TangentStart, Offset, 0.1f) : Offset;
 	for (u32 Axis = 0; Axis < 3; ++Axis)
 	{
 		Offset[Axis] = std::clamp(Offset[Axis], -MaxHandle, MaxHandle);
 	}
-	CameraBlock& Edited = Edit(Core, Rig->Id, "Tangent")->Camera.Blocks[Block];
-	const Fvector Other = DragTangentSide ? TangentIn : TangentOut;
-	const Fvector Mirror = IsBreakPress || !(Offset.magnitude() > EPS_S) ? Other : Fvector().normalize(Offset).mul(-Other.magnitude());
-	for (u32 Axis = 0; Axis < 3; ++Axis)
+	PoseKey& Key = Edit(Core, Rig->Id, "Tangent")->Camera.Blocks[Block].Keys[DragTangentKey];
+	Key = TangentBase;
+	if (Key.Tangent == TangentMode::Auto)
 	{
-		Curve* Part = ViewportUi::PathCurve(Edited, Axis);
-		const u32 At = Part ? Curves::KeyAt(*Part, TangentBase.Time, 1e-4f) : u32(-1);
-		if (At == u32(-1))
-		{
-			continue;
-		}
-		Key& Item = Part->Keys[At];
-		Item.IsBroken = Item.IsBroken || IsBreakPress;
-		Item.InTime = At ? -(Item.Time - Part->Keys[At - 1].Time) / 3.0f : Item.InTime;
-		Item.OutTime = At + 1 < Part->Keys.size() ? (Part->Keys[At + 1].Time - Item.Time) / 3.0f : Item.OutTime;
-		if (At && (!DragTangentSide || !Item.IsBroken))
-		{
-			Part->Keys[At - 1].Mode = Interp::Bezier;
-		}
-		if (At + 1 < Part->Keys.size() && (DragTangentSide || !Item.IsBroken))
-		{
-			Item.Mode = Interp::Bezier;
-		}
-		(DragTangentSide ? Item.OutValue : Item.InValue) = Offset[Axis];
-		(DragTangentSide ? Item.InValue : Item.OutValue) = Item.IsBroken ? (DragTangentSide ? TangentIn : TangentOut)[Axis] : Mirror[Axis];
+		Key.Tangent = Key.Continuity != 0.0f || Key.Bias != 0.0f ? TangentMode::Broken : TangentMode::Aligned;
+		Key.InHandle = TangentIn;
+		Key.OutHandle = TangentOut;
 	}
-	Cameras::Rebuild(Edited);
-}
-
-void Editor::DrawToolbar(Player& Core)
-{
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
-	const ImGuiStyle& Style = ImGui::GetStyle();
-	ImGui::SetNextWindowPos(ImVec2(Main->WorkPos.x + 8.0f, Main->WorkPos.y + 8.0f), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("##CinemaTools", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNavInputs))
+	Key.Tangent = Input.KeyCtrl ? TangentMode::Broken : Key.Tangent;
+	Fvector& Moved = DragTangentSide ? Key.OutHandle : Key.InHandle;
+	Fvector& Other = DragTangentSide ? Key.InHandle : Key.OutHandle;
+	Moved = Offset;
+	if (Key.Tangent == TangentMode::Aligned && Moved.magnitude() > EPS_S)
 	{
-		ImGui::End();
-		return;
+		Other = Fvector().normalize(Moved).mul(-Other.magnitude());
 	}
-	IsOwnWindowFocused |= ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-	u32 Kinds = 0;
-	for (u32 Id : Selected)
-	{
-		const Object* Item = Find(Core.Data, Id);
-		Kinds |= !Item || Item->Type >= ObjectType::Weather ? 0u : IsParamShown(*Item, Param::Rotation) ? 1u << static_cast<u32>(Item->Type) : ViewportUi::PointBit;
-	}
-	const bool IsLit = !(Kinds & (ViewportUi::ActorBit | ViewportUi::ParticleBit)) && (Kinds & (ViewportUi::SpotBit | ViewportUi::PointBit));
-	const float Spacing = Style.ItemInnerSpacing.x;
-	const auto Toggle = [&Style, Spacing](const char* Label, bool IsOn, const char* Tip)
-	{
-		ImGui::PushStyleColor(ImGuiCol_Button, Style.Colors[IsOn ? ImGuiCol_ButtonActive : ImGuiCol_FrameBg]);
-		const bool IsPressed = ImGui::Button(Label);
-		ImGui::PopStyleColor();
-		ImGui::SetItemTooltip("%s", Tip);
-		ImGui::SameLine(0.0f, Spacing);
-		return IsPressed;
-	};
-	for (u32 Index = 0; Index < 4; ++Index)
-	{
-		const GizmoMode Mode = Index ? static_cast<GizmoMode>(Index - 1) : GizmoMode::Universal;
-		ImGui::BeginDisabled(Mode == GizmoMode::Rotate && Kinds && !(Kinds & ~ViewportUi::PointBit));
-		if (Toggle(ViewportUi::ToolLabels[Index], GizmoShown == Mode, ViewportUi::ToolNames[Index == 3 && IsLit ? 4u : Index]))
-		{
-			Gizmo = Mode;
-		}
-		ImGui::EndDisabled();
-	}
-	bool& IsLocal = GizmoItems.size() > 1 ? IsGizmoLocalMulti : IsGizmoLocalSingle;
-	ImGui::SameLine(0.0f, Style.ItemSpacing.x);
-	if (Toggle(IsLocal ? "Local" : "World", false, "Gizmo axes (X)"))
-	{
-		IsLocal = !IsLocal;
-	}
-	if (Toggle("Snap", Settings.IsGizmoSnapping, "Snap the gizmo to the steps; Ctrl while dragging does the opposite. Right-click: steps"))
-	{
-		Settings.IsGizmoSnapping = !Settings.IsGizmoSnapping;
-	}
-	if (ImGui::BeginPopupContextItem("##Steps"))
-	{
-		float* const Steps[4] = { &Settings.MoveStep, &Settings.RotateStep, &Settings.ScaleStep, &Settings.RangeStep };
-		for (u32 Slot = 0; Slot < 4; ++Slot)
-		{
-			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 6.0f);
-			ImGui::DragFloat(ViewportUi::StepNames[Slot], Steps[Slot], ViewportUi::StepLo[Slot], ViewportUi::StepLo[Slot], ViewportUi::StepHi[Slot], ViewportUi::StepFormats[Slot], ImGuiSliderFlags_AlwaysClamp);
-		}
-		ImGui::EndPopup();
-	}
-	ImGui::SameLine(0.0f, Style.ItemSpacing.x);
-	if (Toggle("Key", IsAutoKey, "Auto-key (K)"))
-	{
-		IsAutoKey = !IsAutoKey;
-	}
-	if (Toggle("Bones", IsPosing, "Bone posing (B)"))
-	{
-		IsPosing = !IsPosing;
-	}
-	if (Toggle("Helpers", Settings.ShowHelpers, "Helpers in the game view"))
-	{
-		Settings.ShowHelpers = !Settings.ShowHelpers;
-	}
-	if (Toggle("Free cam", IsEditorCamera, "Editor camera instead of the shot or the game view"))
-	{
-		if (IsEditorCamera)
-		{
-			IsEditorCamera = false;
-		}
-		else
-		{
-			UseEditorCamera(Core);
-		}
-	}
-	ImGui::NewLine();
-	ImGui::End();
 }
 
 void Editor::DrawViewCube(Player& Core)
@@ -1221,7 +737,7 @@ void Editor::Pick(Player& Core)
 	}
 	IsPickArmed = false;
 	Fvector Origin, Direction;
-	if (ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) || !ViewportUi::MouseRay(Origin, Direction) || PickBone(Core, Input.KeyCtrl) || ShowAnimator)
+	if (ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) || !ViewportUi::MouseRay(Origin, Direction))
 	{
 		return;
 	}
@@ -1358,7 +874,7 @@ void Editor::DrawViewportPopup(Player& Core)
 	ChooserOwners.clear();
 	if (IsPopupChoosing && ChooserList(Core, PopupKind, ChooserOwners, Source, Name))
 	{
-		PopupKind == ChooserKind::Preset ? AddActorFromPreset(Core, Source.c_str(), Core.Time, PopupPoint, Facing) : (void)AddObject(Core, AddedType(PopupKind), Source, Core.Time, PopupPoint, Facing);
+		PopupKind == ChooserKind::Preset ? AddActorFromPreset(Core, Source.c_str(), Core.Time, PopupPoint, Facing) : (void)AddObject(Core, PopupKind == ChooserKind::Effect ? ObjectType::Particle : ObjectType::Actor, Source, Core.Time, PopupPoint, Facing);
 		ImGui::CloseCurrentPopup();
 	}
 	if (IsPopupChoosing)
@@ -1367,7 +883,7 @@ void Editor::DrawViewportPopup(Player& Core)
 		return;
 	}
 	ImGui::SeparatorText("Add here");
-	for (u32 Index = 0; !IsPopupChoosing && Index < std::size(AddChoices); ++Index)
+	for (u32 Index = 0; !IsPopupChoosing && Index < 3; ++Index)
 	{
 		if (ImGui::Selectable(AddChoices[Index], false, ImGuiSelectableFlags_NoAutoClosePopups | (Index == 1 && Presets.empty() ? ImGuiSelectableFlags_Disabled : 0)))
 		{
@@ -1458,1047 +974,6 @@ s32 Editor::HelperBlock(const Player& Core, const Object& Rig) const
 	return Block < static_cast<s32>(Rig.Camera.Blocks.size()) ? Block : -1;
 }
 
-float Editor::FrameAspect() const
-{
-	const float Screen = static_cast<float>(Device.TargetWidth) / static_cast<float>(std::max(Device.TargetHeight, 1u));
-	const u32 Ratio = std::min(static_cast<u32>(Settings.FrameRatio), 8u);
-	return Ratio ? std::min(FrameAspects[Ratio], Screen) : Screen;
-}
-
-void Editor::DrawFrameLines(const Player& Core)
-{
-	const u32 Ratio = std::min(static_cast<u32>(Settings.FrameRatio), 8u);
-	if (!Overlay || (Core.View() != ViewSource::Global && Core.View() != ViewSource::Editor) || (!Ratio && !Settings.ShowSafe && !Settings.ShowThirds))
-	{
-		return;
-	}
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
-	const float Screen = Main->Size.x / std::max(Main->Size.y, 1.0f), Wanted = Ratio ? FrameAspects[Ratio] : Screen;
-	const ImVec2 Size = Wanted > Screen ? ImVec2(Main->Size.x, Main->Size.x / Wanted) : ImVec2(Main->Size.y * Wanted, Main->Size.y);
-	const ImVec2 Min(Main->Pos.x + 0.5f * (Main->Size.x - Size.x), Main->Pos.y + 0.5f * (Main->Size.y - Size.y)), Max(Min.x + Size.x, Min.y + Size.y);
-	const ImVec2 End(Main->Pos.x + Main->Size.x, Main->Pos.y + Main->Size.y);
-	const u32 Mask = IM_COL32(0, 0, 0, static_cast<u32>(Settings.FrameMask * 255.0f)), Line = IM_COL32(255, 255, 255, 160), Faint = IM_COL32(255, 255, 255, 90);
-	Overlay->AddRectFilled(Main->Pos, ImVec2(End.x, Min.y), Mask);
-	Overlay->AddRectFilled(ImVec2(Main->Pos.x, Max.y), End, Mask);
-	Overlay->AddRectFilled(ImVec2(Main->Pos.x, Min.y), ImVec2(Min.x, Max.y), Mask);
-	Overlay->AddRectFilled(ImVec2(Max.x, Min.y), ImVec2(End.x, Max.y), Mask);
-	if (Ratio)
-	{
-		Overlay->AddRect(Min, Max, Line);
-	}
-	for (u32 Inset = 1; Settings.ShowSafe && Inset <= 2; ++Inset)
-	{
-		const ImVec2 Cut(Size.x * 0.05f * static_cast<float>(Inset), Size.y * 0.05f * static_cast<float>(Inset));
-		Overlay->AddRect(ImVec2(Min.x + Cut.x, Min.y + Cut.y), ImVec2(Max.x - Cut.x, Max.y - Cut.y), Faint);
-	}
-	const ImVec2 Centre(0.5f * (Min.x + Max.x), 0.5f * (Min.y + Max.y));
-	if (Settings.ShowSafe)
-	{
-		Overlay->AddLine(ImVec2(Centre.x - 10.0f, Centre.y), ImVec2(Centre.x + 10.0f, Centre.y), Line);
-		Overlay->AddLine(ImVec2(Centre.x, Centre.y - 10.0f), ImVec2(Centre.x, Centre.y + 10.0f), Line);
-	}
-	for (u32 Part = 1; Settings.ShowThirds && Part <= 2; ++Part)
-	{
-		const float Third = static_cast<float>(Part) / 3.0f;
-		Overlay->AddLine(ImVec2(Min.x + Size.x * Third, Min.y), ImVec2(Min.x + Size.x * Third, Max.y), Faint);
-		Overlay->AddLine(ImVec2(Min.x, Min.y + Size.y * Third), ImVec2(Max.x, Min.y + Size.y * Third), Faint);
-	}
-}
-
-void Editor::RigPath(string_path& Path) const
-{
-	string_path Name;
-	xr_sprintf(Name, "cinema\\rigs\\%s.ltx", RigVisual.c_str());
-	for (char* At = Name + xr_strlen("cinema\\rigs\\"); *At; ++At)
-	{
-		*At = *At == '\\' || *At == '/' ? '_' : *At;
-	}
-	FS.update_path(Path, "$game_config$", Name);
-}
-
-void Editor::BuildRig(const ActorRuntime& Runtime, const shared_str& Visual)
-{
-	Rig = ActorRig {};
-	RigVisual = Visual;
-	const u16 Count = Runtime.BoneCount();
-	const auto Bone = [&](const char* Name) { const u16 Id = Runtime.FindBone(shared_str(Name)); return Id < Count ? Id : BI_NONE; };
-	constexpr const char* Auto[RigControlCount][3] = { { "bip01_pelvis" }, { "bip01_spine2", "bip01_spine1", "bip01_spine" }, { "bip01_head" }, { "bip01_l_hand" }, { "bip01_r_hand" }, { "bip01_l_foot" }, { "bip01_r_foot" }, { "eye_left" }, { "eye_right" }, { "jaw_1", "bip01_jaw" },
-		{ "bip01" }, { "bip01_spine" }, { "bip01_spine1" }, { "bip01_neck" }, { "bip01_l_clavicle" }, { "bip01_r_clavicle" }, { "bip01_l_toe0" }, { "bip01_r_toe0" },
-		{ "bip01_l_finger0" }, { "bip01_l_finger1" }, { "bip01_l_finger2" }, { "bip01_l_finger3" }, { "bip01_l_finger4" }, { "bip01_r_finger0" }, { "bip01_r_finger1" }, { "bip01_r_finger2" }, { "bip01_r_finger3" }, { "bip01_r_finger4" } };
-	constexpr const char* Chains[RigChainCount][3] = { { "bip01_l_upperarm", "bip01_l_forearm", "bip01_l_hand" }, { "bip01_r_upperarm", "bip01_r_forearm", "bip01_r_hand" }, { "bip01_l_thigh", "bip01_l_calf", "bip01_l_foot" }, { "bip01_r_thigh", "bip01_r_calf", "bip01_r_foot" } };
-	for (u32 Control = 0; Control < RigControlCount; ++Control)
-	{
-		for (u32 Try = 0; Try < 3 && Auto[Control][Try] && Rig.Controls[Control] == BI_NONE; ++Try)
-		{
-			Rig.Controls[Control] = Bone(Auto[Control][Try]);
-		}
-		Rig.Controls[Control] = std::find(Rig.Controls, Rig.Controls + Control, Rig.Controls[Control]) == Rig.Controls + Control ? Rig.Controls[Control] : BI_NONE;
-	}
-	for (u32 Chain = 0; Chain < RigChainCount; ++Chain)
-	{
-		for (u32 Link = 0; Link < 3; ++Link)
-		{
-			Rig.Chains[Chain][Link] = Bone(Chains[Chain][Link]);
-		}
-	}
-	constexpr const char* HandChains[2] = { "left_hand_ik_chain", "right_hand_ik_chain" };
-	const char* Hands = pSettings->read_if_exists<str_c>("actor", "player_hud_default", "actor_hud");
-	for (u32 Side = 0; Side < 2; ++Side)
-	{
-		const char* Common = pSettings->section_exist("camera_rig") ? pSettings->read_if_exists<str_c>("camera_rig", HandChains[Side], nullptr) : nullptr;
-		const char* Names = pSettings->section_exist(Hands) ? pSettings->read_if_exists<str_c>(Hands, HandChains[Side], Common) : Common;
-		u16* Links = Rig.Chains[Side];
-		if (!Names || _GetItemCount(Names) != 3 || std::find(Links, Links + 3, BI_NONE) == Links + 3)
-		{
-			continue;
-		}
-		string128 Part;
-		u16 Found[3];
-		for (int Link = 0; Link < 3; ++Link)
-		{
-			Found[Link] = Bone(_GetItem(Names, Link, Part));
-		}
-		if (std::find(Found, Found + 3, BI_NONE) == Found + 3)
-		{
-			std::copy(Found, Found + 3, Links);
-			Rig.Controls[3 + Side] = Rig.Controls[3 + Side] == BI_NONE ? Found[2] : Rig.Controls[3 + Side];
-		}
-	}
-	Rig.Mirror.assign(Count, BI_NONE);
-	constexpr const char* Sides[4][2] = { { "_l_", "_r_" }, { "_r_", "_l_" }, { "left", "right" }, { "right", "left" } };
-	for (u16 Id = 0; Id < Count; ++Id)
-	{
-		const xr_string Name = Runtime.BoneName(Id) ? Runtime.BoneName(Id) : "";
-		for (const auto& Side : Sides)
-		{
-			const size_t At = Name.find(Side[0]);
-			Rig.Mirror[Id] = At != xr_string::npos && Rig.Mirror[Id] == BI_NONE ? Bone((Name.substr(0, At) + Side[1] + Name.substr(At + xr_strlen(Side[0]))).c_str()) : Rig.Mirror[Id];
-		}
-	}
-	string_path Path;
-	RigPath(Path);
-	const CReaderGuarded File(FS.exist(Path) ? FS.r_open(Path) : nullptr);
-	xr_string Error = "the file is larger than 64 KiB";
-	if (!File)
-	{
-		return;
-	}
-	if (static_cast<size_t>(File->length()) > 65536 || !Io::PreScan(*File, Error))
-	{
-		Msg("! Cinema editor: %s is ignored: %s", Path, Error.c_str());
-		return;
-	}
-	File->seek(0);
-	const CInifile Ini(&*File, nullptr);
-	Rig.HasOverride = true;
-	const auto Named = [&](const char* Section, const char* Key, u16& Out)
-	{
-		const char* Value = Ini.section_exist(Section) && Ini.line_exist(Section, Key) ? Ini.r_string(Section, Key) : nullptr;
-		const u16 Id = Value ? Bone(Value) : BI_NONE;
-		Out = Id != BI_NONE ? Id : Out;
-		if (Value && Id == BI_NONE)
-		{
-			Msg("! Cinema editor: %s: [%s] %s names the missing bone %s", Path, Section, Key, Value);
-		}
-	};
-	for (u32 Control = 0; Control < RigControlCount; ++Control)
-	{
-		Named("controls", RigControlKeys[Control], Rig.Controls[Control]);
-	}
-	for (u32 Chain = 0; Chain < RigChainCount; ++Chain)
-	{
-		const char* Value = Ini.section_exist("chains") && Ini.line_exist("chains", RigChainKeys[Chain]) ? Ini.r_string("chains", RigChainKeys[Chain]) : nullptr;
-		string256 Part;
-		u16 Links[3] = { BI_NONE, BI_NONE, BI_NONE };
-		for (u32 Link = 0; Value && Link < 3 && Link < static_cast<u32>(_GetItemCount(Value)); ++Link)
-		{
-			Links[Link] = Bone(_GetItem(Value, static_cast<int>(Link), Part));
-		}
-		const bool IsValid = Value && Links[0] != BI_NONE && Links[1] != BI_NONE && Links[2] != BI_NONE;
-		std::copy(std::begin(Links), std::end(Links), IsValid ? Rig.Chains[Chain] : Links);
-		if (Value && !IsValid)
-		{
-			Msg("! Cinema editor: %s: [chains] %s needs three existing bones", Path, RigChainKeys[Chain]);
-		}
-	}
-	for (u32 Line = 0; Ini.section_exist("mirror") && Line < Ini.line_count("mirror"); ++Line)
-	{
-		const char *Key = nullptr, *Value = nullptr;
-		Ini.r_line("mirror", static_cast<int>(Line), &Key, &Value);
-		const u16 Left = Key ? Bone(Key) : BI_NONE, Right = Value ? Bone(Value) : BI_NONE;
-		if (Left != BI_NONE && Right != BI_NONE)
-		{
-			Rig.Mirror[Left] = Right;
-			Rig.Mirror[Right] = Left;
-		}
-	}
-}
-
-void Editor::SaveRig()
-{
-	const Player* Core = FindPlayer();
-	const ActorRuntime* Runtime = Core ? Core->FindActor(RigObject) : nullptr;
-	if (!Runtime)
-	{
-		return;
-	}
-	CInifile Ini(nullptr, false, false, false);
-	string_path Path;
-	RigPath(Path);
-	Ini.w_u32("rig", "version", 1);
-	for (u32 Control = 0; Control < RigControlCount; ++Control)
-	{
-		if (Rig.Controls[Control] != BI_NONE)
-		{
-			Ini.w_string("controls", RigControlKeys[Control], Runtime->BoneName(Rig.Controls[Control]));
-		}
-	}
-	for (u32 Chain = 0; Chain < RigChainCount; ++Chain)
-	{
-		const u16* Links = Rig.Chains[Chain];
-		if (Links[0] != BI_NONE && Links[1] != BI_NONE && Links[2] != BI_NONE)
-		{
-			Ini.w_string("chains", RigChainKeys[Chain], (xr_string(Runtime->BoneName(Links[0])) + ", " + Runtime->BoneName(Links[1]) + ", " + Runtime->BoneName(Links[2])).c_str());
-		}
-	}
-	for (u16 Id = 0; Id < Rig.Mirror.size(); ++Id)
-	{
-		if (Rig.Mirror[Id] != BI_NONE && Rig.Mirror[Id] > Id)
-		{
-			Ini.w_string("mirror", Runtime->BoneName(Id), Runtime->BoneName(Rig.Mirror[Id]));
-		}
-	}
-	xr_string Error;
-	if (!Io::SaveIni(Ini, Path, Error))
-	{
-		SetStatus(true, "%s", Error.c_str());
-		return;
-	}
-	Rig.HasOverride = true;
-	SetStatus(false, "Rig saved to %s", Path);
-}
-
-namespace
-{
-bool IkGoalWorld(const Object& Actor, s32 Block, const Fmatrix& World, u32 Limb, bool IsPole, float Local, Fmatrix& Out)
-{
-	const IkLimb& Setup = IkOf(Actor, Block)[Limb];
-	const xr_vector<Lane>& Tracks = LaneList(Actor, Block);
-	if (!Setup.IsOn)
-	{
-		return false;
-	}
-	const Fvector Turn = Curves::LaneVector(Tracks, Param::IkTurn, Local, Setup.Turn, static_cast<u8>(Limb));
-	IsPole ? Out.identity() : Out.setHPB(deg2rad(Turn.x), deg2rad(Turn.y), deg2rad(Turn.z));
-	Out.c = Curves::LaneVector(Tracks, IsPole ? Param::IkPole : Param::IkTarget, Local, IsPole ? Setup.Pole : Setup.Target, static_cast<u8>(Limb));
-	if (Setup.Space == IkSpace::Actor)
-	{
-		Out.mulA_43(World);
-		Out.i.normalize_safe();
-		Out.j.normalize_safe();
-		Out.k.normalize_safe();
-	}
-	return true;
-}
-}
-
-s32 Editor::BoneUnderMouse(const Player& Core) const
-{
-	const ActorRuntime* Runtime = Core.FindActor(PoseObject);
-	const ObjectState* State = Runtime ? Core.FindState(PoseObject) : nullptr;
-	const ImVec2 Mouse = ImGui::GetIO().MousePos;
-	float Best = FLT_MAX;
-	s32 Found = -1;
-	for (u32 Control = 0; State && RigObject == PoseObject && Control < RigControlCount; ++Control)
-	{
-		Fmatrix Joint;
-		ImVec2 At;
-		const u16 Bone = Rig.Controls[Control];
-		const float Gap = Bone != BI_NONE && !IsBoneShared(Bone) && Runtime->BoneWorld(Bone, State->World, Joint) && ViewportUi::Project(Joint.c, At) > 0.0f ? std::hypot(At.x - Mouse.x, At.y - Mouse.y) : FLT_MAX;
-		float Ring = FLT_MAX;
-		for (u32 Step = 0; Gap != FLT_MAX && ViewportUi::RigReach(Control) > 0.0f && Step < 24; ++Step)
-		{
-			ImVec2 Spot;
-			Ring = ViewportUi::Project(ViewportUi::RigRing(Joint.c, ViewportUi::RigReach(Control), Step), Spot) > 0.0f ? std::min(Ring, std::hypot(Spot.x - Mouse.x, Spot.y - Mouse.y)) : Ring;
-		}
-		const bool IsHit = Gap <= RigControlSizes[Control] + 2.0f || Ring <= 6.0f;
-		const float Score = std::min(Gap, Ring);
-		Found = IsHit && Score < Best ? static_cast<s32>(Bone) : Found;
-		Best = IsHit ? std::min(Score, Best) : Best;
-	}
-	if (Found >= 0)
-	{
-		return Found;
-	}
-	Best = 8.0f;
-	for (u16 Bone = 0; State && Bone < Runtime->BoneCount(); ++Bone)
-	{
-		Fmatrix Self, Parent;
-		ImVec2 A, B;
-		if (IsBoneShared(Bone) || (!ShowBoneLines && HasRigControls()) || !Runtime->BoneWorld(Bone, State->World, Self) || !(ViewportUi::Project(Self.c, A) > 0.0f))
-		{
-			continue;
-		}
-		B = Runtime->BoneWorld(Runtime->BoneParent(Bone), State->World, Parent) && ViewportUi::Project(Parent.c, B) > 0.0f ? B : A;
-		const ImVec2 Line(B.x - A.x, B.y - A.y);
-		const float Along = std::clamp(((Mouse.x - A.x) * Line.x + (Mouse.y - A.y) * Line.y) / std::max(Line.x * Line.x + Line.y * Line.y, 1.0f), 0.0f, 1.0f);
-		const float Gap = std::hypot(A.x + Line.x * Along - Mouse.x, A.y + Line.y * Along - Mouse.y) + 2.0f * Along;
-		Found = Gap < Best ? static_cast<s32>(Bone) : Found;
-		Best = std::min(Gap, Best);
-	}
-	return Found;
-}
-
-bool Editor::PickBone(Player& Core, bool IsToggle)
-{
-	if (!IsPosing || !PoseObject || !Core.FindActor(PoseObject))
-	{
-		return false;
-	}
-	const s32 Bone = BoneUnderMouse(Core);
-	const bool IsAdding = ImGui::GetIO().KeyShift;
-	if (Bone < 0)
-	{
-		const bool HadBones = !SelectedBones.empty() && !IsAdding;
-		SelectedBones.resize(IsAdding ? SelectedBones.size() : 0);
-		return HadBones;
-	}
-	const auto Found = std::find(SelectedBones.begin(), SelectedBones.end(), static_cast<u16>(Bone));
-	if (!IsToggle && !IsAdding)
-	{
-		SelectedBones.assign(1, static_cast<u16>(Bone));
-	}
-	else if (Found == SelectedBones.end())
-	{
-		SelectedBones.push_back(static_cast<u16>(Bone));
-	}
-	else if (IsToggle)
-	{
-		SelectedBones.erase(Found);
-	}
-	return true;
-}
-
-void Editor::DrawBones(Player& Core)
-{
-	const Object* Actor = nullptr;
-	for (u32 Id : Selected)
-	{
-		const Object* Item = Find(Core.Data, Id);
-		Actor = !Actor && Item && Item->Type == ObjectType::Actor ? Item : Actor;
-	}
-	if (!Actor || Actor->Id != PoseObject)
-	{
-		SelectedBones.clear();
-		PoseObject = Actor ? Actor->Id : 0;
-	}
-	const ActorRuntime* Runtime = Actor ? Core.FindActor(Actor->Id) : nullptr;
-	const ObjectState* State = Runtime ? Core.FindState(Actor->Id) : nullptr;
-	if (Runtime && Runtime->BoneCount() && (RigObject != Actor->Id || RigVisual != Actor->Actor.Visual || Rig.Mirror.size() != Runtime->BoneCount()))
-	{
-		RigObject = Actor->Id;
-		BuildRig(*Runtime, Actor->Actor.Visual);
-	}
-	const ActorRuntime* Hands = Runtime && Actor->Actor.Hud.size() && Actor->Attach.Parent.ObjectId ? Core.FindActor(Actor->Attach.Parent.ObjectId) : nullptr;
-	if (SharedOwner != PoseObject || SharedHands != Hands || SharedBones.size() != (Hands ? Runtime->BoneCount() : 0))
-	{
-		SharedOwner = PoseObject;
-		SharedHands = Hands;
-		SharedBones.assign(Hands ? Runtime->BoneCount() : 0, 0);
-		for (u16 Bone = 0; Bone < SharedBones.size(); ++Bone)
-		{
-			SharedBones[Bone] = Hands->FindBone(shared_str(Runtime->BoneName(Bone))) < Hands->BoneCount();
-		}
-		std::erase_if(SelectedBones, [this](u16 Bone) { return IsBoneShared(Bone); });
-	}
-	if (!IsPosing || !Overlay || !State)
-	{
-		return;
-	}
-	const s32 Hover = IsViewportFree() && !IsGizmoHovered && !IsGizmoActive ? BoneUnderMouse(Core) : -1;
-	const ImGuiIO& Input = ImGui::GetIO();
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		IsBoneBox = IsViewportFree() && !IsGizmoHovered && !IsGizmoActive;
-		BoneBoxStart = Input.MousePos;
-	}
-	IsBoneBox = IsBoneBox && !ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !ImGui::IsKeyPressed(ImGuiKey_Escape, false);
-	const ImRect Box(ImMin(BoneBoxStart, Input.MousePos), ImMax(BoneBoxStart, Input.MousePos));
-	const bool IsBoxing = IsBoneBox && Input.MouseDragMaxDistanceSqr[ImGuiMouseButton_Left] >= 16.0f;
-	const bool IsClosing = IsBoxing && ImGui::IsMouseReleased(ImGuiMouseButton_Left);
-	if (IsClosing && !Input.KeyCtrl && !Input.KeyShift)
-	{
-		SelectedBones.clear();
-	}
-	if (IsBoxing)
-	{
-		Overlay->AddRectFilled(Box.Min, Box.Max, IM_COL32(255, 255, 255, 30));
-		Overlay->AddRect(Box.Min, Box.Max, IM_COL32(255, 255, 255, 160));
-	}
-	for (u16 Bone = 0; Bone < Runtime->BoneCount(); ++Bone)
-	{
-		Fmatrix Self, Parent;
-		if (IsBoneShared(Bone) || !Runtime->BoneWorld(Bone, State->World, Self))
-		{
-			continue;
-		}
-		const bool IsPicked = std::find(SelectedBones.begin(), SelectedBones.end(), Bone) != SelectedBones.end();
-		if (!ShowBoneLines && !IsPicked && HasRigControls())
-		{
-			continue;
-		}
-		const bool IsEdited = std::any_of(Actor->Actor.Poses.begin(), Actor->Actor.Poses.end(), [&](const PoseRow& Row) { return std::any_of(Row.Bones.begin(), Row.Bones.end(), [&](const PoseBone& Item) { return !xr_strcmp(Item.Name, Runtime->BoneName(Bone)); }); });
-		const u32 Color = IsPicked ? IM_COL32(255, 255, 255, 255) : static_cast<s32>(Bone) == Hover ? IM_COL32(255, 220, 60, 255) : IsEdited ? IM_COL32(255, 150, 40, 220) : IM_COL32(160, 180, 200, 170);
-		if (Runtime->BoneWorld(Runtime->BoneParent(Bone), State->World, Parent))
-		{
-			ViewportUi::Line3D(Overlay, Parent.c, Self.c, Color);
-		}
-		ImVec2 At;
-		if (ViewportUi::Project(Self.c, At) > 0.0f)
-		{
-			Overlay->AddCircleFilled(At, IsPicked ? 4.0f : 2.5f, Color);
-			const auto Found = std::find(SelectedBones.begin(), SelectedBones.end(), Bone);
-			if (IsClosing && Box.Contains(At))
-			{
-				Found == SelectedBones.end() ? SelectedBones.push_back(Bone) : Input.KeyCtrl ? (void)SelectedBones.erase(Found) : (void)0;
-			}
-		}
-	}
-	IsBoneBox = IsBoneBox && ImGui::IsMouseDown(ImGuiMouseButton_Left);
-	for (u32 Control = 0; Control < RigControlCount; ++Control)
-	{
-		Fmatrix Joint;
-		ImVec2 At;
-		const u16 Bone = Rig.Controls[Control];
-		if (Bone == BI_NONE || IsBoneShared(Bone) || !Runtime->BoneWorld(Bone, State->World, Joint) || !(ViewportUi::Project(Joint.c, At) > 0.0f))
-		{
-			continue;
-		}
-		constexpr u32 SideColors[3] = { IM_COL32(255, 210, 60, 230), IM_COL32(90, 150, 255, 230), IM_COL32(255, 90, 90, 230) };
-		const bool IsPicked = std::find(SelectedBones.begin(), SelectedBones.end(), Bone) != SelectedBones.end();
-		const u32 Color = IsPicked ? IM_COL32(255, 255, 255, 255) : static_cast<s32>(Bone) == Hover ? IM_COL32(255, 240, 120, 255) : SideColors[RigControlSides[Control]];
-		const float Size = RigControlSizes[Control], Reach = ViewportUi::RigReach(Control);
-		for (u32 Step = 0; Reach > 0.0f && Step < 24; ++Step)
-		{
-			ViewportUi::Line3D(Overlay, ViewportUi::RigRing(Joint.c, Reach, Step), ViewportUi::RigRing(Joint.c, Reach, Step + 1), Color);
-		}
-		for (u32 Corner = 0; Control >= 3 && Control <= 6 && Corner < 8; ++Corner)
-		{
-			const Fvector* const Axes[3] = { &Joint.i, &Joint.j, &Joint.k };
-			const auto At3 = [&](u32 Code)
-			{
-				Fvector Point = Joint.c;
-				for (u32 Axis = 0; Axis < 3; ++Axis)
-				{
-					Point.mad(*Axes[Axis], (Code & (1u << Axis) ? 0.05f : -0.05f) / std::max(Axes[Axis]->magnitude(), EPS_S));
-				}
-				return Point;
-			};
-			for (u32 Axis = 0; Axis < 3; ++Axis)
-			{
-				if (!(Corner & (1u << Axis)))
-				{
-					ViewportUi::Line3D(Overlay, At3(Corner), At3(Corner | (1u << Axis)), Color);
-				}
-			}
-		}
-		if (IsClosing && Box.Contains(At) && !IsPicked)
-		{
-			SelectedBones.push_back(Bone);
-		}
-		if (!RigControlShapes[Control])
-		{
-			Overlay->AddRect(ImVec2(At.x - Size, At.y - Size), ImVec2(At.x + Size, At.y + Size), Color, 0.0f, 0, 2.0f);
-		}
-		else
-		{
-			Overlay->AddNgon(At, Size, Color, RigControlShapes[Control], 2.0f);
-		}
-	}
-	if (Hover >= 0)
-	{
-		ImGui::SetTooltip("%s", Runtime->BoneName(static_cast<u16>(Hover)));
-	}
-}
-
-void Editor::DrawPathKeys(Player& Core)
-{
-	const ImGuiIO& Input = ImGui::GetIO();
-	const bool HasHelpers = Settings.ShowHelpers && Core.View() != ViewSource::Global;
-	const float HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
-	IsPathKeyCancelled = IsPathKeyCancelled && ImGui::IsMouseDown(ImGuiMouseButton_Left);
-	if (IsPathKeyActive && (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
-	{
-		Undo.Cancel(Core.Data);
-		IsPathKeyActive = false;
-		IsPathKeyCancelled = true;
-	}
-	const bool IsSeeking = HasHelpers && !IsGizmoHovered && IsViewportFree() && !IsPathKeyActive;
-	const Object* Rig = FindCamera(Core.Data);
-	const s32 KeyBlock = Rig && HasHelpers ? HelperBlock(Core, *Rig) : -1;
-	const BlockCache* Cache = KeyBlock >= 0 ? Core.FindCameraBlock(static_cast<u32>(KeyBlock)) : nullptr;
-	const CameraBlock* Shot = Cache ? &Rig->Camera.Blocks[KeyBlock] : nullptr;
-	ViewportUi::PathSpot Hover, Insert;
-	Hover.Gap = ViewportUi::TangentPixels * ViewportUi::TangentPixels;
-	Insert.Gap = ViewportUi::GrabPixels * ViewportUi::GrabPixels;
-	Fvector Point;
-	Fmatrix Turn;
-	for (u32 At = 0; IsSeeking && At < Selected.size(); ++At)
-	{
-		const Object* Item = Find(Core.Data, Selected[At]);
-		const Lane* Track = Item && Item->Type != ObjectType::Camera ? Curves::FindLane(Item->Lanes, Param::Position, 0) : nullptr;
-		for (u32 Axis = 0; Track && Axis < 3; ++Axis)
-		{
-			for (const Key& Entry : Track->Curves[Axis].Keys)
-			{
-				const bool IsRepeat = (Axis > 0 && Curves::KeyAt(Track->Curves[0], Entry.Time, HalfFrame) != u32(-1)) || (Axis > 1 && Curves::KeyAt(Track->Curves[1], Entry.Time, HalfFrame) != u32(-1));
-				if (!IsRepeat && Core.PathPoint(Item->Id, Item->Span.Start + Entry.Time, Point))
-				{
-					ViewportUi::Offer(Hover, Item->Id, -1, -1, Entry.Time, Point);
-				}
-			}
-		}
-	}
-	for (u32 At = 0; IsSeeking && Shot && At < Shot->Keys.size(); ++At)
-	{
-		Point = Shot->Keys[At].Position;
-		Turn = Fidentity;
-		ViewportUi::Place(Cache->Frames, Point, Turn);
-		ViewportUi::Offer(Hover, Rig->Id, KeyBlock, static_cast<s32>(At), Shot->Keys[At].Time, Point);
-	}
-	for (u32 At = 0; IsSeeking && !Hover.Id && Input.KeyCtrl && At < Selected.size(); ++At)
-	{
-		const Object* Item = Find(Core.Data, Selected[At]);
-		const bool HasPath = Item && Item->Type != ObjectType::Camera && Curves::FindLane(Item->Lanes, Param::Position, 0);
-		const float Length = HasPath ? Item->Span.Length : 0.0f, Step = std::max(2.0f * HalfFrame, Length / 600.0f);
-		for (float Local = 0.0f; HasPath && Local <= Length; Local += Step)
-		{
-			if (Core.PathPoint(Item->Id, Item->Span.Start + Local, Point))
-			{
-				ViewportUi::Offer(Insert, Item->Id, -1, -1, Local, Point);
-			}
-		}
-	}
-	for (u32 At = 0; IsSeeking && !Hover.Id && Input.KeyCtrl && Shot && At + 1 < Shot->Keys.size(); ++At)
-	{
-		for (u32 Part = 1; Part < 16; ++Part)
-		{
-			const float Moment = _lerp(Shot->Keys[At].Time, Shot->Keys[At + 1].Time, static_cast<float>(Part) / 16.0f);
-			Cameras::PathPose(*Shot, Moment, Point, Turn);
-			ViewportUi::Place(Cache->Frames, Point, Turn);
-			ViewportUi::Offer(Insert, Rig->Id, KeyBlock, -1, Moment, Point);
-		}
-	}
-	const bool IsPressed = !IsPathKeyCancelled && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
-	if (Hover.Id || Insert.Id)
-	{
-		Overlay->AddCircle(Hover.Id ? Hover.At : Insert.At, Hover.Id ? 10.0f : 6.0f, IM_COL32(255, 220, 60, 255), 0, 2.0f);
-		Hint = Hover.Id ? ViewportUi::PathHint : ViewportUi::InsertHint;
-	}
-	if (Insert.Id && IsPressed)
-	{
-		Object& Edited = *Edit(Core, Insert.Id, "Insert path key");
-		if (Insert.Block >= 0)
-		{
-			CameraBlock& Clip = Edited.Camera.Blocks[Insert.Block];
-			const auto Next = std::upper_bound(Clip.Keys.begin(), Clip.Keys.end(), Insert.Time, [](float Moment, const PoseKey& Item) { return Moment < Item.Time; });
-			const Interp Mode = Next == Clip.Keys.begin() ? Interp::EaseInOut : (Next - 1)->Mode;
-			Cameras::PathPose(Clip, Insert.Time, Point, Turn);
-			Cameras::SetPoseAt(Clip, Insert.Time, Point, Curves::LaneVector(Clip.Lanes, Param::Rotation, Insert.Time, Clip.Rotation), Mode, 1e-4f);
-			Core.IsLookingThrough = false;
-			Core.Seek(TargetStart(Edited, Insert.Block) + Cameras::LocalFromPath(Clip, Insert.Time));
-		}
-		else
-		{
-			Lane& Track = Curves::EnsureLane(Edited.Lanes, Param::Position, 0);
-			for (u32 Axis = 0; Axis < 3; ++Axis)
-			{
-				Curves::SetKey(Track.Curves[Axis], Insert.Time, Curves::Value(Track.Curves[Axis], Insert.Time, (*PlacementOf(Edited, 0))[Axis]), HalfFrame);
-			}
-			Core.Seek(Edited.Span.Start + Insert.Time);
-		}
-		Core.Pause();
-	}
-	if (Hover.Id && IsPressed)
-	{
-		const Object* Owner = Find(Core.Data, Hover.Id);
-		const Lane* Track = Curves::FindLane(Hover.Block >= 0 ? Shot->Lanes : Owner->Lanes, Param::Position, 0);
-		IsPathKeyActive = true;
-		PathKeyObject = Hover.Id;
-		PathKeyBlock = Hover.Block;
-		PathKeyTime = Hover.Time;
-		PathKeyStart = Hover.Point;
-		PathKeyBase = Track ? *Track : Lane();
-		Core.Pause();
-		if (Hover.Block >= 0)
-		{
-			Focus = FocusKind::Block;
-			FocusObject = Hover.Id;
-			FocusBlock = Hover.Block;
-			SetTangentKey(Core, Hover.Block, Hover.Key);
-			Core.IsLookingThrough = false;
-		}
-		Core.Seek(Hover.Block >= 0 ? TargetStart(*Owner, Hover.Block) + Cameras::LocalFromPath(*Shot, *Cache, Hover.Time) : Owner->Span.Start + Hover.Time);
-	}
-	IsGizmoHovered = IsGizmoHovered || Hover.Id || Insert.Id || IsPathKeyActive;
-	const Object* Item = IsPathKeyActive ? Find(Core.Data, PathKeyObject) : nullptr;
-	const ObjectState* State = Item && PathKeyBlock < 0 ? Core.FindState(PathKeyObject) : nullptr;
-	const BlockCache* Held = Item && PathKeyBlock >= 0 && PathKeyBlock < static_cast<s32>(Item->Camera.Blocks.size()) ? Core.FindCameraBlock(static_cast<u32>(PathKeyBlock)) : nullptr;
-	Fvector Origin, Direction, Normal;
-	if ((!State && !Held) || !ImGui::IsMouseDown(ImGuiMouseButton_Left))
-	{
-		IsPathKeyActive = false;
-		return;
-	}
-	Hint = ViewportUi::PathHint;
-	if (!ViewportUi::MouseRay(Origin, Direction) || !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 2.0f) || std::fabs(Direction.dotproduct(Device.vCameraDirection)) < EPS)
-	{
-		return;
-	}
-	Fmatrix Pose = Fidentity;
-	if (!Input.KeyShift || !StaticRay(Origin, Direction, ViewportUi::PickRange, Pose.c, Normal))
-	{
-		Pose.c.mad(Origin, Direction, Fvector().sub(PathKeyStart, Origin).dotproduct(Device.vCameraDirection) / Direction.dotproduct(Device.vCameraDirection));
-	}
-	Spaces::Decompose(Held ? Held->Frames : State->Frames, Pose);
-	Object& Edited = *Edit(Core, PathKeyObject, "Move path key");
-	Lane& Track = Curves::EnsureLane(Held ? Edited.Camera.Blocks[PathKeyBlock].Lanes : Edited.Lanes, Param::Position, 0);
-	for (u8 Axis = 0; Axis < 3; ++Axis)
-	{
-		if (Held)
-		{
-			Curves::SetKey(Track.Curves[Axis], PathKeyTime, Pose.c[Axis], 1e-4f);
-		}
-		else
-		{
-			WriteParam(Core, Edited, -1, Param::Position, 0, Axis, Pose.c[Axis]);
-		}
-	}
-	Lane& Moved = Curves::EnsureLane(Held ? Edited.Camera.Blocks[PathKeyBlock].Lanes : Edited.Lanes, Param::Position, 0);
-	ViewportUi::FitHandles(Moved, PathKeyBase, PathKeyTime, Held ? 1e-4f : HalfFrame);
-	if (Held)
-	{
-		Cameras::Rebuild(Edited.Camera.Blocks[PathKeyBlock]);
-	}
-}
-
-void Editor::EvenSpeed(Player& Core, s32 Block)
-{
-	const Object* Rig = FindCamera(Core.Data);
-	if (!Rig || Block < 0 || Block >= static_cast<s32>(Rig->Camera.Blocks.size()) || Rig->Camera.Blocks[Block].Keys.size() < 3)
-	{
-		return;
-	}
-	const CameraBlock& Shot = Rig->Camera.Blocks[Block];
-	const u32 Count = static_cast<u32>(Shot.Keys.size());
-	const float Frame = 1.0f / static_cast<float>(Core.Data.Header.FrameRate);
-	DragTimes.clear();
-	BlockStarts.assign(1, 0.0f);
-	Fvector From, To;
-	Fmatrix Turn;
-	for (u32 At = 0; At < Count; ++At)
-	{
-		float Reach = 0.0f;
-		DragTimes.push_back(Shot.Keys[At].Time);
-		Cameras::PathPose(Shot, Shot.Keys[At].Time, From, Turn);
-		for (u32 Part = 1; At + 1 < Count && Part <= 16; ++Part)
-		{
-			Cameras::PathPose(Shot, _lerp(Shot.Keys[At].Time, Shot.Keys[At + 1].Time, static_cast<float>(Part) / 16.0f), To, Turn);
-			Reach += From.distance_to(To);
-			From = To;
-		}
-		if (At + 1 < Count)
-		{
-			BlockStarts.push_back(BlockStarts.back() + Reach);
-		}
-	}
-	const float Total = BlockStarts.back(), First = DragTimes.front(), Span = DragTimes.back() - First;
-	if (!(Total > EPS_L))
-	{
-		SetStatus(true, "The camera does not move in this clip.");
-		return;
-	}
-	for (u32 At = 0; At < Count; ++At)
-	{
-		BlockStarts[At] = std::max(First + Span * BlockStarts[At] / Total, At ? BlockStarts[At - 1] + Frame : First);
-	}
-	BlockStarts[Count - 1] = DragTimes.back();
-	for (u32 At = Count - 1; At-- > 0;)
-	{
-		BlockStarts[At] = std::min(BlockStarts[At], BlockStarts[At + 1] - Frame);
-	}
-	if (BlockStarts[0] < First - 1e-4f)
-	{
-		SetStatus(true, "The clip has too many keys for its length to space them evenly.");
-		return;
-	}
-	CameraBlock& Edited = Edit(Core, Rig->Id, "Even speed")->Camera.Blocks[Block];
-	for (Lane& Track : Edited.Lanes)
-	{
-		for (u32 Axis = 0; (Track.Id == Param::Position || Track.Id == Param::Rotation) && Track.Layer == 0 && Axis < 3; ++Axis)
-		{
-			xr_vector<Key>& Keys = Track.Curves[Axis].Keys;
-			for (Key& Item : Keys)
-			{
-				const auto Near = std::lower_bound(DragTimes.begin(), DragTimes.end(), Item.Time - 1e-4f);
-				Item.Time = Near == DragTimes.end() ? Item.Time : BlockStarts[Near - DragTimes.begin()];
-			}
-			for (u32 At = 0; At < Keys.size(); ++At)
-			{
-				Keys[At].InTime = At ? -(Keys[At].Time - Keys[At - 1].Time) / 3.0f : Keys[At].InTime;
-				Keys[At].OutTime = At + 1 < Keys.size() ? (Keys[At + 1].Time - Keys[At].Time) / 3.0f : Keys[At].OutTime;
-			}
-		}
-	}
-	Cameras::Rebuild(Edited);
-	SelectedKeys.clear();
-}
-
-void Editor::DrawIkHandles(Player& Core)
-{
-	const ImGuiIO& Input = ImGui::GetIO();
-	const Object* Actor = IsPosing ? Find(Core.Data, PoseObject) : nullptr;
-	const ActorRuntime* Runtime = Actor ? Core.FindActor(PoseObject) : nullptr;
-	const ObjectState* State = Runtime ? Core.FindState(PoseObject) : nullptr;
-	IsIkCancelled = IsIkCancelled && ImGui::IsMouseDown(ImGuiMouseButton_Left);
-	if (IsIkActive && (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)))
-	{
-		Undo.Cancel(Core.Data);
-		IsIkActive = false;
-		IsIkCancelled = true;
-	}
-	if (!State)
-	{
-		IkHandle = -1;
-		IsIkActive = IsIkOver = IsIkHover = IsIkDirect = false;
-		return;
-	}
-	const float Local = PoseLocal(Core, *Actor);
-	const bool IsFree = IsViewportFree();
-	float Best = ViewportUi::TangentPixels * ViewportUi::TangentPixels;
-	s32 Hover = -1;
-	ImVec2 HoverAt;
-	for (u32 Handle = 0; Handle < 2 * MaxIkLimbs; ++Handle)
-	{
-		Fmatrix Goal, Anchor;
-		ImVec2 Screen;
-		const u32 Limb = Handle / 2;
-		const bool IsPole = Handle & 1, IsPicked = static_cast<s32>(Handle) == IkHandle;
-		if (!IkGoalWorld(*Actor, IkBlock(*Actor), State->World, Limb, IsPole, Local, Goal))
-		{
-			continue;
-		}
-		const u32 Color = IsPicked ? IM_COL32(255, 255, 255, 255) : Limb & 1 ? IM_COL32(255, 90, 90, 230) : IM_COL32(90, 150, 255, 230);
-		const u16 From = Runtime->FindBone(IkOf(*Actor, IkBlock(*Actor))[Limb].Bones[IsPole ? 1 : 2]);
-		if (From != BI_NONE && Runtime->BoneWorld(From, State->World, Anchor))
-		{
-			ViewportUi::Line3D(Overlay, Anchor.c, Goal.c, Color);
-		}
-		if (!(ViewportUi::Project(Goal.c, Screen) > 0.0f))
-		{
-			continue;
-		}
-		const float Radius = (IsPole ? 5.0f : 6.0f) + (IsPicked ? 1.0f : 0.0f);
-		Overlay->AddNgonFilled(Screen, Radius, Color, IsPole ? 4 : 16);
-		Overlay->AddNgon(Screen, Radius, IM_COL32(0, 0, 0, 200), IsPole ? 4 : 16);
-		const float Gap = (Screen.x - Input.MousePos.x) * (Screen.x - Input.MousePos.x) + (Screen.y - Input.MousePos.y) * (Screen.y - Input.MousePos.y);
-		Hover = Gap < Best ? static_cast<s32>(Handle) : Hover;
-		HoverAt = Gap < Best ? Screen : HoverAt;
-		Best = std::min(Gap, Best);
-	}
-	IsIkHover = Hover >= 0 && IsFree && !IsIkActive;
-	if (IsIkHover)
-	{
-		Overlay->AddCircle(HoverAt, 10.0f, IM_COL32(255, 220, 60, 255), 0, 2.0f);
-		ImGui::SetTooltip("%s %s", RigChainKeys[Hover / 2], Hover & 1 ? "pole" : "target");
-		Hint = ViewportUi::IkHint;
-	}
-	if (!IsIkActive && !IsIkCancelled && IsFree && (Hover >= 0 || !IsIkOver) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-	{
-		IkHandle = Hover;
-		IsIkDirect = Hover >= 0;
-		Hover >= 0 ? SelectedBones.clear() : (void)0;
-	}
-	IsIkDirect = IsIkDirect && !IsIkCancelled && ImGui::IsMouseDown(ImGuiMouseButton_Left);
-	IsGizmoHovered = IsGizmoHovered || IsIkHover || IsIkOver || IsIkActive || IsIkDirect;
-	const u32 Limb = static_cast<u32>(IkHandle) / 2;
-	const bool IsPole = IkHandle & 1;
-	Fmatrix Goal;
-	if (IkHandle < 0 || !IkGoalWorld(*Actor, IkBlock(*Actor), State->World, Limb, IsPole, Local, Goal))
-	{
-		IkHandle = -1;
-		IsIkActive = IsIkOver = false;
-		return;
-	}
-	if (!IsIkActive)
-	{
-		IkMatrix = IsPole || !IsGizmoLocalSingle ? Fidentity : Goal;
-		IkMatrix.c = Goal.c;
-		IkGrab = IkMatrix;
-		IkGoal = Goal;
-		BoneTurn = Curves::LaneVector(LaneList(*Actor, IkBlock(*Actor)), Param::IkTurn, Local, IkOf(*Actor, IkBlock(*Actor))[Limb].Turn, static_cast<u8>(Limb));
-	}
-	Fvector Origin, Direction;
-	const bool IsDragged = IsIkDirect && ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 2.0f) && ViewportUi::MouseRay(Origin, Direction) && std::fabs(Direction.dotproduct(Device.vCameraDirection)) > EPS;
-	if (IsDragged)
-	{
-		IkMatrix = IkGrab;
-		IkMatrix.c.mad(Origin, Direction, Fvector().sub(IkGoal.c, Origin).dotproduct(Device.vCameraDirection) / Direction.dotproduct(Device.vCameraDirection));
-	}
-	ImGuizmo::PushID("CinemaIk");
-	const float Step = ImGuizmo::GetUsingOperation() == ImGuizmo::ROTATE ? Settings.RotateStep : Settings.MoveStep, Snap[3] = { Step, Step, Step };
-	ImGuizmo::Enable(!IsIkDirect && !IsIkCancelled && CImGuiManager::Instance().IsCapturingInputs() && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel));
-	ImGuizmo::Manipulate(reinterpret_cast<const float*>(&Device.mView), reinterpret_cast<const float*>(&Device.mProject), IsPole ? ImGuizmo::TRANSLATE : static_cast<ImGuizmo::OPERATION>(ImGuizmo::TRANSLATE | ImGuizmo::ROTATE), IsGizmoLocalSingle ? ImGuizmo::LOCAL : ImGuizmo::WORLD, reinterpret_cast<float*>(&IkMatrix), nullptr, Input.KeyCtrl != Settings.IsGizmoSnapping ? Snap : nullptr);
-	const bool IsUsing = IsDragged || ImGuizmo::IsUsing();
-	IsIkOver = !IsIkDirect && ImGuizmo::IsOver();
-	const ImGuizmo::OPERATION Using = ImGuizmo::GetUsingOperation();
-	ImGuizmo::PopID();
-	IsGizmoHovered = IsGizmoHovered || IsIkOver;
-	if (!IsUsing || IsIkCancelled)
-	{
-		IsIkActive = false;
-		return;
-	}
-	IsIkActive = true;
-	Object& Item = *Edit(Core, PoseObject, IsPole ? "Move IK pole" : "Move IK target");
-	Fmatrix Value, Inverse;
-	Inverse.invert(IkGrab);
-	Value.mul_43(IkMatrix, Inverse);
-	Value.mulB_43(IkGoal);
-	if (IkOf(Item, IkBlock(Item))[Limb].Space == IkSpace::Actor)
-	{
-		Inverse.invert(State->World);
-		Value.mulA_43(Inverse);
-		Value.i.normalize_safe();
-		Value.j.normalize_safe();
-		Value.k.normalize_safe();
-	}
-	Fvector Angles;
-	Value.getHPB(Angles);
-	for (u8 Axis = 0; (IsDragged || Using) && Axis < 3; ++Axis)
-	{
-		const float Degrees = rad2deg(Angles[Axis]);
-		!IsDragged && Using == ImGuizmo::ROTATE ? WriteParam(Core, Item, IkBlock(Item), Param::IkTurn, static_cast<u8>(Limb), Axis, Degrees + 360.0f * std::round((BoneTurn[Axis] - Degrees) / 360.0f)) : WriteParam(Core, Item, IkBlock(Item), IsPole ? Param::IkPole : Param::IkTarget, static_cast<u8>(Limb), Axis, Value.c[Axis]);
-	}
-}
-
-s32 Editor::EnsurePoseBone(Object& Item, const shared_str& Bone)
-{
-	if (const s32 Block = PoseBlock(Item); Block >= 0)
-	{
-		xr_vector<PoseBone>& Bones = TrackOf(Item, Block).Bones;
-		auto Found = std::find_if(Bones.begin(), Bones.end(), [&Bone](const PoseBone& Entry) { return Entry.Name == Bone; });
-		if (Found == Bones.end() && Bones.size() < MaxClipBones && Bone.size())
-		{
-			Bones.push_back({ Bone });
-			Found = Bones.end() - 1;
-		}
-		return Found == Bones.end() ? -1 : static_cast<s32>(Found - Bones.begin());
-	}
-	xr_vector<PoseRow>& Rows = Item.Actor.Poses;
-	if (Rows.empty())
-	{
-		Rows.emplace_back();
-	}
-	ActivePose = std::min<u32>(ActivePose, static_cast<u32>(Rows.size() - 1));
-	xr_vector<PoseBone>& Bones = Rows[ActivePose].Bones;
-	auto Found = std::find_if(Bones.begin(), Bones.end(), [&Bone](const PoseBone& Entry) { return Entry.Name == Bone; });
-	if (Found == Bones.end() && Bones.size() < MaxPoseBones && Bone.size())
-	{
-		Bones.push_back({ Bone });
-		Found = Bones.end() - 1;
-	}
-	return Found == Bones.end() ? -1 : PoseLayer(ActivePose, static_cast<u32>(Found - Bones.begin()));
-}
-
-float Editor::PoseLocal(const Player& Core, const Object& Item) const
-{
-	const s32 Block = PoseBlock(Item);
-	return Block < 0 ? std::clamp(Core.Time - Item.Span.Start, 0.0f, Item.Span.Length) : std::clamp(Core.Time - ClipOrigin, 0.0f, Item.Actor.Clips[ClipIndex(Block)].Length);
-}
-
-void Editor::DrawBoneGizmo(Player& Core)
-{
-	const Object* Actor = Find(Core.Data, PoseObject);
-	const ActorRuntime* Runtime = Actor ? Core.FindActor(PoseObject) : nullptr;
-	const ObjectState* State = Runtime ? Core.FindState(PoseObject) : nullptr;
-	const u16 Bone = SelectedBones[0];
-	Fmatrix World;
-	if (!State || !Runtime->BoneWorld(Bone, State->World, World))
-	{
-		IsGizmoActive = false;
-		return;
-	}
-	const shared_str Name = Runtime->BoneName(Bone);
-	if (!IsGizmoActive)
-	{
-		BonePivot = World;
-	}
-	const ImGuizmo::OPERATION Using = ImGuizmo::GetUsingOperation();
-	const float Step = Using == ImGuizmo::SCALE ? Settings.ScaleStep : Using == ImGuizmo::TRANSLATE ? Settings.MoveStep : Settings.RotateStep, Snap[3] = { Step, Step, Step };
-	const u32 Operation = Gizmo == GizmoMode::Scale ? ImGuizmo::SCALE : ImGuizmo::UNIVERSAL;
-	ImGuizmo::Manipulate(reinterpret_cast<const float*>(&Device.mView), reinterpret_cast<const float*>(&Device.mProject), static_cast<ImGuizmo::OPERATION>(Operation), ImGuizmo::LOCAL, reinterpret_cast<float*>(&BonePivot), nullptr, ImGui::GetIO().KeyCtrl != Settings.IsGizmoSnapping ? Snap : nullptr);
-	IsGizmoHovered = ImGuizmo::IsOver();
-	const bool IsUsing = ImGuizmo::IsUsing(), IsScaling = ImGuizmo::GetUsingOperation() == ImGuizmo::SCALE;
-	if (!IsUsing && !IsGizmoActive)
-	{
-		return;
-	}
-	Object& Item = *Edit(Core, PoseObject, IsScaling ? "Scale bone" : "Pose bone");
-	const float Local = PoseLocal(Core, Item);
-	const s32 Block = PoseBlock(Item);
-	const xr_vector<Lane>& Tracks = LaneList(Item, Block);
-	if (!IsGizmoActive)
-	{
-		BoneLayer = EnsurePoseBone(Item, Name);
-		const PoseBone* Entry = BoneLayer < 0 ? nullptr : BoneEntry(Item, Block, static_cast<u8>(BoneLayer));
-		BoneStart = World;
-		BoneTurn = Entry ? Curves::LaneVector(Tracks, Param::BoneRotation, Local, Entry->Rotation, static_cast<u8>(BoneLayer)) : Fvector().set(0.0f, 0.0f, 0.0f);
-		BoneShift = Entry ? Curves::LaneVector(Tracks, Param::BonePosition, Local, Entry->Offset, static_cast<u8>(BoneLayer)) : Fvector().set(0.0f, 0.0f, 0.0f);
-		BoneSize = Entry ? Curves::LaneVector(Tracks, Param::BoneScale, Local, Entry->Scale, static_cast<u8>(BoneLayer)) : Fvector().set(1.0f, 1.0f, 1.0f);
-		BoneParentModel = Fidentity;
-		Runtime->BoneWorld(Runtime->BoneParent(Bone), Fidentity, BoneParentModel);
-		const bool IsCurl = RigObject == PoseObject && std::find(Rig.Controls + RigFirstFinger, Rig.Controls + RigControlCount, Bone) != Rig.Controls + RigControlCount;
-		CurlLayers.clear();
-		for (u16 Joint = IsCurl ? Bone : BI_NONE, Depth = 0; Joint != BI_NONE && Depth < 2; ++Depth)
-		{
-			u16 Child = BI_NONE;
-			for (u16 Other = 0; Other < Runtime->BoneCount() && Child == BI_NONE; ++Other)
-			{
-				Child = Runtime->BoneParent(Other) == Joint && Other != Joint ? Other : BI_NONE;
-			}
-			Joint = Child;
-			const s32 Layer = Joint != BI_NONE ? EnsurePoseBone(Item, Runtime->BoneName(Joint)) : -1;
-			Layer >= 0 ? CurlLayers.push_back(Layer) : (void)0;
-		}
-	}
-	IsGizmoActive = IsUsing;
-	if (BoneLayer < 0)
-	{
-		return;
-	}
-	if (IsScaling)
-	{
-		const Fvector* const Axes[2][3] = { { &BoneStart.i, &BoneStart.j, &BoneStart.k }, { &BonePivot.i, &BonePivot.j, &BonePivot.k } };
-		for (u8 Axis = 0; ImGuizmo::GetUsingOperation() && Axis < 3; ++Axis)
-		{
-			const float Ratio = Axes[1][Axis]->magnitude() / std::max(Axes[0][Axis]->magnitude(), EPS_S);
-			WriteParam(Core, Item, Block, Param::BoneScale, static_cast<u8>(BoneLayer), Axis, std::clamp(BoneSize[Axis] * Ratio, 0.01f, 100.0f));
-		}
-		return;
-	}
-	Fmatrix Inverse, Before, After, Delta, Turned;
-	Inverse.invert(State->World);
-	Before.mul_43(Inverse, BoneStart);
-	After.mul_43(Inverse, BonePivot);
-	for (Fmatrix* Frame : { &Before, &After })
-	{
-		Frame->i.normalize_safe();
-		Frame->j.normalize_safe();
-		Frame->k.normalize_safe();
-	}
-	if (BoneMode(Item, Block, static_cast<u8>(BoneLayer)) == RowMode::Add)
-	{
-		Fmatrix Start, Back, Relative;
-		Start.setHPB(deg2rad(BoneTurn.x), deg2rad(BoneTurn.y), deg2rad(BoneTurn.z));
-		Start.c = BoneShift;
-		Back.invert(Before);
-		Relative.mul_43(Back, After);
-		Delta.mul_43(Start, Relative);
-	}
-	else
-	{
-		Fmatrix Rest = Fidentity, Back, Local43;
-		Runtime->RestLocal(Bone, Rest);
-		Back.invert(BoneParentModel);
-		Local43.mul_43(Back, After);
-		Local43.i.normalize_safe();
-		Local43.j.normalize_safe();
-		Local43.k.normalize_safe();
-		Turned.invert(Rest);
-		Delta.mul_43(Turned, Local43);
-	}
-	Fvector Angles;
-	Delta.getHPB(Angles);
-	for (u8 Axis = 0; ImGuizmo::GetUsingOperation() && Axis < 3; ++Axis)
-	{
-		const float Degrees = rad2deg(Angles[Axis]);
-		if (ImGuizmo::GetUsingOperation() == ImGuizmo::TRANSLATE)
-		{
-			WriteParam(Core, Item, Block, Param::BonePosition, static_cast<u8>(BoneLayer), Axis, Delta.c[Axis]);
-			continue;
-		}
-		const float Turn = Degrees + 360.0f * std::round((BoneTurn[Axis] - Degrees) / 360.0f);
-		WriteParam(Core, Item, Block, Param::BoneRotation, static_cast<u8>(BoneLayer), Axis, Turn);
-		for (s32 Layer : CurlLayers)
-		{
-			WriteParam(Core, Item, Block, Param::BoneRotation, static_cast<u8>(Layer), Axis, Turn);
-		}
-	}
-}
-
-void Editor::DrawGhosts(Player& Core)
-{
-	ImDrawList* List = Overlay;
-	const float Frame = 1.0f / static_cast<float>(Core.Data.Header.FrameRate);
-	const s32 Count = static_cast<s32>(Settings.OnionCount), Step = static_cast<s32>(Settings.OnionStep);
-	const bool IsEditing = Drag != DragKind::None || IsGizmoActive || Undo.IsOpen();
-	if (Settings.ShowOnion && (IsEditing || GhostTime != Core.Time || GhostSerial != Undo.Serial() || GhostSpans.size() != 2u * Count * std::min<size_t>(Selected.size(), 4u)))
-	{
-		GhostLines.clear();
-		GhostSpans.clear();
-		GhostTime = Core.Time;
-		GhostSerial = Undo.Serial();
-		for (u32 At = 0; At < std::min<size_t>(Selected.size(), 4u); ++At)
-		{
-			for (s32 Index = -Count; Index <= Count; ++Index)
-			{
-				if (Index)
-				{
-					Core.GhostBones(Selected[At], Core.Time + static_cast<float>(Index * Step) * Frame, GhostLines);
-					GhostSpans.push_back(static_cast<u32>(GhostLines.size()) | (Index < 0 ? 0x80000000u : 0u) | (static_cast<u32>(std::abs(Index)) << 24));
-				}
-			}
-		}
-	}
-	for (u32 Span = 0, From = 0; Settings.ShowOnion && Span < GhostSpans.size(); From = GhostSpans[Span++] & 0xFFFFFFu)
-	{
-		const u32 Code = GhostSpans[Span], To = Code & 0xFFFFFFu, Far = (Code >> 24) & 0x7Fu;
-		const u32 Alpha = static_cast<u32>(220 - 150 * (Far - 1) / std::max(Count, 1));
-		const u32 Color = (Code & 0x80000000u) ? IM_COL32(90, 140, 230, Alpha) : IM_COL32(235, 150, 60, Alpha);
-		for (u32 Index = From; Index + 1 < To; Index += 2)
-		{
-			ViewportUi::Line3D(List, GhostLines[Index], GhostLines[Index + 1], Color);
-		}
-	}
-	const float Lo = ScrollTime, Hi = ScrollTime + TrackWidth / Zoom, Pace = std::max(Frame, (Hi - Lo) / 600.0f);
-	for (u32 At = 0; Settings.ShowPaths && At < Selected.size(); ++At)
-	{
-		const Object* Item = Find(Core.Data, Selected[At]);
-		PathPoints.clear();
-		for (float Moment = Lo; Item && Moment <= Hi; Moment += Pace)
-		{
-			Fvector Point;
-			if (Core.PathPoint(Selected[At], Moment, Point))
-			{
-				PathPoints.push_back(Point);
-			}
-		}
-		for (u32 Index = 0; Index < PathPoints.size(); ++Index)
-		{
-			ImVec2 Screen;
-			if (Index)
-			{
-				ViewportUi::Line3D(List, PathPoints[Index - 1], PathPoints[Index], Item->Color);
-			}
-			if (ViewportUi::Project(PathPoints[Index], Screen) > 0.0f)
-			{
-				List->AddCircleFilled(Screen, 1.5f, Lighten(Item->Color));
-			}
-		}
-	}
-}
-
 void Editor::DrawHelpers(const Player& Core) const
 {
 	if (!Settings.ShowHelpers || Core.View() == ViewSource::Global)
@@ -2527,51 +1002,6 @@ void Editor::DrawHelpers(const Player& Core) const
 		{
 			ViewportUi::LinkLines(List, State->Frames, State->World.c, Lighten(Item.Color));
 		}
-		const Lane* Track = State && Item.Type != ObjectType::Camera ? Curves::FindLane(Item.Lanes, Param::Position, 0) : nullptr;
-		const float Start = Item.Span.Start, Length = Item.Span.Length, HalfFrame = 0.5f / static_cast<float>(Core.Data.Header.FrameRate);
-		Fvector Last, Point;
-		bool HasLast = false;
-		for (float Local = 0.0f; Track && Local < Length + 2.0f * HalfFrame; Local += std::max(2.0f * HalfFrame, Length / 600.0f))
-		{
-			if (Core.PathPoint(Item.Id, Start + std::min(Local, Length), Point))
-			{
-				HasLast ? ViewportUi::Line3D(List, Last, Point, Tint) : (void)0;
-				Last = Point;
-				HasLast = true;
-			}
-		}
-		for (u32 Axis = 0; Track && Axis < 3; ++Axis)
-		{
-			for (const Key& Entry : Track->Curves[Axis].Keys)
-			{
-				const bool IsRepeat = (Axis > 0 && Curves::KeyAt(Track->Curves[0], Entry.Time, HalfFrame) != u32(-1)) || (Axis > 1 && Curves::KeyAt(Track->Curves[1], Entry.Time, HalfFrame) != u32(-1));
-				ImVec2 Centre;
-				const float Scale = !IsRepeat && Core.PathPoint(Item.Id, Start + Entry.Time, Point) ? ViewportUi::Project(Point, Centre) : 0.0f;
-				if (!(Scale > 0.0f))
-				{
-					continue;
-				}
-				const float Radius = std::max(3.0f, ViewportUi::KeyRadius * Scale);
-				std::fabs(Start + Entry.Time - Core.Time) < HalfFrame ? List->AddCircleFilled(Centre, Radius, Tint) : List->AddCircle(Centre, Radius, Tint, 0, 1.5f);
-				const Fvector Turn = IsParamShown(Item, Param::Rotation) && !Item.Attach.Parent.ObjectId ? Curves::LaneVector(Item.Lanes, Param::Rotation, Entry.Time, *PlacementOf(Item, 1)) : Fvector().set(0.0f, 0.0f, 0.0f);
-				Fmatrix Facing;
-				Facing.setHPB(deg2rad(Turn.x), deg2rad(Turn.y), deg2rad(Turn.z));
-				IsParamShown(Item, Param::Rotation) && !Item.Attach.Parent.ObjectId ? ViewportUi::Line3D(List, Point, Fvector().mad(Point, Facing.k, ViewportUi::ArrowLength), Tint) : (void)0;
-			}
-		}
-		const u32 Frames = Track ? static_cast<u32>(Length / (2.0f * HalfFrame)) : 0, Stride = Frames / 400 + 1;
-		for (u32 Step = 0; Track && Step <= Frames; Step += Stride)
-		{
-			if (Core.PathPoint(Item.Id, Start + static_cast<float>(Step) * 2.0f * HalfFrame, Point) && ViewportUi::Project(Point, Centre) > 0.0f)
-			{
-				List->AddCircleFilled(Centre, 1.5f, Tint);
-			}
-		}
-		if (Track && Core.Time >= Start && Core.Time <= Start + Length && Core.PathPoint(Item.Id, Core.Time, Point) && ViewportUi::Project(Point, Centre) > 0.0f)
-		{
-			List->AddCircleFilled(Centre, 4.0f, IM_COL32(255, 255, 255, 255));
-			List->AddCircle(Centre, 4.0f, IM_COL32(0, 0, 0, 200));
-		}
 	}
 	const ActorRuntime* Lit = HighlightBone.size() ? Core.FindActor(HighlightObject) : nullptr;
 	Fmatrix Bone;
@@ -2594,7 +1024,7 @@ void Editor::DrawHelpers(const Player& Core) const
 		for (u32 At = 0; At < Count; ++At)
 		{
 			const PoseKey& Item = Cache->Keys[At];
-			const u32 Segments = At + 1 == Count ? 0 : 16;
+			const u32 Segments = At + 1 == Count ? 0 : Item.Mode == Interp::Bezier ? 16 : 1;
 			Fvector Point = Item.Position, From, To;
 			Fmatrix Turn, Step;
 			Turn.setHPB(deg2rad(Item.Rotation.x), deg2rad(Item.Rotation.y), deg2rad(Item.Rotation.z));
@@ -2602,7 +1032,7 @@ void Editor::DrawHelpers(const Player& Core) const
 			From = Point;
 			for (u32 Part = 1; Part <= Segments; ++Part)
 			{
-				Cameras::PathPose(Rig->Camera.Blocks[Index], _lerp(Item.Time, Cache->Keys[At + 1].Time, static_cast<float>(Part) / Segments), To, Step);
+				Cache->Path.Evaluate(_lerp(Item.Time, Cache->Keys[At + 1].Time, static_cast<float>(Part) / Segments), To, Step);
 				ViewportUi::Place(Cache->Frames, To, Step);
 				ViewportUi::Line3D(List, From, To, Color);
 				From = To;
@@ -2629,26 +1059,8 @@ void Editor::DrawHelpers(const Player& Core) const
 		Turn.setHPB(deg2rad(Pose.Rotation.x), deg2rad(Pose.Rotation.y), deg2rad(Pose.Rotation.z));
 		ViewportUi::Place(Cache->Frames, Pose.Position, Turn);
 		ViewportUi::LinkLines(List, Cache->Frames, Pose.Position, Color);
-		if (ViewportUi::Project(Pose.Position, Spot) > 0.0f)
-		{
-			List->AddCircleFilled(Spot, 4.0f, IM_COL32(255, 255, 255, 255));
-			List->AddCircle(Spot, 4.0f, IM_COL32(0, 0, 0, 200));
-		}
 	}
 	const CameraBlock* Shot = Cache ? &Rig->Camera.Blocks[KeyBlock] : nullptr;
-	const float Frame = 1.0f / static_cast<float>(Core.Data.Header.FrameRate);
-	const u32 Frames = Shot && !Shot->Keys.empty() ? static_cast<u32>(Shot->Length / Frame) : 0, Stride = Frames / 400 + 1;
-	for (u32 Step = 0; Shot && !Shot->Keys.empty() && Step <= Frames; Step += Stride)
-	{
-		Fvector Point;
-		Fmatrix Turn;
-		Cameras::PathPose(*Shot, Cameras::PathTime(*Shot, *Cache, static_cast<float>(Step) * Frame), Point, Turn);
-		ViewportUi::Place(Cache->Frames, Point, Turn);
-		if (ViewportUi::Project(Point, Spot) > 0.0f)
-		{
-			List->AddCircleFilled(Spot, 1.5f, Color);
-		}
-	}
 	if (Shot && Shot->Dof != DofMode::Off && !Shot->Keys.empty())
 	{
 		CameraPose Lens;

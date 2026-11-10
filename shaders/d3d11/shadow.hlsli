@@ -83,6 +83,7 @@ float SampleSunShaft(float3 Coord, int Cascade)
 			Coord = Corrected;
 		}
 	}
+    Coord.z -= SunReceiverWarpBias[Cascade].w;
 	return s_smap_sun.SampleCmpLevelZero(smp_smap, float3(Coord.xy, Cascade), Coord.z);
 }
 

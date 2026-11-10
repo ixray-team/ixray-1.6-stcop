@@ -27,7 +27,7 @@ CUIOptConCom::CUIOptConCom()
 
 class CCC_UserName: public CCC_String{
 public:
-	CCC_UserName(const char* N, char* V, int _size) : CCC_String(N, V, _size) { bEmptyArgsHandled = false; };
+	CCC_UserName(const char* N, LPSTR V, int _size) : CCC_String(N, V, _size)  { bEmptyArgsHandled = false; };
 
 	virtual void Execute(const char* arguments) override
 	{

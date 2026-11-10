@@ -338,7 +338,6 @@ void dxRenderDeviceRender::End()
 	{
 		PROF_EVENT("Async Screenshot");
 		DoAsyncScreenshot();
-		Autotest::CaptureFrame();
 	}
 #if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
 	{

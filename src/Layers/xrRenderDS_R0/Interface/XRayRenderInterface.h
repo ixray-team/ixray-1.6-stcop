@@ -28,7 +28,7 @@ public:
 	CDS0_RenderInterface();
 
 	virtual bool is_sun_static() override;
-	virtual u32 get_dx_level() override;
+	virtual DWORD get_dx_level() override;
 
 	virtual void create() override;
 	virtual void destroy() override;
@@ -39,7 +39,7 @@ public:
 	virtual void level_Unload() override;
 
 	virtual void Statistics(CGameFont* F) override {};
-	virtual const char* getShaderPath() override;
+	virtual LPCSTR getShaderPath() override;
 	virtual IRender_Sector* getSector(int id) override;
 	virtual IRenderVisual* getVisual(int id) override;
 	virtual IRender_Sector* detectSector(const Fvector& P) override;
@@ -66,9 +66,9 @@ public:
 	virtual IRender_Glow* glow_create() override;
 
 	// Models
-	virtual IRenderVisual* model_CreateParticles(const char* name) override;
-	virtual IRenderVisual* model_Create(const char* name, IReader* data = 0) override;
-	virtual IRenderVisual* model_CreateChild(const char* name, IReader* data) override;
+	virtual IRenderVisual* model_CreateParticles(LPCSTR name) override;
+	virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = 0) override;
+	virtual IRenderVisual* model_CreateChild(LPCSTR name, IReader* data) override;
 
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V) override;
 
@@ -80,7 +80,7 @@ public:
 	virtual bool occ_visible(Fbox& B) override;
 	virtual bool occ_visible(sPoly& P) override;
 
-	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, const char* name = 0) override;
+	virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) override;
 	virtual void Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer) override;
 	virtual void ScreenshotAsyncBegin() override;
 	virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer) override;
@@ -93,7 +93,7 @@ public:
 	virtual void                    BeforeWorldRender() ; // Перед рендерингом мира
 	virtual void                    AfterWorldRender() ; // После рендеринга мира (до UI)
 
-	virtual void ChangeMark(const char* mark); // Каждый кадр проверяем не поменялась ли текстура
+	virtual void					ChangeMark(LPCSTR mark) ; // Каждый кадр проверяем не поменялась ли текстура
 	virtual u32                     active_phase();
 
 	virtual void Render() override;
@@ -102,9 +102,9 @@ public:
 	virtual void RenderUI(Fcolor* = nullptr) override;
 
 
-	virtual IRHISurface* load_texture(const char* fname, u32& msize, bool bStaging = false) override { return nullptr; };
-	virtual bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override { return false; }
-	virtual void ScreenshotImpl(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) override;
+	virtual IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override { return nullptr; };
+	virtual bool get_texture_metadata(LPCSTR absolute_path, RHITextureMetadata* p_data) override { return false; }
+	virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) override;
 
 	
 };

@@ -152,27 +152,27 @@ public:
 	template<typename T>
 	T* GetSaveable(ESaveVariableType Type)
 	{
-		ISaveable* Cached = nullptr;
-		if (!TakeSaveable(Type, Cached))
+		xrCriticalSectionGuard guard(_saveElementsMutex);
+		auto Storage = SaveElementsCache.find(Type);
+		if (!I_ASSERT_M(Storage != SaveElementsCache.end(), "Unable to access cached save element of type [%s]", magic_enum::enum_name(Type).data()))
 		{
 			return nullptr;
 		}
-		if (!Cached)
+		if (Storage->second.empty())
 		{
 			auto New = new T();
 			R_ASSERT(New->GetVariableType() == Type);
 			return New;
 		}
+		auto Cached = Storage->second.back();
 		R_ASSERT(Cached->GetVariableType() == Type);
+		Storage->second.pop_back();
 		return static_cast<T*>(Cached);
 	}
 
 	void ReleaseSaveable(ISaveable* Elem);
 
 private:
-	bool TakeSaveable(ESaveVariableType Type, ISaveable*& Cached);
-
-
 	xrCriticalSection _saveElementsMutex;
 	xrCriticalSection _saveTasksMutex;
 	xr_map<ESaveVariableType, xr_vector<ISaveable*>> SaveElementsCache;

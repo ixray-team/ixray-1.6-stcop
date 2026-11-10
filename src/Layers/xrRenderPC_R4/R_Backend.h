@@ -42,9 +42,9 @@ public:
 
 	ERHI_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
 	RHIObject*				m_pInputLayout;
-	u32 dummy0; //	Padding to avoid warning
-	u32 dummy1; //	Padding to avoid warning
-	u32 dummy2; //	Padding to avoid warning
+	DWORD							dummy0;	//	Padding to avoid warning	
+	DWORD							dummy1;	//	Padding to avoid warning	
+	DWORD							dummy2;	//	Padding to avoid warning	
 private:
 	IRHIBuffer* ib;
 	RHIObject* PulledLayout = nullptr;

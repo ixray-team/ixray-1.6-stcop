@@ -60,7 +60,7 @@ void FlamethrowerTrace::CPoint::UpdateEnd(float delta_time)
 	}*/
 }
 
-bool FlamethrowerTrace::CPoint::hit_callback(collide::rq_result& result, void* params)
+bool FlamethrowerTrace::CPoint::hit_callback(collide::rq_result& result, LPVOID params)
 {
 	TraceData* pData = static_cast<TraceData*>(params);
 	if (!result.O)
@@ -77,7 +77,7 @@ bool FlamethrowerTrace::CPoint::hit_callback(collide::rq_result& result, void* p
 	return true;
 }
 
-bool FlamethrowerTrace::CPoint::test_callback(const collide::ray_defs& rd, CObject* object, void* params)
+bool FlamethrowerTrace::CPoint::test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params)
 {
 	TraceData* pData = static_cast<TraceData*>(params);
 
@@ -578,7 +578,7 @@ bool FlamethrowerTrace::CManager::feel_touch_contact(CObject* O)
 	return false;
 }
 
-void FlamethrowerTrace::CManager::Load(const char* section)
+void FlamethrowerTrace::CManager::Load(LPCSTR section)
 {
 	for (auto& elem : ActiveTraces) {
 		xr_delete(elem);

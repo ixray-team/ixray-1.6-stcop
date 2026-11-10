@@ -26,15 +26,15 @@ public:
 };
 
 void SetBone(IKinematics& Model, const shared_str& Bone, bool IsVisible, bool IsRecursive = false);
-const char* ReadString(const char* SectionName, const char* Field);
+LPCSTR ReadString(LPCSTR SectionName, LPCSTR Field);
 void ApplyAddons(IKinematics& Model, const AddonState& State);
-void CollectUpgradeBones(const char* SectionName, xr_vector<shared_str>& Bones);
-void ConfigureDefault(IKinematics& Model, const char* SectionName);
+void CollectUpgradeBones(LPCSTR SectionName, xr_vector<shared_str>& Bones);
+void ConfigureDefault(IKinematics& Model, LPCSTR SectionName);
 
 template <typename TVisitor>
-void VisitBoneList(const char* SectionName, const char* Field, bool IsVisible, bool IsRecursive, const TVisitor& Visitor)
+void VisitBoneList(LPCSTR SectionName, LPCSTR Field, bool IsVisible, bool IsRecursive, const TVisitor& Visitor)
 {
-	const char* List = ReadString(SectionName, Field);
+	LPCSTR List = ReadString(SectionName, Field);
 	for (int Index = 0, Count = _GetItemCount(List); Index < Count; ++Index)
 	{
 		string256 Bone;
@@ -44,7 +44,7 @@ void VisitBoneList(const char* SectionName, const char* Field, bool IsVisible, b
 }
 
 template <typename TVisitor>
-void VisitScopeBones(xr_span<const shared_str> Scopes, const char* AttachedSection, xr_span<const shared_str> NoScopeHide, xr_span<const shared_str> NoScopeShow, const TVisitor& Visitor)
+void VisitScopeBones(xr_span<const shared_str> Scopes, LPCSTR AttachedSection, xr_span<const shared_str> NoScopeHide, xr_span<const shared_str> NoScopeShow, const TVisitor& Visitor)
 {
 	for (const auto& Scope : Scopes)
 	{

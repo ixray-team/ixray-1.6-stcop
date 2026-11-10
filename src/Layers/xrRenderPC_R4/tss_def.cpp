@@ -100,11 +100,11 @@ void SimulatorStates::UpdateDesc( RHIDepthStencilDesc &desc ) const
 				break;
 
 			case D3DRS_STENCILMASK:
-				desc.StencilReadMask = (uint8_t)S.v2;
+				desc.StencilReadMask = (UINT8)S.v2;
 				break;
 
 			case D3DRS_STENCILWRITEMASK:
-				desc.StencilWriteMask = (uint8_t)S.v2;
+				desc.StencilWriteMask = (UINT8)S.v2;
 				break;
 
 			case D3DRS_STENCILFAIL:

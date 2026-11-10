@@ -29,8 +29,8 @@ CLightShadows::CLightShadows()
 	current	= 0;
 	RT		= 0;
 
-	const char* RTname = "$user$shadow";
-	const char* RTtemp = "$user$temp";
+	LPCSTR	RTname			= "$user$shadow";
+	LPCSTR	RTtemp			= "$user$temp";
 	string128 RTname2;		xr_strconcat(RTname2,RTname,",",RTname);
 	string128 RTtemp2;		xr_strconcat(RTtemp2,RTtemp,",",RTtemp);
 

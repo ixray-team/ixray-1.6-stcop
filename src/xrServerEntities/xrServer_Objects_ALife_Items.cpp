@@ -590,7 +590,7 @@ void CSE_ALifeItemTorch::UPDATE_Read		(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Read		(tNetPacket);
 	
-	u8 F = tNetPacket.r_u8();
+	BYTE F = tNetPacket.r_u8();
 	m_active					= !!(F & eTorchActive);
 	m_nightvision_active		= !!(F & eNightVisionActive);
 	m_attached					= !!(F & eAttached);
@@ -600,7 +600,7 @@ void CSE_ALifeItemTorch::UPDATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write		(tNetPacket);
 
-	u8 F = 0;
+	BYTE F = 0;
 	F |= (m_active ? eTorchActive : 0);
 	F |= (m_nightvision_active ? eNightVisionActive : 0);
 	F |= (m_attached ? eAttached : 0);
@@ -621,7 +621,7 @@ void CSE_ALifeItemTorch::UPDATE_Serialize(ISaveObject& Object)
 	{
 		inherited::UPDATE_Serialize(Object);
 
-		u8 F = 0;
+		BYTE F = 0;
 		if (Object.IsSave())
 		{
 			F |= (m_active ? eTorchActive : 0);
@@ -1160,7 +1160,7 @@ void CSE_ALifeItemWeaponMagazinedWGL::FillProps			(const char* pref, PropItemVec
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemWeaponFlamethrower
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemFlamethrower::CSE_ALifeItemFlamethrower(const char* caSection) : CSE_ALifeItemWeapon(caSection)
+CSE_ALifeItemFlamethrower::CSE_ALifeItemFlamethrower(LPCSTR caSection) : CSE_ALifeItemWeapon(caSection)
 {
 }
 
@@ -1202,7 +1202,7 @@ void CSE_ALifeItemFlamethrower::UPDATE_Serialize(ISaveObject& Object)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeItemFlamethrower::FillProps(const char* pref, PropItemVec& items)
+void CSE_ALifeItemFlamethrower::FillProps(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps(pref, items);
 }
@@ -1289,7 +1289,7 @@ bool CSE_ALifeItemAmmo::can_switch_offline	() const
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemFuel
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemFuel::CSE_ALifeItemFuel(const char* caSection) : CSE_ALifeItem(caSection)
+CSE_ALifeItemFuel::CSE_ALifeItemFuel(LPCSTR caSection) : CSE_ALifeItem(caSection)
 {
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
 		set_visual(pSettings->r_string(caSection, "visual"));
@@ -1336,8 +1336,7 @@ void CSE_ALifeItemFuel::UPDATE_Serialize(ISaveObject& Object)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeItemFuel::FillProps(const char* pref, PropItemVec& values)
-{
+void CSE_ALifeItemFuel::FillProps(LPCSTR pref, PropItemVec& values) {
 	inherited::FillProps(pref, values);
 }
 #endif // #ifndef XRGAME_EXPORTS

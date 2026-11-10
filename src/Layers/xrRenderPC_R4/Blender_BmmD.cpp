@@ -184,7 +184,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 
 			string_path temp { };
 
-			auto IsSpecularExist = [&temp](const char* texture)
+			auto IsSpecularExist = [&temp](LPCSTR texture)
 			{
 				bool specular_texture = FS.exist(temp, "$textures$", texture, "_spec.dds");
 				specular_texture = specular_texture || FS.exist(temp, "$level$", texture, "_spec.dds");

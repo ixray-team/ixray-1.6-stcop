@@ -2,7 +2,6 @@
 #include "CinemaCurve.h"
 #include "../ParticlesObject.h"
 #include "../../xrEngine/Render.h"
-#include "../../Include/xrRender/WallMarkArray.h"
 
 namespace Cinema
 {
@@ -88,33 +87,6 @@ private:
 	Fvector LastPosition = Fvector().set(0.0f, 0.0f, 0.0f);
 	float LastTau = 0.0f;
 	u32 RebuiltAt = 0;
-};
-}
-
-namespace Cinema
-{
-class DecalRuntime
-{
-public:
-	explicit DecalRuntime(u32 ObjectId) : Id(ObjectId) {}
-	~DecalRuntime() { Drop(); }
-	void Apply(const DecalData& Setup, const xr_vector<shared_str>& Shaders);
-	void Drive(const Fmatrix& World, float Width, float Height, bool IsShown);
-	bool Trace(const Fmatrix& World, Fvector& Point, u32& Triangle, float& Distance) const;
-	IWallMarkArray* Marks() const { return Array->empty() ? nullptr : &*Array; }
-	u32 Id = 0;
-	shared_str Error;
-	float LastTau = -1.0f;
-
-private:
-	void Drop();
-	FactoryPtr<IWallMarkArray> Array;
-	shared_str AppliedTexture, AppliedShader;
-	StaticWallmarkHandle::WallmarkHandlePtr Handle;
-	Fvector PlacedAt = Fvector().set(0.0f, 0.0f, 0.0f);
-	u32 PlacedTriangle = 0;
-	float PlacedWidth = -1.0f, PlacedHeight = -1.0f, PlacedSpin = 0.0f;
-	bool IsApplied = false;
 };
 }
 

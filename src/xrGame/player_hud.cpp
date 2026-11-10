@@ -3265,7 +3265,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 	return false;
 }
 
-bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, void* CallbackParam, bool UpdateCallbackType)
+bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, bool UpdateCallbackType)
 {
 	MotionID motion;
 	if(place_idx < std::size(m_attached_items) && m_attached_items[place_idx])

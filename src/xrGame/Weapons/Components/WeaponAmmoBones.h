@@ -87,7 +87,7 @@ public:
 	void UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type);
 	void Load(CWeapon* pWeapon, const shared_str& section);
 	static void ApplyToModel(IKinematics* Model, xr_span<const SAmmoBonesParams> Parameters, u32 Count, u8 Type);
-	static void ApplyDefaultIconBones(IKinematics& Model, const char* SectionName, xr_span<const shared_str> InstalledSections);
+	static void ApplyDefaultIconBones(IKinematics& Model, LPCSTR SectionName, xr_span<const shared_str> InstalledSections);
 
 private:
 	ECS_COMPONENT(TAmmoBones)

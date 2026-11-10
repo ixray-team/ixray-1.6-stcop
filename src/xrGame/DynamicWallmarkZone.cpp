@@ -39,7 +39,7 @@ void CDynamicWallmarkRegistry::ClearWallmarks()
     registry.clear();
 }
 
-bool CDynamicWallmarkZone::trace_callback(collide::rq_result& result, void* params)
+bool CDynamicWallmarkZone::trace_callback(collide::rq_result& result, LPVOID params)
 {
     VERIFY(!result.O);
     rq_data* wm_trace_data = (rq_data*)params;
@@ -61,7 +61,7 @@ bool CDynamicWallmarkZone::trace_callback(collide::rq_result& result, void* para
 	return false;
 }
 
-bool CDynamicWallmarkZone::test_callback(const collide::ray_defs& rd, CObject* object, void* params)
+bool CDynamicWallmarkZone::test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params)
 {
     return true;
 }

@@ -69,8 +69,8 @@ void CEngineApp::OnEvent(EVENT E, u64 P1, u64 P2)
 	else if (E == g_pEventManager->eStart)
 	{
 		PROF_EVENT("eStart");
-		char* op_server = (char*)(P1);
-		char* op_client = (char*)(P2);
+		LPSTR		op_server = LPSTR(P1);
+		LPSTR		op_client = LPSTR(P2);
 		Level_Current = u32(-1);
 		R_ASSERT(0 == g_pGameLevel);
 		R_ASSERT(0 != g_pGamePersistent);
@@ -124,13 +124,13 @@ void CEngineApp::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if (E == g_pEventManager->eConsole)
 	{
-		char* command = (char*)P1;
+		LPSTR command = (LPSTR)P1;
 		Console->ExecuteCommand(command, false);
 		xr_free(command);
 	}
 	else if (E == g_pEventManager->eStartMPDemo)
 	{
-		char* demo_file = (char*)(P1);
+		LPSTR demo_file = LPSTR(P1);
 
 		R_ASSERT(0 == g_pGameLevel);
 		R_ASSERT(0 != g_pGamePersistent);

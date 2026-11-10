@@ -110,9 +110,6 @@ public:
 	EEffectorPPType			RequestPPEffectorId		();
 	CEffectorPP*			GetPPEffector			(EEffectorPPType	type);
 	CEffectorPP*			AddPPEffector			(CEffectorPP*		ef);
-	void					SetPost					(const SPPInfo& Info);
-	SPPInfo					PostInfo;
-	u32						PostFrame = u32(-8);
 	void					RemovePPEffector		(EEffectorPPType	type);
 
 	IC Fvector				Position				()	const { return m_cam_info.p;	}

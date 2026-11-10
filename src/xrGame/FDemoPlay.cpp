@@ -20,7 +20,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 	m_MParam = nullptr;
 	string_path nm, fn;
 	xr_strcpy(nm, sizeof(nm), name);
-	char* extp = strext(nm);
+	LPSTR extp = strext(nm);
 	if (extp)
 	{
 		xr_strcpy(nm, sizeof(nm) - (extp - nm), ".anm");

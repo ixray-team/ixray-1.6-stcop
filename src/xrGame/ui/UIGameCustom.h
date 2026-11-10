@@ -258,9 +258,9 @@ public:
 	void				SetSleepMute(bool muteMusic, bool muteEffects);
 	void				ClearSleepMute();
 	void				ClearSleepSessionOverrides();
-	void SetSleepBlocked(bool blocked, const char* warningText = nullptr);
+	void				SetSleepBlocked(bool blocked, LPCSTR warningText = nullptr);
 
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIGameCustom
-extern CUIGameCustom* CurrentGameUI();
+extern CUIGameCustom*		CurrentGameUI();

@@ -14,7 +14,7 @@
 
 		static inline const char* GetShaderExt() {return ".hs.hlsl";}
 		static inline const char* GetCompilationTarget() {return "hs_5_0";}
-		static inline DXIface* CreateHWShader(u32 const* buffer, size_t size)
+		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
 			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::HS, &hs)))
@@ -33,7 +33,7 @@
 
 		static inline const char* GetShaderExt() {return ".ds.hlsl";}
 		static inline const char* GetCompilationTarget() {return "ds_5_0";}
-		static inline DXIface* CreateHWShader(u32 const* buffer, size_t size)
+		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* hs = 0;
 			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::DS, &hs)))
@@ -52,7 +52,7 @@
 
 		static inline const char* GetShaderExt() {return ".cs.hlsl";}
 		static inline const char* GetCompilationTarget() {return "cs_5_0";}
-		static inline DXIface* CreateHWShader(u32 const* buffer, size_t size)
+		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
 			DXIface* cs = 0;
 			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::CS, &cs)))
@@ -85,7 +85,7 @@
 		{
 			xrCriticalSectionGuard guard(creationGuard);
 			typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-			typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find((char*)(name));
+			typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(LPSTR(name));
 			if (I != sh_map.end())
 			{
 				if (ResourceLifetime::TryAcquire(I->second, Result))
@@ -136,7 +136,7 @@
 			const char*						c_entry		= "main";
 
 			// Compile
-			HRESULT const _hr = RImplementation.shader_compile(name, (u32 const*)file->pointer(), file->length(), c_entry, c_target, RHI_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh, Defines);
+			HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, RHI_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh, Defines);
 
 			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 			sh->CompileState.MarkCompiled();
@@ -156,7 +156,7 @@
 			return;
 
 		ForgetStage(sh);
-		char* N = (char*)(*sh->cName);
+		LPSTR N = LPSTR(*sh->cName);
 		typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(N);
 		
 		if (I!=sh_map.end())

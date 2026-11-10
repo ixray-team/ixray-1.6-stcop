@@ -73,7 +73,7 @@ static Fvector identboxwire[identboxwirecount] = {
 
 /*
 static const int identboxindexcount = 36;
-static const u16 identboxindices[identboxindexcount] = {
+static const WORD identboxindices[identboxindexcount] = {
 	0, 1, 2,   2, 3, 0,
 	3, 2, 6,   6, 7, 3,
 	6, 4, 5,   6, 5, 7,
@@ -81,7 +81,7 @@ static const u16 identboxindices[identboxindexcount] = {
     3, 5, 0,   3, 7, 5,
     1, 4, 6,   1, 6, 2};
 static const int identboxindexwirecount = 24;
-static const u16 identboxindiceswire[identboxindexwirecount] = {
+static const WORD identboxindiceswire[identboxindexwirecount] = {
 	0, 1, 	1, 2,
 	2, 3, 	3, 0,
 	4, 6, 	6, 7,
@@ -350,8 +350,8 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 
 void CDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
-static const u16 IL[24] = {0, 2, 2, 5, 0, 5, 3, 5, 3, 0, 4, 3, 4, 0, 4, 2, 1, 2, 1, 5, 1, 3, 1, 4};
-	static const u16 IT[24] = {2, 4, 0, 4, 3, 0, 3, 5, 0, 5, 2, 0, 4, 2, 1, 2, 5, 1, 5, 3, 1, 3, 4, 1};
+static const WORD IL[24]={0,2, 2,5, 0,5, 3,5, 3,0, 4,3, 4,0, 4,2, 1,2, 1,5, 1,3, 1,4};
+static const WORD IT[24]={2,4,0, 4,3,0, 3,5,0, 5,2,0, 4,2,1, 2,5,1, 5,3,1, 3,4,1};
 	u32			vBase,iBase;
 
     Fcolor C;
@@ -361,7 +361,7 @@ static const u16 IL[24] = {0, 2, 2, 5, 0, 5, 3, 5, 3, 0, 4, 3, 4, 0, 4, 2, 1, 2,
 
     int k;
     FVF::L*	pv;
-    u16* i;
+    WORD* i;
 	VertexRing*	Stream	= &RImplementation.Imm().Vertex;
 	_IndexStream*	StreamI	= &RImplementation.Imm().Index;
 
@@ -1145,8 +1145,8 @@ void CDrawUtilities::OutText(const Fvector& pos, const char* text, u32 color, u3
 		p.x = (float)iFloor(_x2real(p.x)); p.y = (float)iFloor(_y2real(-p.y));
 
 		m_Font->SetColor(shadow_color);
-		m_Font->Out(p.x, p.y, (char*)text);
+		m_Font->Out(p.x,p.y,(LPSTR)text);
 		m_Font->SetColor(color);
-		m_Font->Out(p.x - 1, p.y - 1, (char*)text);
+		m_Font->Out(p.x-1,p.y-1,(LPSTR)text);
 	}
 }

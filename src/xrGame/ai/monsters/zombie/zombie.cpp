@@ -74,7 +74,7 @@ constexpr u32 default_time_fake_death = 5000;
 constexpr u32 default_time_resurrect_restore = 2000;
 constexpr u32 default_time_out_frustum_timeout = 1000;
 
-void CZombie::Load(const char* section)
+void CZombie::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+extern LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+
 void CRenderDevice::Initialize			()
 {
 	Log("Initializing Engine...");

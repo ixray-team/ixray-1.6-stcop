@@ -13,7 +13,7 @@
 
 occRasterizer	Raster;
 
-ICF void propagade_depth(void* p_dest, void* p_src, int dim)
+ICF void propagade_depth(LPVOID p_dest, LPVOID p_src, int dim)
 {
 	occD*	dest = (occD*)p_dest;
 	occD*	src	 = (occD*)p_src;

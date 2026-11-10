@@ -518,46 +518,8 @@ void CEnvironment::lerp		(float& current_weight)
 	for (xr_list<CEnvModifier>::iterator mit=Modifiers.begin(); mit!=Modifiers.end(); mit++)
 		mpower				+= EM.sum(*mit,view);
 
-	Shown[0]				= Current[0];
-	Shown[1]				= Current[1];
-	CEnvDescriptor*			Over[2] = { nullptr, nullptr };
-	float					OverWeight = current_weight;
-	if (IsOverridden() && Override.Weight > 0.f && (Override.Cycle.size() || Override.Time >= 0.f))
-	{
-		EnvsMapIt			Found = Override.Cycle.size() ? WeatherCycles.find(Override.Cycle) : WeatherCycles.end();
-		EnvVec*				Cycle = Found != WeatherCycles.end() && !Found->second.empty() ? &Found->second : CurrentWeather;
-		const float			Time = Override.Time >= 0.f ? Override.Time : fGameTime;
-		if (Cycle && !Cycle->empty())
-		{
-			SelectEnvs		(Cycle, Over[0], Over[1], Time);
-			OverWeight		= TimeWeight(Time, Over[0]->exec_time, Over[1]->exec_time);
-		}
-	}
-	const bool				IsSwitched = Over[0] && Over[1] && Override.Weight >= 0.5f;
-	const float				GameWeight = current_weight;
-	HoldOverride			(IsSwitched ? Over[0] : nullptr, IsSwitched ? Over[1] : nullptr);
-	if (IsSwitched)
-	{
-		Shown[0]			= Over[0];
-		Shown[1]			= Over[1];
-		current_weight		= OverWeight;
-	}
-
 	// final lerp
-	CurrentEnv->lerp		(this,*Shown[0],*Shown[1],current_weight,EM,mpower);
-
-	if (Over[0] && Over[1])
-	{
-		EnvLook				Game, Scene, Mixed;
-		Game.Read			(*CurrentEnv);
-		Scene				= Game;
-		if (IsSwitched)
-			Game.Mix		(*Current[0], *Current[1], GameWeight);
-		else
-			Scene.Mix		(*Over[0], *Over[1], OverWeight);
-		Mixed.Lerp			(Game, Scene, Override.Weight);
-		Mixed.Write			(*CurrentEnv);
-	}
+	CurrentEnv->lerp		(this,*Current[0],*Current[1],current_weight,EM,mpower);
 }
 
 void CEnvironment::OnFrame()
@@ -591,19 +553,16 @@ void CEnvironment::OnFrame()
 	// Igor. Dynamic sun position. 
 	const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
 	if (!isReadSunConfig && !::Render->is_sun_static() && !CurrentEnv->old_style)
-		calculate_dynamic_sun_dir(IsOverridden() && Override.Time >= 0.f && Override.Weight >= 0.5f ? Override.Time : fGameTime);
-
-	if (IsOverridden())
-		ApplyOverride();
+		calculate_dynamic_sun_dir();
 
 	VERIFY2(CurrentEnv->sun_dir.y < 0, "Invalid sun direction settings in lerp");
 
 	PerlinNoise1D->SetFrequency		(wind_gust_factor*MAX_NOISE_FREQ);
 	wind_strength_factor			= clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal)+0.5f,0.f,1.f); 
 
-    shared_str l_id						=	(current_weight<0.5f)?Shown[0]->lens_flare_id:Shown[1]->lens_flare_id;
+    shared_str l_id						=	(current_weight<0.5f)?Current[0]->lens_flare_id:Current[1]->lens_flare_id;
 	eff_LensFlare->OnFrame				(l_id);
-	shared_str t_id						=	(current_weight<0.5f)?Shown[0]->tb_id:Shown[1]->tb_id;
+	shared_str t_id						=	(current_weight<0.5f)?Current[0]->tb_id:Current[1]->tb_id;
     eff_Thunderbolt->OnFrame			(t_id,CurrentEnv->bolt_period,CurrentEnv->bolt_duration);
 	eff_Rain->OnFrame					();
 
@@ -611,9 +570,9 @@ void CEnvironment::OnFrame()
 	m_pRender->OnFrame(*this);
 }
 
-void CEnvironment::calculate_dynamic_sun_dir(float Time)
+void CEnvironment::calculate_dynamic_sun_dir()
 {
-	float g = (360.0f/365.25f)*(180.0f + Time/DAY_LENGTH);
+	float g = (360.0f/365.25f)*(180.0f + fGameTime/DAY_LENGTH);
 
 	g = deg2rad(g);
 
@@ -628,7 +587,7 @@ void CEnvironment::calculate_dynamic_sun_dir(float Time)
 	//	IN degrees
 	float Longitude = -30.4f;
 
-	float SHA = (Time/(DAY_LENGTH/24)-12)*15 + Longitude + TC;
+	float SHA = (fGameTime/(DAY_LENGTH/24)-12)*15 + Longitude + TC;
 
 	//	Need this to correctly determine SHA sign
 	if (SHA>180) SHA -= 360;
@@ -737,68 +696,4 @@ CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescripto
 	result->load			(pIni, id.c_str());
 	collection.push_back	(result);	
 	return					(result);
-}
-
-bool CEnvironment::IsOverridden() const
-{
-	return Device.dwFrame - Override.Frame <= 1 && (Override.Weight > 0.f || Override.Mask);
-}
-
-void CEnvironment::HoldOverride(CEnvDescriptor* E0, CEnvDescriptor* E1)
-{
-	CEnvDescriptor* const Wanted[2] = { E0, E1 };
-	for (u32 Index = 0; Index < 2; ++Index)
-	{
-		CEnvDescriptor* Old = Held[Index];
-		if (Old && Old != Wanted[0] && Old != Wanted[1] && Old != Current[0] && Old != Current[1])
-		{
-			Old->on_device_destroy();
-		}
-	}
-	for (u32 Index = 0; Index < 2; ++Index)
-	{
-		Held[Index] = Wanted[Index];
-		if (Wanted[Index] && Wanted[Index] != Current[0] && Wanted[Index] != Current[1])
-		{
-			Wanted[Index]->on_device_create();
-		}
-	}
-}
-void CEnvironment::ApplyOverride()
-{
-	const EnvOverride& Scene = Override;
-	CEnvDescriptorMixer& Env = *CurrentEnv;
-	float Of[14];
-	for (u32 Bit = 0; Bit < 14; ++Bit)
-	{
-		Of[Bit] = (Scene.Mask >> Bit) & 1 ? clampr(Scene.Amount[Bit], 0.f, 1.f) : 0.f;
-	}
-	if (Of[0] > 0.f)
-	{
-		Fvector Aim;
-		Aim.setHP(Scene.SunHeading, -Scene.SunHeight);
-		Env.sun_dir.lerp(Env.sun_dir, Aim, Of[0]);
-		Env.sun_dir.y = std::min(Env.sun_dir.y, -0.02f);
-		Env.sun_dir.normalize();
-	}
-	Env.sun_color.lerp(Env.sun_color, Scene.Look.SunColor, Of[1]);
-	Env.sun_color.mul(1.f + (Scene.SunBrightness - 1.f) * Of[2]);
-	Env.m_fSunShaftsIntensity += (Scene.Look.SunShafts - Env.m_fSunShaftsIntensity) * Of[3];
-	Env.ambient.lerp(Env.ambient, Scene.Look.Ambient, Of[4]);
-	const float Correction = Env.hemi_color.w;
-	Env.hemi_color.lerp(Env.hemi_color, Scene.Look.HemiColor, Of[5]);
-	Env.hemi_color.w = Correction;
-	Env.fog_color.lerp(Env.fog_color, Scene.Look.FogColor, Of[6]);
-	Env.fog_density += (Scene.Look.FogDensity - Env.fog_density) * Of[7];
-	Env.fog_distance += (Scene.Look.FogDistance - Env.fog_distance) * Of[8];
-	if (Of[7] > 0.f || Of[8] > 0.f)
-	{
-		Env.fog_near = (1.0f - Env.fog_density) * 0.85f * Env.fog_distance;
-		Env.fog_far = 0.99f * Env.fog_distance;
-	}
-	Env.far_plane += (Scene.Look.FarPlane - Env.far_plane) * Of[9];
-	Env.rain_density += (Scene.Look.RainDensity - Env.rain_density) * Of[10];
-	Env.wind_velocity += (Scene.Look.WindVelocity - Env.wind_velocity) * Of[11];
-	Env.wind_direction += (Scene.Look.WindDirection - Env.wind_direction) * Of[12];
-	Env.sky_rotation += (Scene.Look.SkyRotation - Env.sky_rotation) * Of[13];
 }

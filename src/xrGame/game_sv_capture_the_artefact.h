@@ -221,7 +221,7 @@ public:
 	const char* type_name() const override;
 	void Create(shared_str &options) override;
 	void OnPlayerConnect(ClientID id_who) override;
-	void OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID) override;
+	void OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
 	void OnPlayerConnectFinished(ClientID id_who) override;
 	void OnPlayerHitted(NET_Packet P) override;
 

@@ -440,7 +440,7 @@ namespace
 		return defaultValue;
 	}
 
-	bool TryGetCardinalAngleRad(const char* directionNode, float& outAngleRad)
+	bool TryGetCardinalAngleRad(LPCSTR directionNode, float& outAngleRad)
 	{
 		if (!directionNode || !*directionNode)
 		{
@@ -656,7 +656,7 @@ namespace
 			return true;
 		}
 
-		bool TryReadIniBool(const char* section, const char* key, bool& outValue)
+		bool TryReadIniBool(LPCSTR section, LPCSTR key, bool& outValue)
 		{
 			if (!pSettings || !pSettings->section_exist(section) || !pSettings->line_exist(section, key))
 			{

@@ -2,7 +2,6 @@
 #include "CinemaSceneIo.h"
 #include "CinemaCamera.h"
 #include "CinemaShake.h"
-#include "CinemaOmf.h"
 
 namespace Cinema::Io
 {
@@ -27,7 +26,6 @@ constexpr Range ModeRange = { 0.0f, 5.0f, 3.0f, true };
 constexpr Range EaseRange = { 0.0f, 3.0f, 3.0f, true };
 constexpr Range KeyRanges[5] = { ModeRange, { -MaxTime, 0.0f, 0.0f, false }, DistanceRange, SecondsRange, DistanceRange };
 constexpr Range PoseRanges[4] = { AngleRange, AngleRange, AngleRange, ModeRange };
-constexpr Range RestRanges[6] = { DistanceRange, DistanceRange, DistanceRange, AngleRange, AngleRange, AngleRange };
 constexpr Range UnitRange = { -1.0f, 1.0f, 0.0f, false }, HandleRange = { -MaxHandle, MaxHandle, 0.0f, false };
 constexpr Range TangentRanges[10] = { { 0.0f, 2.0f, 0.0f, true }, UnitRange, UnitRange, UnitRange, HandleRange, HandleRange, HandleRange, HandleRange, HandleRange, HandleRange };
 constexpr Range BlockRanges[9] = { SecondsRange, SecondsRange, { -4.0f, 4.0f, 1.0f, false }, SecondsRange, { -MaxTime, MaxTime, 0.0f, false }, EaseRange, { 1.0f, MaxLoops, 1.0f, false }, SecondsRange, SecondsRange };
@@ -43,7 +41,7 @@ constexpr Range VolumeRanges[3] = { { 0.0f, 100.0f, 1.0f, false }, { 0.01f, 1.0f
 constexpr Range EffectRanges[2] = { { 0.01f, 25.0f, 1.0f, false }, RateRange };
 constexpr Range WeightRange = { 0.0f, 1.0f, 1.0f, false };
 constexpr u32 MaxPartNames = 8;
-constexpr const char* TypeNames[7] = { "actor", "camera", "light", "particle", "decal", "weather", "post" };
+constexpr const char* TypeNames[4] = { "actor", "camera", "light", "particle" };
 constexpr const char* KindNames[2] = { "point", "spot" };
 constexpr const char* EndNames[3] = { "hold", "loop", "pingpong" };
 constexpr u32 FrameRates[4] = { 24, 25, 30, 60 };
@@ -312,9 +310,6 @@ void ReadLinks(const CInifile& Ini, const char* Section, const char* Prefix, Att
 	{
 		Out.IsYawOnly = Flags[0];
 	}
-	xr_sprintf(Line, "%sweight", Prefix);
-	float Weight = 1.0f;
-	Out.Weight = ReadFloats(Ini, Section, Line, &Weight, 1, Notes) ? Sanitize(Weight, 0.0f, 1.0f, 1.0f) : 1.0f;
 }
 
 void WriteLinks(CInifile& Ini, const char* Section, const char* Prefix, const Attachment& Links)
@@ -333,11 +328,6 @@ void WriteLinks(CInifile& Ini, const char* Section, const char* Prefix, const At
 		xr_sprintf(Line, "%slook_at", Prefix);
 		xr_sprintf(Text, "%u,%s,%u", Links.LookAt.ObjectId, Bone(Links.LookAt), static_cast<u32>(Links.IsYawOnly));
 		Ini.w_string(Section, Line, Text);
-	}
-	if (Links.Weight != 1.0f)
-	{
-		xr_sprintf(Line, "%sweight", Prefix);
-		Ini.w_float(Section, Line, Links.Weight);
 	}
 }
 
@@ -430,7 +420,7 @@ void WriteName(CInifile& Ini, const char* Section, const char* Line, const xr_st
 	}
 }
 
-void ReadLanes(const CInifile& Ini, const char* Section, const char* Prefix, u16 Where, u32 Layers, xr_vector<Lane>& Lanes, Warnings& Notes, u8 LayerBase = 0)
+void ReadLanes(const CInifile& Ini, const char* Section, const char* Prefix, u8 Where, u32 Layers, xr_vector<Lane>& Lanes, Warnings& Notes, u8 LayerBase = 0)
 {
 	string64 Line;
 	xr_sprintf(Line, "%slanes", Prefix);
@@ -444,8 +434,7 @@ void ReadLanes(const CInifile& Ini, const char* Section, const char* Prefix, u16
 		const u32 Layer = ReadU32(Ini, Section, Line, ~0u, Notes);
 		const Param Which = static_cast<Param>(Found - std::begin(Params));
 		const bool IsShake = Which >= Param::ShakeInfluence && Which < Param::Count;
-		const bool IsPose = Which >= Param::PoseWeight && Which <= Param::BoneScale, IsIk = Which >= Param::IkTarget && Which <= Param::IkWeight;
-		const bool IsMisplaced = IsShake ? Layer >= Layers : Which == Param::LayerWeight ? Layer > Layers : IsPose ? Layer > 255 : IsIk ? Layer >= MaxIkLimbs : Which == Param::ConstraintWeight ? Layer >= MaxConstraints : Layer != 0;
+		const bool IsMisplaced = IsShake ? Layer >= Layers : Which == Param::LayerWeight ? Layer > Layers : Layer != 0;
 		if (Found == std::end(Params) || IsMisplaced || Curves::FindLane(Lanes, Which, static_cast<u8>(Layer + LayerBase)))
 		{
 			Notes.Add("[%s] %slane_%02u has an unknown, misplaced or repeated parameter, lane skipped", Section, Prefix, Index);
@@ -463,11 +452,9 @@ void ReadLanes(const CInifile& Ini, const char* Section, const char* Prefix, u16
 			const u32 KeyCount = ReadU32(Ini, Section, Line, MaxLaneKeys, Notes);
 			for (u32 KeyIndex = 0; KeyIndex < KeyCount; ++KeyIndex)
 			{
-				float Values[8] = {};
+				float Values[7];
 				xr_sprintf(Line, "%slane_%02u_c%u_%04u", Prefix, Index, Component, KeyIndex);
-				const char* Text = Ini.read_if_exists<str_c>(Section, Line, nullptr);
-				const u32 Fields = Text && std::count(Text, Text + xr_strlen(Text), ',') == 7 ? 8 : 7;
-				if (!ReadFloats(Ini, Section, Line, Values, Fields, Notes))
+				if (!ReadFloats(Ini, Section, Line, Values, 7, Notes))
 				{
 					continue;
 				}
@@ -482,7 +469,7 @@ void ReadLanes(const CInifile& Ini, const char* Section, const char* Prefix, u16
 				{
 					Notes.Add("[%s] %s is out of range, clamped", Section, Line);
 				}
-				Target.Keys.push_back({ Values[0], Value, static_cast<Interp>(static_cast<u8>(Values[2])), Values[3], Values[4], Values[5], Values[6], Values[7] != 0.0f });
+				Target.Keys.push_back({ Values[0], Value, static_cast<Interp>(static_cast<u8>(Values[2])), Values[3], Values[4], Values[5], Values[6] });
 			}
 			float Gen[6];
 			xr_sprintf(Line, "%slane_%02u_c%u_gen", Prefix, Index, Component);
@@ -503,16 +490,6 @@ void ReadLanes(const CInifile& Ini, const char* Section, const char* Prefix, u16
 				}
 			}
 			IsEmpty = IsEmpty && Target.Keys.empty() && Target.Gen.Type == Wave::None;
-		}
-		float Ends[2];
-		xr_sprintf(Line, "%slane_%02u_infinity", Prefix, Index);
-		if (ReadFloats(Ini, Section, Line, Ends, 2, Notes) && Ends[0] >= 0.0f && Ends[0] <= 4.0f && Ends[1] >= 0.0f && Ends[1] <= 4.0f && Ends[0] == std::floor(Ends[0]) && Ends[1] == std::floor(Ends[1]))
-		{
-			for (Curve& Target : Item.Curves)
-			{
-				Target.Pre = static_cast<u8>(Ends[0]);
-				Target.Post = static_cast<u8>(Ends[1]);
-			}
 		}
 		if (!IsEmpty)
 		{
@@ -539,11 +516,6 @@ void WriteLanes(CInifile& Ini, const char* Section, const char* Prefix, const xr
 			xr_sprintf(Line, "%slane_%02u_layer", Prefix, Count);
 			Write(Ini, Section, Line, static_cast<u8>(Item.Layer - LayerBase));
 		}
-		if (Item.Curves[0].Pre || Item.Curves[0].Post)
-		{
-			xr_sprintf(Line, "%slane_%02u_infinity", Prefix, Count);
-			Write(Ini, Section, Line, Item.Curves[0].Pre, Item.Curves[0].Post);
-		}
 		for (u32 Component = 0; Component < Meta.Components; ++Component)
 		{
 			const Curve& Source = Item.Curves[Component];
@@ -556,14 +528,7 @@ void WriteLanes(CInifile& Ini, const char* Section, const char* Prefix, const xr
 			{
 				const Key& Point = Source.Keys[KeyIndex];
 				xr_sprintf(Line, "%slane_%02u_c%u_%04u", Prefix, Count, Component, KeyIndex);
-				if (Point.IsBroken)
-				{
-					Write(Ini, Section, Line, Point.Time, Point.Value, Point.Mode, Point.InTime, Point.InValue, Point.OutTime, Point.OutValue, 1u);
-				}
-				else
-				{
-					Write(Ini, Section, Line, Point.Time, Point.Value, Point.Mode, Point.InTime, Point.InValue, Point.OutTime, Point.OutValue);
-				}
+				Write(Ini, Section, Line, Point.Time, Point.Value, Point.Mode, Point.InTime, Point.InValue, Point.OutTime, Point.OutValue);
 			}
 			if (Source.Gen.Type != Wave::None)
 			{
@@ -579,50 +544,6 @@ void WriteLanes(CInifile& Ini, const char* Section, const char* Prefix, const xr
 		xr_sprintf(Line, "%slanes", Prefix);
 		Write(Ini, Section, Line, Count);
 	}
-}
-
-void ReadTrack(const CInifile& Ini, const char* Section, const char* Prefix, ClipTrack& Out, Warnings& Notes)
-{
-	string128 Key;
-	xr_sprintf(Key, "%sbones", Prefix);
-	const u32 Count = ReadU32(Ini, Section, Key, MaxClipBones, Notes);
-	for (u32 Bone = 0; Bone < Count; ++Bone)
-	{
-		PoseBone Entry;
-		float Rest[6] = {}, Size[3] = { 1.0f, 1.0f, 1.0f };
-		xr_sprintf(Key, "%sbone_%02u", Prefix, Bone);
-		Entry.Name = ReadSafe(Ini, Section, Key, Notes);
-		xr_sprintf(Key, "%sbone_%02u_rest", Prefix, Bone);
-		if (ReadFloats(Ini, Section, Key, Rest, 6, Notes))
-		{
-			Entry.Rotation.set(Sanitize(Rest[0], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[1], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[2], -3600.0f, 3600.0f, 0.0f));
-			Entry.Offset.set(Sanitize(Rest[3], -10.0f, 10.0f, 0.0f), Sanitize(Rest[4], -10.0f, 10.0f, 0.0f), Sanitize(Rest[5], -10.0f, 10.0f, 0.0f));
-		}
-		xr_sprintf(Key, "%sbone_%02u_scale", Prefix, Bone);
-		ReadFloats(Ini, Section, Key, Size, 3, Notes);
-		Entry.Scale.set(Sanitize(Size[0], 0.01f, 100.0f, 1.0f), Sanitize(Size[1], 0.01f, 100.0f, 1.0f), Sanitize(Size[2], 0.01f, 100.0f, 1.0f));
-		Out.Bones.push_back(Entry);
-	}
-	ReadLanes(Ini, Section, Prefix, WherePoseBone, 0, Out.Lanes, Notes);
-	std::erase_if(Out.Lanes, [&Out](const Lane& Track) { return Track.Layer >= Out.Bones.size(); });
-}
-
-void WriteTrack(CInifile& Ini, const char* Section, const char* Prefix, const ClipTrack& Track)
-{
-	string128 Key;
-	xr_sprintf(Key, "%sbones", Prefix);
-	Write(Ini, Section, Key, static_cast<u32>(Track.Bones.size()));
-	for (u32 Bone = 0; Bone < Track.Bones.size(); ++Bone)
-	{
-		const PoseBone& Entry = Track.Bones[Bone];
-		xr_sprintf(Key, "%sbone_%02u", Prefix, Bone);
-		Ini.w_string(Section, Key, Entry.Name.c_str());
-		xr_sprintf(Key, "%sbone_%02u_rest", Prefix, Bone);
-		Write(Ini, Section, Key, Entry.Rotation.x, Entry.Rotation.y, Entry.Rotation.z, Entry.Offset.x, Entry.Offset.y, Entry.Offset.z);
-		xr_sprintf(Key, "%sbone_%02u_scale", Prefix, Bone);
-		Write(Ini, Section, Key, Entry.Scale.x, Entry.Scale.y, Entry.Scale.z);
-	}
-	WriteLanes(Ini, Section, Prefix, Track.Lanes);
 }
 
 void ReadBlocks(const CInifile& Ini, const char* Section, const char* Prefix, xr_vector<ActorBlock>& Blocks, u32 Fields, Warnings& Notes)
@@ -694,8 +615,6 @@ void ReadActor(const CInifile& Ini, const char* Section, ActorData& Setup, bool 
 	Setup.IsRelative = IsRelative;
 	Setup.Visual = ReadSafe(Ini, Section, "visual", Notes);
 	Setup.Item = ReadSafe(Ini, Section, "item", Notes);
-	Setup.Hud = ReadSafe(Ini, Section, "hud", Notes);
-	Setup.IsHudLinked = ReadBool(Ini, Section, "hud_link", false, Notes);
 	ReadVector(Ini, Section, "scale", ScaleRange, Setup.Scale, Notes);
 	ReadRanged(Ini, Section, "time_scale", &Setup.TimeScale, &RateRange, 1, Notes);
 	const char* EndText = Ini.read_if_exists<str_c>(Section, "end", nullptr);
@@ -770,227 +689,6 @@ void ReadActor(const CInifile& Ini, const char* Section, ActorData& Setup, bool 
 			Notes.Add("[%s] animation clips start before the actor or out of order, fixed", Section);
 		}
 	}
-	const u32 PoseCount = ReadU32(Ini, Section, "pose_rows", MaxPoseRows, Notes);
-	for (u32 Row = 0; Row < PoseCount; ++Row)
-	{
-		PoseRow& Pose = Setup.Poses.emplace_back();
-		float Values[3] = { 1.0f, 0.0f, 1.0f };
-		xr_sprintf(Line, "pose_%02u", Row);
-		ReadFloats(Ini, Section, Line, Values, 3, Notes);
-		Pose.Mode = Values[0] == 0.0f ? RowMode::Override : RowMode::Add;
-		Pose.IsMuted = Values[1] != 0.0f;
-		Pose.Weight = Sanitize(Values[2], 0.0f, 1.0f, 1.0f);
-		xr_sprintf(Line, "pose_%02u_bones", Row);
-		const u32 BoneCount = ReadU32(Ini, Section, Line, MaxPoseBones, Notes);
-		for (u32 Bone = 0; Bone < BoneCount; ++Bone)
-		{
-			xr_sprintf(Line, "pose_%02u_bone_%02u", Row, Bone);
-			PoseBone Item;
-			Item.Name = ReadSafe(Ini, Section, Line, Notes);
-			float Rest[6] = {};
-			xr_sprintf(Line, "pose_%02u_bone_%02u_rest", Row, Bone);
-			if (ReadFloats(Ini, Section, Line, Rest, 6, Notes))
-			{
-				Item.Rotation.set(Sanitize(Rest[0], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[1], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[2], -3600.0f, 3600.0f, 0.0f));
-				Item.Offset.set(Sanitize(Rest[3], -10.0f, 10.0f, 0.0f), Sanitize(Rest[4], -10.0f, 10.0f, 0.0f), Sanitize(Rest[5], -10.0f, 10.0f, 0.0f));
-			}
-			float Size[3] = { 1.0f, 1.0f, 1.0f };
-			xr_sprintf(Line, "pose_%02u_bone_%02u_scale", Row, Bone);
-			ReadFloats(Ini, Section, Line, Size, 3, Notes);
-			Item.Scale.set(Sanitize(Size[0], 0.01f, 100.0f, 1.0f), Sanitize(Size[1], 0.01f, 100.0f, 1.0f), Sanitize(Size[2], 0.01f, 100.0f, 1.0f));
-			Pose.Bones.push_back(Item);
-		}
-	}
-	const u32 ClipCount = Ini.line_exist(Section, "clips") ? ReadU32(Ini, Section, "clips", MaxClips, Notes) : 0;
-	for (u32 Clip = 0; Clip < ClipCount; ++Clip)
-	{
-		AnimClip& Item = Setup.Clips.emplace_back();
-		string64 Prefix;
-		float Values[2] = { 1.0f, 0.0f };
-		xr_sprintf(Line, "clip_%02u", Clip);
-		Item.Name = ReadSafe(Ini, Section, Line, Notes);
-		xr_sprintf(Line, "clip_%02u_info", Clip);
-		ReadFloats(Ini, Section, Line, Values, 2, Notes);
-		Item.Length = Sanitize(Values[0], MinLength, MaxTime, 1.0f);
-		Item.Mode = Values[1] == 0.0f ? RowMode::Override : RowMode::Add;
-		xr_sprintf(Line, "clip_%02u_bones", Clip);
-		const u32 BoneCount = ReadU32(Ini, Section, Line, MaxClipBones, Notes);
-		for (u32 Bone = 0; Bone < BoneCount; ++Bone)
-		{
-			PoseBone Entry;
-			float Rest[6] = {}, Size[3] = { 1.0f, 1.0f, 1.0f };
-			xr_sprintf(Line, "clip_%02u_bone_%02u", Clip, Bone);
-			Entry.Name = ReadSafe(Ini, Section, Line, Notes);
-			xr_sprintf(Line, "clip_%02u_bone_%02u_rest", Clip, Bone);
-			if (ReadFloats(Ini, Section, Line, Rest, 6, Notes))
-			{
-				Entry.Rotation.set(Sanitize(Rest[0], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[1], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[2], -3600.0f, 3600.0f, 0.0f));
-				Entry.Offset.set(Sanitize(Rest[3], -10.0f, 10.0f, 0.0f), Sanitize(Rest[4], -10.0f, 10.0f, 0.0f), Sanitize(Rest[5], -10.0f, 10.0f, 0.0f));
-			}
-			xr_sprintf(Line, "clip_%02u_bone_%02u_scale", Clip, Bone);
-			ReadFloats(Ini, Section, Line, Size, 3, Notes);
-			Entry.Scale.set(Sanitize(Size[0], 0.01f, 100.0f, 1.0f), Sanitize(Size[1], 0.01f, 100.0f, 1.0f), Sanitize(Size[2], 0.01f, 100.0f, 1.0f));
-			Item.Bones.push_back(Entry);
-		}
-		xr_sprintf(Prefix, "clip_%02u_", Clip);
-		ReadLanes(Ini, Section, Prefix, WherePoseBone, 0, Item.Lanes, Notes);
-		std::erase_if(Item.Lanes, [&Item](const Lane& Track) { return Track.Layer >= Item.Bones.size(); });
-		xr_sprintf(Line, "clip_%02u_layers", Clip);
-		const u32 LayerCount = Ini.line_exist(Section, Line) ? ReadU32(Ini, Section, Line, MaxClipLayers, Notes) : 0;
-		for (u32 Layer = 0; Layer < LayerCount; ++Layer)
-		{
-			ClipLayer& Over = Item.Layers.emplace_back();
-			float Info[3] = { 1.0f, 1.0f, 0.0f };
-			xr_sprintf(Prefix, "clip_%02u_layer_%02u_", Clip, Layer);
-			xr_sprintf(Line, "%sname", Prefix);
-			Over.Name = ReadSafe(Ini, Section, Line, Notes);
-			xr_sprintf(Line, "%sinfo", Prefix);
-			ReadFloats(Ini, Section, Line, Info, 3, Notes);
-			Over.Weight = Sanitize(Info[0], 0.0f, 1.0f, 1.0f);
-			Over.Mode = Info[1] == 0.0f ? RowMode::Override : RowMode::Add;
-			Over.IsMuted = Info[2] != 0.0f;
-			ReadTrack(Ini, Section, Prefix, Over, Notes);
-		}
-		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
-		{
-			IkLimb& Arm = Item.Ik[Limb];
-			float State[3] = { 0.0f, 0.0f, 1.0f }, Goal[9] = {};
-			string256 Part;
-			xr_sprintf(Line, "clip_%02u_ik_%02u_bones", Clip, Limb);
-			const char* Names = Ini.read_if_exists<str_c>(Section, Line, nullptr);
-			for (u32 Link = 0; Names && _GetItemCount(Names) == 3 && Link < 3; ++Link)
-			{
-				_GetItem(Names, static_cast<int>(Link), Part);
-				Arm.Bones[Link] = IniSafe(Part) ? Part : "";
-			}
-			if (!Arm.Bones[0].size() || !Arm.Bones[1].size() || !Arm.Bones[2].size())
-			{
-				Arm = IkLimb {};
-				continue;
-			}
-			xr_sprintf(Line, "clip_%02u_ik_%02u", Clip, Limb);
-			ReadFloats(Ini, Section, Line, State, 3, Notes);
-			xr_sprintf(Line, "clip_%02u_ik_%02u_goal", Clip, Limb);
-			ReadFloats(Ini, Section, Line, Goal, 9, Notes);
-			Arm.IsOn = State[0] != 0.0f;
-			Arm.Space = State[1] != 0.0f ? IkSpace::World : IkSpace::Actor;
-			Arm.Weight = Sanitize(State[2], 0.0f, 1.0f, 1.0f);
-			for (u32 Axis = 0; Axis < 3; ++Axis)
-			{
-				Arm.Target[Axis] = Sanitize(Goal[Axis], -100000.0f, 100000.0f, 0.0f);
-				Arm.Turn[Axis] = Sanitize(Goal[3 + Axis], -3600.0f, 3600.0f, 0.0f);
-				Arm.Pole[Axis] = Sanitize(Goal[6 + Axis], -100000.0f, 100000.0f, 0.0f);
-			}
-		}
-		xr_sprintf(Prefix, "clip_%02u_ik_", Clip);
-		xr_sprintf(Line, "%slanes", Prefix);
-		if (Ini.line_exist(Section, Line))
-		{
-			ReadLanes(Ini, Section, Prefix, WherePoseBone, 0, Item.IkLanes, Notes);
-			std::erase_if(Item.IkLanes, [](const Lane& Track) { return Track.Id < Param::IkTarget || Track.Id > Param::IkWeight; });
-		}
-		xr_sprintf(Line, "clip_%02u_linked", Clip);
-		AnimClip Stored;
-		if (ReadBool(Ini, Section, Line, false, Notes) && Omf::IsClipName(Item.Name.c_str()))
-		{
-			Item.IsLinked = true;
-			if (Omf::ReadClip(Item.Name.c_str(), Stored))
-			{
-				Item = Stored;
-				Item.IsLinked = true;
-			}
-			else
-			{
-				Notes.Add("[%s] library animation %s is missing or has no keys: the copy saved in the scene is used", Section, Item.Name.c_str());
-			}
-		}
-	}
-	const u32 LookCount = ReadU32(Ini, Section, "looks", MaxLooks, Notes);
-	for (u32 Look = 0; Look < LookCount; ++Look)
-	{
-		ActorLook& Item = Setup.Looks.emplace_back();
-		xr_sprintf(Line, "look_%02u_surfaces", Look);
-		const u32 SurfaceCount = ReadU32(Ini, Section, Line, 2 * MaxLookSurfaces, Notes);
-		for (u32 Index = 0; Index < SurfaceCount; ++Index)
-		{
-			SurfaceShader Entry;
-			xr_sprintf(Line, "look_%02u_%02u", Look, Index);
-			Entry.Surface = static_cast<u8>(ReadU32(Ini, Section, Line, ItemSurfaceBase + MaxLookSurfaces - 1, Notes));
-			xr_sprintf(Line, "look_%02u_%02u_shader", Look, Index);
-			Entry.Shader = ReadSafe(Ini, Section, Line, Notes);
-			xr_sprintf(Line, "look_%02u_%02u_texture", Look, Index);
-			Entry.Texture = ReadSafe(Ini, Section, Line, Notes);
-			if (FindSurface(Item, Entry.Surface))
-			{
-				Notes.Add("[%s] look %u names surface %u twice, the repeat is ignored", Section, Look + 1, Entry.Surface + 1u);
-			}
-			else if (Entry.Shader.size() || Entry.Texture.size())
-			{
-				Item.Surfaces.push_back(Entry);
-			}
-		}
-	}
-	for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
-	{
-		IkLimb& Item = Setup.Ik[Limb];
-		xr_sprintf(Line, "ik_%02u_bones", Limb);
-		const char* Names = Ini.read_if_exists<str_c>(Section, Line, nullptr);
-		string256 Part;
-		for (u32 Link = 0; Names && _GetItemCount(Names) == 3 && Link < 3; ++Link)
-		{
-			_GetItem(Names, static_cast<int>(Link), Part);
-			Item.Bones[Link] = IniSafe(Part) ? Part : "";
-		}
-		if (Names && (!Item.Bones[0].size() || !Item.Bones[1].size() || !Item.Bones[2].size()))
-		{
-			Notes.Add("[%s] %s needs three bone names, the limb is ignored", Section, Line);
-			Item = IkLimb {};
-		}
-		if (!Item.Bones[0].size())
-		{
-			continue;
-		}
-		float Head[3] = { 0.0f, 0.0f, 1.0f }, Values[9] = {};
-		xr_sprintf(Line, "ik_%02u", Limb);
-		ReadFloats(Ini, Section, Line, Head, 3, Notes);
-		Item.IsOn = Head[0] != 0.0f;
-		Item.Space = Head[1] != 0.0f ? IkSpace::World : IkSpace::Actor;
-		Item.Weight = Sanitize(Head[2], 0.0f, 1.0f, 1.0f);
-		xr_sprintf(Line, "ik_%02u_goal", Limb);
-		ReadFloats(Ini, Section, Line, Values, 9, Notes);
-		for (u32 Axis = 0; Axis < 3; ++Axis)
-		{
-			Item.Target[Axis] = Sanitize(Values[Axis], -100000.0f, 100000.0f, 0.0f);
-			Item.Turn[Axis] = Sanitize(Values[3 + Axis], -3600.0f, 3600.0f, 0.0f);
-			Item.Pole[Axis] = Sanitize(Values[6 + Axis], -100000.0f, 100000.0f, 0.0f);
-		}
-	}
-	const u32 RuleCount = ReadU32(Ini, Section, "constraints", MaxConstraints, Notes);
-	for (u32 Slot = 0; Slot < RuleCount; ++Slot)
-	{
-		BoneConstraint Rule;
-		bool Flags[1] = {};
-		float Values[9] = {};
-		xr_sprintf(Line, "constraint_%02u_bone", Slot);
-		Rule.Bone = ReadSafe(Ini, Section, Line, Notes);
-		xr_sprintf(Line, "constraint_%02u_target", Slot);
-		ReadLink(Ini, Section, Line, Rule.Target, Flags, 0, Notes);
-		xr_sprintf(Line, "constraint_%02u", Slot);
-		ReadFloats(Ini, Section, Line, Values, 9, Notes);
-		Rule.Kind = static_cast<ConstraintKind>(static_cast<u8>(Sanitize(std::floor(Values[0]), 0.0f, 3.0f, 2.0f)));
-		Rule.IsMuted = Values[1] != 0.0f;
-		Rule.Weight = Sanitize(Values[2], 0.0f, 1.0f, 1.0f);
-		for (u32 Axis = 0; Axis < 3; ++Axis)
-		{
-			Rule.Shift[Axis] = Sanitize(Values[3 + Axis], -100000.0f, 100000.0f, 0.0f);
-			Rule.Turn[Axis] = Sanitize(Values[6 + Axis], -3600.0f, 3600.0f, 0.0f);
-		}
-		if (!Rule.Bone.size())
-		{
-			Notes.Add("[%s] constraint %u has no bone, the slot stays empty", Section, Slot + 1);
-		}
-		Setup.Constraints.push_back(Rule);
-	}
 }
 
 Shake MakeShake(const float* Values)
@@ -1023,9 +721,7 @@ void MigrateTrack(Object& Rig, const xr_vector<float>& Blends, float Total, cons
 		const Lane* Fov = Curves::FindLane(Previous.Lanes, Param::Fov, 0);
 		const bool HasFov = Fov && (Fov->Curves[0].Gen.Type != Wave::None || (!Fov->Curves[0].Keys.empty() && Fov->Curves[0].Keys.back().Time > Previous.Length));
 		const bool HasShakes = std::any_of(Shot.Shakes.begin(), Shot.Shakes.end(), [&](const ShakeClip& Clip) { return Clip.Start + Cameras::ShakeAnchor >= Previous.Start && Clip.Start + Cameras::ShakeAnchor < Block.Start + Block.Length; });
-		const Lane* Scale = Curves::FindLane(Previous.Lanes, Param::TimeScale, 0);
-		const bool IsWaved = Scale && Scale->Curves[0].Gen.Type != Wave::None;
-		Changed += IsWaved || Previous.Keys.back().Time > static_cast<float>(Curves::LaneArea(Previous.Lanes, nullptr, Param::TimeScale, 0, Previous.Length, Previous.TimeScale)) || HasFov || HasShakes;
+		Changed += Previous.Keys.back().Time > Previous.Length || HasFov || HasShakes;
 		Previous.Length = std::min(Previous.Length + Blend, MaxTime - Previous.Start);
 	}
 	const size_t Count = Shot.Blocks.size();
@@ -1081,7 +777,6 @@ void CheckTrack(CameraData& Shot, const char* Section, Warnings& Notes)
 void ReadCamera(const CInifile& Ini, const char* Section, Object& Rig, u32 Version, Warnings& Notes)
 {
 	CameraData& Shot = Rig.Camera;
-	u32 Approx = 0;
 	string64 Line;
 	string32 Prefix;
 	u32 Dropped = 0;
@@ -1115,7 +810,7 @@ void ReadCamera(const CInifile& Ini, const char* Section, Object& Rig, u32 Versi
 		Block.TimeScale = Head[3];
 		Block.Start = Head[4];
 		xr_sprintf(Line, "block_%03u_keys", Index);
-		const u32 KeyCount = Version < 16 ? ReadU32(Ini, Section, Line, MaxPoseKeys, Notes) : 0;
+		const u32 KeyCount = ReadU32(Ini, Section, Line, MaxPoseKeys, Notes);
 		for (u32 KeyIndex = 0; KeyIndex < KeyCount; ++KeyIndex)
 		{
 			float Values[8];
@@ -1187,42 +882,10 @@ void ReadCamera(const CInifile& Ini, const char* Section, Object& Rig, u32 Versi
 			Block.FarRange = Lens[4];
 			Block.Blur = Lens[5];
 		}
-		float Smooth = 0.0f;
-		xr_sprintf(Line, "block_%03u_smooth", Index);
-		if (ReadFloats(Ini, Section, Line, &Smooth, 1, Notes))
-		{
-			Block.Smooth = Sanitize(Smooth, 0.0f, 2.0f, 0.0f);
-		}
-		float Tension = 1.0f;
-		xr_sprintf(Line, "block_%03u_tension", Index);
-		if (ReadFloats(Ini, Section, Line, &Tension, 1, Notes))
-		{
-			Block.Tension = Sanitize(Tension, 0.1f, 3.0f, 1.0f);
-		}
-		xr_sprintf(Line, "block_%03u_short_turn", Index);
-		Block.IsShortTurn = ReadBool(Ini, Section, Line, false, Notes);
 		bool NoFlags[1] = {};
 		xr_sprintf(Line, "block_%03u_dof_target", Index);
 		ReadLink(Ini, Section, Line, Block.FocusTarget, NoFlags, 0, Notes);
-		xr_sprintf(Line, "block_%03u_name", Index);
-		Block.Name = ReadName(Ini, Section, Line, Notes);
-		float Rest[6] = {};
-		xr_sprintf(Line, "block_%03u_pose", Index);
-		if (ReadRanged(Ini, Section, Line, Rest, RestRanges, 6, Notes))
-		{
-			Block.Position.set(Rest[0], Rest[1], Rest[2]);
-			Block.Rotation.set(Rest[3], Rest[4], Rest[5]);
-		}
-		if (Version < 16)
-		{
-			Approx += Cameras::KeysToLanes(Block) ? 1 : 0;
-		}
-		Cameras::Rebuild(Block);
 		Start += Block.Length;
-	}
-	if (Approx)
-	{
-		Notes.Add("[%s] %u camera clips were converted to per-axis curves approximately (smooth rotation or edited tangents)", Section, Approx);
 	}
 	const u32 ClipCount = Version < 6 ? 0 : ReadU32(Ini, Section, "shakes", MaxShakeClips, Notes);
 	for (u32 Index = 0; Index < ClipCount; ++Index)
@@ -1379,11 +1042,11 @@ void ReadObject(const CInifile& Ini, u32 Index, Scene& Out, u32 Version, Warning
 	xr_sprintf(Section, "object_%03u", Index);
 	const char* TypeText = Ini.read_if_exists<str_c>(Section, "type", nullptr);
 	u32 Type = 0;
-	while (Type < 7 && (!TypeText || xr_strcmp(TypeText, TypeNames[Type])))
+	while (Type < 4 && (!TypeText || xr_strcmp(TypeText, TypeNames[Type])))
 	{
 		++Type;
 	}
-	if (Type == 7 || (Type == 1 && FindCamera(Out)))
+	if (Type == 4 || (Type == 1 && FindCamera(Out)))
 	{
 		Notes.Add("[%s] is missing, of an unknown type or a second camera, object skipped", Section);
 		return;
@@ -1431,74 +1094,11 @@ void ReadObject(const CInifile& Ini, u32 Index, Scene& Out, u32 Version, Warning
 	{
 		ReadParticle(Ini, Section, Item.Particle, Notes);
 	}
-	else if (Item.Type == ObjectType::Decal)
-	{
-		DecalData& Setup = Item.Decal;
-		float Values[2] = { Setup.Width, Setup.Height };
-		Setup.Texture = ReadSafe(Ini, Section, "texture", Notes);
-		Setup.Shader = ReadSafe(Ini, Section, "shader", Notes);
-		ReadFloats(Ini, Section, "decal", Values, 2, Notes);
-		Setup.Width = Sanitize(Values[0], 0.01f, 20.0f, 0.5f);
-		Setup.Height = Sanitize(Values[1], 0.01f, 20.0f, 0.5f);
-		Setup.IsStamp = ReadBool(Ini, Section, "stamp", false, Notes);
-	}
-	else if (Item.Type == ObjectType::Weather)
-	{
-		WeatherData& Setup = Item.Weather;
-		float Fades[2] = { 0.0f, 0.0f };
-		string64 Key;
-		Setup.Cycle = ReadSafe(Ini, Section, "weather", Notes);
-		Setup.Mask = ReadU32(Ini, Section, "weather_mask", 0xFFFFu, Notes);
-		ReadFloats(Ini, Section, "weather_fade", Fades, 2, Notes);
-		Setup.FadeIn = Sanitize(Fades[0], 0.0f, MaxTime, 0.0f);
-		Setup.FadeOut = Sanitize(Fades[1], 0.0f, MaxTime, 0.0f);
-		for (u32 Id = static_cast<u32>(Param::WeatherTime); Id <= static_cast<u32>(Param::SkyRotation); ++Id)
-		{
-			float Values[3] = {};
-			xr_sprintf(Key, "set_%s", Params[Id].Id);
-			for (u8 Component = 0; ReadFloats(Ini, Section, Key, Values, Params[Id].Components, Notes) && Component < Params[Id].Components; ++Component)
-			{
-				float& Field = *WeatherField(Setup, static_cast<Param>(Id), Component);
-				Field = Sanitize(Values[Component], Params[Id].Min, Params[Id].Max, Field);
-			}
-		}
-	}
-	else if (Item.Type == ObjectType::Post)
-	{
-		PostData& Setup = Item.Post;
-		float Fades[2] = { 0.0f, 0.0f };
-		string64 Key;
-		Setup.Mask = ReadU32(Ini, Section, "post_mask", 0xFFFFu, Notes);
-		ReadFloats(Ini, Section, "post_fade_times", Fades, 2, Notes);
-		Setup.FadeIn = Sanitize(Fades[0], 0.0f, MaxTime, 0.0f);
-		Setup.FadeOut = Sanitize(Fades[1], 0.0f, MaxTime, 0.0f);
-		for (u32 Id = static_cast<u32>(Param::PostBase); Id <= static_cast<u32>(Param::PostMiddleGray); ++Id)
-		{
-			float Values[3] = {};
-			xr_sprintf(Key, "set_%s", Params[Id].Id);
-			for (u8 Component = 0; ReadFloats(Ini, Section, Key, Values, Params[Id].Components, Notes) && Component < Params[Id].Components; ++Component)
-			{
-				float& Field = *PostField(Setup, static_cast<Param>(Id), Component);
-				Field = Sanitize(Values[Component], Params[Id].Min, Params[Id].Max, Field);
-			}
-		}
-	}
 	else
 	{
 		ReadCamera(Ini, Section, Item, Version, Notes);
 	}
-	ReadLanes(Ini, Section, "", ObjectWhere[Type] | (Item.Type == ObjectType::Actor ? WherePoseBone : 0), static_cast<u32>(Item.Actor.Layers.size()), Item.Lanes, Notes);
-	const xr_vector<PoseRow>& Poses = Item.Actor.Poses;
-	const size_t Before = Item.Lanes.size();
-	std::erase_if(Item.Lanes, [&Poses](const Lane& Track)
-	{
-		const u32 Row = Track.Id == Param::PoseWeight ? Track.Layer : Track.Layer / MaxPoseBones, Bone = Track.Layer % MaxPoseBones;
-		return (Track.Id == Param::PoseWeight && Row >= Poses.size()) || (IsBoneParam(Track.Id) && (Row >= Poses.size() || Bone >= Poses[Row].Bones.size()));
-	});
-	if (Item.Lanes.size() != Before)
-	{
-		Notes.Add("[%s] %u pose lanes point at a missing pose row or bone, dropped", Section, static_cast<u32>(Before - Item.Lanes.size()));
-	}
+	ReadLanes(Ini, Section, "", ObjectWhere[Type], static_cast<u32>(Item.Actor.Layers.size()), Item.Lanes, Notes);
 }
 
 void ReadScene(const CInifile& Ini, Scene& Out, u32 Version, Warnings& Notes)
@@ -1511,13 +1111,6 @@ void ReadScene(const CInifile& Ini, Scene& Out, u32 Version, Warnings& Notes)
 	{
 		Notes.Add("[scene] frame_rate %u is not 24, 25, 30 or 60, 30 is used", Rate);
 	}
-	float Jump[2] = { 5.0f, 45.0f };
-	if (ReadFloats(Ini, "scene", "cut_jump", Jump, 2, Notes))
-	{
-		Header.CutDistance = Sanitize(Jump[0], 0.0f, 1000.0f, 5.0f);
-		Header.CutAngle = Sanitize(Jump[1], 0.0f, 180.0f, 45.0f);
-	}
-	Header.IsWorldFollowing = ReadBool(Ini, "scene", "world_follows_camera", false, Notes);
 	Out.NextId = ReadU32(Ini, "scene", "next_id", IdCap, Notes);
 	Header.NextColor = ReadU32(Ini, "scene", "next_color", ~0u, Notes);
 	const u32 FolderCount = ReadU32(Ini, "scene", "folders", MaxFolders, Notes);
@@ -1562,7 +1155,7 @@ void ReadScene(const CInifile& Ini, Scene& Out, u32 Version, Warnings& Notes)
 	{
 		Notes.Add("[scene] %u markers within half a frame of another marker were dropped", static_cast<u32>(Markers.size() - Header.Markers.size()));
 	}
-	const u32 ObjectCount = ReadU32(Ini, "scene", "objects", MaxObjects + 1, Notes);
+	const u32 ObjectCount = ReadU32(Ini, "scene", "objects", MaxObjects, Notes);
 	for (u32 Index = 0; Index < ObjectCount; ++Index)
 	{
 		ReadObject(Ini, Index, Out, Version, Notes);
@@ -1641,14 +1234,6 @@ void WriteActor(CInifile& Ini, const char* Section, const ActorData& Setup)
 	{
 		Ini.w_string(Section, "item", Setup.Item.c_str());
 	}
-	if (Setup.Hud.size())
-	{
-		Ini.w_string(Section, "hud", Setup.Hud.c_str());
-	}
-	if (Setup.IsHudLinked)
-	{
-		Ini.w_bool(Section, "hud_link", true);
-	}
 	Write(Ini, Section, "scale", Setup.Scale.x, Setup.Scale.y, Setup.Scale.z);
 	Write(Ini, Section, "time_scale", Setup.TimeScale);
 	if (Setup.IsRelative)
@@ -1694,150 +1279,6 @@ void WriteActor(CInifile& Ini, const char* Section, const ActorData& Setup)
 			Write(Ini, Section, Line, Layer.Weight);
 		}
 		WriteBlocks(Ini, Section, Prefix, Layer.Blocks);
-	}
-	if (!Setup.Poses.empty())
-	{
-		Write(Ini, Section, "pose_rows", static_cast<u32>(Setup.Poses.size()));
-	}
-	for (u32 Row = 0; Row < Setup.Poses.size(); ++Row)
-	{
-		const PoseRow& Pose = Setup.Poses[Row];
-		xr_sprintf(Line, "pose_%02u", Row);
-		Write(Ini, Section, Line, Pose.Mode == RowMode::Add ? 1.0f : 0.0f, Pose.IsMuted ? 1.0f : 0.0f, Pose.Weight);
-		xr_sprintf(Line, "pose_%02u_bones", Row);
-		Write(Ini, Section, Line, static_cast<u32>(Pose.Bones.size()));
-		for (u32 Bone = 0; Bone < Pose.Bones.size(); ++Bone)
-		{
-			const PoseBone& Item = Pose.Bones[Bone];
-			xr_sprintf(Line, "pose_%02u_bone_%02u", Row, Bone);
-			Ini.w_string(Section, Line, Item.Name.c_str());
-			if (!Item.Rotation.similar(Fvector().set(0.0f, 0.0f, 0.0f), 0.0f) || !Item.Offset.similar(Fvector().set(0.0f, 0.0f, 0.0f), 0.0f))
-			{
-				xr_sprintf(Line, "pose_%02u_bone_%02u_rest", Row, Bone);
-				Write(Ini, Section, Line, Item.Rotation.x, Item.Rotation.y, Item.Rotation.z, Item.Offset.x, Item.Offset.y, Item.Offset.z);
-			}
-			if (!Item.Scale.similar(Fvector().set(1.0f, 1.0f, 1.0f), 0.0f))
-			{
-				xr_sprintf(Line, "pose_%02u_bone_%02u_scale", Row, Bone);
-				Write(Ini, Section, Line, Item.Scale.x, Item.Scale.y, Item.Scale.z);
-			}
-		}
-	}
-	if (!Setup.Clips.empty())
-	{
-		Write(Ini, Section, "clips", static_cast<u32>(Setup.Clips.size()));
-	}
-	for (u32 Clip = 0; Clip < Setup.Clips.size(); ++Clip)
-	{
-		const AnimClip& Item = Setup.Clips[Clip];
-		string64 Prefix;
-		xr_sprintf(Line, "clip_%02u", Clip);
-		Ini.w_string(Section, Line, Item.Name.c_str());
-		xr_sprintf(Line, "clip_%02u_info", Clip);
-		Write(Ini, Section, Line, Item.Length, Item.Mode == RowMode::Add ? 1.0f : 0.0f);
-		xr_sprintf(Line, "clip_%02u_bones", Clip);
-		Write(Ini, Section, Line, static_cast<u32>(Item.Bones.size()));
-		for (u32 Bone = 0; Bone < Item.Bones.size(); ++Bone)
-		{
-			const PoseBone& Entry = Item.Bones[Bone];
-			xr_sprintf(Line, "clip_%02u_bone_%02u", Clip, Bone);
-			Ini.w_string(Section, Line, Entry.Name.c_str());
-			xr_sprintf(Line, "clip_%02u_bone_%02u_rest", Clip, Bone);
-			Write(Ini, Section, Line, Entry.Rotation.x, Entry.Rotation.y, Entry.Rotation.z, Entry.Offset.x, Entry.Offset.y, Entry.Offset.z);
-			xr_sprintf(Line, "clip_%02u_bone_%02u_scale", Clip, Bone);
-			Write(Ini, Section, Line, Entry.Scale.x, Entry.Scale.y, Entry.Scale.z);
-		}
-		xr_sprintf(Prefix, "clip_%02u_", Clip);
-		WriteLanes(Ini, Section, Prefix, Item.Lanes);
-		if (!Item.Layers.empty())
-		{
-			xr_sprintf(Line, "clip_%02u_layers", Clip);
-			Write(Ini, Section, Line, static_cast<u32>(Item.Layers.size()));
-		}
-		for (u32 Layer = 0; Layer < Item.Layers.size(); ++Layer)
-		{
-			const ClipLayer& Over = Item.Layers[Layer];
-			xr_sprintf(Prefix, "clip_%02u_layer_%02u_", Clip, Layer);
-			xr_sprintf(Line, "%sname", Prefix);
-			Ini.w_string(Section, Line, Over.Name.c_str());
-			xr_sprintf(Line, "%sinfo", Prefix);
-			Write(Ini, Section, Line, Over.Weight, Over.Mode == RowMode::Add ? 1.0f : 0.0f, Over.IsMuted ? 1.0f : 0.0f);
-			WriteTrack(Ini, Section, Prefix, Over);
-		}
-		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
-		{
-			const IkLimb& Arm = Item.Ik[Limb];
-			if (!Arm.Bones[0].size())
-			{
-				continue;
-			}
-			xr_sprintf(Line, "clip_%02u_ik_%02u_bones", Clip, Limb);
-			Ini.w_string(Section, Line, (xr_string(Arm.Bones[0].c_str()) + ", " + Arm.Bones[1].c_str() + ", " + Arm.Bones[2].c_str()).c_str());
-			xr_sprintf(Line, "clip_%02u_ik_%02u", Clip, Limb);
-			Write(Ini, Section, Line, Arm.IsOn ? 1.0f : 0.0f, Arm.Space == IkSpace::World ? 1.0f : 0.0f, Arm.Weight);
-			xr_sprintf(Line, "clip_%02u_ik_%02u_goal", Clip, Limb);
-			Write(Ini, Section, Line, Arm.Target.x, Arm.Target.y, Arm.Target.z, Arm.Turn.x, Arm.Turn.y, Arm.Turn.z, Arm.Pole.x, Arm.Pole.y, Arm.Pole.z);
-		}
-		if (!Item.IkLanes.empty())
-		{
-			xr_sprintf(Prefix, "clip_%02u_ik_", Clip);
-			WriteLanes(Ini, Section, Prefix, Item.IkLanes);
-		}
-		if (Item.IsLinked)
-		{
-			xr_sprintf(Line, "clip_%02u_linked", Clip);
-			Ini.w_bool(Section, Line, true);
-		}
-	}
-	if (!Setup.Looks.empty())
-	{
-		Write(Ini, Section, "looks", static_cast<u32>(Setup.Looks.size()));
-	}
-	for (u32 Look = 0; Look < Setup.Looks.size(); ++Look)
-	{
-		const xr_vector<SurfaceShader>& Surfaces = Setup.Looks[Look].Surfaces;
-		xr_sprintf(Line, "look_%02u_surfaces", Look);
-		Write(Ini, Section, Line, static_cast<u32>(Surfaces.size()));
-		for (u32 Index = 0; Index < Surfaces.size(); ++Index)
-		{
-			const SurfaceShader& Entry = Surfaces[Index];
-			xr_sprintf(Line, "look_%02u_%02u", Look, Index);
-			Write(Ini, Section, Line, static_cast<u32>(Entry.Surface));
-			xr_sprintf(Line, "look_%02u_%02u_shader", Look, Index);
-			Entry.Shader.size() ? Ini.w_string(Section, Line, Entry.Shader.c_str()) : (void)0;
-			xr_sprintf(Line, "look_%02u_%02u_texture", Look, Index);
-			Entry.Texture.size() ? Ini.w_string(Section, Line, Entry.Texture.c_str()) : (void)0;
-		}
-	}
-	for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
-	{
-		const IkLimb& Item = Setup.Ik[Limb];
-		if (!Item.Bones[0].size())
-		{
-			continue;
-		}
-		xr_sprintf(Line, "ik_%02u_bones", Limb);
-		Ini.w_string(Section, Line, (xr_string(Item.Bones[0].c_str()) + ", " + Item.Bones[1].c_str() + ", " + Item.Bones[2].c_str()).c_str());
-		xr_sprintf(Line, "ik_%02u", Limb);
-		Write(Ini, Section, Line, Item.IsOn ? 1.0f : 0.0f, Item.Space == IkSpace::World ? 1.0f : 0.0f, Item.Weight);
-		xr_sprintf(Line, "ik_%02u_goal", Limb);
-		Write(Ini, Section, Line, Item.Target.x, Item.Target.y, Item.Target.z, Item.Turn.x, Item.Turn.y, Item.Turn.z, Item.Pole.x, Item.Pole.y, Item.Pole.z);
-	}
-	if (!Setup.Constraints.empty())
-	{
-		Write(Ini, Section, "constraints", static_cast<u32>(Setup.Constraints.size()));
-	}
-	for (u32 Slot = 0; Slot < Setup.Constraints.size(); ++Slot)
-	{
-		const BoneConstraint& Rule = Setup.Constraints[Slot];
-		string512 Text;
-		xr_sprintf(Line, "constraint_%02u_bone", Slot);
-		Rule.Bone.size() ? Ini.w_string(Section, Line, Rule.Bone.c_str()) : (void)0;
-		xr_sprintf(Line, "constraint_%02u_target", Slot);
-		xr_sprintf(Text, "%u,%s", Rule.Target.ObjectId, Rule.Target.Bone.size() ? Rule.Target.Bone.c_str() : "");
-		Rule.Target.ObjectId ? Ini.w_string(Section, Line, Text) : (void)0;
-		xr_sprintf(Line, "constraint_%02u", Slot);
-		Write(Ini, Section, Line, static_cast<float>(Rule.Kind), Rule.IsMuted ? 1.0f : 0.0f, Rule.Weight, Rule.Shift.x, Rule.Shift.y, Rule.Shift.z, Rule.Turn.x, Rule.Turn.y, Rule.Turn.z);
 	}
 }
 
@@ -1902,57 +1343,6 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 		WriteParticle(Ini, Section, Item.Particle);
 		return;
 	}
-	if (Item.Type == ObjectType::Decal)
-	{
-		Item.Decal.Texture.size() ? Ini.w_string(Section, "texture", Item.Decal.Texture.c_str()) : (void)0;
-		Item.Decal.Shader.size() ? Ini.w_string(Section, "shader", Item.Decal.Shader.c_str()) : (void)0;
-		Write(Ini, Section, "decal", Item.Decal.Width, Item.Decal.Height);
-		Ini.w_bool(Section, "stamp", Item.Decal.IsStamp);
-		return;
-	}
-	if (Item.Type == ObjectType::Weather)
-	{
-		WeatherData& Setup = const_cast<WeatherData&>(Item.Weather);
-		string64 Key;
-		Setup.Cycle.size() ? Ini.w_string(Section, "weather", Setup.Cycle.c_str()) : (void)0;
-		Write(Ini, Section, "weather_mask", Setup.Mask);
-		Write(Ini, Section, "weather_fade", Setup.FadeIn, Setup.FadeOut);
-		for (u32 Id = static_cast<u32>(Param::WeatherTime); Id <= static_cast<u32>(Param::SkyRotation); ++Id)
-		{
-			const Param Which = static_cast<Param>(Id);
-			xr_sprintf(Key, "set_%s", Params[Id].Id);
-			if (Params[Id].Components == 3)
-			{
-				Write(Ini, Section, Key, *WeatherField(Setup, Which, 0), *WeatherField(Setup, Which, 1), *WeatherField(Setup, Which, 2));
-			}
-			else
-			{
-				Write(Ini, Section, Key, *WeatherField(Setup, Which, 0));
-			}
-		}
-		return;
-	}
-	if (Item.Type == ObjectType::Post)
-	{
-		PostData& Setup = const_cast<PostData&>(Item.Post);
-		string64 Key;
-		Write(Ini, Section, "post_mask", Setup.Mask);
-		Write(Ini, Section, "post_fade_times", Setup.FadeIn, Setup.FadeOut);
-		for (u32 Id = static_cast<u32>(Param::PostBase); Id <= static_cast<u32>(Param::PostMiddleGray); ++Id)
-		{
-			const Param Which = static_cast<Param>(Id);
-			xr_sprintf(Key, "set_%s", Params[Id].Id);
-			if (Params[Id].Components == 3)
-			{
-				Write(Ini, Section, Key, *PostField(Setup, Which, 0), *PostField(Setup, Which, 1), *PostField(Setup, Which, 2));
-			}
-			else
-			{
-				Write(Ini, Section, Key, *PostField(Setup, Which, 0));
-			}
-		}
-		return;
-	}
 	const CameraData& Shot = Item.Camera;
 	Write(Ini, Section, "blocks", static_cast<u32>(Shot.Blocks.size()));
 	for (u32 Index = 0; Index < Shot.Blocks.size(); ++Index)
@@ -1960,10 +1350,18 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 		const CameraBlock& Block = Shot.Blocks[Index];
 		xr_sprintf(Line, "block_%03u", Index);
 		Write(Ini, Section, Line, Block.Length, Block.BlendEase, Block.Fov, Block.TimeScale, Block.Start);
-		if (!Block.Position.similar(Fvector().set(0.0f, 0.0f, 0.0f), 0.0f) || !Block.Rotation.similar(Fvector().set(0.0f, 0.0f, 0.0f), 0.0f))
+		xr_sprintf(Line, "block_%03u_keys", Index);
+		Write(Ini, Section, Line, static_cast<u32>(Block.Keys.size()));
+		for (u32 KeyIndex = 0; KeyIndex < Block.Keys.size(); ++KeyIndex)
 		{
-			xr_sprintf(Line, "block_%03u_pose", Index);
-			Write(Ini, Section, Line, Block.Position.x, Block.Position.y, Block.Position.z, Block.Rotation.x, Block.Rotation.y, Block.Rotation.z);
+			const PoseKey& Pose = Block.Keys[KeyIndex];
+			xr_sprintf(Line, "block_%03u_key_%04u", Index, KeyIndex);
+			Write(Ini, Section, Line, Pose.Time, Pose.Position.x, Pose.Position.y, Pose.Position.z, Pose.Rotation.x, Pose.Rotation.y, Pose.Rotation.z, Pose.Mode);
+			if (Pose.HasTangent())
+			{
+				xr_sprintf(Line, "block_%03u_tangent_%04u", Index, KeyIndex);
+				Write(Ini, Section, Line, Pose.Tangent, Pose.Tension, Pose.Continuity, Pose.Bias, Pose.InHandle.x, Pose.InHandle.y, Pose.InHandle.z, Pose.OutHandle.x, Pose.OutHandle.y, Pose.OutHandle.z);
+			}
 		}
 		xr_sprintf(Prefix, "block_%03u_", Index);
 		WriteLanes(Ini, Section, Prefix, Block.Lanes);
@@ -1974,32 +1372,12 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 			xr_sprintf(Line, "block_%03u_dof", Index);
 			Write(Ini, Section, Line, Block.Dof, Block.Focus, Block.FocusOffset, Block.NearRange, Block.FarRange, Block.Blur);
 		}
-		if (Block.Smooth != Fresh.Smooth)
-		{
-			xr_sprintf(Line, "block_%03u_smooth", Index);
-			Write(Ini, Section, Line, Block.Smooth);
-		}
-		if (Block.Tension != Fresh.Tension)
-		{
-			xr_sprintf(Line, "block_%03u_tension", Index);
-			Write(Ini, Section, Line, Block.Tension);
-		}
-		if (Block.IsShortTurn)
-		{
-			xr_sprintf(Line, "block_%03u_short_turn", Index);
-			Ini.w_bool(Section, Line, true);
-		}
 		if (Block.FocusTarget.ObjectId)
 		{
 			string512 Text;
 			xr_sprintf(Line, "block_%03u_dof_target", Index);
 			xr_sprintf(Text, "%u,%s", Block.FocusTarget.ObjectId, Block.FocusTarget.Bone.size() ? Block.FocusTarget.Bone.c_str() : "");
 			Ini.w_string(Section, Line, Text);
-		}
-		if (Block.Name.size())
-		{
-			xr_sprintf(Line, "block_%03u_name", Index);
-			WriteName(Ini, Section, Line, Block.Name);
 		}
 	}
 	if (!Shot.Shakes.empty())
@@ -2037,11 +1415,7 @@ bool ActorSafe(const ActorData& Setup)
 {
 	const auto IsBlocksSafe = [](const xr_vector<ActorBlock>& Blocks) { return Blocks.size() <= MaxBlocks && std::all_of(Blocks.begin(), Blocks.end(), [](const ActorBlock& Block) { return IniSafe(Block.Source.c_str()) && IniSafe(Block.Name.c_str()); }); };
 	const auto IsLayerSafe = [&](const ActorLayer& Layer) { return Layer.Parts.size() <= MaxPartNames && IsBlocksSafe(Layer.Blocks) && std::all_of(Layer.Parts.begin(), Layer.Parts.end(), [](const shared_str& Part) { return IniSafe(Part.c_str()); }); };
-	const auto IsPoseSafe = [](const PoseRow& Pose) { return Pose.Bones.size() <= MaxPoseBones && std::all_of(Pose.Bones.begin(), Pose.Bones.end(), [](const PoseBone& Bone) { return OptionalSafe(Bone.Name); }); };
-	const auto IsLookSafe = [](const ActorLook& Look) { return Look.Surfaces.size() <= 2 * MaxLookSurfaces && std::all_of(Look.Surfaces.begin(), Look.Surfaces.end(), [](const SurfaceShader& Item) { return Item.Surface < ItemSurfaceBase + MaxLookSurfaces && OptionalSafe(Item.Shader) && OptionalSafe(Item.Texture); }); };
-	const auto IsIkSafe = [](const IkLimb& Limb) { return std::all_of(std::begin(Limb.Bones), std::end(Limb.Bones), OptionalSafe); };
-	const auto IsRuleSafe = [](const BoneConstraint& Rule) { return OptionalSafe(Rule.Bone) && OptionalSafe(Rule.Target.Bone); };
-	return Setup.Constraints.size() <= MaxConstraints && std::all_of(Setup.Constraints.begin(), Setup.Constraints.end(), IsRuleSafe) && std::all_of(std::begin(Setup.Ik), std::end(Setup.Ik), IsIkSafe) && Setup.Looks.size() <= MaxLooks && std::all_of(Setup.Looks.begin(), Setup.Looks.end(), IsLookSafe) && Setup.Poses.size() <= MaxPoseRows && std::all_of(Setup.Poses.begin(), Setup.Poses.end(), IsPoseSafe) && OptionalSafe(Setup.Visual) && OptionalSafe(Setup.Item) && Setup.Packs.size() <= MaxPacks && Setup.Layers.size() <= MaxActorLayers && IsLayerSafe(Setup.Base) && std::all_of(Setup.Layers.begin(), Setup.Layers.end(), IsLayerSafe) && std::all_of(Setup.Packs.begin(), Setup.Packs.end(), [](const shared_str& Pack) { return IniSafe(Pack.c_str()); });
+	return OptionalSafe(Setup.Visual) && OptionalSafe(Setup.Item) && Setup.Packs.size() <= MaxPacks && Setup.Layers.size() <= MaxActorLayers && IsLayerSafe(Setup.Base) && std::all_of(Setup.Layers.begin(), Setup.Layers.end(), IsLayerSafe) && std::all_of(Setup.Packs.begin(), Setup.Packs.end(), [](const shared_str& Pack) { return IniSafe(Pack.c_str()); });
 }
 
 bool CanSave(const Scene& Data, xr_string& Error)
@@ -2052,7 +1426,7 @@ bool CanSave(const Scene& Data, xr_string& Error)
 	const auto IsShotSafe = [&](const CameraData& Shot) { return Shot.Blocks.size() <= MaxBlocks && Shot.Shakes.size() <= MaxShakeClips && std::all_of(Shot.Shakes.begin(), Shot.Shakes.end(), IsClipSafe) && std::all_of(Shot.Blocks.begin(), Shot.Blocks.end(), [&](const CameraBlock& Block) { return Block.Keys.size() <= MaxPoseKeys && IsSmall(Block.Lanes) && IsLinkSafe(Block.Attach); }); };
 	const SceneHeader& Header = Data.Header;
 	const bool HasLongName = std::any_of(Header.Folders.begin(), Header.Folders.end(), [](const Folder& Item) { return Item.Name.size() > MaxNameBytes; }) || std::any_of(Header.Markers.begin(), Header.Markers.end(), [](const Marker& Item) { return Item.Name.size() > MaxNameBytes; });
-	if (!OptionalSafe(Data.LevelName) || Data.Objects.size() > MaxObjects + 1 || Header.Folders.size() > MaxFolders || Header.Markers.size() > MaxMarkers || HasLongName)
+	if (!OptionalSafe(Data.LevelName) || Data.Objects.size() > MaxObjects || Header.Folders.size() > MaxFolders || Header.Markers.size() > MaxMarkers || HasLongName)
 	{
 		Error = "The scene has too many objects, folders or markers, a folder or marker name longer than 127 bytes, or an unusual level name.";
 		return false;
@@ -2061,7 +1435,7 @@ bool CanSave(const Scene& Data, xr_string& Error)
 	for (const Object& Item : Data.Objects)
 	{
 		CameraCount += Item.Type == ObjectType::Camera;
-		const bool IsTypeSafe[7] = { ActorSafe(Item.Actor), CameraCount == 1 && IsShotSafe(Item.Camera), OptionalSafe(Item.Light.Texture) && Item.Light.Texture.size() <= MaxTextureBytes, OptionalSafe(Item.Particle.Effect), OptionalSafe(Item.Decal.Texture) && OptionalSafe(Item.Decal.Shader), OptionalSafe(Item.Weather.Cycle), true };
+		const bool IsTypeSafe[4] = { ActorSafe(Item.Actor), CameraCount == 1 && IsShotSafe(Item.Camera), OptionalSafe(Item.Light.Texture) && Item.Light.Texture.size() <= MaxTextureBytes, OptionalSafe(Item.Particle.Effect) };
 		const bool IsGood = Item.Name.size() <= MaxNameBytes && IsSmall(Item.Lanes) && IsTypeSafe[static_cast<u32>(Item.Type)] && (Item.Type == ObjectType::Camera || IsLinkSafe(Item.Attach));
 		if (!IsGood)
 		{
@@ -2249,14 +1623,6 @@ bool Save(const Scene& Data, const char* Path, xr_string& Error)
 		Ini.w_string("scene", "level", Data.LevelName.c_str());
 	}
 	Write(Ini, "scene", "frame_rate", Header.FrameRate);
-	if (Header.CutDistance != 5.0f || Header.CutAngle != 45.0f)
-	{
-		Write(Ini, "scene", "cut_jump", Header.CutDistance, Header.CutAngle);
-	}
-	if (Header.IsWorldFollowing)
-	{
-		Ini.w_bool("scene", "world_follows_camera", true);
-	}
 	Write(Ini, "scene", "next_id", Data.NextId);
 	Write(Ini, "scene", "next_color", Header.NextColor);
 	Write(Ini, "scene", "folders", static_cast<u32>(Header.Folders.size()));

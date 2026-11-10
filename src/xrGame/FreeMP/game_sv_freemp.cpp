@@ -340,7 +340,7 @@ void game_sv_freemp::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_w
 }
 
 // player disconnect
-void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID)
+void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID)
 {
 	CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(GameID));
 	if (!actor) return;

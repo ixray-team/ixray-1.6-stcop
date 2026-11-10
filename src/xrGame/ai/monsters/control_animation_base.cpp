@@ -656,7 +656,7 @@ public:
 	}
 };
 
-ICF static bool check_hit_trace_callback(collide::rq_result& result, void* params)
+ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID params)
 {
 	ray_query_param* param = (ray_query_param*)params;
 	if (result.O != nullptr)

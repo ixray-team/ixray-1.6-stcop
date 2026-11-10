@@ -4,7 +4,7 @@
 // Project-owned legacy numeric identifiers.
 // Historical DirectX 9 encodings still consumed by the D3D11 state translator, blender/state recording,
 // vertex declarations and stored asset formats. Values must not change. No DX9 SDK dependency.
-// Requires the platform HRESULT type and result codes.
+// Requires the platform base types (BYTE, DWORD, HRESULT) and result codes.
 
 typedef enum _D3DBLEND {
 	D3DBLEND_ZERO = 1,
@@ -301,7 +301,7 @@ typedef enum _D3DTEXTURETRANSFORMFLAGS {
 	D3DTTFF_COUNT3 = 3,
 } D3DTEXTURETRANSFORMFLAGS;
 
-typedef u32 D3DCOLOR;
+typedef DWORD D3DCOLOR;
 
 typedef struct _D3DVERTEXELEMENT9 {
 	u16 Stream;
@@ -364,5 +364,5 @@ static_assert(sizeof(D3DVERTEXELEMENT9) == 8, "Legacy vertex declarations must r
 #define D3D_OK S_OK
 #define D3DERR_DEVICELOST ((HRESULT)0x88760868L)
 #ifndef MAKEFOURCC
-#define MAKEFOURCC(ch0, ch1, ch2, ch3) ((u32)(u8)(ch0) | ((u32)(u8)(ch1) << 8) | ((u32)(u8)(ch2) << 16) | ((u32)(u8)(ch3) << 24))
+#define MAKEFOURCC(ch0, ch1, ch2, ch3) ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) | ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24))
 #endif

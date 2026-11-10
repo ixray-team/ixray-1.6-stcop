@@ -35,7 +35,7 @@ public:
 protected:
 	CHeader							m_header;
 	CVertex							*m_nodes;
-	u8* m_edges;
+	BYTE							*m_edges;
 	mutable ENABLED					m_enabled;
 	_GRAPH_ID						m_current_level_some_vertex_id;
 

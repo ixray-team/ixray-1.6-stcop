@@ -19,7 +19,7 @@ public:
 	virtual void set_cone(float angle) override {}
 	virtual void set_range(float R) override {}
 	virtual void set_virtual_size(float R) override {}
-	virtual void set_texture(const char* name) override {}
+	virtual void set_texture(LPCSTR name) override {}
 	virtual void set_color(const Fcolor& C) override {}
 	virtual void set_color(float r, float g, float b) override {}
 	virtual void set_hud_mode(bool b) override {}

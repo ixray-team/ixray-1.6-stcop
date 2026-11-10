@@ -32,6 +32,7 @@ public:
 	void Evaluate(float Time, Fvector& Position, Fmatrix& Orientation) const;
 	bool Empty() const { return Points.empty(); }
 	bool Handles(u32 Key, Fvector& In, Fvector& Out) const;
+	u32 Split(float Time, Fvector& In, Fvector& Out, Fvector& Before, Fvector& After) const;
 
 private:
 	struct Point
@@ -76,11 +77,11 @@ struct LinkFrames
 	bool HasLook = false;
 	bool IsYawOnly = false;
 	u8 Problems = 0;
-	float Weight = 1.0f;
 };
 
 struct BlockCache
 {
+	Spline Path;
 	xr_vector<PoseKey> Keys;
 	Curves::AreaTable TimeScaleArea;
 	LinkFrames Frames;
@@ -112,18 +113,8 @@ s32 ShakeOwner(const CameraData& Data, const ShakeClip& Clip);
 bool IsTrackValid(const xr_vector<ClipSpan>& Spans);
 float PathTime(const CameraBlock& Block, const BlockCache& Cache, float Local);
 float LocalFromPath(const CameraBlock& Block, const BlockCache& Cache, float Path);
-float PathTime(const CameraBlock& Block, float Local);
-float LocalFromPath(const CameraBlock& Block, float Path);
 void EvaluateBlock(const CameraBlock& Block, const BlockCache& Cache, float Local, CameraPose& Pose);
-void PathPose(const CameraBlock& Block, float Local, Fvector& Position, Fmatrix& Orientation);
-void Rebuild(CameraBlock& Block);
-void SetPoseAt(CameraBlock& Block, float Time, const Fvector& Position, const Fvector& Rotation, Interp Mode, float HalfFrame);
-void RemovePoseAt(CameraBlock& Block, float Time, float HalfFrame);
-void MovePoseAt(CameraBlock& Block, float From, float To, float HalfFrame);
-void ModeAt(CameraBlock& Block, float Time, Interp Mode, float HalfFrame);
-bool KeysToLanes(CameraBlock& Block);
 float FocusDepth(const CameraBlock& Block, const BlockCache& Cache, float Local, const Fvector& Eye, const Fvector& Forward);
-CameraPose Mix(const CameraSample& Sample);
 bool Sample(const Object& Camera, const xr_vector<BlockCache>& Cache, const xr_vector<Curves::AreaTable>& ShakeAreas, const xr_vector<s16>& ShakeOwners, float Time, CameraSample& Out);
 bool IsShakeFree(const CameraData& Data, u32 Skip, u8 Row, float Start, float Length, u32 Until, bool IsStrict = false);
 u32 SettleShakes(CameraData& Data, const xr_vector<u8>& Moved = {}, bool IsStrict = false);

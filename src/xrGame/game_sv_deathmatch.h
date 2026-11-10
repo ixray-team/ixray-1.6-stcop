@@ -137,7 +137,7 @@ public:
 
 	void				OnPlayerConnect			(ClientID id_who) override;
 	void				OnPlayerConnectFinished	(ClientID id_who) override;
-	void OnPlayerDisconnect(ClientID id_who, char* Name, ALife::_OBJECT_ID GameID) override;
+	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
 	void				OnPlayerReady			(ClientID id_who) override;
 	virtual		KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual		bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);

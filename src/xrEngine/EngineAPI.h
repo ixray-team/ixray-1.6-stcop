@@ -90,6 +90,7 @@ enum class EditorUI : u8
 	Profiler,
 	Game_CameraRig,
 	Game_CinemaEditor,
+	Game_DofSetup,
 	Count
 };
 

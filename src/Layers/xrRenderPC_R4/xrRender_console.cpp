@@ -96,6 +96,7 @@ xr_token							qssao_mode_token						[ ]={
 };
 
 u32			ps_r_sun_shafts				=	2;
+bool g_SunShaftsAlternative = true;
 xr_token							qsun_shafts_token							[ ]={
 	{ "st_opt_off",					0												},
 	{ "st_opt_low",					1												},
@@ -304,6 +305,30 @@ Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
 float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
 float g_DofLensKernelScale = 2.0f;
+bool g_UseManualDofFocalLength = false;
+float g_NewDofFocalLength = 10.0f;
+float g_NewDofFNumber = 4.0f;
+float g_NewDofSensorHeight = 0.024f;
+float g_NewDofFocusTime = 0.1f;
+Fvector2 g_DofFocusPoint = {0.5f, 0.495f};
+float g_DofFocusDistance = 1.4f;
+float g_DofTransitionTime = 0.1f;
+float g_DofMaxRadius = 20.0f;
+u32 g_DofBlurResolution = 2;
+static xr_token NewDofModeTokens[] =
+{
+	{"autofocus", 0},
+	{"static", 1},
+	{"manual", 2},
+	{"auto", 0}, // Saved configs from the original physical mode.
+	{nullptr, 0}
+};
+static xr_token DofBlurResolutionTokens[] =
+{
+	{"half", 2},
+	{"quarter", 4},
+	{nullptr, 0}
+};
 
 float		ps_r2_def_aref_quality = 115.0f;
 
@@ -866,11 +891,11 @@ public:
 class CCC_DetailDensity : public CCC_Float
 {
 public:
-	CCC_DetailDensity(const char* N, float* V, float _min = 0.0f, float _max = 10000.0f)
+	CCC_DetailDensity(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(const char* args) override
+	virtual void Execute(LPCSTR args) override
 	{
 		CCC_Float::Execute(args);
 
@@ -890,11 +915,11 @@ public:
 class CCC_DetailReloadDetails : public CCC_Float
 {
 public:
-	CCC_DetailReloadDetails(const char* N, float* V, float _min = 0.0f, float _max = 10000.0f)
+	CCC_DetailReloadDetails(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(const char* args) override
+	virtual void Execute(LPCSTR args) override
 	{
 		CCC_Float::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
@@ -909,7 +934,7 @@ public:
 class CCC_DetailReloadDetails_Boolean : public CCC_Boolean
 {
 public:
-	CCC_DetailReloadDetails_Boolean(const char* N, bool* V)
+	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
 		: CCC_Boolean(N, V) {}
 
 	virtual void Execute(const char* args) override
@@ -1146,14 +1171,27 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4( CCC_DofNear,	"r2_dof_near",	&ps_r2_dof.x, tw_min.x, tw_max.x);
 	CMD4( CCC_DofFocus,	"r2_dof_focus", &ps_r2_dof.y, tw_min.y, tw_max.y);
 	CMD4( CCC_DofFar,	"r2_dof_far",	&ps_r2_dof.z, tw_min.z, tw_max.z);
-	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
+	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	80.f);
 	CMD4(CCC_Float, "r2_dof_lens_kernel_scale", &g_DofLensKernelScale, 1.0f, 4.0f);
+	CMD2(CCC_Boolean, "r4_ndof_manual_focal_length", &g_UseManualDofFocalLength);
+	CMD4(CCC_Float, "r4_ndof_focal_length", &g_NewDofFocalLength, 1.0f, 1000.0f);
+	CMD4(CCC_Float, "r4_ndof_f_number", &g_NewDofFNumber, 0.7f, 64.0f);
+	CMD4(CCC_Float, "r4_ndof_sensor_height", &g_NewDofSensorHeight, 0.001f, 0.1f);
+	CMD4(CCC_Float, "r4_ndof_focus_time", &g_NewDofFocusTime, 0.01f, 10.0f);
+	CMD4(CCC_Float, "r4_ndof_focus_distance", &g_DofFocusDistance, 0.01f, 10000.0f);
+	CMD4(CCC_Float, "r4_ndof_focus_point_x", &g_DofFocusPoint.x, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r4_ndof_focus_point_y", &g_DofFocusPoint.y, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r4_ndof_transition_time", &g_DofTransitionTime, 0.01f, 10.0f);
+	CMD4(CCC_Float, "r4_ndof_max_radius", &g_DofMaxRadius, 1.0f, 40.0f);
+	CMD3(CCC_Token, "r4_ndof_mode", &g_NewDofMode, NewDofModeTokens);
+	CMD3(CCC_Token, "r4_ndof_resolution", &g_DofBlurResolution, DofBlurResolutionTokens);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask32,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 
 	CMD3(CCC_Mask32,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD4(CCC_Float,		"r2_sun_shafts_falloff",		&g_SunShaftsFalloff,		0.0f, 0.2f);
+	CMD2(CCC_Boolean, "r2_sun_shafts_alternative", &g_SunShaftsAlternative);
 	CMD3(CCC_Token,		"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 
 	CMD3(CCC_Mask32,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);

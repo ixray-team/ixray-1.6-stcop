@@ -6,7 +6,7 @@ class CDS0_UIShader :
 public:
 	CDS0_UIShader();
 	virtual void Copy(IUIShader& _in) override;
-	virtual void create(const char* sh, const char* tex = 0) override;
+	virtual void create(LPCSTR sh, LPCSTR tex = 0) override;
 	virtual bool inited() override;
 	virtual void destroy() override;
 };
@@ -30,7 +30,7 @@ public:
 	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) override;
 	virtual void FlushPrimitive() override;
 	virtual void Flush();
-	virtual const char* UpdateShaderName(const char* tex_name, const char* sh_name) override;
+	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name) override;
 
 	virtual void	CacheSetXformWorld(const Fmatrix& M) override;
 	virtual void	CacheSetCullMode(ERHI_CULLMODE) override;

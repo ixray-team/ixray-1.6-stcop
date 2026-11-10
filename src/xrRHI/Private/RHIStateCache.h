@@ -30,8 +30,8 @@ namespace std
 			hash = hash * 31 + desc.CullMode;
 			hash = hash * 31 + desc.FrontCounterClockwise;
 			hash = hash * 31 + desc.DepthBias;
-			hash = hash * 31 + *reinterpret_cast<const u32*>(&desc.DepthBiasClamp);
-			hash = hash * 31 + *reinterpret_cast<const u32*>(&desc.SlopeScaledDepthBias);
+			hash = hash * 31 + *reinterpret_cast<const UINT*>(&desc.DepthBiasClamp);
+			hash = hash * 31 + *reinterpret_cast<const UINT*>(&desc.SlopeScaledDepthBias);
 			hash = hash * 31 + desc.DepthClipEnable;
 			hash = hash * 31 + desc.ScissorEnable;
 			hash = hash * 31 + desc.MultisampleEnable;

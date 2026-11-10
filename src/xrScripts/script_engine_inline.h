@@ -27,7 +27,7 @@ CScriptProcess *CScriptEngine::script_process	(const EScriptProcessors &process_
 	return									(0);
 }
 
-IC void CScriptEngine::parse_script_namespace(const char* function_to_call, char* name_space, u32 const namespace_size, char* function, u32 const function_size)
+IC void CScriptEngine::parse_script_namespace(const char* function_to_call, LPSTR name_space, u32 const namespace_size, LPSTR function, u32 const function_size)
 {
 	const char* I = function_to_call, * J = 0;
 	for (; ; J = I, ++I)

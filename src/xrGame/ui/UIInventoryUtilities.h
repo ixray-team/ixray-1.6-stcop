@@ -108,7 +108,7 @@ const shared_str GetTimeAsString(ALife::_TIME_ID time, ETimePrecision timePrec, 
 const shared_str GetTimeAndDateAsString(ALife::_TIME_ID time, bool legacyMode = false);
 const shared_str Get_GameTimeAndDate_AsString();
 
-const char* GetTimePeriodAsString(char* _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
+const char* GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
 // Отобразить вес, который несет (*pInvOwner)
 void UpdateWeight(CUIStatic& wnd, bool withPrefix = false);
 void UpdateWeightStr(CUIStatic* weightLabel, CUIStatic& wnd_max, CInventoryOwner* pInvOwner);

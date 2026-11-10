@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 
-void xrMemFill32_x86(void* dest, size_t value, size_t count)
+void  xrMemFill32_x86(LPVOID dest, size_t value, size_t count)
 {
 	u32* ptr = (u32*)dest;
 	u32* end = ptr + count;
@@ -9,12 +9,12 @@ void xrMemFill32_x86(void* dest, size_t value, size_t count)
 }
 
 #if defined(IXR_ARM64)
-void xrMemFill32_MMX(void* dest, size_t value, size_t count)
+void xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
 {
 	xrMemFill32_x86(dest, value, count);
 }
 #elif defined(IXR_X64)
-void xrMemFill32_MMX(void* dest, size_t value, size_t count)
+void xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
 {
 	xrMemFill32_x86(dest, value, count);
 }
@@ -23,7 +23,7 @@ void xrMemFill32_MMX(void* dest, size_t value, size_t count)
 block fill:fill a number of DWORDs at DWORD aligned destination
 with DWORD initializer using cacheable stores
 */
-void xrMemFill32_MMX(void* dest, size_t value, size_t count)
+void xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
 {
 	__asm {
 		MOV EDI,[dest];								// pointer to dst,DWORD aligned
@@ -73,3 +73,4 @@ $filldone2_fc:
 	}
 }
 #endif
+

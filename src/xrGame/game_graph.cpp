@@ -44,7 +44,7 @@ CGameGraph::CGameGraph(const IReader& _stream)
 
 	const u32 AIVersion = header().version();
 	R_ASSERT2(CHECK_SPAWN_VERSION(AIVersion), "Graph version mismatch!");
-	m_edges = (u8*)_stream.pointer();
+	m_edges = (BYTE*)_stream.pointer();
 	m_nodes = (CVertex*)_stream.pointer();
 	m_current_level_some_vertex_id = _GRAPH_ID(-1);
 	m_enabled.assign(header().vertex_count(), true);

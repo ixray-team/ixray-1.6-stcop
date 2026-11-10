@@ -20,8 +20,8 @@ private:
 		Fvector				UVclamp_min	;
 		Fvector				UVclamp_max	;
 		Fbox				BB			;
-		u32 dwFrame;
-		u32 dwTimeValid;
+		DWORD				dwFrame		;
+		DWORD				dwTimeValid	;
 	};
 private:
 	IRenderable*			current;

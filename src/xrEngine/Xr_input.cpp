@@ -370,7 +370,7 @@ const xr_map<int, char> russian_lookup_key_table = {
 	{ SDL_SCANCODE_Z, 0xFF }, 
 };
 
-bool CInput::get_dik_name(int dik, char* dest_str, int dest_sz)
+bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
 #if defined(__APPLE__) || defined(IXR_LINUX)
 	// The Cyrillic CP1251 table below is a Windows-layout hack; on macOS and

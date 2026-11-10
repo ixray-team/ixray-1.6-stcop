@@ -258,7 +258,7 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 			}
 		}
 
-		for (u32 mip_level = 1, count = pMippedRT.size(); mip_level < count; ++mip_level)
+		for(UINT mip_level = 1, count = pMippedRT.size(); mip_level < count; ++mip_level)
 		{
 			rtvDesc.MipSlice = mip_level;
 			pMippedRT[mip_level] = GRHI->CreateRenderTargetView(pSurface, rtvDesc);
@@ -386,7 +386,7 @@ void CRTC::create(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFla
 			break;
 	}
 
-	for (u32 i = 0; i < 6; i++)
+	for(UINT i = 0; i < 6; i++)
 	{
 		// Create a copy for each face to avoid modifying the original
 		RHIRenderTargetViewDesc faceRtvDesc = descRTV;
@@ -403,7 +403,7 @@ void CRTC::destroy()
 	pTexture->surface_set(0);
 	pTexture = nullptr;
 
-	for (u32 i = 0; i < 6; ++i)
+	for(UINT i = 0; i < 6; ++i)
 	{
 		_RELEASE(pRT[i]);
 	}

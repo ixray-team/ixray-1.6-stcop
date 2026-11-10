@@ -325,13 +325,6 @@ void CRenderDevice::CalculateTransforms()
 	mProject_old			= mProject_saved;
 	mFullTransform_old		= mFullTransform_saved;
 
-	if (IsCameraCut())
-	{
-		mView_old = mView;
-		mProject_old = mProject;
-		mFullTransform_old = mFullTransform;
-	}
-
 	if (m_pRender)
 	{
 		m_pRender->SetCacheXformOld(mView_old, mProject_old);
@@ -559,10 +552,9 @@ void CRenderDevice::FrameMove()
 	
 	float dt = 0;
 	
-	const bool IsFixed = FixedDelta > 0.0f;
 	if (!Paused())
 	{
-		dt = IsFixed ? FixedDelta : Timer.GetElapsed_sec();
+		dt = Timer.GetElapsed_sec();
 		Timer.Start();
 	}
 	else
@@ -575,10 +567,10 @@ void CRenderDevice::FrameMove()
 	float prev_dt = fTimeDelta;
 	fTimeDeltaContinual = dt * (1.f/time_factor());
 	constexpr float a = .1f;
-	fTimeDelta = IsFixed ? dt : a * dt + (1.f - a) * prev_dt;
+	fTimeDelta = a * dt + (1.f - a) * prev_dt;
 	fTimeDeltaSmoothing = fTimeDelta;
 
-	if (use_smoothed_delta && !IsFixed)
+	if (use_smoothed_delta)
 	{
 		delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
 		fTimeDelta = fTimeDeltaSmoothing;
@@ -588,16 +580,9 @@ void CRenderDevice::FrameMove()
 	clamp(fTimeDelta, EPS_S, .1f);
 	clamp(fTimeDeltaSmoothing, EPS_S, .1f);
 
-	const u64 RealGlobal = TimerGlobal.GetElapsed_mcs();
-	if (IsFixed && !Paused())
-	{
-		GlobalShift.fetch_add(static_cast<s64>(dt * 1000000.0f) - (static_cast<s64>(RealGlobal) - static_cast<s64>(LastGlobal)), std::memory_order_relaxed);
-	}
-	LastGlobal = RealGlobal;
-	const s64 Global = std::max<s64>(static_cast<s64>(RealGlobal) + GlobalShift.load(std::memory_order_relaxed), 0);
-	fTimeGlobal = static_cast<float>(static_cast<double>(Global) / 1000000.0);
+	fTimeGlobal = TimerGlobal.GetElapsed_sec();
 	u32 _old_global = dwTimeGlobal;
-	dwTimeGlobal = static_cast<u32>(Global / 1000);
+	dwTimeGlobal = TimerGlobal.GetElapsed_ms();
 	dwTimeDelta = dwTimeGlobal - _old_global;
 
 	Statistic->EngineTOTAL.Begin();

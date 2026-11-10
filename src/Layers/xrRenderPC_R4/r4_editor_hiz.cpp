@@ -201,7 +201,7 @@ void CEditorHiZ::Build(GfxCmdList& Cmd)
 	Cmd.SetCS(P.cs);
 	Cmd.Constants.Write<CBEditor>().editor_hiz_params.set(float(Width), float(Height), 0.f, 0.f);
 
-	u32 InitialCount = 0;
+	UINT InitialCount = 0;
 	HWContext()->CSSetUnorderedAccessViews(0, 1, &GridUAV, &InitialCount);
 	Cmd.Dispatch((GridWidth + 7) / 8, (GridHeight + 7) / 8, 1);
 

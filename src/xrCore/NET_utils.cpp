@@ -36,7 +36,7 @@ NET_Packet_byte_vector_pool& NET_Packet_byte_vector_pool::GetInstance()
 	return instance;
 }
 
-void NET_Packet_byte_vector_pool::Allocate(u8*& Target, size_t& GivenSize, size_t DesiredSize)
+void NET_Packet_byte_vector_pool::Allocate(BYTE*& Target, size_t& GivenSize, size_t DesiredSize)
 {
 	if (!IVERIFY(!Target))
 	{
@@ -48,7 +48,7 @@ void NET_Packet_byte_vector_pool::Allocate(u8*& Target, size_t& GivenSize, size_
 	auto Slot = buffers.find(GivenSize);
 	if (Slot == buffers.end() || Slot->second.empty())
 	{
-		Target = new u8[GivenSize];
+		Target = new BYTE[GivenSize];
 	} else
 	{
 		Target = Slot->second.front();
@@ -56,7 +56,7 @@ void NET_Packet_byte_vector_pool::Allocate(u8*& Target, size_t& GivenSize, size_
 	}
 }
 
-void NET_Packet_byte_vector_pool::Deallocate(u8*& Target, size_t& BufferSize)
+void NET_Packet_byte_vector_pool::Deallocate(BYTE*& Target, size_t& BufferSize)
 {
 	if (!IVERIFY(Target))
 	{
@@ -153,7 +153,7 @@ void NET_Packet_byte_vector::reserve(size_t size)
 	}
 	if (BuffSize < size)
 	{
-		u8* NewBuff = nullptr;
+		BYTE* NewBuff = nullptr;
 		size_t NewBuffSize = size;
 		NET_Packet_byte_vector_pool::GetInstance().Allocate(NewBuff, NewBuffSize, size);
 		std::memcpy(NewBuff, Buff, UsedSize);
@@ -438,7 +438,7 @@ void NET_Packet::r_sdir(Fvector& A)
 	A.mul			(s);
 }
 
-void NET_Packet::r_stringZ(char* S)
+void NET_Packet::r_stringZ(LPSTR S)
 {
 	if (!inistream)
 	{
@@ -505,7 +505,7 @@ void NET_Packet::r_clientID(ClientID& C)
 	C.set(tmp);
 }
 
-void NET_Packet::r_stringZ_s(char* string, u32 const size)
+void NET_Packet::r_stringZ_s(LPSTR string, u32 const size)
 {
 	if (inistream) 
 	{

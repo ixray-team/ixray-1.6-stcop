@@ -176,8 +176,8 @@ bool bfCreateNamespaceTable(CLuaVirtualMachine *tpLuaVM, const char* caNamespace
 {
 	lua_pushstring	(tpLuaVM,"_G");
 	lua_gettable	(tpLuaVM,LUA_GLOBALSINDEX);
-	char* S2 = xr_strdup(caNamespaceName);
-	char* S = S2;
+	LPSTR			S2	= xr_strdup(caNamespaceName);
+	LPSTR			S	= S2;
 	for (;;) {
 		if (!xr_strlen(S)) {
 			lua_pop		(tpLuaVM,1);
@@ -185,7 +185,7 @@ bool bfCreateNamespaceTable(CLuaVirtualMachine *tpLuaVM, const char* caNamespace
 			xr_free		(S2);
 			return		(false);
 		}
-		char* S1 = strchr(S, '.');
+		LPSTR			S1 = strchr(S,'.');
 		if (S1)
 			*S1				= 0;
 		lua_pushstring	(tpLuaVM,S);
@@ -235,7 +235,7 @@ bool Script::bfLoadBuffer(CLuaVirtualMachine *tpLuaVM, const char* caBuffer, siz
 		string256		insert;
 		xr_sprintf		(insert,sizeof(insert),"local this = %s\n",caNameSpaceName);
 		size_t			str_len = xr_strlen(insert);
-		char* script = xr_alloc<char>(u32(str_len + tSize));
+		LPSTR			script = xr_alloc<char>(u32(str_len + tSize));
 		xr_strcpy		(script, str_len+tSize, insert);
 		CopyMemory		(script+str_len, caBuffer, u32(tSize));
 		l_iErrorCode	= luaL_loadbuffer(tpLuaVM,script,tSize + str_len,caScriptName);
@@ -338,10 +338,10 @@ bool Script::bfGetNamespaceTable(CLuaVirtualMachine *tpLuaVM, const char* N)
 	lua_pushstring 		(tpLuaVM,"_G"); 
 	lua_gettable 		(tpLuaVM,LUA_GLOBALSINDEX); 
 	string256			S2;	xr_strcpy	(S2,N);
-	char* S = S2;
+	LPSTR				S	= S2;
 	for (;;) { 
 		if (!xr_strlen(S)) return	(false); 
-		char* S1 = strchr(S, '.');
+		LPSTR S1 		= strchr(S,'.'); 
 		if (S1) 	*S1 = 0; 
 		lua_pushstring 	(tpLuaVM,S); 
 		lua_gettable 	(tpLuaVM,-2); 
@@ -370,11 +370,11 @@ CLuaVirtualMachine *Script::get_namespace_table(CLuaVirtualMachine *tpLuaVM, con
 	lua_gettable 			(tpLuaVM,LUA_GLOBALSINDEX); 
 	string256				S2;
 	xr_strcpy					(S2,N);
-	char* S = S2;
+	LPSTR					S	= S2;
 	for (;;) { 
 		if (!xr_strlen(S))
 			return			(nullptr); 
-		char* S1 = strchr(S, '.');
+		LPSTR				S1 = strchr(S,'.'); 
 		if (S1)
 			*S1				= 0; 
 		lua_pushstring 		(tpLuaVM,S); 
@@ -425,12 +425,12 @@ luabind::object Script::lua_namespace_table(CLuaVirtualMachine *tpLuaVM, const c
 {
 	string256			S1;
 	xr_strcpy				(S1,namespace_name);
-	char* S = S1;
+	LPSTR				S = S1;
 	luabind::object		lua_namespace = luabind::get_globals(tpLuaVM);
 	for (;;) {
 		if (!xr_strlen(S))
 			return		(lua_namespace);
-		char* I = strchr(S, '.');
+		LPSTR			I = strchr(S,'.');
 		if (!I)
 			return		(lua_namespace[S]);
 		*I				= 0;

@@ -6,6 +6,6 @@ public:
 	virtual ~CDS0_FlareRender() override;
 	virtual void Copy(IFlareRender &_in) override;
 
-	virtual void CreateShader(const char* sh_name, const char* tex_name) override;
+	virtual void CreateShader(LPCSTR sh_name, LPCSTR tex_name) override;
 	virtual void DestroyShader() override;
 };

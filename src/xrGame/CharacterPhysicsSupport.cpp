@@ -39,7 +39,7 @@ bool dbg_draw_ragdoll_spawn = false;
 
 #ifdef DEBUG
 string64 sdbg_stalker_death_anim = "none";
-char* dbg_stalker_death_anim = sdbg_stalker_death_anim;
+LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
 #endif
 constexpr u32 hit_valide_time = 1000;
 static constexpr u32 physics_shell_animated_destroy_delay = 3000;

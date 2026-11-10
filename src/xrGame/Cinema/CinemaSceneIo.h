@@ -18,7 +18,7 @@ inline constexpr const char* LegacyAlias = "$app_data_root$";
 inline constexpr const char* UnsavedFile = "cinema_editor\\unsaved_%s.ltx";
 inline constexpr const char* PresetFile = "cinema_editor\\actor_presets.ltx";
 inline constexpr const char* LegacyPresetFile = "cinema_editor\\presets.ltx";
-inline constexpr u32 PresetVersion = 6, MaxPresets = 512;
+inline constexpr u32 PresetVersion = 5, MaxPresets = 512;
 
 struct Warnings
 {

@@ -43,7 +43,7 @@ configs_dumper::~configs_dumper()
 
 void configs_dumper::shedule_Update(u32 dt)
 {
-	u32 thread_result = WaitForSingleObject(m_make_done_event, 0);
+	DWORD thread_result = WaitForSingleObject(m_make_done_event, 0);
 	R_ASSERT((thread_result != WAIT_ABANDONED) && (thread_result != WAIT_FAILED));
 	R_ASSERT(m_state == ds_active);
 	if (thread_result == WAIT_OBJECT_0)
@@ -261,7 +261,7 @@ void configs_dumper::compress_configs	()
 void configs_dumper::dumper_thread(void* my_ptr)
 {
 	configs_dumper* this_ptr	= static_cast<configs_dumper*>(my_ptr);
-	u32 wait_result = WaitForSingleObject(this_ptr->m_make_start_event, INFINITE);
+	DWORD wait_result = WaitForSingleObject(this_ptr->m_make_start_event, INFINITE);
 	while ((wait_result != WAIT_ABANDONED) || (wait_result != WAIT_FAILED))
 	{
 		if (!this_ptr->is_active())

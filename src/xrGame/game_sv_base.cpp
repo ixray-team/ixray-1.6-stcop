@@ -330,7 +330,7 @@ void game_sv_GameState::OnPlayerConnect			(ClientID /**id_who/**/)
 	signal_Syncronize	();
 }
 
-void game_sv_GameState::OnPlayerDisconnect(ClientID id_who, char*, ALife::_OBJECT_ID)
+void game_sv_GameState::OnPlayerDisconnect		(ClientID id_who, LPSTR, ALife::_OBJECT_ID )
 {
 	signal_Syncronize	();
 }

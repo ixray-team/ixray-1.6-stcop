@@ -2,20 +2,17 @@
 #include "CinemaEditor.h"
 #include "../ImUtils.h"
 #include "../../../xrEngine/ImGuiManager.h"
-#include "../../../xrEngine/Autotest.h"
 #include "../../Cinema/CinemaSceneIo.h"
 #include "../../Cinema/CinemaCamera.h"
-#include "../../../xrEngine/Environment.h"
-#include "../../../xrEngine/IGame_Persistent.h"
 #include "../../../xrEngine/GameMtlLib.h"
 
 namespace Cinema::EditorUi
 {
-constexpr const char* ModalTitles[11] = { "", "Open scene", "Import v4 scene", "Save scene as", "Unsaved changes", "", "Save preset", "Delete preset", "", "Render frames", "Save as animation" };
+constexpr const char* ModalTitles[9] = { "", "Open scene", "Import v4 scene", "Save scene as", "Unsaved changes", "", "Save preset", "Delete preset", "" };
 constexpr const char* SettingsFolder = "cinema_editor\\";
 constexpr const char* SettingsFile = "cinema_editor\\editor.ltx";
 constexpr size_t MaxSettingsSize = 64u << 10;
-constexpr const char* AddLabels[7] = { "Add actor", "", "Add light", "Add particle", "Add decal", "Add weather", "Add post" };
+constexpr const char* AddLabels[4] = { "Add actor", "", "Add light", "Add particle" };
 xr_unique_ptr<Editor> g_Editor;
 
 bool ScenePath(string_path& Out, const char* Alias, const shared_str& LevelName, const xr_string& File)
@@ -57,47 +54,21 @@ void Editor::Draw(Player& Core, bool& IsOpen)
 {
 	WasOpen = true;
 	BeginFrame(Core);
-	UpdateAnimator(Core);
-	if (Job.IsActive)
-	{
-		StepRender(Core);
-		EndFrame(Core);
-		return;
-	}
 	DrawGizmo(Core);
 	DrawTangents(Core);
-	DrawIkHandles(Core);
-	DrawPathKeys(Core);
 	UpdateFly(Core);
-	UpdateHudView(Core);
 	DrawViewCube(Core);
 	Pick(Core);
 	PickColor(Core);
 	PickFocus(Core);
 	DrawHelpers(Core);
-	DrawGhosts(Core);
-	DrawFrameLines(Core);
-	DrawBones(Core);
 	DrawViewportPopup(Core);
 	DrawTimeline(Core, IsOpen);
-	DrawToolbar(Core);
 	DrawInspector(Core);
 	DrawPresets();
-	DrawShots(Core);
-	DrawRetarget(Core);
-	DrawGraph(Core);
 	HandleShortcuts(Core);
 	DrawModals(Core);
-	SyncHudLinks(Core);
-	LayoutReset -= LayoutReset ? 1 : 0;
 	EndFrame(Core);
-}
-
-void Editor::DrawHidden(const Player& Core)
-{
-	Overlay = ImGui::GetForegroundDrawList();
-	DrawFrameLines(Core);
-	Overlay = nullptr;
 }
 
 void Editor::Close(Player& Core)
@@ -106,23 +77,13 @@ void Editor::Close(Player& Core)
 	{
 		return;
 	}
-	if (Job.IsActive)
-	{
-		StopRender(Core, "The editor was closed.");
-	}
 	BeginFrame(Core);
 	Drag = DragKind::None;
 	RenameId = 0;
 	Undo.End(Core.Data);
 	Latches.clear();
-	if (HudNear >= 0.0f)
-	{
-		Device.fViewportNear = HudNear;
-		HudNear = -1.0f;
-	}
 	Core.SetAudition(0, shared_str(), shared_str());
 	Core.Soloed.clear();
-	ReleasePreview();
 	Core.HasUnsavedChanges = Undo.Serial() != SavedSerial || IsLayoutDirty;
 	CImGuiManager::Instance().SetMouseLook(false);
 	IsEditorCamera = IsFlying = IsFlyArmed = IsPanning = IsGizmoActive = IsPickArmed = false;
@@ -198,7 +159,7 @@ void Editor::EndFrame(Player& Core)
 
 void Editor::EndStep(Player& Core)
 {
-	if (Undo.IsOpen() && Drag == DragKind::None && !IsGizmoActive && !IsTangentActive && !IsIkActive && !IsPathKeyActive && !ImGui::IsAnyItemActive() && !Core.HasRequests())
+	if (Undo.IsOpen() && Drag == DragKind::None && !IsGizmoActive && !IsTangentActive && !ImGui::IsAnyItemActive() && !Core.HasRequests())
 	{
 		u8 Used = 0;
 		Object* Rig = FindCamera(Core.Data);
@@ -251,15 +212,15 @@ void Editor::HandleShortcuts(Player& Core)
 	const float Frame = std::round(Core.Time * Rate);
 	if (ImGui::IsKeyPressed(ImGuiKey_Space, false) && !IsFlyArmed)
 	{
-		IsAnimFocused && AnimClipIndex >= 0 && !IsAnimFollowing ? (void)(IsAnimPlaying = !IsAnimPlaying) : PlayPause(Core, ImGui::GetIO().KeyShift);
+		Core.IsPlaying ? Core.Pause() : Core.Play();
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_Home, false))
 	{
-		SeekBoth(Core, 0.0f);
+		Core.Seek(0.0f);
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_End, false))
 	{
-		SeekBoth(Core, ContentEnd(Core.Data));
+		Core.Seek(ContentEnd(Core.Data));
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
 	{
@@ -283,7 +244,7 @@ void Editor::HandleShortcuts(Player& Core)
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_Delete, false) && Drag == DragKind::None)
 	{
-		IsAnimFocused && !AnimKeys.empty() ? DeleteAnimKeys(Core) : DeleteSelection(Core);
+		DeleteSelection(Core);
 	}
 	const bool IsIdle = Drag == DragKind::None && !IsGizmoActive && !IsFlying;
 	if (IsIdle && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_C))
@@ -306,59 +267,9 @@ void Editor::HandleShortcuts(Player& Core)
 	{
 		IsAutoKey = !IsAutoKey;
 	}
-	if (IsIdle && !IsFlyArmed && ImGui::IsKeyChordPressed(ImGuiKey_B))
+	if (IsIdle && !IsFlyArmed && ImGui::IsKeyChordPressed(ImGuiKey_F))
 	{
-		IsPosing = !IsPosing;
-	}
-	const ImGuiKey Tools[4] = { ImGuiKey_W, ImGuiKey_E, ImGuiKey_R, ImGuiKey_Q };
-	for (u32 Index = 0; Index < 4; ++Index)
-	{
-		if (IsIdle && !IsFlyArmed && !IsGraphFocused && ImGui::IsKeyChordPressed(Tools[Index]))
-		{
-			Gizmo = Index == 3 ? GizmoMode::Universal : static_cast<GizmoMode>(Index);
-		}
-	}
-	if (IsIdle && !IsFlyArmed && !IsGraphFocused && ImGui::IsKeyChordPressed(ImGuiKey_X))
-	{
-		bool& IsLocal = GizmoItems.size() > 1 ? IsGizmoLocalMulti : IsGizmoLocalSingle;
-		IsLocal = !IsLocal;
-	}
-	if (IsIdle && !IsFlyArmed && !IsGraphFocused && ImGui::IsKeyChordPressed(ImGuiKey_V))
-	{
-		if (Core.IsLookingThrough)
-		{
-			UseEditorCamera(Core);
-		}
-		else
-		{
-			Core.IsLookingThrough = true;
-		}
-	}
-	if (IsIdle && !IsFlyArmed && ImGui::IsKeyChordPressed(ImGuiKey_G))
-	{
-		Settings.ShowSafe = !Settings.ShowSafe;
-	}
-	if (IsIdle && !IsFlyArmed && !IsGraphFocused && ImGui::IsKeyChordPressed(ImGuiKey_F))
-	{
-		IsPosing && !SelectedBones.empty() ? KeyBones(Core) : KeyPlayhead(Core);
-	}
-	float Lo = 0.0f, Hi = 0.0f;
-	if (IsIdle && !IsFlyArmed && !IsGraphFocused && ImGui::IsKeyChordPressed(ImGuiKey_Z))
-	{
-		if (!SelectionSpan(Core, Lo, Hi))
-		{
-			Lo = Core.HasLoopRange ? Core.LoopStart : 0.0f;
-			Hi = Core.HasLoopRange ? Core.LoopEnd : std::max(ContentEnd(Core.Data), 1.0f);
-		}
-		ZoomTo(Lo, Hi);
-	}
-	if (IsIdle && !IsFlyArmed && (ImGui::IsKeyChordPressed(ImGuiKey_Equal) || ImGui::IsKeyChordPressed(ImGuiKey_KeypadAdd) || ImGui::IsKeyChordPressed(ImGuiMod_Shift | ImGuiKey_Equal)))
-	{
-		ZoomAround(1.25f, Core.Time);
-	}
-	if (IsIdle && !IsFlyArmed && (ImGui::IsKeyChordPressed(ImGuiKey_Minus) || ImGui::IsKeyChordPressed(ImGuiKey_KeypadSubtract)))
-	{
-		ZoomAround(0.8f, Core.Time);
+		KeyPlayhead(Core);
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_F2, false) && (SelectedFolder || Selected.size() == 1))
 	{
@@ -416,32 +327,14 @@ void Editor::LoadSettings()
 	ReadFloat("range_step", Settings.RangeStep, 0.01f, 10.0f);
 	ReadFloat("header_width", Settings.HeaderWidth, MinHeaderWidth, MaxHeaderWidth);
 	ReadFloat("opacity", Settings.Opacity, 0.1f, 1.0f);
-	ReadFloat("look_sensitivity", Settings.LookSensitivity, 0.1f, 4.0f);
-	ReadFloat("onion_count", Settings.OnionCount, 1.0f, 5.0f);
-	ReadFloat("onion_step", Settings.OnionStep, 1.0f, 30.0f);
-	Settings.ShowOnion = Io::ReadBool(Ini, "editor", "onion", Settings.ShowOnion, Notes);
-	Settings.ShowPaths = Io::ReadBool(Ini, "editor", "paths", Settings.ShowPaths, Notes);
-	Settings.ShowSafe = Io::ReadBool(Ini, "editor", "safe_areas", Settings.ShowSafe, Notes);
-	Settings.ShowThirds = Io::ReadBool(Ini, "editor", "thirds", Settings.ShowThirds, Notes);
-	ReadFloat("frame_aspect", Settings.FrameRatio, 0.0f, 8.0f);
-	ReadFloat("frame_mask", Settings.FrameMask, 0.0f, 1.0f);
-	Settings.FrameRatio = std::round(Settings.FrameRatio);
-	ReadFloat("fly_smoothing", Settings.FlySmoothing, 0.0f, 0.5f);
-	ReadFloat("record_smoothing", Settings.RecordSmoothing, 0.0f, 0.5f);
-	ReadFloat("render_warmup", Settings.RenderWarmup, 0.0f, 30.0f);
 	ReadFloat("row_height", Settings.DefaultRow, 1.0f, MaxRowSize);
 	ReadFloat("lane_height", Settings.DefaultLane, 1.0f, MaxLaneSize);
 	Settings.IsSnapping = Io::ReadBool(Ini, "editor", "snap", Settings.IsSnapping, Notes);
 	Settings.SnapStep = static_cast<u8>(Io::ReadU32(Ini, "editor", "snap_step", 6, Notes));
 	Settings.ShowHelpers = Io::ReadBool(Ini, "editor", "helpers", Settings.ShowHelpers, Notes);
-	Settings.ShowHints = Io::ReadBool(Ini, "editor", "hints", Settings.ShowHints, Notes);
-	Settings.IsGizmoSnapping = Io::ReadBool(Ini, "editor", "gizmo_snap", Settings.IsGizmoSnapping, Notes);
 	Settings.DofPreview = Io::ReadBool(Ini, "editor", "dof_preview", Settings.DofPreview, Notes);
-	Settings.IsFollowing = Io::ReadBool(Ini, "editor", "follow", Settings.IsFollowing, Notes);
 	Settings.ShowInspector = Io::ReadBool(Ini, "editor", "inspector", Settings.ShowInspector, Notes);
 	Settings.ShowPresets = Io::ReadBool(Ini, "editor", "presets", Settings.ShowPresets, Notes);
-	Settings.ShowShots = Io::ReadBool(Ini, "editor", "shots", Settings.ShowShots, Notes);
-	Settings.ShowGraph = Io::ReadBool(Ini, "editor", "graph", Settings.ShowGraph, Notes);
 	for (const xr_string& Line : Notes.Lines)
 	{
 		Msg("! Cinema editor: %s: %s", Path, Line.c_str());
@@ -462,29 +355,12 @@ void Editor::SaveSettings()
 	Ini.w_float("editor", "range_step", Settings.RangeStep);
 	Ini.w_float("editor", "header_width", Settings.HeaderWidth);
 	Ini.w_float("editor", "opacity", Settings.Opacity);
-	Ini.w_float("editor", "look_sensitivity", Settings.LookSensitivity);
-	Ini.w_float("editor", "fly_smoothing", Settings.FlySmoothing);
-	Ini.w_float("editor", "record_smoothing", Settings.RecordSmoothing);
-	Ini.w_float("editor", "render_warmup", Settings.RenderWarmup);
 	Ini.w_float("editor", "row_height", Settings.DefaultRow);
 	Ini.w_float("editor", "lane_height", Settings.DefaultLane);
 	Ini.w_bool("editor", "helpers", Settings.ShowHelpers);
-	Ini.w_bool("editor", "hints", Settings.ShowHints);
-	Ini.w_bool("editor", "gizmo_snap", Settings.IsGizmoSnapping);
-	Ini.w_bool("editor", "onion", Settings.ShowOnion);
-	Ini.w_bool("editor", "paths", Settings.ShowPaths);
-	Ini.w_bool("editor", "safe_areas", Settings.ShowSafe);
-	Ini.w_bool("editor", "thirds", Settings.ShowThirds);
-	Ini.w_float("editor", "frame_aspect", Settings.FrameRatio);
-	Ini.w_float("editor", "frame_mask", Settings.FrameMask);
-	Ini.w_float("editor", "onion_count", Settings.OnionCount);
-	Ini.w_float("editor", "onion_step", Settings.OnionStep);
 	Ini.w_bool("editor", "dof_preview", Settings.DofPreview);
-	Ini.w_bool("editor", "follow", Settings.IsFollowing);
-	Ini.w_bool("editor", "inspector", ShowAnimator ? WorkspaceShown[0][0] : Settings.ShowInspector);
-	Ini.w_bool("editor", "presets", ShowAnimator ? WorkspaceShown[0][1] : Settings.ShowPresets);
-	Ini.w_bool("editor", "shots", ShowAnimator ? WorkspaceShown[0][2] : Settings.ShowShots);
-	Ini.w_bool("editor", "graph", ShowAnimator ? WorkspaceShown[0][3] : Settings.ShowGraph);
+	Ini.w_bool("editor", "inspector", Settings.ShowInspector);
+	Ini.w_bool("editor", "presets", Settings.ShowPresets);
 	string_path Path;
 	xr_string Error;
 	FS.update_path(Path, Io::LegacyAlias, EditorUi::SettingsFile);
@@ -500,19 +376,7 @@ void Editor::DrawMenuBar(Player& Core)
 	{
 		return;
 	}
-	if (ImGui::MenuItem("Scene", nullptr, !ShowAnimator))
-	{
-		SetWorkspace(false);
-	}
-	ImGui::SetItemTooltip("Scene workspace: the scene timeline, objects, shots");
-	if (ImGui::MenuItem("Animation", nullptr, ShowAnimator))
-	{
-		SetWorkspace(true);
-	}
-	ImGui::SetItemTooltip("Animation workspace: the animation timeline of one clip, bones, curves");
-	ImGui::Separator();
-	const bool IsMenuOpen = ImGui::BeginMenu("Menu");
-	if (IsMenuOpen && !ShowAnimator && ImGui::BeginMenu("File"))
+	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("New"))
 		{
@@ -535,15 +399,9 @@ void Editor::DrawMenuBar(Player& Core)
 		{
 			ShowModal(Core, ModalKind::SaveAs);
 		}
-		ImGui::Separator();
-		if (ImGui::MenuItem("Render frames...", nullptr, false, FindCamera(Core.Data) != nullptr))
-		{
-			RenderAspect = static_cast<s32>(Settings.FrameRatio);
-			Modal = ModalKind::Render;
-		}
 		ImGui::EndMenu();
 	}
-	if (IsMenuOpen && ImGui::BeginMenu("Edit"))
+	if (ImGui::BeginMenu("Edit"))
 	{
 		const char* UndoLabel = Undo.UndoLabel();
 		const char* RedoLabel = Undo.RedoLabel();
@@ -591,10 +449,10 @@ void Editor::DrawMenuBar(Player& Core)
 		}
 		ImGui::EndMenu();
 	}
-	if (IsMenuOpen && !ShowAnimator && ImGui::BeginMenu("Add"))
+	if (ImGui::BeginMenu("Add"))
 	{
 		LoadPresets();
-		for (u32 Index = 0; Index < std::size(AddChoices); ++Index)
+		for (u32 Index = 0; Index < 3; ++Index)
 		{
 			if (ImGui::MenuItem(AddChoices[Index], nullptr, false, Index != 1 || !Presets.empty()))
 			{
@@ -608,14 +466,6 @@ void Editor::DrawMenuBar(Player& Core)
 		{
 			AddLight(Core, Core.Time, Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, 3.0f));
 		}
-		if (ImGui::MenuItem("Weather"))
-		{
-			AddWeather(Core, Core.Time);
-		}
-		if (ImGui::MenuItem("Post"))
-		{
-			AddPost(Core, Core.Time);
-		}
 		if (ImGui::MenuItem("Camera move"))
 		{
 			AddCameraMove(Core, Core.Time);
@@ -626,7 +476,7 @@ void Editor::DrawMenuBar(Player& Core)
 		}
 		ImGui::EndMenu();
 	}
-	if (IsMenuOpen && ImGui::BeginMenu("View"))
+	if (ImGui::BeginMenu("View"))
 	{
 		if (ImGui::MenuItem("Game camera", nullptr, !IsEditorCamera))
 		{
@@ -644,48 +494,11 @@ void Editor::DrawMenuBar(Player& Core)
 		{
 			Roll = 0.0f;
 		}
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		ImGui::SliderFloat("Look sensitivity", &Settings.LookSensitivity, 0.1f, 4.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_Logarithmic);
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		ImGui::SliderFloat("Fly smoothing", &Settings.FlySmoothing, 0.0f, 0.5f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		ImGui::SliderFloat("Record smoothing", &Settings.RecordSmoothing, 0.0f, 0.5f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
 		ImGui::Separator();
 		ImGui::MenuItem("Helpers", nullptr, &Settings.ShowHelpers);
-		ImGui::MenuItem("Hints", nullptr, &Settings.ShowHints);
 		ImGui::MenuItem("DOF preview", nullptr, &Settings.DofPreview);
 		ImGui::MenuItem("Inspector", nullptr, &Settings.ShowInspector);
 		ImGui::MenuItem("Presets", nullptr, &Settings.ShowPresets);
-		ImGui::MenuItem("Shots & Markers", nullptr, &Settings.ShowShots);
-		if (ImGui::MenuItem("Reset layout"))
-		{
-			LayoutReset = 2;
-		}
-		ImGui::MenuItem("HUD view", nullptr, &IsHudView);
-		ImGui::MenuItem("Graph Editor", nullptr, &Settings.ShowGraph);
-		ImGui::Separator();
-		ImGui::MenuItem("Onion skin", nullptr, &Settings.ShowOnion);
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		ImGui::SliderFloat("Onion count", &Settings.OnionCount, 1.0f, 5.0f, "%.0f", ImGuiSliderFlags_AlwaysClamp);
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		ImGui::SliderFloat("Onion step", &Settings.OnionStep, 1.0f, 30.0f, "%.0f frames", ImGuiSliderFlags_AlwaysClamp);
-		ImGui::MenuItem("Motion paths", nullptr, &Settings.ShowPaths);
-		ImGui::MenuItem("Bones", "B", &IsPosing);
-		ImGui::Separator();
-		s32 Ratio = static_cast<s32>(Settings.FrameRatio);
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		if (ImGui::Combo("Frame lines", &Ratio, "Off\0" "2.39:1\0" "21:9\0" "2:1\0" "1.85:1\0" "16:9\0" "4:3\0" "1:1\0" "9:16\0"))
-		{
-			Settings.FrameRatio = static_cast<float>(Ratio);
-		}
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
-		ImGui::SliderFloat("Frame mask", &Settings.FrameMask, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-		ImGui::MenuItem("Safe areas", "G", &Settings.ShowSafe);
-		ImGui::MenuItem("Thirds", nullptr, &Settings.ShowThirds);
-		ImGui::EndMenu();
-	}
-	if (IsMenuOpen)
-	{
 		ImGui::EndMenu();
 	}
 	ImGui::EndMenuBar();
@@ -735,14 +548,6 @@ void Editor::DrawModals(Player& Core)
 		{
 			Modal = ModalKind::None;
 		}
-	}
-	else if (Modal == ModalKind::Render)
-	{
-		DrawRenderModal(Core);
-	}
-	else if (Modal == ModalKind::SaveMotion)
-	{
-		DrawMotionModal(Core);
 	}
 	else if (Modal == ModalKind::ShiftTime)
 	{
@@ -891,203 +696,6 @@ void Editor::RequestScene(Player& Core, PendingKind Kind, bool IsConfirmed)
 	ShowModal(Core, Kind == PendingKind::Open ? ModalKind::Open : ModalKind::Import);
 }
 
-void Editor::DrawRenderModal(Player& Core)
-{
-	const bool HasRange = Core.HasLoopRange && Core.LoopEnd > Core.LoopStart;
-	RenderRange = HasRange ? RenderRange : 1;
-	ImGui::BeginDisabled(!HasRange);
-	ImGui::RadioButton("Loop brace", &RenderRange, 0);
-	ImGui::EndDisabled();
-	ImGui::SameLine();
-	ImGui::RadioButton("Whole scene", &RenderRange, 1);
-	ImGui::SetNextItemWidth(160.0f);
-	ImGui::Combo("Frame rate", &RenderRate, "Scene\0" "24\0" "25\0" "30\0" "60\0");
-	ImGui::SetNextItemWidth(160.0f);
-	ImGui::Combo("Aspect", &RenderAspect, "Window\0" "2.39:1\0" "21:9\0" "2:1\0" "1.85:1\0" "16:9\0" "4:3\0" "1:1\0" "9:16\0");
-	ImGui::SetNextItemWidth(160.0f);
-	ImGui::Combo("Output", &RenderOutput, "TGA frames\0" "AVI video (MJPEG)\0");
-	ImGui::SetNextItemWidth(160.0f);
-	ImGui::SliderFloat("Cut warm-up", &Settings.RenderWarmup, 0.0f, 30.0f, "%.0f frames", ImGuiSliderFlags_AlwaysClamp);
-	ImGui::SetItemTooltip("Frames rendered and thrown away after every camera cut, so textures, exposure and anti-aliasing settle before the frame is written");
-	ImGui::TextDisabled("Output goes to $app_data_root$\\cinema_renders\\%s\\", SceneName.empty() ? "untitled" : SceneName.c_str());
-	if (ImGui::Button("Render"))
-	{
-		Modal = ModalKind::None;
-		StartRender(Core);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Cancel"))
-	{
-		Modal = ModalKind::None;
-	}
-}
-
-void Editor::DrawMotionModal(Player& Core)
-{
-	const Object* Target = Find(Core.Data, MotionObject);
-	const ActorRuntime* Runtime = Core.FindActor(MotionObject);
-	if (!Target || !Runtime)
-	{
-		Modal = ModalKind::None;
-		return;
-	}
-	float First = FLT_MAX, Last = -FLT_MAX;
-	for (const Lane& Item : Target->Lanes)
-	{
-		for (const Curve& Part : Item.Curves)
-		{
-			if (IsBoneParam(Item.Id) && Item.Layer / MaxPoseBones == MotionRow && !Part.Keys.empty())
-			{
-				First = std::min(First, Part.Keys.front().Time);
-				Last = std::max(Last, Part.Keys.back().Time);
-			}
-		}
-	}
-	const bool HasKeys = Last > First, HasBrace = Core.HasLoopRange && Core.LoopEnd > Core.LoopStart;
-	MotionRange = (MotionRange == 0 && !HasKeys) || (MotionRange == 1 && !HasBrace) ? 2 : MotionRange;
-	if (ImGui::IsWindowAppearing())
-	{
-		ImGui::SetKeyboardFocusHere();
-	}
-	ImGui::SetNextItemWidth(360.0f);
-	ImGui::InputTextWithHint("##Name", "Name", NameBuffer, 64);
-	ImGui::BeginDisabled(!HasKeys);
-	ImGui::RadioButton("Pose keys", &MotionRange, 0);
-	ImGui::EndDisabled();
-	ImGui::SameLine();
-	ImGui::BeginDisabled(!HasBrace);
-	ImGui::RadioButton("Loop brace", &MotionRange, 1);
-	ImGui::EndDisabled();
-	ImGui::SameLine();
-	ImGui::RadioButton("Whole clip", &MotionRange, 2);
-	ImGui::RadioButton("Pose only", &MotionSource, 0);
-	ImGui::SameLine();
-	ImGui::RadioButton("Final result", &MotionSource, 1);
-	const float Start = Target->Span.Start;
-	const float From = MotionRange == 0 ? Start + First : MotionRange == 1 ? Core.LoopStart : Start, To = MotionRange == 0 ? Start + Last : MotionRange == 1 ? Core.LoopEnd : Start + Target->Span.Length;
-	const u32 Frames = static_cast<u32>(std::clamp((To - From) * Omf::MotionRate, 0.0f, 1000000.0f)) + 1;
-	const size_t Length = xr_strlen(NameBuffer);
-	const bool IsNamed = Length > 0 && std::all_of(NameBuffer, NameBuffer + Length, [](char Symbol) { return (Symbol >= 'a' && Symbol <= 'z') || (Symbol >= '0' && Symbol <= '9') || Symbol == '_'; });
-	string_path File, Full;
-	xr_sprintf(File, "cinema\\motions\\%s.omf", IsNamed ? NameBuffer : "");
-	const char* Problem = !IsNamed ? "Use a-z, 0-9 and _ only." : FS.exist(Full, "$app_data_root$", File) ? "An animation with this name exists." : Frames < 2 ? "The range is empty." : Frames > Omf::MaxMotionFrames ? "The range is longer than 10 minutes." : Target->Actor.Packs.size() >= MaxPacks ? "The actor has no free pack slot." : "";
-	ImGui::TextColored(ErrorColor, "%s", Length ? Problem : "");
-	ImGui::TextDisabled("Saved to $app_data_root$\\cinema\\motions\\");
-	ImGui::BeginDisabled(Problem[0] != 0);
-	if (ImGui::Button("Save"))
-	{
-		xr_vector<shared_str> Bones;
-		xr_vector<Fquaternion> Turns;
-		xr_vector<Fvector> Shifts;
-		for (u16 Bone = 0; Bone < Runtime->BoneCount(); ++Bone)
-		{
-			Bones.push_back(Runtime->BoneName(Bone));
-		}
-		IWriter* Writer = !Bones.empty() && Core.BakeMotion(MotionObject, From, Frames, MotionSource == 0, Turns, Shifts) ? FS.w_open("$app_data_root$", File) : nullptr;
-		const bool IsWritten = Writer && Writer->valid();
-		if (IsWritten)
-		{
-			CMemoryWriter Output;
-			Omf::WriteMotion(NameBuffer, Bones, Turns, Shifts, Output);
-			Writer->w(Output.pointer(), Output.size());
-			Edit(Core, MotionObject, "Save as animation")->Actor.Packs.push_back(File);
-		}
-		if (Writer)
-		{
-			FS.w_close(Writer, true);
-		}
-		SetStatus(!IsWritten, IsWritten ? "Saved animation %s" : "Could not save animation %s", NameBuffer);
-		Modal = ModalKind::None;
-	}
-	ImGui::EndDisabled();
-	ImGui::SameLine();
-	if (ImGui::Button("Cancel"))
-	{
-		Modal = ModalKind::None;
-	}
-}
-
-void Editor::StartRender(Player& Core)
-{
-	constexpr double Rates[5] = { 0.0, 24.0, 25.0, 30.0, 60.0 };
-	const bool IsBrace = RenderRange == 0 && Core.HasLoopRange && Core.LoopEnd > Core.LoopStart;
-	const double Begin = IsBrace ? Core.LoopStart : 0.0, End = IsBrace ? Core.LoopEnd : ContentEnd(Core.Data);
-	const double Rate = RenderRate > 0 && RenderRate < 5 ? Rates[RenderRate] : static_cast<double>(Core.Data.Header.FrameRate);
-	string_path Sub;
-	xr_sprintf(Sub, "cinema_renders\\%s\\", SceneName.empty() ? "untitled" : SceneName.c_str());
-	Job = {};
-	FS.update_path(Job.Folder, "$app_data_root$", Sub);
-	Job.Begin = Begin;
-	Job.Rate = Rate;
-	Job.Count = static_cast<u32>(std::clamp(std::ceil((End - Begin) * Rate - 1e-3), 1.0, 999999.0));
-	Job.Aspect = FrameAspects[std::clamp(RenderAspect, 0, 8)];
-	Job.IsVideo = RenderOutput == 1;
-	xr_sprintf(Job.Video, "%s%s.avi", Job.Folder, SceneName.empty() ? "untitled" : SceneName.c_str());
-	if (Job.IsVideo && !Autotest::OpenVideo(Job.Video, Rate))
-	{
-		SetStatus(true, "Could not create %s", Job.Video);
-		return;
-	}
-	Job.WasLooping = Core.IsLooping;
-	Job.IsActive = true;
-	Core.IsLooping = false;
-	IsEditorCamera = IsFlying = IsFlyArmed = IsPanning = IsGizmoActive = IsPickArmed = false;
-	CImGuiManager::Instance().SetMouseLook(false);
-	Core.IsLookingThrough = true;
-	Core.SetEditorView(false, false, Eye, Fidentity);
-	Core.Play();
-	Device.FixedDelta = static_cast<float>(1.0 / Rate);
-}
-
-void Editor::StepRender(Player& Core)
-{
-	const s32 Status = Autotest::FrameStatus();
-	Job.Index += Job.HasRequest && Status == 0 ? 1 : 0;
-	const char* Problem = Job.HasRequest && Status < 0 ? "A frame could not be written." : !g_pGameLevel ? "The level was unloaded." : Device.Paused() ? "The game is paused." : nullptr;
-	Job.HasRequest = Job.HasRequest && Status == 1;
-	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::Begin("Rendering frames###CinemaRender", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
-	ImGui::Text(Job.Warm ? "Frame %u of %u (warming up)" : "Frame %u of %u", std::min(Job.Index + 1, Job.Count), Job.Count);
-	ImGui::ProgressBar(static_cast<float>(Job.Index) / static_cast<float>(Job.Count), ImVec2(240.0f, 0.0f));
-	const bool IsCancelled = ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape, false);
-	ImGui::End();
-	if (Problem || IsCancelled || Job.Index >= Job.Count)
-	{
-		StopRender(Core, Problem ? Problem : IsCancelled ? "Rendering cancelled." : nullptr);
-		return;
-	}
-	if (!Job.HasRequest && Job.WarmIndex != Job.Index)
-	{
-		const float Shown = static_cast<float>(Job.Begin + (static_cast<double>(Job.Index) - 1.0) / Job.Rate);
-		Job.WarmIndex = Job.Index;
-		Job.Warm = Job.Index && Core.IsCutBetween(Shown - static_cast<float>(1.0 / Job.Rate), Shown) ? static_cast<u32>(Settings.RenderWarmup) : 0;
-	}
-	const bool IsWarming = !Job.HasRequest && Job.Warm > 0;
-	if (IsWarming)
-	{
-		--Job.Warm;
-	}
-	else if (!Job.HasRequest)
-	{
-		string_path Path;
-		xr_sprintf(Path, "%sframe_%06u.tga", Job.Folder, Job.Index);
-		Autotest::RequestFrame(Path, Job.Aspect);
-		Job.HasRequest = true;
-	}
-	Core.IsPlaying = true;
-	Core.Time = static_cast<float>(Job.Begin + (static_cast<double>(Job.Index) - (IsWarming ? 2.0 : 1.0)) / Job.Rate);
-}
-
-void Editor::StopRender(Player& Core, const char* Problem)
-{
-	Device.FixedDelta = 0.0f;
-	Core.Pause();
-	Core.IsLooping = Job.WasLooping;
-	Job.IsActive = false;
-	const u32 Parts = Job.IsVideo ? Autotest::CloseVideo() : 0;
-	SetStatus(Problem != nullptr, Parts > 1 ? "%s %u frames written to %s and %u more parts" : "%s %u frames written to %s", Problem ? Problem : "Done:", Job.Index, Job.IsVideo ? Job.Video : Job.Folder, Parts - 1);
-}
-
 void Editor::ShowModal(const Player& Core, ModalKind Kind)
 {
 	Io::ListScenes(Kind == ModalKind::Import ? Io::LegacyAlias : Io::SceneAlias, Core.Data.LevelName, FileList);
@@ -1157,9 +765,8 @@ void Editor::Save(Player& Core)
 	SceneFile.empty() ? ShowModal(Core, ModalKind::SaveAs) : SaveScene(Core, SceneFile);
 }
 
-void Editor::SaveScene(Player& Core, const xr_string& File)
+void Editor::SaveScene(const Player& Core, const xr_string& File)
 {
-	SaveLibrary(Core);
 	string_path Path;
 	xr_string Error = "The scene path is too long.";
 	if (!EditorUi::ScenePath(Path, Io::SceneAlias, Core.Data.LevelName, File) || !Io::Save(Core.Data, Path, Error))
@@ -1231,7 +838,7 @@ Object* Editor::AddObject(Player& Core, ObjectType Type, const shared_str& Sourc
 	Object* Item = CreateObject(Core, Type, Start);
 	if (Item)
 	{
-		(Type == ObjectType::Particle ? Item->Particle.Effect : Type == ObjectType::Decal ? Item->Decal.Texture : Item->Actor.Visual) = Source;
+		(Type == ObjectType::Particle ? Item->Particle.Effect : Item->Actor.Visual) = Source;
 		*PlacementOf(*Item, 0) = Position;
 		*PlacementOf(*Item, 1) = Rotation;
 		Item->Name = DefaultName(*Item);
@@ -1248,33 +855,6 @@ void Editor::AddLight(Player& Core, float Start, const Fvector& Position)
 	if (Item)
 	{
 		Item->Span.Length = std::min(End - Item->Span.Start >= 1.0f ? End - Item->Span.Start : 5.0f, MaxTime - Item->Span.Start);
-	}
-}
-
-void Editor::AddWeather(Player& Core, float Start)
-{
-	Undo.Begin(EditorUi::AddLabels[static_cast<u32>(ObjectType::Weather)]);
-	Object* Item = CreateObject(Core, ObjectType::Weather, Start);
-	if (!Item || !g_pGamePersistent)
-	{
-		return;
-	}
-	CEnvironment& Env = g_pGamePersistent->Environment();
-	Item->Weather.Cycle = Env.GetWeather();
-	Item->Weather.TimeOfDay = std::clamp(Env.GetGameTime() / 3600.0f, 0.0f, 24.0f);
-	Item->Weather.Mask = 1;
-	Item->Span.Length = std::min(10.0f, MaxTime - Item->Span.Start);
-	Item->Name = DefaultName(*Item);
-}
-
-void Editor::AddPost(Player& Core, float Start)
-{
-	Undo.Begin(EditorUi::AddLabels[static_cast<u32>(ObjectType::Post)]);
-	Object* Item = CreateObject(Core, ObjectType::Post, Start);
-	if (Item)
-	{
-		Item->Span.Length = std::min(5.0f, MaxTime - Item->Span.Start);
-		Item->Name = DefaultName(*Item);
 	}
 }
 
@@ -1521,49 +1101,6 @@ void Editor::AddLayer(Player& Core, u32 Id)
 	FocusBlock = -1;
 }
 
-void Editor::PoseToClip(Player& Core, u32 Id, u32 Row)
-{
-	const Object* Target = Find(Core.Data, Id);
-	if (!Target || Target->Type != ObjectType::Actor || Row >= Target->Actor.Poses.size())
-	{
-		return;
-	}
-	if (Target->Actor.Layers.size() >= MaxActorLayers || Target->Actor.Clips.size() >= MaxClips || Target->Actor.IsRelative)
-	{
-		SetStatus(true, "There is no free animation row for the clip, or the actor is not converted yet.");
-		return;
-	}
-	Object& Item = *Edit(Core, Id, "Pose row to animation clip");
-	ActorData& Setup = Item.Actor;
-	AnimClip Made;
-	string64 Name;
-	u32 Number = static_cast<u32>(Setup.Clips.size()) + 1;
-	do
-	{
-		xr_sprintf(Name, "pose_%u", Number++);
-	} while (FindClip(Setup.Clips, Name) >= 0);
-	Made.Name = Name;
-	Made.Length = std::max(Item.Span.Length, MinLength);
-	Made.Mode = Setup.Poses[Row].Mode;
-	Made.Bones = Setup.Poses[Row].Bones;
-	for (const Lane& Track : Item.Lanes)
-	{
-		if (IsBoneParam(Track.Id) && Track.Layer / MaxPoseBones == Row)
-		{
-			Lane& Copy = Made.Lanes.emplace_back(Track);
-			Copy.Layer = static_cast<u8>(Track.Layer % MaxPoseBones);
-		}
-	}
-	Setup.Clips.push_back(Made);
-	Setup.Poses[Row].IsMuted = true;
-	PlaceClip(Setup, Made.Name, Core.FindActor(Id));
-	FocusObject = Id;
-	FocusLayer = static_cast<u8>(Setup.Layers.size());
-	FocusBlock = 0;
-	Focus = FocusKind::Block;
-	SetStatus(false, "Pose row %u is now the animation clip \"%s\" on Animation %u; the pose row is kept, muted.", Row + 1, Name, static_cast<u32>(Setup.Layers.size()) + 1);
-}
-
 void Editor::RemoveLayer(Player& Core, u32 Id, u8 Layer)
 {
 	const Object* Target = Find(Core.Data, Id);
@@ -1673,10 +1210,9 @@ void Editor::AddFolder(Player& Core)
 void Editor::AddCameraMove(Player& Core, float Time, const PoseKey* Pose)
 {
 	xr_vector<CameraBlock> Shots(1);
-	PoseKey First;
-	ViewPose(Core, false, First);
-	First = Pose ? *Pose : First;
-	Cameras::SetPoseAt(Shots[0], 0.0f, First.Position, First.Rotation, First.Mode, 1e-4f);
+	ViewPose(Core, false, Shots[0].Keys.emplace_back());
+	Shots[0].Keys[0] = Pose ? *Pose : Shots[0].Keys[0];
+	Shots[0].Keys[0].Time = 0.0f;
 	Shots[0].Fov = Core.View() == ViewSource::Editor ? EyeFov : 0.0f;
 	Undo.Begin("Add camera move");
 	InsertShots(Core, Sanitize(Time, 0.0f, MaxTime, 0.0f), Shots, true);
@@ -1818,30 +1354,45 @@ float Editor::FitClip(const CameraData& Data, s32 Skip, float Start, float End, 
 
 void Editor::TrimHead(CameraBlock& Shot, const CameraBlock& Base, float Delta) const
 {
+	const float Path = Delta >= 0.0f ? static_cast<float>(Curves::LaneArea(Base.Lanes, &DragArea, Param::TimeScale, 0, Delta, Base.TimeScale)) : Delta * Curves::LaneScalar(Base.Lanes, Param::TimeScale, 0, 0.0f, Base.TimeScale);
 	Shot.Start = Base.Start + Delta;
 	Shot.Length = Base.Length - Delta;
-	const float PathDelta = Cameras::PathTime(Base, Delta);
+	const auto First = std::upper_bound(Shot.Keys.begin(), Shot.Keys.end(), Path, [](float Moment, const PoseKey& Item) { return Moment < Item.Time; });
+	if (Delta > 0.0f && First != Shot.Keys.begin() && !DragPath.Empty())
+	{
+		PoseKey Cut;
+		Fmatrix Turn = Fidentity;
+		DragPath.Evaluate(Path, Cut.Position, Turn);
+		Turn.getHPB(Cut.Rotation);
+		Cut.Rotation.mul(rad2deg(1.0f));
+		Cut.Time = Path;
+		Cut.Mode = (First - 1)->Mode;
+		*(First - 1) = Cut;
+		Shot.Keys.erase(Shot.Keys.begin(), First - 1);
+	}
+	for (PoseKey& Item : Shot.Keys)
+	{
+		Item.Time = std::max(Item.Time - Path, 0.0f);
+	}
 	for (Lane& Track : Shot.Lanes)
 	{
-		const float Cut = Track.Id <= Param::Rotation ? PathDelta : Delta;
 		for (Curve& Part : Track.Curves)
 		{
-			const auto Kept = std::lower_bound(Part.Keys.begin(), Part.Keys.end(), Cut, [](const Key& Item, float Moment) { return Item.Time < Moment; });
-			if (Cut > 0.0f && Kept != Part.Keys.begin())
+			const auto Kept = std::lower_bound(Part.Keys.begin(), Part.Keys.end(), Delta, [](const Key& Item, float Moment) { return Item.Time < Moment; });
+			if (Delta > 0.0f && Kept != Part.Keys.begin())
 			{
-				const float Value = Curves::Value(Part, Cut, 0.0f);
+				const float Value = Curves::Value(Part, Delta, 0.0f);
 				const Interp Mode = (Kept - 1)->Mode;
-				*(Kept - 1) = Key { Cut, Value, Mode };
+				*(Kept - 1) = Key { Delta, Value, Mode };
 				Part.Keys.erase(Part.Keys.begin(), Kept - 1);
 			}
 			for (Key& Item : Part.Keys)
 			{
-				Item.Time -= Cut;
+				Item.Time -= Delta;
 			}
 			Part.Gen.Phase += Delta * Part.Gen.Frequency;
 		}
 	}
-	Cameras::Rebuild(Shot);
 }
 
 s32 Editor::SortShot(Object& Rig, s32 Block)
@@ -1850,19 +1401,10 @@ s32 Editor::SortShot(Object& Rig, s32 Block)
 	const auto Swap = [&](s32 At)
 	{
 		std::swap(Blocks[At], Blocks[At + 1]);
-		const auto Remap = [At](auto& Block) { Block = static_cast<std::decay_t<decltype(Block)>>(Block == At ? At + 1 : Block == At + 1 ? At : Block); };
 		for (ShakePin& Pin : Pins)
 		{
-			Remap(Pin.Block);
+			Pin.Block = Pin.Block == At ? At + 1 : Pin.Block == At + 1 ? At : Pin.Block;
 		}
-		for (KeyRef& Ref : SelectedKeys)
-		{
-			if (Ref.ObjectId == Rig.Id)
-			{
-				Remap(Ref.Block);
-			}
-		}
-		Remap(PickFocusBlock);
 		TangentBlock = TangentKey = -1;
 	};
 	while (Block > 0 && Blocks[Block - 1].Start > Blocks[Block].Start)
@@ -1888,10 +1430,8 @@ bool Editor::InsertShots(Player& Core, float Time, xr_vector<CameraBlock>& Shots
 	Time = std::clamp(Time, 0.0f, MaxTime - MinLength);
 	if (ShouldFit)
 	{
-		for (u32 Step = 0, Inside = 0; Step < Blocks.size() && (Inside = static_cast<u32>(Cameras::BlockAt(Rig->Camera, Time))) < Blocks.size(); ++Step)
-		{
-			Time = std::max(Time, Blocks[Inside].Start + Blocks[Inside].Length);
-		}
+		const s32 Inside = Cameras::BlockAt(Rig->Camera, Time);
+		Time = Inside < 0 ? Time : Blocks[Inside].Start + Blocks[Inside].Length;
 		const auto Next = std::lower_bound(Blocks.begin(), Blocks.end(), Time, [](const CameraBlock& Item, float Moment) { return Item.Start < Moment; });
 		Shots[0].Length = std::min(Shots[0].Length, (Next == Blocks.end() ? MaxTime : Next->Start) - Time);
 	}
@@ -2383,7 +1923,7 @@ void Editor::HoverLane(u32 ObjectId, const LaneSlot& Slot)
 
 void Editor::KeyPlayhead(Player& Core)
 {
-	constexpr Param Keyed[7][3] = { { Param::Position, Param::Rotation, Param::Scale }, { Param::Count, Param::Count, Param::Count }, { Param::Position, Param::Rotation, Param::Count }, { Param::Position, Param::Rotation, Param::Size }, { Param::Position, Param::Rotation, Param::Count }, { Param::Count, Param::Count, Param::Count }, { Param::Count, Param::Count, Param::Count } };
+	constexpr Param Keyed[4][3] = { { Param::Position, Param::Rotation, Param::Scale }, { Param::Count, Param::Count, Param::Count }, { Param::Position, Param::Rotation, Param::Count }, { Param::Position, Param::Rotation, Param::Size } };
 	const Object* Hovered = Find(Core.Data, HoverLaneObject);
 	if (Hovered)
 	{
@@ -2444,10 +1984,10 @@ const BlockCache* Editor::PoseAt(const Player& Core, const CameraBlock& Shot, s3
 		return Cache;
 	}
 	ViewPose(Core, false, Pose);
-	if (Cache && !Shot.Keys.empty())
+	if (Cache && !Cache->Path.Empty() && !Shot.Keys.empty())
 	{
 		Fmatrix Turn = Fidentity;
-		Cameras::PathPose(Shot, Cameras::PathTime(Shot, *Cache, Local), Pose.Position, Turn);
+		Cache->Path.Evaluate(Cameras::PathTime(Shot, *Cache, Local), Pose.Position, Turn);
 		Turn.getHPB(Pose.Rotation);
 		Pose.Rotation.mul(rad2deg(1.0f));
 	}
@@ -2472,15 +2012,21 @@ void Editor::ToSpace(const LinkFrames& Frames, PoseKey& Pose)
 void Editor::PutPose(CameraBlock& Shot, const BlockCache& Cache, float Local, float HalfFrame, PoseKey Pose)
 {
 	const u32 At = PoseKeyAt(Shot, Cache, Local, HalfFrame);
-	if (At == u32(-1) && Shot.Keys.size() >= MaxPoseKeys)
+	if (At != u32(-1))
+	{
+		Shot.Keys[At].Position = Pose.Position;
+		Shot.Keys[At].Rotation = Pose.Rotation;
+		return;
+	}
+	if (Shot.Keys.size() >= MaxPoseKeys)
 	{
 		SetStatus(true, "The block already has %u pose keys.", MaxPoseKeys);
 		return;
 	}
-	const float Time = At != u32(-1) ? Shot.Keys[At].Time : std::clamp(Cameras::PathTime(Shot, Cache, Local), 0.0f, MaxTime);
-	const auto Next = std::upper_bound(Shot.Keys.begin(), Shot.Keys.end(), Time, [](float Moment, const PoseKey& Item) { return Moment < Item.Time; });
-	const Interp Mode = At != u32(-1) ? Shot.Keys[At].Mode : Next != Shot.Keys.begin() ? (Next - 1)->Mode : Next != Shot.Keys.end() ? Next->Mode : Interp::EaseInOut;
-	Cameras::SetPoseAt(Shot, Time, Pose.Position, Pose.Rotation, Mode, HalfFrame);
+	Pose.Time = std::clamp(Cameras::PathTime(Shot, Cache, Local), 0.0f, MaxTime);
+	const auto Next = std::upper_bound(Shot.Keys.begin(), Shot.Keys.end(), Pose.Time, [](float Moment, const PoseKey& Item) { return Moment < Item.Time; });
+	Pose.Mode = Next != Shot.Keys.begin() ? (Next - 1)->Mode : Next != Shot.Keys.end() ? Next->Mode : Interp::EaseInOut;
+	Shot.Keys.insert(Next, Pose);
 }
 
 u32 Editor::PoseKeyAt(const CameraBlock& Shot, const BlockCache& Cache, float Local, float HalfFrame)
@@ -2502,8 +2048,8 @@ void Editor::RemovePose(Player& Core, s32 Block, u32 Index)
 		SetStatus(true, "A shot keeps its last pose key.");
 		return;
 	}
-	const float Time = Rig->Camera.Blocks[Block].Keys[Index].Time;
-	Cameras::RemovePoseAt(Edit(Core, Rig->Id, "Remove pose key")->Camera.Blocks[Block], Time, 1e-4f);
+	xr_vector<PoseKey>& Keys = Edit(Core, Rig->Id, "Remove pose key")->Camera.Blocks[Block].Keys;
+	Keys.erase(Keys.begin() + Index);
 }
 
 void Editor::UseGameFov(Object& Target, s32 Block, Param Id)
@@ -2757,15 +2303,6 @@ void RenderCinemaEditor()
 		ImGui::End();
 	}
 	ImGui::PopStyleColor();
-}
-
-void CinemaEditor_DrawHidden()
-{
-	const Cinema::Player* Core = Cinema::FindPlayer();
-	if (Cinema::EditorUi::g_Editor && Core && g_pGameLevel && g_pGameLevel->bReady && Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_CinemaEditor)])
-	{
-		Cinema::EditorUi::g_Editor->DrawHidden(*Core);
-	}
 }
 
 void CinemaEditor_Shutdown()

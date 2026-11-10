@@ -9,14 +9,14 @@ struct tgaImgSpecHeader{
 	u16		tgaYOrigin;
 	u16		tgaXSize;
 	u16		tgaYSize;
-	u8 tgaDepth;
-	u8 tgaImgDesc;
+	BYTE	tgaDepth;
+	BYTE	tgaImgDesc;
 };
 struct tgaHeader{
-	u8 tgaIDL;
-	u8 tgaMapType;
-	u8 tgaImgType;
-	u8 tgaClrMapSpec[5];
+	BYTE	tgaIDL;
+	BYTE	tgaMapType;
+	BYTE	tgaImgType;
+	BYTE	tgaClrMapSpec[5];
 	tgaImgSpecHeader tgaImgSpec;
 };
 #pragma pack(pop)
@@ -43,3 +43,4 @@ public:
 void	tga_save	(const char* name, u32 w, u32 h, void* data, bool alpha );
 
 #endif /*_INCDEF_TARGASAVER_H_*/
+

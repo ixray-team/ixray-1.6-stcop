@@ -61,7 +61,7 @@ namespace
 		return atoi(value) != 0;
 	}
 
-	bool TryReadIniBool(const char* section, const char* key, bool& outValue)
+	bool TryReadIniBool(LPCSTR section, LPCSTR key, bool& outValue)
 	{
 		if (!pSettings || !pSettings->section_exist(section) || !pSettings->line_exist(section, key))
 		{
@@ -71,7 +71,7 @@ namespace
 		return true;
 	}
 
-	bool TryReadIniFlt(const char* section, const char* key, float& outValue)
+	bool TryReadIniFlt(LPCSTR section, LPCSTR key, float& outValue)
 	{
 		if (!pSettings || !pSettings->section_exist(section) || !pSettings->line_exist(section, key))
 		{
@@ -81,7 +81,7 @@ namespace
 		return true;
 	}
 
-	bool ParseIniColorValue(const char* value, Fvector4& outColor)
+	bool ParseIniColorValue(LPCSTR value, Fvector4& outColor)
 	{
 		if (!value || !*value)
 		{
@@ -134,7 +134,7 @@ namespace
 		return true;
 	}
 
-	bool TryReadIniColor(const char* section, const char* key, Fvector4& outColor)
+	bool TryReadIniColor(LPCSTR section, LPCSTR key, Fvector4& outColor)
 	{
 		if (!pSettings || !pSettings->section_exist(section) || !pSettings->line_exist(section, key))
 		{
@@ -230,7 +230,7 @@ namespace
 		return false;
 	}
 
-	void ParseSafeZoneNames(const char* value, xr_vector<shared_str>& outNames)
+	void ParseSafeZoneNames(LPCSTR value, xr_vector<shared_str>& outNames)
 	{
 		outNames.clear();
 		if (!value || !*value)
@@ -251,7 +251,7 @@ namespace
 		}
 	}
 
-	bool TryReadIniSafeZones(const char* section, const char* key, xr_vector<shared_str>& outNames)
+	bool TryReadIniSafeZones(LPCSTR section, LPCSTR key, xr_vector<shared_str>& outNames)
 	{
 		if (!pSettings || !pSettings->section_exist(section) || !pSettings->line_exist(section, key))
 		{
@@ -421,7 +421,7 @@ void CUIMotionIcon::LoadStatusSettings(CUIXml& uiXml)
 		if (pSettings->line_exist("motion_icon", "safe_zone_source"))
 		{
 			shared_str source = pSettings->r_string_wb("motion_icon", "safe_zone_source");
-			const char* value = source.c_str();
+			LPCSTR value = source.c_str();
 			if (value && (!_stricmp(value, "camp") || !_stricmp(value, "camp_zone")))
 			{
 				_statusUseCampSafeZones = true;

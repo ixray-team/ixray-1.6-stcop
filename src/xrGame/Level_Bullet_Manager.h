@@ -203,8 +203,8 @@ protected:
 	void PlayRicochetSound(SBullet* bullet, CObject* object, const Fvector& pos);
 	void PlayExplodePS(const Fmatrix& xf);
 	// функция обработки хитов объектов
-	static bool test_callback(const collide::ray_defs& rd, CObject* object, void* params);
-	static bool firetrace_callback(collide::rq_result& result, void* params);
+	static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
+	static bool firetrace_callback(collide::rq_result& result, LPVOID params);
 
 	// Deffer event
 	void RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 target_material);

@@ -131,7 +131,7 @@ IClient* xrServer::client_Create()
 
 IClient* xrServer::client_Find_Get(ClientID ID)
 {
-	u32 dwPort = 0;
+	DWORD dwPort = 0;
 	ip_address tmp_ip_address;
 
 
@@ -1782,7 +1782,7 @@ void xrServer::Process_event_activate(NET_Packet& P, const ClientID sender, cons
 	// Signal to everyone (including sender)
 	if (send_message)
 	{
-		u32 MODE = net_flags(true, true, false, true);
+		DWORD MODE = net_flags(true, true, false, true);
 		SendBroadcast(BroadcastCID, P, MODE);
 	}
 
@@ -3397,7 +3397,7 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 	// Signal to everyone (including sender)
 	if (send_message)
 	{
-		u32 MODE = net_flags(true, true, false, true);
+		DWORD MODE = net_flags(true, true, false, true);
 		SendBroadcast(BroadcastCID, P, MODE);
 	}
 

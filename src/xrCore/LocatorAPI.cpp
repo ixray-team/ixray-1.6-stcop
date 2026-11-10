@@ -503,7 +503,7 @@ void CLocatorAPI::unload_archive(CLocatorAPI::archive& A)
 		const file& entry = *I;
 		if(entry.vfs==A.vfs_idx)
 		{
-			char* str = (char*)(I->name);
+			char* str		= LPSTR(I->name);
 			xr_free			(str);
 			m_files.erase	(I);
 			break;
@@ -741,7 +741,7 @@ void *FileDownload			(const char* file_name, const int &file_handle, intptr_t&fi
 void CLocatorAPI::setup_fs_path		(const char* fs_name, string_path &fs_path)
 {
 	xr_strcpy			(fs_path,fs_name ? fs_name : "");
-	char* slash = strrchr(fs_path, Platform::kPreferredSeparator[0]);
+	LPSTR				slash = strrchr(fs_path,Platform::kPreferredSeparator[0]);
 	if (!slash)
 		slash			= strrchr(fs_path,'/');
 	if (!slash) {
@@ -1018,13 +1018,13 @@ void CLocatorAPI::_destroy()
 
 	for (files_it I = m_files.begin(); I != m_files.end(); I++)
 	{
-		char* str = (char*)(I->name);
+		char* str = LPSTR(I->name);
 		xr_free(str);
 	}
 	m_files.clear();
 	for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
 	{
-		char* str = (char*)(p_it->first);
+		char* str = LPSTR(p_it->first);
 		xr_free(str);
 		xr_delete(p_it->second);
 	}
@@ -1146,7 +1146,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 			}
 
 			dest->push_back(xr_strdup(entry_begin));
-			char* fname = dest->back();
+			LPSTR fname = dest->back();
 			if (flags&FS_ClampExt)
 			{
 				if (nullptr != strext(fname))
@@ -1314,7 +1314,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 	return (u32) dest.size();
 }
 
-void CLocatorAPI::check_cached_files(char* fname, const u32& fname_size, const file& desc, const char*& source_name)
+void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const file &desc, const char* &source_name)
 {
 	string_path		fname_copy;
 	if (pathes.size() <= 1)
@@ -1377,7 +1377,7 @@ void CLocatorAPI::check_cached_files(char* fname, const u32& fname_size, const f
 	xr_strcpy		(fname,fname_size,fname_in_cache);
 }
 
-void CLocatorAPI::file_from_cache_impl(IReader*& R, char* fname, const file& desc)
+void CLocatorAPI::file_from_cache_impl(IReader*& R, LPSTR fname, const file& desc)
 {
 	const char* RealFileName = desc.wrap == nullptr ? fname : desc.wrap;
 	if (desc.size_real < 16 * 1024)
@@ -1389,7 +1389,7 @@ void CLocatorAPI::file_from_cache_impl(IReader*& R, char* fname, const file& des
 	R = new CVirtualFileReader(RealFileName);
 }
 
-void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, char* fname, const file& desc)
+void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file& desc)
 {
 	const char* RealFileName = desc.wrap == nullptr ? fname : desc.wrap;
 	CFileStreamReader* r = new CFileStreamReader();
@@ -1398,7 +1398,7 @@ void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, char* fname, const fil
 }
 
 template <typename T>
-void CLocatorAPI::file_from_cache(T*& R, char* fname, const u32& fname_size, const file& desc, const char*& source_name)
+void CLocatorAPI::file_from_cache	(T *&R, LPSTR fname, const u32 &fname_size, const file &desc, const char* &source_name)
 {
 #ifdef DEBUG
 	if (m_Flags.is(flCacheFiles))
@@ -1929,7 +1929,7 @@ void CLocatorAPI::file_delete(const char* path, const char* nm)
 	{
 		// remove file
 		Platform::Unlink(I->name);
-		char* str = (char*)(I->name);
+		char* str		= LPSTR(I->name);
 		xr_free(str);
 		m_files.erase(I);
 	}
@@ -1966,7 +1966,7 @@ void CLocatorAPI::file_rename(const char* src, const char* dest, bool bOwerwrite
 				return;
 
 			Platform::Unlink(D->name);
-			char* str = (char*)(D->name);
+			char* str	= LPSTR(D->name);
 			xr_free(str);
 
 			m_files.erase(D);
@@ -1975,7 +1975,7 @@ void CLocatorAPI::file_rename(const char* src, const char* dest, bool bOwerwrite
 		file new_desc	= *S;
 
 		// remove existing item
-		char* str = (char*)(S->name);
+		char* str		= LPSTR(S->name);
 		xr_free(str);
 		m_files.erase(S);
 
@@ -2138,7 +2138,7 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse, bool NeedMou
 			}
 
 			// erase item
-			char* str = (char*)(cur_item->name);
+			char* str		= LPSTR(cur_item->name);
 			xr_free(str);
 			m_files.erase(cur_item);
 		}

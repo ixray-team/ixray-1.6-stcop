@@ -195,15 +195,6 @@ void CImGuiManager::AfterRender()
 void CImGuiManager::Render()
 {
 #ifdef IXR_WINDOWS
-	if (AppliedScale != psImGuiScale)
-	{
-		BaseStyle = AppliedScale > 0.0f ? BaseStyle : ImGui::GetStyle();
-		ImGuiStyle Scaled = BaseStyle;
-		Scaled.ScaleAllSizes(psImGuiScale);
-		Scaled.FontScaleMain = psImGuiScale;
-		ImGui::GetStyle() = Scaled;
-		AppliedScale = psImGuiScale;
-	}
 	ImGui::NewFrame();
 
 #ifdef DEBUG_DRAW
@@ -229,10 +220,6 @@ void CImGuiManager::Render()
 	{
 #endif
 		RenderFrameData[MainViewportSlot].Function();
-		if (HiddenCallback)
-		{
-			HiddenCallback();
-		}
 #ifdef DEBUG_DRAW
 	}
 #endif
@@ -318,14 +305,6 @@ void CImGuiManager::SetMouseLook(bool IsEnabled)
 {
 	MouseLook = IsEnabled && CaptureInputs;
 	MouseLookDelta = ImVec2(0.0f, 0.0f);
-	MouseLookSkip = MouseLook ? 2 : 0;
-}
-
-float psImGuiScale = 1.0f;
-
-bool CImGuiManager::IsButtonHeld(bool IsMiddle) const
-{
-	return (SDL_GetMouseState(nullptr, nullptr) & (IsMiddle ? SDL_BUTTON_MMASK : SDL_BUTTON_RMASK)) != 0;
 }
 
 bool CImGuiManager::IsMouseLook() const
@@ -341,8 +320,7 @@ void CImGuiManager::AddMouseLook(float X, float Y)
 
 ImVec2 CImGuiManager::TakeMouseLook()
 {
-	const ImVec2 Delta = MouseLookSkip ? ImVec2(0.0f, 0.0f) : MouseLookDelta;
-	MouseLookSkip -= MouseLookSkip ? 1 : 0;
+	const ImVec2 Delta = MouseLookDelta;
 	MouseLookDelta = ImVec2(0.0f, 0.0f);
 	return Delta;
 }

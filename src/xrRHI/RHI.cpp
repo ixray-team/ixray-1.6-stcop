@@ -218,13 +218,13 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
         SDL_DisplayID DisplayID = Displays[D];
 		const SDL_DisplayMode* DesktopMode = SDL_GetDesktopDisplayMode(DisplayID);
 
+		const float Aspect = float(DesktopMode->w) / float(DesktopMode->h);
+		bool bSupports21by9 = fabs(Aspect - 21.0f / 9.0f) < 0.02f;
+
         if (DesktopMode == nullptr)
         {
             continue;
         }
-
-		const float Aspect = float(DesktopMode->w) / float(DesktopMode->h);
-		bool bSupports21by9 = fabs(Aspect - 21.0f / 9.0f) < 0.02f;
 
         if (DesktopMode->w < 1024)
         {

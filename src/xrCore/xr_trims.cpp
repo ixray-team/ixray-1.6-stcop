@@ -1,27 +1,27 @@
 #include "stdafx.h"
 
 
-char* _TrimLeft(char* str)
+LPSTR _TrimLeft( LPSTR str )
 {
-	char* p = str;
+	LPSTR p 	= str;
 	while( *p && (u8(*p)<=u8(' ')) ) p++;
     if (p!=str){
-        char* t = nullptr;
+        LPSTR t = nullptr;
         for (t=str; *p; t++,p++) *t=*p;
         *t = 0;
     }
 	return str;
 }
 
-char* _TrimRight(char* str)
+LPSTR _TrimRight( LPSTR str )
 {
-	char* p = str + xr_strlen(str);
+	LPSTR p 	= str+xr_strlen(str);
 	while( (p!=str) && (u8(*p)<=u8(' ')) ) p--;
     *(++p) 		= 0;
 	return str;
 }
 
-char* _Trim(char* str)
+LPSTR _Trim( LPSTR str )
 {
 	_TrimLeft( str );
 	_TrimRight( str );
@@ -40,7 +40,7 @@ const char* _SetPos (const char* src, u32 pos, char separator )
 	return		res;
 }
 
-const char* _CopyVal(const char* src, char* dst, char separator)
+const char* _CopyVal ( const char* src, LPSTR dst, char separator )
 {
 	const char*	p;
 	size_t	n;
@@ -69,7 +69,7 @@ int	_GetItemCount ( const char* src, char separator )
 	return		cnt;
 }
 
-char* _GetItem(const char* src, int index, char* dst, u32 const dst_size, char separator, const char* def, bool trim)
+LPSTR _GetItem ( const char* src, int index, LPSTR dst, u32 const dst_size, char separator, const char* def, bool trim )
 {
 	const char*	ptr;
 	ptr			= _SetPos	( src, index, separator );
@@ -79,9 +79,9 @@ char* _GetItem(const char* src, int index, char* dst, u32 const dst_size, char s
 	return		dst;
 }
 
-char* _GetItems(const char* src, int idx_start, int idx_end, char* dst, char separator)
+LPSTR _GetItems ( const char* src, int idx_start, int idx_end, LPSTR dst, char separator )
 {
-	char* n = dst;
+	LPSTR n = dst;
     int level = 0;
  	for (const char* p=src; *p!=0; p++){
     	if ((level>=idx_start)&&(level<idx_end))
@@ -101,16 +101,15 @@ u32 _ParseItem ( const char* src, xr_token* token_list )
 	return u32(-1);
 }
 
-u32 _ParseItem(char* src, int ind, xr_token* token_list)
+u32 _ParseItem ( LPSTR src, int ind, xr_token* token_list )
 {
 	char dst[128];
 	_GetItem(src, ind, dst);
 	return _ParseItem(dst, token_list);
 }
 
-char* _ReplaceItems(const char* src, int idx_start, int idx_end, const char* new_items, char* dst, char separator)
-{
-	char* n = dst;
+LPSTR _ReplaceItems( const char* src, int idx_start, int idx_end, const char* new_items, LPSTR dst, char separator ){
+	LPSTR n = dst;
     int level = 0;
     bool bCopy = true;
 	for (const char* p=src; *p!=0; p++){
@@ -129,9 +128,8 @@ char* _ReplaceItems(const char* src, int idx_start, int idx_end, const char* new
 	return dst;
 }
 
-char* _ReplaceItem(const char* src, int index, const char* new_item, char* dst, char separator)
-{
-	char* n = dst;
+LPSTR _ReplaceItem ( const char* src, int index, const char* new_item, LPSTR dst, char separator ){
+	LPSTR n = dst;
     int level = 0;
     bool bCopy = true;
 	for (const char* p=src; *p!=0; p++){
@@ -150,7 +148,7 @@ char* _ReplaceItem(const char* src, int index, const char* new_item, char* dst, 
 	return dst;
 }
 
-char* _ChangeSymbol(char* name, char src, char dest)
+LPSTR _ChangeSymbol ( LPSTR name, char src, char dest )
 {
     char						*sTmpName = name;
     while(sTmpName[0] ){

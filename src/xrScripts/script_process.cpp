@@ -46,9 +46,9 @@ void CScriptProcess::DestroyScripts()
 
 void CScriptProcess::run_scripts()
 {
-	char* S;
+	LPSTR						S;
 	for ( ; !m_scripts_to_run.empty(); ) {
-		char* I = m_scripts_to_run.back().m_script_name;
+		LPSTR					I = m_scripts_to_run.back().m_script_name;
 		bool					do_string = m_scripts_to_run.back().m_do_string;
 		bool					reload = m_scripts_to_run.back().m_reload;
 		S						= xr_strdup(I);

@@ -66,13 +66,13 @@ protected:
 	virtual bool			CreateConnection(GameDescriptionData& game_descr, ServerConnectionOptions& opt) override;
 	virtual void			DestroyConnection() override;
 
-	virtual bool GetClientPendingMessagesCount(ClientID ID, u32& dwPending) override;
+	virtual bool      GetClientPendingMessagesCount(ClientID ID, DWORD& dwPending) override;
 
 	virtual void			_SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) override;
 
 public:
 	virtual void			UpdateClientStatistic(IClient* C) override;
 
-	virtual bool GetClientAddress(ClientID ID, ip_address& Address, u32* pPort = NULL) override;
+	virtual bool			GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) override;
 	virtual bool			DisconnectClient(IClient* C, const char* Reason) override;
 };

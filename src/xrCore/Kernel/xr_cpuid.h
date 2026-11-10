@@ -37,6 +37,12 @@ enum class CPUFeature : unsigned
 	FMA = 1 << 25
 };
 
+template <>
+struct magic_enum::customize::enum_range<CPUFeature>
+{
+	static constexpr bool is_flags = true;
+};
+
 struct XRCORE_API processor_info
 {
 	processor_info();

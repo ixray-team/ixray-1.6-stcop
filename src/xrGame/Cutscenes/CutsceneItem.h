@@ -7,7 +7,7 @@ class CScriptGameObject;
 XREFLECT(LuaExport)
 struct SCutsceneObjectElement
 {
-    SCutsceneObjectElement(const char* ObjectName);
+    SCutsceneObjectElement(LPCSTR ObjectName);
     ~SCutsceneObjectElement();
     XPROPERTY(LuaCallable, Name="set_all_bones_visibility")
     void SetAllBonesVisibility(bool Visibility);
@@ -16,11 +16,11 @@ struct SCutsceneObjectElement
     XPROPERTY(LuaCallable, Name="set_parent")
     void SetParent(SCutsceneObjectElement* Parent, u16 BoneID);
     XPROPERTY(LuaCallable, Name="set_anim_to_play")
-    void SetAnimToPlay(const char* AnimName);
+    void SetAnimToPlay(LPCSTR AnimName);
     XPROPERTY(LuaCallable, Name="set_on_finish_func")
-    void SetOnFinishFunc(const char* Name);
+    void SetOnFinishFunc(LPCSTR Name);
     XPROPERTY(LuaCallable, Name="get_bone_id")
-    u16 GetBoneID(const char* BoneName);
+    u16 GetBoneID(LPCSTR BoneName);
     XPROPERTY(LuaCallable, Name="set_bones_weapon")
     void SetBonesWeapon(u16 BoneIDR, u16 BoneIDL);
 
@@ -66,12 +66,12 @@ class CCutsceneItem
 public:
     ~CCutsceneItem();
     
-    void Construct(const char* Section);
+    void Construct(LPCSTR Section);
     void Activate();
     void Update(Fmatrix matrix, IDSGraphManager* DM);
-    const char* GetName();
+    LPCSTR GetName();
     XPROPERTY(LuaCallable, Name="create_object_element")
-    SCutsceneObjectElement* CreateObjectElement(const char* ObjectName);
+    SCutsceneObjectElement* CreateObjectElement(LPCSTR ObjectName);
     XPROPERTY(LuaCallable, Name="set_pivot_object")
     void SetPivotObject(CScriptGameObject* PivotObject);
     CObject* GetPivotObject() const {return PivotObject;}

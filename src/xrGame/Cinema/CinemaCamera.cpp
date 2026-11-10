@@ -95,6 +95,34 @@ bool Spline::Handles(u32 Key, Fvector& In, Fvector& Out) const
 	return true;
 }
 
+u32 Spline::Split(float Time, Fvector& In, Fvector& Out, Fvector& Before, Fvector& After) const
+{
+	const auto Upper = std::upper_bound(Points.begin(), Points.end(), Time, [](float Moment, const Point& Item) { return Moment < Item.Time; });
+	if (Upper != Points.begin() && (Upper - 1)->Time == Time)
+	{
+		return Handles((Upper - 1)->Key, In, Out) ? 1 : 0;
+	}
+	if (Upper == Points.begin() || Upper == Points.end() || (Upper - 1)->Mode != Interp::Bezier)
+	{
+		return 0;
+	}
+	const Point& A = *(Upper - 1);
+	const Point& B = *Upper;
+	const double T = (static_cast<double>(Time) - A.Time) / (static_cast<double>(B.Time) - A.Time);
+	const auto Fit = [](double Value) { return static_cast<float>(std::clamp(Value, -static_cast<double>(MaxHandle), static_cast<double>(MaxHandle))); };
+	for (u32 Axis = 0; Axis < 3; ++Axis)
+	{
+		const double P0 = A.Value[Axis], P1 = P0 + A.Ahead[Axis], P3 = B.Value[Axis], P2 = P3 - B.Back[Axis];
+		const double Q1 = P0 + (P1 - P0) * T, M = P1 + (P2 - P1) * T, R2 = P2 + (P3 - P2) * T;
+		const double Q2 = Q1 + (M - Q1) * T, R1 = M + (R2 - M) * T, Cut = Q2 + (R1 - Q2) * T;
+		In[Axis] = Fit(Q2 - Cut);
+		Out[Axis] = Fit(R1 - Cut);
+		Before[Axis] = Fit(Q1 - P0);
+		After[Axis] = Fit(R2 - P3);
+	}
+	return 2;
+}
+
 void Spline::Evaluate(float Time, Fvector& Position, Fmatrix& Orientation) const
 {
 	if (Points.empty())
@@ -185,7 +213,7 @@ static void ApplyShakes(const CameraData& Data, const xr_vector<Curves::AreaTabl
 	const auto Share = [&](u32 Index)
 	{
 		const s32 Owner = Index < Owners.size() ? Owners[Index] : -1;
-		return Owner >= 0 && Owner == Sides[1] ? Mix : Owner >= 0 && Owner == Sides[0] ? 1.0f - Mix : 1.0f;
+		return Owner < 0 ? 1.0f : Owner == Sides[1] ? Mix : Owner == Sides[0] ? 1.0f - Mix : 0.0f;
 	};
 	float Kept[MaxShakeRows + 1] = {}, Rows[MaxShakeRows] = {};
 	for (u32 Index = 0; Data.OverrideRows && Index < Data.Shakes.size(); ++Index)
@@ -275,200 +303,9 @@ float LocalFromPath(const CameraBlock& Block, const BlockCache& Cache, float Pat
 	return Curves::LaneInverseArea(Block.Lanes, &Cache.TimeScaleArea, Param::TimeScale, 0, Block.TimeScale, Path, MaxTime);
 }
 
-float PathTime(const CameraBlock& Block, float Local)
-{
-	return static_cast<float>(Curves::LaneArea(Block.Lanes, nullptr, Param::TimeScale, 0, Local, Block.TimeScale));
-}
-
-float LocalFromPath(const CameraBlock& Block, float Path)
-{
-	return Curves::LaneInverseArea(Block.Lanes, nullptr, Param::TimeScale, 0, Block.TimeScale, Path, MaxTime);
-}
-
-static float NearAngle(float Value, float Reference)
-{
-	return Value + 360.0f * std::round((Reference - Value) / 360.0f);
-}
-
-template <typename TVisit>
-static void ForPathCurves(CameraBlock& Block, const TVisit& Visit)
-{
-	for (Lane& Track : Block.Lanes)
-	{
-		for (u32 Axis = 0; (Track.Id == Param::Position || Track.Id == Param::Rotation) && Track.Layer == 0 && Axis < 3; ++Axis)
-		{
-			Visit(Track.Curves[Axis]);
-		}
-	}
-}
-
-void PathPose(const CameraBlock& Block, float Local, Fvector& Position, Fmatrix& Orientation)
-{
-	const Fvector Turn = Curves::LaneVector(Block.Lanes, Param::Rotation, Local, Block.Rotation);
-	Position = Curves::LaneVector(Block.Lanes, Param::Position, Local, Block.Position, 0, Block.Tension);
-	Orientation.setHPB(deg2rad(Turn.x), deg2rad(Turn.y), deg2rad(Turn.z));
-	const auto Next = std::upper_bound(Block.Keys.begin(), Block.Keys.end(), Local, [](float Moment, const PoseKey& Item) { return Moment < Item.Time; });
-	if (Block.IsShortTurn && Next != Block.Keys.begin() && Next != Block.Keys.end())
-	{
-		const PoseKey& A = *(Next - 1);
-		const PoseKey& B = *Next;
-		Fmatrix Early, Late;
-		Fquaternion From, To, Mixed;
-		Early.setHPB(deg2rad(A.Rotation.x), deg2rad(A.Rotation.y), deg2rad(A.Rotation.z));
-		Late.setHPB(deg2rad(B.Rotation.x), deg2rad(B.Rotation.y), deg2rad(B.Rotation.z));
-		From.set(Early);
-		To.set(Late);
-		Mixed.slerp(From, To, Curves::Ease(A.Mode == Interp::Bezier ? Interp::Linear : A.Mode, std::clamp((Local - A.Time) / std::max(B.Time - A.Time, 1e-4f), 0.0f, 1.0f)));
-		Orientation.rotation(Mixed.normalize());
-	}
-	Orientation.c.set(0.0f, 0.0f, 0.0f);
-}
-
-void Rebuild(CameraBlock& Block)
-{
-	Block.Keys.clear();
-	ForPathCurves(Block, [&Block](Curve& Part)
-	{
-		for (u32 At = 0; At < Part.Keys.size(); ++At)
-		{
-			PoseKey& Entry = Block.Keys.emplace_back();
-			Entry.Time = Part.Keys[At].Time;
-			Entry.Mode = Part.Keys[At].Mode;
-		}
-	});
-	std::stable_sort(Block.Keys.begin(), Block.Keys.end(), [](const PoseKey& A, const PoseKey& B) { return A.Time < B.Time; });
-	Block.Keys.erase(std::unique(Block.Keys.begin(), Block.Keys.end(), [](const PoseKey& A, const PoseKey& B) { return B.Time - A.Time <= 1e-4f; }), Block.Keys.end());
-	if (Block.Keys.size() > MaxPoseKeys)
-	{
-		Block.Keys.resize(MaxPoseKeys);
-	}
-	for (PoseKey& Entry : Block.Keys)
-	{
-		Entry.Position = Curves::LaneVector(Block.Lanes, Param::Position, Entry.Time, Block.Position, 0, Block.Tension);
-		Entry.Rotation = Curves::LaneVector(Block.Lanes, Param::Rotation, Entry.Time, Block.Rotation);
-	}
-}
-
-void SetPoseAt(CameraBlock& Block, float Time, const Fvector& Position, const Fvector& Rotation, Interp Mode, float HalfFrame)
-{
-	for (u32 Kind = 0; Kind < 2; ++Kind)
-	{
-		Lane& Track = Curves::EnsureLane(Block.Lanes, Kind ? Param::Rotation : Param::Position, 0);
-		for (u32 Axis = 0; Axis < 3; ++Axis)
-		{
-			Curve& Part = Track.Curves[Axis];
-			Curves::SetKey(Part, Time, Kind ? NearAngle(Rotation[Axis], Curves::Value(Part, Time, Rotation[Axis])) : Position[Axis], HalfFrame);
-			const u32 At = Curves::KeyAt(Part, Time, HalfFrame);
-			if (At != u32(-1))
-			{
-				Part.Keys[At].Mode = Mode;
-			}
-		}
-	}
-	Rebuild(Block);
-}
-
-void RemovePoseAt(CameraBlock& Block, float Time, float HalfFrame)
-{
-	ForPathCurves(Block, [Time, HalfFrame](Curve& Part)
-	{
-		const u32 At = Curves::KeyAt(Part, Time, HalfFrame);
-		if (At != u32(-1))
-		{
-			Part.Keys.erase(Part.Keys.begin() + At);
-		}
-	});
-	Rebuild(Block);
-}
-
-void MovePoseAt(CameraBlock& Block, float From, float To, float HalfFrame)
-{
-	ForPathCurves(Block, [From, To, HalfFrame](Curve& Part)
-	{
-		const u32 At = Curves::KeyAt(Part, From, HalfFrame);
-		if (At != u32(-1))
-		{
-			Key Item = Part.Keys[At];
-			Part.Keys.erase(Part.Keys.begin() + At);
-			Item.Time = To;
-			Curves::PlaceKey(Part, Item, HalfFrame);
-		}
-	});
-	Rebuild(Block);
-}
-
-void ModeAt(CameraBlock& Block, float Time, Interp Mode, float HalfFrame)
-{
-	ForPathCurves(Block, [Time, Mode, HalfFrame](Curve& Part)
-	{
-		const u32 At = Curves::KeyAt(Part, Time, HalfFrame);
-		if (At != u32(-1))
-		{
-			Curves::SetMode(Part, At, Mode);
-		}
-	});
-	Rebuild(Block);
-}
-
-bool KeysToLanes(CameraBlock& Block)
-{
-	bool IsApprox = false;
-	if (!Block.Keys.empty())
-	{
-		Spline Path;
-		Path.Build(Block);
-		xr_vector<float> Times;
-		Times.reserve(Block.Keys.size());
-		for (const PoseKey& Item : Block.Keys)
-		{
-			Times.push_back(Item.Time);
-		}
-		Lane& Place = Curves::EnsureLane(Block.Lanes, Param::Position, 0);
-		Lane& Turn = Curves::EnsureLane(Block.Lanes, Param::Rotation, 0);
-		Fvector Previous = Block.Keys[0].Rotation;
-		const auto Angles = [&Path](float Moment, const Fvector& Near)
-		{
-			Fvector Position, Raw;
-			Fmatrix Orientation = Fidentity;
-			Path.Evaluate(Moment, Position, Orientation);
-			Orientation.getHPB(Raw);
-			return Fvector().set(NearAngle(rad2deg(Raw.x), Near.x), NearAngle(rad2deg(Raw.y), Near.y), NearAngle(rad2deg(Raw.z), Near.z));
-		};
-		for (u32 Index = 0; Index < Block.Keys.size(); ++Index)
-		{
-			const PoseKey& Item = Block.Keys[Index];
-			const Fvector Rotation = Fvector().set(NearAngle(Item.Rotation.x, Previous.x), NearAngle(Item.Rotation.y, Previous.y), NearAngle(Item.Rotation.z, Previous.z));
-			Previous = Rotation;
-			Fvector In, Out;
-			const bool HasHandles = Path.Handles(Index, In, Out);
-			const float Before = Index ? Times[Index] - Times[Index - 1] : 0.0f, After = Index + 1 < Times.size() ? Times[Index + 1] - Times[Index] : 0.0f;
-			const float Step = 1.0f / 240.0f;
-			const Fvector Slope = HasHandles ? Fvector().sub(Angles(Item.Time + Step, Rotation), Angles(Item.Time - Step, Rotation)).div(2.0f * Step) : Fvector().set(0.0f, 0.0f, 0.0f);
-			IsApprox = IsApprox || (Item.Mode == Interp::Bezier && HasHandles) || Item.HasTangent();
-			for (u32 Axis = 0; Axis < 3; ++Axis)
-			{
-				Key Spot { Times[Index], Item.Position[Axis], Item.Mode };
-				Spot.InTime = -Before / 3.0f;
-				Spot.OutTime = After / 3.0f;
-				Spot.InValue = HasHandles ? In[Axis] : 0.0f;
-				Spot.OutValue = HasHandles ? Out[Axis] : 0.0f;
-				Curves::PlaceKey(Place.Curves[Axis], Spot, 1e-4f);
-				Spot.Value = Rotation[Axis];
-				Spot.InValue = -Slope[Axis] * Before / 3.0f;
-				Spot.OutValue = Slope[Axis] * After / 3.0f;
-				Curves::PlaceKey(Turn.Curves[Axis], Spot, 1e-4f);
-			}
-		}
-	}
-	Block.Position = Block.Keys.empty() ? Block.Position : Block.Keys[0].Position;
-	Block.Rotation = Block.Keys.empty() ? Block.Rotation : Block.Keys[0].Rotation;
-	Rebuild(Block);
-	return IsApprox;
-}
-
 void EvaluateBlock(const CameraBlock& Block, const BlockCache& Cache, float Local, CameraPose& Pose)
 {
-	PathPose(Block, PathTime(Block, Cache, Local), Pose.Position, Pose.Orientation);
+	Cache.Path.Evaluate(PathTime(Block, Cache, Local), Pose.Position, Pose.Orientation);
 	Pose.Orientation.c = Pose.Position;
 	Spaces::Compose(Cache.Frames, Pose.Orientation);
 	Pose.Position = Pose.Orientation.c;
@@ -487,23 +324,7 @@ float FocusDepth(const CameraBlock& Block, const BlockCache& Cache, float Local,
 	return std::max(Depth, Info(Param::DofFocus).Min);
 }
 
-CameraPose Mix(const CameraSample& Sample)
-{
-	Fquaternion From, To, Turn;
-	From.set(Sample.A.Orientation);
-	To.set(Sample.B.Orientation);
-	Turn.slerp(From, To, std::clamp(Sample.Weight, 0.0f, 1.0f));
-	CameraPose Pose;
-	Fmatrix Mixed;
-	Fvector Moved;
-	Mixed.rotation(Turn.normalize());
-	Mixed.transform_dir(Moved, Sample.Shift);
-	Pose.Orientation.mul(Mixed, Sample.Turn);
-	Pose.Position.lerp(Sample.A.Position, Sample.B.Position, Sample.Weight).add(Moved);
-	return Pose;
-}
-
-static bool SampleRaw(const Object& Camera, const xr_vector<BlockCache>& Cache, const xr_vector<Curves::AreaTable>& ShakeAreas, const xr_vector<s16>& ShakeOwners, float Time, CameraSample& Out)
+bool Sample(const Object& Camera, const xr_vector<BlockCache>& Cache, const xr_vector<Curves::AreaTable>& ShakeAreas, const xr_vector<s16>& ShakeOwners, float Time, CameraSample& Out)
 {
 	Out = CameraSample {};
 	const CameraData& Data = Camera.Camera;
@@ -529,46 +350,6 @@ static bool SampleRaw(const Object& Camera, const xr_vector<BlockCache>& Cache, 
 	}
 	Out.IsActive = true;
 	ApplyShakes(Data, ShakeAreas, ShakeOwners, Sides, Out.Weight, Local, Out.Shift, Out.Turn);
-	return true;
-}
-
-bool Sample(const Object& Camera, const xr_vector<BlockCache>& Cache, const xr_vector<Curves::AreaTable>& ShakeAreas, const xr_vector<s16>& ShakeOwners, float Time, CameraSample& Out)
-{
-	if (!SampleRaw(Camera, Cache, ShakeAreas, ShakeOwners, Time, Out))
-	{
-		return false;
-	}
-	const CameraBlock& Shot = Camera.Camera.Blocks[Out.Block];
-	const float Begin = Camera.Span.Start + Shot.Start, Sigma = Curves::LaneScalar(Shot.Lanes, Param::CameraSmooth, 0, Time - Begin, Shot.Smooth);
-	if (!(Sigma > 0.0f))
-	{
-		return true;
-	}
-	const CameraPose Centre = Mix(Out);
-	Fquaternion Facing, Mean;
-	Facing.set(Centre.Orientation);
-	Mean.set(0.0f, 0.0f, 0.0f, 0.0f);
-	Fvector Sum = Fvector().set(0.0f, 0.0f, 0.0f);
-	float Total = 0.0f;
-	CameraSample Tap;
-	for (s32 Step = -4; Step <= 4; ++Step)
-	{
-		const float Weight = std::exp(-0.125f * static_cast<float>(Step * Step));
-		const float At = std::clamp(Time + 0.5f * Sigma * static_cast<float>(Step), Begin, Begin + std::max(Shot.Length - 1e-4f, 0.0f));
-		const CameraPose Pose = SampleRaw(Camera, Cache, ShakeAreas, ShakeOwners, At, Tap) ? Mix(Tap) : Centre;
-		Fquaternion Part;
-		Part.set(Pose.Orientation);
-		const float Side = Part.x * Facing.x + Part.y * Facing.y + Part.z * Facing.z + Part.w * Facing.w < 0.0f ? -Weight : Weight;
-		Mean.set(Mean.w + Part.w * Side, Mean.x + Part.x * Side, Mean.y + Part.y * Side, Mean.z + Part.z * Side);
-		Sum.mad(Pose.Position, Weight);
-		Total += Weight;
-	}
-	Out.A.Orientation.rotation(Mean.normalize());
-	Out.A.Position.div(Sum, Total);
-	Out.B.Orientation = Out.A.Orientation;
-	Out.B.Position = Out.A.Position;
-	Out.Shift.set(0.0f, 0.0f, 0.0f);
-	Out.Turn = Fidentity;
 	return true;
 }
 
