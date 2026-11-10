@@ -93,6 +93,16 @@ The setting is read on startup; restart the game after changing it. Explicit `so
 | **EnableImproveWeaponMisfire** | true/false | Improved misfire system (Gunslinger style) |
 | **EnableDelayedWeaponActions** | true/false | Delayed weapon actions (Gunslinger style) |
 
+#### Damage and Accuracy
+
+Enabled in `gamedata_soc` and `gamedata_cs`, disabled in Call of Pripyat. Vanilla config values are not changed: each option reads only its own keys, so `false` restores the original balance.
+
+| Parameter | Values | Description |
+|----------|----------|----------|
+| **EnableImprovedBulletDamage** | true/false | Stalker bone armor stops a share of a bullet instead of being subtracted from it: damage = power × max(1 − armor × (1 − ap), `hit_fraction`). Armor piercing (`k_ap`) lowers the armor the same way it lowers the SoC actor outfit armor. If a bone table `[X]` has an `[X_improved]` section, that one is used (`stalker_damage_improved`: chest 1.0 in SoC / 0.8 in CS, head 6 / 4). Finishing off wounded stalkers and actor armor are unchanged |
+| **EnableImprovedWeaponDispersion** | true/false | Actor weapons use `fire_dispersion_base_improved` (as a factor of `fire_dispersion_base`, so dispersion upgrades keep their share), the actor uses `disp_aim_improved`. Values are chosen so that 90% of bullets land in a 4 cm circle at 30–55 m when aiming standing (sniper rifles up to 100 m). Stalkers keep the original spread |
+| **EnableDifficultyHitProbability** | true/false | Weapon `hit_probability_<difficulty>` of stalkers follows the game difficulty. The original code always used the novice value. In SoC: beyond `hit_probability_max_dist`, 20/30/40/50% of bullets hit the actor (Novice … Master) instead of 20% at any difficulty. CS weapons have the same value for every difficulty, so nothing changes there |
+
 #### Additional Features
 
 | Parameter | Values | Description |
