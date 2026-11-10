@@ -58,6 +58,8 @@ DXC public headers on Linux and macOS are downloaded from DirectXShaderCompiler 
 
 The bundled DLSS and FSR3 Direct3D implementations and SDK libraries are used only on Windows. Linux and macOS exclude those implementations and use fallback wrappers that report the upscalers as unavailable, without requiring NGX or FidelityFX SDK headers. XeSS already guards its SDK calls for Windows x64.
 
+Native Linux and macOS builds fetch vkd3d 2.1 for DXBC compilation, reflection, disassembly, and input signatures. Its x64 calling convention is adjusted to the host ABI used by DXVK/DXMT, including COM callbacks. Linux requires `bison`, `flex`, Perl's `JSON` module (`libjson-perl` on Debian/Ubuntu, `perl-JSON` on Fedora), `patchelf`, and the Vulkan/SPIR-V development headers. The Linux CI workflows and Debian/Fedora dependency checks include these packages. Linux copies the vkd3d shared libraries beside `xrRHI`, with `$ORIGIN` lookup paths so their dependencies remain discoverable outside the build tree. The native D3D11 texture-upload implementation is shared by Linux and macOS; Windows uses the implementation from DirectXTex.
+
 ## xrLevelBuilder CUDA/OptiX
 
 Enable the NVIDIA backend to download its build dependencies automatically:

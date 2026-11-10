@@ -1,4 +1,4 @@
-
+// Native Direct3D 11 texture upload shared by DXVK and DXMT.
 // DirectX::CreateTextureEx ported verbatim from Microsoft DirectXTex (MIT): the Windows include
 // stack and this port's headers are incompatible in one translation unit, so only this function
 // is taken.

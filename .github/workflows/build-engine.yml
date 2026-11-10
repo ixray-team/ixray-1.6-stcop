@@ -116,6 +116,10 @@ jobs:
             liblzo2-dev \
             libogg-dev \
             meson \
+            bison \
+            flex \
+            libjson-perl \
+            patchelf \
             glslang-tools \
             libvulkan-dev \
             spirv-headers \

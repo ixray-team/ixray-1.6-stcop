@@ -1,7 +1,7 @@
-# vkd3d provides D3DCompile for the R4 shader library on macOS.
+# vkd3d provides DXBC compilation and reflection for native D3D11 backends.
 #
 
-if(NOT APPLE)
+if(NOT UNIX)
     return()
 endif()
 
@@ -12,6 +12,7 @@ set(VKD3D_VERSION "2.1")
 FetchContent_Declare(
     vkd3d
     URL "https://dl.winehq.org/vkd3d/source/vkd3d-${VKD3D_VERSION}.tar.xz"
+    URL_HASH SHA256=7510146aff2adfb4ae07ab890701a607e5ff7c66e57100cfc9f630ec92eeda6a
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
@@ -20,7 +21,18 @@ FetchContent_GetProperties(vkd3d)
 if(NOT vkd3d_POPULATED)
     FetchContent_Populate(vkd3d)
 
+    # DXVK and DXMT use the host ABI for native functions and COM interfaces.
+    # Wine's default Microsoft x64 ABI would corrupt calls across this boundary.
+    set(VKD3D_WINDOWS_HEADER "${vkd3d_SOURCE_DIR}/include/vkd3d_windows.h")
+    file(READ "${VKD3D_WINDOWS_HEADER}" VKD3D_WINDOWS_CONTENT)
+    string(REPLACE "#  define __stdcall __attribute__((ms_abi))" "#  define __stdcall"
+        VKD3D_NATIVE_WINDOWS_CONTENT "${VKD3D_WINDOWS_CONTENT}")
+    if(NOT VKD3D_WINDOWS_CONTENT STREQUAL VKD3D_NATIVE_WINDOWS_CONTENT)
+        file(WRITE "${VKD3D_WINDOWS_HEADER}" "${VKD3D_NATIVE_WINDOWS_CONTENT}")
+    endif()
+
     find_program(VKD3D_BISON NAMES bison HINTS /opt/homebrew/opt/bison/bin REQUIRED)
+    find_program(VKD3D_FLEX NAMES flex REQUIRED)
     get_filename_component(VKD3D_BISON_DIR "${VKD3D_BISON}" DIRECTORY)
 
     find_path(VKD3D_VULKAN_INCLUDE_DIR vulkan/vulkan.h
@@ -29,7 +41,11 @@ if(NOT vkd3d_POPULATED)
         HINTS /opt/homebrew/opt/spirv-headers/include REQUIRED)
 
     find_program(VKD3D_MAKE NAMES make HINTS /usr/bin REQUIRED)
-    find_program(VKD3D_INSTALL_NAME_TOOL NAMES install_name_tool REQUIRED)
+    if(APPLE)
+        find_program(VKD3D_INSTALL_NAME_TOOL NAMES install_name_tool REQUIRED)
+    else()
+        find_program(VKD3D_PATCHELF NAMES patchelf REQUIRED)
+    endif()
 
     set(VKD3D_BUILD_DIR "${vkd3d_BINARY_DIR}/build-native")
     file(MAKE_DIRECTORY "${VKD3D_BUILD_DIR}")
@@ -37,10 +53,12 @@ if(NOT vkd3d_POPULATED)
     set(VKD3D_BUILD_ENV
         "PATH=${VKD3D_BISON_DIR}:$ENV{PATH}"
         "CPPFLAGS=-I${VKD3D_VULKAN_INCLUDE_DIR} -I${VKD3D_SPIRV_INCLUDE_DIR}"
-        "LDFLAGS=-L/opt/homebrew/lib"
     )
+    if(APPLE)
+        list(APPEND VKD3D_BUILD_ENV "LDFLAGS=-L/opt/homebrew/lib")
+    endif()
 
-    message(STATUS "Configuring vkd3d ${VKD3D_VERSION} for macOS...")
+    message(STATUS "Configuring vkd3d ${VKD3D_VERSION} for ${CMAKE_SYSTEM_NAME}...")
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E env ${VKD3D_BUILD_ENV}
                 "${vkd3d_SOURCE_DIR}/configure" --disable-demos --disable-tests --without-spirv-tools
@@ -53,7 +71,7 @@ if(NOT vkd3d_POPULATED)
         message(FATAL_ERROR "vkd3d configure failed: ${VKD3D_CONFIGURE_ERROR}")
     endif()
 
-    message(STATUS "Building vkd3d ${VKD3D_VERSION} for macOS...")
+    message(STATUS "Building vkd3d ${VKD3D_VERSION} for ${CMAKE_SYSTEM_NAME}...")
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E env ${VKD3D_BUILD_ENV} "${VKD3D_MAKE}" -j8
         WORKING_DIRECTORY "${VKD3D_BUILD_DIR}"
@@ -78,6 +96,24 @@ if(NOT vkd3d_POPULATED)
             endif()
         endif()
     endforeach()
+
+    if(NOT APPLE)
+        file(GLOB VKD3D_SHARED_LIBRARIES "${VKD3D_BUILD_DIR}/.libs/libvkd3d*.so.*")
+        foreach(VKD3D_SHARED_LIBRARY IN LISTS VKD3D_SHARED_LIBRARIES)
+            if(IS_SYMLINK "${VKD3D_SHARED_LIBRARY}")
+                continue()
+            endif()
+            # Copied libraries must find one another beside xrRHI at runtime.
+            execute_process(
+                COMMAND "${VKD3D_PATCHELF}" --set-rpath "$ORIGIN" "${VKD3D_SHARED_LIBRARY}"
+                RESULT_VARIABLE VKD3D_RPATH_RESULT
+            )
+            if(NOT VKD3D_RPATH_RESULT EQUAL 0)
+                message(FATAL_ERROR "patchelf failed for ${VKD3D_SHARED_LIBRARY}")
+            endif()
+        endforeach()
+        set(VKD3D_RUNTIME_LIBRARIES "${VKD3D_SHARED_LIBRARIES}" CACHE STRING "vkd3d run-time libraries" FORCE)
+    endif()
 
     find_library(VKD3D_UTILS_LIBRARY
         NAMES vkd3d-utils

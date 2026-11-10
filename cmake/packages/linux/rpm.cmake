@@ -29,7 +29,12 @@ set(REQUIRED_PACKAGES
     lzo-devel
     libogg-devel
     meson
+    bison
+    flex
+    perl-JSON
+    patchelf
     glslang
+    spirv-headers
     vulkan-headers
     vulkan-loader-devel
 )

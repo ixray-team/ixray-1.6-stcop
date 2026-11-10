@@ -109,14 +109,16 @@ void CopyTextureList(const char* S)
     for(int it = 0; it < count; ++it) {
         _GetItem(S, it, textureItem);
 
-        if(textureItem && textureItem[0]) {
+        if (textureItem[0])
+        {
             CopyTexture(textureItem);
         }
     }
 #else
     _GetItem(S, 0, textureItem);
 
-    if(textureItem && textureItem[0]) {
+    if (textureItem[0])
+    {
         CopyTexture(textureItem);
     }
 #endif
@@ -262,4 +264,3 @@ int main()
     Core._destroy();
     return 0;
 }
-
