@@ -72,7 +72,10 @@ function action_surge_hide_go_position:execute()
 	action_base.execute(self)
 	if(self.update_time<=0) then
 		self.update_time = 200
-		local tmp_pos_vertex, npc_position_num = get_dest_vertex(self.object, self.st.pp, self.st.position, self.st.npc_pos)
+		local tmp_pos_vertex, npc_position_num = get_dest_vertex(self.object, self.st.pp, self.st.position, self.st.npc_pos, self.st.path_walk)
+		if tmp_pos_vertex == nil then
+			return
+		end
 		if(self.st.npc_position_num~=npc_position_num) then
 			self.st.pp = patrol(self.st.path_walk):point(0)
 			local dir = vector():set(math.random(-1,1), 0, math.random(-1,1))
@@ -195,7 +198,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	end
 end
 -- Get position move to
-function get_dest_vertex(npc, pp, pos_tbl, npc_pos)
+function get_dest_vertex(npc, pp, pos_tbl, npc_pos, path_walk)
 	local npc_id = npc:id()
 	local dir = pos_tbl[npc_pos[npc_id]].dir
 
@@ -215,8 +218,9 @@ function get_dest_vertex(npc, pp, pos_tbl, npc_pos)
 	 	if(dest_vertex==4294967295) or (dest_vertex==4294967296) then
 	 		if radius >= 1 then
 	 			radius = radius - 0.5
-			elseif self.path_walk then
-				abort("Invalid AI map at kamp[surge_hide] point [%s]", self.path_walk)
+			else
+				SemiLog("Invalid AI map at surge_hide point ["..tostring(path_walk).."]")
+				return nil
 	 		end
 	 	end
  	end
