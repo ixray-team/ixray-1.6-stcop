@@ -1,25 +1,15 @@
 #include "stdafx.h"
-
-
 #include "xr_efflensflare.h"
 
 #include "IGame_Persistent.h"
 #include "Environment.h"
-//#include "SkeletonCustom.h"
-//	Instead of SkeletonCustom:
 #include "bone.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrCore/Collision/cl_intersect.h"
 
 #include "../xrServerEntities/object_broker.h"
-
-#ifdef _EDITOR
-	#include "ui_toolscustom.h"
-	#include "ui_main.h"
-#else
-	#include "xr_object.h"
+#include "xr_object.h"
 #include "IGame_Level.h"
-#endif
 
 #define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
@@ -353,20 +343,10 @@ void CLensFlare::OnFrame(shared_str id)
 	vecY.crossproduct(vecX, vecDir);
 	R_ASSERT( _valid(vecY) );
 
-#ifdef _EDITOR
-	float dist = UI->ZFar();
-	if (Tools->RayPick(Device.m_Camera.GetPosition(),vSunDir,dist))
-		fBlend = fBlend - BLEND_DEC_SPEED * Device.fTimeDelta;
-	else
-		fBlend = fBlend + BLEND_INC_SPEED * Device.fTimeDelta;
-#else
-
 	//	Side vectors to bend normal.
 	Fvector vecSx;
 	Fvector vecSy;
 
-	//float fScale = m_Current->m_Source.fRadius * vSunDir.magnitude();
-	//float fScale = m_Current->m_Source.fRadius;
 	//	HACK: it must be read from the weather!
 	float fScale = 0.02f;
 
@@ -414,7 +394,6 @@ void CLensFlare::OnFrame(shared_str id)
 
 	blend_lerp(fBlend,fVisResult,BLEND_DEC_SPEED,Device.fTimeDelta);
 
-#endif
 	clamp( fBlend, 0.0f, 1.0f );
 
 	// gradient
