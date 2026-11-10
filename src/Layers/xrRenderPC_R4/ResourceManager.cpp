@@ -448,6 +448,7 @@ void CResourceManager::DeferredUpload()
 			Texture->Load();
 		}
 	}
+	WaitForTextureLoading();
 
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)GfxCmdList::GetWidth(), (u32)GfxCmdList::GetHeight());
