@@ -213,7 +213,7 @@ void CUISequenceSimpleItem::Update()
 			s.Stop	();
 	}
 	
-	if(g_pGameLevel && (!m_pda_section || 0 == xr_strlen(m_pda_section)) )
+	if(g_pGameLevel && xr_strcmp(m_owner->m_name, "game_loaded") != 0 && (!m_pda_section || 0 == xr_strlen(m_pda_section)) )
 	{
  		if(CurrentGameUI())
 		{
