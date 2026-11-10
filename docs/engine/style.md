@@ -44,3 +44,5 @@ Game, render, and other portable modules do not include platform headers, types,
 | `std::uint32_t` | `u32` |
 
 Use the IXR name when it exists. A missing analog may stay `std::`. Code that runs before `Memory._initialize` (process start, exception paths) uses `std::` containers. `xr_unique_ptr` frees through the engine heap.
+
+Fundamental numeric aliases are declared in [Types.h](../../src/xrCore/Types.h). This lightweight header has no platform or engine-initialization dependencies, so declarations included before `xrCore.h` can use the same fixed-width types. `Template/_types.h` includes it and adds the legacy limits and string-buffer types.

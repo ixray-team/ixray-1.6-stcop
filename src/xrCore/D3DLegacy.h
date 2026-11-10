@@ -1,9 +1,10 @@
 #pragma once
+#include "Types.h"
 
 // Project-owned legacy numeric identifiers.
 // Historical DirectX 9 encodings still consumed by the D3D11 state translator, blender/state recording,
 // vertex declarations and stored asset formats. Values must not change. No DX9 SDK dependency.
-// Requires the Windows base types (BYTE, WORD, DWORD, HRESULT); include after windows.h.
+// Requires the platform base types (BYTE, DWORD, HRESULT) and result codes.
 
 typedef enum _D3DBLEND {
 	D3DBLEND_ZERO = 1,
@@ -303,13 +304,15 @@ typedef enum _D3DTEXTURETRANSFORMFLAGS {
 typedef DWORD D3DCOLOR;
 
 typedef struct _D3DVERTEXELEMENT9 {
-	WORD Stream;
-	WORD Offset;
-	BYTE Type;
-	BYTE Method;
-	BYTE Usage;
-	BYTE UsageIndex;
+	u16 Stream;
+	u16 Offset;
+	u8 Type;
+	u8 Method;
+	u8 Usage;
+	u8 UsageIndex;
 } D3DVERTEXELEMENT9;
+
+static_assert(sizeof(D3DVERTEXELEMENT9) == 8, "Legacy vertex declarations must retain their 8-byte layout.");
 
 #define D3DCOLORWRITEENABLE_ALPHA 8
 #define D3DCOLORWRITEENABLE_BLUE 4
