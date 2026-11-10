@@ -541,7 +541,7 @@ void CWeaponKnife::switch2_Hiding	()
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 	{
-		PlaySound("SndHide", get_LastFP());
+		PlaySound("SndHide", get_LastFP(), true);
 	}
 }
 

@@ -362,39 +362,39 @@ void CWeaponMagazinedWGrenade::switch2_Hiding()
 	{
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_jam_g) && IsGrenadeMode() && IsMisfire())
 		{
-			PlaySound("sndHideMisG", get_LastFP());
+			PlaySound("sndHideMisG", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_jam_w_gl) && IsGrenadeLauncherAttached() && IsMisfire())
 		{
-			PlaySound("sndHideMisWGL", get_LastFP());
+			PlaySound("sndHideMisWGL", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_jam) && IsMisfire())
 		{
-			PlaySound("sndHideMis", get_LastFP());
+			PlaySound("sndHideMis", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_empty_g) && IsGrenadeMode() && default_mag == 0)
 		{
-			PlaySound("sndHideEmptyG", get_LastFP());
+			PlaySound("sndHideEmptyG", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_empty_w_gl) && IsGrenadeLauncherAttached() && default_mag == 0)
 		{
-			PlaySound("sndHideEmptyWGL", get_LastFP());
+			PlaySound("sndHideEmptyWGL", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_empty) && default_mag == 0)
 		{
-			PlaySound("sndHideEmpty", get_LastFP());
+			PlaySound("sndHideEmpty", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_g) && IsGrenadeMode())
 		{
-			PlaySound("sndHideG", get_LastFP());
+			PlaySound("sndHideG", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_w_gl) && IsGrenadeLauncherAttached())
 		{
-			PlaySound("sndHideWGL", get_LastFP());
+			PlaySound("sndHideWGL", get_LastFP(), true);
 		}
 		else
 		{
-			PlaySound("sndHide", get_LastFP());
+			PlaySound("sndHide", get_LastFP(), true);
 		}
 	}
 

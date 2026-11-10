@@ -2245,15 +2245,15 @@ void CWeaponMagazined::switch2_Hiding()
 	{
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_jam) && IsMisfire())
 		{
-			PlaySound("sndHideMis", get_LastFP());
+			PlaySound("sndHideMis", get_LastFP(), true);
 		}
 		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_empty) && GetAmmoChamberElapsed() + GetAmmoElapsed() == 0)
 		{
-			PlaySound("sndHideEmpty", get_LastFP());
+			PlaySound("sndHideEmpty", get_LastFP(), true);
 		}
 		else
 		{
-			PlaySound("sndHide", get_LastFP());
+			PlaySound("sndHide", get_LastFP(), true);
 		}
 	}
 
