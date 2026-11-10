@@ -38,4 +38,4 @@ inline ISaveObject& operator<<(ISaveObject& Object, xrGUID& GUID)
 }
 
 XRCORE_API xrGUID generate_guid();
-XRCORE_API const char* generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buffer_size);
+XRCORE_API const char* generate_guid(const xrGUID& guid, char* buffer, const u32& buffer_size);

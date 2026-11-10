@@ -23,7 +23,8 @@ public:
 private:
 	//--------------------- QR2 --------------------------------------------------
 public:
-	GAMESPY_FN_VAR_DECL(const char*, RegisteredKey, (DWORD KeyID));	
+	GAMESPY_FN_VAR_DECL(const char*, RegisteredKey, (u32 KeyID));
+
 private:
 	GAMESPY_FN_VAR_DECL(void, qr2_register_keyA, (int keyid, const char *key));
 	GAMESPY_FN_VAR_DECL(void, qr2_think, (void* qrec));

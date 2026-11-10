@@ -94,7 +94,7 @@ void DBService::Test()
 	}
 }
 
-void DBService::ErrorMsg(LPCSTR function_name, int code, LPCSTR what)
+void DBService::ErrorMsg(const char* function_name, int code, const char* what)
 {
 	Msg("! [DBService::%s::SQLException] Code: %d / Desc: %s", function_name , code, what);
 }
@@ -284,7 +284,7 @@ void DBService::UpdateInsertPropertyInternal(UserDBProperty data)
 	}
 }
 
-int DBService::GetUserIdByName(LPCSTR name)
+int DBService::GetUserIdByName(const char* name)
 {
 	try
 	{
@@ -316,7 +316,7 @@ int DBService::GetUserIdByName(LPCSTR name)
 	return -1;
 }
 
-DBService::UserDBProfile Logon(LPCSTR username, LPCSTR password)
+DBService::UserDBProfile Logon(const char* username, const char* password)
 {
 	DBService::UserDBProfile res_data;
 	

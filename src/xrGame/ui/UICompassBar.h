@@ -348,18 +348,17 @@ private:
     void InitLayoutFromXml(CUIXml& uiXml);
     void ParseSpots(CUIXml& uiXml, const char* path);
     void InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindow* stripParent);
-    void InitGeneratedLabels(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath,
+    void InitGeneratedLabels(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath,
         float defaultY, float defaultW, float defaultH, const SCompassCardinalMarkerConfig& defaultMarkerCfg);
-    void ParseCardinalMarkerConfig(CUIXml& uiXml, LPCSTR path, SCompassCardinalMarkerConfig& cfg, int index = 0) const;
-    bool InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, LPCSTR groupPath,
-        LPCSTR directionNode, float defaultY, float defaultW, float defaultH,
+    void ParseCardinalMarkerConfig(CUIXml& uiXml, const char* path, SCompassCardinalMarkerConfig& cfg, int index = 0) const;
+	bool InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const char* groupPath, const char* directionNode, float defaultY, float defaultW, float defaultH,
         const SCompassCardinalMarkerConfig& defaultMarkerCfg);
-    bool InitCardinalPointEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, int pointIndex,
+    bool InitCardinalPointEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, int pointIndex,
         float defaultY, float defaultW, float defaultH, const SCompassCardinalMarkerConfig& defaultMarkerCfg);
-    bool InitLabelFromDesc(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, const SCompassLabelDesc& desc,
+    bool InitLabelFromDesc(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const SCompassLabelDesc& desc,
         float defaultY, float defaultW, float defaultH, float degreeY,
         const SCompassCardinalMarkerConfig& defaultMarkerCfg);
-    CUIStatic* CreateCardinalMarker(CUIXml& uiXml, const SCompassCardinalMarkerConfig& cfg, LPCSTR colorPath) const;
+    CUIStatic* CreateCardinalMarker(CUIXml& uiXml, const SCompassCardinalMarkerConfig& cfg, const char* colorPath) const;
     float GetCardinalTextHeight(CUIStatic* textStatic);
     float GetCardinalTextBottom(SCompassCardinalEntry& entry);
     float GetCardinalTextCenterX(const SCompassCardinalEntry& entry) const;

@@ -458,11 +458,11 @@ public:
 	CSaveVariableString() = default;
 	CSaveVariableString(const xr_string& Value) : _value(Value.c_str()) {}
 	CSaveVariableString(const shared_str& Value) : _value(Value) {}
-	CSaveVariableString(LPCSTR Value) : _value(Value) {}
+	CSaveVariableString(const char* Value) : _value(Value) {}
 	
 	void SetValue(const xr_string& Value) { _value = Value.c_str(); }
 	void SetValue(const shared_str& Value) { _value = Value; }
-	void SetValue(LPCSTR Value) { _value = Value; }
+	void SetValue(const char* Value) { _value = Value; }
 
 	virtual ESaveVariableType GetVariableType() override { return ESaveVariableType::t_string; }
 	virtual void Write(CMemoryBuffer& Buffer, SSaveTask* Task) override;
@@ -490,11 +490,11 @@ public:
 	CSaveVariableStringLong() = default;
 	CSaveVariableStringLong(const xr_string& Value) : _value(Value.c_str()) {}
 	CSaveVariableStringLong(const shared_str& Value) : _value(Value.c_str()) {}
-	CSaveVariableStringLong(LPCSTR Value) : _value(Value) {}
+	CSaveVariableStringLong(const char* Value) : _value(Value) {}
 	
 	void SetValue(const xr_string& Value) { _value = Value.c_str(); }
 	void SetValue(const shared_str& Value) { _value = Value.c_str(); }
-	void SetValue(LPCSTR Value) { _value = Value; }
+	void SetValue(const char* Value) { _value = Value; }
 
 	virtual ESaveVariableType GetVariableType() override { return ESaveVariableType::t_longstring; }
 	virtual void Write(CMemoryBuffer& Buffer, SSaveTask* Task) override;

@@ -167,7 +167,7 @@ extern	bool	g_bDrawFirstBulletCrosshair;
 float	debug_on_frame_gather_stats_frequency = 0.f;
 #endif
 #ifdef DEBUG 
-extern LPSTR	dbg_stalker_death_anim;
+extern char* dbg_stalker_death_anim;
 extern bool		death_anim_debug;
 extern bool		dbg_imotion_draw_skeleton;
 extern bool		dbg_imotion_draw_velocity;
@@ -490,7 +490,7 @@ public:
 			Console->Hide();
 			string_path			fn;
 			u32		loops = 0;
-			LPSTR		comma = strchr(const_cast<LPSTR>(args), ',');
+			char* comma = strchr(const_cast<char*>(args), ',');
 			if (comma) {
 				loops = atoi(comma + 1);
 				*comma = 0;	//. :)

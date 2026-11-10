@@ -235,7 +235,7 @@ Ivector	vpack			(Fvector src)
 	return		ipck;
 }
 
-void	generate_jitter	(DWORD*	dest, u32 elem_count)
+void generate_jitter(u32* dest, u32 elem_count)
 {
 	const	int		cmax		= 8;
 	FixedVector<Ivector2,cmax>		samples;
@@ -901,7 +901,7 @@ CRenderTarget::CRenderTarget()
 					for (u32 x=0; x<TEX_material_LdotN; x++)
 					{
 						u16*	p	=	(u16*)		
-							(LPBYTE (subData.Data)
+							((u8*)(subData.Data)
 							+ slice*subData.DepthPitch
 							+ y*subData.RowPitch + x*2);
 						float	ld	=	float(x)	/ float	(TEX_material_LdotN-1);
@@ -977,11 +977,11 @@ CRenderTarget::CRenderTarget()
 			{
 				for(u32 x = 0; x < TEX_jitter; x++)
 				{
-					DWORD data[TEX_jitter_count];
+					u32 data[TEX_jitter_count];
 					generate_jitter(data, TEX_jitter_count);
 					for(u32 it = 0; it < TEX_jitter_count; it++)
 					{
-						u32* p = (u32*)(LPBYTE(subData[it].Data) + y * subData[it].DataSize + x * 4);
+						u32* p = (u32*)((u8*)(subData[it].Data) + y * subData[it].DataSize + x * 4);
 						*p = data[it];
 					}
 				}

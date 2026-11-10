@@ -7,7 +7,7 @@
 class XRCORE_API EFS_Utils
 {
 protected:
-	bool 		GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_buf, bool bMulti = false, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
+	bool GetOpenNameInternal(const char* initial, char* buffer, int sz_buf, bool bMulti = false, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
 
 public:
 	EFS_Utils() = default;
@@ -15,7 +15,7 @@ public:
 	void 		_initialize() {}
 	void 		_destroy() {}
 
-	const char*		GenerateName(const char* base_path, const char* base_name, const char* def_ext, LPSTR out_name, u32 const out_name_size);
+	const char* GenerateName(const char* base_path, const char* base_name, const char* def_ext, char* out_name, u32 const out_name_size);
 
 	bool 		GetOpenName(const char* initial, xr_string& buf, bool bMulti = false, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
 
@@ -98,8 +98,8 @@ public:
 
 	xr_string 	AppendFolderToName(xr_string& tex_name, int depth, bool full_name);
 
-	const char*		AppendFolderToName(LPSTR tex_name, u32 const tex_name_size, int depth, bool full_name);
-	const char*		AppendFolderToName(const char* src_name, LPSTR dest_name, u32 const dest_name_size, int depth, bool full_name);
+	const char* AppendFolderToName(char* tex_name, u32 const tex_name_size, int depth, bool full_name);
+	const char* AppendFolderToName(const char* src_name, char* dest_name, u32 const dest_name_size, int depth, bool full_name);
 
 	xr_string	ChangeFileExt(const char* src, const char* ext);
 	xr_string	ChangeFileExt(const xr_string& src, const char* ext);

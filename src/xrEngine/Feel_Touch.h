@@ -11,7 +11,7 @@ namespace Feel
 		struct DenyTouch
 		{
 			CObject*	O;
-			DWORD		Expire;
+			u32 Expire;
 		};
 	protected:
 		xr_vector<DenyTouch>	feel_touch_disable;
@@ -27,7 +27,7 @@ namespace Feel
 
 		virtual bool			feel_touch_contact			(CObject* O);
 		virtual void			feel_touch_update			(Fvector& P, float	R);
-		virtual void			feel_touch_deny				(CObject* O, DWORD	T);
+		virtual void feel_touch_deny(CObject* O, u32 T);
 		virtual void			feel_touch_new				(CObject* O)			{	};
 		virtual void			feel_touch_delete			(CObject* O)			{	};
 	};

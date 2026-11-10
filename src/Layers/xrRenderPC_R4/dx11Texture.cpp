@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/xr_ioc_cmd.h"
 
-void fix_texture_name(LPSTR fn)
+void fix_texture_name(char* fn)
 {
 	auto _ext = strext(fn);
 	if (_ext && (0 == _stricmp(_ext, ".tga") ||

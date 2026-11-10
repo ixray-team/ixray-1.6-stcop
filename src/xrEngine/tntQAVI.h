@@ -27,19 +27,20 @@ struct AVIINDEXENTRY
     #pragma pack(push, 1)
     struct BITMAPINFOHEADER
 	{
-        DWORD biSize;           // Размер структуры (40 байт)
-        long  biWidth;          // Ширина в пикселях
-        long  biHeight;         // Высота в пикселях
+        u32 biSize;			   // Размер структуры (40 байт)
+		s32 biWidth;		   // Ширина в пикселях
+		s32 biHeight;		   // Высота в пикселях
         u16  biPlanes;         // Всегда 1
         u16  biBitCount;       // Бит на пиксель (1, 4, 8, 16, 24, 32)
-        DWORD biCompression;    // Тип компрессии
-        DWORD biSizeImage;      // Размер изображения в байтах (0 если BI_RGB)
-        long  biXPelsPerMeter;  // Горизонтальное разрешение (пикселей на метр)
-        long  biYPelsPerMeter;  // Вертикальное разрешение
-        DWORD biClrUsed;        // Количество используемых цветов (0 = все)
-        DWORD biClrImportant;   // Количество важных цветов (0 = все)
+        u32 biCompression;	   // Тип компрессии
+		u32 biSizeImage;	   // Размер изображения в байтах (0 если BI_RGB)
+		s32 biXPelsPerMeter;   // Горизонтальное разрешение (пикселей на метр)
+		s32 biYPelsPerMeter;   // Вертикальное разрешение
+		u32 biClrUsed;		   // Количество используемых цветов (0 = все)
+		u32 biClrImportant;	   // Количество важных цветов (0 = все)
     };
     #pragma pack(pop)
+    static_assert(sizeof(BITMAPINFOHEADER) == 40);
     
     // RGBQUAD для палитры
     struct RGBQUAD
@@ -91,16 +92,16 @@ typedef struct {
 typedef struct {
 	FOURCC fccType;
 	FOURCC fccHandler;
-	DWORD  dwFlags;
-	DWORD  dwPriority;
-	DWORD  dwInitialFrames;
-	DWORD  dwScale;
-	DWORD  dwRate;
-	DWORD  dwStart;
-	DWORD  dwLength;
-	DWORD  dwSuggestedBufferSize;
-	DWORD  dwQuality;
-	DWORD  dwSampleSize;
+	u32 dwFlags;
+	u32 dwPriority;
+	u32 dwInitialFrames;
+	u32 dwScale;
+	u32 dwRate;
+	u32 dwStart;
+	u32 dwLength;
+	u32 dwSuggestedBufferSize;
+	u32 dwQuality;
+	u32 dwSampleSize;
 	struct
 	{
 		u16	left;
@@ -117,9 +118,9 @@ protected:
 	CAviPlayerCustom	*alpha;
 protected:
 	AVIINDEXENTRY		*m_pMovieIndex;
-	BYTE				*m_pMovieData;
+	u8* m_pMovieData;
 	HIC					m_aviIC;
-	BYTE				*m_pDecompressedBuf;
+	u8* m_pDecompressedBuf;
 
 	BITMAPINFOHEADER	m_biOutFormat;
 	BITMAPINFOHEADER	m_biInFormat;
@@ -127,26 +128,26 @@ protected:
 	float				m_fRate;		// стандартная скорость, fps
 	float				m_fCurrentRate;	// текущая скорость, fps
 
-	DWORD				m_dwFrameTotal;
-	DWORD				m_dwFrameCurrent;
+	u32 m_dwFrameTotal;
+	u32 m_dwFrameCurrent;
 	u32					m_dwFirstFrameOffset;
 
 
-	DWORD				CalcFrame			();
+	u32 CalcFrame();
 
-	bool				DecompressFrame		( DWORD	dwFrameNum );
-	void				PreRoll				( DWORD dwFrameNum );
+	bool DecompressFrame(u32 dwFrameNum);
+	void PreRoll(u32 dwFrameNum);
 
 public:
 						CAviPlayerCustom		( );
 						~CAviPlayerCustom		( );
 
-	DWORD				m_dwWidth, m_dwHeight;
+	u32 m_dwWidth, m_dwHeight;
 
-	void				GetSize				( DWORD *dwWidth, DWORD *dwHeight );
+	void GetSize(u32* dwWidth, u32* dwHeight);
 	
 	bool				Load				( char *fname  );
-	bool				GetFrame			( BYTE **pDest );
+	bool GetFrame(u8** pDest);
 
 	bool				NeedUpdate			( ) { return CalcFrame( ) != m_dwFrameCurrent; }
 	int					SetSpeed			( int nPercent );

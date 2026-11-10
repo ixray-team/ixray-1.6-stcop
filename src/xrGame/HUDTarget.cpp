@@ -94,7 +94,7 @@ void CHUDTarget::ShowCrosshair(bool b)
 }
 //. fVisTransparencyFactor
 float fCurrentPickPower;
-ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool pick_trace_callback(collide::rq_result& result, void* params)
 {
 	SPickParam*	pp			= (SPickParam*)params;
 //	collide::rq_result* RQ	= pp->RQ;

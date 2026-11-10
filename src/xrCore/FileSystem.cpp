@@ -38,7 +38,7 @@ xr_string	EFS_Utils::ExcludeBasePath(const char* full_path, const char* excl_pat
 xr_string	EFS_Utils::ChangeFileExt(const char* src, const char* ext)
 {
 	xr_string	tmp;
-	LPSTR src_ext = strext(src);
+	char* src_ext = strext(src);
 	if (src_ext) {
 		size_t		ext_pos = src_ext - src;
 		tmp.assign(src, 0, ext_pos);
@@ -105,14 +105,16 @@ void MakeFilter(string1024& dest, const char* info, const char* ext)
 // start_flt_ext = -1-all 0..n-indices
 //------------------------------------------------------------------------------
 
+#ifdef _WIN32
 // Vista uses this hook for old-style save dialog
 UINT_PTR CALLBACK OFNHookProcOldStyle(HWND, UINT, WPARAM, LPARAM)
 {
 	// let default hook work on this message
 	return 0;
 }
+#endif
 
-bool EFS_Utils::GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_buf, bool bMulti, const char* offset, int start_flt_ext, const char* ext)
+bool EFS_Utils::GetOpenNameInternal(const char* initial, char* buffer, int sz_buf, bool bMulti, const char* offset, int start_flt_ext, const char* ext)
 {
 #ifdef IXR_WINDOWS
 	VERIFY(buffer && (sz_buf > 0));
@@ -294,18 +296,18 @@ void EFS_Utils::MarkFile(const char* fn, bool bDeleteSource)
 }
 
 //----------------------------------------------------
-const char* EFS_Utils::AppendFolderToName(LPSTR tex_name, u32 const tex_name_size, int depth, bool full_name)
+const char* EFS_Utils::AppendFolderToName(char* tex_name, u32 const tex_name_size, int depth, bool full_name)
 {
 	string256 _fn;
 	xr_strcpy(tex_name, tex_name_size, AppendFolderToName(tex_name, _fn, sizeof(_fn), depth, full_name));
 	return tex_name;
 }
 
-const char* EFS_Utils::AppendFolderToName(const char* src_name, LPSTR dest_name, u32 const dest_name_size, int depth, bool full_name)
+const char* EFS_Utils::AppendFolderToName(const char* src_name, char* dest_name, u32 const dest_name_size, int depth, bool full_name)
 {
 	shared_str tmp = src_name;
 	const char* s = src_name;
-	LPSTR d = dest_name;
+	char* d = dest_name;
 	int sv_depth = depth;
 	for (; *s && depth; s++, d++) {
 		if (*s == '_') { depth--; *d = '\\'; }
@@ -322,7 +324,7 @@ const char* EFS_Utils::AppendFolderToName(const char* src_name, LPSTR dest_name,
 	return dest_name;
 }
 
-const char* EFS_Utils::GenerateName(const char* base_path, const char* base_name, const char* def_ext, LPSTR out_name, u32 const out_name_size)
+const char* EFS_Utils::GenerateName(const char* base_path, const char* base_name, const char* def_ext, char* out_name, u32 const out_name_size)
 {
 	int cnt = 0;
 	string_path fn;

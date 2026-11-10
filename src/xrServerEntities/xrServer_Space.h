@@ -59,7 +59,7 @@ using BOOL_IT = BOOL_VECTOR::iterator;
 using FLOAT_VECTOR = xr_vector<float>;
 using FLOAT_IT = FLOAT_VECTOR::iterator;
 
-using LPSTR_VECTOR = xr_vector<LPSTR>;
+using LPSTR_VECTOR = xr_vector<char*>;
 using LPSTR_IT = LPSTR_VECTOR::iterator;
 
 using FVECTOR_VECTOR = xr_vector<Fvector>;

@@ -2087,8 +2087,8 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			continue;
 		}
 
-		LPSTR comm = strchr(LTXHelpStr1, ';');
-		LPSTR comm_1 = strchr(LTXHelpStr1, '/');
+		char* comm = strchr(LTXHelpStr1, ';');
+		char* comm_1 = strchr(LTXHelpStr1, '/');
 
 		if (comm_1 && (*(comm_1 + 1) == '/') && ((!comm) || (comm && (comm_1 < comm))))
 		{

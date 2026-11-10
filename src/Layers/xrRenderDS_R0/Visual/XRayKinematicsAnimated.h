@@ -90,12 +90,12 @@ protected:
 	void						ChannelFactorsStartup();
 	CBlend* IBlend_Create();
 private:
-	void						IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam);
+	void IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, bool bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, void* CallbackParam);
 	void						IFXBlendSetup(CBlend& B, MotionID motion_ID, float blendAccrue, float blendFalloff, float Power, float Speed, u16 bone);
 	//.	bool						LoadMotions				(LPCSTR N, IReader *data);
 public:
 #ifdef DEBUG
-	virtual std::pair<LPCSTR, LPCSTR>	LL_MotionDefName_dbg(MotionID	ID) override;
+	virtual std::pair<const char*, const char*> LL_MotionDefName_dbg(MotionID ID) override;
 	virtual void						LL_DumpBlends_dbg() override;
 #endif
 	virtual u32							LL_PartBlendsCount(u32 bone_part_id) override;
@@ -116,12 +116,12 @@ public:
 	virtual IBlendDestroyCallback* GetBlendDestroyCallback() override;
 	virtual void					SetBlendDestroyCallback(IBlendDestroyCallback* cb) override;
 	// Low level interface
-	virtual MotionID					LL_MotionID(LPCSTR B) override;
-	virtual u16							LL_PartID(LPCSTR B) override;
+	virtual MotionID LL_MotionID(const char* B) override;
+	virtual u16 LL_PartID(const char* B) override;
 
 	virtual CBlend* LL_PlayFX(u16 bone, MotionID motion, float blendAccrue, float blendFalloff, float Speed, float Power) override;
-	virtual CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0) override;
-	virtual CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0) override;
+	virtual CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, void* CallbackParam, u8 channel = 0) override;
+	virtual CBlend* LL_PlayCycle(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, void* CallbackParam, u8 channel = 0) override;
 	virtual void						LL_FadeCycle(u16 partition, float	falloff, u8 mask_channel = (1 << 0)) override;
 	virtual void						LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0)) override;
 	virtual void						LL_SetChannelFactor(u16 channel, float factor) override;
@@ -135,20 +135,20 @@ public:
 	void						DestroyCycle(CBlend& B);
 
 	// cycles
-	virtual MotionID					ID_Cycle(LPCSTR  N) override;
-	virtual MotionID					ID_Cycle_Safe(LPCSTR  N) override;
+	virtual MotionID ID_Cycle(const char* N) override;
+	virtual MotionID ID_Cycle_Safe(const char* N) override;
 	virtual MotionID					ID_Cycle(shared_str  N) override;
 	virtual MotionID					ID_Cycle_Safe(shared_str  N) override;
-	virtual CBlend* PlayCycle(LPCSTR  N, bool bMixIn = true, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0) override;
-	virtual CBlend* PlayCycle(MotionID M, bool bMixIn = true, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0) override;
-	virtual CBlend* PlayCycle(u16 partition, MotionID M, bool bMixIn = true, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0) override;
+	virtual CBlend* PlayCycle(const char* N, bool bMixIn = true, PlayCallback Callback = 0, void* CallbackParam = 0, u8 channel = 0) override;
+	virtual CBlend* PlayCycle(MotionID M, bool bMixIn = true, PlayCallback Callback = 0, void* CallbackParam = 0, u8 channel = 0) override;
+	virtual CBlend* PlayCycle(u16 partition, MotionID M, bool bMixIn = true, PlayCallback Callback = 0, void* CallbackParam = 0, u8 channel = 0) override;
 	// fx'es
-	virtual MotionID					ID_FX(LPCSTR  N) override;
-	virtual MotionID					ID_FX_Safe(LPCSTR  N) override;
-	virtual CBlend* PlayFX(LPCSTR  N, float power_scale) override;
+	virtual MotionID ID_FX(const char* N) override;
+	virtual MotionID ID_FX_Safe(const char* N) override;
+	virtual CBlend* PlayFX(const char* N, float power_scale) override;
 	virtual CBlend* PlayFX(MotionID M, float power_scale) override;
 
-	virtual CBlend* PlayFX_Safe(LPCSTR N, float power_scale) override;
+	virtual CBlend* PlayFX_Safe(const char* N, float power_scale) override;
 	virtual void LL_SetInertialization(float) override {}
 	virtual void LL_SetInertializationBone(u16, bool) override {}
 	virtual void LL_ResetInertialization() override {}

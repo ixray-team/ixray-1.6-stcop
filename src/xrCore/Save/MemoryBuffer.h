@@ -29,7 +29,7 @@ public:
 	static constexpr size_t ChunkSize = 4 * 1024;
 
 private:
-	BYTE	data[ChunkSize];
+	u8 data[ChunkSize];
 	size_t		count = 0;
 
 public:
@@ -54,7 +54,7 @@ public:
 
 	template<>
 	bool Write(IWriter* data) {
-		data->w((BYTE*)&this->data, count);
+		data->w((u8*)&this->data, count);
 		return false;
 	}
 

@@ -984,7 +984,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 		CurrentGameUI()->m_pMessagesWnd->AddLogMessage(KMS);
 };
 
-extern	void	WritePlayerName_ToRegistry	(LPSTR name);
+extern void WritePlayerName_ToRegistry(char* name);
 
 void	game_cl_mp::OnPlayerChangeName		(NET_Packet& P)
 {

@@ -30,7 +30,7 @@ struct SFlyingRayContext
     bool support_query;
 };
 
-bool flying_solid_hit(collide::rq_result& hit, LPVOID data)
+bool flying_solid_hit(collide::rq_result& hit, void* data)
 {
     auto& context = *static_cast<SFlyingRayContext*>(data);
     // Airborne birds ignore one another. Grounded birds and final approaches
@@ -60,7 +60,7 @@ bool flying_solid_hit(collide::rq_result& hit, LPVOID data)
     return true;
 }
 
-bool FlyingCollisionCandidate(const collide::ray_defs&, CObject* Object, LPVOID)
+bool FlyingCollisionCandidate(const collide::ray_defs&, CObject* Object, void*)
 {
     const auto* Flyer = smart_cast<CFlyingMonster*>(Object);
     return !Flyer || !Flyer->g_Alive() || Flyer->flight().NeedsGroundCollision(Flyer->Position());

@@ -131,7 +131,7 @@ void CALifeSpawnRegistry::Serialize(ISaveObject& Object)
 	}
 }
 
-void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
+void CALifeSpawnRegistry::load(const char* spawn_name)
 {
 	Msg							("* Loading spawn registry...");
 	m_spawn_name				= spawn_name;

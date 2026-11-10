@@ -294,7 +294,7 @@ private:
 	}
 };
 /////////////////////////////////////////////////////////////////////////////////////
-bool ActivateBoxDynamic( IPHMovementControl* mov_control, bool character_exist,  DWORD id,  int num_it/*=8*/, int num_steps/*5*/, float resolve_depth/*=0.01f*/ )
+bool ActivateBoxDynamic(IPHMovementControl* mov_control, bool character_exist, u32 id, int num_it /*=8*/, int num_steps /*5*/, float resolve_depth /*=0.01f*/)
 {
 	/////////////////////////////////////////////////////////////////////////////
 	//m_PhysicMovementControl->ActivateBox(id);

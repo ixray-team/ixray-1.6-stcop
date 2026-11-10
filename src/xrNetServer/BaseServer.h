@@ -119,7 +119,7 @@ protected:
 	virtual bool			CreateConnection(GameDescriptionData& game_descr, ServerConnectionOptions& opt);
 	virtual void			DestroyConnection() {}
 
-	virtual bool			GetClientPendingMessagesCount(ClientID ID, DWORD& dwPending) { return true; }
+	virtual bool GetClientPendingMessagesCount(ClientID ID, u32& dwPending) { return true; }
 
 	virtual void			_Recieve(const void* data, u32 data_size, u32 param) override;
 	virtual void			_SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) {}
@@ -175,7 +175,7 @@ public:
 	IC		IClient*		  GetServerClient() { return SV_Client; };
 	IC		IClient*		  GetClientByID(ClientID clientId) { return net_players.GetFoundClient(ClientIdSearchPredicate(clientId)); };
 
-	virtual bool			  GetClientAddress(ClientID ID, ip_address& Address, DWORD* pPort = NULL) { return true; }
+	virtual bool GetClientAddress(ClientID ID, ip_address& Address, u32* pPort = NULL) { return true; }
 
 	// extended functionality
 	virtual bool			  OnCL_QueryHost() { return true; };
@@ -207,4 +207,3 @@ public:
 		csMessage.Leave();
 	}
 };
-

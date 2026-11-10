@@ -310,14 +310,14 @@ public:
 	virtual void					SetUpdateCallback(UpdateCallback pCallback) override {Update_Callback = pCallback;}
 	virtual void					SetUpdateCallbackParam(void* pCallbackParam) override {Update_Callback_Param = pCallbackParam;}
 
-	virtual void					LL_SetShader(LPCSTR sh_name) override;
+	virtual void LL_SetShader(const char* sh_name) override;
 	virtual void					LL_RestoreShader() override;
-	virtual void					LL_SetShader(u16 bone_id, LPCSTR sh_name) override;
+	virtual void LL_SetShader(u16 bone_id, const char* sh_name) override;
 	virtual void					LL_RestoreShader(u16 bone_id) override;
 
-	virtual void					LL_SetTexture(LPCSTR tex_name) override;
+	virtual void LL_SetTexture(const char* tex_name) override;
 	virtual void					LL_RestoreTexture() override;
-	virtual void					LL_SetTexture(u16 bone_id, LPCSTR tex_name) override;
+	virtual void LL_SetTexture(u16 bone_id, const char* tex_name) override;
 	virtual void					LL_RestoreTexture(u16 bone_id) override;
 
 	virtual xr_vector<IRenderVisual*>& LL_GetChilds() override;

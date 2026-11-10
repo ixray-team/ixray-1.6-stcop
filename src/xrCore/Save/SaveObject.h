@@ -818,7 +818,7 @@ ISaveObject& operator<<(ISaveObject& Object, xr_deque<T>& Value)
 }
 
 XRCORE_API ISaveObject& operator<<(ISaveObject& Object, char& Value);
-XRCORE_API ISaveObject& operator<<(ISaveObject& Object, LPSTR& Value);
+XRCORE_API ISaveObject& operator<<(ISaveObject& Object, char*& Value);
 
 class XRCORE_API CSaveObjectSave: public CSaveObject {
 public:
@@ -845,7 +845,7 @@ public:
 	virtual ISaveObject& operator<<(bool& Value) override;
 	virtual ISaveObject& operator<<(shared_str& S) override;
 
-	virtual xr_string* SerializeEnourmousString(LPCSTR long_str) override;
+	virtual xr_string* SerializeEnourmousString(const char* long_str) override;
 
 	void Write(CMemoryBuffer* buffer, SSaveTask* Task);
 };
@@ -876,7 +876,7 @@ public:
 	virtual ISaveObject& operator<<(bool& Value) override;
 	virtual ISaveObject& operator<<(shared_str& S) override;
 
-	virtual xr_string* SerializeEnourmousString(LPCSTR long_str) override;
+	virtual xr_string* SerializeEnourmousString(const char* long_str) override;
 
 	void Parse(IReader* stream);
 

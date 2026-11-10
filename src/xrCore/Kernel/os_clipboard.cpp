@@ -14,7 +14,7 @@ void os_clipboard::copy_to_clipboard(const char* buf)
     SDL_SetClipboardText(buf);
 }
 
-void os_clipboard::paste_from_clipboard	( LPSTR buffer, u32 const& buffer_size )
+void os_clipboard::paste_from_clipboard(char* buffer, u32 const& buffer_size)
 {
     if (!SDL_HasClipboardText())
         return;

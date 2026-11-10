@@ -35,7 +35,7 @@ void CCameraLook::Serialize(ISaveObject& Object)
 	}
 }
 
-ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+ICF static bool GetPickDist_Callback(collide::rq_result& result, void* params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
 

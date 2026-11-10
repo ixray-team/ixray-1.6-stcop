@@ -9,6 +9,6 @@
 #define DU_CONE_NUMLINES	24
 
 extern RENDER_API Fvector du_cone_vertices[];
-extern RENDER_API WORD du_cone_faces[];
-extern RENDER_API WORD du_cone_lines[];
+extern RENDER_API u16 du_cone_faces[];
+extern RENDER_API u16 du_cone_lines[];
 #endif

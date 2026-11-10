@@ -159,7 +159,7 @@ void CInventoryBox::SE_update_status()
 	CGameObject::u_EventSend(P);
 }
 
-void CTradeStorageBox::Load(LPCSTR section)
+void CTradeStorageBox::Load(const char* section)
 {
 	CInventoryBox::Load(section);
 	auto FilterSection = pSettings->r_string_nullable(section, "filter_section");
@@ -187,7 +187,7 @@ void CTradeStorageBox::Load(LPCSTR section)
 			{
 				if(Item.first.c_str()[0] == '$')
 				{
-					LPCSTR section_name = Item.first.c_str()+1;
+					const char* section_name = Item.first.c_str() + 1;
 					self(section_name);
 					continue;
 				}

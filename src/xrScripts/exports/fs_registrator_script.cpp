@@ -29,9 +29,10 @@ void rescan_path_script(CLocatorAPI* fs, const char* initial)
 //-Alundaio
 
 class FS_file_list{
-	xr_vector<LPSTR>*	m_p;
+	xr_vector<char*>* m_p;
+
 public :
-				FS_file_list	(xr_vector<LPSTR>* p):m_p(p)	{ }
+				FS_file_list(xr_vector<char*>* p) : m_p(p) {}
 	u32			Size			()								{ return (u32)m_p->size();}
 	const char*		GetAt			(u32 idx)						{ return m_p->at(idx);}
 	void		Free			()								{ FS.file_list_close(m_p);};

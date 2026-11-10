@@ -1077,7 +1077,7 @@ bool ActivateShapeCharacterPhysicsSupport(Fvector& out_pos, const Fvector& vbox,
 	return FindFreeBox(Fvector().mul(vbox, 0.5f), Form, Mask, m_EntityAlife, out_pos);
 }
 
-bool ActivateBoxDynamic(IPHMovementControl* mov_control, bool character_exist, DWORD id, int num_it, int num_steps, float resolve_depth)
+bool ActivateBoxDynamic(IPHMovementControl* mov_control, bool character_exist, u32 id, int num_it, int num_steps, float resolve_depth)
 {
 	IPHCharacter* Character = mov_control->character();
 	if (Character == nullptr || g_B3World == nullptr)

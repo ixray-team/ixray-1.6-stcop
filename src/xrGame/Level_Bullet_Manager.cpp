@@ -952,7 +952,7 @@ IC float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const
 }
 }
 
-bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID params)
+bool CBulletManager::firetrace_callback(collide::rq_result& result, void* params)
 {
 	bullet_test_callback_data& data = *(bullet_test_callback_data*)params;
 	SBullet& bullet = *data.pBullet;

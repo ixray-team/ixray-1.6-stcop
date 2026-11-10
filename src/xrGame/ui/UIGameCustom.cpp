@@ -1154,7 +1154,7 @@ void CUIGameCustom::ClearSleepSessionOverrides()
 		SleepWnd->ClearSleepSessionOverrides();
 }
 
-void CUIGameCustom::SetSleepBlocked(bool blocked, LPCSTR warningText)
+void CUIGameCustom::SetSleepBlocked(bool blocked, const char* warningText)
 {
 	if (SleepWnd != nullptr)
 		SleepWnd->SetSleepBlocked(blocked, warningText);

@@ -418,7 +418,7 @@ public:
 	virtual GenerationLevel			get_generation			() override;
 
 	virtual bool					is_sun_static			() override { return o.sunstatic;}
-	virtual DWORD					get_dx_level			() override { return 0x000A0001; }
+	virtual u32 get_dx_level() override { return 0x000A0001; }
 
 	virtual void					detail_trample_mark(float x, float y, float z, float radius, float weight, bool isActor = false) override
 	{
@@ -463,11 +463,11 @@ public:
 
 	HRESULT							shader_compile			(
 		const char*							name,
-		DWORD const*					pSrcData,
-		UINT                            SrcDataLen,
+		u32 const* pSrcData,
+		u32 SrcDataLen,
 		const char*                          pFunctionName,
 		const char*                          pTarget,
-		DWORD                           Flags,
+		u32 Flags,
 		void*&							result,
 		const ShaderExternalMap&		Defines);
 	void							SetShaderCacheBypass	(bool bypass);

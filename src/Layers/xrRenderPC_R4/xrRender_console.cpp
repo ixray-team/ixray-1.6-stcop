@@ -866,11 +866,11 @@ public:
 class CCC_DetailDensity : public CCC_Float
 {
 public:
-	CCC_DetailDensity(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
+	CCC_DetailDensity(const char* N, float* V, float _min = 0.0f, float _max = 10000.0f)
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(LPCSTR args) override
+	virtual void Execute(const char* args) override
 	{
 		CCC_Float::Execute(args);
 
@@ -890,11 +890,11 @@ public:
 class CCC_DetailReloadDetails : public CCC_Float
 {
 public:
-	CCC_DetailReloadDetails(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
+	CCC_DetailReloadDetails(const char* N, float* V, float _min = 0.0f, float _max = 10000.0f)
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(LPCSTR args) override
+	virtual void Execute(const char* args) override
 	{
 		CCC_Float::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
@@ -909,7 +909,7 @@ public:
 class CCC_DetailReloadDetails_Boolean : public CCC_Boolean
 {
 public:
-	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
+	CCC_DetailReloadDetails_Boolean(const char* N, bool* V)
 		: CCC_Boolean(N, V) {}
 
 	virtual void Execute(const char* args) override

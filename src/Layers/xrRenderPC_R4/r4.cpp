@@ -737,7 +737,7 @@ void CRender::SyncReflections()
 template <typename T>
 static HRESULT create_shader(
 		const char* const pTarget,
-		DWORD const* buffer,
+		u32 const* buffer,
 		u32	const buffer_size,
 		const char* const file_name,
 		T*& result,
@@ -756,7 +756,7 @@ static HRESULT create_shader(
 
 static HRESULT create_shader(
 		const char* const pTarget,
-		DWORD const* buffer,
+		u32 const* buffer,
 		u32	const buffer_size,
 		const char* const file_name,
 		void*& result,
@@ -962,7 +962,7 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 
 class includer : public IRHIShaderInclude {
 public:
-	HRESULT Open(u32 IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
+	HRESULT Open(u32 IncludeType, const char* pFileName, const void* pParentData, const void** ppData, u32* pBytes) override
 	{
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
@@ -987,7 +987,7 @@ public:
 		return	S_OK;
 	}
 
-	HRESULT Close(LPCVOID pData) override
+	HRESULT Close(const void* pData) override
 	{
 		xr_free(pData);
 		return S_OK;
@@ -996,11 +996,11 @@ public:
 
 HRESULT	CRender::shader_compile(
 	const char* name,
-	DWORD const* pSrcData,
-	UINT SrcDataLen,
+	u32 const* pSrcData,
+	u32 SrcDataLen,
 	const char* pFunctionName,
 	const char* pTarget,
-	DWORD Flags,
+	u32 Flags,
 	void*& result,
 	const ShaderExternalMap& Defines)
 {
@@ -1073,7 +1073,7 @@ HRESULT	CRender::shader_compile(
 					inShader->m_crc1 = ShaderCRC;
 					inShader->m_crc2 = CodeSRC;
 
-					_result = create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
+					_result = create_shader(pTarget, (u32*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
 				}
 			}
 		}
@@ -1119,12 +1119,12 @@ HRESULT	CRender::shader_compile(
 			inShader->m_crc1 = crc;
 			inShader->m_crc2 = RealCodeCRC;
 
-			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
+			_result = create_shader(pTarget, (u32*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
 
 		if (pErrorBuf)
 		{
-			Msg("! error: %s\n%s", file_name, (LPCSTR)pErrorBuf->GetBufferPointer());
+			Msg("! error: %s\n%s", file_name, (const char*)pErrorBuf->GetBufferPointer());
 		}
 
 		if (FAILED(_result) && !pErrorBuf)

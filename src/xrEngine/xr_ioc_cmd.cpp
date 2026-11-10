@@ -380,7 +380,7 @@ class CCC_Start : public IConsole_Command
 			sscanf(strstr(args,name)+xr_strlen(name),"(%4095[^)])",dest);
 	}
 
-	void	protect_Name_strlwr( LPSTR str )
+	void protect_Name_strlwr(char* str)
 	{
  		string4096	out;
 		xr_strcpy( out, sizeof(out), str );

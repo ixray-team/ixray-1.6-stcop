@@ -12,7 +12,7 @@
 namespace os_clipboard
 {
 	XRCORE_API	void	copy_to_clipboard		( const char* buf );
-	XRCORE_API	void	paste_from_clipboard	( LPSTR  buf, u32 const& buf_size );
+	XRCORE_API void paste_from_clipboard(char* buf, u32 const& buf_size);
 	XRCORE_API	void	update_clipboard		( const char* str );
 } // namespace os_clipboard
 

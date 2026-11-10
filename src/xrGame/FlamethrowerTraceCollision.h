@@ -78,8 +78,8 @@ namespace FlamethrowerTrace
 		//float RadiusCollidedInterpTime = 0.0f;
 		bool Collided = false;
 
-		static bool	hit_callback(collide::rq_result& result, LPVOID params);
-		static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
+		static bool hit_callback(collide::rq_result& result, void* params);
+		static bool test_callback(const collide::ray_defs& rd, CObject* object, void* params);
 	
 	public:
 		CPoint() = default;
@@ -293,7 +293,7 @@ namespace FlamethrowerTrace
 		void	feel_touch_delete(CObject* O) override;
 		bool	feel_touch_contact(CObject* O) override;
 	
-		void Load(LPCSTR section);
+		void Load(const char* section);
 
 		void save(NET_Packet& output_packet);
 		void load(IReader& input_packet);

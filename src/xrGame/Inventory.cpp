@@ -1370,7 +1370,8 @@ PIItem CInventory::item(CLASS_ID cls_id) const
 	return nullptr;
 }
 
-void CInventory::GetAll(LPCSTR name, xr_vector<PIItem>& Output) {
+void CInventory::GetAll(const char* name, xr_vector<PIItem>& Output)
+{
 	Output.clear();
 	for (TIItemContainer::const_iterator it = m_belt.begin(); m_belt.end() != it; ++it)
 	{

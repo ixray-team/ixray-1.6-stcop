@@ -1004,7 +1004,7 @@ void CKinematics::BonesHistory_Invalidate()
 	dwFirstRenderFrame = 0;
 }
 
-void CKinematics::LL_SetShader(LPCSTR shader_name)
+void CKinematics::LL_SetShader(const char* shader_name)
 {
 	for (dxRender_Visual* V : children)
 	{
@@ -1021,7 +1021,7 @@ void CKinematics::LL_RestoreShader()
 	}
 }
 
-void CKinematics::LL_SetShader(u16 bone_id, LPCSTR shader_name)
+void CKinematics::LL_SetShader(u16 bone_id, const char* shader_name)
 {
 	for (u32 c_it = 0; c_it < children.size(); c_it++)
 	{
@@ -1043,7 +1043,7 @@ void CKinematics::LL_RestoreShader(u16 bone_id)
 	}
 }
 
-void CKinematics::LL_SetTexture(LPCSTR texture_name)
+void CKinematics::LL_SetTexture(const char* texture_name)
 {
 	for (dxRender_Visual* V : children)
 	{
@@ -1061,7 +1061,7 @@ void CKinematics::LL_RestoreTexture()
 	}
 }
 
-void CKinematics::LL_SetTexture(u16 bone_id, LPCSTR texture_name)
+void CKinematics::LL_SetTexture(u16 bone_id, const char* texture_name)
 {
 	for (u32 c_it = 0; c_it < children.size(); c_it++)
 	{

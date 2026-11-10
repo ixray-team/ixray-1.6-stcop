@@ -42,7 +42,7 @@ void	CResourceManager::_DeleteCS			(const SCS*	CS	)
 	DestroyShader(CS);
 }
 
-void fix_texture_name(LPSTR fn);
+void fix_texture_name(char* fn);
 
 template <class T>
 bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
@@ -149,7 +149,7 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name, const ShaderExternalMap&
 	bool IsNew = false;
 	{
 		xrCriticalSectionGuard guard(creationGuard);
-		map_VS::iterator I = m_vs.find(LPSTR(name));
+		map_VS::iterator I = m_vs.find((char*)(name));
 		if (I != m_vs.end())
 		{
 			if (ResourceLifetime::TryAcquire(I->second, Result))
@@ -203,7 +203,7 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name, const ShaderExternalMap&
 		}
 
 		u32	const size = file->length();
-		char* const data = (LPSTR)_alloca(size + 1);
+		char* const data = (char*)_alloca(size + 1);
 		CopyMemory(data, file->pointer(), size);
 		data[size] = 0;
 		FS.r_close(file);
@@ -212,9 +212,9 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name, const ShaderExternalMap&
 		const char* c_target = "vs_5_0";
 		const char* c_entry = "main";
 
-		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
+		u32 flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs, Defines);
+		HRESULT const _hr = RImplementation.shader_compile(name, (u32 const*)data, size, c_entry, c_target, flags, (void*&)_vs, Defines);
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 		_vs->CompileState.MarkCompiled();
@@ -242,7 +242,7 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 	if (0==(vs->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	xrCriticalSectionGuard guard(creationGuard);
 	ForgetStage(vs);
-	LPSTR N				= LPSTR		(*vs->cName);
+	char* N = (char*)(*vs->cName);
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	
 	{
@@ -266,7 +266,7 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name, const ShaderExternalMap
 	bool IsNew = false;
 	{
 		xrCriticalSectionGuard guard(creationGuard);
-		map_PS::iterator I = m_ps.find(LPSTR(name));
+		map_PS::iterator I = m_ps.find((char*)(name));
 		if (I != m_ps.end())
 		{
 			if (ResourceLifetime::TryAcquire(I->second, Result))
@@ -324,7 +324,7 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name, const ShaderExternalMap
 
 		R_ASSERT2(R, cname);
 		u32	const size = R->length();
-		char* const data		= (LPSTR)_alloca(size + 1);
+		char* const data = (char*)_alloca(size + 1);
 		CopyMemory(data, R->pointer(), size);
 		data[size]				= 0;
 		FS.r_close(R);
@@ -333,9 +333,9 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name, const ShaderExternalMap
 		const char* c_target	= "ps_5_0";
 		const char* c_entry		= "main";
 
-		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
+		u32 flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps, Defines);
+		HRESULT const _hr = RImplementation.shader_compile(name, (u32 const*)data, size, c_entry, c_target, flags, (void*&)_ps, Defines);
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 		_ps->CompileState.MarkCompiled();
@@ -366,7 +366,7 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 	if (0==(ps->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	xrCriticalSectionGuard guard(creationGuard);
 	ForgetStage(ps);
-	LPSTR N				= LPSTR		(*ps->cName);
+	char* N = (char*)(*ps->cName);
 	map_PS::iterator I	= m_ps.find	(N);
 	if (I!=m_ps.end())	{
 		if (I->second == ps)
@@ -389,7 +389,7 @@ ref_gs	CResourceManager::_CreateGS			(const char* _name, const ShaderExternalMap
 	bool IsNew = false;
 	{
 		xrCriticalSectionGuard guard(creationGuard);
-		map_GS::iterator I = m_gs.find(LPSTR(name));
+		map_GS::iterator I = m_gs.find((char*)(name));
 		if (I != m_gs.end())
 		{
 			if (ResourceLifetime::TryAcquire(I->second, Result))
@@ -451,9 +451,9 @@ ref_gs	CResourceManager::_CreateGS			(const char* _name, const ShaderExternalMap
 		const char*						c_target	= "gs_5_0";
 		const char*						c_entry		= "main";
 
-		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
+		u32 flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs, Defines);
+		HRESULT const _hr = RImplementation.shader_compile(name, (u32 const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs, Defines);
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 		_gs->CompileState.MarkCompiled();
@@ -468,7 +468,7 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 	if (0==(gs->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	xrCriticalSectionGuard guard(creationGuard);
 	ForgetStage(gs);
-	LPSTR N				= LPSTR		(*gs->cName);
+	char* N = (char*)(*gs->cName);
 	map_GS::iterator I	= m_gs.find	(N);
 	if (I!=m_gs.end())	{
 		if (I->second == gs)
@@ -556,7 +556,7 @@ void CResourceManager::RecompileDX12Shaders()
 		void* result = stage;
 		const HRESULT hr = RImplementation.shader_compile(
 			*stage->cName,
-			(DWORD const*)data.data(),
+			(u32 const*)data.data(),
 			u32(data.size() - 1),
 			"main",
 			target,
@@ -646,7 +646,7 @@ CRT* CResourceManager::_CreateRT(const char* Name, u32 w, u32 h, ERHI_FORMAT f, 
 	R_ASSERT(Name && Name[0] && w && h);
 
 	// ***** first pass - search already created RT
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RT::iterator I = m_rtargets.find	(N);
 	if (I != m_rtargets.end())
@@ -667,7 +667,7 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 	if (0==(RT->dwFlags&xr_resource_flagged::RF_REGISTERED))
 		return;
 
-	LPSTR N = LPSTR(*RT->cName);
+	char* N = (char*)(*RT->cName);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RT::iterator I	= m_rtargets.find	(N);
 	if (I!=m_rtargets.end())
@@ -683,7 +683,7 @@ CRTC* CResourceManager::_CreateRTC(const char* Name, u32 size, ERHI_FORMAT f, CR
 	R_ASSERT(Name && Name[0] && size);
 
 	// ***** first pass - search already created RTC
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RTC::iterator I = m_rtargets_c.find(N);
 	if(I != m_rtargets_c.end())	return I->second;
@@ -698,7 +698,7 @@ CRTC* CResourceManager::_CreateRTC(const char* Name, u32 size, ERHI_FORMAT f, CR
 
 void	CResourceManager::_DeleteRTC(const CRTC* RT) {
 	if(0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))	return;
-	LPSTR N = LPSTR(*RT->cName);
+	char* N = (char*)(*RT->cName);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RTC::iterator I = m_rtargets_c.find(N);
 	if(I != m_rtargets_c.end()) {
@@ -759,7 +759,7 @@ ref_texture CResourceManager::_CreateTexture	(const char* _Name)
 
 	fix_texture_name (Name);
 	// ***** first pass - search already loaded texture
-	LPSTR N			= LPSTR(Name);
+	char* N = (char*)(Name);
 	map_TextureIt I = m_textures.find	(N);
 	if (I!=m_textures.end())
 	{
@@ -819,7 +819,7 @@ ref_texture CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 
 		Name[i] = std::tolower(Name[i]);
 
 	// ***** first pass - search already loaded texture
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 	map_TextureIt I = m_textures.find(N);
 	if (I != m_textures.end())
 	{
@@ -850,7 +850,7 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 
 	xrCriticalSectionGuard guard(creationGuard);
 
-	LPSTR N					= LPSTR		(*T->cName);
+	char* N = (char*)(*T->cName);
 
 	map_Texture::iterator I	= m_textures.find	(N);
 	if (I!=m_textures.end())	{
@@ -870,7 +870,7 @@ CMatrix*	CResourceManager::_CreateMatrix	(const char* Name)
 	R_ASSERT(Name && Name[0]);
 	if (0==_stricmp(Name,"$null"))	return nullptr;
 
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 
 	xrCriticalSectionGuard guard(creationGuard);
 
@@ -891,7 +891,7 @@ void	CResourceManager::_DeleteMatrix		(const CMatrix* M)
 
 	xrCriticalSectionGuard guard(creationGuard);
 
-	LPSTR N					= LPSTR		(*M->cName);
+	char* N = (char*)(*M->cName);
 	map_Matrix::iterator I	= m_matrices.find	(N);
 	if (I!=m_matrices.end())	{
 		m_matrices.erase(I);
@@ -905,7 +905,7 @@ CConstant*	CResourceManager::_CreateConstant	(const char* Name)
 	R_ASSERT(Name && Name[0]);
 	if (0==_stricmp(Name,"$null"))	return nullptr;
 
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 
 	xrCriticalSectionGuard guard(creationGuard);
 
@@ -924,7 +924,7 @@ void	CResourceManager::_DeleteConstant		(const CConstant* C)
 {
 	if (0==(C->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 	xrCriticalSectionGuard guard(creationGuard);
-	LPSTR N				= LPSTR				(*C->cName);
+	char* N = (char*)(*C->cName);
 	map_Constant::iterator I	= m_constants.find	(N);
 	if (I!=m_constants.end())	{
 		m_constants.erase(I);

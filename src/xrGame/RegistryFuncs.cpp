@@ -4,7 +4,7 @@
 
 #define REGISTRY_BASE HKEY_CURRENT_USER
 
-bool ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
+bool ReadRegistryValue(const char* rKeyName, u32 rKeyType, void* value)
 {	
 #ifdef IXR_WINDOWS
 	HKEY hKey = 0;	
@@ -42,7 +42,8 @@ bool ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
 		}break;
 	};	
 		
-	res = RegQueryValueExA(hKey, rKeyName, nullptr, &rKeyType, (LPBYTE)rBuf, &KeyValueSize);
+	DWORD NativeKeyType = rKeyType;
+	res = RegQueryValueExA(hKey, rKeyName, nullptr, &NativeKeyType, (LPBYTE)rBuf, &KeyValueSize);
 	if (hKey != 0) RegCloseKey(hKey);
 
 	if (res != ERROR_SUCCESS)
@@ -56,7 +57,7 @@ bool ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
 	return true;
 };
 
-bool WriteRegistryValue(const char* rKeyName, DWORD rKeyType, const void* value)
+bool WriteRegistryValue(const char* rKeyName, u32 rKeyType, const void* value)
 {
 #ifdef IXR_WINDOWS
 	HKEY hKey;
@@ -125,13 +126,13 @@ void	WriteRegistry_StrValue	(const char* rKeyName, const char* value )
 #endif
 }
 
-void	ReadRegistry_DWValue	(const char* rKeyName, DWORD& value )
+void ReadRegistry_DWValue(const char* rKeyName, u32& value)
 {
 #ifdef IXR_WINDOWS
 	ReadRegistryValue(rKeyName, REG_DWORD, &value);
 #endif
 }
-void	WriteRegistry_DWValue	(const char* rKeyName, const DWORD& value )
+void WriteRegistry_DWValue(const char* rKeyName, const u32& value)
 {
 #ifdef IXR_WINDOWS
 	WriteRegistryValue(rKeyName, REG_DWORD, &value);

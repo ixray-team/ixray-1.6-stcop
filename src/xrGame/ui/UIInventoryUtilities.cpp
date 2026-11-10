@@ -397,7 +397,7 @@ const shared_str InventoryUtilities::GetDateAsStringLegacy(ALife::_TIME_ID date,
 	return bufDate;
 }
 
-const char* InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to)
+const char* InventoryUtilities::GetTimePeriodAsString(char* _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to)
 {
 	u32 year1,month1,day1,hours1,mins1,secs1,milisecs1;
 	u32 year2,month2,day2,hours2,mins2,secs2,milisecs2;

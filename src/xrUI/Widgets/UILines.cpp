@@ -411,7 +411,7 @@ void CUILines::SetTextGradient(bool val)
 	m_pFont->SetGradient(val);
 }
 
-const char* GetElipsisText(CGameFont* pFont, float width, const char* source_text, LPSTR buff, int buff_len)
+const char* GetElipsisText(CGameFont* pFont, float width, const char* source_text, char* buff, int buff_len)
 {
 	float text_len					= pFont->SizeOf_(source_text);
 	UI().ClientToScreenScaledWidth	(text_len);
@@ -549,7 +549,7 @@ void CUILines::DrawInternal(float x, float y, bool worldSpace)
 			{
 				const u32 buffLen = sizeof(char) * xr_strlen(m_text.c_str()) + 1;
 				char* p = static_cast<char*>(_alloca(buffLen));
-				LPCSTR str = GetElipsisText(m_pFont, m_wndSize.x, m_text.c_str(), p, buffLen);
+				const char* str = GetElipsisText(m_pFont, m_wndSize.x, m_text.c_str(), p, buffLen);
 				m_pFont->Out(posX, posY, "%s", str);
 			}
 			else
@@ -788,5 +788,3 @@ void CUILines::CutFirstColoredTextEntry(xr_string& entry, u32& color, xr_string&
 		text.replace(0, begin2, "");
 	}
 }
-
-

@@ -115,7 +115,7 @@ void dx103DFluidRenderer::DestroyShaders()
 
 void dx103DFluidRenderer::CreateJitterTexture()
 {
-	BYTE data[256 * 256];
+	u8 data[256 * 256];
 	for (int i = 0; i < 256 * 256; i++)
 	{
 		data[i] = (unsigned char) (rand()/float(RAND_MAX)*256);

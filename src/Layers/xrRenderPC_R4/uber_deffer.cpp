@@ -2,7 +2,7 @@
 #include "uber_deffer.h"
 
 #include "dxRenderDeviceRender.h"
-void fix_texture_name(LPSTR fn);
+void fix_texture_name(char* fn);
 
 void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {

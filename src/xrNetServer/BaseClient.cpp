@@ -210,7 +210,7 @@ bool BaseClient::Sync_Thread()
 		}
 
 		else {
-			DWORD dwPending = 0;
+			u32 dwPending = 0;
 			do 
 			{
 				GetPendingMessagesCount(dwPending);
@@ -346,7 +346,7 @@ bool BaseClient::net_HasBandwidth()
 		R_ASSERT(IsConnectionInit());
 
 		// check queue for "empty" state
-		DWORD dwPending = 0;
+		u32 dwPending = 0;
 		if (!GetPendingMessagesCount(dwPending))
 		{
 			return false;
