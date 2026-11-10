@@ -96,3 +96,11 @@ and [OptiX license](https://github.com/NVIDIA/optix-dev/blob/v9.0.0/LICENSE.txt)
 See [NVIDIA distribution requirements](../../doc/NVIDIA-Dependencies.txt) when publishing utilities.
 
 Sources: [root options](../../CMakeLists.txt), [engine targets](../../src/CMakeLists.txt), [sound dependencies](../../src/xrSound/CMakeLists.txt).
+
+## Module compilation
+
+Engine modules compile their C/C++ sources in separate object-library targets; their DLL or executable targets retain resource files and link the objects afterwards. This lets independent modules compile without waiting for the complete DLL link chain. xrGame also has separate UI, AI and script compilation targets. Visual Studio keeps the ordinary module projects visible, with compilation disabled for their source listing to avoid building each file twice.
+
+The object targets inherit module definitions, include paths, precompiled headers and unity settings. Generated-source utility dependencies are retained. C++ precompiled headers are enabled for xrGame unity builds, xrPlay, xrRHI and xrScripts; C sources and luapanda.cpp are excluded where required. Debug uses `/Zi` debug information; Edit and Continue (`/ZI`) is disabled.
+
+Validation: configure and build the complete engine in Debug and RelWithDebInfo. Include xrCore, xrEngineCore, xrRHI, xrGame and the renderer DLLs, and confirm that generated sources and dependency headers exist before their object targets compile. Check editor configurations separately when changing LevelEditor or xrECore.
