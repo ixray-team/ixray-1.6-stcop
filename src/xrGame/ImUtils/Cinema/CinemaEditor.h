@@ -1065,7 +1065,7 @@ private:
 	DragKind Drag = DragKind::None;
 	float DragTime = 0.0f;
 	u32 DragObject = 0;
-	bool IsDragFolder = false, IsDragCopy = false, HasDragMoved = false, WasPressSelected = false, IsDragFlat = false;
+	bool IsDragFolder = false, IsDragCopy = false, HasDragMoved = false, WasPressSelected = false;
 	float DragLoop[2] = {};
 	float OverviewWhole = 1.0f;
 	xr_vector<u32> DragIds, DragPrevious;

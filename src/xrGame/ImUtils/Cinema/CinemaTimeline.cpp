@@ -2253,7 +2253,6 @@ void Editor::DrawPoseRow(Player& Core, const Object& Target, u8 Row, const ImRec
 		DragTime = XToTime(Input.MousePos.x);
 		DragOriginY = Input.MousePos.y;
 		DragLaneHeight = DragSpan = 0.0f;
-		IsDragFlat = false;
 		IsDragCopy = Input.KeyCtrl;
 		HasDragMoved = false;
 		WasPressSelected = IsKeySelected(Hit);
@@ -4797,7 +4796,6 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 	u8 YAxis = 0;
 	const auto ToY = [&](float Value) { return Bottom - (Value - Slot.Lo[YAxis]) / (Slot.Hi[YAxis] - Slot.Lo[YAxis]) * (Bottom - Top); };
 	const u8 From = static_cast<u8>(std::max(Component, 0)), To = Component < 0 ? Meta.Components : static_cast<u8>(Component + 1);
-	const bool IsFlat = To - From == 3;
 	ImGui::SetCursorScreenPos(Rect.Min);
 	ImGui::InvisibleButton("##Lane", Rect.GetSize(), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 	CanvasId = ImGui::IsItemActive() ? ImGui::GetItemID() : CanvasId;
@@ -4954,7 +4952,6 @@ void Editor::DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Co
 		DragOriginY = Input.MousePos.y;
 		DragLaneHeight = std::max(Bottom - Top, 1.0f);
 		DragSpan = TimelineUi::DragRange(Slot.Id, Slot.Hi[Ref.Component] - Slot.Lo[Ref.Component], DragLaneHeight);
-		IsDragFlat = IsFlat;
 		IsDragCopy = Drag == DragKind::LaneKeys && Input.KeyCtrl;
 		HasDragMoved = false;
 		GroupKeys(Target, Where.Block, Slot, static_cast<s32>(Hit.Component), Ref, HalfFrame);
@@ -5287,10 +5284,9 @@ void Editor::MoveKeys(Player& Core, float Shift, float Rise)
 		const KeyMove& Move = DragMoves[Index];
 		const LaneDrag& Item = DragCurves[Move.Source];
 		const ParamInfo& Meta = Info(Item.Ref.Id);
-		const bool IsLifted = !IsDragFlat || (Item.Ref.Id == DragKey.Id && Item.Ref.Layer == DragKey.Layer && Item.Ref.Component == DragKey.Component);
 		Key Moved = Item.Base.Keys[Move.Index];
 		Moved.Time = DragTimes[Index];
-		Moved.Value = std::clamp(Moved.Value + (IsLifted ? Rise * Item.Span : 0.0f), Meta.Min, Meta.Max);
+		Moved.Value = std::clamp(Moved.Value + Rise * Item.Span, Meta.Min, Meta.Max);
 		if (Item.Live)
 		{
 			Curves::PlaceKey(*Item.Live, Moved, HalfFrame);
