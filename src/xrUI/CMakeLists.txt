@@ -102,3 +102,5 @@ target_link_libraries(xrUI PUBLIC xrScripts)
 
 # Move precompiled header
 target_validate_pch(xrUI ${CMAKE_CURRENT_SOURCE_DIR})
+
+ixray_split_compile(xrUI)

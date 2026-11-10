@@ -121,3 +121,5 @@ if (WIN32)
     target_link_libraries(xrEngineCore PRIVATE WindowsSDK::WinMM)
     target_link_libraries(xrEngineCore PRIVATE WindowsSDK::VFW32)
 endif()
+
+ixray_split_compile(xrEngineCore)
