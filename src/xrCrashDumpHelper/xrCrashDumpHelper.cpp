@@ -115,8 +115,8 @@ int RunHelper(HANDLE Mapping, HANDLE Request, HANDLE Done, HANDLE Process)
 	// IgnoreInaccessibleMemory applies to FullMemory, not PrivateReadWriteMemory. Keep all readable memory
 	// even if a driver mapping or a region being freed by another thread cannot be read.
 	const MINIDUMP_TYPE Common = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData);
-	BOOL IsMemoryWritten = WriteDump(Process, *State, Path, MINIDUMP_TYPE(Common | MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory), Report.Get());
-	if (!IsMemoryWritten)
+	BOOL IsMemoryWritten = State->IsFullDump && WriteDump(Process, *State, Path, MINIDUMP_TYPE(Common | MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory), Report.Get());
+	if (State->IsFullDump && !IsMemoryWritten)
 	{
 		MakeDumpPath(Path, sizeof(Path), *State, Time, "_medium");
 		IsMemoryWritten = WriteDump(Process, *State, Path, MINIDUMP_TYPE(Common | MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory), Report.Get());

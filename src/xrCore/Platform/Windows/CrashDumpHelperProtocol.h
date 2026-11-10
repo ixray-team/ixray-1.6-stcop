@@ -21,5 +21,6 @@ namespace CrashDumpHelper
 		char Folder[MAX_PATH];
 		char Prefix[128];
 		BOOL IsWritten;
+		BOOL IsFullDump;
 	};
 }

@@ -428,6 +428,8 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		// The full dump takes seconds while the other threads run on: the process may end before it is written.
 		// A small dump with the stacks goes first, next to it.
+		const bool IsFullDump = strstr(Core.Params, "-full_dump") != nullptr;
+		if (IsFullDump)
 		{
 			string_path SmallDumpPath;
 			xr_strcpy(SmallDumpPath, szDumpPath);
@@ -443,7 +445,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 		}
 
 		// write the dump
-		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
+		MINIDUMP_TYPE dump_flags = IsFullDump ? MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo) : MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithThreadInfo);
 
 		bool bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
 		if (bOK)

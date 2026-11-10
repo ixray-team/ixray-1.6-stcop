@@ -108,6 +108,7 @@ void Start()
 	}
 	xr_strcpy(State->Folder, Folder);
 	sprintf_s(State->Prefix, "%s_%s", Core.ApplicationName, Core.UserName);
+	State->IsFullDump = strstr(Core.Params, "-full_dump") != nullptr;
 
 	char HelperPath[MAX_PATH * 2];
 	if (!ResolveHelperPath(HelperPath, sizeof(HelperPath)))
