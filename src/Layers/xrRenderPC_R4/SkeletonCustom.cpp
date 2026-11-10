@@ -3,6 +3,7 @@
 #include "dxDebugRender.h"
 
 #include	"SkeletonX.h"
+#include "ModelPool.h"
 #include "../../xrEngine/Fmesh.h"
 
 #include "../../xrEngine/Render.h"
@@ -98,7 +99,7 @@ CKinematics::~CKinematics	()
 	// wallmarks
 	ClearWallmarks			();
 
-	if(m_lod)
+	if(m_lod && !IsSharedLod)
 	{
 		if ( CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod) )
 		{
@@ -168,8 +169,9 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 			LD->r_string	(lod_name, sizeof(lod_name));
 //.         strconcat		(sizeof(name_load),name_load, short_name, ":lod:", lod_name.c_str());
             m_lod 			= (dxRender_Visual*) ::Render->model_CreateChild(lod_name, nullptr);
+			IsSharedLod = m_lod && RImplementation.Models->PinBase(m_lod);
 
-			if ( CKinematics* lod_kinematics = smart_cast<CKinematics*>(m_lod) )
+			if ( CKinematics* lod_kinematics = IsSharedLod ? nullptr : smart_cast<CKinematics*>(m_lod) )
 			{
 				lod_kinematics->m_is_original_lod = true;
 			}

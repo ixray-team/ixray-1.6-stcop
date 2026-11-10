@@ -87,9 +87,11 @@ void GPUEvents_BeginRendering()
             D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint_data = {};
             auto& event = curr_state.events[i];
 
-            while (DX11Context->GetData(event.begin.Get(), &begin, sizeof(begin), 0) != S_OK);
-            while (DX11Context->GetData(event.end.Get(), &end, sizeof(end), 0) != S_OK);
-            while (DX11Context->GetData(event.disjoint.Get(), &disjoint_data, sizeof(disjoint_data), 0) != S_OK);
+            const u32 Flags = D3D11_ASYNC_GETDATA_DONOTFLUSH;
+            if (DX11Context->GetData(event.begin.Get(), &begin, sizeof(begin), Flags) != S_OK || DX11Context->GetData(event.end.Get(), &end, sizeof(end), Flags) != S_OK || DX11Context->GetData(event.disjoint.Get(), &disjoint_data, sizeof(disjoint_data), Flags) != S_OK)
+            {
+                continue;
+            }
 
             auto& perf_event = events_state.perf.events[events_state.perf.count];
             perf_event.begin = begin;

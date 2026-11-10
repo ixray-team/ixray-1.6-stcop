@@ -548,6 +548,18 @@ dxRender_Visual* CModelPool::Instance_Find(const char* N)
 	return It->second->Model;
 }
 
+bool CModelPool::PinBase(dxRender_Visual* V)
+{
+	xrSRWLockGuard Guard(ModelsLock, true);
+	const auto It = ModelsByVisual.find(V);
+	if (It == ModelsByVisual.end())
+	{
+		return false;
+	}
+	It->second->Refs++;
+	return true;
+}
+
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
 	if (Device.IsEditorMode() && (!name||!name[0]))	return nullptr;

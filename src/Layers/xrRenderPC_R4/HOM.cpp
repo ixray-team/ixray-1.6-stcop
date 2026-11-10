@@ -11,20 +11,6 @@
  
 float	psOSSR		= .001f;
 
-void CHOM::MT_RENDER()
-{
-	PROF_EVENT("Render HOM");
-
-	bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
-	if (MT_frame_rendered != Device.dwFrame && !b_main_menu_is_active)
-	{
-		CFrustum ViewBase;
-		ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
-		Enable();
-		Render(ViewBase);
-	}
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -150,15 +136,6 @@ void CHOM::Load()
 
 	S->close();
 	FS.r_close(fs);
-
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
-	{
-		// MT-details (@front)
-		//Device.seqParallelRender.push_back(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
-
-		// MT-HOM (@front)
-		Device.seqParallelRender.push_back(xr_make_delegate(this, &CHOM::MT_RENDER));
-	}
 }
 
 void CHOM::Unload()
@@ -169,11 +146,6 @@ void CHOM::Unload()
 	m_pTris.clear();
 	invaltids.clear();
 	bEnabled = false;
-
-	auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), xr_make_delegate(this, &CHOM::MT_RENDER));
-
-	if (I != Device.seqParallelRender.end())
-		Device.seqParallelRender.erase(I);
 }
 
 class	pred_fb	{

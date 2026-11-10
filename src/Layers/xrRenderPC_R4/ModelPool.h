@@ -70,6 +70,7 @@ public:
 	dxRender_Visual*		Instance_Load		(const char* N);
 	dxRender_Visual*		Instance_Load		(const char* N, IReader* data);
 	dxRender_Visual*		Instance_Find		(const char* N);
+	bool					PinBase				(dxRender_Visual* V);
 
 	dxRender_Visual*		CreatePE			(PS::CPEDef* source);
 	dxRender_Visual*		CreatePG			(PS::CPGDef* source);

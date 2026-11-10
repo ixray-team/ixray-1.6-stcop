@@ -361,6 +361,7 @@ public:
 	}
 private:
 	bool						m_is_original_lod;
+	bool						IsSharedLod = false;
 
 };
 IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():nullptr; }

@@ -24,7 +24,7 @@ void CRender::render_static(GfxCmdList& Cmd)
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	GraphMain.View = nullptr;
 	HOM.Enable();
-	if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC)) HOM.Render(ViewBase);
+	HOM.Render(ViewBase);
 	GraphMain.r_pmask(true, true);
 	render_main(Cmd, true);
 	L_Shadows->calculate(Cmd);

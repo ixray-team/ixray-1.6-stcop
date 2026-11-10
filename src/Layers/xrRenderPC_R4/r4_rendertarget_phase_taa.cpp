@@ -20,7 +20,8 @@ void CRenderTarget::phase_taa(GfxCmdList& Cmd)
 
 void CRenderTarget::phase_mblur(GfxCmdList& Cmd)
 {
-	if (ps_r4_mblur_power < EPS || !ps_r4_mblur_quality || Device.IsCameraCut())
+	const float Power = Device.Grade(4, ps_r4_mblur_power);
+	if (Power < EPS || !ps_r4_mblur_quality || Device.IsCameraCut())
 		return;
 
 	GPU_EVENT(PhaseMBlur);
@@ -30,7 +31,7 @@ void CRenderTarget::phase_mblur(GfxCmdList& Cmd)
 		DrawSQ(Cmd, s_taa, rt_Generic_2, 1, [&]
 		{
 			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
-			Cmd.Constants.Write<CBPass>().mblur_params.set(ps_r4_mblur_power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);
+			Cmd.Constants.Write<CBPass>().mblur_params.set(Power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);
 		});
 		ResolveSurface(rt_Generic_0, rt_Generic_2);
 	}

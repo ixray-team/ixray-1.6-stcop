@@ -38,8 +38,6 @@ public:
 	void Disable();
 	void Enable();
 
-	void MT_RENDER();
-
 	CDB::MODEL* GetHOMModel() { return m_pModel; }
 	xr_vector<u32>* get_invaltids() { return &invaltids; }
 
