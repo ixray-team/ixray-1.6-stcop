@@ -68,7 +68,7 @@ private:
 
 extern RHI_API Fsr3Wrapper g_Fsr3Wrapper;
 
-#if defined(IXR_APPLE_SERIES)
+#if !defined(IXR_WINDOWS)
 inline bool Fsr3Wrapper::GetRenderScale(float&, u32, float, u32, u32) { return false; }
 inline s32 Fsr3Wrapper::GetJitterPhaseCount(u32, u32) const { return 1; }
 inline void Fsr3Wrapper::GetJitterOffset(float& out_x, float& out_y, u32, s32) const { out_x = 0.f; out_y = 0.f; }

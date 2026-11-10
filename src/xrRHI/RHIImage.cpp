@@ -4,8 +4,12 @@
 #ifdef IXR_WINDOWS
 #include <wincodec.h>
 #else
+// HACK: SAL's empty __null annotation breaks the standard NULL token inside stb.
+#pragma push_macro("__null")
+#undef __null
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
+#pragma pop_macro("__null")
 #endif
 
 HRESULT
@@ -24,7 +28,7 @@ bool
 CRHI::DecodeAlpha(const void* Data, size_t Size, xr_vector<u8>& Alpha, u32& Width, u32& Height)
 {
 	DirectX::ScratchImage Source, Decoded;
-	if (!Data || FAILED(DirectX::LoadFromDDSMemory(Data, Size, DirectX::DDS_FLAGS_NONE, nullptr, Source)))
+	if (!Data || FAILED(DirectX::LoadFromDDSMemory(static_cast<const u8*>(Data), Size, DirectX::DDS_FLAGS_NONE, nullptr, Source)))
 	{
 		return false;
 	}

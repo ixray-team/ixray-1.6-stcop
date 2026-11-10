@@ -62,7 +62,7 @@ public:
 
 extern RHI_API DLSSWrapper g_DLSSWrapper;
 
-#if defined(IXR_APPLE_SERIES)
+#if !defined(IXR_WINDOWS)
 inline void DLSSWrapper::Create() {}
 inline void DLSSWrapper::Destroy() {}
 inline bool DLSSWrapper::GetRenderScale(float&, u32, float, u32, u32) { return false; }

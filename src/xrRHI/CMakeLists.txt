@@ -37,11 +37,11 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*IntelGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx11\\.cpp$")
     list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx12\\.cpp$")
+    # The bundled Direct3D upscaler SDKs are linked only on Windows.
+    list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/(DLSS|FSR3)Wrapper\\.cpp$")
 endif()
 
-if(APPLE)
-    list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/(DLSS|FSR3)Wrapper\\.cpp$")
-else()
+if(NOT APPLE)
     list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/DirectXTexD3D11_macos\\.cpp$")
 endif()
 

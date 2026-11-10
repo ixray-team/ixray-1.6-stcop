@@ -56,6 +56,8 @@ Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, 
 
 DXC public headers on Linux and macOS are downloaded from DirectXShaderCompiler `v1.8.2505.1` into the build directory's `_deps_header_only/dxc/` cache; Windows uses the Windows SDK headers. DXC is compiled separately from the DXVK/DXMT headers to keep their COM declarations independent. The compiler is loaded at runtime as `dxcompiler.dll`, `libdxcompiler.so`, or `libdxcompiler.dylib`; native libraries must be available on the platform's shared-library search path when DXIL compilation or reflection is needed. Windows also requires the matching `dxil.dll` validator. D3D11 uses the existing DXBC compiler without requiring a DXC runtime library.
 
+The bundled DLSS and FSR3 Direct3D implementations and SDK libraries are used only on Windows. Linux and macOS exclude those implementations and use fallback wrappers that report the upscalers as unavailable, without requiring NGX or FidelityFX SDK headers. XeSS already guards its SDK calls for Windows x64.
+
 ## xrLevelBuilder CUDA/OptiX
 
 Enable the NVIDIA backend to download its build dependencies automatically:
