@@ -65,7 +65,7 @@ namespace StackTrace
 		}
 
 		//-' Source info:
-		u32 dwLineOffset;
+		DWORD dwLineOffset;
 		IMAGEHLP_LINE sourceInfo = {};
 		sourceInfo.SizeOfStruct = sizeof(sourceInfo);
 
