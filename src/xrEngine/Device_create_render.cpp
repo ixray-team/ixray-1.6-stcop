@@ -40,8 +40,20 @@ void DrawMainViewport()
 	ImGui::PopStyleVar();
 }
 
+namespace
+{
+	xrCriticalSection VideoModeListLock;
+	xr_token EmptyVideoModeList[] = { { nullptr, -1 } };
+}
+
 void free_vid_mode_list()
 {
+	xrCriticalSectionGuard Guard(VideoModeListLock);
+	if (vid_mode_token == nullptr)
+	{
+		return;
+	}
+
 	for (int i = 0; vid_mode_token[i].name; i++)
 	{
 		xr_free(vid_mode_token[i].name);
@@ -51,10 +63,19 @@ void free_vid_mode_list()
 	vid_mode_token = nullptr;
 }
 
-void fill_vid_mode_list()
+xr_token* GetVideoModeList()
 {
+	xrCriticalSectionGuard Guard(VideoModeListLock);
 	if (vid_mode_token != nullptr)
-		return;
+	{
+		return vid_mode_token;
+	}
+
+	// Display enumeration is restricted to SDL's main thread. A later request can retry.
+	if (GRHI == nullptr || !SDL_IsMainThread())
+	{
+		return EmptyVideoModeList;
+	}
 
 	xr_vector<shared_str> _tmp = GRHI->DisplaySizeArray();
 	u32 _cnt = (u32)_tmp.size() + 1;
@@ -69,12 +90,14 @@ void fill_vid_mode_list()
 		vid_mode_token[i].id = i;
 		vid_mode_token[i].name = xr_strdup(*_tmp[i]);
 	}
+
+	return vid_mode_token;
 }
 
 bool CRenderDevice::InitRenderDeviceEditor()
 {
 	GRHI = new CRHI;
-	fill_vid_mode_list();
+	GetVideoModeList();
 
 	if (!GRHI->CreateDevice((ERHI_API_LAYER)g_graphicsAPI))
 	{
@@ -91,8 +114,6 @@ bool CRenderDevice::InitRenderDeviceEditor()
 bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 {
 	PROF_EVENT("InitRenderDevice");
-
-	fill_vid_mode_list();
 #ifdef IXR_WINDOWS
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 

@@ -14,6 +14,8 @@
 #include "xr_object.h"
 #include "../xrCore/BackgroundLoad.h"
 
+xr_token* GetVideoModeList();
+
 xr_token* vid_quality_token = nullptr;
 
 ENGINE_API float devfloat1 = 1.0f;
@@ -491,7 +493,7 @@ public :
 		xr_sprintf(S,sizeof(S),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]); 
 	}
 
-	virtual xr_token* GetToken() override {return vid_mode_token;}
+	virtual xr_token* GetToken() override { return GetVideoModeList(); }
 
 	virtual void	Info	(TInfo& I) override
 	{	
