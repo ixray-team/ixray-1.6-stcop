@@ -341,7 +341,7 @@ CRenderTarget::CRenderTarget()
 		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
 	}
 
-	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]()
+	GImGUIManager->Windows().Subscribe("GraphicDebug", ImGuiPriority::Medium, [this]()
 	{
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
 		{
@@ -1106,7 +1106,7 @@ CRenderTarget::~CRenderTarget	()
     {
         t_envmap_0->surface_set(nullptr);
         t_envmap_1->surface_set(nullptr);
-        CImGuiManager::Instance().Unsubscribe("GraphicDebug");
+        GImGUIManager->Windows().Unsubscribe("GraphicDebug");
         _RELEASE(g_debug_blend_state);
         _RELEASE(FSTriangleVB);
         _RELEASE(FSTriangleIB);
@@ -1178,7 +1178,7 @@ CRenderTarget::~CRenderTarget	()
 
 	g_Fsr3Wrapper.Destroy();
 
-	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
+	GImGUIManager->Windows().Unsubscribe("GraphicDebug");
 
 	if (g_debug_blend_state != nullptr) 
 	{

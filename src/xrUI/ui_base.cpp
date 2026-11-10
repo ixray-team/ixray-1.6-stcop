@@ -455,7 +455,7 @@ ui_core::ui_core()
 #ifdef DEBUG_DRAW
 	if (!Device.IsEditorMode())
 	{
-		CImGuiManager::Instance().Subscribe("UIDEBUG", CImGuiManager::ERenderPriority::eMedium, xr_make_delegate(this, &ui_core::RenderUIDebugger));
+		GImGUIManager->Windows().Subscribe("UIDEBUG", ImGuiPriority::Medium, xr_make_delegate(this, &ui_core::RenderUIDebugger));
 	}
 #endif
 }

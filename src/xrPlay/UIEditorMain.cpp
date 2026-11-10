@@ -244,10 +244,10 @@ void RenderScenesViewer() {
 void RenderUI()
 {
 	PROF_EVENT("Render ImGui");
-	CImGuiManager::Instance().Subscribe("Editor Weather Draw", CImGuiManager::ERenderPriority::eMedium, RenderUIWeather);
-	CImGuiManager::Instance().Subscribe("Actor InfoPortions", CImGuiManager::ERenderPriority::eMedium, RenderActorInfos);
-	CImGuiManager::Instance().Subscribe("Scenes Viewer", CImGuiManager::ERenderPriority::eMedium, RenderScenesViewer);
-	CImGuiManager::Instance().Subscribe("Audio Editor", CImGuiManager::ERenderPriority::eMedium, RenderUIAudio);
+	GImGUIManager->Windows().Subscribe("Editor Weather Draw", ImGuiPriority::Medium, RenderUIWeather);
+	GImGUIManager->Windows().Subscribe("Actor InfoPortions", ImGuiPriority::Medium, RenderActorInfos);
+	GImGUIManager->Windows().Subscribe("Scenes Viewer", ImGuiPriority::Medium, RenderScenesViewer);
+	GImGUIManager->Windows().Subscribe("Audio Editor", ImGuiPriority::Medium, RenderUIAudio);
 }
 
 bool ImGui_ListBox(const char* label, int* current_item, bool(*items_getter)(void*, int, const char**), void* data,

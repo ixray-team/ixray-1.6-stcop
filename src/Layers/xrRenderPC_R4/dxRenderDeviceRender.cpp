@@ -89,7 +89,7 @@ void dxRenderDeviceRender::ValidateHW()
 void dxRenderDeviceRender::DestroyHW()
 {
 	xr_delete(Resources);
-	CImGuiManager::Instance().Destroy(true);
+	GImGUIManager->DestroyDevice();
 }
 
 xr_task_group thm_reload_task;
@@ -109,7 +109,7 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 
 	ResourcesDeferredUnload();
 
-	CImGuiManager::Instance().Reset();
+	GImGUIManager->ResetDevice();
 	Device.ResizeWindow(psCurrentVidMode[0], psCurrentVidMode[1]);
 
 	thm_reload_task.wait();
@@ -152,7 +152,7 @@ void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
 
 void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, bool move_window)
 {
-	CImGuiManager::Instance().InitHardware();
+	GImGUIManager->InitDevice();
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
@@ -331,14 +331,8 @@ void dxRenderDeviceRender::End()
 #if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
 	{
 		PROF_EVENT("ImGui EndRender");
-		CImGuiManager& MyImGui = CImGuiManager::Instance();
-		MyImGui.BeginRender();
-
-		//GRHI->SetDepthStencilView(RDepth);
 		GRHI->SetRenderTargetView(RSwapchainTarget, 0, true);
-
-		MyImGui.Render();
-		MyImGui.AfterRender();
+		GImGUIManager->RenderFrame();
 
 		DebugRenderImpl.m_lines.resize(0);
 		GRHI->GPUStatsEnd();

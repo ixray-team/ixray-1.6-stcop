@@ -12,12 +12,32 @@
 
 XREUI_API XrUIManager* GUIManager = nullptr;
 
+namespace
+{
+	class CEditorImGuiManager final : public IImGuiManager
+	{
+	public:
+		void InitDevice() override {}
+		void ResetDevice() override {}
+		void DestroyDevice() override {}
+		void RenderFrame() override {}
+
+		bool IsCapturingInputs() const override { return false; }
+		bool IsGUIRendering() const override { return true; }
+	};
+
+	CEditorImGuiManager EditorImGuiManager;
+}
+
 XrUIManager::XrUIManager()
 {
+	GImGUIManager = &EditorImGuiManager;
 }
 
 XrUIManager::~XrUIManager()
 {
+	EditorImGuiManager.Windows().UnsubscribeAll();
+	GImGUIManager = &CImGuiManager::Engine();
 }
 
 xr_map<xr_string, ImFont*> FontsStorage;

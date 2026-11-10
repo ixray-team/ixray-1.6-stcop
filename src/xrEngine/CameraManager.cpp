@@ -171,7 +171,7 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 	m_bAbsolutePositioning = false;
 	
 #if 0
-	CImGuiManager::Instance().Subscribe("CameraEffector", CImGuiManager::ERenderPriority::eLow + 1,
+	GImGUIManager->Windows().Subscribe("CameraEffector", ImGuiPriority::Low + 1,
 	[this]()
 	{
 		if (g_pGameLevel == nullptr || g_pGameLevel->m_pCameras == nullptr || !Engine.External.EditorStates[u8(EditorUI::CameraEffectors)])
@@ -227,7 +227,7 @@ CCameraManager::~CCameraManager()
 		xr_delete(*it);
 
 #ifdef DEBUG_DRAW
-	CImGuiManager::Instance().Unsubscribe("CameraEffector");
+	GImGUIManager->Windows().Unsubscribe("CameraEffector");
 #endif
 }
 

@@ -78,28 +78,28 @@ void RegisterImGuiInGame()
 {
 	if (!Device.IsEditorMode())
 	{
-		CImGuiManager::Instance().Subscribe("Time Manager", CImGuiManager::ERenderPriority::eMedium, RenderTimeManagerWindow);
-		CImGuiManager::Instance().Subscribe("Spawn Manager", CImGuiManager::ERenderPriority::eMedium, RenderSpawnManagerWindow);
-		CImGuiManager::Instance().Subscribe("Weapon Manager", CImGuiManager::ERenderPriority::eMedium, RenderWeaponManagerWindow);
-		CImGuiManager::Instance().Subscribe("Search Manager", CImGuiManager::ERenderPriority::eMedium, RenderSearchManagerWindow);
-		CImGuiManager::Instance().Subscribe("Graph Editor", CImGuiManager::ERenderPriority::eMedium, RenderGraphEditorWindow);
-		CImGuiManager::Instance().Subscribe("OMF Editor", CImGuiManager::ERenderPriority::eMedium, RenderToolsOMFEditorWindow);
-		CImGuiManager::Instance().Subscribe("Car Editor", CImGuiManager::ERenderPriority::eMedium, RenderCarConfigEditor);
-		CImGuiManager::Instance().Subscribe("Texture Editor", CImGuiManager::ERenderPriority::eMedium, RenderTextureEditor);
-		CImGuiManager::Instance().Subscribe("Quest Editor", CImGuiManager::ERenderPriority::eMedium, RenderQuestEditor);
-		CImGuiManager::Instance().Subscribe("PPE Editor", CImGuiManager::ERenderPriority::eMedium, RenderPPEEditor);
-		CImGuiManager::Instance().Subscribe("Input Manager", CImGuiManager::ERenderPriority::eMedium, RenderToolsInputManagerWindow);
-		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
-		CImGuiManager::Instance().Subscribe("DetailLayersEditor", CImGuiManager::ERenderPriority::eMedium, RenderDetailLayersEditorWindow);
-		CImGuiManager::Instance().Subscribe("AIGridEditor", CImGuiManager::ERenderPriority::eMedium, RenderAIGridEditorWindow);
-		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
-		CImGuiManager::Instance().Subscribe("Watch Debug", CImGuiManager::ERenderPriority::eMedium, RenderWatchDebugWindow);
-		CImGuiManager::Instance().Subscribe("3rd Person Adjust", CImGuiManager::ERenderPriority::eMedium, Render3rdAdjust);
-		CImGuiManager::Instance().Subscribe("3D Icons Adjust", CImGuiManager::ERenderPriority::eMedium, Render3DIconAdjust);
-		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
-		CImGuiManager::Instance().Subscribe("Cinema Film Maker Editor", CImGuiManager::ERenderPriority::eMedium, RenderCinemaFilmMakerEditor);
-		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
-		CImGuiManager::Instance().Subscribe("Camera Rig", CImGuiManager::ERenderPriority::eMedium, RenderCameraRigEditor);
+		GImGUIManager->Windows().Subscribe("Time Manager", ImGuiPriority::Medium, RenderTimeManagerWindow);
+		GImGUIManager->Windows().Subscribe("Spawn Manager", ImGuiPriority::Medium, RenderSpawnManagerWindow);
+		GImGUIManager->Windows().Subscribe("Weapon Manager", ImGuiPriority::Medium, RenderWeaponManagerWindow);
+		GImGUIManager->Windows().Subscribe("Search Manager", ImGuiPriority::Medium, RenderSearchManagerWindow);
+		GImGUIManager->Windows().Subscribe("Graph Editor", ImGuiPriority::Medium, RenderGraphEditorWindow);
+		GImGUIManager->Windows().Subscribe("OMF Editor", ImGuiPriority::Medium, RenderToolsOMFEditorWindow);
+		GImGUIManager->Windows().Subscribe("Car Editor", ImGuiPriority::Medium, RenderCarConfigEditor);
+		GImGUIManager->Windows().Subscribe("Texture Editor", ImGuiPriority::Medium, RenderTextureEditor);
+		GImGUIManager->Windows().Subscribe("Quest Editor", ImGuiPriority::Medium, RenderQuestEditor);
+		GImGUIManager->Windows().Subscribe("PPE Editor", ImGuiPriority::Medium, RenderPPEEditor);
+		GImGUIManager->Windows().Subscribe("Input Manager", ImGuiPriority::Medium, RenderToolsInputManagerWindow);
+		GImGUIManager->Windows().Subscribe("SVGStorageViewer", ImGuiPriority::Medium, RenderToolsRenderDebugSVGStorageViewerWindow);
+		GImGUIManager->Windows().Subscribe("DetailLayersEditor", ImGuiPriority::Medium, RenderDetailLayersEditorWindow);
+		GImGUIManager->Windows().Subscribe("AIGridEditor", ImGuiPriority::Medium, RenderAIGridEditorWindow);
+		GImGUIManager->Windows().Subscribe("Hud Adjust", ImGuiPriority::Medium, RenderHUDAdjustManager);
+		GImGUIManager->Windows().Subscribe("Watch Debug", ImGuiPriority::Medium, RenderWatchDebugWindow);
+		GImGUIManager->Windows().Subscribe("3rd Person Adjust", ImGuiPriority::Medium, Render3rdAdjust);
+		GImGUIManager->Windows().Subscribe("3D Icons Adjust", ImGuiPriority::Medium, Render3DIconAdjust);
+		GImGUIManager->Windows().Subscribe("Actor Animations", ImGuiPriority::Medium, RenderActorAnimationManager);
+		GImGUIManager->Windows().Subscribe("Cinema Film Maker Editor", ImGuiPriority::Medium, RenderCinemaFilmMakerEditor);
+		GImGUIManager->Windows().Subscribe("Demo Record", ImGuiPriority::Medium, RenderDemoRecordEditorWindow);
+		GImGUIManager->Windows().Subscribe("Camera Rig", ImGuiPriority::Medium, RenderCameraRigEditor);
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();
@@ -583,7 +583,7 @@ void AllEditors_ExecuteRequest(const SRequestData& req)
 
 void AllEditors_OnPressed(int key)
 {
-	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_pressed == nullptr)
+	if (!GImGUIManager->IsCapturingInputs() || pInput->xrgame_sdk_input_pressed == nullptr)
 		return;
 
 	if (Engine.External.EditorStates[u8(EditorUI::Tools_TextureEditor)])
@@ -614,7 +614,7 @@ void AllEditors_OnPressed(int key)
 
 void AllEditors_OnReleased(int key)
 {
-	if (!CImGuiManager::Instance().IsCapturingInputs() || pInput->xrgame_sdk_input_released == nullptr)
+	if (!GImGUIManager->IsCapturingInputs() || pInput->xrgame_sdk_input_released == nullptr)
 		return;
 
 	if (Engine.External.EditorStates[u8(EditorUI::Tools_TextureEditor)])

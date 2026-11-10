@@ -2,6 +2,7 @@
 #include "ImGuiManager.h"
 #include "IGame_Persistent.h"
 #include "XR_IOConsole.h"
+#include "imgui_impl_sdl3.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -17,7 +18,78 @@ namespace ImGui
 	ImFont* BoldFont = nullptr;
 }
 
-void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font, const float scale)
+IImGuiManager* GImGUIManager = &CImGuiManager::Engine();
+
+//////////////////////////////////////////////////////////////////////////
+// CImGuiWindowRegistry
+
+void CImGuiWindowRegistry::SetMainViewport(DrawFunction&& Function)
+{
+	Commands[MainViewportSlot] = { "MainViewPort", std::move(Function) };
+}
+
+void CImGuiWindowRegistry::Subscribe(shared_str Name, u32 RenderPriority, DrawFunction&& Function)
+{
+	if (RenderPriority == MainViewportSlot)
+	{
+		RenderPriority++;
+	}
+
+	while (Commands.contains(RenderPriority))
+	{
+		RenderPriority++;
+	}
+
+	Commands[RenderPriority] = { Name, std::move(Function) };
+}
+
+void CImGuiWindowRegistry::Unsubscribe(shared_str Name)
+{
+	for (auto It = Commands.begin(); It != Commands.end(); ++It)
+	{
+		if (It->second.Name == Name)
+		{
+			Commands.erase(It);
+			return;
+		}
+	}
+}
+
+void CImGuiWindowRegistry::UnsubscribeAll()
+{
+	Commands.clear();
+}
+
+void CImGuiWindowRegistry::DrawMainViewport() const
+{
+	auto It = Commands.find(MainViewportSlot);
+	if (It != Commands.end() && It->second.Function)
+	{
+		It->second.Function();
+	}
+}
+
+void CImGuiWindowRegistry::DrawAll() const
+{
+	for (const auto& [Id, Command] : Commands)
+	{
+		if (Command.Function)
+		{
+			Command.Function();
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CImGuiManager
+
+CImGuiManager& CImGuiManager::Engine()
+{
+	static CImGuiManager Object;
+	return Object;
+}
+
+void CImGuiManager::LoadFont(ImFont*& FontHandle, const char* Font, float Scale)
 {
 	string_path FullPath;
 	FS.update_path(FullPath, _game_fonts_, Font);
@@ -28,14 +100,14 @@ void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font, const f
 	{
 		IReader* FontReader = FS.r_open(FullPath);
 
-		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), scale * 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), Scale * 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		R_ASSERT(FontHandle);
 
-		ImGuiFontsPtr.push_back(FontReader);
+		FontReaders.push_back(FontReader);
 	}
 }
 
-float GetWindowScale(SDL_Window* window)
+static float GetWindowScale(SDL_Window* window)
 {
 	int w_px, h_px;
 	SDL_GetWindowSizeInPixels(window, &w_px, &h_px);
@@ -77,10 +149,10 @@ void CImGuiManager::InitPlatform()
 
 	float scale = GetWindowScale(g_AppInfo.Window);
 
-	LoadImGuiFont(ImGui::RegularFont, "rus\\RobotoMono.ttf", scale);
-	LoadImGuiFont(ImGui::LightFont, "rus\\RobotoMono-Light.ttf", scale);
-	LoadImGuiFont(ImGui::MediumFont, "rus\\RobotoMono-Medium.ttf", scale);
-	LoadImGuiFont(ImGui::BoldFont, "rus\\RobotoMono-Bold.ttf", scale);
+	LoadFont(ImGui::RegularFont, "rus\\RobotoMono.ttf", scale);
+	LoadFont(ImGui::LightFont, "rus\\RobotoMono-Light.ttf", scale);
+	LoadFont(ImGui::MediumFont, "rus\\RobotoMono-Medium.ttf", scale);
+	LoadFont(ImGui::BoldFont, "rus\\RobotoMono-Bold.ttf", scale);
 
 	//io.Fonts->Build();
 
@@ -89,121 +161,59 @@ void CImGuiManager::InitPlatform()
 		DrawUIRender = false;
 #endif
 
-	PlatformInitCallback();
+	ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
 #endif
 }
 
-void CImGuiManager::InitHardware()
+void CImGuiManager::DestroyPlatform()
+{
+#ifdef IXR_WINDOWS
+	ImGui_ImplSDL3_Shutdown();
+#endif
+
+	for (IReader* FontReader : FontReaders)
+	{
+		FS.r_close(FontReader);
+	}
+	FontReaders.clear();
+
+	Windows().UnsubscribeAll();
+}
+
+void CImGuiManager::NewPlatformFrame()
+{
+#ifdef IXR_WINDOWS
+	ImGui_ImplSDL3_NewFrame();
+	UpdateCapture();
+#endif
+}
+
+void CImGuiManager::InitDevice()
 {
 	RHIUtils::ImGui::Init();
 }
 
-void CImGuiManager::Reset()
+void CImGuiManager::ResetDevice()
 {
 	RHIUtils::ImGui::Reset();
 }
 
-void CImGuiManager::Destroy(bool HardwareOnly)
+void CImGuiManager::DestroyDevice()
 {
-	if (HardwareOnly)
-	{
-		RHIUtils::ImGui::Destroy();
-		return;
-	}
-
-#ifdef IXR_WINDOWS
-	PlatformDestroyCallback();
-#endif
-
-	for (IReader* FontPtr : ImGuiFontsPtr)
-	{
-		FS.r_close(FontPtr);
-	}
-
-	RenderFrameData.clear();
-
-	PlatformInitCallback = nullptr;
-	PlatformDestroyCallback = nullptr;
-	PlatformNewFrameCallback = nullptr;
+	RHIUtils::ImGui::Destroy();
 }
 
-void CImGuiManager::ApplyMainViewport(ImGuiCallback RenderFunction)
-{
-	RenderFrameData[MainViewportSlot] = { "MainViewPort", RenderFunction };
-}
-
-void CImGuiManager::Subscribe(shared_str Name, u32 RenderPriority, ImGuiCallback&& RenderFunction)
-{
-	if (RenderPriority == MainViewportSlot)
-	{
-		RenderPriority++;
-	}
-
-	do
-	{
-		if (!RenderFrameData.contains(RenderPriority))
-		{
-			RenderFrameData[RenderPriority] = { Name, RenderFunction };
-			break;
-		}
-		RenderPriority++;
-	} while (true);
-}
-
-void CImGuiManager::Unsubscribe(shared_str Name)
-{
-	u32 EraseID = u32(-1);
-	for (auto& [ID, Data] : RenderFrameData)
-	{
-		if (Data.Name == Name)
-		{
-			EraseID = ID;
-			break;
-		}
-	}
-
-	if (EraseID != u32(-1))
-	{
-		RenderFrameData.erase(EraseID);
-	}
-}
-
-void CImGuiManager::UnsubscribeAll()
-{
-	RenderFrameData.clear();
-}
-
-void CImGuiManager::BeginRender()
+void CImGuiManager::RenderFrame()
 {
 	RHIUtils::ImGui::NewFrame();
-}
 
-void CImGuiManager::AfterRender()
-{
-#ifdef IXR_WINDOWS
-	ImGuiIO& io = ImGui::GetIO();
-
-	// Update and Render additional Platform Windows
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
-#endif
-}
-
-void CImGuiManager::Render()
-{
 #ifdef IXR_WINDOWS
 	ImGui::NewFrame();
 
 #ifdef DEBUG_DRAW
 	if (DrawUIRender && !psDeviceFlags.test(rsClearBB))
 	{
-		for (const auto& [Id, CommandData] : RenderFrameData)
-		{
-			CommandData.Function();
-		}
+		Windows().DrawAll();
 
 		if (!CaptureInputs)
 		{
@@ -216,7 +226,7 @@ void CImGuiManager::Render()
 	else 
 	{
 #endif
-		RenderFrameData[MainViewportSlot].Function();
+		Windows().DrawMainViewport();
 #ifdef DEBUG_DRAW
 	}
 #endif
@@ -225,47 +235,54 @@ void CImGuiManager::Render()
 #endif
 
 	RHIUtils::ImGui::DrawData();
+
+#ifdef IXR_WINDOWS
+	// Update and Render additional Platform Windows
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+#endif
 }
 
 void CImGuiManager::UpdateCapture()
 {
-    static bool keyProcessed = false;
+	if (ImGui::IsKeyDown(ImGuiMod_Alt))
+	{
+		if (!CaptureKeyProcessed)
+		{
+			if (ImGui::IsKeyDown(ImGuiMod_Ctrl))
+			{
+				DrawUIRender = !DrawUIRender;
 
-    if (ImGui::IsKeyDown(ImGuiMod_Alt))
-    {
-        if (!keyProcessed)
-        {
-            if (ImGui::IsKeyDown(ImGuiMod_Ctrl))
-            {
-                DrawUIRender = !DrawUIRender;
+				if (!DrawUIRender)
+					CaptureInputs = false;
+			}
+			else if (DrawUIRender)
+			{
+				CaptureInputs = !CaptureInputs;
+			}
 
-                if (!DrawUIRender)
-                    CaptureInputs = false;
-            }
-            else if (DrawUIRender)
-            {
-                CaptureInputs = !CaptureInputs;
-            }
-
-            keyProcessed = true;
-        }
-    }
-    else
-    {
-        keyProcessed = false;
-    }
+			CaptureKeyProcessed = true;
+		}
+	}
+	else
+	{
+		CaptureKeyProcessed = false;
+	}
 
 	ImGuiIO& IO = ImGui::GetIO();
-    if (CaptureInputs || g_dedicated_server)
+	if (CaptureInputs || g_dedicated_server)
 	{
 		IO.ConfigFlags &= ~ImGuiConfigFlags_NoMouseCursorChange;
 		SDL_ShowCursor();
-    }
-    else if (!g_dedicated_server)
-    {
+	}
+	else if (!g_dedicated_server)
+	{
 		IO.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 		SDL_HideCursor();
-    }
+	}
 }
 
 bool CImGuiManager::IsCapturingInputs() const
@@ -273,25 +290,7 @@ bool CImGuiManager::IsCapturingInputs() const
 	return CaptureInputs;
 }
 
-void CImGuiManager::NewPlatformFrame() const
-{
-#ifdef IXR_WINDOWS
-	PlatformNewFrameCallback();
-#endif
-}
-
-void CImGuiManager::NewHardwareFrame() const
-{
-	RHIUtils::ImGui::NewFrame();
-}
-
 bool CImGuiManager::IsGUIRendering() const
 {
 	return DrawUIRender;
-}
-
-CImGuiManager& CImGuiManager::Instance()
-{
-	static CImGuiManager Object;
-	return Object;
 }

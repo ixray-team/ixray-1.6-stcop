@@ -86,7 +86,7 @@ void CInput::MousePressed(int button)
 	// one frame (press+release inside the same poll collapse to no change), which is
 	// exactly what happens at 20 FPS with a quick click.
 #if defined(IXR_APPLE_SERIES)
-	if (!Device.dwPrecacheFrame && !cbStack.empty() && !CImGuiManager::Instance().IsCapturingInputs())
+	if (!Device.dwPrecacheFrame && !cbStack.empty() && !GImGUIManager->IsCapturingInputs())
 	{
 		old_mouseState[button] = 1;
 		cbStack.back()->IR_OnMousePress(button);
@@ -99,7 +99,7 @@ void CInput::MouseReleased(int button)
 	mouseState[button] = 0;
 
 #if defined(IXR_APPLE_SERIES)
-	if (!Device.dwPrecacheFrame && !cbStack.empty() && !CImGuiManager::Instance().IsCapturingInputs())
+	if (!Device.dwPrecacheFrame && !cbStack.empty() && !GImGUIManager->IsCapturingInputs())
 	{
 		old_mouseState[button] = 0;
 		cbStack.back()->IR_OnMouseRelease(button);
@@ -122,7 +122,7 @@ void CInput::KeyboardButtonUpdate(SDL_Scancode scancode, bool IsPressed)
 	// state for IR_OnKeyboardHold. A tap shorter than one frame must not be dropped.
 #if defined(IXR_APPLE_SERIES)
 	if (KBState[scancode] != IsPressed && !Device.dwPrecacheFrame && !cbStack.empty()
-		&& !CImGuiManager::Instance().IsCapturingInputs())
+		&& !GImGUIManager->IsCapturingInputs())
 	{
 		old_KBState[scancode] = IsPressed;
 		if (IsPressed)
@@ -545,7 +545,7 @@ void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
 
-	if (!Device.IsEditorMode() && CImGuiManager::Instance().IsCapturingInputs())
+	if (!Device.IsEditorMode() && GImGUIManager->IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 
@@ -620,7 +620,7 @@ void CInput::OnFrame()
 
 	dwCurTime = RDEVICE.TimerAsync_MMT();
 #if !defined(MASTER_GOLD)
-	if (!Device.IsEditorMode() && CImGuiManager::Instance().IsCapturingInputs())
+	if (!Device.IsEditorMode() && GImGUIManager->IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 

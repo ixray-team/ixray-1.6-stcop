@@ -92,16 +92,11 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 	fill_vid_mode_list();
 #ifdef IXR_WINDOWS
-	CImGuiManager& ImManager = CImGuiManager::Instance();
+	CImGuiManager::Engine().InitPlatform();
 
-	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
-	ImManager.PlatformDestroyCallback = ImGui_ImplSDL3_Shutdown;
-	ImManager.PlatformInitCallback = []() { ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window); };
-
-	ImManager.InitPlatform();
-
-	ImManager.ApplyMainViewport(DrawMainViewport);
-	ImManager.Subscribe("Dockspace", CImGuiManager::ERenderPriority::eHight, []()
+	CImGuiWindowRegistry& ImWindows = GImGUIManager->Windows();
+	ImWindows.SetMainViewport(DrawMainViewport);
+	ImWindows.Subscribe("Dockspace", ImGuiPriority::High, []()
 	{
 		auto& States = Engine.External.EditorStates;
 
@@ -281,7 +276,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 void CRenderDevice::DestroyRenderDevice()
 {
-	CImGuiManager::Instance().Destroy();
+	CImGuiManager::Engine().DestroyPlatform();
 	xr_delete(GRHI);
 
 	free_vid_mode_list();
@@ -391,8 +386,7 @@ void CRenderDevice::BeginRender()
 	PROF_EVENT("CRenderDevice::BeginRender");
 
 #ifdef IXR_WINDOWS
-	CImGuiManager::Instance().NewPlatformFrame();
-	CImGuiManager::Instance().UpdateCapture();
+	CImGuiManager::Engine().NewPlatformFrame();
 #endif
 }
 

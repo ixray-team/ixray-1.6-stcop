@@ -158,7 +158,7 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
-	if (!CImGuiManager::Instance().IsCapturingInputs())
+	if (!GImGUIManager->IsCapturingInputs())
 	{
 		vPrevPos = vPos;
 
@@ -182,7 +182,7 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	if (!CImGuiManager::Instance().IsCapturingInputs())
+	if (!GImGUIManager->IsCapturingInputs())
 	{
 		vPos = pos;
 	}

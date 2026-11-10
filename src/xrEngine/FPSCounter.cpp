@@ -173,7 +173,7 @@ void XRay::Hardware::FPSCounter::OnRender()
 	float x = text_screen_padding;
 	float y = text_screen_padding;
 #ifndef MASTER_GOLD
-	if (CImGuiManager::Instance().IsGUIRendering())
+	if (GImGUIManager->IsGUIRendering())
 	{
 		y += 20.f;
 	}

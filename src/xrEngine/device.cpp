@@ -172,7 +172,7 @@ void CRenderDevice::on_idle		()
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = !s_StartupActive && (psDeviceFlags.test(rsFullscreen) || (!Minimized && !IsMainMenuActive && !CImGuiManager::Instance().IsCapturingInputs()));
+	const bool Focus = !s_StartupActive && (psDeviceFlags.test(rsFullscreen) || (!Minimized && !IsMainMenuActive && !GImGUIManager->IsCapturingInputs()));
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);

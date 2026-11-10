@@ -5,9 +5,9 @@
 void ECSViewDraw()
 {
 #ifdef DEBUG_DRAW
-	CImGuiManager::Instance().Subscribe
+	GImGUIManager->Windows().Subscribe
 	(
-		"ECS Viewer", CImGuiManager::ERenderPriority::eMedium,
+		"ECS Viewer", ImGuiPriority::Medium,
 		[]()
 		{
 			if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::ECSViewer)])

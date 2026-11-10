@@ -521,7 +521,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 	{
 		hud_prims = new LevelInspector(true);
 
-		CImGuiManager::Instance().Subscribe("LevelInspector", CImGuiManager::ERenderPriority::eMedium, [this]()
+		GImGUIManager->Windows().Subscribe("LevelInspector", ImGuiPriority::Medium, [this]()
 		{
 			static bool& isOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::LevelInspector)];
 			if (!isOpen) return;
@@ -759,7 +759,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 LevelInspector::~LevelInspector()
 {
 	if (!hud_mode)
-		CImGuiManager::Instance().Unsubscribe("LevelInspector");
+		GImGUIManager->Windows().Unsubscribe("LevelInspector");
 	xr_delete(hud_prims);
 
 	for (const auto& pair : m_clone_fonts_map)

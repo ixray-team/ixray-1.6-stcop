@@ -3370,7 +3370,7 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		ClearGizmo();
 	}
 
-	const bool capturing = CImGuiManager::Instance().IsCapturingInputs();
+	const bool capturing = GImGUIManager->IsCapturingInputs();
 	const bool mouseOverUi = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 	const ImVec2 mouse = ImGui::GetIO().MousePos;
 	const float distance = Device.vCameraPosition.distance_to(actor->Position);

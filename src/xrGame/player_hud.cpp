@@ -125,10 +125,10 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 	if (!Device.IsEditorMode())
 	{
 
-		CImGuiManager::Instance().Subscribe
+		GImGUIManager->Windows().Subscribe
 		(
 			"HudAdjust",
-			CImGuiManager::ERenderPriority::eMedium, []
+			ImGuiPriority::Medium, []
 			{
 				if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]) {
 					return;
@@ -204,10 +204,10 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 		);
 	}
 
-	CImGuiManager::Instance().Subscribe
+	GImGUIManager->Windows().Subscribe
 	(
 		"CutsceneAdjust",
-		CImGuiManager::ERenderPriority::eMedium, [this]
+		ImGuiPriority::Medium, [this]
 		{
 			if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::CutsceneAdjust)]) {
 				return;

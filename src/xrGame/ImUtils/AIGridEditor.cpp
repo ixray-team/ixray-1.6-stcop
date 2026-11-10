@@ -2037,7 +2037,7 @@ void RenderAIGridEditorWindow()
 	}
 	Fvector Hit, Normal;
 	bool HasHit = AIGrid::Ray(Device.vCameraPosition, AIGrid::MouseDirection(), 500.f, Hit, &Normal);
-	bool CanEdit = CImGuiManager::Instance().IsCapturingInputs() && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemActive();
+	bool CanEdit = GImGUIManager->IsCapturingInputs() && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemActive();
 	if (HasHit && CanEdit)
 	{
 		const bool Erasing = ImGui::IsMouseDown(ImGuiMouseButton_Right);
@@ -2082,7 +2082,7 @@ void RenderAIGridEditorWindow()
 void RenderAIGridEditorWorld()
 {
 	if (!Engine.External.EditorStates[u8(EditorUI::Tools_AIGridEditor)] || !g_pGameLevel ||
-		!ai().get_level_graph() || !CImGuiManager::Instance().IsGUIRendering())
+		!ai().get_level_graph() || !GImGUIManager->IsGUIRendering())
 	{
 		return;
 	}

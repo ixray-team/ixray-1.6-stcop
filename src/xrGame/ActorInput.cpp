@@ -476,7 +476,7 @@ void CActor::IR_OnKeyboardRelease(int dik)
 		switch (bindRadial)
 		{
 		case kDROP:		
-			if (GAME_PHASE_INPROGRESS == Game().Phase() && !CImGuiManager::Instance().IsCapturingInputs()) 
+			if (GAME_PHASE_INPROGRESS == Game().Phase() && !GImGUIManager->IsCapturingInputs()) 
 				g_PerformDrop();				
 			break;
 		}
@@ -1449,7 +1449,7 @@ static bool IsActionKeyPressed(const EGameActions& EGameAction)
 
 bool CActor::IsActionKeyPressedInGame(const EGameActions& EGameAction) const
 {
-	return !IsCameraFocusInputLocked() && IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive() && !CImGuiManager::Instance().IsCapturingInputs();
+	return !IsCameraFocusInputLocked() && IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive() && !GImGUIManager->IsCapturingInputs();
 }
 
 void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)

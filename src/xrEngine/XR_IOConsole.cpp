@@ -166,12 +166,12 @@ void CConsole::Initialize()
 #ifdef DEBUG_DRAW
 	if (!Device.IsEditorMode())
 	{
-		CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, [this]
+		GImGUIManager->Windows().Subscribe("DebugConsole", ImGuiPriority::Medium, [this]
 		{
 			ImGuiDrawUIConsole();
 		});
 
-		CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, [this]
+		GImGUIManager->Windows().Subscribe("DebugConsoleVars", ImGuiPriority::Medium, [this]
 		{
 			ImGuiDrawUIConsoleVars();
 		});
@@ -184,8 +184,8 @@ CConsole::~CConsole()
 	xrLogger::RemoveLogCallback(ConsoleLogCallback);
 	if (!Device.IsEditorMode())
 	{
-		CImGuiManager::Instance().Unsubscribe("DebugConsole");
-		CImGuiManager::Instance().Unsubscribe("DebugConsoleVars");
+		GImGUIManager->Windows().Unsubscribe("DebugConsole");
+		GImGUIManager->Windows().Unsubscribe("DebugConsoleVars");
 	}
 
 	xr_delete( m_hShader_back );

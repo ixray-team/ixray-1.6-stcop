@@ -1,14 +1,14 @@
 #pragma once
 #include "../xrCore/xrCore.h"
+#include "../xrCore/Collision/xrCDB.h"
+#include "../xrCore/Kernel/xrAPI.h"
+#include "../xrCore/Kernel/EngineExternal.h"
 
 #if !defined(XRSE_FACTORY_EXPORTS) && !defined(_EDITOR)
 #	include "imgui.h"
 #endif
 
 #include "ExportDefines.h"
-
-#include "../xrCore/Kernel/xrAPI.h"
-#include "../xrCore/Kernel/EngineExternal.h"
 
 #ifndef ECORE_API
 #	define ECORE_API
@@ -17,13 +17,7 @@
 // Our headers
 #include "Engine.h"
 #include "defines.h"
-#ifndef NO_XRLOG
-#include "../xrCore/log.h"
-#endif
 #include "device.h"
-#include "../xrCore/FS.h"
-
-#include "../xrCore/Collision/xrCDB.h"
 
 #include "../xrSound/Sound.h"
 #include "bone.h"
@@ -36,10 +30,7 @@ extern ENGINE_API bool g_dedicated_server;
 #endif
 
 #include "FontManager.h"
-
-#ifndef _EDITOR
-#	include "ImGuiManager.h"
-#endif
+#include "ImGuiManager.h"
 
 
 struct ISE_AbstractLEOwner

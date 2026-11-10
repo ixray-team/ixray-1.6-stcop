@@ -221,9 +221,9 @@ void EditorLuaInit()
 
 
 	CodeText.resize(4096);
-	CImGuiManager::Instance().Subscribe("LuaCoder", CImGuiManager::ERenderPriority::eMedium, EditorLuaCodespace);
+	GImGUIManager->Windows().Subscribe("LuaCoder", ImGuiPriority::Medium, EditorLuaCodespace);
 
-	CImGuiManager::Instance().Subscribe("LuaDebug", CImGuiManager::ERenderPriority::eLow, []()
+	GImGUIManager->Windows().Subscribe("LuaDebug", ImGuiPriority::Low, []()
 	{
 		static bool Attach = false;
 
