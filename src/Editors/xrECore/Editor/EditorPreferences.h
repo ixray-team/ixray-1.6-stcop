@@ -109,6 +109,8 @@ public:
 	// Experimental -> LOD
 	bool UseMULODs = false;
 	bool DisableBillboardLOD = false;
+	
+	bool UseSharedMaterials = false;
 
 	std::map<std::string, std::string> custom_icons;
 protected:

@@ -115,31 +115,52 @@ void CEditableObject::Save(IWriter& F)
     F.close_chunk	();
 
 	// surfaces
-	F.open_chunk(EEditableObjectChunks::SURFACES_SHARED);
-	F.w_u32(m_Surfaces.size());
-
-	for (auto& m_Surface : m_Surfaces)
+	if (EPrefs->UseSharedMaterials)
 	{
-		bool IsShared = m_Surface->IsSharedMode();
-		F.w_u8(IsShared);
-		if(IsShared)
+		F.open_chunk(EEditableObjectChunks::SURFACES_SHARED);
+		F.w_u32(m_Surfaces.size());
+
+		for (auto& m_Surface : m_Surfaces)
 		{
-			F.w_stringZ(m_Surface->_Name());
+			bool IsShared = m_Surface->IsSharedMode();
+			F.w_u8(IsShared);
+			if(IsShared)
+			{
+				F.w_stringZ(m_Surface->_Name());
+			}
+			else
+			{
+				F.w_stringZ(m_Surface->_Name());
+				F.w_stringZ(m_Surface->_ShaderName());
+				F.w_stringZ(m_Surface->_ShaderXRLCName());
+				F.w_stringZ(m_Surface->_GameMtlName());
+				F.w_stringZ(m_Surface->_Texture());
+			}
+			F.w_stringZ(m_Surface->m_VMap);
+			F.w_u32(m_Surface->m_pData.second->m_Flags.get());
+			F.w_u32(m_Surface->m_dwFVF);
+			F.w_u32(1);
 		}
-		else
+		F.close_chunk();
+	} else
+	{
+		F.open_chunk(EEditableObjectChunks::SURFACES3);
+		F.w_u32(m_Surfaces.size());
+
+		for (auto& m_Surface : m_Surfaces)
 		{
-			F.w_stringZ(m_Surface->_Name());
-			F.w_stringZ(m_Surface->_ShaderName());
-			F.w_stringZ(m_Surface->_ShaderXRLCName());
-			F.w_stringZ(m_Surface->_GameMtlName());
-			F.w_stringZ(m_Surface->_Texture());
+			F.w_stringZ	(m_Surface->_Name());
+			F.w_stringZ	(m_Surface->_ShaderName());
+			F.w_stringZ	(m_Surface->_ShaderXRLCName());
+			F.w_stringZ	(m_Surface->_GameMtlName());
+			F.w_stringZ	(m_Surface->_Texture());
+			F.w_stringZ	(m_Surface->m_VMap.c_str());
+			F.w_u32	(m_Surface->m_pData.second->m_Flags.get());
+			F.w_u32	(m_Surface->m_dwFVF);
+			F.w_u32	(1);
 		}
-		F.w_stringZ(m_Surface->m_VMap);
-		F.w_u32(m_Surface->m_pData.second->m_Flags.get());
-		F.w_u32(m_Surface->m_dwFVF);
-		F.w_u32(1);
+		F.close_chunk	();
 	}
-	F.close_chunk();
 
     // bones
     if (!m_Bones.empty()){

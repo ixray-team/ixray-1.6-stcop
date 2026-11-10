@@ -81,20 +81,24 @@ void CEditableObject::OnChangeShader(PropValue*)
 
 void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropItemVec& items)
 {
-	
-	auto B = PHelper().CreateBool(items, PrepareKey(pref, "Use shared material"), &SURF->UseShared);
-	B->OnChangeEvent.bind(this, &CEditableObject::OnChangeSharedMode);
-
-	if(SURF->UseShared)
+	bool SharedMode = false;
+	if (EPrefs->UseSharedMaterials)
 	{
-		auto SMC = PHelper().CreateChoose(items, PrepareKey(pref, "Shared Material Name"), &SURF->m_pData.first, smSharedMaterial);
-		SMC->OnChangeEvent.bind(this, &CEditableObject::OnChangeSharedMaterial);
+		auto B = PHelper().CreateBool(items, PrepareKey(pref, "Use shared material"), &SURF->UseShared);
+		B->OnChangeEvent.bind(this, &CEditableObject::OnChangeSharedMode);
+
+		SharedMode = SURF->UseShared;
+		if(SharedMode)
+		{
+			auto SMC = PHelper().CreateChoose(items, PrepareKey(pref, "Shared Material Name"), &SURF->m_pData.first, smSharedMaterial);
+			SMC->OnChangeEvent.bind(this, &CEditableObject::OnChangeSharedMaterial);
+		}
 	}
 	
 	MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(pref, "TextureView"));
 	PropValue* V = nullptr;
 	
-	if(SURF->UseShared)
+	if(SharedMode)
 	{
 		V = MultiValue->CreateValue(PrepareKey(pref, "Texture"), &SURF->m_pData.second->m_Texture, smDisabled);
 		V= MultiValue->CreateValue(PrepareKey(pref, "Shader"), &SURF->m_pData.second->m_ShaderName, smDisabled);

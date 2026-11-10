@@ -126,6 +126,11 @@ void CLevelPreferences::Load()
 		GetSafe(*lod, "UseMULODs", UseMULODs);
 		GetSafe(*lod, "DisableBillboardLOD", DisableBillboardLOD);
 	}
+	
+	if (const auto shared_materials = GetObjectSafe(JSONData, "SharedMaterials"))
+	{
+		GetSafe(*shared_materials, "UseSharedMaterials", UseSharedMaterials);
+	}
 
 	if (const auto* ae = GetObjectSafe(JSONData, "ActorEditor"))
 	{
@@ -223,6 +228,8 @@ void CLevelPreferences::Save()
 
 	JSONData["ExperimentalLOD"]["UseMULODs"] = UseMULODs;
 	JSONData["ExperimentalLOD"]["DisableBillboardLOD"] = DisableBillboardLOD;
+	
+	JSONData["SharedMaterials"]["UseSharedMaterials"] = UseSharedMaterials;
 
 	JSONData["Scene"]["ValidMake"] = Scene->IsValidateAtMake;
 	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
@@ -255,6 +262,8 @@ void CLevelPreferences::FillProp(PropItemVec& items)
 
 	PHelper().CreateBool(items, "Experimental\\LOD\\Use MU LODs (4-level)", &UseMULODs);
 	PHelper().CreateBool(items, "Experimental\\LOD\\Disable Billboard LOD", &DisableBillboardLOD);
+	
+	PHelper().CreateBool(items, "Experimental\\Shared Materials\\Use Shared Materials", &UseSharedMaterials);
 
 	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 12", &ActorAlwaysShowKeyBar12);
 	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 34", &ActorAlwaysShowKeyBar34);
