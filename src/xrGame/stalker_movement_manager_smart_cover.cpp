@@ -108,8 +108,8 @@ void stalker_movement_manager_smart_cover::update	(u32 time_delta)
 
 void stalker_movement_manager_smart_cover::enter_smart_cover			()
 {
-	smart_cover::loophole const&		target_loophole = *m_target.cover_loophole();
-	smart_cover::loophole const&		loophole = target_loophole.enterable() ? target_loophole : nearest_enterable_loophole();
+	// Use the entry selected by build_enter_path, including its direction.
+	smart_cover::loophole const&		loophole = nearest_enterable_loophole();
 
 	bind_global_selector				();
 
@@ -193,8 +193,8 @@ void stalker_movement_manager_smart_cover::reach_enter_location			(u32 const& ti
 		return;
 	}
 
-	smart_cover::loophole const&		target_loophole = *m_target.cover_loophole();
-	smart_cover::loophole const&		loophole = target_loophole.enterable() ? target_loophole : nearest_enterable_loophole();
+	// Use the entry selected by build_enter_path, including its direction.
+	smart_cover::loophole const&		loophole = nearest_enterable_loophole();
 
 	current_transition();
 	if (!m_current_transition)
