@@ -1,4 +1,11 @@
 #include "stdafx.h"
+#include <magic_enum/magic_enum.hpp>
+
+template <>
+struct magic_enum::customize::enum_range<CPUFeature>
+{
+	static constexpr bool is_flags = true;
+};
 
 #ifdef IXR_WINDOWS
 #include <process.h>

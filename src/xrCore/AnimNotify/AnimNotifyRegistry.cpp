@@ -2,6 +2,7 @@
 #include "AnimNotifyRegistry.h"
 
 #include "AnimNotify.h"
+#include <magic_enum/magic_enum.hpp>
 
 CAnimNotifyRegistry::CAnimNotifyRegistry()
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
+#include <magic_enum/magic_enum.hpp>
 #include "blender_light_occq.h"
 #include "blender_light_mask.h"
 #include "blender_light_direct.h"

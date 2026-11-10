@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <magic_enum/magic_enum.hpp>
 #include "LevelInspector.h"
 #include "GamePersistent.h"
 #include "Level.h"

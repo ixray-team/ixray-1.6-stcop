@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SDL3/SDL.h>
 #include "Kernel/profiler.h"
 #include "Platform/Platform.h"
@@ -63,8 +64,8 @@
 // FSD
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
-
 #include <magic_enum/magic_enum.hpp>
+
 
 // stl
 #pragma warning (push)
