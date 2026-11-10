@@ -166,7 +166,7 @@ void CRender::create()
 	o.SslrHq = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_HQ);
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
-	o.DofCompiled = ps_r2_ls_flags.test(R2FLAG_DOF);
+	o.DofCompiled = LightingModeIsDynamicRender() && (ps_r2_ls_flags.test(R2FLAG_DOF) || (g_pGamePersistent && g_pGamePersistent->IsDofForced()));
 
 	o.dx11_allow_wboit_transparency = LightingModeIsDynamicRender() && !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
@@ -709,7 +709,7 @@ void CRender::SyncMotionVectors()
 
 void CRender::SyncDof()
 {
-	if (o.DofCompiled == ps_r2_ls_flags.test(R2FLAG_DOF))
+	if (o.DofCompiled == (LightingModeIsDynamicRender() && (ps_r2_ls_flags.test(R2FLAG_DOF) || (g_pGamePersistent && g_pGamePersistent->IsDofForced()))))
 		return;
 
 	o.DofCompiled = !o.DofCompiled;

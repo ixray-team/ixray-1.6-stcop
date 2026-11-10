@@ -107,6 +107,7 @@ public:
 	virtual void		GetCurrentDof			(Fvector3& dof) override;
 	virtual void		SetBaseDof				(const Fvector3& dof) override;
 	virtual float		GetDofKernel			(float Default) override { return Dof.GetKernel(Default); }
+	virtual bool		IsDofForced				() const override { return Dof.IsDofForced(); }
 	virtual void		OnSectorChanged			(int sector) override;
 	virtual void		OnAssetsChanged			() override;
 	void				SetDiscordStatus() const;

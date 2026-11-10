@@ -105,6 +105,7 @@ public:
 	virtual void					GetCurrentDof		(Fvector3& dof){dof.set(-1.4f, 0.0f, 250.f);};
 	virtual void					SetBaseDof			(const Fvector3& dof){};
 	virtual float					GetDofKernel		(float Default) { return Default; }
+	virtual bool					IsDofForced			() const { return false; }
 	virtual void					OnSectorChanged		(int sector){};
 	virtual void					OnAssetsChanged		();
 

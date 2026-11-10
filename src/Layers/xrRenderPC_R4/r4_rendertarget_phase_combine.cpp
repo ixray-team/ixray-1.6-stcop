@@ -308,7 +308,7 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 			Cmd.Constants.Write<CBPost>().dof_params.set(dof.x, dof.y, dof.z, ps_r2_dof_sky);
 			Cmd.Constants.Write<CBPost>().dof_kernel.set(vDofKernel.x, vDofKernel.y, DofKernelSize);
 			Cmd.Constants.Write<CBPost>().autoexposure_params.set(ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
-			Cmd.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
+			Cmd.Constants.Write<CBPost>().bloom_params.set(Device.Grade(1, ps_r2_bloom_amount), ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, Device.Grade(0, 0.f));
 			Cmd.Constants.Write<CBPost>().tonemap_params.set(ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
 			Cmd.Constants.Write<CBPost>().bloom_tint.set(ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
 			Cmd.Constants.Write<CBPost>().spp_params.set(ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f, ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f, 0.0f, 0.0f);

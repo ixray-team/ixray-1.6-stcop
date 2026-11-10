@@ -99,7 +99,9 @@ public:
 	void Reset();
 	void GetCurrent(Fvector& Result) const;
 	void SetCinema(const Fvector4* Values);
-	float GetKernel(float Default) const { return HasCinema ? Cinema.w : Default; }
+	float GetKernel(float Default) const { return HasCinema ? Cinema.w : KernelFrom >= 0.0f ? KernelFrom + (Default - KernelFrom) * Progress : Default; }
+	void SetForced(bool Value) { IsForced = Value; }
+	bool IsDofForced() const { return IsForced; }
 	const Fvector& GetBase() const { return Base; }
 
 	static void LoadHud(SHudDofSource& Source, const shared_str& Section, bool Usable = false);
@@ -130,5 +132,7 @@ private:
 	bool Pickable = false;
 	bool HadRequest = false;
 	Fvector4 Cinema = {};
+	float KernelFrom = -1.0f;
 	bool HasCinema = false;
+	bool IsForced = false;
 };

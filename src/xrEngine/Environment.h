@@ -222,6 +222,48 @@ public:
 	void				destroy				();
 };
 
+struct ENGINE_API EnvLook
+{
+	Fvector3 SkyColor, FogColor, Ambient, SunColor;
+	Fvector4 HemiColor, CloudsColor;
+	float SkyRotation, FarPlane, FogDensity, FogDistance, RainDensity, WindVelocity, WindDirection, SunShafts;
+
+	void Read(const CEnvDescriptor& Source);
+	void Write(CEnvDescriptor& Target) const;
+	void Mix(const CEnvDescriptor& A, const CEnvDescriptor& B, float Weight);
+	void Lerp(const EnvLook& A, const EnvLook& B, float Weight);
+};
+
+enum EnvOverrideBit : u32
+{
+	EnvSunDir = 1,
+	EnvSunColor = 2,
+	EnvSunBrightness = 4,
+	EnvSunShafts = 8,
+	EnvAmbient = 16,
+	EnvHemi = 32,
+	EnvFogColor = 64,
+	EnvFogDensity = 128,
+	EnvFogDistance = 256,
+	EnvFarPlane = 512,
+	EnvRain = 1024,
+	EnvWindVelocity = 2048,
+	EnvWindDirection = 4096,
+	EnvSkyRotation = 8192
+};
+
+struct ENGINE_API EnvOverride
+{
+	shared_str Cycle;
+	float Time = -1.0f;
+	float Weight = 0.0f;
+	u32 Mask = 0;
+	float Amount[14] = {};
+	u32 Frame = u32(-8);
+	EnvLook Look = {};
+	float SunHeading = 0.0f, SunHeight = 0.7f, SunBrightness = 1.0f;
+};
+
 class ENGINE_API	CEnvironment
 {
 	friend class dxEnvironmentRender;
@@ -250,7 +292,9 @@ private:
 	void					SelectEnvs		(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*& e1, float tm);
 	void					SelectEnv		(EnvVec* envs, CEnvDescriptor*& e, float tm);
 
-	void					calculate_dynamic_sun_dir();
+	void					calculate_dynamic_sun_dir(float Time);
+	void					HoldOverride(CEnvDescriptor* E0, CEnvDescriptor* E1);
+	void					ApplyOverride();
 public:
 	void SetEnvDesc(const char* weather_section, CEnvDescriptor*& e);
 
@@ -281,6 +325,10 @@ public:
 	// Environments
 	CEnvDescriptorMixer*	CurrentEnv;
 	CEnvDescriptor*			Current[2];
+	CEnvDescriptor*			Shown[2] = { nullptr, nullptr };
+	CEnvDescriptor*			Held[2] = { nullptr, nullptr };
+	EnvOverride				Override;
+	bool					IsOverridden() const;
 
 	bool					bWFX;
 	float					wfx_time;

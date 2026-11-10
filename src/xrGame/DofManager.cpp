@@ -494,6 +494,7 @@ void CDofManager::Update(float Delta)
 	{
 		return;
 	}
+	KernelFrom = Progress < 1.0f ? KernelFrom : -1.0f;
 	SHudDofRequest Request;
 	if (SelectRequest(Request))
 	{
@@ -514,9 +515,12 @@ void CDofManager::Update(float Delta)
 
 void CDofManager::SetCinema(const Fvector4* Values)
 {
+	const bool WasCinema = HasCinema;
 	HasCinema = Values && _valid(*Values) && Values->x < Values->y && Values->y < Values->z && Values->w >= 0.0f;
 	if (!HasCinema)
 	{
+		KernelFrom = WasCinema ? Cinema.w : KernelFrom;
+		Progress = WasCinema ? 0.0f : Progress;
 		return;
 	}
 	Cinema = *Values;
@@ -528,6 +532,7 @@ void CDofManager::SetCinema(const Fvector4* Values)
 void CDofManager::Reset()
 {
 	HasCinema = false;
+	KernelFrom = -1.0f;
 	Zones.clear();
 	Pickable = false;
 	HasEffector = false;

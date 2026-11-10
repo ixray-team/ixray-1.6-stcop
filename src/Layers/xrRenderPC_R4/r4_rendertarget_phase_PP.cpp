@@ -152,7 +152,7 @@ void CRenderTarget::phase_pp(GfxCmdList& Cmd, const SPPInfo* ScopeInfo)
 	if (ScopeInfo)
 	{
 		// The scope shader converts HDR to display colors the same way as combine_2
-		Post.bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
+		Post.bloom_params.set(Device.Grade(1, ps_r2_bloom_amount), ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
 	}
 	Cmd.DrawNoInput(6);
 }
