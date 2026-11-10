@@ -12,7 +12,7 @@
 
 #include "3DFluid/dx103DFluidManager.h"
 //	Already defined in Texture.cpp
-void fix_texture_name(LPSTR fn);
+void fix_texture_name(char* fn);
 
 namespace
 {
@@ -125,7 +125,7 @@ IBlender* CResourceManager::_GetBlender		(const char* Name)
 {
 	R_ASSERT(Name && Name[0]);
 
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
 
 //	TODO: DX10: When all shaders are ready switch to common path
@@ -142,7 +142,7 @@ IBlender* CResourceManager::_FindBlender		(const char* Name)
 {
 	if (!(Name && Name[0])) return nullptr;
 
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
 	if (I==m_blenders.end())	return nullptr;
 	else						return I->second;
@@ -150,7 +150,7 @@ IBlender* CResourceManager::_FindBlender		(const char* Name)
 
 void	CResourceManager::ED_UpdateBlender	(const char* Name, IBlender* data)
 {
-	LPSTR N = LPSTR(Name);
+	char* N = (char*)(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
 	if (I!=m_blenders.end())	{
 		R_ASSERT	(data->getDescription().CLS == I->second->getDescription().CLS);
@@ -556,6 +556,7 @@ void CResourceManager::DeferredUpload()
 			Texture->Load();
 		}
 	}
+	WaitForTextureLoading();
 
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
