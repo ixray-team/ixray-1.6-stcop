@@ -19,18 +19,34 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float4 Center = t_metadata.SampleLevel(smp_nofilter, CenterUV, 0);
 	float Radius = DofCircularRadius(CenterUV, Center);
 	float4 Color = 0.0f;
+	float Step = Radius / 8.0f;
+	int Parts = clamp(int(ceil(Step / dof_blur_params.z)), 1, int(dof_focus_point.w));
 	[unroll]
 	for (int Tap = 0; Tap < 17; ++Tap)
 	{
-		float Offset = float(Tap - 8) * (Radius / 8.0f);
-		float2 SampleUV = clamp(CenterUV + float2(Offset * dof_blur_params.x, 0.0f), MinUV, 1.0f - MinUV);
-		// Intermediates contain spread, not the original surface at SampleUV.
-		// Depth rejection here would clip near against unrelated source-block depths.
-		Color += DofResolveComponent(t_dof_real0.SampleLevel(smp_rtlinear, SampleUV, 0),
-			t_dof_imaginary0.SampleLevel(smp_rtlinear, SampleUV, 0), DofKernel0[Tap], DofKernelWeight0);
+		float4 Real0 = 0.0f;
+		float4 Imaginary0 = 0.0f;
 #ifndef DOF_NEAR
-		Color += DofResolveComponent(t_dof_real1.SampleLevel(smp_rtlinear, SampleUV, 0),
-			t_dof_imaginary1.SampleLevel(smp_rtlinear, SampleUV, 0), DofKernel1[Tap], DofKernelWeight1);
+		float4 Real1 = 0.0f;
+		float4 Imaginary1 = 0.0f;
+#endif
+		[loop]
+		for (int Part = 0; Part < Parts; ++Part)
+		{
+			float Offset = (float(Tap - 8) + (float(Part) + 0.5f) / float(Parts) - 0.5f) * Step;
+			float2 SampleUV = clamp(CenterUV + DofLensOffset(float2(Offset, 0.0f), CenterUV, 1.0f / dof_blur_params.xy, dof_focus_point.z, dof_kernel.y) * dof_blur_params.xy, MinUV, 1.0f - MinUV);
+			// Intermediates contain spread, not the original surface at SampleUV.
+			// Depth rejection here would clip near against unrelated source-block depths.
+			Real0 += t_dof_real0.SampleLevel(smp_rtlinear, SampleUV, 0);
+			Imaginary0 += t_dof_imaginary0.SampleLevel(smp_rtlinear, SampleUV, 0);
+#ifndef DOF_NEAR
+			Real1 += t_dof_real1.SampleLevel(smp_rtlinear, SampleUV, 0);
+			Imaginary1 += t_dof_imaginary1.SampleLevel(smp_rtlinear, SampleUV, 0);
+#endif
+		}
+		Color += DofResolveComponent(Real0, Imaginary0, DofKernel0[Tap], DofKernelWeight0) / float(Parts);
+#ifndef DOF_NEAR
+		Color += DofResolveComponent(Real1, Imaginary1, DofKernel1[Tap], DofKernelWeight1) / float(Parts);
 #endif
 	}
 	// Resolve negative ringing only after combining both axes and all components.

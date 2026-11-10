@@ -62,6 +62,7 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
 		}
 		C.r_Pass("stub_fullscreen_triangle", "dof_coc", false, false, false);
 		C.r_dx10Texture("t_focus", r2_RT_dof_focus);
+		C.r_dx10Texture("t_coc_prev", r2_RT_dof_coc_prev);
 		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_dof_scope_mask", r2_RT_dof_scope_mask);
 		C.r_End();

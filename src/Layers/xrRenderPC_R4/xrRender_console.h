@@ -178,7 +178,7 @@ extern RENDER_API float g_NewDofFNumber;
 extern RENDER_API float g_NewDofFocusTime;
 extern RENDER_API float g_DofFocusDistance;
 extern RENDER_API float g_DofTransitionTime;
-extern RENDER_API u32 g_DofBlurResolution;
+extern RENDER_API u32 g_DofQuality;
 extern RENDER_API float			ps_r2_def_aref_quality;
 extern RENDER_API float			r__dtex_range;
 

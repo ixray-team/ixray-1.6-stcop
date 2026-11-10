@@ -313,7 +313,11 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 				const float Width = float(Device.TargetWidth);
 				const float Height = float(Device.TargetHeight);
 				const float PixelScale = std::max(Width / float(rt_dof_blur1->dwWidth), Height / float(rt_dof_blur1->dwHeight));
-				Cmd.Constants.Write<CBPost>().dof_combine_params.set(Width, Height, PixelScale, DofMaxRadius(g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size)));
+				Cmd.Constants.Write<CBPost>().dof_combine_params.set(Width, Height, PixelScale, DofRadiusLimit);
+			}
+			else
+			{
+				Cmd.Constants.Write<CBPost>().dof_combine_params.set(0.0f, 0.0f, 0.0f, 0.0f);
 			}
 			Cmd.Constants.Write<CBPost>().autoexposure_params.set(ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
 			Cmd.Constants.Write<CBPost>().bloom_params.set(Device.Grade(1, ps_r2_bloom_amount), ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, Device.Grade(0, 0.f));

@@ -35,21 +35,33 @@ DofComplexOutput main(PSInputFullscreen I)
 	O.Imaginary1 = 0.0f;
 #endif
 
+	float Step = Radius / 8.0f;
+	// One bilinear fetch covers about one reduced texel: a wider tap spacing repeats thin detail as dots.
+	int Parts = clamp(int(ceil(Step / dof_blur_params.z)), 1, int(dof_focus_point.w));
 	[unroll]
 	for (int Tap = 0; Tap < 17; ++Tap)
 	{
-		float Offset = float(Tap - 8) * (Radius / 8.0f);
-		float2 SampleUV = clamp(CenterUV + float2(0.0f, Offset * dof_blur_params.y), MinUV, 1.0f - MinUV);
-#ifdef DOF_NEAR
-		float4 Sample = t_near.SampleLevel(smp_rtlinear, SampleUV, 0);
-		float SampleDepth = t_metadata.SampleLevel(smp_nofilter, SampleUV, 0).x;
-		// Only the first axis has source-layer provenance. World near must not cover HUD.
-		if (DofIsHud(CenterDepth) && !DofIsHud(SampleDepth))
+		float4 Sample = 0.0f;
+		[loop]
+		for (int Part = 0; Part < Parts; ++Part)
 		{
-			Sample = 0.0f;
-		}
+			float Offset = (float(Tap - 8) + (float(Part) + 0.5f) / float(Parts) - 0.5f) * Step;
+			float2 SampleUV = clamp(CenterUV + DofLensOffset(float2(0.0f, Offset), CenterUV, 1.0f / dof_blur_params.xy, dof_focus_point.z, dof_kernel.y) * dof_blur_params.xy, MinUV, 1.0f - MinUV);
+#ifdef DOF_NEAR
+			float4 Fetch = t_near.SampleLevel(smp_rtlinear, SampleUV, 0);
+			float SampleDepth = t_metadata.SampleLevel(smp_nofilter, SampleUV, 0).x;
+			// Only the first axis has source-layer provenance. World near must not cover HUD.
+			if (DofIsHud(CenterDepth) && !DofIsHud(SampleDepth))
+			{
+				Fetch = 0.0f;
+			}
+			Sample += Fetch;
 #else
-		float4 Sample = t_far.SampleLevel(smp_rtlinear, SampleUV, 0);
+			Sample += t_far.SampleLevel(smp_rtlinear, SampleUV, 0);
+#endif
+		}
+		Sample /= float(Parts);
+#ifndef DOF_NEAR
 		// A blurred HUD may reveal background; a sharp HUD is restored by combine.
 		if (DofIsHud(CenterDepth) && Center.z == 0.0f)
 		{

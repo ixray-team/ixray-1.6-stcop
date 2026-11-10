@@ -223,6 +223,7 @@ public:
 	float LensDofFactor = 0.0f;
 	Fvector4 DofCameraLens = {}; // focal length (mm), f-number, sensor height (m), focus time (s)
 	bool DofCameraInitialized = false;
+	float DofRadiusLimit = 20.0f;
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.

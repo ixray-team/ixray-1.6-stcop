@@ -61,6 +61,19 @@ float DofVisibleRadius(float Radius, float CenterRadius, float CenterDepth, floa
 	return DofIsBackground(CenterDepth, SampleDepth) ? min(Radius, CenterRadius * 2.0f) : Radius;
 }
 
+// Lens shape as one linear map of every blur offset (output pixels), so both blur axes and the small
+// gather agree. Swirl narrows the blur toward the picture centre, growing to the corners: bokeh
+// becomes arcs around the centre. HorizontalScale is the anamorphic squeeze.
+float2 DofLensOffset(float2 Offset, float2 UV, float2 OutputSize, float HorizontalScale, float Swirl)
+{
+	float2 FromCentre = (UV - 0.5f) * OutputSize / (0.5f * length(OutputSize));
+	float Distance = length(FromCentre);
+	float2 Radial = Distance > 1e-4f ? FromCentre / Distance : float2(0.0f, 1.0f);
+	Offset -= Radial * (dot(Offset, Radial) * Swirl * saturate(Distance));
+	Offset.x *= HorizontalScale;
+	return Offset;
+}
+
 #ifdef DOF_CIRCULAR
 // Circular separable convolution: Kleber Garcia, Frostbite (GDC 2018).
 // https://media.gdcvault.com/gdc2018/presentations/Garcia_Kleber_CircularDepthOf.pdf

@@ -17,11 +17,6 @@ void GfxCmdList::OnFrameBegin	()
 {
 	if (!g_dedicated_server)
 	{
-		if (!EditorMode)
-		{
-			RImplementation.SyncMotionVectors();
-			RImplementation.SyncDof();
-		}
 		if (Heap)
 		{
 			Heap->Flush();

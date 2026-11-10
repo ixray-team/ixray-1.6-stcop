@@ -19,7 +19,7 @@ CBUFFER(CBPost, 7)
 	float4 dof_params; // x - focal length (mm), y - f-number, z - sensor height (m), w - output height
 	float4 dof_combine_params; // xy - output size, z - output pixels per blur pixel, w - maximum radius
 	float4 dof_focus_params; // x - frame blend, y - manual mode, z - manual/fallback distance (m), w - minimum focus (m)
-	float4 dof_focus_point; // xy - target UV, zw - unused
+	float4 dof_focus_point; // xy - target UV, z - horizontal blur scale (1 / anamorphic squeeze), w - most fetches per blur tap
 	float4 dof_classic; // xyz - near, focus, far (m), w - sky distance (m)
 	float4 dof_rt_size; // xy - reduced size, zw - reduced texel size
 	float4 dof_blur_params; // xy - output texel size, z - output pixels per blur pixel, w - maximum output radius
@@ -48,7 +48,7 @@ CBUFFER(CBPost, 7)
 	float puddle_constants;
 	float sharpening_intensity;
 	float NightVisionInterference;
-	float3 dof_kernel; // x - classic radius (output pixels), y - unused, z - radius limit
+	float3 dof_kernel; // x - classic radius (output pixels), y - swirl (0-1), z - radius limit
 CBUFFER_END
 
 #endif

@@ -62,7 +62,7 @@ float3 dof(float2 CenterUV)
 {
 	float3 SharpColor = s_image.SampleLevel(smp_rtlinear, CenterUV, 0).rgb;
 #ifdef USE_DOF
-	if (s_dof_scope_mask.SampleLevel(smp_nofilter, CenterUV, 0) > 0.5f)
+	if (dof_combine_params.w <= 0.0f || s_dof_scope_mask.SampleLevel(smp_nofilter, CenterUV, 0) > 0.5f)
 	{
 		return SharpColor;
 	}
@@ -108,7 +108,7 @@ float3 dof(float2 CenterUV)
 		[loop]
 		while (Radius < SmallRadius + 0.5f)
 		{
-			float2 SampleUV = clamp(CenterUV + float2(cos(Angle), sin(Angle)) * Radius / dof_combine_params.xy, MinUV, 1.0f - MinUV);
+			float2 SampleUV = clamp(CenterUV + DofLensOffset(float2(cos(Angle), sin(Angle)) * Radius, CenterUV, dof_combine_params.xy, dof_focus_point.z, dof_kernel.y) / dof_combine_params.xy, MinUV, 1.0f - MinUV);
 			float SampleCoC = s_dof_coc.SampleLevel(smp_nofilter, SampleUV, 0);
 			float SampleDepth = s_position.SampleLevel(smp_nofilter, SampleUV, 0).x;
 			float SampleRadius = abs(SampleCoC);

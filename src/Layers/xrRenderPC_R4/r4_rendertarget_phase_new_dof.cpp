@@ -13,7 +13,8 @@ namespace DofCamera
 
 void CRenderTarget::CreateDofBlurTargets(GfxCmdList& Cmd)
 {
-	const u32 Divisor = g_DofBlurResolution == 4 ? 4u : 2u;
+	static constexpr u32 Divisors[3] = { 4, 2, 1 };
+	const u32 Divisor = Divisors[std::min(g_DofQuality, 2u)];
 	const u32 Width = std::max((Device.TargetWidth + Divisor - 1) / Divisor, 1u);
 	const u32 Height = std::max((Device.TargetHeight + Divisor - 1) / Divisor, 1u);
 	ref_rt* Targets[] = { &DofDownsample, &rt_dof_blur3, &DofDownsampleDepth, &rt_dof_blur1, &rt_dof_blur2, &DofReal1, &DofImaginary1 };
@@ -80,6 +81,7 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 	{
 		g_pGamePersistent->GetDofCameraSettings(Camera);
 	}
+	DofRadiusLimit = Physical && Camera.MaxRadius > 0.0f ? clampr(Camera.MaxRadius, 1.0f, 40.0f) : DofMaxRadius(Kernel);
 	const float SensorHeight = DofSensorHeight;
 	const bool Instant = Camera.IsInstant || Device.IsCameraCut();
 	float FocalLength = Camera.FocalLength;
@@ -102,7 +104,7 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 	}
 	else
 	{
-		const float Blend = Instant ? 1.0f : 1.0f - exp(-Delta / Camera.TransitionTime);
+		const float Blend = Instant || Camera.TransitionTime <= 0.0f ? 1.0f : 1.0f - exp(-Delta / Camera.TransitionTime);
 		DofCameraLens.lerp(DofCameraLens, TargetLens, Blend);
 	}
 
@@ -114,8 +116,8 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 		{
 			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 			Cmd.SetStencil(false);
-			Cmd.Constants.Write<CBPost>().dof_focus_params.set(Instant ? 1.0f : 1.0f - exp(-Delta / DofCameraLens.w), Camera.Mode == EDofMode::Manual ? 1.0f : 0.0f, Camera.FocusDistance, DofCameraLens.x * 0.001f + EPS);
-			Cmd.Constants.Write<CBPost>().dof_focus_point.set(Camera.FocusPoint.x, Camera.FocusPoint.y, 0.0f, 0.0f);
+			Cmd.Constants.Write<CBPost>().dof_focus_params.set(Instant || DofCameraLens.w <= EPS ? 1.0f : 1.0f - exp(-Delta / DofCameraLens.w), Camera.Mode == EDofMode::Manual ? 1.0f : 0.0f, Camera.FocusDistance, DofCameraLens.x * 0.001f + EPS);
+			Cmd.Constants.Write<CBPost>().dof_focus_point.set(Camera.FocusPoint.x, Camera.FocusPoint.y, 1.0f / clampr(Camera.Squeeze, 1.0f, 2.0f), g_DofQuality == 0 ? 1.0f : g_DofQuality == 1 ? 4.0f : 6.0f);
 		});
 	}
 
@@ -136,12 +138,12 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 			}
 			const float LensScale = 1.0f + (DofLensKernelScale - 1.0f) * LensDofFactor;
 			Cmd.Constants.Write<CBPost>().dof_classic.set(Dof.x, Dof.y, Dof.z, ps_r2_dof_sky);
-			Cmd.Constants.Write<CBPost>().dof_kernel.set(0.5f * Kernel * LensScale, 0.0f, DofMaxRadius(Kernel));
+			Cmd.Constants.Write<CBPost>().dof_kernel.set(0.5f * Kernel * LensScale, clampr(Camera.Swirl, 0.0f, 1.0f), DofRadiusLimit);
 		});
 	}
 
 	Cmd.Constants.Write<CBPost>().dof_rt_size.set(BlurWidth, BlurHeight, 1.0f / BlurWidth, 1.0f / BlurHeight);
-	Cmd.Constants.Write<CBPost>().dof_blur_params.set(1.0f / Width, 1.0f / Height, PixelScale, DofMaxRadius(Kernel));
+	Cmd.Constants.Write<CBPost>().dof_blur_params.set(1.0f / Width, 1.0f / Height, PixelScale, DofRadiusLimit);
 	const float TileWidth = float(DofTileMax->dwWidth);
 	const float TileHeight = float(DofTileMax->dwHeight);
 	Cmd.Constants.Write<CBPost>().dof_tile_params.set(TileWidth, TileHeight, 1.0f / TileWidth, 1.0f / TileHeight);

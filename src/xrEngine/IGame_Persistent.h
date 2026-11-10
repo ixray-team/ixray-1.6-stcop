@@ -34,6 +34,9 @@ struct SDofCameraSettings
 	float FocusDistance = 1.4f;
 	float TransitionTime = 0.1f;
 	bool IsInstant = false;
+	float MaxRadius = 0.0f;
+	float Squeeze = 1.0f;
+	float Swirl = 0.0f;
 };
 
 class ENGINE_API IGame_Persistent : 

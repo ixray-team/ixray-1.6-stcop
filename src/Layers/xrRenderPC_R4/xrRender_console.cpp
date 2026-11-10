@@ -310,7 +310,7 @@ float g_NewDofFNumber = 4.0f;
 float g_NewDofFocusTime = 0.1f;
 float g_DofFocusDistance = 1.4f;
 float g_DofTransitionTime = 0.1f;
-u32 g_DofBlurResolution = 2;
+u32 g_DofQuality = 1;
 static xr_token NewDofModeTokens[] =
 {
 	{"autofocus", 0},
@@ -319,10 +319,11 @@ static xr_token NewDofModeTokens[] =
 	{"auto", 0}, // Saved configs from the original physical mode.
 	{nullptr, 0}
 };
-static xr_token DofBlurResolutionTokens[] =
+static xr_token DofQualityTokens[] =
 {
-	{"half", 2},
-	{"quarter", 4},
+	{"low", 0},
+	{"medium", 1},
+	{"high", 2},
 	{nullptr, 0}
 };
 
@@ -1175,7 +1176,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r4_ndof_focus_distance", &g_DofFocusDistance, 0.01f, 10000.0f);
 	CMD4(CCC_Float, "r4_ndof_transition_time", &g_DofTransitionTime, 0.01f, 10.0f);
 	CMD3(CCC_Token, "r4_ndof_mode", &g_NewDofMode, NewDofModeTokens);
-	CMD3(CCC_Token, "r4_ndof_resolution", &g_DofBlurResolution, DofBlurResolutionTokens);
+	CMD3(CCC_Token, "r4_ndof_quality", &g_DofQuality, DofQualityTokens);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask32,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 

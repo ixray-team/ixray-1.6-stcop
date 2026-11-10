@@ -25,7 +25,7 @@ enum class FieldKind
 	Vector4,
 	Bool,
 	Mode,
-	Resolution,
+	Quality,
 	Reference
 };
 
@@ -52,7 +52,7 @@ static const Field CameraFields[] = {
 };
 
 static const Field GeneralFields[] = {
-	{"r2_dof_enable", "Enable DOF (shader restart required)", FieldKind::Bool},
+	{"r2_dof_enable", "Enable DOF", FieldKind::Bool},
 	{"r4_ndof_mode", "DOF mode", FieldKind::Mode},
 	{"r4_ndof_manual_focal_length", "Use manual focal length", FieldKind::Bool},
 	{"r4_ndof_focal_length", "Focal length (mm)"},
@@ -60,7 +60,7 @@ static const Field GeneralFields[] = {
 	{"r4_ndof_focus_distance", "Focus distance (m)"},
 	{"r4_ndof_focus_time", "Focus response (s)"},
 	{"r4_ndof_transition_time", "Lens transition (s)"},
-	{"r4_ndof_resolution", "Bokeh resolution", FieldKind::Resolution},
+	{"r4_ndof_quality", "Bokeh quality", FieldKind::Quality},
 	{"r2_dof", "Static near / focus / far (m)", FieldKind::Vector3},
 	{"r2_dof_kernel", "Blur size (kernel; maximum radius is 4x)"},
 	{"r2_dof_sky", "Static sky distance (m)"},
@@ -194,7 +194,7 @@ static xr_string Canonical(FieldKind Kind, const char* Text)
 	{
 		return !xr_strcmp(Text, "auto") ? "autofocus" : Text;
 	}
-	if (Kind == FieldKind::Resolution)
+	if (Kind == FieldKind::Quality)
 	{
 		return Text;
 	}
@@ -483,7 +483,7 @@ bool Editor::DrawInput(const Field& Definition, const xr_string& Value, xr_strin
 			Changed = true;
 		}
 	}
-	else if (Definition.Kind == FieldKind::Mode || Definition.Kind == FieldKind::Resolution || Definition.Kind == FieldKind::Reference)
+	else if (Definition.Kind == FieldKind::Mode || Definition.Kind == FieldKind::Quality || Definition.Kind == FieldKind::Reference)
 	{
 		if (ImGui::BeginCombo(Definition.Label, Value.c_str()))
 		{
@@ -513,8 +513,9 @@ bool Editor::DrawInput(const Field& Definition, const xr_string& Value, xr_strin
 			}
 			else
 			{
-				OptionLambda("half");
-				OptionLambda("quarter");
+				OptionLambda("low");
+				OptionLambda("medium");
+				OptionLambda("high");
 			}
 			ImGui::EndCombo();
 		}
