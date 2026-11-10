@@ -625,6 +625,7 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST), "USE_HASHED_AREF", "1" },
 		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER), "USE_SSLR_ON_WATER", "1" },
 		{ Dynamic && ps_r_sun_shafts > 0, "SUN_SHAFTS_QUALITY", SunShafts },
+		{ true, "Volumetric_Alternative", g_SunShaftsAlternative ? "1" : "0" },
 		{ Dynamic && ps_r_sun_quality > 0, "SUN_QUALITY", SunQuality },
 		{ Dynamic && g_SunContactQuality > 0, "SUN_CONTACT_QUALITY", SunContact },
 		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX), "ALLOW_STEEPPARALLAX", "1" },

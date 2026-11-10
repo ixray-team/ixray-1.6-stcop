@@ -221,6 +221,8 @@ public:
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt rt_DofScopeMask;
 	float LensDofFactor = 0.0f;
+	Fvector4 DofCameraLens = {}; // focal length (mm), f-number, sensor height (m), focus time (s)
+	bool DofCameraInitialized = false;
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
@@ -247,13 +249,19 @@ public:
 	//==================================================
 
 	//============== new Depth of Field ==============
-	ref_rt						rt_dof_focus;			// 24bit, 1x1,		current focus distance
-	ref_rt						rt_dof_focus_prev;		// 24bit, 1x1,		prev frame focus distance
-	ref_rt						rt_dof_coc;				// 16bit, dim,		circle of confusion
-	ref_rt						rt_dof_coc_prev;		// 16bit, dim,		circle of confusion
-	ref_rt						rt_dof_blur1;			// 32bit, dim,		blur pass1
-	ref_rt						rt_dof_blur2;			// 32bit, dim,		blur pass2
-	ref_rt						rt_dof_blur3;			// 32bit, dim,		blur pass3
+	ref_rt						rt_dof_focus;			// R32F, 1x1,		current focus distance
+	ref_rt						rt_dof_focus_prev;		// R32F, 1x1,		prev frame focus distance
+	ref_rt						rt_dof_coc;				// R32F, full resolution,		signed CoC in output pixels
+	ref_rt						rt_dof_coc_prev;		// R32F, full resolution,		signed CoC in output pixels
+	ref_rt						rt_dof_blur1;			// RGBA16F, component 0 real RGBA
+	ref_rt DofDownsample;							// RGBA16F, prepared near, then resolved premultiplied color/opacity
+	ref_rt DofDownsampleDepth;						// RGBA32F, near/far raw depth and output-pixel radii
+	ref_rt						rt_dof_blur2;			// RGBA16F, component 0 imaginary RGBA
+	ref_rt						rt_dof_blur3;			// RGBA16F, prepared far, then resolved color/validity
+	ref_rt DofReal1; // RGBA16F, far component 1 real RGBA
+	ref_rt DofImaginary1; // RGBA16F, far component 1 imaginary RGBA
+	ref_rt DofTileMax; // R32F, maximum near radius per 8x8 reduced texels
+	ref_rt DofTileDilated; // R32F, conservative near radius for separable gathering
 
 	// env
 	ref_texture				t_envmap_0		;	// env-0
@@ -517,6 +525,7 @@ public:
 	void						phase_bloom_downsample(GfxCmdList& Cmd);
 	void						phase_bloom_upsample(GfxCmdList& Cmd);
 	void						phase_new_luminance(GfxCmdList& Cmd);
+	void CreateDofBlurTargets(GfxCmdList& Cmd);
 	void						phase_new_dof(GfxCmdList& Cmd);
 	//==========================================================
 

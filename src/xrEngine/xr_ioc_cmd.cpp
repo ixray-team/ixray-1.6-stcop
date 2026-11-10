@@ -314,7 +314,12 @@ void CCC_SaveCFG::Execute(const char* args)
 
 	if (b_allow)
 	{
-		IWriter* F = FS.w_open(cfg_full_name);
+		IWriter* F = FS.w_open_ex(cfg_full_name);
+		if (!F)
+		{
+			Msg("!Cannot store config file [%s]", cfg_full_name);
+			return;
+		}
 		for (auto& val : Console->Commands | std::views::values)
 		{
 			val->Save(F);

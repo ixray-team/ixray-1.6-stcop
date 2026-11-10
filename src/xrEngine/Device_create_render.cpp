@@ -160,6 +160,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 			{
 				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
 				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
+				ImGui::MenuItem("DOF setup", nullptr, &States[static_cast<u8>(EditorUI::Game_DofSetup)]);
 
 				if (ImGui::BeginMenu("World##InGame"))
 				{

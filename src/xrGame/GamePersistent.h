@@ -105,6 +105,8 @@ public:
 	CDofManager& DofManager() { return Dof; }
 
 	virtual void		GetCurrentDof			(Fvector3& dof) override;
+	virtual float GetDofOverrideWeight() const override { return Dof.GetOverrideWeight(); }
+	void GetDofCameraSettings(SDofCameraSettings& Settings) const override { Dof.GetCameraSettings(Settings); }
 	virtual void		SetBaseDof				(const Fvector3& dof) override;
 	virtual float		GetDofKernel			(float Default) override { return Dof.GetKernel(Default); }
 	virtual bool		IsDofForced				() const override { return Dof.IsDofForced(); }

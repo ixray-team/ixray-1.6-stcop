@@ -3377,6 +3377,7 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "r2_const_zoomdof", &g_DofOptions.ConstantZoom);
 	CMD2(CCC_Boolean, "enable_dof_hud_animator", &g_DofOptions.HudAnimator);
 	CMD2(CCC_Boolean, "enable_dof_talk", &g_DofOptions.Talk);
+	CMD2(CCC_Boolean, "r4_ndof_inventory", &g_DofOptions.Inventory);
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_StartTimeSingle, "start_time_single");

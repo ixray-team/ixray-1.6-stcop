@@ -9,6 +9,9 @@ public:
 
 	virtual void    Compile(CBlender_Compile& C) override;
 
-    CBlender_new_dof();
+	explicit CBlender_new_dof(bool IsBlur = false);
 	virtual ~CBlender_new_dof() override;
+
+private:
+	bool IsBlur;
 };

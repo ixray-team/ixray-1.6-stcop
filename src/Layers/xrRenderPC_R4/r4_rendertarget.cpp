@@ -829,17 +829,19 @@ CRenderTarget::CRenderTarget()
 		rt_dof_focus.create(r2_RT_dof_focus, FW, FH, fmt);
 		rt_dof_focus_prev.create(r2_RT_dof_focus_prev, FW, FH, fmt);
 
-		Cmd.ClearTarget(rt_dof_focus->pRT, ERTColor::Gray);
-		Cmd.ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Gray);
+		// Zero marks uninitialized focus history; the first valid sample seeds it.
+		Cmd.ClearTarget(rt_dof_focus->pRT, ERTColor::Transparent);
+		Cmd.ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Transparent);
 		//fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
 		u32 CoCW = Device.TargetWidth, CoCH = Device.TargetHeight;
 		rt_dof_coc.create(r2_RT_dof_coc, CoCW, CoCH, fmt);
 		rt_dof_coc_prev.create(r2_RT_dof_coc_prev, CoCW, CoCH, fmt);
 
-		fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
-		rt_dof_blur1.create(r2_RT_dof_blur1, CoCW, CoCH, fmt);
+		CreateDofBlurTargets(Cmd);
 
 		CreateEffectSQ<CBlender_new_dof>(s_dof_coc);
+		CBlender_new_dof BlurBlender(true);
+		s_dof_blur1.create(&BlurBlender);
 	}
 
 	s_ssao.create(b_ssao, "r2\\ssao");

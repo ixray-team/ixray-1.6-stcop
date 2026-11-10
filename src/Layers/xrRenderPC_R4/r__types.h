@@ -85,13 +85,19 @@
 
 #define r2_RT_luminance_cur	"$user$tonemap"
 
-#define		r2_RT_dof_focus			"$user$dof_focus"		// --- 24 bit, 1x1, current focus distance
-#define		r2_RT_dof_focus_prev	"$user$dof_focus_prev"	// --- 24 bit, 1x1, previous frame focus distance
-#define		r2_RT_dof_coc			"$user$dof_coc"			// --- 16 bit, dim, circle of confusion
-#define		r2_RT_dof_coc_prev		"$user$dof_coc_prev"	// --- 16 bit, dim, previous frame circle of confusion
-#define 	r2_RT_dof_blur1			"$user$dof_blur1"		// --- 32 bit, dim, blur pass1
-#define 	r2_RT_dof_blur2			"$user$dof_blur2"		// --- 32 bit, dim, blur pass2
-#define 	r2_RT_dof_blur3			"$user$dof_blur3"		// --- 32 bit, dim, blur pass3
+#define		r2_RT_dof_focus			"$user$dof_focus"		// --- R32F, 1x1, current focus distance
+#define		r2_RT_dof_focus_prev	"$user$dof_focus_prev"	// --- R32F, 1x1, previous frame focus distance
+#define		r2_RT_dof_coc			"$user$dof_coc"			// --- R32F, full-resolution signed CoC
+#define		r2_RT_dof_coc_prev		"$user$dof_coc_prev"	// --- R32F, full-resolution previous signed CoC
+#define R4_RT_DOF_DOWNSAMPLE "$user$dof_downsample"
+#define R4_RT_DOF_DOWNSAMPLE_DEPTH "$user$dof_downsample_depth"
+#define 	r2_RT_dof_blur1			"$user$dof_blur1"		// --- RGBA16F, component 0 real RGBA
+#define 	r2_RT_dof_blur2			"$user$dof_blur2"		// --- RGBA16F, component 0 imaginary RGBA
+#define 	r2_RT_dof_blur3			"$user$dof_blur3"		// --- RGBA16F, prepared far, then resolved color/validity
+#define R4_RT_DOF_REAL1 "$user$dof_real1"
+#define R4_RT_DOF_IMAGINARY1 "$user$dof_imaginary1"
+#define R4_RT_DOF_TILE_MAX "$user$dof_tile_max"
+#define R4_RT_DOF_TILE_DILATED "$user$dof_tile_dilated"
 
 #define		r2_RT_smap_surf		"$user$smap_surf"		// --- directional
 #define		r2_RT_smap_depth	"$user$smap_depth"		// ---directional
@@ -172,4 +178,3 @@ IC float u_diffuse2s(Fcolor& c)
 {
 	return u_diffuse2s(c.r, c.g, c.b);
 }
-

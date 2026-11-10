@@ -23,6 +23,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [weather-editor.md](weather-editor.md) | Live environment editing, texture browsing and saving |
 | [detail-layers-editor.md](detail-layers-editor.md) | In-game detail vegetation masks, controls and checks |
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
+| [dof-setup.md](dof-setup.md) | In-game DOF setup: base camera, physical presets, events, HUD and weapon profiles |
 | [level-inspector.md](level-inspector.md) | In-game Level Inspector: modder guide and checks |
 | [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs and particles, held items, animation playlists, scene save/load |
 | [cinema-editor.md](cinema-editor.md) | In-game Cinema Editor (rewrite): object rows, animation blocks, global camera, lights, particles, lanes, undo, presets, markers, v5 scenes in gamedata |

@@ -12,6 +12,7 @@ public:
 	{
 		shared_str	first;
 		shared_str	second;
+		u32 SourceId = 0;
 		Item() : first(nullptr), second(nullptr)
 		{};
 	};
@@ -24,6 +25,7 @@ public:
 	{
 		shared_str		Name;
 		Items			Data;
+		u32 SourceId = 0;
 
 		bool			line_exist	(str_c L, str_c* val=nullptr);
 	};
@@ -33,6 +35,32 @@ public:
 	typedef Root::const_iterator	RootCIt;
 	
 	using allow_include_func_t = xr_delegate<bool(str_c)>;
+
+	// Source tracking is opt-in for authoring tools; ordinary game loads do not retain text.
+	struct SourceLocation
+	{
+		xr_string File;
+		xr_string Section;
+		xr_string Key;
+		xr_string Parents;
+		u32 Line = 0;
+		u32 EndLine = 0;
+		bool IsOverride = false;
+	};
+	using SourceTextMap = xr_map<xr_string, xr_string>;
+	struct SourceFileList
+	{
+		xr_string Directory;
+		xr_string Mask;
+		xr_vector<xr_string> Names;
+	};
+	using SourceLists = xr_map<xr_string, SourceFileList>;
+	const SourceTextMap& GetSourceTexts() const { return SourceTexts; }
+	const SourceLists& GetSourceLists() const { return FileLists; }
+	const xr_string& GetSourceError() const { return SourceError; }
+	const xr_vector<SourceLocation>& GetSourceLocations() const { return SourceLocations; }
+	const SourceLocation* GetSource(const char* Section, const char* Key = nullptr) const;
+	const SourceLocation* GetEditSource(const char* Section, const char* Key = nullptr) const;
 
 	static CInifile*	Create		( str_c szFileName, bool ReadOnly=TRUE);
 	static void			Destroy		( CInifile*);
@@ -46,7 +74,14 @@ protected:
 	Flags8			m_flags;
 	string_path		m_file_name;
 	Root			DATA;
-	
+	bool IsTrackingSources = false;
+	const SourceTextMap* SourceOverrides = nullptr;
+	const SourceLists* SourceListOverrides = nullptr;
+	SourceTextMap SourceTexts;
+	SourceLists FileLists;
+	xr_vector<SourceLocation> SourceLocations;
+	xr_string SourceError;
+
 	void Load(IReader* F, const char* path, allow_include_func_t	allow_include_func = nullptr);
 	void LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile, const char* SourceFileName);
 
@@ -84,6 +119,7 @@ private:
 	void insert_item(Sect* tgt, const Item& I);
 
 public:
+	CInifile(const char* FileName, const SourceTextMap& Texts, const SourceLists* Lists = nullptr);
 				CInifile		( IReader* F, str_c path=0 ,allow_include_func_t allow_include_func = nullptr );
 
 				CInifile		( str_c szFileName,
