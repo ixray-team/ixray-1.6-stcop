@@ -26,8 +26,6 @@ public:
 	static void Apply(xr_unique_ptr<CInifile> Config);
 	static void Clear();
 	static u64 GetRevision();
-	static bool Validate(const CInifile& Config, xr_string& Error);
-	static bool IsDofKey(xr_string_view Key);
 	static shared_str AnimationAlias(xr_string_view Key);
 
 private:
@@ -164,16 +162,14 @@ public:
 	void Reset();
 	void GetCurrent(Fvector& Result) const;
 	void SetCinema(const Fvector4* Values);
+	void SetCinemaCamera(const SDofCameraSettings* Values);
+	bool IsCameraForced() const { return HasCinemaCamera; }
 	float GetKernel(float Default) const { return HasCinema ? Cinema.w : KernelFrom >= 0.0f ? KernelFrom + (Default - KernelFrom) * Progress : Default; }
 	void SetForced(bool Value) { IsForced = Value; }
 	bool IsDofForced() const { return IsForced; }
 	const Fvector& GetBase() const { return Base; }
 	void GetCameraSettings(SDofCameraSettings& Settings) const;
 	float GetOverrideWeight() const { return OverrideWeight; }
-	void SetPreview(const SDofCameraDesc& Profile);
-	void SetPreview(const SHudDofRequest& Profile);
-	void StopPreview();
-	bool IsPreviewing() const { return IsCameraPreview || IsStaticPreview; }
 	EDofEvent GetActiveEvent() const { return ActiveEvent; }
 	const shared_str& GetActiveProfile() const { return ActiveProfile; }
 	const shared_str& GetActiveBinding() const { return ActiveBinding; }
@@ -188,9 +184,9 @@ public:
 private:
 	static void CacheAction(SHudDofSource& Source);
 	static void RefreshSource(SHudDofSource& Source);
-	bool SelectRequest(SHudDofRequest& Request) const;
-	const SDofCameraDesc* SelectCameraProfile() const;
-	const SDofCameraDesc* GetCameraProfile(EDofEvent Event, const SHudDofSource* Source = nullptr, bool UseAction = false) const;
+	bool SelectRequest(SHudDofRequest& Request);
+	const SDofCameraDesc* SelectCameraProfile();
+	const SDofCameraDesc* GetCameraProfile(EDofEvent Event, const SHudDofSource* Source = nullptr, bool UseAction = false);
 	bool GetAction(const SHudDofSource& Source, bool Animator, SHudDofRequest& Request) const;
 	bool GetTimedAction(const SHudDofSource& Source, const SHudDofActionDesc& Action, SHudDofRequest& Request) const;
 	void Blend(const Fvector& Values, float Weight, float Rate, float Delta);
@@ -198,14 +194,9 @@ private:
 
 	const SHudDofDefaults* Defaults = nullptr;
 	const SDofCameraDesc* CameraProfile = nullptr;
-	SDofCameraDesc PreviewCamera;
-	SHudDofRequest PreviewStatic;
-	bool IsCameraPreview = false;
-	bool IsStaticPreview = false;
-	u32 PreviewOriginalMode = 0;
-	mutable EDofEvent ActiveEvent = EDofEvent::Count;
-	mutable shared_str ActiveProfile;
-	mutable shared_str ActiveBinding;
+	EDofEvent ActiveEvent = EDofEvent::Count;
+	shared_str ActiveProfile;
+	shared_str ActiveBinding;
 	Fvector4 Talk = {-1.0f, -1.0f, -1.0f, -1.0f};
 	xr_hash_set<ALife::_OBJECT_ID> Zones;
 	Fvector Base = {-1.25f, 1.4f, 600.0f};
@@ -226,4 +217,6 @@ private:
 	float KernelFrom = -1.0f;
 	bool IsForced = false;
 	bool HasCinema = false;
+	bool HasCinemaCamera = false;
+	SDofCameraSettings CinemaCamera;
 };

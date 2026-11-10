@@ -110,6 +110,7 @@ public:
 	virtual void		SetBaseDof				(const Fvector3& dof) override;
 	virtual float		GetDofKernel			(float Default) override { return Dof.GetKernel(Default); }
 	virtual bool		IsDofForced				() const override { return Dof.IsDofForced(); }
+	bool IsDofCameraForced() const override { return Dof.IsCameraForced(); }
 	virtual void		OnSectorChanged			(int sector) override;
 	virtual void		OnAssetsChanged			() override;
 	void				SetDiscordStatus() const;

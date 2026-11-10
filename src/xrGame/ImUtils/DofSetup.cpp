@@ -10,12 +10,10 @@
 #include "../HudAnimatorManager.h"
 #include "../HUDManager.h"
 #include "../Level.h"
-#include "../../xrCore/LtxDocument.h"
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../../xrEngine/xr_ioc_cmd.h"
 #include "../../xrEngine/ImGuiManager.h"
 #include <array>
-#include <cmath>
 
 namespace DofSetup
 {
@@ -57,20 +55,15 @@ static const Field GeneralFields[] = {
 	{"r2_dof_enable", "Enable DOF (shader restart required)", FieldKind::Bool},
 	{"r4_ndof_mode", "DOF mode", FieldKind::Mode},
 	{"r4_ndof_manual_focal_length", "Use manual focal length", FieldKind::Bool},
-	{"r4_ndof_focal_length", "Focal length (mm)", FieldKind::Float, "10", 1.0f, 1000.0f},
-	{"r4_ndof_f_number", "Aperture (f-number)", FieldKind::Float, "4", 0.7f, 64.0f},
-	{"r4_ndof_sensor_height", "Sensor height (m)", FieldKind::Float, "0.024", 0.001f, 0.1f},
-	{"r4_ndof_focus_distance", "Focus distance (m)", FieldKind::Float, "1.4", 0.01f, 10000.0f},
-	{"r4_ndof_focus_point_x", "Autofocus point X (UV)", FieldKind::Float, "0.5", 0.0f, 1.0f},
-	{"r4_ndof_focus_point_y", "Autofocus point Y (UV)", FieldKind::Float, "0.495", 0.0f, 1.0f},
-	{"r4_ndof_focus_time", "Focus response (s)", FieldKind::Float, "0.1", 0.01f, 10.0f},
-	{"r4_ndof_transition_time", "Lens transition (s)", FieldKind::Float, "0.1", 0.01f, 10.0f},
-	{"r4_ndof_max_radius", "Maximum radius (output pixels)", FieldKind::Float, "20", 1.0f, 40.0f},
+	{"r4_ndof_focal_length", "Focal length (mm)"},
+	{"r4_ndof_f_number", "Aperture (f-number)"},
+	{"r4_ndof_focus_distance", "Focus distance (m)"},
+	{"r4_ndof_focus_time", "Focus response (s)"},
+	{"r4_ndof_transition_time", "Lens transition (s)"},
 	{"r4_ndof_resolution", "Bokeh resolution", FieldKind::Resolution},
-	{"r2_dof", "Static near / focus / far (m)", FieldKind::Vector3, "-1.25, 1.4, 600"},
-	{"r2_dof_kernel", "Static blur kernel", FieldKind::Float, "5", 0.0f, 80.0f},
-	{"r2_dof_sky", "Static sky distance (m)", FieldKind::Float, "30"},
-	{"r2_dof_lens_kernel_scale", "Static lens radius multiplier", FieldKind::Float, "2", 1.0f, 4.0f},
+	{"r2_dof", "Static near / focus / far (m)", FieldKind::Vector3},
+	{"r2_dof_kernel", "Blur size (kernel; maximum radius is 4x)"},
+	{"r2_dof_sky", "Static sky distance (m)"},
 	{"r2_dynamic_dof", "Static weapon action profiles", FieldKind::Bool},
 	{"r2_const_zoomdof", "Static fixed aiming distances", FieldKind::Bool},
 	{"enable_dof_reload", "Static reload DOF", FieldKind::Bool},
@@ -79,20 +72,7 @@ static const Field GeneralFields[] = {
 	{"r4_ndof_inventory", "Static inventory DOF", FieldKind::Bool}
 };
 
-enum class Operation
-{
-	None,
-	Apply,
-	Save,
-	Reload,
-	Revert
-};
-
-struct InputValue
-{
-	xr_array<float, 4> Numbers = {};
-	xr_string Text;
-};
+using ChangeMap = xr_map<xr_string, xr_map<xr_string, xr_string>>;
 
 class Editor final
 {
@@ -104,81 +84,78 @@ public:
 
 private:
 	bool Load();
+	void ReadMod();
+	xr_string ModText() const;
+	bool WriteMod() const;
 	void Index();
 	void ReadGeneral();
-	bool ReadSavedGeneral(xr_map<xr_string, xr_string>& Values, xr_string& Error, bool RequireAll = false) const;
 	void ApplyGeneral(const xr_map<xr_string, xr_string>& Values);
-	void RefreshChanges();
-	bool Commit(const char* Section, const Field& Definition, const char* Value);
+	void Set(const char* Section, const char* Key, const char* Value);
+	void Commit(const char* Section, const Field& Definition, const char* Value);
 	void GeneralTab();
 	void PresetsTab();
 	void EventsTab();
 	void HudTab();
 	void CameraEditor();
 	void StaticEditor();
-	bool DrawField(const char* Section, const Field& Definition, bool IsGeneral = false);
-	bool DrawInput(const char* Section, const Field& Definition, const xr_string& Value, xr_string& Edited, bool AllowStaticMode = false);
+	void DrawField(const char* Section, const Field& Definition);
+	bool DrawInput(const Field& Definition, const xr_string& Value, xr_string& Edited, bool AllowStaticMode = false);
 	void ProfileReference(const char* Section, const char* Key, const char* Label);
 	void StartPreview(bool IsCamera);
 	void UpdatePreview();
-	SHudDofRequest StaticPreview() const;
+	void StopPreview(CDofManager& Manager);
+	bool IsLocal(const ChangeMap& Map, const char* Section, const char* Key) const;
 	xr_string Effective(const char* Section, const char* Key, const char* Default) const;
 	xr_string CameraDefault(const Field& Definition) const;
 	xr_string StaticDefault(const char* Key, const char* Fallback) const;
 	xr_string CopySection(const char* Section, bool IsCamera) const;
 	void PickCurrent(int Index);
 
-	LtxDocument Document;
-	CInifile::SourceTextMap AppliedTexts;
+	xr_unique_ptr<CInifile> Config;
+	ChangeMap Changes;
+	ChangeMap Saved;
+	ChangeMap Startup;
+	xr_set<xr_string> Added;
 	xr_map<xr_string, xr_string> General;
-	xr_map<xr_string, xr_string> AppliedGeneral;
 	xr_map<xr_string, xr_string> SavedGeneral;
 	xr_map<xr_string, xr_pair<float, float>> GeneralRanges;
-	xr_map<xr_string, InputValue> Inputs;
 	xr_vector<xr_string> Profiles;
 	xr_vector<xr_string> Sections;
-	xr_vector<xr_string> ChangedFiles;
 	xr_vector<xr_string> GroupKeys;
 	xr_map<xr_string, xr_string> CopiedGroup;
 	xr_map<xr_string, xr_string> GroupDefaults;
-	xr_string Root;
-	xr_string UserConfig;
-	xr_string NdoFile;
+	xr_string ModFile;
 	xr_string Profile = "ndof_neutral";
 	xr_string HudSection;
 	xr_string Status;
-	xr_string SaveIssue;
 	xr_string ActiveProfile;
 	xr_string ActiveBinding;
-	xr_string ParentSection;
 	xr_array<xr_string, 4> CurrentSections;
 	float RayFocus = 1.4f;
 	xr_string Mode;
 	EDofEvent ActiveEvent = EDofEvent::Count;
-	Operation Pending = Operation::None;
-	SDofCameraDesc PreviewCamera;
-	SHudDofRequest PreviewRequest;
+	SDofCameraSettings PreviewCamera;
+	Fvector4 PreviewValues = {};
 	xr_string PreviewSection;
 	bool IsPreviewCamera = false;
 	bool IsPreview = false;
 	bool HasPendingPreview = false;
 	bool HasPendingStop = false;
+	bool HasStartup = false;
 	bool IsLoaded = false;
 	bool ShouldLoad = true;
-	bool HasUnsaved = false;
-	bool HasUnapplied = false;
+	bool ShouldSave = false;
+	bool ShouldReload = false;
+	bool ShouldApplyGeneral = false;
 	bool OpenPresets = false;
 	bool IsLevelReady = false;
-	bool WasLevelReady = false;
 	bool IsMasterEnabled = false;
-	bool CanWriteSources = false;
 	int StaticGroup = 0;
 	int PreviewGroup = 0;
 	char ProfileFilter[128] = {};
 	char SectionFilter[128] = {};
 	char NewName[128] = {};
 	char Motion[128] = "anm_reload";
-	char ParentNames[512] = {};
 };
 
 static xr_unique_ptr<Editor> g_State;
@@ -186,6 +163,12 @@ static xr_unique_ptr<Editor> g_State;
 static bool IsTrue(const xr_string& Value)
 {
 	return Value == "true" || Value == "on" || Value == "yes" || Value == "1";
+}
+
+static bool IsIdentifier(xr_string_view Text)
+{
+	return !Text.empty() && std::all_of(Text.begin(), Text.end(), [](char Value)
+										{ return (Value >= 'a' && Value <= 'z') || (Value >= '0' && Value <= '9') || Value == '_' || Value == '-' || Value == '.'; });
 }
 
 static xr_string Format(const float* Values, size_t Count)
@@ -201,85 +184,140 @@ static xr_string Format(const float* Values, size_t Count)
 	return Result;
 }
 
-static bool CanonicalGeneral(const Field& Definition, const char* Text, xr_string& Value)
+static xr_string Canonical(FieldKind Kind, const char* Text)
 {
-	if (Definition.Kind == FieldKind::Bool)
+	if (Kind == FieldKind::Bool)
 	{
-		const xr_string Raw = Text;
-		if (Raw != "true" && Raw != "false" && Raw != "on" && Raw != "off" && Raw != "1" && Raw != "0")
-		{
-			return false;
-		}
-		Value = IsTrue(Raw) ? "true" : "false";
-		return true;
+		return IsTrue(Text) ? "true" : "false";
 	}
-	if (Definition.Kind == FieldKind::Mode)
+	if (Kind == FieldKind::Mode)
 	{
-		Value = !xr_strcmp(Text, "auto") ? "autofocus" : Text;
-		return Value == "autofocus" || Value == "manual" || Value == "static";
+		return !xr_strcmp(Text, "auto") ? "autofocus" : Text;
 	}
-	if (Definition.Kind == FieldKind::Resolution)
+	if (Kind == FieldKind::Resolution)
 	{
-		Value = Text;
-		return Value == "half" || Value == "quarter";
+		return Text;
 	}
 	float Numbers[3] = {};
-	char Extra = 0;
-	const int Count = Definition.Kind == FieldKind::Vector3 ? 3 : 1;
-	const int Read = Count == 3 ? sscanf(Text, "%f , %f , %f %c", &Numbers[0], &Numbers[1], &Numbers[2], &Extra) : sscanf(Text, "%f %c", &Numbers[0], &Extra);
-	if (Read != Count)
-	{
-		return false;
-	}
-	float Min = Definition.Min;
-	float Max = Definition.Max;
-	for (int Index = 0; Index < Count; ++Index)
-	{
-		if (!_valid(Numbers[Index]) || Numbers[Index] < Min || Numbers[Index] > Max)
-		{
-			return false;
-		}
-	}
-	if (Count == 3 && (Numbers[0] > Numbers[1] || Numbers[1] > Numbers[2] || Numbers[2] < 0))
-	{
-		return false;
-	}
-	Value = Format(Numbers, Count);
-	return true;
+	sscanf(Text, "%f , %f , %f", &Numbers[0], &Numbers[1], &Numbers[2]);
+	return Format(Numbers, Kind == FieldKind::Vector3 ? 3 : 1);
+}
+
+static xr_unique_ptr<CInifile> OpenConfig()
+{
+	auto Result = xr_make_unique<CInifile>(pSettings->fname(), false, true, false);
+	Result->set_override_names(true);
+	return Result;
 }
 
 bool Editor::Load()
 {
-	if (Root.empty())
+	Config = OpenConfig();
+	if (!Config->section_count())
 	{
-		Root = pSettings->fname();
+		Status = "Cannot open the game configuration";
+		Config.reset();
+		IsLoaded = false;
+		return false;
 	}
-	if (!Document.Load(Root.c_str(), Status))
+	const xr_string Root = pSettings->fname();
+	const size_t Name = Root.find_last_of("\\/") + 1;
+	ModFile.assign(Root, 0, Name);
+	ModFile += "mod_";
+	ModFile.append(Root, Name, Root.rfind('.') - Name);
+	ModFile += "_zz_dof_setup.ltx";
+	ReadMod();
+	Saved = Changes;
+	if (!HasStartup)
+	{
+		Startup = Changes;
+		HasStartup = true;
+	}
+	ReadGeneral();
+	SavedGeneral = General;
+	Index();
+	IsLoaded = true;
+	return true;
+}
+
+void Editor::ReadMod()
+{
+	Changes.clear();
+	Added.clear();
+	if (!FS.exist(ModFile.c_str()))
+	{
+		return;
+	}
+	auto Reader = FS.rg_open(ModFile.c_str());
+	if (!Reader)
+	{
+		return;
+	}
+	auto TrimLambda = [](const xr_string& Text, size_t First, size_t Last)
+	{
+		const size_t Begin = Text.find_first_not_of(" \t", First);
+		const size_t End = Begin == xr_string::npos || Begin >= Last ? xr_string::npos : Text.find_last_not_of(" \t\r\n", Last - 1);
+		return End == xr_string::npos || End < Begin ? xr_string() : xr_string(Text.c_str() + Begin, static_cast<u32>(End - Begin + 1));
+	};
+	xr_string Raw, Section;
+	while (!Reader->eof())
+	{
+		Reader->r_string(Raw);
+		const xr_string Line = TrimLambda(Raw, 0, Raw.size());
+		if (Line.empty() || Line[0] == ';')
+		{
+			continue;
+		}
+		const bool IsOverride = Line.starts_with("![");
+		const size_t Close = Line.find(']');
+		if ((IsOverride || Line[0] == '[') && Close != xr_string::npos)
+		{
+			const size_t Open = IsOverride ? 2 : 1;
+			Section = TrimLambda(Line, Open, Close);
+			Changes[Section];
+			if (!IsOverride)
+			{
+				Added.insert(Section);
+			}
+			continue;
+		}
+		const size_t Equals = Line.find('=');
+		if (!Section.empty() && Equals != xr_string::npos)
+		{
+			Changes[Section][TrimLambda(Line, 0, Equals)] = TrimLambda(Line, Equals + 1, Line.size());
+		}
+	}
+}
+
+xr_string Editor::ModText() const
+{
+	xr_string Text = "; Written by the DOF setup tool. Delete this file to return to the game's values.\r\n";
+	for (const auto& [Section, Keys] : Changes)
+	{
+		Text += Added.contains(Section) ? "\r\n[" : "\r\n![";
+		Text += Section;
+		Text += "]\r\n";
+		for (const auto& [Key, Value] : Keys)
+		{
+			Text += Key;
+			Text += " = ";
+			Text += Value;
+			Text += "\r\n";
+		}
+	}
+	return Text;
+}
+
+bool Editor::WriteMod() const
+{
+	IWriter* Writer = FS.w_open(ModFile.c_str());
+	if (!Writer)
 	{
 		return false;
 	}
-	ReadGeneral();
-	AppliedTexts = Document.GetTexts();
-	AppliedGeneral = SavedGeneral = General;
-	xr_path Name(Console->ConfigFile);
-	Name.replace_extension(".ltx");
-	if (Name.is_absolute())
-	{
-		UserConfig = Name.xstring();
-	}
-	else
-	{
-		string_path Path;
-		FS.update_path(Path, _app_data_root_, Name.xstring().c_str());
-		UserConfig = Path;
-	}
-	xr_string ReadError;
-	ReadSavedGeneral(SavedGeneral, ReadError);
-	Inputs.clear();
-	ParentSection.clear();
-	Index();
-	RefreshChanges();
-	IsLoaded = true;
+	const xr_string Text = ModText();
+	Writer->w(Text.data(), static_cast<u32>(Text.size()));
+	FS.w_close(Writer, true);
 	return true;
 }
 
@@ -293,98 +331,28 @@ void Editor::ReadGeneral()
 		{
 			IConsole_Command::TStatus Value = {};
 			Command->Status(Value);
-			Field Active = Definition;
 			if (Definition.Kind == FieldKind::Float)
 			{
-				Console->GetFloat(Definition.Key, Active.Min, Active.Max);
-				GeneralRanges[Definition.Key] = {Active.Min, Active.Max};
+				float Min = 0.0f, Max = 0.0f;
+				Console->GetFloat(Definition.Key, Min, Max);
+				GeneralRanges[Definition.Key] = {Min, Max};
 			}
-			xr_string Canonical;
-			General[Definition.Key] = CanonicalGeneral(Active, Value, Canonical) ? Canonical : Value;
+			General[Definition.Key] = Canonical(Definition.Kind, Value);
 		}
 	}
-}
-
-bool Editor::ReadSavedGeneral(xr_map<xr_string, xr_string>& Values, xr_string& Error, bool RequireAll) const
-{
-	auto Reader = FS.rg_open(UserConfig.c_str());
-	if (!Reader)
-	{
-		Error = "Cannot read user config: " + UserConfig;
-		return false;
-	}
-	auto Loaded = Values;
-	xr_set<xr_string> Seen;
-	xr_string Line;
-	while (!Reader->eof())
-	{
-		Reader->r_string(Line);
-		const size_t Begin = Line.find_first_not_of(" \t");
-		if (Begin == xr_string::npos)
-		{
-			continue;
-		}
-		const size_t Split = Line.find_first_of(" \t", Begin);
-		if (Split == xr_string::npos)
-		{
-			continue;
-		}
-		const xr_string Key = Line.substr(Begin, Split - Begin);
-		const auto Definition = std::find_if(std::begin(GeneralFields), std::end(GeneralFields), [&](const Field& Entry)
-											 { return Key == Entry.Key; });
-		if (Definition == std::end(GeneralFields) || !General.contains(Key))
-		{
-			continue;
-		}
-		const size_t First = Line.find_first_not_of(" \t", Split);
-		const size_t Last = Line.find_last_not_of(" \t\r\n");
-		const xr_string Text = First != xr_string::npos ? Line.substr(First, Last - First + 1) : "";
-		xr_string Canonical;
-		Field Active = *Definition;
-		if (const auto Range = GeneralRanges.find(Key); Range != GeneralRanges.end())
-		{
-			Active.Min = Range->second.first;
-			Active.Max = Range->second.second;
-		}
-		if (!CanonicalGeneral(Active, Text.c_str(), Canonical))
-		{
-			Error = "Invalid saved DOF command: " + Key;
-			return false;
-		}
-		Loaded[Key] = Canonical;
-		Seen.insert(Key);
-	}
-	if (RequireAll && Seen.size() != General.size())
-	{
-		Error = "User config is incomplete: " + UserConfig;
-		return false;
-	}
-	Values = std::move(Loaded);
-	Error.clear();
-	return true;
 }
 
 void Editor::ApplyGeneral(const xr_map<xr_string, xr_string>& Values)
 {
+	ReadGeneral();
 	for (const auto& Definition : GeneralFields)
 	{
 		const auto It = Values.find(Definition.Key);
-		if (It != Values.end())
+		const auto Current = General.find(Definition.Key);
+		if (It != Values.end() && Current != General.end() && Current->second != It->second)
 		{
-			IConsole_Command::TStatus Current = {};
-			Console->GetCommand(Definition.Key)->Status(Current);
-			xr_string Canonical;
-			Field Active = Definition;
-			if (const auto Range = GeneralRanges.find(Definition.Key); Range != GeneralRanges.end())
-			{
-				Active.Min = Range->second.first;
-				Active.Max = Range->second.second;
-			}
-			if (!CanonicalGeneral(Active, Current, Canonical) || Canonical != It->second)
-			{
-				const xr_string Value = Definition.Kind == FieldKind::Bool ? IsTrue(It->second) ? "1" : "0" : It->second;
-				Console->ExecuteCommand((xr_string(Definition.Key) + " " + Value).c_str(), false);
-			}
+			const xr_string Value = Definition.Kind == FieldKind::Bool ? IsTrue(It->second) ? "1" : "0" : It->second;
+			Console->ExecuteCommand((xr_string(Definition.Key) + " " + Value).c_str(), false);
 		}
 	}
 	ReadGeneral();
@@ -394,7 +362,6 @@ void Editor::Index()
 {
 	Profiles.clear();
 	Sections.clear();
-	const auto* Config = Document.GetConfig();
 	xr_hash_set<shared_str> Referenced;
 	for (const auto& Section : Config->sections())
 	{
@@ -407,36 +374,25 @@ void Editor::Index()
 			}
 		}
 	}
-	NdoFile.clear();
-	if (const auto* Source = Config->GetSource("ndof_events"))
-	{
-		NdoFile = Source->File;
-	}
-	else if (const auto* Source = Config->GetSource("ndof_neutral"))
-	{
-		NdoFile = Source->File;
-	}
 	for (const auto& Section : Config->sections())
 	{
 		const char* Name = Section.Name.c_str();
-		const auto* Source = Config->GetSource(Name);
-		if (Section.Name != "ndof_events" && (Referenced.contains(Section.Name) || Config->line_exist(Name, "ndof_mode") || Config->line_exist(Name, "f_number") || (Source && !NdoFile.empty() && Source->File == NdoFile)))
+		if (Section.Name != "ndof_events" && (Referenced.contains(Section.Name) || xr_string_view(Name).starts_with("ndof_") || Added.contains(Name) || Config->line_exist(Name, "ndof_mode") || Config->line_exist(Name, "f_number")))
 		{
 			Profiles.emplace_back(Name);
 		}
 	}
 }
 
-void Editor::RefreshChanges()
+bool Editor::IsLocal(const ChangeMap& Map, const char* Section, const char* Key) const
 {
-	ChangedFiles = Document.GetChangedFiles();
-	HasUnsaved = Document.IsDirty() || General != SavedGeneral;
-	HasUnapplied = Document.GetTexts() != AppliedTexts || General != AppliedGeneral;
+	const auto It = Map.find(Section);
+	return It != Map.end() && It->second.contains(Key);
 }
 
 xr_string Editor::Effective(const char* Section, const char* Key, const char* Default) const
 {
-	const char* Value = Document.GetConfig()->r_string_nullable(Section, Key);
+	const char* Value = Config->r_string_nullable(Section, Key);
 	return Value ? Value : Default;
 }
 
@@ -449,9 +405,7 @@ xr_string Editor::CameraDefault(const Field& Definition) const
 	}
 	if (!xr_strcmp(Definition.Key, "focus_point"))
 	{
-		const auto X = General.find("r4_ndof_focus_point_x");
-		const auto Y = General.find("r4_ndof_focus_point_y");
-		return X != General.end() && Y != General.end() ? X->second + ", " + Y->second : Definition.Default;
+		return Definition.Default;
 	}
 	if (!xr_strcmp(Definition.Key, "ndof_mode"))
 	{
@@ -467,92 +421,78 @@ xr_string Editor::StaticDefault(const char* Key, const char* Fallback) const
 	return Effective("gunslinger_base", Key, Fallback);
 }
 
-bool Editor::Commit(const char* Section, const Field& Definition, const char* Value)
+void Editor::Set(const char* Section, const char* Key, const char* Value)
 {
-	const auto Before = Document.GetTexts();
-	if (!Document.Set(Section, Definition.Key, Value, Status))
+	HasPendingPreview = true;
+	if (Value)
 	{
-		Inputs.clear();
-		if (IsPreview)
-		{
-			UpdatePreview();
-		}
-		return false;
+		Changes[Section][Key] = Value;
+		Config->w_string(Section, Key, Value);
+		return;
 	}
-	if (!DofSettings::Validate(*Document.GetConfig(), Status))
+	if (const auto It = Changes.find(Section); It != Changes.end())
 	{
-		xr_string Error;
-		Document.Restore(Before, Error);
-		Inputs.clear();
-		if (IsPreview)
+		It->second.erase(Key);
+		if (It->second.empty() && !Added.contains(Section))
 		{
-			UpdatePreview();
-		}
-		return false;
-	}
-	if (HudSection == Section && StaticGroup == 10 && xr_string_view(Definition.Key).starts_with("zoom_dof_"))
-	{
-		SHudDofDefaults Defaults;
-		Defaults.LoadFrom(*Document.GetConfig(), "gunslinger_base");
-		Fvector Values = Defaults.Action.Request.Values;
-		const char* Keys[] = {"zoom_dof_near", "zoom_dof_focus", "zoom_dof_far"};
-		for (u32 Index = 0; Index < 3; ++Index)
-		{
-			Values[Index] = Document.GetConfig()->read_if_exists<float>(Section, Keys[Index], Values[Index]);
-		}
-		if (Values.x > Values.y || Values.y > Values.z)
-		{
-			xr_string Error;
-			Document.Restore(Before, Error);
-			Inputs.clear();
-			Status = "PDA requires near <= focus <= far, including action defaults";
-			if (IsPreview)
-			{
-				UpdatePreview();
-			}
-			return false;
+			Changes.erase(It);
 		}
 	}
-	Inputs.clear();
-	RefreshChanges();
-	if (IsPreview)
+	if (IsLocal(Startup, Section, Key))
 	{
-		UpdatePreview();
+		Status = "This field was saved in an earlier session: it shows the game's value after Save.";
+		return;
 	}
-	return true;
+	if (pSettings->section_exist(Section) && pSettings->line_exist(Section, Key))
+	{
+		Config->w_string(Section, Key, pSettings->r_string(Section, Key));
+	}
+	else if (Config->section_exist(Section))
+	{
+		Config->remove_line(Section, Key);
+	}
 }
 
-bool Editor::DrawInput(const char* Section, const Field& Definition, const xr_string& Value, xr_string& Edited, bool AllowStaticMode)
+void Editor::Commit(const char* Section, const Field& Definition, const char* Value)
 {
-	const xr_string Id = xr_string(Section) + ":" + Definition.Key;
-	auto [It, IsNew] = Inputs.try_emplace(Id);
-	auto& Input = It->second;
-	if (IsNew)
+	if (Value && (Definition.Kind == FieldKind::Vector3 || Definition.Kind == FieldKind::Vector4))
 	{
-		Input.Text = Value;
-		sscanf(Value.c_str(), "%f , %f , %f , %f", &Input.Numbers[0], &Input.Numbers[1], &Input.Numbers[2], &Input.Numbers[3]);
+		float Numbers[4] = {};
+		sscanf(Value, "%f , %f , %f , %f", &Numbers[0], &Numbers[1], &Numbers[2], &Numbers[3]);
+		if (Numbers[0] > Numbers[1] || Numbers[1] > Numbers[2] || Numbers[3] < 0.0f)
+		{
+			Status = "Expected near <= focus <= far and a release of 0 or more";
+			return;
+		}
 	}
+	Status.clear();
+	Set(Section, Definition.Key, Value);
+}
+
+bool Editor::DrawInput(const Field& Definition, const xr_string& Value, xr_string& Edited, bool AllowStaticMode)
+{
+	Edited = Value;
+	bool Changed = false;
 	ImGui::PushID(Definition.Key);
-	bool CommitValue = false;
 	if (Definition.Kind == FieldKind::Bool)
 	{
-		bool Enabled = IsTrue(Input.Text);
+		bool Enabled = IsTrue(Value);
 		if (ImGui::Checkbox(Definition.Label, &Enabled))
 		{
-			Input.Text = Enabled ? "true" : "false";
-			CommitValue = true;
+			Edited = Enabled ? "true" : "false";
+			Changed = true;
 		}
 	}
 	else if (Definition.Kind == FieldKind::Mode || Definition.Kind == FieldKind::Resolution || Definition.Kind == FieldKind::Reference)
 	{
-		if (ImGui::BeginCombo(Definition.Label, Input.Text.c_str()))
+		if (ImGui::BeginCombo(Definition.Label, Value.c_str()))
 		{
 			auto OptionLambda = [&](const char* Name)
 			{
-				if (ImGui::Selectable(Name, Input.Text == Name))
+				if (ImGui::Selectable(Name, Value == Name))
 				{
-					Input.Text = Name;
-					CommitValue = true;
+					Edited = Name;
+					Changed = true;
 				}
 			};
 			if (Definition.Kind == FieldKind::Reference)
@@ -584,143 +524,86 @@ bool Editor::DrawInput(const char* Section, const Field& Definition, const xr_st
 		const int Count = Definition.Kind == FieldKind::Vector4 ? 4 : Definition.Kind == FieldKind::Vector3 ? 3
 																  : Definition.Kind == FieldKind::Vector2	? 2
 																											: 1;
-		bool Changed = ImGui::DragScalarN(Definition.Label, ImGuiDataType_Float, Input.Numbers.data(), Count, 0.01f, &Definition.Min, &Definition.Max, "%.4f", ImGuiSliderFlags_AlwaysClamp);
-		CommitValue = ImGui::IsItemDeactivatedAfterEdit();
-		if (Changed)
+		float Numbers[4] = {};
+		sscanf(Value.c_str(), "%f , %f , %f , %f", &Numbers[0], &Numbers[1], &Numbers[2], &Numbers[3]);
+		if (ImGui::DragScalarN(Definition.Label, ImGuiDataType_Float, Numbers, Count, 0.01f, &Definition.Min, &Definition.Max, "%.4f", ImGuiSliderFlags_AlwaysClamp) && std::all_of(Numbers, Numbers + Count, [](float Number)
+																																																  { return _valid(Number); }))
 		{
-			bool IsValid = true;
-			for (int Index = 0; Index < Count; ++Index)
-			{
-				IsValid = IsValid && _valid(Input.Numbers[Index]);
-			}
-			if (!IsValid)
-			{
-				Status = "DOF values must be finite numbers";
-				sscanf(Value.c_str(), "%f , %f , %f , %f", &Input.Numbers[0], &Input.Numbers[1], &Input.Numbers[2], &Input.Numbers[3]);
-				CommitValue = false;
-			}
-			Input.Text = Format(Input.Numbers.data(), Count);
-			if (IsPreview)
-			{
-				UpdatePreview();
-			}
-		}
-	}
-	ImGui::SetItemTooltip("%s\nDrag to adjust; Ctrl+click for exact input.", Definition.Key);
-	Edited = Input.Text;
-	ImGui::PopID();
-	return CommitValue;
-}
-
-bool Editor::DrawField(const char* Section, const Field& Definition, bool IsGeneral)
-{
-	ImGui::PushID(Section);
-	xr_string Default = Definition.Default;
-	if (!IsGeneral && Section == Profile && std::find_if(std::begin(CameraFields), std::end(CameraFields), [&](const Field& Entry)
-														 { return !xr_strcmp(Entry.Key, Definition.Key); }) != std::end(CameraFields))
-	{
-		Default = CameraDefault(Definition);
-	}
-	xr_string Value = IsGeneral ? General.at(Definition.Key) : Effective(Section, Definition.Key, Default.c_str());
-	bool Changed = false;
-	if (!IsGeneral)
-	{
-		const auto* Source = Document.GetConfig()->GetSource(Section, Definition.Key);
-		bool IsLocal = Source && Source->Section == Section;
-		ImGui::PushID(Definition.Key);
-		if (ImGui::Checkbox("##Local", &IsLocal))
-		{
-			if (IsLocal && Value.empty() && Definition.Kind == FieldKind::Reference)
-			{
-				Value = Profile;
-			}
-			Changed = Commit(Section, Definition, IsLocal ? Value.c_str() : nullptr);
-		}
-		ImGui::SetItemTooltip("Override this field locally. Clear to inherit.");
-		ImGui::SameLine();
-		ImGui::PopID();
-		// The commit rebuilds provenance; obtain the source again.
-		Source = Document.GetConfig()->GetSource(Section, Definition.Key);
-		IsLocal = Source && Source->Section == Section;
-		ImGui::BeginDisabled(!IsLocal);
-		xr_string Edited;
-		if (DrawInput(Section, Definition, Value, Edited))
-		{
-			Changed = Commit(Section, Definition, Edited.c_str());
-		}
-		ImGui::EndDisabled();
-		Source = Document.GetConfig()->GetSource(Section, Definition.Key);
-		if (Source)
-		{
-			ImGui::TextDisabled("  %s: [%s] %s:%u", Source->Section == Section ? "Local" : "Inherited", Source->Section.c_str(), Source->File.c_str(), Source->Line);
-		}
-		else
-		{
-			ImGui::TextDisabled("  Base/default: %s", Default.c_str());
-		}
-	}
-	else
-	{
-		Field ActiveDefinition = Definition;
-		if (const auto Range = GeneralRanges.find(Definition.Key); Range != GeneralRanges.end())
-		{
-			ActiveDefinition.Min = Range->second.first;
-			ActiveDefinition.Max = Range->second.second;
-		}
-		xr_string Edited;
-		if (DrawInput(Section, ActiveDefinition, Value, Edited, true))
-		{
-			if (Definition.Kind == FieldKind::Vector3)
-			{
-				const auto& Values = Inputs.at(xr_string(Section) + ":" + Definition.Key).Numbers;
-				if (Values[0] > Values[1] || Values[1] > Values[2])
-				{
-					Status = "Expected near <= focus <= far";
-					Inputs.clear();
-					ImGui::PopID();
-					return false;
-				}
-			}
-			xr_string Canonical;
-			if (!CanonicalGeneral(ActiveDefinition, Edited.c_str(), Canonical))
-			{
-				Status = "Invalid console DOF value or near/focus/far order";
-				Inputs.clear();
-				ImGui::PopID();
-				return false;
-			}
-			General[Definition.Key] = Canonical;
-			Inputs.clear();
-			RefreshChanges();
-			if (IsPreview)
-			{
-				UpdatePreview();
-			}
+			Edited = Format(Numbers, Count);
 			Changed = true;
 		}
 	}
+	ImGui::SetItemTooltip("%s\nDrag to adjust; Ctrl+click for exact input.", Definition.Key);
 	ImGui::PopID();
 	return Changed;
+}
+
+void Editor::DrawField(const char* Section, const Field& Definition)
+{
+	ImGui::PushID(Section);
+	ImGui::PushID(Definition.Key);
+	const bool IsCamera = Section == Profile && std::find_if(std::begin(CameraFields), std::end(CameraFields), [&](const Field& Entry)
+															 { return !xr_strcmp(Entry.Key, Definition.Key); }) != std::end(CameraFields);
+	const xr_string Default = IsCamera ? CameraDefault(Definition) : xr_string(Definition.Default);
+	xr_string Value = Effective(Section, Definition.Key, Default.c_str());
+	bool IsSet = IsLocal(Changes, Section, Definition.Key);
+	if (ImGui::Checkbox("##Local", &IsSet))
+	{
+		if (IsSet && Value.empty() && Definition.Kind == FieldKind::Reference)
+		{
+			Value = Profile;
+		}
+		Commit(Section, Definition, IsSet ? Value.c_str() : nullptr);
+	}
+	ImGui::SetItemTooltip("Ticked: the DOF setup file sets this field. Clear it to return to the game's value.");
+	ImGui::SameLine();
+	ImGui::PopID();
+	xr_string Edited;
+	if (DrawInput(Definition, Value, Edited))
+	{
+		Commit(Section, Definition, Edited.c_str());
+	}
+	ImGui::PopID();
 }
 
 void Editor::GeneralTab()
 {
 	ImGui::TextWrapped("Physical camera controls affect R4 autofocus/manual. Static controls affect classic DOF. Event profiles may override the base camera.");
-	ImGui::TextWrapped("Changing r2_dof_enable requires a renderer restart to update the shader variant.");
+	ImGui::TextWrapped("These are console settings: they act at once and Save stores them in the user config.");
 	for (const auto& Definition : GeneralFields)
 	{
-		if (General.contains(Definition.Key))
+		const auto It = General.find(Definition.Key);
+		if (It == General.end())
 		{
-			if (!xr_strcmp(Definition.Key, "r4_ndof_mode"))
-			{
-				ImGui::SeparatorText("R4 camera / physical controls");
-			}
-			if (!xr_strcmp(Definition.Key, "r2_dof"))
-			{
-				ImGui::SeparatorText("Classic static controls");
-			}
-			DrawField("Console", Definition, true);
+			continue;
 		}
+		if (!xr_strcmp(Definition.Key, "r4_ndof_mode"))
+		{
+			ImGui::SeparatorText("R4 camera / physical controls");
+		}
+		if (!xr_strcmp(Definition.Key, "r2_dof"))
+		{
+			ImGui::SeparatorText("Classic static controls");
+		}
+		Field Active = Definition;
+		if (const auto Range = GeneralRanges.find(Definition.Key); Range != GeneralRanges.end())
+		{
+			Active.Min = Range->second.first;
+			Active.Max = Range->second.second;
+		}
+		xr_string Edited;
+		if (!DrawInput(Active, It->second, Edited, true))
+		{
+			continue;
+		}
+		float Numbers[3] = {};
+		if (Definition.Kind == FieldKind::Vector3 && (sscanf(Edited.c_str(), "%f , %f , %f", &Numbers[0], &Numbers[1], &Numbers[2]) != 3 || Numbers[0] > Numbers[1] || Numbers[1] > Numbers[2]))
+		{
+			Status = "Expected near <= focus <= far";
+			continue;
+		}
+		It->second = Edited;
+		ShouldApplyGeneral = HasPendingPreview = true;
 	}
 }
 
@@ -737,7 +620,6 @@ void Editor::ProfileReference(const char* Section, const char* Key, const char* 
 		{
 			Profile = Bound;
 			HasPendingStop = true;
-			Inputs.clear();
 			OpenPresets = true;
 		}
 		ImGui::PopID();
@@ -746,81 +628,17 @@ void Editor::ProfileReference(const char* Section, const char* Key, const char* 
 
 void Editor::CameraEditor()
 {
-	if (Profile.empty() || !Document.GetConfig()->section_exist(Profile.c_str()))
+	if (Profile.empty() || !Config->section_exist(Profile.c_str()))
 	{
 		return;
 	}
 	ImGui::Text("[%s]", Profile.c_str());
-	const auto* Base = Document.GetConfig()->GetSource(Profile.c_str());
-	if (Base)
-	{
-		ImGui::TextWrapped("Source: %s", Base->File.c_str());
-		if (ParentSection != Profile)
-		{
-			xr_strcpy(ParentNames, sizeof(ParentNames), Base->Parents.c_str());
-			ParentSection = Profile;
-		}
-		ImGui::InputText("Parents (comma-separated)", ParentNames, sizeof(ParentNames));
-		ImGui::SameLine();
-		if (ImGui::Button("Set parents"))
-		{
-			const auto Before = Document.GetTexts();
-			if (Document.SetParents(Profile.c_str(), ParentNames, Status) && DofSettings::Validate(*Document.GetConfig(), Status))
-			{
-				Inputs.clear();
-				RefreshChanges();
-				if (IsPreview)
-				{
-					UpdatePreview();
-				}
-			}
-			else
-			{
-				xr_string Error;
-				Document.Restore(Before, Error);
-			}
-		}
-		if (ImGui::BeginCombo("Parent preset", ParentNames))
-		{
-			auto ParentLambda = [&](const char* Name, const char* Label)
-			{
-				if (ImGui::Selectable(Label, !xr_strcmp(Name, ParentNames)))
-				{
-					const auto Before = Document.GetTexts();
-					if (Document.SetParents(Profile.c_str(), Name, Status) && DofSettings::Validate(*Document.GetConfig(), Status))
-					{
-						xr_strcpy(ParentNames, sizeof(ParentNames), Name);
-						Inputs.clear();
-						RefreshChanges();
-						if (IsPreview)
-						{
-							UpdatePreview();
-						}
-					}
-					else
-					{
-						xr_string Error;
-						Document.Restore(Before, Error);
-					}
-				}
-			};
-			ParentLambda("", "<base camera>");
-			for (const auto& Name : Profiles)
-			{
-				if (Name != Profile)
-				{
-					ParentLambda(Name.c_str(), Name.c_str());
-				}
-			}
-			ImGui::EndCombo();
-		}
-	}
-	ImGui::TextWrapped("Checked fields are local overrides. Unchecked fields show inherited or base values. A disabled profile suppresses its event, including lower-priority bindings for that event.");
+	ImGui::TextWrapped("Ticked fields are set by the DOF setup file; the others show the game's or the base camera's value. A disabled profile suppresses its event, including lower-priority bindings for that event.");
 	for (const auto& Definition : CameraFields)
 	{
 		DrawField(Profile.c_str(), Definition);
 	}
-	ImGui::BeginDisabled(!psDeviceFlags.test(rsR4) || !IsLevelReady);
+	ImGui::BeginDisabled(!psDeviceFlags.test(rsR4) || !IsLevelReady || !IsMasterEnabled);
 	if (ImGui::Button("Preview profile"))
 	{
 		StartPreview(true);
@@ -840,57 +658,37 @@ void Editor::PresetsTab()
 	{
 		for (const auto& Name : Profiles)
 		{
-			if (!ProfileFilter[0] || Name.find(ProfileFilter) != xr_string::npos)
+			if ((!ProfileFilter[0] || Name.find(ProfileFilter) != xr_string::npos) && ImGui::Selectable(Name.c_str(), Name == Profile))
 			{
-				if (ImGui::Selectable(Name.c_str(), Name == Profile))
-				{
-					HasPendingStop = true;
-					Profile = Name;
-					Inputs.clear();
-				}
+				HasPendingStop = true;
+				Profile = Name;
 			}
 		}
 		ImGui::EndCombo();
 	}
 	ImGui::InputText("New profile name", NewName, sizeof(NewName));
-	ImGui::BeginDisabled(NdoFile.empty());
-	if (ImGui::Button("Create"))
-	{
-		if (Document.AddSection(NdoFile.c_str(), NewName, "", Status))
-		{
-			Profile = NewName;
-			Index();
-			Inputs.clear();
-			RefreshChanges();
-		}
-	}
+	const bool ShouldCreate = ImGui::Button("Create");
 	ImGui::SameLine();
-	if (ImGui::Button("Duplicate"))
+	const bool ShouldCopy = ImGui::Button("Duplicate");
+	if ((ShouldCreate || ShouldCopy) && (!IsIdentifier(NewName) || Config->section_exist(NewName)))
 	{
-		const auto Before = Document.GetTexts();
-		bool Success = Document.AddSection(NdoFile.c_str(), NewName, "", Status);
+		Status = "A profile name must be new and use only a-z, 0-9, _, - and .";
+	}
+	else if (ShouldCreate || ShouldCopy)
+	{
+		Status.clear();
+		Added.insert(NewName);
+		Set(NewName, "enabled", "true");
 		for (const auto& Definition : CameraFields)
 		{
-			if (Success && Document.GetConfig()->line_exist(Profile.c_str(), Definition.Key))
+			if (ShouldCopy && Config->line_exist(Profile.c_str(), Definition.Key))
 			{
-				const xr_string Value = Effective(Profile.c_str(), Definition.Key, Definition.Default);
-				Success = Document.Set(NewName, Definition.Key, Value.c_str(), Status);
+				Set(NewName, Definition.Key, Effective(Profile.c_str(), Definition.Key, Definition.Default).c_str());
 			}
 		}
-		if (Success)
-		{
-			Profile = NewName;
-			Index();
-			Inputs.clear();
-			RefreshChanges();
-		}
-		else
-		{
-			xr_string Error;
-			Document.Restore(Before, Error);
-		}
+		Profile = NewName;
+		Index();
 	}
-	ImGui::EndDisabled();
 	ImGui::Separator();
 	CameraEditor();
 }
@@ -921,12 +719,36 @@ void Editor::PickCurrent(int Index)
 		{
 			StaticGroup = 0;
 		}
-		Inputs.clear();
 		HasPendingStop = true;
 	}
 }
 
-static SHudDofRequest ResolveStatic(const CInifile& Config, const char* Section, int Group, const char* Motion, float RayFocus);
+static SHudDofRequest ResolveStatic(const CInifile& Config, const char* Section, int Group, const char* Motion, float RayFocus)
+{
+	SHudDofDefaults Defaults;
+	Defaults.LoadFrom(Config, "gunslinger_base");
+	SHudDofDesc Desc;
+	Desc.LoadFrom(Config, Section, Defaults);
+	switch (Group)
+	{
+		case 0: return Desc.Zoom;
+		case 1: return Desc.AlterZoom;
+		case 2: return Desc.Grenade;
+		case 3: return Desc.Lens;
+		case 4:
+		{
+			const auto It = Desc.Actions.find(Motion);
+			return It != Desc.Actions.end() ? It->second.Request : Defaults.Action.Request;
+		}
+		case 5: return Desc.Reload.Request;
+		case 6: return Desc.Usable.Request;
+		case 7: return {Defaults.Zoom, Defaults.Action.Request.SpeedIn, Defaults.Action.Request.SpeedOut};
+		case 8: return Defaults.Inventory;
+		case 9: return {Fvector().set(RayFocus + Defaults.PickNear, RayFocus, RayFocus + Defaults.PickFar), Defaults.Speed, Defaults.Speed};
+		case 10: return Desc.Pda;
+		default: return Defaults.Action.Request;
+	}
+}
 
 void Editor::StaticEditor()
 {
@@ -942,14 +764,13 @@ void Editor::StaticEditor()
 			HudSection = "zone_pick_dof";
 		}
 		HasPendingStop = true;
-		Inputs.clear();
 	}
-	if (StaticGroup == 4 && (!LtxDocument::IsIdentifier(Motion) || !xr_string_view(Motion).starts_with("anm_")))
+	if (StaticGroup == 4 && (!IsIdentifier(Motion) || !xr_string_view(Motion).starts_with("anm_")))
 	{
 		ImGui::TextWrapped("Select an animation alias beginning with anm_.");
 		return;
 	}
-	const auto Resolved = ResolveStatic(*Document.GetConfig(), HudSection.c_str(), StaticGroup, Motion, RayFocus);
+	const auto Resolved = ResolveStatic(*Config, HudSection.c_str(), StaticGroup, Motion, RayFocus);
 	GroupKeys.clear();
 	GroupDefaults.clear();
 	auto FieldLambda = [&](const xr_string& Key, const char* Label, FieldKind Kind, const xr_string& Default, float Min = -flt_max, float Max = flt_max)
@@ -967,14 +788,21 @@ void Editor::StaticEditor()
 																					: StaticGroup == 4	 ? xr_string("dof_") + Motion
 																					: StaticGroup == 7	 ? "default_zoom_dof"
 																										 : "inventory_dof";
-		const bool IsAction = StaticGroup == 4 || StaticGroup == 8 || StaticGroup == 10;
-		const xr_string DefaultPrefix = IsAction ? "default_action_dof" : "default_zoom_dof";
 		const xr_string Near = Format(&Resolved.Values.x, 1);
 		const xr_string Focus = Format(&Resolved.Values.y, 1);
 		const xr_string Far = Format(&Resolved.Values.z, 1);
 		FieldLambda(Prefix + "_near", "Near (m)", FieldKind::Float, StaticGroup == 1 ? Effective(HudSection.c_str(), "zoom_dof_near", Near.c_str()) : Near);
 		FieldLambda(Prefix + "_focus", "Focus (m)", FieldKind::Float, StaticGroup == 1 ? Effective(HudSection.c_str(), "zoom_dof_focus", Focus.c_str()) : Focus);
 		FieldLambda(Prefix + "_far", "Far (m)", FieldKind::Float, StaticGroup == 1 ? Effective(HudSection.c_str(), "zoom_dof_far", Far.c_str()) : Far);
+		float Order[3] = {};
+		for (u32 Index = 0; Index < 3; ++Index)
+		{
+			Order[Index] = static_cast<float>(atof(Effective(HudSection.c_str(), GroupKeys[Index].c_str(), GroupDefaults.at(GroupKeys[Index]).c_str()).c_str()));
+		}
+		if (Order[0] > Order[1] || Order[1] > Order[2])
+		{
+			ImGui::TextColored(ImVec4(1, 0.4f, 0.3f, 1), "Near <= focus <= far is required: the game ignores these three values until they are in order.");
+		}
 		const xr_string SpeedIn = StaticDefault("default_dof_speed_in", "3");
 		const xr_string SpeedOut = StaticDefault("default_dof_speed_out", "1");
 		if (StaticGroup == 4)
@@ -1016,7 +844,7 @@ void Editor::StaticEditor()
 		FieldLambda("near", "Ray near offset (m)", FieldKind::Float, "-70", -flt_max, 0);
 		FieldLambda("far", "Ray far offset (m)", FieldKind::Float, "70", 0, flt_max);
 	}
-	ImGui::BeginDisabled(!IsLevelReady || !General.contains("r2_dof"));
+	ImGui::BeginDisabled(!IsLevelReady || !IsMasterEnabled);
 	if (ImGui::Button("Preview static group"))
 	{
 		StartPreview(false);
@@ -1028,30 +856,16 @@ void Editor::StaticEditor()
 		CopiedGroup.clear();
 		for (const auto& Key : GroupKeys)
 		{
-			const auto It = Inputs.find(HudSection + ":" + Key);
-			CopiedGroup[Key] = It != Inputs.end() ? It->second.Text : Effective(HudSection.c_str(), Key.c_str(), GroupDefaults.at(Key).c_str());
+			CopiedGroup[Key] = Effective(HudSection.c_str(), Key.c_str(), GroupDefaults.at(Key).c_str());
 		}
 	}
 	ImGui::SameLine();
 	ImGui::BeginDisabled(CopiedGroup.empty());
 	if (ImGui::Button("Paste group"))
 	{
-		const auto Before = Document.GetTexts();
-		bool Success = true;
 		for (const auto& [Key, Value] : CopiedGroup)
 		{
-			Success = Success && Document.Set(HudSection.c_str(), Key.c_str(), Value.c_str(), Status);
-		}
-		if (!Success || !DofSettings::Validate(*Document.GetConfig(), Status))
-		{
-			xr_string Error;
-			Document.Restore(Before, Error);
-		}
-		Inputs.clear();
-		RefreshChanges();
-		if (IsPreview)
-		{
-			UpdatePreview();
+			Set(HudSection.c_str(), Key.c_str(), Value.c_str());
 		}
 	}
 	ImGui::EndDisabled();
@@ -1085,7 +899,6 @@ void Editor::HudTab()
 					{
 						StaticGroup = 0;
 					}
-					Inputs.clear();
 				}
 			}
 		}
@@ -1108,7 +921,6 @@ void Editor::HudTab()
 		HasPendingStop = true;
 		HudSection = "gunslinger_base";
 		StaticGroup = 7;
-		Inputs.clear();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Zone offsets"))
@@ -1116,16 +928,11 @@ void Editor::HudTab()
 		HasPendingStop = true;
 		HudSection = "zone_pick_dof";
 		StaticGroup = 9;
-		Inputs.clear();
 	}
-	if (HudSection.empty() || !Document.GetConfig()->section_exist(HudSection.c_str()))
+	if (HudSection.empty() || !Config->section_exist(HudSection.c_str()))
 	{
 		ImGui::TextWrapped("Select an existing HUD, item, scope or animator section.");
 		return;
-	}
-	if (const auto* Source = Document.GetConfig()->GetSource(HudSection.c_str()))
-	{
-		ImGui::TextWrapped("Source: %s", Source->File.c_str());
 	}
 	if (ImGui::InputText("Animation alias", Motion, sizeof(Motion)))
 	{
@@ -1134,14 +941,13 @@ void Editor::HudTab()
 	if (ImGui::BeginCombo("Existing aliases", Motion))
 	{
 		xr_hash_set<shared_str> Seen;
-		for (const auto& Entry : Document.GetConfig()->r_section(HudSection.c_str()).Data)
+		for (const auto& Entry : Config->r_section(HudSection.c_str()).Data)
 		{
 			const shared_str Alias = Entry.first.size() ? DofSettings::AnimationAlias(Entry.first.c_str()) : shared_str();
 			if (Alias.size() && Seen.insert(Alias).second && ImGui::Selectable(Alias.c_str()))
 			{
 				xr_strcpy(Motion, sizeof(Motion), Alias.c_str());
 				HasPendingStop = true;
-				Inputs.clear();
 			}
 		}
 		ImGui::EndCombo();
@@ -1153,7 +959,7 @@ void Editor::HudTab()
 			const char* Event = CDofManager::EventName(static_cast<EDofEvent>(Index));
 			ProfileReference(HudSection.c_str(), (xr_string("ndof_profile_") + Event).c_str(), Event);
 		}
-		if (LtxDocument::IsIdentifier(Motion) && xr_string_view(Motion).starts_with("anm_"))
+		if (IsIdentifier(Motion) && xr_string_view(Motion).starts_with("anm_"))
 		{
 			ProfileReference(HudSection.c_str(), (xr_string("ndof_profile_") + Motion).c_str(), "Animation profile");
 		}
@@ -1171,199 +977,94 @@ void Editor::HudTab()
 
 xr_string Editor::CopySection(const char* Section, bool IsCamera) const
 {
-	xr_string Text;
-	if (const auto* Source = Document.GetConfig()->GetSource(Section))
+	xr_string Text = xr_string("[") + Section + "]\r\n";
+	auto LineLambda = [&Text](const char* Key, const char* Value)
 	{
-		Text = "; Target: " + Source->File + "\r\n";
-	}
-	Text += xr_string("[") + Section + "]\r\n";
-	for (const auto& Entry : Document.GetConfig()->r_section(Section).Data)
+		Text += Key;
+		Text += " = ";
+		Text += Value;
+		Text += "\r\n";
+	};
+	if (const auto It = Changes.find(Section); !IsCamera && It != Changes.end())
 	{
-		if (Entry.first.size() && (IsCamera || DofSettings::IsDofKey(Entry.first.c_str())))
+		for (const auto& [Key, Value] : It->second)
 		{
-			Text += xr_string(Entry.first.c_str()) + " = " + (Entry.second.size() ? Entry.second.c_str() : "") + "\r\n";
+			LineLambda(Key.c_str(), Value.c_str());
+		}
+	}
+	for (const auto& Entry : Config->r_section(Section).Data)
+	{
+		if (IsCamera && Entry.first.size())
+		{
+			LineLambda(Entry.first.c_str(), Entry.second.size() ? Entry.second.c_str() : "");
 		}
 	}
 	return Text;
 }
 
-static SHudDofRequest ResolveStatic(const CInifile& Config, const char* Section, int Group, const char* Motion, float RayFocus)
-{
-	SHudDofDefaults Defaults;
-	Defaults.LoadFrom(Config, "gunslinger_base");
-	SHudDofDesc Desc;
-	Desc.LoadFrom(Config, Section, Defaults);
-	switch (Group)
-	{
-		case 0: return Desc.Zoom;
-		case 1: return Desc.AlterZoom;
-		case 2: return Desc.Grenade;
-		case 3: return Desc.Lens;
-		case 4:
-		{
-			const auto It = Desc.Actions.find(Motion);
-			return It != Desc.Actions.end() ? It->second.Request : Defaults.Action.Request;
-		}
-		case 5: return Desc.Reload.Request;
-		case 6: return Desc.Usable.Request;
-		case 7: return {Defaults.Zoom, Defaults.Action.Request.SpeedIn, Defaults.Action.Request.SpeedOut};
-		case 8: return Defaults.Inventory;
-		case 9: return {Fvector().set(RayFocus + Defaults.PickNear, RayFocus, RayFocus + Defaults.PickFar), Defaults.Speed, Defaults.Speed};
-		case 10: return Desc.Pda;
-		default: return Defaults.Action.Request;
-	}
-}
-
-SHudDofRequest Editor::StaticPreview() const
-{
-	SHudDofRequest Result = ResolveStatic(*Document.GetConfig(), PreviewSection.c_str(), PreviewGroup, Motion, RayFocus);
-	const xr_string Prefix = PreviewGroup == 0 || PreviewGroup == 10 ? "zoom_dof" : PreviewGroup == 1 ? "alter_zoom_dof"
-																				: PreviewGroup == 2	  ? "gl_dof"
-																				: PreviewGroup == 3	  ? "lens_dof"
-																				: PreviewGroup == 4	  ? xr_string("dof_") + Motion
-																				: PreviewGroup == 7	  ? "default_zoom_dof"
-																									  : "inventory_dof";
-	if (PreviewGroup == 5 || PreviewGroup == 6)
-	{
-		const xr_string Key = PreviewGroup == 5 ? "reload_dof" : "dof";
-		if (const auto It = Inputs.find(PreviewSection + ":" + Key); It != Inputs.end())
-		{
-			for (u32 Index = 0; Index < 3; ++Index)
-			{
-				Result.Values[Index] = It->second.Numbers[Index];
-			}
-		}
-	}
-	else if (PreviewGroup == 9)
-	{
-		if (const auto It = Inputs.find(PreviewSection + ":near"); It != Inputs.end())
-		{
-			Result.Values.x = RayFocus + It->second.Numbers[0];
-		}
-		if (const auto It = Inputs.find(PreviewSection + ":far"); It != Inputs.end())
-		{
-			Result.Values.z = RayFocus + It->second.Numbers[0];
-		}
-	}
-	else
-	{
-		const char* Suffixes[] = {"near", "focus", "far"};
-		for (u32 Index = 0; Index < 3; ++Index)
-		{
-			if (const auto It = Inputs.find(PreviewSection + ":" + Prefix + "_" + Suffixes[Index]); It != Inputs.end())
-			{
-				Result.Values[Index] = It->second.Numbers[0];
-			}
-		}
-	}
-	const xr_string SpeedKey = PreviewGroup == 4 ? xr_string("dof_speed_in_") + Motion : PreviewGroup == 7 ? "default_dof_speed_in"
-																					 : PreviewGroup == 8   ? "inventory_dof_speed_in"
-																					 : PreviewGroup == 9   ? "default_dof_speed"
-																					 : PreviewGroup == 1   ? "alter_zoom_in_dof_speed"
-																					 : PreviewGroup == 2   ? "gl_in_dof_speed"
-																										   : "zoom_in_dof_speed";
-	if (const auto It = Inputs.find(PreviewSection + ":" + SpeedKey); It != Inputs.end())
-	{
-		Result.SpeedIn = It->second.Numbers[0];
-	}
-	return Result;
-}
-
 void Editor::StartPreview(bool IsCamera)
 {
 	HasPendingStop = false;
-	IsPreview = true;
+	IsPreview = HasPendingPreview = true;
 	IsPreviewCamera = IsCamera;
 	PreviewSection = IsCamera ? Profile : HudSection;
 	PreviewGroup = StaticGroup;
-	UpdatePreview();
 }
 
 void Editor::UpdatePreview()
 {
-	if (IsPreviewCamera)
+	HasPendingPreview = false;
+	if (!IsPreviewCamera)
 	{
-		PreviewCamera = {};
-		PreviewCamera.LoadFrom(*Document.GetConfig(), PreviewSection.c_str());
-		// Fill omitted fields from the working base camera, then apply the explicit profile.
-		SDofCameraSettings Base;
-		auto FloatLambda = [&](const char* Name, float& Value)
-		{
-			if (const auto It = General.find(Name); It != General.end())
-			{
-				Value = static_cast<float>(atof(It->second.c_str()));
-			}
-		};
-		FloatLambda("r4_ndof_f_number", Base.FNumber);
-		FloatLambda("r4_ndof_focal_length", Base.FocalLength);
-		FloatLambda("r4_ndof_focus_distance", Base.FocusDistance);
-		FloatLambda("r4_ndof_focus_time", Base.FocusTime);
-		FloatLambda("r4_ndof_transition_time", Base.TransitionTime);
-		FloatLambda("r4_ndof_focus_point_x", Base.FocusPoint.x);
-		FloatLambda("r4_ndof_focus_point_y", Base.FocusPoint.y);
-		if (const auto It = General.find("r4_ndof_manual_focal_length"); It != General.end())
-		{
-			Base.ManualFocalLength = IsTrue(It->second);
-		}
-		if (const auto It = General.find("r4_ndof_mode"); It != General.end())
-		{
-			Base.Mode = It->second == "manual" ? EDofMode::Manual : EDofMode::Autofocus;
-		}
-		PreviewCamera.Apply(Base);
-		PreviewCamera.Camera = Base;
-		PreviewCamera.Fields.set(u8(255), true);
-		for (const auto& Definition : CameraFields)
-		{
-			const auto It = Inputs.find(PreviewSection + ":" + Definition.Key);
-			if (It == Inputs.end())
-			{
-				continue;
-			}
-			const auto& Values = It->second.Numbers;
-			if (!xr_strcmp(Definition.Key, "f_number"))
-			{
-				PreviewCamera.Camera.FNumber = Values[0];
-			}
-			else if (!xr_strcmp(Definition.Key, "focal_length"))
-			{
-				PreviewCamera.Camera.FocalLength = Values[0];
-			}
-			else if (!xr_strcmp(Definition.Key, "focus_distance"))
-			{
-				PreviewCamera.Camera.FocusDistance = Values[0];
-			}
-			else if (!xr_strcmp(Definition.Key, "focus_time"))
-			{
-				PreviewCamera.Camera.FocusTime = Values[0];
-			}
-			else if (!xr_strcmp(Definition.Key, "transition_time"))
-			{
-				PreviewCamera.Camera.TransitionTime = Values[0];
-			}
-			else if (!xr_strcmp(Definition.Key, "focus_point"))
-			{
-				PreviewCamera.Camera.FocusPoint.set(Values[0], Values[1]);
-			}
-		}
+		const SHudDofRequest Request = ResolveStatic(*Config, PreviewSection.c_str(), PreviewGroup, Motion, RayFocus);
+		const float Focus = std::max(Request.Values.y, Request.Values.x + EPS_L);
+		const auto Kernel = General.find("r2_dof_kernel");
+		PreviewValues.set(Request.Values.x, Focus, std::max(Request.Values.z, Focus + EPS_L), Kernel != General.end() ? static_cast<float>(atof(Kernel->second.c_str())) : 5.0f);
+		return;
 	}
-	else
+	PreviewCamera = {};
+	auto FloatLambda = [&](const char* Name, float& Value)
 	{
-		PreviewRequest = StaticPreview();
-		if (PreviewRequest.Values.x > PreviewRequest.Values.y || PreviewRequest.Values.y > PreviewRequest.Values.z)
+		if (const auto It = General.find(Name); It != General.end())
 		{
-			Status = "Preview requires near <= focus <= far";
-			return;
+			Value = static_cast<float>(atof(It->second.c_str()));
 		}
+	};
+	FloatLambda("r4_ndof_f_number", PreviewCamera.FNumber);
+	FloatLambda("r4_ndof_focal_length", PreviewCamera.FocalLength);
+	FloatLambda("r4_ndof_focus_distance", PreviewCamera.FocusDistance);
+	FloatLambda("r4_ndof_focus_time", PreviewCamera.FocusTime);
+	FloatLambda("r4_ndof_transition_time", PreviewCamera.TransitionTime);
+	if (const auto It = General.find("r4_ndof_manual_focal_length"); It != General.end())
+	{
+		PreviewCamera.ManualFocalLength = IsTrue(It->second);
 	}
-	HasPendingPreview = true;
+	if (const auto It = General.find("r4_ndof_mode"); It != General.end())
+	{
+		PreviewCamera.Mode = It->second == "manual" ? EDofMode::Manual : EDofMode::Autofocus;
+	}
+	SDofCameraDesc Desc;
+	Desc.LoadFrom(*Config, PreviewSection.c_str());
+	Desc.Apply(PreviewCamera);
+}
+
+void Editor::StopPreview(CDofManager& Manager)
+{
+	if (IsPreview)
+	{
+		Manager.SetForced(false);
+		Manager.SetCinema(nullptr);
+		Manager.SetCinemaCamera(nullptr);
+	}
+	IsPreview = HasPendingPreview = HasPendingStop = false;
 }
 
 void Editor::OnFrame(CDofManager& Manager)
 {
-	if ((!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_DofSetup)] || !CImGuiManager::Instance().IsGUIRendering()) && Pending == Operation::None)
+	const bool IsShown = Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_DofSetup)] && CImGuiManager::Instance().IsGUIRendering();
+	if (!IsShown && !ShouldSave && !ShouldReload)
 	{
-		Manager.StopPreview();
-		IsPreview = HasPendingPreview = HasPendingStop = false;
+		StopPreview(Manager);
 		return;
 	}
 	if (!IsLoaded)
@@ -1378,13 +1079,14 @@ void Editor::OnFrame(CDofManager& Manager)
 			return;
 		}
 	}
-	IsLevelReady = g_pGameLevel && g_pGameLevel->bReady;
-	if (auto* Command = Console->GetCommand("r2_dof_enable"))
+	if (ShouldApplyGeneral)
 	{
-		IConsole_Command::TStatus Value = {};
-		Command->Status(Value);
-		IsMasterEnabled = IsTrue(Value);
+		ShouldApplyGeneral = false;
+		ApplyGeneral(xr_map<xr_string, xr_string>(General));
 	}
+	IsLevelReady = g_pGameLevel && g_pGameLevel->bReady;
+	const auto Master = General.find("r2_dof_enable");
+	IsMasterEnabled = Master != General.end() && IsTrue(Master->second);
 	CurrentSections = {};
 	if (CActor* Actor = IsLevelReady ? ::Actor() : nullptr)
 	{
@@ -1403,101 +1105,44 @@ void Editor::OnFrame(CDofManager& Manager)
 		}
 		RayFocus = HUD().GetCurrentRayQuery().range;
 	}
-	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_DofSetup)] || !CImGuiManager::Instance().IsGUIRendering() || !IsLevelReady || (WasLevelReady && !Manager.IsPreviewing() && IsPreview && !HasPendingPreview))
+	if (!IsShown || !IsLevelReady || !IsMasterEnabled || HasPendingStop || ShouldSave || ShouldReload)
 	{
-		HasPendingStop = true;
+		StopPreview(Manager);
 	}
-	WasLevelReady = IsLevelReady;
-	if (HasPendingStop)
+	if (ShouldSave || ShouldReload)
 	{
-		Manager.StopPreview();
-		IsPreview = HasPendingPreview = HasPendingStop = false;
-	}
-	if (Pending != Operation::None)
-	{
-		const Operation Action = Pending;
-		Pending = Operation::None;
-		Manager.StopPreview();
-		IsPreview = HasPendingPreview = false;
-		if (Action == Operation::Reload)
+		const bool IsSaving = ShouldSave;
+		const auto Previous = SavedGeneral;
+		ShouldSave = ShouldReload = false;
+		if (IsSaving && !WriteMod())
 		{
-			auto SavedValues = SavedGeneral;
-			xr_string ReadError;
-			ReadSavedGeneral(SavedValues, ReadError);
-			if (Load())
-			{
-				auto Applied = Document.CreateConfig();
-				if (Applied && Applied->GetSourceError().empty())
-				{
-					DofSettings::Apply(std::move(Applied));
-					ApplyGeneral(SavedValues);
-					AppliedGeneral = SavedGeneral = General;
-					RefreshChanges();
-					Status = ReadError.empty() ? "Reloaded DOF configuration and saved base camera" : "Reloaded DOF configuration; restored the previous saved base snapshot. " + ReadError;
-				}
-			}
+			Status = "Cannot write " + ModFile;
 		}
-		else if (Action == Operation::Revert)
+		else if (Load())
 		{
-			if (Document.Restore(AppliedTexts, Status))
+			DofSettings::Apply(OpenConfig());
+			if (IsSaving)
 			{
-				General = AppliedGeneral;
-				ParentSection.clear();
-				Inputs.clear();
-				Index();
-				RefreshChanges();
+				Console->ExecuteCommand("cfg_save", false);
+				Status = "Saved " + ModFile + " and the user config";
 			}
-		}
-		else if (DofSettings::Validate(*Document.GetConfig(), Status))
-		{
-			auto Config = Document.CreateConfig();
-			if (Config && Config->GetSourceError().empty() && (Action != Operation::Save || Document.Save(Status)))
+			else
 			{
-				const xr_string WriteWarning = Status;
-				DofSettings::Apply(std::move(Config));
-				ApplyGeneral(General);
-				AppliedTexts = Document.GetTexts();
-				Inputs.clear();
-				AppliedGeneral = General;
-				if (Action == Operation::Save)
-				{
-					Console->ExecuteCommand("cfg_save", false);
-					FS.file_update(UserConfig.c_str());
-					auto Verified = General;
-					xr_string SaveError;
-					if (ReadSavedGeneral(Verified, SaveError, true) && Verified == General)
-					{
-						SavedGeneral = General;
-						Status = "Saved and verified source LTX and user config; applied DOF settings";
-					}
-					else
-					{
-						Status = "Source LTX saved and applied, but user-config save could not be verified. " + SaveError;
-					}
-				}
-				else
-				{
-					Status = "Applied DOF settings without saving";
-				}
-				if (!WriteWarning.empty())
-				{
-					Status += "\n" + WriteWarning;
-				}
-				RefreshChanges();
+				ApplyGeneral(Previous);
+				SavedGeneral = General;
+				Status = "Reloaded from disk";
 			}
 		}
 	}
-	if (HasPendingPreview && IsLevelReady)
+	if (IsPreview && HasPendingPreview)
 	{
-		if (IsPreviewCamera && psDeviceFlags.test(rsR4))
-		{
-			Manager.SetPreview(PreviewCamera);
-		}
-		else if (!IsPreviewCamera)
-		{
-			Manager.SetPreview(PreviewRequest);
-		}
-		HasPendingPreview = false;
+		UpdatePreview();
+	}
+	if (IsPreview)
+	{
+		Manager.SetForced(!IsPreviewCamera);
+		Manager.SetCinema(IsPreviewCamera ? nullptr : &PreviewValues);
+		Manager.SetCinemaCamera(IsPreviewCamera ? &PreviewCamera : nullptr);
 	}
 	ActiveEvent = Manager.GetActiveEvent();
 	ActiveProfile = Manager.GetActiveProfile().size() ? Manager.GetActiveProfile().c_str() : "base/static";
@@ -1529,12 +1174,13 @@ void Editor::Draw()
 		ImGui::End();
 		return;
 	}
+	const bool HasUnsaved = Changes != Saved || General != SavedGeneral;
 	ImGui::Text("%s | %s | event: %s", psDeviceFlags.test(rsR4) ? "R4" : psDeviceFlags.test(rsR2) ? "R2"
 																								  : "R1",
 				Mode.c_str(),
 				CDofManager::EventName(ActiveEvent));
 	ImGui::TextWrapped("Profile: %s | binding: %s", ActiveProfile.c_str(), ActiveBinding.c_str());
-	ImGui::Text("%s | %s", HasUnsaved ? "Unsaved changes" : "Saved", HasUnapplied ? "Working copy differs from applied" : "Applied");
+	ImGui::TextUnformatted(HasUnsaved ? "Unsaved changes: the game uses profile and weapon values after Save" : "Saved");
 	if (IsPreview)
 	{
 		ImGui::TextColored(ImVec4(1, 0.8f, 0.2f, 1), "FORCED PREVIEW: [%s]", PreviewSection.c_str());
@@ -1544,15 +1190,11 @@ void Editor::Draw()
 			HasPendingStop = true;
 		}
 	}
-	if (ImGui::Button("Apply"))
+	if (ImGui::Button("Save"))
 	{
-		Pending = Operation::Apply;
+		ShouldSave = true;
 	}
-	ImGui::SameLine();
-	if (ImGui::Button("Revert changes"))
-	{
-		Pending = Operation::Revert;
-	}
+	ImGui::SetItemTooltip("Writes %s and the user config, then reloads", ModFile.c_str());
 	ImGui::SameLine();
 	if (ImGui::Button("Reload from disk"))
 	{
@@ -1562,53 +1204,21 @@ void Editor::Draw()
 		}
 		else
 		{
-			Pending = Operation::Reload;
+			ShouldReload = true;
 		}
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Save"))
+	if (ImGui::Button("Copy LTX"))
 	{
-		CanWriteSources = Document.CanSave(SaveIssue);
-		ImGui::OpenPopup("Save DOF source files");
+		ImGui::SetClipboardText(ModText().c_str());
 	}
 	if (ImGui::BeginPopupModal("Discard unsaved DOF changes?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::TextUnformatted("Reload replaces the working and applied DOF configuration.");
+		ImGui::TextUnformatted("Reload drops every change made since the last Save.");
 		if (ImGui::Button("Discard and reload"))
 		{
-			Pending = Operation::Reload;
+			ShouldReload = true;
 			ImGui::CloseCurrentPopup();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Cancel"))
-		{
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
-	}
-	if (ImGui::BeginPopupModal("Save DOF source files", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		ImGui::TextUnformatted("Write only edited keys in these source files; keep .bak backups:");
-		for (const auto& File : ChangedFiles)
-		{
-			ImGui::BulletText("%s", File.c_str());
-		}
-		ImGui::BulletText("%s (cfg_save)", UserConfig.c_str());
-		if (!CanWriteSources)
-		{
-			ImGui::TextWrapped("%s", SaveIssue.c_str());
-		}
-		ImGui::BeginDisabled(!CanWriteSources);
-		if (ImGui::Button("Save and apply"))
-		{
-			Pending = Operation::Save;
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndDisabled();
-		ImGui::SameLine();
-		if (ImGui::Button("Copy LTX"))
-		{
-			ImGui::SetClipboardText(Document.ExportChanges().c_str());
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel"))
@@ -1627,7 +1237,7 @@ void Editor::Draw()
 	}
 	if (!IsMasterEnabled && General.contains("r2_dof_enable"))
 	{
-		ImGui::TextDisabled("DOF master is off. Enable it in General, Apply, then restart the renderer to update shaders.");
+		ImGui::TextDisabled("DOF master is off: enable it in General to preview.");
 	}
 	if (ImGui::BeginTabBar("DofTabs"))
 	{

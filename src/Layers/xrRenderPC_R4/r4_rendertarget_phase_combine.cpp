@@ -299,7 +299,7 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 
 		//	Set up variable
 		Fvector2 vDofKernel;
-		const float DofKernelSize = g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size) * (1.0f + (g_DofLensKernelScale - 1.0f) * LensDofFactor);
+		const float DofKernelSize = g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size) * (1.0f + (DofLensKernelScale - 1.0f) * LensDofFactor);
 		vDofKernel.set(0.5f / Device.TargetWidth, 0.5f / Device.TargetHeight);
 		vDofKernel.mul(DofKernelSize);
 
@@ -313,7 +313,7 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 				const float Width = float(Device.TargetWidth);
 				const float Height = float(Device.TargetHeight);
 				const float PixelScale = std::max(Width / float(rt_dof_blur1->dwWidth), Height / float(rt_dof_blur1->dwHeight));
-				Cmd.Constants.Write<CBPost>().dof_combine_params.set(Width, Height, PixelScale, g_DofMaxRadius);
+				Cmd.Constants.Write<CBPost>().dof_combine_params.set(Width, Height, PixelScale, DofMaxRadius(g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size)));
 			}
 			Cmd.Constants.Write<CBPost>().autoexposure_params.set(ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
 			Cmd.Constants.Write<CBPost>().bloom_params.set(Device.Grade(1, ps_r2_bloom_amount), ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, Device.Grade(0, 0.f));

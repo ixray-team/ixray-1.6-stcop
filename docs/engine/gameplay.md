@@ -97,8 +97,7 @@ Priority is dialogue focus, anomaly ray focus, the active HUD animator, weapon a
 | `enable_dof_reload` | `true` | Cached legacy `reload_dof` profile when dynamic weapon DOF is off |
 | `enable_dof_hud_animator` | `false` | Usable-item and PDA profiles, independently of weapon actions |
 | `enable_dof_talk` | `true` | Focus relative to the conversation partner |
-| `r2_dof_kernel` | `5` | Global blur radius |
-| `r2_dof_lens_kernel_scale` | `2` | Blur-radius multiplier outside a rendered 3D lens, from 1 to 4; fades with aiming |
+| `r2_dof_kernel` | `5` | The one blur size: the static blur radius, and four times it (1 to 40 output pixels) is the largest bokeh radius of the physical camera. Outside a rendered 3D lens the radius is doubled, fading with aiming |
 | `r2_dof_sky` | `30` | Sky focus distance |
 | `r2_dof_near/focus/far` | `-1.25, 1.4, 600` | Base profile, saved together by `r2_dof` |
 

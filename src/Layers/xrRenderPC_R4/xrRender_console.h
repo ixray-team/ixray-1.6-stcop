@@ -170,16 +170,14 @@ extern RENDER_API int			ps_r2_wait_sleep;
 extern RENDER_API Fvector3		ps_r2_dof;
 extern RENDER_API float			ps_r2_dof_sky;				//	distance to sky
 extern RENDER_API float			ps_r2_dof_kernel_size;		//	7.0f
-extern RENDER_API float g_DofLensKernelScale;
+inline constexpr float DofSensorHeight = 0.024f, DofLensKernelScale = 2.0f;
+inline float DofMaxRadius(float Kernel) { return clampr(4.0f * Kernel, 1.0f, 40.0f); }
 extern RENDER_API bool g_UseManualDofFocalLength;
 extern RENDER_API float g_NewDofFocalLength;
 extern RENDER_API float g_NewDofFNumber;
-extern RENDER_API float g_NewDofSensorHeight;
 extern RENDER_API float g_NewDofFocusTime;
-extern RENDER_API Fvector2 g_DofFocusPoint;
 extern RENDER_API float g_DofFocusDistance;
 extern RENDER_API float g_DofTransitionTime;
-extern RENDER_API float g_DofMaxRadius;
 extern RENDER_API u32 g_DofBlurResolution;
 extern RENDER_API float			ps_r2_def_aref_quality;
 extern RENDER_API float			r__dtex_range;

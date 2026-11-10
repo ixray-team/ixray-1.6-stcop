@@ -274,16 +274,6 @@ const char* CDofManager::EventName(EDofEvent Event)
 	return Event < EDofEvent::Count ? DofConfig::CameraEvents[static_cast<u32>(Event)] : "base";
 }
 
-bool DofSettings::IsDofKey(xr_string_view Key)
-{
-	return Key.starts_with("ndof_profile_") || Key.starts_with("use_dof_") || Key.starts_with("dof_") ||
-		   Key.starts_with("zoom_dof_") || Key.starts_with("alter_zoom_dof_") || Key.starts_with("gl_dof_") ||
-		   Key.starts_with("lens_dof_") || Key.starts_with("inventory_dof_") || Key.starts_with("default_zoom_dof_") ||
-		   Key.starts_with("default_action_dof_") || Key.starts_with("default_dof_") || Key == "dof" ||
-		   Key == "reload_dof" || Key == "disable_zoom_dof" || Key == "zoom_in_dof_speed" ||
-		   Key == "alter_zoom_in_dof_speed" || Key == "gl_in_dof_speed" || Key == "zoom_out_dof_speed";
-}
-
 shared_str DofSettings::AnimationAlias(xr_string_view Key)
 {
 	if (Key.starts_with("ndof_profile_anm_"))
@@ -291,191 +281,6 @@ shared_str DofSettings::AnimationAlias(xr_string_view Key)
 		return xr_string(Key.data() + 13, Key.size() - 13).c_str();
 	}
 	return DofConfig::MotionFromKey(Key);
-}
-
-bool DofSettings::Validate(const CInifile& Config, xr_string& Error)
-{
-	// Existing malformed mod values keep the loader's fallback behavior. Reject new errors.
-	auto ChangedLambda = [&](const char* Section, const char* Key)
-	{
-		const char* Before = Get().r_string_nullable(Section, Key);
-		const char* After = Config.r_string_nullable(Section, Key);
-		return (Before == nullptr) != (After == nullptr) || xr_string_view(Before ? Before : "") != xr_string_view(After ? After : "");
-	};
-	auto NumberLambda = [](const char* Text, float& Value)
-	{
-		char Extra = 0;
-		return Text && sscanf(Text, "%f %c", &Value, &Extra) == 1 && _valid(Value);
-	};
-	auto BoolLambda = [](xr_string_view Value)
-	{
-		return Value == "true" || Value == "false" || Value == "on" || Value == "off" || Value == "yes" || Value == "no" || Value == "0" || Value == "1";
-	};
-	SHudDofDefaults Defaults;
-	Defaults.LoadFrom(Config, "gunslinger_base");
-	for (const auto& Section : Config.sections())
-	{
-		const char* Name = Section.Name.c_str();
-		const bool IsCamera = Config.line_exist(Name, "ndof_mode") || Config.line_exist(Name, "f_number") || Config.line_exist(Name, "focus_point");
-		if (IsCamera)
-		{
-			for (const auto& Field : DofConfig::CameraFloats)
-			{
-				const char* Text = Config.r_string_nullable(Name, Field.Key);
-				float Value = 0.0f;
-				if (Text && ChangedLambda(Name, Field.Key) && (!NumberLambda(Text, Value) || Value < Field.Min || Value > Field.Max))
-				{
-					Error = xr_string("Invalid [") + Name + "] " + Field.Key;
-					return false;
-				}
-			}
-			if (const char* Text = Config.r_string_nullable(Name, "focus_point"); Text && ChangedLambda(Name, "focus_point"))
-			{
-				Fvector2 Value = {};
-				char Extra = 0;
-				if (sscanf(Text, "%f , %f %c", &Value.x, &Value.y, &Extra) != 2 || !_valid(Value.x) || !_valid(Value.y) || Value.x < 0 || Value.x > 1 || Value.y < 0 || Value.y > 1)
-				{
-					Error = xr_string("Invalid [") + Name + "] focus_point";
-					return false;
-				}
-			}
-			if (const char* Mode = Config.r_string_nullable(Name, "ndof_mode"); Mode && ChangedLambda(Name, "ndof_mode") && xr_strcmp(Mode, "manual") && xr_strcmp(Mode, "auto") && xr_strcmp(Mode, "autofocus"))
-			{
-				Error = xr_string("Invalid [") + Name + "] ndof_mode";
-				return false;
-			}
-		}
-		xr_hash_set<shared_str> Prefixes;
-		for (const auto& Entry : Section.Data)
-		{
-			if (!Entry.first.size())
-			{
-				continue;
-			}
-			const char* KeyName = Entry.first.c_str();
-			const xr_string_view Key = KeyName;
-			const char* Text = Entry.second.size() ? Entry.second.c_str() : "";
-			const bool Changed = ChangedLambda(Name, KeyName);
-			if (Key.starts_with("ndof_profile_") || xr_string_view(Name) == "ndof_events")
-			{
-				if (Changed && (!Entry.second.size() || !Config.section_exist(Text)))
-				{
-					Error = xr_string("Missing profile referenced by [") + Name + "] " + KeyName;
-					return false;
-				}
-				continue;
-			}
-			if (Changed && (Key.starts_with("use_dof_") || Key == "disable_zoom_dof" || (IsCamera && (Key == "enabled" || Key == "manual_focal_length"))) && !BoolLambda(Text))
-			{
-				Error = xr_string("Invalid boolean in [") + Name + "] " + KeyName;
-				return false;
-			}
-			if (Changed && (Key == "dof" || Key == "reload_dof"))
-			{
-				Fvector4 Value = {};
-				char Extra = 0;
-				if (sscanf(Text, "%f , %f , %f , %f %c", &Value.x, &Value.y, &Value.z, &Value.w, &Extra) != 4 || !_valid(Value.x) || !_valid(Value.y) || !_valid(Value.z) || !_valid(Value.w) || Value.x > Value.y || Value.y > Value.z || Value.w < 0)
-				{
-					Error = xr_string("Expected finite near <= focus <= far and nonnegative legacy release in [") + Name + "] " + KeyName;
-					return false;
-				}
-			}
-			const bool IsDistance = IsDofKey(Key) && !Key.starts_with("use_dof_") && !Key.starts_with("dof_speed_") && !Key.starts_with("dof_time_offset_") && (Key.ends_with("_near") || Key.ends_with("_focus") || Key.ends_with("_far"));
-			const bool IsSpeed = IsDofKey(Key) && Key.find("speed") != xr_string_view::npos;
-			const bool IsTime = Key.starts_with("dof_time_offset_") || Key == "default_dof_time_offset";
-			const bool IsZone = xr_string_view(Name) == "zone_pick_dof" && (Key == "near" || Key == "far");
-			if (Changed && (IsDistance || IsSpeed || IsTime || IsZone))
-			{
-				float Value = 0;
-				if (!NumberLambda(Text, Value) || (IsSpeed && (Value < 0 || Value > 1000)) || (IsZone && ((Key == "near" && Value > 0) || (Key == "far" && Value < 0))))
-				{
-					Error = xr_string("Invalid number in [") + Name + "] " + KeyName;
-					return false;
-				}
-			}
-			if (IsDistance)
-			{
-				Prefixes.insert(xr_string(Key.data(), Key.rfind('_')).c_str());
-			}
-		}
-		for (const auto& Prefix : Prefixes)
-		{
-			const xr_string Text = Prefix.c_str();
-			const bool IsZoom = Text == "zoom_dof" || Text == "alter_zoom_dof" || Text == "gl_dof" || Text == "lens_dof" || Text == "default_zoom_dof";
-			Fvector Base = IsZoom ? Defaults.Zoom : Defaults.Action.Request.Values;
-			if (Text == "default_zoom_dof")
-			{
-				Base.set(0.5f, 0.8f, 100.0f);
-			}
-			if (Text == "default_action_dof")
-			{
-				Base.set(0.0f, 0.5f, 5.0f);
-			}
-			if (Text == "alter_zoom_dof")
-			{
-				Base = DofConfig::ReadVector(Config, Name, "zoom_dof", Defaults.Zoom);
-			}
-			Fvector Values;
-			bool Changed = false;
-			const char* Suffixes[] = {"near", "focus", "far"};
-			for (u32 Index = 0; Index < 3; ++Index)
-			{
-				const xr_string Key = Text + "_" + Suffixes[Index];
-				Values[Index] = DofConfig::ReadFloat(Config, Name, Key.c_str(), Base[Index]);
-				Changed = Changed || ChangedLambda(Name, Key.c_str());
-			}
-			if (Changed && (Values.x > Values.y || Values.y > Values.z))
-			{
-				Error = xr_string("Expected near <= focus <= far in [") + Name + "] " + Text;
-				return false;
-			}
-		}
-	}
-	Error.clear();
-	return true;
-}
-
-void CDofManager::SetPreview(const SDofCameraDesc& Profile)
-{
-	if (!IsPreviewing())
-	{
-		PreviewOriginalMode = g_NewDofMode;
-	}
-	PreviewCamera = Profile;
-	IsCameraPreview = true;
-	IsStaticPreview = false;
-	Console->ExecuteCommand(Profile.Camera.Mode == EDofMode::Manual ? "r4_ndof_mode manual" : "r4_ndof_mode autofocus", false);
-}
-
-void CDofManager::SetPreview(const SHudDofRequest& Profile)
-{
-	if (!IsPreviewing())
-	{
-		PreviewOriginalMode = g_NewDofMode;
-	}
-	PreviewStatic = Profile;
-	IsStaticPreview = true;
-	IsCameraPreview = false;
-	if (psDeviceFlags.test(rsR4))
-	{
-		Console->ExecuteCommand("r4_ndof_mode static", false);
-	}
-}
-
-void CDofManager::StopPreview()
-{
-	if (!IsPreviewing())
-	{
-		return;
-	}
-	if (IsPreviewing() && psDeviceFlags.test(rsR4))
-	{
-		const char* Mode = PreviewOriginalMode == static_cast<u32>(EDofMode::Static) ? "static" : PreviewOriginalMode == static_cast<u32>(EDofMode::Manual) ? "manual"
-																																							: "autofocus";
-		Console->ExecuteCommand((xr_string("r4_ndof_mode ") + Mode).c_str(), false);
-	}
-	IsCameraPreview = IsStaticPreview = false;
-	CameraProfile = nullptr;
 }
 
 void SDofCameraDesc::Load(const shared_str& Section)
@@ -812,7 +617,7 @@ Fvector CDofManager::PickFocus() const
 	return Fvector().set(Focus + Defaults->PickNear, Focus, Focus + Defaults->PickFar);
 }
 
-const SDofCameraDesc* CDofManager::GetCameraProfile(EDofEvent Event, const SHudDofSource* Source, bool UseAction) const
+const SDofCameraDesc* CDofManager::GetCameraProfile(EDofEvent Event, const SHudDofSource* Source, bool UseAction)
 {
 	const u32 Index = static_cast<u32>(Event);
 	const SDofCameraDesc* Profile = nullptr;
@@ -869,7 +674,7 @@ const SDofCameraDesc* CDofManager::GetCameraProfile(EDofEvent Event, const SHudD
 	return nullptr;
 }
 
-const SDofCameraDesc* CDofManager::SelectCameraProfile() const
+const SDofCameraDesc* CDofManager::SelectCameraProfile()
 {
 	CActor* Actor = g_pGameLevel && Level().bReady && Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 	if (!Actor || !Actor->g_Alive() || !Actor->HUDview())
@@ -984,7 +789,7 @@ const SDofCameraDesc* CDofManager::SelectCameraProfile() const
 	return Fallback ? GetCameraProfile(EDofEvent::Effector, Source) : nullptr;
 }
 
-bool CDofManager::SelectRequest(SHudDofRequest& Request) const
+bool CDofManager::SelectRequest(SHudDofRequest& Request)
 {
 	CActor* Actor = g_pGameLevel && Level().bReady && Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 	if (!Actor || !Actor->g_Alive() || !Actor->HUDview())
@@ -1195,7 +1000,7 @@ void CDofManager::Blend(const Fvector& Values, float Weight, float Rate, float D
 
 void CDofManager::Update(float Delta)
 {
-	if (!Defaults || g_dedicated_server || HasCinema)
+	if (!Defaults || g_dedicated_server || HasCinema || HasCinemaCamera)
 	{
 		return;
 	}
@@ -1219,21 +1024,6 @@ void CDofManager::Update(float Delta)
 				RefreshSource(Animator->DofSource);
 			}
 		}
-	}
-	if (IsCameraPreview && psDeviceFlags.test(rsR4))
-	{
-		CameraProfile = &PreviewCamera;
-		ActiveProfile = PreviewCamera.Section;
-		ActiveBinding = "Preview";
-		return;
-	}
-	if (IsStaticPreview)
-	{
-		ActiveBinding = "Preview";
-		ReturnSpeed = PreviewStatic.SpeedOut;
-		HadRequest = true;
-		Blend(PreviewStatic.Values, 1.0f, PreviewStatic.SpeedIn, Delta);
-		return;
 	}
 	if (psDeviceFlags.test(rsR4) && g_NewDofMode != static_cast<u32>(EDofMode::Static))
 	{
@@ -1276,11 +1066,17 @@ void CDofManager::SetCinema(const Fvector4* Values)
 	HadRequest = false;
 }
 
+void CDofManager::SetCinemaCamera(const SDofCameraSettings* Values)
+{
+	HasCinemaCamera = Values != nullptr;
+	CinemaCamera = Values ? *Values : SDofCameraSettings {};
+}
+
 void CDofManager::Reset()
 {
 	HasCinema = false;
+	HasCinemaCamera = false;
 	KernelFrom = -1.0f;
-	StopPreview();
 	CameraProfile = nullptr;
 	Zones.clear();
 	Pickable = false;
@@ -1300,6 +1096,11 @@ void CDofManager::GetCurrent(Fvector& Result) const
 
 void CDofManager::GetCameraSettings(SDofCameraSettings& Settings) const
 {
+	if (HasCinemaCamera)
+	{
+		Settings = CinemaCamera;
+		return;
+	}
 	if (CameraProfile)
 	{
 		CameraProfile->Apply(Settings);

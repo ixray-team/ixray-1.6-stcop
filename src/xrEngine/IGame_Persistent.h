@@ -33,6 +33,7 @@ struct SDofCameraSettings
 	Fvector2 FocusPoint = {0.5f, 0.495f};
 	float FocusDistance = 1.4f;
 	float TransitionTime = 0.1f;
+	bool IsInstant = false;
 };
 
 class ENGINE_API IGame_Persistent : 
@@ -129,6 +130,7 @@ public:
 	virtual void					SetBaseDof			(const Fvector3& dof){};
 	virtual float					GetDofKernel		(float Default) { return Default; }
 	virtual bool					IsDofForced			() const { return false; }
+	virtual bool IsDofCameraForced() const { return false; }
 	virtual void					OnSectorChanged		(int sector){};
 	virtual void					OnAssetsChanged		();
 

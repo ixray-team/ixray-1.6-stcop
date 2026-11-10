@@ -304,16 +304,12 @@ float		g_SunShaftsFalloff			= 0.01f;
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
 float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
-float g_DofLensKernelScale = 2.0f;
 bool g_UseManualDofFocalLength = false;
 float g_NewDofFocalLength = 10.0f;
 float g_NewDofFNumber = 4.0f;
-float g_NewDofSensorHeight = 0.024f;
 float g_NewDofFocusTime = 0.1f;
-Fvector2 g_DofFocusPoint = {0.5f, 0.495f};
 float g_DofFocusDistance = 1.4f;
 float g_DofTransitionTime = 0.1f;
-float g_DofMaxRadius = 20.0f;
 u32 g_DofBlurResolution = 2;
 static xr_token NewDofModeTokens[] =
 {
@@ -1172,17 +1168,12 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4( CCC_DofFocus,	"r2_dof_focus", &ps_r2_dof.y, tw_min.y, tw_max.y);
 	CMD4( CCC_DofFar,	"r2_dof_far",	&ps_r2_dof.z, tw_min.z, tw_max.z);
 	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	80.f);
-	CMD4(CCC_Float, "r2_dof_lens_kernel_scale", &g_DofLensKernelScale, 1.0f, 4.0f);
 	CMD2(CCC_Boolean, "r4_ndof_manual_focal_length", &g_UseManualDofFocalLength);
 	CMD4(CCC_Float, "r4_ndof_focal_length", &g_NewDofFocalLength, 1.0f, 1000.0f);
 	CMD4(CCC_Float, "r4_ndof_f_number", &g_NewDofFNumber, 0.7f, 64.0f);
-	CMD4(CCC_Float, "r4_ndof_sensor_height", &g_NewDofSensorHeight, 0.001f, 0.1f);
 	CMD4(CCC_Float, "r4_ndof_focus_time", &g_NewDofFocusTime, 0.01f, 10.0f);
 	CMD4(CCC_Float, "r4_ndof_focus_distance", &g_DofFocusDistance, 0.01f, 10000.0f);
-	CMD4(CCC_Float, "r4_ndof_focus_point_x", &g_DofFocusPoint.x, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r4_ndof_focus_point_y", &g_DofFocusPoint.y, 0.0f, 1.0f);
 	CMD4(CCC_Float, "r4_ndof_transition_time", &g_DofTransitionTime, 0.01f, 10.0f);
-	CMD4(CCC_Float, "r4_ndof_max_radius", &g_DofMaxRadius, 1.0f, 40.0f);
 	CMD3(CCC_Token, "r4_ndof_mode", &g_NewDofMode, NewDofModeTokens);
 	CMD3(CCC_Token, "r4_ndof_resolution", &g_DofBlurResolution, DofBlurResolutionTokens);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);

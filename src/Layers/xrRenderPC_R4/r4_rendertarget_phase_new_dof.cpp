@@ -65,7 +65,9 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 	const float BlurWidth = float(rt_dof_blur1->dwWidth);
 	const float BlurHeight = float(rt_dof_blur1->dwHeight);
 	const float PixelScale = std::max(Width / BlurWidth, Height / BlurHeight);
-	const bool Physical = g_NewDofMode != static_cast<u32>(EDofMode::Static) && !(g_pGamePersistent && g_pGamePersistent->IsDofForced());
+	const bool Forced = g_pGamePersistent && g_pGamePersistent->IsDofCameraForced();
+	const bool Physical = Forced || (g_NewDofMode != static_cast<u32>(EDofMode::Static) && !(g_pGamePersistent && g_pGamePersistent->IsDofForced()));
+	const float Kernel = g_pGamePersistent ? g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size) : ps_r2_dof_kernel_size;
 	SDofCameraSettings Camera;
 	Camera.Mode = static_cast<EDofMode>(g_NewDofMode);
 	Camera.FNumber = DofCamera::Validate(g_NewDofFNumber, 0.7f, 64.0f, Camera.FNumber);
@@ -73,14 +75,13 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 	Camera.FocalLength = DofCamera::Validate(g_NewDofFocalLength, 1.0f, 1000.0f, Camera.FocalLength);
 	Camera.FocusTime = DofCamera::Validate(g_NewDofFocusTime, 0.01f, 10.0f, Camera.FocusTime);
 	Camera.FocusDistance = DofCamera::Validate(g_DofFocusDistance, 0.01f, 10000.0f, Camera.FocusDistance);
-	Camera.FocusPoint.x = DofCamera::Validate(g_DofFocusPoint.x, 0.0f, 1.0f, Camera.FocusPoint.x);
-	Camera.FocusPoint.y = DofCamera::Validate(g_DofFocusPoint.y, 0.0f, 1.0f, Camera.FocusPoint.y);
 	Camera.TransitionTime = DofCamera::Validate(g_DofTransitionTime, 0.01f, 10.0f, Camera.TransitionTime);
 	if (Physical && g_pGamePersistent)
 	{
 		g_pGamePersistent->GetDofCameraSettings(Camera);
 	}
-	const float SensorHeight = DofCamera::Validate(g_NewDofSensorHeight, 0.001f, 0.1f, 0.024f);
+	const float SensorHeight = DofSensorHeight;
+	const bool Instant = Camera.IsInstant || Device.IsCameraCut();
 	float FocalLength = Camera.FocalLength;
 	const Fmatrix& Projection = Device.mProject_saved;
 	if (!Camera.ManualFocalLength && Projection._34 == 1.0f && Projection._44 == 0.0f)
@@ -101,7 +102,7 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 	}
 	else
 	{
-		const float Blend = 1.0f - exp(-Delta / Camera.TransitionTime);
+		const float Blend = Instant ? 1.0f : 1.0f - exp(-Delta / Camera.TransitionTime);
 		DofCameraLens.lerp(DofCameraLens, TargetLens, Blend);
 	}
 
@@ -113,7 +114,7 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 		{
 			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 			Cmd.SetStencil(false);
-			Cmd.Constants.Write<CBPost>().dof_focus_params.set(1.0f - exp(-Delta / DofCameraLens.w), Camera.Mode == EDofMode::Manual ? 1.0f : 0.0f, Camera.FocusDistance, DofCameraLens.x * 0.001f + EPS);
+			Cmd.Constants.Write<CBPost>().dof_focus_params.set(Instant ? 1.0f : 1.0f - exp(-Delta / DofCameraLens.w), Camera.Mode == EDofMode::Manual ? 1.0f : 0.0f, Camera.FocusDistance, DofCameraLens.x * 0.001f + EPS);
 			Cmd.Constants.Write<CBPost>().dof_focus_point.set(Camera.FocusPoint.x, Camera.FocusPoint.y, 0.0f, 0.0f);
 		});
 	}
@@ -133,14 +134,14 @@ void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 			{
 				g_pGamePersistent->GetCurrentDof(Dof);
 			}
-			const float LensScale = 1.0f + (g_DofLensKernelScale - 1.0f) * LensDofFactor;
+			const float LensScale = 1.0f + (DofLensKernelScale - 1.0f) * LensDofFactor;
 			Cmd.Constants.Write<CBPost>().dof_classic.set(Dof.x, Dof.y, Dof.z, ps_r2_dof_sky);
-			Cmd.Constants.Write<CBPost>().dof_kernel.set(0.5f * (g_pGamePersistent ? g_pGamePersistent->GetDofKernel(ps_r2_dof_kernel_size) : ps_r2_dof_kernel_size) * LensScale, 0.0f, g_DofMaxRadius);
+			Cmd.Constants.Write<CBPost>().dof_kernel.set(0.5f * Kernel * LensScale, 0.0f, DofMaxRadius(Kernel));
 		});
 	}
 
 	Cmd.Constants.Write<CBPost>().dof_rt_size.set(BlurWidth, BlurHeight, 1.0f / BlurWidth, 1.0f / BlurHeight);
-	Cmd.Constants.Write<CBPost>().dof_blur_params.set(1.0f / Width, 1.0f / Height, PixelScale, g_DofMaxRadius);
+	Cmd.Constants.Write<CBPost>().dof_blur_params.set(1.0f / Width, 1.0f / Height, PixelScale, DofMaxRadius(Kernel));
 	const float TileWidth = float(DofTileMax->dwWidth);
 	const float TileHeight = float(DofTileMax->dwHeight);
 	Cmd.Constants.Write<CBPost>().dof_tile_params.set(TileWidth, TileHeight, 1.0f / TileWidth, 1.0f / TileHeight);
