@@ -176,7 +176,8 @@ void main(p_bumped_new I, out IXRayForward O)
     O.Color.w = 1.0f - s_base.Sample(smp_base, I.tcdh.xy).w;
 
     float Fog = GammaToLinear(saturate(length(I.position.xyz) * fog_params.w + fog_params.x));
-    O.Color = lerp(O.Color, GammaToLinear(fog_color), Fog);
+    O.Color.xyz = lerp(O.Color.xyz, GammaToLinear(fog_color.xyz), Fog);
+    O.Color.w *= 1.0f - Fog;
 
 #ifdef USE_LENGTH_BUFFER
 	O.Color.xyz = saturate(O.Color.xyz * rcp(1.0f + O.Color.xyz));

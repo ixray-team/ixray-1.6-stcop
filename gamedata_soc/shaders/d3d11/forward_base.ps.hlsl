@@ -151,8 +151,9 @@ void main(p_bumped_new I, out OutStructure O)
 #ifndef USE_LENGTH_BUFFER
     O.Color.w = M.Color.w;
 	
-    float Fog = saturate(ViewLength * fog_params.w + fog_params.x);
-    O.Color = lerp(O.Color, GammaToLinear(fog_color), Fog * Fog);
+    float Fog = GammaToLinear(saturate(ViewLength * fog_params.w + fog_params.x));
+    O.Color.xyz = lerp(O.Color.xyz, GammaToLinear(fog_color.xyz), Fog);
+    O.Color.w *= 1.0f - Fog;
 	
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;

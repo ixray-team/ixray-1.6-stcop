@@ -181,12 +181,11 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	alpha = max(alpha, leaves.w * fLeavesFactor);
 #endif
 	
-	float fog_fade = calc_fogging(I.pos.xyz);
+	float fog_fade = GammaToLinear(calc_fogging(I.pos.xyz));
 	
-	O.Color.xyz = lerp(final, fog_color, fog_fade);
-	O.Color.xyz = GammaToLinear(O.Color.xyz);
+	O.Color.xyz = lerp(GammaToLinear(final), GammaToLinear(fog_color.xyz), fog_fade);
 	
-	O.Color.w = alpha * (1.0f - fog_fade * fog_fade);
+	O.Color.w = alpha * (1.0f - fog_fade);
 	
 	O.Velocity = 0.0f;
 	
