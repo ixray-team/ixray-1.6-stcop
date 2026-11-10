@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "pch_script.h"
+#include <cmath>
 #include "GamePersistent.h"
 #include "ImUtils/ImUtils.h"
 #include "../xrEngine/Fmesh.h"
@@ -570,12 +571,23 @@ void CGamePersistent::UpdateParticles()
 			for (u32 Index = Target.NextBucket.fetch_add(1); Index < Count; Index = Target.NextBucket.fetch_add(1))
 			{
 				xr_vector<xr_shared_ptr<CParticlesObject>>& Bucket = Target.Buckets[Index];
-				std::sort(Bucket.begin(), Bucket.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
+				xr_vector<std::pair<float, xr_shared_ptr<CParticlesObject>>> Sorted;
+				Sorted.reserve(Bucket.size());
+				for (const auto& Particle : Bucket)
 				{
-					return Device.vCameraPosition_saved.distance_to_sqr(a->SpatialComponent->sphere.P) < Device.vCameraPosition_saved.distance_to_sqr(b->SpatialComponent->sphere.P);
+					const float Distance = Device.vCameraPosition_saved.distance_to_sqr(Particle->SpatialComponent->sphere.P);
+					Sorted.emplace_back(Distance, Particle);
+				}
+				std::sort(Sorted.begin(), Sorted.end(), [](const auto& A, const auto& B)
+				{
+					if (std::isnan(A.first))
+					{
+						return false;
+					}
+					return std::isnan(B.first) || A.first < B.first;
 				});
 
-				for (xr_shared_ptr<CParticlesObject>& particle : Bucket)
+				for (auto& [Distance, particle] : Sorted)
 				{
 					if (particle->m_NeedDestroy) continue;
 					particle->Update(Target.Time - particle->dwLastTime, &Target.Frustum);
