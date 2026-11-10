@@ -20,6 +20,8 @@ protected:
 	float			m_switch_factor;
 	float			m_online_distance;
 	float			m_offline_distance;
+	mutable Fvector	m_switch_centre;
+	mutable u32		m_switch_centre_frame = u32(-8);
 
 private:
 	OBJECT_VECTOR	m_saved_chidren;
@@ -48,6 +50,8 @@ public:
 	IC		float	switch_distance			() const;
 	IC		void	set_switch_distance		(float switch_distance);
 	IC		void	set_switch_factor		(float switch_factor);
+			void	set_switch_centre		(const Fvector& centre) const;
+			const Fvector& switch_centre	() const;
 };
 
 #include "alife_switch_manager_inline.h"

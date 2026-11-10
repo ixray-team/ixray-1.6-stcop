@@ -152,7 +152,7 @@ void CSE_ALifeGroupAbstract::try_switch_offline		()
 				// to switch offline
 				break;
 			
-			if (I->alife().graph().actor()->o_Position.distance_to(tpGroupMember->o_Position) <= I->alife().offline_distance())
+			if (I->alife().switch_centre().distance_to(tpGroupMember->o_Position) <= I->alife().offline_distance())
 				// so, it is not ready, breaking a cycle, because we can't 
 				// switch group offline since not all the group members are ready
 				// to switch offline
