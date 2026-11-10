@@ -130,6 +130,7 @@ public:
 	// mesh/surface pairs are collected by tasks started at once, and both scene passes (opaque
 	// and forward share the frustum) add the ready pairs of their priority.
 	void BeginPrepared();
+	void InvalidatePrepared() { PreparedFrame = u32(-1); }
 	SDeferredSubmit& AddPrepared(CCustomObject* Parent);
 	void LaunchPrepared();
 	// The prepared object of this frame, waiting for the tasks on first use; null when absent
@@ -175,7 +176,7 @@ private:
 	xr_vector<xr_unique_ptr<SDeferredSubmit>> Prepared;
 	size_t PreparedCount = 0;
 	xr_hash_map<CCustomObject*, u32> PreparedIndex;
-	u32 PreparedFrame = u32(-1);
+	xr_atomic_u32 PreparedFrame = u32(-1);
 	bool PreparedRunning = false;
 	xr_task_group PreparedTasks;
 };

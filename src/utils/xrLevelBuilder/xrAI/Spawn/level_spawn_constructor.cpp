@@ -21,6 +21,7 @@
 #include "object_broker.h"
 #include "restriction_space.h"
 #include <random>
+#include "../../../../xrEngine/Fmesh.h"
 
 #include "../../../../xrCore/Save/SaveManager.h"
 #include "../../../../xrCore/Save/SaveObject.h"
@@ -199,6 +200,70 @@ void CLevelSpawnConstructor::add_free_object					(CSE_Abstract			*abstract)
 //		add_group_object		(abstract,_GetItem(*group_section,i,temp),true);
 //}
 
+namespace BreakableValidation
+{
+	bool IsHeaderValid(const shared_str& LevelName, const char* VisualName, xr_string& Reason)
+	{
+		if (!VisualName || !VisualName[0])
+		{
+			Reason = "empty visual name";
+			return false;
+		}
+
+		string_path FileName;
+		FS.update_path(FileName, "$game_levels$", *LevelName);
+		xr_strcat(FileName, "\\");
+		xr_strcat(FileName, VisualName);
+		if (!strext(FileName))
+		{
+			xr_strcat(FileName, ".ogf");
+		}
+
+		IReader* Stream = FS.r_open(FileName);
+		if (!Stream)
+		{
+			Reason = "file not found";
+			return false;
+		}
+
+		bool Result = false;
+		IReader* Chunk = Stream->open_chunk(OGF_HEADER);
+		if (!Chunk || Chunk->length() < sizeof(ogf_header))
+		{
+			Reason = "missing or truncated OGF_HEADER";
+		}
+		else
+		{
+			ogf_header Header;
+			Chunk->r(&Header, sizeof(Header));
+			const bool Finite = _valid(Header.bb.min) && _valid(Header.bb.max) && _valid(Header.bs.c) && _valid(Header.bs.r);
+			if (Header.format_version != xrOGF_FormatVersion)
+			{
+				Reason = "unsupported format version";
+			}
+			else if (Header.type != MT_SKELETON_RIGID) // Level Editor exports breakables as MT_SKELETON_RIGID only (SBPart::Export)
+			{
+				Reason = "unexpected visual type";
+			}
+			else if (!Finite || Header.bs.r <= 0.f || Header.bb.min.x > Header.bb.max.x || Header.bb.min.y > Header.bb.max.y || Header.bb.min.z > Header.bb.max.z)
+			{
+				Reason = "invalid bounding volume";
+			}
+			else
+			{
+				Result = true;
+			}
+		}
+
+		if (Chunk)
+		{
+			Chunk->close();
+		}
+		FS.r_close(Stream);
+		return Result;
+	}
+} // namespace BreakableValidation
+
 void CLevelSpawnConstructor::load_objects						()
 {
 	// loading spawn points
@@ -230,6 +295,18 @@ void CLevelSpawnConstructor::load_objects						()
 		if (!alife_object) {
 			F_entity_Destroy	(abstract);
 			continue;
+		}
+
+		if (abstract->m_tClassID == CLSID_OBJECT_BREAKABLE)
+		{
+			CSE_Visual* Visual = abstract->visual();
+			xr_string Reason;
+			if (!Visual || !BreakableValidation::IsHeaderValid(m_level.name(), Visual->get_visual(), Reason))
+			{
+				Msg("! [%s] Breakable object '%s' (visual '%s') removed: %s", *m_level.name(), abstract->name_replace(), Visual ? Visual->get_visual() : "", Reason.c_str());
+				F_entity_Destroy(abstract);
+				continue;
+			}
 		}
 
 		CSE_ALifeCreatureActor	*actor = smart_cast<CSE_ALifeCreatureActor*>(alife_object);

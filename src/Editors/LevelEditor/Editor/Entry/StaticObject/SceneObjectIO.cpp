@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../../../xrECore/Editor/EditorSceneSubmit.h"
 
 
 #define SCENEOBJ_CURRENT_VERSION		0x0012
@@ -178,6 +179,7 @@ void CSceneObject::StreamOut()
         Mesh->RemoveColor(this);
     }
 
+    GEditorSceneSubmit.InvalidatePrepared();
     for (CSurface* Surf : m_Surfaces)
     {
         Surf->OnDeviceDestroy();

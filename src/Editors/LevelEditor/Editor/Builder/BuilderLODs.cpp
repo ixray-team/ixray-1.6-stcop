@@ -40,11 +40,20 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
 
 int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int sector_num)
 {
-    if (EPrefs->DisableBillboardLOD)
-        return -1;
+    LODStats.BillboardRequested++;
 
-    if (!E->m_objectFlags.is(CEditableObject::eoUsingLOD)) 
+    if (EPrefs->DisableBillboardLOD)
+    {
+        LODStats.Disabled++;
         return -1;
+    }
+
+    if (!E->m_objectFlags.is(CEditableObject::eoUsingLOD))
+    {
+        LODStats.NoLODFlag++;
+        Msg("~ [LOD] '%s': 'Use LOD' flag is not set, billboard skipped", E->m_LibName.c_str());
+        return -1;
+    }
 
     xr_string lod_name = E->GetLODTextureName();
 
@@ -56,6 +65,8 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
 
     if ((u16(-1) == mtl.surfidx) || (u16(-1) == mtl.shader))
     {
+	    LODStats.Failed++;
+	    Msg("! [LOD] '%s': can't build LOD material (shader '%s')", E->m_LibName.c_str(), E->GetLODShaderName());
 	    return -2;
     }
 
@@ -91,6 +102,7 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
         if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.data, w, h, &age))
         {
             Msg("!Can't find LOD texture: '%s'", l_name.c_str());
+            LODStats.Failed++;
             return -2;
         }
 
@@ -98,6 +110,7 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
         if (!ImageLib.LoadTextureData(l_name.c_str(), new_lod.ndata, w, h, &age))
         {
             Msg("!Can't find LOD normal texture: '%s'", l_name.c_str());
+            LODStats.Failed++;
             return -2;
         }
     }
@@ -106,15 +119,19 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
         if (!ImageLib.LoadTextureData("lod_stub", new_lod.data, w, h, &age))
         {
             Msg("!Can't load LOD texture: 'lod_stub'");
+            LODStats.Failed++;
             return -2;
         }
 
         if (!ImageLib.LoadTextureData("lod_stub", new_lod.ndata, w, h, &age))
         {
             Msg("!Can't load LOD normal texture: 'lod_stub'");
+            LODStats.Failed++;
             return -2;
         }
     }
+    LODStats.Collected++;
+    Msg("* [LOD] '%s': billboard collected (texture '%s')", E->m_LibName.c_str(), lod_name.c_str());
     l_lods.push_back(std::move(new_lod));
     return l_lods.size() - 1;
 }

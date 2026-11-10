@@ -52,6 +52,7 @@ CSceneObject::~CSceneObject()
 		}
 	}
 
+	GEditorSceneSubmit.InvalidatePrepared();
 	for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
 	Lib.RemoveEditObject(m_pReference);
 }
@@ -652,6 +653,7 @@ bool CSceneObject::Validate(bool bMsg)
 
 void CSceneObject::ClearSurface()
 {
+	GEditorSceneSubmit.InvalidatePrepared();
 	for (CSurface* i : m_Surfaces)
 	{
 		i->OnDeviceDestroy(); 

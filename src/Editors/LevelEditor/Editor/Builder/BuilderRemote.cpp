@@ -900,12 +900,19 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	int sect_num 		= S?S->m_sector_num:m_iDefaultSectorNum;
 	
 	xr_string ref_name1 = obj->m_ReferenceName.c_str();
-	bool LOD0HasSuffix = ref_name1.find("lod0") != xr_string::npos;
+	// Only a "_lod0" suffix marks the mesh LOD chain: decompiled levels name MU objects "<level>_lod0000"
+	const xr_string_view LOD0Suffix = "_lod0";
+	bool LOD0HasSuffix = ref_name1.size() > LOD0Suffix.size() && xr_string_view(ref_name1).ends_with(LOD0Suffix);
 	bool UseMeshLODs = EPrefs->UseMULODs && EPrefs->LODsForAllMU || LOD0HasSuffix;
 
 	// build model
 	if (-1==model_idx || m_save_as_object)
 	{
+		LODStats.MUTemplates++;
+		if (UseMeshLODs)
+		{
+			LODStats.MeshLODTemplates++;
+		}
 		model_idx = BuildMUObjectTemplate(obj, !UseMeshLODs, sect_num);
 		if (model_idx == -1)
 		{
@@ -917,6 +924,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		//Seakad: Parser lod0 - lod4 (export lod1-lod4)
     	if (UseMeshLODs)
     	{
+			Msg("Object %s build as mesh lod", ref_name1.c_str());
 		    size_t f1 = ref_name1.find_last_of('\\');
     		int RF_MU1_FS_I = static_cast<int>(f1);
 	
@@ -1674,6 +1682,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	bool bResult	= true;
 
 	Clear			();
+	LODStats		= {};
 
 	SceneToolsMapPairIt t_it 	= Scene->FirstTool();
 	SceneToolsMapPairIt t_end 	= Scene->LastTool();
@@ -1757,6 +1766,21 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	}
 	EContext.UI->ProgressEnd(pb);
 // process lods
+	Msg("* [LOD] MU templates: %u (mesh LOD: %u), billboard requested: %u, collected: %u, no 'Use LOD' flag: %u, disabled: %u, failed: %u",
+		LODStats.MUTemplates, LODStats.MeshLODTemplates, LODStats.BillboardRequested, LODStats.Collected,
+		LODStats.NoLODFlag, LODStats.Disabled, LODStats.Failed);
+	if (!bResult)
+	{
+		Msg("! [LOD] Skipped merging LOD textures: static export failed");
+	}
+	else if (EPrefs->DisableBillboardLOD)
+	{
+		Msg("! [LOD] Skipped merging LOD textures: 'Disable Billboard LOD' is enabled");
+	}
+	else if (l_lods.empty())
+	{
+		Msg("! [LOD] Skipped merging LOD textures: no billboard LODs collected, level_lods.dds will not be created");
+	}
 	if (bResult&&!l_lods.empty() && !EPrefs->DisableBillboardLOD)
 	{
 		SPBItem* pb = EContext.UI->ProgressStart(l_lods.size()*2,"Merge LOD textures...");

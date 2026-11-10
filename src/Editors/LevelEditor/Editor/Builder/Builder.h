@@ -53,6 +53,18 @@ public:
 	xr_vector<b_mu_mesh_lods>	l_mu_mesh_lods;
     xr_vector<shared_str>	l_mu_refs_debug;
     xr_vector<e_b_lod>			l_lods;
+
+    // Debug counters for billboard LOD collection, reset in CompileStatic
+    struct SLODStats
+    {
+        u32 MUTemplates = 0;
+        u32 MeshLODTemplates = 0;
+        u32 BillboardRequested = 0;
+        u32 NoLODFlag = 0;
+        u32 Disabled = 0;
+        u32 Failed = 0;
+        u32 Collected = 0;
+    } LODStats;
     xr_vector<sb_light_control>	l_light_control;
     xr_vector<b_light_static>	l_light_static;
     xr_vector<b_light_dynamic>	l_light_dynamic;
