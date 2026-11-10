@@ -35,15 +35,14 @@ extern ENGINE_API bool g_dedicated_server;
 #	define LUABIND_NO_ERROR_CHECKING
 #endif
 
-#define LUABIND_DONT_COPY_STRINGS
-
 #include "FontManager.h"
 
 #ifndef _EDITOR
-#include "ImGuiManager.h"
+#	include "ImGuiManager.h"
 #endif
 
 
-struct ISE_AbstractLEOwner{
-	virtual void			get_bone_xform			(const char* name, Fmatrix& xform) = 0;
+struct ISE_AbstractLEOwner
+{
+	virtual void get_bone_xform(const char* name, Fmatrix& xform) = 0;
 };
