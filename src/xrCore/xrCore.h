@@ -64,8 +64,6 @@
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
 
-#include <magic_enum/magic_enum.hpp>
-
 // stl
 #pragma warning (push)
 #pragma warning (disable:4702)

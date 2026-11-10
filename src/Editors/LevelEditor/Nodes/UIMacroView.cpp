@@ -3,6 +3,7 @@
 #include "../../xrEUI/IconsFontAwesome7.h"
 #include "NodesCommon.h"
 #include "UINodesEditorForm.h"
+#include <magic_enum/magic_enum.hpp>
 
 namespace ed = ax::NodeEditor;
 using namespace NodesUI;
