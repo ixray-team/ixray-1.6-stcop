@@ -119,14 +119,13 @@ end
 
 function file_exist(fname)
 	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname)
-	local f_cnt = flist:Size()
-
-	if f_cnt > 0 then
-		return true
-	else
-		return false
+	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly), "*")
+	for i = 0, flist:Size() - 1 do
+		if flist:GetAt(i):NameFull() == fname then
+			return true
+		end
 	end
+	return false
 end
 
 function delete_save_game(filename)
@@ -156,12 +155,7 @@ function AddTimeDigit(str, dig)
 end
 
 function file_data(fname)
-	local f = getFS();
-	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly) , fname .. saved_game_extension)
-	local f_cnt = flist:Size()
-
-	if f_cnt > 0 then
-		local file		=	flist:GetAt(0)
+	if file_exist(fname .. saved_game_extension) then
 		local sg = CSavedGameWrapper(fname)
 
 		local y,m,d,h,min,sec,ms = 0,0,0,0,0,0,0
@@ -220,7 +214,7 @@ function load_dialog:OnListItemClicked()
 
 	local r = self.picture:GetTextureRect()
 	if file_exist(item_text .. ".dds") then
-		self.picture:InitTexture(item_text)
+		self.picture:InitTexture("$save_preview$" .. item_text)
 	else
 		self.picture:InitTexture("ui\\ui_noise")
 	end
