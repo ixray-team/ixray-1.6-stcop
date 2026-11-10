@@ -525,6 +525,87 @@ void Editor::SelectSet(u32 Set, bool IsAdding)
 	}
 }
 
+bool Editor::DrawAttachSwitches(Player& Core, const Object& Target)
+{
+	const float Local = std::clamp(Core.Time - Target.Span.Start, 0.0f, Target.Span.Length);
+	const xr_vector<AttachSwitch>& Switches = Target.Attach.Switches;
+	s32 Removed = -1;
+	ImGui::PushID("AttachSwitches");
+	ImGui::SeparatorText("Bone over time");
+	for (u32 Index = 0; Index < Switches.size(); ++Index)
+	{
+		ImGui::PushID(static_cast<s32>(Index));
+		if (ImGui::SmallButton("Go"))
+		{
+			Core.Seek(Target.Span.Start + Switches[Index].Time);
+		}
+		ImGui::SameLine();
+		Removed = ImGui::SmallButton("x") ? static_cast<s32>(Index) : Removed;
+		ImGui::SameLine();
+		ImGui::Text("%.2f s: %s", Switches[Index].Time, Switches[Index].Bone.size() ? Switches[Index].Bone.c_str() : "origin");
+		ImGui::PopID();
+	}
+	AttachLink Pick { Target.Attach.Parent.ObjectId, AttachSwitchBone };
+	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 9.0f);
+	BoneCombo(Core, "##SwitchBone", Pick);
+	AttachSwitchBone = Pick.Bone;
+	ImGui::SameLine();
+	ImGui::Checkbox("Keep place", &IsSwitchKeeping);
+	ImGui::SetItemTooltip("Keys the position and rotation at the switch so the object stays where it is when it changes bone");
+	const bool IsAdded = Switches.size() < MaxAttachSwitches && ImGui::Button("Switch to this bone at the playhead");
+	ImGui::PopID();
+	if (Removed >= 0)
+	{
+		xr_vector<AttachSwitch>& Edited = Edit(Core, Target.Id, "Remove attach switch")->Attach.Switches;
+		Edited.erase(Edited.begin() + Removed);
+	}
+	if (IsAdded)
+	{
+		AddAttachSwitch(Core, Target.Id, Local);
+	}
+	return Removed >= 0 || IsAdded;
+}
+
+void Editor::AddAttachSwitch(Player& Core, u32 Id, float Local)
+{
+	const ObjectState* State = Core.FindState(Id);
+	Object& Item = *Edit(Core, Id, "Switch attach bone");
+	const float Frame = 1.0f / static_cast<float>(Core.Data.Header.FrameRate), Half = 0.5f * Frame;
+	Fmatrix Hook;
+	Fvector* const Places[2] = { PlacementOf(Item, 0), PlacementOf(Item, 1) };
+	if (IsSwitchKeeping && State && Places[0] && Places[1] && Core.LinkFrame({ Item.Attach.Parent.ObjectId, AttachSwitchBone }, Hook))
+	{
+		Fmatrix Back, Seat;
+		Fvector Angles;
+		Back.invert(Hook);
+		Seat.mul_43(Back, State->World);
+		Seat.i.normalize_safe();
+		Seat.j.normalize_safe();
+		Seat.k.normalize_safe();
+		Seat.getHPB(Angles);
+		for (u32 Kind = 0; Kind < 2; ++Kind)
+		{
+			for (u8 Axis = 0; Axis < 3; ++Axis)
+			{
+				Curve& Part = Curves::EnsureLane(Item.Lanes, Kind ? Param::Rotation : Param::Position, 0).Curves[Axis];
+				const float Old = Curves::Value(Part, Local, (*Places[Kind])[Axis]), Degrees = rad2deg(Angles[Axis]);
+				const float New = Kind ? Degrees + 360.0f * std::round((Old - Degrees) / 360.0f) : Seat.c[Axis];
+				if (Local > Frame)
+				{
+					Curves::SetKey(Part, Local - Frame, Old, Half);
+					const u32 Before = Curves::KeyAt(Part, Local - Frame, Half);
+					Before != u32(-1) ? Curves::SetMode(Part, Before, Interp::Hold) : (void)0;
+				}
+				Curves::SetKey(Part, Local, New, Half);
+			}
+		}
+	}
+	xr_vector<AttachSwitch>& Switches = Item.Attach.Switches;
+	std::erase_if(Switches, [Local, Half](const AttachSwitch& Other) { return std::fabs(Other.Time - Local) <= Half; });
+	Switches.push_back({ Local, AttachSwitchBone });
+	std::stable_sort(Switches.begin(), Switches.end(), [](const AttachSwitch& A, const AttachSwitch& B) { return A.Time < B.Time; });
+}
+
 void Editor::DrawBoneValues(Player& Core, const Object& Target)
 {
 	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
@@ -2856,6 +2937,10 @@ void Editor::DrawAttach(Player& Core, const xr_vector<u32>& Ids, s32 Block)
 	ImGui::EndDisabled();
 	Value.IsYawOnly = IsActor ? Value.IsYawOnly : IsYawOnly && Action != RowAction::Reset;
 	EndRow(KeyState::None);
+	if (IsObject && Links.Parent.ObjectId && Ids.size() == 1 && DrawAttachSwitches(Core, Primary))
+	{
+		return;
+	}
 	for (u32 Bit = 0; Bit < 4; ++Bit)
 	{
 		if (Problems & (1u << Bit))

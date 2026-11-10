@@ -1299,13 +1299,33 @@ void Editor::DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, con
 	const auto XAt = [&](float Time) { return Left + Pad + (Time - AnimScroll) * Scale; };
 	const auto RawAt = [&](float X) { return (X - Left - Pad) / Scale + AnimScroll; };
 	const auto TimeAt = [&](float X) { return std::round(RawAt(X) * Rate) / Rate; };
+	AnimSnaps.clear();
+	if (Track)
+	{
+		AnimatorUi::KeyTimes(*Track, AnimatorUi::AllBones, AnimSnaps);
+	}
+	const auto Pick = [&](float X)
+	{
+		const float Raw = RawAt(X);
+		const auto Next = std::lower_bound(AnimSnaps.begin(), AnimSnaps.end(), Raw);
+		float Best = TimeAt(X), Gap = 5.0f / Scale;
+		for (auto Near : { Next, Next == AnimSnaps.begin() ? Next : Next - 1 })
+		{
+			if (Near != AnimSnaps.end() && std::fabs(*Near - Raw) <= Gap)
+			{
+				Gap = std::fabs(*Near - Raw);
+				Best = *Near;
+			}
+		}
+		return Best;
+	};
 	const u32 HeadColor = IM_COL32(255, 90, 90, 255), PickColor = IM_COL32(255, 200, 60, 255), Faint = ImGui::GetColorU32(ImGuiCol_TextDisabled);
 	ImDrawList* List = ImGui::GetWindowDrawList();
 	ImGui::SetCursorScreenPos(ImVec2(Left, Top.y));
 	ImGui::InvisibleButton("##Ruler", ImVec2(Width, Row));
 	if (ImGui::IsItemActive())
 	{
-		Seek(TimeAt(Input.MousePos.x));
+		Seek(Pick(Input.MousePos.x));
 	}
 	const float* Step = std::find_if(std::begin(AnimatorUi::Steps), std::end(AnimatorUi::Steps) - 1, [&](float Item) { return Item * Scale >= ImGui::GetFontSize() * 4.0f; });
 	List->PushClipRect(ImVec2(Left, Top.y), ImVec2(Left + Width, Top.y + Row), true);
@@ -1386,15 +1406,20 @@ void Editor::DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, con
 			AnimatorUi::KeyTimes(*Clip, Layer, AnimTimes);
 		}
 		List->PushClipRect(ImVec2(Left, Y), ImVec2(Left + Width, Y + Row), true);
+		float Column = -FLT_MAX;
+		u32 Stack = 0;
 		for (float Time : AnimTimes)
 		{
-			const float X = XAt(Time), Size = IsLeaf ? Half * 0.8f : Half;
+			const float X = XAt(Time);
 			if (X < Left - Half || X > Left + Width + Half)
 			{
 				continue;
 			}
+			Stack = X - Column < Half * 1.5f ? (Stack + 1) % 3 : 0;
+			Column = Stack ? Column : X;
+			const float Size = (IsLeaf ? Half * 0.8f : Half) * (Stack ? 0.7f : 1.0f), High = Mid + (Stack == 1 ? -0.3f : Stack == 2 ? 0.3f : 0.0f) * Row;
 			const bool IsPicked = std::any_of(AnimKeys.begin(), AnimKeys.end(), [&](const AnimKey& Item) { return (Item.Bone == AnimatorUi::AllBones || Item.Bone == Layer) && (Item.Channel < 0 || Item.Channel == Line.Channel) && std::fabs(Item.Time - Time) < AnimatorUi::SameTime; });
-			List->AddQuadFilled(ImVec2(X - Size, Mid), ImVec2(X, Mid - Size), ImVec2(X + Size, Mid), ImVec2(X, Mid + Size), IsPicked ? PickColor : IsLeaf ? AxisColors[Line.Channel % 3] : ImGui::GetColorU32(ImGuiCol_Text));
+			List->AddQuadFilled(ImVec2(X - Size, High), ImVec2(X, High - Size), ImVec2(X + Size, High), ImVec2(X, High + Size), IsPicked ? PickColor : IsLeaf ? AxisColors[Line.Channel % 3] : ImGui::GetColorU32(ImGuiCol_Text));
 			const bool IsNear = Over == static_cast<s32>(Index) && std::fabs(Input.MousePos.x - X) <= Half + 2.0f;
 			HitTime = IsNear && (HitTime < 0.0f || std::fabs(Input.MousePos.x - X) < std::fabs(Input.MousePos.x - XAt(HitTime))) ? Time : HitTime;
 			if (IsBoxed && X >= Box.Min.x && X <= Box.Max.x && Mid >= Box.Min.y && Mid <= Box.Max.y)
@@ -1469,7 +1494,7 @@ void Editor::DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, con
 		else if (!IsMenu)
 		{
 			IsAnimDragging = Clip && IsOnKey && !Input.KeyCtrl;
-			AnimGrab = TimeAt(Input.MousePos.x);
+			AnimGrab = IsOnKey ? TimeAt(Input.MousePos.x) : Pick(Input.MousePos.x);
 			AnimShift = 0.0f;
 			AnimBaseKeys = AnimKeys;
 			if (IsAnimDragging)
@@ -1507,7 +1532,7 @@ void Editor::DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, con
 	}
 	else if (!Clip && IsDragging && !IsLabel)
 	{
-		Seek(TimeAt(Input.MousePos.x));
+		Seek(Pick(Input.MousePos.x));
 	}
 	IsAnimDragging &= ImGui::IsMouseDown(ImGuiMouseButton_Left);
 	bool IsStale = false;
@@ -1709,7 +1734,7 @@ void Editor::DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, con
 		}
 		else
 		{
-			Seek(TimeAt(Input.MousePos.x));
+			Seek(Pick(Input.MousePos.x));
 		}
 	}
 	const bool IsPulled = IsPressed && ImGui::IsMouseDragging(ImGuiMouseButton_Left);
@@ -1747,7 +1772,7 @@ void Editor::DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, con
 	}
 	else if (!AnimTipSide && AnimCurveKey < 0 && IsPulled)
 	{
-		Seek(TimeAt(Input.MousePos.x));
+		Seek(Pick(Input.MousePos.x));
 	}
 	if (IsOver && Input.MouseWheel != 0.0f)
 	{

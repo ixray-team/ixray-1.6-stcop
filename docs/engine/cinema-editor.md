@@ -778,6 +778,15 @@ The **Attach** group follows **Transform** for actors, lights and particle effec
 
 - Deleting an object never changes other objects: their links to it stay and show the warnings above. Undo brings the object back and the links work again.
 
+### Bone over time
+
+An attached object can change the bone it hangs on during its clip, for example an item passing from the right hand to the left. Select one attached object: under the Attach rows, **Bone over time** lists the switches (time and bone) with **Go** (moves the playhead there) and **x** (removes it).
+
+- Pick a bone of the parent, move the playhead to the moment of the hand-over and press **Switch to this bone at the playhead**. From that time on the object follows the new bone; before it, the bone of the **Bone** row or of the previous switch.
+- **Keep place** (on by default) keys the object's Position and Rotation at the switch, with a held key one frame before, so the object stays exactly where it is at that moment instead of jumping to its old offset on the new bone. Untick it to keep the same offset on the new bone.
+- A switch at a time that already has one replaces it. Up to 32 switches. Only the bone changes: the parent object stays the same, and camera clips have no switches.
+- Saved with the scene as `attach_switches`, `attach_switch_NN` (seconds from the clip's start) and `attach_switch_NN_bone`.
+
 ### On the timeline and in the view
 
 - An actor's clip label reads `name -> parent.bone @ target` (the parts that are set). A camera clip with links shows `-> parent.bone @ target` below its pose diamonds.

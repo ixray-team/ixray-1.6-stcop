@@ -315,6 +315,20 @@ void ReadLinks(const CInifile& Ini, const char* Section, const char* Prefix, Att
 	xr_sprintf(Line, "%sweight", Prefix);
 	float Weight = 1.0f;
 	Out.Weight = ReadFloats(Ini, Section, Line, &Weight, 1, Notes) ? Sanitize(Weight, 0.0f, 1.0f, 1.0f) : 1.0f;
+	xr_sprintf(Line, "%sswitches", Prefix);
+	const u32 Count = Ini.line_exist(Section, Line) ? ReadU32(Ini, Section, Line, MaxAttachSwitches, Notes) : 0;
+	for (u32 Index = 0; Index < Count; ++Index)
+	{
+		AttachSwitch Item;
+		float Moment = 0.0f;
+		xr_sprintf(Line, "%sswitch_%02u", Prefix, Index);
+		ReadFloats(Ini, Section, Line, &Moment, 1, Notes);
+		Item.Time = Sanitize(Moment, 0.0f, MaxTime, 0.0f);
+		xr_sprintf(Line, "%sswitch_%02u_bone", Prefix, Index);
+		Item.Bone = ReadSafe(Ini, Section, Line, Notes);
+		Out.Switches.push_back(Item);
+	}
+	std::stable_sort(Out.Switches.begin(), Out.Switches.end(), [](const AttachSwitch& A, const AttachSwitch& B) { return A.Time < B.Time; });
 }
 
 void WriteLinks(CInifile& Ini, const char* Section, const char* Prefix, const Attachment& Links)
@@ -338,6 +352,21 @@ void WriteLinks(CInifile& Ini, const char* Section, const char* Prefix, const At
 	{
 		xr_sprintf(Line, "%sweight", Prefix);
 		Ini.w_float(Section, Line, Links.Weight);
+	}
+	if (!Links.Switches.empty())
+	{
+		xr_sprintf(Line, "%sswitches", Prefix);
+		Ini.w_u32(Section, Line, static_cast<u32>(Links.Switches.size()));
+	}
+	for (u32 Index = 0; Index < Links.Switches.size(); ++Index)
+	{
+		xr_sprintf(Line, "%sswitch_%02u", Prefix, Index);
+		Ini.w_float(Section, Line, Links.Switches[Index].Time);
+		if (Links.Switches[Index].Bone.size())
+		{
+			xr_sprintf(Line, "%sswitch_%02u_bone", Prefix, Index);
+			Ini.w_string(Section, Line, Links.Switches[Index].Bone.c_str());
+		}
 	}
 }
 

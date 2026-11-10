@@ -100,7 +100,7 @@ private:
 	void Stamp(DecalRuntime& Runtime, const Fmatrix& World, float Size);
 	float PoseTransform(u32 Index, float At, const Fvector& Position, const Fvector& Rotation);
 	void DropRuntimes();
-	void Resolve(const Attachment& Links, bool IsActor, LinkFrames& Out) const;
+	void Resolve(const Attachment& Links, bool IsActor, LinkFrames& Out, float Local) const;
 	void Unhook(const Attachment& Links, const xr_vector<Lane>& Lanes, float Start, float Local, LinkFrames& Out);
 	bool FrameAt(const AttachLink& Link, float At, Fmatrix& Out);
 	bool Frame(const AttachLink& Link, Fmatrix& Out, u8& Problems, u8 BoneProblem) const;

@@ -191,8 +191,19 @@ struct AttachLink
 	bool operator==(const AttachLink&) const = default;
 };
 
+struct AttachSwitch
+{
+	float Time = 0.0f;
+	shared_str Bone;
+
+	bool operator==(const AttachSwitch&) const = default;
+};
+
+inline constexpr u32 MaxAttachSwitches = 32;
+
 struct Attachment
 {
+	xr_vector<AttachSwitch> Switches;
 	AttachLink Parent;
 	bool IsRollLocked = false, IsPitchLocked = false;
 	AttachLink LookAt;

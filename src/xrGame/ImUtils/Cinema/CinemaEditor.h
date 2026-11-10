@@ -739,6 +739,8 @@ private:
 	void SaveRig();
 	void DrawRigSection(const ActorRuntime& Runtime);
 	void DrawBoneValues(Player& Core, const Object& Target);
+	bool DrawAttachSwitches(Player& Core, const Object& Target);
+	void AddAttachSwitch(Player& Core, u32 Id, float Local);
 	void SelectSet(u32 Set, bool IsAdding);
 	bool HasRigControls() const { return RigObject == PoseObject && std::any_of(Rig.Controls, Rig.Controls + RigControlCount, [](u16 Bone) { return Bone != BI_NONE; }); }
 	s32 EnsurePoseBone(Object& Item, const shared_str& Bone);
@@ -1226,7 +1228,7 @@ private:
 	bool IsAnimBoxing = false;
 	ImVec2 AnimBoxStart;
 	xr_vector<Lane> AnimBase;
-	xr_vector<float> AnimTimes, AnimTops;
+	xr_vector<float> AnimTimes, AnimTops, AnimSnaps;
 	s32 AnimCurveKey = -1, AnimPickKey = -1;
 	u8 AnimPickBone = 0, AnimPickAxis = 0, AnimTipSide = 0;
 	u8 AnimCurveBone = 0, AnimCurveAxis = 0, AnimLaneKind = 0;
@@ -1238,7 +1240,8 @@ private:
 	bool IsActorModelsListed = false;
 	xr_vector<ActorBlock> HudBlocks;
 	float HudNear = -1.0f;
-	bool ShowBoneLines = false;
+	bool ShowBoneLines = false, IsSwitchKeeping = true;
+	shared_str AttachSwitchBone;
 	bool WorkspaceShown[2][4] = { { true, false, false, false }, { true, false, false, false } };
 	bool IsAnimFresh = false;
 	s32 AnimStockBlock = -1;

@@ -87,6 +87,16 @@ void Lock(const Attachment& Links, Fmatrix& Parent)
 	Parent.c = Origin;
 }
 
+AttachLink LinkAt(const Attachment& Links, float Local)
+{
+	AttachLink Out = Links.Parent;
+	for (const AttachSwitch& Item : Links.Switches)
+	{
+		Out.Bone = Item.Time <= Local ? Item.Bone : Out.Bone;
+	}
+	return Out;
+}
+
 Fmatrix PoseMatrix(const Fvector& Position, const Fvector& Rotation)
 {
 	Fmatrix Pose;
@@ -505,8 +515,8 @@ void Player::Convert(const AttachRequest& Request)
 	{
 		EvaluateObjects(Start + (IsBlock ? Cameras::LocalFromPath(Target->Camera.Blocks[Request.Block], Times[Index]) : Times[Index]), Needed.data());
 		LinkFrames Old, New;
-		Resolve(Links, Target->Type == ObjectType::Actor, Old);
-		Resolve(Request.Links, Target->Type == ObjectType::Actor, New);
+		Resolve(Links, Target->Type == ObjectType::Actor, Old, Times[Index]);
+		Resolve(Request.Links, Target->Type == ObjectType::Actor, New, Times[Index]);
 		Fvector Position = PlayerLocal::KeyValues(Lanes, Param::Position, Times[Index], Place ? *Place : Zero);
 		Fvector Rotation = PlayerLocal::KeyValues(Lanes, Param::Rotation, Times[Index], Turn ? *Turn : Zero);
 		Reference = Index ? Reference : Rotation;
@@ -619,7 +629,7 @@ void Player::PoseActor(u32 Index, float At, bool IsNeeded)
 	const Object& Item = Data.Objects[Index];
 	ActorRuntime& Runtime = ActorAt(Item.Id);
 	ObjectState& State = States[Index];
-	Resolve(Item.Attach, true, State.Frames);
+	Resolve(Item.Attach, true, State.Frames, std::clamp(At - Item.Span.Start, 0.0f, Item.Span.Length));
 	Unhook(Item.Attach, Item.Lanes, Item.Span.Start, std::clamp(At - Item.Span.Start, 0.0f, Item.Span.Length), State.Frames);
 	State.IsReady = !(State.Frames.Problems & MissingParent) && Runtime.Evaluate(Item, At, Heard(Item.Id), IsNeeded, IsSilent(Item));
 	if (!State.IsReady)
@@ -659,7 +669,7 @@ void Player::PoseCamera(u32 Index, float At)
 		const AttachLink& Focus = Rig.Camera.Blocks[Block].FocusTarget;
 		Fmatrix Point = Fidentity;
 		const CameraBlock& Clip = Rig.Camera.Blocks[Block];
-		Resolve(Clip.Attach, false, Cache.Frames);
+		Resolve(Clip.Attach, false, Cache.Frames, 0.0f);
 		Unhook(Clip.Attach, Clip.Lanes, Rig.Span.Start + Clip.Start, std::clamp(At - Rig.Span.Start - Clip.Start, 0.0f, Clip.Length), Cache.Frames);
 		Cache.HasFocus = Focus.ObjectId && Frame(Focus, Point, Cache.Frames.Problems, MissingFocusBone);
 		Cache.FocusPoint = Point.c;
@@ -781,7 +791,7 @@ float Player::PoseTransform(u32 Index, float At, const Fvector& Position, const 
 	ObjectState& State = States[Index];
 	const float Tau = At - Item.Span.Start;
 	const float Local = std::clamp(Tau, 0.0f, Item.Span.Length);
-	Resolve(Item.Attach, false, State.Frames);
+	Resolve(Item.Attach, false, State.Frames, Local);
 	Unhook(Item.Attach, Item.Lanes, Item.Span.Start, Local, State.Frames);
 	State.World = PlayerLocal::PoseMatrix(Curves::LaneVector(Item.Lanes, Param::Position, Local, Position), Curves::LaneVector(Item.Lanes, Param::Rotation, Local, Rotation));
 	Spaces::Compose(State.Frames, State.World);
@@ -789,12 +799,12 @@ float Player::PoseTransform(u32 Index, float At, const Fvector& Position, const 
 	return Tau;
 }
 
-void Player::Resolve(const Attachment& Links, bool IsActor, LinkFrames& Out) const
+void Player::Resolve(const Attachment& Links, bool IsActor, LinkFrames& Out, float Local) const
 {
 	Fmatrix Target = Fidentity;
 	Out = LinkFrames {};
 	Out.IsYawOnly = IsActor || Links.IsYawOnly;
-	Out.HasParent = Links.Parent.ObjectId && Frame(Links.Parent, Out.Parent, Out.Problems, MissingParentBone);
+	Out.HasParent = Links.Parent.ObjectId && Frame(PlayerLocal::LinkAt(Links, Local), Out.Parent, Out.Problems, MissingParentBone);
 	Out.HasLook = Links.LookAt.ObjectId && Frame(Links.LookAt, Target, Out.Problems, MissingTargetBone);
 	Out.Problems |= (Links.Parent.ObjectId && !Out.HasParent ? MissingParent : 0) | (Links.LookAt.ObjectId && !Out.HasLook ? MissingTarget : 0);
 	Out.Look = Target.c;
@@ -825,7 +835,7 @@ void Player::Unhook(const Attachment& Links, const xr_vector<Lane>& Lanes, float
 		IsFound = true;
 	}
 	Fmatrix Frozen;
-	if (!FrameAt(Links.Parent, Start + Freeze, Frozen))
+	if (!FrameAt(PlayerLocal::LinkAt(Links, Local), Start + Freeze, Frozen))
 	{
 		return;
 	}
