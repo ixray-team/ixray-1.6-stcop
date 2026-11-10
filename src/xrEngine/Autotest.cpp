@@ -42,6 +42,156 @@ namespace
 	CTimer				s_clock;
 	xr_vector<Sample>	s_samples;
 	xr_vector<u8>		s_pixels;
+	string_path			s_frame_path = {};
+	float				s_frame_aspect = 0.0f;
+	s32					s_frame_status = 0;
+	xr_vector<u8>		s_jpeg;
+
+	class MjpegAvi
+	{
+	public:
+		bool Open(const char* Path, double Rate)
+		{
+			xr_strcpy(Base, Path);
+			Parts = 0;
+			FrameRate = Rate;
+			return Start();
+		}
+
+		bool Add(const xr_vector<u8>& Jpeg, u32 FrameWidth, u32 FrameHeight)
+		{
+			const u32 Size = static_cast<u32>(Jpeg.size());
+			if (!File || Jpeg.size() > MaxMovie || (Frames && (FrameWidth != Width || FrameHeight != Height)))
+			{
+				return false;
+			}
+			if (Moved + 8u + Size + 1u > MaxMovie && (!Finish() || !Start()))
+			{
+				return false;
+			}
+			Width = FrameWidth;
+			Height = FrameHeight;
+			Index.push_back({ Moved + 4, Size });
+			File->w("00dc", 4);
+			File->w_u32(Size);
+			File->w(Jpeg.data(), Size);
+			(Size & 1) ? File->w_u8(0) : (void)0;
+			Moved += 8 + Size + (Size & 1);
+			Largest = std::max(Largest, Size);
+			++Frames;
+			return true;
+		}
+
+		u32 Close()
+		{
+			Finish();
+			return Parts;
+		}
+
+		bool IsOpen() const
+		{
+			return File != nullptr;
+		}
+
+	private:
+		struct Entry
+		{
+			u32 Offset;
+			u32 Size;
+		};
+
+		static constexpr u32 HeaderSize = 224, MaxMovie = 1u << 30;
+
+		bool Start()
+		{
+			string_path Path;
+			const size_t Stem = xr_strlen(Base) > 4 ? xr_strlen(Base) - 4 : xr_strlen(Base);
+			xr_sprintf(Path, Parts ? "%.*s_%u.avi" : "%.*s", static_cast<int>(Parts ? Stem : xr_strlen(Base)), Base, Parts + 1);
+			File = FS.w_open(Path);
+			if (File && !File->valid())
+			{
+				FS.w_close(File);
+			}
+			if (!File)
+			{
+				return false;
+			}
+			++Parts;
+			Index.clear();
+			Frames = Moved = Largest = 0;
+			WriteHeader();
+			return true;
+		}
+
+		bool Finish()
+		{
+			if (!File)
+			{
+				return false;
+			}
+			File->w("idx1", 4);
+			File->w_u32(16 * Frames);
+			for (const Entry& Item : Index)
+			{
+				File->w("00dc", 4);
+				File->w_u32(0x10);
+				File->w_u32(Item.Offset);
+				File->w_u32(Item.Size);
+			}
+			File->seek(0);
+			WriteHeader();
+			FS.w_close(File);
+			return true;
+		}
+
+		void WriteHeader()
+		{
+			const u32 Scale = 1000, Rate = static_cast<u32>(std::lround(FrameRate * Scale));
+			const auto Tag = [this](const char* Code) { File->w(Code, 4); };
+			Tag("RIFF");
+			File->w_u32(HeaderSize - 8 + Moved + 8 + 16 * Frames);
+			Tag("AVI ");
+			Tag("LIST");
+			File->w_u32(192);
+			Tag("hdrl");
+			Tag("avih");
+			File->w_u32(56);
+			const u32 Main[14] = { static_cast<u32>(std::lround(1000000.0 / FrameRate)), static_cast<u32>(Largest * FrameRate), 0, 0x10, Frames, 0, 1, Largest, Width, Height, 0, 0, 0, 0 };
+			File->w(Main, sizeof(Main));
+			Tag("LIST");
+			File->w_u32(116);
+			Tag("strl");
+			Tag("strh");
+			File->w_u32(56);
+			Tag("vids");
+			Tag("MJPG");
+			const u32 Stream[10] = { 0, 0, 0, Scale, Rate, 0, Frames, Largest, u32(-1), 0 };
+			File->w(Stream, sizeof(Stream));
+			const u16 Frame[4] = { 0, 0, static_cast<u16>(Width), static_cast<u16>(Height) };
+			File->w(Frame, sizeof(Frame));
+			Tag("strf");
+			File->w_u32(40);
+			File->w_u32(40);
+			File->w_u32(Width);
+			File->w_u32(Height);
+			File->w_u16(1);
+			File->w_u16(24);
+			Tag("MJPG");
+			const u32 Bitmap[5] = { Width * Height * 3, 0, 0, 0, 0 };
+			File->w(Bitmap, sizeof(Bitmap));
+			Tag("LIST");
+			File->w_u32(4 + Moved);
+			Tag("movi");
+		}
+
+		IWriter* File = nullptr;
+		string_path Base = {};
+		xr_vector<Entry> Index;
+		double FrameRate = 30.0;
+		u32 Parts = 0, Frames = 0, Moved = 0, Largest = 0, Width = 0, Height = 0;
+	};
+
+	MjpegAvi s_video;
 
 	void OnLog(const char* line)
 	{
@@ -62,9 +212,13 @@ namespace
 		return value;
 	}
 
-	bool Readback(u32& w, u32& h, u32& pitch)
+	bool Readback(u32& w, u32& h, u32& pitch, bool IsScene = false)
 	{
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+		IRHIRenderTargetView* rtv = IsScene ? GRHI->DevicePtr->RenderRTV : GRHI->DevicePtr->SwapChainRTV;
+#else
 		IRHIRenderTargetView* rtv = GRHI->DevicePtr->SwapChainRTV;
+#endif
 		if (!rtv)
 			return false;
 
@@ -85,14 +239,13 @@ namespace
 	}
 
 	// Swapchain is DXGI_FORMAT_B8G8R8A8_UNORM, which is TGA's native byte order.
-	void WriteTGA(u32 frame, u32 w, u32 h, u32 pitch)
+	bool WriteTGA(const char* name, u32 x, u32 y, u32 w, u32 h, u32 pitch)
 	{
-		string_path name;
-		xr_sprintf(name, "%s_%04u.tga", s_shot, frame);
-
 		IWriter* W = FS.w_open(name);
+		if (W && !W->valid())
+			FS.w_close(W);
 		if (!W)
-			return;
+			return false;
 
 		u8 hdr[18] = { 0 };
 		hdr[2]	= 2;
@@ -106,17 +259,17 @@ namespace
 		// Nothing writes swapchain alpha, so it reads back as 0 and every viewer shows the
 		// dump as fully transparent. Force it opaque.
 		xr_vector<u8> row(size_t(w) * 4);
-		for (u32 y = 0; y < h; ++y)
+		for (u32 row_y = 0; row_y < h; ++row_y)
 		{
-			CopyMemory(row.data(), s_pixels.data() + size_t(y) * pitch, row.size());
-			for (size_t x = 3; x < row.size(); x += 4)
-				row[x] = 0xff;
+			CopyMemory(row.data(), s_pixels.data() + size_t(y + row_y) * pitch + size_t(x) * 4, row.size());
+			for (size_t alpha = 3; alpha < row.size(); alpha += 4)
+				row[alpha] = 0xff;
 
 			W->w(row.data(), (u32)row.size());
 		}
 
 		FS.w_close(W);
-		Msg("~ [autotest] %s", name);
+		return true;
 	}
 
 	float TakeTimer(CStatTimer& T)
@@ -331,7 +484,12 @@ namespace Autotest
 				if (s_hash)
 					S.hash = Hash(w, h, pitch);
 				if (shot)
-					WriteTGA(index, w, h, pitch);
+				{
+					string_path name;
+					xr_sprintf(name, "%s_%04u.tga", s_shot, index);
+					WriteTGA(name, 0, 0, w, h, pitch);
+					Msg("~ [autotest] %s", name);
+				}
 			}
 		}
 
@@ -353,5 +511,52 @@ namespace Autotest
 			return 1;
 
 		return 0;
+	}
+
+	void RequestFrame(const char* Path, float Aspect)
+	{
+		xr_strcpy(s_frame_path, Path);
+		s_frame_aspect = Aspect;
+		s_frame_status = 1;
+	}
+
+	s32 FrameStatus()
+	{
+		return s_frame_status;
+	}
+
+	void CaptureFrame()
+	{
+		u32 Width = 0, Height = 0, Pitch = 0;
+		if (s_frame_status != 1)
+			return;
+
+		s_frame_status = -1;
+		if (!Readback(Width, Height, Pitch, true) || !Width || !Height)
+			return;
+
+		const float Screen = float(Width) / float(Height);
+		const u32 CropWidth = s_frame_aspect > 0.0f && s_frame_aspect < Screen ? std::max(u32(std::lround(Height * s_frame_aspect)), 1u) : Width;
+		const u32 CropHeight = s_frame_aspect > Screen ? std::max(u32(std::lround(Width / s_frame_aspect)), 1u) : Height;
+		const u32 Left = (Width - CropWidth) / 2, Top = (Height - CropHeight) / 2;
+		if (!s_video.IsOpen())
+		{
+			s_frame_status = WriteTGA(s_frame_path, Left, Top, CropWidth, CropHeight, Pitch) ? 0 : -1;
+			return;
+		}
+		const u32 EvenWidth = std::max(CropWidth & ~1u, 2u), EvenHeight = std::max(CropHeight & ~1u, 2u);
+		const bool IsEncoded = EvenWidth <= Width && EvenHeight <= Height && SUCCEEDED(GRHI->EncodeJpeg(s_pixels.data() + size_t(Top) * Pitch + size_t(Left) * 4, EvenWidth, EvenHeight, Pitch, s_jpeg));
+		s_frame_status = IsEncoded && s_video.Add(s_jpeg, EvenWidth, EvenHeight) ? 0 : -1;
+	}
+
+	bool OpenVideo(const char* Path, double Rate)
+	{
+		s_video.Close();
+		return Rate > 0.0 && s_video.Open(Path, Rate);
+	}
+
+	u32 CloseVideo()
+	{
+		return s_video.Close();
 	}
 }

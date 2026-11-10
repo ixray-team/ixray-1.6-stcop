@@ -144,6 +144,7 @@ public:
 	bool DecodeAlpha(const void* Data, size_t Size, xr_vector<u8>& Alpha, u32& Width, u32& Height);
 	HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface);
 	HRESULT EncodeRenderTarget(IRHIRenderTargetView* target, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data);
+	HRESULT EncodeJpeg(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_vector<u8>& Out);
 	void SetViewport(RHIViewport& VP);
 	void SetScissorRect(Irect* R);
 
