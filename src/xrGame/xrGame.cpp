@@ -14,6 +14,7 @@
 #include "../xrEngine/xr_level_controller.h"
 
 #include "ImUtils/ImUtils.h"
+#include "../xrEngine/ImGuiManager.h"
 #include "Cinema/CinemaApi.h"
 
 void CCC_RegisterCommands	();
@@ -133,6 +134,7 @@ extern "C"
 	{
 		CinemaFilmMaker_Shutdown();
 		CinemaEditor_Shutdown();
+		CImGuiManager::Instance().HiddenCallback = nullptr;
 		Cinema::ShutdownPlayer();
 		CDynamicWallmarkRegistry::Instance().ClearWallmarks();
 	}

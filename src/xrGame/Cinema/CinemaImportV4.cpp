@@ -867,6 +867,10 @@ void AddCamera(xr_vector<Shot>& Shots, Scene& Out, Tally& Counts)
 			}
 		}
 	}
+	for (CameraBlock& Block : Blocks)
+	{
+		Cameras::KeysToLanes(Block);
+	}
 	Rig.Span.Length = std::clamp(Length, MinLength, MaxTime);
 }
 

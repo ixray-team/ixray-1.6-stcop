@@ -13,7 +13,7 @@ bool Locate(const char* Path, string_path& Resolved, bool IsMeshFirst)
 	{
 		return false;
 	}
-	return FS.exist(Resolved, IsMeshFirst ? _game_meshes_ : "$level$", Path) || FS.exist(Resolved, IsMeshFirst ? "$level$" : _game_meshes_, Path);
+	return FS.exist(Resolved, IsMeshFirst ? _game_meshes_ : "$level$", Path) || FS.exist(Resolved, IsMeshFirst ? "$level$" : _game_meshes_, Path) || FS.exist(Resolved, "$app_data_root$", Path);
 }
 
 bool LocateVisual(const char* Visual, string_path& Resolved)
@@ -202,6 +202,57 @@ bool CheckMotionPath(const char* Path, const xr_vector<xr_string>& Bones, xr_str
 		return false;
 	}
 	return std::all_of(Files.begin(), Files.end(), [&](const FS_File& Item) { return CheckMotion(Item.name.c_str(), Bones, Error); });
+}
+
+void WriteMotion(const char* Name, const xr_vector<shared_str>& Bones, const xr_vector<Fquaternion>& Turns, const xr_vector<Fvector>& Shifts, CMemoryWriter& Output)
+{
+	const u32 Count = static_cast<u32>(Bones.size()), Frames = Count ? static_cast<u32>(Turns.size() / Count) : 0;
+	Output.open_chunk(OGF_S_SMPARAMS);
+	Output.w_u16(xrOGF_SMParamsVersion);
+	Output.w_u16(1);
+	Output.w_stringZ("base");
+	Output.w_u16(static_cast<u16>(Count));
+	for (u32 Bone = 0; Bone < Count; ++Bone)
+	{
+		Output.w_stringZ(Bones[Bone]);
+		Output.w_u32(Bone);
+	}
+	Output.w_u16(1);
+	Output.w_stringZ(Name);
+	Output.w_u32(0);
+	Output.w_u16(BI_NONE);
+	Output.w_u16(0);
+	Output.w_float(1.0f);
+	Output.w_float(1.0f);
+	Output.w_float(2.0f);
+	Output.w_float(2.0f);
+	Output.w_u32(0);
+	Output.close_chunk();
+	Output.open_chunk(OGF_S_MOTIONS);
+	Output.open_chunk(0);
+	Output.w_u32(1);
+	Output.close_chunk();
+	Output.open_chunk(1);
+	Output.w_stringZ(Name);
+	Output.w_u32(Frames);
+	for (u32 Bone = 0; Bone < Count; ++Bone)
+	{
+		Output.w_u8(flTKeyFFT_Bit | flTKeyPresent);
+		Output.w_u32(0);
+		for (u32 Frame = 0; Frame < Frames; ++Frame)
+		{
+			const Fquaternion& Turn = Turns[Frame * Count + Bone];
+			const CKeyQR32 Rotation { Turn.x, Turn.y, Turn.z, Turn.w };
+			Output.w(&Rotation, sizeof(Rotation));
+		}
+		Output.w_u32(0);
+		for (u32 Frame = 0; Frame < Frames; ++Frame)
+		{
+			Output.w_fvector3(Shifts[Frame * Count + Bone]);
+		}
+	}
+	Output.close_chunk();
+	Output.close_chunk();
 }
 
 bool IsOmfPath(const shared_str& Path)

@@ -37,7 +37,7 @@ static float SmoothNoise(float Cycle)
 	return A + (NoiseSample(Cell + 1) - A) * Blend;
 }
 
-static double BezierAt(const Key& A, const Key& B, double Local)
+static double BezierAt(const Key& A, const Key& B, double Local, double Tension = 1.0)
 {
 	const double Span = static_cast<double>(B.Time) - A.Time;
 	const double X1 = std::clamp<double>(A.OutTime, 0.0, Span);
@@ -51,14 +51,14 @@ static double BezierAt(const Key& A, const Key& B, double Local)
 		const double Next = Slope > 1e-6 ? S - Error / Slope : -1.0;
 		S = Next >= Lo && Next <= Hi ? Next : 0.5 * (Lo + Hi);
 	}
-	return BezierValue(A.Value, A.Value + A.OutValue, B.Value + B.InValue, B.Value, S);
+	return BezierValue(A.Value, A.Value + A.OutValue * Tension, B.Value + B.InValue * Tension, B.Value, S);
 }
 
-static float SegmentValue(const Key& A, const Key& B, float Time)
+static float SegmentValue(const Key& A, const Key& B, float Time, float Tension)
 {
 	if (A.Mode == Interp::Bezier)
 	{
-		return static_cast<float>(BezierAt(A, B, static_cast<double>(Time) - A.Time));
+		return static_cast<float>(BezierAt(A, B, static_cast<double>(Time) - A.Time, Tension));
 	}
 	return A.Value + (B.Value - A.Value) * Ease(A.Mode, (Time - A.Time) / (B.Time - A.Time));
 }
@@ -208,27 +208,45 @@ float WaveSignal(Wave Type, float Cycle)
 	}
 }
 
-float Value(const Curve& Source, float Time, float Fallback)
+float Value(const Curve& Source, float Time, float Fallback, float Tension)
 {
+	float Offset = 0.0f;
 	const xr_vector<Key>& Keys = Source.Keys;
 	if (Keys.empty())
 	{
 		return Fallback;
 	}
+	const float First = Keys.front().Time, Span = Keys.back().Time - First;
+	const u8 Mode = Time < First ? Source.Pre : Time > Keys.back().Time ? Source.Post : 0;
+	if (Mode && Span > 0.0f && Keys.size() > 1)
+	{
+		const bool IsBefore = Time < First;
+		const Key &Near = IsBefore ? Keys[0] : Keys.back(), &Far = IsBefore ? Keys[1] : Keys[Keys.size() - 2];
+		const double Turns = std::floor((Time - First) / Span), Inside = Time - First - Turns * Span;
+		const bool IsMirror = Mode == 4 && (static_cast<s64>(Turns) & 1);
+		const float Folded = First + static_cast<float>(IsMirror ? Span - Inside : Inside);
+		const float Slope = (IsBefore ? Near.Mode : Far.Mode) == Interp::Hold ? 0.0f : (Near.Value - Far.Value) / (Near.Time - Far.Time);
+		if (Mode == 1)
+		{
+			return Near.Value + Slope * (Time - Near.Time);
+		}
+		Offset = Mode == 3 ? static_cast<float>(Turns) * (Keys.back().Value - Keys.front().Value) : 0.0f;
+		Time = Folded;
+	}
 	const auto Next = std::upper_bound(Keys.begin(), Keys.end(), Time, [](float Moment, const Key& Item) { return Moment < Item.Time; });
 	if (Next == Keys.begin())
 	{
-		return Keys.front().Value;
+		return Keys.front().Value + Offset;
 	}
-	return Next == Keys.end() ? Keys.back().Value : SegmentValue(*(Next - 1), *Next, Time);
+	return Offset + (Next == Keys.end() ? Keys.back().Value : SegmentValue(*(Next - 1), *Next, Time, Tension));
 }
 
-float Result(const Curve& Source, float Time, float Fallback, const ParamInfo& Meta)
+float Result(const Curve& Source, float Time, float Fallback, const ParamInfo& Meta, float Tension)
 {
 	const Generator& Gen = Source.Gen;
 	const float Lo = std::max(Meta.Min, Gen.Min);
 	const float Hi = std::max(Lo, std::min(Meta.Max, Gen.Max));
-	return std::clamp(Value(Source, Time, Fallback) + Gen.Amplitude * WaveSignal(Gen.Type, Time * Gen.Frequency + Gen.Phase), Lo, Hi);
+	return std::clamp(Value(Source, Time, Fallback, Tension) + Gen.Amplitude * WaveSignal(Gen.Type, Time * Gen.Frequency + Gen.Phase), Lo, Hi);
 }
 
 void Refresh(AreaTable& Table, const Curve& Source, float Rate, float Step, float Cover, const ParamInfo& Meta)
@@ -310,15 +328,15 @@ float LaneScalar(const xr_vector<Lane>& Lanes, Param Id, u8 Layer, float Time, f
 	return Found ? Result(Found->Curves[0], Time, Fallback, Info(Id)) : Fallback;
 }
 
-Fvector LaneVector(const xr_vector<Lane>& Lanes, Param Id, float Time, const Fvector& Fallback)
+Fvector LaneVector(const xr_vector<Lane>& Lanes, Param Id, float Time, const Fvector& Fallback, u8 Layer, float Tension)
 {
-	const Lane* Found = FindLane(Lanes, Id, 0);
+	const Lane* Found = FindLane(Lanes, Id, Layer);
 	if (!Found)
 	{
 		return Fallback;
 	}
 	const ParamInfo& Meta = Info(Id);
-	return Fvector().set(Result(Found->Curves[0], Time, Fallback.x, Meta), Result(Found->Curves[1], Time, Fallback.y, Meta), Result(Found->Curves[2], Time, Fallback.z, Meta));
+	return Fvector().set(Result(Found->Curves[0], Time, Fallback.x, Meta, Tension), Result(Found->Curves[1], Time, Fallback.y, Meta, Tension), Result(Found->Curves[2], Time, Fallback.z, Meta, Tension));
 }
 
 double LaneArea(const xr_vector<Lane>& Lanes, const AreaTable* Table, Param Id, u8 Layer, float Time, float Rate)

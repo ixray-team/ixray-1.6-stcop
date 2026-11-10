@@ -7,12 +7,14 @@
 #include "../../Cinema/CinemaSceneIo.h"
 
 extern float g_fov;
+class IRHISurface;
+class IRHIShaderResourceView;
 
 namespace Cinema
 {
 inline constexpr ImVec4 ErrorColor = ImVec4(0.95f, 0.35f, 0.35f, 1.0f);
 inline constexpr ImVec4 OverrideColor = ImVec4(1.0f, 165.0f / 255.0f, 0.0f, 1.0f);
-inline constexpr const char* TypeNames[4] = { "Actor", "Camera", "Light", "Particle" };
+inline constexpr const char* TypeNames[7] = { "Actor", "Camera", "Light", "Particle", "Decal", "Weather", "Post" };
 
 inline void Timecode(string32& Out, float Time, u32 Rate)
 {
@@ -32,8 +34,8 @@ inline xr_string ModelName(const shared_str& Visual)
 
 inline xr_string DefaultName(const Object& Item)
 {
-	const char* const Fixed[4] = { nullptr, "Camera", Item.Light.Kind == LightKind::Spot ? "Spot light" : "Point light", nullptr };
-	xr_string Name = Fixed[static_cast<u32>(Item.Type)] ? xr_string(Fixed[static_cast<u32>(Item.Type)]) : Item.Type == ObjectType::Particle ? Platform::ANSI_TO_UTF8(EffectName(Item.Particle.Effect)) : ModelName(Item.Actor.Visual);
+	const char* const Fixed[7] = { nullptr, "Camera", Item.Light.Kind == LightKind::Spot ? "Spot light" : "Point light", nullptr, nullptr, Item.Weather.Cycle.size() ? Item.Weather.Cycle.c_str() : "Weather", "Post" };
+	xr_string Name = Fixed[static_cast<u32>(Item.Type)] ? xr_string(Fixed[static_cast<u32>(Item.Type)]) : Item.Type == ObjectType::Decal ? Platform::ANSI_TO_UTF8(EffectName(Item.Decal.Texture.size() ? Item.Decal.Texture : shared_str("Decal"))) : Item.Type == ObjectType::Particle ? Platform::ANSI_TO_UTF8(EffectName(Item.Particle.Effect)) : ModelName(Item.Actor.Visual);
 	size_t Size = std::min<size_t>(Name.size(), MaxNameBytes);
 	while (Size < Name.size() && (static_cast<u8>(Name[Size]) & 0xC0) == 0x80)
 	{
@@ -45,7 +47,7 @@ inline xr_string DefaultName(const Object& Item)
 
 inline bool IsParamShown(const Object& Target, Param Id)
 {
-	return !(Target.Type == ObjectType::Light && Target.Light.Kind == LightKind::Point && (Id == Param::Rotation || Id == Param::Cone));
+	return (Id != Param::AttachWeight || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId) && !(Target.Type == ObjectType::Light && Target.Light.Kind == LightKind::Point && (Id == Param::Rotation || Id == Param::Cone));
 }
 
 inline const char* DisplayName(const Object* Item)
@@ -58,11 +60,14 @@ inline const char* RuntimeError(const Player& Core, const Object& Target)
 	const ActorRuntime* Body = Target.Type == ObjectType::Actor ? Core.FindActor(Target.Id) : nullptr;
 	const LightRuntime* Lamp = Target.Type == ObjectType::Light ? Core.FindLight(Target.Id) : nullptr;
 	const ParticleRuntime* Emitter = Target.Type == ObjectType::Particle ? Core.FindParticle(Target.Id) : nullptr;
-	const shared_str* Error = Body ? &Body->Error : Lamp ? &Lamp->Error : Emitter ? &Emitter->Error : nullptr;
+	const DecalRuntime* Mark = Target.Type == ObjectType::Decal ? Core.FindDecal(Target.Id) : nullptr;
+	const shared_str* Error = Body ? &Body->Error : Lamp ? &Lamp->Error : Emitter ? &Emitter->Error : Mark ? &Mark->Error : nullptr;
 	return Error && Error->size() ? Error->c_str() : Body && !Body->IsComplete() ? "missing" : nullptr;
 }
 
 inline constexpr s32 ShakeBase = 1024;
+inline constexpr float FrameAspects[9] = { 0.0f, 2.39f, 21.0f / 9.0f, 2.0f, 1.85f, 16.0f / 9.0f, 4.0f / 3.0f, 1.0f, 9.0f / 16.0f };
+inline constexpr const char* AspectNames = "2.39:1\0" "21:9\0" "2:1\0" "1.85:1\0" "16:9\0" "4:3\0" "1:1\0" "9:16\0";
 
 inline bool HasOwner(const Object& Target, s32 Block)
 {
@@ -81,6 +86,41 @@ inline const xr_vector<Lane>& LaneList(const Object& Target, s32 Block)
 
 inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Component)
 {
+	if (Id == Param::AttachWeight)
+	{
+		return Block < 0 ? (Target.Type == ObjectType::Camera ? nullptr : &Target.Attach.Weight) : Block < ShakeBase ? &Target.Camera.Blocks[Block].Attach.Weight : nullptr;
+	}
+	if (Block < 0 && Id >= Param::IkTarget && Id <= Param::IkWeight)
+	{
+		IkLimb* Limb = Target.Type == ObjectType::Actor && Layer < MaxIkLimbs ? &Target.Actor.Ik[Layer] : nullptr;
+		return !Limb ? nullptr : Id == Param::IkWeight ? &Limb->Weight : &(Id == Param::IkTarget ? Limb->Target : Id == Param::IkTurn ? Limb->Turn : Limb->Pole)[Component];
+	}
+	if (Block < 0 && (Id == Param::DecalWidth || Id == Param::DecalHeight))
+	{
+		return Target.Type == ObjectType::Decal ? &(Id == Param::DecalWidth ? Target.Decal.Width : Target.Decal.Height) : nullptr;
+	}
+	if (Block < 0 && Id >= Param::WeatherTime && Id <= Param::SkyRotation)
+	{
+		return Target.Type == ObjectType::Weather ? WeatherField(Target.Weather, Id, Component) : nullptr;
+	}
+	if (Block < 0 && Id >= Param::PostBase && Id <= Param::PostMiddleGray)
+	{
+		return Target.Type == ObjectType::Post ? PostField(Target.Post, Id, Component) : nullptr;
+	}
+	if (Block < 0 && Id == Param::ConstraintWeight)
+	{
+		return Target.Type == ObjectType::Actor && Layer < Target.Actor.Constraints.size() ? &Target.Actor.Constraints[Layer].Weight : nullptr;
+	}
+	if (Block < 0 && Id == Param::PoseWeight)
+	{
+		return Target.Type == ObjectType::Actor && Layer < Target.Actor.Poses.size() ? &Target.Actor.Poses[Layer].Weight : nullptr;
+	}
+	if (Block < 0 && IsBoneParam(Id))
+	{
+		const u32 Row = Layer / MaxPoseBones, Bone = Layer % MaxPoseBones;
+		PoseBone* Item = Target.Type == ObjectType::Actor && Row < Target.Actor.Poses.size() && Bone < Target.Actor.Poses[Row].Bones.size() ? &Target.Actor.Poses[Row].Bones[Bone] : nullptr;
+		return Item ? &(Id == Param::BoneRotation ? Item->Rotation : Id == Param::BonePosition ? Item->Offset : Item->Scale)[Component] : nullptr;
+	}
 	if (Block < 0 && Id == Param::LayerWeight)
 	{
 		return Target.Type == ObjectType::Actor && Layer <= Target.Actor.Layers.size() ? &RowOf(Target.Actor, Layer).Weight : nullptr;
@@ -101,14 +141,25 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 		return Id >= Param::ShakeInfluence && Clip.Row == Layer ? Shaken[static_cast<u32>(Id) - static_cast<u32>(Param::ShakeInfluence)] : nullptr;
 	}
 	CameraBlock& Shot = Target.Camera.Blocks[Block];
-	float* const Shots[] = { &Shot.TimeScale, &Shot.Fov, &Shot.Focus, &Shot.FocusOffset, &Shot.NearRange, &Shot.FarRange, &Shot.Blur };
-	const u32 At = Id == Param::TimeScale ? 0 : Id == Param::Fov ? 1 : Id >= Param::DofFocus && Id <= Param::DofBlur ? 2 + static_cast<u32>(Id) - static_cast<u32>(Param::DofFocus) : 7;
-	return At < 7 ? Shots[At] : nullptr;
+	float* const Shots[] = { &Shot.Position[Component], &Shot.Rotation[Component], &Shot.TimeScale, &Shot.Fov, &Shot.Focus, &Shot.FocusOffset, &Shot.NearRange, &Shot.FarRange, &Shot.Blur, &Shot.Smooth };
+	const u32 At = Id <= Param::Rotation ? static_cast<u32>(Id) : Id == Param::TimeScale ? 2 : Id == Param::Fov ? 3 : Id >= Param::DofFocus && Id <= Param::CameraSmooth ? 4 + static_cast<u32>(Id) - static_cast<u32>(Param::DofFocus) : 10;
+	return At < 10 ? Shots[At] : nullptr;
 }
 
 inline float TargetStart(const Object& Target, s32 Block)
 {
 	return Target.Span.Start + (Block < 0 ? 0.0f : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Start : Cameras::BlockStart(Target.Camera, static_cast<u32>(Block)));
+}
+
+inline float LaneLocal(const Object& Target, s32 Block, Param Id, float Time)
+{
+	const float Local = Time - TargetStart(Target, Block);
+	return Block >= 0 && Block < ShakeBase && Id <= Param::Rotation ? Cameras::PathTime(Target.Camera.Blocks[Block], Local) : Local;
+}
+
+inline float LaneMoment(const Object& Target, s32 Block, Param Id, float KeyTime)
+{
+	return TargetStart(Target, Block) + (Block >= 0 && Block < ShakeBase && Id <= Param::Rotation ? Cameras::LocalFromPath(Target.Camera.Blocks[Block], KeyTime) : KeyTime);
 }
 
 inline float OwnerLength(const Object& Target, s32 Block)
@@ -155,7 +206,26 @@ enum class ModalKind : u8
 	Message,
 	SavePreset,
 	DeletePreset,
-	ShiftTime
+	ShiftTime,
+	Render,
+	SaveMotion
+};
+
+struct RenderJob
+{
+	double Begin = 0.0;
+	double Rate = 30.0;
+	u32 Count = 0;
+	u32 Index = 0;
+	float Aspect = 0.0f;
+	bool IsActive = false;
+	bool HasRequest = false;
+	bool WasLooping = false;
+	bool IsVideo = false;
+	u32 Warm = 0;
+	u32 WarmIndex = u32(-1);
+	string_path Folder = {};
+	string_path Video = {};
 };
 
 enum class PendingKind : u8
@@ -201,6 +271,27 @@ enum class DragKind : u8
 	BoxKeys
 };
 
+enum class ClipPart : u8
+{
+	None,
+	Body,
+	Start,
+	End,
+	FadeIn,
+	FadeOut,
+	Cross,
+	Key
+};
+
+enum class Cover : u8
+{
+	Keep,
+	Remove,
+	Split,
+	CutTail,
+	CutHead
+};
+
 enum class ChooserKind : u8
 {
 	Model,
@@ -209,11 +300,17 @@ enum class ChooserKind : u8
 	Pack,
 	Preset,
 	Effect,
-	Texture
+	Texture,
+	Shader
 };
 
-inline constexpr const char* AddChoices[3] = { "Actor...", "Actor from preset...", "Particle..." };
-inline constexpr ChooserKind AddKinds[3] = { ChooserKind::Model, ChooserKind::Preset, ChooserKind::Effect };
+inline constexpr const char* AddChoices[4] = { "Actor...", "Actor from preset...", "Particle...", "Decal..." };
+inline constexpr ChooserKind AddKinds[4] = { ChooserKind::Model, ChooserKind::Preset, ChooserKind::Effect, ChooserKind::Texture };
+
+inline ObjectType AddedType(ChooserKind Kind)
+{
+	return Kind == ChooserKind::Effect ? ObjectType::Particle : Kind == ChooserKind::Texture ? ObjectType::Decal : ObjectType::Actor;
+}
 
 enum class KeyState : u8
 {
@@ -303,16 +400,98 @@ struct KeyRef
 	auto operator<=>(const KeyRef&) const = default;
 };
 
+inline constexpr u32 RigControlCount = 28, RigChainCount = 4, RigFirstFinger = 18;
+inline constexpr const char* RigControlKeys[RigControlCount] = { "hips", "chest", "head", "hand_l", "hand_r", "foot_l", "foot_r", "eye_l", "eye_r", "jaw", "root", "spine", "spine1", "neck", "clavicle_l", "clavicle_r", "toe_l", "toe_r", "finger0_l", "finger1_l", "finger2_l", "finger3_l", "finger4_l", "finger0_r", "finger1_r", "finger2_r", "finger3_r", "finger4_r" };
+inline constexpr u8 RigControlSides[RigControlCount] = { 0, 0, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
+inline constexpr u8 RigControlShapes[RigControlCount] = { 0, 16, 16, 4, 4, 4, 4, 16, 16, 16, 0, 16, 16, 16, 16, 16, 4, 4, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 };
+inline constexpr float RigControlSizes[RigControlCount] = { 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 5.0f, 5.0f, 5.0f, 15.0f, 8.0f, 8.0f, 8.0f, 7.0f, 7.0f, 6.0f, 6.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f };
+inline constexpr const char* RigChainKeys[RigChainCount] = { "arm_l", "arm_r", "leg_l", "leg_r" };
+
+struct ActorRig
+{
+	u16 Controls[RigControlCount] = { BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE, BI_NONE };
+	u16 Chains[RigChainCount][3] = { { BI_NONE, BI_NONE, BI_NONE }, { BI_NONE, BI_NONE, BI_NONE }, { BI_NONE, BI_NONE, BI_NONE }, { BI_NONE, BI_NONE, BI_NONE } };
+	xr_vector<u16> Mirror;
+	bool HasOverride = false;
+};
+
+struct PoseValue
+{
+	shared_str Bone;
+	Fvector Turn = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Shift = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Size = Fvector().set(1.0f, 1.0f, 1.0f);
+};
+
+struct NamedPose
+{
+	xr_string Name;
+	xr_vector<PoseValue> Bones;
+};
+
+inline constexpr u32 MaxNamedPoses = 256;
+
+struct LibraryFolder
+{
+	xr_string Name;
+	xr_vector<xr_string> Items;
+};
+
+struct LibraryShelf
+{
+	xr_vector<xr_string> Favourites;
+	xr_vector<LibraryFolder> Folders;
+};
+
+struct RecordSample
+{
+	float Time = 0.0f;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	float Fov = 0.0f;
+};
+
 struct LaneSlot
 {
 	u32 ObjectId = 0;
 	Param Id = Param::Position;
 	u8 Layer = 0;
 	u8 Mask = 7;
-	bool IsSplit = false;
+	u8 Shown = 7;
 	bool IsFitted = false;
-	float Lo = 0.0f;
-	float Hi = 1.0f;
+	float Lo[3] = { 0.0f, 0.0f, 0.0f };
+	float Hi[3] = { 1.0f, 1.0f, 1.0f };
+};
+
+struct CurveTarget
+{
+	u32 ObjectId = 0;
+	s16 Block = -1;
+	Param Id = Param::Count;
+	u8 Layer = 0;
+	u8 Mask = 1;
+	float Local = 0.0f;
+	float Amount = 1.0f;
+};
+
+struct GraphCurve
+{
+	KeyRef Ref;
+	float Start = 0.0f;
+	float Lo = 0.0f, Hi = 1.0f;
+	u32 Color = 0;
+};
+
+struct GraphBuffered
+{
+	KeyRef Ref;
+	Curve Shape;
+};
+
+struct GraphKeyStart
+{
+	KeyRef Ref;
+	float Time = 0.0f, Value = 0.0f;
 };
 
 struct LaneTarget
@@ -390,13 +569,30 @@ struct EditorSettings
 	float ScaleStep = 0.1f;
 	float RangeStep = 0.1f;
 	bool ShowHelpers = true;
+	bool ShowHints = true;
+	bool IsGizmoSnapping = true;
 	bool DofPreview = true;
+	bool IsFollowing = true;
 	bool ShowInspector = true;
 	bool ShowPresets = false;
+	bool ShowShots = false;
+	bool ShowGraph = false;
+	bool ShowOnion = false;
+	bool ShowPaths = false;
+	bool ShowSafe = false;
+	bool ShowThirds = false;
+	float FrameRatio = 0.0f;
+	float FrameMask = 0.5f;
+	float OnionCount = 2.0f;
+	float OnionStep = 5.0f;
 	float HeaderWidth = 220.0f;
 	float Opacity = 0.5f;
+	float LookSensitivity = 1.0f;
+	float FlySmoothing = 0.08f;
+	float RecordSmoothing = 0.1f;
+	float RenderWarmup = 8.0f;
 	float DefaultRow = 1.0f;
-	float DefaultLane = 2.0f;
+	float DefaultLane = 1.0f;
 	bool operator==(const EditorSettings&) const = default;
 };
 
@@ -421,6 +617,7 @@ class Editor
 public:
 	Editor();
 	void Draw(Player& Core, bool& IsOpen);
+	void DrawHidden(const Player& Core);
 	void Close(Player& Core);
 	float Opacity() const { return Settings.Opacity; }
 	bool WasOpen = false;
@@ -445,8 +642,44 @@ private:
 	void LoadSettings();
 	void SaveSettings();
 	void UpdateFly(Player& Core);
+	void CommitRecording(Player& Core);
 	void UseEditorCamera(Player& Core);
 	void DrawHelpers(const Player& Core) const;
+	void DrawGhosts(Player& Core);
+	void DrawFrameLines(const Player& Core);
+	void DrawBones(Player& Core);
+	void DrawBoneGizmo(Player& Core);
+	void DrawIkHandles(Player& Core);
+	void DrawPathKeys(Player& Core);
+	void EvenSpeed(Player& Core, s32 Block);
+	void SetIk(Player& Core, const Object& Target, u32 Limb, bool IsOn);
+	void SwitchIkSpace(Player& Core, const Object& Target, u32 Limb);
+	void CaptureConstraint(Player& Core, u32 Id, u32 Slot, bool IsSnap);
+	void DrawConstraints(Player& Core, const Object& Target);
+	bool PickBone(Player& Core, bool IsToggle);
+	s32 BoneUnderMouse(const Player& Core) const;
+	void BuildRig(const ActorRuntime& Runtime, const shared_str& Visual);
+	void RigPath(string_path& Path) const;
+	void SaveRig();
+	void DrawRigSection(const ActorRuntime& Runtime);
+	s32 EnsurePoseBone(Object& Item, const shared_str& Bone);
+	void DrawPoseSection(Player& Core, const Object& Target);
+	void KeyBones(Player& Core);
+	void ResetBones(Player& Core);
+	bool ReadPoseValue(const Object& Item, u16 Bone, PoseValue& Out) const;
+	void WritePoses(Player& Core, const char* Label, const xr_vector<PoseValue>& Values, bool IsMirrored);
+	void MirrorBones(Player& Core, bool IsSwap);
+	void DrawPoseLibrary(Player& Core);
+	void LoadPoseLibrary();
+	void SavePoseLibrary();
+	void RemovePoseRow(Player& Core, u32 Id, u32 Row);
+	float FrameAspect() const;
+	void HorizontalFovRow(Player& Core, const xr_vector<u32>& Ids, s32 Block);
+	void DrawRenderModal(Player& Core);
+	void DrawMotionModal(Player& Core);
+	void StartRender(Player& Core);
+	void StepRender(Player& Core);
+	void StopRender(Player& Core, const char* Problem);
 	s32 HelperBlock(const Player& Core, const Object& Rig) const;
 	bool IsViewportFree() const;
 	void CollectGizmo(const Player& Core, bool HasCamera, GizmoMode Mode = GizmoMode::Translate);
@@ -465,6 +698,8 @@ private:
 	Object* CreateObject(Player& Core, ObjectType Type, float Start);
 	Object* AddObject(Player& Core, ObjectType Type, const shared_str& Source, float Start, const Fvector& Position, const Fvector& Rotation);
 	void AddLight(Player& Core, float Start, const Fvector& Position);
+	void AddWeather(Player& Core, float Start);
+	void AddPost(Player& Core, float Start);
 	void LoadPresets();
 	bool StorePresets(xr_vector<ActorPreset>&& Next, const xr_string& Removed);
 	s32 FindPreset(const char* Name) const;
@@ -478,6 +713,7 @@ private:
 	void RemoveLayer(Player& Core, u32 Id, u8 Layer);
 	void SetRowMode(Player& Core, u32 Id, u8 Row, bool IsAdd);
 	void AddAnimationAt(Player& Core, u32 Id, u8 Row, float Time, const shared_str& Source, const shared_str& Name);
+	void DrawLookSection(Player& Core, const Object& Target);
 	bool PartsCombo(Player& Core, const Object& Target, u8 Layer, float Width);
 	void AddFolder(Player& Core);
 	void AddCameraMove(Player& Core, float Time, const PoseKey* Pose = nullptr);
@@ -523,25 +759,30 @@ private:
 	void DrawTimeline(Player& Core, bool& IsOpen);
 	void DrawTransport(Player& Core);
 	void BuildRows(const Scene& Data);
-	void DrawRuler(Player& Core, const ImRect& Rect);
+	void DrawRuler(Player& Core, const ImRect& Full);
 	void DrawMarkers(const Player& Core, const ImRect& Track, bool IsRuler) const;
 	s32 MarkerAt(const SceneHeader& Header, float X) const;
 	void DrawRowHeader(Player& Core, const RowItem& Row, const ImRect& Rect);
 	void HandleTrack(Player& Core, const Object* Target);
 	void DrawClip(const Player& Core, const Object& Target, const ImRect& Rect);
-	void DrawActorBlocks(const Object& Target, const ActorRuntime& Runtime, const ImRect& Rect, u8 Layer = 0);
-	s32 BlockHit(const Object& Target, const ActorRuntime& Runtime, u8 Layer, const ImVec2& Mouse, float Top, DragKind& Kind, s32& Hit, double& Rep) const;
+	void DrawActorBlocks(const Object& Target, const ActorRuntime& Runtime, const ImRect& Rect, u8 Layer, u32 Fill);
+	s32 BlockHit(const Object& Target, const ActorRuntime& Runtime, u8 Layer, const ImVec2& Mouse, const ImRect& Row, DragKind& Kind, s32& Hit, double& Rep, ClipPart& Part, ImRect& Area) const;
+	void ShowPart(ClipPart Part, const ImRect& Area, u32 Color, u32 Type);
 	void PressBlock(Player& Core, const Object& Target, const ActorRuntime& Runtime, u8 Layer, DragKind Kind, s32 Hit, double Rep);
 	void DrawLayerRow(Player& Core, const Object& Target, u8 Layer, const ImRect& Header, const ImRect& Track);
 	u8 LayerAt(const Scene& Data, const Object& Target, float Y) const;
+	void DrawPoseRow(Player& Core, const Object& Target, u8 Row, const ImRect& Header, const ImRect& Track);
 	void DrawCameraBlocks(const Player& Core, const Object& Target, const ImRect& Rect);
 	u8 SubRows(const Object& Target) const;
 	void DrawSubRow(Player& Core, const Object& Target, u8 Sub, const ImRect& Header, const ImRect& Track);
 	void DrawShakeRow(Player& Core, const Object& Rig, u8 Row, const ImRect& Header, const ImRect& Track);
 	void DragShake(Player& Core);
+	void MoveShake(Player& Core, const Object& Found);
+	static void TrimShake(ShakeClip& Clip, float Trim, float Rate);
 	void DrawShakeMenu(Player& Core);
-	s32 CameraHit(const Player& Core, const Object& Target, const ImVec2& Mouse, float Top, float Bottom, DragKind& Kind, s32& Pose) const;
+	s32 CameraHit(const Player& Core, const Object& Target, const ImVec2& Mouse, float Top, float Bottom, DragKind& Kind, s32& Pose, ClipPart& Part, ImRect& Area) const;
 	void DragCameraBlock(Player& Core, const Object& Target);
+	void MoveShot(Player& Core, const Object& Target);
 	bool CutShot(Player& Core, s32 Block, float From, float To, bool ShouldApply);
 	void DrawPoseMenu(Player& Core);
 	void DrawTimelinePopups(Player& Core);
@@ -561,6 +802,7 @@ private:
 	bool IsTrackValid(const Object& Target, const ActorRuntime& Runtime, const xr_vector<ActorBlock>& Blocks) const;
 	bool RemoveCrossfade(Player& Core, u32 Id, u8 Layer, s32 Block, bool ShouldApply);
 	u8 PlaceRow(Object& Item, const ActorRuntime& Runtime, u8 Row, const ActorBlock& Block, bool IsStrict, bool IsSearching);
+	u8 Overwrite(Object& Item, const ActorRuntime& Runtime, u8 Row, const ActorBlock& Moved, float Frame);
 	void DragBlockEdge(Player& Core);
 	void DragActorBlock(Player& Core, const Object& Target, const ActorRuntime& Runtime);
 	bool SplitBlock(Player& Core, u32 Id, s32 Block, bool ShouldApply, u8 Layer = 0);
@@ -581,8 +823,7 @@ private:
 	void DrawLanes(Player& Core, const Object& Target, float Left, float Top);
 	void DrawLaneHeader(Player& Core, const Object& Target, LaneSlot& Slot, s32 Component, const ImRect& Rect, bool& ShouldRemove);
 	void DrawLane(Player& Core, const Object& Target, LaneSlot& Slot, s32 Component, const ImRect& Rect);
-	void DrawPoseLane(Player& Core, const Object& Rig, const LaneSlot& Slot, s32 Component, const ImRect& Rect);
-	void DrawKeyTicks(ImDrawList* List, const xr_vector<Lane>& Lanes, float Start, float Y, u32 Color) const;
+	void DrawKeyTicks(ImDrawList* List, const xr_vector<Lane>& Lanes, float Start, float Y, u32 Color, const CameraBlock* Path = nullptr) const;
 	void SetLooping(Player& Core, bool IsOn);
 	void LoopSelection(Player& Core);
 	void FitLane(const Object& Target, LaneSlot& Slot);
@@ -594,33 +835,48 @@ private:
 	void BeginKeyMove(Player& Core, const char* Label);
 	void MoveKeys(Player& Core, float Shift, float Rise);
 	void DrawKeyMenu(Player& Core);
+	void DrawCurveMenu(Player& Core);
 	void RemoveKeys(Player& Core);
 	template <typename TFunc>
 	void ForSelectedKeys(Player& Core, const char* Label, const TFunc& Visit);
+	template <typename TFunc>
+	void ForMenuCurves(Player& Core, const char* Label, const TFunc& Visit);
 	static void RemoveLane(Object& Target, s32 Block, Param Id, u8 Layer, float Local);
 
 	void DrawInspector(Player& Core);
 	void DrawPresets();
+	void DrawShots(Player& Core);
+	void DrawGraph(Player& Core);
+	void FrameGraph(Player& Core, bool IsSelection);
+	const GraphCurve* GraphCurveOf(const KeyRef& Ref) const;
+	bool IsGraphHidden(const KeyRef& Ref) const;
+	void SnapGraphKeys(Player& Core);
+	void PlaceGraphKeys(Player& Core, float Shift, float Rise, bool IsView, float Factor, float Pivot);
+	void SetGraphTangents(Player& Core, u8 Kind);
+	template <typename TVisit>
+	void ForGraphCurves(Player& Core, const char* Label, const TVisit& Visit);
 	void DrawHeader(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawSceneSection(Player& Core);
 	void DrawActorSection(Player& Core, const xr_vector<u32>& Ids);
 	void DrawBlockSection(Player& Core, const Object& Target);
 	void DrawLightSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawParticleSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
+	void DrawDecalSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
+	void DrawWeatherSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
+	void DrawPostSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void ClipRow(Player& Core, const xr_vector<u32>& Ids);
 	bool GroupHeader(Player& Core, const xr_vector<u32>& Ids, const char* Title, const char* Label, bool LightData::*Field);
 	void PickColor(Player& Core);
 	void PickFocus(Player& Core);
 	void DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawShake(Player& Core, const xr_vector<u32>& Ids, s32 Owner);
-	void PoseRow(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param Id);
 	void ParamRow(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param Id, u8 Layer, float Speed, const char* Format, u8 ResetMask, float Default);
 	void KeyRow(Player& Core, const xr_vector<u32>& Ids);
 	void DrawAttach(Player& Core, const xr_vector<u32>& Ids, s32 Block);
 	bool AttachCombo(const Player& Core, const char* Label, u32 Owner, AttachLink& Link);
 	bool BoneCombo(const Player& Core, const char* Label, AttachLink& Link);
 	bool CanAttach(const Scene& Data, u32 From, u32 To);
-	void DrawGizmoRow(bool HasScale, bool IsRange = false, bool HasRotate = true);
+	void DrawToolbar(Player& Core);
 	RowAction BeginRow(const char* Name, bool IsOverridden, bool HasLane);
 	bool EndRow(KeyState Mark);
 	bool TimeField(const char* Label, float& Seconds, float Lo, float Hi, u32 Rate);
@@ -629,8 +885,17 @@ private:
 	void BuildLibrary();
 	bool Chooser(Player& Core, ChooserKind Kind, const char* Label, const char* Preview, const xr_vector<u32>& Owners, shared_str& Source, shared_str& Name);
 	bool ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& Owners, shared_str& Source, shared_str& Name);
+	void ReadLibrary();
+	void WriteLibrary();
+	void PreviewTexture(const shared_str& Texture);
+	void ReleasePreview();
 	void ToggleKey(Player& Core, const xr_vector<u32>& Ids, s32 Block, Param Id, u8 Layer, bool IsAdding = false);
 	void KeyPlayhead(Player& Core);
+	void PlayPause(Player& Core, bool IsContinue);
+	void SeekBoth(Player& Core, float Time);
+	bool SelectionSpan(const Player& Core, float& Lo, float& Hi) const;
+	void ZoomTo(float Lo, float Hi);
+	void ZoomAround(float Factor, float Pivot);
 	void HoverLane(u32 ObjectId, const LaneSlot& Slot);
 
 
@@ -638,6 +903,10 @@ private:
 	void Record(Player& Core, WriteLatch& Latch);
 
 	History Undo;
+	xr_vector<Fvector> GhostLines, PathPoints;
+	xr_vector<u32> GhostSpans;
+	float GhostTime = -1.0f;
+	u64 GhostSerial = 0;
 	u64 SavedSerial = 0;
 	EditorSettings Settings, SavedSettings;
 	u32 SeenGeneration = 0;
@@ -657,6 +926,16 @@ private:
 	xr_string StatusText;
 	bool IsStatusError = false;
 	bool IsOwnWindowFocused = false;
+	xr_vector<GraphCurve> GraphCurves;
+	xr_vector<KeyRef> GraphHidden;
+	xr_vector<GraphBuffered> GraphBuffer;
+	xr_vector<GraphKeyStart> GraphStart;
+	float GraphView[4] = { 0.0f, 10.0f, -1.0f, 1.0f };
+	float GraphField = 0.0f;
+	ImVec2 GraphPress;
+	ImRect GraphBox, GraphBounds;
+	u8 GraphDrag = 0;
+	bool IsGraphNormalized = false, IsGraphFocused = false;
 
 	xr_vector<u32> Selected;
 	u32 Anchor = 0, SelectedFolder = 0;
@@ -664,8 +943,13 @@ private:
 	bool IsRenameFolder = false;
 	u8 RenameFrames = 0;
 	char RenameBuffer[MaxNameBytes + 1] = {};
+	char ShotBuffer[MaxNameBytes + 1] = {};
+	s32 ShotRow = -1, ShotRename = -1;
+	bool IsShotMarker = false;
 
-	float Zoom = 60.0f, ScrollTime = 0.0f;
+	float Zoom = 60.0f, ScrollTime = 0.0f, ZoomAnchor[2] = {};
+	u8 RulerMode = 0;
+	bool IsFollowPaused = false;
 	ImRect Marquee;
 	double AddedKeyTime = -1.0;
 	xr_vector<RowSize> SizesBefore;
@@ -680,9 +964,8 @@ private:
 	float DragTime = 0.0f;
 	u32 DragObject = 0;
 	bool IsDragFolder = false, IsDragCopy = false, HasDragMoved = false, WasPressSelected = false, IsDragFlat = false;
-	s32 DragPoseAxis = -1;
-	bool IsPoseRetimed = false;
 	float DragLoop[2] = {};
+	float OverviewWhole = 1.0f;
 	xr_vector<u32> DragIds, DragPrevious;
 	xr_vector<float> DragStarts, SnapTargets;
 	u32 PopupRow = 0;
@@ -702,8 +985,6 @@ private:
 	float DragValidStart = 0.0f;
 	s8 UndoRequest = 0;
 	CameraBlock DragShot;
-	Spline DragPath;
-	Curves::AreaTable DragArea;
 	xr_vector<float> DragClipStarts;
 	float DragClipSpan = 0.0f;
 	xr_vector<Cameras::ClipSpan> SpanScratch;
@@ -713,7 +994,14 @@ private:
 	xr_vector<u8> ShakeMoved;
 	s32 DragShakeIndex = -1;
 	u8 DragRow = 0, PopupShakeRow = 0;
-	bool IsShakeCopied = false, IsShakeSlide = false, IsPopupCross = false, IsShotCopied = false;
+	bool IsShakeSlide = false, IsPopupCross = false;
+	xr_vector<CameraBlock> DragShots;
+	xr_vector<ShakeClip> DragShakes;
+	xr_vector<ShakePin> DragPins;
+	xr_vector<u8> CoverPlan;
+	s32 DragShotIndex = -1, DragShakePress = -1, DragPickFocus = -1;
+	float DragLimit = -1.0f;
+	const char* Hint = nullptr;
 
 	float LastBlend = 0.5f;
 	bool IsPopupChoosing = false;
@@ -723,6 +1011,7 @@ private:
 	xr_vector<KeyRef> SelectedKeys, KeyGroup, DragKeyPrevious;
 	xr_vector<LaneDrag> DragCurves;
 	xr_vector<KeyMove> DragMoves;
+	xr_vector<float> DragTimes;
 	KeyRef DragKey;
 	Key DragKeyStart;
 	float DragKeyTime = 0.0f, DragOriginY = 0.0f, DragLaneHeight = 1.0f, DragSpan = 1.0f;
@@ -733,6 +1022,11 @@ private:
 	float OffsetValue = 0.0f;
 	bool IsOffsetKeys = false;
 	float ShiftAmount = 1.0f;
+	RenderJob Job;
+	s32 RenderRange = 0, RenderRate = 0, RenderAspect = 0, RenderOutput = 0;
+	s32 MotionRange = 0, MotionSource = 0;
+	u32 LookEdit = 0;
+	u32 MotionObject = 0, MotionRow = 0;
 	bool IsRemovingTime = false;
 	xr_vector<ActorPreset> Presets;
 	xr_vector<shared_str> PresetNames;
@@ -745,7 +1039,7 @@ private:
 	char PresetBuffer[MaxNameBytes + 1] = {}, PresetFilter[128] = {};
 	ChooserKind PopupKind = ChooserKind::Model;
 
-	xr_vector<u32> PinnedIds, InspectActors, InspectCameras, InspectLights, InspectParticles, ChooserOwners, PickColorIds;
+	xr_vector<u32> PinnedIds, InspectActors, InspectCameras, InspectLights, InspectParticles, InspectDecals, InspectWeathers, InspectPosts, ChooserOwners, PickColorIds;
 	bool IsPinned = false, IsAutoKey = false, IsPickingColor = false, IsPickingFocus = false;
 	s32 PickFocusBlock = -1;
 	xr_vector<WriteLatch> Latches;
@@ -762,9 +1056,18 @@ private:
 
 	xr_vector<shared_str> ModelFiles, ItemSections, OmfFiles, EffectNames, TextureFiles;
 	shared_str MenuPack;
+	LibraryShelf Library[5];
+	u8 Scopes[5] = {};
+	u8 FolderAction = 0;
+	s32 FolderEdited = -1;
+	char FolderName[64] = {};
+	xr_string LibraryKey, MenuKey;
+	IRHISurface* PreviewSurface = nullptr;
+	IRHIShaderResourceView* PreviewView = nullptr;
+	shared_str PreviewName;
 	xr_vector<u32> Filtered;
 	xr_vector<u64> Ranked;
-	char Filters[7][128] = {};
+	char Filters[8][128] = {};
 	s32 ChooserCursor = 0;
 	ChooserKind FilteredKind = ChooserKind::Model;
 	u32 FilteredObject = 0;
@@ -774,6 +1077,16 @@ private:
 	bool IsEditorCamera = false, IsEyeValid = false, IsFlying = false, IsFlyArmed = false, IsPanning = false;
 	Fvector Eye = Fvector().set(0.0f, 0.0f, 0.0f);
 	float Yaw = 0.0f, Pitch = 0.0f, Roll = 0.0f, EyeFov = 0.0f, FlyFov = 0.0f;
+	Fvector ShownEye = Fvector().set(0.0f, 0.0f, 0.0f);
+	float ShownYaw = 0.0f, ShownPitch = 0.0f, ShownRoll = 0.0f, ShownFov = 0.0f;
+	bool IsGliding = false, HasRecorded = false, IsRecordCancelled = false;
+	xr_vector<RecordSample> Recorded, Smoothed;
+	xr_vector<u8> Kept;
+	xr_vector<std::pair<u32, u32>> RdpSpans;
+	CurveTarget CurveMenu;
+	Lane CurveClip;
+	bool HasCurveClip = false;
+	xr_vector<float> CurveScratch;
 
 
 	shared_str EyeLevel;
@@ -785,16 +1098,45 @@ private:
 	bool IsGizmoLocalSingle = true, IsGizmoLocalMulti = false, IsGizmoActive = false, IsGizmoCancelled = false, IsGizmoHovered = false, IsGizmoRelative = false;
 	bool IsPickArmed = false, ShouldOpenPopup = false, IsPopupAligned = false, HasPopupHit = false;
 	Fmatrix GizmoPivot = Fidentity, GizmoInverse = Fidentity;
+	bool IsPosing = false;
+	u32 PoseObject = 0, ActivePose = 0;
+	s32 BoneLayer = -1;
+	xr_vector<s32> CurlLayers;
+	xr_vector<NamedPose> PoseLibrary;
+	xr_vector<PoseValue> PoseScratch;
+	bool IsPoseLibraryRead = false;
+	char PoseName[64] = {};
+	s32 IkHandle = -1;
+	bool IsIkActive = false, IsIkCancelled = false, IsIkOver = false, IsIkHover = false, IsIkDirect = false;
+	bool IsPathKeyActive = false, IsPathKeyCancelled = false;
+	u32 PathKeyObject = 0;
+	s32 PathKeyBlock = -1;
+	float PathKeyTime = 0.0f;
+	Lane PathKeyBase;
+	Fvector PathKeyStart = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fmatrix IkMatrix = Fidentity, IkGrab = Fidentity, IkGoal = Fidentity;
+	xr_vector<u16> SelectedBones;
+	ActorRig Rig;
+	u32 RigObject = 0;
+	shared_str RigVisual;
+	ImVec2 BoneBoxStart;
+	bool IsBoneBox = false;
+	xr_vector<u32> PoseIds;
+	string64 PoseBoneFilter = {};
+	Fmatrix BonePivot = Fidentity, BoneStart = Fidentity, BoneParentModel = Fidentity;
+	Fvector BoneTurn = Fvector().set(0.0f, 0.0f, 0.0f), BoneShift = Fvector().set(0.0f, 0.0f, 0.0f), BoneSize = Fvector().set(1.0f, 1.0f, 1.0f);
 	xr_vector<GizmoItem> GizmoItems;
 	Fvector RangeCentre = Fvector().set(0.0f, 0.0f, 0.0f), RangeAxis = Fvector().set(1.0f, 0.0f, 0.0f);
 	float RangeStart = 0.0f;
-	s32 TangentBlock = -1, TangentKey = -1, DragTangentKey = -1;
+	s32 TangentBlock = -1, TangentKey = -1;
 	u32 TangentCount = 0;
 	float TangentTime = 0.0f;
 	u8 DragTangentSide = 0;
-	bool IsTangentActive = false, IsTangentCancelled = false;
+	bool IsTangentActive = false, IsTangentCancelled = false, IsHandlePicked = false, IsHandleOver = false, IsBreakPress = false;
+	Fmatrix HandleMatrix = Fidentity;
 	PoseKey TangentBase;
-	Fvector TangentIn = Fvector().set(0.0f, 0.0f, 0.0f), TangentOut = Fvector().set(0.0f, 0.0f, 0.0f), TangentStart = Fvector().set(0.0f, 0.0f, 0.0f), TangentPlane = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector TangentGrab = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector TangentIn = Fvector().set(0.0f, 0.0f, 0.0f), TangentOut = Fvector().set(0.0f, 0.0f, 0.0f), TangentStart = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fvector PopupPoint = Fvector().set(0.0f, 0.0f, 0.0f), PopupNormal = Fvector().set(0.0f, 1.0f, 0.0f);
 	ImRect CubeRect;
 	float ViewRight = FLT_MAX;

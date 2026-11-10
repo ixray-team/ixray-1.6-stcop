@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "CinemaEffects.h"
 #include "../GamePersistent.h"
+#include "../Level.h"
+#include "CinemaActorRuntime.h"
 #include "../../Include/xrRender/EnvironmentRender.h"
 #include "../../Include/xrRender/particles_systems_library_interface.hpp"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
@@ -113,7 +115,7 @@ void ParticleObject::Post(const ParticleCommand& Next)
 	Pending.Advance += Carried;
 }
 
-void ParticleObject::Update(u32, CFrustum* View)
+void ParticleObject::Update(u32, CFrustum*)
 {
 	ParticleCommand Next;
 	{
@@ -141,7 +143,7 @@ void ParticleObject::Update(u32, CFrustum* View)
 	{
 		const u32 Elapsed = static_cast<u32>(std::min(Remainder, PrerollStep * 1000.0));
 		Remainder -= Elapsed;
-		CParticlesObject::Update(Elapsed, View);
+		CParticlesObject::Update(Elapsed, nullptr);
 		if (Elapsed && Emitting == EmitState::Live && Next.ShouldRetrigger && !IsLooped() && m_bPlaying && !IsPlaying())
 		{
 			Stop(false);
@@ -210,5 +212,80 @@ void ParticleRuntime::Drop()
 		System->m_NeedDestroy = true;
 	}
 	System.reset();
+}
+
+void DecalRuntime::Apply(const DecalData& Setup, const xr_vector<shared_str>& Shaders)
+{
+	if (IsApplied && Setup.Texture == AppliedTexture && Setup.Shader == AppliedShader)
+	{
+		return;
+	}
+	IsApplied = true;
+	AppliedTexture = Setup.Texture;
+	AppliedShader = Setup.Shader;
+	Drop();
+	Array->clear();
+	const bool IsKnown = !Setup.Shader.size() || std::binary_search(Shaders.begin(), Shaders.end(), Setup.Shader, ShaderLess);
+	Error = !Setup.Texture.size() ? shared_str("No texture") : !IsKnown ? shared_str("Shader not in shaders.xr") : shared_str();
+	if (Error.size())
+	{
+		return;
+	}
+	Setup.Shader.size() ? Array->AppendMark(Setup.Shader.c_str(), Setup.Texture.c_str()) : Array->AppendMark(Setup.Texture.c_str());
+}
+
+bool DecalRuntime::Trace(const Fmatrix& World, Fvector& Point, u32& Triangle, float& Distance) const
+{
+	Fvector Up = World.j, Down;
+	Up.normalize_safe();
+	Down.invert(Up);
+	const Fvector Start = Fvector().mad(World.c, Up, 0.5f);
+	collide::rq_result Result;
+	if (!g_pGameLevel || !Level().ObjectSpace.RayPick(Start, Down, 1.0f, collide::rqtStatic, Result, nullptr) || Result.element < 0)
+	{
+		return false;
+	}
+	const xr_vector<CDB::TRI>& Tris = Level().ObjectSpace.GetStaticTris();
+	Triangle = static_cast<u32>(Result.element);
+	Distance = Result.range;
+	Point.mad(Start, Down, Result.range);
+	return Triangle < Tris.size() && !Tris[Triangle].suppress_wm;
+}
+
+void DecalRuntime::Drive(const Fmatrix& World, float Width, float Height, bool IsShown)
+{
+	Fvector Point, Up = World.j, Side, Front;
+	Up.normalize_safe();
+	Side.crossproduct(std::fabs(Up.y) < 0.99f ? Fvector().set(0.0f, 1.0f, 0.0f) : Fvector().set(0.0f, 0.0f, 1.0f), Up).normalize_safe();
+	Front.crossproduct(Up, Side);
+	const float Spin = std::atan2(World.k.dotproduct(Front), World.k.dotproduct(Side));
+	u32 Triangle = 0;
+	float Distance = 0.0f;
+	const bool IsPlaced = IsShown && !Array->empty() && Width > EPS_L && Height > EPS_L && Trace(World, Point, Triangle, Distance);
+	if (IsPlaced && (!Handle || Handle->IsValid()) && Point.similar(PlacedAt, 1e-4f) && Triangle == PlacedTriangle && fsimilar(Width, PlacedWidth) && fsimilar(Height, PlacedHeight) && fsimilar(Spin, PlacedSpin))
+	{
+		return;
+	}
+	Drop();
+	if (!IsPlaced)
+	{
+		return;
+	}
+	Handle = ::Render->add_DynamicWallmark(Array->GenerateWallmark(), Point, Width, Height, Spin, &Level().ObjectSpace.GetStaticTris()[Triangle], Level().ObjectSpace.GetStaticVerts().data());
+	PlacedAt = Point;
+	PlacedTriangle = Triangle;
+	PlacedWidth = Width;
+	PlacedHeight = Height;
+	PlacedSpin = Spin;
+}
+
+void DecalRuntime::Drop()
+{
+	PlacedWidth = -1.0f;
+	if (Handle && Handle->IsValid())
+	{
+		Handle->Destroy();
+	}
+	Handle.reset();
 }
 }

@@ -747,6 +747,7 @@ void CinemaFilmMaker_Render(IDSGraphManager* DM);
 void CinemaFilmMaker_Shutdown();
 void RenderCinemaEditor();
 void CinemaEditor_Shutdown();
+void CinemaEditor_DrawHidden();
 void RenderCameraRigEditor();
 void RenderHudMotionPlayer();
 void HudMotionPlayerClose();

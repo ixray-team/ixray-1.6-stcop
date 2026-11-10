@@ -3,6 +3,7 @@
 #include "../../Include/xrRender/Kinematics.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/Render.h"
+#include "../CameraRig.h"
 
 namespace Cinema::Actors
 {
@@ -25,6 +26,31 @@ void BindPoseCallback(CBoneInstance* Instance)
 	{
 		Instance->mTransform = *Matrix;
 	}
+}
+
+void RigCallback(CBoneInstance* Instance)
+{
+	const BoneSolve& Solve = *static_cast<const BoneSolve*>(Instance->callback_param());
+	Fmatrix& Bone = Instance->mTransform;
+	Bone = Solve.Bind ? *Solve.Bind : Bone;
+	if (Solve.Weight > 0.0f)
+	{
+		const Fmatrix& Parent = Solve.Parent == BI_NONE ? Fidentity : Solve.Model->LL_GetTransform(Solve.Parent);
+		Fmatrix Inverse, Local, Posed;
+		Inverse.invert(Parent);
+		Local.mul_43(Inverse, Bone);
+		Fquaternion From, To, Mixed;
+		From.set(Local);
+		To.set(Solve.Over);
+		Mixed.slerp(From, To, Solve.Weight);
+		Posed.rotation(Mixed);
+		Posed.c.lerp(Local.c, Solve.Over.c, Solve.Weight);
+		Bone.mul_43(Parent, Posed);
+	}
+	Bone.mulB_43(Solve.Add);
+	Bone.i.mul(Solve.Scale.x);
+	Bone.j.mul(Solve.Scale.y);
+	Bone.k.mul(Solve.Scale.z);
 }
 
 const shared_str& LoadedId(const xr_vector<AdaptedSource>& Adapted, const shared_str& Source)
@@ -218,6 +244,7 @@ ActorRuntime::~ActorRuntime()
 {
 	Body.Unbind();
 	Body.ItemVisual = nullptr;
+	ReleaseRig();
 	ClearBindPose();
 }
 
@@ -333,10 +360,11 @@ bool ActorRuntime::Evaluate(const Object& Target, float Time, const Audition* Li
 	const u8 Layers = static_cast<u8>(1 + std::min<size_t>(Data.Layers.size(), MaxActorLayers));
 	const auto Ramp = [](const BlockSpan& Span, float Offset)
 	{
+		Offset = std::clamp(Offset, 0.0f, Span.Duration);
 		const float In = Span.FadeIn > 0.0f ? std::clamp(Offset / Span.FadeIn, 0.0f, 1.0f) : 1.0f, Out = Span.FadeOut > 0.0f ? std::clamp((Span.Duration - Offset) / Span.FadeOut, 0.0f, 1.0f) : 1.0f;
-		return Offset < 0.0f || Offset >= Span.Duration ? 1.0f : Curves::Ease(Span.BlendEase, In * Out);
+		return Curves::Ease(Span.BlendEase, In * Out);
 	};
-	for (u8 Layer = 0; !IsHeard && Layer < Layers; ++Layer)
+	for (u8 Layer = 0; !IsHeard && !IsPoseOnly && Layer < Layers; ++Layer)
 	{
 		const LayerRuntime& Track = Tracks[Layer];
 		const xr_vector<BlockSpan>& Spans = Track.Spans;
@@ -360,15 +388,301 @@ bool ActorRuntime::Evaluate(const Object& Target, float Time, const Audition* Li
 			const float Offset = Sequence - Span.Start;
 			const float Fade = Index > 0 && Offset >= 0.0f && Offset < Span.Overlap ? Curves::Ease(Span.BlendEase, Offset / Span.Overlap) : 1.0f;
 			const BlockSpan& Before = Spans[Index > 0 ? Index - 1 : 0];
-			const float Near = Fade * Ramp(Span, Offset), Far = Fade < 1.0f ? (1.0f - Fade) * Ramp(Before, Sequence - Before.Start) : 0.0f, Sum = Near + Far;
+			const float Rise = Ramp(Span, Offset);
+			const bool IsHeld = Index > 0 && Fade >= 1.0f && Rise < 1.0f && Offset < Span.FadeIn;
+			const float Near = Fade * Rise, Far = Fade < 1.0f ? (1.0f - Fade) * Ramp(Before, Sequence - Before.Start) : IsHeld ? (1.0f - Rise) * Ramp(Before, Sequence - Before.Start) : 0.0f, Sum = Near + Far;
 			Pose.Items[0] = { Span.Motion, Actors::FrameAt(Span, Offset) * Span.RawScale, Sum > 0.0f ? Near / Sum : 1.0f };
 			Pose.Items[1] = { Before.Motion, Actors::FrameAt(Before, Sequence - Before.Start) * Before.RawScale, Sum > 0.0f ? Far / Sum : 0.0f };
-			Pose.Count = Fade < 1.0f ? 2 : 1;
+			Pose.Count = Fade < 1.0f || IsHeld ? 2 : 1;
 			Pose.Weight *= std::min(Sum, 1.0f);
 		}
 		Count += Pose.Count && Pose.Weight > 0.0f ? 1 : 0;
 	}
 	MixParts(Poses, Count);
+	Pose(Target, Local);
+	return true;
+}
+
+void ActorRuntime::Pose(const Object& Target, float Local)
+{
+	const xr_vector<PoseRow>& Rows = Target.Actor.Poses;
+	if (!Skeleton || (Rows.empty() && !IsRigged))
+	{
+		return;
+	}
+	const u16 Count = Skeleton->LL_BoneCount();
+	if (Solves.size() != Count)
+	{
+		xr_vector<Fmatrix> Rest;
+		Skeleton->LL_GetBindTransform(Rest);
+		if (Rest.size() < Count)
+		{
+			return;
+		}
+		Solves.assign(Count, BoneSolve {});
+		BindLocals.resize(Count);
+		for (u16 Bone = 0; Bone < Count; ++Bone)
+		{
+			const u16 Parent = Skeleton->GetBoneData(Bone).GetParentID();
+			Fmatrix Inverse = Fidentity;
+			Inverse.invert(Parent < Count ? Rest[Parent] : Fidentity);
+			BindLocals[Bone].mul_43(Inverse, Rest[Bone]);
+			Solves[Bone].Parent = Parent < Count ? Parent : BI_NONE;
+			Solves[Bone].Model = Skeleton;
+		}
+	}
+	for (BoneSolve& Solve : Solves)
+	{
+		Solve.Add = Fidentity;
+		Solve.Scale.set(1.0f, 1.0f, 1.0f);
+		Solve.Weight = 0.0f;
+	}
+	for (u32 Row = 0; Row < Rows.size(); ++Row)
+	{
+		const PoseRow& Item = Rows[Row];
+		const float Weight = Item.IsMuted ? 0.0f : std::clamp(Curves::LaneScalar(Target.Lanes, Param::PoseWeight, static_cast<u8>(Row), Local, Item.Weight), 0.0f, 1.0f);
+		for (u32 Index = 0; Weight > 0.0f && Index < Item.Bones.size(); ++Index)
+		{
+			const u16 Bone = FindBone(Item.Bones[Index].Name);
+			if (Bone >= Count)
+			{
+				continue;
+			}
+			const u8 Layer = PoseLayer(Row, Index);
+			const Fvector Turn = Curves::LaneVector(Target.Lanes, Param::BoneRotation, Local, Item.Bones[Index].Rotation, Layer);
+			const Fvector Shift = Curves::LaneVector(Target.Lanes, Param::BonePosition, Local, Item.Bones[Index].Offset, Layer);
+			const float Scale = Item.Mode == RowMode::Add ? Weight : 1.0f;
+			Fmatrix Delta;
+			Delta.setHPB(deg2rad(Turn.x * Scale), deg2rad(Turn.y * Scale), deg2rad(Turn.z * Scale));
+			Delta.c.mul(Shift, Scale);
+			BoneSolve& Solve = Solves[Bone];
+			const Fvector Size = Curves::LaneVector(Target.Lanes, Param::BoneScale, Local, Item.Bones[Index].Scale, Layer);
+			for (u32 Axis = 0; Axis < 3; ++Axis)
+			{
+				Solve.Scale[Axis] *= 1.0f + (std::clamp(Size[Axis], 0.01f, 100.0f) - 1.0f) * Weight;
+			}
+			if (Item.Mode == RowMode::Add)
+			{
+				Solve.Add.mulB_43(Delta);
+				continue;
+			}
+			Solve.Over.mul_43(BindLocals[Bone], Delta);
+			Solve.Weight = Weight;
+		}
+	}
+	for (u16 Bone = 0; Bone < Count; ++Bone)
+	{
+		BoneSolve& Solve = Solves[Bone];
+		Solve.Bind = BindPose.size() == Count ? &BindPose[Bone] : nullptr;
+		Skeleton->LL_GetBoneInstance(Bone).set_callback(bctCustom, Actors::RigCallback, &Solve, Solve.Bind != nullptr);
+	}
+	IsRigged = true;
+	Skeleton->CalculateBones_Invalidate();
+	Skeleton->CalculateBones(true);
+	if (Rows.empty())
+	{
+		ReleaseRig();
+	}
+}
+
+void ActorRuntime::Locals(xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts) const
+{
+	for (u16 Bone = 0, Count = BoneCount(); Bone < Count; ++Bone)
+	{
+		const u16 Parent = BoneParent(Bone);
+		Fmatrix Inverse = Fidentity, Local;
+		Inverse.invert(Parent < Count ? Skeleton->LL_GetTransform(Parent) : Fidentity);
+		Local.mul_43(Inverse, Skeleton->LL_GetTransform(Bone));
+		Local.i.normalize_safe();
+		Local.j.normalize_safe();
+		Local.k.normalize_safe();
+		Turns.push_back(Fquaternion().set(Local).normalize());
+		Shifts.push_back(Local.c);
+	}
+}
+
+void ActorRuntime::Dress(const Object& Target, float Local, const xr_vector<shared_str>& Shaders)
+{
+	const xr_vector<ActorLook>& Looks = Target.Actor.Looks;
+	const u32 Look = Curves::LookAt(Target.Lanes, Local);
+	const ActorLook* Active = Look < Looks.size() ? &Looks[Look] : nullptr;
+	for (u32 Child = 0; Child < ItemSurfaceBase + MaxLookSurfaces; Child = SurfaceAt(Child) ? Child + 1 : Child < ItemSurfaceBase ? ItemSurfaceBase : ItemSurfaceBase + MaxLookSurfaces)
+	{
+		IRenderVisual* Surface = SurfaceAt(Child);
+		if (!Surface)
+		{
+			continue;
+		}
+		const SurfaceShader* Entry = Active ? FindSurface(*Active, Child) : nullptr;
+		const bool IsKnown = Entry && Entry->Shader.size() && std::binary_search(Shaders.begin(), Shaders.end(), Entry->Shader, ShaderLess);
+		const shared_str Shader = IsKnown ? Entry->Shader : Surface->getOrigShaderName();
+		const shared_str Texture = Entry && Entry->Texture.size() ? Entry->Texture : Surface->getOrigTextureName();
+		if (Surface->getShaderName() != Shader || Surface->getTextureName() != Texture)
+		{
+			Surface->set_shader(Shader);
+			Surface->set_texture(Texture);
+			Surface->reload_shader();
+		}
+	}
+}
+
+IRenderVisual* ActorRuntime::SurfaceAt(u32 Surface) const
+{
+	const bool IsItem = Surface >= ItemSurfaceBase;
+	const u32 Index = Surface - (IsItem ? ItemSurfaceBase : 0);
+	IRenderVisual* Owner = IsItem ? ItemModel.Get() : Model.Get();
+	IKinematics* Parts = IsItem ? (Owner ? Owner->dcast_PKinematics() : nullptr) : Skeleton;
+	if (!Parts)
+	{
+		return IsItem && Index == 0 && Owner && Owner->getOrigShaderName().size() ? Owner : nullptr;
+	}
+	const xr_vector<IRenderVisual*>& Children = Parts->LL_GetChilds();
+	return Index < std::min(static_cast<u32>(Children.size()), MaxLookSurfaces) ? Children[Index] : nullptr;
+}
+
+bool ActorRuntime::SurfaceNames(u32 Surface, shared_str& Shader, shared_str& Texture) const
+{
+	IRenderVisual* Item = SurfaceAt(Surface);
+	if (!Item)
+	{
+		return false;
+	}
+	Shader = Item->getOrigShaderName();
+	Texture = Item->getOrigTextureName();
+	return true;
+}
+
+void ActorRuntime::SolveIk(const Object& Target, float Local, const Fmatrix& World)
+{
+	Fmatrix ToModel;
+	ToModel.invert(World);
+	for (u8 Limb = 0; Skeleton && Limb < MaxIkLimbs; ++Limb)
+	{
+		const IkLimb& Item = Target.Actor.Ik[Limb];
+		const u16 Chain[3] = { FindBone(Item.Bones[0]), FindBone(Item.Bones[1]), FindBone(Item.Bones[2]) };
+		const float Weight = Item.IsOn ? std::clamp(Curves::LaneScalar(Target.Lanes, Param::IkWeight, Limb, Local, Item.Weight), 0.0f, 1.0f) : 0.0f;
+		if (Weight <= 0.0f || std::find(Chain, Chain + 3, BI_NONE) != Chain + 3)
+		{
+			continue;
+		}
+		const Fvector Turn = Curves::LaneVector(Target.Lanes, Param::IkTurn, Local, Item.Turn, Limb);
+		Fmatrix Goal;
+		Goal.setHPB(deg2rad(Turn.x), deg2rad(Turn.y), deg2rad(Turn.z));
+		Goal.c = Curves::LaneVector(Target.Lanes, Param::IkTarget, Local, Item.Target, Limb);
+		Fvector Pole = Curves::LaneVector(Target.Lanes, Param::IkPole, Local, Item.Pole, Limb);
+		if (Item.Space == IkSpace::World)
+		{
+			Goal.mulA_43(ToModel);
+			Goal.i.normalize_safe();
+			Goal.j.normalize_safe();
+			Goal.k.normalize_safe();
+			ToModel.transform_tiny(Pole);
+		}
+		CCameraRig::SolveLimb(Skeleton, Chain, Goal, Weight, &Pole);
+	}
+}
+
+void ActorRuntime::Constrain(const BoneConstraint& Rule, float Weight, const Fmatrix& Goal, const Fmatrix& World)
+{
+	const u16 Bone = FindBone(Rule.Bone);
+	if (Bone >= BoneCount())
+	{
+		return;
+	}
+	Fmatrix Current, Desired, Offset, Back, Delta, ToModel, Blended;
+	Current.mul_43(World, Skeleton->LL_GetTransform(Bone));
+	Current.i.normalize_safe();
+	Current.j.normalize_safe();
+	Current.k.normalize_safe();
+	Offset.setHPB(deg2rad(Rule.Turn.x), deg2rad(Rule.Turn.y), deg2rad(Rule.Turn.z));
+	Offset.c = Rule.Shift;
+	Desired.mul_43(Goal, Offset);
+	const Fvector Place = Rule.Kind == ConstraintKind::Point ? Desired.c : Current.c;
+	Desired = Rule.Kind == ConstraintKind::Point || Rule.Kind == ConstraintKind::Aim ? Current : Desired;
+	Desired.c = Rule.Kind == ConstraintKind::Parent ? Desired.c : Place;
+	Fvector From, To, Axis;
+	Current.transform_dir(From, Rule.Shift);
+	To.sub(Goal.c, Current.c);
+	From.normalize_safe();
+	To.normalize_safe();
+	Axis.crossproduct(From, To);
+	const float Sine = Axis.magnitude();
+	if (Rule.Kind == ConstraintKind::Aim && Sine > EPS_S)
+	{
+		Fmatrix Swing;
+		Swing.rotation(Axis.div(Sine), atan2f(Sine, From.dotproduct(To)));
+		Desired.mulA_43(Swing);
+		Desired.c = Current.c;
+	}
+	Fquaternion A, B, Mixed;
+	A.set(Current);
+	B.set(Desired);
+	Mixed.slerp(A, B, Weight);
+	Blended.rotation(Mixed);
+	Blended.c.lerp(Current.c, Desired.c, Weight);
+	Back.invert(Current);
+	Delta.mul_43(Blended, Back);
+	ToModel.invert(World);
+	Delta.mulA_43(ToModel);
+	Delta.mulB_43(World);
+	CCameraRig::TransformBone(Skeleton, Bone, Delta);
+}
+
+void ActorRuntime::ReleaseRig()
+{
+	for (u16 Bone = 0, Count = IsRigged && Skeleton ? Skeleton->LL_BoneCount() : 0; Bone < Count; ++Bone)
+	{
+		CBoneInstance& Instance = Skeleton->LL_GetBoneInstance(Bone);
+		if (Instance.callback() == Actors::RigCallback)
+		{
+			BindPose.size() == Count ? Instance.set_callback(bctCustom, Actors::BindPoseCallback, &BindPose[Bone], true) : Instance.reset_callback();
+		}
+	}
+	IsRigged = false;
+	Solves.clear();
+}
+
+u16 ActorRuntime::FindBone(const shared_str& Name) const
+{
+	return Skeleton && Name.size() ? Skeleton->LL_BoneID(Name) : BI_NONE;
+}
+
+u16 ActorRuntime::BoneParent(u16 Bone) const
+{
+	return Skeleton && Bone < BoneCount() ? Skeleton->GetBoneData(Bone).GetParentID() : BI_NONE;
+}
+
+bool ActorRuntime::BoneWorld(u16 Bone, const Fmatrix& World, Fmatrix& Out) const
+{
+	if (!Skeleton || Bone >= BoneCount())
+	{
+		return false;
+	}
+	Out.mul_43(World, Skeleton->LL_GetTransform(Bone));
+	return true;
+}
+
+bool ActorRuntime::RestLocal(u16 Bone, Fmatrix& Out) const
+{
+	if (Bone >= BindLocals.size())
+	{
+		return false;
+	}
+	Out = BindLocals[Bone];
+	return true;
+}
+
+bool ActorRuntime::RestModel(u16 Bone, Fmatrix& Out) const
+{
+	if (Bone >= BindLocals.size() || Bone >= Solves.size())
+	{
+		return false;
+	}
+	Out = BindLocals[Bone];
+	for (u16 Parent = Solves[Bone].Parent, Depth = 0; Parent < BindLocals.size() && Depth < 256; Parent = Solves[Parent].Parent, ++Depth)
+	{
+		Out.mulA_43(BindLocals[Parent]);
+	}
 	return true;
 }
 
@@ -395,6 +709,22 @@ bool ActorRuntime::BoneFrame(const shared_str& Bone, Fmatrix& Out) const
 	return !Bone.size() || Index < BoneCount();
 }
 
+void ActorRuntime::Bones(const Fmatrix& World, xr_vector<Fvector>& Lines) const
+{
+	for (u16 Bone = 0; IsShown && Bone < BoneCount(); ++Bone)
+	{
+		const u16 Parent = Skeleton->GetBoneData(Bone).GetParentID();
+		if (Parent < BoneCount())
+		{
+			Fvector From, To;
+			World.transform_tiny(From, Skeleton->LL_GetTransform(Bone).c);
+			World.transform_tiny(To, Skeleton->LL_GetTransform(Parent).c);
+			Lines.push_back(From);
+			Lines.push_back(To);
+		}
+	}
+}
+
 u16 ActorRuntime::BoneCount() const
 {
 	return Skeleton ? Skeleton->LL_BoneCount() : 0;
@@ -414,6 +744,7 @@ bool ActorRuntime::LoadModel(const shared_str& Visual)
 {
 	Body.Unbind();
 	Body.ItemVisual = nullptr;
+	ReleaseRig();
 	ClearBindPose();
 	Model.Reset();
 	Skeleton = nullptr;
@@ -806,13 +1137,14 @@ void ActorRuntime::MixParts(const LayerPose* Poses, u32 Count)
 			}
 			HasAny = HasAny || (!Channel && Now.Count);
 		}
-		const MotionID Fallback = Channel || !HasAny ? MotionID() : IdleMotion().valid() ? IdleMotion() : Poses[0].Items[0].Motion;
+		const MotionID Fallback = Channel ? MotionID() : IdleMotion().valid() ? IdleMotion() : HasAny ? Poses[0].Items[0].Motion : MotionID();
 		for (u16 Part = 0; Fallback.valid() && Part < MAX_PARTS; ++Part)
 		{
 			MixPart& Now = Next[Part];
 			if (!Now.Count && (NamedParts & (1u << Part)))
 			{
 				Now.Entries[Now.Count++] = { Fallback, static_cast<u8>(MaxActorLayers + 1), 0, 0.0f, 1.0f };
+				HasAny = true;
 			}
 		}
 		for (u16 Part = 0; Part < MAX_PARTS; ++Part)
@@ -926,7 +1258,7 @@ void ActorRuntime::ClearBindPose()
 	for (u16 Bone = 0, Count = Skeleton ? Skeleton->LL_BoneCount() : 0; Bone < Count; ++Bone)
 	{
 		CBoneInstance& Instance = Skeleton->LL_GetBoneInstance(Bone);
-		if (Instance.callback() == Actors::BindPoseCallback)
+		if (Instance.callback() == Actors::BindPoseCallback || Instance.callback() == Actors::RigCallback)
 		{
 			Instance.reset_callback();
 		}

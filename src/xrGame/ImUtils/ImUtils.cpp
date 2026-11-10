@@ -99,6 +99,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
 		CImGuiManager::Instance().Subscribe("Cinema Film Maker Editor", CImGuiManager::ERenderPriority::eMedium, RenderCinemaFilmMakerEditor);
 		CImGuiManager::Instance().Subscribe("Cinema Editor", CImGuiManager::ERenderPriority::eMedium, RenderCinemaEditor);
+		CImGuiManager::Instance().HiddenCallback = CinemaEditor_DrawHidden;
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
 		CImGuiManager::Instance().Subscribe("Camera Rig", CImGuiManager::ERenderPriority::eMedium, RenderCameraRigEditor);
 
