@@ -1216,6 +1216,15 @@ void ReadCamera(const CInifile& Ini, const char* Section, Object& Rig, u32 Versi
 			Block.FarRange = Lens[4];
 			Block.Blur = Lens[5];
 		}
+		float Glass[4] = { 0.0f, 4.0f, 0.0f, 0.0f };
+		xr_sprintf(Line, "block_%03u_lens", Index);
+		if (Ini.line_exist(Section, Line) && ReadFloats(Ini, Section, Line, Glass, 4, Notes))
+		{
+			Block.IsPhysical = Glass[0] != 0.0f;
+			Block.Aperture = Sanitize(Glass[1], 0.7f, 64.0f, 4.0f);
+			Block.FocalLength = Sanitize(Glass[2], 0.0f, 1000.0f, 0.0f);
+			Block.IsAutofocus = Glass[3] != 0.0f;
+		}
 		float Smooth = 0.0f;
 		xr_sprintf(Line, "block_%03u_smooth", Index);
 		if (ReadFloats(Ini, Section, Line, &Smooth, 1, Notes))
@@ -1501,7 +1510,7 @@ void ReadObject(const CInifile& Ini, u32 Index, Scene& Out, u32 Version, Warning
 		ReadFloats(Ini, Section, "post_fade_times", Fades, 2, Notes);
 		Setup.FadeIn = Sanitize(Fades[0], 0.0f, MaxTime, 0.0f);
 		Setup.FadeOut = Sanitize(Fades[1], 0.0f, MaxTime, 0.0f);
-		for (u32 Id = static_cast<u32>(Param::PostBase); Id <= static_cast<u32>(Param::PostMiddleGray); ++Id)
+		for (u32 Id = static_cast<u32>(Param::PostBase); Id <= static_cast<u32>(Param::PostMotionBlur); ++Id)
 		{
 			float Values[3] = {};
 			xr_sprintf(Key, "set_%s", Params[Id].Id);
@@ -1967,7 +1976,7 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 		string64 Key;
 		Write(Ini, Section, "post_mask", Setup.Mask);
 		Write(Ini, Section, "post_fade_times", Setup.FadeIn, Setup.FadeOut);
-		for (u32 Id = static_cast<u32>(Param::PostBase); Id <= static_cast<u32>(Param::PostMiddleGray); ++Id)
+		for (u32 Id = static_cast<u32>(Param::PostBase); Id <= static_cast<u32>(Param::PostMotionBlur); ++Id)
 		{
 			const Param Which = static_cast<Param>(Id);
 			xr_sprintf(Key, "set_%s", Params[Id].Id);
@@ -2002,6 +2011,11 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 		{
 			xr_sprintf(Line, "block_%03u_dof", Index);
 			Write(Ini, Section, Line, Block.Dof, Block.Focus, Block.FocusOffset, Block.NearRange, Block.FarRange, Block.Blur);
+		}
+		if (Block.IsPhysical != Fresh.IsPhysical || Block.Aperture != Fresh.Aperture || Block.FocalLength != Fresh.FocalLength || Block.IsAutofocus != Fresh.IsAutofocus)
+		{
+			xr_sprintf(Line, "block_%03u_lens", Index);
+			Write(Ini, Section, Line, Block.IsPhysical ? 1.0f : 0.0f, Block.Aperture, Block.FocalLength, Block.IsAutofocus ? 1.0f : 0.0f);
 		}
 		if (Block.Smooth != Fresh.Smooth)
 		{

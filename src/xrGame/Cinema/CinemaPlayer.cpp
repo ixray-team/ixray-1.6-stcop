@@ -1120,6 +1120,7 @@ void Player::OutputCamera()
 	if (!Camera && Manager.GetCamEffector(cefDemo))
 	{
 		GamePersistent().DofManager().SetCinema(nullptr);
+		GamePersistent().DofManager().SetCinemaCamera(nullptr);
 		CurrentView = ViewSource::Busy;
 		return;
 	}
@@ -1314,7 +1315,7 @@ void Player::OutputPost()
 		const float Local = Time - Item.Span.Start;
 		const float In = Setup.FadeIn > 0.0f ? std::clamp(Local / Setup.FadeIn, 0.0f, 1.0f) : 1.0f, Out = Setup.FadeOut > 0.0f ? std::clamp((Item.Span.Length - Local) / Setup.FadeOut, 0.0f, 1.0f) : 1.0f;
 		const float Weight = In * Out;
-		for (u32 Id = static_cast<u32>(Param::PostBase); Weight > 0.0f && Id <= static_cast<u32>(Param::PostMiddleGray); ++Id)
+		for (u32 Id = static_cast<u32>(Param::PostBase); Weight > 0.0f && Id <= static_cast<u32>(Param::PostMotionBlur); ++Id)
 		{
 			const Param Which = static_cast<Param>(Id);
 			if (!IsPostSet(Setup, Item.Lanes, Which))
@@ -1322,8 +1323,8 @@ void Player::OutputPost()
 				continue;
 			}
 			IsUsed = true;
-			const u32 Bit = Id >= static_cast<u32>(Param::PostExposure) ? Id - static_cast<u32>(Param::PostExposure) : 4;
-			if (Bit < 4)
+			const u32 Bit = Id >= static_cast<u32>(Param::PostExposure) ? Id - static_cast<u32>(Param::PostExposure) : 5;
+			if (Bit < 5)
 			{
 				const float Value = Curves::LaneScalar(Item.Lanes, Which, 0, Local, *PostField(Setup, Which, 0));
 				Grade.Value[Bit] = Grade.Amount[Bit] > 0.0f ? Grade.Value[Bit] + (Value - Grade.Value[Bit]) * Weight : Value;
@@ -1381,6 +1382,29 @@ bool Player::IsCutBetween(float From, float To) const
 void Player::OutputDof(const CameraSample& Lens)
 {
 	CDofManager& Dof = GamePersistent().DofManager();
+	const bool IsEarly = Lens.A.HasDof && Lens.A.IsPhysical, IsLate = Lens.B.HasDof && Lens.B.IsPhysical;
+	if (IsEarly || IsLate)
+	{
+		const float Share = std::clamp(Lens.Weight, 0.0f, 1.0f);
+		const CameraPose& Lead = IsLate && (!IsEarly || Share >= 0.5f) ? Lens.B : Lens.A;
+		Fvector4 Mixed = Lead.Lens;
+		if (IsEarly && IsLate)
+		{
+			Mixed.lerp(Lens.A.Lens, Lens.B.Lens, Share);
+		}
+		SDofCameraSettings Settings;
+		Settings.Mode = Lead.Lens.w > 0.5f ? EDofMode::Autofocus : EDofMode::Manual;
+		Settings.FNumber = Mixed.x;
+		Settings.ManualFocalLength = Lead.Lens.y > 0.0f;
+		Settings.FocalLength = Settings.ManualFocalLength ? Mixed.y : Settings.FocalLength;
+		Settings.FocusDistance = Mixed.z;
+		Settings.IsInstant = Settings.Mode == EDofMode::Manual;
+		Dof.SetForced(false);
+		Dof.SetCinema(nullptr);
+		Dof.SetCinemaCamera(&Settings);
+		return;
+	}
+	Dof.SetCinemaCamera(nullptr);
 	const Fvector& Base = Dof.GetBase();
 	float Lo = 0.0f, Hi = 0.0f;
 	const Fvector4 Rest = Fvector4().set(Base.x, Base.y, Base.z, Console ? Console->GetFloat("r2_dof_kernel", Lo, Hi) : (Lens.B.HasDof ? Lens.B.Dof.w : Lens.A.Dof.w));
@@ -1414,6 +1438,7 @@ void Player::Release()
 	if (g_pGamePersistent)
 	{
 		GamePersistent().DofManager().SetCinema(nullptr);
+		GamePersistent().DofManager().SetCinemaCamera(nullptr);
 	}
 	if (Camera)
 	{

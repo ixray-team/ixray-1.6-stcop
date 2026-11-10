@@ -477,6 +477,8 @@ void EvaluateBlock(const CameraBlock& Block, const BlockCache& Cache, float Loca
 	Pose.Fov = FovLane && (Block.Fov > 0.0f || !FovLane->Curves[0].Keys.empty()) ? Curves::Result(FovLane->Curves[0], Local, Block.Fov, Info(Param::Fov)) : Block.Fov;
 	const float Focus = FocusDepth(Block, Cache, Local, Pose.Position, Pose.Orientation.k);
 	Pose.HasDof = Block.Dof != DofMode::Off;
+	Pose.IsPhysical = Pose.HasDof && Block.IsPhysical;
+	Pose.Lens.set(Curves::LaneScalar(Block.Lanes, Param::DofAperture, 0, Local, Block.Aperture), Curves::LaneScalar(Block.Lanes, Param::DofLength, 0, Local, Block.FocalLength), Focus, Block.IsAutofocus && Block.Dof == DofMode::Manual ? 1.0f : 0.0f);
 	Pose.Dof.set(Focus - Curves::LaneScalar(Block.Lanes, Param::DofNear, 0, Local, Block.NearRange), Focus, Focus + Curves::LaneScalar(Block.Lanes, Param::DofFar, 0, Local, Block.FarRange), Curves::LaneScalar(Block.Lanes, Param::DofBlur, 0, Local, Block.Blur));
 }
 

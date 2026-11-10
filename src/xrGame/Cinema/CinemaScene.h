@@ -82,6 +82,8 @@ enum class Param : u8
 	DofNear,
 	DofFar,
 	DofBlur,
+	DofAperture,
+	DofLength,
 	CameraSmooth,
 	PoseWeight,
 	BoneRotation,
@@ -128,6 +130,7 @@ enum class Param : u8
 	PostBloom,
 	PostTonemap,
 	PostMiddleGray,
+	PostMotionBlur,
 	ShakeInfluence,
 	ShakePositionScale,
 	ShakeSpeed,
@@ -549,6 +552,10 @@ struct CameraBlock
 	float NearRange = 2.0f;
 	float FarRange = 20.0f;
 	float Blur = 5.0f;
+	bool IsPhysical = false;
+	bool IsAutofocus = false;
+	float Aperture = 4.0f;
+	float FocalLength = 0.0f;
 	float Smooth = 0.0f;
 	float Tension = 1.0f;
 	bool IsShortTurn = false;
@@ -687,6 +694,7 @@ struct PostData
 	float Bloom = 0.04f;
 	float Tonemap = 1.0f;
 	float MiddleGray = 1.0f;
+	float MotionBlur = 0.25f;
 
 	bool operator==(const PostData&) const = default;
 };
@@ -694,7 +702,7 @@ struct PostData
 inline float* PostField(PostData& Setup, Param Id, u8 Component)
 {
 	const u8 Axis = Component < 3 ? Component : 0;
-	float* const Fields[16] = { &Setup.Base[Axis], &Setup.Add[Axis], &Setup.GrayColor[Axis], &Setup.Gray, &Setup.Blur, &Setup.DualityH, &Setup.DualityV, &Setup.Noise, &Setup.Grain, &Setup.NoiseFps, &Setup.Fade, &Setup.FadeColor[Axis], &Setup.Exposure, &Setup.Bloom, &Setup.Tonemap, &Setup.MiddleGray };
+	float* const Fields[17] = { &Setup.Base[Axis], &Setup.Add[Axis], &Setup.GrayColor[Axis], &Setup.Gray, &Setup.Blur, &Setup.DualityH, &Setup.DualityV, &Setup.Noise, &Setup.Grain, &Setup.NoiseFps, &Setup.Fade, &Setup.FadeColor[Axis], &Setup.Exposure, &Setup.Bloom, &Setup.Tonemap, &Setup.MiddleGray, &Setup.MotionBlur };
 	return Fields[static_cast<u32>(Id) - static_cast<u32>(Param::PostBase)];
 }
 

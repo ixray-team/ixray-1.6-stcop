@@ -2280,12 +2280,12 @@ void Editor::DrawPostSection(Player& Core, const xr_vector<u32>& Ids, bool HasPi
 		float Speed;
 		const char* Format;
 	};
-	static constexpr Row Rows[16] = {
+	static constexpr Row Rows[17] = {
 		{ Param::PostFade, "Fade", 0.01f, "%.2f" }, { Param::PostFadeColor, nullptr, 0.01f, "%.2f" },
 		{ Param::PostBase, "Color", 0.005f, "%.3f" }, { Param::PostAdd, nullptr, 0.005f, "%.3f" }, { Param::PostGray, nullptr, 0.01f, "%.2f" }, { Param::PostGrayColor, nullptr, 0.005f, "%.3f" },
 		{ Param::PostBlur, "Image", 0.01f, "%.2f" }, { Param::PostDualityH, nullptr, 0.001f, "%.3f" }, { Param::PostDualityV, nullptr, 0.001f, "%.3f" },
 		{ Param::PostNoise, "Noise", 0.01f, "%.2f" }, { Param::PostGrain, nullptr, 0.01f, "%.2f" }, { Param::PostNoiseFps, nullptr, 1.0f, "%.0f" },
-		{ Param::PostExposure, "Grade", 0.02f, "%.2f" }, { Param::PostBloom, nullptr, 0.005f, "%.3f" }, { Param::PostTonemap, nullptr, 0.01f, "%.2f" }, { Param::PostMiddleGray, nullptr, 0.01f, "%.2f" }
+		{ Param::PostExposure, "Grade", 0.02f, "%.2f" }, { Param::PostBloom, nullptr, 0.005f, "%.3f" }, { Param::PostTonemap, nullptr, 0.01f, "%.2f" }, { Param::PostMiddleGray, nullptr, 0.01f, "%.2f" }, { Param::PostMotionBlur, nullptr, 0.01f, "%.2f" }
 	};
 	const Object& Primary = *Find(Core.Data, Ids[0]);
 	const PostData& Setup = Primary.Post;
@@ -2629,6 +2629,25 @@ void Editor::DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool Has
 			Edit(Core, Rig.Id, "Depth of field")->Camera.Blocks[Block].Dof = Action == RowAction::Reset ? DofMode::Off : static_cast<DofMode>(Lens);
 		}
 		EndRow(KeyState::None);
+		Action = BeginRow("Lens", Shot.IsPhysical, false);
+		s32 Glass = Shot.IsPhysical ? 1 : 0;
+		if (ImGui::Combo("##Lens", &Glass, "Classic\0Physical\0") || Action == RowAction::Reset)
+		{
+			Edit(Core, Rig.Id, "Depth of field lens")->Camera.Blocks[Block].IsPhysical = Action != RowAction::Reset && Glass == 1;
+		}
+		ImGui::SetItemTooltip("Classic: sharp between Near range and Far range, with a Blur size. Physical: a real lens, blur from Aperture, Focal length and Focus");
+		EndRow(KeyState::None);
+		if (Shot.IsPhysical && Shot.Dof == DofMode::Manual)
+		{
+			Action = BeginRow("Autofocus", Shot.IsAutofocus, false);
+			bool IsAuto = Shot.IsAutofocus;
+			if (ImGui::Checkbox("##Autofocus", &IsAuto) || Action == RowAction::Reset)
+			{
+				Edit(Core, Rig.Id, "Autofocus")->Camera.Blocks[Block].IsAutofocus = Action != RowAction::Reset && IsAuto;
+			}
+			ImGui::SetItemTooltip("Focus on whatever is at the centre of the picture instead of the Focus distance");
+			EndRow(KeyState::None);
+		}
 		const bool IsTracked = Shot.Dof == DofMode::Object;
 		if (IsTracked)
 		{
@@ -2658,9 +2677,17 @@ void Editor::DrawCameraSection(Player& Core, const xr_vector<u32>& Ids, bool Has
 			ImGui::PopStyleColor();
 		}
 		ParamRow(Core, Ids, Block, IsTracked ? Param::DofOffset : Param::DofFocus, 0, 0.01f, "%.2f m", 1, IsTracked ? 0.0f : 5.0f);
-		ParamRow(Core, Ids, Block, Param::DofNear, 0, 0.01f, "%.2f m", 1, 2.0f);
-		ParamRow(Core, Ids, Block, Param::DofFar, 0, 0.05f, "%.2f m", 1, 20.0f);
-		ParamRow(Core, Ids, Block, Param::DofBlur, 0, 0.01f, "%.2f", 1, 5.0f);
+		if (Shot.IsPhysical)
+		{
+			ParamRow(Core, Ids, Block, Param::DofAperture, 0, 0.05f, "f/%.1f", 1, 4.0f);
+			ParamRow(Core, Ids, Block, Param::DofLength, 0, 0.5f, "%.0f mm", 1, 0.0f);
+		}
+		else
+		{
+			ParamRow(Core, Ids, Block, Param::DofNear, 0, 0.01f, "%.2f m", 1, 2.0f);
+			ParamRow(Core, Ids, Block, Param::DofFar, 0, 0.05f, "%.2f m", 1, 20.0f);
+			ParamRow(Core, Ids, Block, Param::DofBlur, 0, 0.01f, "%.2f", 1, 5.0f);
+		}
 		ImGui::BeginDisabled(IsTracked);
 		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[IsPickingFocus ? ImGuiCol_ButtonActive : ImGuiCol_FrameBg]);
 		if (ImGui::Button("Pick focus", ImVec2(-FLT_MIN, 0.0f)))

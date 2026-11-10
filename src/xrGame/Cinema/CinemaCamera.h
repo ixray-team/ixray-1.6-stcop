@@ -52,7 +52,9 @@ struct CameraPose
 	Fmatrix Orientation = Fidentity;
 	float Fov = 0.0f;
 	Fvector4 Dof = {};
+	Fvector4 Lens = {};
 	bool HasDof = false;
+	bool IsPhysical = false;
 };
 
 struct CameraSample

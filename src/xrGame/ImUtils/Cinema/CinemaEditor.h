@@ -164,7 +164,7 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 	{
 		return Target.Type == ObjectType::Weather ? WeatherField(Target.Weather, Id, Component) : nullptr;
 	}
-	if (Block < 0 && Id >= Param::PostBase && Id <= Param::PostMiddleGray)
+	if (Block < 0 && Id >= Param::PostBase && Id <= Param::PostMotionBlur)
 	{
 		return Target.Type == ObjectType::Post ? PostField(Target.Post, Id, Component) : nullptr;
 	}
@@ -202,9 +202,9 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 		return Id >= Param::ShakeInfluence && Clip.Row == Layer ? Shaken[static_cast<u32>(Id) - static_cast<u32>(Param::ShakeInfluence)] : nullptr;
 	}
 	CameraBlock& Shot = Target.Camera.Blocks[Block];
-	float* const Shots[] = { &Shot.Position[Component], &Shot.Rotation[Component], &Shot.TimeScale, &Shot.Fov, &Shot.Focus, &Shot.FocusOffset, &Shot.NearRange, &Shot.FarRange, &Shot.Blur, &Shot.Smooth };
-	const u32 At = Id <= Param::Rotation ? static_cast<u32>(Id) : Id == Param::TimeScale ? 2 : Id == Param::Fov ? 3 : Id >= Param::DofFocus && Id <= Param::CameraSmooth ? 4 + static_cast<u32>(Id) - static_cast<u32>(Param::DofFocus) : 10;
-	return At < 10 ? Shots[At] : nullptr;
+	float* const Shots[] = { &Shot.Position[Component], &Shot.Rotation[Component], &Shot.TimeScale, &Shot.Fov, &Shot.Focus, &Shot.FocusOffset, &Shot.NearRange, &Shot.FarRange, &Shot.Blur, &Shot.Aperture, &Shot.FocalLength, &Shot.Smooth };
+	const u32 At = Id <= Param::Rotation ? static_cast<u32>(Id) : Id == Param::TimeScale ? 2 : Id == Param::Fov ? 3 : Id >= Param::DofFocus && Id <= Param::CameraSmooth ? 4 + static_cast<u32>(Id) - static_cast<u32>(Param::DofFocus) : 12;
+	return At < 12 ? Shots[At] : nullptr;
 }
 
 inline float TargetStart(const Object& Target, s32 Block)
@@ -287,6 +287,7 @@ struct RenderJob
 	u32 WarmIndex = u32(-1);
 	string_path Folder = {};
 	string_path Video = {};
+	string_path Name = {};
 };
 
 enum class PendingKind : u8
@@ -1125,6 +1126,7 @@ private:
 	float ShiftAmount = 1.0f;
 	RenderJob Job;
 	s32 RenderRange = 0, RenderRate = 0, RenderAspect = 0, RenderOutput = 0;
+	char RenderName[64] = {};
 	s32 MotionRange = 0, MotionSource = 0;
 	u32 LookEdit = 0;
 	u32 MotionObject = 0, MotionRow = 0;

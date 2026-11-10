@@ -132,8 +132,8 @@ public:
 	{
 		u32 Frame = u32(-8);
 		u32 Mask = 0;
-		float Value[4] = {};
-		float Amount[4] = {};
+		float Value[5] = {};
+		float Amount[5] = {};
 	};
 	GradeOverride PostGrade;
 	float Grade(u32 Bit, float Game) const { return dwFrame - PostGrade.Frame <= 1 && ((PostGrade.Mask >> Bit) & 1) ? Game + (PostGrade.Value[Bit] - Game) * PostGrade.Amount[Bit] : Game; }
