@@ -129,3 +129,5 @@ endif()
 
 ## lunaSVG
 target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
+
+ixray_split_compile(xrECore)

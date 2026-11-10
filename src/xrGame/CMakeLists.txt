@@ -247,15 +247,19 @@ if (IXRAY_MP)
 endif()
 
 # Move precompiled header
-set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+file(GLOB_RECURSE GAME_SOURCE_ALL_C_FILES "*.c" "../xrGameSpy/gamespy/md5c.c")
+set_source_files_properties(${GAME_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
+if (IXRAY_UNITYBUILD AND NOT IXRAY_CROSS_COMPILATION)
+	target_precompile_headers(xrGame PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.h>")
+else()
+	set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+endif()
 
 if (NOT IXRAY_UNITYBUILD AND WIN32)
 	set_target_properties(xrGame PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 	target_precompile_headers(xrGame PUBLIC "stdafx.h")
-
-	file(GLOB_RECURSE GAME_SOURCE_ALL_C_FILES "*.c" "../xrGameSpy/gamespy/md5c.c")
-	set_source_files_properties(${GAME_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 endif()
 
 file(GLOB_RECURSE GAME_SOURCE_PCH_FILES "stdafx.*")
@@ -265,3 +269,8 @@ source_group("pch" FILES ${GAME_SOURCE_PCH_FILES})
 if(IXRAY_MP)
 	target_link_libraries(xrGame PUBLIC RedImage::RedImage)
 endif()
+
+ixray_split_compile(xrGame
+	xrGameUI "/xrGame/ui/"
+	xrGameAI "/xrGame/ai/"
+	xrGameScript "/xrGame/.*cript|/xrServerEntities/.*cript")

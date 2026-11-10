@@ -48,3 +48,5 @@ if (IXRAY_MP)
     target_link_libraries(xrSound PRIVATE Opus::Opus)
 	target_compile_definitions(xrSound PUBLIC XR_MP_BUILD)
 endif()
+
+ixray_split_compile(xrSound)
