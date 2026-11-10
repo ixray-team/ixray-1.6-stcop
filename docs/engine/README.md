@@ -18,6 +18,10 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [imgui-windows.md](imgui-windows.md) | In-game ImGui panels: detached desktop windows, input and checks |
 | [hud-adjust.md](hud-adjust.md) | In-game Hud Adjust: controls, export and screen guides |
 | [cutscene-adjust.md](cutscene-adjust.md) | Legacy cutscene adjustment: configs, controls and closing the tool |
+| [actor-animations.md](actor-animations.md) | Actor animation library, playback and favorites |
+| [spawn-manager.md](spawn-manager.md) | In-game object browser, icons and spawning |
+| [weather-editor.md](weather-editor.md) | Live environment editing, texture browsing and saving |
+| [detail-layers-editor.md](detail-layers-editor.md) | In-game detail vegetation masks, controls and checks |
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
 | [level-inspector.md](level-inspector.md) | In-game Level Inspector: modder guide and checks |
 | [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs and particles, held items, animation playlists, scene save/load |
