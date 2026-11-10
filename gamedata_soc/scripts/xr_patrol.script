@@ -337,23 +337,18 @@ function PatrolManager:get_commander   (npc)
 end
 -----------------------
 function PatrolManager:get_npc_command (npc)    -- get command for NPC
-    if npc == nil then 
-       abort ("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
+    if npc == nil then
+       return
     end
-    
-    --закешируем айдишник непися
-    local npc_id = npc:id ()   
-    --проверка непися на присутсвие в списке
-    if self.npc_list[npc:id ()] == nil then
-       abort ("NPC with name %s can't present in PatrolManager[%s]", npc:name (), self.path_name)
+
+    local npc_id = npc:id ()
+    local npc_data = self.npc_list[npc_id]
+    local commander_data = self.npc_list[self.commander_id]
+    if npc_data == nil or npc_id == self.commander_id or commander_data == nil or commander_data.soldier == nil then
+       return
     end
-    --проверка, чтобы командир не вздумал задавать глупых вопросов
-    if npc:id () == self.commander_id then
-       abort ("Patrol commander called function PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name) 
-    end       
-    --получим данные командира
-    local commander = self.npc_list[self.commander_id].soldier
-    
+    local commander = commander_data.soldier
+
     local dir = commander:direction ()
     
     local pos = vector ():set (0, 0, 0)
@@ -593,7 +588,18 @@ function action_patrol:execute()
     
     self.time_to_update = time_global () + 5000
     
-	self.l_vid, self.dir, self.cur_state, reset = patrols[self.st.path_name]:get_npc_command (self.object)
+	local patrol = patrols[self.st.path_name]
+	if patrol == nil then
+	   return
+	end
+	if patrol.npc_list[self.object:id ()] == nil and patrol.npc_count < 7 then
+	   patrol:add_npc (self.object, false)
+	end
+	local reset
+	self.l_vid, self.dir, self.cur_state, reset = patrol:get_npc_command (self.object)
+	if self.l_vid == nil then
+	   return
+	end
 
 	if self.l_vid == self.object:level_vertex_id () then
 	   utils.send_to_nearest_accessible_vertex (self.object, level.vertex_in_direction (self.l_vid, self.object:direction (), 1))
