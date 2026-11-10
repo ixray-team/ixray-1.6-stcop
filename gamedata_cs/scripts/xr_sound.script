@@ -14,6 +14,11 @@ function set_sound_play(npc_id, sound, faction, point)
 		if sound == nil then
 			return
 		end
+		if sound == "nil" then
+			SemiLog("! set_sound_play: ignoring nil sound theme for npc [" .. tostring(npc_id) .. "]")
+			log(debug.traceback(2))
+			return
+		end
 		if sound_theme.theme[sound] == nil then
 			abort("set_sound_play. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
 			return
