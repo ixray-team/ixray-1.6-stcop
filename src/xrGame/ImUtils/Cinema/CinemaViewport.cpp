@@ -64,6 +64,18 @@ float Project(const Fvector& Point, ImVec2& Screen)
 	return 0.5f * Main->Size.y * Device.mProject._22 / Clip.w;
 }
 
+float RigReach(u32 Control)
+{
+	constexpr float Reach[14] = { 0.25f, 0.22f, 0.14f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.4f, 0.2f, 0.2f, 0.1f };
+	return Control < 14 ? Reach[Control] : 0.0f;
+}
+
+Fvector RigRing(const Fvector& Centre, float Radius, u32 Step)
+{
+	const float Angle = static_cast<float>(Step) * PI_MUL_2 / 24.0f;
+	return Fvector().set(Centre.x + cosf(Angle) * Radius, Centre.y, Centre.z + sinf(Angle) * Radius);
+}
+
 void Line3D(ImDrawList* List, Fvector From, Fvector To, u32 Color)
 {
 	const Fmatrix& Full = Device.mFullTransform;
@@ -762,7 +774,7 @@ void Editor::DrawGizmo(Player& Core)
 	const ActorRuntime* Body = Posed ? Core.FindActor(PoseObject) : nullptr;
 	for (u32 Joint = 0; Body && !SelectedBones.empty() && Joint < 3 * MaxIkLimbs; ++Joint)
 	{
-		const IkLimb& Setup = Posed->Actor.Ik[Joint / 3];
+		const IkLimb& Setup = IkOf(*Posed, IkBlock(*Posed))[Joint / 3];
 		if (Setup.IsOn && Body->FindBone(Setup.Bones[Joint % 3]) == SelectedBones[0])
 		{
 			IkHandle = static_cast<s32>(2 * (Joint / 3) + (Joint % 3 == 2 ? 0 : 1));
@@ -1209,7 +1221,7 @@ void Editor::Pick(Player& Core)
 	}
 	IsPickArmed = false;
 	Fvector Origin, Direction;
-	if (ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) || !ViewportUi::MouseRay(Origin, Direction) || PickBone(Core, Input.KeyCtrl))
+	if (ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) || !ViewportUi::MouseRay(Origin, Direction) || PickBone(Core, Input.KeyCtrl) || ShowAnimator)
 	{
 		return;
 	}
@@ -1529,6 +1541,29 @@ void Editor::BuildRig(const ActorRuntime& Runtime, const shared_str& Visual)
 			Rig.Chains[Chain][Link] = Bone(Chains[Chain][Link]);
 		}
 	}
+	constexpr const char* HandChains[2] = { "left_hand_ik_chain", "right_hand_ik_chain" };
+	const char* Hands = pSettings->read_if_exists<str_c>("actor", "player_hud_default", "actor_hud");
+	for (u32 Side = 0; Side < 2; ++Side)
+	{
+		const char* Common = pSettings->section_exist("camera_rig") ? pSettings->read_if_exists<str_c>("camera_rig", HandChains[Side], nullptr) : nullptr;
+		const char* Names = pSettings->section_exist(Hands) ? pSettings->read_if_exists<str_c>(Hands, HandChains[Side], Common) : Common;
+		u16* Links = Rig.Chains[Side];
+		if (!Names || _GetItemCount(Names) != 3 || std::find(Links, Links + 3, BI_NONE) == Links + 3)
+		{
+			continue;
+		}
+		string128 Part;
+		u16 Found[3];
+		for (int Link = 0; Link < 3; ++Link)
+		{
+			Found[Link] = Bone(_GetItem(Names, Link, Part));
+		}
+		if (std::find(Found, Found + 3, BI_NONE) == Found + 3)
+		{
+			std::copy(Found, Found + 3, Links);
+			Rig.Controls[3 + Side] = Rig.Controls[3 + Side] == BI_NONE ? Found[2] : Rig.Controls[3 + Side];
+		}
+	}
 	Rig.Mirror.assign(Count, BI_NONE);
 	constexpr const char* Sides[4][2] = { { "_l_", "_r_" }, { "_r_", "_l_" }, { "left", "right" }, { "right", "left" } };
 	for (u16 Id = 0; Id < Count; ++Id)
@@ -1645,16 +1680,17 @@ void Editor::SaveRig()
 
 namespace
 {
-bool IkGoalWorld(const Object& Actor, const Fmatrix& World, u32 Limb, bool IsPole, float Local, Fmatrix& Out)
+bool IkGoalWorld(const Object& Actor, s32 Block, const Fmatrix& World, u32 Limb, bool IsPole, float Local, Fmatrix& Out)
 {
-	const IkLimb& Setup = Actor.Actor.Ik[Limb];
+	const IkLimb& Setup = IkOf(Actor, Block)[Limb];
+	const xr_vector<Lane>& Tracks = LaneList(Actor, Block);
 	if (!Setup.IsOn)
 	{
 		return false;
 	}
-	const Fvector Turn = Curves::LaneVector(Actor.Lanes, Param::IkTurn, Local, Setup.Turn, static_cast<u8>(Limb));
+	const Fvector Turn = Curves::LaneVector(Tracks, Param::IkTurn, Local, Setup.Turn, static_cast<u8>(Limb));
 	IsPole ? Out.identity() : Out.setHPB(deg2rad(Turn.x), deg2rad(Turn.y), deg2rad(Turn.z));
-	Out.c = Curves::LaneVector(Actor.Lanes, IsPole ? Param::IkPole : Param::IkTarget, Local, IsPole ? Setup.Pole : Setup.Target, static_cast<u8>(Limb));
+	Out.c = Curves::LaneVector(Tracks, IsPole ? Param::IkPole : Param::IkTarget, Local, IsPole ? Setup.Pole : Setup.Target, static_cast<u8>(Limb));
 	if (Setup.Space == IkSpace::Actor)
 	{
 		Out.mulA_43(World);
@@ -1678,9 +1714,17 @@ s32 Editor::BoneUnderMouse(const Player& Core) const
 		Fmatrix Joint;
 		ImVec2 At;
 		const u16 Bone = Rig.Controls[Control];
-		const float Gap = Bone != BI_NONE && Runtime->BoneWorld(Bone, State->World, Joint) && ViewportUi::Project(Joint.c, At) > 0.0f ? std::hypot(At.x - Mouse.x, At.y - Mouse.y) : FLT_MAX;
-		Found = Gap <= RigControlSizes[Control] + 2.0f && Gap < Best ? static_cast<s32>(Bone) : Found;
-		Best = Gap <= RigControlSizes[Control] + 2.0f ? std::min(Gap, Best) : Best;
+		const float Gap = Bone != BI_NONE && !IsBoneShared(Bone) && Runtime->BoneWorld(Bone, State->World, Joint) && ViewportUi::Project(Joint.c, At) > 0.0f ? std::hypot(At.x - Mouse.x, At.y - Mouse.y) : FLT_MAX;
+		float Ring = FLT_MAX;
+		for (u32 Step = 0; Gap != FLT_MAX && ViewportUi::RigReach(Control) > 0.0f && Step < 24; ++Step)
+		{
+			ImVec2 Spot;
+			Ring = ViewportUi::Project(ViewportUi::RigRing(Joint.c, ViewportUi::RigReach(Control), Step), Spot) > 0.0f ? std::min(Ring, std::hypot(Spot.x - Mouse.x, Spot.y - Mouse.y)) : Ring;
+		}
+		const bool IsHit = Gap <= RigControlSizes[Control] + 2.0f || Ring <= 6.0f;
+		const float Score = std::min(Gap, Ring);
+		Found = IsHit && Score < Best ? static_cast<s32>(Bone) : Found;
+		Best = IsHit ? std::min(Score, Best) : Best;
 	}
 	if (Found >= 0)
 	{
@@ -1691,7 +1735,7 @@ s32 Editor::BoneUnderMouse(const Player& Core) const
 	{
 		Fmatrix Self, Parent;
 		ImVec2 A, B;
-		if (!Runtime->BoneWorld(Bone, State->World, Self) || !(ViewportUi::Project(Self.c, A) > 0.0f))
+		if (IsBoneShared(Bone) || (!ShowBoneLines && HasRigControls()) || !Runtime->BoneWorld(Bone, State->World, Self) || !(ViewportUi::Project(Self.c, A) > 0.0f))
 		{
 			continue;
 		}
@@ -1755,6 +1799,18 @@ void Editor::DrawBones(Player& Core)
 		RigObject = Actor->Id;
 		BuildRig(*Runtime, Actor->Actor.Visual);
 	}
+	const ActorRuntime* Hands = Runtime && Actor->Actor.Hud.size() && Actor->Attach.Parent.ObjectId ? Core.FindActor(Actor->Attach.Parent.ObjectId) : nullptr;
+	if (SharedOwner != PoseObject || SharedHands != Hands || SharedBones.size() != (Hands ? Runtime->BoneCount() : 0))
+	{
+		SharedOwner = PoseObject;
+		SharedHands = Hands;
+		SharedBones.assign(Hands ? Runtime->BoneCount() : 0, 0);
+		for (u16 Bone = 0; Bone < SharedBones.size(); ++Bone)
+		{
+			SharedBones[Bone] = Hands->FindBone(shared_str(Runtime->BoneName(Bone))) < Hands->BoneCount();
+		}
+		std::erase_if(SelectedBones, [this](u16 Bone) { return IsBoneShared(Bone); });
+	}
 	if (!IsPosing || !Overlay || !State)
 	{
 		return;
@@ -1782,11 +1838,15 @@ void Editor::DrawBones(Player& Core)
 	for (u16 Bone = 0; Bone < Runtime->BoneCount(); ++Bone)
 	{
 		Fmatrix Self, Parent;
-		if (!Runtime->BoneWorld(Bone, State->World, Self))
+		if (IsBoneShared(Bone) || !Runtime->BoneWorld(Bone, State->World, Self))
 		{
 			continue;
 		}
 		const bool IsPicked = std::find(SelectedBones.begin(), SelectedBones.end(), Bone) != SelectedBones.end();
+		if (!ShowBoneLines && !IsPicked && HasRigControls())
+		{
+			continue;
+		}
 		const bool IsEdited = std::any_of(Actor->Actor.Poses.begin(), Actor->Actor.Poses.end(), [&](const PoseRow& Row) { return std::any_of(Row.Bones.begin(), Row.Bones.end(), [&](const PoseBone& Item) { return !xr_strcmp(Item.Name, Runtime->BoneName(Bone)); }); });
 		const u32 Color = IsPicked ? IM_COL32(255, 255, 255, 255) : static_cast<s32>(Bone) == Hover ? IM_COL32(255, 220, 60, 255) : IsEdited ? IM_COL32(255, 150, 40, 220) : IM_COL32(160, 180, 200, 170);
 		if (Runtime->BoneWorld(Runtime->BoneParent(Bone), State->World, Parent))
@@ -1810,14 +1870,42 @@ void Editor::DrawBones(Player& Core)
 		Fmatrix Joint;
 		ImVec2 At;
 		const u16 Bone = Rig.Controls[Control];
-		if (Bone == BI_NONE || !Runtime->BoneWorld(Bone, State->World, Joint) || !(ViewportUi::Project(Joint.c, At) > 0.0f))
+		if (Bone == BI_NONE || IsBoneShared(Bone) || !Runtime->BoneWorld(Bone, State->World, Joint) || !(ViewportUi::Project(Joint.c, At) > 0.0f))
 		{
 			continue;
 		}
 		constexpr u32 SideColors[3] = { IM_COL32(255, 210, 60, 230), IM_COL32(90, 150, 255, 230), IM_COL32(255, 90, 90, 230) };
 		const bool IsPicked = std::find(SelectedBones.begin(), SelectedBones.end(), Bone) != SelectedBones.end();
 		const u32 Color = IsPicked ? IM_COL32(255, 255, 255, 255) : static_cast<s32>(Bone) == Hover ? IM_COL32(255, 240, 120, 255) : SideColors[RigControlSides[Control]];
-		const float Size = RigControlSizes[Control];
+		const float Size = RigControlSizes[Control], Reach = ViewportUi::RigReach(Control);
+		for (u32 Step = 0; Reach > 0.0f && Step < 24; ++Step)
+		{
+			ViewportUi::Line3D(Overlay, ViewportUi::RigRing(Joint.c, Reach, Step), ViewportUi::RigRing(Joint.c, Reach, Step + 1), Color);
+		}
+		for (u32 Corner = 0; Control >= 3 && Control <= 6 && Corner < 8; ++Corner)
+		{
+			const Fvector* const Axes[3] = { &Joint.i, &Joint.j, &Joint.k };
+			const auto At3 = [&](u32 Code)
+			{
+				Fvector Point = Joint.c;
+				for (u32 Axis = 0; Axis < 3; ++Axis)
+				{
+					Point.mad(*Axes[Axis], (Code & (1u << Axis) ? 0.05f : -0.05f) / std::max(Axes[Axis]->magnitude(), EPS_S));
+				}
+				return Point;
+			};
+			for (u32 Axis = 0; Axis < 3; ++Axis)
+			{
+				if (!(Corner & (1u << Axis)))
+				{
+					ViewportUi::Line3D(Overlay, At3(Corner), At3(Corner | (1u << Axis)), Color);
+				}
+			}
+		}
+		if (IsClosing && Box.Contains(At) && !IsPicked)
+		{
+			SelectedBones.push_back(Bone);
+		}
 		if (!RigControlShapes[Control])
 		{
 			Overlay->AddRect(ImVec2(At.x - Size, At.y - Size), ImVec2(At.x + Size, At.y + Size), Color, 0.0f, 0, 2.0f);
@@ -2085,7 +2173,7 @@ void Editor::DrawIkHandles(Player& Core)
 		IsIkActive = IsIkOver = IsIkHover = IsIkDirect = false;
 		return;
 	}
-	const float Local = std::clamp(Core.Time - Actor->Span.Start, 0.0f, Actor->Span.Length);
+	const float Local = PoseLocal(Core, *Actor);
 	const bool IsFree = IsViewportFree();
 	float Best = ViewportUi::TangentPixels * ViewportUi::TangentPixels;
 	s32 Hover = -1;
@@ -2096,12 +2184,12 @@ void Editor::DrawIkHandles(Player& Core)
 		ImVec2 Screen;
 		const u32 Limb = Handle / 2;
 		const bool IsPole = Handle & 1, IsPicked = static_cast<s32>(Handle) == IkHandle;
-		if (!IkGoalWorld(*Actor, State->World, Limb, IsPole, Local, Goal))
+		if (!IkGoalWorld(*Actor, IkBlock(*Actor), State->World, Limb, IsPole, Local, Goal))
 		{
 			continue;
 		}
 		const u32 Color = IsPicked ? IM_COL32(255, 255, 255, 255) : Limb & 1 ? IM_COL32(255, 90, 90, 230) : IM_COL32(90, 150, 255, 230);
-		const u16 From = Runtime->FindBone(Actor->Actor.Ik[Limb].Bones[IsPole ? 1 : 2]);
+		const u16 From = Runtime->FindBone(IkOf(*Actor, IkBlock(*Actor))[Limb].Bones[IsPole ? 1 : 2]);
 		if (From != BI_NONE && Runtime->BoneWorld(From, State->World, Anchor))
 		{
 			ViewportUi::Line3D(Overlay, Anchor.c, Goal.c, Color);
@@ -2136,7 +2224,7 @@ void Editor::DrawIkHandles(Player& Core)
 	const u32 Limb = static_cast<u32>(IkHandle) / 2;
 	const bool IsPole = IkHandle & 1;
 	Fmatrix Goal;
-	if (IkHandle < 0 || !IkGoalWorld(*Actor, State->World, Limb, IsPole, Local, Goal))
+	if (IkHandle < 0 || !IkGoalWorld(*Actor, IkBlock(*Actor), State->World, Limb, IsPole, Local, Goal))
 	{
 		IkHandle = -1;
 		IsIkActive = IsIkOver = false;
@@ -2148,7 +2236,7 @@ void Editor::DrawIkHandles(Player& Core)
 		IkMatrix.c = Goal.c;
 		IkGrab = IkMatrix;
 		IkGoal = Goal;
-		BoneTurn = Curves::LaneVector(Actor->Lanes, Param::IkTurn, Local, Actor->Actor.Ik[Limb].Turn, static_cast<u8>(Limb));
+		BoneTurn = Curves::LaneVector(LaneList(*Actor, IkBlock(*Actor)), Param::IkTurn, Local, IkOf(*Actor, IkBlock(*Actor))[Limb].Turn, static_cast<u8>(Limb));
 	}
 	Fvector Origin, Direction;
 	const bool IsDragged = IsIkDirect && ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 2.0f) && ViewportUi::MouseRay(Origin, Direction) && std::fabs(Direction.dotproduct(Device.vCameraDirection)) > EPS;
@@ -2177,7 +2265,7 @@ void Editor::DrawIkHandles(Player& Core)
 	Inverse.invert(IkGrab);
 	Value.mul_43(IkMatrix, Inverse);
 	Value.mulB_43(IkGoal);
-	if (Item.Actor.Ik[Limb].Space == IkSpace::Actor)
+	if (IkOf(Item, IkBlock(Item))[Limb].Space == IkSpace::Actor)
 	{
 		Inverse.invert(State->World);
 		Value.mulA_43(Inverse);
@@ -2190,12 +2278,23 @@ void Editor::DrawIkHandles(Player& Core)
 	for (u8 Axis = 0; (IsDragged || Using) && Axis < 3; ++Axis)
 	{
 		const float Degrees = rad2deg(Angles[Axis]);
-		!IsDragged && Using == ImGuizmo::ROTATE ? WriteParam(Core, Item, -1, Param::IkTurn, static_cast<u8>(Limb), Axis, Degrees + 360.0f * std::round((BoneTurn[Axis] - Degrees) / 360.0f)) : WriteParam(Core, Item, -1, IsPole ? Param::IkPole : Param::IkTarget, static_cast<u8>(Limb), Axis, Value.c[Axis]);
+		!IsDragged && Using == ImGuizmo::ROTATE ? WriteParam(Core, Item, IkBlock(Item), Param::IkTurn, static_cast<u8>(Limb), Axis, Degrees + 360.0f * std::round((BoneTurn[Axis] - Degrees) / 360.0f)) : WriteParam(Core, Item, IkBlock(Item), IsPole ? Param::IkPole : Param::IkTarget, static_cast<u8>(Limb), Axis, Value.c[Axis]);
 	}
 }
 
 s32 Editor::EnsurePoseBone(Object& Item, const shared_str& Bone)
 {
+	if (const s32 Block = PoseBlock(Item); Block >= 0)
+	{
+		xr_vector<PoseBone>& Bones = TrackOf(Item, Block).Bones;
+		auto Found = std::find_if(Bones.begin(), Bones.end(), [&Bone](const PoseBone& Entry) { return Entry.Name == Bone; });
+		if (Found == Bones.end() && Bones.size() < MaxClipBones && Bone.size())
+		{
+			Bones.push_back({ Bone });
+			Found = Bones.end() - 1;
+		}
+		return Found == Bones.end() ? -1 : static_cast<s32>(Found - Bones.begin());
+	}
 	xr_vector<PoseRow>& Rows = Item.Actor.Poses;
 	if (Rows.empty())
 	{
@@ -2210,6 +2309,12 @@ s32 Editor::EnsurePoseBone(Object& Item, const shared_str& Bone)
 		Found = Bones.end() - 1;
 	}
 	return Found == Bones.end() ? -1 : PoseLayer(ActivePose, static_cast<u32>(Found - Bones.begin()));
+}
+
+float Editor::PoseLocal(const Player& Core, const Object& Item) const
+{
+	const s32 Block = PoseBlock(Item);
+	return Block < 0 ? std::clamp(Core.Time - Item.Span.Start, 0.0f, Item.Span.Length) : std::clamp(Core.Time - ClipOrigin, 0.0f, Item.Actor.Clips[ClipIndex(Block)].Length);
 }
 
 void Editor::DrawBoneGizmo(Player& Core)
@@ -2240,16 +2345,17 @@ void Editor::DrawBoneGizmo(Player& Core)
 		return;
 	}
 	Object& Item = *Edit(Core, PoseObject, IsScaling ? "Scale bone" : "Pose bone");
-	const float Local = std::clamp(Core.Time - Item.Span.Start, 0.0f, Item.Span.Length);
+	const float Local = PoseLocal(Core, Item);
+	const s32 Block = PoseBlock(Item);
+	const xr_vector<Lane>& Tracks = LaneList(Item, Block);
 	if (!IsGizmoActive)
 	{
 		BoneLayer = EnsurePoseBone(Item, Name);
-		const PoseRow* Row = BoneLayer < 0 ? nullptr : &Item.Actor.Poses[BoneLayer / MaxPoseBones];
-		const PoseBone* Entry = Row ? &Row->Bones[BoneLayer % MaxPoseBones] : nullptr;
+		const PoseBone* Entry = BoneLayer < 0 ? nullptr : BoneEntry(Item, Block, static_cast<u8>(BoneLayer));
 		BoneStart = World;
-		BoneTurn = Entry ? Curves::LaneVector(Item.Lanes, Param::BoneRotation, Local, Entry->Rotation, static_cast<u8>(BoneLayer)) : Fvector().set(0.0f, 0.0f, 0.0f);
-		BoneShift = Entry ? Curves::LaneVector(Item.Lanes, Param::BonePosition, Local, Entry->Offset, static_cast<u8>(BoneLayer)) : Fvector().set(0.0f, 0.0f, 0.0f);
-		BoneSize = Entry ? Curves::LaneVector(Item.Lanes, Param::BoneScale, Local, Entry->Scale, static_cast<u8>(BoneLayer)) : Fvector().set(1.0f, 1.0f, 1.0f);
+		BoneTurn = Entry ? Curves::LaneVector(Tracks, Param::BoneRotation, Local, Entry->Rotation, static_cast<u8>(BoneLayer)) : Fvector().set(0.0f, 0.0f, 0.0f);
+		BoneShift = Entry ? Curves::LaneVector(Tracks, Param::BonePosition, Local, Entry->Offset, static_cast<u8>(BoneLayer)) : Fvector().set(0.0f, 0.0f, 0.0f);
+		BoneSize = Entry ? Curves::LaneVector(Tracks, Param::BoneScale, Local, Entry->Scale, static_cast<u8>(BoneLayer)) : Fvector().set(1.0f, 1.0f, 1.0f);
 		BoneParentModel = Fidentity;
 		Runtime->BoneWorld(Runtime->BoneParent(Bone), Fidentity, BoneParentModel);
 		const bool IsCurl = RigObject == PoseObject && std::find(Rig.Controls + RigFirstFinger, Rig.Controls + RigControlCount, Bone) != Rig.Controls + RigControlCount;
@@ -2277,7 +2383,7 @@ void Editor::DrawBoneGizmo(Player& Core)
 		for (u8 Axis = 0; ImGuizmo::GetUsingOperation() && Axis < 3; ++Axis)
 		{
 			const float Ratio = Axes[1][Axis]->magnitude() / std::max(Axes[0][Axis]->magnitude(), EPS_S);
-			WriteParam(Core, Item, -1, Param::BoneScale, static_cast<u8>(BoneLayer), Axis, std::clamp(BoneSize[Axis] * Ratio, 0.01f, 100.0f));
+			WriteParam(Core, Item, Block, Param::BoneScale, static_cast<u8>(BoneLayer), Axis, std::clamp(BoneSize[Axis] * Ratio, 0.01f, 100.0f));
 		}
 		return;
 	}
@@ -2291,7 +2397,7 @@ void Editor::DrawBoneGizmo(Player& Core)
 		Frame->j.normalize_safe();
 		Frame->k.normalize_safe();
 	}
-	if (Item.Actor.Poses[BoneLayer / MaxPoseBones].Mode == RowMode::Add)
+	if (BoneMode(Item, Block, static_cast<u8>(BoneLayer)) == RowMode::Add)
 	{
 		Fmatrix Start, Back, Relative;
 		Start.setHPB(deg2rad(BoneTurn.x), deg2rad(BoneTurn.y), deg2rad(BoneTurn.z));
@@ -2319,14 +2425,14 @@ void Editor::DrawBoneGizmo(Player& Core)
 		const float Degrees = rad2deg(Angles[Axis]);
 		if (ImGuizmo::GetUsingOperation() == ImGuizmo::TRANSLATE)
 		{
-			WriteParam(Core, Item, -1, Param::BonePosition, static_cast<u8>(BoneLayer), Axis, Delta.c[Axis]);
+			WriteParam(Core, Item, Block, Param::BonePosition, static_cast<u8>(BoneLayer), Axis, Delta.c[Axis]);
 			continue;
 		}
 		const float Turn = Degrees + 360.0f * std::round((BoneTurn[Axis] - Degrees) / 360.0f);
-		WriteParam(Core, Item, -1, Param::BoneRotation, static_cast<u8>(BoneLayer), Axis, Turn);
+		WriteParam(Core, Item, Block, Param::BoneRotation, static_cast<u8>(BoneLayer), Axis, Turn);
 		for (s32 Layer : CurlLayers)
 		{
-			WriteParam(Core, Item, -1, Param::BoneRotation, static_cast<u8>(Layer), Axis, Turn);
+			WriteParam(Core, Item, Block, Param::BoneRotation, static_cast<u8>(Layer), Axis, Turn);
 		}
 	}
 }

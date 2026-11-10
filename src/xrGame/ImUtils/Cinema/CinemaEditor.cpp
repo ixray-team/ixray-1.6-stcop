@@ -57,6 +57,7 @@ void Editor::Draw(Player& Core, bool& IsOpen)
 {
 	WasOpen = true;
 	BeginFrame(Core);
+	UpdateAnimator(Core);
 	if (Job.IsActive)
 	{
 		StepRender(Core);
@@ -68,6 +69,7 @@ void Editor::Draw(Player& Core, bool& IsOpen)
 	DrawIkHandles(Core);
 	DrawPathKeys(Core);
 	UpdateFly(Core);
+	UpdateHudView(Core);
 	DrawViewCube(Core);
 	Pick(Core);
 	PickColor(Core);
@@ -82,9 +84,12 @@ void Editor::Draw(Player& Core, bool& IsOpen)
 	DrawInspector(Core);
 	DrawPresets();
 	DrawShots(Core);
+	DrawRetarget(Core);
 	DrawGraph(Core);
 	HandleShortcuts(Core);
 	DrawModals(Core);
+	SyncHudLinks(Core);
+	LayoutReset -= LayoutReset ? 1 : 0;
 	EndFrame(Core);
 }
 
@@ -110,6 +115,11 @@ void Editor::Close(Player& Core)
 	RenameId = 0;
 	Undo.End(Core.Data);
 	Latches.clear();
+	if (HudNear >= 0.0f)
+	{
+		Device.fViewportNear = HudNear;
+		HudNear = -1.0f;
+	}
 	Core.SetAudition(0, shared_str(), shared_str());
 	Core.Soloed.clear();
 	ReleasePreview();
@@ -241,7 +251,7 @@ void Editor::HandleShortcuts(Player& Core)
 	const float Frame = std::round(Core.Time * Rate);
 	if (ImGui::IsKeyPressed(ImGuiKey_Space, false) && !IsFlyArmed)
 	{
-		PlayPause(Core, ImGui::GetIO().KeyShift);
+		IsAnimFocused && AnimClipIndex >= 0 && !IsAnimFollowing ? (void)(IsAnimPlaying = !IsAnimPlaying) : PlayPause(Core, ImGui::GetIO().KeyShift);
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_Home, false))
 	{
@@ -273,7 +283,7 @@ void Editor::HandleShortcuts(Player& Core)
 	}
 	if (ImGui::IsKeyPressed(ImGuiKey_Delete, false) && Drag == DragKind::None)
 	{
-		DeleteSelection(Core);
+		IsAnimFocused && !AnimKeys.empty() ? DeleteAnimKeys(Core) : DeleteSelection(Core);
 	}
 	const bool IsIdle = Drag == DragKind::None && !IsGizmoActive && !IsFlying;
 	if (IsIdle && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_C))
@@ -471,10 +481,10 @@ void Editor::SaveSettings()
 	Ini.w_float("editor", "onion_step", Settings.OnionStep);
 	Ini.w_bool("editor", "dof_preview", Settings.DofPreview);
 	Ini.w_bool("editor", "follow", Settings.IsFollowing);
-	Ini.w_bool("editor", "inspector", Settings.ShowInspector);
-	Ini.w_bool("editor", "presets", Settings.ShowPresets);
-	Ini.w_bool("editor", "shots", Settings.ShowShots);
-	Ini.w_bool("editor", "graph", Settings.ShowGraph);
+	Ini.w_bool("editor", "inspector", ShowAnimator ? WorkspaceShown[0][0] : Settings.ShowInspector);
+	Ini.w_bool("editor", "presets", ShowAnimator ? WorkspaceShown[0][1] : Settings.ShowPresets);
+	Ini.w_bool("editor", "shots", ShowAnimator ? WorkspaceShown[0][2] : Settings.ShowShots);
+	Ini.w_bool("editor", "graph", ShowAnimator ? WorkspaceShown[0][3] : Settings.ShowGraph);
 	string_path Path;
 	xr_string Error;
 	FS.update_path(Path, Io::LegacyAlias, EditorUi::SettingsFile);
@@ -490,7 +500,19 @@ void Editor::DrawMenuBar(Player& Core)
 	{
 		return;
 	}
-	if (ImGui::BeginMenu("File"))
+	if (ImGui::MenuItem("Scene", nullptr, !ShowAnimator))
+	{
+		SetWorkspace(false);
+	}
+	ImGui::SetItemTooltip("Scene workspace: the scene timeline, objects, shots");
+	if (ImGui::MenuItem("Animation", nullptr, ShowAnimator))
+	{
+		SetWorkspace(true);
+	}
+	ImGui::SetItemTooltip("Animation workspace: the animation timeline of one clip, bones, curves");
+	ImGui::Separator();
+	const bool IsMenuOpen = ImGui::BeginMenu("Menu");
+	if (IsMenuOpen && !ShowAnimator && ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("New"))
 		{
@@ -521,7 +543,7 @@ void Editor::DrawMenuBar(Player& Core)
 		}
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("Edit"))
+	if (IsMenuOpen && ImGui::BeginMenu("Edit"))
 	{
 		const char* UndoLabel = Undo.UndoLabel();
 		const char* RedoLabel = Undo.RedoLabel();
@@ -569,7 +591,7 @@ void Editor::DrawMenuBar(Player& Core)
 		}
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("Add"))
+	if (IsMenuOpen && !ShowAnimator && ImGui::BeginMenu("Add"))
 	{
 		LoadPresets();
 		for (u32 Index = 0; Index < std::size(AddChoices); ++Index)
@@ -604,7 +626,7 @@ void Editor::DrawMenuBar(Player& Core)
 		}
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("View"))
+	if (IsMenuOpen && ImGui::BeginMenu("View"))
 	{
 		if (ImGui::MenuItem("Game camera", nullptr, !IsEditorCamera))
 		{
@@ -635,6 +657,11 @@ void Editor::DrawMenuBar(Player& Core)
 		ImGui::MenuItem("Inspector", nullptr, &Settings.ShowInspector);
 		ImGui::MenuItem("Presets", nullptr, &Settings.ShowPresets);
 		ImGui::MenuItem("Shots & Markers", nullptr, &Settings.ShowShots);
+		if (ImGui::MenuItem("Reset layout"))
+		{
+			LayoutReset = 2;
+		}
+		ImGui::MenuItem("HUD view", nullptr, &IsHudView);
 		ImGui::MenuItem("Graph Editor", nullptr, &Settings.ShowGraph);
 		ImGui::Separator();
 		ImGui::MenuItem("Onion skin", nullptr, &Settings.ShowOnion);
@@ -655,6 +682,10 @@ void Editor::DrawMenuBar(Player& Core)
 		ImGui::SliderFloat("Frame mask", &Settings.FrameMask, 0.0f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 		ImGui::MenuItem("Safe areas", "G", &Settings.ShowSafe);
 		ImGui::MenuItem("Thirds", nullptr, &Settings.ShowThirds);
+		ImGui::EndMenu();
+	}
+	if (IsMenuOpen)
+	{
 		ImGui::EndMenu();
 	}
 	ImGui::EndMenuBar();
@@ -1126,8 +1157,9 @@ void Editor::Save(Player& Core)
 	SceneFile.empty() ? ShowModal(Core, ModalKind::SaveAs) : SaveScene(Core, SceneFile);
 }
 
-void Editor::SaveScene(const Player& Core, const xr_string& File)
+void Editor::SaveScene(Player& Core, const xr_string& File)
 {
+	SaveLibrary(Core);
 	string_path Path;
 	xr_string Error = "The scene path is too long.";
 	if (!EditorUi::ScenePath(Path, Io::SceneAlias, Core.Data.LevelName, File) || !Io::Save(Core.Data, Path, Error))
@@ -1487,6 +1519,49 @@ void Editor::AddLayer(Player& Core, u32 Id)
 	FocusObject = Id;
 	FocusLayer = static_cast<u8>(Item.Actor.Layers.size());
 	FocusBlock = -1;
+}
+
+void Editor::PoseToClip(Player& Core, u32 Id, u32 Row)
+{
+	const Object* Target = Find(Core.Data, Id);
+	if (!Target || Target->Type != ObjectType::Actor || Row >= Target->Actor.Poses.size())
+	{
+		return;
+	}
+	if (Target->Actor.Layers.size() >= MaxActorLayers || Target->Actor.Clips.size() >= MaxClips || Target->Actor.IsRelative)
+	{
+		SetStatus(true, "There is no free animation row for the clip, or the actor is not converted yet.");
+		return;
+	}
+	Object& Item = *Edit(Core, Id, "Pose row to animation clip");
+	ActorData& Setup = Item.Actor;
+	AnimClip Made;
+	string64 Name;
+	u32 Number = static_cast<u32>(Setup.Clips.size()) + 1;
+	do
+	{
+		xr_sprintf(Name, "pose_%u", Number++);
+	} while (FindClip(Setup.Clips, Name) >= 0);
+	Made.Name = Name;
+	Made.Length = std::max(Item.Span.Length, MinLength);
+	Made.Mode = Setup.Poses[Row].Mode;
+	Made.Bones = Setup.Poses[Row].Bones;
+	for (const Lane& Track : Item.Lanes)
+	{
+		if (IsBoneParam(Track.Id) && Track.Layer / MaxPoseBones == Row)
+		{
+			Lane& Copy = Made.Lanes.emplace_back(Track);
+			Copy.Layer = static_cast<u8>(Track.Layer % MaxPoseBones);
+		}
+	}
+	Setup.Clips.push_back(Made);
+	Setup.Poses[Row].IsMuted = true;
+	PlaceClip(Setup, Made.Name, Core.FindActor(Id));
+	FocusObject = Id;
+	FocusLayer = static_cast<u8>(Setup.Layers.size());
+	FocusBlock = 0;
+	Focus = FocusKind::Block;
+	SetStatus(false, "Pose row %u is now the animation clip \"%s\" on Animation %u; the pose row is kept, muted.", Row + 1, Name, static_cast<u32>(Setup.Layers.size()) + 1);
 }
 
 void Editor::RemoveLayer(Player& Core, u32 Id, u8 Layer)

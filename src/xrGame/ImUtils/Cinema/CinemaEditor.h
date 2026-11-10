@@ -65,18 +65,53 @@ inline const char* RuntimeError(const Player& Core, const Object& Target)
 	return Error && Error->size() ? Error->c_str() : Body && !Body->IsComplete() ? "missing" : nullptr;
 }
 
-inline constexpr s32 ShakeBase = 1024;
+inline constexpr s32 ShakeBase = 1024, ClipBase = 2048;
+inline float ClipOrigin = 0.0f;
 inline constexpr float FrameAspects[9] = { 0.0f, 2.39f, 21.0f / 9.0f, 2.0f, 1.85f, 16.0f / 9.0f, 4.0f / 3.0f, 1.0f, 9.0f / 16.0f };
 inline constexpr const char* AspectNames = "2.39:1\0" "21:9\0" "2:1\0" "1.85:1\0" "16:9\0" "4:3\0" "1:1\0" "9:16\0";
 
+inline constexpr s32 ClipSpan = 64, IkBase = 4096;
+
+inline IkLimb* IkOf(Object& Target, s32 Block)
+{
+	return Block >= IkBase ? Target.Actor.Clips[Block - IkBase].Ik : Target.Actor.Ik;
+}
+
+inline const IkLimb* IkOf(const Object& Target, s32 Block)
+{
+	return IkOf(const_cast<Object&>(Target), Block);
+}
+
+inline u32 ClipIndex(s32 Block)
+{
+	return static_cast<u32>(Block - ClipBase) % ClipSpan;
+}
+
+inline u32 ClipLayerOf(s32 Block)
+{
+	return static_cast<u32>(Block - ClipBase) / ClipSpan;
+}
+
+inline ClipTrack& TrackOf(Object& Target, s32 Block)
+{
+	AnimClip& Clip = Target.Actor.Clips[ClipIndex(Block)];
+	const u32 Layer = ClipLayerOf(Block);
+	return Layer ? static_cast<ClipTrack&>(Clip.Layers[Layer - 1]) : Clip;
+}
+
+inline const ClipTrack& TrackOf(const Object& Target, s32 Block)
+{
+	return TrackOf(const_cast<Object&>(Target), Block);
+}
+
 inline bool HasOwner(const Object& Target, s32 Block)
 {
-	return Block < 0 || (Block >= ShakeBase ? Block - ShakeBase < static_cast<s32>(Target.Camera.Shakes.size()) : Block < static_cast<s32>(Target.Camera.Blocks.size()));
+	return Block < 0 || (Block >= IkBase ? Block - IkBase < static_cast<s32>(Target.Actor.Clips.size()) : Block >= ClipBase ? ClipIndex(Block) < Target.Actor.Clips.size() && ClipLayerOf(Block) <= Target.Actor.Clips[ClipIndex(Block)].Layers.size() : Block >= ShakeBase ? Block - ShakeBase < static_cast<s32>(Target.Camera.Shakes.size()) : Block < static_cast<s32>(Target.Camera.Blocks.size()));
 }
 
 inline xr_vector<Lane>& LaneList(Object& Target, s32 Block)
 {
-	return Block < 0 ? Target.Lanes : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Lanes : Target.Camera.Blocks[Block].Lanes;
+	return Block < 0 ? Target.Lanes : Block >= IkBase ? Target.Actor.Clips[Block - IkBase].IkLanes : Block >= ClipBase ? TrackOf(Target, Block).Lanes : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Lanes : Target.Camera.Blocks[Block].Lanes;
 }
 
 inline const xr_vector<Lane>& LaneList(const Object& Target, s32 Block)
@@ -84,15 +119,41 @@ inline const xr_vector<Lane>& LaneList(const Object& Target, s32 Block)
 	return LaneList(const_cast<Object&>(Target), Block);
 }
 
+inline PoseBone* BoneEntry(Object& Target, s32 Block, u8 Layer)
+{
+	if (Target.Type != ObjectType::Actor)
+	{
+		return nullptr;
+	}
+	const u32 Row = Layer / MaxPoseBones;
+	xr_vector<PoseBone>* Bones = Block >= ClipBase ? &TrackOf(Target, Block).Bones : Row < Target.Actor.Poses.size() ? &Target.Actor.Poses[Row].Bones : nullptr;
+	const u32 Bone = Block >= ClipBase ? Layer : Layer % MaxPoseBones;
+	return Bones && Bone < Bones->size() ? &(*Bones)[Bone] : nullptr;
+}
+
+inline RowMode BoneMode(const Object& Target, s32 Block, u8 Layer)
+{
+	return Block >= ClipBase ? TrackOf(Target, Block).Mode : Target.Actor.Poses[Layer / MaxPoseBones].Mode;
+}
+
 inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Component)
 {
+	if (Block >= ClipBase && Block < IkBase)
+	{
+		PoseBone* Item = IsBoneParam(Id) ? BoneEntry(Target, Block, Layer) : nullptr;
+		return Item ? &(Id == Param::BoneRotation ? Item->Rotation : Id == Param::BonePosition ? Item->Offset : Item->Scale)[Component] : nullptr;
+	}
 	if (Id == Param::AttachWeight)
 	{
 		return Block < 0 ? (Target.Type == ObjectType::Camera ? nullptr : &Target.Attach.Weight) : Block < ShakeBase ? &Target.Camera.Blocks[Block].Attach.Weight : nullptr;
 	}
-	if (Block < 0 && Id >= Param::IkTarget && Id <= Param::IkWeight)
+	if (Block >= IkBase && (Id < Param::IkTarget || Id > Param::IkWeight))
 	{
-		IkLimb* Limb = Target.Type == ObjectType::Actor && Layer < MaxIkLimbs ? &Target.Actor.Ik[Layer] : nullptr;
+		return nullptr;
+	}
+	if ((Block < 0 || Block >= IkBase) && Id >= Param::IkTarget && Id <= Param::IkWeight)
+	{
+		IkLimb* Limb = Target.Type == ObjectType::Actor && Layer < MaxIkLimbs ? &IkOf(Target, Block)[Layer] : nullptr;
 		return !Limb ? nullptr : Id == Param::IkWeight ? &Limb->Weight : &(Id == Param::IkTarget ? Limb->Target : Id == Param::IkTurn ? Limb->Turn : Limb->Pole)[Component];
 	}
 	if (Block < 0 && (Id == Param::DecalWidth || Id == Param::DecalHeight))
@@ -148,7 +209,7 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 
 inline float TargetStart(const Object& Target, s32 Block)
 {
-	return Target.Span.Start + (Block < 0 ? 0.0f : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Start : Cameras::BlockStart(Target.Camera, static_cast<u32>(Block)));
+	return Block >= ClipBase ? ClipOrigin : Target.Span.Start + (Block < 0 ? 0.0f : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Start : Cameras::BlockStart(Target.Camera, static_cast<u32>(Block)));
 }
 
 inline float LaneLocal(const Object& Target, s32 Block, Param Id, float Time)
@@ -164,7 +225,7 @@ inline float LaneMoment(const Object& Target, s32 Block, Param Id, float KeyTime
 
 inline float OwnerLength(const Object& Target, s32 Block)
 {
-	return Block < 0 ? Target.Span.Length : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Length : Target.Camera.Blocks[Block].Length;
+	return Block < 0 ? Target.Span.Length : Block >= IkBase ? Target.Actor.Clips[Block - IkBase].Length : Block >= ClipBase ? Target.Actor.Clips[ClipIndex(Block)].Length : Block >= ShakeBase ? Target.Camera.Shakes[Block - ShakeBase].Length : Target.Camera.Blocks[Block].Length;
 }
 
 inline u8 ShakeRows(const CameraData& Data)
@@ -634,7 +695,22 @@ private:
 	void CheckName();
 	void OpenScene(Player& Core, const char* Path, const xr_string& Name, bool IsNamed);
 	void Save(Player& Core);
-	void SaveScene(const Player& Core, const xr_string& File);
+	void SaveScene(Player& Core, const xr_string& File);
+	bool SaveClip(Player& Core, u32 Id, u32 Index);
+	void SaveLibrary(Player& Core);
+	void OpenClip(Player& Core, u32 Id, const char* Name);
+	void ImportClip(Player& Core, u32 Id, u8 Layer, u32 Block);
+	void DrawRetarget(Player& Core);
+	void BuildHudItems();
+	void DrawActorPicker(Player& Core);
+	void SyncHudLinks(Player& Core);
+	void UpdateHudView(Player& Core);
+	void AddHud(Player& Core, const char* Item, float Start);
+	void AddHudMotion(Player& Core, u32 Id, const char* Alias);
+	const Object* HudHands(const Player& Core) const;
+	void BuildRetargetMap(Player& Core);
+	void SaveRetargetMap(Player& Core);
+	void RetargetClip(Player& Core);
 	void Message(const char* Title, xr_vector<xr_string> Lines);
 	void SetStatus(bool IsError, const char* Format, ...);
 	void HandleShortcuts(Player& Core);
@@ -662,7 +738,28 @@ private:
 	void RigPath(string_path& Path) const;
 	void SaveRig();
 	void DrawRigSection(const ActorRuntime& Runtime);
+	void DrawBoneValues(Player& Core, const Object& Target);
+	void SelectSet(u32 Set, bool IsAdding);
+	bool HasRigControls() const { return RigObject == PoseObject && std::any_of(Rig.Controls, Rig.Controls + RigControlCount, [](u16 Bone) { return Bone != BI_NONE; }); }
 	s32 EnsurePoseBone(Object& Item, const shared_str& Bone);
+	s32 PoseBlock(const Object& Item) const { return AnimClipIndex >= 0 && AnimObject == Item.Id && AnimClipIndex < static_cast<s32>(Item.Actor.Clips.size()) && AnimLayer <= Item.Actor.Clips[AnimClipIndex].Layers.size() ? ClipBase + static_cast<s32>(AnimLayer) * ClipSpan + AnimClipIndex : -1; }
+	float PoseLocal(const Player& Core, const Object& Item) const;
+	s32 IkBlock(const Object& Item) const { return PoseBlock(Item) >= 0 ? IkBase + AnimClipIndex : -1; }
+	void DrawAnimatorBody(Player& Core);
+	void SetWorkspace(bool IsAnimation);
+	ImGuiCond LayoutCond() const { return LayoutReset ? ImGuiCond_Always : ImGuiCond_FirstUseEver; }
+	void DrawAnimatorKeys(Player& Core, const Object& Target, s32 Block, const ActorBlock* Stock);
+	void OpenAnimator(Player& Core, u32 Id, s32 Clip, bool ShouldFocus = true);
+	void NewClip(Player& Core, u32 Id);
+	void PlaceClip(ActorData& Setup, const shared_str& Name, const ActorRuntime* Runtime);
+	void SeekAnimator(Player& Core, const Object& Target, float Time);
+	void UpdateAnimator(Player& Core);
+	void DeleteAnimKeys(Player& Core);
+	void SetAnimMode(Player& Core, Interp Mode);
+	void FitAnimKeys(Player& Core);
+	void MoveAnimKeys(Player& Core, float Shift);
+	void RemoveAnimBone(Player& Core, u8 Bone);
+	ClipTrack* EditClip(Player& Core, const char* Label);
 	void DrawPoseSection(Player& Core, const Object& Target);
 	void KeyBones(Player& Core);
 	void ResetBones(Player& Core);
@@ -708,6 +805,7 @@ private:
 	static void SpawnPose(Fvector& Position, Fvector& Rotation);
 	static bool StaticRay(const Fvector& Origin, const Fvector& Direction, float Range, Fvector& Point, Fvector& Normal);
 	void Refit(Player& Core, const Object& Target);
+	void PoseToClip(Player& Core, u32 Id, u32 Row);
 	void RemoveBlock(Player& Core, u32 Id, s32 Block, u8 Layer = 0);
 	void AddLayer(Player& Core, u32 Id);
 	void RemoveLayer(Player& Core, u32 Id, u8 Layer);
@@ -934,7 +1032,8 @@ private:
 	float GraphField = 0.0f;
 	ImVec2 GraphPress;
 	ImRect GraphBox, GraphBounds;
-	u8 GraphDrag = 0;
+	u8 GraphDrag = 0, GraphTipSide = 0;
+	KeyRef GraphTip;
 	bool IsGraphNormalized = false, IsGraphFocused = false;
 
 	xr_vector<u32> Selected;
@@ -1100,6 +1199,65 @@ private:
 	Fmatrix GizmoPivot = Fidentity, GizmoInverse = Fidentity;
 	bool IsPosing = false;
 	u32 PoseObject = 0, ActivePose = 0;
+	struct AnimKey
+	{
+		u8 Bone = 0;
+		float Time = 0.0f;
+		s8 Channel = -1;
+		bool operator==(const AnimKey&) const = default;
+	};
+	struct AnimRow
+	{
+		u16 Bone = u16(-1);
+		s8 Channel = -1;
+	};
+	xr_vector<AnimRow> AnimRows;
+	xr_vector<u8> AnimOpen;
+	s8 AnimSolo = -1;
+	u8 AnimLayer = 0;
+	bool IsAnimJump = false;
+	bool ShowAnimator = false, IsAnimLinked = true, IsAnimPlaying = false, IsAnimDragging = false, HasAnimMoved = false;
+	u32 AnimObject = 0;
+	s32 AnimClipIndex = -1;
+	float AnimTime = 0.0f, AnimZoom = 0.0f, AnimScroll = 0.0f, AnimGrab = 0.0f, AnimShift = 0.0f;
+	AnimKey AnimMenu;
+	string64 AnimName = {};
+	xr_vector<AnimKey> AnimKeys, AnimBaseKeys, AnimBoxKeys;
+	bool IsAnimBoxing = false;
+	ImVec2 AnimBoxStart;
+	xr_vector<Lane> AnimBase;
+	xr_vector<float> AnimTimes, AnimTops;
+	s32 AnimCurveKey = -1, AnimPickKey = -1;
+	u8 AnimPickBone = 0, AnimPickAxis = 0, AnimTipSide = 0;
+	u8 AnimCurveBone = 0, AnimCurveAxis = 0, AnimLaneKind = 0;
+	float AnimLaneLo = 0.0f, AnimLaneHi = 1.0f;
+	xr_vector<shared_str> ClipFiles;
+	bool ShowRetarget = false, IsHudView = false;
+	string64 HudHandsSection = {}, HudFilter = {};
+	xr_vector<shared_str> HudItems, ActorModels;
+	bool IsActorModelsListed = false;
+	xr_vector<ActorBlock> HudBlocks;
+	float HudNear = -1.0f;
+	bool ShowBoneLines = false;
+	bool WorkspaceShown[2][4] = { { true, false, false, false }, { true, false, false, false } };
+	bool IsAnimFresh = false;
+	s32 AnimStockBlock = -1;
+	u8 AnimStockLayer = 0;
+	u8 LayoutReset = 0;
+	ImRect MainBox;
+	xr_vector<u8> SharedBones;
+	u32 SharedOwner = 0;
+	const ActorRuntime* SharedHands = nullptr;
+	bool IsBoneShared(u16 Bone) const { return Bone < SharedBones.size() && SharedBones[Bone]; }
+	u32 AnimSeenObject = 0;
+	s32 AnimSeenBlock = -1;
+	u8 AnimSeenLayer = 0;
+	u32 RetargetFrom = 0, RetargetTo = 0, RetargetPair[2] = {};
+	s32 RetargetClipIndex = -1;
+	float RetargetRatio = 1.0f;
+	xr_vector<s32> RetargetMap;
+	bool IsAnimFocused = false, IsAnimFollowing = false;
+	float AnimRate = 1.0f, AnimLastScene = 0.0f, AnimLastTime = 0.0f, AnimTolerance = 0.5f;
 	s32 BoneLayer = -1;
 	xr_vector<s32> CurlLayers;
 	xr_vector<NamedPose> PoseLibrary;

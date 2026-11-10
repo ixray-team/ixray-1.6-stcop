@@ -616,7 +616,7 @@ Key* FindKey(Scene& Data, const KeyRef& Ref)
 	return Part && Ref.Index < Part->Keys.size() ? &Part->Keys[Ref.Index] : nullptr;
 }
 
-void SlotLabel(string64& Out, Param Id, u8 Layer, const Object* Target = nullptr)
+void SlotLabel(string64& Out, Param Id, u8 Layer, const Object* Target = nullptr, s32 Block = -1)
 {
 	if (Id == Param::PoseWeight)
 	{
@@ -625,9 +625,8 @@ void SlotLabel(string64& Out, Param Id, u8 Layer, const Object* Target = nullptr
 	}
 	if (IsBoneParam(Id))
 	{
-		const u32 Row = Layer / MaxPoseBones, Bone = Layer % MaxPoseBones;
-		const bool IsKnown = Target && Row < Target->Actor.Poses.size() && Bone < Target->Actor.Poses[Row].Bones.size();
-		xr_sprintf(Out, "%s %s", IsKnown ? Target->Actor.Poses[Row].Bones[Bone].Name.c_str() : "Bone", Info(Id).Label);
+		const PoseBone* Joint = Target && HasOwner(*Target, Block) ? BoneEntry(const_cast<Object&>(*Target), Block, Layer) : nullptr;
+		xr_sprintf(Out, "%s %s", Joint ? Joint->Name.c_str() : "Bone", Info(Id).Label);
 		return;
 	}
 	if (Id == Param::LayerWeight)
@@ -845,17 +844,31 @@ namespace Cinema
 void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 {
 	const ImGuiViewport* View = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(View->Pos.x, View->Pos.y + View->Size.y * 0.72f), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(View->Size.x, View->Size.y * 0.28f), ImGuiCond_FirstUseEver);
+	const bool IsAnimation = ShowAnimator;
+	const float Share = IsAnimation ? 0.4f : 0.28f;
+	ImGui::SetNextWindowPos(ImVec2(View->Pos.x, View->Pos.y + View->Size.y * (1.0f - Share)), LayoutCond());
+	ImGui::SetNextWindowSize(ImVec2(View->Size.x, View->Size.y * Share), LayoutCond());
+	if (LayoutReset)
+	{
+		ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
+	}
 	string256 Title;
-	xr_sprintf(Title, "%.128s%s###CinemaTimeline", SceneName.empty() ? "Untitled" : SceneName.c_str(), Core.HasUnsavedChanges ? " *" : "");
+	xr_sprintf(Title, "%.128s%s###Cinema%s", SceneName.empty() ? "Untitled" : SceneName.c_str(), Core.HasUnsavedChanges ? " *" : "", IsAnimation ? "Animation" : "Timeline");
 	const bool IsVisible = ImGui::Begin(Title, &IsOpen, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoNavInputs);
 	IsOwnWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+	IsAnimFocused = false;
+	MainBox = ImRect(ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
 	HoverPose = HoverMarker = -1;
 	HoverLaneObject = 0;
 	const float Step = TimelineUi::SnapValues[Settings.SnapStep];
 	SnapGrid = Settings.SnapStep < 4 ? Step / static_cast<float>(Core.Data.Header.FrameRate) : Step;
-	if (IsVisible)
+	if (IsVisible && IsAnimation)
+	{
+		DrawMenuBar(Core);
+		DrawTransport(Core);
+		DrawAnimatorBody(Core);
+	}
+	else if (IsVisible)
 	{
 		DrawMenuBar(Core);
 		DrawTransport(Core);
@@ -874,8 +887,9 @@ void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 		if (ImGui::IsWindowHovered() && Input.MouseWheel != 0.0f)
 		{
 			const float Pivot = XToTime(Input.MousePos.x);
-			IsFollowPaused = IsFollowPaused || (Core.IsPlaying && (Input.KeyCtrl || Input.KeyShift) && Input.MousePos.x >= TrackLeft);
-			if (Input.KeyCtrl && Input.MousePos.x < TrackLeft)
+			const bool IsOverTracks = Input.MousePos.x >= TrackLeft;
+			IsFollowPaused = IsFollowPaused || (Core.IsPlaying && !Input.KeyShift && IsOverTracks);
+			if (Input.KeyCtrl && !IsOverTracks)
 			{
 				for (const LaneSlot& Slot : Slots)
 				{
@@ -887,12 +901,12 @@ void Editor::DrawTimeline(Player& Core, bool& IsOpen)
 			}
 			else if (Input.KeyCtrl)
 			{
+				ScrollTime = std::clamp(ScrollTime - Input.MouseWheel * 80.0f / Zoom, 0.0f, MaxTime);
+			}
+			else if (!Input.KeyShift && IsOverTracks)
+			{
 				Zoom = std::clamp(Zoom * std::pow(1.2f, Input.MouseWheel), 4.0f, 2000.0f);
 				ScrollTime = std::clamp(Pivot - (Input.MousePos.x - TrackLeft) / Zoom, 0.0f, MaxTime);
-			}
-			else if (Input.KeyShift)
-			{
-				ScrollTime = std::clamp(ScrollTime - Input.MouseWheel * 80.0f / Zoom, 0.0f, MaxTime);
 			}
 			else
 			{
@@ -1029,29 +1043,35 @@ void Editor::DrawTransport(Player& Core)
 	};
 	const auto Wide = [&Style](const char* Text) { return ImGui::CalcTextSize(Text).x + 2.0f * Style.FramePadding.x; };
 	const auto Check = [&Style](const char* Text) { return ImGui::GetFrameHeight() + Style.ItemInnerSpacing.x + ImGui::CalcTextSize(Text).x; };
+	const bool IsAlone = ShowAnimator && AnimClipIndex >= 0 && !IsAnimFollowing && !Core.IsPlaying;
 	if (ImGui::Button("|<"))
 	{
-		SeekBoth(Core, 0.0f);
+		IsAlone ? (void)(AnimTime = 0.0f) : SeekBoth(Core, 0.0f);
 	}
 	ImGui::SetItemTooltip("Start (Home)");
 	Flow(Wide("Pause"));
-	if (ImGui::Button(Core.IsPlaying ? "Pause" : "Play"))
+	if (ImGui::Button(Core.IsPlaying || (IsAlone && IsAnimPlaying) ? "Pause" : "Play"))
 	{
-		PlayPause(Core, Core.IsPlaying);
+		IsAlone ? (void)(IsAnimPlaying = !IsAnimPlaying) : PlayPause(Core, Core.IsPlaying);
 	}
 	ImGui::SetItemTooltip("Play from marker (Space) / Continue (Shift+Space)");
 	Flow(Wide("Stop"));
 	if (ImGui::Button("Stop"))
 	{
+		IsAnimPlaying = false;
+		AnimTime = IsAlone ? 0.0f : AnimTime;
 		Core.Stop();
 	}
 	ImGui::SetItemTooltip("Stop (Space)");
-	Flow(Check("Follow"));
-	if (ImGui::Checkbox("Follow", &Settings.IsFollowing))
+	if (!ShowAnimator)
 	{
-		IsFollowPaused = false;
+		Flow(Check("Follow"));
+		if (ImGui::Checkbox("Follow", &Settings.IsFollowing))
+		{
+			IsFollowPaused = false;
+		}
+		ImGui::SetItemTooltip("Follow");
 	}
-	ImGui::SetItemTooltip("Follow");
 	Flow(Check("Loop"));
 	bool IsLooping = Core.IsLooping;
 	if (ImGui::Checkbox("Loop", &IsLooping))
@@ -1074,48 +1094,51 @@ void Editor::DrawTransport(Player& Core)
 		Core.Speed = TimelineUi::Speeds[Choice];
 	}
 	ImGui::SetItemTooltip("Playback speed");
-	Flow(Check("Snap") + Style.ItemSpacing.x + ImGui::GetFontSize() * 4.5f);
-	ImGui::Checkbox("Snap", &Settings.IsSnapping);
-	ImGui::SameLine();
-	s32 Step = Settings.SnapStep;
-	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 4.5f);
-	if (ImGui::Combo("##SnapStep", &Step, TimelineUi::SnapLabels, 7))
+	if (!ShowAnimator)
 	{
-		Settings.SnapStep = static_cast<u8>(Step);
-	}
-	ImGui::SetItemTooltip("Snap step");
-	Flow(ImGui::GetFontSize() * 6.0f + Style.ItemSpacing.x + Wide("Fit"));
-	const float PlayX = TimeToX(Core.Time);
-	const float AnchorX = PlayX >= TrackLeft && PlayX <= TrackLeft + TrackWidth ? PlayX - TrackLeft : 0.5f * TrackWidth;
-	string32 ZoomText;
-	xr_sprintf(ZoomText, "%.0f px/s##Zoom", Zoom);
-	ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-	ImGui::Button(ZoomText, ImVec2(ImGui::GetFontSize() * 6.0f, 0.0f));
-	ImGui::PopStyleColor();
-	if (ImGui::IsItemHovered() || ImGui::IsItemActive())
-	{
-		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
-	}
-	if (ImGui::IsItemActivated())
-	{
-		ZoomAnchor[0] = ScrollTime + AnchorX / Zoom;
-		ZoomAnchor[1] = AnchorX;
-	}
-	if (ImGui::IsItemActive() && Input.MouseDelta.y != 0.0f)
-	{
-		Zoom = std::clamp(Zoom * std::pow(Input.KeyShift ? 1.002f : 1.02f, -Input.MouseDelta.y), 4.0f, 2000.0f);
-		ScrollTime = std::clamp(ZoomAnchor[0] - ZoomAnchor[1] / Zoom, 0.0f, MaxTime);
-		IsFollowPaused = IsFollowPaused || Core.IsPlaying;
-	}
-	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-	{
-		ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
-	}
-	ImGui::SetItemTooltip("Zoom");
-	ImGui::SameLine();
-	if (ImGui::Button("Fit"))
-	{
-		ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
+		Flow(Check("Snap") + Style.ItemSpacing.x + ImGui::GetFontSize() * 4.5f);
+		ImGui::Checkbox("Snap", &Settings.IsSnapping);
+		ImGui::SameLine();
+		s32 Step = Settings.SnapStep;
+		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 4.5f);
+		if (ImGui::Combo("##SnapStep", &Step, TimelineUi::SnapLabels, 7))
+		{
+			Settings.SnapStep = static_cast<u8>(Step);
+		}
+		ImGui::SetItemTooltip("Snap step");
+		Flow(ImGui::GetFontSize() * 6.0f + Style.ItemSpacing.x + Wide("Fit"));
+		const float PlayX = TimeToX(Core.Time);
+		const float AnchorX = PlayX >= TrackLeft && PlayX <= TrackLeft + TrackWidth ? PlayX - TrackLeft : 0.5f * TrackWidth;
+		string32 ZoomText;
+		xr_sprintf(ZoomText, "%.0f px/s##Zoom", Zoom);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+		ImGui::Button(ZoomText, ImVec2(ImGui::GetFontSize() * 6.0f, 0.0f));
+		ImGui::PopStyleColor();
+		if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+		}
+		if (ImGui::IsItemActivated())
+		{
+			ZoomAnchor[0] = ScrollTime + AnchorX / Zoom;
+			ZoomAnchor[1] = AnchorX;
+		}
+		if (ImGui::IsItemActive() && Input.MouseDelta.y != 0.0f)
+		{
+			Zoom = std::clamp(Zoom * std::pow(Input.KeyShift ? 1.002f : 1.02f, -Input.MouseDelta.y), 4.0f, 2000.0f);
+			ScrollTime = std::clamp(ZoomAnchor[0] - ZoomAnchor[1] / Zoom, 0.0f, MaxTime);
+			IsFollowPaused = IsFollowPaused || Core.IsPlaying;
+		}
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
+		}
+		ImGui::SetItemTooltip("Zoom");
+		ImGui::SameLine();
+		if (ImGui::Button("Fit"))
+		{
+			ZoomTo(0.0f, std::max(ContentEnd(Core.Data), 1.0f));
+		}
 	}
 	Flow(Wide("Auto-key"));
 	ImGui::PushStyleColor(ImGuiCol_Text, IsAutoKey ? ErrorColor : ImGui::GetStyleColorVec4(ImGuiCol_Text));
@@ -2289,6 +2312,12 @@ void Editor::DrawPoseRow(Player& Core, const Object& Target, u8 Row, const ImRec
 			}
 		}
 	}
+	if (ImGui::MenuItem("Make animation clip", nullptr, false, !Target.Actor.Poses[Row].Bones.empty()))
+	{
+		PoseToClip(Core, Target.Id, Row);
+		ImGui::EndPopup();
+		return;
+	}
 	if (ImGui::MenuItem("Save as animation..."))
 	{
 		MotionObject = Target.Id;
@@ -3062,6 +3091,15 @@ void Editor::DrawTimelinePopups(Player& Core)
 			ImGui::EndPopup();
 			return;
 		}
+		if (HasBlock && IsClipBlock(BlocksOf(Target->Actor, PopupLayer)[PopupBlock].Source) && ImGui::MenuItem("Edit animation"))
+		{
+			OpenAnimator(Core, PopupRow, FindClip(Target->Actor.Clips, BlocksOf(Target->Actor, PopupLayer)[PopupBlock].Name));
+		}
+		if (HasBlock && !IsClipBlock(BlocksOf(Target->Actor, PopupLayer)[PopupBlock].Source) && ImGui::MenuItem("Import as keys"))
+		{
+			ImportClip(Core, PopupRow, PopupLayer, static_cast<u32>(PopupBlock));
+		}
+		ImGui::SetItemTooltip("Turns this animation into an editable clip of the Animator and makes the block play it");
 		if (HasBlock && ImGui::Selectable("Replace animation...", false, ImGuiSelectableFlags_NoAutoClosePopups))
 		{
 			IsPopupChoosing = IsChooserFresh = true;
@@ -5602,8 +5640,12 @@ void Editor::DrawGraph(Player& Core)
 	{
 		return;
 	}
-	ImGui::SetNextWindowSize(ImVec2(760.0f, 360.0f), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("Graph Editor###CinemaGraph", &Settings.ShowGraph, ImGuiWindowFlags_NoNavInputs))
+	ImGui::SetNextWindowSize(ImVec2(760.0f, 360.0f), LayoutCond());
+	if (LayoutReset)
+	{
+		ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
+	}
+	if (!ImGui::Begin(ShowAnimator ? "Graph Editor###CinemaGraphAnimation" : "Graph Editor###CinemaGraph", &Settings.ShowGraph, ImGuiWindowFlags_NoNavInputs))
 	{
 		ImGui::End();
 		return;
@@ -5623,10 +5665,20 @@ void Editor::DrawGraph(Player& Core)
 			continue;
 		}
 		CollectLaneTargets(*Target);
+		if (const s32 Block = PoseBlock(*Target); Block >= 0)
+		{
+			LaneTargets.push_back({ static_cast<s16>(Block), ClipOrigin, Target->Actor.Clips[ClipIndex(Block)].Length });
+		}
 		for (const LaneTarget& Where : LaneTargets)
 		{
 			for (const Lane& Track : LaneList(*Target, Where.Block))
 			{
+				const PoseBone* Joint = Where.Block >= ClipBase ? BoneEntry(const_cast<Object&>(*Target), Where.Block, Track.Layer) : nullptr;
+				const ActorRuntime* Body = Joint && !SelectedBones.empty() ? Core.FindActor(Id) : nullptr;
+				if (Body && std::find(SelectedBones.begin(), SelectedBones.end(), Body->FindBone(Joint->Name)) == SelectedBones.end())
+				{
+					continue;
+				}
 				for (u8 Axis = 0; Axis < Info(Track.Id).Components; ++Axis)
 				{
 					const Curve& Part = Track.Curves[Axis];
@@ -5761,7 +5813,7 @@ void Editor::DrawGraph(Player& Core)
 		const GraphCurve& Item = GraphCurves[Index];
 		const Object* Owner = Find(Core.Data, Item.Ref.ObjectId);
 		string64 Label;
-		TimelineUi::SlotLabel(Label, Item.Ref.Id, Item.Ref.Layer, Owner);
+		TimelineUi::SlotLabel(Label, Item.Ref.Id, Item.Ref.Layer, Owner, Item.Ref.Block);
 		string256 Line;
 		xr_sprintf(Line, "%s %s %s##%u", DisplayName(Owner), Label, Info(Item.Ref.Id).Components == 3 ? TimelineUi::AxisNames[Item.Ref.Id == Param::Color][Item.Ref.Component] : "", Index);
 		bool IsShown = !IsGraphHidden(Item.Ref);
@@ -5832,8 +5884,9 @@ void Editor::DrawGraph(Player& Core)
 			TimelineUi::Plot(List, Canvas.Min.x, Canvas.Max.x, [&](float X) { return ToY(Shown(*Item, Curves::Value(Stored.Shape, TimeAt(X) - Item->Start, 0.0f))); }, ImGui::GetColorU32(ImGuiCol_TextDisabled), 1.0f);
 		}
 	}
-	KeyRef Hot;
-	float HotScore = 7.0f;
+	KeyRef Hot, Tipped;
+	float HotScore = 7.0f, TipScore = 7.0f;
+	u8 TipSide = 0;
 	ImRect Bounds(FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX);
 	for (const GraphCurve& Item : GraphCurves)
 	{
@@ -5856,8 +5909,16 @@ void Editor::DrawGraph(Player& Core)
 				{
 					const ImVec2 Arm = TimelineUi::TangentOf(*Part, At, Side == 1, Point.Value);
 					const ImVec2 Tip(ToX(Item.Start + Point.Time + Arm.x), ToY(Shown(Item, Point.Value + Arm.y)));
-					List->AddLine(Spot, Tip, ImGui::GetColorU32(ImGuiCol_TextDisabled));
-					List->AddCircleFilled(Tip, 2.5f, ImGui::GetColorU32(ImGuiCol_TextDisabled));
+					const float Reach = std::fabs(Tip.x - Input.MousePos.x) + std::fabs(Tip.y - Input.MousePos.y);
+					const bool IsHeld = GraphDrag == 3 && GraphTip == Ref && GraphTipSide == Side;
+					if (IsHovered && !GraphDrag && Reach < TipScore)
+					{
+						TipScore = Reach;
+						Tipped = Ref;
+						TipSide = Side;
+					}
+					List->AddLine(Spot, Tip, ImGui::GetColorU32(IsHeld ? ImGuiCol_Text : ImGuiCol_TextDisabled));
+					List->AddCircleFilled(Tip, IsHeld ? 4.0f : 3.0f, ImGui::GetColorU32(IsHeld ? ImGuiCol_Text : ImGuiCol_TextDisabled));
 				}
 			}
 			List->AddNgonFilled(Spot, TimelineUi::KeyRadius, IsPicked ? ImGui::GetColorU32(ImGuiCol_Text) : Item.Color | 0xFF000000u, 4);
@@ -5890,7 +5951,42 @@ void Editor::DrawGraph(Player& Core)
 	{
 		ImGui::SetMouseCursor(HasHot ? ImGuiMouseCursor_Hand : Edge < 6 ? ImGuiMouseCursor_ResizeEW : ImGuiMouseCursor_ResizeNS);
 	}
-	if (ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	const bool HasTip = TipScore < 7.0f && TipScore <= HotScore;
+	if (IsHovered && HasTip)
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+	if (HasTip && ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		GraphDrag = 3;
+		GraphTip = Tipped;
+		GraphTipSide = TipSide;
+	}
+	if (IsActive && GraphDrag == 3)
+	{
+		const GraphCurve* Item = GraphCurveOf(GraphTip);
+		Curve* Part = Item && Edit(Core, GraphTip.ObjectId, "Move tangent") ? TimelineUi::FindCurve(Core.Data, GraphTip) : nullptr;
+		const u32 At = GraphTip.Index, Count = Part ? static_cast<u32>(Part->Keys.size()) : 0;
+		const bool IsOut = GraphTipSide == 1;
+		if (At < Count && (IsOut ? At + 1 < Count : At > 0))
+		{
+			const u32 Head = IsOut ? At : At - 1;
+			Curves::SetMode(*Part, Head, Interp::Bezier);
+			Key& Point = Part->Keys[At];
+			const float Width = Part->Keys[Head + 1].Time - Part->Keys[Head].Time, Sign = IsOut ? 1.0f : -1.0f;
+			const float Level = View[2] + (Canvas.Max.y - Mouse.y) / Canvas.GetHeight() * (View[3] - View[2]);
+			const float Rise = (IsGraphNormalized ? Item->Lo + Level * (Item->Hi - Item->Lo) : Level) - Point.Value;
+			const float Reach = Sign * std::clamp(Sign * (TimeAt(Mouse.x) - Item->Start - Point.Time), 0.01f * Width, Width);
+			(IsOut ? Point.OutTime : Point.InTime) = Reach;
+			(IsOut ? Point.OutValue : Point.InValue) = Rise;
+			Point.IsBroken |= Input.KeyAlt;
+			if (!Point.IsBroken)
+			{
+				(IsOut ? Point.InValue : Point.OutValue) = (IsOut ? Point.InTime : Point.OutTime) * Rise / Reach;
+			}
+		}
+	}
+	if (!HasTip && ImGui::IsItemActivated() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
 		GraphPress = Mouse;
 		GraphBounds = Bounds;

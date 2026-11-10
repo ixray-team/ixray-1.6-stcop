@@ -133,6 +133,7 @@ void SetKey(Curve& Target, float Time, float NewValue, float HalfFrame);
 void PlaceKey(Curve& Target, const Key& Item, float HalfFrame);
 void SetMode(Curve& Target, u32 Index, Interp Mode);
 void EasyEase(Curve& Target, u32 Index);
+u32 Fit(Curve& Target, float From, float To, float Tolerance);
 
 inline u32 LookAt(const xr_vector<Lane>& Lanes, float Time)
 {

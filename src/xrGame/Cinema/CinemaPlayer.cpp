@@ -258,6 +258,14 @@ const ActorRuntime* Player::FindActor(u32 ObjectId) const
 	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Actors, ObjectId);
 }
 
+void Player::PreviewClip(u32 ObjectId, s32 Clip, float Time)
+{
+	if (ActorRuntime* Found = const_cast<ActorRuntime*>(FindActor(ObjectId)))
+	{
+		Found->Preview = { Clip, Time, Device.dwFrame };
+	}
+}
+
 const LightRuntime* Player::FindLight(u32 ObjectId) const
 {
 	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Lights, ObjectId);
@@ -1464,6 +1472,59 @@ bool Player::BakeMotion(u32 ObjectId, float From, u32 Frames, bool IsPoseOnly, x
 	Runtime.IsPoseOnly = false;
 	EvaluateLinked(static_cast<u32>(Index), Time);
 	return IsDone;
+}
+
+bool Player::BakeClip(u32 ObjectId, s32 Clip, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts)
+{
+	const s32 Index = IndexOf(Data, ObjectId);
+	if (Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type != ObjectType::Actor || !FindActor(ObjectId) || static_cast<u32>(Clip) >= Data.Objects[Index].Actor.Clips.size())
+	{
+		return false;
+	}
+	ActorRuntime& Runtime = ActorAt(ObjectId);
+	const u32 Frames = std::min(static_cast<u32>(Data.Objects[Index].Actor.Clips[Clip].Length * Omf::MotionRate) + 2, Omf::MaxMotionFrames);
+	Runtime.IsPoseOnly = true;
+	bool IsDone = true;
+	for (u32 Frame = 0; IsDone && Frame < Frames; ++Frame)
+	{
+		Runtime.Preview = { Clip, static_cast<float>(Frame) / Omf::MotionRate, Device.dwFrame };
+		PoseActor(static_cast<u32>(Index), Time, true);
+		IsDone = States[Index].IsReady;
+		if (IsDone)
+		{
+			Runtime.Locals(Turns, Shifts);
+		}
+	}
+	Runtime.IsPoseOnly = false;
+	Runtime.Preview = {};
+	PoseActor(static_cast<u32>(Index), Time, true);
+	return IsDone;
+}
+
+u32 Player::BakeSource(u32 ObjectId, const shared_str& Source, const shared_str& Name, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts)
+{
+	const s32 Index = IndexOf(Data, ObjectId);
+	float Length = 0.0f;
+	if (Index < 0 || static_cast<u32>(Index) >= States.size() || Data.Objects[Index].Type != ObjectType::Actor || !FindActor(ObjectId) || !ActorAt(ObjectId).SetSolo(Source, Name, Length))
+	{
+		return 0;
+	}
+	ActorRuntime& Runtime = ActorAt(ObjectId);
+	const u32 Frames = std::min(static_cast<u32>(Length * Omf::MotionRate) + 1, Omf::MaxMotionFrames);
+	u32 Done = 0;
+	for (; Done < Frames; ++Done)
+	{
+		Runtime.SoloTime = std::min(static_cast<float>(Done) / Omf::MotionRate, Length);
+		PoseActor(static_cast<u32>(Index), Time, true);
+		if (!States[Index].IsReady)
+		{
+			break;
+		}
+		Runtime.Locals(Turns, Shifts);
+	}
+	Runtime.SoloMotion = MotionID();
+	PoseActor(static_cast<u32>(Index), Time, true);
+	return Done == Frames ? Frames : 0;
 }
 
 const xr_vector<shared_str>& Player::Shaders()

@@ -38,6 +38,9 @@ public:
 	void RequestAttach(u32 ObjectId, s32 Block, const Attachment& NewAttach);
 	bool HasRequests() const { return !FitRequests.empty() || !AttachRequests.empty(); }
 	const ActorRuntime* FindActor(u32 ObjectId) const;
+	void PreviewClip(u32 ObjectId, s32 Clip, float Time);
+	bool BakeClip(u32 ObjectId, s32 Clip, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts);
+	u32 BakeSource(u32 ObjectId, const shared_str& Source, const shared_str& Name, xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts);
 	const LightRuntime* FindLight(u32 ObjectId) const;
 	const ParticleRuntime* FindParticle(u32 ObjectId) const;
 	const DecalRuntime* FindDecal(u32 ObjectId) const;

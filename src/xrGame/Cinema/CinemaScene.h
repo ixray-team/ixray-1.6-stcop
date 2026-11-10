@@ -329,6 +329,52 @@ struct PoseRow
 	bool operator==(const PoseRow&) const = default;
 };
 
+struct ClipTrack
+{
+	RowMode Mode = RowMode::Override;
+	xr_vector<PoseBone> Bones;
+	xr_vector<Lane> Lanes;
+
+	bool operator==(const ClipTrack&) const = default;
+};
+
+struct ClipLayer : ClipTrack
+{
+	shared_str Name;
+	float Weight = 1.0f;
+	bool IsMuted = false;
+
+	bool operator==(const ClipLayer&) const = default;
+};
+
+struct AnimClip : ClipTrack
+{
+	shared_str Name;
+	float Length = 1.0f;
+	bool IsLinked = false;
+	xr_vector<ClipLayer> Layers;
+	IkLimb Ik[MaxIkLimbs];
+	xr_vector<Lane> IkLanes;
+
+	bool operator==(const AnimClip&) const = default;
+};
+
+inline constexpr u32 MaxClipLayers = 8;
+
+inline constexpr u32 MaxClips = 64, MaxClipBones = 128;
+inline constexpr const char* ClipSource = "clip";
+
+inline bool IsClipBlock(const shared_str& Source)
+{
+	return Source.size() && !xr_strcmp(Source.c_str(), ClipSource);
+}
+
+inline s32 FindClip(const xr_vector<AnimClip>& Clips, const shared_str& Name)
+{
+	const auto Found = std::find_if(Clips.begin(), Clips.end(), [&Name](const AnimClip& Item) { return Item.Name == Name; });
+	return Found == Clips.end() ? -1 : static_cast<s32>(Found - Clips.begin());
+}
+
 inline u8 PoseLayer(u32 Row, u32 Bone)
 {
 	return static_cast<u8>(Row * MaxPoseBones + Bone);
@@ -338,6 +384,7 @@ struct ActorData
 {
 	shared_str Visual;
 	shared_str Item;
+	shared_str Hud;
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fvector Scale = Fvector().set(1.0f, 1.0f, 1.0f);
@@ -347,10 +394,12 @@ struct ActorData
 	ActorLayer Base;
 	xr_vector<ActorLayer> Layers;
 	xr_vector<PoseRow> Poses;
+	xr_vector<AnimClip> Clips;
 	xr_vector<ActorLook> Looks;
 	IkLimb Ik[MaxIkLimbs];
 	xr_vector<BoneConstraint> Constraints;
 	bool IsRelative = false;
+	bool IsHudLinked = false;
 
 	bool operator==(const ActorData&) const = default;
 };

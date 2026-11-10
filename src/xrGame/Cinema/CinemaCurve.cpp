@@ -403,6 +403,80 @@ void SetMode(Curve& Target, u32 Index, Interp Mode)
 	}
 }
 
+u32 Fit(Curve& Target, float From, float To, float Tolerance)
+{
+	xr_vector<Key>& Keys = Target.Keys;
+	const auto Begin = std::lower_bound(Keys.begin(), Keys.end(), From - 1e-4f, [](const Key& Item, float Moment) { return Item.Time < Moment; });
+	const auto End = std::upper_bound(Begin, Keys.end(), To + 1e-4f, [](float Moment, const Key& Item) { return Moment < Item.Time; });
+	const u32 Count = static_cast<u32>(End - Begin);
+	if (Count < 3)
+	{
+		return 0;
+	}
+	const xr_vector<Key> Old(Begin, End);
+	xr_vector<u8> Kept(Count, 0);
+	Kept.front() = Kept.back() = 1;
+	const auto Slope = [&Old, Count](u32 Index)
+	{
+		const Key &A = Old[Index ? Index - 1 : 0], &B = Old[std::min(Index + 1, Count - 1)];
+		return (B.Value - A.Value) / std::max(B.Time - A.Time, 1e-6f);
+	};
+	const auto Cubic = [&Old, &Slope](u32 A, u32 B, float Time)
+	{
+		const float Width = Old[B].Time - Old[A].Time, U = (Time - Old[A].Time) / std::max(Width, 1e-6f), V = 1.0f - U;
+		const float P1 = Old[A].Value + Slope(A) * Width / 3.0f, P2 = Old[B].Value - Slope(B) * Width / 3.0f;
+		return V * V * V * Old[A].Value + 3.0f * V * V * U * P1 + 3.0f * V * U * U * P2 + U * U * U * Old[B].Value;
+	};
+	for (bool IsSplit = true; IsSplit;)
+	{
+		IsSplit = false;
+		for (u32 A = 0, B = 1; A + 1 < Count; A = B, B = A + 1)
+		{
+			while (!Kept[B])
+			{
+				++B;
+			}
+			float Worst = Tolerance;
+			u32 At = 0;
+			for (u32 Index = A + 1; Index < B; ++Index)
+			{
+				const float Miss = std::fabs(Cubic(A, B, Old[Index].Time) - Old[Index].Value);
+				At = Miss > Worst ? Index : At;
+				Worst = std::max(Worst, Miss);
+			}
+			if (At)
+			{
+				Kept[At] = 1;
+				IsSplit = true;
+			}
+		}
+	}
+	xr_vector<Key> Made;
+	for (u32 Index = 0, Last = 0; Index < Count; ++Index)
+	{
+		if (!Kept[Index])
+		{
+			continue;
+		}
+		Key Item = Old[Index];
+		Item.IsBroken = Item.IsBroken && (Index == 0 || Index + 1 == Count);
+		if (Index)
+		{
+			const float Third = (Item.Time - Old[Last].Time) / 3.0f;
+			Made.back().Mode = Interp::Bezier;
+			Made.back().OutTime = Third;
+			Made.back().OutValue = Slope(Last) * Third;
+			Item.InTime = -Third;
+			Item.InValue = -Slope(Index) * Third;
+		}
+		Made.push_back(Item);
+		Last = Index;
+	}
+	const u32 Removed = Count - static_cast<u32>(Made.size());
+	Keys.insert(Keys.erase(Begin, End), Made.begin(), Made.end());
+	return Removed;
+}
+
 void EasyEase(Curve& Target, u32 Index)
 {
 	if (Index > 0)

@@ -2,6 +2,7 @@
 #include "CinemaSceneIo.h"
 #include "CinemaCamera.h"
 #include "CinemaShake.h"
+#include "CinemaOmf.h"
 
 namespace Cinema::Io
 {
@@ -580,6 +581,50 @@ void WriteLanes(CInifile& Ini, const char* Section, const char* Prefix, const xr
 	}
 }
 
+void ReadTrack(const CInifile& Ini, const char* Section, const char* Prefix, ClipTrack& Out, Warnings& Notes)
+{
+	string128 Key;
+	xr_sprintf(Key, "%sbones", Prefix);
+	const u32 Count = ReadU32(Ini, Section, Key, MaxClipBones, Notes);
+	for (u32 Bone = 0; Bone < Count; ++Bone)
+	{
+		PoseBone Entry;
+		float Rest[6] = {}, Size[3] = { 1.0f, 1.0f, 1.0f };
+		xr_sprintf(Key, "%sbone_%02u", Prefix, Bone);
+		Entry.Name = ReadSafe(Ini, Section, Key, Notes);
+		xr_sprintf(Key, "%sbone_%02u_rest", Prefix, Bone);
+		if (ReadFloats(Ini, Section, Key, Rest, 6, Notes))
+		{
+			Entry.Rotation.set(Sanitize(Rest[0], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[1], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[2], -3600.0f, 3600.0f, 0.0f));
+			Entry.Offset.set(Sanitize(Rest[3], -10.0f, 10.0f, 0.0f), Sanitize(Rest[4], -10.0f, 10.0f, 0.0f), Sanitize(Rest[5], -10.0f, 10.0f, 0.0f));
+		}
+		xr_sprintf(Key, "%sbone_%02u_scale", Prefix, Bone);
+		ReadFloats(Ini, Section, Key, Size, 3, Notes);
+		Entry.Scale.set(Sanitize(Size[0], 0.01f, 100.0f, 1.0f), Sanitize(Size[1], 0.01f, 100.0f, 1.0f), Sanitize(Size[2], 0.01f, 100.0f, 1.0f));
+		Out.Bones.push_back(Entry);
+	}
+	ReadLanes(Ini, Section, Prefix, WherePoseBone, 0, Out.Lanes, Notes);
+	std::erase_if(Out.Lanes, [&Out](const Lane& Track) { return Track.Layer >= Out.Bones.size(); });
+}
+
+void WriteTrack(CInifile& Ini, const char* Section, const char* Prefix, const ClipTrack& Track)
+{
+	string128 Key;
+	xr_sprintf(Key, "%sbones", Prefix);
+	Write(Ini, Section, Key, static_cast<u32>(Track.Bones.size()));
+	for (u32 Bone = 0; Bone < Track.Bones.size(); ++Bone)
+	{
+		const PoseBone& Entry = Track.Bones[Bone];
+		xr_sprintf(Key, "%sbone_%02u", Prefix, Bone);
+		Ini.w_string(Section, Key, Entry.Name.c_str());
+		xr_sprintf(Key, "%sbone_%02u_rest", Prefix, Bone);
+		Write(Ini, Section, Key, Entry.Rotation.x, Entry.Rotation.y, Entry.Rotation.z, Entry.Offset.x, Entry.Offset.y, Entry.Offset.z);
+		xr_sprintf(Key, "%sbone_%02u_scale", Prefix, Bone);
+		Write(Ini, Section, Key, Entry.Scale.x, Entry.Scale.y, Entry.Scale.z);
+	}
+	WriteLanes(Ini, Section, Prefix, Track.Lanes);
+}
+
 void ReadBlocks(const CInifile& Ini, const char* Section, const char* Prefix, xr_vector<ActorBlock>& Blocks, u32 Fields, Warnings& Notes)
 {
 	const bool IsPacked = Fields == 6;
@@ -649,6 +694,8 @@ void ReadActor(const CInifile& Ini, const char* Section, ActorData& Setup, bool 
 	Setup.IsRelative = IsRelative;
 	Setup.Visual = ReadSafe(Ini, Section, "visual", Notes);
 	Setup.Item = ReadSafe(Ini, Section, "item", Notes);
+	Setup.Hud = ReadSafe(Ini, Section, "hud", Notes);
+	Setup.IsHudLinked = ReadBool(Ini, Section, "hud_link", false, Notes);
 	ReadVector(Ini, Section, "scale", ScaleRange, Setup.Scale, Notes);
 	ReadRanged(Ini, Section, "time_scale", &Setup.TimeScale, &RateRange, 1, Notes);
 	const char* EndText = Ini.read_if_exists<str_c>(Section, "end", nullptr);
@@ -752,6 +799,110 @@ void ReadActor(const CInifile& Ini, const char* Section, ActorData& Setup, bool 
 			ReadFloats(Ini, Section, Line, Size, 3, Notes);
 			Item.Scale.set(Sanitize(Size[0], 0.01f, 100.0f, 1.0f), Sanitize(Size[1], 0.01f, 100.0f, 1.0f), Sanitize(Size[2], 0.01f, 100.0f, 1.0f));
 			Pose.Bones.push_back(Item);
+		}
+	}
+	const u32 ClipCount = Ini.line_exist(Section, "clips") ? ReadU32(Ini, Section, "clips", MaxClips, Notes) : 0;
+	for (u32 Clip = 0; Clip < ClipCount; ++Clip)
+	{
+		AnimClip& Item = Setup.Clips.emplace_back();
+		string64 Prefix;
+		float Values[2] = { 1.0f, 0.0f };
+		xr_sprintf(Line, "clip_%02u", Clip);
+		Item.Name = ReadSafe(Ini, Section, Line, Notes);
+		xr_sprintf(Line, "clip_%02u_info", Clip);
+		ReadFloats(Ini, Section, Line, Values, 2, Notes);
+		Item.Length = Sanitize(Values[0], MinLength, MaxTime, 1.0f);
+		Item.Mode = Values[1] == 0.0f ? RowMode::Override : RowMode::Add;
+		xr_sprintf(Line, "clip_%02u_bones", Clip);
+		const u32 BoneCount = ReadU32(Ini, Section, Line, MaxClipBones, Notes);
+		for (u32 Bone = 0; Bone < BoneCount; ++Bone)
+		{
+			PoseBone Entry;
+			float Rest[6] = {}, Size[3] = { 1.0f, 1.0f, 1.0f };
+			xr_sprintf(Line, "clip_%02u_bone_%02u", Clip, Bone);
+			Entry.Name = ReadSafe(Ini, Section, Line, Notes);
+			xr_sprintf(Line, "clip_%02u_bone_%02u_rest", Clip, Bone);
+			if (ReadFloats(Ini, Section, Line, Rest, 6, Notes))
+			{
+				Entry.Rotation.set(Sanitize(Rest[0], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[1], -3600.0f, 3600.0f, 0.0f), Sanitize(Rest[2], -3600.0f, 3600.0f, 0.0f));
+				Entry.Offset.set(Sanitize(Rest[3], -10.0f, 10.0f, 0.0f), Sanitize(Rest[4], -10.0f, 10.0f, 0.0f), Sanitize(Rest[5], -10.0f, 10.0f, 0.0f));
+			}
+			xr_sprintf(Line, "clip_%02u_bone_%02u_scale", Clip, Bone);
+			ReadFloats(Ini, Section, Line, Size, 3, Notes);
+			Entry.Scale.set(Sanitize(Size[0], 0.01f, 100.0f, 1.0f), Sanitize(Size[1], 0.01f, 100.0f, 1.0f), Sanitize(Size[2], 0.01f, 100.0f, 1.0f));
+			Item.Bones.push_back(Entry);
+		}
+		xr_sprintf(Prefix, "clip_%02u_", Clip);
+		ReadLanes(Ini, Section, Prefix, WherePoseBone, 0, Item.Lanes, Notes);
+		std::erase_if(Item.Lanes, [&Item](const Lane& Track) { return Track.Layer >= Item.Bones.size(); });
+		xr_sprintf(Line, "clip_%02u_layers", Clip);
+		const u32 LayerCount = Ini.line_exist(Section, Line) ? ReadU32(Ini, Section, Line, MaxClipLayers, Notes) : 0;
+		for (u32 Layer = 0; Layer < LayerCount; ++Layer)
+		{
+			ClipLayer& Over = Item.Layers.emplace_back();
+			float Info[3] = { 1.0f, 1.0f, 0.0f };
+			xr_sprintf(Prefix, "clip_%02u_layer_%02u_", Clip, Layer);
+			xr_sprintf(Line, "%sname", Prefix);
+			Over.Name = ReadSafe(Ini, Section, Line, Notes);
+			xr_sprintf(Line, "%sinfo", Prefix);
+			ReadFloats(Ini, Section, Line, Info, 3, Notes);
+			Over.Weight = Sanitize(Info[0], 0.0f, 1.0f, 1.0f);
+			Over.Mode = Info[1] == 0.0f ? RowMode::Override : RowMode::Add;
+			Over.IsMuted = Info[2] != 0.0f;
+			ReadTrack(Ini, Section, Prefix, Over, Notes);
+		}
+		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
+		{
+			IkLimb& Arm = Item.Ik[Limb];
+			float State[3] = { 0.0f, 0.0f, 1.0f }, Goal[9] = {};
+			string256 Part;
+			xr_sprintf(Line, "clip_%02u_ik_%02u_bones", Clip, Limb);
+			const char* Names = Ini.read_if_exists<str_c>(Section, Line, nullptr);
+			for (u32 Link = 0; Names && _GetItemCount(Names) == 3 && Link < 3; ++Link)
+			{
+				_GetItem(Names, static_cast<int>(Link), Part);
+				Arm.Bones[Link] = IniSafe(Part) ? Part : "";
+			}
+			if (!Arm.Bones[0].size() || !Arm.Bones[1].size() || !Arm.Bones[2].size())
+			{
+				Arm = IkLimb {};
+				continue;
+			}
+			xr_sprintf(Line, "clip_%02u_ik_%02u", Clip, Limb);
+			ReadFloats(Ini, Section, Line, State, 3, Notes);
+			xr_sprintf(Line, "clip_%02u_ik_%02u_goal", Clip, Limb);
+			ReadFloats(Ini, Section, Line, Goal, 9, Notes);
+			Arm.IsOn = State[0] != 0.0f;
+			Arm.Space = State[1] != 0.0f ? IkSpace::World : IkSpace::Actor;
+			Arm.Weight = Sanitize(State[2], 0.0f, 1.0f, 1.0f);
+			for (u32 Axis = 0; Axis < 3; ++Axis)
+			{
+				Arm.Target[Axis] = Sanitize(Goal[Axis], -100000.0f, 100000.0f, 0.0f);
+				Arm.Turn[Axis] = Sanitize(Goal[3 + Axis], -3600.0f, 3600.0f, 0.0f);
+				Arm.Pole[Axis] = Sanitize(Goal[6 + Axis], -100000.0f, 100000.0f, 0.0f);
+			}
+		}
+		xr_sprintf(Prefix, "clip_%02u_ik_", Clip);
+		xr_sprintf(Line, "%slanes", Prefix);
+		if (Ini.line_exist(Section, Line))
+		{
+			ReadLanes(Ini, Section, Prefix, WherePoseBone, 0, Item.IkLanes, Notes);
+			std::erase_if(Item.IkLanes, [](const Lane& Track) { return Track.Id < Param::IkTarget || Track.Id > Param::IkWeight; });
+		}
+		xr_sprintf(Line, "clip_%02u_linked", Clip);
+		AnimClip Stored;
+		if (ReadBool(Ini, Section, Line, false, Notes) && Omf::IsClipName(Item.Name.c_str()))
+		{
+			Item.IsLinked = true;
+			if (Omf::ReadClip(Item.Name.c_str(), Stored))
+			{
+				Item = Stored;
+				Item.IsLinked = true;
+			}
+			else
+			{
+				Notes.Add("[%s] library animation %s is missing or has no keys: the copy saved in the scene is used", Section, Item.Name.c_str());
+			}
 		}
 	}
 	const u32 LookCount = ReadU32(Ini, Section, "looks", MaxLooks, Notes);
@@ -1490,6 +1641,14 @@ void WriteActor(CInifile& Ini, const char* Section, const ActorData& Setup)
 	{
 		Ini.w_string(Section, "item", Setup.Item.c_str());
 	}
+	if (Setup.Hud.size())
+	{
+		Ini.w_string(Section, "hud", Setup.Hud.c_str());
+	}
+	if (Setup.IsHudLinked)
+	{
+		Ini.w_bool(Section, "hud_link", true);
+	}
 	Write(Ini, Section, "scale", Setup.Scale.x, Setup.Scale.y, Setup.Scale.z);
 	Write(Ini, Section, "time_scale", Setup.TimeScale);
 	if (Setup.IsRelative)
@@ -1562,6 +1721,72 @@ void WriteActor(CInifile& Ini, const char* Section, const ActorData& Setup)
 				xr_sprintf(Line, "pose_%02u_bone_%02u_scale", Row, Bone);
 				Write(Ini, Section, Line, Item.Scale.x, Item.Scale.y, Item.Scale.z);
 			}
+		}
+	}
+	if (!Setup.Clips.empty())
+	{
+		Write(Ini, Section, "clips", static_cast<u32>(Setup.Clips.size()));
+	}
+	for (u32 Clip = 0; Clip < Setup.Clips.size(); ++Clip)
+	{
+		const AnimClip& Item = Setup.Clips[Clip];
+		string64 Prefix;
+		xr_sprintf(Line, "clip_%02u", Clip);
+		Ini.w_string(Section, Line, Item.Name.c_str());
+		xr_sprintf(Line, "clip_%02u_info", Clip);
+		Write(Ini, Section, Line, Item.Length, Item.Mode == RowMode::Add ? 1.0f : 0.0f);
+		xr_sprintf(Line, "clip_%02u_bones", Clip);
+		Write(Ini, Section, Line, static_cast<u32>(Item.Bones.size()));
+		for (u32 Bone = 0; Bone < Item.Bones.size(); ++Bone)
+		{
+			const PoseBone& Entry = Item.Bones[Bone];
+			xr_sprintf(Line, "clip_%02u_bone_%02u", Clip, Bone);
+			Ini.w_string(Section, Line, Entry.Name.c_str());
+			xr_sprintf(Line, "clip_%02u_bone_%02u_rest", Clip, Bone);
+			Write(Ini, Section, Line, Entry.Rotation.x, Entry.Rotation.y, Entry.Rotation.z, Entry.Offset.x, Entry.Offset.y, Entry.Offset.z);
+			xr_sprintf(Line, "clip_%02u_bone_%02u_scale", Clip, Bone);
+			Write(Ini, Section, Line, Entry.Scale.x, Entry.Scale.y, Entry.Scale.z);
+		}
+		xr_sprintf(Prefix, "clip_%02u_", Clip);
+		WriteLanes(Ini, Section, Prefix, Item.Lanes);
+		if (!Item.Layers.empty())
+		{
+			xr_sprintf(Line, "clip_%02u_layers", Clip);
+			Write(Ini, Section, Line, static_cast<u32>(Item.Layers.size()));
+		}
+		for (u32 Layer = 0; Layer < Item.Layers.size(); ++Layer)
+		{
+			const ClipLayer& Over = Item.Layers[Layer];
+			xr_sprintf(Prefix, "clip_%02u_layer_%02u_", Clip, Layer);
+			xr_sprintf(Line, "%sname", Prefix);
+			Ini.w_string(Section, Line, Over.Name.c_str());
+			xr_sprintf(Line, "%sinfo", Prefix);
+			Write(Ini, Section, Line, Over.Weight, Over.Mode == RowMode::Add ? 1.0f : 0.0f, Over.IsMuted ? 1.0f : 0.0f);
+			WriteTrack(Ini, Section, Prefix, Over);
+		}
+		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
+		{
+			const IkLimb& Arm = Item.Ik[Limb];
+			if (!Arm.Bones[0].size())
+			{
+				continue;
+			}
+			xr_sprintf(Line, "clip_%02u_ik_%02u_bones", Clip, Limb);
+			Ini.w_string(Section, Line, (xr_string(Arm.Bones[0].c_str()) + ", " + Arm.Bones[1].c_str() + ", " + Arm.Bones[2].c_str()).c_str());
+			xr_sprintf(Line, "clip_%02u_ik_%02u", Clip, Limb);
+			Write(Ini, Section, Line, Arm.IsOn ? 1.0f : 0.0f, Arm.Space == IkSpace::World ? 1.0f : 0.0f, Arm.Weight);
+			xr_sprintf(Line, "clip_%02u_ik_%02u_goal", Clip, Limb);
+			Write(Ini, Section, Line, Arm.Target.x, Arm.Target.y, Arm.Target.z, Arm.Turn.x, Arm.Turn.y, Arm.Turn.z, Arm.Pole.x, Arm.Pole.y, Arm.Pole.z);
+		}
+		if (!Item.IkLanes.empty())
+		{
+			xr_sprintf(Prefix, "clip_%02u_ik_", Clip);
+			WriteLanes(Ini, Section, Prefix, Item.IkLanes);
+		}
+		if (Item.IsLinked)
+		{
+			xr_sprintf(Line, "clip_%02u_linked", Clip);
+			Ini.w_bool(Section, Line, true);
 		}
 	}
 	if (!Setup.Looks.empty())

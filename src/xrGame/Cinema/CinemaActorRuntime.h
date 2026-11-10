@@ -155,10 +155,24 @@ public:
 	~ActorRuntime();
 	void Apply(const Object& Target, float Step, u32& RetargetIndex, const Audition* Listen);
 	bool Evaluate(const Object& Target, float Time, const Audition* Listen, bool IsNeeded, bool IsSilent);
+	bool ClipMoment(s32 Clip, float& Time) const;
+	bool SetSolo(const shared_str& Source, const shared_str& Name, float& Length);
+	MotionID SoloMotion;
+	bool IsRootPinned = false;
+	void PinRoot();
+	float SoloTime = 0.0f;
+	struct ClipPreview
+	{
+		s32 Clip = -1;
+		float Time = 0.0f;
+		u32 Frame = 0;
+	};
+	ClipPreview Preview;
 	void Place(const Fmatrix& Transform);
 	bool BoneFrame(const shared_str& Bone, Fmatrix& Out) const;
 	void Bones(const Fmatrix& World, xr_vector<Fvector>& Lines) const;
 	void Pose(const Object& Target, float Local);
+	void PoseBones(const xr_vector<PoseBone>& Bones, const xr_vector<Lane>& Lanes, u32 Row, RowMode Mode, float Weight, float Time);
 	void Locals(xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts) const;
 	void Dress(const Object& Target, float Local, const xr_vector<shared_str>& Shaders);
 	void SolveIk(const Object& Target, float Local, const Fmatrix& World);
@@ -167,6 +181,7 @@ public:
 	bool SurfaceNames(u32 Surface, shared_str& Shader, shared_str& Texture) const;
 	bool BoneWorld(u16 Bone, const Fmatrix& World, Fmatrix& Out) const;
 	bool RestLocal(u16 Bone, Fmatrix& Out) const;
+	bool RestPose(xr_vector<Fmatrix>& Model) const;
 	bool RestModel(u16 Bone, Fmatrix& Out) const;
 	u16 BoneParent(u16 Bone) const;
 	u16 FindBone(const shared_str& Name) const;
@@ -216,6 +231,15 @@ private:
 	xr_vector<Fmatrix> BindLocals;
 	xr_vector<BoneSolve> Solves;
 	bool IsRigged = false;
+	struct ClipSample
+	{
+		s32 Clip = -1;
+		float Time = 0.0f;
+		float Weight = 0.0f;
+	};
+	ClipSample Samples[2 * (MaxActorLayers + 1)];
+	u32 SampleCount = 0;
+	xr_vector<AnimClip> AppliedClips;
 	ItemSetup Item;
 	shared_str AppliedVisual, AppliedItem;
 	xr_vector<shared_str> AppliedPacks;

@@ -124,9 +124,13 @@ void Editor::DrawInspector(Player& Core)
 		return;
 	}
 	const ImGuiViewport* View = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(View->Pos.x + View->Size.x * 0.76f, View->WorkPos.y), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(View->Size.x * 0.24f, View->Pos.y + View->Size.y * 0.72f - View->WorkPos.y), ImGuiCond_FirstUseEver);
-	const bool IsVisible = ImGui::Begin("Inspector###CinemaInspector", &Settings.ShowInspector, ImGuiWindowFlags_NoNavInputs);
+	ImGui::SetNextWindowPos(ImVec2(View->Pos.x + View->Size.x * 0.76f, View->WorkPos.y), LayoutCond());
+	ImGui::SetNextWindowSize(ImVec2(View->Size.x * 0.24f, View->Pos.y + View->Size.y * (ShowAnimator ? 0.6f : 0.72f) - View->WorkPos.y), LayoutCond());
+	if (LayoutReset)
+	{
+		ImGui::SetNextWindowDockID(0, ImGuiCond_Always);
+	}
+	const bool IsVisible = ImGui::Begin(ShowAnimator ? "Inspector###CinemaInspectorAnimation" : "Inspector###CinemaInspector", &Settings.ShowInspector, ImGuiWindowFlags_NoNavInputs);
 	IsOwnWindowFocused |= ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 	ViewRight = ImGui::GetWindowPos().x;
 	std::erase_if(PinnedIds, [&Core](u32 Id) { return !Find(Core.Data, Id); });
@@ -145,6 +149,21 @@ void Editor::DrawInspector(Player& Core)
 	}
 	if (!IsVisible)
 	{
+		ImGui::End();
+		return;
+	}
+	if (ShowAnimator)
+	{
+		const Object* Posed = Find(Core.Data, AnimObject);
+		if (Posed && Posed->Type == ObjectType::Actor)
+		{
+			ImGui::TextUnformatted(DisplayName(Posed));
+			DrawPoseSection(Core, *Posed);
+		}
+		else
+		{
+			ImGui::TextDisabled("Select an actor to animate.");
+		}
 		ImGui::End();
 		return;
 	}
@@ -276,7 +295,53 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
 	const xr_vector<PoseRow>& Rows = Target.Actor.Poses;
 	ActivePose = Rows.empty() ? 0 : std::min<u32>(ActivePose, static_cast<u32>(Rows.size() - 1));
-	for (u32 Row = 0; Row < Rows.size(); ++Row)
+	const bool IsCompact = ShowAnimator;
+	if (IsCompact)
+	{
+		DrawBoneValues(Core, Target);
+		ImGui::SeparatorText("IK");
+		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
+		{
+			const u16* Chain = RigObject == Target.Id ? Rig.Chains[Limb] : nullptr;
+			const bool HasChain = Chain && std::find(Chain, Chain + 3, BI_NONE) == Chain + 3;
+			bool IsOn = IkOf(Target, IkBlock(Target))[Limb].IsOn;
+			ImGui::PushID(static_cast<s32>(Limb));
+			if (Limb & 1)
+			{
+				ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.5f);
+			}
+			ImGui::BeginDisabled(!HasChain && !IsOn);
+			if (ImGui::Checkbox(RigChainKeys[Limb], &IsOn))
+			{
+				SetIk(Core, Target, Limb, IsOn);
+			}
+			ImGui::EndDisabled();
+			ImGui::SetItemTooltip(HasChain ? "On: the limb follows its target and pole handles in the game view. Off: its bones are posed one by one" : "The rig of this model has no such limb (Rig and tools -> Rig)");
+			ImGui::PopID();
+		}
+		ImGui::SeparatorText("Select");
+		constexpr const char* SetNames[7] = { "Arm L", "Arm R", "Leg L", "Leg R", "Spine", "Fingers L", "Fingers R" };
+		for (u32 Set = 0; Set < 7; ++Set)
+		{
+			if (Set % 4)
+			{
+				ImGui::SameLine();
+			}
+			if (ImGui::SmallButton(SetNames[Set]))
+			{
+				SelectSet(Set, ImGui::GetIO().KeyCtrl || ImGui::GetIO().KeyShift);
+			}
+		}
+		ImGui::SetItemTooltip("Selects every control of that part; Ctrl or Shift adds to the selection");
+		ImGui::Checkbox("Bone lines", &ShowBoneLines);
+		ImGui::SetItemTooltip("Off: only the rig's controls are drawn and picked. On: every bone is drawn as a line and can be picked");
+		if (!ImGui::TreeNode("Rig and tools"))
+		{
+			ImGui::PopID();
+			return;
+		}
+	}
+	for (u32 Row = 0; !IsCompact && Row < Rows.size(); ++Row)
 	{
 		ImGui::PushID(static_cast<s32>(Row));
 		string32 Title;
@@ -311,7 +376,7 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 			break;
 		}
 	}
-	if (Rows.size() < MaxPoseRows && ImGui::Button("+ Pose row"))
+	if (!IsCompact && Rows.size() < MaxPoseRows && ImGui::Button("+ Pose row"))
 	{
 		Object* Item = Edit(Core, Target.Id, "Add pose row");
 		Item->Actor.Poses.emplace_back();
@@ -319,6 +384,10 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 	}
 	if (!Runtime || !Runtime->BoneCount())
 	{
+		if (IsCompact)
+		{
+			ImGui::TreePop();
+		}
 		ImGui::PopID();
 		return;
 	}
@@ -352,10 +421,10 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 	{
 		for (u32 Limb = 0; Limb < MaxIkLimbs; ++Limb)
 		{
-			const IkLimb& Setup = Target.Actor.Ik[Limb];
+			const IkLimb& Setup = IkOf(Target, IkBlock(Target))[Limb];
 			const u16* Chain = RigObject == Target.Id ? Rig.Chains[Limb] : nullptr;
 			const bool HasChain = Chain && std::find(Chain, Chain + 3, BI_NONE) == Chain + 3;
-			const bool HasLanes = std::any_of(Target.Lanes.begin(), Target.Lanes.end(), [Limb](const Lane& Track) { return Track.Id >= Param::IkTarget && Track.Id <= Param::IkPole && Track.Layer == Limb; });
+			const bool HasLanes = std::any_of(LaneList(Target, IkBlock(Target)).begin(), LaneList(Target, IkBlock(Target)).end(), [Limb](const Lane& Track) { return Track.Id >= Param::IkTarget && Track.Id <= Param::IkPole && Track.Layer == Limb; });
 			bool IsOn = Setup.IsOn;
 			ImGui::PushID(static_cast<s32>(Limb));
 			ImGui::BeginDisabled(!HasChain && !IsOn);
@@ -375,28 +444,24 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 				}
 				ImGui::EndDisabled();
 				ImGui::SetItemTooltip("Space");
-				ParamRow(Core, Ids, -1, Param::IkWeight, static_cast<u8>(Limb), 0.01f, "%.2f", 1, 1.0f);
-				ParamRow(Core, Ids, -1, Param::IkTarget, static_cast<u8>(Limb), 0.005f, "%.3f", 0, 0.0f);
-				ParamRow(Core, Ids, -1, Param::IkTurn, static_cast<u8>(Limb), 0.5f, "%.1f", 0, 0.0f);
-				ParamRow(Core, Ids, -1, Param::IkPole, static_cast<u8>(Limb), 0.005f, "%.3f", 0, 0.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkWeight, static_cast<u8>(Limb), 0.01f, "%.2f", 1, 1.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkTarget, static_cast<u8>(Limb), 0.005f, "%.3f", 0, 0.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkTurn, static_cast<u8>(Limb), 0.5f, "%.1f", 0, 0.0f);
+				ParamRow(Core, Ids, IkBlock(Target), Param::IkPole, static_cast<u8>(Limb), 0.005f, "%.3f", 0, 0.0f);
 			}
 			ImGui::PopID();
 		}
 		ImGui::TreePop();
 	}
 	DrawConstraints(Core, Target);
-	if (SelectedBones.size() == 1 && ActivePose < Rows.size())
+	const s32 Block = PoseBlock(Target);
+	if (Block >= 0 && !IsCompact)
 	{
-		const xr_vector<PoseBone>& Bones = Rows[ActivePose].Bones;
-		const char* Name = Runtime->BoneName(SelectedBones[0]);
-		const auto Entry = std::find_if(Bones.begin(), Bones.end(), [Name](const PoseBone& Item) { return !xr_strcmp(Item.Name, Name); });
-		if (Entry != Bones.end())
-		{
-			const u8 Layer = PoseLayer(ActivePose, static_cast<u32>(Entry - Bones.begin()));
-			ParamRow(Core, Ids, -1, Param::BoneRotation, Layer, 0.5f, "%.1f", 7, 0.0f);
-			ParamRow(Core, Ids, -1, Param::BonePosition, Layer, 0.005f, "%.3f", 7, 0.0f);
-			ParamRow(Core, Ids, -1, Param::BoneScale, Layer, 0.005f, "%.3f", 7, 1.0f);
-		}
+		ImGui::TextDisabled("Bones go to the clip \"%s\" (Animator)", Target.Actor.Clips[ClipIndex(Block)].Name.c_str());
+	}
+	if (!IsCompact)
+	{
+		DrawBoneValues(Core, Target);
 	}
 	ImGui::BeginDisabled(SelectedBones.empty());
 	if (ImGui::Button("Key pose"))
@@ -411,7 +476,7 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 	}
 	ImGui::SetItemTooltip("Reset bones");
 	ImGui::EndDisabled();
-	ImGui::BeginDisabled(ActivePose >= Rows.size() || RigObject != Target.Id);
+	ImGui::BeginDisabled((Block < 0 && ActivePose >= Rows.size()) || RigObject != Target.Id);
 	if (ImGui::Button("Mirror"))
 	{
 		MirrorBones(Core, true);
@@ -425,7 +490,74 @@ void Editor::DrawPoseSection(Player& Core, const Object& Target)
 	ImGui::SetItemTooltip("Paste opposite");
 	ImGui::EndDisabled();
 	DrawPoseLibrary(Core);
+	if (IsCompact)
+	{
+		ImGui::TreePop();
+	}
 	ImGui::PopID();
+}
+
+void Editor::SelectSet(u32 Set, bool IsAdding)
+{
+	constexpr s8 Sets[7][6] = { { 14, 3, -1, -1, -1, -1 }, { 15, 4, -1, -1, -1, -1 }, { 5, 16, -1, -1, -1, -1 }, { 6, 17, -1, -1, -1, -1 }, { 0, 11, 12, 1, 13, 2 }, { 18, 19, 20, 21, 22, -1 }, { 23, 24, 25, 26, 27, -1 } };
+	if (RigObject != PoseObject || Set >= 7)
+	{
+		return;
+	}
+	if (!IsAdding)
+	{
+		SelectedBones.clear();
+	}
+	const auto Add = [this](u16 Bone)
+	{
+		if (Bone != BI_NONE && !IsBoneShared(Bone) && std::find(SelectedBones.begin(), SelectedBones.end(), Bone) == SelectedBones.end())
+		{
+			SelectedBones.push_back(Bone);
+		}
+	};
+	for (s8 Control : Sets[Set])
+	{
+		Add(Control >= 0 ? Rig.Controls[Control] : BI_NONE);
+	}
+	for (u32 Link = 0; Set < RigChainCount && Link < 3; ++Link)
+	{
+		Add(Rig.Chains[Set][Link]);
+	}
+}
+
+void Editor::DrawBoneValues(Player& Core, const Object& Target)
+{
+	const ActorRuntime* Runtime = Core.FindActor(Target.Id);
+	const xr_vector<PoseRow>& Rows = Target.Actor.Poses;
+	const s32 Block = PoseBlock(Target);
+	if (!Runtime || SelectedBones.size() != 1 || (Block < 0 && ActivePose >= Rows.size()))
+	{
+		if (ShowAnimator)
+		{
+			ImGui::TextDisabled(SelectedBones.size() > 1 ? "Several bones are selected." : "Select a bone to see its values.");
+		}
+		return;
+	}
+	const xr_vector<PoseBone>& Bones = Block < 0 ? Rows[ActivePose].Bones : TrackOf(Target, Block).Bones;
+	const char* Name = Runtime->BoneName(SelectedBones[0]);
+	const auto Entry = std::find_if(Bones.begin(), Bones.end(), [Name](const PoseBone& Item) { return !xr_strcmp(Item.Name, Name); });
+	if (ShowAnimator)
+	{
+		ImGui::TextUnformatted(Name ? Name : "");
+	}
+	if (Entry == Bones.end())
+	{
+		if (ShowAnimator)
+		{
+			ImGui::TextDisabled("Not posed yet: move it in the game view.");
+		}
+		return;
+	}
+	const u32 Index = static_cast<u32>(Entry - Bones.begin());
+	const u8 Layer = Block < 0 ? PoseLayer(ActivePose, Index) : static_cast<u8>(Index);
+	ParamRow(Core, PoseIds, Block, Param::BoneRotation, Layer, 0.5f, "%.1f", 7, 0.0f);
+	ParamRow(Core, PoseIds, Block, Param::BonePosition, Layer, 0.005f, "%.3f", 7, 0.0f);
+	ParamRow(Core, PoseIds, Block, Param::BoneScale, Layer, 0.005f, "%.3f", 7, 1.0f);
 }
 
 bool Editor::ReadPoseValue(const Object& Item, u16 Bone, PoseValue& Out) const
@@ -433,22 +565,25 @@ bool Editor::ReadPoseValue(const Object& Item, u16 Bone, PoseValue& Out) const
 	const Player* Core = FindPlayer();
 	const ActorRuntime* Runtime = Core ? Core->FindActor(Item.Id) : nullptr;
 	const char* Name = Runtime ? Runtime->BoneName(Bone) : nullptr;
-	if (!Name || ActivePose >= Item.Actor.Poses.size())
+	const s32 Block = PoseBlock(Item);
+	if (!Name || (Block < 0 && ActivePose >= Item.Actor.Poses.size()))
 	{
 		return false;
 	}
 	Out = PoseValue { Name };
-	const xr_vector<PoseBone>& Bones = Item.Actor.Poses[ActivePose].Bones;
+	const xr_vector<PoseBone>& Bones = Block < 0 ? Item.Actor.Poses[ActivePose].Bones : TrackOf(Item, Block).Bones;
 	const auto Entry = std::find_if(Bones.begin(), Bones.end(), [&Out](const PoseBone& Other) { return Other.Name == Out.Bone; });
 	if (Entry == Bones.end())
 	{
 		return true;
 	}
-	const float Local = std::clamp(Core->Time - Item.Span.Start, 0.0f, Item.Span.Length);
-	const u8 Layer = PoseLayer(ActivePose, static_cast<u32>(Entry - Bones.begin()));
-	Out.Turn = Curves::LaneVector(Item.Lanes, Param::BoneRotation, Local, Entry->Rotation, Layer);
-	Out.Shift = Curves::LaneVector(Item.Lanes, Param::BonePosition, Local, Entry->Offset, Layer);
-	Out.Size = Curves::LaneVector(Item.Lanes, Param::BoneScale, Local, Entry->Scale, Layer);
+	const float Local = PoseLocal(*Core, Item);
+	const u32 Index = static_cast<u32>(Entry - Bones.begin());
+	const u8 Layer = Block < 0 ? PoseLayer(ActivePose, Index) : static_cast<u8>(Index);
+	const xr_vector<Lane>& Tracks = LaneList(Item, Block);
+	Out.Turn = Curves::LaneVector(Tracks, Param::BoneRotation, Local, Entry->Rotation, Layer);
+	Out.Shift = Curves::LaneVector(Tracks, Param::BonePosition, Local, Entry->Offset, Layer);
+	Out.Size = Curves::LaneVector(Tracks, Param::BoneScale, Local, Entry->Scale, Layer);
 	return true;
 }
 
@@ -513,9 +648,9 @@ void Editor::WritePoses(Player& Core, const char* Label, const xr_vector<PoseVal
 		}
 		for (u8 Axis = 0; Axis < 3; ++Axis)
 		{
-			WriteParam(Core, *Item, -1, Param::BoneRotation, static_cast<u8>(Layer), Axis, Result.Turn[Axis]);
-			WriteParam(Core, *Item, -1, Param::BonePosition, static_cast<u8>(Layer), Axis, std::clamp(Result.Shift[Axis], -10.0f, 10.0f));
-			WriteParam(Core, *Item, -1, Param::BoneScale, static_cast<u8>(Layer), Axis, std::clamp(Result.Size[Axis], 0.01f, 100.0f));
+			WriteParam(Core, *Item, PoseBlock(*Item), Param::BoneRotation, static_cast<u8>(Layer), Axis, Result.Turn[Axis]);
+			WriteParam(Core, *Item, PoseBlock(*Item), Param::BonePosition, static_cast<u8>(Layer), Axis, std::clamp(Result.Shift[Axis], -10.0f, 10.0f));
+			WriteParam(Core, *Item, PoseBlock(*Item), Param::BoneScale, static_cast<u8>(Layer), Axis, std::clamp(Result.Size[Axis], 0.01f, 100.0f));
 		}
 	}
 	if (Missing)
@@ -528,14 +663,16 @@ void Editor::MirrorBones(Player& Core, bool IsSwap)
 {
 	const Object* Item = Find(Core.Data, PoseObject);
 	const ActorRuntime* Runtime = Item ? Core.FindActor(PoseObject) : nullptr;
-	if (!Runtime || ActivePose >= Item->Actor.Poses.size() || RigObject != PoseObject)
+	const s32 Block = Item ? PoseBlock(*Item) : -1;
+	if (!Runtime || (Block < 0 && ActivePose >= Item->Actor.Poses.size()) || RigObject != PoseObject)
 	{
 		return;
 	}
+	const xr_vector<PoseBone>& Posed = Block < 0 ? Item->Actor.Poses[ActivePose].Bones : TrackOf(*Item, Block).Bones;
 	xr_vector<u16> Picked = SelectedBones;
-	for (u32 Index = 0; SelectedBones.empty() && Index < Item->Actor.Poses[ActivePose].Bones.size(); ++Index)
+	for (u32 Index = 0; SelectedBones.empty() && Index < Posed.size(); ++Index)
 	{
-		const u16 Bone = Runtime->FindBone(Item->Actor.Poses[ActivePose].Bones[Index].Name);
+		const u16 Bone = Runtime->FindBone(Posed[Index].Name);
 		Bone != BI_NONE ? Picked.push_back(Bone) : (void)0;
 	}
 	PoseScratch.clear();
@@ -713,7 +850,7 @@ void Editor::SetIk(Player& Core, const Object& Target, u32 Limb, bool IsOn)
 	{
 		return;
 	}
-	IkLimb& Item = Edit(Core, Target.Id, IsOn ? "IK on" : "IK off")->Actor.Ik[Limb];
+	IkLimb& Item = IkOf(*Edit(Core, Target.Id, IsOn ? "IK on" : "IK off"), IkBlock(Target))[Limb];
 	Item.IsOn = IsOn;
 	IkHandle = IsOn ? IkHandle : -1;
 	if (!IsOn)
@@ -743,7 +880,7 @@ void Editor::SwitchIkSpace(Player& Core, const Object& Target, u32 Limb)
 	{
 		return;
 	}
-	IkLimb& Item = Edit(Core, Target.Id, "IK space")->Actor.Ik[Limb];
+	IkLimb& Item = IkOf(*Edit(Core, Target.Id, "IK space"), IkBlock(Target))[Limb];
 	const bool IsWorld = Item.Space == IkSpace::World;
 	Fmatrix Change, Goal;
 	IsWorld ? Change.invert(State->World) : Change.set(State->World);
@@ -900,16 +1037,18 @@ void Editor::KeyBones(Player& Core)
 		{
 			continue;
 		}
-		const float Local = std::clamp(Core.Time - Item->Span.Start, 0.0f, Item->Span.Length);
-		const PoseBone& Entry = Item->Actor.Poses[Layer / MaxPoseBones].Bones[Layer % MaxPoseBones];
-		const Fvector Turn = Curves::LaneVector(Item->Lanes, Param::BoneRotation, Local, Entry.Rotation, static_cast<u8>(Layer));
-		const Fvector Shift = Curves::LaneVector(Item->Lanes, Param::BonePosition, Local, Entry.Offset, static_cast<u8>(Layer));
-		const Fvector Size = Curves::LaneVector(Item->Lanes, Param::BoneScale, Local, Entry.Scale, static_cast<u8>(Layer));
+		const float Local = PoseLocal(Core, *Item);
+		const s32 Block = PoseBlock(*Item);
+		const xr_vector<Lane>& Tracks = LaneList(*Item, Block);
+		const PoseBone& Entry = *BoneEntry(*Item, Block, static_cast<u8>(Layer));
+		const Fvector Turn = Curves::LaneVector(Tracks, Param::BoneRotation, Local, Entry.Rotation, static_cast<u8>(Layer));
+		const Fvector Shift = Curves::LaneVector(Tracks, Param::BonePosition, Local, Entry.Offset, static_cast<u8>(Layer));
+		const Fvector Size = Curves::LaneVector(Tracks, Param::BoneScale, Local, Entry.Scale, static_cast<u8>(Layer));
 		for (u8 Axis = 0; Axis < 3; ++Axis)
 		{
-			WriteParam(Core, *Item, -1, Param::BoneRotation, static_cast<u8>(Layer), Axis, Turn[Axis]);
-			WriteParam(Core, *Item, -1, Param::BonePosition, static_cast<u8>(Layer), Axis, Shift[Axis]);
-			WriteParam(Core, *Item, -1, Param::BoneScale, static_cast<u8>(Layer), Axis, Size[Axis]);
+			WriteParam(Core, *Item, Block, Param::BoneRotation, static_cast<u8>(Layer), Axis, Turn[Axis]);
+			WriteParam(Core, *Item, Block, Param::BonePosition, static_cast<u8>(Layer), Axis, Shift[Axis]);
+			WriteParam(Core, *Item, Block, Param::BoneScale, static_cast<u8>(Layer), Axis, Size[Axis]);
 		}
 	}
 	IsAutoKey = WasAutoKey;
@@ -919,6 +1058,20 @@ void Editor::ResetBones(Player& Core)
 {
 	const ActorRuntime* Runtime = Core.FindActor(PoseObject);
 	Object* Item = Runtime && !SelectedBones.empty() ? Edit(Core, PoseObject, "Reset bones") : nullptr;
+	if (const s32 Block = Item ? PoseBlock(*Item) : -1; Block >= 0)
+	{
+		ClipTrack& Clip = TrackOf(*Item, Block);
+		for (u32 Bone = 0; Bone < Clip.Bones.size(); ++Bone)
+		{
+			if (std::any_of(SelectedBones.begin(), SelectedBones.end(), [&](u16 Picked) { return !xr_strcmp(Clip.Bones[Bone].Name, Runtime->BoneName(Picked)); }))
+			{
+				Clip.Bones[Bone] = PoseBone { Clip.Bones[Bone].Name };
+				std::erase_if(Clip.Lanes, [Bone](const Lane& Track) { return Track.Layer == Bone; });
+			}
+		}
+		AnimKeys.clear();
+		return;
+	}
 	for (u32 Row = 0; Item && Row < Item->Actor.Poses.size(); ++Row)
 	{
 		xr_vector<PoseBone>& Bones = Item->Actor.Poses[Row].Bones;
@@ -1411,6 +1564,16 @@ void Editor::DrawActorSection(Player& Core, const xr_vector<u32>& Ids)
 	if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ParamRow(Core, Ids, -1, Param::TimeScale, 0, 0.01f, "%.2f", 1, 1.0f);
+		const Object* Held = Ids.size() == 1 ? Find(Core.Data, Ids[0]) : nullptr;
+		if (Held && Held->Actor.Hud.size() && Held->Attach.Parent.ObjectId)
+		{
+			bool IsLinked = Held->Actor.IsHudLinked;
+			if (ImGui::Checkbox("Follow hands animation", &IsLinked))
+			{
+				Edit(Core, Ids[0], IsLinked ? "Link item animation" : "Unlink item animation")->Actor.IsHudLinked = IsLinked;
+			}
+			ImGui::SetItemTooltip("Linked: the animation rows of this item copy the rows of the hands (same times, trims and speed, the item animation of the same name). Untick to unlink and edit the rows of the item on their own");
+		}
 		BeginRow("Add", false, false);
 		if (Chooser(Core, ChooserKind::Animation, "##Add", "+ Animation...", Ids, Source, Name))
 		{
