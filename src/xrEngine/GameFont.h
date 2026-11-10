@@ -256,7 +256,7 @@ public:
 
 	struct Glyph
 	{
-		RECT TextureCoord;
+		Irect TextureCoord;
 		ABC Abc;
 		int yOffset;
 	};

@@ -115,7 +115,7 @@ void CUIWatchText::SetText(const char* Text)
 		const float Right = X + float(Glyph->Abc.abcB);
 		TextWidth = Right;
 
-		const RECT& Tc = Glyph->TextureCoord;
+		const Irect& Tc = Glyph->TextureCoord;
 		SGlyphQuad& Quad = Quads.emplace_back();
 		Quad.Pos.set(X, float(Glyph->yOffset), Right, Cell + float(Glyph->yOffset));
 		Quad.Uv.set(

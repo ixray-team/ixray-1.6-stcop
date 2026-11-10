@@ -441,11 +441,11 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 		CopyGlyphImageToAtlas(GlyphBitmap);
 
-		RECT region;
+		Irect region;
 		region.left = TargetX;
 		region.right = TargetX + GlyphBitmap.width;
 		region.top = TargetY;
-		region.bottom = long(TargetY + FontSizeInPixels);
+		region.bottom = s32(TargetY + FontSizeInPixels);
 
 		ABC widths;
 		widths.abcA = FT_CEIL(GlyphMetrics.horiBearingX);
