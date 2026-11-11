@@ -2,7 +2,7 @@ function normal(shader, t_base, t_second, t_detail)
     shader:begin("deffer_model", "forward_base")
         :fog(true)
         :zb(true, false)
-        :blend(true, blend.one, blend.one)
+        :blend(true, blend.srcalpha, blend.invsrcalpha)
         :aref(true, 0)
         :sorting(3, true)
 
