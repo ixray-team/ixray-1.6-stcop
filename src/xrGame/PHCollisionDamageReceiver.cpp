@@ -39,11 +39,25 @@ void CPHCollisionDamageReceiver::Init()
 
 void CPHCollisionDamageReceiver::CollisionHit(ALife::_OBJECT_ID source_id,u16 bone_id,float power,const Fvector& dir,Fvector &pos )
 {
-
+	// Only bones registered from [collision_damage] may send a hit or start the
+	// cooldown. A stray callback for any other bone is ignored here.
 	DAMAGE_BONES_I i=FindBone(bone_id);
 	if(i==m_controled_bones.end())return;
 	power*=i->second;
 	if(power<m_hit_threshold)return;
+
+	// One impact can reach several nearby collision geoms in the same frame or
+	// in consecutive frames. Send only the first damaging hit and ignore the
+	// rest for a short cooldown, otherwise the car takes double damage.
+	const u32 Now=Device.dwTimeGlobal;
+	if(m_hit_cooldown>0.f)
+	{
+		if(m_last_hit_time!=0 && Now-m_last_hit_time<u32(m_hit_cooldown*1000.f))
+			return;
+	}
+	// Do not let a hit that cannot damage this object (or a wheel contact)
+	// suppress the next real body hit.
+	const bool StartsCooldown=CollisionHitStartsCooldown(bone_id,power);
 	
 	NET_Packet		P;
 	CPhysicsShellHolder *ph=PPhysicsShellHolder();
@@ -65,6 +79,10 @@ void CPHCollisionDamageReceiver::CollisionHit(ALife::_OBJECT_ID source_id,u16 bo
 	HS.Write_Packet(P);						
 
 	ph->u_EventSend(P);
+
+	// Start the cooldown only for a hit that is going to damage the object.
+	if (StartsCooldown && m_hit_cooldown>0.f)
+		m_last_hit_time = Now;
 }
 
 void CPHCollisionDamageReceiver::Clear()

@@ -540,7 +540,7 @@ void CActor::HitCar(CObject* who, float value, float impulse, const Fvector& dir
 {
 	CCar* Car = GetCar();
 	if (Car != nullptr)
-		Car->HitFrom(who, value, impulse, dir, hit_type);
+		Car->HitFromCreature(who, value, impulse, dir, hit_type);
 }
 
 bool CActor::IsMutantBiteBlocked() const

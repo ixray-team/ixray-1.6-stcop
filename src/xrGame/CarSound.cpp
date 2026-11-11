@@ -316,8 +316,10 @@ void CCar::SCarSound::UpdateDrive()
 	// UpdateStarting() is the usual place that starts the looped sounds, but a
 	// running engine restored from a save skips the starter. Starting them here
 	// also recovers if the first play happened while the sound was suspended
-	// during level loading.
-	if (pcar->b_engine_on)
+	// during level loading. During a normal start the starter sequence owns the
+	// delay, so do not start the loops before engine_start_delay has elapsed.
+	if (pcar->b_engine_on &&
+		(eCarSound != sndStarting || time_state_start + engine_start_delay < Device.dwTimeGlobal))
 	{
 		auto PlayLoop = [this](ref_sound& sound)
 		{

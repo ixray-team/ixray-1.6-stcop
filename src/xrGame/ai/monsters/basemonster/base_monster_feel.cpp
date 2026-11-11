@@ -446,8 +446,8 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		VERIFY		(pEntityNC);
 
 		// While the actor is driving, the monster attacks the car instead of
-		// reaching through its body. The car handles the hit as a normal
-		// physical strike, and the actor takes no damage.
+		// reaching through its body. The car takes the damage and a capped body
+		// push at the contact point, and the actor takes no damage.
 		if (CActor* Actor = pEntityNC->cast_actor())
 		{
 			const bool bPhysicalHit =

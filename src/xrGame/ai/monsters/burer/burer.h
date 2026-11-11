@@ -83,7 +83,6 @@ public:
 		float radius;
 		float impulse_to_objects;
 		float impulse_to_enemy;
-		float impulse_to_car;
 		float hit_power;
 	} gravi;
 

@@ -131,7 +131,6 @@ void CBurer::Load(const char* section)
 	gravi.radius = pSettings->r_float(section, "Gravi_Radius");
 	gravi.impulse_to_objects = pSettings->r_float(section, "Gravi_Impulse_To_Objects");
 	gravi.impulse_to_enemy = pSettings->r_float(section, "Gravi_Impulse_To_Enemy");
-	gravi.impulse_to_car = pSettings->read_if_exists<float>(section, "Gravi_Impulse_To_Car", 4.f);
 	gravi.hit_power = pSettings->r_float(section, "Gravi_Hit_Power");
 
 	weight_to_stamina_hit = pSettings->read_if_exists<float>(section, "weight_to_stamina_hit", 0.02f);
@@ -660,7 +659,23 @@ void CBurer::PushGraviCar(CCar* Car, const Fvector& WavePos)
 		Fvector car_dir;
 		car_dir.sub(Car->Position(), WavePos);
 		car_dir.normalize();
-		CarShell->applyImpulse(car_dir, gravi.impulse_to_car * CarShell->getMass());
+
+		// The base wave speed is 3x the old 4 m/s; the per-car factor from
+		// misc/vehicles.ltx tunes it further. A heavier car reacts less, but the
+		// mass is only half-weighted so the wave still shoves trucks noticeably
+		// instead of stopping them dead.
+		constexpr float BaseCarSpeed = 12.f;
+		constexpr float ReferenceCarMass = 1400.f;
+		const float CarMass = CarShell->getMass();
+		if (CarMass <= 0.f)
+		{
+			return;
+		}
+
+		const float WaveSpeed = BaseCarSpeed * Car->BurerGraviImpulseFactor();
+		const float HalfMass = 0.5f * CarMass + 0.5f * ReferenceCarMass;
+		const float Speed = WaveSpeed * ReferenceCarMass / HalfMass;
+		CarShell->applyImpulse(car_dir, Speed * CarMass);
 	}
 }
 

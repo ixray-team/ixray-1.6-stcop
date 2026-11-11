@@ -352,6 +352,8 @@ public:
 	float	m_interior_volume;
 	float	m_hit_stall_threshold;
 	float	m_hit_anomaly_scale;
+	float	m_mutant_hit_impulse_factor;
+	float	m_burer_gravi_impulse_factor;
 
 	struct SHeadlightHideaway
 	{
@@ -663,7 +665,6 @@ virtual void ApplyDamage			(u16 level);
 		bool			broken_door_handle;
 		bool			spring_loaded_door;
 		bool			lamba_door;
-		bool			vertical_door;
 
 // 		float			dist_to_door;
 		float			dist_to_door_avlbl;
@@ -769,7 +770,6 @@ virtual void ApplyDamage(u16 level);
 			broken_door_handle = false;
 			spring_loaded_door = false;
 			lamba_door = false;
-			vertical_door = false;
 
 			real_close_time = 0;
 			real_open_time = 0;
@@ -1416,6 +1416,9 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:
 	void					HitFrom						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
+	void					HitFromCreature				(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
+	void					ApplyPush					(const Fvector& dir, float speed, const Fvector& world_point);
+	bool					CollisionHitStartsCooldown	(u16 bone_id, float power) override;
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
 	float					GetRepairAmount			() const		{ return RepairAmount; }
@@ -1484,6 +1487,7 @@ public:
 	void					HitEngine					(CObject *obj, float scale);
 	float					HitStallThreshold			() const		{ return m_hit_stall_threshold; }
 	float					HitAnomalyScale				() const		{ return m_hit_anomaly_scale; }
+	float					BurerGraviImpulseFactor		() const		{ return m_burer_gravi_impulse_factor; }
 	u16						GetTrunkBone				() const		{return m_bone_trunk;};
 	u16						DriverAnimationType 		();
 	virtual	bool			register_schedule() const { return false; }
