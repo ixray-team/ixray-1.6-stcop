@@ -148,8 +148,11 @@ public:
 
 	// Cached node bounds for TBV optimization
 	float node_radius = 0.f;
-	float ssa_dyn_factor = 0.002f;
-	float ssa_d_cam = 220.f;	
+
+	static constexpr float DefaultSsaDynFactor = 0.002f;
+	static constexpr float DefaultSsaDCam = 220.f;
+	float ssa_dyn_factor = DefaultSsaDynFactor;
+	float ssa_d_cam = DefaultSsaDCam;
 
 	// Cached parent node for "empty-members" optimization
 	ISpatial_NODE* node_ptr = nullptr;		
