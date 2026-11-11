@@ -9,6 +9,11 @@
 #include "UIGameSP.h"
 #include "../Level.h"
 #include "UIPdaWnd.h"
+#include "UITaskWnd.h"
+#include "UIMapWnd.h"
+#include "../GametaskManager.h"
+#include "../map_location.h"
+#include "../map_spot.h"
 #include "UIActorMenu.h"
 #include "UITalkWnd.h"
 #include "../MainMenu.h"
@@ -119,6 +124,15 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 		SSubItem _si;
 		_si.m_start				= xml->ReadAttribFlt("auto_static", i, "start_time", 0);
 		_si.m_length				= xml->ReadAttribFlt("auto_static", i, "length_sec", 0);
+		const xr_string_view MapTask = xml->ReadAttrib("auto_static", i, "map_task", "");
+		if (MapTask == "spot")
+		{
+			_si.MapTaskHighlight = EMapTaskHighlight::Spot;
+		}
+		else if (MapTask == "hint")
+		{
+			_si.MapTaskHighlight = EMapTaskHighlight::Hint;
+		}
 
 		_si.m_visible = false;
 		CUIWindow* finded_child = find_child_window(m_UIWindow, sname);
@@ -193,6 +207,74 @@ float CUISequenceSimpleItem::current_factor()
 		return ((Device.dwTimeContinual/1000.0f)-m_time_start) / m_time_length;
 }
 
+bool CUISequenceSimpleItem::UpdateMapTaskHighlight(SSubItem& Item)
+{
+	auto* GameUI = g_pGameLevel ? CurrentGameUI() : nullptr;
+	auto* Pda = GameUI ? GameUI->PdaMenu() : nullptr;
+	auto* TaskWnd = Pda && Pda->IsShown() ? Pda->pUITaskWnd : nullptr;
+	if (!TaskWnd || !TaskWnd->IsShown())
+	{
+		return false;
+	}
+
+	auto* Map = TaskWnd->m_pMapWnd;
+	const Frect MapRect = Map->ActiveMapRect();
+	Fvector2 Center;
+	const auto FindVisibleSpot = [&MapRect, &Center](CGameTask* Task) -> CMapSpot*
+	{
+		auto* Location = Task ? Task->LinkedMapLocation() : nullptr;
+		auto* Spot = Location ? Location->LevelMapSpot() : nullptr;
+		if (!Spot || !Spot->GetParent() || !Spot->IsShown())
+		{
+			return nullptr;
+		}
+
+		Frect SpotRect;
+		Spot->GetAbsoluteRect(SpotRect);
+		SpotRect.getcenter(Center);
+		return MapRect.in(Center) ? Spot : nullptr;
+	};
+
+	auto* TaskManager = Level().GameTaskManager();
+	auto* Spot = FindVisibleSpot(TaskManager->ActiveTask(eTaskTypeStoryline));
+	if (!Spot)
+	{
+		// The active task may be on another level. Use a storyline marker visible on this map.
+		for (const auto& Entry : TaskManager->GetGameTasks())
+		{
+			auto* Task = Entry.getGameTask();
+			if (Task->GetTaskType() == eTaskTypeStoryline && Task->GetTaskState() == eTaskStateInProgress)
+			{
+				Spot = FindVisibleSpot(Task);
+				if (Spot)
+				{
+					break;
+				}
+			}
+		}
+	}
+	if (!Spot)
+	{
+		return false;
+	}
+
+	if (Item.MapTaskHighlight == EMapTaskHighlight::Hint)
+	{
+		GetUICursor().SetUICursorPosition(Center);
+		Frect HintRect;
+		if (!Map->GetSpotHintRect(*Spot, HintRect))
+		{
+			return false;
+		}
+		HintRect.getcenter(Center);
+	}
+
+	Fvector2 WindowPos;
+	m_UIWindow->GetAbsolutePos(WindowPos);
+	Item.m_wnd->SetWndPos(Center.sub(WindowPos));
+	return true;
+}
+
 void CUISequenceSimpleItem::Update()
 {
 	inherited::Update();
@@ -204,7 +286,8 @@ void CUISequenceSimpleItem::Update()
 	for(;_I!=_E;++_I)
 	{
 		SSubItem& s					= *_I;
-		bool bPlaying				= (gt>(_start+s.m_start-EPS))&&(gt<(_start+s.m_start+s.m_length+EPS));
+		const bool HasTarget = s.MapTaskHighlight == EMapTaskHighlight::None || UpdateMapTaskHighlight(s);
+		bool bPlaying				= HasTarget && (gt>(_start+s.m_start-EPS))&&(gt<(_start+s.m_start+s.m_length+EPS));
 		
 		if (true==bPlaying&&(false==s.m_visible))			
 			s.Start	();

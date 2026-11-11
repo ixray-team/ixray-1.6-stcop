@@ -129,11 +129,19 @@ public:
 class CUISequenceSimpleItem final : public CUISequenceItem
 {
 	typedef CUISequenceItem	inherited;
+	enum class EMapTaskHighlight
+	{
+		None,
+		Spot,
+		Hint,
+	};
+
 	struct SSubItem{
 		CUIStatic*			m_wnd;
 		float				m_start;
 		float				m_length;
 		bool				m_visible;
+		EMapTaskHighlight	MapTaskHighlight = EMapTaskHighlight::None;
 	public:
 		virtual void		Start				();
 		virtual void		Stop				();
@@ -143,6 +151,8 @@ class CUISequenceSimpleItem final : public CUISequenceItem
 	using SubItemVecIt = SubItemVec::iterator;
 
 	SubItemVec				m_subitems;
+	bool UpdateMapTaskHighlight(SSubItem& Item);
+
 	struct SActionItem{
 		EGameActions			m_action;
 		shared_str				m_functor;

@@ -1064,6 +1064,17 @@ void CUIMapWnd::ShowHintTask( CGameTask* task, CUIWindow* owner )
 	HideCurHint();
 }
 
+bool CUIMapWnd::GetSpotHintRect(CMapSpot& Spot, Frect& Rect)
+{
+	if (m_map_location_hint->GetOwner() != &Spot || !Spot.MapLocation()->HintEnabled())
+	{
+		return false;
+	}
+
+	m_map_location_hint->GetAbsoluteRect(Rect);
+	return true;
+}
+
 void CUIMapWnd::ShowHint( bool extra )
 {
 	Frect vis_rect;

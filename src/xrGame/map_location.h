@@ -111,7 +111,7 @@ public:
 			const char*			GetHint							();
 	void					SetHint							(const shared_str& hint);
 	CComplexMapSpot*		complex_spot					()					{return m_complex_spot;}
-	const CMapSpot*			LevelMapSpot					()					{return m_level_spot;}
+	CMapSpot*				LevelMapSpot					()					{return m_level_spot;}
 	const CMiniMapSpot*		MiniMapSpot						()					{return m_minimap_spot;}
 
 	IC bool					PointerEnabled					()					{return SpotEnabled() && !!m_flags.test(ePointerEnabled);};

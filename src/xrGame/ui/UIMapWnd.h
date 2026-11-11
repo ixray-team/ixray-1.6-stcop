@@ -188,6 +188,7 @@ public:
 			void				ShowHintStr				(CUIWindow* parent, const char* text);
 			void				ShowHintSpot			(CMapSpot* spot);
 			void				ShowHintTask			(CGameTask* task, CUIWindow* owner);
+			bool				GetSpotHintRect			(CMapSpot& Spot, Frect& Rect);
 
 			void				SpotSelected			(CUIWindow* spot);
 

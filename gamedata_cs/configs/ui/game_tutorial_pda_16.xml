@@ -73,7 +73,7 @@
     <grab_input>1</grab_input>
     <pause_state>off</pause_state>
     <main_wnd>
-      <auto_static start_time="0" length_sec="9" x="584" y="468" width="60" height="60" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+      <auto_static start_time="0" length_sec="9" map_task="spot" width="60" height="60" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
         <texture>ui_highlight</texture>
       </auto_static>
     </main_wnd>
@@ -95,13 +95,12 @@
   <item>
     <!--При наведении на отметку на карте, ты можешь получить дополнительную информацию о ней. -->
     <length_sec>5</length_sec>
-    <cursor_pos x="584" y="468"/>
     <sound>characters_voice\scenario\marsh\mar_csky_tactic_pda_tutorial_06</sound>
     <pda_section>pda_tasks</pda_section>
     <grab_input>1</grab_input>
     <pause_state>off</pause_state>
     <main_wnd>
-      <auto_static start_time="1" length_sec="5" x="693" y="385" width="80" height="80" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+      <auto_static start_time="1" length_sec="5" map_task="hint" width="80" height="80" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
         <texture>ui_highlight</texture>
       </auto_static>
     </main_wnd>
@@ -117,10 +116,10 @@
     <grab_input>1</grab_input>
     <pause_state>off</pause_state>
     <main_wnd>
-      <auto_static start_time="0" length_sec="9" x="829" y="355" width="60" height="60" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+      <auto_static start_time="0" length_sec="9" x="743" y="351" width="60" height="60" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
         <texture>ui_highlight</texture>
       </auto_static>
-      <auto_static start_time="0" length_sec="9" x="533" y="470" width="60" height="60" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
+      <auto_static start_time="0" length_sec="9" x="535" y="462" width="60" height="60" stretch="1" light_anim="tutor_rad_sign_clr" light_anim_cyclic="1" la_alpha="0" la_texture="1" xform_anim="tutor_rad_sign_xform" xform_anim_cyclic="1" alignment="c">
         <texture>ui_highlight</texture>
       </auto_static>
     </main_wnd>
