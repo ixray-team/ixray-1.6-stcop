@@ -107,6 +107,51 @@ function run_tutorial_if_newbie(actor, npc, p)
 	end
 end
 
+function yan_recover_scientist_bunker_path(actor, npc)
+	local storage = db.storage[npc:id()]
+	local walker = storage.walker
+	local entry = patrol(walker.path_walk):point(0)
+	local position = npc:position()
+	local distance = position:distance_to_sqr(entry)
+	if distance <= 0.13 or distance > 9 then
+		walker.bunker_path_sample = nil
+		return
+	end
+
+	local now = time_global()
+	local sample = walker.bunker_path_sample
+	if not sample or sample.activation_time ~= storage.activation_time then
+		walker.bunker_path_sample = { position = position, time = now, activation_time = storage.activation_time }
+		return
+	end
+	if now - sample.time < 2000 then
+		return
+	end
+
+	local stalled = position:distance_to_sqr(sample.position) < 0.04
+	sample.position = position
+	sample.time = now
+	if not stalled then
+		sample.retried = nil
+		return
+	end
+	if not sample.retried then
+		npc:patrol_path_make_inactual()
+		storage.move_mgr:continue()
+		sample.retried = true
+		return
+	end
+
+	-- Resume at the first waypoint and let the next waypoint open the inner door.
+	if actor:position():distance_to_sqr(entry) > 1 then
+		npc:set_npc_position(entry)
+		npc:patrol_path_make_inactual()
+		storage.move_mgr:continue()
+		walker.bunker_path_sample = nil
+	end
+end
+
+
 function teleport_actor(actor, npc, p)
 	local point = patrol(p[1])
 	local look = patrol(p[2])

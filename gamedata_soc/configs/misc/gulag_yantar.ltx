@@ -285,6 +285,7 @@ wounded = wounded@ignore_scientist
 path_walk = door_1_walk
 combat_ignore_cond = always
 on_signal = door_2_open | %-yan_scientist_door_1_open +yan_scientist_door_2_open -yan_scientist_gulag_state_2 +yan_scientist_gulag_state_3%
+on_timer = 2000 | {+yan_scientist_door_1_open -yan_scientist_door_2_open} %=yan_recover_scientist_bunker_path%
 danger = danger_condition@1
 def_state_moving1 = walk
 def_state_moving2 = walk
