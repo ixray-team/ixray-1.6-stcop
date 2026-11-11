@@ -772,6 +772,7 @@ void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 			return;
 #else
 			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", path);
+			return;
 #endif
 		}
 	}
