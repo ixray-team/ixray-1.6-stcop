@@ -23,7 +23,6 @@ Texture2D s_reactive : register(t26);
 
 //Settings...
 #define TAA_BLEND_WEIGHT 0.9 //Blend weight
-#define TAA_HISTORY_SHARPNESS 0.5 //Sharpness factor for history filtering
 #define TAA_REACTIVE_BLEND_WEIGHT 0.4
 
 //don't touch it unless you KNOW what you're doing. 
@@ -50,23 +49,32 @@ static const int2 offset_3x3[9] =
 	int2(1, 1),
 };
 
-//From CoD presentation
-float3 SMAABicubicFilter(
-	float3 current_top,
-	float3 current_bottom,
-	float3 current_left,
-	float3 current_right,
-	float3 current_center,
-	float3 previous_center,
-	float2 f)
+// Catmull-Rom history in five bilinear taps, the corners are dropped (Jimenez, Filmic SMAA, SIGGRAPH 2016).
+// A single bilinear tap blurs the history a little more every frame the image moves by a fraction of a pixel
+float3 history_catmull_rom(float2 texcoord)
 {
-	float2 w = 0.8 * TAA_HISTORY_SHARPNESS * (f * f - f); //hardcoded sharpness, refer to slides
-	float4 color = 
-		float4(lerp(current_left, current_right, f.x), 1.0) * w.x +
-		float4(lerp(current_top, current_bottom, f.y), 1.0) * w.y;
+	float2 position = texcoord * scaled_screen_res.xy;
+	float2 center = floor(position - 0.5) + 0.5;
+	float2 f = position - center;
 
-	color += float4((1.0 + color.w) * previous_center - color.w * current_center, 1.0);
-	return color.xyz / color.w;
+	float2 w0 = f * (-0.5 + f * (1.0 - 0.5 * f));
+	float2 w1 = 1.0 + f * f * (-2.5 + 1.5 * f);
+	float2 w2 = f * (0.5 + f * (2.0 - 1.5 * f));
+	float2 w3 = f * f * (-0.5 + 0.5 * f);
+	float2 w12 = w1 + w2;
+
+	float2 tc0 = (center - 1.0) * scaled_screen_res.zw;
+	float2 tc12 = (center + w2 / w12) * scaled_screen_res.zw;
+	float2 tc3 = (center + 2.0) * scaled_screen_res.zw;
+
+	float4 color =
+		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc12.x, tc0.y), 0).xyz), 1.0) * (w12.x * w0.y) +
+		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc0.x, tc12.y), 0).xyz), 1.0) * (w0.x * w12.y) +
+		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, tc12, 0).xyz), 1.0) * (w12.x * w12.y) +
+		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc3.x, tc12.y), 0).xyz), 1.0) * (w3.x * w12.y) +
+		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc12.x, tc3.y), 0).xyz), 1.0) * (w12.x * w3.y);
+
+	return max(color.xyz / color.w, 0.0);
 }
 
 //Cheapest way to get 3x3 neighborhood of single channel texture
@@ -205,10 +213,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 		return float4(Lottes_Tonemap_Inverse(c_3x3[4]), 0.0);
 
 	//Fetch previous frame
-	float3 p_4 = Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, reprojected_tc, 0).xyz);
-
-	//Spatio-temporal bicubic filter
-	p_4 = SMAABicubicFilter(c_3x3[1], c_3x3[7], c_3x3[3], c_3x3[5], c_3x3[4], p_4, frac(reprojected_tc * scaled_screen_res.xy - 0.5));
+	float3 p_4 = history_catmull_rom(reprojected_tc);
 
 	float reactive = s_reactive[I.hpos.xy].x;
 
