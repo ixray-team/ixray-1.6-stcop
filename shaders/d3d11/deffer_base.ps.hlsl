@@ -124,6 +124,15 @@ void main(p_bumped_new I,
 
 #if defined(USE_TREEWAVE) || defined(USE_AREF)
 	M.MaterialID = FOLIAGE_ID;
+	#ifndef USE_LEGACY_LIGHT
+		// The G-buffer has no spare bit: bit 0 of the stored SSS marks detail objects, sun_contact_shadows skips other foliage.
+		// FIX_CULL_NORMAL is defined for the detail blender only
+		#ifdef FIX_CULL_NORMAL
+			M.SSS = (floor(saturate(M.SSS) * 127.0f) * 2.0f + 1.0f) / 255.0f;
+		#else
+			M.SSS = floor(saturate(M.SSS) * 127.0f) * 2.0f / 255.0f;
+		#endif
+	#endif
 #elif defined(FORWARD_LIGHT)
 	M.MaterialID = OBJECT_ID;
 #else

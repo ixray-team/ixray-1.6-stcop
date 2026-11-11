@@ -24,6 +24,12 @@ float main(VSOutputFullscreen I) : SV_Target
 	float nol = -dot(N, Ldynamic_dir.xyz);
 
 	bool foliage = uint(normal.w * MAX_ID) == FOLIAGE_ID;
+#ifndef USE_LEGACY_LIGHT
+	// Trees and other alpha-tested foliage get no contact shadows, details do (see the SSS bit in deffer_base)
+	if (foliage && !(uint(s_surface.Load(int3(I.hpos.xy, 0)).w * 255.0f + 0.5f) & 1)) {
+		return 1.0f;
+	}
+#endif
 	if (foliage) {
 		N *= sign(nol);
 		nol = abs(nol);
