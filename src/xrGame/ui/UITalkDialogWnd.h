@@ -68,7 +68,7 @@ public:
 
 	bool				swapCharacterNames = false;
 
-	void				AddQuestion			(const char* str, const char* value, int number, SPhraseInfo &phInfo);
+	void				AddQuestion			(const char* str, const char* value, const SPhraseInfo& phInfo);
 	void				AddAnswer			(const char* SpeakerName, const char* str, bool bActor);
 	void				AddIconedAnswer		(const char* caption, const char* text, const char* texture_name, const char* templ_name);
 	void				AddIconedAnswer		(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name);

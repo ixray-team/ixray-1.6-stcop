@@ -168,7 +168,7 @@ void CUITalkWnd::UpdateQuestions()
 				phInfo.bUseIconLtx = (phrase_dialog->GetPhrase("0"))->GetIconUsingLTX();
 				phInfo.bFinalizer = (phrase_dialog->GetPhrase("0"))->IsFinalizer();
 
-				AddQuestion(phrase_dialog->DialogCaption(), phrase_dialog->GetDialogID(), i, phInfo);
+				AddQuestion(phrase_dialog->DialogCaption(), phrase_dialog->GetDialogID(), phInfo);
 			}
 		}
 	}
@@ -186,17 +186,16 @@ void CUITalkWnd::UpdateQuestions()
 			//выбор доступных фраз из активного диалога
 			if( m_pCurrentDialog && !m_pCurrentDialog->allIsDummy() )
 			{			
-				int number = 0;
 				for(PHRASE_VECTOR::const_iterator   it = m_pCurrentDialog->PhraseList().begin();
 					it != m_pCurrentDialog->PhraseList().end();
-					++it, ++number)
+					++it)
 				{
 					SPhraseInfo phInfo;
 					CPhrase* phrase = *it;
 					phInfo.bFinalizer = phrase->IsFinalizer();
 					phInfo.sIconName = phrase->GetIconName();
 					phInfo.bUseIconLtx = phrase->GetIconUsingLTX();
-					AddQuestion(m_pCurrentDialog->GetPhraseText(phrase->GetID() ), phrase->GetID(), number, phInfo);
+					AddQuestion(m_pCurrentDialog->GetPhraseText(phrase->GetID() ), phrase->GetID(), phInfo);
 				}
 			}
 			else
@@ -450,12 +449,12 @@ void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 	if(m_pCurrentDialog->IsFinished()) ToTopicMode();
 }
 
-void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, int number, SPhraseInfo phInfo)
+void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value, SPhraseInfo phInfo)
 {
 	if(text.size() == 0)
 		return;
 
-	UITalkDialogWnd->AddQuestion(text.c_str(), value.c_str(), number, phInfo);
+	UITalkDialogWnd->AddQuestion(text.c_str(), value.c_str(), phInfo);
 }
 
 void CUITalkWnd::AddAnswer(const shared_str& text, const char* SpeakerName)

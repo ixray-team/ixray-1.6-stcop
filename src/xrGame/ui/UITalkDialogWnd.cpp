@@ -246,24 +246,24 @@ void CUITalkDialogWnd::ClearQuestions()
 }
 
 
-void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, int number, SPhraseInfo &phInfo)
+void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, const SPhraseInfo& phInfo)
 {
 	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
 	itm->Init						(value, str, phInfo.bFinalizer);
-	++number; //zero-based index
+	const int Number = static_cast<int>(UIQuestionsList->Items().size()) + 1;
 
 	string16 buff;
-	xr_sprintf(buff, "%d.", number);
+	xr_sprintf(buff, "%d.", Number);
 	float x_offset = 0.f;
 	if (itm->m_num_text)
 		itm->m_num_text->SetText(buff);
-	if (number > 9)
+	if (Number > 9)
 	{
 		x_offset += itm->m_fOffset;
 	}
-	if (number < 10)
+	if (Number <= 9)
 	{
-		itm->m_text->SetAccelerator(SDL_SCANCODE_Z + number, 0);
+		itm->m_text->SetAccelerator(SDL_SCANCODE_1 + (Number - 1), 0);
 	}
 	if (phInfo.bFinalizer)
 	{

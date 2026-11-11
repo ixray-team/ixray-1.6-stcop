@@ -63,7 +63,7 @@ protected:
 	void				SayPhrase				(const shared_str& phrase_id);
 
 public:
-	void				AddQuestion				(const shared_str& text, const shared_str& id, int number, SPhraseInfo phInfo);
+	void				AddQuestion				(const shared_str& text, const shared_str& id, SPhraseInfo phInfo);
 	void				AddAnswer				(const shared_str& text, const char* SpeakerName);
 	bool				b_disable_break;
 	CUITalkDialogWnd*	UITalkDialogWnd;
