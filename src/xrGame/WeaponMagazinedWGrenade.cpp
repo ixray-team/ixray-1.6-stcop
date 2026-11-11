@@ -657,29 +657,30 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 	
 	d.normalize().mul(CRocketLauncher::m_fLaunchSpeed);
 
-	VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
-	CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
-	
-	CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
-	if (!IsGameTypeSingle() && !pGrenade)
+	CCustomRocket* Rocket = getCurrentRocket();
+	CExplosiveRocket* pGrenade = Rocket ? Rocket->cast_explosive_rocket() : nullptr;
+	if (!pGrenade && OnServer() && !IsGameTypeSingle() && AmmoType.MagazineType < m_ammoTypes.size())
 	{
-		if (m_ammoTypes.size() > AmmoType.MagazineType && pSettings->line_exist(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name"))
+		const char* AmmoSection = m_ammoTypes[AmmoType.MagazineType].c_str();
+		if (pSettings->line_exist(AmmoSection, "fake_grenade_name"))
 		{
-			shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
-			if (fake_grenade_name.size())
+			const char* RocketSection = pSettings->r_string(AmmoSection, "fake_grenade_name");
+			if (RocketSection && *RocketSection)
 			{
-				CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
-				pGrenade = getCurrentRocket() ? getCurrentRocket()->cast_explosive_rocket() : nullptr;
+				CRocketLauncher::SpawnRocket(RocketSection, this);
+				Rocket = getCurrentRocket();
+				pGrenade = Rocket ? Rocket->cast_explosive_rocket() : nullptr;
 			}
 		}
-	
-		if (!pGrenade)
-		{
-			return;
-		}
 	}
-	
-	VERIFY(pGrenade);
+
+	if (!pGrenade)
+	{
+		return;
+	}
+
+	VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::state_Fire. Invalid launch_matrix!");
+	CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
 	pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
 	
 	if (Local() && OnServer())
@@ -691,7 +692,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 	
 		NET_Packet P;
 		u_EventGen(P, GE_LAUNCH_ROCKET, ID());
-		P << getCurrentRocket()->ID();
+		P << Rocket->ID();
 		u_EventSend(P);
 	}
 }
