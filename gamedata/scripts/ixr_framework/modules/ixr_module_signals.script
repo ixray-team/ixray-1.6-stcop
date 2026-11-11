@@ -174,6 +174,19 @@ end
 -- #######################################
 -- #	 	 IX-Ray INTERCEPTS 	  	 	 #
 -- #######################################
+function ixr_signals.load_core_intercepts()
+	IXRLogEmptyLine()
+	IXRLog("[IXR SIGNALS] LOAD IXR CORE INTERCEPT SETTINGS")
+	IXRLogEmptyLine()
+
+	--// IXR сore
+	ixr_signals.add_intercept("save_file_loaded",                     	{"dir_path_string", "file_name_string"})
+	ixr_signals.add_intercept("save_file_created",                		{"dir_path_string", "file_name_string"})
+	ixr_signals.add_intercept("new_game_created",                       {"dir_path_string", "file_name_string"})
+	ixr_signals.add_intercept("actor_on_spawn",                   		{})
+	ixr_signals.add_intercept("on_frame",                   			{})
+end
+
 function ixr_signals.load_addons_intercepts()
 	IXRLogEmptyLine()
 	IXRLog("[IXR SIGNALS] LOAD IXR ADDONS INTERCEPT SETTINGS")
@@ -183,11 +196,6 @@ function ixr_signals.load_addons_intercepts()
 	ixr_signals.add_intercept("update",                          		{"delta_number"}) -- actor
 	ixr_signals.add_intercept("load",                            		{"net_packet"}) -- actor
 	ixr_signals.add_intercept("save",                            		{"net_packet"}) -- actor
-	
-	ixr_signals.add_intercept("save_file_loaded",                     	{"dir_path_string", "file_name_string"})
-	ixr_signals.add_intercept("save_file_created",                		{"dir_path_string", "file_name_string"})
-	ixr_signals.add_intercept("new_game_created",                       {"dir_path_string", "file_name_string"})
-	ixr_signals.add_intercept("actor_on_spawn",                   		{})
 end
 
 
@@ -195,8 +203,6 @@ end
 -- #	 	 DEFAULT INTERCEPTS 	  	 #
 -- #######################################
 function ixr_signals.load_default_intercepts()
-	ixr_signals.load_addons_intercepts()
-	
 	IXRLogEmptyLine()
 	IXRLog("[IXR SIGNALS] LOAD DEFAULT SETTINGS")
 	IXRLogEmptyLine()
@@ -407,8 +413,10 @@ function ixr_signals.init()
 	
 	IXRLog("[IXR SIGNALS] PREPARE INIT", true)
 	
+	ixr_signals.load_core_intercepts()
+	ixr_signals.load_addons_intercepts()
+	
 	if __ixr_override_signals_intercepts then 
-		ixr_signals.load_addons_intercepts()
 		IXRLogEmptyLine()
 		IXRLog("[IXR SIGNALS] LOAD OVERRIDED SETTINGS")
 		IXRLogEmptyLine()

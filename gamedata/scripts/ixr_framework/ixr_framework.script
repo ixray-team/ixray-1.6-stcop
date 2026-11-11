@@ -147,6 +147,7 @@ Description: on frame ticks handler
 Return: (void)
 --]]
 function ixr_framework.on_frame()
+	SendScriptCallback("on_frame", device().time_delta)
 	if ixr_logs then ixr_logs.update() end
 	if ixr_tracy_profiler then ixr_tracy_profiler.on_framework_frame_update() end
 end
