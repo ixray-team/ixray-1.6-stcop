@@ -743,3 +743,10 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - `RestoreEngineAndLights()` сбрасывает `m_engine_drive`, `m_engine_state_scale`, `m_idle_state_scale`, `m_engine_rpm_scale` и `m_engine_idle_volume_scale` при каждом восстановлении работающего двигателя, а не только когда `b_engine_on` ещё был false. Иначе при раннем `SyncRead`/повторном restore idle-слой мог остаться приглушённым.
 - `SCarSound::Init()` при уже включённом двигателе сразу вызывает `Drive()`, а `SCarSound::Start()` гасит залипший `snd_engine_stop`. Это закрывает гонку, когда `Init()`/`Start()` приходят после восстановления состояния.
 - Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон save/load с работающим двигателем и с машиной, загруженной в выключенном состоянии.
+
+### Этап 66: shock/chemical burn иммунитеты машин равны burn
+
+- Во всех активных конфигах машин (`H:\IXRAY\ixr_addons\carpack\configs\models\vehicles\*.ltx`, кроме `veh_btr_u_01.ltx` и папок `backup*`) значения `shock_immunity` и `chemical_burn_immunity` выставлены равными `burn_immunity` этой же машины. Затронуто 53 файла; `veh_zaz_u_02.ltx` уже имел равные значения.
+- Базовый `veh_base.ltx` обновлён с `shock/chemical = 0.07` на `0.04`, чтобы машины без собственного override тоже получили равенство.
+- `veh_btr_u_01.ltx` оставлен исключением: `burn = 0.5`, `shock = 0.0`, `chemical = 0.0`.
+- Проверка: скриптовая проверка всех активных файлов — расхождение осталось только у `veh_btr_u_01.ltx`; autotest со спавном `veh_zaz968` — `RESULT: PASS`, `errors=0`. Резервная копия: `H:\BACKUP\carpack_vehicles_immunities_2026-11-12_00-22-56.zip`.
