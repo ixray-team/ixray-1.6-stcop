@@ -165,6 +165,20 @@ bool obstacles_query::remove_objects	(const Fvector &position, const float &radi
 	return						(crc_before != crc());
 }
 
+void obstacles_query::RemoveInactiveStaticObstacles()
+{
+	const auto End = m_obstacles.end();
+	const auto Removed = std::remove_if(m_obstacles.begin(), End, [](const auto& Entry)
+	{
+		return !Entry.first->is_ai_obstacle();
+	});
+	if (Removed != End)
+	{
+		m_obstacles.erase(Removed, End);
+		m_actual = false;
+	}
+}
+
 void obstacles_query::remove_links		(CObject *object)
 {
 	OBSTACLES::iterator			I = m_obstacles.find(object->cast_game_object());
@@ -172,4 +186,5 @@ void obstacles_query::remove_links		(CObject *object)
 		return;
 
 	m_obstacles.erase			(I);
+	m_actual					= false;
 }

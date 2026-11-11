@@ -17,7 +17,7 @@ private:
 	typedef CRestrictedObject	inherited;
 
 private:
-	const obstacles_query		&m_static_query;
+	obstacles_query				&m_static_query;
 	const obstacles_query		&m_dynamic_query;
 
 private:
@@ -29,7 +29,7 @@ public:
 	CRestrictedObjectObstacle(const CRestrictedObjectObstacle& other) = delete;
 	CRestrictedObjectObstacle& operator=(const CRestrictedObjectObstacle& other) = delete;
 
-								CRestrictedObjectObstacle	(CCreature *object, const obstacles_query &static_query, const obstacles_query &dynamic_query);
+								CRestrictedObjectObstacle	(CCreature *object, obstacles_query &static_query, const obstacles_query &dynamic_query);
 	virtual void				add_border					(u32 start_vertex_id, float radius) const override;
 	virtual void				add_border					(const Fvector &start_position, const Fvector &dest_position) const override;
 	virtual void				add_border					(u32 start_vertex_id, u32 dest_vertex_id) const override;

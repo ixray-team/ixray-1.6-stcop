@@ -23,6 +23,8 @@ class IPHCharacter
 public:
 	virtual bool Exists() const = 0;
 	virtual bool IsActorCharacter() = 0;
+	virtual u16 RecentContact() const { return u16(-1); }
+	virtual void AllowPassage(u16) {}
 
 	virtual void Create(const Fvector& Sizes) = 0;
 	virtual void Destroy() = 0;

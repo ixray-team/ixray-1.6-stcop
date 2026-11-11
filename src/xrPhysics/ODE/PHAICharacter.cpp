@@ -7,6 +7,7 @@
 #include "tri-colliderknoopc/__aabb_tri.h"
 
 #include "PHAICharacter.h"
+#include "../IPhysicsShellHolder.h"
 #include "../../xrEngine/device.h"
 
 #ifdef DEBUG
@@ -22,6 +23,30 @@ void CPHAICharacter::Create(dVector3 sizes)
 {
 	inherited::Create(sizes);
 	m_forced_physics_control=false;
+	ContactObjectId = u16(-1);
+	PassageObjectId = u16(-1);
+}
+
+u16 CPHAICharacter::RecentContact() const
+{
+	constexpr u32 ContactLifetime = 250;
+	return Device.dwTimeGlobal - ContactTime < ContactLifetime ? ContactObjectId : u16(-1);
+}
+
+void CPHAICharacter::AllowPassage(u16 ObjectId)
+{
+	if (ObjectId == RecentContact())
+	{
+		PassageObjectId = ObjectId;
+		PassageTime = Device.dwTimeGlobal;
+	}
+}
+
+bool CPHAICharacter::AllowsPassage(const CPHAICharacter& Other) const
+{
+	constexpr u32 PassageDuration = 1200;
+	return PassageObjectId != u16(-1) && Device.dwTimeGlobal - PassageTime < PassageDuration &&
+		Other.m_phys_ref_object && Other.m_phys_ref_object->ObjectID() == PassageObjectId;
 }
 
 bool CPHAICharacter::TryPosition(Fvector pos, bool exact_state)
@@ -125,6 +150,16 @@ void CPHAICharacter::InitContact(dContact* c, bool& do_collide, u16 material_idx
 	{
 		b_on_object = true;
 		b_valide_wall_contact = false;
+		auto* Other = static_cast<CPHCharacter*>(D1->ph_object == this ? D2->ph_object : D1->ph_object);
+		if (do_collide && Other->CastAICharacter())
+		{
+			auto* Holder = Other->PhysicsRefObject();
+			if (Holder && Holder->IsStalker())
+			{
+				ContactObjectId = Holder->ObjectID();
+				ContactTime = Device.dwTimeGlobal;
+			}
+		}
 	}
 #ifdef DEBUG
 	if (debug_output().ph_dbg_draw_mask().test(phDbgNeverUseAiPhMove))do_collide = false;

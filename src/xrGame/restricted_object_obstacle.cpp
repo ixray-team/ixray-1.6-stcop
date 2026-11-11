@@ -14,7 +14,7 @@
 
 typedef obstacles_query::AREA	AREA;
 
-CRestrictedObjectObstacle::CRestrictedObjectObstacle(CCreature *object, const obstacles_query &static_query, const obstacles_query &dynamic_query) : 
+CRestrictedObjectObstacle::CRestrictedObjectObstacle(CCreature *object, obstacles_query &static_query, const obstacles_query &dynamic_query) :
 	inherited				(object),
 	m_static_query			(static_query),
 	m_dynamic_query			(dynamic_query)
@@ -36,6 +36,7 @@ void CRestrictedObjectObstacle::apply				(const obstacles_query &query, const u3
 
 void CRestrictedObjectObstacle::add_border			(u32 start_vertex_id, float radius) const
 {
+	m_static_query.RemoveInactiveStaticObstacles();
 	inherited::add_border	(start_vertex_id,radius);
 
 	apply					(m_static_query,start_vertex_id);
@@ -60,6 +61,7 @@ void CRestrictedObjectObstacle::apply				(const obstacles_query &query, const Fv
 
 void CRestrictedObjectObstacle::add_border			(const Fvector &start_position, const Fvector &dest_position) const
 {
+	m_static_query.RemoveInactiveStaticObstacles();
 	inherited::add_border	(start_position,dest_position);
 
 	apply					(m_static_query,start_position,dest_position);
@@ -84,6 +86,7 @@ void CRestrictedObjectObstacle::apply				(const obstacles_query &query, const u3
 
 void CRestrictedObjectObstacle::add_border			(u32 start_vertex_id, u32 dest_vertex_id) const
 {
+	m_static_query.RemoveInactiveStaticObstacles();
 	inherited::add_border	(start_vertex_id,dest_vertex_id);
 
 	apply					(m_static_query,start_vertex_id,dest_vertex_id);

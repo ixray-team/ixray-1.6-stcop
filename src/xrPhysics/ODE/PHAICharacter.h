@@ -6,8 +6,15 @@ class CPHAICharacter :
 	using inherited = CPHSimpleCharacter;
 
 	bool	m_forced_physics_control;
+	u16 ContactObjectId = u16(-1);
+	u32 ContactTime = 0;
+	u16 PassageObjectId = u16(-1);
+	u32 PassageTime = 0;
 public:
 	CPHAICharacter();
+	u16 RecentContact() const override;
+	void AllowPassage(u16 ObjectId) override;
+	bool AllowsPassage(const CPHAICharacter& Other) const;
 	virtual	CPHAICharacter* CastAICharacter() override { return this; }
 	virtual	void		ValidateWalkOn() override;
 	virtual	bool		TryPosition(Fvector pos, bool exact_state) override;

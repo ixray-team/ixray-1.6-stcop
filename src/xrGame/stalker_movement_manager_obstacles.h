@@ -50,6 +50,8 @@ private:
 			void				remove_border				(const obstacles_query &query);
 			void				move_along_path_no_changes	();
 			void				rebuild_path				();
+			bool				TryBuildDetour(const CAI_Stalker& Blocker);
+			void				RecoverBlockedPath(CPHMovementControl& MovementControl);
 			void				process_query_impl			();
 			void				process_query				(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta);
 			void				move_along_path_impl		(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta);
@@ -96,6 +98,10 @@ private:
 	u32							m_last_dest_vertex_id;
 	u32							m_last_fail_time;
 	xr_vector<u32>				m_temp_path;
+	Fvector						ProgressPosition{};
+	u32							ProgressCheckTime = 0;
+	u32							LastPassageTime = 0;
+	u16							LastDetourBlockerId = u16(-1);
 }; // class stalker_movement_manager_obstacles
 
 #include "stalker_movement_manager_obstacles_inline.h"

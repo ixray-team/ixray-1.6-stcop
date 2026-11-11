@@ -21,6 +21,9 @@ const CAI_Stalker &static_obstacles_avoider::object	() const
 
 void static_obstacles_avoider::query						(const Fvector &start_position, const Fvector &dest_position)
 {
+	m_active_query.RemoveInactiveStaticObstacles();
+	m_inactive_query.RemoveInactiveStaticObstacles();
+
 	ai().moving_objects().query_action_static(
 		object().get_moving_object(),
 		start_position,
@@ -32,6 +35,9 @@ void static_obstacles_avoider::query						(const Fvector &start_position, const 
 
 void static_obstacles_avoider::query						()
 {
+	m_active_query.RemoveInactiveStaticObstacles();
+	m_inactive_query.RemoveInactiveStaticObstacles();
+
 	ai().moving_objects().query_action_static(
 		object().get_moving_object()		
 	);
