@@ -689,3 +689,31 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - В `CPHCollisionDamageReceiver` добавлен виртуальный `CollisionHitStartsCooldown()`: кулдаун стартует только для удара, который действительно нанесёт урон. `CCar` отклоняет колеса, уже мёртвую/уничтоженную машину, `rs_car_god` и машины с `strike_immunity = 0`.
 - Отметка времени кулдауна теперь ставится после `u_EventSend()`, а не до отправки. Колесо больше не может «съесть» следующим ударом кузова.
 - Проверка: drop-тест Niva с 20 м при временно сниженном пороге `0.001` — при `strike_immunity = 0.012` 4 принятых удара, здоровье `1.0 → 0.9939`; при `strike_immunity = 0.0` — 3023 удара, кулдаун не запускался ни разу, здоровье осталось `1.0`. Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 58: огонь не глушит двигатель, аномалии реагируют на кузов
+
+- `CMosquitoBald::Affect()` больше не вызывает `CCar::HitEngine()` для типов урона `burn`, `light_burn`, `chemical_burn`. Костёр и огневые/кислотные аномалии по-прежнему наносят урон кузову, но не снижают `m_current_engine_power`/RPM и не глушат двигатель. Остальные типы сохраняют прежний урон двигателю.
+- Для машины расстояние до аномалии считается от ближайшей точки кузова `CCar::GetNearestPoint(zoneCenter)`, а не как `Position() - Radius()`. Это убирает срабатывание от большого bounding sphere машины.
+- `CAnomalyZone::feel_touch_contact()` для машин проверяет пересечение OBB кузова (`BoundingBox()` + `XFORM()`) с реальными shape-формами зоны (сфера/бокс) вместо `CCF_Shape::Contact()`, который использовал bounding sphere объекта. Зона регистрирует машину только при касании кузова; `CMosquitoBald::UpdateSecondaryHit()` использует то же расстояние до ближайшей точки кузова.
+- Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: костёр/термальная аномалия не меняют обороты и не глушат двигатель; аномалия начинает действовать только при касании кузова; шоковые/гравитационные аномалии и удары мутантов не изменились.
+
+### Этап 59: collision-урон только у гравитационных аномалий
+
+- `CMosquitoBald::Affect()` больше не принудительно переводит урон по машине в `eHitTypeStrike`. Теперь fire/acid/shock/explosion-аномалии передают машине свой штатный тип урона (`light_burn`, `chemical_burn`, `shock`, `explosion` и т.д.), и `CCar::Hit()` применяет соответствующую иммунность. Это не collision-урон.
+- Масс-масштабирование `MassScale * hit_anomaly_scale` осталось только для аномалий, у которых `hit_type = strike`: гравитационные секции `zone_mine_gravitational` (`CMincer` и `ZS_MBALD`-секция) и другие strike-зоны. У `zone_teleport` тоже `strike`, но `max_start_power = 0`, поэтому урона по машине он не наносит.
+- Огонь по-прежнему не вызывает `HitEngine()`; правило из этапа 58 сохранено.
+- Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: костёр/термальная/кислотная/электрическая аномалии не наносят strike-урон машине; гравитационные аномалии и гравитационные мины продолжают наносить collision-урон.
+
+### Этап 60: звуки столкновений машины из vehicles.ltx
+
+- В `[m_car_base]` (`H:\IXRAY\ixr_addons\carpack\configs\misc\vehicles.ltx`) добавлен ключ `collision_sounds = car_collision_sounds`. Секция `[car_collision_sounds]` задаёт пары материалов `материал машины|материал препятствия` и списки звуков `material\car\collide\...`.
+- `CCar::LoadCollisionSounds()` читает эту секцию в `CCar::ParseDefinitions()` и заменяет `SGameMtlPair::CollideSounds` только для явно перечисленных пар. Пустое значение или отсутствующая пара оставляют звуки из `gamemtl.xr`. Секция загружается один раз на весь уровень.
+- Пары с `objects\car_wheel` пропускаются: колёса используют собственную систему звуков шин.
+- Для столкновений с динамическими объектами звук теперь выбирается в `CCar::CarBodySurfaceCallback()` по тем же material pair из `GMLib`: учитывается относительная скорость по нормали контакта (порог `1 м/с`) и кулдаун `150 мс`. Контакты собственных колёс машины пропускаются по `WheellCollisionCallback`; пары, не переопределённые в `vehicles.ltx`, берут `CollideSounds` из `gamemtl.xr`.
+- Проверка: `veh_zaz968`, лог `* [veh_zaz968] collision_sounds: overridden 22 material pairs from 'car_collision_sounds'`; два `veh_zaz968` при падении дали динамические контакты `objects\car_cabine | objects\car_cabine` (скорость `4.49 м/с`) и `objects\car_cabine | objects\car_wheel` (`1.10`/`1.32 м/с`). Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: удары кузовом о бетон/асфальт/металл/дерево и динамические объекты используют `material\car\collide`/`gamemtl.xr`; звуки шин не изменились. Резервная копия `vehicles.ltx`: `H:\BACKUP\carpack_vehicles_2026-11-11_21-40-32.zip`.
+
+### Этап 61: looped CollideParticles не роняют игру
+
+- `CCarParticlesPlayCall` и `CPHParticlesPlayCall` создавали частицы через `Particles::Details::Create(ps_name, true)`. Для `vehiclefx\generic_scratch_01` (пара `objects\car_wheel | objects\large_furniture`) система оказалась looped, и `CParticlesObject` падал с `Can't set auto-remove flag for looped particle system`.
+- Добавлен `Particles::Details::CreateOneShot()`: создаёт объект без auto-remove, затем включает auto-remove; looped-системам задаётся искусственная жизнь `1000 мс`, чтобы они не висели вечно. Оба collision-колбэка переведены на него.
+- Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: сбивание крупных объектов машиной (`objects\large_furniture`) не роняет игру, частица `vehiclefx\generic_scratch_01` проигрывается и удаляется.

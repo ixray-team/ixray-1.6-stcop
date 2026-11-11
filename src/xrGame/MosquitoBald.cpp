@@ -5,6 +5,37 @@
 #include "Car.h"
 #include "../xrEngine/xr_collide_form.h"
 
+namespace
+{
+	// Fire and burn anomalies damage the body but must not stall the engine.
+	// Other hit types keep the original engine hit behaviour.
+	bool IsFireOrBurnHitType(ALife::EHitType HitType)
+	{
+		switch (HitType)
+		{
+		case ALife::eHitTypeBurn:
+		case ALife::eHitTypeLightBurn:
+		case ALife::eHitTypeChemicalBurn:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	// The car's bounding sphere is much larger than its body, so the old
+	// Position() - Radius() distance made anomalies react from several metres
+	// away. Use the nearest point of the car body box instead.
+	float ObjectDistanceToZone(CPhysicsShellHolder* Object, const Fvector& ZoneCenter)
+	{
+		if (CCar* Car = Object->cast_car())
+		{
+			return Car->GetNearestPoint(ZoneCenter).distance_to(ZoneCenter);
+		}
+
+		return Object->Position().distance_to(ZoneCenter) - Object->Radius();
+	}
+}
+
 CMosquitoBald::CMosquitoBald(void) 
 {
 	m_fHitImpulseScale		= 1.f;
@@ -67,7 +98,7 @@ void CMosquitoBald::Affect(SZoneObjectInfo* O)
 
 	VERIFY(!pGameObject->getDestroy());
 
-	float dist = pGameObject->Position().distance_to(P) - pGameObject->Radius();
+	float dist = ObjectDistanceToZone(pGameObject, P);
 	float power = Power(dist>0.f?dist:0.f, Radius());
 	float impulse = m_fHitImpulseScale*power*pGameObject->GetMass();
 
@@ -80,17 +111,19 @@ void CMosquitoBald::Affect(SZoneObjectInfo* O)
 		{
 			// A non-zero hit_stall_threshold enables the LA anomaly engine hit:
 			// HitEngine lowers current power/RPM and can stop the engine.
-			if (car->HitStallThreshold() != 0.f)
+			if (car->HitStallThreshold() != 0.f && !IsFireOrBurnHitType(hit_type))
 			{
 				car->HitEngine(this, power);
 			}
 
-			// Collision-like body damage. The anomaly force is scaled by the car
-			// mass (1000 kg reference) and hit_anomaly_scale; CCar::Hit applies
-			// the car's strike_immunity on the resulting strike hit.
-			const float MassScale = pGameObject->GetMass() / 1000.f;
-			power *= MassScale * car->HitAnomalyScale();
-			hit_type = ALife::eHitTypeStrike;
+			// Collision-like body damage is reserved for anomalies that use
+			// strike damage (gravity zones). Fire, acid, shock and other zones
+			// keep their own hit type so CCar::Hit applies the matching immunity.
+			if (hit_type == ALife::eHitTypeStrike)
+			{
+				const float MassScale = pGameObject->GetMass() / 1000.f;
+				power *= MassScale * car->HitAnomalyScale();
+			}
 		}
 
 		CreateHit(pGameObject->ID(),ID(),hit_dir,power,0,position_in_bone_space,impulse,hit_type);
@@ -128,7 +161,7 @@ void CMosquitoBald::UpdateSecondaryHit()
 
 			VERIFY(!pGameObject->getDestroy());
 
-			float dist = pGameObject->Position().distance_to(P) - pGameObject->Radius();
+			float dist = ObjectDistanceToZone(pGameObject, P);
 			float power = m_fSecondaryHitPower * RelativePower(dist>0.f?dist:0.f, Radius());
 			if(power<0.0f)
 				return;

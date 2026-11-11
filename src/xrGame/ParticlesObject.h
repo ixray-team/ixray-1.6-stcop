@@ -51,6 +51,9 @@ public:
 namespace Particles::Details
 {
 	xr_shared_ptr<CParticlesObject> Create(const char* p_name, bool bAutoRemove = true, bool remove_on_game_load = true);
+	// Creates an auto-removed particle object even when the effect is looped.
+	// Looped systems have no natural lifetime, so they are given a short one.
+	xr_shared_ptr<CParticlesObject> CreateOneShot(const char* p_name, u32 loop_lifetime = 1000);
 
 	template <class T>
 	static IC void Destroy(T& p)

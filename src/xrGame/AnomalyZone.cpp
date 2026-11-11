@@ -26,10 +26,84 @@
 #include "AnomalyRainCollide.h"
 #include "AnomalyGravity.h"
 #include "AnomalyRandomHudVertexParticles.h"
+#include "Car.h"
 #include "..\xrEngine\Rain.h"
 
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
+
+namespace
+{
+	bool CarBoxIntersectsShape(const CCF_Shape::shape_def& Shape, const Fmatrix& ShapeTransform, const Fmatrix& WorldToCar, const Fbox& CarBox)
+	{
+		if (Shape.type == 0)
+		{
+			Fvector Center;
+			ShapeTransform.transform_tiny(Center, Shape.data.sphere.P);
+			WorldToCar.transform_tiny(Center);
+
+			Fvector Closest;
+			Closest.x = std::clamp(Center.x, CarBox.min.x, CarBox.max.x);
+			Closest.y = std::clamp(Center.y, CarBox.min.y, CarBox.max.y);
+			Closest.z = std::clamp(Center.z, CarBox.min.z, CarBox.max.z);
+
+			return Center.distance_to_sqr(Closest) <= Shape.data.sphere.R * Shape.data.sphere.R;
+		}
+
+		if (Shape.type == 1)
+		{
+			Fmatrix ShapeWorld;
+			ShapeWorld.mul_43(ShapeTransform, Shape.data.box);
+
+			Fmatrix ShapeLocal;
+			ShapeLocal.mul_43(WorldToCar, ShapeWorld);
+
+			const float SizeX = ShapeLocal.i.magnitude();
+			const float SizeY = ShapeLocal.j.magnitude();
+			const float SizeZ = ShapeLocal.k.magnitude();
+			if (SizeX <= EPS || SizeY <= EPS || SizeZ <= EPS)
+			{
+				return true;
+			}
+
+			Fobb Obb;
+			Obb.m_translate.set(ShapeLocal.c);
+			Obb.m_rotate.i.set(ShapeLocal.i).div(SizeX);
+			Obb.m_rotate.j.set(ShapeLocal.j).div(SizeY);
+			Obb.m_rotate.k.set(ShapeLocal.k).div(SizeZ);
+			Obb.m_halfsize.set(SizeX * 0.5f, SizeY * 0.5f, SizeZ * 0.5f);
+
+			return Obb.intersectAABB(CarBox);
+		}
+
+		return true;
+	}
+
+	// CCF_Shape::Contact() tests the car bounding sphere, which is much larger
+	// than the body. Test the car body box instead so an anomaly starts reacting
+	// only when the car actually touches one of its shapes.
+	bool CarContactsZoneShape(const CCar* Car, CCF_Shape* ShapeForm, const Fmatrix& ShapeTransform)
+	{
+		Fbox CarBox = Car->BoundingBox();
+		if (!CarBox.is_valid())
+		{
+			return true;
+		}
+
+		Fmatrix WorldToCar;
+		WorldToCar.invert(Car->XFORM());
+
+		for (const CCF_Shape::shape_def& Shape : ShapeForm->Shapes())
+		{
+			if (CarBoxIntersectsShape(Shape, ShapeTransform, WorldToCar, CarBox))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
 
 CAnomalyZone::CAnomalyZone(void) 
 {
@@ -1064,8 +1138,18 @@ bool CAnomalyZone::feel_touch_contact(CObject* O)
     if (!pGameObject->IsVisibleForZones())
 		return		(false);
 
-	if (!((CCF_Shape*)CFORM())->Contact(O))
+	CCF_Shape* ShapeForm = static_cast<CCF_Shape*>(CFORM());
+	if (CCar* Car = pGameObject->cast_car())
+	{
+		if (!CarContactsZoneShape(Car, ShapeForm, XFORM()))
+		{
+			return	(false);
+		}
+	}
+	else if (!ShapeForm->Contact(O))
+	{
 		return		(false);
+	}
 
 	return			(pGameObject->feel_touch_on_contact(this));
 }

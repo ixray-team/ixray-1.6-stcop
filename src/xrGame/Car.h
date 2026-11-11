@@ -89,7 +89,7 @@ public:
 	}
 	virtual void run()
 	{
-		xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name, true);
+		xr_shared_ptr<CParticlesObject> ps = Particles::Details::CreateOneShot(ps_name);
 		if (ps)
 		{
 			ps->UpdateParent(pos, vel);
@@ -969,6 +969,7 @@ private:
 	float					m_wheels_spin_factor_stop;
 	float					m_wheels_sound_delay;
 	float					m_wheels_sound_timer;
+	u32						m_collision_sound_time;
 	/////////////////////porabola
 	float m_a,m_b,m_c;
 
@@ -1502,6 +1503,8 @@ public:
 	void					LoadTransmissionDefinitions	(CInifile* ini);
 	void					LoadVisualDefinitions	(CInifile* ini);
 	void					LoadSurfaceParams			();
+	void					LoadCollisionSounds		();
+	void					PlayDynamicCollisionSound	(SGameMtl* CarMaterial, SGameMtl* OtherMaterial, const Fvector& Position, float RelativeSpeed);
 	const SSurfaceParams*	FindSurfaceParams			(const SGameMtl* Material) const;
 	static void				ApplyBindPositionAdd		(IKinematics* K, const xr_vector<Fmatrix>& BindGlobals, u16 BoneID, const Fvector& Offset);
 	static void				ApplyBindDirectionAdd		(IKinematics* K, u16 BoneID, const Fvector& Angles);

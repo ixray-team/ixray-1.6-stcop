@@ -290,6 +290,7 @@ CCar::CCar()
 	m_current_rpm_brp_decrease = 1.f;
 	m_wheels_sound_delay = 0.1f;
 	m_wheels_sound_timer = 0.f;
+	m_collision_sound_time = 0;
 	m_nitro = false;
 	m_nitro_power_factor = 2.f;
 	m_nitro_fuel_factor = 2.f;
@@ -1447,8 +1448,25 @@ void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, S
 
 	// The car surface table describes static level surfaces only. Other cars,
 	// characters and dynamic props keep their normal material behaviour.
-	if (cphc.GetObject(!bo1) != nullptr)
+	CPhysicsShellHolder* Other = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(!bo1));
+	if (Other != nullptr)
+	{
+		if (do_colide && Other != Car)
+		{
+			Fvector CarVelocity;
+			Fvector OtherVelocity;
+			Fvector RelativeVelocity;
+			Car->PHGetLinearVell(CarVelocity);
+			Other->PHGetLinearVell(OtherVelocity);
+			RelativeVelocity.sub(CarVelocity, OtherVelocity);
+			const float RelativeSpeed = _abs(RelativeVelocity.dotproduct(cphc.GetNormal()));
+
+			SGameMtl* CarMaterial = bo1 ? material_1 : material_2;
+			SGameMtl* OtherMaterial = bo1 ? material_2 : material_1;
+			Car->PlayDynamicCollisionSound(CarMaterial, OtherMaterial, cphc.GetPosition(), RelativeSpeed);
+		}
 		return;
+	}
 
 	SGameMtl* SurfaceMaterial = bo1 ? material_2 : material_1;
 	if (!SurfaceMaterial)
@@ -3578,6 +3596,7 @@ static void loadcamera(LPCSTR section, CInifile *ini, CCameraBase* cam)
 void CCar::ParseDefinitions()
 {
 	LoadSurfaceParams();
+	LoadCollisionSounds();
 
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
 	CInifile* ini = pKinematics->LL_UserData();
@@ -3640,6 +3659,121 @@ const CCar::SSurfaceParams* CCar::FindSurfaceParams(const SGameMtl* Material) co
 
 	auto It = m_surface_params.find(Material->ID);
 	return It == m_surface_params.end() ? nullptr : &It->second;
+}
+
+void CCar::LoadCollisionSounds()
+{
+	if (g_dedicated_server || !pSettings || !pSettings->line_exist(cNameSect_str(), "collision_sounds"))
+		return;
+
+	const char* SectionName = pSettings->r_string(cNameSect_str(), "collision_sounds");
+	if (SectionName == nullptr || SectionName[0] == '\0')
+		return;
+
+	if (!pSettings->section_exist(SectionName))
+	{
+		Msg("! [%s] collision_sounds section '%s' does not exist", cNameSect_str(), SectionName);
+		return;
+	}
+
+	// The material pairs are global, so load each section only once.
+	static xr_vector<xr_string> LoadedSections;
+	const xr_string Section(SectionName);
+	if (std::find(LoadedSections.begin(), LoadedSections.end(), Section) != LoadedSections.end())
+		return;
+
+	const CInifile::Sect& Config = pSettings->r_section(SectionName);
+	u32 Overridden = 0;
+	for (const CInifile::Item& Item : Config.Data)
+	{
+		const char* Key = Item.first.c_str();
+		const char* Separator = strchr(Key, '|');
+		if (Separator == nullptr || Separator == Key || Separator[1] == '\0')
+		{
+			Msg("! [%s] collision_sounds: invalid pair '%s', expected 'material0|material1'", cNameSect_str(), Key);
+			continue;
+		}
+
+		const char* SoundList = Item.second.c_str();
+		if (SoundList == nullptr || SoundList[0] == '\0')
+		{
+			// An empty value keeps the sounds loaded from gamemtl.xr.
+			continue;
+		}
+
+		const xr_string Material0(Key, Separator - Key);
+		const char* Material1 = Separator + 1;
+
+		// Wheels use their own tire sound system.
+		if (0 == _stricmp(Material0.c_str(), "objects\\car_wheel") || 0 == _stricmp(Material1, "objects\\car_wheel"))
+			continue;
+
+		auto It0 = GMLib.GetMaterialIt(Material0.c_str());
+		auto It1 = GMLib.GetMaterialIt(Material1);
+		if (It0 == GMLib.LastMaterial() || It1 == GMLib.LastMaterial())
+		{
+			Msg("! [%s] collision_sounds: unknown material in pair '%s'", cNameSect_str(), Key);
+			continue;
+		}
+
+		const u16 Index0 = u16(It0 - GMLib.FirstMaterial());
+		const u16 Index1 = u16(It1 - GMLib.FirstMaterial());
+		SGameMtlPair* Pair = GMLib.GetMaterialPair(Index0, Index1);
+		if (Pair == nullptr)
+		{
+			Msg("! [%s] collision_sounds: material pair '%s' is missing in gamemtl.xr", cNameSect_str(), Key);
+			continue;
+		}
+
+		for (ref_sound& Sound : Pair->CollideSounds)
+			Sound.destroy();
+		Pair->CollideSounds.clear();
+
+		const int Count = _GetItemCount(SoundList);
+		Pair->CollideSounds.resize(Count);
+		string128 SoundName;
+		for (int i = 0; i < Count; ++i)
+		{
+			Pair->CollideSounds[i].create(_GetItem(SoundList, i, SoundName), st_Effect, sg_SourceType);
+		}
+		++Overridden;
+	}
+
+	Msg("* [%s] collision_sounds: overridden %u material pairs from '%s'", cNameSect().c_str(), Overridden, SectionName);
+	LoadedSections.push_back(Section);
+}
+
+void CCar::PlayDynamicCollisionSound(SGameMtl* CarMaterial, SGameMtl* OtherMaterial, const Fvector& Position, float RelativeSpeed)
+{
+	if (g_dedicated_server || CarMaterial == nullptr || OtherMaterial == nullptr)
+		return;
+
+	// A resting or slowly pushed prop must not play the impact sound every
+	// physics step. The static collision path uses its own velocity thresholds;
+	// dynamic contacts need a small car-specific one.
+	constexpr float MinRelativeSpeed = 1.f;
+	constexpr u32 SoundCooldownMs = 150;
+
+	if (RelativeSpeed < MinRelativeSpeed || Device.dwTimeGlobal < m_collision_sound_time)
+		return;
+
+	const u16 CarIndex = GMLib.GetMaterialIdx(CarMaterial->ID);
+	const u16 OtherIndex = GMLib.GetMaterialIdx(OtherMaterial->ID);
+	SGameMtlPair* Pair = GMLib.GetMaterialPair(CarIndex, OtherIndex);
+	if (Pair == nullptr || Pair->CollideSounds.empty())
+		return;
+
+	ref_sound* Sound = &Pair->CollideSounds[::Random.randI(Pair->CollideSounds.size())];
+	if (Sound == nullptr || Sound->_p == nullptr)
+		return;
+
+	m_collision_sound_time = Device.dwTimeGlobal + SoundCooldownMs;
+
+	float Volume = RelativeSpeed / 8.f;
+	clamp(Volume, 0.15f, 1.f);
+	float Frequency = ::Random.randF(0.9f, 1.1f);
+	Fvector SoundPosition = Position;
+	Sound->play_no_feedback(nullptr, 0, 0, &SoundPosition, &Volume, &Frequency);
 }
 
 void CCar::LoadExplosionAndDriverDefinitions(CInifile* ini, IKinematics* pKinematics)

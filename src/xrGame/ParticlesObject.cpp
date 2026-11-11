@@ -73,6 +73,21 @@ xr_shared_ptr<CParticlesObject> Particles::Details::Create(const char* p_name, b
 	return Particle;
 }
 
+xr_shared_ptr<CParticlesObject> Particles::Details::CreateOneShot(const char* p_name, u32 loop_lifetime)
+{
+	// The constructor asserts when auto-remove is requested for a looped
+	// system. Create it without that flag first, then enable auto-removal and
+	// give looped systems an artificial lifetime so they cannot leak.
+	xr_shared_ptr<CParticlesObject> Particle = Create(p_name, false);
+	if (Particle)
+	{
+		Particle->m_bAutoRemove = true;
+		if (Particle->IsLooped())
+			Particle->m_iLifeTime = int(loop_lifetime > 0 ? loop_lifetime : 1);
+	}
+	return Particle;
+}
+
 //----------------------------------------------------
 void CParticlesObject::Play(bool bHudMode)
 {
