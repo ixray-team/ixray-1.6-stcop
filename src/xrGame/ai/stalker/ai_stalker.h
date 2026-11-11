@@ -378,6 +378,7 @@ private:
 
 public:
 			bool						can_kill_member			();
+	bool WouldHitFriendly(const Fvector& Position, const Fvector& Direction, float Dispersion);
 			bool						can_kill_enemy			();
 			float						pick_distance			();
 	IC		float						start_pick_distance		() const;

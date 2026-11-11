@@ -100,6 +100,7 @@ protected:
 			void	ApplySilencerKoeffs();
 			void	ResetSilencerKoeffs();
 
+	bool StopForFriendlyFire(const Fvector& Position, const Fvector& Direction, int ShotCount);
 	virtual void	state_Fire		(float dt);
 	virtual void	state_FireChamber(float dt);
 public:

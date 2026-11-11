@@ -1389,6 +1389,77 @@ bool CAI_Stalker::can_kill_member							()
 	return					(m_can_kill_member);
 }
 
+bool CAI_Stalker::WouldHitFriendly(const Fvector& Position, const Fvector& Direction, float Dispersion)
+{
+	if (!animation().script_animations().empty())
+	{
+		return false;
+	}
+
+	const float TransparencyThreshold = memory().visual().transparency_threshold();
+	const auto CheckRay = [&](const Fvector& RayDirection, float Distance)
+	{
+		const collide::ray_defs Ray(Position, RayDirection, Distance, CDB::OPT_CULL, collide::rqtBoth);
+		ray_query_param_stalker Query(this, TransparencyThreshold, Distance);
+		Level().ObjectSpace.RayQuery(rq_storage, Ray, ray_query_callback, &Query, nullptr, this);
+		return Query;
+	};
+
+	const auto Direct = CheckRay(Direction, start_pick_distance());
+	if (Direct.m_can_kill_member)
+	{
+		return true;
+	}
+	if (Dispersion <= EPS_S || Direct.m_pick_distance <= EPS_S)
+	{
+		return false;
+	}
+
+	// Check characters within the spread before the first obstruction on the direct ray.
+	const float Spread = std::min(Dispersion, PI_DIV_4);
+	const float Slope = std::tan(Spread);
+	const float RadiusScale = 1.f / std::cos(Spread);
+	const float HalfRange = Direct.m_pick_distance * 0.5f;
+	const float MaxRadius = Direct.m_pick_distance * Slope;
+	Fvector Center;
+	Center.mad(Position, Direction, HalfRange);
+	const Fvector HalfExtents = {
+		std::abs(Direction.x) * HalfRange + MaxRadius,
+		std::abs(Direction.y) * HalfRange + MaxRadius,
+		std::abs(Direction.z) * HalfRange + MaxRadius,
+	};
+	xr_vector<ISpatialShared> Candidates;
+	g_SpatialSpace->q_box(Candidates, 0, ESPATIAL_TYPE::COLLIDEABLE, Center, HalfExtents);
+	for (const auto& Spatial : Candidates)
+	{
+		CObject* Object = Spatial->dcast_CObject();
+		CEntityAlive* Character = Object && Object != this && !Object->getDestroy() ? Object->cast_entity_alive() : nullptr;
+		if (!Character || !Character->g_Alive() || is_relation_enemy(Character))
+		{
+			continue;
+		}
+
+		const auto& Sphere = Spatial->sphere;
+		Fvector Offset;
+		Offset.sub(Sphere.P, Position);
+		const float Along = Offset.dotproduct(Direction);
+		if (Along <= EPS_S || Along - Sphere.R > Direct.m_pick_distance)
+		{
+			continue;
+		}
+
+		const float Radius = Along * Slope + Sphere.R * RadiusScale;
+		const float OffsetSquared = Offset.square_magnitude();
+		if (OffsetSquared - _sqr(Along) <= _sqr(Radius) &&
+			CheckRay(Offset.normalize(), std::sqrt(OffsetSquared)).m_can_kill_member)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool CAI_Stalker::can_kill_enemy							()
 {
 	VERIFY					(inventory().ActiveItem());
