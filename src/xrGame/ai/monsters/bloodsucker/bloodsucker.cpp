@@ -231,6 +231,7 @@ void CAI_Bloodsucker::Load(const char* section)
 	m_sufficient_hits_before_vampire_random	=	-1 + (rand()%3);
 
 	invisible_particle_name			= pSettings->r_string(section,"Particle_Invisible");
+	InvulnerableWhileInvisible = READ_IF_EXISTS(pSettings, r_bool, section, "invulnerable_while_invisible", false);
 
 	using namespace ::detail::bloodsucker;
 
@@ -937,12 +938,18 @@ void CAI_Bloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float imp
 
 bool CAI_Bloodsucker::in_solid_state ()
 {
-	return true;
+	if (!InvulnerableWhileInvisible || !g_Alive())
+	{
+		return true;
+	}
+
+	const bool IsInvisible = m_predator || m_visibility_state == no_visibility || (state_invisible && !getVisible());
+	return !IsInvisible;
 }
 
 void CAI_Bloodsucker::Hit(SHit* pHDS)
 {
-	if ( !collision_hit_off )
+	if (!collision_hit_off && in_solid_state())
 	{
 		inherited::Hit(pHDS);
 	}

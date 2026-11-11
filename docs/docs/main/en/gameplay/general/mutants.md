@@ -61,3 +61,18 @@ For a psi-dog to spawn phantoms from your own section, specify its name in the m
 [psy_dog]
 phantom_section		= my_custom_phantom ; Using a custom section for phantoms
 ```
+
+## Bloodsucker Invulnerability While Cloaked
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `invulnerable_while_invisible` | bool | `false` | When set to `true`, a living bloodsucker ignores damage and bullet hits while cloaked. |
+
+Set this parameter in the base `[m_bloodsucker_e]` section or override it in an individual bloodsucker variant. Clear Sky enables it in the base section through `gamedata_cs/configs/mod_system_ixray.ltx`.
+
+To enable invulnerability for all variants that inherit the base section, add the following block to a DLTX file for `system.ltx`.
+
+```ini
+![m_bloodsucker_e]
+invulnerable_while_invisible = true
+```

@@ -72,6 +72,7 @@ private:
 private:
 	SMotionVel				invisible_vel;
 	const char*					invisible_particle_name;
+	bool InvulnerableWhileInvisible = false;
 
 public:
 			void			start_invisible_predator ();
