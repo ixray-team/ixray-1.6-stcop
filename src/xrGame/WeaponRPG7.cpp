@@ -112,6 +112,8 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 			NET_Packet P;
 			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
 			P << getCurrentRocket()->ID();
+			P.w_matrix(launch_matrix);
+			P.w_vec3(d);
 			u_EventSend(P);
 		}
 	}
@@ -357,9 +359,17 @@ void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 		{
 			P >> id;
 			CObject* O = Level().Objects.net_Find(id);
-			if (O->cast_custom_rocket())
+			if (!O)
 			{
-				bool bLaunch = (type == GE_LAUNCH_ROCKET);
+				break;
+			}
+			if (CCustomRocket* Rocket = O->cast_custom_rocket())
+			{
+				const bool bLaunch = (type == GE_LAUNCH_ROCKET);
+				if (bLaunch)
+				{
+					ApplyNetworkLaunchParams(P, *Rocket, H_Parent() ? H_Parent()->ID() : ID());
+				}
 				CRocketLauncher::DetachRocket(id, bLaunch);
 				if (bLaunch)
 				{

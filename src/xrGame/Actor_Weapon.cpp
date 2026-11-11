@@ -123,6 +123,20 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 {
 	CHudItem* casted_hud_item = const_cast<CHudItem*>(pHudItem);
 	CWeapon* pWeap = casted_hud_item != nullptr ? casted_hud_item->cast_weapon() : nullptr;
+	if (g_dedicated_server && pWeap && (pWeap->IsGrenadeMode() || pWeap->cast_weapon_rpg7()))
+	{
+		// The dedicated server does not update the remote actor's camera transform.
+		fire_pos.set(Position());
+		fire_pos.y += CameraHeight();
+
+		Fquaternion Aim;
+		Aim.rotationYawPitchRoll(0.0f, -NET_Last.o_torso.yaw, NET_Last.o_torso.pitch);
+		Fmatrix AimTransform;
+		AimTransform.rotation(Aim).transpose();
+		fire_dir.set(AimTransform.k);
+		return;
+	}
+
 	if (!IsGameTypeSingle() || HUDview() || (pWeap && pWeap->render_item_ui_query()))
 	{
 		fire_pos = Cameras().Position();

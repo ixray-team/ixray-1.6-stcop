@@ -6,6 +6,7 @@
 #include "StdAfx.h"
 #include "RocketLauncher.h"
 #include "CustomRocket.h"
+#include "ExplosiveRocket.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "Level.h"
 #include "ai_object_location.h"
@@ -107,6 +108,31 @@ void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, con
 	{
 		Rocket->SetLaunchParams(xform, vel, angular_vel);
 		m_launched_rockets.push_back(Rocket);
+	}
+}
+
+void CRocketLauncher::ApplyNetworkLaunchParams(NET_Packet& Packet, CCustomRocket& Rocket, ALife::_OBJECT_ID Initiator)
+{
+	constexpr u32 SerializedVec3Size = 3 * sizeof(float);
+	constexpr u32 LaunchParamsSize = 4 * SerializedVec3Size + SerializedVec3Size;
+	if (!OnClient() || Packet.r_elapsed() < LaunchParamsSize)
+	{
+		return;
+	}
+
+	Fmatrix LaunchMatrix;
+	Fvector LaunchVelocity;
+	Packet.r_matrix(LaunchMatrix);
+	Packet.r_vec3(LaunchVelocity);
+	if (!_valid(LaunchMatrix) || !_valid(LaunchVelocity))
+	{
+		return;
+	}
+
+	Rocket.SetLaunchParams(LaunchMatrix, LaunchVelocity, zero_vel);
+	if (CExplosiveRocket* Grenade = Rocket.cast_explosive_rocket())
+	{
+		Grenade->SetInitiator(Initiator);
 	}
 }
 

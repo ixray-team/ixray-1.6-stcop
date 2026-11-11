@@ -2,6 +2,7 @@
 
 class CCustomRocket;
 class CGameObject;
+class NET_Packet;
 
 class CRocketLauncher
 {
@@ -20,6 +21,8 @@ public:
 	virtual CRocketLauncher* cast_rocket_launcher() { return this; }
 
 protected:
+	static void ApplyNetworkLaunchParams(NET_Packet& Packet, CCustomRocket& Rocket, ALife::_OBJECT_ID Initiator);
+
 	using ROCKET_VECTOR = xr_vector<CCustomRocket*>;
 	using ROCKETIT = ROCKET_VECTOR::iterator;
 
