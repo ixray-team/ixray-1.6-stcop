@@ -176,6 +176,8 @@ void CCar::SCarSound::Init()
 	//	Msg("! Car doesn't contain sound params");
 	//}
 	eCarSound = sndOff;
+	if (pcar->b_engine_on)
+		Drive();
 }
 void CCar::SCarSound::SetSoundPosition(ref_sound &snd)
 {
@@ -694,7 +696,15 @@ void CCar::SCarSound::SwitchState(ESoundState new_state)
 void CCar::SCarSound::Update()
 {
 	VERIFY(!physics_world()->Processing());
-	if (eCarSound == sndOff)
+
+	// A running engine must not stay in a stop/stall sound state. This can
+	// happen after loading when the restored engine state arrives after an
+	// older Stop()/Stall(), leaving the stop sound fading over the idle loop.
+	if (pcar->b_engine_on && (eCarSound == sndStoping || eCarSound == sndStalling))
+	{
+		Drive();
+	}
+	else if (eCarSound == sndOff)
 	{
 		// Init() resets the sound state when the car is spawned. A restored
 		// running engine must not stay silent if that reset happened after
@@ -761,6 +771,12 @@ void CCar::SCarSound::Start()
 	VERIFY(!physics_world()->Processing());
 	if(eCarSound==sndOff) SwitchOn();
 	SwitchState(sndStarting);
+
+	// A new start must not be masked by a stale stop sound from a previous
+	// failed start or from a state restored before the engine chunk arrived.
+	if (snd_engine_stop._p && snd_engine_stop.is_playing())
+		snd_engine_stop.stop_deffered(CarDeferredStopFade);
+
 	if (snd_engine_start._p)
 	{
 		snd_engine_start.play(pcar, sm_NoOCC);

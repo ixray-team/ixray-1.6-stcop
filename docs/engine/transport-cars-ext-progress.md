@@ -717,3 +717,29 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - `CCarParticlesPlayCall` и `CPHParticlesPlayCall` создавали частицы через `Particles::Details::Create(ps_name, true)`. Для `vehiclefx\generic_scratch_01` (пара `objects\car_wheel | objects\large_furniture`) система оказалась looped, и `CParticlesObject` падал с `Can't set auto-remove flag for looped particle system`.
 - Добавлен `Particles::Details::CreateOneShot()`: создаёт объект без auto-remove, затем включает auto-remove; looped-системам задаётся искусственная жизнь `1000 мс`, чтобы они не висели вечно. Оба collision-колбэка переведены на него.
 - Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: сбивание крупных объектов машиной (`objects\large_furniture`) не роняет игру, частица `vehiclefx\generic_scratch_01` проигрывается и удаляется.
+
+### Этап 62: выход из машины, лежащей на боку или крыше
+
+- `CCar::SDoor::GetExitPosition()` теперь считает выход заблокированным не только по лучу в статику, но и при `pcar->XFORM().j.y < 0.5` — машина на боку/крыше. Двери в таком положении недоступны, даже если горизонтальный луч упирается в пустоту.
+- Точка выхода в этом случае строится в мировых координатах над выбранной дверью: X/Z берутся из мирового центра двери (`pf.c`), Y — из AABB кузова (`WorldBox.max.y + 1.0`). Если AABB недоступен, Y считается как `Position().y + Radius() + 1.0`. Больше не используется локальный `m_sits_transforms.c + 1.6`, который при крене уводил актёра внутрь салона, и не используется центр кузова.
+- Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: положить машину на бок, выйти от третьего лица — актёр должен появиться над машиной, а не внутри салона над сиденьем.
+
+### Этап 63: повторное открытие приоткрытой двери в состоянии `opened`
+
+- Выход от третьего лица теперь проверяет не только `state == opened`, но и физическое положение двери через `SDoor::IsFullyOpen()`: угол шарнира сравнивается с `opened_angle`. Дверь может оставаться в состоянии `opened`, но физически приоткрыться — тогда `IsFullyOpen()` возвращает `false`.
+- Для такого случая добавлен `SDoor::Reopen()`: сбрасывает таймеры, при необходимости активирует joint в текущей позе двери, ставит `opening` и снова выдаёт положительный момент. Если дверь была `closed`, вызывается `ClosedToOpening()` (звук, воздушное сопротивление).
+- Предыдущие попытки исправления (сброс таймеров для `closing`/`opening` и ожидание в `UpdateCL`) убраны: они не решали случай `state == opened` с физически приоткрытой дверью.
+- Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон: довести дверь до состояния `opened`, оставить её приоткрытой и выйти от третьего лица — дверь должна открыться заново.
+
+### Этап 64: `time_to_explosion = 0` отключает фитиль
+
+- `CDelayedActionFuse::Initialize()` теперь при `time <= 0` полностью сбрасывает флаги и таймеры: `flInitialized` не ставится, `CheckCondition()`/`Update()` не срабатывают, а уже запущенный фитиль отменяется. Раньше при нуле флаг `flInitialized` оставался, и фитиль мог сработать при нулевом условии.
+- Активная `veh_base.ltx` использует `time_to_explosion = 0`, поэтому задержанного взрыва у машин теперь нет.
+- Проверка: спавн `veh_zaz968`, лог `time_to_explosion=0.000000 fuse_initialized=0`; Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 65: состояние звука двигателя после загрузки
+
+- `SCarSound::Update()` теперь при `b_engine_on` выходит из устаревших состояний `sndStoping`/`sndStalling` через `Drive()`. Раньше сохранённый/сетевой `Stop()` мог оставить звук в состоянии остановки, и глушение/затухание играло поверх работающего idle.
+- `RestoreEngineAndLights()` сбрасывает `m_engine_drive`, `m_engine_state_scale`, `m_idle_state_scale`, `m_engine_rpm_scale` и `m_engine_idle_volume_scale` при каждом восстановлении работающего двигателя, а не только когда `b_engine_on` ещё был false. Иначе при раннем `SyncRead`/повторном restore idle-слой мог остаться приглушённым.
+- `SCarSound::Init()` при уже включённом двигателе сразу вызывает `Drive()`, а `SCarSound::Start()` гасит залипший `snd_engine_stop`. Это закрывает гонку, когда `Init()`/`Start()` приходят после восстановления состояния.
+- Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`. Нужен ручной прогон save/load с работающим двигателем и с машиной, загруженной в выключенном состоянии.

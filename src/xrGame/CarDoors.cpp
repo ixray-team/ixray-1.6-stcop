@@ -302,6 +302,61 @@ void CCar::SDoor::Open()
 
 }
 
+bool CCar::SDoor::IsFullyOpen()
+{
+	if (state != opened)
+		return false;
+
+	if (!joint || !joint->bActive)
+		return false;
+
+	const float Current = pos_open * GetAngle();
+	const float Limit = pos_open * opened_angle;
+	return Current >= Limit - 0.01f;
+}
+
+void CCar::SDoor::Reopen()
+{
+	if (!joint)
+	{
+		state = opened;
+		return;
+	}
+
+	if (state == broken)
+		return;
+
+	// A door can report `opened` while it has physically settled to a slightly
+	// open position. Restart the opening from that position instead of waiting
+	// for the old state machine.
+	if (state == closed)
+	{
+		ClosedToOpening();
+	}
+	else
+	{
+		real_open_time = Device.dwTimeGlobal;
+		real_close_time = 0;
+	}
+
+	if (!joint->bActive)
+	{
+		pcar->m_pPhysicsShell->Enable();
+
+		Fmatrix door_form = joint->PSecond_element()->XFORM();
+		joint->PSecond_element()->mXFORM.set(door_form);
+
+		Fmatrix root_form;
+		pcar->m_pPhysicsShell->GetGlobalTransformDynamic(&root_form);
+		joint->PSecond_element()->Activate(root_form, true);
+		joint->Activate();
+	}
+
+	state = opening;
+	PlaceInUpdate();
+	ApplyTorque(torque, a_vel);
+}
+
 void CCar::SDoor::Close()
 {
 	if(!joint)
@@ -818,13 +873,49 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 			}
 		}
 
-		if (exit_blocked)
+		// A car lying on its side or upside down cannot use its doors even if
+		// the horizontal exit ray happens to be clear. Force the world-space
+		// point above the car instead of transforming the seat through the
+		// rolled car transform.
+		const bool CarRolled = pcar->XFORM().j.y < 0.5f;
+		if (exit_blocked || CarRolled)
 		{
-			// The door opens into a wall. Put the actor above the car instead of
-			// letting the character body resolve the overlap by pushing the car.
-			Fvector local_top = pcar->m_sits_transforms.c;
-			local_top.y += 1.6f;
-			pcar->XFORM().transform_tiny(pos, local_top);
+			Fbox LocalBox = pcar->BoundingBox();
+			if (LocalBox.is_valid())
+			{
+				Fbox WorldBox;
+				WorldBox.invalidate();
+
+				const Fmatrix& CarXForm = pcar->XFORM();
+				for (int ix = 0; ix < 2; ++ix)
+				{
+					for (int iy = 0; iy < 2; ++iy)
+					{
+						for (int iz = 0; iz < 2; ++iz)
+						{
+							Fvector Corner;
+							Corner.set(ix ? LocalBox.max.x : LocalBox.min.x,
+								iy ? LocalBox.max.y : LocalBox.min.y,
+								iz ? LocalBox.max.z : LocalBox.min.z);
+
+							Fvector WorldCorner;
+							CarXForm.transform_tiny(WorldCorner, Corner);
+							WorldBox.modify(WorldCorner);
+						}
+					}
+				}
+
+				// Place the actor above the blocked door, not above the car
+				// center: use the door's world X/Z and the current car pose top.
+				pos.set(
+					pf.c.x,
+					WorldBox.max.y + 1.0f,
+					pf.c.z);
+			}
+			else
+			{
+				pos.set(pf.c.x, pcar->Position().y + pcar->Radius() + 1.0f, pf.c.z);
+			}
 		}
 		return;
 	}

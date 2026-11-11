@@ -34,18 +34,22 @@ float CDelayedActionFuse::Time()
 }
 void CDelayedActionFuse::Initialize(float time,float critical_condition)
 {
+	// Zero (or negative) time disables the fuse completely, including an
+	// already running timer. This lets car configs use
+	// `time_to_explosion = 0` to turn delayed explosion off.
+	if (time <= 0.f)
+	{
+		m_dafflags.assign(0);
+		m_fTime = 0.f;
+		m_fSpeedChangeCondition = 0.f;
+		return;
+	}
+
 	if(isActive())		return;
 
-	VERIFY(time>=0.f&&critical_condition>=0.f);
-	if(!fis_zero(time))
-	{
-		m_fSpeedChangeCondition=critical_condition;//time;
-		m_fTime=time;
-	}else
-	{
-		m_fSpeedChangeCondition=0.f;
-		m_fTime=0.f;
-	}
+	VERIFY(critical_condition>=0.f);
+	m_fSpeedChangeCondition=critical_condition;
+	m_fTime=time;
 	if(fis_zero(m_fSpeedChangeCondition))m_dafflags.set(flNoConditionChange,true);
 	m_dafflags.set(flInitialized,true);
 }
