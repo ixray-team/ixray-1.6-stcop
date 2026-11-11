@@ -142,13 +142,14 @@ function action_door:open_door(disable_snd)
 	local ph_shell = self.object:get_physics_shell()
 	if ph_shell then
 		local ph_element = ph_shell:get_element_by_bone_name("door")
-		if ph_element:is_fixed() then
+		local was_fixed = ph_element:is_fixed()
+		if was_fixed then
 			--printf("RELEASE")
 			ph_element:release_fixed()
-			
-			local ph_obj = self.object:get_physics_object()
-			ph_obj:set_door_ignore_dynamics() --'Игнорирование динамики на момент открытия/закрытия
 		end	
+		if was_fixed or not self.st.no_force then
+			self.object:get_physics_object():set_door_ignore_dynamics()
+		end
 	end
 	 
 	

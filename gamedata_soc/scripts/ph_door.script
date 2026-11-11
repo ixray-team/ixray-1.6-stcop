@@ -113,6 +113,19 @@ function action_door:close_action()
 	end
 end
 
+function action_door:open_fastcall()
+	if not self.initialized then
+		return false
+	end
+
+	if not self.st.no_force and not (self.joint:get_axis_angle(90) >= self.hi_limits - 0.02) then
+		return false
+	end
+
+	self.object:get_physics_object():unset_door_ignore_dynamics()
+	return true
+end
+
 function action_door:open_door(disable_snd)
 	printf("_bp: [%s] action_door:open_door()", self.object:name())
 	if not disable_snd then
@@ -124,6 +137,8 @@ function action_door:open_door(disable_snd)
 	if self.st.no_force == true then
 		self.joint:set_max_force_and_velocity(0, 0, 0)
 	else
+		self.object:get_physics_object():set_door_ignore_dynamics()
+		self.object:set_fastcall(self.open_fastcall, self)
 		self.joint:set_max_force_and_velocity(2100, -3, 0)
 	end
 	self.block = false
@@ -152,6 +167,8 @@ function action_door:close_door(disable_snd)
 			self:door_play_snd_from_set(self.st.snd_close_start)
 		end
 	end
+
+	self.object:get_physics_object():unset_door_ignore_dynamics()
 
 	-- Ставим коллбек для отлова окончания закрытия двери (чтобы заблокировать ее и проиграть звук, если нужно):
 	self.object:set_fastcall(self.fastcall,self)
