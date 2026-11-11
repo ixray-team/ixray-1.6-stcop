@@ -39,8 +39,9 @@ void SoundRuntime::Drive(const SoundDrive& State)
 		return;
 	}
 	const float Whole = Offset + State.Tau;
-	const float At = (Flags & sm_Looped) && Total > 0.0f ? std::fmod(Whole, Total) : Whole;
-	if (!State.IsHeard || At < 0.0f || (Total > 0.0f && At >= Total - 0.02f))
+	const bool IsLooped = (Flags & sm_Looped) && Total > 0.0f;
+	const float At = IsLooped ? std::fmod(Whole, Total) : Whole;
+	if (!State.IsHeard || At < 0.0f || (!IsLooped && Total > 0.0f && At >= Total - 0.02f))
 	{
 		if (PlayedFlags != u32(-1))
 		{
@@ -49,6 +50,7 @@ void SoundRuntime::Drive(const SoundDrive& State)
 		}
 		return;
 	}
+	const float Drift = std::fabs(XRay::Sound::Mixer::GetPlaytime(Voice._p->slot) - At);
 	if (PlayedFlags != Flags)
 	{
 		(Flags & sm_2D) ? Voice.play(nullptr, Flags) : Voice.play_at_pos(nullptr, State.Point, Flags);
@@ -59,7 +61,7 @@ void SoundRuntime::Drive(const SoundDrive& State)
 		}
 		PlayedFlags = Flags;
 	}
-	else if (std::fabs(State.Pitch - 1.0f) < 0.01f && std::fabs(XRay::Sound::Mixer::GetPlaytime(Voice._p->slot) - At) > 0.3f)
+	else if (std::fabs(State.Pitch - 1.0f) < 0.01f && (IsLooped ? std::min(Drift, Total - Drift) : Drift) > 0.3f)
 	{
 		XRay::Sound::Mixer::Seek(Voice._p->slot, At);
 	}
