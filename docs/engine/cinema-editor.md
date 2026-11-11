@@ -1039,6 +1039,7 @@ The editor camera is a free camera, separate from the player. It needs ImGui mou
 | **Reset roll** | Levels the editor camera. Disabled while it is level. |
 | **Helpers** | Shows or hides the world helpers: the camera path, light and particle markers, decal outlines, link lines, and the path of each selected object with Position keys (its whole clip in its colour, a circle and a facing arrow at every key, filled at the playhead; no arrows when attached). Remembered. The focused camera clip's path and each selected object's path also show a small dot per frame (fewer on long clips), so the spacing shows the speed, and a white dot where the playhead is. |
 | **DOF preview** | While the editor camera is the view, the depth of field of the clip under the playhead is applied to it, its object focus measured from the editor camera. Off: the game's own depth of field. Remembered. |
+| **Particle preview** | While the scene is stopped, every particle effect whose clip is under the playhead keeps running in real time, at its Speed, so you can watch it without playing the scene. Moving the playhead puts the effect back in step with the timeline at once, and playing the scene runs it in step as always. Off: a stopped scene shows the effect frozen at the playhead. Remembered. |
 | **Inspector** | Shows or hides the inspector. Remembered. |
 | **Presets** | Shows or hides the Presets window. Remembered. |
 | **Shots & Markers** | Shows or hides the Shots & Markers window. Remembered. |
@@ -1090,6 +1091,7 @@ The editor's own settings live in `_appdata_ixray_\cinema_editor\editor.ltx`, se
 | `onion_count` | 1–5 | 2 |
 | `onion_step` | frames, 1–30 | 5 |
 | `dof_preview` | on / off: **View → DOF preview** | on |
+| `particle_preview` | on / off: **View → Particle preview** | off |
 | `inspector` | on / off | on |
 | `presets` | on / off: the Presets window | off |
 
@@ -1924,3 +1926,4 @@ Timeline fixes, solo and choosers:
 452. Click an animation block that is not focused: it is focused and the inspector shows its rows; the Scene timeline stays. Click the same block again: the Animation view opens on it. Click block A, then block B: B is only focused. Press and drag a focused block: it moves and the view does not change.
 453. Actor with **Look at** an object beside it and IK ticked on both hands in its animation clip. **Fix** with nothing ticked: the whole character turns to the object, as before. Tick **Legs**: the character keeps its heading and its feet stay; the spine, neck and head turn to the object (also up and down for a high or low target) and the IK hands hold their place and rotation. Tick **Torso** too: only the head turns. Tick all three: nothing turns. Move the object behind the actor with only Legs ticked: torso and head stop at their limits. **Look influence** 0.5 halves the turn. Save and reopen: `attach_look_fix` is kept.
 454. **File → Render frames...**, **Output** **PNG frames**: the folder gets `frame_000000.png`, … that open in an image viewer with no transparency and look the same as the TGA frames of the same render, at a fraction of the size. **AVI video (MJPEG, high quality)**: the video plays in a common player, is noticeably larger than the normal AVI of the same range, and a dark sky gradient shows less blocking in a paused frame.
+455. **View → Particle preview** on, scene stopped, playhead inside a smoke effect's clip: the smoke keeps moving. Scrub the playhead: the effect jumps to that moment of its life and keeps running from there. Play the scene: it runs in step with the timeline as before, and stopping leaves it running. Move the playhead out of the clip: the effect is gone. Untick the option: the effect freezes at the playhead. Pause the game: it stops. The setting is remembered.

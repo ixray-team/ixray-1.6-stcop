@@ -61,6 +61,7 @@ struct ParticleDrive
 	Fmatrix World = Fidentity;
 	float Tau = 0.0f;
 	float Played = 0.0f;
+	float Idle = 0.0f;
 	float Rate = 0.0f;
 	float Preroll = 0.0f;
 	float Size = 1.0f;

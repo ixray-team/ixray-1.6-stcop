@@ -258,7 +258,7 @@ void ParticleRuntime::Drive(const ParticleDrive& Input)
 	Command.Restart += IsRestart ? 1 : 0;
 	Command.Preroll = IsRestart ? Input.Preroll : Command.Preroll;
 	Command.State = Input.IsShown ? EmitState::Live : Input.IsAfter && IsContinuous && Command.State != EmitState::Cut ? EmitState::Released : EmitState::Cut;
-	Command.Advance = IsRestart || Command.State == EmitState::Cut ? 0.0f : Input.Played * Input.Rate;
+	Command.Advance = IsRestart || Command.State == EmitState::Cut ? 0.0f : (Input.Played + Input.Idle) * Input.Rate;
 	Command.Transform = Input.World;
 	Command.Velocity.sub(Input.World.c, LastPosition).mul(IsMoving ? 1.0f / Input.Played : 0.0f);
 	Command.Size = Input.Size;

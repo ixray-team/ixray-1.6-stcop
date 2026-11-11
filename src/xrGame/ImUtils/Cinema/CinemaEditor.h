@@ -641,6 +641,7 @@ struct EditorSettings
 	bool ShowHints = true;
 	bool IsGizmoSnapping = true;
 	bool DofPreview = true;
+	bool EffectPreview = false;
 	bool IsFollowing = true;
 	bool ShowInspector = true;
 	bool ShowPresets = false;

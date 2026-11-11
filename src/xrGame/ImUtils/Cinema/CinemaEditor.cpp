@@ -134,6 +134,7 @@ void Editor::Close(Player& Core)
 void Editor::BeginFrame(Player& Core)
 {
 	Core.IsDofPreview = Settings.DofPreview;
+	Core.IsEffectPreview = Settings.EffectPreview;
 	if (SeenGeneration != Core.Generation)
 	{
 		SeenGeneration = Core.Generation;
@@ -437,6 +438,7 @@ void Editor::LoadSettings()
 	Settings.ShowHints = Io::ReadBool(Ini, "editor", "hints", Settings.ShowHints, Notes);
 	Settings.IsGizmoSnapping = Io::ReadBool(Ini, "editor", "gizmo_snap", Settings.IsGizmoSnapping, Notes);
 	Settings.DofPreview = Io::ReadBool(Ini, "editor", "dof_preview", Settings.DofPreview, Notes);
+	Settings.EffectPreview = Io::ReadBool(Ini, "editor", "particle_preview", Settings.EffectPreview, Notes);
 	Settings.IsFollowing = Io::ReadBool(Ini, "editor", "follow", Settings.IsFollowing, Notes);
 	Settings.ShowInspector = Io::ReadBool(Ini, "editor", "inspector", Settings.ShowInspector, Notes);
 	Settings.ShowPresets = Io::ReadBool(Ini, "editor", "presets", Settings.ShowPresets, Notes);
@@ -480,6 +482,7 @@ void Editor::SaveSettings()
 	Ini.w_float("editor", "onion_count", Settings.OnionCount);
 	Ini.w_float("editor", "onion_step", Settings.OnionStep);
 	Ini.w_bool("editor", "dof_preview", Settings.DofPreview);
+	Ini.w_bool("editor", "particle_preview", Settings.EffectPreview);
 	Ini.w_bool("editor", "follow", Settings.IsFollowing);
 	Ini.w_bool("editor", "inspector", ShowAnimator ? WorkspaceShown[0][0] : Settings.ShowInspector);
 	Ini.w_bool("editor", "presets", ShowAnimator ? WorkspaceShown[0][1] : Settings.ShowPresets);
@@ -658,6 +661,8 @@ void Editor::DrawMenuBar(Player& Core)
 		ImGui::MenuItem("Helpers", nullptr, &Settings.ShowHelpers);
 		ImGui::MenuItem("Hints", nullptr, &Settings.ShowHints);
 		ImGui::MenuItem("DOF preview", nullptr, &Settings.DofPreview);
+		ImGui::MenuItem("Particle preview", nullptr, &Settings.EffectPreview);
+		ImGui::SetItemTooltip("Particle effects under the playhead keep running while the scene is stopped");
 		ImGui::MenuItem("Inspector", nullptr, &Settings.ShowInspector);
 		ImGui::MenuItem("Presets", nullptr, &Settings.ShowPresets);
 		ImGui::MenuItem("Shots & Markers", nullptr, &Settings.ShowShots);
