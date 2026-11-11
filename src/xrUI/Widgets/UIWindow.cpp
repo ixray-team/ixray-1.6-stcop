@@ -278,6 +278,33 @@ bool CUIWindow::ToBack()
 	return Parent && Parent->MoveChildInDrawOrder(this, false);
 }
 
+bool CUIWindow::ToFrontTree()
+{
+	return MoveTreeInDrawOrder(true);
+}
+
+bool CUIWindow::ToBackTree()
+{
+	return MoveTreeInDrawOrder(false);
+}
+
+bool CUIWindow::MoveTreeInDrawOrder(bool Front)
+{
+	bool Moved = false;
+	CUIWindow* Child = this;
+	while (CUIWindow* Parent = Child->GetParent())
+	{
+		// Move the containing branches too, so other branches cannot cover this subtree.
+		if (!Parent->MoveChildInDrawOrder(Child, Front))
+		{
+			return false;
+		}
+		Moved = true;
+		Child = Parent;
+	}
+	return Moved;
+}
+
 bool CUIWindow::MoveChildInDrawOrder(CUIWindow* Child, bool Front)
 {
 	xrCriticalSectionGuard Guard(csUi);

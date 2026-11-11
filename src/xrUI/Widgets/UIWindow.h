@@ -69,6 +69,7 @@ private:
 	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
 	xr_vector<CUIWindow*> ChildDrawOrder;
 	bool MoveChildInDrawOrder(CUIWindow* Child, bool Front);
+	bool MoveTreeInDrawOrder(bool Front);
 	void RemoveChildDrawOrder(CUIWindow* Child);
 
 public:
@@ -80,6 +81,8 @@ public:
 	void SetTreeOpacity(float Value);
 	bool ToFront();
 	bool ToBack();
+	bool ToFrontTree();
+	bool ToBackTree();
 	void SetTreeHeading(float Angle, const Fvector2& Pivot, const Fvector2& Offset);
 	void SetSmothRotate(bool Enabled, float Factor);
 	void SetUseAspectRatioCorrection(bool Enabled) { UseAspectRatioCorrection = Enabled; }
