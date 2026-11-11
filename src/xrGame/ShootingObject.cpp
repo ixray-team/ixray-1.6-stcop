@@ -400,7 +400,8 @@ void CShootingObject::UpdateEffects()
 		Particle->SetHudMode(in_hud_mode);
 		if (in_hud_mode)
 		{
-			Particle->Update(dwTime);
+			Particle->Update(dwTime - Particle->dwLastTime);
+			Particle->dwLastTime = dwTime;
 		}
 
 		if (!Particle->IsPlaying() || Particle->m_NeedDestroy)
