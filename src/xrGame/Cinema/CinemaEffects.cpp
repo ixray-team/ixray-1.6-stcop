@@ -7,6 +7,71 @@
 #include "../../Include/xrRender/particles_systems_library_interface.hpp"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
 
+namespace Cinema
+{
+void SoundRuntime::Apply(const SoundData& Setup)
+{
+	Offset = Setup.Offset;
+	Flags = (Setup.IsLooped ? sm_Looped : 0u) | (Setup.IsWorld ? 0u : sm_2D);
+	PlayedFlags = Near == Setup.MinDistance && Far == Setup.MaxDistance ? PlayedFlags : u32(-1);
+	Near = Setup.MinDistance;
+	Far = Setup.MaxDistance;
+	if (File == Setup.File)
+	{
+		return;
+	}
+	Voice.destroy();
+	PlayedFlags = u32(-1);
+	File = Setup.File;
+	Total = 0.0f;
+	string_path Path;
+	if (File.size() && FS.exist(Path, "$game_sounds$", File.c_str(), ".ogg"))
+	{
+		Voice.create(File.c_str(), st_Effect, sg_SourceType);
+		Total = XRay::Sound::Mixer::GetSourceDuration(File.c_str());
+	}
+}
+
+void SoundRuntime::Drive(const SoundDrive& State)
+{
+	if (!Voice._p)
+	{
+		return;
+	}
+	const float Whole = Offset + State.Tau;
+	const float At = (Flags & sm_Looped) && Total > 0.0f ? std::fmod(Whole, Total) : Whole;
+	if (!State.IsHeard || At < 0.0f || (Total > 0.0f && At >= Total - 0.02f))
+	{
+		if (PlayedFlags != u32(-1))
+		{
+			Voice.stop();
+			PlayedFlags = u32(-1);
+		}
+		return;
+	}
+	if (PlayedFlags != Flags)
+	{
+		(Flags & sm_2D) ? Voice.play(nullptr, Flags) : Voice.play_at_pos(nullptr, State.Point, Flags);
+		XRay::Sound::Mixer::Seek(Voice._p->slot, At);
+		if (!(Flags & sm_2D) && Far > 0.0f)
+		{
+			Voice.set_range(std::min(Near, Far), Far);
+		}
+		PlayedFlags = Flags;
+	}
+	else if (std::fabs(State.Pitch - 1.0f) < 0.01f && std::fabs(XRay::Sound::Mixer::GetPlaytime(Voice._p->slot) - At) > 0.3f)
+	{
+		XRay::Sound::Mixer::Seek(Voice._p->slot, At);
+	}
+	if (!(Flags & sm_2D))
+	{
+		Voice.set_position(State.Point);
+	}
+	Voice.set_volume(State.Volume);
+	Voice.set_frequency(State.Pitch);
+}
+}
+
 namespace Cinema::Effects
 {
 constexpr u32 RebuildInterval = 100;

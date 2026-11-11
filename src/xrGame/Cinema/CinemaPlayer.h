@@ -44,6 +44,7 @@ public:
 	const LightRuntime* FindLight(u32 ObjectId) const;
 	const ParticleRuntime* FindParticle(u32 ObjectId) const;
 	const DecalRuntime* FindDecal(u32 ObjectId) const;
+	const SoundRuntime* FindSound(u32 ObjectId) const;
 	const BlockCache* FindCameraBlock(u32 Block) const;
 	const ObjectState* FindState(u32 ObjectId) const;
 	ViewSource View() const { return CurrentView; }
@@ -97,6 +98,7 @@ private:
 	void PoseLight(u32 Index, float At, bool IsDrawn);
 	void PoseParticle(u32 Index, float At, bool IsDrawn);
 	void PoseDecal(u32 Index, float At, bool IsDrawn);
+	void PoseSound(u32 Index, float At, bool IsDrawn);
 	void Stamp(DecalRuntime& Runtime, const Fmatrix& World, float Size);
 	float PoseTransform(u32 Index, float At, const Fvector& Position, const Fvector& Rotation);
 	void DropRuntimes();
@@ -121,6 +123,7 @@ private:
 	xr_vector<xr_unique_ptr<LightRuntime>> Lights;
 	xr_vector<xr_unique_ptr<ParticleRuntime>> Emitters;
 	xr_vector<xr_unique_ptr<DecalRuntime>> Decals;
+	xr_vector<xr_unique_ptr<SoundRuntime>> Voices;
 	xr_vector<u32> RuntimeIds;
 	float Played = 0.0f;
 	float EvaluationTime = 0.0f;

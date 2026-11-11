@@ -34,7 +34,7 @@ constexpr float RollRate = 0.7853982f, FovRate = 30.0f, MinFov = 5.0f, MaxFov = 
 constexpr float PickRange = 1000.0f, PickPixels = 32.0f, CubeSize = 128.0f, CubeLength = 8.0f;
 constexpr float MarkerRadius = 0.3f, GrabPixels = 8.0f, HandlePixels = 5.0f, TangentPixels = 12.0f;
 constexpr u32 CircleSegments = 24, FaintAlpha = 90;
-constexpr u32 ActorBit = 1u << static_cast<u32>(ObjectType::Actor), SpotBit = 1u << static_cast<u32>(ObjectType::Light), ParticleBit = 1u << static_cast<u32>(ObjectType::Particle), PointBit = 1u << 5;
+constexpr u32 ActorBit = 1u << static_cast<u32>(ObjectType::Actor), SpotBit = 1u << static_cast<u32>(ObjectType::Light), ParticleBit = 1u << static_cast<u32>(ObjectType::Particle), PointBit = 1u << 8;
 constexpr const char* GizmoLabels[3] = { "Move", "Rotate", "Scale" };
 constexpr const char* ToolLabels[4] = { "TRS", "T", "R", "S" };
 constexpr const char* ToolNames[5] = { "Move, rotate and scale (Q)", "Move (W)", "Rotate (E)", "Scale (R)", "Range (R)" };
@@ -49,7 +49,7 @@ constexpr const char* InsertHint = "Click: add a key here";
 constexpr const char* IkHint = "Drag: move | Click: gizmo for turning and axis moves | Esc: cancel";
 constexpr const char* TangentHint = "Drag: bend the path | Ctrl: break the handles | Shift: fine";
 constexpr ImGuizmo::OPERATION Operations[3] = { ImGuizmo::TRANSLATE, ImGuizmo::ROTATE, ImGuizmo::SCALE };
-constexpr Param ScaleParams[7] = { Param::Scale, Param::Scale, Param::Range, Param::Size, Param::DecalWidth, Param::Scale, Param::Scale };
+constexpr Param ScaleParams[8] = { Param::Scale, Param::Scale, Param::Range, Param::Size, Param::DecalWidth, Param::Scale, Param::Scale, Param::Scale };
 
 float Project(const Fvector& Point, ImVec2& Screen)
 {
@@ -267,13 +267,13 @@ bool AxisPoint(const Fvector& Centre, const Fvector& Axis, float& Along)
 
 const ObjectState* HelperState(const Player& Core, const Object& Item)
 {
-	const ObjectState* State = Item.Type == ObjectType::Light || Item.Type == ObjectType::Particle || Item.Type == ObjectType::Decal ? Core.FindState(Item.Id) : nullptr;
+	const ObjectState* State = Item.Type == ObjectType::Light || Item.Type == ObjectType::Particle || Item.Type == ObjectType::Decal || (Item.Type == ObjectType::Sound && Item.Sound.IsWorld) ? Core.FindState(Item.Id) : nullptr;
 	return State && State->IsReady ? State : nullptr;
 }
 
 bool IsSkipped(const Object& Item, GizmoMode Mode)
 {
-	return Item.Type >= ObjectType::Weather || (Item.Type == ObjectType::Light && (Mode == GizmoMode::Scale || (Mode == GizmoMode::Rotate && !IsParamShown(Item, Param::Rotation)))) || (Item.Type == ObjectType::Camera && Mode == GizmoMode::Scale);
+	return Item.Type >= ObjectType::Weather || (Item.Type == ObjectType::Sound && (!Item.Sound.IsWorld || Mode == GizmoMode::Rotate || Mode == GizmoMode::Scale)) || (Item.Type == ObjectType::Light && (Mode == GizmoMode::Scale || (Mode == GizmoMode::Rotate && !IsParamShown(Item, Param::Rotation)))) || (Item.Type == ObjectType::Camera && Mode == GizmoMode::Scale);
 }
 
 void DrawEffectHelper(ImDrawList* List, const Object& Item, const Fmatrix& World, float Time, u32 Tint)

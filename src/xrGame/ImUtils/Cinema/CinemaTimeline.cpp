@@ -132,7 +132,7 @@ constexpr u32 AxisColors[3] = { Rgb(230, 90, 90), Rgb(90, 200, 90), Rgb(90, 140,
 constexpr const char* AxisNames[2][3] = { { "X", "Y", "Z" }, { "R", "G", "B" } };
 constexpr const char* WaveNames[11] = { "None", "Sine", "Triangle", "Square", "Sawtooth", "Noise stepped", "Noise smooth", "Noise fractal", "Noise Perlin", "Noise continuous", "Oscillator" };
 constexpr const char* ModeNames[6] = { "Linear", "Ease in", "Ease out", "Ease in-out", "Bezier", "Hold" };
-constexpr Param DefaultLanes[7] = { Param::Position, Param::Fov, Param::Intensity, Param::Speed, Param::DecalWidth, Param::WeatherTime, Param::PostFade };
+constexpr Param DefaultLanes[8] = { Param::Position, Param::Fov, Param::Intensity, Param::Speed, Param::DecalWidth, Param::SoundVolume, Param::WeatherTime, Param::PostFade };
 const Curve EmptyCurve {};
 
 struct KeyHit
@@ -382,6 +382,13 @@ void Icon(ImDrawList* List, const ImVec2& At, u32 Kind, u32 Color)
 	{
 		List->AddRect(ImVec2(At.x - 5.0f, At.y - 5.0f), ImVec2(At.x + 5.0f, At.y + 5.0f), Color, 0.0f, 0, 1.5f);
 		List->AddCircleFilled(At, 2.0f, Color);
+		return;
+	}
+	if (Kind == static_cast<u32>(ObjectType::Sound))
+	{
+		List->AddRectFilled(ImVec2(At.x - 6.0f, At.y - 2.0f), ImVec2(At.x - 3.0f, At.y + 2.0f), Color);
+		List->AddTriangleFilled(ImVec2(At.x - 3.0f, At.y), ImVec2(At.x + 1.0f, At.y - 5.0f), ImVec2(At.x + 1.0f, At.y + 5.0f), Color);
+		List->AddLine(ImVec2(At.x + 4.0f, At.y - 3.0f), ImVec2(At.x + 4.0f, At.y + 3.0f), Color, 1.5f);
 		return;
 	}
 	if (Kind == static_cast<u32>(ObjectType::Post))
@@ -3213,6 +3220,10 @@ void Editor::DrawTimelinePopups(Player& Core)
 		if (!IsPopupChoosing && ImGui::MenuItem("Light"))
 		{
 			AddLight(Core, PopupTime, Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, 3.0f));
+		}
+		if (!IsPopupChoosing && ImGui::MenuItem("Sound"))
+		{
+			AddSound(Core, PopupTime);
 		}
 		if (!IsPopupChoosing && ImGui::MenuItem("Weather"))
 		{

@@ -61,7 +61,8 @@ enum class ESoundMixerCommands : u16
 	resume_all,
 	update_parameter,
 	set_volume,
-	set_panning
+	set_panning,
+	seek
 };
 
 struct SoundCommand
@@ -1065,6 +1066,13 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				}
 			}
 			break;
+			case ESoundMixerCommands::seek:
+			{
+				auto& SeekSlot = GMixer.slots[Command.slot - 1];
+				const SoundSourceState* SeekSource = Snd_FindSource(&SeekSlot.sound_name);
+				SeekSlot.position = SeekSource ? std::min((u32)Command.param1, SeekSource->Desc.frames_total) : 0;
+			}
+			break;
 			case ESoundMixerCommands::set_volume:
 			{
 				GMixer.slots[Command.slot - 1].parameters[(u32)ParameterId::VolumePerChannel].y = *(double*)&Command.param1;
@@ -1240,6 +1248,17 @@ void Mixer::Pause(u32 slot)
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 	GMixer.slots[slot - 1].fake_state = State::Paused;
 	GMixer.cmd.emplace_back(SoundCommand{.slot = slot, .id = ESoundMixerCommands::pause});
+}
+
+void Mixer::Seek(u32 slot, double seconds)
+{
+	if (slot == 0)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(SoundCommand{.slot = slot, .id = ESoundMixerCommands::seek, .param1 = (u64)(std::max(seconds, 0.0) * SND_SAMPLERATE)});
 }
 
 void Mixer::Stop(u32 SlotID, bool IsDeferred)
@@ -1469,6 +1488,20 @@ float Mixer::GetPlaytime(u32 SlotID)
 	}
 
 	return (((float)GMixer.slots[SlotID - 1].position) / (float)SND_SAMPLERATE);
+}
+
+float Mixer::GetSourceDuration(const char* name)
+{
+	const xr_string Name = name ? name : "";
+	const SoundSourceState* Source = Snd_AcquireSource(&Name);
+	if (Source == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float Duration = (float)Source->Desc.frames_total / (float)SND_SAMPLERATE;
+	Snd_ReleaseSource(&Name);
+	return Duration;
 }
 
 float Mixer::GetDuration(u32 SlotID)

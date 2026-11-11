@@ -116,6 +116,32 @@ private:
 	float PlacedWidth = -1.0f, PlacedHeight = -1.0f, PlacedSpin = 0.0f;
 	bool IsApplied = false;
 };
+
+struct SoundDrive
+{
+	Fvector Point;
+	float Tau = 0.0f;
+	float Volume = 1.0f;
+	float Pitch = 1.0f;
+	bool IsHeard = false;
+};
+
+class SoundRuntime
+{
+public:
+	explicit SoundRuntime(u32 ObjectId) : Id(ObjectId) {}
+	~SoundRuntime() { Voice.destroy(); }
+	void Apply(const SoundData& Setup);
+	void Drive(const SoundDrive& State);
+	float Length() const { return Total; }
+	u32 Id = 0;
+
+private:
+	ref_sound Voice;
+	shared_str File;
+	float Offset = 0.0f, Near = 0.0f, Far = 0.0f, Total = 0.0f;
+	u32 Flags = 0, PlayedFlags = u32(-1);
+};
 }
 
 namespace Cinema::Effects

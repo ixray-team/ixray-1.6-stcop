@@ -16,6 +16,7 @@ enum class ObjectType : u8
 	Light,
 	Particle,
 	Decal,
+	Sound,
 	Weather,
 	Post
 };
@@ -104,6 +105,8 @@ enum class Param : u8
 	ConstraintWeight,
 	DecalWidth,
 	DecalHeight,
+	SoundVolume,
+	SoundPitch,
 	WeatherTime,
 	SunHeading,
 	SunHeight,
@@ -643,6 +646,22 @@ struct DecalData
 	bool operator==(const DecalData&) const = default;
 };
 
+struct SoundData
+{
+	shared_str File;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	float Volume = 1.0f;
+	float Pitch = 1.0f;
+	float Offset = 0.0f;
+	float MinDistance = 0.0f;
+	float MaxDistance = 0.0f;
+	bool IsWorld = false;
+	bool IsLooped = false;
+
+	bool operator==(const SoundData&) const = default;
+};
+
 struct WeatherData
 {
 	shared_str Cycle;
@@ -740,6 +759,7 @@ struct Object
 	LightData Light;
 	ParticleData Particle;
 	DecalData Decal;
+	SoundData Sound;
 	WeatherData Weather;
 	PostData Post;
 	Attachment Attach;
@@ -867,7 +887,7 @@ inline void EnsureCamera(Scene& Data)
 
 inline Fvector* PlacementOf(Object& Target, u32 Kind)
 {
-	Fvector* const Fields[7][2] = { { &Target.Actor.Position, &Target.Actor.Rotation }, { nullptr, nullptr }, { &Target.Light.Position, &Target.Light.Rotation }, { &Target.Particle.Position, &Target.Particle.Rotation }, { &Target.Decal.Position, &Target.Decal.Rotation }, { &Target.Weather.Position, &Target.Weather.Rotation }, { &Target.Post.Position, &Target.Post.Rotation } };
+	Fvector* const Fields[8][2] = { { &Target.Actor.Position, &Target.Actor.Rotation }, { nullptr, nullptr }, { &Target.Light.Position, &Target.Light.Rotation }, { &Target.Particle.Position, &Target.Particle.Rotation }, { &Target.Decal.Position, &Target.Decal.Rotation }, { &Target.Sound.Position, &Target.Sound.Rotation }, { &Target.Weather.Position, &Target.Weather.Rotation }, { &Target.Post.Position, &Target.Post.Rotation } };
 	return Fields[static_cast<u32>(Target.Type)][Kind];
 }
 

@@ -14,7 +14,7 @@ namespace Cinema
 {
 inline constexpr ImVec4 ErrorColor = ImVec4(0.95f, 0.35f, 0.35f, 1.0f);
 inline constexpr ImVec4 OverrideColor = ImVec4(1.0f, 165.0f / 255.0f, 0.0f, 1.0f);
-inline constexpr const char* TypeNames[7] = { "Actor", "Camera", "Light", "Particle", "Decal", "Weather", "Post" };
+inline constexpr const char* TypeNames[8] = { "Actor", "Camera", "Light", "Particle", "Decal", "Sound", "Weather", "Post" };
 
 inline void Timecode(string32& Out, float Time, u32 Rate)
 {
@@ -34,7 +34,7 @@ inline xr_string ModelName(const shared_str& Visual)
 
 inline xr_string DefaultName(const Object& Item)
 {
-	const char* const Fixed[7] = { nullptr, "Camera", Item.Light.Kind == LightKind::Spot ? "Spot light" : "Point light", nullptr, nullptr, Item.Weather.Cycle.size() ? Item.Weather.Cycle.c_str() : "Weather", "Post" };
+	const char* const Fixed[8] = { nullptr, "Camera", Item.Light.Kind == LightKind::Spot ? "Spot light" : "Point light", nullptr, nullptr, Item.Sound.File.size() ? Item.Sound.File.c_str() : "Sound", Item.Weather.Cycle.size() ? Item.Weather.Cycle.c_str() : "Weather", "Post" };
 	xr_string Name = Fixed[static_cast<u32>(Item.Type)] ? xr_string(Fixed[static_cast<u32>(Item.Type)]) : Item.Type == ObjectType::Decal ? Platform::ANSI_TO_UTF8(EffectName(Item.Decal.Texture.size() ? Item.Decal.Texture : shared_str("Decal"))) : Item.Type == ObjectType::Particle ? Platform::ANSI_TO_UTF8(EffectName(Item.Particle.Effect)) : ModelName(Item.Actor.Visual);
 	size_t Size = std::min<size_t>(Name.size(), MaxNameBytes);
 	while (Size < Name.size() && (static_cast<u8>(Name[Size]) & 0xC0) == 0x80)
@@ -159,6 +159,10 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 	if (Block < 0 && (Id == Param::DecalWidth || Id == Param::DecalHeight))
 	{
 		return Target.Type == ObjectType::Decal ? &(Id == Param::DecalWidth ? Target.Decal.Width : Target.Decal.Height) : nullptr;
+	}
+	if (Block < 0 && (Id == Param::SoundVolume || Id == Param::SoundPitch))
+	{
+		return Target.Type == ObjectType::Sound ? &(Id == Param::SoundVolume ? Target.Sound.Volume : Target.Sound.Pitch) : nullptr;
 	}
 	if (Block < 0 && Id >= Param::WeatherTime && Id <= Param::SkyRotation)
 	{
@@ -363,7 +367,8 @@ enum class ChooserKind : u8
 	Preset,
 	Effect,
 	Texture,
-	Shader
+	Shader,
+	Sound
 };
 
 inline constexpr const char* AddChoices[4] = { "Actor...", "Actor from preset...", "Particle...", "Decal..." };
@@ -799,6 +804,7 @@ private:
 	Object* AddObject(Player& Core, ObjectType Type, const shared_str& Source, float Start, const Fvector& Position, const Fvector& Rotation);
 	void AddLight(Player& Core, float Start, const Fvector& Position);
 	void AddWeather(Player& Core, float Start);
+	void AddSound(Player& Core, float Start);
 	void AddPost(Player& Core, float Start);
 	void LoadPresets();
 	bool StorePresets(xr_vector<ActorPreset>&& Next, const xr_string& Removed);
@@ -963,6 +969,7 @@ private:
 	void DrawLightSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawParticleSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawDecalSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
+	void DrawSoundSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawWeatherSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void DrawPostSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin);
 	void ClipRow(Player& Core, const xr_vector<u32>& Ids);
@@ -1142,7 +1149,8 @@ private:
 	char PresetBuffer[MaxNameBytes + 1] = {}, PresetFilter[128] = {};
 	ChooserKind PopupKind = ChooserKind::Model;
 
-	xr_vector<u32> PinnedIds, InspectActors, InspectCameras, InspectLights, InspectParticles, InspectDecals, InspectWeathers, InspectPosts, ChooserOwners, PickColorIds;
+	xr_vector<u32> PinnedIds, InspectActors, InspectCameras, InspectLights, InspectParticles, InspectDecals, InspectSounds, InspectWeathers, InspectPosts, ChooserOwners, PickColorIds;
+	xr_vector<shared_str> SoundFiles;
 	bool IsPinned = false, IsAutoKey = false, IsPickingColor = false, IsPickingFocus = false;
 	s32 PickFocusBlock = -1;
 	xr_vector<WriteLatch> Latches;
@@ -1170,7 +1178,7 @@ private:
 	shared_str PreviewName;
 	xr_vector<u32> Filtered;
 	xr_vector<u64> Ranked;
-	char Filters[8][128] = {};
+	char Filters[9][128] = {};
 	s32 ChooserCursor = 0;
 	ChooserKind FilteredKind = ChooserKind::Model;
 	u32 FilteredObject = 0;

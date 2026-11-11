@@ -281,6 +281,11 @@ const LightRuntime* Player::FindLight(u32 ObjectId) const
 	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Lights, ObjectId);
 }
 
+const SoundRuntime* Player::FindSound(u32 ObjectId) const
+{
+	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Voices, ObjectId);
+}
+
 const DecalRuntime* Player::FindDecal(u32 ObjectId) const
 {
 	return ShouldDropRuntimes ? nullptr : PlayerLocal::RuntimeOf(Decals, ObjectId);
@@ -359,6 +364,7 @@ void Player::Sync()
 	PlayerLocal::Reconcile(Lights, Data, ObjectType::Light, RuntimeIds);
 	PlayerLocal::Reconcile(Emitters, Data, ObjectType::Particle, RuntimeIds);
 	PlayerLocal::Reconcile(Decals, Data, ObjectType::Decal, RuntimeIds);
+	PlayerLocal::Reconcile(Voices, Data, ObjectType::Sound, RuntimeIds);
 	const float Step = 1.0f / static_cast<float>(Data.Header.FrameRate);
 	for (Object& Item : Data.Objects)
 	{
@@ -391,6 +397,10 @@ void Player::Sync()
 		else if (Item.Type == ObjectType::Decal)
 		{
 			PlayerLocal::RuntimeOf(Decals, Item.Id)->Apply(Item.Decal, Item.Decal.Shader.size() ? Shaders() : ShaderNames);
+		}
+		else if (Item.Type == ObjectType::Sound)
+		{
+			PlayerLocal::RuntimeOf(Voices, Item.Id)->Apply(Item.Sound);
 		}
 	}
 	for (u32 Id : FitRequests)
@@ -595,6 +605,10 @@ void Player::EvaluateObjects(float At, const u8* Mask)
 		{
 			PoseDecal(Index, At, !Mask);
 		}
+		else if (Type == ObjectType::Sound)
+		{
+			PoseSound(Index, At, !Mask);
+		}
 	}
 }
 
@@ -747,6 +761,20 @@ void Player::PoseDecal(u32 Index, float At, bool IsDrawn)
 	}
 	Runtime.LastTau = Tau;
 	Runtime.Drive(States[Index].World, Width, Height, !Setup.IsStamp && IsLive && Tau >= 0.0f && Tau < Item.Span.Length);
+}
+
+void Player::PoseSound(u32 Index, float At, bool IsDrawn)
+{
+	const Object& Item = Data.Objects[Index];
+	const SoundData& Setup = Item.Sound;
+	const float Tau = PoseTransform(Index, At, Setup.Position, Setup.Rotation);
+	if (!IsDrawn)
+	{
+		return;
+	}
+	const float Local = std::clamp(Tau, 0.0f, Item.Span.Length);
+	const bool IsHeard = IsPlaying && States[Index].IsReady && !IsSilent(Item) && Tau >= 0.0f && Tau < Item.Span.Length;
+	PlayerLocal::RuntimeOf(Voices, Item.Id)->Drive({ States[Index].World.c, Tau, Curves::LaneScalar(Item.Lanes, Param::SoundVolume, 0, Local, Setup.Volume), Curves::LaneScalar(Item.Lanes, Param::SoundPitch, 0, Local, Setup.Pitch), IsHeard });
 }
 
 void Player::Stamp(DecalRuntime& Runtime, const Fmatrix& World, float Size)
@@ -1472,6 +1500,7 @@ void Player::DropRuntimes()
 	Lights.clear();
 	Emitters.clear();
 	Decals.clear();
+	Voices.clear();
 	CameraCache.clear();
 	ShakeAreas.clear();
 	ShakeOwners.clear();

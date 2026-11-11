@@ -3,8 +3,8 @@
 
 namespace Cinema
 {
-inline constexpr u16 WhereActor = 1, WhereCameraBlock = 2, WhereLight = 4, WhereParticle = 8, WhereShakeClip = 16, WherePose = 32, WherePoseBone = 64, WhereDecal = 128, WhereWeather = 256, WherePost = 512, WherePlaced = WhereActor | WhereLight | WhereParticle | WhereDecal;
-inline constexpr u16 ObjectWhere[7] = { WhereActor, 0, WhereLight, WhereParticle, WhereDecal, WhereWeather, WherePost };
+inline constexpr u16 WhereActor = 1, WhereCameraBlock = 2, WhereLight = 4, WhereParticle = 8, WhereShakeClip = 16, WherePose = 32, WherePoseBone = 64, WhereDecal = 128, WhereWeather = 256, WherePost = 512, WhereSound = 1024, WherePlaced = WhereActor | WhereLight | WhereParticle | WhereDecal | WhereSound;
+inline constexpr u16 ObjectWhere[8] = { WhereActor, 0, WhereLight, WhereParticle, WhereDecal, WhereSound, WhereWeather, WherePost };
 
 struct ParamInfo
 {
@@ -62,6 +62,8 @@ inline constexpr ParamInfo Params[static_cast<u32>(Param::Count)] =
 	{ "constraint_weight", "Weight", 1, 0.0f, 1.0f, false, WherePoseBone },
 	{ "decal_width", "Width", 1, 0.01f, 20.0f, false, WhereDecal },
 	{ "decal_height", "Height", 1, 0.01f, 20.0f, false, WhereDecal },
+	{ "sound_volume", "Volume", 1, 0.0f, 2.0f, false, WhereSound },
+	{ "sound_pitch", "Pitch", 1, 0.25f, 4.0f, false, WhereSound },
 	{ "weather_time", "Time of day", 1, 0.0f, 24.0f, false, WhereWeather },
 	{ "sun_heading", "Sun heading", 1, -3600.0f, 3600.0f, false, WhereWeather },
 	{ "sun_height", "Sun height", 1, 1.0f, 89.0f, false, WhereWeather },

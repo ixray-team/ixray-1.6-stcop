@@ -1434,11 +1434,11 @@ void ReadObject(const CInifile& Ini, u32 Index, Scene& Out, u32 Version, Warning
 	xr_sprintf(Section, "object_%03u", Index);
 	const char* TypeText = Ini.read_if_exists<str_c>(Section, "type", nullptr);
 	u32 Type = 0;
-	while (Type < 7 && (!TypeText || xr_strcmp(TypeText, TypeNames[Type])))
+	while (Type < 8 && (!TypeText || xr_strcmp(TypeText, TypeNames[Type])))
 	{
 		++Type;
 	}
-	if (Type == 7 || (Type == 1 && FindCamera(Out)))
+	if (Type == 8 || (Type == 1 && FindCamera(Out)))
 	{
 		Notes.Add("[%s] is missing, of an unknown type or a second camera, object skipped", Section);
 		return;
@@ -1496,6 +1496,24 @@ void ReadObject(const CInifile& Ini, u32 Index, Scene& Out, u32 Version, Warning
 		Setup.Width = Sanitize(Values[0], 0.01f, 20.0f, 0.5f);
 		Setup.Height = Sanitize(Values[1], 0.01f, 20.0f, 0.5f);
 		Setup.IsStamp = ReadBool(Ini, Section, "stamp", false, Notes);
+	}
+	else if (Item.Type == ObjectType::Sound)
+	{
+		SoundData& Setup = Item.Sound;
+		float Values[3] = { Setup.Volume, Setup.Pitch, Setup.Offset };
+		Setup.File = ReadSafe(Ini, Section, "sound", Notes);
+		ReadFloats(Ini, Section, "voice", Values, 3, Notes);
+		Setup.Volume = Sanitize(Values[0], 0.0f, 2.0f, 1.0f);
+		Setup.Pitch = Sanitize(Values[1], 0.25f, 4.0f, 1.0f);
+		Setup.Offset = Sanitize(Values[2], 0.0f, MaxTime, 0.0f);
+		Setup.IsWorld = ReadBool(Ini, Section, "world", false, Notes);
+		Setup.IsLooped = ReadBool(Ini, Section, "loop", false, Notes);
+		float Reach[2] = { 0.0f, 0.0f };
+		if (Ini.line_exist(Section, "distance") && ReadFloats(Ini, Section, "distance", Reach, 2, Notes))
+		{
+			Setup.MinDistance = Sanitize(Reach[0], 0.0f, 1000.0f, 0.0f);
+			Setup.MaxDistance = Sanitize(Reach[1], 0.0f, 1000.0f, 0.0f);
+		}
 	}
 	else if (Item.Type == ObjectType::Weather)
 	{
@@ -1965,6 +1983,18 @@ void WriteObject(CInifile& Ini, const char* Section, const Object& Item)
 		Ini.w_bool(Section, "stamp", Item.Decal.IsStamp);
 		return;
 	}
+	if (Item.Type == ObjectType::Sound)
+	{
+		Item.Sound.File.size() ? Ini.w_string(Section, "sound", Item.Sound.File.c_str()) : (void)0;
+		Write(Ini, Section, "voice", Item.Sound.Volume, Item.Sound.Pitch, Item.Sound.Offset);
+		Ini.w_bool(Section, "world", Item.Sound.IsWorld);
+		Ini.w_bool(Section, "loop", Item.Sound.IsLooped);
+		if (Item.Sound.MinDistance != 0.0f || Item.Sound.MaxDistance != 0.0f)
+		{
+			Write(Ini, Section, "distance", Item.Sound.MinDistance, Item.Sound.MaxDistance);
+		}
+		return;
+	}
 	if (Item.Type == ObjectType::Weather)
 	{
 		WeatherData& Setup = const_cast<WeatherData&>(Item.Weather);
@@ -2131,7 +2161,7 @@ bool CanSave(const Scene& Data, xr_string& Error)
 	for (const Object& Item : Data.Objects)
 	{
 		CameraCount += Item.Type == ObjectType::Camera;
-		const bool IsTypeSafe[7] = { ActorSafe(Item.Actor), CameraCount == 1 && IsShotSafe(Item.Camera), OptionalSafe(Item.Light.Texture) && Item.Light.Texture.size() <= MaxTextureBytes, OptionalSafe(Item.Particle.Effect), OptionalSafe(Item.Decal.Texture) && OptionalSafe(Item.Decal.Shader), OptionalSafe(Item.Weather.Cycle), true };
+		const bool IsTypeSafe[8] = { ActorSafe(Item.Actor), CameraCount == 1 && IsShotSafe(Item.Camera), OptionalSafe(Item.Light.Texture) && Item.Light.Texture.size() <= MaxTextureBytes, OptionalSafe(Item.Particle.Effect), OptionalSafe(Item.Decal.Texture) && OptionalSafe(Item.Decal.Shader), OptionalSafe(Item.Sound.File), OptionalSafe(Item.Weather.Cycle), true };
 		const bool IsGood = Item.Name.size() <= MaxNameBytes && IsSmall(Item.Lanes) && IsTypeSafe[static_cast<u32>(Item.Type)] && (Item.Type == ObjectType::Camera || IsLinkSafe(Item.Attach));
 		if (!IsGood)
 		{

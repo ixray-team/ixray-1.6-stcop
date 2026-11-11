@@ -15,7 +15,7 @@ constexpr const char* ModalTitles[11] = { "", "Open scene", "Import v4 scene", "
 constexpr const char* SettingsFolder = "cinema_editor\\";
 constexpr const char* SettingsFile = "cinema_editor\\editor.ltx";
 constexpr size_t MaxSettingsSize = 64u << 10;
-constexpr const char* AddLabels[7] = { "Add actor", "", "Add light", "Add particle", "Add decal", "Add weather", "Add post" };
+constexpr const char* AddLabels[8] = { "Add actor", "", "Add light", "Add particle", "Add decal", "Add sound", "Add weather", "Add post" };
 xr_unique_ptr<Editor> g_Editor;
 
 bool ScenePath(string_path& Out, const char* Alias, const shared_str& LevelName, const xr_string& File)
@@ -607,6 +607,10 @@ void Editor::DrawMenuBar(Player& Core)
 		if (ImGui::MenuItem("Light"))
 		{
 			AddLight(Core, Core.Time, Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, 3.0f));
+		}
+		if (ImGui::MenuItem("Sound"))
+		{
+			AddSound(Core, Core.Time);
 		}
 		if (ImGui::MenuItem("Weather"))
 		{
@@ -1240,7 +1244,7 @@ Object* Editor::AddObject(Player& Core, ObjectType Type, const shared_str& Sourc
 	Object* Item = CreateObject(Core, Type, Start);
 	if (Item)
 	{
-		(Type == ObjectType::Particle ? Item->Particle.Effect : Type == ObjectType::Decal ? Item->Decal.Texture : Item->Actor.Visual) = Source;
+		(Type == ObjectType::Particle ? Item->Particle.Effect : Type == ObjectType::Decal ? Item->Decal.Texture : Type == ObjectType::Sound ? Item->Sound.File : Item->Actor.Visual) = Source;
 		*PlacementOf(*Item, 0) = Position;
 		*PlacementOf(*Item, 1) = Rotation;
 		Item->Name = DefaultName(*Item);
@@ -1258,6 +1262,11 @@ void Editor::AddLight(Player& Core, float Start, const Fvector& Position)
 	{
 		Item->Span.Length = std::min(End - Item->Span.Start >= 1.0f ? End - Item->Span.Start : 5.0f, MaxTime - Item->Span.Start);
 	}
+}
+
+void Editor::AddSound(Player& Core, float Start)
+{
+	AddObject(Core, ObjectType::Sound, shared_str(), Start, Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, 3.0f), Fvector().set(0.0f, 0.0f, 0.0f));
 }
 
 void Editor::AddWeather(Player& Core, float Start)
@@ -2392,7 +2401,7 @@ void Editor::HoverLane(u32 ObjectId, const LaneSlot& Slot)
 
 void Editor::KeyPlayhead(Player& Core)
 {
-	constexpr Param Keyed[7][3] = { { Param::Position, Param::Rotation, Param::Scale }, { Param::Count, Param::Count, Param::Count }, { Param::Position, Param::Rotation, Param::Count }, { Param::Position, Param::Rotation, Param::Size }, { Param::Position, Param::Rotation, Param::Count }, { Param::Count, Param::Count, Param::Count }, { Param::Count, Param::Count, Param::Count } };
+	constexpr Param Keyed[8][3] = { { Param::Position, Param::Rotation, Param::Scale }, { Param::Count, Param::Count, Param::Count }, { Param::Position, Param::Rotation, Param::Count }, { Param::Position, Param::Rotation, Param::Size }, { Param::Position, Param::Rotation, Param::Count }, { Param::Position, Param::Count, Param::Count }, { Param::Count, Param::Count, Param::Count }, { Param::Count, Param::Count, Param::Count } };
 	const Object* Hovered = Find(Core.Data, HoverLaneObject);
 	if (Hovered)
 	{

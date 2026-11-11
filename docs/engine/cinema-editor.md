@@ -555,6 +555,24 @@ The **Attach** group follows Transform (see [Attach rows](#attach-rows)).
 
 The **Attach** group follows Transform: a decal can ride on an object or a bone, though it only lands on level geometry.
 
+### Sound rows
+
+| Group | Row | Value | Default, Reset |
+| --- | --- | --- | --- |
+| — | **Sound** | Sound chooser: the same list with a **Filter** box, arrow keys and `Enter` as the model and texture choosers. The name follows the file unless renamed. Red when the file cannot be found: the clip is silent then. | None (silent) |
+| — | **In world** | Off: heard the same wherever the camera is (music, narration, radio). On: heard from the object's position, quieter with distance and panned, with the file's own distance settings. | off |
+| — | **Loop** | Repeats the file for the whole clip. | off |
+| — | **Start at** | Where in the file the clip begins, in seconds. | 0 |
+| — | **Fit clip to sound** | Sets the clip length to the rest of the file after **Start at**. | — |
+| — | **Clip** | Start and length as `mm:ss:ff`. | — |
+| — | **Volume** | 0–2. ◇ | 1 |
+| — | **Pitch** | Playback speed and pitch, 0.25–4. ◇ | 1 |
+| — | **Min distance**, **Max distance** | Only with **In world**. Full volume up to Min, silent beyond Max, in metres. 0 (shown as **File**) uses the sound file's own setting; Min and Max take effect once Max is set. | File |
+| Transform | **Position** | Only with **In world**. As the actor row. ◇ | as the actor row |
+| Transform | **Key** | As the actor row, for the Position keys. | — |
+
+With **In world** the **Attach** group follows: the sound can ride on an object or a bone, for example an actor's head for speech.
+
 ### Weather rows
 
 A weather row changes the sky, the sun and the air while its clip plays. It is a row with one clip, like a light: move and trim the clip, mute and solo the row, put several in a folder. Outside every weather clip the game's own weather shows. A weather is a look only: the game clock, the game's own weather and what NPCs do are never changed, and the look ends with the clip.
@@ -933,6 +951,16 @@ The status line at the bottom shows the last result (new, opened, imported, save
 - With **Stamp** it leaves a game wallmark once, each time playback (not scrubbing) crosses the start of its clip, like a bullet hole or a blood splash: on the nearest actor whose bounds the projection passes through (on the actor's skin; needs the game's dynamic wallmarks option and the actor within 50 m), otherwise on the level geometry below. Stamps fade like the game's wallmarks and are not undone; **Clear stamps** removes every static wallmark of the level, the game's own included.
 - Decals are drawn by the game's wallmark system, so a level change clears them like any wallmark; the editor lays them again when they are shown.
 
+### Sounds
+
+- **Add → Sound** (the menu and the timeline's right-click menu) makes a sound clip at the playhead, 3 m in front of the view; pick the file in the inspector.
+- A sound is heard only while the scene plays and the playhead is inside its clip, and only when the clip is not muted. Scrubbing, stepping and a paused scene are silent.
+- Pressing Play in the middle of a clip starts the file from the matching moment, and a jump of the playhead during playback moves the sound with it. The sound and the picture can drift apart by up to about a third of a second before the sound is moved back in step.
+- Without **Loop** the clip is silent after the file ends, however long the clip is.
+- With **Pitch** other than 1 (or keyed), the file runs faster or slower than the clip, so starting in the middle of the clip is only approximate.
+- **In world** sounds move with the move gizmo and show a marker in the view; other sounds have no place in the world.
+- Not done yet: the clip does not draw a waveform, and **Render frames** writes no sound.
+
 ### Lights and particles
 
 - A light shines only while the playhead is inside its clip and the clip is not muted. Its colour, intensity, range, cone, virtual size and volumetric values follow the lanes; what lights the scene is Color times Intensity. A Spot light points along its rotation; a Point light ignores Rotation, Cone and Texture. Scrubbing either way and playing give the same light.
@@ -1193,7 +1221,7 @@ Values:
 | Key | Value | Rule |
 | --- | --- | --- |
 | `id` | number | zero or repeated gets a new id |
-| `type` | `actor`, `camera`, `light`, `particle`, `decal`, `weather` or `post` | anything else, or a second camera, skips the object |
+| `type` | `actor`, `camera`, `light`, `particle`, `decal`, `sound`, `weather` or `post` | anything else, or a second camera, skips the object |
 | `weather`, `weather_mask`, `weather_fade`, `set_<value>` | a weather row: the weather's name (absent for the game's weather), which values the scene sets (one bit per value, in the order of the inspector rows), fade in and out in seconds, and one line per value (`set_weather_time`, `set_sun_color` and so on) | values out of range are replaced by the defaults |
 | `name`, `name_locked` | hex name; bool | an invalid hex name is dropped with a warning |
 | `color` | `r, g, b` | each 0–255, otherwise a palette colour |
@@ -1305,6 +1333,18 @@ Decals (`type = decal`)
 | `decal` | `width, height` | 0.01–20 each, default 0.5 |
 | `stamp` | bool | default `off` |
 | `lane_NN_param` `decal_width`, `decal_height` | size lanes | layer 0 |
+
+Sound objects (`type = sound`):
+
+| Key | Value | Rule |
+| --- | --- | --- |
+| `sound` | sound path under the game's sounds folder, without `.ogg` | written only when set; the path rule |
+| `position`, `rotation` | as lights | used only with `world` |
+| `voice` | `volume, pitch, start_at` | 0–2, 0.25–4, seconds; default `1, 1, 0` |
+| `world` | bool | default `off` |
+| `loop` | bool | default `off` |
+| `distance` | `min, max` in metres, 0–1000 | written only when set; 0 uses the file's own |
+| `lane_NN_param` `sound_volume`, `sound_pitch` | volume and pitch lanes | layer 0 |
 
 Links (actors, lights and particles: `attach_parent`, `attach_look_at`; camera clips: `block_NNN_parent`, `block_NNN_look_at`)
 
@@ -1865,3 +1905,12 @@ Timeline fixes, solo and choosers:
 440. On a lane with four keys a few pixels apart (zoom the timeline out), box-select them and drag one of the selected keys up by pressing on its diamond: all four rise together and keep their shape. Press on a tangent handle tip beside a diamond instead: only that handle moves. Repeat zoomed in: the same.
 441. Physical lens at f/1.4 on a night shot with small lights out of focus across the whole picture, **Swirl** 0 then 0.7: lights near the centre stay round, lights toward the edges become ovals whose long side follows a circle around the centre, strongest in the corners; no seams or steps across the picture. Key it from 0 to 1: it animates. With **Anamorphic** 2 as well, both shapes combine. Save and reopen: `block_NNN_swirl` keeps the value.
 442. On a Position lane showing X, Y and Z together, box-select keys of all three curves and drag one of them up: every selected key rises by the same height on screen, on all three curves; keys that are not selected stay. Drag sideways: all selected keys move in time together.
+443. **Add → Sound**, pick a music file, **Fit clip to sound**: the clip gets the file's length and a speaker icon. Play from the clip start: the music starts with it; stop: silence. Put the playhead in the middle of the clip and Play: the music starts from that moment, not from its beginning. Scrub: silent. Mute the row: silent.
+444. While playing, click the ruler to jump inside the clip: the sound jumps with it. Let the file run out in a longer clip: silence after its end; with **Loop** it repeats. **Start at** 5 s: the clip begins five seconds into the file.
+445. Key **Volume** from 0 to 1 over two seconds: the sound fades in while playing. **Pitch** 0.5: slower and lower. Two overlapping sound clips on two rows: both are heard.
+446. **In world** on: a marker appears 3 m in front of where the clip was added, and the move gizmo moves it; walk the camera away during playback: the sound gets quieter and pans. Attach it to an actor's head bone: it follows the actor. **In world** off: the same loudness everywhere and no marker.
+447. Save and reopen: `type = sound` with `sound`, `voice`, `world` and `loop`; the lanes are kept. A scene with a sound whose file is missing opens, shows the name in red and plays silently. Play the scene in game (editor closed): the sounds play and stop with it.
+448. Camera clip with **Look at** an actor who walks past: **Look influence** 1 keeps the actor centred; 0 keeps the clip's own rotation; 0.5 turns half way. Key it from 0 to 1 over a second: the camera eases on to the actor with no jump. An object with scale keeps its size at 0.5.
+449. **Follow smoothing** 1 s on that clip while the actor stops and starts abruptly: the camera turn is softened and trails slightly, with no jitter; scrub backwards and forwards: the picture at a given time is always the same. With a **Parent** as well, the camera's position trails the parent in the same way. 0: exact again.
+450. Save and reopen: `block_NNN_follow` keeps both values and the lanes are kept. With **Look influence** below 1 the rotate gizmo still turns the object (it is exact only at 0 and 1).
+451. Sound clip **Sound** row: the chooser opens with a **Filter** box focused; type part of a name: the list narrows; arrows and `Enter` pick; the clip name follows. **In world** with **Max distance** 5 and **Min distance** 1: at 1 m the sound is at full volume, at 6 m silent; back to 0 (**File**): the file's own reach. Changing a distance during playback restarts the sound in step. Save and reopen: `distance` is kept.

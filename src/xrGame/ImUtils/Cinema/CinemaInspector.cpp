@@ -14,7 +14,7 @@ constexpr u32 Rates[4] = { 24, 25, 30, 60 };
 constexpr float ListWidth = 360.0f;
 constexpr const char* LibraryFile = "cinema_editor\\cinema_library.ltx";
 constexpr const char* LibraryKinds[5] = { "model", "item", "animation", "effect", "texture" };
-constexpr s32 LibrarySlots[8] = { 0, 1, 2, -1, -1, 3, 4, -1 };
+constexpr s32 LibrarySlots[9] = { 0, 1, 2, -1, -1, 3, 4, -1, -1 };
 constexpr u32 MaxFavourites = 1024, MaxFolders = 64, MaxFolderItems = 256;
 constexpr size_t MaxLibrarySize = 256u << 10;
 constexpr const char* LinkProblems[5] = { "Parent is missing: hidden", "Bone is missing: the origin is used", "Look at target is missing: ignored", "Look bone is missing: the origin is used", "Parent is missing: the block passes through" };
@@ -135,7 +135,7 @@ void Editor::DrawInspector(Player& Core)
 	ViewRight = ImGui::GetWindowPos().x;
 	std::erase_if(PinnedIds, [&Core](u32 Id) { return !Find(Core.Data, Id); });
 	IsPinned = IsPinned && !PinnedIds.empty();
-	xr_vector<u32>* const Lists[7] = { &InspectActors, &InspectCameras, &InspectLights, &InspectParticles, &InspectDecals, &InspectWeathers, &InspectPosts };
+	xr_vector<u32>* const Lists[8] = { &InspectActors, &InspectCameras, &InspectLights, &InspectParticles, &InspectDecals, &InspectSounds, &InspectWeathers, &InspectPosts };
 	for (xr_vector<u32>* List : Lists)
 	{
 		List->clear();
@@ -191,7 +191,7 @@ void Editor::DrawInspector(Player& Core)
 	OffsetValue = ImGui::IsItemActive() ? OffsetValue : 0.0f;
 	EndRow(KeyState::None);
 	ImGui::EndDisabled();
-	const bool HasLightPin = InspectActors.empty(), HasParticlePin = HasLightPin && InspectLights.empty(), HasDecalPin = HasParticlePin && InspectParticles.empty(), HasWeatherPin = HasDecalPin && InspectDecals.empty(), HasPostPin = HasWeatherPin && InspectWeathers.empty(), HasCameraPin = HasPostPin && InspectPosts.empty();
+	const bool HasLightPin = InspectActors.empty(), HasParticlePin = HasLightPin && InspectLights.empty(), HasDecalPin = HasParticlePin && InspectParticles.empty(), HasSoundPin = HasDecalPin && InspectDecals.empty(), HasWeatherPin = HasSoundPin && InspectSounds.empty(), HasPostPin = HasWeatherPin && InspectWeathers.empty(), HasCameraPin = HasPostPin && InspectPosts.empty();
 	if (HasCameraPin && InspectCameras.empty())
 	{
 		DrawSceneSection(Core);
@@ -215,6 +215,10 @@ void Editor::DrawInspector(Player& Core)
 	if (!InspectDecals.empty())
 	{
 		DrawDecalSection(Core, InspectDecals, HasDecalPin);
+	}
+	if (!InspectSounds.empty())
+	{
+		DrawSoundSection(Core, InspectSounds, HasSoundPin);
 	}
 	if (!InspectWeathers.empty())
 	{
@@ -2185,6 +2189,104 @@ void Editor::DrawDecalSection(Player& Core, const xr_vector<u32>& Ids, bool HasP
 	ImGui::PopID();
 }
 
+void Editor::DrawSoundSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin)
+{
+	const Object& Primary = *Find(Core.Data, Ids[0]);
+	const SoundData& Setup = Primary.Sound;
+	const SoundRuntime* Runtime = Core.FindSound(Primary.Id);
+	const float Total = Runtime ? Runtime->Length() : 0.0f;
+	ImGui::PushID("Sound");
+	DrawHeader(Core, Ids, HasPin);
+	BeginRow("Sound", false, false);
+	ImGui::PushStyleColor(ImGuiCol_Text, !Setup.File.size() || Total > 0.0f ? ImGui::GetStyleColorVec4(ImGuiCol_Text) : ErrorColor);
+	shared_str Source, Name;
+	const bool IsFilePicked = Chooser(Core, ChooserKind::Sound, "##File", Setup.File.size() ? Setup.File.c_str() : "None", Ids, Source, Name);
+	ImGui::PopStyleColor();
+	if (IsFilePicked)
+	{
+		for (u32 Id : Ids)
+		{
+			Object* Item = Edit(Core, Id, "Sound file");
+			Item->Sound.File = Source;
+			Item->Name = Item->IsNameLocked ? Item->Name : DefaultName(*Item);
+		}
+	}
+	EndRow(KeyState::None);
+	RowAction Action = BeginRow("In world", Setup.IsWorld, false);
+	bool IsWorld = Setup.IsWorld;
+	if (ImGui::Checkbox("##World", &IsWorld) || Action == RowAction::Reset)
+	{
+		for (u32 Id : Ids)
+		{
+			Edit(Core, Id, "Sound in world")->Sound.IsWorld = IsWorld && Action != RowAction::Reset;
+		}
+	}
+	ImGui::SetItemTooltip("Off: heard the same everywhere (music, narration). On: heard from the object's position");
+	EndRow(KeyState::None);
+	Action = BeginRow("Loop", Setup.IsLooped, false);
+	bool IsLooped = Setup.IsLooped;
+	if (ImGui::Checkbox("##Loop", &IsLooped) || Action == RowAction::Reset)
+	{
+		for (u32 Id : Ids)
+		{
+			Edit(Core, Id, "Sound loop")->Sound.IsLooped = IsLooped && Action != RowAction::Reset;
+		}
+	}
+	EndRow(KeyState::None);
+	Action = BeginRow("Start at", Setup.Offset != 0.0f, false);
+	float Offset = Setup.Offset;
+	if (ImGui::DragFloat("##Offset", &Offset, 0.01f, 0.0f, std::max(Total, 0.0f), "%.2f s", ImGuiSliderFlags_AlwaysClamp) || Action == RowAction::Reset)
+	{
+		for (u32 Id : Ids)
+		{
+			Edit(Core, Id, "Sound start")->Sound.Offset = Action == RowAction::Reset ? 0.0f : Offset;
+		}
+	}
+	ImGui::SetItemTooltip("Where in the file the clip begins");
+	EndRow(KeyState::None);
+	ImGui::BeginDisabled(Total <= Setup.Offset);
+	if (ImGui::Button("Fit clip to sound", ImVec2(-FLT_MIN, 0.0f)))
+	{
+		for (u32 Id : Ids)
+		{
+			Object* Item = Edit(Core, Id, "Fit clip to sound");
+			const SoundRuntime* Voice = Core.FindSound(Id);
+			const float Rest = Voice ? Voice->Length() - Item->Sound.Offset : 0.0f;
+			Item->Span.Length = Rest > 0.0f ? std::clamp(Rest, MinLength, MaxTime - Item->Span.Start) : Item->Span.Length;
+		}
+	}
+	ImGui::EndDisabled();
+	ClipRow(Core, Ids);
+	ParamRow(Core, Ids, -1, Param::SoundVolume, 0, 0.01f, "%.2f", 1, 1.0f);
+	ParamRow(Core, Ids, -1, Param::SoundPitch, 0, 0.01f, "%.2f", 1, 1.0f);
+	if (Setup.IsWorld)
+	{
+		for (u32 Side = 0; Side < 2; ++Side)
+		{
+			const float Was = Side ? Setup.MaxDistance : Setup.MinDistance;
+			Action = BeginRow(Side ? "Max distance" : "Min distance", Was != 0.0f, false);
+			float Value = Was;
+			if (ImGui::DragFloat(Side ? "##Far" : "##Near", &Value, 0.1f, 0.0f, 1000.0f, Value > 0.0f ? "%.1f m" : "File", ImGuiSliderFlags_AlwaysClamp) || Action == RowAction::Reset)
+			{
+				for (u32 Id : Ids)
+				{
+					SoundData& Voice = Edit(Core, Id, "Sound distance")->Sound;
+					(Side ? Voice.MaxDistance : Voice.MinDistance) = Action == RowAction::Reset ? 0.0f : Value;
+				}
+			}
+			ImGui::SetItemTooltip("%s", Side ? "Beyond this distance the sound is silent. 0 uses the sound file's own setting" : "Up to this distance the sound is at full volume. 0 uses the sound file's own setting");
+			EndRow(KeyState::None);
+		}
+		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ParamRow(Core, Ids, -1, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
+			KeyRow(Core, Ids);
+		}
+		DrawAttach(Core, Ids, -1);
+	}
+	ImGui::PopID();
+}
+
 void Editor::DrawWeatherSection(Player& Core, const xr_vector<u32>& Ids, bool HasPin)
 {
 	struct Row
@@ -3391,6 +3493,12 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 		InspectorUi::ListFiles(TextureFiles, _game_textures_, "*.dds", FS_ListFiles | FS_ClampExt, MaxTextureBytes);
 		InspectorUi::SortNames(TextureFiles);
 	}
+	if (Kind == ChooserKind::Sound && SoundFiles.empty())
+	{
+		IsFilterDirty = true;
+		InspectorUi::ListFiles(SoundFiles, "$game_sounds$", "*.ogg", FS_ListFiles | FS_ClampExt, MaxTextureBytes);
+		InspectorUi::SortNames(SoundFiles);
+	}
 	const u32 Owner = Owners.empty() ? 0 : Owners[0];
 	const ActorRuntime* Runtime = Owner ? Core.FindActor(Owner) : nullptr;
 	if (ImGui::IsWindowAppearing() || IsChooserFresh)
@@ -3404,7 +3512,7 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 	{
 		LoadPresets();
 	}
-	const xr_vector<shared_str>* const Lists[8] = { &ModelFiles, &ItemSections, &OmfFiles, &OmfFiles, &PresetNames, &EffectNames, &TextureFiles, &Core.Shaders() };
+	const xr_vector<shared_str>* const Lists[9] = { &ModelFiles, &ItemSections, &OmfFiles, &OmfFiles, &PresetNames, &EffectNames, &TextureFiles, &Core.Shaders(), &SoundFiles };
 	const xr_vector<shared_str>& Files = *Lists[static_cast<u32>(Shown)];
 	const size_t Sources = Shown == ChooserKind::Animation && Runtime ? Runtime->Sources.size() : 0;
 	char* Filter = Filters[static_cast<u32>(Shown)];
