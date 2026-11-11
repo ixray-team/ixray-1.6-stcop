@@ -355,6 +355,15 @@ void CGrenade::OnAnimationEnd(u8 state)
 {
 	switch(state)
 	{
+	case eThrow:
+	{
+		if (m_motion_marks_available && !SuicideThrow && !m_thrown && !m_throw && H_Parent() && m_fake_missile)
+		{
+			Throw();
+		}
+		inherited::OnAnimationEnd(state);
+		break;
+	}
 	case eThrowEnd:
 	{
 		SwitchState(eHidden);
