@@ -201,7 +201,12 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 
 		if (entity_alive)
 		{
-			if (add_enemies && enemy().add(entity_alive))
+			bool AddEnemy = add_enemies;
+			if constexpr (std::is_same_v<T, CHitObject>)
+			{
+				AddEnemy |= m_stalker && member.m_amount > 0.f && entity_alive->ID() == hit().last_hit_object_id();
+			}
+			if (AddEnemy && enemy().add(entity_alive))
 			{
 				continue;
 			}
