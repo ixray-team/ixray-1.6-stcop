@@ -824,7 +824,8 @@ function actor_punch(npc)
 
 	local active_slot = db.actor:active_slot()
 	if active_slot ~= CInventory.INV_SLOT_2 and
-		 active_slot ~= CInventory.INV_SLOT_3
+		 active_slot ~= CInventory.INV_SLOT_3 and
+		 active_slot ~= CInventory.PISTOL_SLOT_NEW
 	then
 		return
 	end
