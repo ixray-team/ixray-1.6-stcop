@@ -93,8 +93,6 @@ void CCar::SDoor::Init()
 					broken_door_handle = !!ini->r_bool(bone_name, "broken_door_handle");
 				if (ini->line_exist(bone_name, "lamba_door"))
 					lamba_door = !!ini->r_bool(bone_name, "lamba_door");
-				if (ini->line_exist(bone_name, "vertical_door"))
-					vertical_door = !!ini->r_bool(bone_name, "vertical_door");
 
 				if (ini->line_exist(bone_name, "no_deactivate"))
 					no_deactivate = !!ini->r_bool(bone_name, "no_deactivate");
@@ -570,7 +568,7 @@ bool CCar::SDoor::IsFront(const Fvector& pos,const Fvector& dir)
 	if(pcar->bones_bind_forms.empty())
 		return false;
 
-	Fvector tdir;tdir.set(vertical_door ? pcar->XFORM().j:pcar->XFORM().i);if(tdir.dotproduct(dir)<0.f)tdir.invert();
+	Fvector tdir;tdir.set(pcar->XFORM().i);if(tdir.dotproduct(dir)<0.f)tdir.invert();
 	Fmatrix pf;
 	pf.mul(pcar->XFORM(),pcar->bones_bind_forms[bone_id]);
 	Fvector dif,dif1;
@@ -594,7 +592,7 @@ bool CCar::SDoor::IsInArea(const Fvector& pos,const Fvector& dir)
 		//CBoneInstance bi=K->LL_GetBoneInstance(bone_id);
 		//CBoneData& bd=K->LL_GetData(bone_id);
 		//		Fobb bb=bd.obb;
-		Fvector tdir;tdir.set(vertical_door ? pcar->XFORM().j:pcar->XFORM().i);if(tdir.dotproduct(dir)<0.f)tdir.invert();
+		Fvector tdir;tdir.set(pcar->XFORM().i);if(tdir.dotproduct(dir)<0.f)tdir.invert();
 		Fmatrix pf;
 		pf.mul(pcar->XFORM(),pcar->bones_bind_forms[bone_id]);
 		Fvector dif,dif1;
@@ -602,7 +600,7 @@ bool CCar::SDoor::IsInArea(const Fvector& pos,const Fvector& dir)
 		pcar->Center(dif1);
 		Fvector c_to_d;c_to_d.sub(pf.c,dif1);
 		dif1.sub(pos);
-		return 2.f*abs(c_to_d.dotproduct(vertical_door ? pcar->XFORM().j:pcar->XFORM().i))>abs(dif1.dotproduct(vertical_door ? pcar->XFORM().j:pcar->XFORM().i));
+		return 2.f*abs(c_to_d.dotproduct(pcar->XFORM().i))>abs(dif1.dotproduct(pcar->XFORM().i));
 	}
 	Fmatrix closed_door_form,door_form;
 	Fvector closed_door_dir,door_dir,anchor_to_pos,door_axis;

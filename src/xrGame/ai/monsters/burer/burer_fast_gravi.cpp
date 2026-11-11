@@ -40,10 +40,9 @@ void CBurerFastGravi::on_event(ControlCom::EEventType type, ControlCom::IEventDa
 
 void CBurerFastGravi::process_hit()
 {
-	// The normal impulse is meant for a free actor. While the actor is in a
-	// car, HitEntity redirects the hit to the car; keep the car hit damage-only
-	// so a ranged burer strike cannot launch the vehicle.
-	const float impulse = m_object->IsEnemyInCar() ? 0.f : 100.f;
-	m_object->HitEntity(m_object->EnemyMan.get_enemy(), 1.f, impulse, m_object->Direction());
+	// The 100 impulse is tuned for the actor. While the actor is in a car,
+	// HitEntity redirects the hit to the car, which converts the impulse into
+	// a capped body push instead of applying the raw value.
+	m_object->HitEntity(m_object->EnemyMan.get_enemy(), 1.f, 100.f, m_object->Direction());
 }
 

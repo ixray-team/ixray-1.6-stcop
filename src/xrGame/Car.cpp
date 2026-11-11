@@ -375,6 +375,8 @@ CCar::CCar()
 	m_interior_volume = 0.7f;
 	m_hit_stall_threshold = 1.f;
 	m_hit_anomaly_scale = 1.f;
+	m_mutant_hit_impulse_factor = 1.f;
+	m_burer_gravi_impulse_factor = 1.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
 	m_brakes_pressure_current = 0.f;
@@ -2937,7 +2939,129 @@ void CCar::HitFrom(CObject* who, float value, float impulse, const Fvector& dir,
 	u_EventSend(packet);
 }
 
+namespace
+{
+	float GetCarAttackerMass(CObject* who)
+	{
+		if (who == nullptr)
+			return 0.f;
+
+		CPhysicsShellHolder* Holder = who->cast_physics_shell_holder();
+		if (Holder == nullptr)
+			return 0.f;
+
+		// A living creature keeps its mass in the movement controller; the
+		// physics shell exists only for ragdolls and physical objects.
+		if (CCharacterPhysicsSupport* Support = Holder->character_physics_support())
+		{
+			if (CPHMovementControl* Movement = Support->movement())
+			{
+				const float Mass = Movement->GetMass();
+				if (Mass > 0.f)
+					return Mass;
+			}
+		}
+
+		return Holder->GetMass();
+	}
+}
+
+void CCar::HitFromCreature(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type)
+{
+	if (getDestroy())
+		return;
+
+	// Damage keeps using the regular hit event. The car has no single hit bone
+	// for that event, so the physical reaction is applied separately below.
+	HitFrom(who, value, 0.f, dir, hit_type);
+
+	if (m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
+		return;
+
+	const float CarMass = m_pPhysicsShell->getMass();
+	if (CarMass <= 0.f)
+		return;
+
+	// The attack impulse is tuned for the actor, while the monster body adds
+	// momentum of its own. Convert both to momentum, cap the result and divide
+	// by the car mass: a heavy truck moves much less than a light car.
+	constexpr float ImpulseToMomentum = 8.f;  // kg*m/s per attack impulse unit
+	constexpr float AttackerBodySpeed = 3.f;  // m/s, monster body momentum
+	constexpr float MaxMomentum = 2400.f;     // kg*m/s, strongest melee hit
+	constexpr float MaxSpeed = 3.f;           // m/s, guard for very light cars
+
+	const float AttackerMass = GetCarAttackerMass(who);
+	const float AttackImpulse = std::max(impulse, 0.f);
+	const float Momentum = std::min(
+		(AttackImpulse * ImpulseToMomentum + AttackerMass * AttackerBodySpeed) * m_mutant_hit_impulse_factor,
+		MaxMomentum);
+	if (Momentum <= 0.f)
+		return;
+
+	const float Speed = std::min(Momentum / CarMass, MaxSpeed);
+
+	const Fvector Contact = GetNearestPoint(who != nullptr ? who->Position() : Position());
+	ApplyPush(dir, Speed, Contact);
+}
+
+void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point)
+{
+	if (getDestroy() || m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
+		return;
+
+	if (OwnerActor() && rs_car_god)
+		return;
+
+	if (speed <= 0.f)
+		return;
+
+	const float Mass = m_pPhysicsShell->getMass();
+	if (Mass <= 0.f)
+		return;
+
+	Fvector PushDir = dir;
+	PushDir.y *= GravityFactorImpulse();
+	if (PushDir.magnitude() < EPS)
+		return;
+	PushDir.normalize();
+
+	Fvector LocalPoint;
+	Fmatrix Inv;
+	Inv.invert(XFORM());
+	Inv.transform_tiny(LocalPoint, world_point);
+
+	// Apply the push at mid-body height. A bite at wheel level must not roll the
+	// car over, while the horizontal offset still gives a realistic yaw.
+	Fbox Box = BoundingBox();
+	if (Box.is_valid())
+	{
+		LocalPoint.y = (Box.min.y + Box.max.y) * 0.5f;
+	}
+
+	// ODE expects the point in body space and the direction in world space.
+	m_pPhysicsShell->applyImpulseTrace(LocalPoint, PushDir, speed * Mass);
+}
+
 //void CCar::Hit(float P,Fvector &dir,CObject * who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+bool CCar::CollisionHitStartsCooldown(u16 bone_id, float power)
+{
+	// Wheel contacts have their own damage path and must not consume the
+	// body-hit cooldown, otherwise a wheel hit can swallow a following body
+	// impact.
+	if (m_wheels_map.find(bone_id) != m_wheels_map.end())
+		return false;
+
+	if (power <= 0.f || getDestroy() || !g_Alive())
+		return false;
+
+	if (OwnerActor() && rs_car_god)
+		return false;
+
+	// The collision receiver sends eHitTypeStrike hits. If this car is immune
+	// to strikes, no health is lost and the cooldown must not start.
+	return GetHitImmunity(ALife::eHitTypeStrike) > 0.f;
+}
+
 void	CCar::Hit							(SHit* pHDS)
 {
 	if (OwnerActor() && rs_car_god)
@@ -3581,6 +3705,10 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_interior_volume = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "interior_volume", m_interior_volume);
 	m_hit_stall_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
 	m_hit_anomaly_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_anomaly_scale", m_hit_anomaly_scale);
+	m_mutant_hit_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "mutant_hit_impulse_factor", m_mutant_hit_impulse_factor);
+	clamp(m_mutant_hit_impulse_factor, 0.f, 5.f);
+	m_burer_gravi_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "burer_gravi_impulse_factor", m_burer_gravi_impulse_factor);
+	clamp(m_burer_gravi_impulse_factor, 0.f, 5.f);
 
 	loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
 	loadcamera("car_look_cam", ini, camera[EctSecondCam]);
@@ -3992,6 +4120,9 @@ void CCar::Init()
 	// Cars-Ext uses a much lower default than vanilla's 5.0. Keep the same
 	// default for models that do not override collision_hit_threshold.
 	SetCollisionHitThreshold(READ_IF_EXISTS(ini, r_float, "car_definition", "collision_hit_threshold", 1.f));
+	// A single impact can touch several collision geoms at once. Only the first
+	// damaging hit is applied within this window.
+	SetCollisionHitCooldown(READ_IF_EXISTS(ini, r_float, "car_definition", "collision_hit_cooldown", 0.1f));
 
 	pKinematics->LL_GetBindTransform(bones_bind_forms);
 	xr_vector<Fvector> m_bind_poses;
