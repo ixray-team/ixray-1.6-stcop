@@ -129,20 +129,24 @@ void HUD_SOUND_ITEM::PlaySound(HUD_SOUND_ITEM& hud_snd, const Fvector& position,
 		hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(sounds_pool_size)];
 	}
 
-    float vol = hud_snd.m_activeSnd->volume * (b_hud_mode ? psHUDSoundVolume : 1.0f) * g_fHudSndVolumeFactor;
+	// AI sound propagation uses Volume before the HUD playback scale.
+	float Volume = hud_snd.m_activeSnd->volume * g_fHudSndVolumeFactor;
+	float PlaybackScale = b_hud_mode ? psHUDSoundVolume : 1.0f;
+	Fvector Position = (flags & sm_2D) ? zero_vel : position;
 
-    Fvector pos = (flags & sm_2D) ? zero_vel : position;
-
-    if (!allowOverlap)
-    {
-		hud_snd.m_activeSnd->snd.play_at_pos(const_cast<CObject*>(parent), pos, flags, hud_snd.m_activeSnd->delay);
-        hud_snd.m_activeSnd->snd.set_volume(vol);
-        hud_snd.m_activeSnd->snd.set_frequency(g_fHudSndFrequency);
-    }
+	if (!allowOverlap)
+	{
+		auto& Sound = hud_snd.m_activeSnd->snd;
+		Sound.play_at_pos(const_cast<CObject*>(parent), Position, flags, hud_snd.m_activeSnd->delay);
+		Sound.set_volume(Volume);
+		Sound.set_frequency(g_fHudSndFrequency);
+		Sound.SetBaseVolumeScale(PlaybackScale);
+	}
 	else
-    {
-        hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol, &g_fHudSndFrequency);
-    }
+	{
+		hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay,
+			&Position, &Volume, &g_fHudSndFrequency, nullptr, &PlaybackScale);
+	}
 }
 
 void HUD_SOUND_ITEM::StopSound(HUD_SOUND_ITEM& hud_snd)

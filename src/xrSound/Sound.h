@@ -139,6 +139,7 @@ public:
 	IC void					set_range				( float min, float max );
 	IC void					set_volume				( float vol );
 	IC void					set_base_volume			( float vol );
+	IC void SetBaseVolumeScale(float Scale);
 	IC void					set_priority			( float vol );
 
 	IC CSound_params	get_params				( );
@@ -196,6 +197,7 @@ public:
 	virtual void					stop					(bool bDeffered)											= 0;
 	virtual	CSound_params			get_params				( )															= 0;
 	virtual u32						play_time				( )															= 0;
+	virtual void SetBaseVolumeScale(float Scale) = 0;
 };
 
 /// definition (Sound Stream Interface)
@@ -324,6 +326,14 @@ IC void	ref_sound::set_frequency				( float freq)											{	VERIFY(!::Sound->i
 IC void	ref_sound::set_range					( float min, float max )								{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_range(min,max);							}
 IC void	ref_sound::set_volume					( float vol )											{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_volume(vol);								}
 IC void	ref_sound::set_base_volume				( float vol )											{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_base_volume(vol);							}
+IC void ref_sound::SetBaseVolumeScale(float Scale)
+{
+	VERIFY(!::Sound->i_locked());
+	if (_feedback())
+	{
+		_feedback()->SetBaseVolumeScale(Scale);
+	}
+}
 IC void	ref_sound::set_priority					( float p )												{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_priority(p);								}
 IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(false);									}
 IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(true);									}

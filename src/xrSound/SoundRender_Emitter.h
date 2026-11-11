@@ -81,6 +81,7 @@ public:
 	virtual void				set_range				(float min, float max)	{ VERIFY(_valid(min)&&_valid(max));	p_source.min_distance=min; p_source.max_distance=max;}
 	virtual void				set_volume				(float vol)				{ if(!_valid(vol)) vol=0.0f;		p_source.volume=vol;}
 	virtual void				set_base_volume			(float vol)				{ if(!_valid(vol)) vol=0.0f;		p_source.base_volume=vol;}
+	void SetBaseVolumeScale(float Scale) override;
 	virtual void				set_priority			(float p)				{ priority_scale = p;									}
 	virtual	CSound_params		get_params				()						{ return p_source;										}
 

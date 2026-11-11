@@ -368,8 +368,7 @@ void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags,
 	if (vol)			S._feedback()->set_volume   (*vol);
 	if (base_vol_scale)
 	{
-		CSound_params params = S._feedback()->get_params();
-		S._feedback()->set_base_volume(params.base_volume * (*base_vol_scale));
+		S._feedback()->SetBaseVolumeScale(*base_vol_scale);
 	}
 	S._p				= orig;
 }
