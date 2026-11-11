@@ -8,6 +8,8 @@
 using Microsoft::WRL::ComPtr;
 
 #define MAX_STACK_COUNT 64
+// Frames between issuing a query and reading it back without a flush
+#define FRAME_LATENCY 4
 #define DX11Device ((ID3D11Device*)GRHI->DevicePtr->RawDevice)
 #define DX11Context ((ID3D11DeviceContext*)GRHI->GetContext())
 
@@ -40,8 +42,9 @@ struct gpu_events_state
     u64 frame;
     u64 stack_idx;
     xr_array<u32, MAX_STACK_COUNT> stack;
-    gpu_frame_state states[2];
-    RHI_GPU_EVENT perf;
+    gpu_frame_state states[FRAME_LATENCY];
+    RHI_GPU_EVENT perf[2];
+    u32 perf_idx;
 };
 
 static gpu_events_state events_state;
@@ -75,32 +78,37 @@ void GPUEvents_BeginRendering()
     InvalidateQueries();
 
     events_state.frame++;
-    auto& curr_state = events_state.states[events_state.frame % 2];
+    auto& curr_state = events_state.states[events_state.frame % FRAME_LATENCY];
 
-    if (events_state.frame >= 2)
+    if (events_state.frame >= FRAME_LATENCY)
     {
-        events_state.perf.count = 0;
-
-        for (size_t i = 0; i < curr_state.counter; i++)
+        // A frame is published whole or not at all: the previous result stays until then
+        RHI_GPU_EVENT& perf = events_state.perf[events_state.perf_idx ^ 1];
+        u32 ready = 0;
+        for (; ready < curr_state.counter; ready++)
         {
             u64 begin = 0, end = 0;
             D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint_data = {};
-            auto& event = curr_state.events[i];
+            auto& event = curr_state.events[ready];
 
             const u32 Flags = D3D11_ASYNC_GETDATA_DONOTFLUSH;
             if (DX11Context->GetData(event.begin.Get(), &begin, sizeof(begin), Flags) != S_OK || DX11Context->GetData(event.end.Get(), &end, sizeof(end), Flags) != S_OK || DX11Context->GetData(event.disjoint.Get(), &disjoint_data, sizeof(disjoint_data), Flags) != S_OK)
             {
-                continue;
+                break;
             }
 
-            auto& perf_event = events_state.perf.events[events_state.perf.count];
+            auto& perf_event = perf.events[ready];
             perf_event.begin = begin;
             perf_event.end = end;
             perf_event.freq = disjoint_data.Frequency;
             perf_event.stack = event.stack_idx;
             perf_event.name = event.name;
+        }
 
-            events_state.perf.count++;
+        if (ready != 0 && ready == curr_state.counter)
+        {
+            perf.count = ready;
+            events_state.perf_idx ^= 1;
         }
     }
 
@@ -112,7 +120,7 @@ void GPUEvents_BeginRendering()
 
 int GPUEvents_PushEvent(const char* name)
 {
-    auto& curr_state = events_state.states[events_state.frame % 2];
+    auto& curr_state = events_state.states[events_state.frame % FRAME_LATENCY];
     u32 index = curr_state.counter; R_ASSERT(curr_state.counter < QUERY_MAX_COUNT);
     auto& event = curr_state.events[index];
 
@@ -130,7 +138,7 @@ int GPUEvents_PushEvent(const char* name)
 
 void GPUEvents_PopEvent(int index)
 {
-    auto& curr_state = events_state.states[events_state.frame % 2];
+    auto& curr_state = events_state.states[events_state.frame % FRAME_LATENCY];
     R_ASSERT(index < QUERY_MAX_COUNT);
     auto& event = curr_state.events[index];
 
@@ -152,6 +160,6 @@ void GPUEvents_EndRendering()
 
 const RHI_GPU_EVENT& GPUEvents_Statistics()
 {
-    return events_state.perf;
+    return events_state.perf[events_state.perf_idx];
 }
 #endif
