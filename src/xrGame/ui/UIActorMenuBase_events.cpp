@@ -881,6 +881,11 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 	CUIDragDropListEx*	old_owner			= itm->OwnerList();
 	PIItem	iitem							= (PIItem)itm->m_pData;
 
+	if (slot_id != NO_ACTIVE_SLOT && GetInventoryOwner()->inventory().ItemFromSlot(slot_id) == iitem)
+	{
+		return false;
+	}
+
 	bool b_own_item							= (iitem->parent_id()==GetInventoryOwner()->object_id());
 	if (!b_own_item && !GetInventoryOwner()->inventory().CanTakeItem(iitem))
 	{
