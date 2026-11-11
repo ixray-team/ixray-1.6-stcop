@@ -657,6 +657,7 @@ virtual void ApplyDamage			(u16 level);
 		bool  update;
 		CPhysicsJoint*  joint;
 		float			torque;
+		float			hold_torque;
 		float			a_vel;
 		float			pos_open;
 
@@ -761,6 +762,7 @@ virtual void ApplyDamage(u16 level);
 			joint=NULL;
 			state=closed;
 			torque=500.f;
+			hold_torque=500.f;
 			a_vel=M_PI;
 // 			dist_to_door = 0.0f;
 			dist_to_door_avlbl = 3.0f;
@@ -932,6 +934,7 @@ private:
 	bool					b_nitro_engage;
 	/////////////////////////////////////////////////////////////
 	float					m_doors_torque_factor;
+	float					m_doors_hold_factor;
 	float					m_doors_vel_factor;
 	/////////////////////////////////////////////////////////////
 	// Cars-Ext tire trails use dedicated wallmark arrays because the stock
