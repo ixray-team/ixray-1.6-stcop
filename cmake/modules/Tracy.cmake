@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
     Tracy
     GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-    GIT_TAG v0.14.1
+    GIT_TAG v0.15.0
 )
 
 set(TRACY_ENABLE 1 CACHE BOOL "" FORCE)
