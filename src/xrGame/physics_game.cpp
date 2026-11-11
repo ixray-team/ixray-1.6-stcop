@@ -47,7 +47,7 @@ public:
 
 	virtual void run() override
 	{
-		xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name, true);
+		xr_shared_ptr<CParticlesObject> ps = Particles::Details::CreateOneShot(ps_name);
 
 		Fmatrix pos;
 		Fvector zero_vel_ = {0.f, 0.f, 0.f};
