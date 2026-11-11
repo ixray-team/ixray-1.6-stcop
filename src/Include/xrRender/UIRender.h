@@ -87,6 +87,9 @@ public:
 	virtual void FlushPrimitive() = 0;
 	virtual bool BeginRoundedRect(const UIRoundedRect& Rect) { return false; }
 	virtual void EndRoundedRect() {}
+	// Positions include padding; UVRect is the unpadded source region (atlas-safe).
+	virtual bool DrawBlurredTextureShadow(IUIShader& Shader, const Fvector2* Positions,
+		const Frect& UVRect, const Fvector2& UVRadius, const Fvector2& UVPadding, const Fvector4& LightParams, const Fvector4& Basis, float SigmaRatio, float Falloff, float MinOpacityRatio, u32 Color, bool ScreenSpace) { return false; }
 
 	virtual const char*	UpdateShaderName(const char* tex_name, const char* sh_name) = 0;
 

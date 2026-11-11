@@ -29,6 +29,42 @@ void dxUIRender::SetShader(IUIShader &shader)
 	RCache.set_Shader(pShader->hShader);
 }
 
+bool dxUIRender::DrawBlurredTextureShadow(IUIShader& Shader, const Fvector2* Positions,
+	const Frect& UVRect, const Fvector2& UVRadius, const Fvector2& UVPadding, const Fvector4& LightParams, const Fvector4& Basis, float SigmaRatio, float Falloff, float MinOpacityRatio, u32 Color, bool ScreenSpace)
+{
+	SetShader(Shader);
+	CTexture* Texture = RCache.get_ActiveTexture(0);
+	if (!Texture)
+	{
+		return false;
+	}
+	dxUIShader& Source = static_cast<dxUIShader&>(Shader);
+	ref_shader& Shadow = ScreenSpace ? Source.BlurredShadowScreen : Source.BlurredShadowWorld;
+	if (!Shadow)
+	{
+		Shadow.create(ScreenSpace ? "hud\\ui_texture_shadow" : "hud\\ui_texture_shadow_world", Texture->cName.c_str());
+	}
+	RCache.set_Shader(Shadow);
+	RCache.set_c("ui_shadow_rect", UVRect.x1, UVRect.y1, UVRect.x2, UVRect.y2);
+	RCache.set_c("ui_shadow_blur", UVRadius.x, UVRadius.y, SigmaRatio, Falloff);
+	RCache.set_c("ui_shadow_range", MinOpacityRatio, 0.0f, 0.0f, 0.0f);
+	RCache.set_c("ui_shadow_light", LightParams);
+	RCache.set_c("ui_shadow_basis", Basis);
+	StartPrimitive(6, ptTriList, ScreenSpace ? pttTL : pttLIT);
+	const Frect Expanded = Frect().set(UVRect.x1 - UVPadding.x, UVRect.y1 - UVPadding.y,
+		UVRect.x2 + UVPadding.x, UVRect.y2 + UVPadding.y);
+	constexpr int Corners[] = { 0, 1, 2, 0, 2, 3 };
+	for (int Corner : Corners)
+	{
+		const float U = Corner == 1 || Corner == 2 ? Expanded.x2 : Expanded.x1;
+		const float V = Corner >= 2 ? Expanded.y2 : Expanded.y1;
+		PushPoint(Positions[Corner].x, Positions[Corner].y, 0.0f, Color, U, V);
+	}
+	FlushPrimitive();
+	SetShader(Shader);
+	return true;
+}
+
 void dxUIRender::SetAlphaRef(int aref)
 {
 	RCache.set_AlphaRef(aref);

@@ -18,6 +18,7 @@ public:
 	virtual void destroy() override;
 private:
 	ref_shader		hShader;
+	ref_shader BlurredShadowScreen, BlurredShadowWorld;
 };
 
 #endif	//	dxUIShader_included

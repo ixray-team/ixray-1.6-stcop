@@ -32,6 +32,8 @@ public:
 	void			Render					();
 	void			Render					(float angle);
 	void Render(float Angle, bool CorrectedAspect);
+	void RenderBlurredShadow(const Fvector2& Light, float ProjectionScale, float LightHeight, float LightRadius, float Radius, float Sigma, float Falloff, float MinOpacityRatio, u32 Color,
+		bool Rotated, float Angle, bool CorrectedAspect);
 	void ResetOriginalRect() { uFlags.set(flValidTextureRect, false); }
 
 	IC void			SetPos					(float left, float top)			{vPos.set(left,top);}

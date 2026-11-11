@@ -205,6 +205,132 @@ void CUIStaticItem::Render(float Angle, bool CorrectedAspect)
 }
 
 
+void CUIStaticItem::RenderBlurredShadow(const Fvector2& Light, float ProjectionScale, float LightHeight, float LightRadius,
+	float Radius, float Sigma, float Falloff, float MinOpacityRatio, u32 Color, bool Rotated, float Angle, bool CorrectedAspect)
+{
+	VERIFY(g_bRendering);
+	UIRender->SetShader(*hShader);
+	Fvector2 TextureSize;
+	UIRender->GetActiveTextureResolution(TextureSize);
+	if (TextureSize.x <= 0.0f || TextureSize.y <= 0.0f)
+	{
+		return;
+	}
+	if (!uFlags.test(flValidSize))
+	{
+		SetSize(TextureSize);
+	}
+	if (!uFlags.test(flValidTextureRect))
+	{
+		SetTextureRect(Frect().set(0.0f, 0.0f, TextureSize.x, TextureSize.y));
+	}
+	if (vSize.x <= 0.0f || vSize.y <= 0.0f || TextureRect.width() <= 0.0f || TextureRect.height() <= 0.0f)
+	{
+		return;
+	}
+	const UITransform2D& Transform = UIRender->Transform2D;
+	const float Determinant = Transform.XX * Transform.YY - Transform.XY * Transform.YX;
+	if (!std::isfinite(ProjectionScale) || !std::isfinite(Determinant) || std::abs(Determinant) < 1e-8f)
+	{
+		return;
+	}
+	const UITransform2D Inverse = Transform.Inverted();
+	const Frect UVRect = Frect().set(TextureRect.x1 / TextureSize.x, TextureRect.y1 / TextureSize.y,
+		TextureRect.x2 / TextureSize.x, TextureRect.y2 / TextureSize.y);
+	const Fvector2 Pivot = uFlags.test(flValidHeadingPivot) ? vHeadingPivot : Fvector2().set(vSize.x * 0.5f, vSize.y * 0.5f);
+	Fvector2 Origin = vPos;
+	if (Rotated)
+	{
+		Origin.add(vHeadingOffset);
+	}
+	const auto RootPoint = [&](float X, float Y)
+	{
+		S2DVert Point;
+		Point.set(X, Y, 0.0f, 0.0f);
+		if (Rotated)
+		{
+			Point.rotate_pt(Pivot, std::cos(Angle), std::sin(Angle), CorrectedAspect ? 1.0f : UI().get_current_kx());
+		}
+		Point.pt.add(Origin);
+		Fvector2 Result;
+		UI().ClientToScreenScaled(Result, Point.pt.x, Point.pt.y);
+		Transform.Apply(Result.x, Result.y);
+		return Result;
+	};
+	Fvector2 PixelScale, LightPosition;
+	UI().ClientToScreenScaled(PixelScale, 1.0f, 1.0f);
+	UI().ClientToScreenScaled(LightPosition, Light.x, Light.y);
+	if (PixelScale.x <= 0.0f || PixelScale.y <= 0.0f)
+	{
+		return;
+	}
+	Fvector2 Padding = Fvector2().set(Sigma > 0.0f ? Radius : 0.0f, Sigma > 0.0f ? Radius : 0.0f);
+	Fvector2 UVRadius = Fvector2().set(Padding.x * UVRect.width() / vSize.x, Padding.y * UVRect.height() / vSize.y);
+	Fvector2 UVPadding = UVRadius;
+	Fvector4 LightParams = Fvector4().set(0.0f, 0.0f, 1.0f, 0.0f);
+	Fvector4 Basis = Fvector4().set(1.0f, 0.0f, 0.0f, 1.0f);
+	const float Depth = LightHeight / ProjectionScale;
+	if (LightRadius > 0.0f && LightHeight > 0.0f && Sigma > 0.0f && Radius > 0.0f && ProjectionScale >= 1.0f)
+	{
+		const auto UIPlanePoint = [&](float X, float Y)
+		{
+			Fvector2 Result = RootPoint(X, Y);
+			Result.x /= PixelScale.x;
+			Result.y /= PixelScale.y;
+			return Result;
+		};
+		const Fvector2 Corner0 = UIPlanePoint(0.0f, 0.0f);
+		const Fvector2 Corner1 = UIPlanePoint(vSize.x, 0.0f);
+		const Fvector2 Corner3 = UIPlanePoint(0.0f, vSize.y);
+		const Fvector2 AxisU = Fvector2().set((Corner1.x - Corner0.x) / UVRect.width(), (Corner1.y - Corner0.y) / UVRect.width());
+		const Fvector2 AxisV = Fvector2().set((Corner3.x - Corner0.x) / UVRect.height(), (Corner3.y - Corner0.y) / UVRect.height());
+		const float BasisDet = AxisU.x * AxisV.y - AxisU.y * AxisV.x;
+		if (!std::isfinite(Depth) || Depth <= 1e-3f || std::abs(BasisDet) < 1e-8f)
+		{
+			return;
+		}
+		const Fvector2 InverseU = Fvector2().set(AxisV.y / BasisDet, -AxisV.x / BasisDet);
+		const Fvector2 InverseV = Fvector2().set(-AxisU.y / BasisDet, AxisU.x / BasisDet);
+		const Fvector2 ToLight = Fvector2().sub(Light, Corner0);
+		const float LightU = UVRect.x1 + InverseU.x * ToLight.x + InverseU.y * ToLight.y;
+		const float LightV = UVRect.y1 + InverseV.x * ToLight.x + InverseV.y * ToLight.y;
+		float MaxSlopeSquared = 0.0f;
+		for (int Corner = 0; Corner < 4; ++Corner)
+		{
+			const Fvector2 Point = UIPlanePoint((Corner & 1) ? vSize.x : 0.0f, (Corner & 2) ? vSize.y : 0.0f);
+			const float DX = Point.x - Light.x, DY = Point.y - Light.y;
+			MaxSlopeSquared = std::max(MaxSlopeSquared, (DX * DX + DY * DY) / (Depth * Depth));
+		}
+		const float MaxStretch = std::sqrt(1.0f + MaxSlopeSquared);
+		// Finite spherical emitter: r*h/(H-h) on the receiving plane.
+		const float BaseRadius = LightRadius * (ProjectionScale - 1.0f) / ProjectionScale;
+		const float Bound = BaseRadius * MaxStretch * std::sqrt(2.0f);
+		UVPadding.set(Bound * std::sqrt(InverseU.x * InverseU.x + InverseU.y * InverseU.y),
+			Bound * std::sqrt(InverseV.x * InverseV.x + InverseV.y * InverseV.y));
+		Padding.set(UVPadding.x * vSize.x / UVRect.width(), UVPadding.y * vSize.y / UVRect.height());
+		UVRadius.set(BaseRadius, BaseRadius);
+		LightParams.set(LightU, LightV, Depth, MaxStretch);
+		Basis.set(AxisU.x, AxisV.x, AxisU.y, AxisV.y);
+	}
+	const bool ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
+	Fvector2 Positions[4];
+	for (int Corner = 0; Corner < 4; ++Corner)
+	{
+		const float X = (Corner == 1 || Corner == 2) ? vSize.x + Padding.x : -Padding.x;
+		const float Y = Corner >= 2 ? vSize.y + Padding.y : -Padding.y;
+		Positions[Corner] = RootPoint(X, Y);
+		Positions[Corner].x = LightPosition.x + (Positions[Corner].x - LightPosition.x) * ProjectionScale;
+		Positions[Corner].y = LightPosition.y + (Positions[Corner].y - LightPosition.y) * ProjectionScale;
+		Inverse.Apply(Positions[Corner].x, Positions[Corner].y);
+		if (ScreenSpace)
+		{
+			Positions[Corner].sub(Fvector2().set(0.5f, 0.5f));
+		}
+	}
+	UIRender->DrawBlurredTextureShadow(*hShader, Positions, UVRect, UVRadius, UVPadding, LightParams, Basis,
+		Radius > 0.0f ? Sigma / Radius : 0.0f, Falloff, MinOpacityRatio, Color, ScreenSpace);
+}
+
 void CUIStaticItem::CreateShader(const char* tex, const char* sh)
 {
 	hShader->create(sh,tex);

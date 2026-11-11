@@ -52,6 +52,58 @@ void CUIStatic::SetTextureShadow(bool enabled, float thickness, u32 color)
 	m_textureShadowColor = color;
 }
 
+void CUIStatic::SetBlurredTextureShadow(bool Enabled, float Blur, float Opacity, float Radius, float LightX, float LightY)
+{
+	const auto Finite = [](float Value, float Fallback) { return std::isfinite(Value) ? Value : Fallback; };
+	BlurredShadowEnabled = Enabled;
+	BlurredShadowSigma = std::clamp(Finite(Blur, 0.0f), 0.0f, 128.0f);
+	BlurredShadowOpacity = std::clamp(Finite(Opacity, 0.0f), 0.0f, 1.0f);
+	BlurredShadowMinOpacity = std::min(BlurredShadowMinOpacity, BlurredShadowOpacity);
+	BlurredShadowRadius = std::clamp(Finite(Radius, 0.0f), 0.0f, 128.0f);
+	BlurredShadowLight.set(std::clamp(Finite(LightX, 512.0f), -8192.0f, 8192.0f),
+		std::clamp(Finite(LightY, 0.0f), -8192.0f, 8192.0f));
+}
+
+void CUIStatic::SetBlurredTextureShadowHeight(float Height, float LightHeight)
+{
+	BlurredShadowHeight = std::isfinite(Height) ? std::clamp(Height, 0.0f, 1024.0f) : 4.0f;
+	BlurredShadowLightHeight = std::isfinite(LightHeight) ? std::clamp(LightHeight, 1.0f, 4096.0f) : 300.0f;
+}
+
+void CUIStatic::SetBlurredTextureShadowLightRadius(float Radius)
+{
+	BlurredShadowLightRadius = std::isfinite(Radius) ? std::clamp(Radius, 0.0f, 4096.0f) : 0.0f;
+}
+
+void CUIStatic::SetBlurredTextureShadowFalloff(float Falloff)
+{
+	BlurredShadowFalloff = std::isfinite(Falloff) ? std::clamp(Falloff, 0.0f, 12.0f) : 0.0f;
+}
+
+void CUIStatic::SetBlurredTextureShadowOpacityRange(float Minimum, float Maximum)
+{
+	BlurredShadowOpacity = std::isfinite(Maximum) ? std::clamp(Maximum, 0.0f, 1.0f) : 0.0f;
+	BlurredShadowMinOpacity = std::isfinite(Minimum) ? std::clamp(Minimum, 0.0f, BlurredShadowOpacity) : 0.0f;
+}
+
+void CUIStatic::DrawBlurredTextureShadow()
+{
+	if (!BlurredShadowEnabled || BlurredShadowOpacity <= 0.0f || BlurredShadowHeight >= BlurredShadowLightHeight)
+	{
+		return;
+	}
+	const u32 Alpha = color_get_A(GetTextureColor()) * color_get_A(BlurredShadowColor) / 255;
+	const u32 Color = UIColors::ScaleAlpha(subst_alpha(BlurredShadowColor, Alpha), BlurredShadowOpacity);
+	if (color_get_A(Color) == 0)
+	{
+		return;
+	}
+	PrepareTextureItem();
+	const float ProjectionScale = BlurredShadowLightHeight / (BlurredShadowLightHeight - BlurredShadowHeight);
+	m_UIStaticItem.RenderBlurredShadow(BlurredShadowLight, ProjectionScale, BlurredShadowLightHeight, BlurredShadowLightRadius, BlurredShadowRadius, BlurredShadowSigma, BlurredShadowFalloff,
+		BlurredShadowMinOpacity / BlurredShadowOpacity, Color, Heading(), GetHeading(), IsAspectRatioCorrectionActive());
+}
+
 void CUIStatic::SetTextShadow(bool enabled, float thickness, u32 color)
 {
 	TextItemControl()->SetTextShadow(enabled, thickness, color);
@@ -402,13 +454,13 @@ void CUIStatic::DrawWidgetText()
 
 #include "../../Include/xrRender/UIShader.h"
 
-void CUIStatic::DrawTexturePass(u32 color, const Fvector2& extraOffset)
+void CUIStatic::PrepareTextureItem()
 {
 	Frect rect;
 	GetAbsoluteRect(rect);
 	m_UIStaticItem.SetPos(
-		rect.left + m_TextureOffset.x + extraOffset.x,
-		rect.top + m_TextureOffset.y + extraOffset.y);
+		rect.left + m_TextureOffset.x,
+		rect.top + m_TextureOffset.y);
 
 	if (m_bStretchTexture)
 	{
@@ -441,6 +493,12 @@ void CUIStatic::DrawTexturePass(u32 color, const Fvector2& extraOffset)
 		m_UIStaticItem.SetSize(Fvector2().set(r.width(), r.height()));
 	}
 
+}
+
+void CUIStatic::DrawTexturePass(u32 color, const Fvector2& extraOffset)
+{
+	PrepareTextureItem();
+	m_UIStaticItem.vPos.add(extraOffset);
 	const u32 prevColor = m_UIStaticItem.GetTextureColor();
 	m_UIStaticItem.SetTextureColor(color);
 
@@ -457,6 +515,10 @@ void CUIStatic::DrawTexture()
 	if (!m_bTextureEnable || !GetShader() || !GetShader()->inited())
 		return;
 
+	if (BlurredShadowEnabled && BlurredShadowOpacity > 0.0f)
+	{
+		DrawBlurredTextureShadow();
+	}
 	const u32 textureColor = GetTextureColor();
 	if (m_textureShadowEnabled && m_textureShadowThickness > 0.0f)
 	{

@@ -180,6 +180,27 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, const char* path, int index, CUISta
 	InitTextureOffset	(xml_doc,path,index,pWnd);
 
 	{
+		string512 ShadowPath;
+		xr_strconcat(ShadowPath, path, ":blurred_shadow");
+		const bool Present = xml_doc.NavigateToNode(ShadowPath, index) != nullptr;
+		pWnd->SetBlurredTextureShadow(
+			Present && xml_doc.ReadAttribInt(ShadowPath, index, "enabled", 1) != 0,
+			xml_doc.ReadAttribFlt(ShadowPath, index, "blur", 3.0f),
+			xml_doc.ReadAttribFlt(ShadowPath, index, "opacity", 0.5f),
+			xml_doc.ReadAttribFlt(ShadowPath, index, "radius", 9.0f),
+			xml_doc.ReadAttribFlt(ShadowPath, index, "light_x", 512.0f),
+			xml_doc.ReadAttribFlt(ShadowPath, index, "light_y", 0.0f));
+		pWnd->SetBlurredTextureShadowLightRadius(xml_doc.ReadAttribFlt(ShadowPath, index, "light_radius", 0.0f));
+		pWnd->SetBlurredTextureShadowFalloff(xml_doc.ReadAttribFlt(ShadowPath, index, "falloff", 0.0f));
+		pWnd->SetBlurredTextureShadowOpacityRange(xml_doc.ReadAttribFlt(ShadowPath, index, "opacity_min", 0.0f),
+			xml_doc.ReadAttribFlt(ShadowPath, index, "opacity_max", xml_doc.ReadAttribFlt(ShadowPath, index, "opacity", 0.5f)));
+		pWnd->SetBlurredTextureShadowHeight(xml_doc.ReadAttribFlt(ShadowPath, index, "height", 4.0f),
+			xml_doc.ReadAttribFlt(ShadowPath, index, "light_height", 300.0f));
+		pWnd->SetBlurredTextureShadowColor(Present ? GetColor(xml_doc, ShadowPath, index, 0xff000000) : 0xff000000);
+	}
+
+
+	{
 		SUIOutlineParams rootShadow;
 		ReadShadowsNode(xml_doc, path, index, rootShadow);
 		if (rootShadow.enabled)

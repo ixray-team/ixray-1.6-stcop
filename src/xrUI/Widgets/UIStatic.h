@@ -40,6 +40,18 @@ private:
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 	CUIVectorBinding _svgBinding;
 	bool MouseEventsEnabled = false;
+	bool BlurredShadowEnabled = false;
+	float BlurredShadowSigma = 3.0f;
+	float BlurredShadowOpacity = 0.5f;
+	float BlurredShadowFalloff = 0.0f;
+	float BlurredShadowMinOpacity = 0.0f;
+	float BlurredShadowRadius = 9.0f;
+	Fvector2 BlurredShadowLight = { 512.0f, 0.0f };
+	float BlurredShadowHeight = 4.0f;
+	float BlurredShadowLightHeight = 300.0f;
+	float BlurredShadowLightRadius = 0.0f;
+	u32 BlurredShadowColor = 0xff000000;
+	void PrepareTextureItem();
 	u32 BackgroundColor = 0;
 	bool BackgroundColorAssigned = false;
 	bool BorderEnabled = false;
@@ -156,6 +168,14 @@ public:
 			void			SetStretchTexture		(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 			bool			GetStretchTexture		()						{return m_bStretchTexture;}
 			void			SetTextureShadow		(bool enabled, float thickness, u32 color);
+	void SetBlurredTextureShadow(bool Enabled, float Blur, float Opacity, float Radius, float LightX, float LightY);
+	void SetBlurredTextureShadowHeight(float Height, float LightHeight);
+	void SetBlurredTextureShadowLightRadius(float Radius);
+	void SetBlurredTextureShadowFalloff(float Falloff);
+	void SetBlurredTextureShadowOpacityRange(float Minimum, float Maximum);
+	void SetBlurredTextureShadowColor(u32 Color) { BlurredShadowColor = Color; }
+	bool GetBlurredTextureShadowEnabled() const { return BlurredShadowEnabled; }
+	void DrawBlurredTextureShadow();
 			bool			GetTextureShadowEnabled	() const					{return m_textureShadowEnabled;}
 			void			SetTextShadow			(bool enabled, float thickness, u32 color);
 			void			SetTextShadow			(const SUIOutlineParams& params);
