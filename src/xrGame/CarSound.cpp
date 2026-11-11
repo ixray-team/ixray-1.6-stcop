@@ -1001,8 +1001,8 @@ void CCar::SCarSound::Whine()
 		float avg_speed = 0.f;
 		for (; i != e; ++i)
 			avg_speed += _abs(i->ASpeed()) * i->pwheel->radius;
+		avg_speed -= 1.f;
 		avg_speed = 2.f * sqrtf(((avg_speed * 3.6f) / pcar->m_driving_wheels.size()) / pcar->m_whine_speed);
-
 		clamp(avg_speed, 0.f, 2.f);
 		float boost = 1.f;
 		if (pcar->m_nitro_engage)
@@ -1010,7 +1010,7 @@ void CCar::SCarSound::Whine()
 		pcar->m_whine_sound_scale = (1.f - 2.5f * Device.fTimeDelta) * pcar->m_whine_sound_scale + 2.5f * avg_speed * Device.fTimeDelta;
 
 		float vol = 1.f;
-		vol = 0.45f + 0.55f * pcar->m_engine_state_scale;
+		vol = avg_speed * 0.45f + 0.55f * pcar->m_engine_state_scale;
 		
 		if (pcar->IsTransmissionSwitching() && pcar->e_state_drive == drive)
 			vol *= pcar->m_transmission_switch_volume;
