@@ -80,6 +80,36 @@ float3 GetFlatNormal(float2 tc)
 	return normalize(cross(ddx_1, ddy_1));
 }
 
+float ValueNoise(float2 P)
+{
+	float2 Cell = floor(P);
+	float2 F = frac(P);
+	F = F * F * (3.0f - 2.0f * F);
+	return lerp(lerp(Hash(Cell), Hash(Cell + float2(1.0f, 0.0f)), F.x), lerp(Hash(Cell + float2(0.0f, 1.0f)), Hash(Cell + 1.0f), F.x), F.y);
+}
+
+float RainExposure(float3 Coord, float3 WorldNormal, float Rotation)
+{
+	const float Radius = 2.0f;
+	const int Taps = 16;
+	float2 UvX = mul(m_shadow, float4(WorldX.xyz, 0.0f)).xy * Radius;
+	float2 UvZ = mul(m_shadow, float4(WorldZ.xyz, 0.0f)).xy * Radius;
+	float DepthUp = mul(m_shadow, float4(-Ldynamic_dir.xyz, 0.0f)).z * Radius;
+	// Each tap compares against the receiver plane, or slopes would shadow themselves.
+	float2 Slope = WorldNormal.xz / max(WorldNormal.y, 0.5f);
+
+	float Sum = 0.0f;
+	[unroll]
+	for (int Tap = 0; Tap < Taps; ++Tap)
+	{
+		float2 Offset;
+		sincos(Tap * 2.39996f + Rotation, Offset.y, Offset.x);
+		Offset *= sqrt((Tap + 0.5f) / Taps);
+		Sum += s_smap.SampleCmpLevelZero(smp_smap, Coord.xy + UvX * Offset.x + UvZ * Offset.y, Coord.z - DepthUp * dot(Slope, Offset) - 1e-5f);
+	}
+	return Sum / Taps;
+}
+
 // float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_POSITION) : SV_Target
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
@@ -120,16 +150,22 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
     // Read rain projection with some jetter. Also adding pixel normal
     // factor to jitter to make rain strips more realistic.
 	
-	//LVutner: We gonna reuse 3x3 filter
-    float s = min(1.0f, 2.0f * shadow_rain(PS.xyz));
+	float3 Noise = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xyz;
+	float3 WorldPoint = mul(m_invV, P).xyz;
+    float s = RainExposure(PS.xyz, mul((float3x3)m_invV, N), Noise.x * 6.2831853f);
 
 #ifndef USE_LEGACY_LIGHT
-	s *= saturate(M.Hemi * 10.0f);
+	s *= smoothstep(0.0f, 0.5f, M.Hemi);
 #else
-	s *= saturate(M.Hemi * 100.0f);
+	s *= smoothstep(0.0f, 0.05f, M.Hemi);
 #endif
 
-	float Shadow = s = lerp(saturate(M.Hemi * 10.0f - 2.0f), s, GetBorderAtten(PS.xy));
+	s = lerp(smoothstep(0.1f, 0.6f, M.Hemi), s, GetBorderAtten(PS.xy));
+
+	// Noise-shaped threshold: the wet border follows an organic contour, not the kernel.
+	float2 EdgeCoord = WorldPoint.xz + WorldPoint.y * 0.7f;
+	float Edge = (ValueNoise(EdgeCoord * 0.9f) * 0.75f + ValueNoise(EdgeCoord * 3.3f) * 0.25f) * 0.2f;
+	float Shadow = s = smoothstep(Edge, Edge + 0.8f, s);
 
     //	Apply distance falloff
     // Using fixed fallof factors according to float16 depth coordinate precision.
@@ -187,9 +223,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float F90 = saturate(dot(M.Color, 0.333f));
 	
-	float3 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xyz;
-	
-	Jitter = Jitter - 0.5f;
+	float3 Jitter = Noise - 0.5f;
 	Jitter *= rcp(1024.0f);
 	
 #ifdef USE_RAIN_MASK

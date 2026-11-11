@@ -259,7 +259,7 @@ float		ps_r2_def_aref_quality = 115.0f;
 
 float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
 float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
-int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
+int			ps_r3_dyn_wet_surf_sm_res	= 512;				// 512
 float		ps_r2_gloss_factor = 3.14f;
 
 int			ps_r__detail_radius = 120;
