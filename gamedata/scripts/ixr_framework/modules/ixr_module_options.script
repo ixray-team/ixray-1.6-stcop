@@ -125,6 +125,10 @@ end
 
 function on_main_menu_update(_ref)
 	_on_main_menu_update(_ref)
+	if not IsActionThrottled("ixr_options_wnd_upd", 2000) then
+		_ref.ixr_options_layer:ToFrontTree()
+		_ref.ixr_options_btn:ToFrontTree()
+	end
 end
 
 -- #######################################
@@ -1117,6 +1121,10 @@ function get_options_xml()
 	return ixr_options.main_menu_ref.options_xml
 end
 
+function get_options_layer()
+	return get_menu_ref().ixr_options_layer
+end
+
 function get_menu_ref()
 	return ixr_options.main_menu_ref
 end
@@ -1126,12 +1134,14 @@ function set_menu_ref(_ref)
 end
 
 function draw_options()
+	get_options_layer():Show(true)
 	for k, v in pairs(get_menu_ref().ixr_controlls) do
 		v:Show(true)
 	end
 end
 
 function hide_options()
+	get_options_layer():Show(false)
 	-- очищаем данные о контроллах и аддонах для геймпада перед выходом
 	--on_before_clear_controlls_and_addons_info_gamepads()
 	
@@ -1141,7 +1151,7 @@ function hide_options()
 end
 
 function register_static(name_controll, static, x, y, width, height, color)
-	set_controll(name_controll, get_options_xml():InitStatic(static, get_menu_ref()))
+	set_controll(name_controll, get_options_xml():InitStatic(static, get_options_layer()))
 	get_controll(name_controll):SetStretchTexture(true)
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
@@ -1153,7 +1163,7 @@ function register_static(name_controll, static, x, y, width, height, color)
 end
 
 function register_framewindow(name_controll, static, x, y, width, height)
-	set_controll(name_controll, get_options_xml():InitFrame(static, get_menu_ref()))
+	set_controll(name_controll, get_options_xml():InitFrame(static, get_options_layer()))
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
 	get_controll(name_controll):Show(false)
@@ -1161,13 +1171,13 @@ function register_framewindow(name_controll, static, x, y, width, height)
 end
 
 function register_gamepad_legend(name_controll, static)
-	set_controll(name_controll, get_options_xml():InitGamepadLegend(static, get_menu_ref()))
+	set_controll(name_controll, get_options_xml():InitGamepadLegend(static, get_options_layer()))
 	get_controll(name_controll):Show(false)
 	register_controll(name_controll)
 end
 
 function register_button(name_controll, static, x, y, width, height, _callback)
-	set_controll(name_controll, get_options_xml():Init3tButton(static, get_menu_ref()))
+	set_controll(name_controll, get_options_xml():Init3tButton(static, get_options_layer()))
 	get_controll(name_controll):SetStretchTexture(true)
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
@@ -1179,7 +1189,7 @@ function register_button(name_controll, static, x, y, width, height, _callback)
 end
 
 function register_text(name_controll, text_section, displayText, x, y, width, height, color)
-	set_controll(name_controll, get_options_xml():InitStatic(text_section, get_menu_ref()))
+	set_controll(name_controll, get_options_xml():InitStatic(text_section, get_options_layer()))
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
 	get_controll(name_controll):TextControl():SetText(displayText)
@@ -1191,7 +1201,7 @@ function register_text(name_controll, text_section, displayText, x, y, width, he
 end
 
 function register_list_box(name_controll, list_box, x, y, width, height, item_height)
-	set_controll(name_controll, get_options_xml():InitListBox(list_box, get_menu_ref()))
+	set_controll(name_controll, get_options_xml():InitListBox(list_box, get_options_layer()))
 	get_controll(name_controll):ShowSelectedItem(true)
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWidth(width)
@@ -1205,7 +1215,7 @@ function register_list_box(name_controll, list_box, x, y, width, height, item_he
 end
 
 function register_scroll_view(name_controll, scroll_section, x, y, width, height)
-    set_controll(name_controll, get_options_xml():InitScrollView(scroll_section, get_menu_ref()))
+    set_controll(name_controll, get_options_xml():InitScrollView(scroll_section, get_options_layer()))
     get_controll(name_controll):SetWndPos(vector2():set(x, y))
 	get_controll(name_controll):SetWndSize(vector2():set(width, height))
     get_controll(name_controll):Show(false)
@@ -1215,7 +1225,7 @@ function register_scroll_view(name_controll, scroll_section, x, y, width, height
 end
 
 function register_image(name_controll, img_path, x, y, width, height, alpha)
-	set_controll(name_controll, get_options_xml():InitStatic("addon_icon", get_menu_ref()))
+	set_controll(name_controll, get_options_xml():InitStatic("addon_icon", get_options_layer()))
 	get_controll(name_controll):InitTexture(img_path)
 	get_controll(name_controll):SetStretchTexture(true)
 	get_controll(name_controll):SetWndPos(vector2():set(x, y))
@@ -1229,7 +1239,7 @@ end
 
 function register_checkbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
-		_ref = get_menu_ref()
+		_ref = get_options_layer()
 	end
 	
 	name_controll = name_controll .. "_checkbox_"
@@ -1243,7 +1253,7 @@ end
 
 function register_textbox(name_controll, x, y, alpha, def_value, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
-		_ref = get_menu_ref()
+		_ref = get_options_layer()
 	end
 	
 	name_controll = name_controll .. "_textbox_"
@@ -1257,7 +1267,7 @@ end
 
 function register_combobox(name_controll, x, y, alpha, def_value, list_values, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
-		_ref = get_menu_ref()
+		_ref = get_options_layer()
 	end
 	
 	name_controll = name_controll .. "_combobox_"
@@ -1271,7 +1281,7 @@ end
 
 function register_numeric_up_down(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
-		_ref = get_menu_ref()
+		_ref = get_options_layer()
 	end
 	
 	name_controll = name_controll .. "_numeric_up_down_"
@@ -1284,7 +1294,7 @@ end
 
 function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _ref, _callback, script_name, variable_name)
 	if _ref == nil then
-		_ref = get_menu_ref()
+		_ref = get_options_layer()
 	end
 	
 	name_controll = name_controll .. "_track_bar_"
@@ -1304,6 +1314,15 @@ function _on_main_menu_init(_ref)
 	get_menu_ref().options_xml = CScriptXmlInit()
 	get_menu_ref().options_xml:ParseFile("ui_ixr_options.xml")
 	ixr_options.main_menu_ref.ixr_controlls = {}
+	ixr_options.dynamic_vars.menu_opened = false
+
+	-- Move the complete options UI as one branch, preserving its internal draw order.
+	local layer = CUIWindow()
+	layer:SetWndSize(vector2():set(1024, 768))
+	layer:SetAutoDelete(true)
+	get_menu_ref():AttachChild(layer)
+	get_menu_ref().ixr_options_layer = layer
+	layer:Show(false)
 end
 
 function _on_main_menu_init_callbacks(_ref)
