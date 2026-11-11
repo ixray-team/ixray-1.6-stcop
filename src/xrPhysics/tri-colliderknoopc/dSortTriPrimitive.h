@@ -218,13 +218,9 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 			if (debug_output().ph_dbg_draw_mask().test(phDBgDrawNegativeTries))
 				debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 0, 255));
 #endif
-			float last_pos_dist=dDOT(last_pos,tri.norm)- tri.pos;
-#ifdef _M_X64
-			bool test_nan = isnan(last_pos_dist);
-#else 
-			const bool test_nan = false;
-#endif
-			if((!(last_pos_dist<0.f))||b_pushing||test_nan)
+			// On the first collision, last_pos contains a sentinel and cannot define a trajectory.
+			const dReal LastPosDist = no_last_pos ? 0.f : dDOT(last_pos, tri.norm) - tri.pos;
+			if (no_last_pos || b_pushing || LastPosDist >= 0.f)
 				if(__aabb_tri(Point(p),Point((float*)&AABB),vertices))
 				{
 #ifdef DEBUG
@@ -250,7 +246,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 								debug_output().DBG_DrawLine(cast_fv(last_pos), cast_fv(p), color_xrgb(255, 0, 255));
 #endif
 							dVector3 tri_point;
-							PlanePoint(tri,last_pos,p,last_pos_dist,tri_point);
+							PlanePoint(tri,last_pos,p,LastPosDist,tri_point);
 #ifdef DEBUG
 							if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriPoint))
 								debug_output().DBG_DrawPoint(cast_fv(tri_point), 0.01f, color_xrgb(255, 0, 255));
