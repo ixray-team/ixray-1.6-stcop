@@ -225,6 +225,27 @@ jobs:
             -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
             -DIXRAY_CI=ON \
             -DIXRAY_PROFILER=OFF
+            
+      - name: Diagnose Embree
+        run: |
+          build_dir="build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}"
+
+          echo "::group::Export map bytes"
+          hexdump -C src/3rd-party/embree/kernels/export.macosx.map
+          echo "::endgroup::"
+
+          echo "::group::Build Embree with full commands"
+          cmake --build "$build_dir" --target embree --verbose
+          echo "::endgroup::"
+
+          echo "::group::Embree exported symbols"
+          nm -gU "$build_dir/src/3rd-party/embree/libembree4.dylib"
+          echo "::endgroup::"
+
+          echo "::group::Embree API symbols including non-exported"
+          nm "$build_dir/src/3rd-party/embree/libembree4.dylib" \
+            | grep -E 'rtcNewDevice|rtcBuildBVH|rtcIntersect1' || true
+          echo "::endgroup::"
 
       - name: Build engine
         run: |
