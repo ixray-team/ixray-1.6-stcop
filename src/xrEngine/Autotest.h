@@ -9,6 +9,6 @@ namespace Autotest
 	ENGINE_API void	RequestFrame(const char* Path, float Aspect);
 	ENGINE_API s32	FrameStatus();
 	ENGINE_API void	CaptureFrame();
-	ENGINE_API bool	OpenVideo(const char* Path, double Rate);
+	ENGINE_API bool	OpenVideo(const char* Path, double Rate, float Quality = 0.9f);
 	ENGINE_API u32	CloseVideo();
 }

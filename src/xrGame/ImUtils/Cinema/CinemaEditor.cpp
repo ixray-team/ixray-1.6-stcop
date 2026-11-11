@@ -909,10 +909,10 @@ void Editor::DrawRenderModal(Player& Core)
 	ImGui::SetNextItemWidth(160.0f);
 	ImGui::Combo("Aspect", &RenderAspect, "Window\0" "2.39:1\0" "21:9\0" "2:1\0" "1.85:1\0" "16:9\0" "4:3\0" "1:1\0" "9:16\0");
 	ImGui::SetNextItemWidth(160.0f);
-	ImGui::Combo("Output", &RenderOutput, "TGA frames\0" "AVI video (MJPEG)\0");
+	ImGui::Combo("Output", &RenderOutput, "TGA frames\0" "PNG frames\0" "AVI video (MJPEG)\0" "AVI video (MJPEG, high quality)\0");
 	const char* SceneTitle = SceneName.empty() ? "untitled" : SceneName.c_str();
 	ImGui::SetNextItemWidth(160.0f);
-	ImGui::InputTextWithHint("Name", RenderOutput == 1 ? SceneTitle : "frame", RenderName, sizeof(RenderName), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiInputTextCallbackData* Data)
+	ImGui::InputTextWithHint("Name", RenderOutput >= 2 ? SceneTitle : "frame", RenderName, sizeof(RenderName), ImGuiInputTextFlags_CallbackCharFilter, [](ImGuiInputTextCallbackData* Data)
 	{
 		const ImWchar Symbol = Data->EventChar;
 		return (Symbol >= 'a' && Symbol <= 'z') || (Symbol >= 'A' && Symbol <= 'Z') || (Symbol >= '0' && Symbol <= '9') || Symbol == '_' || Symbol == '-' ? 0 : 1;
@@ -920,8 +920,8 @@ void Editor::DrawRenderModal(Player& Core)
 	ImGui::SetNextItemWidth(160.0f);
 	ImGui::SliderFloat("Cut warm-up", &Settings.RenderWarmup, 0.0f, 30.0f, "%.0f frames", ImGuiSliderFlags_AlwaysClamp);
 	ImGui::SetItemTooltip("Frames rendered and thrown away after every camera cut, so textures, exposure and anti-aliasing settle before the frame is written");
-	const char* FileTitle = RenderName[0] ? RenderName : RenderOutput == 1 ? SceneTitle : "frame";
-	ImGui::TextDisabled(RenderOutput == 1 ? "Output: $app_data_root$\\cinema_renders\\%s\\%s.avi" : "Output: $app_data_root$\\cinema_renders\\%s\\%s_000000.tga", SceneTitle, FileTitle);
+	const char* FileTitle = RenderName[0] ? RenderName : RenderOutput >= 2 ? SceneTitle : "frame";
+	ImGui::TextDisabled(RenderOutput >= 2 ? "Output: $app_data_root$\\cinema_renders\\%s\\%s.avi" : RenderOutput == 1 ? "Output: $app_data_root$\\cinema_renders\\%s\\%s_000000.png" : "Output: $app_data_root$\\cinema_renders\\%s\\%s_000000.tga", SceneTitle, FileTitle);
 	if (ImGui::Button("Render"))
 	{
 		Modal = ModalKind::None;
@@ -1033,10 +1033,11 @@ void Editor::StartRender(Player& Core)
 	Job.Rate = Rate;
 	Job.Count = static_cast<u32>(std::clamp(std::ceil((End - Begin) * Rate - 1e-3), 1.0, 999999.0));
 	Job.Aspect = FrameAspects[std::clamp(RenderAspect, 0, 8)];
-	Job.IsVideo = RenderOutput == 1;
-	xr_strcpy(Job.Name, RenderName[0] ? RenderName : RenderOutput == 1 ? (SceneName.empty() ? "untitled" : SceneName.c_str()) : "frame");
+	Job.IsVideo = RenderOutput >= 2;
+	Job.IsPng = RenderOutput == 1;
+	xr_strcpy(Job.Name, RenderName[0] ? RenderName : Job.IsVideo ? (SceneName.empty() ? "untitled" : SceneName.c_str()) : "frame");
 	xr_sprintf(Job.Video, "%s%s.avi", Job.Folder, Job.Name);
-	if (Job.IsVideo && !Autotest::OpenVideo(Job.Video, Rate))
+	if (Job.IsVideo && !Autotest::OpenVideo(Job.Video, Rate, RenderOutput == 3 ? 0.98f : 0.9f))
 	{
 		SetStatus(true, "Could not create %s", Job.Video);
 		return;
@@ -1083,7 +1084,7 @@ void Editor::StepRender(Player& Core)
 	else if (!Job.HasRequest)
 	{
 		string_path Path;
-		xr_sprintf(Path, "%s%s_%06u.tga", Job.Folder, Job.Name, Job.Index);
+		xr_sprintf(Path, Job.IsPng ? "%s%s_%06u.png" : "%s%s_%06u.tga", Job.Folder, Job.Name, Job.Index);
 		Autotest::RequestFrame(Path, Job.Aspect);
 		Job.HasRequest = true;
 	}

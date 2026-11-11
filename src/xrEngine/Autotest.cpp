@@ -44,6 +44,7 @@ namespace
 	xr_vector<u8>		s_pixels;
 	string_path			s_frame_path = {};
 	float				s_frame_aspect = 0.0f;
+	float				s_video_quality = 0.9f;
 	s32					s_frame_status = 0;
 	xr_vector<u8>		s_jpeg;
 
@@ -539,18 +540,30 @@ namespace Autotest
 		const u32 CropWidth = s_frame_aspect > 0.0f && s_frame_aspect < Screen ? std::max(u32(std::lround(Height * s_frame_aspect)), 1u) : Width;
 		const u32 CropHeight = s_frame_aspect > Screen ? std::max(u32(std::lround(Width / s_frame_aspect)), 1u) : Height;
 		const u32 Left = (Width - CropWidth) / 2, Top = (Height - CropHeight) / 2;
+		if (!s_video.IsOpen() && strext(s_frame_path) && !xr_strcmp(strext(s_frame_path), ".png"))
+		{
+			IWriter* File = SUCCEEDED(GRHI->EncodeFrame(s_pixels.data() + size_t(Top) * Pitch + size_t(Left) * 4, CropWidth, CropHeight, Pitch, s_jpeg, 0.0f)) ? FS.w_open(s_frame_path) : nullptr;
+			if (File)
+			{
+				File->w(s_jpeg.data(), static_cast<u32>(s_jpeg.size()));
+				FS.w_close(File);
+				s_frame_status = 0;
+			}
+			return;
+		}
 		if (!s_video.IsOpen())
 		{
 			s_frame_status = WriteTGA(s_frame_path, Left, Top, CropWidth, CropHeight, Pitch) ? 0 : -1;
 			return;
 		}
 		const u32 EvenWidth = std::max(CropWidth & ~1u, 2u), EvenHeight = std::max(CropHeight & ~1u, 2u);
-		const bool IsEncoded = EvenWidth <= Width && EvenHeight <= Height && SUCCEEDED(GRHI->EncodeJpeg(s_pixels.data() + size_t(Top) * Pitch + size_t(Left) * 4, EvenWidth, EvenHeight, Pitch, s_jpeg));
+		const bool IsEncoded = EvenWidth <= Width && EvenHeight <= Height && SUCCEEDED(GRHI->EncodeFrame(s_pixels.data() + size_t(Top) * Pitch + size_t(Left) * 4, EvenWidth, EvenHeight, Pitch, s_jpeg, s_video_quality));
 		s_frame_status = IsEncoded && s_video.Add(s_jpeg, EvenWidth, EvenHeight) ? 0 : -1;
 	}
 
-	bool OpenVideo(const char* Path, double Rate)
+	bool OpenVideo(const char* Path, double Rate, float Quality)
 	{
+		s_video_quality = std::clamp(Quality, 0.05f, 1.0f);
 		s_video.Close();
 		return Rate > 0.0 && s_video.Open(Path, Rate);
 	}

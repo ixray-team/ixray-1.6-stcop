@@ -288,6 +288,7 @@ struct RenderJob
 	bool HasRequest = false;
 	bool WasLooping = false;
 	bool IsVideo = false;
+	bool IsPng = false;
 	u32 Warm = 0;
 	u32 WarmIndex = u32(-1);
 	string_path Folder = {};

@@ -66,8 +66,9 @@ CRHI::LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, E
     return DevicePtr->LoadDDS(data, size, usage, bind_flags, cpu_flags, lod, fallback, out_surface);
 }
 
-HRESULT CRHI::EncodeJpeg(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_vector<u8>& Out)
+HRESULT CRHI::EncodeFrame(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_vector<u8>& Out, float Quality)
 {
+	const bool IsPng = Quality <= 0.0f;
 	Out.clear();
 	DirectX::ScratchImage Image;
 	HRESULT Result = Image.Initialize2D(DXGI_FORMAT_B8G8R8A8_UNORM, Width, Height, 1, 1);
@@ -90,7 +91,22 @@ HRESULT CRHI::EncodeJpeg(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_
 	}
 #ifdef IXR_WINDOWS
 	DirectX::Blob Encoded;
-	Result = DirectX::SaveToWICMemory(*Frame, DirectX::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, Encoded);
+	Result = DirectX::SaveToWICMemory(*Frame, DirectX::WIC_FLAGS_NONE, IsPng ? GUID_ContainerFormatPng : GUID_ContainerFormatJpeg, Encoded, IsPng ? &GUID_WICPixelFormat24bppBGR : nullptr, [IsPng, Quality](IPropertyBag2* Props)
+	{
+		if (IsPng)
+		{
+			return;
+		}
+		PROPBAG2 Options[2] = {};
+		VARIANT Values[2] = {};
+		Options[0].pstrName = const_cast<wchar_t*>(L"ImageQuality");
+		Values[0].vt = VT_R4;
+		Values[0].fltVal = Quality;
+		Options[1].pstrName = const_cast<wchar_t*>(L"JpegYCrCbSubsampling");
+		Values[1].vt = VT_UI1;
+		Values[1].bVal = Quality >= 0.95f ? WICJpegYCrCbSubsampling422 : WICJpegYCrCbSubsampling420;
+		Props->Write(2, Options, Values);
+	});
 	if (SUCCEEDED(Result))
 	{
 		const u8* Begin = static_cast<const u8*>(Encoded.GetBufferPointer());
@@ -103,7 +119,9 @@ HRESULT CRHI::EncodeJpeg(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_
 		const u8* Begin = static_cast<const u8*>(Data);
 		static_cast<xr_vector<u8>*>(Context)->insert(static_cast<xr_vector<u8>*>(Context)->end(), Begin, Begin + Size);
 	};
-	return stbi_write_jpg_to_func(Append, &Out, static_cast<int>(Width), static_cast<int>(Height), 4, Frame->pixels, 90) ? S_OK : E_FAIL;
+	const int Wide = static_cast<int>(Width), High = static_cast<int>(Height);
+	const int IsWritten = IsPng ? stbi_write_png_to_func(Append, &Out, Wide, High, 4, Frame->pixels, static_cast<int>(Frame->rowPitch)) : stbi_write_jpg_to_func(Append, &Out, Wide, High, 4, Frame->pixels, static_cast<int>(Quality * 100.0f));
+	return IsWritten ? S_OK : E_FAIL;
 #endif
 }
 
