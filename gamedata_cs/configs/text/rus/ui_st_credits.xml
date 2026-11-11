@@ -491,4 +491,109 @@
 	</string>
 
 
+	<string id="st_game_world">
+		<text>GSC GAME WORLD</text>
+	</string>
+	<string id="st_spa_localization">
+		<text>Испанская и итальянская локализация</text>
+	</string>
+	<string id="st_spa_translations">
+		<text>Vertigo Translations srl</text>
+	</string>
+	<string id="st_spa_recordings">
+		<text>Запись звука</text>
+	</string>
+	<string id="st_spa_synthesis">
+		<text>Synthesis US llc</text>
+	</string>
+	<string id="st_spa_manager">
+		<text>Руководитель проекта</text>
+	</string>
+	<string id="st_spa_solbiati">
+		<text>Davide Solbiati</text>
+	</string>
+	<string id="st_publisher">
+		<text>Издатель</text>
+	</string>
+	<string id="st_koch_media">
+		<text>DEEP SILVER</text>
+	</string>
+	<string id="st_publisher_head">
+		<text>Руководитель производства</text>
+	</string>
+	<string id="st_publisher_moriz">
+		<text>Christian Moriz</text>
+	</string>
+	<string id="st_publisher_management">
+		<text>Управление продуктом</text>
+	</string>
+	<string id="st_publisher_stettner">
+		<text>Maik Stettner</text>
+	</string>
+	<string id="st_publisher_production">
+		<text>Постпродакшн и проверка локализации</text>
+	</string>
+	<string id="st_publisher_schmidt">
+		<text>Michael K. Schmidt</text>
+	</string>
+	<string id="st_publisher_langer">
+		<text>Daniel Langer</text>
+	</string>
+	<string id="st_publisher_gaitzsch">
+		<text>Daniel Gaitzsch</text>
+	</string>
+	<string id="st_publisher_int_marketing">
+		<text>Международный маркетинг</text>
+	</string>
+	<string id="st_publisher_larch">
+		<text>Georg Larch</text>
+	</string>
+	<string id="st_publisher_marketing">
+		<text>Менеджер по маркетингу GSA</text>
+	</string>
+	<string id="st_publisher_gerhold">
+		<text>Mario Gerhold</text>
+	</string>
+	<string id="st_publisher_beck">
+		<text>Oliver Beck</text>
+	</string>
+	<string id="st_publisher_press">
+		<text>Международная пресса</text>
+	</string>
+	<string id="st_publisher_metzler">
+		<text>Martin Metzler</text>
+	</string>
+	<string id="st_publisher_pr">
+		<text>Менеджер по связям с общественностью GAS</text>
+	</string>
+	<string id="st_publisher_wein">
+		<text>Martin Wein</text>
+	</string>
+	<string id="st_publisher_design">
+		<text>Графика и дизайн</text>
+	</string>
+	<string id="st_publisher_stein">
+		<text>Alexander Stein</text>
+	</string>
+	<string id="st_publisher_community">
+		<text>Работа с сообществом</text>
+	</string>
+	<string id="st_publisher_oberlerchner">
+		<text>Daniel "Oberle" Oberlerchner</text>
+	</string>
+	<string id="st_publisher_testing">
+		<text>Лингвистическое тестирование</text>
+	</string>
+	<string id="st_publisher_grobhennig">
+		<text>Linda Grosshennig</text>
+	</string>
+	<string id="st_publisher_parakhen">
+		<text>Prachya Isaac Parakhen</text>
+	</string>
+	<string id="st_publisher_cuinet">
+		<text>Mikael Cuinet</text>
+	</string>
+	<string id="st_publisher_randall_mage">
+		<text>LocalSoft - Randall Mage</text>
+	</string>
 </string_table>
