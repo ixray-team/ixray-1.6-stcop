@@ -24,6 +24,53 @@
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
 #include "xrSound/ai_sounds.h"
+#include "Include/xrRender/KinematicsAnimated.h"
+#include "xrGame/ai/monsters/state_manager.h"
+#include "xrGame/EntityCondition.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedHuntGroups.h"
+
+namespace
+{
+// Inspect actual skeletal tracks, including partial-body and fading animations.
+class CAnimationDebugCollector final : public IterateBlendsCallback
+{
+public:
+	explicit CAnimationDebugCollector(IKinematicsAnimated& Owner) : Skeleton(Owner) {}
+	void operator()(CBlend& Blend) override
+	{
+		if (!Blend.motionID.valid() || Blend.blendAmount <= .01f)
+		{
+			return;
+		}
+		xr_string Name = "<unknown>";
+		if (Blend.motionID.slot < Skeleton.LL_MotionsSlotCount())
+		{
+			shared_motions Motions = Skeleton.LL_MotionsSlot(Blend.motionID.slot);
+			if (const auto* Map = Motions.motion_map())
+			{
+				for (const auto& Entry : *Map)
+				{
+					if (Entry.second == Blend.motionID.idx)
+					{
+						Name = Entry.first.c_str();
+						break;
+					}
+				}
+			}
+		}
+		string512 Label;
+		xr_sprintf(Label, "ANIM: %s | part=%u ch=%u weight=%.2f time=%.2f/%.2f speed=%.2f", Name.c_str(), u32(Blend.bone_or_part), u32(Blend.channel), Blend.blendAmount, Blend.timeCurrent, Blend.timeTotal, Blend.speed);
+		Labels.emplace_back(Label);
+		xr_sprintf(Label, "%s:%u:%u;", Name.c_str(), u32(Blend.bone_or_part), u32(Blend.channel));
+		Signature += Label;
+	}
+	xr_vector<shared_str> Labels;
+	xr_string Signature;
+private:
+	IKinematicsAnimated& Skeleton;
+};
+}
+
 
 // Связывает общую память и восприятие владельца с необходимыми службами и состоянием владельца.
 CELComponentBase::CELComponentBase(xr_unique_ptr<IELAdapter> OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : Adapter(std::move(OwnerAdapter)), Profile(OwnerProfile) {}
@@ -373,6 +420,84 @@ void CELComponentBase::ForgetTarget(u16 ObjectIdentifier)
 	}
 }
 
+void CELComponentBase::UpdateFieldExposure()
+{
+	const u32 Now = Device.dwTimeGlobal;
+	const float Elapsed = LastFieldAt ? std::min(1.f, float(Now - LastFieldAt) * .001f) : 0.f;
+	LastFieldAt = Now;
+	float Exposure = 0.f;
+	Fvector Source;
+	u32 Until;
+	const bool IsInside = CBaseMonster::PanicZonePressure(Adapter->Monster().Position(), Source, Until, Adapter->Monster().ThreatTier, &Exposure) > 0.f;
+	if (IsInside)
+	{
+		FieldEscapeSource = Source;
+		FieldHeadache = std::min(1.f, FieldHeadache + Elapsed * Profile.FieldHeadacheGain * Exposure);
+		if (FieldHeadache >= 1.f)
+		{
+			IsFieldRecovering = true;
+		}
+	}
+	else
+	{
+		FieldHeadache = std::max(0.f, FieldHeadache - Elapsed * Profile.FieldHeadacheRecovery);
+		if (FieldHeadache <= Profile.FieldHeadacheResume)
+		{
+			IsFieldRecovering = false;
+		}
+	}
+	Adapter->SetFieldEscapePermission(IsFieldRecovering && s32(Adapter->Monster().CorneredBerserkUntil - Now) <= 0);
+}
+
+bool CELComponentBase::ShouldFleePredator(const SELObservation* Observation)
+{
+	CBaseMonster& Monster = Adapter->Monster();
+	CEntityAlive* Target = Observation ? ExtendedEntityes::FindEntity(Observation->TargetIdentifier) : nullptr;
+	if (Target && !Adapter->IsEnemy(*Target))
+	{
+		Target = nullptr;
+	}
+	// Species fear is independent of damage and of the native combat strength estimator.
+	const u16 CurrentTarget = Target ? Target->ID() : u16(-1);
+	const u32 Members = Target && Profile.UsesPackCourage ? CELSharedHuntGroups::Observe(Monster, CurrentTarget, Profile.PackCourageRadius).Count : 1;
+	const float DesiredCourage = Profile.UsesPackCourage ? std::min(.8f, float(Members > 0 ? Members - 1 : 0) * Profile.PackCouragePerAlly) : 0.f;
+	const float Elapsed = LastCourageAt ? std::min(1.f, float(Device.dwTimeGlobal - LastCourageAt) * .001f) : 0.f;
+	LastCourageAt = Device.dwTimeGlobal;
+	const float Step = (DesiredCourage > Courage ? Profile.PackCourageGain : Profile.SoloCourageDecay) * Elapsed;
+	Courage += std::clamp(DesiredCourage - Courage, -Step, Step);
+	if (FearTarget != CurrentTarget)
+	{
+		FearTarget = CurrentTarget;
+		FearDecisionUntil = 0;
+		IsFleeingPredator = false;
+	}
+	bool IsPredator = false;
+	if (Target && Profile.CanFearPredators && Profile.PredatorSpecies.size())
+	{
+		const char* Species = pSettings->read_if_exists<str_c>(Target->cNameSect().c_str(), "species", "");
+		string128 Item;
+		for (u32 Index = 0; Index < _GetItemCount(Profile.PredatorSpecies.c_str()); ++Index)
+		{
+			_GetItem(Profile.PredatorSpecies.c_str(), Index, Item);
+			if (xr_strcmp(Item, Species) == 0)
+			{
+				IsPredator = true;
+				break;
+			}
+		}
+	}
+	if (IsPredator && s32(Device.dwTimeGlobal - FearDecisionUntil) >= 0)
+	{
+		const float RawThreshold = Monster.panic_threshold();
+		const float Threshold = _valid(RawThreshold) ? std::clamp(RawThreshold, 0.f, 5.f) : 0.f;
+		const float Health = clampr(Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth()), 0.f, 1.f);
+		const float Chance = std::clamp(Profile.PredatorFearChance * (1.f + Threshold) * (1.f - Courage) + Profile.InjuryFearGain * (1.f - Health), .05f, .95f);
+		IsFleeingPredator = Random.randF(0.f, 1.f) < Chance;
+		FearDecisionUntil = Device.dwTimeGlobal + Random.randI(6000u, 10001u);
+	}
+	return s32(Monster.CorneredBerserkUntil - Device.dwTimeGlobal) <= 0 && IsPredator && IsFleeingPredator;
+}
+
 // Use existing perception snapshots: debug drawing must not consume vision rays.
 void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 {
@@ -387,8 +512,16 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 	{
 		Record.Senses.push_back("ВНИМАНИЕ: разворот к услышанной точке");
 	}
+	if (s32(Adapter->Monster().CorneredBerserkUntil - Device.dwTimeGlobal) > 0)
+	{
+		Record.Senses.push_back("БЕРСЕРК: загнан в угол, страх подавлен, урон усилен");
+	}
 	string256 EnvironmentLabel;
 	xr_sprintf(EnvironmentLabel, "ВОСПРИЯТИЕ: зрение ×%.2f | дождь %.2f | туман %.2f | нюх %s", CELSharedEnvironment::Vision(Profile), CELSharedEnvironment::Rain(), CELSharedEnvironment::Fog(), CELSharedEnvironment::CanSmell() ? "разрешён" : "отключён дождём");
+	Record.Senses.push_back(EnvironmentLabel);
+	xr_sprintf(EnvironmentLabel, "ПОЛЕ: головная боль %.0f%% | %s", FieldHeadache * 100.f, IsFieldRecovering ? "уход/восстановление" : "может рискнуть войти");
+	Record.Senses.push_back(EnvironmentLabel);
+	xr_sprintf(EnvironmentLabel, "СМЕЛОСТЬ: %.0f%% | видовой страх %s | решение: %s", Courage * 100.f, Profile.CanFearPredators ? "разрешён" : "отключён", IsFleeingPredator ? "отступление" : "бой/нет угрозы");
 	Record.Senses.push_back(EnvironmentLabel);
 	const SELObservation* Guided = Memory.Find(TargetIdentifier);
 	if (Guided && Guided->Source == EELObservationSource::Sharing && Guided->IsPsiShared && s32(Guided->ExpiresAt - Device.dwTimeGlobal) > 0 &&
@@ -405,6 +538,49 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 	if (!Player)
 	{
 		return;
+	}
+	if (Player->Position().distance_to_sqr(Adapter->Monster().Position()) <= 60.f * 60.f)
+	{
+		if (s32(Device.dwTimeGlobal - NextAnimationSample) >= 0)
+		{
+			NextAnimationSample = Device.dwTimeGlobal + 100;
+			AnimationLabels.clear();
+			CBaseMonster& Owner = Adapter->Monster();
+			CControlAnimationBase& Animation = Owner.anim();
+			string512 Header;
+			xr_sprintf(Header, "ANIM REQUEST: native=%u action=%u motion=%u override=%u selected=%s age=%u ms", Owner.StateMan ? u32(Owner.StateMan->get_state_type()) : u32(-1), u32(Animation.m_tAction), u32(Animation.GetCurAnim()), u32(Animation.get_override_animation()), Animation.cur_anim_info().name.size() ? Animation.cur_anim_info().name.c_str() : "<none>", Device.dwTimeGlobal - Animation.cur_anim_info().time_started);
+			AnimationLabels.emplace_back(Header);
+			xr_string Signature;
+			string256 Request;
+			xr_sprintf(Request, "%u:%u:%u:%u|%s|%s|", Owner.StateMan ? u32(Owner.StateMan->get_state_type()) : u32(-1), u32(Animation.m_tAction), u32(Animation.GetCurAnim()), u32(Animation.get_override_animation()), Record.Mode.c_str(), Record.State.c_str());
+			Signature = Request;
+			if (Owner.Visual())
+			{
+				if (IKinematicsAnimated* Skeleton = Owner.Visual()->dcast_PKinematicsAnimated())
+				{
+					CAnimationDebugCollector Collector(*Skeleton);
+					Skeleton->LL_IterateBlends(Collector);
+					Signature += Collector.Signature;
+					AnimationLabels.insert(AnimationLabels.end(), Collector.Labels.begin(), Collector.Labels.end());
+				}
+			}
+			if (Signature != LastAnimationSignature || Device.dwTimeGlobal - LastAnimationLog >= 2000)
+			{
+				LastAnimationSignature = Signature;
+				LastAnimationLog = Device.dwTimeGlobal;
+				Msg("[monster_anim] t=%u id=%u section=%s target=%u state=%s speed=%.2f pos=%.2f,%.2f,%.2f", Device.dwTimeGlobal, Owner.ID(), Owner.cNameSect().c_str(), TargetIdentifier, Record.State.c_str(), Record.Speed, Owner.Position().x, Owner.Position().y, Owner.Position().z);
+				for (const shared_str& AnimationLabel : AnimationLabels)
+				{
+					Msg("[monster_anim] id=%u %s", Owner.ID(), AnimationLabel.c_str());
+				}
+			}
+		}
+		Record.Senses.insert(Record.Senses.end(), AnimationLabels.begin(), AnimationLabels.end());
+	}
+	else
+	{
+		AnimationLabels.clear();
+		LastAnimationSignature.clear();
 	}
 	string512 Label;
 	const SELObservation* Known = Memory.Find(Player->ID());

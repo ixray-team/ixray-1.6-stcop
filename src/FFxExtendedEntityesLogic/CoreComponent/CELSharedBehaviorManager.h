@@ -12,6 +12,9 @@ public:
 	bool IsActive(const IELBehavior& Behavior) const { return ActiveBehavior == &Behavior; }
 	const SELBehaviorValidation& GetValidation() const { return Validation; }
 
+protected:
+	void SetValidationReason(const char* Reason) { Validation.Reason = Reason; }
+
 private:
 	IELBehavior* ActiveBehavior = nullptr;
 	SELBehaviorValidation Validation;

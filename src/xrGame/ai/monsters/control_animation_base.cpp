@@ -163,6 +163,11 @@ bool CControlAnimationBase::get_animation_info (EMotionAnim anim, u32 index, Mot
 
 	motion								=	animated->ID_Cycle_Safe(animation_name_buffer);
 
+	if (!motion.valid())
+	{
+		length = 0.f;
+		return false;
+	}
 	length								=	animated->get_animation_length(motion);
 	return									true;
 }

@@ -28,7 +28,21 @@ CBaseMonster& CELBaseAdapter::Monster() const
 // Разрешает перехват управления только вне конфликтующих штатных и скриптовых действий.
 bool CELBaseAdapter::CanControl() const
 {
-	return OwnerMonster.g_Alive() && !OwnerMonster.getDestroy() && !OwnerMonster.GetScriptControl() &&
+	// Species-specific attacks must finish in their native FSM, even between captures.
+	if (OwnerMonster.StateMan)
+	{
+		const EMonsterState State = OwnerMonster.StateMan->get_state_type();
+		if (State != eStateUnknown && (is_state(State, eStateCustom) || State == eStateAttack_Psy || State == eStateAttack_ControlFire || State == eStateAttack_ControlTube))
+		{
+			return false;
+		}
+	}
+	const EMotionAnim Override = OwnerMonster.anim().get_override_animation();
+	if (Override != eAnimUndefined && Override != eAnimAttackOnRunLeft && Override != eAnimAttackOnRunRight && Override != eAnimSniff)
+	{
+		return false;
+	}
+	return !OwnerMonster.is_jumping() && OwnerMonster.anim().GetCurAnim() != eAnimAttack && OwnerMonster.g_Alive() && !OwnerMonster.getDestroy() && !OwnerMonster.GetScriptControl() &&
 		   !OwnerMonster.EnemyMan.get_script_enemy() && !OwnerMonster.m_script_processing_active &&
 		   !(OwnerMonster.m_controlled && OwnerMonster.m_controlled->is_under_control()) &&
 		   !OwnerMonster.control().is_captured_pure() && OwnerMonster.anim().m_tAction != ACT_ATTACK;
@@ -49,12 +63,23 @@ bool CELBaseAdapter::CanSee(const CEntityAlive& Candidate) const
 // Проверяет допустимость назначения с учётом ограничений категории.
 bool CELBaseAdapter::CanReach(const Fvector& TargetPosition, u32 TargetVertex) const
 {
+	if (HasFieldEscapePermission)
+	{
+		Fvector Source;
+		u32 Until;
+		const float Current = CBaseMonster::PanicZonePressure(OwnerMonster.Position(), Source, Until, OwnerMonster.ThreatTier);
+		const float Next = CBaseMonster::PanicZonePressure(TargetPosition, Source, Until, OwnerMonster.ThreatTier);
+		if ((Next > 0.f && Next >= Current) || !CBaseMonster::IsPanicRouteSafe(OwnerMonster.Position(), TargetPosition, OwnerMonster.ThreatTier))
+		{
+			return false;
+		}
+	}
 	return ai().get_level_graph() && ai().level_graph().valid_vertex_id(TargetVertex) &&
 		   (!CELSharedAnomalies::Contains(OwnerMonster.ID(), TargetPosition) ||
 			(CELSharedAnomalies::Contains(OwnerMonster.ID(), OwnerMonster.Position()) && !CELSharedAnomalies::Crosses(OwnerMonster.ID(), OwnerMonster.Position(), TargetPosition))) &&
 		   (!CELSharedDeaths::Contains(OwnerMonster.ID(), TargetPosition) ||
 			(CELSharedDeaths::Contains(OwnerMonster.ID(), OwnerMonster.Position()) && !CELSharedDeaths::Crosses(OwnerMonster.ID(), OwnerMonster.Position(), TargetPosition))) &&
-		   OwnerMonster.Home && OwnerMonster.Home->at_home(TargetPosition) &&
+		   (HasFieldEscapePermission || (OwnerMonster.Home && OwnerMonster.Home->at_home(TargetPosition))) &&
 		   OwnerMonster.control().path_builder().accessible(TargetVertex) && OwnerMonster.control().path_builder().accessible(TargetPosition);
 }
 
@@ -64,9 +89,33 @@ bool CELBaseAdapter::CanPursue(CEntityAlive& Candidate, const Fvector& KnownPosi
 	return true;
 }
 
+// Finalize the previous native action before issuing the first extended movement command.
+// Do not restart the FSM on every waypoint or when switching extended movement schemes.
+void CELBaseAdapter::BeginMovementControl()
+{
+	if (HasMovementControl)
+	{
+		return;
+	}
+	if (OwnerMonster.StateMan)
+	{
+		OwnerMonster.StateMan->critical_finalize();
+	}
+	OwnerMonster.m_bRunTurnLeft = OwnerMonster.m_bRunTurnRight = false;
+	HasMovementControl = true;
+}
+
+// Native control may already be starting a jump: do not overwrite its new commands here.
+void CELBaseAdapter::EndMovementControl()
+{
+	HasMovementControl = false;
+}
+
 // Снимает команды расширения и возвращает штатное управление.
 void CELBaseAdapter::ReleaseControl()
 {
+	EndMovementControl();
+	HasFieldEscapePermission = false;
 	OwnerMonster.movement().detail().SetMovementFactor(1.f);
 	OwnerMonster.path().enable_path();
 	OwnerMonster.path().set_generic_parameters();

@@ -189,6 +189,21 @@ EELControl CELScavengerCrow::Update(float DeltaTime)
 			BeginFlight(EELCrowFlightMode::Roam, State.Remaining);
 		}
 	}
+	UpdateFieldExposure();
+	if (IsFieldRecovering)
+	{
+		if (!HasFieldRecoveryOverride)
+		{
+			BeginFlight(EELCrowFlightMode::Escape, Settings.Escape.Sample());
+			HasFieldRecoveryOverride = true;
+		}
+		return CELFlying::Update(DeltaTime);
+	}
+	if (HasFieldRecoveryOverride)
+	{
+		HasFieldRecoveryOverride = false;
+		BeginFlight(EELCrowFlightMode::Roam, Settings.Escape.Sample());
+	}
 	DeltaTime = std::max(0.f, DeltaTime);
 	State.Satiety = std::max(0.f, State.Satiety - DeltaTime / Settings.HungerTime);
 	State.Fear = std::max(0.f, State.Fear - DeltaTime * Settings.FearDecay);

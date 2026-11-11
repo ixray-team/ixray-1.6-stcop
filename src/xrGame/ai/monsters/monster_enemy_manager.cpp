@@ -80,7 +80,8 @@ void CMonsterEnemyManager::update()
 	// обновить опасность врага
 	danger_type = eNone;
 
-	switch (dwfChooseAction(0, monster->panic_threshold(), 0.f, 0.f, 0.f, monster->g_Team(),monster->g_Squad(),monster->g_Group(),0,1,2,3,4, monster, 30.f)) {
+	// Extended species fear owns fight-or-flight; native attacks must not reroll damage-based fear.
+	switch ((ExtendedEntityes::HandlesSharing(*monster) && pSettings->read_if_exists<bool>(monster->cNameSect().c_str(), "monster_behavior_enabled", true)) ? 0 : dwfChooseAction(0, monster->panic_threshold(), 0.f, 0.f, 0.f, monster->g_Team(),monster->g_Squad(),monster->g_Group(),0,1,2,3,4, monster, 30.f)) {
 		case 4 : 	
 		case 3 : 	
 		case 2 : 	

@@ -7,6 +7,9 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedAnomalies.h"
 #include "FFxExtendedEntityesLogic/Interfaces/IELAdapter.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedHuntGroups.h"
+#include <algorithm>
+#include "xrGame/EntityCondition.h"
 
 // Связывает выбор наземных схем поведения с необходимыми службами и состоянием владельца.
 CELGroundBehaviorManager::CELGroundBehaviorManager(CELGround& OwnerLogic, IELAdapter& OwnerAdapter, const SELPerceptionProfile& OwnerProfile)
@@ -20,10 +23,52 @@ CELGroundBehaviorManager::~CELGroundBehaviorManager()
 // Выбирает и обновляет наземную схему по текущей ситуации.
 EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 {
+	Owner.UpdateFieldExposure();
 	if (!Owner.HasAttached || !Profile.CanUseBehaviors || !Adapter.CanControl())
 	{
 		Clear();
 		return EELControl::Native;
+	}
+	CBaseMonster& Monster = Adapter.Monster();
+	const float Health = Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth());
+	if (!Profile.IsPassive && Profile.CanCornerBerserk && Health < Profile.CornerBerserkHealth && IsActive(ReactionBehavior) && ReactionBehavior.IsCornered())
+	{
+		Monster.CorneredBerserkUntil = Device.dwTimeGlobal + Profile.CornerBerserkDuration;
+		Monster.CorneredBerserkDamage = Profile.CornerBerserkDamage;
+		Monster.set_berserk();
+		Clear();
+	}
+	const bool IsBerserk = s32(Monster.CorneredBerserkUntil - Device.dwTimeGlobal) > 0;
+	if (IsBerserk)
+	{
+		Adapter.SetFieldEscapePermission(false);
+	}
+	if (Owner.IsFieldRecovering && !IsBerserk)
+	{
+		Fvector Source;
+		u32 Until;
+		const bool Inside = CBaseMonster::PanicZonePressure(Monster.Position(), Source, Until, Monster.ThreatTier) > 0.f;
+		Fvector Goal;
+		const bool HasStimulus = Owner.Memory.Find(Owner.TargetIdentifier) || s32(Owner.Hearing.InvestigateUntil - Device.dwTimeGlobal) > 0;
+		if (Inside)
+		{
+			ReactionBehavior.Configure(Source, Device.dwTimeGlobal + 1000, true);
+		}
+		else if (HasStimulus && CBaseMonster::FindPanicPerimeter(Monster.Position(), Monster.ThreatTier, Monster.ID() % 2 ? .12f : -.12f, Goal))
+		{
+			ReactionBehavior.Configure(Goal, Device.dwTimeGlobal + 1000, false);
+		}
+		else
+		{
+			Clear();
+			CELGroundMovement Idle(Adapter);
+			Idle.Stop();
+			return EELControl::Extended;
+		}
+		Select(&ReactionBehavior);
+		Update(DeltaTime);
+		SetValidationReason(Inside ? "Головная боль: покидаю поле" : "Восстановление: кружу снаружи поля");
+		return EELControl::Extended;
 	}
 	// Используем то же назначение, которое Observe уже опубликовал штатному EnemyMan.
 	const SELObservation* SelectedObservation = Profile.IsPassive ? nullptr : Owner.Memory.Find(Owner.TargetIdentifier);
@@ -33,12 +78,20 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		SelectedObservation = nullptr;
 		Owner.TargetIdentifier = u16(-1);
 	}
+	if (Owner.ShouldFleePredator(SelectedObservation))
+	{
+		ReactionBehavior.Configure(SelectedObservation->Position, Device.dwTimeGlobal + 1000, true);
+		Select(&ReactionBehavior);
+		Update(DeltaTime);
+		SetValidationReason("Бегство от видового хищника");
+		return EELControl::Extended;
+	}
 	const bool HasThreat = SelectedObservation && CELSharedTargets::ThreatPriority(*SelectedObservation, Adapter);
-	if (UpdateEscape(DeltaTime))
+	if (!IsBerserk && UpdateEscape(DeltaTime))
 	{
 		return EELControl::Extended;
 	}
-	const bool IsPanicking = !HasThreat && (!SelectedObservation || Owner.Hearing.DamagePanic) && s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
+	const bool IsPanicking = !IsBerserk && !HasThreat && (!SelectedObservation || Owner.Hearing.DamagePanic) && s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
 	const bool IsInvestigating = !SelectedObservation && s32(Device.dwTimeGlobal - Owner.Hearing.InvestigateUntil) < 0;
 	if (IsPanicking || IsInvestigating)
 	{

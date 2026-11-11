@@ -45,13 +45,21 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 		BehaviorManager.Clear();
 		return EELControl::Native;
 	}
-	Tactics.Update(*Adapter, Profile, *TargetEntity, HasVision, &Hearing);
+	const bool IsBerserk = s32(Adapter->Monster().CorneredBerserkUntil - Device.dwTimeGlobal) > 0;
+	if (IsBerserk)
+	{
+		Tactics.Release(*Adapter);
+	}
+	else
+	{
+		Tactics.Update(*Adapter, Profile, *TargetEntity, HasVision, &Hearing);
+	}
 	if (Tactics.StartedJump())
 	{
 		BehaviorManager.Clear();
 		return EELControl::Native;
 	}
-	AttackBehavior.SetForceDirect(Tactics.IsCounterAttacking() || Tactics.IsFireEvading());
+	AttackBehavior.SetForceDirect(IsBerserk || Tactics.IsCounterAttacking() || Tactics.IsFireEvading());
 	AttackBehavior.SetTacticalGoal(Tactics.HasGoal() ? &Tactics.Goal() : nullptr);
 	Fvector TargetPosition = Observation.Position;
 	if (HasVision)

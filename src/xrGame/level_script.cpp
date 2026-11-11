@@ -11,6 +11,7 @@
 #include "pch_script.h"
 #include "Level.h"
 #include "Actor.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "script_game_object.h"
 #include "patrol_path_storage.h"
 #include "xrServer.h"
@@ -1962,6 +1963,8 @@ void CLevel::script_register(lua_State *L)
 
 		def("get_weather",						get_weather),
 		def("set_weather",						set_weather),
+		def("add_panic_zone", &CBaseMonster::SetPanicZone),
+		def("remove_panic_zone", &CBaseMonster::RemovePanicZone),
 		def("set_weather_fx",					set_weather_fx),
 		def("set_past_weather", set_past_wdesc),
 		def("set_next_weather", set_next_wdesc),

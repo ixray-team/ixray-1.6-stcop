@@ -59,6 +59,17 @@ bool CELFlyingAdapter::CanSee(const CEntityAlive& Candidate) const
 // Проверяет допустимость назначения с учётом ограничений категории.
 bool CELFlyingAdapter::CanReach(const Fvector& TargetPosition, u32 TargetVertex) const
 {
+	if (HasFieldEscapePermission)
+	{
+		Fvector Source;
+		u32 Until;
+		const float Current = CBaseMonster::PanicZonePressure(OwnerMonster.Position(), Source, Until, OwnerMonster.ThreatTier);
+		const float Next = CBaseMonster::PanicZonePressure(TargetPosition, Source, Until, OwnerMonster.ThreatTier);
+		if ((Next > 0.f && Next >= Current) || !CBaseMonster::IsPanicRouteSafe(OwnerMonster.Position(), TargetPosition, OwnerMonster.ThreatTier))
+		{
+			return false;
+		}
+	}
 	return _valid(TargetPosition) && Level().ObjectSpace.GetBoundingVolume().contains(TargetPosition);
 }
 

@@ -70,6 +70,22 @@ struct SELPerceptionProfile
 {
 	bool CanUseBehaviors = true;
 	bool IsPassive = false;
+	bool CanCornerBerserk = true;
+	float CornerBerserkHealth = .3f;
+	float CornerBerserkDamage = 2.f;
+	u32 CornerBerserkDuration = 60000;
+	float InjuryFearGain = .5f;
+	float FieldHeadacheGain = .08f;
+	float FieldHeadacheRecovery = .12f;
+	float FieldHeadacheResume = .25f;
+	bool CanFearPredators = true;
+	bool UsesPackCourage = true;
+	shared_str PredatorSpecies;
+	float PredatorFearChance = .65f;
+	float PackCourageRadius = 25.f;
+	float PackCourageGain = .08f;
+	float SoloCourageDecay = .15f;
+	float PackCouragePerAlly = .2f;
 	bool CanShare = true;
 	bool IsWireless = false;
 	bool CanTrackLive = false;

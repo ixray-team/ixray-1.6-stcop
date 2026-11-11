@@ -17,6 +17,7 @@ bool CELGroundMovement::MoveTo(const Fvector& TargetPosition, u32 TargetVertex, 
 	{
 		return false;
 	}
+	Adapter.BeginMovementControl();
 	CBaseMonster& OwnerMonster = Adapter.Monster();
 	if (OwnerMonster.m_bSleep)
 	{
@@ -39,6 +40,11 @@ bool CELGroundMovement::MoveTo(const Fvector& TargetPosition, u32 TargetVertex, 
 // Останавливает движение и отменяет связанные проверки маршрута.
 void CELGroundMovement::Stop()
 {
+	if (!Adapter.CanControl())
+	{
+		return;
+	}
+	Adapter.BeginMovementControl();
 	Adapter.Monster().path().disable_path();
 	Adapter.Monster().set_action(ACT_STAND_IDLE);
 }

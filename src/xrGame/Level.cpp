@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "pch_script.h"
 #include "FDemoRecord.h"
@@ -237,6 +238,7 @@ extern CAI_Space *g_ai_space;
 CLevel::~CLevel()
 {
 	PROF_EVENT("CLevel::~CLevel");
+	CBaseMonster::ClearPanicZones();
 	
 	Device.LuaGC.clear();
 

@@ -412,6 +412,15 @@ public:
 	// Panic Threshold (extension for scripts)
 	//--------------------------------------------------------------------
 
+		static void SetPanicZone(const char* Name, float Radius, const Fvector& Center, u32 DurationMs, float Strength);
+		static void RemovePanicZone(const char* Name);
+		static void ClearPanicZones();
+		static float PanicZonePressure(const Fvector& Position, Fvector& Source, u32& Until, u32 ThreatTier, float* Exposure = nullptr);
+		static bool FindPanicPerimeter(const Fvector& Position, u32 ThreatTier, float AngleOffset, Fvector& Point);
+		static bool IsPanicRouteSafe(const Fvector& Start, const Fvector& Goal, u32 ThreatTier);
+		u32 ThreatTier = 1;
+		u32 CorneredBerserkUntil = 0;
+		float CorneredBerserkDamage = 2.f;
 		float				m_default_panic_threshold;
 	IC	void				set_custom_panic_threshold	(float value);
 	IC	void				set_default_panic_threshold	();

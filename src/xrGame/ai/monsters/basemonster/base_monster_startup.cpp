@@ -265,6 +265,8 @@ void CBaseMonster::reload	(const char* section)
 
 	// save panic_threshold
 	m_default_panic_threshold = m_panic_threshold;
+	ThreatTier = pSettings->read_if_exists<u32>(section, "monster_threat_tier", 1u);
+	clamp(ThreatTier, 1u, 5u);
 }
 
 

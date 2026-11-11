@@ -21,6 +21,7 @@ public:
 	u32 LastRouteReadyMilliseconds() const;
 
 private:
+	u32 CorneredSince = 0;
 	CELFlying& Owner;
 	CELFlyingMovement& Movement;
 	CELFlyingCruiseBehavior CruiseBehavior;

@@ -1171,3 +1171,217 @@ bool   CBaseMonster::is_paused () const
 }
 
 #endif // DEBUG
+
+namespace
+{
+struct SPanicZone
+{
+	Fvector Center;
+	float Radius;
+	u32 Until;
+	float Strength;
+};
+class CPanicZoneStorage
+{
+public:
+	static CPanicZoneStorage& Instance()
+	{
+		static CPanicZoneStorage Storage;
+		return Storage;
+	}
+	xr_map<shared_str, SPanicZone> Zones;
+	xrCriticalSection Lock;
+	u32 NextSweep = 0;
+};
+xr_map<shared_str, SPanicZone>& PanicZones()
+{
+	return CPanicZoneStorage::Instance().Zones;
+}
+xrCriticalSection& PanicZoneLock()
+{
+	return CPanicZoneStorage::Instance().Lock;
+}
+}
+
+void CBaseMonster::SetPanicZone(const char* Name, float Radius, const Fvector& Center, u32 DurationMs, float Strength)
+{
+	if (!Name || !*Name || !_valid(Strength) || !_valid(Radius) || !_valid(Center.x) || !_valid(Center.y) || !_valid(Center.z))
+	{
+		return;
+	}
+	xrCriticalSectionGuard Guard(PanicZoneLock());
+	auto& Zones = PanicZones();
+	if (s32(Device.dwTimeGlobal - CPanicZoneStorage::Instance().NextSweep) >= 0)
+	{
+		CPanicZoneStorage::Instance().NextSweep = Device.dwTimeGlobal + 1000;
+		for (auto It = Zones.begin(); It != Zones.end();)
+		{
+			if (s32(It->second.Until - Device.dwTimeGlobal) <= 0)
+			{
+				It = Zones.erase(It);
+			}
+			else
+			{
+				++It;
+			}
+		}
+	}
+	if (Radius <= 0.f || DurationMs == 0 || Strength <= 0.f)
+	{
+		Zones.erase(shared_str(Name));
+		return;
+	}
+	Zones[shared_str(Name)] = {Center, Radius, Device.dwTimeGlobal + std::min(DurationMs, 86400000u), Strength};
+}
+
+void CBaseMonster::RemovePanicZone(const char* Name)
+{
+	if (Name && *Name)
+	{
+		xrCriticalSectionGuard Guard(PanicZoneLock());
+		PanicZones().erase(shared_str(Name));
+	}
+}
+
+void CBaseMonster::ClearPanicZones()
+{
+	xrCriticalSectionGuard Guard(PanicZoneLock());
+	PanicZones().clear();
+	CPanicZoneStorage::Instance().NextSweep = 0;
+}
+
+float CBaseMonster::PanicZonePressure(const Fvector& Position, Fvector& Source, u32& Until, u32 ThreatTier, float* Exposure)
+{
+	xrCriticalSectionGuard Guard(PanicZoneLock());
+	float Pressure = 0.f;
+	if (Exposure)
+	{
+		*Exposure = 0.f;
+	}
+	Fvector Away = {0.f, 0.f, 0.f};
+	Until = Device.dwTimeGlobal;
+	for (auto It = PanicZones().begin(); It != PanicZones().end();)
+	{
+		const SPanicZone& Zone = It->second;
+		if (s32(Zone.Until - Device.dwTimeGlobal) <= 0)
+		{
+			It = PanicZones().erase(It);
+			continue;
+		}
+		const float Depth = Zone.Radius + 2.f - Position.distance_to(Zone.Center);
+		if (Depth > 0.f && Zone.Strength >= float(ThreatTier))
+		{
+			Fvector Direction = Fvector().sub(Position, Zone.Center);
+			Direction.y = 0.f;
+			if (Direction.square_magnitude() < EPS_L)
+			{
+				Direction.set(1.f, 0.f, 0.f);
+			}
+			Direction.normalize_safe();
+			Away.mad(Direction, Depth);
+			Pressure += Depth;
+			if (Exposure)
+			{
+				*Exposure = std::max(*Exposure, 1.f + Zone.Strength - float(ThreatTier));
+			}
+			if (s32(Zone.Until - Until) > 0)
+			{
+				Until = Zone.Until;
+			}
+		}
+		++It;
+	}
+	if (Away.square_magnitude() < EPS_L)
+	{
+		Away.set(1.f, 0.f, 0.f);
+	}
+	Away.normalize_safe();
+	Source.mad(Position, Away, -12.f);
+	return Pressure;
+}
+
+// Choose a point outside all effective fields, advancing around the nearest perimeter.
+bool CBaseMonster::FindPanicPerimeter(const Fvector& Position, u32 ThreatTier, float AngleOffset, Fvector& Point)
+{
+	xrCriticalSectionGuard Guard(PanicZoneLock());
+	const SPanicZone* Nearest = nullptr;
+	float Best = FLT_MAX;
+	for (const auto& Item : PanicZones())
+	{
+		const SPanicZone& Zone = Item.second;
+		if (s32(Zone.Until - Device.dwTimeGlobal) > 0 && Zone.Strength >= float(ThreatTier))
+		{
+			const float Gap = std::abs(Position.distance_to(Zone.Center) - Zone.Radius);
+			if (Gap < Best)
+			{
+				Best = Gap;
+				Nearest = &Zone;
+			}
+		}
+	}
+	if (!Nearest)
+	{
+		return false;
+	}
+	const float Angle = std::atan2(Position.x - Nearest->Center.x, Position.z - Nearest->Center.z) + AngleOffset;
+	Point.set(Nearest->Center.x + std::sin(Angle) * (Nearest->Radius + 5.f), Position.y, Nearest->Center.z + std::cos(Angle) * (Nearest->Radius + 5.f));
+	for (u32 Pass = 0; Pass < 8; ++Pass)
+	{
+		bool Changed = false;
+		for (const auto& Item : PanicZones())
+		{
+			const SPanicZone& Zone = Item.second;
+			if (s32(Zone.Until - Device.dwTimeGlobal) <= 0 || Zone.Strength < float(ThreatTier))
+			{
+				continue;
+			}
+			Fvector Away = Fvector().sub(Point, Zone.Center);
+			Away.y = 0.f;
+			if (Away.square_magnitude() < _sqr(Zone.Radius + 4.f))
+			{
+				if (Away.square_magnitude() < EPS_L)
+				{
+					Away.set(1.f, 0.f, 0.f);
+				}
+				Away.normalize_safe();
+				const float Height = Point.y;
+				Point.mad(Zone.Center, Away, Zone.Radius + 5.f);
+				Point.y = Height;
+				Changed = true;
+			}
+		}
+		if (!Changed)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CBaseMonster::IsPanicRouteSafe(const Fvector& Start, const Fvector& Goal, u32 ThreatTier)
+{
+	xrCriticalSectionGuard Guard(PanicZoneLock());
+	Fvector Segment = Fvector().sub(Goal, Start);
+	const float LengthSquared = Segment.square_magnitude();
+	if (LengthSquared < EPS_L)
+	{
+		return true;
+	}
+	for (const auto& Item : PanicZones())
+	{
+		const SPanicZone& Zone = Item.second;
+		const float RadiusSquared = _sqr(Zone.Radius + 2.f);
+		if (s32(Zone.Until - Device.dwTimeGlobal) <= 0 || Zone.Strength < float(ThreatTier) || Start.distance_to_sqr(Zone.Center) <= RadiusSquared)
+		{
+			continue;
+		}
+		const float Fraction = clampr(Fvector().sub(Zone.Center, Start).dotproduct(Segment) / LengthSquared, 0.f, 1.f);
+		Fvector Closest;
+		Closest.mad(Start, Segment, Fraction);
+		if (Closest.distance_to_sqr(Zone.Center) < RadiusSquared)
+		{
+			return false;
+		}
+	}
+	return true;
+}

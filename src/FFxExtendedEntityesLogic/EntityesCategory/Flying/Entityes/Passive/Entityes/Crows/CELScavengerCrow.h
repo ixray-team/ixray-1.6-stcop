@@ -63,5 +63,6 @@ private:
 	u32 PerchAttempt = 0;
 	u16 CircledFood = u16(-1);
 	bool HasStarted = false;
+	bool HasFieldRecoveryOverride = false;
 	bool IsFeeding = false;
 };

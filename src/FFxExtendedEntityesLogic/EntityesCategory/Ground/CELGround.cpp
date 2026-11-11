@@ -29,7 +29,12 @@ void CELGround::Detach()
 // Обновляет общую логику наземной категории и обрабатывает текущий результат выполнения.
 EELControl CELGround::Update(float DeltaTime)
 {
-	return BehaviorManager.UpdateGround(DeltaTime);
+	const EELControl Result = BehaviorManager.UpdateGround(DeltaTime);
+	if (Result == EELControl::Native)
+	{
+		Adapter->EndMovementControl();
+	}
+	return Result;
 }
 
 // Обновляет выбранного противника и сообщает его сведения схемам.

@@ -30,6 +30,7 @@ void CELGroundReactionBehavior::Enter()
 	HasPoint = false;
 	NextPoint = 0;
 	SearchPhase = 0;
+	EscapeBlockedSince = 0;
 	ActionUntil = Until;
 	PointStartedAt = Device.dwTimeGlobal;
 }
@@ -103,12 +104,20 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 	if (!HasPoint && s32(Device.dwTimeGlobal - NextPoint) >= 0)
 	{
 		HasPoint = SelectPoint();
+		if (HasPoint)
+		{
+			EscapeBlockedSince = 0;
+		}
+		else if (!EscapeBlockedSince)
+		{
+			EscapeBlockedSince = Device.dwTimeGlobal;
+		}
 		NextPoint = Device.dwTimeGlobal + Profile.GroundLocalRetry;
 		PointStartedAt = Device.dwTimeGlobal;
 	}
 	if (!HasPoint)
 	{
-		if (LocalSearch.Move(Adapter, Movement, Profile, SourcePosition, true))
+		if (!IsFleeing && LocalSearch.Move(Adapter, Movement, Profile, SourcePosition, true))
 		{
 			HasMoveCommand = true;
 			Validation = {EELBehaviorState::Running, "Обход недоступного источника шума"};
@@ -153,4 +162,9 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 		HasPoint = false;
 		Validation = {EELBehaviorState::Blocked, "Путь к источнику шума перекрыт"};
 	}
+}
+
+bool CELGroundReactionBehavior::IsCornered() const
+{
+	return IsFleeing && ((EscapeBlockedSince && Device.dwTimeGlobal - EscapeBlockedSince >= 2000) || (HasMoveCommand && Device.dwTimeGlobal - ProgressTime >= 3000));
 }

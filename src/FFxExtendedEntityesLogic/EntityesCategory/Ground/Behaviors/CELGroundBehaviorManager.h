@@ -21,4 +21,5 @@ private:
 	CELGroundReactionBehavior ReactionBehavior;
 	CELGroundBodyBehavior BodyBehavior;
 	u32 BodyRetryAfter = 0;
+
 };

@@ -116,6 +116,10 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 	if (!EnemyMan.get_enemy()) return;
 
+	if (s32(CorneredBerserkUntil - Device.dwTimeGlobal) > 0)
+	{
+		fDamage *= CorneredBerserkDamage;
+	}
 	if (EnemyMan.get_enemy() == pEntity) {
 		Fvector position_in_bone_space;
 		position_in_bone_space.set(0.f,0.f,0.f);

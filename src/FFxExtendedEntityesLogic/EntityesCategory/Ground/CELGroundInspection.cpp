@@ -14,7 +14,7 @@ bool CELGroundInspection::Update(bool Enabled)
 		Clear();
 		return false;
 	}
-	if (!HasOverride && s32(Device.dwTimeGlobal - NextInspection) >= 0)
+	if (!HasOverride && !Owner.anim().has_override_animation() && s32(Device.dwTimeGlobal - NextInspection) >= 0)
 	{
 		MotionID Motion;
 		float Duration = 0.f;
@@ -39,7 +39,11 @@ void CELGroundInspection::Clear()
 {
 	if (HasOverride)
 	{
-		Owner.anim().clear_override_animation();
+		// Another controller may have replaced our inspection in the meantime.
+		if (Owner.anim().get_override_animation() == eAnimSniff)
+		{
+			Owner.anim().clear_override_animation();
+		}
 		HasOverride = false;
 	}
 }

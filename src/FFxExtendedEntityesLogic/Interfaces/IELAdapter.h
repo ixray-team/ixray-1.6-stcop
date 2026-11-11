@@ -13,5 +13,8 @@ public:
 	virtual bool CanSee(const CEntityAlive& Candidate) const = 0;
 	virtual bool CanReach(const Fvector& TargetPosition, u32 TargetVertex) const = 0;
 	virtual bool CanPursue(CEntityAlive& Candidate, const Fvector& KnownPosition) const = 0;
+	virtual void SetFieldEscapePermission(bool Enabled) {}
+	virtual void BeginMovementControl() {}
+	virtual void EndMovementControl() {}
 	virtual void ReleaseControl() = 0;
 };

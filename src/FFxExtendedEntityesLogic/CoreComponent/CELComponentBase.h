@@ -28,6 +28,8 @@ public:
 
 protected:
 	void FillDebugRecord(SELDebugRecord& Record) const;
+	void UpdateFieldExposure();
+	bool ShouldFleePredator(const SELObservation* Observation);
 	virtual const SELObservation* SelectTarget();
 	void RememberEntity(CEntityAlive& TargetEntity, EELObservationSource Source, u32 ObservedAt);
 	void PublishNativeMemory();
@@ -45,6 +47,15 @@ protected:
 	CELSharedMemory Memory;
 	CELSharedHearing Hearing;
 	CELSharedEnemySharing Sharing;
+	float FieldHeadache = 0.f;
+	bool IsFieldRecovering = false;
+	u32 LastFieldAt = 0;
+	Fvector FieldEscapeSource = {0.f, 0.f, 0.f};
+	u16 FearTarget = u16(-1);
+	u32 FearDecisionUntil = 0;
+	bool IsFleeingPredator = false;
+	float Courage = 0.f;
+	u32 LastCourageAt = 0;
 	u16 TargetIdentifier = u16(-1);
 	u32 ReceiveAfter = 0;
 	u32 NextCloseProbe = 0;
@@ -61,6 +72,11 @@ protected:
 	bool HasActorVisualSample = false;
 
 private:
+	mutable u32 NextAnimationSample = 0;
+	mutable u32 LastAnimationLog = 0;
+	mutable xr_string LastAnimationSignature;
+	mutable xr_vector<shared_str> AnimationLabels;
+
 	struct SVisualAcquisition
 	{
 		u32 SampleTime = 0;
