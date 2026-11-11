@@ -404,14 +404,19 @@ function action_reach_task_location:soldier_execute()
 		return
 	end
 
+	self.time_to_update = time_global() + 1000
 	local squad = get_object_squad(self.object)
-	local squad_target = simulation_objects.get_sim_obj_registry().objects[squad.assigned_target_id]
+	local commander_id = squad and squad:commander_id()
+	local commander = commander_id and level.object_by_id(commander_id)
+	if not commander or not commander:alive() then
+		return
+	end
 
+	local squad_target = simulation_objects.get_sim_obj_registry().objects[squad.assigned_target_id]
 	if squad_target == nil and squad:get_script_target() ~= nil then
 		squad_target = alife():object(squad.assigned_target_id)
 	end
 
-	self.time_to_update = time_global() + 1000
 	self.l_vid, self.dir, self.cur_state = patrols[self.target_id.."_to_"..self.squad_id]:get_npc_command(self.object)
 	self.l_vid = utils.send_to_nearest_accessible_vertex(self.object, self.l_vid)
 	local desired_direction = self.dir
@@ -422,28 +427,20 @@ function action_reach_task_location:soldier_execute()
 	end
 	self.object:set_path_type(game_object.level_path)
 
-	if squad_target == nil or squad_target:clsid() == clsid.online_offline_group_s or xr_conditions.surge_started() then
-		if not squad or not squad:commander_id() then
-			return
-		end
-		
-		self.object:set_movement_type(level.object_by_id(squad:commander_id()):movement_type())
-		self.object:set_mental_state (level.object_by_id(squad:commander_id()):mental_state())
-		return
+	local commander_movement = commander:movement_type()
+	local follow_commander_state = squad_target == nil or
+		squad_target:clsid() == clsid.online_offline_group_s or xr_conditions.surge_started()
+	if follow_commander_state then
+		self.object:set_mental_state(commander:mental_state())
 	end
-	
-	if not self.object then
-		return
-	end
-	
-	if level.object_by_id(get_object_squad(self.object):commander_id()):movement_type() == move.stand then
-		self.object:set_movement_type(move.stand)
-		return
-	end
-	if level.vertex_position(self.l_vid):distance_to(self.object:position()) > 5 then
-		self.object:set_movement_type(move.run)
+
+	local far_from_formation = level.vertex_position(self.l_vid):distance_to_sqr(self.object:position()) > 25
+	if commander_movement == move.stand then
+		self.object:set_movement_type(far_from_formation and move.run or move.stand)
+	elseif follow_commander_state then
+		self.object:set_movement_type(commander_movement)
 	else
-		self.object:set_movement_type(move.walk)
+		self.object:set_movement_type(far_from_formation and move.run or move.walk)
 	end
 end
 
