@@ -661,7 +661,7 @@ void Editor::UpdateAnimator(Player& Core)
 	const ActorBlock* Pressed = Row && FocusBlock < static_cast<s32>(Row->size()) ? &(*Row)[FocusBlock] : nullptr;
 	const bool IsSeen = Pressed && AnimSeenObject == FocusObject && AnimSeenLayer == FocusLayer && AnimSeenBlock == FocusBlock;
 	const bool IsAsked = Pressed && !ShowAnimator && Drag == DragKind::None && IsAnimJump;
-	IsAnimJump = Pressed && !ShowAnimator && !IsSeen && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) && MainBox.Contains(ImGui::GetIO().MousePos);
+	IsAnimJump = Pressed && !ShowAnimator && IsSeen && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) && MainBox.Contains(ImGui::GetIO().MousePos);
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	{
 		AnimSeenObject = Pressed ? FocusObject : 0;
