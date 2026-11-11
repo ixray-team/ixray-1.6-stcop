@@ -675,6 +675,7 @@ public:
 
 	virtual void	Status	(TStatus& S) override
 	{
+		S[0] = 0;
 		GetToken				();
 		if(!tokens)				return;
 		inherited::Status		(S);
