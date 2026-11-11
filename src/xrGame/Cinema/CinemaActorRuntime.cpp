@@ -340,7 +340,8 @@ bool ActorRuntime::Evaluate(const Object& Target, float Time, const Audition* Li
 	const float Elapsed = Time - Target.Span.Start;
 	const float Local = std::clamp(Elapsed, 0.0f, Target.Span.Length);
 	const bool IsClipped = !Target.Actor.IsRelative && HasClips(Target.Actor);
-	IsShown = IsHeard || (Listen && Listen->Visual.size()) || (!IsSilent && (IsClipped ? Elapsed >= First && Elapsed < Last : Elapsed >= 0.0f && Elapsed < Target.Span.Length));
+	const bool IsPreviewed = Preview.Frame + 1 >= Device.dwFrame && static_cast<u32>(Preview.Clip) < Target.Actor.Clips.size();
+	IsShown = IsHeard || IsPreviewed || (Listen && Listen->Visual.size()) || (!IsSilent && (IsClipped ? Elapsed >= First && Elapsed < Last : Elapsed >= 0.0f && Elapsed < Target.Span.Length));
 	if (!Model.Get() || !(IsShown || IsNeeded))
 	{
 		SampleCount = 0;

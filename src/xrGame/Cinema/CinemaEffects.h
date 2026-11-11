@@ -34,6 +34,7 @@ struct ParticleCommand
 	Fmatrix Transform = Fidentity;
 	Fvector Velocity = Fvector().set(0.0f, 0.0f, 0.0f);
 	float Size = 1.0f;
+	float Opacity = 1.0f;
 	float Advance = 0.0f;
 	float Preroll = 0.0f;
 	u32 Restart = 0;
@@ -65,6 +66,7 @@ struct ParticleDrive
 	float Rate = 0.0f;
 	float Preroll = 0.0f;
 	float Size = 1.0f;
+	float Opacity = 1.0f;
 	bool IsShown = false;
 	bool IsAfter = false;
 	bool ShouldRetrigger = false;

@@ -66,6 +66,7 @@ inline constexpr ParamInfo Params[static_cast<u32>(Param::Count)] =
 	{ "decal_height", "Height", 1, 0.01f, 20.0f, false, WhereDecal },
 	{ "sound_volume", "Volume", 1, 0.0f, 2.0f, false, WhereSound },
 	{ "sound_pitch", "Pitch", 1, 0.25f, 4.0f, false, WhereSound },
+	{ "particle_opacity", "Opacity", 1, 0.0f, 1.0f, false, WhereParticle },
 	{ "weather_time", "Time of day", 1, 0.0f, 24.0f, false, WhereWeather },
 	{ "sun_heading", "Sun heading", 1, -3600.0f, 3600.0f, false, WhereWeather },
 	{ "sun_height", "Sun height", 1, 1.0f, 89.0f, false, WhereWeather },

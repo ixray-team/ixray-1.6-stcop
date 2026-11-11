@@ -745,7 +745,9 @@ void Player::PoseParticle(u32 Index, float At, bool IsDrawn)
 	const float EffectTime = static_cast<float>(Curves::LaneArea(Item.Lanes, &Runtime.SpeedArea, Param::Speed, 0, Local, Setup.Speed));
 	const float Rate = Curves::LaneScalar(Item.Lanes, Param::Speed, 0, Local, Setup.Speed);
 	const float Size = Curves::LaneScalar(Item.Lanes, Param::Size, 0, Local, Setup.Size);
-	Runtime.Drive({ .World = States[Index].World, .Tau = Tau, .Played = Played, .Idle = IsEffectPreview && !IsPlaying && Played == 0.0f && !Device.Paused() ? Device.fTimeDelta : 0.0f, .Rate = Rate, .Preroll = std::clamp(EffectTime, 0.0f, MaxPreroll), .Size = Size, .IsShown = IsLive && Tau >= 0.0f && Tau < Item.Span.Length, .IsAfter = IsLive && Tau >= Item.Span.Length, .ShouldRetrigger = Setup.ShouldRetrigger });
+	const bool IsInside = Tau >= 0.0f && Tau < Item.Span.Length, IsFree = Setup.IsAlways && IsEditorOpen && !IsPlaying;
+	const float Step = IsFree && !IsInside ? 0.0f : Played;
+	Runtime.Drive({ .World = States[Index].World, .Tau = IsFree ? Local : Tau, .Played = Step, .Idle = IsFree && Step == 0.0f && !Device.Paused() ? Device.fTimeDelta : 0.0f, .Rate = Rate, .Preroll = std::clamp(EffectTime, 0.0f, MaxPreroll), .Size = Size, .Opacity = Curves::LaneScalar(Item.Lanes, Param::ParticleOpacity, 0, Local, Setup.Opacity), .IsShown = IsLive && (IsFree || IsInside), .IsAfter = IsLive && !IsFree && Tau >= Item.Span.Length, .ShouldRetrigger = Setup.ShouldRetrigger });
 }
 
 void Player::PoseDecal(u32 Index, float At, bool IsDrawn)

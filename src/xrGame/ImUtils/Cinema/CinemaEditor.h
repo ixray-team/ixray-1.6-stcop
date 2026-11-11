@@ -161,6 +161,10 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 	{
 		return Target.Type == ObjectType::Decal ? &(Id == Param::DecalWidth ? Target.Decal.Width : Target.Decal.Height) : nullptr;
 	}
+	if (Block < 0 && Id == Param::ParticleOpacity)
+	{
+		return Target.Type == ObjectType::Particle ? &Target.Particle.Opacity : nullptr;
+	}
 	if (Block < 0 && (Id == Param::SoundVolume || Id == Param::SoundPitch))
 	{
 		return Target.Type == ObjectType::Sound ? &(Id == Param::SoundVolume ? Target.Sound.Volume : Target.Sound.Pitch) : nullptr;
@@ -641,7 +645,6 @@ struct EditorSettings
 	bool ShowHints = true;
 	bool IsGizmoSnapping = true;
 	bool DofPreview = true;
-	bool EffectPreview = false;
 	bool IsFollowing = true;
 	bool ShowInspector = true;
 	bool ShowPresets = false;

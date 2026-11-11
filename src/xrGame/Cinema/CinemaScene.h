@@ -109,6 +109,7 @@ enum class Param : u8
 	DecalHeight,
 	SoundVolume,
 	SoundPitch,
+	ParticleOpacity,
 	WeatherTime,
 	SunHeading,
 	SunHeight,
@@ -634,7 +635,9 @@ struct ParticleData
 	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
 	float Size = 1.0f;
 	float Speed = 1.0f;
+	float Opacity = 1.0f;
 	bool ShouldRetrigger = false;
+	bool IsAlways = true;
 
 	bool operator==(const ParticleData&) const = default;
 };

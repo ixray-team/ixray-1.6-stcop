@@ -537,9 +537,11 @@ The **Attach** group follows Transform (see [Attach rows](#attach-rows)). **Cast
 | — | **Clip** | Start and length as `mm:ss:ff`. | — |
 | Transform | **Position**, **Rotation** | As the actor rows. ◇ | as the actor rows |
 | Transform | **Scale** | Size of the whole effect, 0.01–25. ◇ | 1 |
+| Transform | **Opacity** | How visible the whole effect is, 0 (invisible) to 1. It scales the transparency of every particle, so key it to fade an effect in or out. ◇ | 1 |
 | Transform | **Key** | As the actor row, for the Position, Rotation and Scale keys. | — |
 | Playback | **Speed** | How fast the effect runs, 0–4. ◇ | 1 |
 | Playback | **Retrigger** | Plays a one-shot effect again each time it finishes, until the clip ends (see [Lights and particles](#lights-and-particles)). | off |
+| Playback | **Always playback** | An editor aid: while the scene is stopped the effect keeps running in real time at its Speed, wherever the playhead is, so you can see and place it without playing the scene. Moving the playhead inside the clip puts the effect at that moment of its life. While the scene plays, and in game, the effect follows the timeline as usual. | on |
 
 The **Attach** group follows Transform (see [Attach rows](#attach-rows)).
 
@@ -1039,7 +1041,6 @@ The editor camera is a free camera, separate from the player. It needs ImGui mou
 | **Reset roll** | Levels the editor camera. Disabled while it is level. |
 | **Helpers** | Shows or hides the world helpers: the camera path, light and particle markers, decal outlines, link lines, and the path of each selected object with Position keys (its whole clip in its colour, a circle and a facing arrow at every key, filled at the playhead; no arrows when attached). Remembered. The focused camera clip's path and each selected object's path also show a small dot per frame (fewer on long clips), so the spacing shows the speed, and a white dot where the playhead is. |
 | **DOF preview** | While the editor camera is the view, the depth of field of the clip under the playhead is applied to it, its object focus measured from the editor camera. Off: the game's own depth of field. Remembered. |
-| **Particle preview** | While the scene is stopped, every particle effect whose clip is under the playhead keeps running in real time, at its Speed, so you can watch it without playing the scene. Moving the playhead puts the effect back in step with the timeline at once, and playing the scene runs it in step as always. Off: a stopped scene shows the effect frozen at the playhead. Remembered. |
 | **Inspector** | Shows or hides the inspector. Remembered. |
 | **Presets** | Shows or hides the Presets window. Remembered. |
 | **Shots & Markers** | Shows or hides the Shots & Markers window. Remembered. |
@@ -1091,7 +1092,6 @@ The editor's own settings live in `_appdata_ixray_\cinema_editor\editor.ltx`, se
 | `onion_count` | 1–5 | 2 |
 | `onion_step` | frames, 1–30 | 5 |
 | `dof_preview` | on / off: **View → DOF preview** | on |
-| `particle_preview` | on / off: **View → Particle preview** | off |
 | `inspector` | on / off | on |
 | `presets` | on / off: the Presets window | off |
 
@@ -1328,6 +1328,8 @@ Particle keys
 | `effect` | particle effect or group name | written only when set; the path rule; a name the game does not know is kept |
 | `position`, `rotation` | as lights | |
 | `particle` | `scale, speed` | 0.01–25; 0–4 |
+| `always` | bool: **Always playback** | default `on` |
+| `opacity` | particle effect opacity, 0–1 | written only when not 1; lane `particle_opacity` |
 | `retrigger` | bool | default `off`; replays a one-shot effect while its clip lasts |
 
 Decals (`type = decal`)
@@ -1926,4 +1928,8 @@ Timeline fixes, solo and choosers:
 452. Click an animation block that is not focused: it is focused and the inspector shows its rows; the Scene timeline stays. Click the same block again: the Animation view opens on it. Click block A, then block B: B is only focused. Press and drag a focused block: it moves and the view does not change.
 453. Actor with **Look at** an object beside it and IK ticked on both hands in its animation clip. **Fix** with nothing ticked: the whole character turns to the object, as before. Tick **Legs**: the character keeps its heading and its feet stay; the spine, neck and head turn to the object (also up and down for a high or low target) and the IK hands hold their place and rotation. Tick **Torso** too: only the head turns. Tick all three: nothing turns. Move the object behind the actor with only Legs ticked: torso and head stop at their limits. **Look influence** 0.5 halves the turn. Save and reopen: `attach_look_fix` is kept.
 454. **File → Render frames...**, **Output** **PNG frames**: the folder gets `frame_000000.png`, … that open in an image viewer with no transparency and look the same as the TGA frames of the same render, at a fraction of the size. **AVI video (MJPEG, high quality)**: the video plays in a common player, is noticeably larger than the normal AVI of the same range, and a dark sky gradient shows less blocking in a paused frame.
-455. **View → Particle preview** on, scene stopped, playhead inside a smoke effect's clip: the smoke keeps moving. Scrub the playhead: the effect jumps to that moment of its life and keeps running from there. Play the scene: it runs in step with the timeline as before, and stopping leaves it running. Move the playhead out of the clip: the effect is gone. Untick the option: the effect freezes at the playhead. Pause the game: it stops. The setting is remembered.
+455. Particle effect with **Always playback** ticked (the default, also for effects in older scenes), scene stopped: the effect runs in the game view, also with the playhead outside its clip. Scrub the playhead inside the clip: the effect jumps to that moment of its life and keeps running; scrub outside the clip: it keeps running undisturbed. Play the scene: the effect follows the timeline (hidden outside its clip, in step inside it); stop: it runs again. Untick it: a stopped scene shows the effect frozen at the playhead, and nothing outside the clip. Pause the game: it stops. Save and reopen: `always` is kept. Play the scene in game with the editor closed: the effect only shows inside its clip.
+456. Particle effect **Opacity** 0.3: the whole effect is fainter; 0: invisible; key it from 0 to 1 over a second: the effect fades in while playing. Save and reopen: `opacity` and the lane are kept.
+457. **Add → Particle...** at the playhead, then press Play without touching the playhead: the effect plays at the place it was added, the same as after a seek.
+458. In the Animation view (not linked to the scene), play a clip to its end and let it loop, then drag the animation playhead back: the character stays visible the whole time. Put the scene playhead past the actor's last animation clip and open the Animation view: the character is shown.
+459. Right-click an animation block and close the menu, then left-click the block once: it is only focused, the Scene timeline stays. Left-click it again: the Animation view opens.

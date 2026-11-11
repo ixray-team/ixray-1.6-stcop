@@ -26,6 +26,7 @@ public:
 	IC	Fmatrix&		XFORM				() {return renderable.xform;}
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
 	void SetScale(float Scale);
+	void SetOpacity(float Opacity);
 	float GetScale();
 	void				SetLiveUpdate		(bool b);
 	bool				GetLiveUpdate		();

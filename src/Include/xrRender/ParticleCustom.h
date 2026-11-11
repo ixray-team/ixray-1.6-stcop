@@ -82,6 +82,7 @@ public:
 	virtual bool	GetHudMode			()=0;
 	// Uniform size multiplier relative to the authored PE size domains.
 	virtual void SetScale(float Scale) = 0;
+	virtual void SetOpacity(float Opacity) = 0;
 	virtual float GetScale() = 0;
 
 	virtual void	SetLiveUpdate		(bool b)=0;

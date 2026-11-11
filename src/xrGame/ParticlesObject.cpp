@@ -196,6 +196,15 @@ void CParticlesObject::SetScale(float Scale)
 	Visual->SetScale(Scale);
 }
 
+void CParticlesObject::SetOpacity(float Opacity)
+{
+	if (g_dedicated_server || renderable.visual == nullptr)
+	{
+		return;
+	}
+	renderable.visual->dcast_ParticleCustom()->SetOpacity(Opacity);
+}
+
 float CParticlesObject::GetScale()
 {
 	if (g_dedicated_server || renderable.visual == nullptr)

@@ -527,7 +527,7 @@ void CParticleEffect::UpdateCache()
 				clampr(Color.r * ColorMod.x, 0.0f, 1.0f),
 				clampr(Color.g * ColorMod.y, 0.0f, 1.0f),
 				clampr(Color.b * ColorMod.z, 0.0f, 1.0f),
-				clampr(Color.a * ColorMod.w, 0.0f, 1.0f)
+				clampr(Color.a * ColorMod.w * Opacity, 0.0f, 1.0f)
 				);
 		}
 	}
@@ -891,7 +891,7 @@ void CParticleEffect::RenderEditor(GfxCmdList& Cmd)
 						clampr(Color.r * ColorMod.x, 0.0f, 1.0f),
 						clampr(Color.g * ColorMod.y, 0.0f, 1.0f),
 						clampr(Color.b * ColorMod.z, 0.0f, 1.0f),
-						clampr(Color.a * ColorMod.w, 0.0f, 1.0f)
+						clampr(Color.a * ColorMod.w * Opacity, 0.0f, 1.0f)
 						);
 				}
 			}

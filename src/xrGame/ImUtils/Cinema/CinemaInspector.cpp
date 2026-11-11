@@ -2477,6 +2477,7 @@ void Editor::DrawParticleSection(Player& Core, const xr_vector<u32>& Ids, bool H
 		ParamRow(Core, Ids, -1, Param::Position, 0, 0.01f, "%.2f", 0, 0.0f);
 		ParamRow(Core, Ids, -1, Param::Rotation, 0, 0.5f, "%.1f", 6, 0.0f);
 		ParamRow(Core, Ids, -1, Param::Size, 0, 0.01f, "%.2f", 1, 1.0f);
+		ParamRow(Core, Ids, -1, Param::ParticleOpacity, 0, 0.01f, "%.2f", 1, 1.0f);
 		KeyRow(Core, Ids);
 	}
 	DrawAttach(Core, Ids, -1);
@@ -2492,6 +2493,17 @@ void Editor::DrawParticleSection(Player& Core, const xr_vector<u32>& Ids, bool H
 				Edit(Core, Id, "Retrigger")->Particle.ShouldRetrigger = ShouldRetrigger && Action != RowAction::Reset;
 			}
 		}
+		EndRow(KeyState::None);
+		const RowAction Always = BeginRow("Always playback", !Setup.IsAlways, false);
+		bool IsAlways = Setup.IsAlways;
+		if (ImGui::Checkbox("##Always", &IsAlways) || Always == RowAction::Reset)
+		{
+			for (u32 Id : Ids)
+			{
+				Edit(Core, Id, "Always playback")->Particle.IsAlways = IsAlways || Always == RowAction::Reset;
+			}
+		}
+		ImGui::SetItemTooltip("In the editor the effect keeps running while the scene is stopped, wherever the playhead is. While the scene plays it follows the timeline");
 		EndRow(KeyState::None);
 	}
 	ImGui::PopID();

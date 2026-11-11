@@ -219,6 +219,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	
 	C->SetHudMode(emitter->GetHudMode());
 	C->SetScale(emitter->GetScale());
+	C->SetOpacity(emitter->Opacity);
 
 	Fmatrix M; M.identity();
 	Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->IsFrameStepped()?Device.fTimeDelta:fDT_STEP);
@@ -254,6 +255,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
 	C->SetHudMode(emitter->GetHudMode());
 	C->SetScale(emitter->GetScale());
+	C->SetOpacity(emitter->Opacity);
 	if(!C->IsLooped())
 	{
 		Fmatrix M; M.identity();
@@ -585,6 +587,7 @@ void CParticleGroup::Compile(CPGDef* def)
 		{
 			CParticleEffect* eff = (CParticleEffect*)RImplementation.model_CreatePE(*(*e_it)->m_EffectName);
 			eff->SetScale(Scale);
+			eff->SetOpacity(Opacity);
 			eff->SetBirthDeadCB	(OnGroupParticleBirth,OnGroupParticleDead,this,u32(e_it-def_effects.begin()));
 			items[e_it-def->m_Effects.begin()].root_effect = eff;
 		}
@@ -641,6 +644,28 @@ void CParticleGroup::SetScale(float NewScale)
 		for (CParticleEffect* Child : Item.children_free)
 		{
 			Child->SetScale(Scale);
+		}
+	}
+}
+
+void CParticleGroup::SetOpacity(float Value)
+{
+	xrCriticalSectionGuard Guard(&onframe_lock);
+	Opacity = Value;
+	for (SItem& Item : items)
+	{
+		if (Item.root_effect)
+		{
+			Item.root_effect->SetOpacity(Opacity);
+		}
+		xrCriticalSectionGuard ChildrenGuard(Item.childs_cs);
+		for (CParticleEffect* Child : Item.children_related)
+		{
+			Child->SetOpacity(Opacity);
+		}
+		for (CParticleEffect* Child : Item.children_free)
+		{
+			Child->SetOpacity(Opacity);
 		}
 	}
 }

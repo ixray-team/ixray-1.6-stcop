@@ -1378,6 +1378,9 @@ void ReadParticle(const CInifile& Ini, const char* Section, ParticleData& Setup,
 		Setup.Speed = Values[1];
 	}
 	Setup.ShouldRetrigger = ReadBool(Ini, Section, "retrigger", false, Notes);
+	Setup.IsAlways = ReadBool(Ini, Section, "always", true, Notes);
+	float Opacity = 1.0f;
+	Setup.Opacity = Ini.line_exist(Section, "opacity") && ReadFloats(Ini, Section, "opacity", &Opacity, 1, Notes) ? Sanitize(Opacity, 0.0f, 1.0f, 1.0f) : 1.0f;
 }
 
 void SizeKey(string64& Out, const RowSize& Size)
@@ -1955,6 +1958,11 @@ void WriteParticle(CInifile& Ini, const char* Section, const ParticleData& Setup
 	}
 	Write(Ini, Section, "particle", Setup.Size, Setup.Speed);
 	Ini.w_bool(Section, "retrigger", Setup.ShouldRetrigger);
+	Ini.w_bool(Section, "always", Setup.IsAlways);
+	if (Setup.Opacity != 1.0f)
+	{
+		Ini.w_float(Section, "opacity", Setup.Opacity);
+	}
 }
 
 void WriteObject(CInifile& Ini, const char* Section, const Object& Item)

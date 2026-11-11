@@ -64,7 +64,6 @@ public:
 	float LoopStart = 0.0f, LoopEnd = 0.0f;
 	bool HasUnsavedChanges = false;
 	bool IsDofPreview = true;
-	bool IsEffectPreview = false;
 	u32 Generation = 0;
 
 private:

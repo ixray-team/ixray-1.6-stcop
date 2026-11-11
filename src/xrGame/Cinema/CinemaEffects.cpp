@@ -191,6 +191,7 @@ void ParticleObject::Update(u32, CFrustum*)
 		Pending.Advance = 0.0f;
 	}
 	const bool IsRestart = Next.Restart != Restarted;
+	UpdateParent(Next.Transform, Next.Velocity);
 	if (IsRestart)
 	{
 		Restarted = Next.Restart;
@@ -205,6 +206,7 @@ void ParticleObject::Update(u32, CFrustum*)
 	Emitting = Next.State;
 	UpdateParent(Next.Transform, Next.Velocity);
 	SetScale(Next.Size);
+	SetOpacity(Next.Opacity);
 	Remainder = std::min((IsRestart ? Next.Preroll * 1000.0 : Remainder) + Next.Advance * 1000.0, MaxPreroll * 1000.0);
 	do
 	{
@@ -262,6 +264,7 @@ void ParticleRuntime::Drive(const ParticleDrive& Input)
 	Command.Transform = Input.World;
 	Command.Velocity.sub(Input.World.c, LastPosition).mul(IsMoving ? 1.0f / Input.Played : 0.0f);
 	Command.Size = Input.Size;
+	Command.Opacity = Input.Opacity;
 	Command.ShouldRetrigger = Input.ShouldRetrigger;
 	RebuiltAt = IsRestart ? Device.dwTimeContinual : RebuiltAt;
 	LastTau = IsHeld ? LastTau : Input.Tau;

@@ -84,6 +84,8 @@ namespace PS
 
 		virtual u32			SpriteCount		() override;
 		virtual void SetScale(float Scale) override;
+		virtual void SetOpacity(float Value) override { Opacity = clampr(Value, 0.0f, 1.0f); }
+		float Opacity = 1.0f;
 		virtual float GetScale() override;
 		virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 

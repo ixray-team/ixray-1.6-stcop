@@ -86,6 +86,7 @@ namespace PS
 		const CPGDef* m_Def = nullptr;
 		float m_CurrentTime;
 		float Scale = 1.0f;
+		float Opacity = 1.0f;
 		Fvector m_InitialPosition;
 		xrCriticalSection onframe_lock;
 
@@ -156,6 +157,7 @@ namespace PS
 
 		virtual u32 SpriteCount() override;
 		virtual void SetScale(float Scale) override;
+		virtual void SetOpacity(float Value) override;
 		virtual float GetScale() override;
 		virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 

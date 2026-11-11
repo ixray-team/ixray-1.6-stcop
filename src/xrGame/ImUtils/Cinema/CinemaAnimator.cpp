@@ -659,14 +659,21 @@ void Editor::UpdateAnimator(Player& Core)
 	const Object* Focused = Focus == FocusKind::Block && FocusBlock >= 0 ? Find(Core.Data, FocusObject) : nullptr;
 	const xr_vector<ActorBlock>* Row = Focused && Focused->Type == ObjectType::Actor && FocusLayer <= Focused->Actor.Layers.size() ? &BlocksOf(Focused->Actor, FocusLayer) : nullptr;
 	const ActorBlock* Pressed = Row && FocusBlock < static_cast<s32>(Row->size()) ? &(*Row)[FocusBlock] : nullptr;
+	const bool IsReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+	const bool IsClean = !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) && MainBox.Contains(ImGui::GetIO().MousePos);
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
+	{
+		AnimSeenObject = 0;
+		AnimSeenBlock = -1;
+	}
 	const bool IsSeen = Pressed && AnimSeenObject == FocusObject && AnimSeenLayer == FocusLayer && AnimSeenBlock == FocusBlock;
 	const bool IsAsked = Pressed && !ShowAnimator && Drag == DragKind::None && IsAnimJump;
-	IsAnimJump = Pressed && !ShowAnimator && IsSeen && ImGui::IsMouseReleased(ImGuiMouseButton_Left) && !ImGui::IsMouseDragPastThreshold(ImGuiMouseButton_Left, 4.0f) && MainBox.Contains(ImGui::GetIO().MousePos);
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	IsAnimJump = Pressed && !ShowAnimator && IsSeen && IsReleased && IsClean;
+	if (IsReleased)
 	{
-		AnimSeenObject = Pressed ? FocusObject : 0;
+		AnimSeenObject = Pressed && IsClean && !IsSeen ? FocusObject : 0;
 		AnimSeenLayer = FocusLayer;
-		AnimSeenBlock = Pressed ? FocusBlock : -1;
+		AnimSeenBlock = Pressed && IsClean && !IsSeen ? FocusBlock : -1;
 	}
 	const s32 Chosen = IsAsked && IsClipBlock(Pressed->Source) ? FindClip(Focused->Actor.Clips, Pressed->Name) : -1;
 	if (Chosen >= 0)
