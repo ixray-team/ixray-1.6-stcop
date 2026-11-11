@@ -60,6 +60,9 @@ Coordinate system: left-handed (LH), with +Y pointing up.
 
 ## Build
 
+- Never build or rebuild the engine or any of its targets unless the user explicitly requests a build. Requests to edit or fix source code, scripts, content, or documentation do not authorize a build, including builds for verification.
+- Never copy, deploy, replace, or restore built DLLs, EXEs, PDBs, or other engine binaries in the game directory unless the user explicitly requests that deployment. A request to build does not authorize replacing the game's binaries.
+
 CMake ≥ 3.26, x64, output `build/bin/<Config>/`. Details: [docs/engine/build.md](docs/engine/build.md).
 
 `IXRAY_USE_R1` and `IXRAY_USE_R2` default on; R4 is added when `IXR_TEST_CI` is true (see `src/CMakeLists.txt`). `IXRAY_UNITYBUILD` defaults on for `xrGame` (batch 32). `IXRAY_MP` adds the dedicated renderer; `xrServer` / `xrServerCLI` / `xrGameSpy` also require `IXR_TEST_CI`. `IXRAY_EDITORS`, `IXRAY_UTILS`, `IXRAY_PLUGINS`, `IXRAY_TESTS` default off. `IXRAY_ASAN` requires a full rebuild. `IXRAY_PROFILER` (Optick) defaults on.
