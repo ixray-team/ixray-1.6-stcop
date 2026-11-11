@@ -1019,6 +1019,19 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	}
 }
 
+bool CAI_Stalker::is_ai_obstacle() const
+{
+	if (!g_Alive() || !m_movement_manager || animation_movement_controlled())
+	{
+		return false;
+	}
+
+	const auto& Movement = movement();
+	return Movement.movement_type() == eMovementTypeStand &&
+		Movement.target_movement_type() == eMovementTypeStand &&
+		fis_zero(Movement.old_desirable_speed(), EPS_L);
+}
+
 float CAI_Stalker::Radius() const
 { 
 	float R		= inherited::Radius();

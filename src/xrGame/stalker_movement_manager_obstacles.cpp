@@ -19,6 +19,9 @@
 #include "doors_actor.h"
 #include "doors_manager.h"
 #include "level_path_builder.h"
+#include "Level.h"
+#include "PHMovementControl.h"
+#include "../xrPhysics/PHCharacterAvoidance.h"
 
 #ifndef MASTER_GOLD
 #	include "ai_debug.h"
@@ -133,6 +136,7 @@ void stalker_movement_manager_obstacles::move_along_path_impl				(CPHMovementCon
 	{
 		m_dynamic_obstacles.update		();
 		if (!m_dynamic_obstacles.movement_enabled()) {
+			ProgressCheckTime = 0;
 			float						desirable_speed = old_desirable_speed();
 			set_desirable_speed			(0.f);
 
@@ -154,6 +158,11 @@ void stalker_movement_manager_obstacles::move_along_path_impl				(CPHMovementCon
 		m_static_obstacles.need_path_to_rebuild())
 		rebuild_path				();
 
+	if (!wait_for_distributed_computation() && move_along_path())
+	{
+		RecoverBlockedPath(*movement_control);
+	}
+
 	inherited::move_along_path		(movement_control, dest_position, time_delta);
 }
 
@@ -162,6 +171,7 @@ void stalker_movement_manager_obstacles::move_along_path					(CPHMovementControl
 	VERIFY							( m_doors_actor );
 
 	if ( !ai().doors().actualize_doors_state(*m_doors_actor,old_desirable_speed()) ) {
+		ProgressCheckTime = 0;
 //		Msg							( "%6d stalker %s waits for the some door to be open/closed", Device.dwTimeGlobal, object().cName().c_str() );
 		float						desirable_speed = old_desirable_speed();
 		set_desirable_speed			(0.f);
@@ -176,22 +186,109 @@ void stalker_movement_manager_obstacles::move_along_path					(CPHMovementControl
 
 #ifndef MASTER_GOLD
 	if (!psAI_Flags.test(aiObstaclesAvoiding)) {
+		ProgressCheckTime = 0;
 		inherited::move_along_path	( movement_control, dest_position, time_delta);
 		return;
 	}
 #endif // MASTER_GOLD
 
 	if (Device.dwTimeGlobal < (m_last_fail_time + fail_check_time)) {
+		ProgressCheckTime = 0;
 		inherited::move_along_path	( movement_control, dest_position, time_delta);
 		return;
 	}
 
 	if (!move_along_path()) {
+		ProgressCheckTime = 0;
 		inherited::move_along_path	( movement_control, dest_position, time_delta);
 		return;
 	}
 
 	move_along_path_impl			( movement_control, dest_position, time_delta);
+}
+
+bool stalker_movement_manager_obstacles::TryBuildDetour(const CAI_Stalker& Blocker)
+{
+	auto& DynamicQuery = m_dynamic_obstacles.active_query();
+	obstacles_query DetourQuery;
+	DetourQuery.copy(DynamicQuery);
+	DetourQuery.add(&Blocker);
+	DetourQuery.merge(m_static_obstacles.active_query());
+
+	const bool FailedBefore = m_failed_to_build_path;
+	const bool HasDetour = can_build_restricted_path(DetourQuery);
+	m_failed_to_build_path = FailedBefore;
+	if (!HasDetour)
+	{
+		return false;
+	}
+
+	// Keep this moving NPC in the obstacle mask only for the synchronous rebuild.
+	{
+		DetourQuery.swap(DynamicQuery);
+		const xr_scope_exit RestoreQuery([&] { DetourQuery.swap(DynamicQuery); });
+		rebuild_path();
+	}
+	if (!level_path().failed() && !detail().failed() && detail().actual())
+	{
+		return true;
+	}
+
+	rebuild_path();
+	return false;
+}
+
+void stalker_movement_manager_obstacles::RecoverBlockedPath(CPHMovementControl& MovementControl)
+{
+	constexpr u32 StallDuration = 750;
+	constexpr u32 PassageCooldown = 1750;
+	constexpr float MinProgress = 0.2f;
+	const u32 Now = Device.dwTimeGlobal;
+	const Fvector& Position = object().Position();
+	if (!ProgressCheckTime || Position.distance_to_xz_sqr(ProgressPosition) >= _sqr(MinProgress))
+	{
+		ProgressPosition = Position;
+		ProgressCheckTime = Now;
+		LastDetourBlockerId = u16(-1);
+		return;
+	}
+
+	if (Now - ProgressCheckTime < StallDuration)
+	{
+		return;
+	}
+	ProgressCheckTime = Now;
+
+	const u16 BlockerId = RecentAICharacterContact(MovementControl.character());
+	auto* Candidate = BlockerId != u16(-1) ? Level().Objects.net_Find(BlockerId) : nullptr;
+	auto* Blocker = Candidate ? Candidate->cast_stalker() : nullptr;
+	if (!Blocker || Blocker == &object() || Blocker->getDestroy() || !Blocker->g_Alive())
+	{
+		return;
+	}
+
+	// Contacts behind the stalker do not obstruct its current route.
+	const Fvector Direction = Fvector().sub(path_position(0.5f), Position);
+	const Fvector Offset = Fvector().sub(Blocker->Position(), Position);
+	if (Direction.x * Offset.x + Direction.z * Offset.z <= 0.f)
+	{
+		return;
+	}
+
+	if (LastDetourBlockerId != BlockerId)
+	{
+		LastDetourBlockerId = BlockerId;
+		if (TryBuildDetour(*Blocker))
+		{
+			return;
+		}
+	}
+
+	if (!LastPassageTime || Now - LastPassageTime >= PassageCooldown)
+	{
+		AllowAICharacterPassage(MovementControl.character(), BlockerId);
+		LastPassageTime = Now;
+	}
 }
 
 const float &stalker_movement_manager_obstacles::prediction_speed	() const

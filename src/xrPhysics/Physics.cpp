@@ -5,6 +5,7 @@
 #include "PHContactBodyEffector.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "PHCollideValidator.h"
+#include "PHAICharacter.h"
 #ifdef DEBUG
 #include "debug_output.h"
 #endif
@@ -250,6 +251,15 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 {	
+	if (obj1->CastType() == CPHObject::tpCharacter && obj2->CastType() == CPHObject::tpCharacter)
+	{
+		const auto* First = static_cast<CPHCharacter*>(obj1)->CastAICharacter();
+		const auto* Second = static_cast<CPHCharacter*>(obj2)->CastAICharacter();
+		if (First && Second && (First->AllowsPassage(*Second) || Second->AllowsPassage(*First)))
+		{
+			return;
+		}
+	}
 	
 	CPHIsland* island1=obj1->DActiveIsland();
 	CPHIsland* island2=obj2->DActiveIsland();
