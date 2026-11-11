@@ -715,6 +715,8 @@ virtual void ApplyDamage			(u16 level);
 		bool IsDamaged() { return state == broken || Health() < m_max_health; }
 		void Open();
 		void Close();
+		bool IsFullyOpen();
+		void Reopen();
 		void Break();
 virtual void ApplyDamage(u16 level);
 		virtual void Repair();

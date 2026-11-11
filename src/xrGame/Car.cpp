@@ -4495,16 +4495,19 @@ void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
 			m_current_rpm = m_min_rpm;
 			m_current_engine_power = 0.f;
 			m_current_rpm_brp_n = 1.f;
-
-			// The sound scales belong to the live engine state. A car restored
-			// from a save must start from the idle scale instead of inheriting
-			// a value from an earlier spawn of the same object.
-			m_engine_drive = 0.f;
-			m_engine_state_scale = 0.f;
-			m_engine_state_scale_last = 0.f;
-			m_idle_state_scale = 0.f;
-			m_idle_state_scale_last = 0.f;
 		}
+
+		// The sound scales belong to the live engine state. A car restored
+		// from a save must start from the idle scale instead of inheriting a
+		// value from an earlier spawn of the same object or from a state that
+		// arrived before the client chunk.
+		m_engine_drive = 0.f;
+		m_engine_state_scale = 0.f;
+		m_engine_state_scale_last = 0.f;
+		m_idle_state_scale = 0.f;
+		m_idle_state_scale_last = 0.f;
+		m_engine_rpm_scale = 0.f;
+		m_engine_idle_volume_scale = 1.f;
 
 		b_engine_on = true;
 		b_starting = false;
@@ -5448,9 +5451,9 @@ bool CCar::Use(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 				m_exit_door_bone = LastDoor->bone_id;
 				LastDoor->GetExitPosition(m_exit_position);
 
-				if (LastDoor->state != CCar::SDoor::opened)
+				if (LastDoor->state != CCar::SDoor::opened || !LastDoor->IsFullyOpen())
 				{
-					LastDoor->Open();
+					LastDoor->Reopen();
 					b_event_exit_car = true;
 					m_exit_car_time = Device.dwTimeGlobal + 400;
 				}
