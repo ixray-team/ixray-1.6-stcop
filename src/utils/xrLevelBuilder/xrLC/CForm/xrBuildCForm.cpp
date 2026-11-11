@@ -120,8 +120,7 @@ void CBuild::BuildCForm	()
 		CL.add_face(
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
 			T->dwMaterialGame, 
-			GetMaterialSector(*T), 
-			T->flags.bSharedMaterial,
+			GetMaterialSector(*T),
 			T->sm_group
 		);
 		Progress(p_total += p_cost);		// progress
@@ -145,12 +144,16 @@ void CBuild::BuildCForm	()
 
 	// Simplification
 	if (g_params().m_quality != ebqDraft)
+	{
 		SimplifyCFORM(CL);
+	}
 
 	// bb?
 	BB.invalidate();
 	for (size_t it = 0; it < CL.getVS(); it++)
+	{
 		BB.modify(CL.getV()[it]);
+	}
 
 	// Saving
 	Status("Saving...");
@@ -188,22 +191,6 @@ void CBuild::BuildCForm	()
 	xr_stack_string_path level_path = pBuild->path;
 	level_path.append("level");
 	XRay::CForm::Write(level_path.c_str(), *FormatPtr);
-	
-	/*
-	string_path		fn;
-	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
-
-	// Header
-	hdrCFORM hdr;
-	hdr.version = CFORM_CURRENT_VERSION;
-	hdr.vertcount = (u32)CL.getVS();
-	hdr.facecount = (u32)CL.getTS();
-	hdr.aabb = BB;
-	MFS->w(&hdr, sizeof(hdr));
- 	// Data
-	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
- 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
-	*/
  
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (auto F : lc_global_data()->g_faces())
