@@ -138,7 +138,8 @@ public:
 		if (result)
 		{
 			// visible	- delay next test
-			delay = ::Random.randI(5 * 2, 5 * 5);
+			// Static visuals are tested on a worker: no shared random state
+			delay = 10 + (u32(size_t(&vis) >> 6) ^ frame_current * 2654435761u) % 15;
 		}
 		else {
 			// hidden	- shedule to next frame

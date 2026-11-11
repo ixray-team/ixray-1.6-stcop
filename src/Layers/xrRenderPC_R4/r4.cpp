@@ -249,6 +249,7 @@ void CRender::destroy()
 	Device.seqFrame.Remove(this);
 
 	GraphMain.r_dsgraph_destroy();
+	GraphMainStatic.r_dsgraph_destroy();
 
 	ForEachViewGraph([](R_dsgraph_structure& Graph)
 	{

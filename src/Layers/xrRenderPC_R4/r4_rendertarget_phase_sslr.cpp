@@ -280,8 +280,8 @@ void CRender::render_reflections(GfxCmdList& Cmd)
 
 		Cmd.ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
 
-		bool NeedRender = GraphReflection[i].mapNormalPasses[0][0].size() || GraphReflection[i].mapMatrixPasses[0][0].size() ||
-						GraphReflection[i].mapNormalPasses[1][0].size() || GraphReflection[i].mapMatrixPasses[1][0].size() || GraphReflection[i].mapSorted.size();
+		bool NeedRender = GraphReflection[i].HasPasses(0) ||
+						GraphReflection[i].HasPasses(1) || GraphReflection[i].mapSorted.size();
 
 		if (!NeedRender)
 		{

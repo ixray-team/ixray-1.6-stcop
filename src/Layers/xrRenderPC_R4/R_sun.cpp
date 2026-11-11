@@ -489,8 +489,8 @@ void CRender::render_sun_cascades(GfxCmdList& Cmd)
 			// Empty captures must discard the previous slice as well.
 			Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
 
-			bool bNormal = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
-			bool bSpecial = Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
+			bool bNormal = Graph.HasPasses(0);
+			bool bSpecial = Graph.HasPasses(1) || Graph.mapSorted.size();
 
 			if (bNormal || bSpecial)
 			{

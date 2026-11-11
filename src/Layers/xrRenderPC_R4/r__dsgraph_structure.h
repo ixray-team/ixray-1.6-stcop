@@ -116,22 +116,31 @@ public:
 	bool														CollectForwardTogether = false;	// both priorities in one collection
 
 	// Dynamic scene graph
-	R_dsgraph::mapNormalPasses_T								mapNormalPasses	[2]	;	// 2==(priority/2)
-	R_dsgraph::mapMatrixPasses_T								mapMatrixPasses	[2]	;
-	R_dsgraph::mapSorted_T										mapSorted;
-	R_dsgraph::mapHUD_T											mapHUD;
-	R_dsgraph::mapLOD_T											mapLOD;
-	R_dsgraph::mapSorted_T										mapDistort;
-	R_dsgraph::mapHUD_T											mapHUDSorted;
+	// Indexed by priority / 2; a packet's key holds its pass
+	R_dsgraph::StaticList										StaticPasses[2];
+	R_dsgraph::DynamicList										DynamicPasses[2];
+	bool HasPasses(u32 Priority) const { return !StaticPasses[Priority].empty() || !DynamicPasses[Priority].empty(); }
 
-	R_dsgraph::mapHUD_T											mapUI;
-	R_dsgraph::mapHUD_T											mapUISorted;
-	R_dsgraph::mapSorted_T										mapUIEmissive;
-	R_dsgraph::mapSorted_T										mapWmark;			// sorted
-	R_dsgraph::mapSorted_T										mapEmissive;
-	R_dsgraph::mapSorted_T										mapHUDEmissive;
-	R_dsgraph::mapHUD_T											mapHUDScopeMask;
-	R_dsgraph::mapSorted_T										mapHUDDistort;
+	// Drawn back to front
+	R_dsgraph::DynamicList										mapSorted;
+	R_dsgraph::DynamicList										mapHUDSorted;
+	R_dsgraph::DynamicList										mapUISorted;
+
+	// Drawn in insertion order
+	R_dsgraph::DynamicList										mapHUD;
+	R_dsgraph::DynamicList										mapDistort;
+	R_dsgraph::DynamicList										mapUI;
+	R_dsgraph::DynamicList										mapUIEmissive;
+	R_dsgraph::DynamicList										mapWmark;
+	R_dsgraph::DynamicList										mapEmissive;
+	R_dsgraph::DynamicList										mapHUDEmissive;
+	R_dsgraph::DynamicList										mapHUDScopeMask;
+	R_dsgraph::DynamicList										mapHUDDistort;
+	R_dsgraph::LodList											mapLOD;
+
+	void SortStatic();
+	// Moves what a static-only collection of the same view produced into this graph
+	void TakeStatic(R_dsgraph_structure& From);
 
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
 	xr_vector<ISpatialShared>				lstRenderables;
@@ -171,26 +180,16 @@ public:
 		lstSpatial.clear();
 		lstVisuals.clear();
 
-		for (int i = 0; i < SHADER_PASSES_MAX; ++i)
+		for (u32 i = 0; i < 2; ++i)
 		{
-			mapNormalPasses[0][i].destroy();
-			mapNormalPasses[1][i].destroy();
-			mapMatrixPasses[0][i].destroy();
-			mapMatrixPasses[1][i].destroy();
+			StaticPasses[i] = {};
+			DynamicPasses[i] = {};
 		}
-		mapSorted.destroy();
-		mapHUD.destroy();
-		mapUI.destroy();
-		mapLOD.destroy();
-		mapDistort.destroy();
-		mapHUDSorted.destroy();
-		mapHUDDistort.destroy();
-		mapUISorted.destroy();
-
-		mapWmark.destroy();
-		mapEmissive.destroy();
-		mapHUDEmissive.destroy();
-		mapUIEmissive.destroy();
+		for (R_dsgraph::DynamicList* List : { &mapSorted, &mapHUDSorted, &mapUISorted, &mapHUD, &mapDistort, &mapUI, &mapUIEmissive, &mapWmark, &mapEmissive, &mapHUDEmissive, &mapHUDScopeMask, &mapHUDDistort })
+		{
+			*List = {};
+		}
+		mapLOD = {};
 	}
 
 	void		r_dsgraph_clear_aux();

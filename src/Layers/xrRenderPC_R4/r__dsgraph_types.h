@@ -64,18 +64,6 @@ class dxRender_Visual;
 
 namespace R_dsgraph
 {
-	// Elementary types
-	// geom==nullptr selects the virtual Render() path; MT_NORMAL visuals resolve their draw
-	// parameters at insert time so the render walk never dereferences the visual at all.
-	struct _NormalItem
-	{
-		float ssa;
-		float R;
-		dxRender_Visual* pVisual;
-		SGeometry* geom;
-		u32 vBase, vCount, iBase, pCount;
-	};
-
 	struct _MatrixItem
 	{
 		float ssa;
@@ -84,67 +72,36 @@ namespace R_dsgraph
 		Fmatrix Matrix;				// matrix (copy)
 	};
 
-	struct _MatrixItemS	: public _MatrixItem
-	{
-		ShaderElement* se;
-	};
-
 	struct _LodItem
 	{
 		float ssa;
 		dxRender_Visual* pVisual;
 	};
 
-	using vs_type = SVS*;
-	using gs_type = RHIObject*;
-	using hs_type = RHIObject*;
-	using ds_type = RHIObject*;
-	using ps_type = RHIObject*;
-
-	// NORMAL
-	using mapNormalDirect = xr_vector<_NormalItem,render_allocator::helper<_NormalItem>::result>;
-	using mapNormalItems = mapNormalDirect;
-	using mapNormalTextures = FixedMAP<STextureList*,mapNormalItems,render_allocator>;
-	using mapNormalStates = FixedMAP<GfxPipelineState*,mapNormalTextures,render_allocator>;
-	using mapNormalCS = FixedMAP<R_constant_table*,mapNormalStates,render_allocator>;
-	struct	mapNormalAdvStages
+	// Geometry==nullptr selects the virtual Render() path
+	struct StaticPacket
 	{
-		hs_type		hs;
-		ds_type		ds;
-		mapNormalCS	mapCS;
+		u64 Key;
+		SPass* Pass;
+		dxRender_Visual* Visual;
+		SGeometry* Geometry;
+		u32 BaseVertex, StartIndex, IndexCount;
+		float Ssa, Radius;
 	};
-	using mapNormalPS = FixedMAP<ps_type, mapNormalAdvStages,render_allocator>;
-	using mapNormalGS = FixedMAP<gs_type, mapNormalPS,render_allocator>;
-	using mapNormalVS = FixedMAP<vs_type, mapNormalGS,render_allocator>;
-	using mapNormal_T = mapNormalVS;
-	using mapNormalPasses_T = mapNormal_T[SHADER_PASSES_MAX];
 
-
-
-	// MATRIX
-	using mapMatrixItems = xr_vector<_MatrixItem,render_allocator::helper<_MatrixItem>::result>;
-	using mapMatrixTextures = FixedMAP<STextureList*,mapMatrixItems,render_allocator>;
-	using mapMatrixStates = FixedMAP<GfxPipelineState*,mapMatrixTextures,render_allocator>;
-	using mapMatrixCS = FixedMAP<R_constant_table*,mapMatrixStates,render_allocator>;
-	struct	mapMatrixAdvStages
+	struct DynamicPacket
 	{
-		hs_type		hs;
-		ds_type		ds;
-		mapMatrixCS	mapCS;
+		u64 Key;
+		SPass* Pass;
+		ShaderElement* Element;
+		dxRender_Visual* Visual;
+		IRenderable* Object;
+		float Ssa;
+		Fmatrix Matrix;
 	};
-	using mapMatrixPS = FixedMAP<ps_type, mapMatrixAdvStages,render_allocator>;
-	using mapMatrixGS = FixedMAP<gs_type, mapMatrixPS,render_allocator>;
-	using mapMatrixVS = FixedMAP<vs_type, mapMatrixGS,render_allocator>;
-	using mapMatrix_T = mapMatrixVS;
-	using mapMatrixPasses_T = mapMatrix_T[SHADER_PASSES_MAX];
 
-	// Top level
-	using mapSorted_T = FixedMAP<float,_MatrixItemS,render_allocator>;
-	using mapSorted_Node = mapSorted_T::TNode;
+	using StaticList = xr_vector<StaticPacket>;
+	using DynamicList = xr_vector<DynamicPacket>;
 
-	using mapHUD_T = FixedMAP<float, _MatrixItemS, render_allocator>;
-	using mapHUD_Node = mapHUD_T::TNode;
-
-	using mapLOD_T = FixedMAP<float,_LodItem,render_allocator>;
-	using mapLOD_Node = mapLOD_T::TNode;
+	using LodList = xr_vector<_LodItem>;
 };

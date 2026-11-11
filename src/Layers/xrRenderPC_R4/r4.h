@@ -115,6 +115,10 @@ public:
 	GfxCmdList& Imm() { return Backend; }
 
 	R_dsgraph_structure GraphMain;
+	// Static geometry of the main view, collected on a worker while the primary thread collects
+	// the dynamic part, then moved into GraphMain
+	R_dsgraph_structure GraphMainStatic;
+	xr_task_group MainStaticTask;
 	xr_array<R_dsgraph_structure, 6> GraphReflection;
 	xr_array<R_dsgraph_structure, 3> GraphSun;
 	R_dsgraph_structure GraphRain;
@@ -227,6 +231,9 @@ private:
 	void							CollectMainRenderable		(ISpatial* spatial, bool deffered, bool ParticlesOnly);
 	void							CaptureMainParticles		();
 	void							RenderMainDynamic			();
+	void							BeginMainStatic				(bool dont_test_sectors);
+	void							CollectMainStatic			(bool dont_test_sectors);
+	void							EndMainStatic				();
 
 public:
 	void							render_main					(GfxCmdList& Cmd, bool deffered, bool zfill = false);

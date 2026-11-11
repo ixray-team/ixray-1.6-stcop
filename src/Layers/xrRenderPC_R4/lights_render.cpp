@@ -162,8 +162,8 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 						Graph = &BuildPassGraph(Cmd, ShadowView, L->ignore_object);
 					}
 
-					bool bNormal = Graph->mapNormalPasses[0][0].size() || Graph->mapMatrixPasses[0][0].size();
-					bool bSpecial = Graph->mapNormalPasses[1][0].size() || Graph->mapMatrixPasses[1][0].size() || Graph->mapSorted.size();
+					bool bNormal = Graph->HasPasses(0);
+					bool bSpecial = Graph->HasPasses(1) || Graph->mapSorted.size();
 					if (bNormal || bSpecial)
 					{
 						stats.s_merged++;

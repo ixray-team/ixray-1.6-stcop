@@ -24,47 +24,34 @@ ICF float calcLOD	(float ssa/*fDistSq*/, float R)
 	return _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
 }
 
-template <class K, class T, class A>
-static void WipeMap(FixedMAP<K, T, A>& m);
-
-static void WipeMap(R_dsgraph::mapNormalAdvStages& s);
-static void WipeMap(R_dsgraph::mapMatrixAdvStages& s);
-
 template <class T>
-static void WipeMap(T& v)
+static void SortPackets(xr_vector<T>& List)
 {
-	v.clear();
-}
-
-template <class K, class T, class A>
-static void WipeMap(FixedMAP<K, T, A>& m)
-{
-	for (auto& n : m)
+	const auto Less = [](const T& A, const T& B) { return A.Key < B.Key; };
+	if (!std::is_sorted(List.begin(), List.end(), Less))
 	{
-		WipeMap(n.val);
+		std::sort(List.begin(), List.end(), Less);
 	}
-	m.clear();
 }
 
-static void WipeMap(R_dsgraph::mapNormalAdvStages& s)
+static void BindPass(GfxCmdList& Cmd, SPass& Pass)
 {
-	WipeMap(s.mapCS);
-}
-
-static void WipeMap(R_dsgraph::mapMatrixAdvStages& s)
-{
-	WipeMap(s.mapCS);
+	Cmd.SetVS(Pass.vs._get());
+	Cmd.SetShader(Pass.gs->gs, ERHI_SHADER_TYPE::GS);
+	Cmd.SetShader(Pass.ps->ps, ERHI_SHADER_TYPE::PS);
+	Cmd.SetShader(Pass.hs->sh, ERHI_SHADER_TYPE::HS);
+	Cmd.SetShader(Pass.ds->sh, ERHI_SHADER_TYPE::DS);
+	Cmd.SetConstantTable(Pass.constants._get());
+	Cmd.SetStates(Pass.state->state);
+	Cmd.SetTextures(Pass.T._get());
 }
 
 void R_dsgraph_structure::r_dsgraph_clear_passes()
 {
 	for (u32 i = 0; i < 2; ++i)
 	{
-		for (u32 j = 0; j < SHADER_PASSES_MAX; ++j)
-		{
-			WipeMap(mapNormalPasses[i][j]);
-			WipeMap(mapMatrixPasses[i][j]);
-		}
+		StaticPasses[i].clear();
+		DynamicPasses[i].clear();
 	}
 	r_dsgraph_clear_aux();
 }
@@ -82,162 +69,90 @@ void R_dsgraph_structure::r_dsgraph_clear_aux()
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
 	PROF_EVENT("r_dsgraph_render_graph");
-	//GPU_EVENT(r_dsgraph_render_graph);
 	CScopeTimer Timer(Device.Statistic->RenderDUMP);
 	GfxCmdList& Cmd = *Backend;
 
-	// **************************************************** NORMAL
-	// Perform sorting based on ScreenSpaceArea
-	// Sorting by SSA and changes minimizations
 	{
+		PROF_EVENT("NORMAL_SHADER_PASSES");
 		Cmd.SetObjectTransform(Fidentity);
+		StaticList& List = StaticPasses[_priority];
+		SortPackets(List);
+		SPass* Bound = nullptr;
+		for (StaticPacket& Packet : List)
 		{
-			// Render several passes
-			PROF_EVENT("NORMAL_SHADER_PASSES");
-			for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
+			if (Packet.Pass != Bound)
 			{
-				//mapNormalVS&	vs				= mapNormal	[_priority];
-				mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
-				for (mapNormalVS::TNode& Nvs : vs)
-				{
-					Cmd.SetVS					(Nvs.key);
-	
-					//	GS setup
-					mapNormalGS&		gs			= Nvs.val;
-					for (mapNormalGS::TNode& Ngs : gs)
-					{
-						Cmd.SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
-						mapNormalPS&		ps			= Ngs.val;
-						for (mapNormalPS::TNode& Nps : ps)
-						{
-							Cmd.SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
-							mapNormalCS&		cs			= Nps.val.mapCS;
-							Cmd.SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
-							Cmd.SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-							for (mapNormalCS::TNode& Ncs : cs)
-							{
-								Cmd.SetConstantTable			(Ncs.key);
-	
-								mapNormalStates&	states		= Ncs.val;
-								for (mapNormalStates::TNode& Nstate : states)
-								{
-									Cmd.SetStates					(Nstate.key);
-	
-									mapNormalTextures&		tex			= Nstate.val;
-									for (mapNormalTextures::TNode& Ntex : tex)
-									{
-										Cmd.SetTextures					(Ntex.key);
-										RImplementation.apply_lmaterial		(Cmd);
-	
-										mapNormalItems&				items	= Ntex.val;
-										for (_NormalItem& Ni : items)
-										{
-											VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(Ni.pVisual));
-											if (SpotShadowPass && (!SpotShadowBuild || !SpotShadowBuild->IsDepthCacheBuild))
-											{
-												++SpotShadowStaticItems;
-											}
-											float LOD = SpotShadowBuild ? 1.f : calcLOD(Ni.ssa, Ni.R);
-											Cmd.Constants.SetLOD(LOD);
-											if (Ni.geom)
-											{
-												Cmd.SetGeometry(Ni.geom);
-												Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Ni.pCount * 3, Ni.iBase, Ni.vBase);
-											}
-											else
-											{
-												Ni.pVisual->Render(Cmd, LOD);
-											}
-										}
-										if(_clear)items.clear();
-									}if(_clear) tex.clear();
-								}if(_clear) states.clear();
-							}if(_clear) cs.clear();
-	
-						}if(_clear) ps.clear();
-					}if(_clear) gs.clear();
-				}if(_clear) vs.clear();
+				Bound = Packet.Pass;
+				BindPass(Cmd, *Bound);
+				RImplementation.apply_lmaterial(Cmd);
 			}
+			VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(Packet.Visual));
+			if (SpotShadowPass && (!SpotShadowBuild || !SpotShadowBuild->IsDepthCacheBuild))
+			{
+				++SpotShadowStaticItems;
+			}
+			float LOD = SpotShadowBuild ? 1.f : calcLOD(Packet.Ssa, Packet.Radius);
+			Cmd.Constants.SetLOD(LOD);
+			if (Packet.Geometry)
+			{
+				Cmd.SetGeometry(Packet.Geometry);
+				Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Packet.IndexCount, Packet.StartIndex, Packet.BaseVertex);
+			}
+			else
+			{
+				Packet.Visual->Render(Cmd, LOD);
+			}
+		}
+		if (_clear)
+		{
+			List.clear();
 		}
 	}
 
 	{
-		// **************************************************** MATRIX
-		// Perform sorting based on ScreenSpaceArea
-		// Sorting by SSA and changes minimizations
-		// Render several passes
 		PROF_EVENT("MATRIX_SHADER_PASSES");
-		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
+		DynamicList& List = DynamicPasses[_priority];
+		SortPackets(List);
+		SPass* Bound = nullptr;
+		for (DynamicPacket& Packet : List)
 		{
-			//mapMatrixVS&	vs				= mapMatrix	[_priority];
-			mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
-			for (mapMatrixVS::TNode& Nvs : vs)
+			if (Packet.Pass != Bound)
 			{
-				Cmd.SetVS					(Nvs.key);	
-				mapMatrixGS&		gs			= Nvs.val;
-				for (mapMatrixGS::TNode& Ngs : gs)
-				{
-					Cmd.SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
-	
-					mapMatrixPS&		ps			= Ngs.val;
-					for (mapMatrixPS::TNode& Nps : ps)
-					{
-						Cmd.SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
-						mapMatrixCS&		cs			= Nps.val.mapCS;
-						Cmd.SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
-						Cmd.SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-						for (mapMatrixCS::TNode& Ncs : cs)
-						{
-							Cmd.SetConstantTable			(Ncs.key);
-	
-							mapMatrixStates&	states		= Ncs.val;
-							for (mapMatrixStates::TNode& Nstate : states)
-							{
-								Cmd.SetStates					(Nstate.key);
-	
-								mapMatrixTextures&		tex			= Nstate.val;
-								for (mapMatrixTextures::TNode& Ntex : tex)
-								{
-									Cmd.SetTextures					(Ntex.key);
-	
-									mapMatrixItems& items = Ntex.val;
-									for (_MatrixItem& Ni : items)
-									{
-										VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(Ni.pVisual));
-										if (Ni.pVisual->shader == nullptr)
-										{
-											continue;
-										}
-										Cmd.SetObjectTransform(Ni.Matrix);
-										if (SpotShadowPass)
-										{
-											++SpotShadowDynamicItems;
-										}
-										RImplementation.apply_object(Cmd, Ni.pObject);
-										RImplementation.apply_lmaterial(Cmd);
-	
-										float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-										// Distance lets tessellation fade out with it (see CShaderConstants::SetLOD).
-										const float tess_dist = Device.vCameraPosition.distance_to(Ni.Matrix.c) - Ni.pVisual->vis.sphere.R;
-										Cmd.Constants.SetLOD(LOD, tess_dist);
-										Ni.pVisual->Render(Cmd, LOD);
-									}if (_clear) items.clear();
-								}if(_clear) tex.clear();
-							}if(_clear) states.clear();
-						}if(_clear) cs.clear();
-					}if(_clear) ps.clear();
-				}if(_clear) gs.clear();
-			}if(_clear) vs.clear();
+				Bound = Packet.Pass;
+				BindPass(Cmd, *Bound);
+			}
+			VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(Packet.Visual));
+			if (Packet.Visual->shader == nullptr)
+			{
+				continue;
+			}
+			Cmd.SetObjectTransform(Packet.Matrix);
+			if (SpotShadowPass)
+			{
+				++SpotShadowDynamicItems;
+			}
+			RImplementation.apply_object(Cmd, Packet.Object);
+			RImplementation.apply_lmaterial(Cmd);
+
+			float LOD = calcLOD(Packet.Ssa, Packet.Visual->vis.sphere.R);
+			// Distance lets tessellation fade out with it (see CShaderConstants::SetLOD).
+			const float tess_dist = Device.vCameraPosition.distance_to(Packet.Matrix.c) - Packet.Visual->vis.sphere.R;
+			Cmd.Constants.SetLOD(LOD, tess_dist);
+			Packet.Visual->Render(Cmd, LOD);
+		}
+		if (_clear)
+		{
+			List.clear();
 		}
 	}
 }
 
-ICF void RenderNode(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted_Node& N, bool emissive = false)
+ICF void RenderNode(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, DynamicPacket& N, bool emissive = false)
 {
-	dxRender_Visual* V = N.val.pVisual;
+	dxRender_Visual* V = N.Visual;
 
 	VERIFY(V && V->shader._get());
-	Cmd.SetPass(N.val.se);
+	Cmd.SetPass(N.Element);
 
 	const auto* Settings = Graph.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
 	Hlsl::float4& Tint = Cmd.Constants.Write<CBUIIcon>().ui_emissive_tint;
@@ -255,7 +170,7 @@ ICF void RenderNode(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted
 		Cmd.SetBlend(true, D3DBLEND_ONE, D3DBLEND_ONE);
 		Cmd.SetColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 	}
-	else if (Graph.val_bUI && N.val.se->flags.bEmissive)
+	else if (Graph.val_bUI && N.Element->flags.bEmissive)
 	{
 		Cmd.SetColorWriteEnable();
 		Cmd.SetDepthWrite(true);
@@ -267,27 +182,28 @@ ICF void RenderNode(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted
 		return;
 	}
 
-	Cmd.SetObjectTransform(N.val.Matrix);
+	Cmd.SetObjectTransform(N.Matrix);
 
-	RImplementation.apply_object(Cmd, N.val.pObject);
+	RImplementation.apply_object(Cmd, N.Object);
 	RImplementation.apply_lmaterial(Cmd);
 
-	V->Render(Cmd, calcLOD(N.val.ssa, V->vis.sphere.R));
+	V->Render(Cmd, calcLOD(N.Ssa, V->vis.sphere.R));
 }
 
-ICF void sorted_L1(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted_Node* N)
+ICF void RenderMap(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, DynamicList& Map, bool emissive = false)
 {
-	RenderNode(Graph, Cmd, *N);
-}
-
-ICF void RenderMap(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted_T& Map, bool emissive = false)
-{
-	for (auto& Node : Map)
+	for (DynamicPacket& Node : Map)
 	{
 		RenderNode(Graph, Cmd, Node, emissive);
 	}
 
 	Map.clear();
+}
+
+ICF void RenderBackToFront(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, DynamicList& Map)
+{
+	SortPackets(Map);
+	RenderMap(Graph, Cmd, Map);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_ui()
@@ -301,8 +217,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 	GfxCmdList& Cmd = *Backend;
 	RenderMap(*this, Cmd, mapUIEmissive);
 
-	mapUISorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(*this, Cmd, N); });
-	mapUISorted.clear();
+	RenderBackToFront(*this, Cmd, mapUISorted);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud()
@@ -332,8 +247,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 	PROF_EVENT("r_dsgraph_render_sorted");
 	GfxCmdList& Cmd = *Backend;
 
-	mapSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(*this, Cmd, N); });
-	mapSorted.clear();
+	RenderBackToFront(*this, Cmd, mapSorted);
 
 	if (render_hud)
 	{
@@ -357,8 +271,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 		r_dsgraph_render_hud_ui();
 	}
 
-	mapHUDSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(*this, Cmd, N); });
-	mapHUDSorted.clear();
+	RenderBackToFront(*this, Cmd, mapHUDSorted);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_emissive()
@@ -466,6 +379,30 @@ void R_dsgraph_structure::Build(const GraphView& NewView)
 	Begin(NewView);
 	Traverse();
 	CaptureStatic();
+	SortStatic();
+}
+
+void R_dsgraph_structure::SortStatic()
+{
+	SortPackets(StaticPasses[0]);
+	SortPackets(StaticPasses[1]);
+}
+
+void R_dsgraph_structure::TakeStatic(R_dsgraph_structure& From)
+{
+	const auto Move = [](auto& To, auto& List, bool Front = false)
+	{
+		To.insert(Front ? To.begin() : To.end(), List.begin(), List.end());
+		List.clear();
+	};
+	Move(StaticPasses[0], From.StaticPasses[0]);
+	Move(StaticPasses[1], From.StaticPasses[1]);
+	Move(mapSorted, From.mapSorted);
+	Move(mapLOD, From.mapLOD);
+	// Statics were inserted before dynamics; these lists draw in insertion order
+	Move(mapDistort, From.mapDistort, true);
+	Move(mapEmissive, From.mapEmissive, true);
+	Move(mapWmark, From.mapWmark, true);
 }
 
 void R_dsgraph_structure::BuildFull(const GraphView& NewView, CObject* Ignore)

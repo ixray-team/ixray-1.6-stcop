@@ -26,8 +26,8 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 	{
 		const u32 iBatchSize = std::min(u32(mapLOD.size()) - i, Cmd.Vertex.GetCapacity());
 		const u32 BatchStart = i;
-		cur_S = mapLOD[i].val.pVisual->shader->E[shid];
-		SGeometry* cur_G = ((FLOD*)mapLOD[i].val.pVisual)->geom._get();
+		cur_S = mapLOD[i].pVisual->shader->E[shid];
+		SGeometry* cur_G = ((FLOD*)mapLOD[i].pVisual)->geom._get();
 		int cur_count = 0;
 		u32 vOffset;
 		PackedVertex* V = (PackedVertex*)Cmd.Vertex.Lock(iBatchSize, EVertexFormat::Packed, vOffset);
@@ -35,7 +35,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 		for ( u32 j=0; j<iBatchSize; ++j, ++i )
 		{
 			// sort out redundancy
-			R_dsgraph::_LodItem	&P = mapLOD[i].val;
+			R_dsgraph::_LodItem	&P = mapLOD[i];
 			FLOD* lodV = (FLOD*)P.pVisual;
 			if (P.pVisual->shader->E[shid]==cur_S && lodV->geom._get()==cur_G)
 				cur_count++;
@@ -92,11 +92,11 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 			
 			for (int p_count : lstLODgroups)
 			{
-				u32 uiNumPasses = mapLOD[current].val.pVisual->shader->E[shid]->passes.size();
+				u32 uiNumPasses = mapLOD[current].pVisual->shader->E[shid]->passes.size();
 				if (uiPass<uiNumPasses)
 				{
-					Cmd.SetPass(mapLOD[current].val.pVisual->shader->E[shid], uiPass);
-					Cmd.SetGeometry(((FLOD*)mapLOD[current].val.pVisual)->geom);
+					Cmd.SetPass(mapLOD[current].pVisual->shader->E[shid], uiPass);
+					Cmd.SetGeometry(((FLOD*)mapLOD[current].pVisual)->geom);
 					Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6 * p_count, vCurOffset);
 				}
 				current	+= p_count;

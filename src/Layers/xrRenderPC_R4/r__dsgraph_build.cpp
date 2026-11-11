@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <bit>
+
 #include "FHierrarhyVisual.h"
 #include "SkeletonCustom.h"
 #include "SkeletonX.h"
@@ -363,12 +365,12 @@ ICF bool IsValuableToRender(const R_dsgraph_structure& Graph, dxRender_Visual* p
 	return CheckLevelLabmda(dynamic_sizes, dynamic_dists, std::size(dynamic_sizes), opt_level, sphere_volume, adjusted_distance);
 }
 
-ICF R_dsgraph::_NormalItem MakeNormalItem(const R_dsgraph_structure& Graph, float ssa, dxRender_Visual* pVisual)
+ICF R_dsgraph::StaticPacket MakeStaticPacket(const R_dsgraph_structure& Graph, float Ssa, dxRender_Visual* pVisual)
 {
-	R_dsgraph::_NormalItem I = { ssa, pVisual->vis.sphere.R, pVisual, nullptr, 0, 0, 0, 0 };
+	R_dsgraph::StaticPacket Packet = { 0, nullptr, pVisual, nullptr, 0, 0, 0, Ssa, pVisual->vis.sphere.R };
 
 	if (MT_NORMAL != pVisual->Type)
-		return I;
+		return Packet;
 
 	Fvisual* V = (Fvisual*)pVisual;
 #ifdef DEBUG
@@ -379,13 +381,30 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(const R_dsgraph_structure& Graph, floa
 	if (V->m_fast && Graph.ViewPhase() == CRender::PHASE_SMAP && V->fast_usable())
 		M = V->m_fast;
 
-	I.geom		= M->rm_geom._get();
-	I.vBase		= M->vBase;
-	I.vCount	= M->vCount;
-	I.iBase		= M->iBase;
-	I.pCount	= M->dwPrimitives;
+	Packet.Geometry = M->rm_geom._get();
+	Packet.BaseVertex = M->vBase;
+	Packet.StartIndex = M->iBase;
+	Packet.IndexCount = M->dwPrimitives * 3;
 
-	return I;
+	return Packet;
+}
+
+ICF u64 HashBits(const void* Pointer)
+{
+	return (u64(size_t(Pointer)) >> 4) * 0x9E3779B97F4A7C15ull >> 54;
+}
+
+ICF u64 PassKey(u32 PassIndex, const SPass& Pass, size_t Order)
+{
+	const u64 Stages = HashBits(Pass.ps._get()) ^ HashBits(Pass.gs._get()) ^ HashBits(Pass.hs._get()) ^ HashBits(Pass.ds._get());
+	const u64 State = HashBits(Pass.state._get()) ^ HashBits(Pass.constants._get());
+	return u64(PassIndex) << 60 | HashBits(Pass.vs._get()) << 50 | Stages << 40 | State << 30 | HashBits(Pass.T._get()) << 20 | (Order & 0xFFFFF);
+}
+
+ICF void PushSorted(R_dsgraph::DynamicList& List, float DistSQ, float Ssa, IRenderable* Object, dxRender_Visual* Visual, const Fmatrix& Matrix, ShaderElement* Element)
+{
+	const u64 Key = u64(~std::bit_cast<u32>(DistSQ)) << 32 | u32(List.size());
+	List.push_back({ Key, nullptr, Element, Visual, Object, Ssa, Matrix });
 }
 
 ICF float CalcSSADistanceSQ(const R_dsgraph_structure& Graph, const Fvector& C)
@@ -489,20 +508,13 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 	if (!SpotShadowPass && !val_bUI && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && IsDistortCollected(*this, *sh_d) && !psDeviceFlags.test(rsClearBB))
 	{
-		mapSorted_T& test = bHUD ? mapHUDDistort : mapDistort;
-		mapSorted_Node* N = test.insertInAnyWay(distSQ);
-
-		N->val.ssa = SSA;
-		N->val.pObject = val_pObject;
-		N->val.pVisual = pVisual;
-		N->val.Matrix = *val_pTransform;
-		N->val.se = sh_d;		// 4=L_special
+		PushSorted(bHUD ? mapHUDDistort : mapDistort, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh_d);
 		RequestSkin(pVisual, *val_pTransform);
 	}
 
 	if (!SpotShadowPass && sh_d && sh_d->flags.bScopeMask && pmask[0])
 	{
-		mapHUDScopeMask.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh_d });
+		PushSorted(mapHUDScopeMask, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh_d);
 		RequestSkin(pVisual, *val_pTransform);
 	}
 
@@ -519,14 +531,14 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	{
 		if (sh->flags.bStrictB2F || sh->flags.iPriority > 1)
 		{
-			mapUISorted.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
+			PushSorted(mapUISorted, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh);
 		}
 		else
 		{
-			mapUI.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
+			PushSorted(mapUI, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh);
 			if (LightingModeIsDynamicRender() && sh->flags.bEmissive && sh != sh_d)
 			{
-				mapUIEmissive.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh_d });
+				PushSorted(mapUIEmissive, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh_d);
 			}
 		}
 
@@ -540,14 +552,14 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		{
 			if (sh->flags.bStrictB2F || sh->flags.iPriority > 1)
 			{
-				mapHUDSorted.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
+				PushSorted(mapHUDSorted, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh);
 			}
 			else
 			{
-				mapHUD.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
+				PushSorted(mapHUD, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh);
 				if (LightingModeIsDynamicRender() && sh->flags.bEmissive)
 				{
-					mapHUDEmissive.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh_d });
+					PushSorted(mapHUDEmissive, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh_d);
 				}
 			}
 			return;
@@ -563,18 +575,18 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		// strict-sorting selection
 		if (sh->flags.bStrictB2F || pVisual->dcast_ParticleCustom())
 		{
-			mapSorted.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
+			PushSorted(mapSorted, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh);
 			return;
 		}
 
 		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bEmissive)
 		{
-			mapEmissive.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh_d });
+			PushSorted(mapEmissive, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh_d);
 		}
 
 		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2] && IsWallmarkCollected(*this, *sh))
 		{
-			mapWmark.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
+			PushSorted(mapWmark, distSQ, SSA, val_pObject, pVisual, *val_pTransform, sh);
 			return;
 		}
 	}
@@ -595,31 +607,8 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 			continue;
 		}
 
-		mapMatrix_T& map = mapMatrixPasses[iPriority / 2][iPass];
-		
-#ifdef USE_RESOURCE_DEBUGGER
-		mapMatrixVS::TNode*			Nvs		= map.insert		(pass.vs);
-		mapMatrixGS::TNode*			Ngs		= Nvs->val.insert	(pass.gs);
-		mapMatrixPS::TNode*			Nps		= Ngs->val.insert	(pass.ps);
-#else
-		mapMatrixVS::TNode*			Nvs		= map.insert		(&*pass.vs);
-		mapMatrixGS::TNode*			Ngs		= Nvs->val.insert	(pass.gs->gs);
-		mapMatrixPS::TNode*			Nps		= Ngs->val.insert	(pass.ps->ps);
-#endif
-
-#	ifdef USE_RESOURCE_DEBUGGER
-		Nps->val.hs = pass.hs;
-		Nps->val.ds = pass.ds;
-		mapMatrixCS::TNode*			Ncs		= Nps->val.mapCS.insert	(pass.constants._get());
-#	else
-		Nps->val.hs = pass.hs->sh;
-		Nps->val.ds = pass.ds->sh;
-		mapMatrixCS::TNode*			Ncs		= Nps->val.mapCS.insert	(pass.constants._get());
-#	endif
-		mapMatrixStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
-		mapMatrixTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
-
-		Ntex->val.push_back({ SSA, val_pObject, pVisual, *val_pTransform });
+		DynamicList& List = DynamicPasses[iPriority / 2];
+		List.push_back({ PassKey(iPass, pass, List.size()), &pass, nullptr, pVisual, val_pObject, SSA, *val_pTransform });
 	}
 }
 
@@ -676,7 +665,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 
 	if (!SpotShadowPass && !SpotShadowBuild && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && IsDistortCollected(*this, *sh_d) && !psDeviceFlags.test(rsClearBB))
 	{
-		mapDistort.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
+		PushSorted(mapDistort, distSQ, SSA, nullptr, pVisual, Fidentity, sh_d);
 	}
 
 	// Select shader
@@ -718,18 +707,18 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		// strict-sorting selection
 		if (sh->flags.bStrictB2F)
 		{
-			mapSorted.insertInAnyWay(distSQ, {SSA, nullptr, pVisual, Fidentity, sh});
+			PushSorted(mapSorted, distSQ, SSA, nullptr, pVisual, Fidentity, sh);
 			return;
 		}
 
 		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bEmissive)
 		{
-			mapEmissive.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
+			PushSorted(mapEmissive, distSQ, SSA, nullptr, pVisual, Fidentity, sh_d);
 		}
 
 		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2] && IsWallmarkCollected(*this, *sh))
 		{
-			mapWmark.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
+			PushSorted(mapWmark, distSQ, SSA, nullptr, pVisual, Fidentity, sh);
 			return;
 		}
 
@@ -750,19 +739,11 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 			continue;
 		}
 
-		mapNormal_T& map = mapNormalPasses[iPriority / 2][iPass];
-
-		mapNormalVS::TNode*			Nvs		= map.insert		(&*pass.vs);
-		mapNormalGS::TNode*			Ngs		= Nvs->val.insert	(pass.gs->gs);
-		mapNormalPS::TNode*			Nps		= Ngs->val.insert	(pass.ps->ps);
-
-		Nps->val.hs = pass.hs->sh;
-		Nps->val.ds = pass.ds->sh;
-		mapNormalCS::TNode*			Ncs		= Nps->val.mapCS.insert	(pass.constants._get());
-		mapNormalStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
-		mapNormalTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
-
-		Ntex->val.push_back(MakeNormalItem(*this, SSA, pVisual));
+		StaticList& List = StaticPasses[iPriority / 2];
+		StaticPacket Packet = MakeStaticPacket(*this, SSA, pVisual);
+		Packet.Key = PassKey(iPass, pass, List.size());
+		Packet.Pass = &pass;
+		List.push_back(Packet);
 	}
 }
 
@@ -851,9 +832,7 @@ ICF void r_dsgraph_insert_static_lod(dxRender_Visual* pVisual, R_dsgraph_structu
 	if (ssa < ViewSsaLodA(Graph) && !Graph.SpotShadowPass)
 	{
 		if (ssa < ViewSsaDiscard(Graph))	return;
-		mapLOD_Node* N = Graph.mapLOD.insertInAnyWay(D);
-		N->val.ssa = ssa;
-		N->val.pVisual = pVisual;
+		Graph.mapLOD.push_back({ ssa, pVisual });
 	}
 	if (ssa > ViewSsaLodB(Graph) || Graph.ViewPhase() == CRender::PHASE_SMAP)
 	{

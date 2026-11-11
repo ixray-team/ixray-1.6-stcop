@@ -261,8 +261,8 @@ void CRender::render_rain(GfxCmdList& Cmd)
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
 
-	bool bNormal = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
-	bool bSpecial = Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
+	bool bNormal = Graph.HasPasses(0);
+	bool bSpecial = Graph.HasPasses(1) || Graph.mapSorted.size();
 
 	if (bNormal || bSpecial)
 	{

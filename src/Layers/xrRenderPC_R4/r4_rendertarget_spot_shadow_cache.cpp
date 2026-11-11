@@ -69,14 +69,7 @@ static bool ValidMatrix(const Fmatrix& Matrix)
 
 static bool HasGeometry(R_dsgraph_structure& Renderer, u32 Priority)
 {
-	for (u32 Pass = 0; Pass < SHADER_PASSES_MAX; ++Pass)
-	{
-		if (Renderer.mapNormalPasses[Priority][Pass].size() || Renderer.mapMatrixPasses[Priority][Pass].size())
-		{
-			return true;
-		}
-	}
-	return false;
+	return Renderer.HasPasses(Priority);
 }
 
 static bool HasDecorativeCasters(const light& Source)

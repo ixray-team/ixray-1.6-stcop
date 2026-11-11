@@ -140,62 +140,19 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 				);
 		}
 
-		// Dynamic objects are collected before static geometry
+		BeginMainStatic(dont_test_sectors);
 		CollectMainDynamic(deffered, dont_test_sectors);
-
-		// Determine visibility for static geometry hierrarhy
-		if(psDeviceFlags.test(rsDrawStatic))
 		{
-			PROF_EVENT("add_static")
-
-			if (dont_test_sectors)
-			{
-				PROF_EVENT("add_static: non sector")
-				CSector* sector = (CSector*)Sectors[0];
-				GraphMain.View = &ViewBase;
-				GraphMain.add_Static((dxRender_Visual*)sector->root(), GraphMain.View->getMask());
-			}
-			else
-			{
-				if (psDeviceFlags.test(rsClearBB))
-				{
-					for (auto visual : Visuals)
-					{
-						GraphMain.r_dsgraph_insert_static(visual);
-					}
-				}
-				else
-				{
-					const bool CaptureStats = phase == CRender::PHASE_NORMAL && g_StaticTraversalStats.BeginFrame();
-					for (u32 s_it = 0; s_it < GraphMain.PortalTraverser.r_sectors.size(); s_it++)
-					{
-						CSector* sector = (CSector*)GraphMain.PortalTraverser.r_sectors[s_it];
-						dxRender_Visual* root = sector->root();
-						g_StaticTraversalStats.BeginSector(sector);
-
-						xr_vector<CFrustum>& Frustums = GraphMain.PortalTraverser.local_frustums[sector->index];
-						for (u32 v_it = 0; v_it < Frustums.size(); v_it++)
-						{
-							GraphMain.View = &Frustums[v_it];
-							GraphMain.add_Static((dxRender_Visual*)root, GraphMain.View->getMask());
-						}
-						g_StaticTraversalStats.EndSector();
-					}
-					if (CaptureStats)
-					{
-						g_StaticTraversalStats.EndFrame();
-					}
-				}
-			}
+			PROF_EVENT("add_dynamic")
+			RenderMainDynamic();
 		}
-		PROF_EVENT("add_dynamic")
-		RenderMainDynamic();
 
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
 		{
 			PROF_EVENT("Render HUD");
 			g_hud->Render_Last(&GraphMain);		// HUD
 		}
+		EndMainStatic();
 	}
 	else
 	{
@@ -206,6 +163,77 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 			g_hud->Render_Last(&GraphMain);		// HUD
 		}
 	}
+}
+
+void CRender::BeginMainStatic(bool dont_test_sectors)
+{
+	R_dsgraph_structure& Graph = GraphMainStatic;
+	Graph.ViewParams = GraphMain.ViewParams;
+	Graph.OwnsView = true;
+	Graph.CollectForwardTogether = GraphMain.CollectForwardTogether;
+	Graph.r_pmask(GraphMain.pmask[0], GraphMain.pmask[1], GraphMain.pmask[2]);
+	Graph.val_pTransform = &Fidentity;
+	Graph.private_visuals.clear();
+
+	// Static lighting marks the visuals it accepts for the passes that follow
+	if (LightingModeIsStaticRender())
+	{
+		CollectMainStatic(dont_test_sectors);
+		return;
+	}
+	MainStaticTask.run([this, dont_test_sectors]() { CollectMainStatic(dont_test_sectors); });
+}
+
+void CRender::EndMainStatic()
+{
+	PROF_EVENT("join add_static")
+	MainStaticTask.wait();
+	GraphMain.TakeStatic(GraphMainStatic);
+}
+
+// Runs on a worker: reads the portal traversal of GraphMain, writes only GraphMainStatic
+void CRender::CollectMainStatic(bool dont_test_sectors)
+{
+	PROF_EVENT("add_static")
+	R_dsgraph_structure& Graph = GraphMainStatic;
+	if (!psDeviceFlags.test(rsDrawStatic))
+	{
+		return;
+	}
+
+	if (dont_test_sectors)
+	{
+		Graph.View = &ViewBase;
+		Graph.add_Static((dxRender_Visual*)((CSector*)Sectors[0])->root(), ViewBase.getMask());
+	}
+	else if (psDeviceFlags.test(rsClearBB))
+	{
+		for (auto visual : Visuals)
+		{
+			Graph.r_dsgraph_insert_static(visual);
+		}
+	}
+	else
+	{
+		const bool CaptureStats = Graph.ViewParams.Phase == CRender::PHASE_NORMAL && g_StaticTraversalStats.BeginFrame();
+		for (IRender_Sector* Item : GraphMain.PortalTraverser.r_sectors)
+		{
+			CSector* sector = (CSector*)Item;
+			g_StaticTraversalStats.BeginSector(sector);
+			for (CFrustum& Frustum : GraphMain.PortalTraverser.local_frustums[sector->index])
+			{
+				Graph.View = &Frustum;
+				Graph.add_Static(sector->root(), Frustum.getMask());
+			}
+			g_StaticTraversalStats.EndSector();
+		}
+		if (CaptureStats)
+		{
+			g_StaticTraversalStats.EndFrame();
+		}
+	}
+	Graph.View = nullptr;
+	Graph.SortStatic();
 }
 
 void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors, bool ParticlesOnly)
@@ -917,8 +945,7 @@ void CRender::render_forward(GfxCmdList& Cmd)
 		CaptureMainParticles();
 	}
 
-	bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size();
-	bSpecial |= GraphMain.mapNormalPasses[1][1].size() || GraphMain.mapMatrixPasses[1][1].size();
+	bool bSpecial = GraphMain.HasPasses(1);
 
 	if (ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
 	{
@@ -990,7 +1017,7 @@ void CRender::render_forward(GfxCmdList& Cmd)
 		{
 			for (const auto& Node : GraphMain.mapHUDSorted)
 			{
-				if (!Node.val.se->flags.ScopePostprocess)
+				if (!Node.Element->flags.ScopePostprocess)
 				{
 					Device.ScopePostprocessActive = false;
 					break;

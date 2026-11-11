@@ -109,8 +109,8 @@ void CRenderTarget::phase_planar(GfxCmdList& Cmd)
 		PlanarView.CalculateSkeletons = true;
 		R_dsgraph_structure& Graph = RImplementation.BuildPassGraph(Cmd, PlanarView);
 
-		bool IsRender = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
-		IsRender |= Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
+		bool IsRender = Graph.HasPasses(0);
+		IsRender |= Graph.HasPasses(1) || Graph.mapSorted.size();
 
 		if (IsRender)
 		{
