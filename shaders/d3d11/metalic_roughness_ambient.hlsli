@@ -146,7 +146,7 @@ float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 	float4 SampleRef = saturate(s_env_fwd.SampleLevel(smp_linear, View, 6.0f * ViewRoughness));
 	SampleRef.xyz *= rcp(max(1.0f - SampleRef.xyz, 0.02f));
 	
-	Irradance = lerp(SampleRef.xyz, Irradance * saturate(Hemi * 3.0f), SampleRef.w);
+	Irradance = lerp(SampleRef.xyz, Irradance * Hemi, SampleRef.w);
 #else
 	Irradance *= Hemi;
 #endif
