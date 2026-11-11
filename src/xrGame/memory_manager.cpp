@@ -179,11 +179,15 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 		
 		if (CEntityAlive* entity_alive = const_cast<CGameObject*>(member.m_object)->cast_entity_alive())
 		{
-			if (add_enemies)
+			bool AddEnemy = add_enemies;
+			if constexpr (std::is_same_v<T, CHitObject>)
 			{
-				if (enemy().add(entity_alive))
-			continue;
-		}
+				AddEnemy |= m_stalker && member.m_amount > 0.f && entity_alive->ID() == hit().last_hit_object_id();
+			}
+			if (AddEnemy && enemy().add(entity_alive))
+			{
+				continue;
+			}
 
 			const CAI_Stalker* stalker = entity_alive->cast_stalker();
 		if (m_stalker && stalker)
