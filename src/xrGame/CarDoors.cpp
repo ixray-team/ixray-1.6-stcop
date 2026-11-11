@@ -15,6 +15,11 @@
 #include "game_object_space.h"
 #include "actor.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Below this speed the car is treated as parked: an open door is held by the
+// hinge motor instead of being driven by the moving-car door logic.
+constexpr float CarDoorHoldSpeed = 0.5f;
+
 bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 {
 	if(hit_type==ALife::eHitTypeStrike && P > 20.f)
@@ -41,6 +46,7 @@ void CCar::SDoor::Init()
 {
 	update=false;
 	float OpenTorqueFactor = pcar->m_doors_torque_factor;
+	float HoldTorqueFactor = pcar->m_doors_hold_factor;
 	float OpenVelFactor = pcar->m_doors_vel_factor;
 	joint = pcar->bone_map.find(bone_id)->second.joint;
 	if (joint == nullptr || joint->PSecond_element() == nullptr)
@@ -81,6 +87,7 @@ void CCar::SDoor::Init()
 				if (ini->line_exist(bone_name, "use_distance"))
 					dist_to_door_avlbl = ini->r_float(bone_name, "use_distance");
 				OpenTorqueFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_torque_factor", OpenTorqueFactor);
+				HoldTorqueFactor = READ_IF_EXISTS(ini, r_float, bone_name, "hold_torque_factor", HoldTorqueFactor);
 				OpenVelFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_vel_factor", OpenVelFactor);
 
 				if (ini->line_exist(bone_name, "non_enterable"))
@@ -272,6 +279,11 @@ void CCar::SDoor::Init()
 
 	shoulder.sub(door_transform.c,joint->PSecond_element()->mass_Center());
 	torque=shoulder.magnitude()*joint->PSecond_element()->getMass()*OpenTorqueFactor*10.f;
+	// A zero-velocity hinge motor with this force limit acts as static
+	// friction for an open door. Air resistance (linear_factor/angular_factor)
+	// only damps movement and cannot hold a door on a slope.
+	clamp(HoldTorqueFactor, 0.f, 10.f);
+	hold_torque=torque*HoldTorqueFactor;
 	a_vel=M_PI*OpenVelFactor;
 	state=opened;
 //	Close();
@@ -410,7 +422,7 @@ void CCar::SDoor::Update()
 				if (pos_open * opened_angle < pos_open * door_angle)
 				{
 					if (!spring_loaded_door)
-						NeutralTorque(torque);
+						NeutralTorque(hold_torque);
 					open_time = Device.dwTimeGlobal;
 					state = opened;
 				}
@@ -418,28 +430,40 @@ void CCar::SDoor::Update()
 			}
 			case opened:
 			{
-				// Only spring_loaded doors are held at the opened limit.
 				// non_enterable/non_exitable only restrict entry and exit; they
 				// must not affect the door physics or prevent it from closing.
 				if (spring_loaded_door)
 				{
 					if (Device.dwTimeGlobal - open_time > 1000)
 					{
-						ApplyTorque(torque / 5.f, a_vel);
-						RemoveFromUpdate();
+						// The spring keeps pushing the door towards its limit.
+						// Once it is there, replace the drive with a zero-velocity
+						// hold. Keeping the door in the update list lets it recover
+						// if a slope or a collision pushes it off the limit.
+						if (IsFullyOpen())
+							NeutralTorque(hold_torque);
+						else
+							ApplyTorque(torque / 5.f, a_vel);
 					}
 					break;
 				}
 
-				if (pcar->m_pPhysicsShell->isEnabled() && pcar->GetVelocityM() > 0.01f)
+				// A parked car must not lose the door hold. The moving-car
+				// branch used to replace it with a near-zero motor force while
+				// the car slowly rolled on a slope, and the door then closed
+				// under gravity.
+				if (!pcar->m_pPhysicsShell->isEnabled() || pcar->GetVelocityM() <= CarDoorHoldSpeed)
 				{
-					Fvector angil, torque;
-					Fvector angil2; pcar->m_pPhysicsShell->get_AngularVel(angil2); torque.set(angil2);
-					pcar->m_pPhysicsShell->get_AngularVel(angil);
-					float odoor_trq = torque.magnitude();
-					float odoor_vel = angil.magnitude() + (-(pcar->GetVelocityM() * 0.8f));
-					ApplyTorque(odoor_trq, odoor_vel);
+					NeutralTorque(hold_torque);
+					break;
 				}
+
+				Fvector car_ang_vel;
+				pcar->m_pPhysicsShell->get_AngularVel(car_ang_vel);
+				const float odoor_trq = car_ang_vel.magnitude();
+				const float odoor_vel = odoor_trq - pcar->GetVelocityM() * 0.8f;
+				ApplyTorque(odoor_trq, odoor_vel);
+				break;
 			}
 		}
 		if (Device.dwTimeGlobal - real_open_time > 1000 && _abs(GetAngleRate()) > 2.0f)
@@ -504,6 +528,7 @@ void CCar::SDoor::ApplyTorque(float atorque,float aa_vel)
 void CCar::SDoor::NeutralTorque(float atorque)
 {
 	if (!joint || !joint->bActive)return;
+	joint->PSecond_element()->Enable();
 	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
 	dJointSetHingeParam(joint->GetDJoint(),dParamVel,0);
 }
