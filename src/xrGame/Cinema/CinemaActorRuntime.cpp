@@ -686,6 +686,61 @@ void ActorRuntime::SolveIk(const Object& Target, float Local, const Fmatrix& Wor
 	Solve(Target.Actor.Ik, Target.Lanes, Local, 1.0f);
 }
 
+void ActorRuntime::LookWith(u8 Groups, const Fvector& Point, float Weight, const Fmatrix& World)
+{
+	if (!Skeleton || Weight <= 0.0f)
+	{
+		return;
+	}
+	Fmatrix ToModel;
+	ToModel.invert(World);
+	Fvector Goal;
+	ToModel.transform_tiny(Goal, Point);
+	const auto Turn = [this](u16 Bone, const Fvector& Axis, float Angle)
+	{
+		if (Bone >= BoneCount() || std::fabs(Angle) <= EPS_S)
+		{
+			return;
+		}
+		const Fvector Pivot = Skeleton->LL_GetTransform(Bone).c;
+		Fmatrix Delta;
+		Delta.rotation(Axis, Angle);
+		Fvector Moved;
+		Delta.transform_dir(Moved, Pivot);
+		Delta.c.sub(Pivot, Moved);
+		CCameraRig::TransformBone(Skeleton, Bone, Delta);
+	};
+	float Yaw = 0.0f;
+	const u16 Spine[3] = { FindBone("bip01_spine"), FindBone("bip01_spine1"), FindBone("bip01_spine2") };
+	const u32 Links = static_cast<u32>(std::count_if(Spine, Spine + 3, [this](u16 Bone) { return Bone < BoneCount(); }));
+	if ((Groups & LookTorso) && Links)
+	{
+		const Fvector Base = Skeleton->LL_GetTransform(*std::find_if(Spine, Spine + 3, [this](u16 Bone) { return Bone < BoneCount(); })).c;
+		Yaw = Weight * std::clamp(atan2f(Goal.x - Base.x, Goal.z - Base.z), -PI / 3.0f, PI / 3.0f);
+		for (u16 Bone : Spine)
+		{
+			Turn(Bone, Fvector().set(0.0f, 1.0f, 0.0f), Yaw / static_cast<float>(Links));
+		}
+	}
+	const u16 Head = FindBone("bip01_head"), Neck = FindBone("bip01_neck");
+	if ((Groups & LookHead) && Head < BoneCount())
+	{
+		const Fvector From = Fvector().set(std::sin(Yaw), 0.0f, std::cos(Yaw));
+		Fvector To = Fvector().sub(Goal, Skeleton->LL_GetTransform(Head).c), Axis;
+		To.normalize_safe();
+		Axis.crossproduct(From, To);
+		const float Sine = Axis.magnitude();
+		if (Sine > EPS_S)
+		{
+			const float Angle = Weight * std::min(atan2f(Sine, From.dotproduct(To)), PI * 4.0f / 9.0f);
+			Axis.div(Sine);
+			const bool HasNeck = Neck < BoneCount();
+			Turn(Neck, Axis, HasNeck ? 0.35f * Angle : 0.0f);
+			Turn(Head, Axis, HasNeck ? 0.65f * Angle : Angle);
+		}
+	}
+}
+
 void ActorRuntime::Constrain(const BoneConstraint& Rule, float Weight, const Fmatrix& Goal, const Fmatrix& World)
 {
 	const u16 Bone = FindBone(Rule.Bone);

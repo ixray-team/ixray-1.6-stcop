@@ -786,6 +786,7 @@ The **Attach** group follows **Transform** for actors, lights and particle effec
 | **Look at** | As **Parent**. | None |
 | **Look bone** | As **Bone**, for the Look at target. | Origin |
 | **Yaw only** | Turn on the heading only. Always on (and grey) for actors. | off |
+| **Fix** | Actors with a Look at target only. Parts of the character that do not turn to the target: **Legs**, **Torso**, **Head**. With nothing ticked the whole character turns on its heading, as before. With **Legs** ticked the character keeps its own heading, so its feet and any IK-locked limbs stay where they are, and only the spine (up to 60° either way) and the neck and head (up to 80°, also up and down) turn; tick **Torso** or **Head** as well to hold that part too. **Torso** and **Head** have no effect while **Legs** is not ticked. | none |
 | **Look influence** | Only with a Look at target. How much the object turns to its target, 0–1; keyable (◇, lane **Look influence**). 0 keeps its own rotation, 1 looks straight at the target; between, it turns part of the way, so a camera can ease on to and off a subject. | 1 |
 | **Follow smoothing** | Only with a parent or a Look at target. Seconds of lag, 0–5; keyable (◇). The object follows where its parent and its target were, averaged over that time, so sudden moves of the subject are softened and the camera trails behind by about half the time. 0 follows exactly. | 0 |
 
@@ -1356,6 +1357,7 @@ Links (actors, lights and particles: `attach_parent`, `attach_look_at`; camera c
 | --- | --- | --- |
 | `attach_parent` | `id, bone, roll_lock, pitch_lock` | written only with a parent |
 | `attach_weight`, `block_NNN_weight` | static Attach weight, 0–1 | written only when not 1 |
+| `attach_look_fix` | actors: fixed parts, sum of 1 (legs), 2 (torso), 4 (head) | written only when not 0 |
 | `attach_follow`, `block_NNN_follow` | `look_influence, follow_smoothing`: 0–1 and 0–5 s | written only when not `1, 0` |
 | `attach_look_at` | `id, bone, yaw_only` | written only with a target; actors always turn on the heading only, lights and particles when `yaw_only` is 1 |
 
@@ -1920,3 +1922,4 @@ Timeline fixes, solo and choosers:
 450. Save and reopen: `block_NNN_follow` keeps both values and the lanes are kept. With **Look influence** below 1 the rotate gizmo still turns the object (it is exact only at 0 and 1).
 451. Sound clip **Sound** row: the chooser opens with a **Filter** box focused; type part of a name: the list narrows; arrows and `Enter` pick; the clip name follows. **In world** with **Max distance** 5 and **Min distance** 1: at 1 m the sound is at full volume, at 6 m silent; back to 0 (**File**): the file's own reach. Changing a distance during playback restarts the sound in step. Save and reopen: `distance` is kept.
 452. Click an animation block that is not focused: it is focused and the inspector shows its rows; the Scene timeline stays. Click the same block again: the Animation view opens on it. Click block A, then block B: B is only focused. Press and drag a focused block: it moves and the view does not change.
+453. Actor with **Look at** an object beside it and IK ticked on both hands in its animation clip. **Fix** with nothing ticked: the whole character turns to the object, as before. Tick **Legs**: the character keeps its heading and its feet stay; the spine, neck and head turn to the object (also up and down for a high or low target) and the IK hands hold their place and rotation. Tick **Torso** too: only the head turns. Tick all three: nothing turns. Move the object behind the actor with only Legs ticked: torso and head stop at their limits. **Look influence** 0.5 halves the turn. Save and reopen: `attach_look_fix` is kept.

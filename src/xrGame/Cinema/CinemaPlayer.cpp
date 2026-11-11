@@ -645,6 +645,8 @@ void Player::PoseActor(u32 Index, float At, bool IsNeeded)
 	ObjectState& State = States[Index];
 	Resolve(Item.Attach, true, State.Frames, std::clamp(At - Item.Span.Start, 0.0f, Item.Span.Length));
 	Unhook(Item.Attach, Item.Lanes, Item.Span.Start, std::clamp(At - Item.Span.Start, 0.0f, Item.Span.Length), State.Frames);
+	const bool IsAimed = State.Frames.HasLook;
+	State.Frames.HasLook = IsAimed && !(Item.Attach.LookFixed & LookLegs);
 	State.IsReady = !(State.Frames.Problems & MissingParent) && Runtime.Evaluate(Item, At, Heard(Item.Id), IsNeeded, IsSilent(Item));
 	if (!State.IsReady)
 	{
@@ -659,6 +661,10 @@ void Player::PoseActor(u32 Index, float At, bool IsNeeded)
 	State.World.i.mul(Scale.x);
 	State.World.j.mul(Scale.y);
 	State.World.k.mul(Scale.z);
+	if (IsAimed && (Item.Attach.LookFixed & LookLegs))
+	{
+		Runtime.LookWith(static_cast<u8>(~Item.Attach.LookFixed & (LookTorso | LookHead)), State.Frames.Look, State.Frames.LookWeight, State.World);
+	}
 	for (u32 Slot = 0; Slot < Setup.Constraints.size(); ++Slot)
 	{
 		const BoneConstraint& Rule = Setup.Constraints[Slot];

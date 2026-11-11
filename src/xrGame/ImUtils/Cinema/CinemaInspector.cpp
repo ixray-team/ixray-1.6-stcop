@@ -3083,8 +3083,33 @@ void Editor::DrawAttach(Player& Core, const xr_vector<u32>& Ids, s32 Block)
 	{
 		ParamRow(Core, Ids, Block, Param::FollowSmooth, 0, 0.01f, "%.2f s", 1, 0.0f);
 	}
+	if (IsActor && Links.LookAt.ObjectId)
+	{
+		constexpr const char* Parts[3] = { "Legs", "Torso", "Head" };
+		Action = BeginRow("Fix", Links.LookFixed != 0, false);
+		u8 Groups = Action == RowAction::Reset ? u8(0) : Links.LookFixed;
+		for (u32 Part = 0; Part < 3; ++Part)
+		{
+			bool IsOn = (Groups >> Part) & 1;
+			if (ImGui::Checkbox(Parts[Part], &IsOn))
+			{
+				Groups = static_cast<u8>(IsOn ? Groups | (1u << Part) : Groups & ~(1u << Part));
+			}
+			Part < 2 ? ImGui::SameLine() : (void)0;
+		}
+		ImGui::SetItemTooltip("Parts that do not turn to the target. With Legs fixed the character keeps its heading and only the torso and head turn");
+		EndRow(KeyState::None);
+		for (u32 Id : Ids)
+		{
+			if (Groups != Links.LookFixed)
+			{
+				Edit(Core, Id, "Look fix")->Attach.LookFixed = Groups;
+			}
+		}
+	}
 	Value.LookWeight = Links.LookWeight;
 	Value.Smooth = Links.Smooth;
+	Value.LookFixed = Links.LookFixed;
 	if (IsObject && Links.Parent.ObjectId && Ids.size() == 1 && DrawAttachSwitches(Core, Primary))
 	{
 		return;

@@ -322,6 +322,8 @@ void ReadLinks(const CInifile& Ini, const char* Section, const char* Prefix, Att
 		Out.LookWeight = Sanitize(Follow[0], 0.0f, 1.0f, 1.0f);
 		Out.Smooth = Sanitize(Follow[1], 0.0f, 5.0f, 0.0f);
 	}
+	xr_sprintf(Line, "%slook_fix", Prefix);
+	Out.LookFixed = Ini.line_exist(Section, Line) ? static_cast<u8>(ReadU32(Ini, Section, Line, LookLegs | LookTorso | LookHead, Notes)) : 0;
 	xr_sprintf(Line, "%sswitches", Prefix);
 	const u32 Count = Ini.line_exist(Section, Line) ? ReadU32(Ini, Section, Line, MaxAttachSwitches, Notes) : 0;
 	for (u32 Index = 0; Index < Count; ++Index)
@@ -365,6 +367,11 @@ void WriteLinks(CInifile& Ini, const char* Section, const char* Prefix, const At
 		xr_sprintf(Line, "%sfollow", Prefix);
 		xr_sprintf(Text, "%.9g,%.9g", Links.LookWeight, Links.Smooth);
 		Ini.w_string(Section, Line, Text);
+	}
+	if (Links.LookFixed)
+	{
+		xr_sprintf(Line, "%slook_fix", Prefix);
+		Ini.w_u32(Section, Line, Links.LookFixed);
 	}
 	if (!Links.Switches.empty())
 	{

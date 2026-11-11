@@ -176,6 +176,7 @@ public:
 	void Locals(xr_vector<Fquaternion>& Turns, xr_vector<Fvector>& Shifts) const;
 	void Dress(const Object& Target, float Local, const xr_vector<shared_str>& Shaders);
 	void SolveIk(const Object& Target, float Local, const Fmatrix& World);
+	void LookWith(u8 Groups, const Fvector& Point, float Weight, const Fmatrix& World);
 	void Constrain(const BoneConstraint& Rule, float Weight, const Fmatrix& Goal, const Fmatrix& World);
 	IRenderVisual* SurfaceAt(u32 Surface) const;
 	bool SurfaceNames(u32 Surface, shared_str& Shader, shared_str& Texture) const;

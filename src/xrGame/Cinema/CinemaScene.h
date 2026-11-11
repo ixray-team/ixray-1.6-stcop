@@ -214,6 +214,7 @@ struct AttachSwitch
 };
 
 inline constexpr u32 MaxAttachSwitches = 32;
+inline constexpr u8 LookLegs = 1, LookTorso = 2, LookHead = 4;
 
 struct Attachment
 {
@@ -225,6 +226,7 @@ struct Attachment
 	float Weight = 1.0f;
 	float LookWeight = 1.0f;
 	float Smooth = 0.0f;
+	u8 LookFixed = 0;
 
 	bool operator==(const Attachment&) const = default;
 };
