@@ -43,7 +43,7 @@ constexpr Range VolumeRanges[3] = { { 0.0f, 100.0f, 1.0f, false }, { 0.01f, 1.0f
 constexpr Range EffectRanges[2] = { { 0.01f, 25.0f, 1.0f, false }, RateRange };
 constexpr Range WeightRange = { 0.0f, 1.0f, 1.0f, false };
 constexpr u32 MaxPartNames = 8;
-constexpr const char* TypeNames[7] = { "actor", "camera", "light", "particle", "decal", "weather", "post" };
+constexpr const char* TypeNames[8] = { "actor", "camera", "light", "particle", "decal", "sound", "weather", "post" };
 constexpr const char* KindNames[2] = { "point", "spot" };
 constexpr const char* EndNames[3] = { "hold", "loop", "pingpong" };
 constexpr u32 FrameRates[4] = { 24, 25, 30, 60 };
@@ -315,6 +315,13 @@ void ReadLinks(const CInifile& Ini, const char* Section, const char* Prefix, Att
 	xr_sprintf(Line, "%sweight", Prefix);
 	float Weight = 1.0f;
 	Out.Weight = ReadFloats(Ini, Section, Line, &Weight, 1, Notes) ? Sanitize(Weight, 0.0f, 1.0f, 1.0f) : 1.0f;
+	float Follow[2] = { 1.0f, 0.0f };
+	xr_sprintf(Line, "%sfollow", Prefix);
+	if (Ini.line_exist(Section, Line) && ReadFloats(Ini, Section, Line, Follow, 2, Notes))
+	{
+		Out.LookWeight = Sanitize(Follow[0], 0.0f, 1.0f, 1.0f);
+		Out.Smooth = Sanitize(Follow[1], 0.0f, 5.0f, 0.0f);
+	}
 	xr_sprintf(Line, "%sswitches", Prefix);
 	const u32 Count = Ini.line_exist(Section, Line) ? ReadU32(Ini, Section, Line, MaxAttachSwitches, Notes) : 0;
 	for (u32 Index = 0; Index < Count; ++Index)
@@ -352,6 +359,12 @@ void WriteLinks(CInifile& Ini, const char* Section, const char* Prefix, const At
 	{
 		xr_sprintf(Line, "%sweight", Prefix);
 		Ini.w_float(Section, Line, Links.Weight);
+	}
+	if (Links.LookWeight != 1.0f || Links.Smooth != 0.0f)
+	{
+		xr_sprintf(Line, "%sfollow", Prefix);
+		xr_sprintf(Text, "%.9g,%.9g", Links.LookWeight, Links.Smooth);
+		Ini.w_string(Section, Line, Text);
 	}
 	if (!Links.Switches.empty())
 	{

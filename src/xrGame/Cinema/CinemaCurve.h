@@ -54,6 +54,8 @@ inline constexpr ParamInfo Params[static_cast<u32>(Param::Count)] =
 	{ "bone_position", "Position", 3, -10.0f, 10.0f, false, WherePoseBone },
 	{ "bone_scale", "Scale", 3, 0.01f, 100.0f, false, WherePoseBone },
 	{ "attach_weight", "Attach", 1, 0.0f, 1.0f, false, WherePlaced | WhereCameraBlock },
+	{ "look_weight", "Look influence", 1, 0.0f, 1.0f, false, WherePlaced | WhereCameraBlock },
+	{ "follow_smooth", "Follow smoothing", 1, 0.0f, 5.0f, false, WherePlaced | WhereCameraBlock },
 	{ "look", "Look", 1, 0.0f, 15.0f, false, WhereActor },
 	{ "ik_target", "IK target", 3, -100000.0f, 100000.0f, false, WherePoseBone },
 	{ "ik_turn", "IK turn", 3, -3600.0f, 3600.0f, false, WherePoseBone },

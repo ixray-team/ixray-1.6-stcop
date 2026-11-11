@@ -784,6 +784,8 @@ The **Attach** group follows **Transform** for actors, lights and particle effec
 | **Look at** | As **Parent**. | None |
 | **Look bone** | As **Bone**, for the Look at target. | Origin |
 | **Yaw only** | Turn on the heading only. Always on (and grey) for actors. | off |
+| **Look influence** | Only with a Look at target. How much the object turns to its target, 0–1; keyable (◇, lane **Look influence**). 0 keeps its own rotation, 1 looks straight at the target; between, it turns part of the way, so a camera can ease on to and off a subject. | 1 |
+| **Follow smoothing** | Only with a parent or a Look at target. Seconds of lag, 0–5; keyable (◇). The object follows where its parent and its target were, averaged over that time, so sudden moves of the subject are softened and the camera trails behind by about half the time. 0 follows exactly. | 0 |
 
 - Choices that would make a loop (the object itself, or an object that already follows or looks at it, directly or through others) or a chain deeper than 8 links are grey. The camera counts as one object: the links of all its blocks together.
 - Setting, changing or clearing a slot, a bone, a lock or Yaw only keeps the object where it was on screen: every Position and Rotation key is rewritten into the new space at its own moment, and a component without a key at one of those moments gets one there (with the interpolation of its previous key). Without keys the plain values are rewritten for the playhead. A camera clip rewrites its pose keys. Each change is one undo step.
@@ -1352,6 +1354,7 @@ Links (actors, lights and particles: `attach_parent`, `attach_look_at`; camera c
 | --- | --- | --- |
 | `attach_parent` | `id, bone, roll_lock, pitch_lock` | written only with a parent |
 | `attach_weight`, `block_NNN_weight` | static Attach weight, 0–1 | written only when not 1 |
+| `attach_follow`, `block_NNN_follow` | `look_influence, follow_smoothing`: 0–1 and 0–5 s | written only when not `1, 0` |
 | `attach_look_at` | `id, bone, yaw_only` | written only with a target; actors always turn on the heading only, lights and particles when `yaw_only` is 1 |
 
 - `id` is the `id` of another object (the camera included). An id that is not in the file loads with a warning and is kept; the link then shows the warnings of [What follows what](#what-follows-what).

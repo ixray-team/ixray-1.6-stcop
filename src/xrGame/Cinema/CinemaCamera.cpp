@@ -654,9 +654,28 @@ void Compose(const LinkFrames& Frames, Fmatrix& Pose)
 	{
 		World.mul_43(Frames.Parent, Pose);
 	}
-	if (LookBasis(Frames, World.c, Basis))
+	if (Frames.LookWeight > 0.0f && LookBasis(Frames, World.c, Basis))
 	{
 		Turn.mul_43(Basis, Pose);
+		if (Frames.LookWeight < 1.0f)
+		{
+			const float Sizes[3] = { Turn.i.magnitude(), Turn.j.magnitude(), Turn.k.magnitude() };
+			Fmatrix Own = World, Aimed = Turn, Mix;
+			for (Fmatrix* Each : { &Own, &Aimed })
+			{
+				Each->i.normalize_safe();
+				Each->j.normalize_safe();
+				Each->k.normalize_safe();
+			}
+			Fquaternion From, To, Mixed;
+			From.set(Own);
+			To.set(Aimed);
+			Mixed.slerp(From, To, Frames.LookWeight);
+			Mix.rotation(Mixed.normalize());
+			Turn.i.mul(Mix.i, Sizes[0]);
+			Turn.j.mul(Mix.j, Sizes[1]);
+			Turn.k.mul(Mix.k, Sizes[2]);
+		}
 		World.i = Turn.i;
 		World.j = Turn.j;
 		World.k = Turn.k;
@@ -667,7 +686,7 @@ void Compose(const LinkFrames& Frames, Fmatrix& Pose)
 void Decompose(const LinkFrames& Frames, Fmatrix& Pose)
 {
 	Fmatrix Basis;
-	const bool HasBasis = LookBasis(Frames, Pose.c, Basis);
+	const bool HasBasis = Frames.LookWeight >= 0.5f && LookBasis(Frames, Pose.c, Basis);
 	if (Frames.HasParent)
 	{
 		Pose.c.sub(Frames.Parent.c);

@@ -3075,6 +3075,16 @@ void Editor::DrawAttach(Player& Core, const xr_vector<u32>& Ids, s32 Block)
 	ImGui::EndDisabled();
 	Value.IsYawOnly = IsActor ? Value.IsYawOnly : IsYawOnly && Action != RowAction::Reset;
 	EndRow(KeyState::None);
+	if (Links.LookAt.ObjectId)
+	{
+		ParamRow(Core, Ids, Block, Param::LookWeight, 0, 0.01f, "%.2f", 1, 1.0f);
+	}
+	if (Links.LookAt.ObjectId || Links.Parent.ObjectId)
+	{
+		ParamRow(Core, Ids, Block, Param::FollowSmooth, 0, 0.01f, "%.2f s", 1, 0.0f);
+	}
+	Value.LookWeight = Links.LookWeight;
+	Value.Smooth = Links.Smooth;
 	if (IsObject && Links.Parent.ObjectId && Ids.size() == 1 && DrawAttachSwitches(Core, Primary))
 	{
 		return;

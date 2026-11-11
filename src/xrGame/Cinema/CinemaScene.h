@@ -97,6 +97,8 @@ enum class Param : u8
 	BonePosition,
 	BoneScale,
 	AttachWeight,
+	LookWeight,
+	FollowSmooth,
 	Look,
 	IkTarget,
 	IkTurn,
@@ -221,6 +223,8 @@ struct Attachment
 	AttachLink LookAt;
 	bool IsYawOnly = false;
 	float Weight = 1.0f;
+	float LookWeight = 1.0f;
+	float Smooth = 0.0f;
 
 	bool operator==(const Attachment&) const = default;
 };

@@ -81,6 +81,7 @@ struct LinkFrames
 	bool IsYawOnly = false;
 	u8 Problems = 0;
 	float Weight = 1.0f;
+	float LookWeight = 1.0f;
 };
 
 struct BlockCache

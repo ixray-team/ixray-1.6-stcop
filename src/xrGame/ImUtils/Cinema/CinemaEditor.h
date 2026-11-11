@@ -47,7 +47,7 @@ inline xr_string DefaultName(const Object& Item)
 
 inline bool IsParamShown(const Object& Target, Param Id)
 {
-	return (Id != Param::AttachWeight || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId) && !(Target.Type == ObjectType::Light && Target.Light.Kind == LightKind::Point && (Id == Param::Rotation || Id == Param::Cone));
+	return (Id != Param::AttachWeight || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId) && (Id != Param::LookWeight || Target.Type == ObjectType::Camera || Target.Attach.LookAt.ObjectId) && (Id != Param::FollowSmooth || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId || Target.Attach.LookAt.ObjectId) && !(Target.Type == ObjectType::Light && Target.Light.Kind == LightKind::Point && (Id == Param::Rotation || Id == Param::Cone));
 }
 
 inline const char* DisplayName(const Object* Item)
@@ -143,9 +143,10 @@ inline float* StaticField(Object& Target, s32 Block, Param Id, u8 Layer, u8 Comp
 		PoseBone* Item = IsBoneParam(Id) ? BoneEntry(Target, Block, Layer) : nullptr;
 		return Item ? &(Id == Param::BoneRotation ? Item->Rotation : Id == Param::BonePosition ? Item->Offset : Item->Scale)[Component] : nullptr;
 	}
-	if (Id == Param::AttachWeight)
+	if (Id == Param::AttachWeight || Id == Param::LookWeight || Id == Param::FollowSmooth)
 	{
-		return Block < 0 ? (Target.Type == ObjectType::Camera ? nullptr : &Target.Attach.Weight) : Block < ShakeBase ? &Target.Camera.Blocks[Block].Attach.Weight : nullptr;
+		Attachment* Links = Block < 0 ? (Target.Type == ObjectType::Camera ? nullptr : &Target.Attach) : Block < ShakeBase ? &Target.Camera.Blocks[Block].Attach : nullptr;
+		return !Links ? nullptr : Id == Param::AttachWeight ? &Links->Weight : Id == Param::LookWeight ? &Links->LookWeight : &Links->Smooth;
 	}
 	if (Block >= IkBase && (Id < Param::IkTarget || Id > Param::IkWeight))
 	{

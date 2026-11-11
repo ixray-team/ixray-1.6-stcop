@@ -846,6 +846,31 @@ void Player::Unhook(const Attachment& Links, const xr_vector<Lane>& Lanes, float
 {
 	const Lane* Track = Curves::FindLane(Lanes, Param::AttachWeight, 0);
 	Out.Weight = std::clamp(Track ? Curves::Value(Track->Curves[0], Local, Links.Weight) : Links.Weight, 0.0f, 1.0f);
+	Out.LookWeight = std::clamp(Curves::LaneScalar(Lanes, Param::LookWeight, 0, Local, Links.LookWeight), 0.0f, 1.0f);
+	const float Smooth = std::clamp(Curves::LaneScalar(Lanes, Param::FollowSmooth, 0, Local, Links.Smooth), 0.0f, 5.0f);
+	if (Smooth > 0.0f && (Out.HasLook || Out.HasParent))
+	{
+		constexpr u32 Samples = 3;
+		Fvector Aimed = Out.Look, Placed = Out.Parent.c;
+		u32 AimCount = 1, PlaceCount = 1;
+		for (u32 Step = 1; Step <= Samples; ++Step)
+		{
+			const float Past = Start + Local - Smooth * static_cast<float>(Step) / static_cast<float>(Samples);
+			Fmatrix Earlier;
+			if (Out.HasLook && FrameAt(Links.LookAt, Past, Earlier))
+			{
+				Aimed.add(Earlier.c);
+				++AimCount;
+			}
+			if (Out.HasParent && FrameAt(PlayerLocal::LinkAt(Links, Local), Past, Earlier))
+			{
+				Placed.add(Earlier.c);
+				++PlaceCount;
+			}
+		}
+		Out.Look.mul(Aimed, 1.0f / static_cast<float>(AimCount));
+		Out.Parent.c.mul(Placed, 1.0f / static_cast<float>(PlaceCount));
+	}
 	if (!Out.HasParent || Out.Weight >= 1.0f)
 	{
 		return;
