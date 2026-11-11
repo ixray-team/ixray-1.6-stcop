@@ -90,40 +90,30 @@ float SampleSunShaft(float3 Coord, int Cascade)
 // Calculates cascade indices. Index 3 means no usable capture.
 bool calc_cascades(in float3 position, in float4x4 smap_vp_matrix[3], inout int cascade_index, inout float3 smap_texcoord)
 {
-	bool is_in_bounds = false;
+	cascade_index = 3;
 	smap_texcoord = 0.0f;
 
+	// HACK: FXC miscompiles the index when it is the counter of an unrolled loop with an early exit: later tests of
+	// cascade_index against a constant are folded away. The counter stays local and the result is assigned from it
 	[unroll]
-	for(cascade_index = 0; cascade_index < 3; cascade_index++)
+	for (int Index = 0; Index < 3; ++Index)
 	{
-		//Transform position into UV space
-		float4 temp = mul(smap_vp_matrix[cascade_index], float4(position, 1.0));
-		smap_texcoord = temp.xyz / temp.w;
 		[branch]
-		if (SunCacheParams.x > 0.0f)
+		if (cascade_index == 3)
 		{
-			float3 Corrected;
-			if (CorrectSunShadowCoord(smap_texcoord, smap_vp_matrix[cascade_index], cascade_index, Corrected))
+			//Transform position into UV space
+			float4 temp = mul(smap_vp_matrix[Index], float4(position, 1.0));
+			float3 coord = temp.xyz / temp.w;
+			bool valid = SunCacheParams.x > 0.0f ? CorrectSunShadowCoord(coord, smap_vp_matrix[Index], Index, coord) : all(abs(coord - 0.5) < 0.5);
+			if (valid)
 			{
-				smap_texcoord = Corrected;
-				return true;
+				cascade_index = Index;
+				smap_texcoord = coord;
 			}
-			continue;
-		}
-
-		//Check the bounds
-		if(all(abs(smap_texcoord.xyz - 0.5) < 0.5))
-		{
-			is_in_bounds = true;
-			break;
 		}
 	}
-	if (SunCacheParams.x > 0.0f)
-	{
-		smap_texcoord = 0.0f;
-	}
 
-	return is_in_bounds;
+	return cascade_index < 3;
 }
 
 //Rainmap (LVutner: Well, you can make wider kernel...)

@@ -43,6 +43,11 @@ float4 main(PSInput I) : SV_Target
 		float blend = max(edge.x, edge.y);
 
 		[unroll] for (int next_index = 1; next_index < 3; ++next_index) {
+			// A cascade is a column along the sun: looking towards the sun it also covers receivers far beyond its range,
+			// where its texels are several times smaller than a pixel and the shadow aliases under the camera jitter
+			if (next_index == cascade_index + 1) {
+				blend = max(blend, smoothstep(0.75f, 1.0f, O.ViewDist * length(m_shadow_sun[next_index - 1][0].xyz)));
+			}
 			[branch] if (next_index == cascade_index + 1 && blend > 0.0f) {
 				float4 next = mul(m_shadow_sun[next_index], float4(world, 1.0f));
 				float3 coord = next.xyz / next.w;
