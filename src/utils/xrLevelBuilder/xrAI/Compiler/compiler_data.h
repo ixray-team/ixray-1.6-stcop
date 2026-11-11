@@ -32,8 +32,7 @@ public:
 		{
 			F.bOpaque = true;
 
-			b_material& M = g_materials[F.dwMaterial];
-			b_BuildTexture& T = g_textures[M.surfidx];
+			auto& T = GetTexture(F.dwMaterial, F.bSharedMaterial);
 			F.bOpaque = !T.bHasAlpha;
 
 			// pSurface was possible deleted

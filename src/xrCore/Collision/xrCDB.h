@@ -37,8 +37,7 @@ namespace CDB
 				u32 material : 14;		  //
 				u32 suppress_shadows : 1; //
 				u32 suppress_wm : 1;	  //
-				u32 sector : 15;		  // was 16
-				u32 shared_material:1;
+				u32 sector : 16;		  //
 			};
 		};
 		ICF u32 IDvert(u32 ID) { return verts[ID]; }
@@ -263,8 +262,8 @@ namespace CDB
 			flags.reserve(apx_faces);
 		}
 
-		void add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, bool bSharedMaterial, u32 flags );
-		void add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
+		void add_face( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags );
+		void add_face_D( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
 
 		ICF xr_vector<Fvector>& getV_Vec()			{ return verts;				}
 		ICF Fvector*			getV()				{ return &*verts.begin();	}
