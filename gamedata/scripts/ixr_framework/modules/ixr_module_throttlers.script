@@ -27,7 +27,7 @@ local ixr_throttlers = {
 	dynamic_vars = {
 		initialized = false,
 		first_log_record = true,
-		t_global = 0,
+		dwtime_continual = 0,
 		storage = {},
 	}
 }
@@ -102,13 +102,13 @@ end
 function ixr_throttlers.register_callbacks()
 	IXRLog("REGISTER CALLBACKS :: [BEGIN]")
 
-	RegisterScriptCallback("actor_on_update", ixr_throttlers.actor_on_update)
+	RegisterScriptCallback("on_frame", ixr_throttlers.on_frame)
 	
 	IXRLog("REGISTER CALLBACKS :: [COMPLETED]")
 end
 
-function ixr_throttlers.actor_on_update()
-	ixr_throttlers.dynamic_vars.t_global = time_global()
+function ixr_throttlers.on_frame()
+	ixr_throttlers.dynamic_vars.dwtime_continual = device().dwtime_continual
 end
 
 function ixr_throttlers.is_action_throttled(name, interval_ms)
@@ -117,9 +117,9 @@ function ixr_throttlers.is_action_throttled(name, interval_ms)
 		ixr_throttlers.dynamic_vars.storage[name] = { delay = interval_ms, next_update = 0, counter = 0}
 	end
 	
-	if ixr_throttlers.dynamic_vars.storage[name].next_update < ixr_throttlers.dynamic_vars.t_global then
+	if ixr_throttlers.dynamic_vars.storage[name].next_update < ixr_throttlers.dynamic_vars.dwtime_continual then
 		ixr_throttlers.dynamic_vars.storage[name].counter = ixr_throttlers.dynamic_vars.storage[name].counter  + 1
-		ixr_throttlers.dynamic_vars.storage[name].next_update = ixr_throttlers.dynamic_vars.t_global + ixr_throttlers.dynamic_vars.storage[name].delay
+		ixr_throttlers.dynamic_vars.storage[name].next_update = ixr_throttlers.dynamic_vars.dwtime_continual + ixr_throttlers.dynamic_vars.storage[name].delay
 	
 		return false
 	end
