@@ -6320,10 +6320,15 @@ void CCar::UpdateReturnBones(float step)
 		ReturnBone.has_previous_angle = AllAnglesValid;
 	}
 
+	// setTorqueNoWake() only writes the torque accumulator. Calling
+	// CPHElement::setTorque() here would call EnableObject() every step, which
+	// keeps the whole car awake and prevents it from going to disable.
 	for (const auto& Pair : Torques)
 	{
 		if (Pair.first != nullptr)
-			Pair.first->setTorque(Pair.second);
+		{
+			Pair.first->setTorqueNoWake(Pair.second);
+		}
 	}
 }
 

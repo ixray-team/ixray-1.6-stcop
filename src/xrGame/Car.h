@@ -659,6 +659,7 @@ virtual void ApplyDamage			(u16 level);
 		CPhysicsJoint*  joint;
 		float			torque;
 		float			hold_torque;
+		bool			hold_applied;
 		float			a_vel;
 		float			pos_open;
 
@@ -765,6 +766,7 @@ virtual void ApplyDamage(u16 level);
 			state=closed;
 			torque=500.f;
 			hold_torque=500.f;
+			hold_applied=false;
 			a_vel=M_PI;
 // 			dist_to_door = 0.0f;
 			dist_to_door_avlbl = 3.0f;

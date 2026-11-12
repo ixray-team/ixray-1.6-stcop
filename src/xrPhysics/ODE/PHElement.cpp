@@ -1055,6 +1055,16 @@ void	CPHElement::setTorque(const Fvector& torque)
 	VERIFY(dBodyStateValide(m_body));
 }
 
+void	CPHElement::setTorqueNoWake(const Fvector& torque)
+{
+	if(!isActive()||m_flags.test(flFixed)) return;
+	// Unlike setTorque(), do not enable the body or the shell. This is used
+	// for continuous return forces, which must not keep the car awake.
+	dBodySetTorque(m_body,torque.x,torque.y,torque.z);
+	BodyCutForce(m_body,m_l_limit,m_w_limit);
+	VERIFY(dBodyStateValide(m_body));
+}
+
 void CPHElement::applyForce(const Fvector& dir, float val)															//aux
 {
 	applyForce(dir.x * val, dir.y * val, dir.z * val);
