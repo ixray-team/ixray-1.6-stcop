@@ -373,7 +373,7 @@ bool CFlyingMovementController::clear_path(CGameObject& object, const Fvector& f
         CDB::COLLIDER Collider;
         Collider.box_options(CDB::OPT_ONLYFIRST);
         Collider.r_clear();
-        Collider.box_query(*Level().ObjectSpace.GetStaticModel(), Expanded);
+        Collider.box_query(Level().ObjectSpace, Expanded);
         if (!Collider.r_count())
         {
             AirVolume = Roots;

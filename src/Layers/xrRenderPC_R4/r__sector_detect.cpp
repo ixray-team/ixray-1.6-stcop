@@ -63,7 +63,7 @@ IRender_Sector* CRender::detectLastSector(const Fvector& P)
 		}
 
 		// Geometry model
-		sectors_detect_xrc.ray_query(*g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,1000.f);
+		sectors_detect_xrc.ray_query(g_pGameLevel->ObjectSpace,P,dir,1000.f);
 		if (sectors_detect_xrc.r_count())
 		{
 			auto& RP = sectors_detect_xrc.r_any();
@@ -110,7 +110,7 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 	Res2.model = nullptr;
 	Res2.tris_id = size_t(-1);
 	Res2.range = Res1.range;
-	sectors_detect_xrc.ray_query(*g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,Res2.range);
+		sectors_detect_xrc.ray_query(g_pGameLevel->ObjectSpace,P,dir,Res2.range);
 	if (sectors_detect_xrc.r_count())
 	{
 		Res2 = sectors_detect_xrc.r_any();

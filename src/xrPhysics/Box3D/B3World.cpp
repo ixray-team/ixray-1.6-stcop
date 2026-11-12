@@ -15,6 +15,41 @@ extern Fbox phBoundaries;
 
 CB3World* g_B3World = nullptr;
 
+namespace
+{
+struct StaticMeshKind
+{
+	u64 Category;
+	u64 Mask;
+	const char* Name;
+};
+constexpr StaticMeshKind StaticMeshKinds[] = {
+	{B3Category::Level, B3Category::Dynamic, "level"},
+	{B3Category::Liquid, B3Category::LiquidQuery, "passable"},
+	{B3Category::ActorObstacle, B3Category::ActorObstacleQuery, "actor obstacle"}
+};
+
+struct NativeTriangleSource
+{
+	xr_array<u32, 4> Key;
+	u32 Triangle;
+	bool operator==(const NativeTriangleSource& Other) const { return Key == Other.Key; }
+};
+
+struct NativeTriangleHash
+{
+	size_t operator()(const NativeTriangleSource& Source) const
+	{
+		size_t Hash = 0;
+		for (u32 Value : Source.Key)
+		{
+			Hash ^= size_t(Value) + 0x9e3779b9u + (Hash << 6) + (Hash >> 2);
+		}
+		return Hash;
+	}
+};
+} // namespace
+
 static struct SEmptyUpdateCallback : public IPHWorldUpdateCallbck
 {
 	virtual void update_step() override {}
@@ -58,7 +93,7 @@ CObjectSpace* mesh_create_object_space(const XRay::CForm::IFormat& CForm, CDB::b
 	CObjectSpace* os = new CObjectSpace();
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
-	os->Create(CForm, build_callback, nullptr, false);
+	os->Create(CForm, build_callback);
 	return os;
 }
 
@@ -117,8 +152,7 @@ void CB3World::Create(bool Mt, CObjectSpace* InObjectSpace, CObjectList* InLevel
 	auto DefaultIt = GMLibrary().GetMaterialIt("default");
 	DefaultMaterial = DefaultIt == GMLibrary().GetMaterials().end() ? 0 : u16(DefaultIt - GMLibrary().FirstMaterial());
 
-	CreateStaticMesh(ObjectSpacePtr->GetStaticVerts().data(), ObjectSpacePtr->GetStaticVerts().size(),
-		ObjectSpacePtr->GetStaticTris().data(), ObjectSpacePtr->GetStaticTris().size());
+	SyncStaticGeometry();
 
 	phBoundaries.set(ObjectSpacePtr->GetBoundingVolume());
 	phBoundaries.y1 -= 30.f;
@@ -149,58 +183,267 @@ void CB3World::Destroy()
 	Exists = false;
 }
 
-bool CB3World::CreateStaticMesh(const Fvector* Verts, size_t VertCount, const CDB::TRI* Tris, size_t TriCount)
+void CB3World::SyncStaticGeometry()
 {
-	DestroyStaticMesh();
-	if (VertCount < 3 || TriCount < 1)
+	if (Stepping || SyncingCollision || !ObjectSpacePtr || !b3World_IsValid(World))
 	{
-		return false;
+		return;
 	}
-
-	xr_vector<b3Vec3> Vertices(VertCount);
-	for (size_t I = 0; I < VertCount; ++I)
+	const u64 Revision = ObjectSpacePtr->IsStreamingEnabled() ? ObjectSpacePtr->GetStreamingRevision() : 0;
+	if (CollisionRevision == Revision && !PendingStaticGeometry)
 	{
-		Vertices[I] = B3Math::ToB3(Verts[I]);
+		return;
 	}
+	PROF_EVENT("CB3World::SyncStaticGeometry");
+	SyncingCollision = true;
+	xr_scope_exit Guard = [this]() { SyncingCollision = false; };
+	if (StaticGeometryTaskRunning.load(std::memory_order_acquire))
+	{
+		if (PendingStaticGeometry->Revision != Revision)
+		{
+			PendingStaticGeometry->Cancelled.store(true, std::memory_order_relaxed);
+		}
+		return;
+	}
+	if (PendingStaticGeometry)
+	{
+		if (PendingStaticGeometry->Revision == Revision)
+		{
+			if (!PendingStaticGeometry->Success || !ApplyStaticGeometry(*PendingStaticGeometry))
+			{
+				Msg("! [Box3D] static collision update failed; keeping the previous native snapshot");
+				PendingStaticGeometry.reset();
+				return;
+			}
+		}
+		// A stale task owns only unattached meshes; releasing it cannot change the world.
+		PendingStaticGeometry.reset();
+	}
+	if (CollisionRevision == Revision)
+	{
+		return;
+	}
+	const auto Models = ObjectSpacePtr->GetStaticModels();
+	if (ObjectSpacePtr->IsStreamingEnabled() && ObjectSpacePtr->GetStreamingRevision() != Revision)
+	{
+		return;
+	}
+	PendingStaticGeometry.reset(new SStaticGeometryUpdate());
+	auto& Update = *PendingStaticGeometry;
+	Update.Revision = Revision;
+	xr_hash_set<const CDB::MODEL*> Resident;
+	for (const auto& Model : Models)
+	{
+		Resident.insert(Model.get());
+	}
+	// Keep resident roots in their previous order so boundary ownership stays stable.
+	for (const auto& Collision : LevelCollisions)
+	{
+		if (Resident.contains(Collision->Root.get()))
+		{
+			Update.Entries.push_back({Collision->Root, Collision->Geometry, Collision->Selected, {}});
+		}
+	}
+	for (const auto& Model : Models)
+	{
+		if (std::none_of(LevelCollisions.begin(), LevelCollisions.end(), [&](const auto& Collision) { return Collision->Root == Model; }))
+		{
+			Update.Entries.push_back({Model, {}, {}, {}});
+		}
+	}
+	xr_vector<SStaticMaterial> Materials;
+	Materials.reserve(GMLibrary().GetMaterials().size());
+	for (const SGameMtl* Material : GMLibrary().GetMaterials())
+	{
+		b3SurfaceMaterial Surface = b3DefaultSurfaceMaterial();
+		Surface.friction = Material->fPHFriction;
+		Surface.restitution = Material->Flags.test(SGameMtl::flBounceable) ? Material->fPHBouncing : 0.f;
+		Materials.push_back({Surface, bool(Material->Flags.test(SGameMtl::flPassable)), bool(Material->Flags.test(SGameMtl::flActorObstacle))});
+	}
+	// Create() can precede the first CDB tile publication. Do not consume the first
+	// synchronous initialization on an empty streaming master.
+	if (!StaticGeometryInitialized || Update.Entries.empty())
+	{
+		PrepareStaticGeometry(Update, Materials);
+		if (Update.Success)
+		{
+			ApplyStaticGeometry(Update);
+		}
+		PendingStaticGeometry.reset();
+		return;
+	}
+	StaticGeometryTaskRunning.store(true, std::memory_order_release);
+	StaticGeometryTasks.run([this, Work = PendingStaticGeometry.get(), Materials = std::move(Materials)]()
+							{
+		xr_scope_exit Complete = [this]() { StaticGeometryTaskRunning.store(false, std::memory_order_release); };
+		PrepareStaticGeometry(*Work, Materials); });
+}
 
-	b3BodyDef BodyDef = b3DefaultBodyDef();
-	BodyDef.type = b3_staticBody;
-	StaticBody = b3CreateBody(World, &BodyDef);
+void CB3World::WaitForStaticGeometry()
+{
+	if (Stepping || SyncingCollision)
+	{
+		return;
+	}
+	SyncStaticGeometry();
+	while (PendingStaticGeometry)
+	{
+		StaticGeometryTasks.wait();
+		SyncStaticGeometry();
+	}
+}
 
-	const bool Solid = BuildMesh(Vertices, Tris, TriCount, MeshSolid);
-	BuildMesh(Vertices, Tris, TriCount, MeshPassable);
-	BuildMesh(Vertices, Tris, TriCount, MeshActorObstacle);
-	return Solid;
+void CB3World::PrepareStaticGeometry(SStaticGeometryUpdate& Update, const xr_vector<SStaticMaterial>& Materials)
+{
+	PROF_EVENT("CB3World::PrepareStaticGeometry");
+	CB3StaticGeometry::TriangleSet Seen;
+	for (auto& Entry : Update.Entries)
+	{
+		if (Update.Cancelled.load(std::memory_order_relaxed))
+		{
+			return;
+		}
+		const bool Existing = Entry.Geometry != nullptr;
+		if (!Existing)
+		{
+			Entry.Geometry.reset(new CB3StaticGeometry(*Entry.Root));
+		}
+		auto Selected = Entry.Geometry->SelectUniqueTriangles(Seen);
+		if (Existing && Entry.Selected && Selected == *Entry.Selected)
+		{
+			continue;
+		}
+		Entry.Prepared.reset(new SLevelCollision(Entry.Root, Entry.Geometry));
+		auto& Collision = *Entry.Prepared;
+		Collision.Selected.reset(new xr_vector<u32>(std::move(Selected)));
+		if (Collision.Selected->empty())
+		{
+			continue;
+		}
+		xr_vector<b3Vec3> Vertices;
+		Vertices.reserve(Collision.Geometry->GetVertices().size());
+		for (const Fvector& Vertex : Collision.Geometry->GetVertices())
+		{
+			Vertices.push_back(B3Math::ToB3(Vertex));
+		}
+		for (u32 Kind = 0; Kind < MeshCount; ++Kind)
+		{
+			if (Update.Cancelled.load(std::memory_order_relaxed) || !BuildMesh(Collision, Vertices, EMesh(Kind), Materials))
+			{
+				return;
+			}
+		}
+	}
+	Update.Success = true;
+}
+
+bool CB3World::ApplyStaticGeometry(SStaticGeometryUpdate& Update)
+{
+	PROF_EVENT("CB3World::ApplyStaticGeometry");
+	// Validate every reuse before attaching anything. Live shapes are owned only here.
+	for (const auto& Entry : Update.Entries)
+	{
+		if (!Entry.Prepared && std::none_of(LevelCollisions.begin(), LevelCollisions.end(), [&](const auto& Collision)
+											{ return Collision && Collision->Root == Entry.Root; }))
+		{
+			return false;
+		}
+	}
+	if (!b3Body_IsValid(StaticBody))
+	{
+		b3BodyDef BodyDef = b3DefaultBodyDef();
+		BodyDef.type = b3_staticBody;
+		StaticBody = b3CreateBody(World, &BodyDef);
+	}
+	for (auto& Entry : Update.Entries)
+	{
+		if (!Entry.Prepared)
+		{
+			continue;
+		}
+		for (u32 Kind = 0; Kind < MeshCount; ++Kind)
+		{
+			auto& Mesh = Entry.Prepared->Meshes[Kind];
+			if (!Mesh.Data)
+			{
+				continue;
+			}
+			b3ShapeDef ShapeDef = b3DefaultShapeDef();
+			ShapeDef.materials = Mesh.Materials.data();
+			ShapeDef.materialCount = int(Mesh.Materials.size());
+			ShapeDef.filter.categoryBits = StaticMeshKinds[Kind].Category;
+			ShapeDef.filter.maskBits = StaticMeshKinds[Kind].Mask;
+			Mesh.Shape = b3CreateMeshShape(StaticBody, &ShapeDef, Mesh.Data, b3Vec3{1.f, 1.f, 1.f});
+			if (!b3Shape_IsValid(Mesh.Shape))
+			{
+				return false;
+			}
+		}
+	}
+	xr_vector<xr_unique_ptr<SLevelCollision>> Collisions;
+	Collisions.reserve(Update.Entries.size());
+	for (auto& Entry : Update.Entries)
+	{
+		if (Entry.Prepared)
+		{
+			Collisions.push_back(std::move(Entry.Prepared));
+		}
+		else
+		{
+			auto It = std::find_if(LevelCollisions.begin(), LevelCollisions.end(), [&](const auto& Collision)
+								   { return Collision && Collision->Root == Entry.Root; });
+			Collisions.push_back(std::move(*It));
+		}
+	}
+	// Attach replacements before retiring old shapes, including boundary ownership
+	// transfers. No physics step or query observes the intermediate state.
+	LevelCollisions.swap(Collisions);
+	CollisionRevision = Update.Revision;
+	StaticGeometryInitialized |= !Update.Entries.empty();
+	return true;
+}
+
+CB3World::SLevelMesh::~SLevelMesh()
+{
+	Reset();
+}
+
+void CB3World::SLevelMesh::Reset()
+{
+	if (!B3_ID_EQUALS(Shape, b3_nullShapeId) && b3Shape_IsValid(Shape))
+	{
+		b3DestroyShape(Shape, true);
+	}
+	Shape = b3_nullShapeId;
+	if (Data)
+	{
+		b3DestroyMesh(Data);
+		Data = nullptr;
+	}
+	ToCdb.clear();
+	Materials.clear();
 }
 
 // Passable triangles in ODE make contacts that never collide but splash, slow bodies down and,
 // for actor obstacles, block characters (CPHActorCharacter::InitContact). Box3D never calls
 // pre-solve for mesh contacts, so they are query-only meshes whose masks no body category matches.
-bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris, size_t TriCount, EMesh Kind)
+bool CB3World::BuildMesh(SLevelCollision& Collision, const xr_vector<b3Vec3>& Vertices, EMesh Kind, const xr_vector<SStaticMaterial>& MaterialSnapshot)
 {
-	static constexpr struct
-	{
-		u64 Category;
-		u64 Mask;
-		const char* Name;
-	} Kinds[MeshCount] = {
-		{B3Category::Level, B3Category::Dynamic, "level"},
-		{B3Category::Liquid, B3Category::LiquidQuery, "passable"},
-		{B3Category::ActorObstacle, B3Category::ActorObstacleQuery, "actor obstacle"}};
-
 	// Box3D takes up to 256 materials per shape: map game materials to slots.
-	xr_vector<b3SurfaceMaterial> Materials;
+	SLevelMesh& Target = Collision.Meshes[Kind];
+	auto& Materials = Target.Materials;
 	xr_hash_map<u32, u8> MaterialSlots;
+	xr_hash_set<NativeTriangleSource, NativeTriangleHash> SourceTriangles;
 	xr_vector<int32_t> Indices;
 	xr_vector<uint8_t> MaterialIndices;
-	SLevelMesh& Target = Meshes[Kind];
 	Target.ToCdb.clear();
-	for (size_t I = 0; I < TriCount; ++I)
+	for (u32 I : *Collision.Selected)
 	{
-		const u32 GameMaterial = Tris[I].material;
-		SGameMtl* Mtl = GMLibrary().GetMaterialByIdx(u16(GameMaterial));
-		const bool Passable = Mtl && Mtl->Flags.test(SGameMtl::flPassable);
-		const bool Keep = Kind == MeshSolid ? !Passable : (Passable && (Kind == MeshPassable || Mtl->Flags.test(SGameMtl::flActorObstacle)));
+		const auto Source = Collision.Geometry->GetTriangle(I);
+		const u32 GameMaterial = Source.GetTri().material;
+		const SStaticMaterial* Mtl = MaterialSnapshot.empty() ? nullptr : &MaterialSnapshot[GameMaterial < MaterialSnapshot.size() ? GameMaterial : 0];
+		const bool Passable = Mtl && Mtl->Passable;
+		const bool Keep = Kind == MeshSolid ? !Passable : (Passable && (Kind == MeshPassable || Mtl->ActorObstacle));
 		if (!Keep)
 		{
 			continue;
@@ -216,29 +459,25 @@ bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris
 			}
 			else
 			{
-				b3SurfaceMaterial Material = b3DefaultSurfaceMaterial();
+				b3SurfaceMaterial Material = Mtl ? Mtl->Surface : b3DefaultSurfaceMaterial();
 				Material.userMaterialId = GameMaterial;
-				if (Mtl)
-				{
-					Material.friction = Mtl->fPHFriction;
-					Material.restitution = Mtl->Flags.test(SGameMtl::flBounceable) ? Mtl->fPHBouncing : 0.f;
-				}
 				It = MaterialSlots.emplace(GameMaterial, u8(Materials.size())).first;
 				Materials.push_back(Material);
 			}
 		}
 
 		// Mirroring Z reverses the winding.
-		Indices.push_back(int32_t(Tris[I].verts[0]));
-		Indices.push_back(int32_t(Tris[I].verts[2]));
-		Indices.push_back(int32_t(Tris[I].verts[1]));
+		const auto Triangle = Collision.Geometry->GetIndices(I);
+		Indices.push_back(int32_t(Triangle[0]));
+		Indices.push_back(int32_t(Triangle[2]));
+		Indices.push_back(int32_t(Triangle[1]));
 		MaterialIndices.push_back(It->second);
-		Target.ToCdb.push_back(int(I));
+		SourceTriangles.insert({{Triangle[0], Triangle[2], Triangle[1], It->second}, I});
 	}
 
 	if (MaterialIndices.empty())
 	{
-		return false;
+		return true;
 	}
 
 	b3MeshDef MeshDef = {};
@@ -254,35 +493,77 @@ bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris
 	Target.Data = b3CreateMesh(&MeshDef, nullptr, 0);
 	if (Target.Data == nullptr)
 	{
-		Msg("! [Box3D] failed to build the %s mesh", Kinds[Kind].Name);
+		Msg("! [Box3D] failed to build the %s mesh", StaticMeshKinds[Kind].Name);
 		return false;
 	}
 
-	b3ShapeDef ShapeDef = b3DefaultShapeDef();
-	ShapeDef.materials = Materials.data();
-	ShapeDef.materialCount = int(Materials.size());
-	ShapeDef.filter.categoryBits = Kinds[Kind].Category;
-	ShapeDef.filter.maskBits = Kinds[Kind].Mask;
-	Target.Shape = b3CreateMeshShape(StaticBody, &ShapeDef, Target.Data, b3Vec3{1.f, 1.f, 1.f});
-	Msg("* [Box3D] %s mesh: %d triangles, %d materials", Kinds[Kind].Name, int(MaterialIndices.size()), int(Materials.size()));
+	// Box3D sorts triangles while cooking its BVH (and can discard degenerates).
+	// Build the source map from the cooked layout, not the input triangle order.
+	const auto* NativeTriangles = b3GetMeshTriangles(Target.Data);
+	const auto* NativeMaterials = b3GetMeshMaterialIndices(Target.Data);
+	for (int Index = 0; Index < Target.Data->triangleCount; ++Index)
+	{
+		const auto& Triangle = NativeTriangles[Index];
+		const xr_array<u32, 4> Key{u32(Triangle.index1), u32(Triangle.index2), u32(Triangle.index3), NativeMaterials[Index]};
+		const auto It = SourceTriangles.find({Key, 0});
+		if (It == SourceTriangles.end())
+		{
+			Msg("! [Box3D] cooked triangle has no CDB source");
+			return false;
+		}
+		Target.ToCdb.push_back(It->Triangle);
+	}
+	Msg("* [Box3D] %s mesh: %d triangles, %d materials", StaticMeshKinds[Kind].Name, Target.Data->triangleCount, int(Materials.size()));
 	return true;
 }
 
 void CB3World::DestroyStaticMesh()
 {
+	if (PendingStaticGeometry)
+	{
+		PendingStaticGeometry->Cancelled.store(true, std::memory_order_relaxed);
+	}
+	StaticGeometryTasks.wait();
+	PendingStaticGeometry.reset();
+	LevelCollisions.clear();
 	if (b3Body_IsValid(StaticBody))
 	{
 		b3DestroyBody(StaticBody);
 	}
 	StaticBody = b3_nullBodyId;
 
-	for (SLevelMesh& Mesh : Meshes)
+	CollisionRevision = u64(-1);
+	StaticGeometryInitialized = false;
+}
+
+const CB3World::SLevelMesh* CB3World::FindLevelMesh(b3ShapeId Shape, const SLevelCollision*& Collision) const
+{
+	for (const auto& Entry : LevelCollisions)
 	{
-		if (Mesh.Data != nullptr)
+		for (const SLevelMesh& Mesh : Entry->Meshes)
 		{
-			b3DestroyMesh(Mesh.Data);
+			if (B3_ID_EQUALS(Shape, Mesh.Shape))
+			{
+				Collision = Entry.get();
+				return &Mesh;
+			}
 		}
-		Mesh = SLevelMesh();
+	}
+	Collision = nullptr;
+	return nullptr;
+}
+
+void CB3World::ResolveRayHit(SB3RayHit& Hit) const
+{
+	Hit.Triangle = {};
+	Hit.ModelOwner.reset();
+	const SLevelCollision* Collision = nullptr;
+	const SLevelMesh* Mesh = FindLevelMesh(Hit.Shape, Collision);
+	if (Mesh && Hit.ShapeTriangle >= 0 && size_t(Hit.ShapeTriangle) < Mesh->ToCdb.size())
+	{
+		Hit.ModelOwner = Collision->Root;
+		Hit.Triangle = Collision->Geometry->GetTriangle(Mesh->ToCdb[Hit.ShapeTriangle]);
+		Hit.Material = u16(Hit.Triangle.GetTri().material);
 	}
 }
 
@@ -300,15 +581,17 @@ static float RayCallback(b3ShapeId ShapeId, b3Pos Point, b3Vec3 Normal, float Fr
 	Ray.Hit->Normal = B3Math::FromB3(Normal);
 	Ray.Hit->Distance = Fraction;
 	Ray.Hit->Material = u16(UserMaterialId);
-	Ray.Hit->Triangle = TriangleIndex;
+	Ray.Hit->ShapeTriangle = TriangleIndex;
 	Ray.Hit->Geom = static_cast<CODEGeom*>(b3Shape_GetUserData(ShapeId));
 	Ray.Hit->Shape = ShapeId;
 	// Clip the ray to find the closest hit.
 	return Fraction;
 }
 
-bool CB3World::RayPick(const Fvector& Start, const Fvector& Dir, float Range, u64 Mask, SB3RayHit& Hit) const
+bool CB3World::RayPick(const Fvector& Start, const Fvector& Dir, float Range, u64 Mask, SB3RayHit& Hit)
 {
+	SyncStaticGeometry();
+	Hit = {};
 	Fvector Translation;
 	Translation.mul(Dir, Range);
 
@@ -326,13 +609,7 @@ bool CB3World::RayPick(const Fvector& Start, const Fvector& Dir, float Range, u6
 	}
 
 	Hit.Distance *= Range;
-	for (const SLevelMesh& Mesh : Meshes)
-	{
-		if (B3_ID_EQUALS(Hit.Shape, Mesh.Shape) && Hit.Triangle >= 0 && Hit.Triangle < int(Mesh.ToCdb.size()))
-		{
-			Hit.Triangle = Mesh.ToCdb[Hit.Triangle];
-		}
-	}
+	ResolveRayHit(Hit);
 	return true;
 }
 
@@ -525,6 +802,7 @@ void CB3World::OnFrame()
 
 void CB3World::FrameStep(float DeltaTime)
 {
+	SyncStaticGeometry();
 	if (Frozen)
 	{
 		return;
@@ -559,6 +837,7 @@ void CB3World::FrameStep(float DeltaTime)
 void CB3World::Step()
 {
 	PROF_EVENT("CB3World::Step");
+	SyncStaticGeometry();
 	++StepCount;
 
 	for (CPHShell* Shell : Shells)
@@ -603,10 +882,17 @@ void CB3World::Step()
 	Stepping = true;
 	b3World_Step(World, fixed_step, SubSteps);
 	Stepping = false;
-	RunDeferred();
-	ProcessHitEvents();
-	ProcessLiquidContacts();
-	ProcessLevelContacts();
+	{
+		// These passes retain native shape/contact IDs from the completed step.
+		// Ray/overlap queries inside callbacks must not publish a new mesh snapshot.
+		SyncingCollision = true;
+		xr_scope_exit Guard = [this]()
+		{ SyncingCollision = false; };
+		RunDeferred();
+		ProcessHitEvents();
+		ProcessLiquidContacts();
+		ProcessLevelContacts();
+	}
 
 	// Joints over their force or torque threshold break; the shell splits on the next game update.
 	const b3JointEvents JointEvents = b3World_GetJointEvents(World);
@@ -749,8 +1035,9 @@ bool CB3World::AllowContact(b3ShapeId ShapeA, b3ShapeId ShapeB, const Fvector& P
 	return Allow;
 }
 
-void CB3World::OverlapGeom(const CODEGeom& Geom, const Fmatrix& Form, float Inset, u64 Mask, b3OverlapResultFcn* Fcn, void* Context) const
+void CB3World::OverlapGeom(const CODEGeom& Geom, const Fmatrix& Form, float Inset, u64 Mask, b3OverlapResultFcn* Fcn, void* Context)
 {
+	SyncStaticGeometry();
 	b3Vec3 Points[B3_MAX_SHAPE_CAST_POINTS];
 	b3ShapeProxy Proxy = {Points, 0, 0.f};
 	Proxy.count = Geom.MakeProxy(Form, Inset, Points, Proxy.radius);
@@ -834,12 +1121,13 @@ void CB3World::ProcessHitEvents()
 		Fvector Start;
 		Start.mad(Position, Normal, 0.1f);
 		SB3RayHit Hit;
-		if (!RayPick(Start, Fvector().invert(Normal), 0.3f, B3Category::Level, Hit) || Hit.Triangle < 0)
+		if (!RayPick(Start, Fvector().invert(Normal), 0.3f, B3Category::Level, Hit) || !Hit.Triangle.Valid())
 		{
 			continue;
 		}
 
-		CDB::TRI* Tri = &ObjectSpacePtr->GetStaticTris()[Hit.Triangle];
+		Fvector Verts[3];
+		Hit.Triangle.GetVerts(Verts);
 		SPHShotMarkContact Mark;
 		Mark.Position = Position;
 		Mark.Normal = Normal;
@@ -851,7 +1139,7 @@ void CB3World::ProcessHitEvents()
 		Mark.HasEffect = true;
 		Mark.HasUserData = true;
 		Mark.IsCharacter = Geom->Owner->Character != nullptr;
-		Geom->Owner->ContactCallback(Tri, Mark);
+		Geom->Owner->ContactCallback(Hit.Triangle.GetTri(), Verts, Mark);
 	}
 }
 
@@ -937,6 +1225,8 @@ void CB3World::ProcessGeomContacts(CPHElement& Element, CODEGeom& Geom, float& S
 		const bool IsA = B3_ID_EQUALS(Data.shapeIdA, Shape);
 		const b3ShapeId OtherShape = IsA ? Data.shapeIdB : Data.shapeIdA;
 		const bool Level = B3_ID_EQUALS(b3Shape_GetBody(OtherShape), StaticBody);
+		const SLevelCollision* Collision = nullptr;
+		const SLevelMesh* Mesh = Level ? FindLevelMesh(OtherShape, Collision) : nullptr;
 		CODEGeom* Other = static_cast<CODEGeom*>(b3Shape_GetUserData(OtherShape));
 		if (!Level && (!Damage || (Other && Other->Owner && Other->Owner->Shell == Element.Shell)))
 		{
@@ -951,7 +1241,7 @@ void CB3World::ProcessGeomContacts(CPHElement& Element, CODEGeom& Geom, float& S
 			{
 				const b3ManifoldPoint& Point = Manifold.points[P];
 				const size_t Triangle = size_t(Point.triangleIndex);
-				if (Point.totalNormalImpulse <= 0.f || (Level && (Point.triangleIndex < 0 || Triangle >= Meshes[MeshSolid].ToCdb.size())))
+				if (Point.totalNormalImpulse <= 0.f || (Level && (!Mesh || Point.triangleIndex < 0 || Triangle >= Mesh->ToCdb.size())))
 				{
 					continue;
 				}
@@ -969,7 +1259,7 @@ void CB3World::ProcessGeomContacts(CPHElement& Element, CODEGeom& Geom, float& S
 				}
 				if (Level)
 				{
-					Native.Material[0] = u16(ObjectSpacePtr->GetStaticTris()[Meshes[MeshSolid].ToCdb[Triangle]].material);
+					Native.Material[0] = u16(Collision->Geometry->GetTriangle(Mesh->ToCdb[Triangle]).GetTri().material);
 					SGameMtl* Mtl = MaterialOf(Native.Material[0]);
 					if (Mtl->Flags.test(SGameMtl::flSlowDown) && 1.f - Mtl->fFlotationFactor > SlowDown)
 					{
@@ -1029,7 +1319,7 @@ void CB3World::RunDeferred()
 
 void CB3World::ProcessLiquidContacts()
 {
-	if (!b3Shape_IsValid(Meshes[MeshPassable].Shape))
+	if (std::none_of(LevelCollisions.begin(), LevelCollisions.end(), [](const auto& Collision) { return b3Shape_IsValid(Collision->Meshes[MeshPassable].Shape); }))
 	{
 		return;
 	}
@@ -1054,13 +1344,13 @@ void CB3World::ProcessLiquidContacts()
 			Fvector Start = B3Math::FromB3(b3Body_GetWorldCenterOfMass(Body));
 			Start.y += Radius;
 			SB3RayHit Hit;
-			if (!RayPick(Start, Fvector().set(0.f, -1.f, 0.f), Radius * 2.f, B3Category::Liquid, Hit) || Hit.Triangle < 0)
+			if (!RayPick(Start, Fvector().set(0.f, -1.f, 0.f), Radius * 2.f, B3Category::Liquid, Hit) || !Hit.Triangle.Valid())
 			{
 				continue;
 			}
 
-			CDB::TRI* Tri = &ObjectSpacePtr->GetStaticTris()[Hit.Triangle];
-			SGameMtl* Mtl = MaterialOf(u16(Tri->material));
+			const CDB::TRI& Tri = Hit.Triangle.GetTri();
+			SGameMtl* Mtl = MaterialOf(u16(Tri.material));
 			const Fvector Velocity = B3Math::FromB3(b3Body_GetLinearVelocity(Body));
 			const float Mass = b3Body_GetMass(Body);
 
@@ -1080,7 +1370,9 @@ void CB3World::ProcessLiquidContacts()
 				Mark.VelCret = std::abs(Velocity.dotproduct(Hit.Normal)) * _sqrt(std::max(Mass, 0.f));
 				Mark.HasEffect = true;
 				Mark.HasUserData = true;
-				Element->Owner.ContactCallback(Tri, Mark);
+				Fvector Verts[3];
+				Hit.Triangle.GetVerts(Verts);
+				Element->Owner.ContactCallback(Tri, Verts, Mark);
 			}
 		}
 	}

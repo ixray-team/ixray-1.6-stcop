@@ -16,6 +16,7 @@ public:
     Fmatrix					xform;
     Flags32					flags;
 	u16						sector;
+	u32 CollisionStreamingSector;
 
 	xr_vector<base_color>	color;
 

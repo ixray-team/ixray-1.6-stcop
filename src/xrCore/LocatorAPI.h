@@ -277,8 +277,23 @@ public:
 
 	CReaderGuarded(const CReaderGuarded&) = delete;
 	CReaderGuarded& operator=(const CReaderGuarded&) = delete;
-	CReaderGuarded(CReaderGuarded&&) = delete;
-	CReaderGuarded& operator=(CReaderGuarded&&) = delete;
+	CReaderGuarded(CReaderGuarded&& Other) noexcept : Reader(Other.Reader)
+	{
+		Other.Reader = nullptr;
+	}
+	CReaderGuarded& operator=(CReaderGuarded&& Other) noexcept
+	{
+		if (this != &Other)
+		{
+			if (Reader)
+			{
+				FS.r_close(Reader);
+			}
+			Reader = Other.Reader;
+			Other.Reader = nullptr;
+		}
+		return *this;
+	}
 
 	ICF IReader& operator*() const { return *Reader; }
 	ICF IReader* operator->() const { return Reader; }

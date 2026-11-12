@@ -208,7 +208,7 @@ namespace CDB
 
 	void	CollectorPacked::add_face(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-		u16 material, u16 sector, u32 _flags									// misc
+		u16 material, u16 sector, u32 _flags, u32 CollisionSector	// misc
 		)
 	{
 		TRI T;
@@ -217,6 +217,7 @@ namespace CDB
 		T.verts[2] = VPack(v2);
 		T.material = material;
 		T.sector = sector;
+		T.StreamedSectorID = CollisionSector;
 		flags.push_back(_flags);
 		faces.push_back(T);
 
@@ -224,7 +225,7 @@ namespace CDB
 
 	void	CollectorPacked::add_face_D(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-		u32 dummy, u32 _flags										// misc
+		u32 dummy, u32 _flags, u32 CollisionSector					// misc
 		)
 	{
 		TRI T;
@@ -232,6 +233,7 @@ namespace CDB
 		T.verts	[1] = VPack(v1);
 		T.verts	[2] = VPack(v2);
 		T.dummy = dummy;
+		T.StreamedSectorID = CollisionSector;
 		faces.push_back(T);
 		flags.push_back(_flags);
 	}

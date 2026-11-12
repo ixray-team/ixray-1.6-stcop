@@ -7,6 +7,7 @@
 #include "physics_scripted.h"
 #include "../xrEngine/pure.h"
 #include "B3Shell.h"
+#include "B3StaticGeometry.h"
 
 class CObjectSpace;
 class CObjectList;
@@ -22,7 +23,10 @@ struct SB3RayHit
 	Fvector Normal;
 	float Distance = 0.f;
 	u16 Material = 0;
-	int Triangle = -1;
+	// The index belongs to Triangle.model, not to a single whole-level mesh.
+	TriabgleCDBData Triangle;
+	xr_shared_ptr<CDB::MODEL> ModelOwner;
+	int ShapeTriangle = -1;
 	CODEGeom* Geom = nullptr;
 	b3ShapeId Shape = b3_nullShapeId;
 };
@@ -61,14 +65,19 @@ public:
 	void Create(bool Mt, CObjectSpace* ObjectSpace, CObjectList* LevelObjects);
 	void Destroy();
 
-	// Level geometry from xrCDB; per-triangle game material goes to userMaterialId.
-	bool CreateStaticMesh(const Fvector* Verts, size_t VertCount, const CDB::TRI* Tris, size_t TriCount);
+	// Apply residency changes only outside Box3D queries/steps and contact callbacks.
+	void SyncStaticGeometry();
+	// Explicit loading/test barrier. Normal frame and query paths never wait for cooking.
+	void WaitForStaticGeometry();
+	bool IsStaticGeometryPending() const { return PendingStaticGeometry != nullptr; }
 	void DestroyStaticMesh();
 
-	bool RayPick(const Fvector& Start, const Fvector& Dir, float Range, u64 Mask, SB3RayHit& Hit) const;
+	bool RayPick(const Fvector& Start, const Fvector& Dir, float Range, u64 Mask, SB3RayHit& Hit);
+	void ResolveRayHit(SB3RayHit& Hit) const;
 
-	b3WorldId Id() const
+	b3WorldId Id()
 	{
+		SyncStaticGeometry();
 		return World;
 	}
 	bool IsStepping() const
@@ -109,7 +118,7 @@ public:
 	// World changes wait for RunDeferred. Returns false when a callback refuses the contact.
 	bool AllowContact(b3ShapeId ShapeA, b3ShapeId ShapeB, const Fvector& Point, const Fvector& Normal);
 	void RunDeferred();
-	void OverlapGeom(const CODEGeom& Geom, const Fmatrix& Form, float Inset, u64 Mask, b3OverlapResultFcn* Fcn, void* Context) const;
+	void OverlapGeom(const CODEGeom& Geom, const Fmatrix& Form, float Inset, u64 Mask, b3OverlapResultFcn* Fcn, void* Context);
 	// ODE CPHShell::CollideAll for one geom at Form: object callbacks for every overlap, at once.
 	void CollideGeom(CODEGeom& Geom, const Fmatrix& Form, u64 Mask);
 
@@ -185,9 +194,44 @@ private:
 
 	struct SLevelMesh
 	{
+		SLevelMesh() = default;
+		SLevelMesh(const SLevelMesh&) = delete;
+		SLevelMesh& operator=(const SLevelMesh&) = delete;
+		~SLevelMesh();
+		void Reset();
 		b3MeshData* Data = nullptr;
 		b3ShapeId Shape = b3_nullShapeId;
-		xr_vector<int> ToCdb;
+		xr_vector<u32> ToCdb;
+		xr_vector<b3SurfaceMaterial> Materials;
+	};
+	struct SLevelCollision
+	{
+		SLevelCollision(xr_shared_ptr<CDB::MODEL> InRoot, xr_shared_ptr<const CB3StaticGeometry> InGeometry)
+			: Root(std::move(InRoot)), Geometry(std::move(InGeometry)) {}
+		xr_shared_ptr<CDB::MODEL> Root;
+		xr_shared_ptr<const CB3StaticGeometry> Geometry;
+		xr_shared_ptr<const xr_vector<u32>> Selected;
+		SLevelMesh Meshes[MeshCount];
+	};
+	struct SStaticGeometryEntry
+	{
+		xr_shared_ptr<CDB::MODEL> Root;
+		xr_shared_ptr<const CB3StaticGeometry> Geometry;
+		xr_shared_ptr<const xr_vector<u32>> Selected;
+		xr_unique_ptr<SLevelCollision> Prepared;
+	};
+	struct SStaticGeometryUpdate
+	{
+		u64 Revision;
+		xr_vector<SStaticGeometryEntry> Entries;
+		xr_atomic_bool Cancelled = false;
+		bool Success = false;
+	};
+	struct SStaticMaterial
+	{
+		b3SurfaceMaterial Surface;
+		bool Passable;
+		bool ActorObstacle;
 	};
 
 	struct SFrozenBody
@@ -204,7 +248,10 @@ private:
 	void ProcessLiquidContacts();
 	void ProcessLevelContacts();
 	void ProcessGeomContacts(CPHElement& Element, CODEGeom& Geom, float& SlowDown, Fvector& SlowDownNormal);
-	bool BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris, size_t TriCount, EMesh Kind);
+	static bool BuildMesh(SLevelCollision& Collision, const xr_vector<b3Vec3>& Vertices, EMesh Kind, const xr_vector<SStaticMaterial>& Materials);
+	static void PrepareStaticGeometry(SStaticGeometryUpdate& Update, const xr_vector<SStaticMaterial>& Materials);
+	bool ApplyStaticGeometry(SStaticGeometryUpdate& Update);
+	const SLevelMesh* FindLevelMesh(b3ShapeId Shape, const SLevelCollision*& Collision) const;
 	void FreezeBody(b3BodyId Body, CPHShell* Shell);
 	bool Simulated(const CPHShell* Shell) const
 	{
@@ -216,7 +263,13 @@ private:
 	b3WorldId World = b3_nullWorldId;
 	b3BodyId StaticBody = b3_nullBodyId;
 	b3BodyId Ground = b3_nullBodyId;
-	SLevelMesh Meshes[MeshCount];
+	xr_vector<xr_unique_ptr<SLevelCollision>> LevelCollisions;
+	xr_task_group StaticGeometryTasks;
+	xr_atomic_bool StaticGeometryTaskRunning = false;
+	xr_unique_ptr<SStaticGeometryUpdate> PendingStaticGeometry;
+	u64 CollisionRevision = u64(-1);
+	bool SyncingCollision = false;
+	bool StaticGeometryInitialized = false;
 	xr_vector<b3ContactData> ContactScratch;
 	xr_vector<SFrozenBody> FrozenBodies;
 

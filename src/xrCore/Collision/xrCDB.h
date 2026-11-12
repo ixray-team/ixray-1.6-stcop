@@ -22,6 +22,7 @@ namespace Opcode
 };
 
 class CDB_Model;
+class CObjectSpace;
 
 #pragma pack(push,8)
 namespace CDB
@@ -33,8 +34,15 @@ namespace CDB
 // Triangle
 
 	RTCDevice GetEmbreeDevice();
-	// Triangle
-	struct XRCORE_API TRI final //*** 16 bytes total (was 32 :)
+	// Stable on-disk triangle layout used by existing cform files.
+	struct XRCORE_API TRI_Vanilla final
+	{
+		u32 verts[3];
+		u32 dummy;
+	};
+	static_assert(sizeof(TRI_Vanilla) == 16);
+
+	struct XRCORE_API TRI final
 	{
 		u32 verts[3]; // 3*4 = 12b
 		union
@@ -48,8 +56,11 @@ namespace CDB
 				u32 sector : 16;		  //
 			};
 		};
+		// Zero selects automatic grid streaming; nonzero selects a manual sector.
+		u32 StreamedSectorID = 0;
 		ICF u32 IDvert(u32 ID) { return verts[ID]; }
 	};
+	static_assert(sizeof(TRI) == 20);
 
 	// Build callback
 	using build_callback = void(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, void* params);
@@ -79,7 +90,7 @@ namespace CDB
 		xr_vector<Fvector> verts;
 		xr_vector<MODEL*> models;
 		xr_vector<InstanceData> instances;
-		RTCScene InstaceScene;
+		RTCScene InstaceScene = nullptr;
 		RTCBVH tree = nullptr;
 		BVHNode* root = nullptr;
 		u16 Sector = u16(-1);
@@ -147,6 +158,9 @@ namespace CDB
 		u32 custom_mode = 0;
 		// Result management
 		xr_vector<RESULT> rd;
+		xr_vector<xr_shared_ptr<MODEL>> StreamingModels;
+		template <class Query>
+		void QueryModels(CObjectSpace& Space, Query&& QueryModel, u32 Options = 0);
 		//Shared tree walk for the shape queries (box, obb, sphere, cylinder, cone).
 		template <class Shape>
 		void shape_query(const MODEL& m_def, const Shape& shape, u32 mode, ColliderCallback OnCheckNode = nullptr);
@@ -157,29 +171,38 @@ namespace CDB
  		// Older
 		ICF void ray_options(u32 f)	{ ray_mode = f; }
 		void ray_query(const MODEL& m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
+		void ray_query(CObjectSpace& Space, const Fvector& Start, const Fvector& Direction, float Range = 10000.f);
 
 		ICF void box_options(u32 f)	{ box_mode = f; }
 		ICF void box_query(const MODEL& m_def, const Fvector& b_center, const Fvector& b_dim, ColliderCallback OnCheckNode = nullptr) { box_query(m_def, Fbox().set(b_center - b_dim, b_center + b_dim), OnCheckNode); }
 		void box_query(const MODEL& m_def, const Fbox& _box, ColliderCallback OnCheckNode = nullptr);
+		void box_query(CObjectSpace& Space, const Fbox& Box, ColliderCallback OnCheckNode = nullptr);
+		void box_query(CObjectSpace& Space, const Fvector& Center, const Fvector& Size, ColliderCallback OnCheckNode = nullptr);
 
 		ICF void frustum_options(u32 f)	{ frustum_mode = f; }
 		void frustum_query(const MODEL& m_def, const CFrustum& F, ColliderCallback OnCheckNode = nullptr);
+		void frustum_query(CObjectSpace& Space, const CFrustum& Frustum, ColliderCallback OnCheckNode = nullptr);
 
 		ICF void obb_options(u32 f) { obb_mode = f; }
 		void obb_query(const MODEL& m_def, const Fobb& _obb, ColliderCallback OnCheckNode = nullptr);
+		void obb_query(CObjectSpace& Space, const Fobb& Box, ColliderCallback OnCheckNode = nullptr);
 
 		ICF void sphere_options(u32 f) { sphere_mode = f; }
 		void sphere_query(const MODEL& m_def, const Fsphere& _sphere, ColliderCallback OnCheckNode = nullptr);
+		void sphere_query(CObjectSpace& Space, const Fsphere& Sphere, ColliderCallback OnCheckNode = nullptr);
 		ICF void sphere_query(const MODEL& m_def, const Fvector& P, float R, ColliderCallback OnCheckNode = nullptr) { sphere_query(m_def, Fsphere{P,R}, OnCheckNode); }
 
 		ICF void		cylinder_options(u32 f) { cylinder_mode = f; }
 		void			cylinder_query(const MODEL& m_def, const Fcylinder& _cylinder, ColliderCallback OnCheckNode = nullptr);
+		void cylinder_query(CObjectSpace& Space, const Fcylinder& Cylinder, ColliderCallback OnCheckNode = nullptr);
 
 		ICF void		cone_options(u32 f) { cone_mode = f; }
 		void			cone_query(const MODEL& m_def, const Fcone& _cone, ColliderCallback OnCheckNode = nullptr);
+		void cone_query(CObjectSpace& Space, const Fcone& Cone, ColliderCallback OnCheckNode = nullptr);
 
 		ICF void		custom_options(u32 f) { obb_mode = f; }
 		void			custom_query(const MODEL& m_def, CheckFunc AABBCheckF, void* paabbc, TrisFunc GetTrisF, void* ptric);
+		void custom_query(CObjectSpace& Space, CheckFunc AABBCheck, void* AABBParams, TrisFunc GetTris, void* TriParams);
 
 		ICF RESULT& r_add() { return rd.emplace_back(); }
 		ICF const RESULT& r_any() const { VERIFY(r_count()); return rd[0]; }
@@ -285,8 +308,8 @@ namespace CDB
 			flags.reserve(apx_faces);
 		}
 
-		void add_face( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags );
-		void add_face_D( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
+		void add_face( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags, u32 CollisionSector = 0 );
+		void add_face_D( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags, u32 CollisionSector = 0 );
 
 		ICF xr_vector<Fvector>& getV_Vec()			{ return verts;				}
 		ICF xr_vector<TRI>& getT_Vec()				{ return faces;				}

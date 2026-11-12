@@ -349,6 +349,10 @@ void SceneBuilder::SaveBuild()
 		F->open_chunk	(EB_Faces);
 		F->w		  	(l_faces.data(),sizeof(b_face)*l_face_it); 	//. l_face_cnt
 		F->close_chunk	();
+		
+		F->open_chunk(EB_Faces_Extra);
+		F->w(l_faces_extra.data(), sizeof(b_face_extra)*l_face_it);
+		F->close_chunk();
 
 		F->open_chunk	(EB_SmoothGroups);
 		F->w		  	(l_smgroups.data(), sizeof(u32)*l_face_it); 	//. l_face_cnt
@@ -606,11 +610,12 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 								CEditableObject* object,
 								CEditableMesh* mesh,
-								int sect_num,
+								CSector* Sector,
 								xr_vector<b_vertex>& verts,
 								int& vert_it,
 								xr_vector<b_face>& faces,
 								int& face_it,
+								xr_vector<b_face_extra>& faces_extra,
 								xr_vector<u32>& smooth_groups,
 								const Fmatrix& real_transform,
 								CSceneObject* obj)
@@ -676,7 +681,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 			continue;
 		}
 												
-		int m_id			= BuildMaterial(surf,sect_num,!object->IsMUStatic());
+		int m_id			= BuildMaterial(surf,Sector ? Sector->m_sector_num : m_iDefaultSectorNum,!object->IsMUStatic());
 		int gm_id			= surf->_GameMtl();
 		if (m_id<0)			{
 			bResult = false;
@@ -755,6 +760,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 
 			first_face.dwMaterial = (u16)m_id;
 			first_face.dwMaterialGame = gm_id;
+			faces_extra[face_it].CollisionStreamingSector = Sector ? Sector->CollisionStreamingID : 0;
 			if (surf->UseShared)
 			{
 				first_face.flags |= b_face_flags::UseSharedMaterial;
@@ -791,6 +797,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 				second_face.flags = first_face.flags;
 				smooth_groups[face_it] = mesh->m_SmoothGroups[f_it];
 				smooth_groups[face_it] |= (1<<3);
+				faces_extra[face_it].CollisionStreamingSector = Sector ? Sector->CollisionStreamingID : 0;
 
 				for (int k=0; k<3; ++k)
 				{
@@ -862,8 +869,7 @@ bool SceneBuilder::BuildEditableObject(CEditableObject* obj, Fmatrix Transform, 
 	for (EditMeshIt M = obj->m_Meshes.begin(); M != obj->m_Meshes.end(); M++)
 	{
 		CSector* S = PortalUtils.FindSector(Owner, *M);
-		int sect_num = S ? S->m_sector_num : m_iDefaultSectorNum;
-		if (!BuildMesh(T, obj, *M, sect_num, l_verts, l_vert_it, l_faces, l_face_it, l_smgroups, Transform, Owner))
+		if (!BuildMesh(T, obj, *M, S, l_verts, l_vert_it, l_faces, l_face_it, l_faces_extra, l_smgroups, Transform, Owner))
 		{
 			return false;
 		}
@@ -925,7 +931,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		{
 			LODStats.MeshLODTemplates++;
 		}
-		model_idx = BuildMUObjectTemplate(obj, !UseMeshLODs, sect_num);
+		model_idx = BuildMUObjectTemplate(obj, !UseMeshLODs, S);
 		if (model_idx == -1)
 		{
 			return false;
@@ -992,7 +998,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 				O = obj->SetReference(ref_new_MU1_1);
 				EContext.UI->SetStatus(ref_new_MU1_check.c_str());
 				
-				if (!BuildMUObjectLOD(obj, slot, 1, sect_num))
+				if (!BuildMUObjectLOD(obj, slot, 1, S))
 				{
 					return false;
 				}
@@ -1002,7 +1008,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 				LPCSTR ref_new_MU2_2 = ref_new_MU2.c_str();
 				O = obj->SetReference(ref_new_MU2_2);
 				EContext.UI->SetStatus(ref_new_MU2_check.c_str());
-				if (!BuildMUObjectLOD(obj, slot, 2, sect_num))
+				if (!BuildMUObjectLOD(obj, slot, 2, S))
 				{
 					return false;
 				}
@@ -1012,7 +1018,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 				LPCSTR ref_new_MU3_3 = ref_new_MU3.c_str();
 				O = obj->SetReference(ref_new_MU3_3);
 				EContext.UI->SetStatus(ref_new_MU3_check.c_str());
-				if (!BuildMUObjectLOD(obj, slot, 3, sect_num))
+				if (!BuildMUObjectLOD(obj, slot, 3, S))
 				{
 					return false;
 				}
@@ -1022,7 +1028,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 				LPCSTR ref_new_MU4_4 = ref_new_MU4.c_str();
 				O = obj->SetReference(ref_new_MU4_4);
 				EContext.UI->SetStatus(ref_new_MU4_check.c_str());
-				if (!BuildMUObjectLOD(obj, slot, 4, sect_num))
+				if (!BuildMUObjectLOD(obj, slot, 4, S))
 				{
 					return false;
 				}
@@ -1038,6 +1044,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	R.transform = obj->_Transform();
 	R.flags.zero();
 	R.sector = (u16)sect_num;
+	R.CollisionStreamingSector = S ? S->CollisionStreamingID : 0;
 
 	xr_stack_string256 debug_name;
 	if (obj->m_pOwnerObject)
@@ -1058,14 +1065,14 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	return true;
 }
 
-u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num)
+u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, CSector* sect)
 {
 	CEditableObject* O = obj->GetReference();
 	// build LOD
 	u16	lod_id = u16(-1);
 	if (BuildBillboard)
 	{
-		lod_id = u16(BuildObjectLOD(Fidentity,O,sect_num));
+		lod_id = u16(BuildObjectLOD(Fidentity,O,sect ? sect->m_sector_num : m_iDefaultSectorNum));
 		if (lod_id==u16(-2))
 		{
 			return u32(-1);
@@ -1082,6 +1089,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 	strcpy(M.name,O->m_LibName.c_str());
 
 	M.faces.resize(FaceCount);
+	xr_vector<b_face_extra> faces_extra(FaceCount);
 	M.vertices.resize(VertexCount);
 	M.smgroups.resize(FaceCount);
 	// parse mesh data
@@ -1109,7 +1117,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 		{
 			continue;
 		}
-		if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
+		if (!BuildMesh(T, O, *MESH, sect, M.vertices, vert_it, M.faces, face_it, faces_extra, M.smgroups, obj->_Transform(), obj))
 		{
 			return u32(-1);
 		}
@@ -1120,7 +1128,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 	auto& CollisionTris = Slot.faces;
 	{
 		CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
-		for (auto& face : M.faces)
+		for (auto [face, face_extra] : std::views::zip(M.faces, faces_extra))
 		{
 			str_c cshader_name = nullptr;
 			bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
@@ -1137,7 +1145,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 			{
 				continue;
 			}
-			CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterialGame, -1, 0);
+			CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterialGame, -1, 0, face_extra.CollisionStreamingSector);
 		}
 		CollisionVerts = CL.getV_Vec();
 		CollisionTris = CL.getT_Vec();
@@ -1146,7 +1154,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 	return model_idx;
 }
 
-bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num)
+bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, CSector* sect)
 {
 	CEditableObject *O = obj->GetReference();
 	int model_idx = GetModelIdx( O->m_LibName.c_str() ) ;
@@ -1154,7 +1162,7 @@ bool SceneBuilder::BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 
 	// build model
 	if (-1==model_idx || m_save_as_object)
 	{
-		model_idx = BuildMUObjectTemplate(obj, false, sect_num);
+		model_idx = BuildMUObjectTemplate(obj, false, sect);
 		if (model_idx == -1)
 		{
 			return false;
@@ -1760,6 +1768,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 		}
 	}
 	l_faces.resize(l_face_cnt);
+	l_faces_extra.resize(l_face_cnt);
 	l_smgroups.resize(l_face_cnt);
 	l_verts.resize(l_vert_cnt);
 

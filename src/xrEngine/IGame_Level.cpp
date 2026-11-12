@@ -38,6 +38,7 @@ IGame_Level::IGame_Level	()
 
 IGame_Level::~IGame_Level() noexcept
 {
+	StopCollisionStreaming();
 	if (Core.ParamsData.test(ECoreParams::nes_texture_storing))
 		Device.m_pRender->ResourcesStoreNecessaryTextures();
 
@@ -72,6 +73,7 @@ IGame_Level::~IGame_Level() noexcept
 
 void IGame_Level::net_Stop			()
 {
+	StopCollisionStreaming();
 	for (int i=0; i<6; i++)
 		Objects.Update			(false);
 	// Destroy all objects
@@ -183,6 +185,9 @@ bool IGame_Level::Load			(u32 dwNum)
 	PROF_EVENT("IGame_Level::Load");
 	xrCriticalSectionGuard guard(lloadcs);
 	if (bReady) return true;
+	StopCollisionStreaming();
+	FirstStreamingUpdate = true;
+	StreamingStopped = false;
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;
@@ -220,7 +225,7 @@ bool IGame_Level::Load			(u32 dwNum)
 	);
 
 	//Sound->set_geometry_occ		( &Static );
-	Sound->set_geometry_occ		(ObjectSpace.GetStaticModel	());
+	Sound->set_geometry_occ		(&ObjectSpace);
 	Sound->set_handler			( _sound_event );
 
 	pApp->LoadSwitch			();
@@ -295,6 +300,7 @@ void IGame_Level::OnFrame()
 		return false; 
 	});
 
+	UpdateCollisionStreaming();
 	Objects.Update(false);
 	g_hud->OnFrame();
 
@@ -314,6 +320,57 @@ void IGame_Level::OnFrame()
 	}
 }
 // ==================================================================================================
+
+void IGame_Level::UpdateCollisionStreaming()
+{
+	if (StreamingStopped || !ObjectSpace.IsStreamingEnabled())
+	{
+		return;
+	}
+	// Camera and tuning belong to the frame thread, never read them from a worker.
+	Fvector Position = Device.vCameraPosition;
+	const float LoadRadius = StreamingLoadRadius;
+	const float UnloadRadius = StreamingUnloadRadius;
+	if (FirstStreamingUpdate)
+	{
+		// The camera may still belong to the previous level until the first object tick.
+		if (CObject* Entity = CurrentViewEntity() ? CurrentViewEntity() : CurrentEntity())
+		{
+			Position = Entity->Position();
+		}
+		ObjectSpace.UpdateStreaming(Position, LoadRadius, UnloadRadius);
+		FirstStreamingUpdate = false;
+		return;
+	}
+	if (StreamingTaskRunning.load(std::memory_order_acquire))
+	{
+		return;
+	}
+	// Only publication runs on the frame thread, before Objects.Update/physics.
+	// Preparation leaves the live maps and their revision untouched.
+	ObjectSpace.ApplyStreamingUpdate(std::move(PendingStreamingUpdate));
+	StreamingTaskRunning.store(true, std::memory_order_release);
+	StreamingTaskScheduled = true;
+	Device.async_tasks.run([this, Position, LoadRadius, UnloadRadius]()
+	{
+		xr_scope_exit Complete = [this]() { StreamingTaskRunning.store(false, std::memory_order_release); };
+		PROF_EVENT("CollisionStreamingTask");
+		PendingStreamingUpdate = ObjectSpace.PrepareStreamingUpdate(Position, LoadRadius, UnloadRadius);
+	});
+}
+
+void IGame_Level::StopCollisionStreaming()
+{
+	StreamingStopped = true;
+	if (StreamingTaskScheduled)
+	{
+		// Drain the group even if Running is already false: the callable must finish
+		// before this level, its format or the global material callback can disappear.
+		Device.async_tasks.wait();
+		StreamingTaskScheduled = false;
+	}
+	PendingStreamingUpdate.reset();
+}
 
 void CServerInfo::AddItem( const char* name_, const char* value_, u32 color_ )
 {
@@ -462,5 +519,3 @@ void   IGame_Level::SoundEvent_net_Relcase(CObject* obj)
 	if (!snd_Events.empty())
 		snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) {return d.source->g_object == obj; }), snd_Events.end());
 }
-
-

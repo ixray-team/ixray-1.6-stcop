@@ -660,7 +660,9 @@ const char* lightmap_resolution[] = {"1024", "2048", "4096", "8192", "16384"};
 const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
 	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data(),
-	magic_enum::enum_name<CFormVersions>(CFormVersions::Instanced).data()
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Instanced).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Streamed).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::StreamedInstanced).data(),
 };
 constexpr int cform_types_num = std::size(cform_types);
 
@@ -817,7 +819,7 @@ void DrawLCConfig()
 			VERIFY(type.has_value());
 			gCompilerMode.LC_CformType = type.value();
 		}
-		ImGui::SetItemTooltip("level.cform format. Vanilla: one block. VanillaChunked: split into parts of the given size.");
+		ImGui::SetItemTooltip("level.cform format. Vanilla: one block. VanillaChunked: split into parts of the given size. Instanced: store each MU object collision once. Streamed and StreamedInstanced: store data in separate chunks suitable for collision streaming");
 
 		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked);
 		ImGui::SetNextItemWidth(100);

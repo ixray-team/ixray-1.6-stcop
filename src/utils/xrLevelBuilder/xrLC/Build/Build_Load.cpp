@@ -118,6 +118,18 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		Progress			(p_total+=p_cost);
 		clMsg				("* %16s: %d","faces",lc_global_data()->g_faces().size());
 		F->close			();
+		
+		
+		static_assert(sizeof(b_face_extra) == 4); // if error is here, you need to fix deserialization of this chunk
+		F = fs.open_chunk(EB_Faces_Extra);
+		if (F)
+		{
+			for (auto& Face : lc_global_data()->g_faces())
+			{
+				Face->CollisionStreamingSector = F->r_u32();
+			}
+			F->close();
+		}
 
 		if(g_using_smooth_groups)
 		{

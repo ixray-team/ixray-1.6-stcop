@@ -12,6 +12,7 @@
 #include "Save/MemoryBuffer.h"
 #include "Save/SaveManager.h"
 #include "../xrLevelBuilder/xrAI/factory_api.h"
+#include "../xrLevelBuilder/Common/cl_log.h"
 
 // SWIContainer g_SWI, x_SWI;
 // VBContainer g_VB, x_VB;
@@ -53,6 +54,7 @@ bool IsAdvancedSerialization()
 
 void StartupLevel()
 {
+	Phase("StartupLevel: creating...");
 	for (const auto& [Name, Selected] : CFormConverter::GetConverterSettings().Files)
 	{
 		if (!Selected)
@@ -79,45 +81,104 @@ void StartupLevel()
 
 		if (CFormConverter::GetConverterSettings().CForm)
 		{
+			Phase("CForm Read");
 			auto CForm = XRay::CForm::Read(prjName.c_str());
-
-			switch (CFormConverter::GetConverterSettings().LC_CformType)
-			{
-				case CFormVersions::Vanilla:
-				{
-					xr_vector<Fvector> Verts;
-					xr_vector<CDB::TRI> Tris;
-					CForm->GetStaticGeom(Verts, Tris);
 			
-					XRay::CForm::CFormatVanilla TargetCForm;
-					TargetCForm.AddStaticGeom(Verts, Tris);
-					XRay::CForm::Write(prjName.c_str(), TargetCForm);
-					break;
-				}
-				case CFormVersions::VanillaChunked:
+			if (CForm->GetHeader().version < CFormVersions::Streamed)
+			{
+				CDB::MODEL Model;
+				CForm->ReadData(Model);
+				
+				CDB::CollectorPacked CL;
+				Fbox AABB;
+				AABB.invalidate();
+				for (auto& Vertex : Model.get_verts())
 				{
-					xr_vector<Fvector> Verts;
-					xr_vector<CDB::TRI> Tris;
-					CForm->GetStaticGeom(Verts, Tris);
+					AABB.modify(Vertex);
+				}
+				size_t verts_num = Model.get_verts().size();
+				size_t tris_num = Model.get_tris().size();
+				for (auto& Inst : Model.get_instances())
+				{
+					AABB.merge(Inst.GlobalAABB);
+					auto& Prot = *Model.get_models()[Inst.ModelIndex];
+					verts_num += Prot.get_verts().size();
+					tris_num += Prot.get_tris().size();
+				}
+				CL.Create(AABB, verts_num, tris_num);
+				auto ModelProcess = [&](Fmatrix xform, CDB::MODEL& Model, u16 Sector, bool DoProgress)
+				{
+					auto& Verts = Model.get_verts();
+					size_t i = 0;
+					for (auto& Tri : Model.get_tris())
+					{
+						if (DoProgress)
+						{
+							Progress(float((i++)+1)/Model.get_tris().size());
+						}
+						Fvector VArr[3];
+						xform.transform_tiny(VArr[0], Verts[Tri.verts[0]]);
+						xform.transform_tiny(VArr[1], Verts[Tri.verts[1]]);
+						xform.transform_tiny(VArr[2], Verts[Tri.verts[2]]);
+						auto LocSector = Sector;
+						if (LocSector == u16(-1))
+						{
+							LocSector = Tri.sector;
+						}
+						CL.add_face(VArr[0], VArr[1], VArr[2], Tri.material, LocSector, 0);
+					}
+				};
+				Phase("CForm Dump (main)");
+				ModelProcess(Fmatrix(Fmatrix::EIdentity::Identity), Model, -1, true);
+				Phase("CForm Dump (instances)");
+				size_t i = 0;
+				for (auto& Instance : Model.get_instances())
+				{
+					Progress(float((i++)+1)/Model.get_tris().size());
+					auto& Prototype = *Model.get_models()[Instance.ModelIndex];
+					ModelProcess(Instance.Transform, Prototype, Instance.Sector, false);
+				}
+				CForm.reset();
 
-					size_t mem_bytes = Tris.size()*sizeof(CDB::TRI) + Verts.size()*sizeof(Fvector);
-					u32 Number = (mem_bytes / (1024ull*1024ull)) / CFormConverter::GetConverterSettings().LC_CFormChunkSize;
-					if (!Number)
+				Phase("CForm Convert");
+				switch (CFormConverter::GetConverterSettings().LC_CformType)
+				{
+					case CFormVersions::Vanilla:
 					{
 						XRay::CForm::CFormatVanilla TargetCForm;
-						TargetCForm.AddStaticGeom(Verts, Tris);
+						TargetCForm.AddStaticGeom(CL.getV_Vec(), CL.getT_Vec());
 						XRay::CForm::Write(prjName.c_str(), TargetCForm);
-					} else
-					{
-						XRay::CForm::CFormatVanillaChunked TargetCForm(Number+1);
-						TargetCForm.AddStaticGeom(Verts, Tris);
-						XRay::CForm::Write(prjName.c_str(), TargetCForm);
+						break;
 					}
-					break;
-				}
-				default:
-				{
-					FATAL("Invalid target CForm type!");
+					case CFormVersions::VanillaChunked:
+					{
+						size_t mem_bytes = CL.getT_Vec().size()*sizeof(CDB::TRI) + CL.getV_Vec().size()*sizeof(Fvector);
+						u32 Number = (mem_bytes / (1024ull*1024ull)) / CFormConverter::GetConverterSettings().LC_CFormChunkSize;
+						if (!Number)
+						{
+							XRay::CForm::CFormatVanilla TargetCForm;
+							TargetCForm.AddStaticGeom(CL.getV_Vec(), CL.getT_Vec());
+							XRay::CForm::Write(prjName.c_str(), TargetCForm);
+						} else
+						{
+							XRay::CForm::CFormatVanillaChunked TargetCForm(Number+1);
+							TargetCForm.AddStaticGeom(CL.getV_Vec(), CL.getT_Vec());
+							XRay::CForm::Write(prjName.c_str(), TargetCForm);
+						}
+						break;
+					}
+					case CFormVersions::Streamed:
+					{
+						XRay::CForm::CFormatStreamed TargetCForm;
+						TargetCForm.SetTileSize(CFormConverter::GetConverterSettings().LC_CFormTileSize);
+						TargetCForm.AddStaticGeom(CL.getV_Vec(), CL.getT_Vec());
+						XRay::CForm::Write(prjName.c_str(), TargetCForm);
+						break;
+					}
+					default:
+					{
+						FATAL("Invalid target CForm type!");
+					}
 				}
 			}
 		}

@@ -33,6 +33,15 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 
 	CObjectSpaceThreadData::r_temp.r_clear();
 	CObjectSpaceThreadData::xrc.ray_options(CDB::OPT_ONLYFIRST);
+	// Cached misses (or polygons from an unloaded tile) are not valid after residency changes.
+	if (IsStreamingEnabled())
+	{
+		cache = nullptr;
+	}
+	auto QueryStatic = [&]()
+	{
+		CObjectSpaceThreadData::xrc.ray_query(*this, start, dir, range);
+	};
 
 	collide::ray_defs	Q(start, dir, range, CDB::OPT_ONLYFIRST, tgt);
 
@@ -78,7 +87,7 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			}
 
 			// 2. Polygon doesn't pick - real database query
-			CObjectSpaceThreadData::xrc.ray_query(Static, start, dir, range);
+			QueryStatic();
 			auto Num = CObjectSpaceThreadData::xrc.r_count();
 			if (!Num) {
 				cache->set(start, dir, range, false);
@@ -101,7 +110,7 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			}
 		}
 		else {
-			CObjectSpaceThreadData::xrc.ray_query(Static, start, dir, range);
+			QueryStatic();
 			return CObjectSpaceThreadData::xrc.r_count();
 		}
 	}
@@ -124,8 +133,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 	if (tgt & rqtStatic)
 	{
 		CObjectSpaceThreadData::xrc.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
-		CObjectSpaceThreadData::xrc.ray_query(Static, start, dir, range);
-
+		CObjectSpaceThreadData::xrc.ray_query(*this, start, dir, R.range);
 		if (CObjectSpaceThreadData::xrc.r_count())
 		{
 			R.set_if_less(CObjectSpaceThreadData::xrc.r_any());
@@ -203,7 +211,7 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 	if (R.tgt & s_mask)
 	{
 		CObjectSpaceThreadData::xrc.ray_options(R.flags);
-		CObjectSpaceThreadData::xrc.ray_query(Static, R.start, R.dir, R.range);
+		CObjectSpaceThreadData::xrc.ray_query(*this, R.start, R.dir, R.range);
 		for (auto& elem : CObjectSpaceThreadData::xrc.r_vec())
 		{
 			CObjectSpaceThreadData::r_temp.append_result(rq_result().set(elem.ModelWorldTransform, *elem.model, elem.range, elem.tris_id));

@@ -39,6 +39,13 @@ struct b_face
 
 static_assert(sizeof(b_face) == 44);
 
+struct b_face_extra
+{
+	u32 CollisionStreamingSector;
+};
+
+static_assert(sizeof(b_face_extra) == 4);
+
 struct b_material
 {
 	u16					surfidx;			// indices of texture surface
@@ -156,8 +163,11 @@ struct b_mu_reference
     Fmatrix				transform;
     Flags32				flags;
 	u16					sector;
-    u32					reserved	[8];
+	u32 CollisionStreamingSector = 0;
+    u32					reserved	[7];
 };
+
+static_assert(sizeof(b_mu_reference) == 108);
 
 struct b_mu_mesh_lods
 {
@@ -277,6 +287,7 @@ enum EBUILD_CHUNKS
 	EB_MaterialsShared,
 	EB_MU_refs_debug,
     EB_MU_collisions,
+	EB_Faces_Extra,
 
 	EB_FORCE_DWORD = u32(-1)
 };

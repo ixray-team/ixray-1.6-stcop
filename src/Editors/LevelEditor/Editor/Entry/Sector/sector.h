@@ -69,6 +69,7 @@ class CSector :
 	void 			OnDestroy	();
     void			UpdateVolume();
 public:
+	u32 CollisionStreamingID = 0;
 	u8    			m_map_idx;
 
 	const SItemVec&	GetItems	() const { return sector_items; }

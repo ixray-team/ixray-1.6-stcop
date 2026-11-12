@@ -1,5 +1,10 @@
 #include "stdafx.h"
 
+namespace
+{
+	constexpr u32 CollisionStreamingChunk = 0xF033;
+}
+
 #define SECTOR_VERSION   					0x0012
 
 #define SECTOR_CHUNK_VERSION				0xF010
@@ -531,6 +536,7 @@ bool CSector::LoadLTX(CInifile& ini, const char* sect_name)
 
 	if(version>=0x0012)
 		m_map_idx 				= ini.r_u8(sect_name, "change_map_to_idx");
+	CollisionStreamingID = ini.read_if_exists<u32>(sect_name, "CollisionStreamingID", 0);
 		
 	if (sector_items.empty()) return false;
 
@@ -562,6 +568,7 @@ void CSector::SaveLTX(CInifile& ini, const char* sect_name)
 			++count;
 	}
 	ini.w_u8(sect_name, "change_map_to_idx", m_map_idx);
+	ini.w_u32(sect_name, "CollisionStreamingID", CollisionStreamingID);
 	
 }
 
@@ -597,6 +604,7 @@ bool CSector::LoadStream(IReader& F)
 
 	if(F.find_chunk	(SECTOR_CHUNK_MAP_IDX))
 		m_map_idx		= F.r_u8();
+	CollisionStreamingID = F.find_chunk(CollisionStreamingChunk) ? F.r_u32() : 0;
 
 	if (sector_items.empty()) return false;
 
@@ -633,6 +641,9 @@ void CSector::SaveStream(IWriter& F)
 	F.open_chunk	(SECTOR_CHUNK_MAP_IDX);
 	F.w_u8			(m_map_idx);
 	F.close_chunk	();
+	F.open_chunk(CollisionStreamingChunk);
+	F.w_u32(CollisionStreamingID);
+	F.close_chunk();
 }
 
 
@@ -682,6 +693,7 @@ void CSector::FillProp(const char* pref, PropItemVec& items)
 	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string::ToString(meshes).c_str());
 	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string::ToString(faces).c_str());
 	PHelper().CreateToken(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
+	PHelper().CreateNumeric(items, PrepareKey(pref, GetName(), "Collision streaming ID"), &CollisionStreamingID);
 }
 
 
