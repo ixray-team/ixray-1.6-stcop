@@ -16,8 +16,6 @@
 #include "Level.h"
 #include "CarWeapon.h"
 #include "../xrEngine/xr_input.h"
-#include "script_game_object.h"
-#include "visual_memory_manager.h"
 
 void CCar::OnMouseMove(int dx, int dy)
 {
@@ -395,34 +393,6 @@ float CCar::FireDirDiff()
 {
 	if(m_car_weapon) return m_car_weapon->FireDirDiff();
 	return 0.0f;
-}
-
-bool CCar::isObjectVisible(CScriptGameObject* O_)
-{
-	if (!O_)
-	{
-		Msg("Attempt to call CCar::isObjectVisible method wihth passed nullptr parameter");
-		return false;
-	}
-
-	CObject* O = &O_->object();
-	Fvector Dist2Obj;
-	Fvector Point;
-	O->Center(Point);
-
-	Fvector From;
-	Center(From);
-
-	if (HasWeapon())
-	{
-		From.y = XFORM().c.y + m_car_weapon->_height();
-	}
-
-	Dist2Obj.sub(Point, From).normalize_safe();
-	float RayLen = From.distance_to(Point);
-
-	bool res = Level().ObjectSpace.RayTest(From, Dist2Obj, RayLen, collide::rqtStatic, nullptr, nullptr);
-	return (0 == res);
 }
 
 bool CCar::HasWeapon()

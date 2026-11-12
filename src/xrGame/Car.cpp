@@ -27,6 +27,54 @@
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/IActivationShape.h"
 #include "UIGameSP.h"
+#include "script_game_object.h"
+#include "vision_client.h"
+#include "visual_memory_manager.h"
+
+class CCar::MountedWeaponVision final : public vision_client
+{
+public:
+	MountedWeaponVision(CCar& Car, const char* Section)
+		: vision_client(&Car, 100), Position(Car.Position()), Direction(Car.Direction()), Up(Car.XFORM().j)
+	{
+		reload(Section);
+		FieldOfView = deg2rad(pSettings->r_float(Section, "view_fov_deg"));
+		AspectRatio = pSettings->r_float(Section, "view_aspect");
+		FarPlane = pSettings->r_float(Section, "view_far_plane");
+	}
+
+	void UpdateCamera(CCarWeapon& Weapon)
+	{
+		Position = Weapon.ViewCameraPos();
+		Direction = Weapon.ViewCameraDir();
+		Up = Weapon.ViewCameraNorm();
+	}
+
+	bool feel_vision_isRelevant(CObject* Object) override
+	{
+		return Object && Object->cast_actor();
+	}
+
+	void camera(Fvector& CameraPosition, Fvector& CameraDirection, Fvector& CameraUp,
+		float& CameraFov, float& CameraAspectRatio, float& CameraNearPlane, float& CameraFarPlane) override
+	{
+		CameraPosition = Position;
+		CameraDirection = Direction;
+		CameraUp = Up;
+		CameraFov = FieldOfView;
+		CameraAspectRatio = AspectRatio;
+		CameraNearPlane = 0.1f;
+		CameraFarPlane = FarPlane;
+	}
+
+private:
+	Fvector Position;
+	Fvector Direction;
+	Fvector Up;
+	float FieldOfView;
+	float AspectRatio;
+	float FarPlane;
+};
 
 CCar::CCar()
 {
@@ -87,6 +135,7 @@ CCar::CCar()
 
 CCar::~CCar(void)
 {
+	xr_delete(WeaponVision);
 	xr_delete(camera[0]);
 	xr_delete(camera[1]);
 	xr_delete(camera[2]);
@@ -99,6 +148,10 @@ void CCar::reinit()
 {
 	CEntity::reinit();
 	CScriptEntity::reinit();
+	if (WeaponVision)
+	{
+		WeaponVision->reinit();
+	}
 }
 
 void CCar::reload(const char* section)
@@ -177,7 +230,14 @@ bool CCar::net_Spawn(CSE_Abstract* DC)
 			CPHDestroyable::Load(pUserData, "destroyed");
 
 		if (pUserData->section_exist("mounted_weapon_definition"))
+		{
 			m_car_weapon = new CCarWeapon(this);
+			if (pUserData->section_exist("visual_memory_definition"))
+			{
+				WeaponVision = new MountedWeaponVision(
+					*this, pUserData->r_string("visual_memory_definition", "section"));
+			}
+		}
 
 		if (pUserData->line_exist("car_definition", "trunk_bone"))
 			m_bone_trunk = PKinematics(Visual())->LL_BoneID(pUserData->r_string("car_definition", "trunk_bone"));
@@ -212,6 +272,8 @@ void CCar::SpawnInitPhysics(CSE_Abstract* D)
 
 void CCar::net_Destroy()
 {
+	xr_delete(WeaponVision);
+
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
@@ -416,6 +478,34 @@ bool CCar::AlwaysTheCrow()
 	return Owner() || (m_car_weapon && m_car_weapon->IsActive());
 }
 
+bool CCar::isObjectVisible(CScriptGameObject* Object)
+{
+	if (!Object)
+	{
+		Msg("Attempt to call CCar::isObjectVisible with a null object");
+		return false;
+	}
+
+	if (WeaponVision)
+	{
+		return WeaponVision->visual().visible_now(&Object->object());
+	}
+
+	Fvector Target;
+	Object->object().Center(Target);
+
+	Fvector Origin;
+	Center(Origin);
+	if (HasWeapon())
+	{
+		Origin.y = XFORM().c.y + m_car_weapon->_height();
+	}
+
+	const Fvector Direction = Fvector().sub(Target, Origin).normalize_safe();
+	const float Distance = Origin.distance_to(Target);
+	return !Level().ObjectSpace.RayTest(Origin, Direction, Distance, collide::rqtStatic, nullptr, nullptr);
+}
+
 void CCar::UpdateCL()
 {
 	inherited::UpdateCL();
@@ -423,6 +513,10 @@ void CCar::UpdateCL()
 	if (m_car_weapon)
 	{
 		m_car_weapon->UpdateCL();
+		if (WeaponVision && m_car_weapon->IsActive())
+		{
+			WeaponVision->UpdateCamera(*m_car_weapon);
+		}
 	}
 	ASCUpdate();
 
@@ -2245,6 +2339,10 @@ void CCar::net_Relcase(CObject* O)
 {
 	CExplosive::net_Relcase(O);
 	inherited::net_Relcase(O);
+	if (WeaponVision)
+	{
+		WeaponVision->remove_links(O);
+	}
 }
 
 void CCar::ASCUpdate()
