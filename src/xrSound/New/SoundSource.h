@@ -49,6 +49,7 @@ struct SoundSourceState
 	xrCriticalSection DecodeLock;
 	bool IsReady = false;
 	bool IsLoading = false;
+	u64 IdleTimestamp = 0;
 };
 
 extern xrSRWLock g_SoundSourceLock;
@@ -72,9 +73,11 @@ SoundSourceState* Snd_LookupSource(const xr_string* Name);
 
 SoundSourceState* Snd_FindSource(const xr_string* Name);
 SoundSourceState* Snd_AcquireSource(const xr_string* Name);
+// A source with no references stays loaded until the idle budget evicts it
 void Snd_ReleaseSource(const xr_string* Name);
-// Async: hand a decode request to the decode thread
-void Snd_QueueDecode(const xr_string* Name, u32 Position);
+void Snd_PurgeIdleSources();
+// Async: hand a decode request to the decode thread. IsLoad also loads the source there if it isn't loaded
+void Snd_QueueDecode(const xr_string* Name, u32 Position, bool IsLoad);
 // Async: make sure the current position and the read-ahead window are cached (or queued)
 void Snd_PrefetchSource(const SoundSourceState* Source, const xr_string* Name, u32 Position, bool IsLooped);
 // Sync: decode the cache line for Position on the calling thread. Caller must hold a source reference

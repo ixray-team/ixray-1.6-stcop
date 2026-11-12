@@ -6,6 +6,7 @@
 #include "New/SoundMixer.h"
 #include "New/SoundBackend.h"
 #include "New/SoundMixerInternal.h"
+#include "New/SoundSource.h"
 #include "../xrEngine/IRenderable.h"
 #include "Recorder/SoundVoiceChat.h"
 #include "ai_sounds.h"
@@ -336,6 +337,9 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 void CSoundRender_Core::set_geometry_env(IReader* I)
 {
 	xr_delete(geom_ENV);
+
+	// Level change: $level$ sounds resolve to other files under the same names
+	Snd_PurgeIdleSources();
 
 	if (I == nullptr || s_environment == nullptr)
 	{

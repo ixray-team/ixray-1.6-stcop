@@ -886,8 +886,28 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 	xr_vector<ref_sound_data_ptr> PendingEvents;
-	for (const auto& Command : GMixer.cmd)
+	// A play whose source is still loading stays queued, along with the later commands of its slot
+	size_t Deferred = 0;
+	for (size_t CommandIdx = 0; CommandIdx < GMixer.cmd.size(); CommandIdx++)
 	{
+		const SoundCommand& Command = GMixer.cmd[CommandIdx];
+		bool IsDeferred = false;
+		for (size_t DeferredIdx = 0; DeferredIdx < Deferred && !IsDeferred; DeferredIdx++)
+		{
+			IsDeferred = Command.slot != 0 && GMixer.cmd[DeferredIdx].slot == Command.slot;
+		}
+
+		if (IsDeferred)
+		{
+			if (Deferred != CommandIdx)
+			{
+				GMixer.cmd[Deferred] = Command;
+			}
+
+			Deferred++;
+			continue;
+		}
+
 		switch (Command.id)
 		{
 			case ESoundMixerCommands::play:
@@ -900,16 +920,27 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 					reinterpret_cast<CObject*>(Command.param3) : (RefSound ? RefSound->_g_object() : nullptr);
 
 				auto& ActualSlot = GMixer.slots[Command.slot - 1];
-				Snd_ReleaseVoiceEffects(ActualSlot, SoundEffectOp::Destroy);
 				const xr_string NewName = Command.string_storage.size() ? Command.string_storage.c_str() : "";
+				SoundSourceState* SourcePtr = Snd_FindSource(&NewName);
+				if (SourcePtr == nullptr && !NewName.empty())
+				{
+					Snd_QueueDecode(&NewName, 0, true);
+					if (Deferred != CommandIdx)
+					{
+						GMixer.cmd[Deferred] = Command;
+					}
+
+					Deferred++;
+					break;
+				}
+
+				Snd_ReleaseVoiceEffects(ActualSlot, SoundEffectOp::Destroy);
 				bool IsSameFile = ActualSlot.sound_name == NewName;
 				if (!IsSameFile && !ActualSlot.sound_name.empty())
 				{
 					Snd_ReleaseSource(&ActualSlot.sound_name);
 					ActualSlot.sound_name.clear();
 				}
-
-				SoundSourceState* SourcePtr = IsSameFile ? Snd_FindSource(&ActualSlot.sound_name) : Snd_AcquireSource(&NewName);
 
 				if (SourcePtr == nullptr)
 				{
@@ -944,7 +975,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				ActualSlot.zone_idx = 0;
 
 				// Start decoding the first cache line immediately (off the audio thread) so the sound is ready by the time it is rendered.
-				Snd_QueueDecode(&ActualSlot.sound_name, 0);
+				Snd_QueueDecode(&ActualSlot.sound_name, 0, false);
 
 				if (ActualSlot.flags & (u16)Flags::Spatial && RefSound != nullptr && PlaybackObject != nullptr)
 				{
@@ -1015,6 +1046,30 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 			break;
 			case ESoundMixerCommands::stop_all:
 			{
+				size_t Pending = Deferred;
+				Deferred = 0;
+				for (size_t DeferredIdx = 0; DeferredIdx < Pending; DeferredIdx++)
+				{
+					const SoundCommand& Queued = GMixer.cmd[DeferredIdx];
+					if (Queued.id != ESoundMixerCommands::play)
+					{
+						if (Deferred != DeferredIdx)
+						{
+							GMixer.cmd[Deferred] = Queued;
+						}
+
+						Deferred++;
+					}
+					else if (Queued.param0 & (u16)Flags::NoFeedback)
+					{
+						DestroyInternal(Queued.slot);
+					}
+					else
+					{
+						MixerNewState(Queued.slot, State::Stopped);
+					}
+				}
+
 				for (size_t Iter = 0; Iter < GMixer.slots.size(); Iter++)
 				{
 					if (GMixer.slots[Iter].sound_name.size() && GMixer.slots[Iter].state != State::Stopped)
@@ -1071,6 +1126,10 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				auto& SeekSlot = GMixer.slots[Command.slot - 1];
 				const SoundSourceState* SeekSource = Snd_FindSource(&SeekSlot.sound_name);
 				SeekSlot.position = SeekSource ? std::min((u32)Command.param1, SeekSource->Desc.frames_total) : 0;
+				if (SeekSource != nullptr)
+				{
+					Snd_ReleaseSource(&SeekSlot.sound_name);
+				}
 			}
 			break;
 			case ESoundMixerCommands::set_volume:
@@ -1096,7 +1155,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 		const float Range = std::min(Params.max_ai_distance, Params.max_ai_distance * Params.volume);
 		if (Range >= .1f) Handler(Event, Range);
 	}
-	GMixer.cmd.resize(0);
+	GMixer.cmd.resize(Deferred);
 	g_SoundStats.update_time_micros = (Snd_GetTimestamp() - TimeStamp) / 1000;
 
 	GMixer.update_lock.ReleaseExclusive();
@@ -1124,6 +1183,21 @@ void Mixer::ResumeAll()
 
 void Mixer::DereferenceObjects(CObject** object, int count)
 {
+	// A queued play can wait several frames for its source and outlive its emitter
+	{
+		xrCriticalSectionGuard Guard(GMixer.play_lock);
+		for (SoundCommand& Command : GMixer.cmd)
+		{
+			for (int Iter = 0; Iter < count && Command.id == ESoundMixerCommands::play; Iter++)
+			{
+				if (Command.param3 == (u64)object[Iter])
+				{
+					Command.param3 = 0;
+				}
+			}
+		}
+	}
+
 	xrSRWLockGuard Guard0(GMixer.update_lock);
 	xrSRWLockGuard Guard1(GMixer.manage_lock);
 
