@@ -14,7 +14,9 @@ player_account::~player_account() = default;
 
 void player_account::load_account()
 {
+#ifdef XR_MP_BUILD
 	Msg("* WARNING: player not logged in");
+#endif
 
 	m_player_name		= "";
 	m_online_account	= false;
