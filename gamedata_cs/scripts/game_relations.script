@@ -70,7 +70,7 @@ function set_npcs_relation(npc1, npc2, new_relation)
         goodwill = 1000
     end
 	if npc1 and npc2 then
-	    npc1:set_goodwill(goodwill, npc2)
+	    npc1:force_set_goodwill(goodwill, npc2)
 	else
 		abort("Npc not set in goodwill function!!!")
 	end
@@ -95,24 +95,17 @@ end
 
 function set_squad_goodwill(squad_id, new_goodwill)
 	local board = sim_board.get_sim_board()
-    local goodwill = 0
-    if(new_goodwill=="enemy") then
-        goodwill = -1000
-    elseif(new_goodwill=="friend") then
-        goodwill = 1000
-    end
 	if board.squads[squad_id] then
+	    db.goodwill.relations = db.goodwill.relations or {}
 	    for k,v in pairs(board.squads[squad_id].squad_npc) do
 	        local obj = db.storage[v] and db.storage[v].object
 	        if obj and db.actor then
-	            obj:set_goodwill(goodwill, db.actor)
-	            if not(db.goodwill.relations) then
-	                db.goodwill.relations = {}
-	            end
-	            db.goodwill.relations[k] = new_goodwill
+	            set_npcs_relation(obj, db.actor, new_goodwill)
 	        end
+	        db.goodwill.relations[k] = new_goodwill
 	    end
 	    board.squads[squad_id].relationship = new_goodwill
+	    board.squads[squad_id]:refresh()
 	else
 		abort("There is no squad [%s] in sim_board", squad_id)
 	end
