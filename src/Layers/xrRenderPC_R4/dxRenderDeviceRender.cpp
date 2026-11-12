@@ -333,6 +333,7 @@ void dxRenderDeviceRender::End()
 		GPU_EVENT(GAMMA_APPLY);
 		RImplementation.Target->PhaseGammaApply(Cmd);
 	}
+	RImplementation.NriPasses.EndFrame();
 
 	Cmd.OnFrameEnd();
 	{

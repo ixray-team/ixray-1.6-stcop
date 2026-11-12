@@ -152,6 +152,11 @@ public:
     void PrepareImGuiTarget();
     void PrepareUpscale(IRHISurface* surface, bool output);
     void FinishExternalWork();
+    bool GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size) override;
+    void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) override;
+    void EndExternalPass() override;
+    void* ReadExternalBuffer(IRHIBuffer* Buffer) override;
+    void ReadExternalSurface(IRHISurface* Surface) override;
     void BeginMarker(const char* name);
     void EndMarker();
     void BeginGPUStats();
@@ -274,7 +279,9 @@ private:
     };
     struct Frame
     {
-        ID3D12CommandAllocator* Allocator = nullptr;
+        // More than one when the list is reopened while the frame is still on the GPU
+        xr_vector<ID3D12CommandAllocator*> Allocators;
+        u32 AllocatorsUsed = 0;
         u64 Fence = 0;
         u32 ResourcesUsed = 0;
         u32 SamplersUsed = 0;

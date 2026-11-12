@@ -32,6 +32,7 @@
 #include "RHIStateManager.h"
 class CAMDAntiLag;
 class GfxCmdList;
+class NriDevice;
 
 enum
 {
@@ -153,6 +154,10 @@ public:
 	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce = false);
 	void ApplyRenderTargetChange();
 
+	// A pass recorded through NRI into the native backend's command list (see IRHIDevice)
+	void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth);
+	void EndExternalPass();
+
 	IRHIDepthStencilView* GetDepthStencilView() const;
 	IRHIRenderTargetView* GetRenderTargetView(size_t ID) const;
 
@@ -169,6 +174,7 @@ public:
 	void EvictManagedResources();
 
 public:
+	NriDevice* Nri = nullptr;
 	IRHIDevice* DevicePtr = nullptr;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
 	IRHIStateManager* StateManager = nullptr;

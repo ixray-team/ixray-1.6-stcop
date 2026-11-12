@@ -1,6 +1,7 @@
 #include "Device.h"
 #include "GPUEvents.h"
 #include "../RHITopologyUtils.h"
+#include "../Nri/NriDevice.h"
 #include <d3d12sdklayers.h>
 
 static void CALLBACK DebugMessage(D3D12_MESSAGE_CATEGORY, D3D12_MESSAGE_SEVERITY severity,
@@ -41,52 +42,10 @@ bool InternalDevice12::StateCovers(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_
 InternalDevice12::InternalDevice12()
 {
     _images.resize(StaticResourceDescriptors, nullptr);
-    if (Core.ParamsData.test(ECoreParams::dxdebug))
-    {
-        ID3D12DeviceRemovedExtendedDataSettings* dred = nullptr;
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&dred))))
-        {
-            dred->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
-            dred->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
-            dred->Release();
-        }
-        ID3D12Debug* debug = nullptr;
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug))))
-        {
-            debug->EnableDebugLayer();
-            ID3D12Debug1* validation = nullptr;
-            if (SUCCEEDED(debug->QueryInterface(IID_PPV_ARGS(&validation))))
-            {
-                validation->SetEnableGPUBasedValidation(TRUE);
-                validation->SetEnableSynchronizedCommandQueueValidation(TRUE);
-                validation->Release();
-                Msg("* D3D12 GPU validation enabled");
-            }
-            debug->Release();
-        }
-        else
-        {
-            Msg("! D3D12 debug layer unavailable");
-        }
-    }
     R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&_factory)));
-    IDXGIAdapter1* adapter = nullptr;
-    for (u32 adapter_idx = 0; _factory->EnumAdapters1(adapter_idx, &adapter) != DXGI_ERROR_NOT_FOUND; ++adapter_idx)
-    {
-        DXGI_ADAPTER_DESC1 adapterDesc = {};
-        R_CHK(adapter->GetDesc1(&adapterDesc));
-        if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) &&
-            SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), &RawDevice)))
-        {
-            Msg("* D3D12 adapter: %ls", adapterDesc.Description);
-            adapter->Release();
-            adapter = nullptr;
-            break;
-        }
-        adapter->Release();
-        adapter = nullptr;
-    }
-    R_ASSERT2(RawDevice, "Unable to create a native D3D12 device");
+    // NRI owns the device and the queue; this backend borrows them until it is ported
+    RawDevice = GRHI->Nri->NativeDevice();
+    GetDevice()->AddRef();
     GetDevice()->QueryInterface(IID_PPV_ARGS(&_device1));
     if (Core.ParamsData.test(ECoreParams::dxdebug))
     {
@@ -114,10 +73,8 @@ InternalDevice12::InternalDevice12()
     D3D12_FEATURE_DATA_D3D12_OPTIONS2 options = {};
     _canUseDepthBounds = SUCCEEDED(GetDevice()->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &options, sizeof(options))) &&
         options.DepthBoundsTestSupported;
-    D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-    R_CHK(GetDevice()->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_queue)));
-    _queue->SetName(L"xrRHI D3D12 graphics queue");
+    _queue = static_cast<ID3D12CommandQueue*>(GRHI->Nri->NativeQueue());
+    _queue->AddRef();
     R_CHK(_queue->GetTimestampFrequency(&_statsFrequency));
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);
@@ -144,9 +101,11 @@ InternalDevice12::InternalDevice12()
 #endif
     for (u32 frame_idx = 0; frame_idx < FrameCount; ++frame_idx)
     {
-        R_CHK(GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_frames[frame_idx].Allocator)));
+        ID3D12CommandAllocator* allocator = nullptr;
+        R_CHK(GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)));
+        _frames[frame_idx].Allocators.push_back(allocator);
     }
-    R_CHK(GetDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frames[0].Allocator, nullptr, IID_PPV_ARGS(&_commands)));
+    R_CHK(GetDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frames[0].Allocators[0], nullptr, IID_PPV_ARGS(&_commands)));
     _commands->SetName(L"xrRHI D3D12 graphics commands");
     R_CHK(_commands->Close());
     _commands->QueryInterface(IID_PPV_ARGS(&_commands1));
@@ -251,7 +210,10 @@ InternalDevice12::~InternalDevice12()
             frame.Timestamps->Release();
             frame.TimestampReadback->Release();
         }
-        frame.Allocator->Release();
+        for (auto allocator : frame.Allocators)
+        {
+            allocator->Release();
+        }
     }
     for (auto& stream : _streamPool)
     {
@@ -538,9 +500,20 @@ ID3D12GraphicsCommandList* InternalDevice12::Commands()
     if (!_isRecording)
     {
         Frame& frame = _frames[_frame];
-        Wait(frame.Fence);
-        R_CHK(frame.Allocator->Reset());
-        R_CHK(_commands->Reset(frame.Allocator, nullptr));
+        // An allocator cannot be reset while its commands run: take another one instead of waiting
+        if (IsComplete(frame.Fence))
+        {
+            frame.AllocatorsUsed = 0;
+        }
+        if (frame.AllocatorsUsed == frame.Allocators.size())
+        {
+            ID3D12CommandAllocator* allocator = nullptr;
+            R_CHK(GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)));
+            frame.Allocators.push_back(allocator);
+        }
+        ID3D12CommandAllocator* allocator = frame.Allocators[frame.AllocatorsUsed++];
+        R_CHK(allocator->Reset());
+        R_CHK(_commands->Reset(allocator, nullptr));
         _isRecording = true;
         ++_epoch;
         for (auto name : _markers)
@@ -1162,7 +1135,8 @@ void InternalDevice12::UpdateBuffers()
     }
     SwapChainRTV = _backbufferViews[_frame];
     RHITextureDesc renderDesc = backDesc;
-    renderDesc.Format = ERHI_FORMAT::B8G8R8X8_UNORM;
+    // Not B8G8R8X8: NRI has no such format, and the gamma pass writes this target through it
+    renderDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
     renderDesc.BindFlags = (ERHI_BIND_FLAG)(ERHI_BIND_FLAG::RENDER_TARGET | ERHI_BIND_FLAG::SHADER_RESOURCE);
     _renderSurface = static_cast<DX12Surface*>(_textureFactory->CreateRenderTarget(renderDesc));
     RenderRTV = _textureFactory->CreateRenderTargetView(_renderSurface);

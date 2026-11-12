@@ -17,6 +17,7 @@
 #endif
 
 #include "Private/RHIRenderViewManager.h"
+#include "Nri/NriDevice.h"
 
 RHI_API u32 g_graphicsAPI = ERHI_API_LAYER::D3D11;
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
@@ -46,6 +47,7 @@ CRHI::~CRHI()
 	xr_delete(ShaderResourceCache);
 	xr_delete(StateManager);
 	xr_delete(DevicePtr);
+	xr_delete(Nri);
 	xr_delete(DriverExt);
 	xr_delete(DriverAntiLag);
 }
@@ -77,6 +79,10 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 #endif
 
 	APILevel = NewAPILevel;
+
+#ifdef IXR_WINDOWS
+	Nri = new NriDevice(NewAPILevel);
+#endif
 
 	switch (NewAPILevel)
 	{
@@ -172,6 +178,18 @@ void CRHI::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source)
 void CRHI::CopySurface(IRHISurface* Dest, IRHISurface* Source)
 {
 	DevicePtr->CopySurface(Dest, Source);
+}
+
+void* CRHI::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth)
+{
+	return DevicePtr->BeginExternalPass(Reads, ReadCount, Targets, TargetCount, Depth);
+}
+
+void CRHI::EndExternalPass()
+{
+	DevicePtr->EndExternalPass();
+	// The pass bound its own targets: what is cached here has to be applied again
+	GRHIRenderViewManager.ChangedRTorZB = true;
 }
 
 void CRHI::Present()

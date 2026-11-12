@@ -9,6 +9,8 @@ public:
 
 	virtual void ResetDeviceState() override;
 	virtual void Apply() override;
+	// Binds everything again on the next Apply: something else has bound views on the context
+	void Restore();
 		 
 	virtual void SetPSResource(u32 uiSlot, IRHIShaderResourceView* pRes) override;
 	virtual void SetGSResource(u32 uiSlot, IRHIShaderResourceView* pRes) override;

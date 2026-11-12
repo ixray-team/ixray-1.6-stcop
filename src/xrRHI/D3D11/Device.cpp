@@ -8,6 +8,7 @@ extern "C" void* IxrDxmtGetNSView(void* sdl_window);
 #include "../RHITopologyUtils.h"
 
 #ifdef IXR_WINDOWS
+#	include "../Nri/NriDevice.h"
 #	include "../Drivers/AMDGPUTransferee.h"
 #endif
 
@@ -96,7 +97,8 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
-	descDepth.Format = DXGI_FORMAT_B8G8R8X8_UNORM;
+	// Not B8G8R8X8: NRI has no such format, and the gamma pass writes this target through it
+	descDepth.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	descDepth.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	R = (DX11Device)->CreateTexture2D(&descDepth, nullptr, (ID3D11Texture2D**)&RenderTexture);
 	R_CHK(R);
@@ -253,27 +255,27 @@ bool InternalDevice11::CreateD3D11()
 	//	Additional set up
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	UINT createDeviceFlags = 0;
 	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
 
+	{
 #ifdef IXR_WINDOWS
-	if (CAMDReader* AMDReader = GRHI->DriverExt->GetAMD(); AMDReader != nullptr && !bHasDebugRender)
-	{
-		u32 NewFeatureLevel = AMDReader->GetDX11Device((void**)&RawDevice, (void**)&HWRenderContext, (void**)&HWSwapchain);
-		if (RawDevice != nullptr)
-		{
-			FeatureLevel = NewFeatureLevel;
-		}
-	}
-#endif
+		// NRI owns the device; this backend borrows it and its immediate context until it is ported
+		RawDevice = GRHI->Nri->NativeDevice();
+		DX11Device->AddRef();
+		DX11Device->GetImmediateContext(&HWRenderContext);
+		FeatureLevel = DX11Device->GetFeatureLevel();
 
-	if (RawDevice == nullptr)
-	{
-		if (bHasDebugRender)
-		{
-			createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-		}
-
+		IDXGIDevice* DxgiDevice = nullptr;
+		IDXGIAdapter* Adapter = nullptr;
+		IDXGIFactory* Factory = nullptr;
+		R_CHK(DX11Device->QueryInterface(IID_PPV_ARGS(&DxgiDevice)));
+		R_CHK(DxgiDevice->GetAdapter(&Adapter));
+		R_CHK(Adapter->GetParent(IID_PPV_ARGS(&Factory)));
+		HRESULT R = Factory->CreateSwapChain(DX11Device, &sd, &HWSwapchain);
+		Factory->Release();
+		Adapter->Release();
+		DxgiDevice->Release();
+#else
 		const D3D_FEATURE_LEVEL pFeatureLevels[] =
 		{
 			D3D_FEATURE_LEVEL_11_1,
@@ -284,17 +286,12 @@ bool InternalDevice11::CreateD3D11()
 
 		HRESULT R = D3D11CreateDeviceAndSwapChain
 		(
-			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
+			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, bHasDebugRender ? D3D11_CREATE_DEVICE_DEBUG : 0, pFeatureLevels,
 			std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, &HWSwapchain,
 			(ID3D11Device**)&RawDevice, &CurLevel, &HWRenderContext
 		);
 		FeatureLevel = CurLevel;
-
-		// main anotation
-		if (FeatureLevel == D3D_FEATURE_LEVEL_11_1)
-		{
-			R_CHK(HWRenderContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&g_pAnnotation));
-		}
+#endif
 
 		if (FAILED(R))
 		{
@@ -308,6 +305,12 @@ bool InternalDevice11::CreateD3D11()
 			xrLogger::FlushLog();
 			return false;
 		};
+
+		// main anotation
+		if (FeatureLevel == D3D_FEATURE_LEVEL_11_1)
+		{
+			R_CHK(HWRenderContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&g_pAnnotation));
+		}
 
 		if (bHasDebugRender)
 		{

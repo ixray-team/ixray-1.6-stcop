@@ -1,6 +1,9 @@
 #pragma once
 #include "R_Backend.h"
 
+// Records the pass set on Cmd through NRI; false when it needs something that path lacks
+bool DrawFullscreenNri(GfxCmdList& Cmd, u32 VertexCount);
+
 template <class TBlender>
 inline void CreateEffectSQ(ref_shader& Shader, const char* ShadernName = nullptr, const char* Textures = nullptr, const char* Constants = nullptr, const char* Matrices = nullptr)
 {
@@ -13,7 +16,10 @@ inline void CRenderTarget::DrawPassSQ(GfxCmdList& Cmd, const ref_shader& Shader,
 {
 	Cmd.SetPass(Shader->E[Element]);
 	Bind();
-	Cmd.DrawNoInput(3);
+	if (!DrawFullscreenNri(Cmd, 3))
+	{
+		Cmd.DrawNoInput(3);
+	}
 }
 
 inline void CRenderTarget::DrawPassSQ(GfxCmdList& Cmd, const ref_shader& shader, u32 Element)

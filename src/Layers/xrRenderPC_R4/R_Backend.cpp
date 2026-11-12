@@ -47,6 +47,16 @@ void GfxCmdList::CreatePulledLayout()
 	CHK_DX(GRHI->CreateInputLayout(&DrawId, 1, Signature->GetBufferPointer(), Signature->GetBufferSize(), &PulledLayout));
 }
 
+void GfxCmdList::RestoreInput()
+{
+	if (ib)
+	{
+		ib->SetIndexBuffer(false, 0);
+	}
+
+	m_pInputLayout = nullptr;
+}
+
 void GfxCmdList::SetIndices(IRHIBuffer* _ib)
 {
 	if (ib != _ib)

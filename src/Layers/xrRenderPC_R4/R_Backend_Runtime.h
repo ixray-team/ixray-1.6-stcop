@@ -53,6 +53,7 @@ IC void GfxCmdList::SetMatrices			(SMatrixList*	_M)
 
 IC void GfxCmdList::SetPipeline(SPass& P)
 {
+	Pass = nullptr;
 	SetStates(P.state);
 	SetPS(P.ps);
 	SetVS(P.vs);
@@ -65,6 +66,7 @@ IC void GfxCmdList::SetPipeline(SPass& P)
 IC void GfxCmdList::SetPass(SPass& P)
 {
 	SetPipeline(P);
+	Pass = &P;
 	SetConstantTable(P.constants);
 	SetTextures(P.T);
 	if (EditorMode)

@@ -18,6 +18,13 @@ void RHIStateManagerDX11::Reset()
 	BlendDirty = true;
 }
 
+void RHIStateManagerDX11::Restore()
+{
+	RasterizerDirty = true;
+	DepthStencilDirty = true;
+	BlendDirty = true;
+}
+
 void RHIStateManagerDX11::SetContext(ID3D11DeviceContext* InContext)
 {
 	D3DContext = InContext;

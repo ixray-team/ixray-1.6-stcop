@@ -89,9 +89,17 @@ public:
 	ID3D11DeviceContext* HWRenderContext = nullptr;
 
 	void InvalidateBindings();
+	bool GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size) override;
+	void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) override;
+	void EndExternalPass() override;
+	void* ReadExternalBuffer(IRHIBuffer* Buffer) override;
 
 private:
 	void ApplyBindings(u32 Stages);
+
+	// D3D11 shader objects do not keep their bytecode, and NRI pipelines are built from it
+	xrCriticalSection ShaderCodeLock;
+	xr_hash_map<void*, xr_vector<u8>> ShaderCode;
 
 	static constexpr u32 ConstantRingSize = 4u << 20;
 	ID3D11DeviceContext1* HWContext1 = nullptr;

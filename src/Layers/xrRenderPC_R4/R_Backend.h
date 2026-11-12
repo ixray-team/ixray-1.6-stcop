@@ -22,6 +22,8 @@ struct GfxView
 #pragma warning(disable:4324)
 class RENDER_API GfxCmdList
 {
+	friend class NriPass;
+
 public:
 	enum MaxTextures
 	{
@@ -115,10 +117,10 @@ public:
 	ICF	void						SetDepthStencil		(IRHIDepthStencilView* View, bool Force = false)	{ GRHI->SetDepthStencilView(View, Force); }
 	ICF	IRHIDepthStencilView*		GetDepthStencil		() const								{ return GRHI->GetDepthStencilView(); }
 	ICF	void						ApplyRenderTargets	()										{ GRHI->ApplyRenderTargetChange(); }
-	ICF	void						SetUAV				(IRHIUnorderedAccessView* View, u32 Index, bool Force = false)	{ GRHI->SetUnorderedAccessViews(View, Index, Force); }
+	ICF	void						SetUAV				(IRHIUnorderedAccessView* View, u32 Index, bool Force = false)	{ UavMask = View ? UavMask | 1u << Index : UavMask & ~(1u << Index); GRHI->SetUnorderedAccessViews(View, Index, Force); }
 	ICF	void						SetComputeUAVs		(u32 Start, u32 Count, IRHIUnorderedAccessView* const* Views, const u32* InitialCounts = nullptr)	{ GRHI->SetComputeUAVs(Start, Count, Views, InitialCounts); }
 	ICF	void						SetComputeResources	(u32 Start, u32 Count, IRHIShaderResourceView* const* Views)	{ GRHI->SetComputeResources(Start, Count, Views); }
-	ICF	void						SetViewport			(RHIViewport& Viewport)					{ GRHI->SetViewport(Viewport); }
+	ICF	void						SetViewport			(RHIViewport& Viewport)					{ LastViewport = Viewport; GRHI->SetViewport(Viewport); }
 	ICF	void						ClearTarget			(IRHIRenderTargetView* Target, ERTColor Color = ERTColor::Transparent)	{ GRHI->ClearTarget(Target, Color); }
 	ICF	void						ClearTarget			(IRHIRenderTargetView* Target, const float* Color)	{ GRHI->ClearTarget(Target, Color); }
 	ICF	void						ClearDepthStencil	(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET Flags, float Depth, u8 Stencil)	{ GRHI->ClearDepthStencil(View, Flags, Depth, Stencil); }
@@ -162,6 +164,8 @@ public:
 	// Raw views bypass set_Textures, so the slot is forgotten and rebound by the next texture list
 		void						SetResource			(ERHI_SHADER_TYPE Stage, u32 Slot, IRHIShaderResourceView* View);
 		void						SetIndices			(IRHIBuffer* _ib);
+		// Something else drew on the context: the index buffer and the input layout are bound again
+		void						RestoreInput		();
 	ICF void						SetGeometry		(SGeometry* _geom);
 	ICF void						SetGeometry		(ref_geom& _geom)					{	SetGeometry(_geom ? &*_geom : nullptr);		}
 	ICF void						SetSourceBase		(u32 Base)								{ SourceBase = Base; }
@@ -229,6 +233,12 @@ private:
 
 private:
 	SVS*					CurrentVS = nullptr;
+
+	// What a pass recorded through NRI needs to know about the state set here
+	SPass*					Pass = nullptr;
+	RHIViewport				LastViewport;
+	u64						RawPixelViews = 0;
+	u32						UavMask = 0;
 
 	bool					m_bChangedRTorZB;
 };

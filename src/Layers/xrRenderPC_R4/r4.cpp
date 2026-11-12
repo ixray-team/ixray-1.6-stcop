@@ -222,6 +222,7 @@ void CRender::create()
 
 void CRender::destroy() 
 {
+	NriPasses.Destroy();
 	ResetSunShadowCache();
 	// Release the editor's lazily created brush resources while the device is still
 	// alive - their destructors dereference DEV, which is null by DLL detach time.
@@ -323,6 +324,8 @@ R_dsgraph_structure& CRender::BuildPassGraph(GfxCmdList& Cmd, const GraphView& V
 void CRender::reset_begin() {
 	// The pre-render stage runs in parallel with FrameMove, where a reset can start
 	Device.PreRenderThread.Wait();
+	// Its pipelines and wrappers refer to targets that are about to be recreated
+	NriPasses.Destroy();
 	ResetSunShadowCache();
 	// Its compute pass reads the scene depth target, which is recreated
 	if (Device.IsEditorMode())

@@ -58,7 +58,9 @@ private:
 
 static RHIDxc& Dxc()
 {
-	static RHIDxc dxc;
+	// Never destroyed: a static destructor runs at process detach, after dxcompiler.dll has
+	// already torn itself down, and releasing its objects then crashes.
+	static RHIDxc& dxc = *new RHIDxc;
 	return dxc;
 }
 

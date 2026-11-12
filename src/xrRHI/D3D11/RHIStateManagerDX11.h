@@ -16,6 +16,7 @@ public:
 
 	void Apply() override;
 	void Reset() override;
+	void Restore();
 	void SetRasterizerState(void* NewState) override;
 	void SetDepthStencilState(void* NewState) override;
 	void SetBlendState(void* NewState) override;

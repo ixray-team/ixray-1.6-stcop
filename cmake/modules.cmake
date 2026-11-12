@@ -58,6 +58,8 @@ endif()
 
 include("${CMAKE_MODULE_PATHEX}/VKD3D.cmake")
 
+include("${CMAKE_MODULE_PATHEX}/NRI.cmake")
+
 # Headers only libraries
 include("${CMAKE_MODULE_PATHEX}/DXC.cmake")
 include("${CMAKE_MODULE_PATHEX}/FastDynamicCast.cmake")

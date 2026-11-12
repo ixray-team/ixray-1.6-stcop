@@ -8,6 +8,7 @@ public:
 	void Destroy();
 	void SetMaxAnisotropy(u32 MaxAniso);
 	void SetMipLodBias(float Bias);
+	RHIObject* GetState(u32 Register) const { return States[ActiveSet][Register]; }
 
 private:
 	void CreateSet(u32 Set);

@@ -79,6 +79,12 @@ public:
 
 	void Flush();
 
+	template<class F>
+	void ForEachBlock(F&& Function) const
+	{
+		std::apply([&](const auto&... Block) { (Function(std::remove_cvref_t<decltype(Block)>::Slot, static_cast<const void*>(&Block), u32(sizeof(Block))), ...); }, Shadow);
+	}
+
 	void UpdateFrame();
 	void UpdateView(const GfxView& View);
 	void UpdateSunShadows();

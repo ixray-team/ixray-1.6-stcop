@@ -28,6 +28,7 @@ class CGlowManager;
 #include "RainPuddleWaterMap.h"
 #include "PackedVertex.h"
 #include "SkinningPass.h"
+#include "NriPass.h"
 #include <atomic>
 
 class dxRender_Visual;
@@ -111,6 +112,7 @@ public:
 
 	GeometryHeap Geometry;
 	SkinningPass Skinning;
+	NriPass NriPasses;
 	GfxCmdList Backend;
 	GfxCmdList& Imm() { return Backend; }
 

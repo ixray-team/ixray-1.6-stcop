@@ -109,5 +109,17 @@ public:
     virtual void SetRawBlendState(void* state, const float* factor, u32 mask) = 0;
     virtual bool SetDepthBounds(bool enable, float minimum, float maximum) { return false; }
 
+	// Seams for passes recorded through NRI while this backend still owns the resources.
+	// Begin leaves Reads readable by a pixel shader, Targets and Depth writable, and returns what the pass
+	// records into: this backend's own command list (D3D12) or context (D3D11), so the pass lands
+	// in order with no submit. End makes this backend forget the pipeline state it had bound.
+	virtual bool GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size) { return false; }
+	virtual void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) { return nullptr; }
+	virtual void EndExternalPass() {}
+	// The native buffer, left in a state a shader of the pass can read it in
+	virtual void* ReadExternalBuffer(IRHIBuffer* Buffer) { return nullptr; }
+	// Leaves a surface in a state the pass can sample or copy it in
+	virtual void ReadExternalSurface(IRHISurface* Surface) {}
+
 	virtual void EvictManagedResources() {};
 };

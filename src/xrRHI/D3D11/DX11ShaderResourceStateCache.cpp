@@ -42,6 +42,15 @@ void DX11ShaderResourceStateCache::ResetDeviceState()
 	m_bUpdateCSViews = false;
 }
 
+void DX11ShaderResourceStateCache::Restore()
+{
+	m_uiMinPSView = m_uiMinVSView = m_uiMinCSView = 0;
+	m_uiMaxPSView = u32(std::size(m_PSViews)) - 1;
+	m_uiMaxVSView = u32(std::size(m_VSViews)) - 1;
+	m_uiMaxCSView = u32(std::size(m_CSViews)) - 1;
+	m_bUpdatePSViews = m_bUpdateVSViews = m_bUpdateCSViews = true;
+}
+
 void DX11ShaderResourceStateCache::Apply()
 {
 	if (m_bUpdatePSViews)

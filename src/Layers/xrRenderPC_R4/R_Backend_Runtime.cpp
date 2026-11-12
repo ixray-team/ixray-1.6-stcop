@@ -123,6 +123,10 @@ void GfxCmdList::SetResource(ERHI_SHADER_TYPE Stage, u32 Slot, IRHIShaderResourc
 	Textures[Kind][Slot] = nullptr;
 	TextureMask[Kind] &= ~(1ull << Slot);
 	PendingTextureMask[Kind] &= ~(1ull << Slot);
+	if (Stage == ERHI_SHADER_TYPE::PS)
+	{
+		RawPixelViews = View ? RawPixelViews | 1ull << Slot : RawPixelViews & ~(1ull << Slot);
+	}
 	(GRHI->ShaderResourceCache->*StageResource[Kind])(Slot, View);
 }
 

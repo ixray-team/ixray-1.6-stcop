@@ -97,6 +97,54 @@ void InternalDevice12::PrepareImGuiTarget()
     _commands->OMSetRenderTargets(1, &target->View.Descriptor.Cpu, FALSE, nullptr);
 }
 
+bool InternalDevice12::GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size)
+{
+    const DX12Shader& native = *static_cast<DX12Shader*>(Shader->resource);
+    Code = native.Code.data();
+    Size = native.Code.size();
+    return Size != 0;
+}
+
+void* InternalDevice12::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth)
+{
+    ContextLock guard(*this);
+    for (u32 read_idx = 0; read_idx < ReadCount; ++read_idx)
+    {
+        Transition(static_cast<DX12Surface*>(Reads[read_idx])->GetResource(),
+            D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    }
+    for (u32 target_idx = 0; target_idx < TargetCount; ++target_idx)
+    {
+        Transition(static_cast<DX12RenderTargetView*>(Targets[target_idx])->View.Surface->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+    }
+    if (Depth)
+    {
+        Transition(static_cast<DX12DepthStencilView*>(Depth)->View.Surface->GetResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
+    }
+    return Commands();
+}
+
+void* InternalDevice12::ReadExternalBuffer(IRHIBuffer* Buffer)
+{
+    auto& native = *static_cast<DX12Buffer*>(Buffer);
+    // Queued uploads move the buffer between states when the list is taken: have that done first
+    Commands();
+    // Index pages are read by a vertex shader too: one state serves that and the old backend's draws
+    Transition(native.GetResource(), D3D12_RESOURCE_STATE_INDEX_BUFFER | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    return native.GetNative();
+}
+
+void InternalDevice12::ReadExternalSurface(IRHISurface* Surface)
+{
+    Transition(static_cast<DX12Surface*>(Surface)->GetResource(),
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_COPY_SOURCE);
+}
+
+void InternalDevice12::EndExternalPass()
+{
+    InvalidateBindings();
+}
+
 void InternalDevice12::FinishExternalWork()
 {
     ContextLock guard(*this);

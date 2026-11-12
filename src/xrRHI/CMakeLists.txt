@@ -13,6 +13,7 @@ endif()
 file(GLOB_RECURSE XRHI_SOURCE_GPU_FILES CONFIGURE_DEPENDS "Drivers/*.*")
 file(GLOB_RECURSE XRHI_SOURCE_PRIVATE_FILES CONFIGURE_DEPENDS "Private/*.*")
 file(GLOB_RECURSE XRHI_SOURCE_IMGUI_FILES CONFIGURE_DEPENDS "Layout/ImGui/*.*")
+file(GLOB_RECURSE XRHI_SOURCE_NRI_FILES CONFIGURE_DEPENDS "Nri/*.cpp" "Nri/*.h")
 
 # File groups
 source_group("Core" FILES ${XRHI_SOURCE_ALL_FILES})
@@ -21,6 +22,7 @@ source_group("Interface/D3D12" FILES ${XRHI_SOURCE_D3D12_FILES})
 source_group("Drivers" FILES ${XRHI_SOURCE_GPU_FILES})
 source_group("Layout/ImGui" FILES ${XRHI_SOURCE_IMGUI_FILES})
 source_group("Private" FILES ${XRHI_SOURCE_PRIVATE_FILES})
+source_group("Nri" FILES ${XRHI_SOURCE_NRI_FILES})
 
 # Apply list
 list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_ALL_FILES})
@@ -29,6 +31,7 @@ list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_GPU_FILES})
 list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_D3D11_FILES})
 list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_D3D12_FILES})
 list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_PRIVATE_FILES})
+list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_NRI_FILES})
 
 if (NOT WIN32)
 	# Исключаем Windows-специфичные файлы
@@ -120,5 +123,8 @@ target_link_libraries(xrRHI PUBLIC imgui)
 target_link_libraries(xrRHI PRIVATE DirectX::Mesh)
 target_link_libraries(xrRHI PRIVATE DirectX::Tex)
 target_link_libraries(xrRHI PRIVATE DXC::Headers)
+
+# Public: the renderers record their command lists through NRI directly.
+target_link_libraries(xrRHI PUBLIC NRI)
 
 ixray_split_compile(xrRHI)

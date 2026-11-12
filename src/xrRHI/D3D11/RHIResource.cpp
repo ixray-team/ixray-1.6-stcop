@@ -1,6 +1,8 @@
 #include "Device.h"
 #include "RHIStateTypesDX11.h"
 #include "RHIStateManagerDX11.h"
+#include "DX11Buffer.h"
+#include "DX11ShaderResourceStateCache.h"
 #include <DirectXTex.h>
 
 static void ReleaseObject(void* resource)
@@ -33,7 +35,49 @@ InternalDevice11::CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE t
 	case ERHI_SHADER_TYPE::CS: result = device->CreateComputeShader(code, size, nullptr, reinterpret_cast<ID3D11ComputeShader**>(&shader)); break;
 	}
 	*out_shader = shader ? new RHIObject(shader, ReleaseObject) : nullptr;
+	if (shader)
+	{
+		xrCriticalSectionGuard Guard(ShaderCodeLock);
+		ShaderCode[shader].assign(static_cast<const u8*>(code), static_cast<const u8*>(code) + size);
+	}
 	return result;
+}
+
+void* InternalDevice11::BeginExternalPass(IRHISurface* const*, u32, IRHIRenderTargetView* const*, u32, IRHIDepthStencilView*)
+{
+	// The pass records on this context, where what is bound stays bound: a texture left as a
+	// render target would be dropped from the pass's inputs
+	HWRenderContext->OMSetRenderTargets(0, nullptr, nullptr);
+	// Likewise what an earlier pass wrote from a compute shader and this one reads
+	ID3D11UnorderedAccessView* const Unbound[D3D11_1_UAV_SLOT_COUNT] = {};
+	HWRenderContext->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, Unbound, nullptr);
+	return HWRenderContext;
+}
+
+void InternalDevice11::EndExternalPass()
+{
+	InvalidateBindings();
+	static_cast<DX11ShaderResourceStateCache*>(GRHI->ShaderResourceCache)->Restore();
+	static_cast<RHIStateManagerDX11*>(GRHI->StateManager)->Restore();
+	currentTopology = ERHI_PRIMITIVE_TOPOLOGY(-1);
+}
+
+void* InternalDevice11::ReadExternalBuffer(IRHIBuffer* Buffer)
+{
+	return static_cast<CD3D11Buffer*>(Buffer)->GetD3DObject();
+}
+
+bool InternalDevice11::GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size)
+{
+	xrCriticalSectionGuard Guard(ShaderCodeLock);
+	const auto Found = ShaderCode.find(Shader->resource);
+	if (Found == ShaderCode.end())
+	{
+		return false;
+	}
+	Code = Found->second.data();
+	Size = Found->second.size();
+	return true;
 }
 
 HRESULT
