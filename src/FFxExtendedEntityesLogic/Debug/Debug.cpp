@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "xrGame/entity_alive.h"
+#include "xrGame/Actor.h"
 
 namespace ExtendedEntityesDebugTiming
 {
@@ -367,5 +368,48 @@ void CELSharedDebug::UpdateHits()
 		Target->BoundingBox().get_CD(LocalBounds.m_translate, LocalBounds.m_halfsize);
 		Event->Bounds.transform(LocalBounds, Target->XFORM());
 		Target->Center(Event->Finish);
+	}
+}
+
+// Combat capture is independent of all visual debug switches.
+bool CELSharedDebug::CanLogCombat(const Fvector& Position) const
+{
+	return HasCombatLog.load() && Actor() && Actor()->Position().distance_to_sqr(Position) <= 60.f * 60.f;
+}
+
+bool CELSharedDebug::DrawDetail(const char* Label) const
+{
+	const xr_string Text = Label ? Label : "";
+	if (Text.starts_with("ANIM")) { return Detail(0); }
+	if (Text.starts_with("СЛУХ") || Text.starts_with("ПАМЯТЬ") || Text.starts_with("ВНИМАНИЕ")) { return Detail(1); }
+	if (Text.starts_with("ЗРЕНИЕ") || Text.starts_with("ВОСПРИЯТИЕ") || Text.starts_with("АКТОР") || Text.starts_with("ПОМНЮ") || Text.starts_with("ПРЕСЛЕДУЮ") || Text.starts_with("Передал") || Text.starts_with("ОСОБЫЙ")) { return Detail(2); }
+	if (Text.starts_with("ХАРАКТЕР") || Text.starts_with("СМЕЛОСТЬ") || Text.starts_with("ПОЛЕ") || Text.starts_with("БЕРСЕРК")) { return Detail(3); }
+	if (Text.starts_with("ПУТЬ") || Text.starts_with("ДЕЙСТВИЕ")) { return Detail(5); }
+	return Detail(4);
+}
+
+void CELSharedDebug::SetCombatLog(bool Enabled)
+{
+	if (HasCombatLog.exchange(Enabled) != Enabled)
+	{
+		Msg("[monsters_debug] CAPTURE t=%u enabled=%d actor_ignored=%d radius=60m sample=500ms heartbeat=2000ms", Device.dwTimeGlobal, int(Enabled), int(Actor() && ExtendedEntityes::IsIgnored(*Actor())));
+	}
+}
+
+bool CELSharedDebug::DrawEvent(EELDebugEvent Kind) const
+{
+	switch (Kind)
+	{
+	case EELDebugEvent::Sound:
+	case EELDebugEvent::SoundEmission:
+	case EELDebugEvent::SoundReception:
+	case EELDebugEvent::Interest:
+	case EELDebugEvent::Fear: return Detail(1);
+	case EELDebugEvent::Damage: return Detail(4);
+	case EELDebugEvent::Sharing:
+	case EELDebugEvent::PsiSharing:
+	case EELDebugEvent::Call:
+	case EELDebugEvent::Light: return Detail(2);
+	default: return Detail(5);
 	}
 }

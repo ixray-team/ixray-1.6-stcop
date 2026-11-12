@@ -8,13 +8,28 @@ public:
 	static void Register()
 	{
 		static CCommand LogicCommand("monster_logic", EKind::Logic);
-		static CCommand DrawCommand("monster_debug_3d_shapes", EKind::Draw);
-		static CCommand TextCommand("monster_debug_3d_text", EKind::Text);
-		static CCommand StatsCommand("monster_debug_hud", EKind::Stats);
+		static CCommand DrawCommand("monsters_debug_3d_shapes", EKind::Draw);
+		static CCommand TextCommand("monsters_debug_3d_text", EKind::Text);
+		static CCommand StatsCommand("monsters_debug_hud", EKind::Stats);
 		Console->AddCommand(&LogicCommand);
 		Console->AddCommand(&DrawCommand);
 		Console->AddCommand(&StatsCommand);
 		Console->AddCommand(&TextCommand);
+		static CCommand LogCommand("monsters_debug_log", EKind::Log);
+		Console->AddCommand(&LogCommand);
+		static CCommand AnimationsCommand("monsters_debug_animations", EKind::Detail);
+		Console->AddCommand(&AnimationsCommand);
+		static CCommand HearingCommand("monsters_debug_hearing", EKind::Detail);
+		Console->AddCommand(&HearingCommand);
+		static CCommand PerceptionCommand("monsters_debug_perception", EKind::Detail);
+		Console->AddCommand(&PerceptionCommand);
+		static CCommand CharacterCommand("monsters_debug_character", EKind::Detail);
+		Console->AddCommand(&CharacterCommand);
+		static CCommand CombatCommand("monsters_debug_combat", EKind::Detail);
+		Console->AddCommand(&CombatCommand);
+		static CCommand NavigationCommand("monsters_debug_navigation", EKind::Detail);
+		Console->AddCommand(&NavigationCommand);
+
 	}
 	static void Synchronize();
 
@@ -24,7 +39,9 @@ private:
 		Logic,
 		Draw,
 		Text,
-		Stats
+		Stats,
+		Log,
+		Detail
 	};
 	struct SControl
 	{

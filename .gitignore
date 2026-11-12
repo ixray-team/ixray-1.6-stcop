@@ -84,3 +84,6 @@ util/wrap_config.json
 
 # Graphify output
 graphify-out/
+gamedata/levels/pripyat_full/detail_layers/last_detail_settings.txt
+gamedata/levels/pripyat_full/detail_layers/precomputed_detail_fmb_noise.bin
+gamedata/levels/pripyat_full/detail_layers/precomputed_detail_perlin_scale.bin

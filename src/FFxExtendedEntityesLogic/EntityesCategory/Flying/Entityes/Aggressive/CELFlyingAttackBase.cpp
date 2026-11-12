@@ -18,7 +18,7 @@ const SELObservation* CELFlyingAttackBase::SelectTarget()
 	const SELObservation* Observation = BehaviorManager.IsActive(AttackBehavior) && AttackBehavior.HasCommittedTarget() ? Memory.Find(AttackBehavior.CommittedTargetIdentifier()) : nullptr;
 	CEntityAlive* CommittedTarget = Observation ? ExtendedEntityes::FindEntity(Observation->TargetIdentifier) : nullptr;
 	const SELObservation* Selected = CELComponentBase::SelectTarget();
-	if (Observation && CommittedTarget && Adapter->IsEnemy(*CommittedTarget) && Adapter->CanSee(*CommittedTarget) &&
+	if (Observation && CommittedTarget && CanEngage(*Observation) && Adapter->IsEnemy(*CommittedTarget) && Adapter->CanSee(*CommittedTarget) &&
 		(!Selected || CELSharedTargets::ThreatPriority(*Selected, *Adapter) <= CELSharedTargets::ThreatPriority(*Observation, *Adapter)))
 	{
 		return Observation;
@@ -82,6 +82,7 @@ CELFlyingBehaviorBase* CELFlyingAttackBase::ChooseBehavior(const SELObservation*
 			return nullptr;
 		}
 		SearchBehavior.SetEvidence(*Observation);
+		Memory.KeepUntil(Observation->TargetIdentifier, SearchBehavior.Deadline() + 1000u);
 		return &SearchBehavior;
 	}
 	if (!Observation && s32(Hearing.InvestigateUntil - Device.dwTimeGlobal) > 0 && s32(Hearing.PanicUntil - Device.dwTimeGlobal) <= 0)
@@ -108,7 +109,7 @@ CELFlyingBehaviorBase* CELFlyingAttackBase::ChooseBehavior(const SELObservation*
 // Передаёт отказ схемы ограниченному восстановлению или освобождает управление.
 void CELFlyingAttackBase::HandleFailure(CELFlyingBehaviorBase* RequestedBehavior)
 {
-	if (s32(Device.dwTimeGlobal - Hearing.PanicUntil) < 0)
+	if (IsFieldRecovering || IsFleeingPredator || s32(Device.dwTimeGlobal - Hearing.PanicUntil) < 0)
 	{
 		return;
 	}

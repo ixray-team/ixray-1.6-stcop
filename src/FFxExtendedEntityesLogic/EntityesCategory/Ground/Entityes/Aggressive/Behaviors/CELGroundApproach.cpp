@@ -33,7 +33,7 @@ void CELGroundApproach::ChooseStrategy(IELAdapter& Adapter, const SELPerceptionP
 		// Pursue the known point without reading the hidden target or slowing to an investigation walk.
 		return;
 	}
-	if (Adapter.Monster().GetfHealth() < Profile.RetreatHealthThreshold && Allowed(EELApproachStrategy::Retreat))
+	if (!Profile.HasCharacter && Adapter.Monster().GetfHealth() < Profile.RetreatHealthThreshold && Allowed(EELApproachStrategy::Retreat))
 	{
 		Strategy = EELApproachStrategy::Retreat;
 		return;

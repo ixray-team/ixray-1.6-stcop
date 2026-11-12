@@ -16,6 +16,7 @@ protected:
 	CELGroundCombatTactics Tactics;
 	CELGroundAttackBehavior AttackBehavior;
 	CELGroundSearchBehavior SearchBehavior;
+	u32 NextAttackTrace = 0;
 	u32 SuppressedUntil = 0;
 	u32 SuppressedObservation = 0;
 	u16 SuppressedTarget = u16(-1);

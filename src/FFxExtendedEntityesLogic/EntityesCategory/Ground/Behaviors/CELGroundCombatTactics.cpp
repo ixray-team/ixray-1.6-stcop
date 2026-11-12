@@ -20,7 +20,8 @@ void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProf
 	CBaseMonster& Owner = Adapter.Monster();
 	const u32 Now = Device.dwTimeGlobal;
 	const float Elapsed = LastSampleAt ? std::min(10.f, float(Now - LastSampleAt) * .001f) : 0.f;
-	DodgeStrength = Profile.DodgeStrength;
+	DodgeStrength = Profile.DodgeStrength * (Profile.HasCharacter ? 1.f + (1.f - Adapter.Monster().CharacterCourage) * Profile.CharacterDodgeCaution : 1.f);
+	clamp(DodgeStrength, 0.f, 1.f);
 	const bool SameTarget = TargetIdentifier == Target.ID();
 	const bool LandedEvasiveJump = Intent == EELCombatIntent::EvasionJump;
 	if (LandedEvasiveJump)

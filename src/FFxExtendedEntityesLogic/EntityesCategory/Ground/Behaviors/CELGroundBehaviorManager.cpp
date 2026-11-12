@@ -31,7 +31,7 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	}
 	CBaseMonster& Monster = Adapter.Monster();
 	const float Health = Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth());
-	if (!Profile.IsPassive && Profile.CanCornerBerserk && Health < Profile.CornerBerserkHealth && IsActive(ReactionBehavior) && ReactionBehavior.IsCornered())
+	if (!Profile.IsPassive && Profile.CanCornerBerserk && Health < Profile.CornerBerserkHealth && IsActive(ReactionBehavior) && ReactionBehavior.IsCornered() && (!Profile.HasCharacter || Owner.HasEnemyPressure()))
 	{
 		Monster.CorneredBerserkUntil = Device.dwTimeGlobal + Profile.CornerBerserkDuration;
 		Monster.CorneredBerserkDamage = Profile.CornerBerserkDamage;
@@ -47,14 +47,14 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	{
 		Fvector Source;
 		u32 Until;
-		const bool Inside = CBaseMonster::PanicZonePressure(Monster.Position(), Source, Until, Monster.ThreatTier) > 0.f;
+		const bool Inside = CBaseMonster::PanicZonePressure(Monster.Position(), Source, Until, Monster.EmmiPainProtection) > 0.f;
 		Fvector Goal;
 		const bool HasStimulus = Owner.Memory.Find(Owner.TargetIdentifier) || s32(Owner.Hearing.InvestigateUntil - Device.dwTimeGlobal) > 0;
 		if (Inside)
 		{
 			ReactionBehavior.Configure(Source, Device.dwTimeGlobal + 1000, true);
 		}
-		else if (HasStimulus && CBaseMonster::FindPanicPerimeter(Monster.Position(), Monster.ThreatTier, Monster.ID() % 2 ? .12f : -.12f, Goal))
+		else if (HasStimulus && CBaseMonster::FindPanicPerimeter(Monster.Position(), Monster.EmmiPainProtection, Monster.ID() % 2 ? .12f : -.12f, Goal))
 		{
 			ReactionBehavior.Configure(Goal, Device.dwTimeGlobal + 1000, false);
 		}
@@ -83,7 +83,7 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		ReactionBehavior.Configure(SelectedObservation->Position, Device.dwTimeGlobal + 1000, true);
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
-		SetValidationReason("Бегство от видового хищника");
+		SetValidationReason(Profile.HasCharacter ? "Отступление: характер и полученный отпор" : "Бегство от видового хищника");
 		return EELControl::Extended;
 	}
 	const bool HasThreat = SelectedObservation && CELSharedTargets::ThreatPriority(*SelectedObservation, Adapter);

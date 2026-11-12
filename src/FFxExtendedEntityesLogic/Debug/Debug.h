@@ -134,6 +134,12 @@ public:
 	static CELSharedDebug& Instance();
 	void SetDrawEnabled(bool IsGeometryEnabled, bool IsTextEnabled);
 	void SetStatsEnabled(bool IsEnabled);
+	void SetCombatLog(bool Enabled);
+	bool CanLogCombat(const Fvector& Position) const;
+	void SetDetails(u32 Mask) { Details = Mask; }
+	bool Detail(u32 Index) const { return (Details.load() & (1u << Index)) != 0; }
+	bool DrawDetail(const char* Label) const;
+	bool DrawEvent(EELDebugEvent Kind) const;
 	bool IsEnabled() const;
 	bool IsDrawEnabled() const;
 	bool IsStatsEnabled() const;
@@ -166,5 +172,7 @@ private:
 	bool HasGeometry = false;
 	bool HasText = false;
 	std::atomic<bool> HasDraw{false};
+	std::atomic<bool> HasCombatLog{false};
+	std::atomic<u32> Details{0};
 	std::atomic<bool> HasStats{false};
 };

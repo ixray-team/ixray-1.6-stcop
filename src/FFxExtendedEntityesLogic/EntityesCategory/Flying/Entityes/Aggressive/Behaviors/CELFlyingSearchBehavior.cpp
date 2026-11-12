@@ -14,7 +14,8 @@ void CELFlyingSearchBehavior::SetEvidence(const SELObservation& Evidence)
 		CancelRouteRequest();
 		HasPreparedRoute = false;
 		Phase = 0;
-		Until = Device.dwTimeGlobal + Random.randI(Profile.SearchMin, Profile.SearchMax + 1);
+		Until = 0;
+		TravelUntil = Device.dwTimeGlobal + Profile.ApproachMax;
 	}
 	SetObservation(&Evidence);
 }
@@ -23,14 +24,24 @@ void CELFlyingSearchBehavior::Enter()
 {
 	CELFlyingBehaviorBase::Enter();
 	Phase = 0;
-	if (!Until)
+	if (!TravelUntil || Expired())
 	{
-		Until = Device.dwTimeGlobal + Random.randI(Profile.SearchMin, Profile.SearchMax + 1);
+		Until = 0;
+		TravelUntil = Device.dwTimeGlobal + Profile.ApproachMax;
 	}
 }
 
 void CELFlyingSearchBehavior::Update(float DeltaTime)
 {
+	if (!Until)
+	{
+		Fvector Anchor = Observation.Position;
+		Anchor.y += Settings.GroundClearance;
+		if (Adapter.Monster().Position().distance_to_sqr(Anchor) <= _sqr(std::max(2.f, Settings.AttackDistance)))
+		{
+			Until = Device.dwTimeGlobal + Random.randI(Profile.SearchMin, Profile.SearchMax + 1);
+		}
+	}
 	if (Expired())
 	{
 		CancelRouteRequest();
@@ -58,12 +69,15 @@ void CELFlyingSearchBehavior::ChooseGoal()
 		GoalPosition.z += cosf(Angle) * Radius;
 	}
 	GoalPosition.y += Settings.GroundClearance;
-	++Phase;
+	if (Until)
+	{
+		++Phase;
+	}
 }
 
 bool CELFlyingSearchBehavior::Expired() const
 {
-	return s32(Device.dwTimeGlobal - Until) >= 0 || (Observation.Kind == EELObservationKind::Interest && s32(Device.dwTimeGlobal - Observation.ExpiresAt) >= 0);
+	return s32(Device.dwTimeGlobal - (Until ? Until : TravelUntil)) >= 0 || (Observation.Kind == EELObservationKind::Interest && s32(Device.dwTimeGlobal - Observation.ExpiresAt) >= 0);
 }
 
 void CELFlyingSearchBehavior::FrameUpdate(float DeltaTime)

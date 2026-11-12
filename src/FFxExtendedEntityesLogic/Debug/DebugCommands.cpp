@@ -16,12 +16,12 @@ void CELSharedDebugCommands::Synchronize()
 	}
 	SControl DrawControl;
 	SControl TextControl;
-	if (Read("monster_debug_3d_shapes", DrawControl) && Read("monster_debug_3d_text", TextControl))
+	if (Read("monsters_debug_3d_shapes", DrawControl) && Read("monsters_debug_3d_text", TextControl))
 	{
 		CELSharedDebug::Instance().SetDrawEnabled(DrawControl.Mode != 0, TextControl.Mode != 0);
 	}
 	SControl StatsControl;
-	if (Read("monster_debug_hud", StatsControl))
+	if (Read("monsters_debug_hud", StatsControl))
 	{
 		if (StatsControl.ResetRevision != StatsResetRevision)
 		{
@@ -30,4 +30,23 @@ void CELSharedDebugCommands::Synchronize()
 		}
 		CELSharedDebug::Instance().SetStatsEnabled(StatsControl.Mode != 0);
 	}
+	SControl LogControl;
+	if (Read("monsters_debug_log", LogControl))
+	{
+		CELSharedDebug::Instance().SetCombatLog(LogControl.Mode != 0);
+	}
+	u32 Mask = 0;
+	SControl Detail0;
+	if (Read("monsters_debug_animations", Detail0) && Detail0.Mode) { Mask |= 1u << 0; }
+	SControl Detail1;
+	if (Read("monsters_debug_hearing", Detail1) && Detail1.Mode) { Mask |= 1u << 1; }
+	SControl Detail2;
+	if (Read("monsters_debug_perception", Detail2) && Detail2.Mode) { Mask |= 1u << 2; }
+	SControl Detail3;
+	if (Read("monsters_debug_character", Detail3) && Detail3.Mode) { Mask |= 1u << 3; }
+	SControl Detail4;
+	if (Read("monsters_debug_combat", Detail4) && Detail4.Mode) { Mask |= 1u << 4; }
+	SControl Detail5;
+	if (Read("monsters_debug_navigation", Detail5) && Detail5.Mode) { Mask |= 1u << 5; }
+	CELSharedDebug::Instance().SetDetails(Mask);
 }

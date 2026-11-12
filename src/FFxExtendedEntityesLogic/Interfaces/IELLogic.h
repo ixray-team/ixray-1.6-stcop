@@ -3,6 +3,7 @@
 class CObject;
 class ISaveObject;
 class CBaseMonster;
+class CEntityAlive;
 struct SELObservation;
 struct SELSoundEvent;
 
@@ -29,5 +30,8 @@ public:
 	virtual void Hear(const SELSoundEvent& SoundEvent) = 0;
 	virtual void ForgetTarget(u16 ObjectIdentifier) = 0;
 	virtual void RemoveObject(u16 ObjectIdentifier) = 0;
+	virtual bool CanEngage(const SELObservation&) { return true; }
+	virtual void TraceCombat(EELControl) {}
+	virtual void RecordCombatHit(CEntityAlive&, float, bool) {}
 	virtual bool Accept(const SELObservation& Observation, CBaseMonster& SourceMonster) = 0;
 };

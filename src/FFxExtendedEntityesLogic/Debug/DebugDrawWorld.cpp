@@ -98,9 +98,9 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 		ExtendedEntityesWorldLabels::Append(Columns, RecordIterator->OwnerIdentifier, RecordIterator->Position, Label, Color, DrawText);
 		for (const shared_str& Sense : RecordIterator->Senses)
 		{
-			ExtendedEntityesWorldLabels::Append(Columns, RecordIterator->OwnerIdentifier, RecordIterator->Position, Sense.c_str(), color_rgba(200, 220, 255, 255), DrawText);
+			ExtendedEntityesWorldLabels::Append(Columns, RecordIterator->OwnerIdentifier, RecordIterator->Position, Sense.c_str(), color_rgba(200, 220, 255, 255), DrawText && CELSharedDebug::Instance().DrawDetail(Sense.c_str()));
 		}
-		if (RecordIterator->IgnoresFoliage)
+		if (RecordIterator->IgnoresFoliage && CELSharedDebug::Instance().Detail(2))
 		{
 			xr_sprintf(Label, "#%u | Зрение: игнорирует растительность", RecordIterator->OwnerIdentifier);
 			ExtendedEntityesWorldLabels::Append(Columns, RecordIterator->OwnerIdentifier, RecordIterator->Position, Label, color_rgba(255, 150, 30, 255), DrawText);
@@ -132,7 +132,7 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 				Previous = Point;
 			}
 			xr_sprintf(Label, "%s | слух %.1f м", Event->Label.c_str(), Event->Radius);
-			if (DrawText)
+			if ((DrawText && CELSharedDebug::Instance().DrawEvent(Event->Kind)))
 			{
 				HUD().world_prims.append_text3d(Previous, Label, color_rgba(180, 180, 180, 255));
 			}
@@ -145,7 +145,7 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 				HUD().world_prims.append_line(Event->Start, Event->Finish, color_rgba(160, 160, 160, 180));
 			}
 			xr_sprintf(Label, "#%u | Услышал игрока: %s", Event->OwnerIdentifier, Event->Label.c_str());
-			ExtendedEntityesWorldLabels::Append(Columns, Event->OwnerIdentifier, Event->Start, Label, color_rgba(180, 180, 180, 255), DrawText);
+			ExtendedEntityesWorldLabels::Append(Columns, Event->OwnerIdentifier, Event->Start, Label, color_rgba(180, 180, 180, 255), (DrawText && CELSharedDebug::Instance().DrawEvent(Event->Kind)));
 			continue;
 		}
 		if (Event->Kind == EELDebugEvent::Damage)
@@ -162,7 +162,7 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 				DamageLabel += Label;
 			}
 			DamageLabel += ")";
-			ExtendedEntityesWorldLabels::Append(Columns, Event->TargetIdentifier, Event->Finish, DamageLabel.c_str(), color_rgba(255, 20, 20, 255), DrawText);
+			ExtendedEntityesWorldLabels::Append(Columns, Event->TargetIdentifier, Event->Finish, DamageLabel.c_str(), color_rgba(255, 20, 20, 255), (DrawText && CELSharedDebug::Instance().DrawEvent(Event->Kind)));
 			continue;
 		}
 		if (Event->Kind == EELDebugEvent::Anomaly)
@@ -231,7 +231,7 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 			}
 			if (Event->Kind == EELDebugEvent::Sound || Event->Kind == EELDebugEvent::Light)
 			{
-				if (DrawText)
+				if ((DrawText && CELSharedDebug::Instance().DrawEvent(Event->Kind)))
 				{
 					auto Column = std::find_if(SoundColumns.begin(), SoundColumns.end(), [&Event](const ExtendedEntityesWorldLabels::SColumn& Candidate)
 											   { return Candidate.Anchor.distance_to_sqr(Event->Finish) < .25f; });
@@ -246,7 +246,7 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 			}
 			else
 			{
-				ExtendedEntityesWorldLabels::Append(Columns, Event->OwnerIdentifier, Event->Finish, Label, Color, DrawText);
+				ExtendedEntityesWorldLabels::Append(Columns, Event->OwnerIdentifier, Event->Finish, Label, Color, (DrawText && CELSharedDebug::Instance().DrawEvent(Event->Kind)));
 			}
 		}
 	}
@@ -267,6 +267,6 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 			xr_sprintf(Label, "%s%u", Identifier == Known->second.begin() ? "" : ", ", *Identifier);
 			AnomalyLabel += Label;
 		}
-		ExtendedEntityesWorldLabels::Append(Columns, Known->first, AnomalyAnchors.at(Known->first), AnomalyLabel.c_str(), color_rgba(255, 60, 80, 160), DrawText);
+		ExtendedEntityesWorldLabels::Append(Columns, Known->first, AnomalyAnchors.at(Known->first), AnomalyLabel.c_str(), color_rgba(255, 60, 80, 160), (DrawText && CELSharedDebug::Instance().Detail(2)));
 	}
 }

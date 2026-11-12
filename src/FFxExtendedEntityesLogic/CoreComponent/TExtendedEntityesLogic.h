@@ -21,6 +21,7 @@ struct TExtendedEntityesLogic final
 	void FrameUpdate(float DeltaTime);
 	void NoticeActorLight(const Fvector& Point);
 	void Hear(const SELSoundEvent& SoundEvent);
+	void RecordCombatHit(CEntityAlive& Opponent, float HealthFraction, bool Received);
 	void ForgetTarget(u16 ObjectIdentifier);
 	void RemoveObject(u16 ObjectIdentifier);
 	bool Accept(const SELObservation& Observation, CBaseMonster& SourceMonster);

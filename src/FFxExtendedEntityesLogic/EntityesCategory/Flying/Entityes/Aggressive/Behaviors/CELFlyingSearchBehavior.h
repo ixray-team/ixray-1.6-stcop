@@ -7,6 +7,7 @@ class CELFlyingSearchBehavior final : public CELFlyingBehaviorBase
 public:
 	CELFlyingSearchBehavior(IELAdapter& Adapter, const SELFlyingSettings& Settings, CELFlyingMovement& Movement, const SELPerceptionProfile& Profile);
 	void SetEvidence(const SELObservation& Evidence);
+	u32 Deadline() const { return Until ? Until : TravelUntil + Profile.SearchMax; }
 	void Enter() override;
 	void Update(float DeltaTime) override;
 	void FrameUpdate(float DeltaTime) override;
@@ -20,5 +21,6 @@ private:
 	bool Expired() const;
 	const SELPerceptionProfile& Profile;
 	u32 Until = 0;
+	u32 TravelUntil = 0;
 	u32 Phase = 0;
 };

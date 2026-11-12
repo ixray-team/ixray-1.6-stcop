@@ -29,6 +29,7 @@ struct SStatus
 };
 xr_map<u16, SStatus> Statuses;
 xr_map<u64, xr_vector<SMember>> Groups;
+xr_map<u64, xr_vector<SMember>> Packs;
 u32 SampleAt = 0;
 u64 Key(const CBaseMonster& Owner, u16 Target)
 {
@@ -42,6 +43,7 @@ void Refresh()
 	}
 	SampleAt = Device.dwTimeGlobal;
 	Groups.clear();
+	Packs.clear();
 	for (auto It = Statuses.begin(); It != Statuses.end();)
 	{
 		if (It->second.Generation != ExtendedEntityes::OwnerGeneration(It->first) || Device.dwTimeGlobal - It->second.At > 2000u)
@@ -61,6 +63,7 @@ void Refresh()
 		{
 			continue;
 		}
+		Packs[Key(*Monster, u16(-1))].push_back({Identifier, ExtendedEntityes::OwnerGeneration(Identifier), Monster->Position(), 0.f, 0});
 		const CEntityAlive* Target = Monster->EnemyMan.get_enemy();
 		if (!Target || !Target->g_Alive() || ExtendedEntityes::IsIgnored(*Target))
 		{
@@ -175,5 +178,31 @@ void CELSharedHuntGroups::Clear()
 {
 	Statuses.clear();
 	Groups.clear();
+	Packs.clear();
 	SampleAt = 0;
+}
+
+// Reuse the shared 100 ms population snapshot; no per-monster spatial query.
+u32 CELSharedHuntGroups::CountCompanions(CBaseMonster& Owner, float Radius)
+{
+	Refresh();
+	const auto Found = Packs.find(Key(Owner, u16(-1)));
+	u32 Count = 1;
+	if (Found != Packs.end())
+	{
+		for (const SMember& Member : Found->second)
+		{
+			if (Member.Identifier == Owner.ID() || Member.Position.distance_to_sqr(Owner.Position()) > _sqr(Radius) || Member.Generation != ExtendedEntityes::OwnerGeneration(Member.Identifier))
+			{
+				continue;
+			}
+			CEntityAlive* Entity = ExtendedEntityes::FindEntity(Member.Identifier);
+			CBaseMonster* Ally = Entity ? smart_cast<CBaseMonster*>(Entity) : nullptr;
+			if (Ally && Ally->g_Alive() && !Ally->getDestroy() && CELSharedEnemySharing::CanReceive(Owner, *Ally))
+			{
+				++Count;
+			}
+		}
+	}
+	return Count;
 }

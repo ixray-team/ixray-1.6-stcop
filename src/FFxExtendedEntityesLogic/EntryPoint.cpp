@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/EntityCondition.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "xrServerEntities/clsid_game.h"
 #include "xrGame/ai_object_location.h"
@@ -119,6 +120,10 @@ void ExtendedEntityes::Attach(CBaseMonster& OwnerMonster)
 // Запоминает смерть и отключает расширенное управление погибшей сущностью.
 void ExtendedEntityes::RecordDeath(CBaseMonster& Victim, CObject* Killer)
 {
+	if (CELSharedDebug::Instance().CanLogCombat(Victim.Position()))
+	{
+		Msg("[monsters_debug] DEATH t=%u victim=%u section=%s killer=%u pos=%.2f,%.2f,%.2f", Device.dwTimeGlobal, Victim.ID(), *Victim.cNameSect(), Killer ? Killer->ID() : u16(-1), Victim.Position().x, Victim.Position().y, Victim.Position().z);
+	}
 	CELSharedDeaths::Record(Victim, Killer);
 	Detach(Victim);
 }
@@ -538,8 +543,31 @@ void ExtendedEntityes::PublishMelee(const CObject* SourceObject, const Fvector& 
 // Dispatch a confirmed hit to diagnostics and the optional post-hit capture.
 void ExtendedEntityes::RecordHit(CEntityAlive& Target, u16 AttackerIdentifier, float PreviousHealth)
 {
+	if (CELSharedDebug::Instance().CanLogCombat(Target.Position()))
+	{
+		Msg("[monsters_debug] HIT t=%u attacker=%u victim=%u section=%s hp_before=%.4f hp_after=%.4f", Device.dwTimeGlobal, AttackerIdentifier, Target.ID(), *Target.cNameSect(), PreviousHealth, Target.GetfHealth());
+	}
 	CELSharedDebug::Instance().RecordHit(Target, AttackerIdentifier, PreviousHealth);
 	CELSharedTargets::RecordHit(Target, AttackerIdentifier, PreviousHealth);
+	CEntityAlive* Attacker = FindEntity(AttackerIdentifier);
+	if (Attacker && Attacker != &Target && Target.GetfHealth() < PreviousHealth)
+	{
+		const float Fraction = std::clamp((PreviousHealth - Target.GetfHealth()) / std::max(EPS_L, Target.conditions().GetMaxHealth()), 0.f, 1.f);
+		if (CBaseMonster* Victim = smart_cast<CBaseMonster*>(&Target))
+		{
+			if (TExtendedEntityesLogic* Component = Victim->GetComponent<TExtendedEntityesLogic>())
+			{
+				Component->RecordCombatHit(*Attacker, Fraction, true);
+			}
+		}
+		if (CBaseMonster* Hunter = smart_cast<CBaseMonster*>(Attacker))
+		{
+			if (TExtendedEntityesLogic* Component = Hunter->GetComponent<TExtendedEntityesLogic>())
+			{
+				Component->RecordCombatHit(Target, Fraction, false);
+			}
+		}
+	}
 	CELGroundFlyingGrab::ConfirmHit(Target, AttackerIdentifier, PreviousHealth);
 }
 

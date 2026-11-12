@@ -20,15 +20,21 @@ public:
 	void Serialize(ISaveObject& Object) override {}
 	u16 GetTargetIdentifier() const override { return TargetIdentifier; }
 	void FrameUpdate(float DeltaTime) override;
+	void TraceCombat(EELControl Control) override;
 	void NoticeActorLight(const Fvector& Point) override;
 	void Hear(const SELSoundEvent& SoundEvent) override;
 	void ForgetTarget(u16 ObjectIdentifier) override;
 	void RemoveObject(u16 ObjectIdentifier) override;
+	bool CanEngage(const SELObservation& Observation) override;
+	void RecordCombatHit(CEntityAlive& Opponent, float HealthFraction, bool Received) override;
 	bool Accept(const SELObservation& Observation, CBaseMonster& SourceMonster) override;
 
 protected:
 	void FillDebugRecord(SELDebugRecord& Record) const;
 	void UpdateFieldExposure();
+	void UpdateCharacter();
+	bool HasEnemyPressure();
+	bool ShouldFleeCharacter(const SELObservation* Observation);
 	bool ShouldFleePredator(const SELObservation* Observation);
 	virtual const SELObservation* SelectTarget();
 	void RememberEntity(CEntityAlive& TargetEntity, EELObservationSource Source, u32 ObservedAt);
@@ -51,6 +57,33 @@ protected:
 	bool IsFieldRecovering = false;
 	u32 LastFieldAt = 0;
 	Fvector FieldEscapeSource = {0.f, 0.f, 0.f};
+	struct SEncounter
+	{
+		u32 Generation = 0;
+		u32 EnemyTier = 2;
+		u32 UpdatedAt = 0;
+		u32 LastContactAt = 0;
+		u32 ProvokedUntil = 0;
+		u32 DecisionUntil = 0;
+		u32 NextDecisionAt = 0;
+		float Initiative = 0.f;
+		float ResolveBias = 0.f;
+		float Experience = 0.f;
+		float EnemyHealth = 1.f;
+		float EnemyScale = 1.f;
+		bool IsActor = false;
+		bool Initialized = false;
+		bool Engaged = false;
+		bool Fleeing = false;
+		bool Withdrawn = false;
+	};
+	SEncounter& Encounter(CEntityAlive& Target);
+	float CharacterConfidence(const SEncounter& State) const;
+	float CharacterResolve(const SEncounter& State) const;
+	xr_map<u16, SEncounter> Encounters;
+	float CharacterShock = 0.f;
+	float PackCourage = 0.f;
+	u32 CharacterUpdatedAt = 0;
 	u16 FearTarget = u16(-1);
 	u32 FearDecisionUntil = 0;
 	bool IsFleeingPredator = false;
@@ -72,9 +105,11 @@ protected:
 	bool HasActorVisualSample = false;
 
 private:
+	u32 NextCandidateTrace = 0;
+	u32 NextCombatSample = 0;
+	u32 LastCombatLog = 0;
+	xr_string LastCombatState;
 	mutable u32 NextAnimationSample = 0;
-	mutable u32 LastAnimationLog = 0;
-	mutable xr_string LastAnimationSignature;
 	mutable xr_vector<shared_str> AnimationLabels;
 
 	struct SVisualAcquisition

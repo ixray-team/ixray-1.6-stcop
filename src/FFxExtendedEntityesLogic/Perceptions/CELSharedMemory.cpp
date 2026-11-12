@@ -75,6 +75,10 @@ bool CELSharedMemory::Remember(const SELObservation& Observation, u32 CurrentTim
 	ExistingObservation->SenderGeneration = Observation.SenderGeneration;
 	ExistingObservation->IsPsiShared = Observation.IsPsiShared;
 	ExistingObservation->ExpiresAt = Observation.ObservedAt + ExistingObservation->RetentionTime;
+	if (s32(ExistingObservation->TaskUntil - ExistingObservation->ExpiresAt) > 0)
+	{
+		ExistingObservation->ExpiresAt = ExistingObservation->TaskUntil;
+	}
 	if (Observation.Source == EELObservationSource::Vision)
 	{
 		ExistingObservation->VisualGraceUntil = Observation.VisualGraceUntil;
@@ -120,4 +124,24 @@ void CELSharedMemory::Remove(u16 TargetIdentifier)
 void CELSharedMemory::Clear()
 {
 	Observations.clear();
+}
+
+// A finite task reservation must not turn an old observation into a fresh sighting.
+void CELSharedMemory::KeepUntil(u16 TargetIdentifier, u32 Deadline)
+{
+	for (SELObservation& Observation : Observations)
+	{
+		if (Observation.TargetIdentifier == TargetIdentifier)
+		{
+			if (s32(Deadline - Observation.TaskUntil) > 0)
+			{
+				Observation.TaskUntil = Deadline;
+			}
+			if (s32(Observation.TaskUntil - Observation.ExpiresAt) > 0)
+			{
+				Observation.ExpiresAt = Observation.TaskUntil;
+			}
+			return;
+		}
+	}
 }

@@ -3,6 +3,7 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
 #include "FFxExtendedEntityesLogic/Interfaces/IELAdapter.h"
+#include "FFxExtendedEntityesLogic/Interfaces/IELLogic.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "xrGame/entity_alive.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
@@ -105,7 +106,7 @@ u32 CELSharedTargets::ThreatPriority(const SELObservation& Observation, IELAdapt
 }
 
 // Combat selection never waits for the optional squad assignment budget.
-const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IELAdapter& Adapter, u16 CurrentTarget)
+const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IELAdapter& Adapter, u16 CurrentTarget, IELLogic* Logic)
 {
 	using namespace ExtendedEntityesAssignments;
 	if (LastFrame != Device.dwFrame)
@@ -119,7 +120,7 @@ const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IE
 	SPersonalTargets& State = Personal(Adapter.Monster());
 	const SELObservation* Current = Memory.Find(CurrentTarget);
 	CEntityAlive* CurrentEntity = Current ? ExtendedEntityes::FindEntity(CurrentTarget) : nullptr;
-	if (!CurrentEntity || !Adapter.IsEnemy(*CurrentEntity) || !Adapter.CanPursue(*CurrentEntity, Current->Position))
+	if (!CurrentEntity || !Adapter.IsEnemy(*CurrentEntity) || !Adapter.CanPursue(*CurrentEntity, Current->Position) || (Logic && !Logic->CanEngage(*Current)))
 	{
 		Current = nullptr;
 	}
@@ -168,7 +169,7 @@ const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IE
 	for (const SELObservation& Observation : Memory.GetRecords())
 	{
 		CEntityAlive* Candidate = ExtendedEntityes::FindEntity(Observation.TargetIdentifier);
-		if (!Candidate || !Adapter.IsEnemy(*Candidate) || !Adapter.CanPursue(*Candidate, Observation.Position))
+		if (!Candidate || !Adapter.IsEnemy(*Candidate) || !Adapter.CanPursue(*Candidate, Observation.Position) || (Logic && !Logic->CanEngage(Observation)))
 		{
 			continue;
 		}

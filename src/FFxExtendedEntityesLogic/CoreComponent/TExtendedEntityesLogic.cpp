@@ -131,7 +131,9 @@ EELControl TExtendedEntityesLogic::Update(float DeltaTime)
 	LastBehaviorUpdate = Device.dwTimeGlobal;
 	// Фаза по ID сохраняет распределение стаи по кадрам, в том числе после общего стимула.
 	NextDecisionAt = Device.dwTimeGlobal + 100u - (Device.dwTimeGlobal + u32(OwnerMonster->ID()) * 37u) % 100u;
-	return Logic->Update(float(Elapsed) * .001f);
+	const EELControl Result = Logic->Update(float(Elapsed) * .001f);
+	Logic->TraceCombat(Result);
+	return Result;
 }
 
 // Выполняет покадровую часть активной схемы без повторного выбора поведения.
@@ -199,5 +201,13 @@ void TExtendedEntityesLogic::NoticeActorLight(const Fvector& Point)
 	if (IsActive())
 	{
 		Logic->NoticeActorLight(Point);
+	}
+}
+
+void TExtendedEntityesLogic::RecordCombatHit(CEntityAlive& Opponent, float HealthFraction, bool Received)
+{
+	if (IsActive())
+	{
+		Logic->RecordCombatHit(Opponent, HealthFraction, Received);
 	}
 }

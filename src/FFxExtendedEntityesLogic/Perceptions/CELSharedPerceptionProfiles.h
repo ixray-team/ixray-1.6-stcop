@@ -70,6 +70,25 @@ struct SELPerceptionProfile
 {
 	bool CanUseBehaviors = true;
 	bool IsPassive = false;
+	bool HasCharacter = false;
+	float CharacterAggression = 50.f;
+	float CharacterCourage = 50.f;
+	float CharacterSizeCourage = 15.f;
+	float CharacterHealthPenalty = 45.f;
+	float CharacterHitLoss = 70.f;
+	float CharacterHitGain = 18.f;
+	float CharacterAllyDeathLoss = 12.f;
+	float CharacterRecovery = 2.f;
+	float CharacterRetreatThreshold = 25.f;
+	float CharacterResumeThreshold = 45.f;
+	float CharacterTierPressure = 12.f;
+	float CharacterPackBonus = 18.f;
+	float CharacterCounterChance = .15f;
+	float CharacterSafeDistance = 25.f;
+	float CharacterDodgeCaution = .5f;
+	u32 CharacterMemory = 180000;
+	u32 CharacterReevaluate = 2000;
+	u32 CharacterDecisionHold = 6000;
 	bool CanCornerBerserk = true;
 	float CornerBerserkHealth = .3f;
 	float CornerBerserkDamage = 2.f;

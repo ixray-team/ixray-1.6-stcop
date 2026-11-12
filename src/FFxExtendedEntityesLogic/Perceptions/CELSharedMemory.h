@@ -31,6 +31,7 @@ struct SELObservation
 	u32 ObservedAt = 0;
 	u32 ExpiresAt = 0;
 	u32 RetentionTime = 0;
+	u32 TaskUntil = 0;
 	u32 VisualGraceUntil = 0;
 	EELObservationSource Source = EELObservationSource::Vision;
 	bool HasLivePosition = false;
@@ -48,6 +49,7 @@ class CELSharedMemory
 public:
 	using Records = xr_vector<SELObservation>;
 	bool Remember(const SELObservation& Observation, u32 CurrentTime, u32 RetentionTime, float TrailLength);
+	void KeepUntil(u16 TargetIdentifier, u32 Deadline);
 	void Expire(u32 CurrentTime);
 	void Remove(u16 TargetIdentifier);
 	void Clear();

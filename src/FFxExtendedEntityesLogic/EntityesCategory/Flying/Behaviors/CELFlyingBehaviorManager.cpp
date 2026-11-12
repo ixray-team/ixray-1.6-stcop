@@ -51,7 +51,7 @@ EELControl CELFlyingBehaviorManager::UpdateFlight(float DeltaTime, CELFlyingBeha
 		CorneredSince = 0;
 	}
 	const float Health = NativeMonster.conditions().GetHealth() / std::max(EPS_L, NativeMonster.conditions().GetMaxHealth());
-	if (!Owner.Profile.IsPassive && Owner.Profile.CanCornerBerserk && Health < Owner.Profile.CornerBerserkHealth && CorneredSince && Device.dwTimeGlobal - CorneredSince >= 2000)
+	if (!Owner.Profile.IsPassive && Owner.Profile.CanCornerBerserk && Health < Owner.Profile.CornerBerserkHealth && CorneredSince && Device.dwTimeGlobal - CorneredSince >= 2000 && (!Owner.Profile.HasCharacter || Owner.HasEnemyPressure()))
 	{
 		NativeMonster.CorneredBerserkUntil = Device.dwTimeGlobal + Owner.Profile.CornerBerserkDuration;
 		NativeMonster.CorneredBerserkDamage = Owner.Profile.CornerBerserkDamage;
@@ -67,14 +67,14 @@ EELControl CELFlyingBehaviorManager::UpdateFlight(float DeltaTime, CELFlyingBeha
 		CBaseMonster& Monster = Owner.Adapter->Monster();
 		Fvector Source;
 		u32 Until;
-		const bool Inside = CBaseMonster::PanicZonePressure(Monster.Position(), Source, Until, Monster.ThreatTier) > 0.f;
+		const bool Inside = CBaseMonster::PanicZonePressure(Monster.Position(), Source, Until, Monster.EmmiPainProtection) > 0.f;
 		Fvector Goal;
 		const bool HasStimulus = Owner.Memory.Find(Owner.TargetIdentifier) || s32(Owner.Hearing.InvestigateUntil - Device.dwTimeGlobal) > 0;
 		if (Inside)
 		{
 			CruiseBehavior.SetAttention(Source, true);
 		}
-		else if (HasStimulus && CBaseMonster::FindPanicPerimeter(Monster.Position(), Monster.ThreatTier, Monster.ID() % 2 ? .12f : -.12f, Goal))
+		else if (HasStimulus && CBaseMonster::FindPanicPerimeter(Monster.Position(), Monster.EmmiPainProtection, Monster.ID() % 2 ? .12f : -.12f, Goal))
 		{
 			CruiseBehavior.SetAttention(Goal, false);
 		}

@@ -419,6 +419,8 @@ public:
 		static bool FindPanicPerimeter(const Fvector& Position, u32 ThreatTier, float AngleOffset, Fvector& Point);
 		static bool IsPanicRouteSafe(const Fvector& Start, const Fvector& Goal, u32 ThreatTier);
 		u32 ThreatTier = 1;
+		u32 EmmiPainProtection = 1;
+		float CharacterCourage = .5f;
 		u32 CorneredBerserkUntil = 0;
 		float CorneredBerserkDamage = 2.f;
 		float				m_default_panic_threshold;

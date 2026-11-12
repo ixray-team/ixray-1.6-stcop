@@ -61,11 +61,9 @@ public:
 		string512 Label;
 		xr_sprintf(Label, "ANIM: %s | part=%u ch=%u weight=%.2f time=%.2f/%.2f speed=%.2f", Name.c_str(), u32(Blend.bone_or_part), u32(Blend.channel), Blend.blendAmount, Blend.timeCurrent, Blend.timeTotal, Blend.speed);
 		Labels.emplace_back(Label);
-		xr_sprintf(Label, "%s:%u:%u;", Name.c_str(), u32(Blend.bone_or_part), u32(Blend.channel));
-		Signature += Label;
+
 	}
 	xr_vector<shared_str> Labels;
-	xr_string Signature;
 private:
 	IKinematicsAnimated& Skeleton;
 };
@@ -99,6 +97,10 @@ void CELComponentBase::Detach()
 	Hearing.Clear();
 	Sharing.Clear();
 	VisualAcquisition.clear();
+	Encounters.clear();
+	CharacterShock = PackCourage = 0.f;
+	CharacterUpdatedAt = 0;
+	IsFleeingPredator = false;
 	TargetIdentifier = u16(-1);
 	HasAttached = false;
 	HasActorVisualSample = false;
@@ -143,6 +145,13 @@ void CELComponentBase::RememberEntity(CEntityAlive& TargetEntity, EELObservation
 		}
 		OnVisualContact(TargetEntity, ObservedAt);
 	}
+	if (Profile.HasCharacter)
+	{
+		SEncounter& State = Encounter(TargetEntity);
+		State.LastContactAt = Device.dwTimeGlobal;
+		State.EnemyHealth = std::clamp(TargetEntity.GetfHealth() / std::max(EPS_L, TargetEntity.conditions().GetMaxHealth()), 0.f, 1.f);
+		State.EnemyScale = TargetEntity.GetVisualScale();
+	}
 	SELObservation Observation;
 	Observation.TargetIdentifier = TargetEntity.ID();
 	Observation.Position = TargetEntity.Position();
@@ -178,6 +187,14 @@ void CELComponentBase::Observe()
 	SELObservation Witnessed;
 	if (CELSharedDeaths::Witness(OwnerMonster, Profile, Witnessed))
 	{
+		if (CELSharedDebug::Instance().CanLogCombat(OwnerMonster.Position()))
+		{
+			Msg("[monsters_debug] WITNESS t=%u id=%u killer=%u shock_before=%.1f", CurrentTime, OwnerMonster.ID(), Witnessed.TargetIdentifier, CharacterShock);
+		}
+		if (Profile.HasCharacter)
+		{
+			CharacterShock = std::min(40.f, CharacterShock + Profile.CharacterAllyDeathLoss);
+		}
 		Hearing.Investigate(Witnessed.Position, Witnessed.TargetIdentifier, Profile.NoiseSearchTime, Profile.NoiseDangerPriority + 1);
 		if (Witnessed.TargetIdentifier != u16(-1))
 		{
@@ -231,7 +248,25 @@ void CELComponentBase::RefreshDecision()
 // Выбирает назначение до синхронизации штатной памяти и запуска схемы поведения.
 const SELObservation* CELComponentBase::SelectTarget()
 {
-	const SELObservation* Selected = Profile.IsPassive ? nullptr : CELSharedTargets::Select(Memory, *Adapter, TargetIdentifier);
+	UpdateCharacter();
+	// An animation, jump or species ability already owned by the native FSM must finish.
+	if (Profile.HasCharacter && !Profile.IsPassive && !Adapter->CanControl())
+	{
+		const CEntityAlive* Committed = Adapter->Monster().EnemyMan.get_enemy();
+		const SELObservation* Known = Committed ? Memory.Find(Committed->ID()) : nullptr;
+		if (Known && Adapter->IsEnemy(*Committed))
+		{
+			return Known;
+		}
+	}
+	const SELObservation* Selected = Profile.IsPassive ? nullptr : CELSharedTargets::Select(Memory, *Adapter, TargetIdentifier, this);
+	if (Selected && Profile.HasCharacter)
+	{
+		if (CEntityAlive* Target = ExtendedEntityes::FindEntity(Selected->TargetIdentifier))
+		{
+			Encounter(*Target).Engaged = true;
+		}
+	}
 	if (Selected && CELSharedTargets::ThreatPriority(*Selected, *Adapter))
 	{
 		return Selected;
@@ -240,7 +275,7 @@ const SELObservation* CELComponentBase::SelectTarget()
 	{
 		CEntityAlive* Target = ExtendedEntityes::FindEntity(ProvokedTarget);
 		const SELObservation* Known = Memory.Find(ProvokedTarget);
-		if (Target && Known && Adapter->IsEnemy(*Target) && Adapter->CanPursue(*Target, Known->Position))
+		if (Target && Known && Adapter->IsEnemy(*Target) && Adapter->CanPursue(*Target, Known->Position) && CanEngage(*Known))
 		{
 			return Known;
 		}
@@ -253,6 +288,10 @@ const SELObservation* CELComponentBase::SelectTarget()
 void CELComponentBase::PublishNativeMemory()
 {
 	CBaseMonster& OwnerMonster = Adapter->Monster();
+	if (Profile.HasCharacter && !Profile.IsPassive && !Adapter->CanControl() && OwnerMonster.EnemyMan.get_enemy())
+	{
+		return;
+	}
 	OwnerMonster.EnemyMemory.clear();
 	if (Profile.IsPassive)
 	{
@@ -265,7 +304,12 @@ void CELComponentBase::PublishNativeMemory()
 	for (ObservationIterator = Memory.GetRecords().begin(); ObservationIterator != Memory.GetRecords().end(); ++ObservationIterator)
 	{
 		TargetEntity = ExtendedEntityes::FindEntity(ObservationIterator->TargetIdentifier);
-		if (!TargetEntity || !Adapter->IsEnemy(*TargetEntity))
+		if (!TargetEntity || !Adapter->IsEnemy(*TargetEntity) || !CanEngage(*ObservationIterator))
+		{
+			continue;
+		}
+		const auto EncounterIterator = Encounters.find(TargetEntity->ID());
+		if (Profile.HasCharacter && (TargetEntity->ID() != TargetIdentifier || (EncounterIterator != Encounters.end() && EncounterIterator->second.Fleeing)))
 		{
 			continue;
 		}
@@ -399,6 +443,7 @@ void CELComponentBase::UpdateAuditoryAttention()
 // Удаляет знания и ссылки, связанные с исчезнувшим объектом.
 void CELComponentBase::RemoveObject(u16 ObjectIdentifier)
 {
+	Encounters.erase(ObjectIdentifier);
 	ForgetTarget(ObjectIdentifier);
 	Hearing.RemoveObject(ObjectIdentifier);
 }
@@ -428,7 +473,7 @@ void CELComponentBase::UpdateFieldExposure()
 	float Exposure = 0.f;
 	Fvector Source;
 	u32 Until;
-	const bool IsInside = CBaseMonster::PanicZonePressure(Adapter->Monster().Position(), Source, Until, Adapter->Monster().ThreatTier, &Exposure) > 0.f;
+	const bool IsInside = CBaseMonster::PanicZonePressure(Adapter->Monster().Position(), Source, Until, Adapter->Monster().EmmiPainProtection, &Exposure) > 0.f;
 	if (IsInside)
 	{
 		FieldEscapeSource = Source;
@@ -451,6 +496,10 @@ void CELComponentBase::UpdateFieldExposure()
 
 bool CELComponentBase::ShouldFleePredator(const SELObservation* Observation)
 {
+	if (Profile.HasCharacter)
+	{
+		return ShouldFleeCharacter(Observation);
+	}
 	CBaseMonster& Monster = Adapter->Monster();
 	CEntityAlive* Target = Observation ? ExtendedEntityes::FindEntity(Observation->TargetIdentifier) : nullptr;
 	if (Target && !Adapter->IsEnemy(*Target))
@@ -521,7 +570,14 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 	Record.Senses.push_back(EnvironmentLabel);
 	xr_sprintf(EnvironmentLabel, "ПОЛЕ: головная боль %.0f%% | %s", FieldHeadache * 100.f, IsFieldRecovering ? "уход/восстановление" : "может рискнуть войти");
 	Record.Senses.push_back(EnvironmentLabel);
-	xr_sprintf(EnvironmentLabel, "СМЕЛОСТЬ: %.0f%% | видовой страх %s | решение: %s", Courage * 100.f, Profile.CanFearPredators ? "разрешён" : "отключён", IsFleeingPredator ? "отступление" : "бой/нет угрозы");
+	if (Profile.HasCharacter)
+	{
+		xr_sprintf(EnvironmentLabel, "ХАРАКТЕР: агрессия %.0f | смелость %.0f / база %.0f | стая +%.1f | потрясение -%.1f | %s", Profile.CharacterAggression, Courage * 100.f, Profile.CharacterCourage, PackCourage * Profile.CharacterPackBonus, CharacterShock, IsFleeingPredator ? "отход" : "бой/наблюдение");
+	}
+	else
+	{
+		xr_sprintf(EnvironmentLabel, "СМЕЛОСТЬ: %.0f%% | видовой страх %s | решение: %s", Courage * 100.f, Profile.CanFearPredators ? "разрешён" : "отключён", IsFleeingPredator ? "отступление" : "бой/нет угрозы");
+	}
 	Record.Senses.push_back(EnvironmentLabel);
 	const SELObservation* Guided = Memory.Find(TargetIdentifier);
 	if (Guided && Guided->Source == EELObservationSource::Sharing && Guided->IsPsiShared && s32(Guided->ExpiresAt - Device.dwTimeGlobal) > 0 &&
@@ -539,7 +595,7 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 	{
 		return;
 	}
-	if (Player->Position().distance_to_sqr(Adapter->Monster().Position()) <= 60.f * 60.f)
+	if (CELSharedDebug::Instance().Detail(0) && Player->Position().distance_to_sqr(Adapter->Monster().Position()) <= 60.f * 60.f)
 	{
 		if (s32(Device.dwTimeGlobal - NextAnimationSample) >= 0)
 		{
@@ -550,37 +606,22 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 			string512 Header;
 			xr_sprintf(Header, "ANIM REQUEST: native=%u action=%u motion=%u override=%u selected=%s age=%u ms", Owner.StateMan ? u32(Owner.StateMan->get_state_type()) : u32(-1), u32(Animation.m_tAction), u32(Animation.GetCurAnim()), u32(Animation.get_override_animation()), Animation.cur_anim_info().name.size() ? Animation.cur_anim_info().name.c_str() : "<none>", Device.dwTimeGlobal - Animation.cur_anim_info().time_started);
 			AnimationLabels.emplace_back(Header);
-			xr_string Signature;
-			string256 Request;
-			xr_sprintf(Request, "%u:%u:%u:%u|%s|%s|", Owner.StateMan ? u32(Owner.StateMan->get_state_type()) : u32(-1), u32(Animation.m_tAction), u32(Animation.GetCurAnim()), u32(Animation.get_override_animation()), Record.Mode.c_str(), Record.State.c_str());
-			Signature = Request;
 			if (Owner.Visual())
 			{
 				if (IKinematicsAnimated* Skeleton = Owner.Visual()->dcast_PKinematicsAnimated())
 				{
 					CAnimationDebugCollector Collector(*Skeleton);
 					Skeleton->LL_IterateBlends(Collector);
-					Signature += Collector.Signature;
 					AnimationLabels.insert(AnimationLabels.end(), Collector.Labels.begin(), Collector.Labels.end());
 				}
 			}
-			if (Signature != LastAnimationSignature || Device.dwTimeGlobal - LastAnimationLog >= 2000)
-			{
-				LastAnimationSignature = Signature;
-				LastAnimationLog = Device.dwTimeGlobal;
-				Msg("[monster_anim] t=%u id=%u section=%s target=%u state=%s speed=%.2f pos=%.2f,%.2f,%.2f", Device.dwTimeGlobal, Owner.ID(), Owner.cNameSect().c_str(), TargetIdentifier, Record.State.c_str(), Record.Speed, Owner.Position().x, Owner.Position().y, Owner.Position().z);
-				for (const shared_str& AnimationLabel : AnimationLabels)
-				{
-					Msg("[monster_anim] id=%u %s", Owner.ID(), AnimationLabel.c_str());
-				}
-			}
+
 		}
 		Record.Senses.insert(Record.Senses.end(), AnimationLabels.begin(), AnimationLabels.end());
 	}
 	else
 	{
 		AnimationLabels.clear();
-		LastAnimationSignature.clear();
 	}
 	string512 Label;
 	const SELObservation* Known = Memory.Find(Player->ID());
@@ -756,4 +797,235 @@ void CELComponentBase::NoticeActorLight(const Fvector& Point)
 	Stimulus.Power = 1.f;
 	Stimulus.OccurredAt = Device.dwTimeGlobal;
 	Hearing.Hear(Stimulus, OwnerMonster.Position(), Profile, OwnerMonster.ID());
+}
+
+// Bounded encounter memory keeps decisions stable without a second species matrix.
+CELComponentBase::SEncounter& CELComponentBase::Encounter(CEntityAlive& Target)
+{
+	const u32 Now = Device.dwTimeGlobal;
+	auto Existing = Encounters.find(Target.ID());
+	if (Existing == Encounters.end() && Encounters.size() >= 64)
+	{
+		auto Oldest = std::min_element(Encounters.begin(), Encounters.end(), [this](const auto& Left, const auto& Right)
+		{
+			if (Left.first == TargetIdentifier || Right.first == TargetIdentifier)
+			{
+				return Right.first == TargetIdentifier && Left.first != TargetIdentifier;
+			}
+			return Left.second.LastContactAt < Right.second.LastContactAt;
+		});
+		Encounters.erase(Oldest);
+	}
+	SEncounter& State = Encounters[Target.ID()];
+	const u32 Generation = ExtendedEntityes::OwnerGeneration(Target.ID());
+	if (!State.Initialized || State.Generation != Generation)
+	{
+		State = {};
+		State.Initialized = true;
+		State.Generation = Generation;
+		State.IsActor = smart_cast<CActor*>(&Target) != nullptr;
+		State.EnemyTier = std::clamp(pSettings->read_if_exists<u32>(*Target.cNameSect(), "monster_threat_tier", 2u), 1u, 5u);
+		State.UpdatedAt = Now;
+		State.LastContactAt = Now;
+		State.Initiative = Random.randF(0.f, 100.f);
+		State.ResolveBias = Random.randF(-5.f, 5.f);
+	}
+	return State;
+}
+
+void CELComponentBase::UpdateCharacter()
+{
+	if (!Profile.HasCharacter)
+	{
+		return;
+	}
+	const u32 Now = Device.dwTimeGlobal;
+	const float Elapsed = CharacterUpdatedAt ? std::min(1.f, float(Now - CharacterUpdatedAt) * .001f) : 0.f;
+	CharacterUpdatedAt = Now;
+	CBaseMonster& Monster = Adapter->Monster();
+	const u32 Members = Profile.UsesPackCourage ? CELSharedHuntGroups::CountCompanions(Monster, Profile.PackCourageRadius) : 1;
+	const float DesiredPack = Profile.UsesPackCourage ? std::min(1.f, float(Members > 0 ? Members - 1 : 0) * Profile.PackCouragePerAlly) : 0.f;
+	const float PackStep = (DesiredPack > PackCourage ? Profile.PackCourageGain : Profile.SoloCourageDecay) * Elapsed;
+	PackCourage += std::clamp(DesiredPack - PackCourage, -PackStep, PackStep);
+	const bool Fighting = TargetIdentifier != u16(-1);
+	if (!Fighting)
+	{
+		CharacterShock = std::max(0.f, CharacterShock - Profile.CharacterRecovery * Elapsed);
+	}
+	for (auto Iterator = Encounters.begin(); Iterator != Encounters.end();)
+	{
+		SEncounter& State = Iterator->second;
+		if ((Iterator->first != TargetIdentifier && Now - State.LastContactAt > Profile.CharacterMemory) || !ExtendedEntityes::FindEntity(Iterator->first))
+		{
+			Iterator = Encounters.erase(Iterator);
+			continue;
+		}
+		const float Recovery = Profile.CharacterRecovery * std::min(1.f, float(Now - State.UpdatedAt) * .001f);
+		State.UpdatedAt = Now;
+		if (Iterator->first != TargetIdentifier)
+		{
+			State.Experience += std::clamp(-State.Experience, -Recovery, Recovery);
+			State.Engaged = false;
+		}
+		++Iterator;
+	}
+	const auto Current = Encounters.find(TargetIdentifier);
+	Courage = std::clamp(CharacterConfidence(Current != Encounters.end() ? Current->second : SEncounter()) * .01f, 0.f, 1.f);
+	Monster.CharacterCourage = Courage;
+}
+
+float CELComponentBase::CharacterConfidence(const SEncounter& State) const
+{
+	CBaseMonster& Monster = Adapter->Monster();
+	const float Health = std::clamp(Monster.GetfHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth()), 0.f, 1.f);
+	const float Size = std::clamp((Monster.GetVisualScale() - 1.f) / .3f, -1.f, 1.f) * Profile.CharacterSizeCourage;
+	const float Bonus = std::max(0.f, Size) + PackCourage * Profile.CharacterPackBonus + std::max(0.f, State.Experience);
+	// Positive support uses remaining headroom; injuries and resistance retain their full weight.
+	return Profile.CharacterCourage + std::min(0.f, Size) + Bonus * (1.f - Profile.CharacterCourage * .01f) + std::min(0.f, State.Experience) - CharacterShock - (1.f - Health) * Profile.CharacterHealthPenalty;
+}
+
+float CELComponentBase::CharacterResolve(const SEncounter& State) const
+{
+	CBaseMonster& Monster = Adapter->Monster();
+	const float Confidence = CharacterConfidence(State);
+	const u32 EnemyTier = State.EnemyTier;
+	const bool IsActor = State.IsActor;
+	const float RankPressure = IsActor || !Profile.CanFearPredators ? 0.f : std::max(0.f, float(std::min(5u, EnemyTier)) - float(Monster.ThreatTier)) * Profile.CharacterTierPressure;
+	const float EnemyWeakness = IsActor ? 0.f : (1.f - State.EnemyHealth) * Profile.CharacterHealthPenalty * .5f;
+	const float RelativeSize = IsActor ? 0.f : std::clamp(State.EnemyScale - Monster.GetVisualScale(), -.6f, .6f) * Profile.CharacterSizeCourage;
+	return Confidence - RankPressure - RelativeSize + EnemyWeakness + State.ResolveBias;
+}
+
+bool CELComponentBase::CanEngage(const SELObservation& Observation)
+{
+	if (!Profile.HasCharacter)
+	{
+		return true;
+	}
+	if (Profile.IsPassive)
+	{
+		return false;
+	}
+	CEntityAlive* Target = ExtendedEntityes::FindEntity(Observation.TargetIdentifier);
+	if (!Target || !Adapter->IsEnemy(*Target))
+	{
+		return false;
+	}
+	const u32 Now = Device.dwTimeGlobal;
+	SEncounter& State = Encounter(*Target);
+	// Sampling takes place once per encounter, never once per sight update or candidate scan.
+	const bool Provoked = s32(State.ProvokedUntil - Now) > 0 || (ProvokedTarget == Target->ID() && s32(ProvokedUntil - Now) > 0);
+	const bool Berserk = s32(Adapter->Monster().CorneredBerserkUntil - Now) > 0;
+	CBaseMonster* Other = smart_cast<CBaseMonster*>(Target);
+	const bool UnderAttack = Other && Other->EnemyMan.get_enemy() == &Adapter->Monster() && Adapter->Monster().Position().distance_to_sqr(Observation.Position) < _sqr(Profile.CharacterSafeDistance);
+	const bool RecentHit = CELSharedTargets::ThreatPriority(Observation, *Adapter) == 3;
+	if (State.Withdrawn && !RecentHit && !UnderAttack && !Berserk)
+	{
+		if (s32(Now - State.DecisionUntil) < 0 || CharacterResolve(State) < Profile.CharacterResumeThreshold)
+		{
+			return false;
+		}
+		State.Withdrawn = false;
+	}
+	if (State.Engaged || Provoked || UnderAttack || Berserk)
+	{
+		return true;
+	}
+	const float Resolve = CharacterResolve(State);
+	const bool Allowed = (Profile.CharacterAggression >= 100.f || Profile.CharacterAggression > State.Initiative) && Resolve >= Profile.CharacterRetreatThreshold;
+	if (CELSharedDebug::Instance().CanLogCombat(Adapter->Monster().Position()) && s32(Now - NextCandidateTrace) >= 0)
+	{
+		NextCandidateTrace = Now + 2000;
+		Msg("[monsters_debug] INITIATIVE t=%u id=%u candidate=%u allowed=%d aggression=%.1f roll=%.1f resolve=%.1f retreat_threshold=%.1f", Now, Adapter->Monster().ID(), Target->ID(), int(Allowed), Profile.CharacterAggression, State.Initiative, Resolve, Profile.CharacterRetreatThreshold);
+	}
+	return Allowed;
+}
+
+void CELComponentBase::RecordCombatHit(CEntityAlive& Opponent, float HealthFraction, bool Received)
+{
+	if (!Profile.HasCharacter || !HasAttached || !Adapter->IsEnemy(Opponent))
+	{
+		return;
+	}
+	SEncounter& State = Encounter(Opponent);
+	State.LastContactAt = Device.dwTimeGlobal;
+	State.Experience = std::clamp(State.Experience + HealthFraction * (Received ? -Profile.CharacterHitLoss : Profile.CharacterHitGain), -40.f, 20.f);
+	if (Received)
+	{
+		State.ProvokedUntil = Device.dwTimeGlobal + Profile.CharacterMemory;
+	}
+	else
+	{
+		State.EnemyHealth = std::clamp(Opponent.GetfHealth() / std::max(EPS_L, Opponent.conditions().GetMaxHealth()), 0.f, 1.f);
+	}
+}
+
+bool CELComponentBase::HasEnemyPressure()
+{
+	const SELObservation* Known = Memory.Find(TargetIdentifier);
+	CEntityAlive* Target = Known ? ExtendedEntityes::FindEntity(TargetIdentifier) : nullptr;
+	return Target && Adapter->IsEnemy(*Target) && (CELSharedTargets::ThreatPriority(*Known, *Adapter) == 3 ||
+		(Adapter->CanSee(*Target) && Adapter->Monster().Position().distance_to_sqr(Known->Position) < _sqr(Profile.CharacterSafeDistance)));
+}
+
+bool CELComponentBase::ShouldFleeCharacter(const SELObservation* Observation)
+{
+	CEntityAlive* Target = Observation ? ExtendedEntityes::FindEntity(Observation->TargetIdentifier) : nullptr;
+	if (!Target || !Adapter->IsEnemy(*Target))
+	{
+		IsFleeingPredator = false;
+		return false;
+	}
+	CBaseMonster& Monster = Adapter->Monster();
+	const u32 Now = Device.dwTimeGlobal;
+	SEncounter& State = Encounter(*Target);
+	const float Resolve = CharacterResolve(State);
+	Courage = std::clamp(CharacterConfidence(State) * .01f, 0.f, 1.f);
+	Monster.CharacterCourage = Courage;
+	if (s32(Monster.CorneredBerserkUntil - Now) > 0)
+	{
+		State.Fleeing = false;
+	}
+	else if (State.Fleeing && Monster.Position().distance_to_sqr(Observation->Position) >= _sqr(Profile.CharacterSafeDistance) && CELSharedTargets::ThreatPriority(*Observation, *Adapter) != 3)
+	{
+		// Reaching safety ends this chase. New pressure may force another defensive response.
+		State.Fleeing = false;
+		State.Engaged = false;
+		State.Withdrawn = true;
+		State.DecisionUntil = Now + Profile.CharacterDecisionHold;
+		IsFleeingPredator = false;
+		return true;
+	}
+	else if (s32(Now - State.NextDecisionAt) >= 0 && s32(Now - State.DecisionUntil) >= 0)
+	{
+		State.NextDecisionAt = Now + Profile.CharacterReevaluate;
+		const bool WantsRetreat = Resolve < (State.Fleeing ? Profile.CharacterResumeThreshold : Profile.CharacterRetreatThreshold);
+		if (WantsRetreat != State.Fleeing)
+		{
+			// A frightened animal can still choose a counterattack; hold it long enough to act.
+			State.Fleeing = WantsRetreat && Random.randF(0.f, 1.f) >= Profile.CharacterCounterChance;
+			State.DecisionUntil = Now + Profile.CharacterDecisionHold;
+		}
+	}
+	IsFleeingPredator = State.Fleeing;
+	return State.Fleeing;
+}
+
+void CELComponentBase::TraceCombat(EELControl Control)
+{
+	CBaseMonster& Owner = Adapter->Monster();
+	const u32 Now = Device.dwTimeGlobal;
+	if (!CELSharedDebug::Instance().CanLogCombat(Owner.Position()) || s32(Now - NextCombatSample) < 0) { return; }
+	NextCombatSample = Now + 500;
+	CEntityAlive* Target = ExtendedEntityes::FindEntity(TargetIdentifier);
+	const CEntityAlive* Native = Owner.EnemyMan.get_enemy();
+	const SELObservation* Known = Memory.Find(TargetIdentifier);
+	const bool Visible = Target && Adapter->CanSee(*Target);
+	string256 State;
+	xr_sprintf(State, "%u:%u:%u:%u:%u:%u:%u:%u", TargetIdentifier, Native ? Native->ID() : u16(-1), u32(Control), u32(Owner.anim().m_tAction), u32(Owner.anim().GetCurAnim()), u32(IsFleeingPredator), u32(IsFieldRecovering), u32(Visible));
+	if (LastCombatState == State && Now - LastCombatLog < 2000) { return; }
+	LastCombatState = State;
+	LastCombatLog = Now;
+	Msg("[monsters_debug] STATE t=%u id=%u section=%s scale=%.2f hp=%.3f target=%u target_section=%s native=%u control=%s can_control=%d visible=%d source=%d distance=%.2f melee_max=%.2f action=%u motion=%u native_state=%u courage=%.1f pack=%.2f shock=%.1f flee=%d field=%d noise_panic=%d investigate=%d pos=%.2f,%.2f,%.2f",
+		Now, Owner.ID(), *Owner.cNameSect(), Owner.GetVisualScale(), Owner.GetfHealth(), TargetIdentifier, Target ? *Target->cNameSect() : "none", Native ? Native->ID() : u16(-1), Control == EELControl::Native ? "native" : "extended", int(Adapter->CanControl()), int(Visible), Known ? int(Known->Source) : -1, Target ? Owner.MeleeChecker.TargetDistance(Target) : -1.f, Owner.MeleeChecker.get_max_distance(), u32(Owner.anim().m_tAction), u32(Owner.anim().GetCurAnim()), Owner.StateMan ? u32(Owner.StateMan->get_state_type()) : u32(-1), Courage * 100.f, PackCourage, CharacterShock, int(IsFleeingPredator), int(IsFieldRecovering), int(s32(Hearing.PanicUntil - Now) > 0), int(s32(Hearing.InvestigateUntil - Now) > 0), Owner.Position().x, Owner.Position().y, Owner.Position().z);
 }
