@@ -789,3 +789,22 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - `SActorVehicleAnims` хранит два набора коллекций (`m_vehicles_type_collections` и `m_vehicles_old_type_collections`); выбор идёт через `CCar::UseOldDriverAnimations()`.
 - В активном `veh_base.ltx` (`ixray-definitive-car-pack-addon`) выставлено `driver_animation_set = new`.
 - Проверка: лог показал `set=new` с двумя слоями и `set=old` (type 0 — 3 idles, type 1 — 2 idles); autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 72: открытые двери не мешают переводу машины в disable
+
+- `NeutralTorque()` больше не вызывает `PSecond_element()->Enable()`. Этот вызов активировал физический объект машины каждый кадр, из-за чего машина с открытыми дверями не засыпала и слегка дёргалась на месте.
+- Статическое удержание двери применяется один раз при переходе в состояние покоя (`hold_applied`), а не каждый кадр. `ApplyTorque()` сбрасывает флаг, поэтому после движения удержание восстанавливается один раз при остановке.
+- `spring_loaded` двери после завершения пружинного хода один раз получают `NeutralTorque(hold_torque)` (если полностью открыты) или слабый пружинный момент, после чего удаляются из `m_doors_update`, как раньше.
+- Проверка: временно все 4 двери `veh_zaz968` принудительно открывались при спавне. В логе `shell` менялся с `1` на `0` после затухания скорости, `speed=0.0000`, `open_doors=4`; autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 73: return_force не мешает переводу машины в disable
+
+- `CCar::UpdateReturnBones()` больше не вызывает `CPhysicsElement::setTorque()` каждый шаг. Тот метод вызывает `dBodyEnable()` и `m_shell->EnableObject(0)`, поэтому машины с `return_force` (Gaz66, Kamaz) не засыпали и дёргались на месте.
+- В `CPhysicsElement` добавлен виртуальный `setTorqueNoWake()`. Реализация в `CPHElement` пишет момент через `dBodySetTorque()`, применяет `BodyCutForce()` с лимитами элемента, но не включает тело и физическую оболочку.
+- Проверка: `veh_gaz66` с `[kabina] return_force = 120000`; в логе `shell` менялся с `1` на `0`, скорость `0.0000`; autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 74: возвращено удержание spring_loaded дверей
+
+- Для `spring_loaded` дверей после завершения хода снова применяется прежний слабый пружинный момент `ApplyTorque(torque / 5.f, a_vel)` и дверь удаляется из `m_doors_update`.
+- Ранее в этом месте ставился `NeutralTorque(hold_torque)`, а `hold_torque_factor` в активном конфиге равен `0.05`, то есть удержание было в 4 раза слабее прежнего пружинного момента. Из-за этого spring-двери переставали держаться открытыми.
+- Проверка: `veh_zaz968`, spring-двери `front_door` и `back_door` открывались после спавна и оставались в состоянии `opened` с углами `0.785` и `0.960` при `limit` `0.750`/`0.925`; после `shell=0` двери оставались открытыми. Autotest — `RESULT: PASS`, `errors=0`.

@@ -439,14 +439,11 @@ void CCar::SDoor::Update()
 				{
 					if (Device.dwTimeGlobal - open_time > 1000)
 					{
-						// The spring keeps pushing the door towards its limit.
-						// Once it is there, replace the drive with a zero-velocity
-						// hold. Keeping the door in the update list lets it recover
-						// if a slope or a collision pushes it off the limit.
-						if (IsFullyOpen())
-							NeutralTorque(hold_torque);
-						else
-							ApplyTorque(torque / 5.f, a_vel);
+						// Preserve the original spring hold: a weak continuous
+						// opening torque, then stop updating the door. The motor
+						// stays set and the car can still go to disable.
+						ApplyTorque(torque / 5.f, a_vel);
+						RemoveFromUpdate();
 					}
 					break;
 				}
@@ -455,10 +452,12 @@ void CCar::SDoor::Update()
 				// branch used to replace it with a near-zero motor force while
 				// the car slowly rolled on a slope, and the door then closed
 				// under gravity. hold_at_speed keeps the hold active even when
-				// the car is moving.
+				// the car is moving. Apply it only once per stop so the motor
+				// does not keep the physics shell awake every frame.
 				if (hold_at_speed || !pcar->m_pPhysicsShell->isEnabled() || pcar->GetVelocityM() <= CarDoorHoldSpeed)
 				{
-					NeutralTorque(hold_torque);
+					if (!hold_applied)
+						NeutralTorque(hold_torque);
 					break;
 				}
 
@@ -525,6 +524,7 @@ default:	return;
 void CCar::SDoor::ApplyTorque(float atorque,float aa_vel)
 {
 	if(!joint||!joint->bActive)return;
+	hold_applied = false;
 	joint->PSecond_element()->Enable();
 	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
 	dJointSetHingeParam(joint->GetDJoint(),dParamVel,aa_vel*pos_open);
@@ -532,7 +532,7 @@ void CCar::SDoor::ApplyTorque(float atorque,float aa_vel)
 void CCar::SDoor::NeutralTorque(float atorque)
 {
 	if (!joint || !joint->bActive)return;
-	joint->PSecond_element()->Enable();
+	hold_applied = true;
 	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
 	dJointSetHingeParam(joint->GetDJoint(),dParamVel,0);
 }

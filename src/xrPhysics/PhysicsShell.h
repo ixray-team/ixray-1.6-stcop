@@ -98,6 +98,7 @@ public:
 	virtual		void			applyForce								(float x,float y,float z)																								= 0;
 	virtual		void			applyImpulse							(const Fvector& dir, float val)																							= 0;
 	virtual		void			setTorque								(const Fvector& torque)																									= 0;
+	virtual		void			setTorqueNoWake							(const Fvector& torque)																									{ setTorque(torque); }
 	virtual		void			setForce								(const Fvector& force)																									= 0;
 	virtual		void	_BCL	applyGravityAccel						(const Fvector& accel)																									= 0;
 	virtual		void			SetAirResistance						(float linear=default_k_l, float angular=default_k_w)																	= 0;

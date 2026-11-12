@@ -212,6 +212,7 @@ public:																																				//
 	virtual	void						set_AngularVel					(const Fvector& velocity) override;														//called anywhere ph state influent
 	virtual	void						setForce						(const Fvector& force) override;															//
 	virtual	void						setTorque						(const Fvector& torque) override;														//
+	virtual	void						setTorqueNoWake					(const Fvector& torque) override;														//
 	virtual	void						set_ApplyByGravity				(bool flag) override;															//
 	virtual	bool						get_ApplyByGravity				() override;															//
 ///////////////////////////////////////////////////Net////////////////////////////////////////////////////////////////////////////////////////
