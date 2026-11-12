@@ -9,8 +9,11 @@
 
 #ifdef IXR_LINUX
 #	define STB_IMAGE_WRITE_IMPLEMENTATION
-#	define NULL 0
+#	pragma push_macro("NULL")
+#	undef NULL
+#	define NULL nullptr
 #	include <stb/stb_image_write.h>
+#	pragma pop_macro("NULL")
 #endif
 
 extern int SM_FOR_SEND_WIDTH;
