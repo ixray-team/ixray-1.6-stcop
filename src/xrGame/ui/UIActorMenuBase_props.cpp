@@ -625,7 +625,7 @@ void CUIActorMenuBase::PropertiesBoxForCar(PIItem item, bool& b_show)
 	if (!IsGameTypeSingle() || !item)
 		return;
 
-	CCar* Car = GetActorCar();
+	CCar* Car = GetCarForActions();
 	if (!CanUseCarActions(Car))
 		return;
 
@@ -663,12 +663,23 @@ bool CUIActorMenuBase::CanUseCarActions(CCar* Car)
 	if (Car->GetSpeedKmH() > 1.f)
 		return false;
 
-	// Repair and refuel are available while the actor is inside the car. In
-	// the car trunk UI the displayed partner must be that same car.
+	// Repair and refuel are available while the actor is inside the car or
+	// while the car trunk UI is open for this car.
 	if (m_currMenuMode == mmInventory)
 		return true;
 
 	return m_currMenuMode == mmDeadBodySearch && GetPartner() == Car;
+}
+
+CCar* CUIActorMenuBase::GetCarForActions()
+{
+	if (CCar* Car = GetActorCar())
+		return Car;
+
+	if (m_currMenuMode == mmDeadBodySearch && GetPartner())
+		return GetPartner()->cast_car();
+
+	return nullptr;
 }
 
 bool CUIActorMenuBase::ConsumeCarItem(CUICellItem* cell_item)
@@ -714,7 +725,7 @@ bool CUIActorMenuBase::TryCarRepair(CUICellItem* cell_item)
 		return false;
 
 	PIItem Item = (PIItem)cell_item->m_pData;
-	CCar* Car = GetActorCar();
+	CCar* Car = GetCarForActions();
 	if (!Item || !CanUseCarActions(Car))
 		return false;
 
@@ -740,7 +751,7 @@ bool CUIActorMenuBase::TryCarRefuel(CUICellItem* cell_item)
 		return false;
 
 	PIItem Item = (PIItem)cell_item->m_pData;
-	CCar* Car = GetActorCar();
+	CCar* Car = GetCarForActions();
 	if (!Item || !CanUseCarActions(Car))
 		return false;
 

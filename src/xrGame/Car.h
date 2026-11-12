@@ -261,6 +261,9 @@ static	const u16				cAsCallsnum						= 3;
 	virtual void						ApplyDamage					(u16 level)				;
 	void								UpdateDamageEffects			()						;
 	void								RepairDamageItems			()						;
+	void								StartExplosionTimer			(float time = -1.f)		;
+	void								StopExplosionTimer			()						;
+	void								RestoreExplosionState		()						;
 	virtual	float						Health						()						{return GetfHealth();}
 	virtual void						ChangeCondition				(float fDeltaCondition)	;
 	virtual void						StartTimerEffects			()						{};
@@ -270,6 +273,11 @@ static	const u16				cAsCallsnum						= 3;
 
 ////////////////////////////////////////////////////////////////////////
 	CCarDamageParticles					m_damage_particles;
+	float								m_explosion_delay = 0.f;
+	bool								m_zero_health_explosion_timer = false;
+	float								m_saved_explosion_time = 0.f;
+	bool								m_saved_explosion_pending = false;
+	bool								m_has_saved_explosion_state = false;
 ///////////////////////////////////////////////////////////////////////
 public:
 	bool								calc_bones_at_once = false;

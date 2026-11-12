@@ -107,6 +107,7 @@ protected:
 	void						PropertiesBoxForUpgrade		(PIItem item, bool& b_show);
 	void						PropertiesBoxForRepair		(PIItem item, bool& b_show);
 	void						PropertiesBoxForCar			(PIItem item, bool& b_show);
+	CCar*						GetCarForActions			();
 	bool						CanUseCarActions			(CCar* Car);
 	bool						TryCarRepair				(CUICellItem* cell_item);
 	bool						TryCarRefuel				(CUICellItem* cell_item);

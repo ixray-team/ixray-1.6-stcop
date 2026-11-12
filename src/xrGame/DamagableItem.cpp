@@ -24,7 +24,12 @@ u16 CDamagableItem::DamageLevel()
 	{
 		health = 0.f;
 	}
-	u16 dl = u16((1.f - Health() / m_max_health) * m_levels_num);
+	// Truncation keeps a damage level active until its threshold is crossed.
+	// Health exactly at a threshold can still evaluate to 1.9999999 in float,
+	// which would fall back one level. The car explosion fuse sets health
+	// exactly to DamageLevelToHealth(2), so nudge the level past that boundary.
+	const float Level = (1.f - health / m_max_health) * m_levels_num;
+	u16 dl = u16(Level + 1e-4f);
 
 	if (dl < m_levels_num)
 	{
