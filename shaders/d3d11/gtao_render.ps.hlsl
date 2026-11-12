@@ -28,6 +28,7 @@
 #endif
 
 //View-z pyramid with prefiltered MIPs (depth_pyramid.cs.hlsl), HUD view-z is negative
+//HUD and world depths are not in one space: a tap only occludes a pixel of its own kind
 Texture2D<float> s_ao_depth : register(t25);
 
 //GbufferGetPointRealUnjitter from view-z, see GbufferGetViewZ
@@ -37,7 +38,7 @@ float3 TapPoint(float2 TexCoord, float ViewZ, bool Hud)
 	return float3((TexCoord * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f)) * Scale * ViewZ, ViewZ);
 }
 
-float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter)
+float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter, bool hud)
 {
 	//Few constants
 	//TBD: Put everything into common header
@@ -124,7 +125,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 				float s_horizon = dot(s_vector, view_direction) * rsqrt(s_vec_length);
 
 				//'Obscurance' term, basically a simple falloff known from HBAO/HBAO+. Just a MAD + saturate
-				float falloff = saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0);
+				float falloff = (s_depth.x < 0.0) == hud ? saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0) : 0.0;
 				s_horizon = lerp(-1.0, s_horizon, falloff);
 
 				max_horizon_cos = max(max_horizon_cos, s_horizon);
@@ -138,7 +139,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 				float s_vec_length = dot(s_vector, s_vector);
 				float s_horizon = dot(s_vector, view_direction) * rsqrt(s_vec_length);
 
-				float falloff = saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0);
+				float falloff = (s_depth.y < 0.0) == hud ? saturate(s_vec_length * GTAO_NEG_1_OVER_RADIUSQR + 1.0) : 0.0;
 				s_horizon = lerp(-1.0, s_horizon, falloff);
 
 				max_horizon_cos = max(max_horizon_cos, s_horizon);
@@ -175,10 +176,15 @@ uint main(PSInputFullscreen I) : SV_Target
 	if(zbuffer == 1.0)
 		return asuint(f32tof16(1000.0)) | (asuint(f32tof16(1.0)) << 16);
 
-	//Sample blue noise texture, animated only when TAA or an upscaler accumulates it (texture contains 32 frames)
-	//Offset by 16 frames so the pattern is not the one SSLR uses this frame
-	uint noise_frame = m_taa_jitter.z < 0.0f ? 0 : (uint(m_taa_jitter.w) + 16) % 32;
-	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, noise_frame)].xyz;
+	//Every 5x5 window, the support of gtao_filter, holds each of 25 slice rotations and step offsets once,
+	//so the filter sees the same sample set everywhere and the pattern cancels without temporal accumulation
+	uint2 cell = uint2(I.hpos.xy) % 5;
+	uint order = cell.x + 5 * ((cell.y + 2 * cell.x) % 5);
+	float2 jitter_tex = (float2(order, (order * 7) % 25) + 0.5) / 25.0;
+
+	//Shifted every frame only when TAA or an upscaler accumulates it
+	if (m_taa_jitter.z >= 0.0f)
+		jitter_tex = frac(jitter_tex + float(uint(m_taa_jitter.w) % 64) * float2(0.618034, 0.754878));
 
 	//Unpack G-Buffer data...
 	float3 Normal, Point;
@@ -190,7 +196,7 @@ uint main(PSInputFullscreen I) : SV_Target
 
 	//Init. Don't render GTAO past 60 units, fade it out from 50. It will become a noisy mess...
 	//View-pos is shifted towards view normal; this eliminates self-occlusion
-	float occlusion = Point.z > 60.0 ? 1.0 : lerp(example_how_to_not_implement_gtao(Point + Normal * 0.0035, Normal, texcoord, jitter_tex.xy), 1.0, saturate(Point.z * 0.1 - 5.0));
+	float occlusion = Point.z > 60.0 ? 1.0 : lerp(example_how_to_not_implement_gtao(Point + Normal * 0.0035, Normal, texcoord, jitter_tex.xy, zbuffer < 0.02f), 1.0, saturate(Point.z * 0.1 - 5.0));
 
 	//Pack the data into R32_UINT (16 bits for depth, and 16 for occlusion)
 	return asuint(f32tof16(Point.z)) | (asuint(f32tof16(occlusion)) << 16);
