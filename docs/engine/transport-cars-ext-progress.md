@@ -755,8 +755,37 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 
 - `linear_factor`/`angular_factor` — это воздушное сопротивление, то есть момент, пропорциональный угловой скорости. В покое он равен нулю и не может удержать дверь против силы тяжести на уклоне; увеличение этих коэффициентов только замедляет закрывание.
 - Для открытых дверей теперь используется статическое удержание через мотор шарнира: `dParamFMax = hold_torque`, `dParamVel = 0`. Это аналог трения покоя, которое не даёт гравитации провернуть дверь.
-- `hold_torque = torque * hold_torque_factor`. Множитель задаётся в `[doors]` модели (`hold_torque_factor`, по умолчанию `1`) и может быть переопределён в секции конкретной кости двери. В `veh_base.ltx` добавлено `hold_torque_factor = 1` в `[veh_base_doors]`.
+- `hold_torque = torque * hold_torque_factor`. Множитель задаётся в `[doors]` модели (`hold_torque_factor`, по умолчанию `1`) и может быть переопределён в секции конкретной кости двери. В активном `H:\IXRAY\ixr_addons\ixray-definitive-car-pack-addon\configs\models\vehicles\veh_base.ltx` сейчас задано `hold_torque_factor = 0.05`; при необходимости момент удержания увеличивается этим множителем.
 - Для не-`spring_loaded` дверей удержание переустанавливается каждый кадр, пока машина стоит или движется медленнее `0.5` м/с. Раньше ветка движения при `GetVelocityM() > 0.01` заменяла удержание почти нулевым моментом; после остановки он не восстанавливался, и дверь закрывалась под действием гравитации.
 - `spring_loaded` двери после достижения полностью открытого положения тоже переводятся в режим `NeutralTorque(hold_torque)` и остаются в списке обновления. Если уклон или столкновение сдвигает дверь с ограничителя, она снова подталкивается к нему прежним слабым пружинным моментом `torque / 5`.
 - `NeutralTorque()` теперь явно включает элемент двери перед установкой параметров мотора, как это уже делал `ApplyTorque()`.
 - Проверка: Debug/Release/RelWithDebInfo собраны, общий autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 68: анимации водителя по driver_animation_type
+
+- `SVehicleAnimCollection::Create()` теперь загружает полные циклы `steering_idle_<type>_0..2`, `steering_idle_<type>_ls` и `steering_idle_<type>_rs` вместо одинаковых `steering_torso_*`/`steering_legs_*` для всех типов. Поэтому `driver_animation_type = 1` использует `steering_idle_1_*`, а не набор типа 0.
+- `AttachVehicle()`, `ReapplyVehicleVisual()` и `steer_Vehicle()` проигрывают только `idles[0]`, как в LA. Раньше одновременно запускались `idles[0]` и `idles[1]`.
+- `idles_num` сбрасывается при повторном `Create()` и считает только валидные циклы. Если для типа нет полного набора, `idles[0]`/`steer_left`/`steer_right` откатываются на `steering_idle_0_*`.
+- `SActorVehicleAnims::TYPES_NUMBER` увеличен с 2 до 4, чтобы принимать наборы 0..3, как в LA. В текущем `resources.db0` есть только наборы 0 и 1, поэтому 2/3 пока откатываются на тип 0; после обновления ресурсов они начнут использоваться без правок кода.
+- Проверка: временный лог при старте актёра показал для типа 0 `idles=3`, для типа 1 `idles=2`; все `idle0/idle1/left/right` валидны. Autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 69: удержание дверей на скорости
+
+- Добавлен `[doors] hold_at_speed` (`bool`, по умолчанию `false`) и одноимённый per-door ключ. При `true` открытая не-`spring_loaded` дверь удерживается `NeutralTorque(hold_torque)` при любой скорости, а не только ниже `0.5` м/с.
+- В активном `veh_base.ltx` (`ixray-definitive-car-pack-addon`) выставлено `hold_at_speed = true`; `hold_torque_factor` там равен `0.05`.
+- Проверка: лог `SDoor::Init()` подтвердил `factor=0.050000 at_speed=1`; autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 70: release-сборка без отладочных команд машин
+
+- `rs_car_unlimitedfuel`, `rs_car_god`, `rs_car_repair`, `rs_car_refuel` регистрируются только под `#ifndef MASTER_GOLD`, как `g_god`.
+- Проверка: в `Release/xrGame.dll` строк этих команд нет; в `Debug` и `RelWithDebInfo` они присутствуют. Autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 71: выбор набора анимаций водителя
+
+- В `[animations]` добавлен `driver_animation_set`:
+  - `new` — наши партиальные анимации: `steering_torso_idle` + `steering_legs_idle`, руль `steering_torso_ls`/`steering_torso_rs` (по умолчанию);
+  - `old` — старые анимации LA: `steering_idle_<type>_*`, full-body.
+- `SVehicleAnimCollection` теперь хранит `idle_layers` и проигрывает нужное число idle-слоёв: 2 для `new`, 1 для `old`.
+- `SActorVehicleAnims` хранит два набора коллекций (`m_vehicles_type_collections` и `m_vehicles_old_type_collections`); выбор идёт через `CCar::UseOldDriverAnimations()`.
+- В активном `veh_base.ltx` (`ixray-definitive-car-pack-addon`) выставлено `driver_animation_set = new`.
+- Проверка: лог показал `set=new` с двумя слоями и `set=old` (type 0 — 3 idles, type 1 — 2 idles); autotest — `RESULT: PASS`, `errors=0`.

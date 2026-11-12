@@ -277,23 +277,88 @@ void SActorMotions::Create(IKinematicsAnimated* V)
 SActorVehicleAnims::SActorVehicleAnims() = default;
 void SActorVehicleAnims::Create(IKinematicsAnimated* V)
 {
-	for(u16 i=0;TYPES_NUMBER>i;++i) m_vehicles_type_collections[i].Create(V,i);
+	for(u16 i=0;TYPES_NUMBER>i;++i)
+	{
+		m_vehicles_type_collections[i].Create(V,i,false);
+		m_vehicles_old_type_collections[i].Create(V,i,true);
+	}
 }
 
 SVehicleAnimCollection::SVehicleAnimCollection()
 {
 	for(u16 i=0;MAX_IDLES>i;++i) idles[i].invalidate();
 	idles_num = 0;
+	idle_layers = 0;
 	steer_left.invalidate();
 	steer_right.invalidate();
 }
 
-void SVehicleAnimCollection::Create(IKinematicsAnimated* V,u16 num)
+void SVehicleAnimCollection::Create(IKinematicsAnimated* V,u16 num,bool old)
 {
-	steer_left = V->ID_Cycle_Safe("steering_torso_ls");
-	steer_right = V->ID_Cycle_Safe("steering_torso_rs");
-	idles[0] = V->ID_Cycle_Safe("steering_torso_idle");
-	idles[1] = V->ID_Cycle_Safe("steering_legs_idle");
+	string128 Name;
+
+	idles_num = 0;
+	idle_layers = 0;
+	for (u16 i = 0; i < MAX_IDLES; ++i)
+		idles[i].invalidate();
+	steer_left.invalidate();
+	steer_right.invalidate();
+
+	if (!old)
+	{
+		// New set: partial torso/legs cycles. The actor plays both idle
+		// layers, so the legs and torso are composed from separate motions.
+		idle_layers = 2;
+		steer_left = V->ID_Cycle_Safe("steering_torso_ls");
+		steer_right = V->ID_Cycle_Safe("steering_torso_rs");
+		idles[0] = V->ID_Cycle_Safe("steering_torso_idle");
+		idles[1] = V->ID_Cycle_Safe("steering_legs_idle");
+		if (idles[0].valid())
+			++idles_num;
+		if (idles[1].valid())
+			++idles_num;
+		return;
+	}
+
+	// Old set: full-body cycles selected by driver_animation_type. Only the
+	// first idle is played, as in the LA source.
+	idle_layers = 1;
+
+	for (u16 i = 0; i < MAX_IDLES; ++i)
+	{
+		xr_sprintf(Name, "steering_idle_%u_%u", u32(num), u32(i));
+		idles[i] = V->ID_Cycle_Safe(Name);
+		if (!idles[i].valid())
+		{
+			if (i == 0)
+			{
+				idles[0] = V->ID_Cycle_Safe("steering_idle_0_0");
+				if (idles[0].valid())
+					++idles_num;
+			}
+			break;
+		}
+		++idles_num;
+	}
+
+	xr_sprintf(Name, "steering_idle_%u_ls", u32(num));
+	steer_left = V->ID_Cycle_Safe(Name);
+	if (!steer_left.valid())
+		steer_left = V->ID_Cycle_Safe("steering_idle_0_ls");
+
+	xr_sprintf(Name, "steering_idle_%u_rs", u32(num));
+	steer_right = V->ID_Cycle_Safe(Name);
+	if (!steer_right.valid())
+		steer_right = V->ID_Cycle_Safe("steering_idle_0_rs");
+}
+
+void SVehicleAnimCollection::PlayIdles(IKinematicsAnimated* K,bool mix_in) const
+{
+	for (u16 i = 0; i < idle_layers; ++i)
+	{
+		if (idles[i].valid())
+			K->PlayCycle(idles[i], mix_in);
+	}
 }
 
 void CActor::steer_Vehicle(float angle)	
@@ -307,20 +372,21 @@ void CActor::steer_Vehicle(float angle)
 	CCar* car = holder->cast_car();
 	u16 anim_type = car->DriverAnimationType();
 	IKinematicsAnimated* ka = Visual()->dcast_PKinematicsAnimated();
-	SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
+	SVehicleAnimCollection& anims = m_vehicle_anims->GetCollection(anim_type, car->UseOldDriverAnimations());
 
 	if (angle == 0.0f)
 	{
-		ka->PlayCycle(anims.idles[0]);
-		ka->PlayCycle(anims.idles[1]);
+		anims.PlayIdles(ka, true);
 	}
 	else if (angle > 0.0f)
 	{
-		ka->PlayCycle(anims.steer_right);
+		if (anims.steer_right.valid())
+			ka->PlayCycle(anims.steer_right);
 	}
 	else
 	{
-		ka->PlayCycle(anims.steer_left);
+		if (anims.steer_left.valid())
+			ka->PlayCycle(anims.steer_left);
 	}
 }
 

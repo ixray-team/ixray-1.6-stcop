@@ -66,6 +66,13 @@ namespace
 	// the fuel float instead, which cannot collide with this value.
 	constexpr u32 CarRuntimeStateMagic = 0x43415253; // "CARS"
 
+	xr_token DriverAnimationSetToken[] =
+	{
+		{ "new", 0 },
+		{ "old", 1 },
+		{ nullptr, 0 }
+	};
+
 	bool ParticleEffectExists(const char* Name)
 	{
 		if (Name == nullptr || Name[0] == '\0')
@@ -102,6 +109,7 @@ CCar::CCar()
 	bone_map = BONE_P_MAP();
 	m_memory		= NULL;
 	m_driver_anim_type = 0;
+	m_driver_anim_old = false;
 	m_bone_trunk	= BI_NONE;
 	active_camera	= NULL;
 
@@ -154,6 +162,7 @@ CCar::CCar()
 	inventory().SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
 	m_doors_hold_factor = 1.f;
+	m_doors_hold_at_speed = false;
 	m_doors_vel_factor = 1.f;
 	m_power_increment_factor = 0.5f;
 	m_power_decrement_factor = 0.5f;
@@ -4065,10 +4074,18 @@ void CCar::LoadVisualDefinitions(CInifile* ini)
 		}
 	}
 
+	if (ini->section_exist("animations") && ini->line_exist("animations", "driver_animation_set"))
+	{
+		// new: partial torso/legs cycles (IXRAY set).
+		// old: type-specific full-body cycles (LA set).
+		m_driver_anim_old = ini->r_token("animations", "driver_animation_set", DriverAnimationSetToken) != 0;
+	}
+
 	if (ini->section_exist("doors"))
 	{
 		m_doors_torque_factor = READ_IF_EXISTS(ini, r_float, "doors", "open_torque_factor", m_doors_torque_factor);
 		m_doors_hold_factor = READ_IF_EXISTS(ini, r_float, "doors", "hold_torque_factor", m_doors_hold_factor);
+		m_doors_hold_at_speed = READ_IF_EXISTS(ini, r_bool, "doors", "hold_at_speed", m_doors_hold_at_speed);
 		m_doors_vel_factor = READ_IF_EXISTS(ini, r_float, "doors", "open_vel_factor", m_doors_vel_factor);
 	}
 
