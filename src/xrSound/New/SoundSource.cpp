@@ -42,11 +42,13 @@
 #define SND_CACHE_PREFETCH_FRAMES (SND_BLOCKSIZE * 8)
 #define SND_CACHE_LINE_MAX_TIME_NS ((u64)SND_CACHE_PREFETCH_FRAMES * 2 * 1000000000 / SND_SAMPLERATE)
 #define SND_DEFAULT_MAX_DISTANCE (300.0f)
+#define SND_SOURCE_IDLE_BYTES ((u64)128 * 1024 * 1024)
 
 struct SoundDecodeCommand
 {
 	xr_string Name;
 	u32 Position = 0;
+	bool IsLoad = false;
 };
 
 struct SoundCacheLine
@@ -613,6 +615,56 @@ SoundSourceState* Snd_AcquireSource(const xr_string* Name)
 	return Source;
 }
 
+// Caller holds g_SoundSourceLock exclusively. Unloads the least recently used unreferenced sources until they fit in Budget
+static void Snd_TrimSources(u64 Budget)
+{
+	while (true)
+	{
+		u64 IdleBytes = 0;
+		auto Oldest = GSourcePool.Sources.end();
+		for (auto Iter = GSourcePool.Sources.begin(); Iter != GSourcePool.Sources.end(); ++Iter)
+		{
+			const SoundSourceState& Idle = Iter->second;
+			if (!Idle.IsReady || Idle.Desc.ref_count != 0)
+			{
+				continue;
+			}
+
+			IdleBytes += Idle.Desc.data_size;
+			if (Oldest == GSourcePool.Sources.end() || Idle.IdleTimestamp < Oldest->second.IdleTimestamp)
+			{
+				Oldest = Iter;
+			}
+		}
+
+		if (IdleBytes <= Budget || Oldest == GSourcePool.Sources.end())
+		{
+			return;
+		}
+
+		SoundSourceState* Source = &Oldest->second;
+		Snd_UnloadSourceFile(Source);
+
+		xrSRWLockGuard CacheGuard(GSourcePool.CacheLock, false);
+		for (u32 EntryIdx = 0; EntryIdx < SND_CACHE_ENTRY_COUNT; EntryIdx++)
+		{
+			u32 CacheIdx = Source->CacheLines[EntryIdx];
+			if (Snd_IsCacheLineValid(CacheIdx) && Snd_GetCacheLine(CacheIdx)->Owner == Source)
+			{
+				Snd_PurgeCacheLine(CacheIdx, false);
+			}
+		}
+
+		GSourcePool.Sources.erase(Oldest);
+	}
+}
+
+void Snd_PurgeIdleSources()
+{
+	xrSRWLockGuard Guard(g_SoundSourceLock);
+	Snd_TrimSources(0);
+}
+
 void Snd_ReleaseSource(const xr_string* Name)
 {
 	if (Name->empty())
@@ -642,27 +694,13 @@ void Snd_ReleaseSource(const xr_string* Name)
 		return;
 	}
 
-	SoundSourceState* Source = &Found->second;
-	Snd_UnloadSourceFile(Source);
-
-	xrSRWLockGuard CacheGuard(GSourcePool.CacheLock, false);
-	for (u32 EntryIdx = 0; EntryIdx < SND_CACHE_ENTRY_COUNT; EntryIdx++)
-	{
-		u32 CacheIdx = Source->CacheLines[EntryIdx];
-		if (Snd_IsCacheLineValid(CacheIdx) && Snd_GetCacheLine(CacheIdx)->Owner == Source)
-		{
-			Snd_PurgeCacheLine(CacheIdx, false);
-		}
-
-		Source->CacheLines[EntryIdx] = 0;
-	}
-
-	GSourcePool.Sources.erase(Found);
+	Found->second.IdleTimestamp = Snd_GetTimestamp();
+	Snd_TrimSources(SND_SOURCE_IDLE_BYTES);
 }
 
 static void Snd_StartDecoder();
 
-void Snd_QueueDecode(const xr_string* Name, u32 Position)
+void Snd_QueueDecode(const xr_string* Name, u32 Position, bool IsLoad)
 {
 	if (Name->empty())
 	{
@@ -674,14 +712,15 @@ void Snd_QueueDecode(const xr_string* Name, u32 Position)
 		for (size_t RequestIdx = 0; RequestIdx < GSourcePool.DecodeQueue.size(); RequestIdx++)
 		{
 			// A queued request already covers this position (its line spans at least SND_CACHE_LINE_MIN_AHEAD frames)
-			const SoundDecodeCommand* Queued = &GSourcePool.DecodeQueue[RequestIdx];
+			SoundDecodeCommand* Queued = &GSourcePool.DecodeQueue[RequestIdx];
 			if (Position >= Queued->Position && Position - Queued->Position + SND_BLOCKSIZE <= SND_CACHE_LINE_MIN_AHEAD && Queued->Name == *Name)
 			{
+				Queued->IsLoad |= IsLoad;
 				return;
 			}
 		}
 
-		GSourcePool.DecodeQueue.push_back({*Name, Position});
+		GSourcePool.DecodeQueue.push_back({*Name, Position, IsLoad});
 	}
 
 	Snd_StartDecoder();
@@ -739,7 +778,7 @@ void Snd_PrefetchSource(const SoundSourceState* Source, const xr_string* Name, u
 
 	if (Missing != (u32)-1)
 	{
-		Snd_QueueDecode(Name, Missing);
+		Snd_QueueDecode(Name, Missing, false);
 	}
 }
 
@@ -800,7 +839,7 @@ static bool Snd_DecodeNext()
 	}
 
 	PROF_EVENT("Decode OGG");
-	SoundSourceState* Source = Snd_FindSource(&Request.Name);
+	SoundSourceState* Source = Request.IsLoad ? Snd_AcquireSource(&Request.Name) : Snd_FindSource(&Request.Name);
 	if (Source != nullptr)
 	{
 		Snd_UpdateCache(Source, Request.Position);
@@ -863,6 +902,7 @@ void Snd_ShutdownSources()
 	GSourcePool.DecodeTasks.wait();
 
 	GSourcePool.DecodeQueue.clear();
+	Snd_PurgeIdleSources();
 	for (auto& Source : GSourcePool.Sources)
 	{
 		memset(Source.second.CacheLines, 0, sizeof(Source.second.CacheLines));
