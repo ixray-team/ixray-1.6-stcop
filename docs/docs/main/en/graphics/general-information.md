@@ -9,7 +9,7 @@
 
 ## Upscale
 
-**Upscale (DLSS/FSR2/XeSS)** renders the game at a lower resolution and reconstructs it to a higher one, increasing FPS.
+**Upscale (DLSS/FSR3/XeSS)** renders the game at a lower resolution and reconstructs it to a higher one, increasing FPS.
 
 ## TAA
 

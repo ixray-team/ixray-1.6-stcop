@@ -38,7 +38,7 @@ At the moment, this is a temporary implementation, the counter can indeed be upd
 
 This is done intentionally to solve engine debugging problems (minimizing, etc) and since these builds are not intended for players
 
-### What is Nvidia DLSS and AMD FSR2 in the context of this project?
+### What is Nvidia DLSS and AMD FSR3 in the context of this project?
 
 Both technologies take an image with a lower resolution and scale it up to a higher resolution. They use advanced algorithms to make this scaling higher quality. DLSS uses artificial intelligence and deep learning to predict and improve image details, while FSR uses noise reduction and edge smoothing algorithms to achieve a similar result. As a result, these technologies provide a sharper and smoother image, improving graphics quality and game performance even on less powerful systems. If these scaling methods are used in native mode, they will work as anti-aliasing
 
