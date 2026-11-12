@@ -19,4 +19,11 @@
 	<string id="st_ixray_global_options__draw_debug"> 
 		<text>Draw A-Life debug</text>
 	</string>
+	<string id="st_ixray_global_options_gameplay">
+		<text>Gameplay</text>
+	</string>
+
+	<string id="st_ixray_global_options_disable_emissions">
+		<text>Disable emissions</text>
+	</string>
 </string_table>

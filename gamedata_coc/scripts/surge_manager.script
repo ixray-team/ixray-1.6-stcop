@@ -33,6 +33,14 @@ local prev_game_sec 		= -1
 local currentPPEfactor 		= 0.001
 local _tmr
 
+local function emissions_disabled()
+	return GetRegistryValue("ixray_global_options", "disable_emissions", false) == true
+end
+
+function is_blowout_enabled()
+	return not emissions_disabled() and atmosfear_options.config:r_value("atmosfear_current_parameters", "opt_enable_blowout", 2, 1) == 1
+end
+
 local function main_loop()
 	local tg = time_global()
 	if (_tmr and tg < _tmr) then 
@@ -155,6 +163,11 @@ function CSurgeManager:initialize()
 end
 
 function CSurgeManager:start(manual)
+	local disabled = emissions_disabled()
+	if manual and disabled then
+		return
+	end
+
 	--alun_utils.debug_write("CSurgeManager:start()")
 	if not (self._state_loaded) then 
 		self:initialize()
@@ -170,6 +183,12 @@ function CSurgeManager:start(manual)
 		self.inited_time:set(Y, M, D, h, m, s + self._delta, ms)
 	end
 	
+	if disabled then
+		-- Keep anomaly refreshes on the emission schedule.
+		self:skip_surge(true)
+		return
+	end
+
 	local level_name = level.name()
 	if (level_weathers.valid_levels[level_name] ~= true or atmosfear_options.config:r_value("atmosfear_current_parameters","opt_enable_blowout",2,1)==0) then
 		self.skip_message = true
@@ -232,7 +251,7 @@ function CSurgeManager:new_surge_time(reset)
 	end
 end
 
-function CSurgeManager:skip_surge()
+function CSurgeManager:skip_surge(silent)
 	if not (self.inited_time) then 
 		self.inited_time = game.get_game_time()
 	end
@@ -269,11 +288,12 @@ function CSurgeManager:skip_surge()
 	self:toggle_level_artefact_respawns()
 	self:respawn_artefacts_and_replace_anomaly_zone()
 	
-	xr_statistic.inc_counter("surges")
-	if not (self.skip_message) and (atmosfear_options.config:r_value("atmosfear_current_parameters","opt_enable_blowout",2,1)==1) then
-		news_manager.send_tip(db.actor, "st_surge_while_asleep", nil, "recent_surge", nil, nil)
-		self.skip_message = true
-		--release_body_manager.get_release_body_manager():clear(true)
+	if not silent then
+		xr_statistic.inc_counter("surges")
+		if not self.skip_message and is_blowout_enabled() then
+			news_manager.send_tip(db.actor, "st_surge_while_asleep", nil, "recent_surge", nil, nil)
+			self.skip_message = true
+		end
 	end
 	-- hide indicators
 	self:displayIndicators(0)
@@ -281,11 +301,16 @@ function CSurgeManager:skip_surge()
 	level.set_time_factor(self.game_time_factor)
 end
 
-function CSurgeManager:end_surge(manual)
+function CSurgeManager:end_surge(manual, cancelled)
+	if cancelled then
+		self.first_update = true
+	end
 
-	if (self.started == true) then 
-		xr_statistic.inc_counter("surges")
-		self:kill_all_unhided()
+	if self.started then
+		if not cancelled then
+			xr_statistic.inc_counter("surges")
+			self:kill_all_unhided()
+		end
 		self:respawn_artefacts_and_replace_anomaly_zone()
 		self:toggle_level_artefact_respawns()
 	end
@@ -435,6 +460,12 @@ function CSurgeManager:update()
 		return
 	end 
 	
+	local disabled = emissions_disabled()
+	if disabled and self.started then
+		self:end_surge(true, true)
+		return
+	end
+
 	if not (self.first_update) then 
 		self.first_update = true
 		local level_name = level.name()
@@ -442,13 +473,13 @@ function CSurgeManager:update()
 			if (self.started) then
 				self:end_surge()
 			else
-				self:skip_surge()
+				self:skip_surge(disabled)
 			end
 			return
 		end
 		local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
 		if (diff_sec > self.surge_time)then
-			self:skip_surge()
+			self:skip_surge(disabled)
 			return
 		end
 	end
@@ -1294,6 +1325,10 @@ function CSurgeManager:kill_actor_at_pos(pos)
 end
 
 function make_dead_crow(id,powr)
+	if emissions_disabled() then
+		return true
+	end
+
 	local crow = id and level.object_by_id(id)
 	if(crow and crow:alive() and powr) then
 		crow:hit(powr)
@@ -1302,6 +1337,10 @@ function make_dead_crow(id,powr)
 end
 
 function make_dead(id)
+	if emissions_disabled() then
+		return true
+	end
+
 	local obj = id and db.storage[id] and db.storage[id].object --level.object_by_id(id)
 	if (obj and obj:alive()) then
 		obj:kill(obj)
@@ -1687,7 +1726,7 @@ end
 
 function stop_surge()
 	if(get_surge_manager().started) then
-		get_surge_manager():end_surge(true)
+		get_surge_manager():end_surge(true, emissions_disabled())
 	end
 end
 

@@ -13,5 +13,9 @@ function on_game_start()
 		_ref.register_option("st_ixray_global_options_params", "_g_draw_debug", "st_ixray_global_options__draw_debug", _ref.check_box(false), function (group, name, value) 
 			_G.dev_debug = value
 		end)
+
+		_ref.register_option("st_ixray_global_options_gameplay", "disable_emissions", "st_ixray_global_options_disable_emissions", _ref.check_box(false), function (group, name, value)
+			SetRegistryValue("ixray_global_options", name, value)
+		end)
 	end)
 end

@@ -18,6 +18,11 @@ local MAX_SURGE_TIME 		= 24*60*60
 local prev_sec 				= 0
 
 local AFTERBLOW_TIME = 15
+local ids_to_kill = {}
+
+local function emissions_disabled()
+    return GetRegistryValue("ixray_global_options", "disable_emissions", false) == true
+end
 
 local immuned_to_surge_squads = {
 						["monster_predatory_day"] 	= true,
@@ -162,21 +167,33 @@ function CSurgeManager:update()
             return
         end
         
-        local flags = {allow = true}
-        SendScriptCallback("on_before_surge", flags)
-        
-        if not flags.allow then
-            log("skip surge")
-            return
+        local disabled = emissions_disabled()
+        if disabled then
+            if self.started then
+                self:end_surge(true, true)
+                return
+            end
+
+            if #ids_to_kill > 0 then
+                ids_to_kill = {}
+            end
+        else
+            local flags = {allow = true}
+            SendScriptCallback("on_before_surge", flags)
+
+            if not flags.allow then
+                log("skip surge")
+                return
+            end
+
+            self:ProcessDelayedKills()
         end
-        
-        self:ProcessDelayedKills()
         
         if not(self.started) then
             local g_time = game.get_game_time()
             local diff_sec = math.ceil(g_time:diffSec(self.last_surge_time)/level.get_time_factor())
     
-            if ( diff_sec < AFTERBLOW_TIME ) then
+            if not disabled and diff_sec < AFTERBLOW_TIME then
                 xr_sound.set_volume_sound_looped(db.actor:id(), "surge_earthquake_sound_looped", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME )
                 xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME)
     
@@ -198,7 +215,7 @@ function CSurgeManager:update()
                 xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
                 if xr_sound.is_played_sound_looped(db.actor:id(), "surge_earthquake_sound_looped") then
                     xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
-                    if(level) then
+                    if not disabled then
                         if(level.name()=="zaton") then
                             xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_after_surge")
                         elseif(level.name()=="jupiter") then
@@ -226,7 +243,7 @@ function CSurgeManager:update()
             if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.condlist) ~= "true") then
                 return
             end
-            if not(self:get_nearest_cover()) then
+            if not disabled and not self:get_nearest_cover() then
                 return
             end
             self:start()
@@ -356,6 +373,11 @@ end
 
 function CSurgeManager:start(manual)
 	return PROF_EVENT_CLOSURE("start", function()
+        local disabled = emissions_disabled()
+        if manual and disabled then
+            return
+        end
+
         local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
         Y, M, D, h, m, s, ms = self.last_surge_time:get(Y, M, D, h, m, s, ms)
         if(manual) then
@@ -364,6 +386,12 @@ function CSurgeManager:start(manual)
             self.inited_time:set(Y, M, D, h, m, s + self._delta, ms)
         end
     
+        if disabled then
+            -- Keep anomaly refreshes on the emission schedule.
+            self:skip_surge(true)
+            return
+        end
+
         diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
         log("--->start diff_sec="..tostring(diff_sec))
         
@@ -395,7 +423,7 @@ function CSurgeManager:start(manual)
     end)
 end
 
-function CSurgeManager:skip_surge()
+function CSurgeManager:skip_surge(silent)
 	return PROF_EVENT_CLOSURE("skip_surge", function()
         local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
         Y, M, D, h, m, s, ms = self.inited_time:get(Y, M, D, h, m, s, ms)
@@ -415,9 +443,15 @@ function CSurgeManager:skip_surge()
         self.blowout_sound			= false
         prev_sec				= 0
     
-        SendScriptCallback("actor_on_interaction", "anomalies", nil, "emission_end")
-    
+        if not silent then
+            SendScriptCallback("actor_on_interaction", "anomalies", nil, "emission_end")
+        end
+
         self:respawn_artefacts_and_replace_anomaly_zone()
+        if silent then
+            return
+        end
+
         xr_statistic.inc_surges_counter()
         if (not self.skip_message) then
             news_manager.send_tip(db.actor, "st_surge_while_asleep", nil, "recent_surge", nil, nil)
@@ -430,10 +464,12 @@ function CSurgeManager:skip_surge()
     end)
 end
 
-function CSurgeManager:end_surge(manual)
+function CSurgeManager:end_surge(manual, cancelled)
 	return PROF_EVENT_CLOSURE("end_surge", function()
-        if (self.started) then 
-            SendScriptCallback("actor_on_interaction", "anomalies", nil, "emissions")
+        if self.started then
+            if not cancelled then
+                SendScriptCallback("actor_on_interaction", "anomalies", nil, "emissions")
+            end
             SendScriptCallback("actor_on_interaction", "anomalies", nil, "emission_end")
         end
         
@@ -456,7 +492,14 @@ function CSurgeManager:end_surge(manual)
     
         level.remove_pp_effector(surge_shock_pp_eff)
         level.remove_cam_effector(earthquake_cam_eff)
-        level.add_cam_effector("camera_effects\\earthquake_end.anm", earthquake_end_cam_eff, false, "")
+        if cancelled then
+            ids_to_kill = {}
+            xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
+            xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
+            level.electronics_reset()
+        else
+            level.add_cam_effector("camera_effects\\earthquake_end.anm", earthquake_end_cam_eff, false, "")
+        end
     
         if(manual or (self.time_forwarded and level_weathers.get_weather_manager():get_weather_fx())) then
             level.stop_weather_fx()
@@ -475,12 +518,16 @@ function CSurgeManager:end_surge(manual)
             v:stop()
         end
     
-        if self.loaded then
+        if cancelled then
+            self.loaded = false
+        elseif self.loaded then
             self:kill_all_unhided()
         end
-    
+
         self:respawn_artefacts_and_replace_anomaly_zone()
-        xr_statistic.inc_surges_counter()
+        if not cancelled then
+            xr_statistic.inc_surges_counter()
+        end
     end)
 end
 
@@ -591,7 +638,6 @@ function check_squad_smart_props(squad_id)
     end)
 end
 
-local ids_to_kill = {}
 local last_kills_processing_time = 0
 
 function CSurgeManager:DelayedKill(who, is_online)
@@ -847,6 +893,10 @@ function get_surge_manager()
 end
 
 function start_surge(p)
+	if emissions_disabled() then
+		return
+	end
+
 	local m = get_surge_manager()
 	if(m:get_nearest_cover()) then
 		m:start(true)
@@ -868,7 +918,7 @@ end
 function stop_surge()
 	local m = get_surge_manager()
 	if(m.started) then
-		m:end_surge(true)
+		m:end_surge(true, emissions_disabled())
 	end
 end
 

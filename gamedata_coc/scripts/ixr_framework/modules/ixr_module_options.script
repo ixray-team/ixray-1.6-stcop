@@ -975,6 +975,10 @@ end
 
 
 function ixr_options.set_draw_variable_names_state(flag)
+	if DRAW_VAR_NAME == flag then
+		return
+	end
+
 	DRAW_VAR_NAME = flag
 	ReDraw()
 end

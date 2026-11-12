@@ -19,4 +19,11 @@
 	<string id="st_ixray_global_options__draw_debug"> 
 		<text>ќтображение симул€ции жизни</text>
 	</string>
+	<string id="st_ixray_global_options_gameplay">
+		<text>»гровой процесс</text>
+	</string>
+
+	<string id="st_ixray_global_options_disable_emissions">
+		<text>ќтключить выбросы</text>
+	</string>
 </string_table>
