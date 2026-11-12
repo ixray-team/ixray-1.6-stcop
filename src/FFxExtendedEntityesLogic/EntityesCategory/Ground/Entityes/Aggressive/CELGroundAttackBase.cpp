@@ -82,7 +82,10 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 		return EELControl::Native;
 	}
 	// Loss of sight selects search immediately; search owns the run to the last known point.
-	if (!HasVision && !Profile.CanTrackLive)
+	const bool ContactGrace = !HasVision && Device.dwTimeGlobal - Observation.ObservedAt < 1000u &&
+		(Observation.Source == EELObservationSource::Vision || Observation.Source == EELObservationSource::CloseContact || Observation.Source == EELObservationSource::CloseScent) &&
+		Adapter->Monster().Position().distance_to_sqr(Observation.Position) <= _sqr(Profile.NativeAttackDistance * 2.f);
+	if (!HasVision && !Profile.CanTrackLive && !ContactGrace)
 	{
 		if (SearchedTarget == TargetIdentifier && SearchedObservation == Observation.ObservedAt && BehaviorManager.IsActive(SearchBehavior) && BehaviorManager.GetValidation().State == EELBehaviorState::Completed)
 		{

@@ -31,8 +31,13 @@ public:
 
 protected:
 	void FillDebugRecord(SELDebugRecord& Record) const;
+	virtual void FillCombatDebug(SELDebugRecord&) const {}
 	void UpdateFieldExposure();
 	void UpdateCharacter();
+	bool RegroupPoint(Fvector& Point, bool& Wait);
+	xr_map<u16, u32> RallyMembers;
+	u32 RallyUntil = 0;
+	u32 NextRallyCapture = 0;
 	bool HasEnemyPressure();
 	bool ShouldFleeCharacter(const SELObservation* Observation);
 	bool ShouldFleePredator(const SELObservation* Observation);
@@ -64,6 +69,7 @@ protected:
 		u32 UpdatedAt = 0;
 		u32 LastContactAt = 0;
 		u32 ProvokedUntil = 0;
+		u32 AssistanceUntil = 0;
 		u32 DecisionUntil = 0;
 		u32 NextDecisionAt = 0;
 		float Initiative = 0.f;
@@ -90,6 +96,12 @@ protected:
 	float Courage = 0.f;
 	u32 LastCourageAt = 0;
 	u16 TargetIdentifier = u16(-1);
+	u16 SharingSightSender = u16(-1);
+	u32 SharingSightGeneration = 0;
+	u32 SharingSightAt = 0;
+	bool SharingSightVisible = false;
+	Fvector LastFearPosition = {0.f, 0.f, 0.f};
+	u32 LastFearAt = 0;
 	u32 ReceiveAfter = 0;
 	u32 NextCloseProbe = 0;
 	u32 NextPeripheralProbe = 0;

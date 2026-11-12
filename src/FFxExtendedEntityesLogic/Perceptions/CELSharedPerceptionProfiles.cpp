@@ -314,6 +314,8 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.FieldHeadacheRecovery = Number(SystemSettings, Section, "emmi_pain_recovery", "", Number(SystemSettings, Section, "monster_field_headache_recovery", "", .12f, .001f, 10.f), .001f, 10.f);
 	Result.FieldHeadacheResume = Number(SystemSettings, Section, "emmi_pain_resume", "", Number(SystemSettings, Section, "monster_field_headache_resume", "", .25f, 0.f, .95f), 0.f, .95f);
 	Result.CanFearPredators = pSettings->read_if_exists<bool>(Section, "monster_predator_fear_enabled", true);
+	Result.PackRegroupTime = u32(Number(SystemSettings, Section, "monster_pack_regroup_time", "monster_pack_regroup_time", 60.f, 0.f, 300.f) * 1000.f);
+	Result.PackRegroupDistance = Number(SystemSettings, Section, "monster_pack_regroup_distance", "monster_pack_regroup_distance", 10.f, 2.f, 50.f);
 	Result.UsesPackCourage = pSettings->read_if_exists<bool>(Section, "monster_pack_courage_enabled", true);
 	Result.PredatorSpecies = pSettings->read_if_exists<str_c>(Section, "monster_predator_species", "");
 	Result.PredatorFearChance = ExtendedEntityesProfiles::Number(SystemSettings, Section, "monster_predator_fear_chance", "", .65f, .05f, .95f);
@@ -324,7 +326,7 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.CanInspect = (pSettings)->read_if_exists<bool>(Section, "monster_search_sniff", false);
 	Result.SharingRadius = Number(SystemSettings, Section, "monster_enemy_sharing_radius", "", 40.0f, 0.0f, 500.0f);
 	Result.CloseSharingRatio = Number(SystemSettings, Section, "monster_enemy_sharing_close_ratio", "MonsterEnemySharingCloseRatio", 0.25f, 0.0f, 1.0f);
-	Result.CallSharingRatio = Number(SystemSettings, Section, "monster_enemy_sharing_call_ratio", "MonsterEnemySharingCallRatio", 0.6f, 0.0f, 1.0f);
+	Result.CallSharingRatio = Number(SystemSettings, Section, "monster_enemy_sharing_call_ratio", "MonsterEnemySharingCallRatio", 2.f, 0.0f, 4.0f);
 	Result.CloseDetectionRadius = Number(SystemSettings, Section, "monster_enemy_close_detection_radius", "", 0.0f, 0.0f, 100.0f);
 	Result.AutoFocusRadius = Number(SystemSettings, Section, "autofocus_max_dist", "", 200.0f, 0.0f, 500.0f);
 	Result.CanRecordTrail = (pSettings)->read_if_exists<bool>(Section, "monster_trail_enabled", SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterTrailEnabled", true) : true);

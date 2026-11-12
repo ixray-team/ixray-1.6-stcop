@@ -15,6 +15,7 @@ struct SELHuntGroup
 class CELSharedHuntGroups
 {
 public:
+	static void CaptureCompanions(CBaseMonster& Owner, float Radius, xr_map<u16, u32>& Members);
 	static u32 CountCompanions(CBaseMonster& Owner, float Radius);
 	static SELHuntGroup Observe(CBaseMonster& Owner, u16 TargetIdentifier, float Radius);
 	static void ReportPosition(CBaseMonster& Owner, const Fvector& Position, u16 TargetIdentifier, bool IsBlocking);

@@ -17,6 +17,7 @@ public:
 	void RemoveObject(u16 ObjectIdentifier) override;
 
 protected:
+	void FillCombatDebug(SELDebugRecord& Record) const override;
 	void ObserveVision(CBaseMonster& OwnerMonster, u32 CurrentTime) override;
 	void SelectFlight(CELFlyingBehaviorBase& Behavior);
 	void ClearBehavior();

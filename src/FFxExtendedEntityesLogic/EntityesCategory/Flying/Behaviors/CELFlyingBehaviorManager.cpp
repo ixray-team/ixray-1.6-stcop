@@ -91,7 +91,7 @@ EELControl CELFlyingBehaviorManager::UpdateFlight(float DeltaTime, CELFlyingBeha
 	const SELObservation* Target = Owner.Memory.Find(Owner.TargetIdentifier);
 	if (Owner.ShouldFleePredator(Target))
 	{
-		CruiseBehavior.SetAttention(Target->Position, true);
+		CruiseBehavior.SetAttention(Target ? Target->Position : Owner.LastFearPosition, true);
 		SelectFlight(CruiseBehavior);
 		Update(DeltaTime);
 		return EELControl::Extended;

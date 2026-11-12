@@ -206,3 +206,21 @@ u32 CELSharedHuntGroups::CountCompanions(CBaseMonster& Owner, float Radius)
 	}
 	return Count;
 }
+
+// Remember nearby pack members across temporary combat target splits.
+void CELSharedHuntGroups::CaptureCompanions(CBaseMonster& Owner, float Radius, xr_map<u16, u32>& Members)
+{
+	Refresh();
+	const auto Found = Packs.find(Key(Owner, u16(-1)));
+	if (Found == Packs.end()) { return; }
+	for (const SMember& Member : Found->second)
+	{
+		if (Members.size() >= 16) { break; }
+		CEntityAlive* Entity = ExtendedEntityes::FindEntity(Member.Identifier);
+		CBaseMonster* Ally = Entity ? smart_cast<CBaseMonster*>(Entity) : nullptr;
+		if (Ally && Ally != &Owner && Ally->g_Alive() && !Ally->getDestroy() && Member.Position.distance_to_sqr(Owner.Position()) <= _sqr(Radius) && CELSharedEnemySharing::CanReceive(Owner, *Ally))
+		{
+			Members[Member.Identifier] = Member.Generation;
+		}
+	}
+}

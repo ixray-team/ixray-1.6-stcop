@@ -101,6 +101,8 @@ struct SELPerceptionProfile
 	bool UsesPackCourage = true;
 	shared_str PredatorSpecies;
 	float PredatorFearChance = .65f;
+	u32 PackRegroupTime = 60000;
+	float PackRegroupDistance = 10.f;
 	float PackCourageRadius = 25.f;
 	float PackCourageGain = .08f;
 	float SoloCourageDecay = .15f;
@@ -203,7 +205,7 @@ struct SELPerceptionProfile
 	shared_str GrabBone;
 	float SharingRadius = 40.f;
 	float CloseSharingRatio = .25f;
-	float CallSharingRatio = .6f;
+	float CallSharingRatio = 2.f;
 	float CloseDetectionRadius = 0.f;
 	bool CanUseCloseScent = false;
 	float CloseScentRadius = 5.f;

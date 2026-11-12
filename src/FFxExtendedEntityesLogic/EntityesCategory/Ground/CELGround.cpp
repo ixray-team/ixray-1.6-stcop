@@ -130,3 +130,11 @@ void CELGround::ObserveCloseScent()
 {
 	CloseScent.Update(*Adapter, Memory, Profile);
 }
+
+void CELGround::FillCombatDebug(SELDebugRecord& Record) const
+{
+	Record.Mode = "Ground";
+	CloseScent.FillDebug(Record, Profile);
+	Record.State = BehaviorManager.HasActiveBehavior() ? BehaviorManager.GetValidation().Reason : "native_control";
+	FillGroundDebug(Record);
+}

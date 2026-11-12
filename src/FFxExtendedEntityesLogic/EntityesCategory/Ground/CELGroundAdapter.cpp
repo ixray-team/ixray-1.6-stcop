@@ -23,13 +23,11 @@ CELGroundAdapter::CELGroundAdapter(CBaseMonster& OwnerMonster) : CELBaseAdapter(
 // Не назначает бесконечную погоню за телом летуна выше ближней атаки и штатного прыжка.
 bool CELGroundAdapter::CanPursue(CEntityAlive& Candidate, const Fvector& KnownPosition) const
 {
+	// Losing sight must permit bounded investigation of the known point, not erase the enemy because of its old height.
+	if (!CanSee(Candidate)) { return true; }
 	if (!Candidate.UsedAI_Locations() && CELSharedSettings::Profile(*OwnerMonster.cNameSect()).CanInterceptFlying && CanSee(Candidate))
 	{
 		// Keep a visible aerial threat available to the ground tactical executor.
-		return true;
-	}
-	if (Candidate.UsedAI_Locations())
-	{
 		return true;
 	}
 	Fbox OwnerBounds;

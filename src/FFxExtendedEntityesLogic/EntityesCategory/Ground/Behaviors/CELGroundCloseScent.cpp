@@ -6,6 +6,7 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedPerceptionProfiles.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai_object_location.h"
 
@@ -37,7 +38,7 @@ void CELGroundCloseScent::Update(IELAdapter& Adapter, CELSharedMemory& Memory, c
 		}
 		const SELObservation* Known = Memory.Find(Target->ID());
 		// A same-tick visual confirmation always keeps precedence over scent.
-		if (Known && Known->ObservedAt < Device.dwTimeGlobal)
+		if (Known && Known->ObservedAt < Device.dwTimeGlobal && CELSharedSight::CheckScent(Adapter.Monster(), *Target, It->second.SeenAt + Profile.CloseScentTime, Profile.CloseScentRadius) == EELSightResult::Visible)
 		{
 			SELObservation Observation;
 			Observation.TargetIdentifier = Target->ID();

@@ -15,6 +15,7 @@ public:
 	void FrameUpdate(float DeltaTime) override;
 
 protected:
+	void FillCombatDebug(SELDebugRecord& Record) const override;
 	void OnVisualContact(CEntityAlive& Target, u32 ObservedAt) override;
 	void ObserveCloseScent() override;
 	CELGroundCloseScent CloseScent;

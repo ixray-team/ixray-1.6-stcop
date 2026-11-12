@@ -14,6 +14,8 @@ enum class EELSightResult : u8
 class CELSharedSight final
 {
 public:
+	static EELSightResult CheckScent(CBaseMonster& Owner, CEntityAlive& Candidate, u32 Until, float Radius);
+	static bool HasScentContact(CBaseMonster& Owner, const CEntityAlive& Candidate);
 	static EELSightResult CheckClose(CBaseMonster& OwnerMonster, CObject& Candidate);
 	static bool HasCloseContact(CBaseMonster& OwnerMonster, const CEntityAlive& Candidate);
 	static void Remove(ALife::_OBJECT_ID Identifier);

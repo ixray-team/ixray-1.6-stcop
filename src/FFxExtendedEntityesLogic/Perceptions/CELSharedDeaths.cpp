@@ -13,6 +13,7 @@
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai_object_location.h"
 #include "xrGame/enemy_manager.h"
+#include "FFxExtendedEntityesLogic/Debug/Debug.h"
 
 namespace ExtendedEntityesDeaths
 {
@@ -33,6 +34,8 @@ struct SLocalKnowledge
 	u32 FightUntil = 0;
 	u32 WitnessedAt = 0;
 	u16 WitnessedVictim = u16(-1);
+	u32 NextWitnessTraceAt = 0;
+	xr_map<u16, std::pair<u32, const char*>> WitnessTrace;
 };
 struct SClaim
 {
@@ -210,9 +213,20 @@ bool CELSharedDeaths::Witness(CBaseMonster& Observer, const SELPerceptionProfile
 	ExtendedEntityesDeaths::SLocalKnowledge& Local = ExtendedEntityesDeaths::Local(Observer.ID());
 	for (const ExtendedEntityesDeaths::SDeath& Death : ExtendedEntityesDeaths::Deaths)
 	{
+		const auto Report = [&](const char* Reason)
+		{
+			if (!CELSharedDebug::Instance().CanLogCombat(Observer.Position()) || s32(Device.dwTimeGlobal - Local.NextWitnessTraceAt) < 0 || Device.dwTimeGlobal - Death.Time > Profile.WitnessWindow + 3000u) { return; }
+			const auto Existing = Local.WitnessTrace.find(Death.Identifier);
+			if (Existing != Local.WitnessTrace.end() && Existing->second.first == Death.Time && xr_strcmp(Existing->second.second, Reason) == 0) { return; }
+			if (Local.WitnessTrace.size() >= 32 && Existing == Local.WitnessTrace.end()) { Local.WitnessTrace.erase(Local.WitnessTrace.begin()); }
+			Local.NextWitnessTraceAt = Device.dwTimeGlobal + 200;
+			Local.WitnessTrace[Death.Identifier] = {Death.Time, Reason};
+			Msg("[monsters_debug] WITNESS_CHECK t=%u id=%u victim=%u killer=%u age_ms=%u window_ms=%u reason=%s", Device.dwTimeGlobal, Observer.ID(), Death.Identifier, Death.Killer, Device.dwTimeGlobal - Death.Time, Profile.WitnessWindow, Reason);
+		};
 		if (Death.IsEnvironmental || Device.dwTimeGlobal - Death.Time > Profile.WitnessWindow ||
 			(Local.WitnessedAt && s32(Death.Time - Local.WitnessedAt) <= 0))
 		{
+			Report(Death.IsEnvironmental ? "environmental" : Device.dwTimeGlobal - Death.Time > Profile.WitnessWindow ? "window_expired" : "already_processed");
 			continue;
 		}
 		CEntityAlive* VictimEntity = ExtendedEntityes::FindEntity(Death.Identifier);
@@ -223,23 +237,28 @@ bool CELSharedDeaths::Witness(CBaseMonster& Observer, const SELPerceptionProfile
 			Death.KillerGeneration != ExtendedEntityes::OwnerGeneration(Death.Killer) ||
 			!CELSharedEnemySharing::IgnoresOrdinarySound(Observer, *Victim))
 		{
+			Report("invalid_objects_relation_or_generation");
 			continue;
 		}
 		const float Angle = Observer.UsedAI_Locations() ? Observer.eye_fov : 360.f;
 		const EELSightResult VictimSight = CELSharedSight::Check(Observer, *Victim, Angle, Observer.eye_range);
 		if (VictimSight == EELSightResult::WaitingForBudget)
 		{
+			Report("victim_ray_budget");
 			return false;
 		}
 		if (VictimSight != EELSightResult::Visible)
 		{
+			Report("victim_not_visible");
 			continue;
 		}
 		const EELSightResult KillerSight = CELSharedSight::Check(Observer, *Killer, Angle, Observer.eye_range);
 		if (KillerSight == EELSightResult::WaitingForBudget)
 		{
+			Report("killer_ray_budget");
 			return false;
 		}
+		Report(KillerSight == EELSightResult::Visible ? "witnessed_killer_visible" : "witnessed_killer_hidden");
 		Local.WitnessedAt = Death.Time;
 		Local.WitnessedVictim = Death.Identifier;
 		Enemy = SELObservation();

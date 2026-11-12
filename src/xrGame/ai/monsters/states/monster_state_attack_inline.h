@@ -115,6 +115,20 @@ void CStateMonsterAttackAbstract::execute()
 		this->select_state			(b_melee ? eStateAttack_Melee : eStateAttack_Run);
 	}
 
+	this->object->NativeAttackSubstate = this->current_substate;
+	switch (this->current_substate)
+	{
+	case eStateAttack_MoveToHomePoint: this->object->NativeAttackDecision = "return_home"; break;
+	case eStateAttack_Steal: this->object->NativeAttackDecision = "steal"; break;
+	case eStateAttackCamp: this->object->NativeAttackDecision = "camp"; break;
+	case eStateAttack_FindEnemy: this->object->NativeAttackDecision = "find_enemy"; break;
+	case eStateAttack_RunAway: this->object->NativeAttackDecision = "native_morale_retreat"; break;
+	case eStateAttack_RunAttack: this->object->NativeAttackDecision = "run_attack"; break;
+	case eStateAttack_Attack_On_Run: this->object->NativeAttackDecision = "attack_on_run"; break;
+	case eStateAttack_Melee: this->object->NativeAttackDecision = "melee"; break;
+	case eStateAttack_Run: this->object->NativeAttackDecision = "close_distance"; break;
+	default: this->object->NativeAttackDecision = "other"; break;
+	}
 	this->get_state_current()->execute();
 	
 	this->prev_substate			= this->current_substate;

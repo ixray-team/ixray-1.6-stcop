@@ -70,6 +70,8 @@ float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 
 void CMeleeChecker::on_hit_attempt(bool hit_success) 
 {
+	m_object->NativeHitAttemptAt = Device.dwTimeGlobal;
+	m_object->NativeHitAttemptSuccess = hit_success;
 	// добавить новый элемент в стек
 	for (u32 i=HIT_STACK_SIZE-1; i > 0; i--) m_hit_stack[i] = m_hit_stack[i-1];
 	m_hit_stack[0] = hit_success;
@@ -92,12 +94,15 @@ void CMeleeChecker::on_hit_attempt(bool hit_success)
 
 bool	CMeleeChecker::can_start_melee (const CEntityAlive *enemy)
 {
-	if ( !m_object->EnemyMan.see_enemy_now(enemy) )
+	m_object->NativeMeleeCheckedAt = Device.dwTimeGlobal;
+	if (!m_object->EnemyMan.see_enemy_now(enemy))
 	{
+		m_object->NativeMeleeReason = "no_native_vision";
 		return false;
 	}
-
-	return distance_to_enemy(enemy) < get_min_distance();
+	const bool Allowed = distance_to_enemy(enemy) < get_min_distance();
+	m_object->NativeMeleeReason = Allowed ? "start_allowed" : "outside_start_distance";
+	return Allowed;
 }
 
 bool	CMeleeChecker::should_stop_melee (const CEntityAlive *enemy)

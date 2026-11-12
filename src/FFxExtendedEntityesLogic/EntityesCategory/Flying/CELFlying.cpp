@@ -154,3 +154,9 @@ void CELFlying::RemoveObject(u16 ObjectIdentifier)
 	}
 	CELComponentBase::RemoveObject(ObjectIdentifier);
 }
+
+void CELFlying::FillCombatDebug(SELDebugRecord& Record) const
+{
+	Record.Mode = "Flying";
+	Record.State = BehaviorManager.HasActiveBehavior() ? BehaviorManager.GetValidation().Reason : "native_control";
+}

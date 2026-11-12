@@ -9,6 +9,8 @@
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedHuntGroups.h"
 #include <algorithm>
+#include <cmath>
+#include "xrGame/ai/monsters/control_manager_custom.h"
 #include "xrGame/EntityCondition.h"
 
 // Связывает выбор наземных схем поведения с необходимыми службами и состоянием владельца.
@@ -80,10 +82,41 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	}
 	if (Owner.ShouldFleePredator(SelectedObservation))
 	{
-		ReactionBehavior.Configure(SelectedObservation->Position, Device.dwTimeGlobal + 1000, true);
+		ReactionBehavior.Configure(SelectedObservation ? SelectedObservation->Position : Owner.LastFearPosition, Device.dwTimeGlobal + 1000, true);
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
 		SetValidationReason(Profile.HasCharacter ? "Отступление: характер и полученный отпор" : "Бегство от видового хищника");
+		return EELControl::Extended;
+	}
+	// A perceived but inaccessible enemy is a waiting stimulus, not a stale sound task.
+	for (const SELObservation& Known : Owner.Memory.GetRecords())
+	{
+		if (SelectedObservation && Known.TargetIdentifier != SelectedObservation->TargetIdentifier) { continue; }
+		CEntityAlive* VisibleEnemy = ExtendedEntityes::FindEntity(Known.TargetIdentifier);
+		if (!VisibleEnemy || !Adapter.IsEnemy(*VisibleEnemy) || !Adapter.CanSee(*VisibleEnemy) || !Owner.CanEngage(Known)) { continue; }
+		const bool CanPursue = Adapter.CanPursue(*VisibleEnemy, Known.Position);
+		if (CanPursue && Adapter.CanReach(Known.Position, Known.VertexIdentifier)) { continue; }
+		// Preserve legal bites and native jumps at graph edges, and the aerial interception executor.
+		if (CanPursue && ((!VisibleEnemy->UsedAI_Locations() && Profile.CanInterceptFlying) || Monster.MeleeChecker.can_start_melee(VisibleEnemy))) { continue; }
+		if (CanPursue && Profile.CanAttackJump && Monster.com_man().get_jump_control() && Monster.Position().distance_to_sqr(Known.Position) <= _sqr(Profile.LungeMaxDistance) && Monster.com_man().check_if_jump_possible(Known.Position, true)) { continue; }
+		if (Owner.ShouldFleePredator(&Known))
+		{
+			ReactionBehavior.Configure(Known.Position, Device.dwTimeGlobal + 1000u, true);
+		}
+		else
+		{
+			Fvector Away = Fvector().sub(Monster.Position(), Known.Position);
+			const float Angle = atan2f(Away.x, Away.z) + (Monster.ID() % 2 ? .35f : -.35f);
+			const float Radius = std::max(3.f, Profile.NativeAttackDistance * 1.5f);
+			Fvector WaitingPoint = Known.Position;
+			WaitingPoint.x += sinf(Angle) * Radius;
+			WaitingPoint.z += cosf(Angle) * Radius;
+			WaitingPoint.y = Monster.Position().y;
+			ReactionBehavior.Configure(WaitingPoint, Device.dwTimeGlobal + 1000u, false);
+		}
+		Select(&ReactionBehavior);
+		Update(DeltaTime);
+		SetValidationReason(Owner.IsFleeingPredator ? "Отход от недосягаемой угрозы" : "Ожидание: противник обнаружен, подход недоступен");
 		return EELControl::Extended;
 	}
 	const bool HasThreat = SelectedObservation && CELSharedTargets::ThreatPriority(*SelectedObservation, Adapter);
@@ -92,6 +125,25 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		return EELControl::Extended;
 	}
 	const bool IsPanicking = !IsBerserk && !HasThreat && (!SelectedObservation || Owner.Hearing.DamagePanic) && s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
+	Fvector Rally;
+	bool WaitForPack = false;
+	if (!SelectedObservation && !IsPanicking && Owner.RegroupPoint(Rally, WaitForPack))
+	{
+		if (WaitForPack)
+		{
+			Clear();
+			CELGroundMovement Idle(Adapter);
+			Idle.Stop();
+		}
+		else
+		{
+			ReactionBehavior.Configure(Rally, Device.dwTimeGlobal + 1000, false);
+			Select(&ReactionBehavior);
+			Update(DeltaTime);
+		}
+		SetValidationReason(WaitForPack ? "Сбор стаи: ожидаю сородичей" : "Сбор стаи: возвращаюсь к сородичам");
+		return EELControl::Extended;
+	}
 	const bool IsInvestigating = !SelectedObservation && s32(Device.dwTimeGlobal - Owner.Hearing.InvestigateUntil) < 0;
 	if (IsPanicking || IsInvestigating)
 	{

@@ -262,6 +262,7 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive *object0, const CEntityAl
 
 bool CMonsterEnemyManager::is_enemy(const CEntityAlive *obj) 
 {
+	if (obj->ID() == monster->ProvokedEnemyIdentifier && s32(monster->ProvokedEnemyUntil - Device.dwTimeGlobal) > 0 && obj->g_Alive()) { return true; }
 	return ((monster->g_Team() != obj->g_Team()) && monster->is_relation_enemy(obj) && obj->g_Alive());
 }
 
@@ -304,6 +305,11 @@ void CMonsterEnemyManager::script_enemy	(const CEntityAlive &enemy_)
 
 void CMonsterEnemyManager::remove_links (CObject* O)
 {
+	if (O->ID() == monster->ProvokedEnemyIdentifier)
+	{
+		monster->ProvokedEnemyIdentifier = u16(-1);
+		monster->ProvokedEnemyUntil = 0;
+	}
 	if ( enemy == O )
 	{
 		enemy			= nullptr;
