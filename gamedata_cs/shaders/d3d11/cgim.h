@@ -44,22 +44,20 @@ float3 Uncharted2ACES(float3 x)
 	static const float F = 0.30f; // Toe denominator
 	return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
-/*
 // Uncharted 2 tonemapping
 #define UNCHARTED2TONEMAP_WHITEPT 1.35
 #define UNCHARTED2TONEMAP_EXPOSURE 1.0
 
-float3 Uncharted2Tonemap(float3 c)
+float3 CGIMTonemap(float3 c)
 {
 	c *= UNCHARTED2TONEMAP_EXPOSURE;
 	
 	float3 tc = Uncharted2ACES(c);
 	float l = Luminance(c);
 	
-	c = lerp(c * Uncharted2ACES(l) / l, tc, tc);
+	c = lerp(c * Uncharted2ACES(l) / max(l, 1e-5f), tc, tc);
 	c /= Uncharted2ACES(UNCHARTED2TONEMAP_WHITEPT);
 
 	return c;
 }
-*/
 #endif
