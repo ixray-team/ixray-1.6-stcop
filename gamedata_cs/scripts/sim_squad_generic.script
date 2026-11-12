@@ -1138,15 +1138,15 @@ function sim_squad_generic:show()
 	local spot = self.spot_section
 	if self.player_id == "monster" then
 		spot = "alife_presentation_squad_monster"
+	elseif self.relationship == "enemy" then
+		spot = "alife_presentation_squad_enemy"
 	else
 		local commander = db.storage[self.commander_id] and db.storage[self.commander_id].object
 		local relation
 		if commander ~= nil and db.actor then
 			relation = commander:general_goodwill(db.actor)
 		else
-			if self.relationship == "enemy" then
-				relation = -1000
-			elseif self.relationship == "friend" then
+			if self.relationship == "friend" then
 				relation = 1000
 			end
 			if relation == nil then
