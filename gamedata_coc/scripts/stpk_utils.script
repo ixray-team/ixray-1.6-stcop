@@ -1217,14 +1217,27 @@ end
 function parse_cse_ph_skeleton_properties_packet(ret,stpk)
 	ret.skeleton_name = stpk:r_stringZ()
 	ret.skeleton_flags = stpk:r_u8()
-	ret.source_id = stpk:r_u16()
+	ret.source_id = stpk:r_u32()
+	if bit.band(ret.skeleton_flags, 4) ~= 0 then -- CSE_PHSkeleton::flSavedData
+		-- SPHBonesData: preserve the mask, root and float bounds without conversion.
+		ret.skeleton_bones_header = read_chunk(stpk, 34, "u8")
+		ret.skeleton_bones_count = stpk:r_u16()
+		local size = ret.skeleton_bones_count * 8
+		if ret.skeleton_bones_count > 64 then size = size + 8 end
+		ret.skeleton_bones_data = read_chunk(stpk, size, "u8")
+	end
 	return ret
 end
 
 function fill_cse_ph_skeleton_properties_packet(ret,stpk)
 	stpk:w_stringZ(ret.skeleton_name)
 	stpk:w_u8(ret.skeleton_flags)
-	stpk:w_u16(ret.source_id)
+	stpk:w_u32(ret.source_id)
+	if bit.band(ret.skeleton_flags, 4) ~= 0 then
+		write_chunk(stpk, ret.skeleton_bones_header, "u8")
+		stpk:w_u16(ret.skeleton_bones_count)
+		write_chunk(stpk, ret.skeleton_bones_data, "u8")
+	end
 end
 
 --[[
@@ -1256,6 +1269,7 @@ function parse_cse_alife_object_properties_packet(ret,stpk)
 	ret.custom_data = stpk:r_stringZ()
 	ret.story_id = stpk:r_s32()
 	ret.spawn_story_id = stpk:r_s32()
+	ret.script_story_id = stpk:r_stringZ()
 	return ret
 end
 
@@ -1268,6 +1282,7 @@ function fill_cse_alife_object_properties_packet(ret,stpk)
 	stpk:w_stringZ(ret.custom_data)
 	stpk:w_s32(ret.story_id)
 	stpk:w_s32(ret.spawn_story_id)
+	stpk:w_stringZ(ret.script_story_id)
 end
 
 -- cse_alife_object_climable_properties

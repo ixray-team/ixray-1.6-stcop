@@ -41,7 +41,12 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --game|--release)   MODE="game" ;;
         --engine|--debug)   MODE="engine" ;;
-        --data)             shift; DATA_DIR="${1:-}" ;;
+        --data)
+            if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "--data requires a game directory" >&2
+                exit 1
+            fi
+            shift; DATA_DIR="$1" ;;
         -h|--help)          usage; exit 0 ;;
         -*) echo "Неизвестная опция: $1" >&2; usage >&2; exit 1 ;;
         *)  BUILD_DIR="$1" ;;
@@ -171,7 +176,15 @@ prompt_for_game_dir() {
 
 find_game_dir() {
     local candidate bundle
-    for candidate in "${DATA_DIR}" "${REPO_DIR}/../cop-baseline" "${REPO_DIR}/../run"; do
+    if [ -n "${DATA_DIR}" ]; then
+        if [ ! -d "${DATA_DIR}/levels" ] || [ ! -d "${DATA_DIR}/resources" ]; then
+            say "Invalid --data directory: ${DATA_DIR} (levels/resources required)" >&2
+            return 1
+        fi
+        printf '%s' "${DATA_DIR}"
+        return 0
+    fi
+    for candidate in "${REPO_DIR}/../cop-baseline" "${REPO_DIR}/../run"; do
         [ -n "${candidate}" ] || continue
         if [ -d "${candidate}" ] && [ -d "${candidate}/levels" ] && [ -d "${candidate}/resources" ]; then
             printf '%s' "${candidate}"
@@ -189,8 +202,56 @@ find_game_dir() {
     return 1
 }
 
+preserve_mutable_data() {
+    local source="$1" destination="$2" item
+    for item in _appdata_ixray_ ixr_addons mods; do
+        if [ -d "${source}/${item}" ]; then
+            ditto "${source}/${item}" "${destination}/${item}" || return 1
+        fi
+    done
+}
+
+replace_bundle() {
+    local source="$1" target="$2" backup=""
+    local parent
+    parent="$(dirname "${target}")"
+    mkdir -p "${parent}" || return 1
+    if [ -e "${target}" ] || [ -L "${target}" ]; then
+        backup="$(mktemp -d "${parent}/IX-Ray-previous.XXXXXX")" || return 1
+        mv "${target}" "${backup}/IX-Ray.app" || return 1
+        say "Previous bundle preserved: ${backup}/IX-Ray.app"
+    fi
+    if ! mv "${source}" "${target}"; then
+        # A cross-filesystem move can leave a partial destination. Move it aside
+        # before rollback so mv cannot nest the old app inside that directory.
+        if [ -e "${target}" ] || [ -L "${target}" ]; then
+            local partial
+            if ! partial="$(mktemp -d "${parent}/IX-Ray-incomplete.XXXXXX")" || \
+               ! mv "${target}" "${partial}/IX-Ray.app"; then
+                say "Cannot quarantine incomplete bundle at ${target}" >&2
+                if [ -n "${backup}" ]; then
+                    say "Restore the previous bundle from ${backup}/IX-Ray.app" >&2
+                fi
+                return 1
+            fi
+            say "Incomplete bundle preserved: ${partial}/IX-Ray.app" >&2
+        fi
+        if [ -n "${backup}" ]; then
+            if ! mv "${backup}/IX-Ray.app" "${target}"; then
+                say "Restore the previous bundle from ${backup}/IX-Ray.app" >&2
+                return 1
+            fi
+            say "Previous bundle restored: ${target}" >&2
+        fi
+        return 1
+    fi
+}
+
 package_game() {
-    local app="${BUILD_DIR}/IX-Ray.app"
+    local final_app="${BUILD_DIR}/IX-Ray.app"
+    local package_root
+    package_root="$(mktemp -d "${BUILD_DIR}/IX-Ray-package.XXXXXX")" || return 1
+    local app="${package_root}/IX-Ray.app"
     local contents="${app}/Contents"
     local macos="${contents}/MacOS"
     local res="${contents}/Resources"
@@ -204,6 +265,7 @@ package_game() {
     local game_dir="${GAME_DIR}"
     if [ -z "${game_dir}" ]; then
         if ! game_dir="$(find_game_dir)"; then
+            [ -z "${DATA_DIR}" ] || return 1
             game_dir="$(prompt_for_game_dir)"
         fi
     fi
@@ -216,7 +278,6 @@ package_game() {
         exit 1
     fi
 
-    rm -rf "${app}"
     mkdir -p "${macos}" "${res}"
 
     say "Складываю движок..."
@@ -252,6 +313,12 @@ package_game() {
         ditto "${REPO_DIR}/gamedata" "${res}/gamedata"
     fi
 
+    preserve_mutable_data "${game_dir}" "${res}" || return 1
+    if [ ! -d "${res}/levels" ] || [ ! -d "${res}/resources" ]; then
+        say "Packaging failed: required game data was not copied" >&2
+        return 1
+    fi
+
     cat > "${macos}/launch" <<'LAUNCH'
 #!/bin/sh
 # Запускается LaunchServices из бандла. Данные игры лежат в Contents/Resources,
@@ -268,25 +335,24 @@ LAUNCH
     codesign --force --deep --sign - "${app}" >/dev/null 2>&1 || \
         say "ПРЕДУПРЕЖДЕНИЕ: подпись не удалась, Gatekeeper может ругаться" >&2
 
-    say "Собрано: ${app} ($(du -sh "${app}" | cut -f1))"
+    replace_bundle "${app}" "${final_app}" || return 1
+    rmdir "${package_root}"
+    say "Собрано: ${final_app} ($(du -sh "${final_app}" | cut -f1))"
 }
 
 install_to_applications() {
     local app="${BUILD_DIR}/IX-Ray.app"
-    local target="/Applications/IX-Ray.app"
+    local target="${IXRAY_INSTALL_TARGET:-/Applications/IX-Ray.app}"
 
-    say "Устанавливаю в /Applications..."
-    osascript -e 'tell application "IX-Ray" to quit' >/dev/null 2>&1 || true
-
-    # Move, not copy: one copy of the 4.8 GB bundle is enough, and build/IX-Ray.app would
-    # otherwise stay behind as a second installation.
-    if ! rm -rf "${target}" 2>/dev/null || ! mv "${app}" "${target}" 2>/dev/null; then
-        say "ПРЕДУПРЕЖДЕНИЕ: не удалось перенести бандл в /Applications." >&2
-        say "Перетащите ${app} в /Applications вручную." >&2
+    say "Устанавливаю в ${target}..."
+    if [ -e "${target}" ] || [ -L "${target}" ]; then
+        preserve_mutable_data "${target}/Contents/Resources" "${app}/Contents/Resources" || return 1
+    fi
+    if ! replace_bundle "${app}" "${target}"; then
+        say "Installation failed; the new bundle remains at ${app}." >&2
         return 1
     fi
     say "Установлено: ${target}"
-    return 0
 }
 
 move_to_trash() {   # $1 = путь; кладём в Корзину, чтобы можно было вернуть
@@ -317,6 +383,7 @@ offer_cleanup() {
 # не ждать компиляцию ради сообщения «папки нет».
 if [ "${MODE}" = "game" ] && [ -z "${GAME_DIR}" ]; then
     if ! GAME_DIR="$(find_game_dir)"; then
+        [ -z "${DATA_DIR}" ] || exit 1
         GAME_DIR="$(prompt_for_game_dir)"
     fi
     if [ -z "${GAME_DIR}" ] || [ ! -d "${GAME_DIR}" ]; then
@@ -353,7 +420,7 @@ ninja -C "${BUILD_DIR}"
 echo
 if [ "${MODE}" = "game" ]; then
     package_game
-    install_to_applications || true
+    install_to_applications
     echo
     say "Приятной игры!"
 else

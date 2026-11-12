@@ -7,6 +7,27 @@
     },
     "configurePresets": [
         {
+            "name": "Engine-arm64-macOS",
+            "displayName": "Native macOS ARM64 development build",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/arm64/Engine-Darwin",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_POLICY_VERSION_MINIMUM": "3.5",
+                "IXRAY_ENABLE_RESONANCEAUDIO": "OFF",
+                "IXRAY_CI": "ON",
+                "IXRAY_PROFILER": "OFF"
+            }
+        },
+        {
             "name": "Engine-Base-Windows",
             "displayName": "Engine-Base-Windows",
             "hidden": true,
@@ -292,6 +313,16 @@
         }
     ],
     "buildPresets": [
+        {
+            "name": "Engine-arm64-macOS-RelWithDebInfo",
+            "configurePreset": "Engine-arm64-macOS",
+            "targets": [
+                "xrEngine",
+                "xrGame",
+                "xrRender_R4"
+            ],
+            "jobs": 4
+        },
         {
             "name": "Engine-x64-Windows-Debug",
             "displayName": "Engine-x64-Windows-Debug",
