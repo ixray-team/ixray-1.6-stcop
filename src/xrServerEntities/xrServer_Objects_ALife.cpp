@@ -2207,6 +2207,9 @@ CSE_ALifeCar::CSE_ALifeCar				(const char* caSection) : CSE_ALifeDynamicObjectVi
 	fuel						=pSettings->read_if_exists<float>(caSection, "fuel_tank", 10.0f);
 	Engine						=0;
 	Light						=0;
+	Exploded					=0;
+	ExplosionPending			=0;
+	ExplosionTime				=0.f;
 	Owner						=ALife::INVALID_OBJECT_ID;
 	Transmission				=0;
 }
@@ -2327,6 +2330,11 @@ void CSE_ALifeCar::STATE_Serialize(ISaveObject& Object)
 	{
 		Object << Engine << Light;
 	}
+
+	BEGIN_CHUNK(Object,"CSE_ALifeCar::explosion_state")
+	{
+		Object << Exploded << ExplosionPending << ExplosionTime;
+	}
 }
 
 void CSE_ALifeCar::UPDATE_Serialize(ISaveObject& Object)
@@ -2415,6 +2423,11 @@ void CSE_ALifeCar::data_serialize(ISaveObject& Object)
 	{
 		inherited2::data_serialize(Object);
 		Object << o_Position << o_Angle << health << fuel << door_states << wheel_states;
+	}
+
+	BEGIN_CHUNK(Object,"CSE_ALifeCar::explosion_state")
+	{
+		Object << Exploded << ExplosionPending << ExplosionTime;
 	}
 }
 

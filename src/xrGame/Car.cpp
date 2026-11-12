@@ -494,6 +494,11 @@ void CCar::save(NET_Packet& output_packet)
 	output_packet.w_u8(b_engine_on ? 1 : 0);
 	output_packet.w_u8(m_lights.IsOn() ? 1 : 0);
 	save_data(m_fuel, output_packet);
+
+	const bool ExplosionPending = m_zero_health_explosion_timer && CDelayedActionFuse::isActive();
+	const float ExplosionTime = ExplosionPending ? CDelayedActionFuse::Time() : 0.f;
+	output_packet.w_u8(ExplosionPending ? 1 : 0);
+	save_data(ExplosionTime, output_packet);
 }
 
 void CCar::load(IReader& input_packet)
@@ -515,6 +520,13 @@ void CCar::load(IReader& input_packet)
 	}
 
 	load_data(m_fuel, input_packet);
+
+	if (input_packet.elapsed() >= intptr_t(sizeof(u8) + sizeof(float)))
+	{
+		m_saved_explosion_pending = input_packet.r_u8() != 0;
+		load_data(m_saved_explosion_time, input_packet);
+		m_has_saved_explosion_state = true;
+	}
 }
 
 void CCar::Serialize(ISaveObject& Object)
@@ -540,6 +552,21 @@ void CCar::Serialize(ISaveObject& Object)
 				m_saved_engine_on = EngineOn != 0;
 				m_saved_lights_on = LightsOn != 0;
 				m_has_saved_runtime_state = true;
+			}
+		}
+
+		BEGIN_CHUNK(Object, "CCar::explosion_state")
+		{
+			const bool ExplosionPending = m_zero_health_explosion_timer && CDelayedActionFuse::isActive();
+			u8 Pending = ExplosionPending ? 1 : 0;
+			float Remaining = ExplosionPending ? CDelayedActionFuse::Time() : 0.f;
+			Object << Pending << Remaining;
+
+			if (!Object.IsSave())
+			{
+				m_saved_explosion_pending = Pending != 0;
+				m_saved_explosion_time = Remaining;
+				m_has_saved_explosion_state = true;
 			}
 		}
 	}
@@ -1372,8 +1399,13 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 	PKinematics(Visual())->CalculateBones(TRUE);
 	SetfHealth						(co->health);
 	m_fuel							= co->fuel;
-	if(!g_Alive())					b_exploded=true;
-	else							b_exploded=false;
+	b_exploded						= co->Exploded != 0;
+	if (!m_has_saved_explosion_state)
+	{
+		m_saved_explosion_pending	= co->ExplosionPending != 0;
+		m_saved_explosion_time		= co->ExplosionTime;
+		m_has_saved_explosion_state	= true;
+	}
 									
 	CDamagableItem::RestoreEffect();
 	
@@ -1407,6 +1439,25 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 	{
 		m_has_saved_runtime_state = false;
 		RestoreEngineAndLights(m_saved_engine_on, m_saved_lights_on);
+	}
+
+	if (m_zero_health_explosion_timer)
+	{
+		if (m_has_saved_explosion_state)
+		{
+			m_has_saved_explosion_state = false;
+			RestoreExplosionState();
+		}
+		else if (GetfHealth() <= 0.f && !CDelayedActionFuse::isActive())
+		{
+			StartExplosionTimer();
+		}
+	}
+	else if (GetfHealth() <= 0.f)
+	{
+		// Legacy mode: time_to_explosion is the old health-drain fuse, and a
+		// dead car explodes immediately.
+		CarExplode();
 	}
 
 	return							(CScriptEntity::net_Spawn(DC) && R);
@@ -2134,9 +2185,9 @@ void CCar::shedule_Update(u32 dt)
 	if(CPHDestroyable::Destroyed())CPHDestroyable::SheduleUpdate(dt);
 	else	CPHSkeleton::Update(dt);
 	
-	if(CDelayedActionFuse::isActive()&&CDelayedActionFuse::Update(GetfHealth()))
-	{
-	}
+	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetfHealth()))
+		CarExplode();
+
 	if(b_exploded&&!m_explosion_flags.test(flExploding)&&!getEnabled())//!m_bExploding
 										setEnabled(TRUE);
 #ifdef DEBUG
@@ -2229,6 +2280,12 @@ void CCar::UpdateCL				( )
 	{
 		m_has_saved_runtime_state = false;
 		RestoreEngineAndLights(m_saved_engine_on, m_saved_lights_on);
+	}
+
+	if (m_has_saved_explosion_state)
+	{
+		m_has_saved_explosion_state = false;
+		RestoreExplosionState();
 	}
 
 	// Clear a boost value left by input from a previous frame. Input normally
@@ -3112,7 +3169,12 @@ void	CCar::Hit							(SHit* pHDS)
 	}
 
 	inherited::Hit(pHDS);
-	if(!CDelayedActionFuse::isActive())
+	if (m_zero_health_explosion_timer)
+	{
+		if (GetfHealth() <= 0.f)
+			StartExplosionTimer();
+	}
+	else if (!b_exploded && GetfHealth() > 0.f && !CDelayedActionFuse::isActive())
 	{
 		CDelayedActionFuse::CheckCondition(GetfHealth());
 	}
@@ -3209,38 +3271,47 @@ void CCar::ApplyDamage(u16 level)
 {
 	if (level == m_level_applied) return;
 
-	if (level > m_level_applied)
+	const u16 OldLevel = m_level_applied;
+
+	// Mark the level as applied before running the effects, like the original
+	// car did. Starting the legacy fuse raises health back to the level 2
+	// threshold and calls HitEffect() again; with the level still unapplied
+	// that re-entered ApplyDamage(2) and restarted the check.
+	CDamagableItem::ApplyDamage(level);
+
+	if (level > OldLevel)
 	{
 		switch(level)
 		{
 			case 1: m_damage_particles.Play1(this);break;
-			case 2: 
-				{
-					if(!CDelayedActionFuse::isActive())
-					{
-						CDelayedActionFuse::CheckCondition(GetfHealth());
-					}
-					m_damage_particles.Play2(this);
-				}
-												   break;
-			case 3: m_fuel=0.f;
-				
+			case 2:
+				if (!m_zero_health_explosion_timer && !CDelayedActionFuse::isActive())
+					CDelayedActionFuse::CheckCondition(GetfHealth());
+				m_damage_particles.Play2(this);
+				break;
+			case 3:
+				if (m_zero_health_explosion_timer)
+					StartExplosionTimer();
+				break;
 		}
 	}
 	else
 	{
-		if (level < 2)
+		if (m_zero_health_explosion_timer)
 		{
-			m_damage_particles.Stop2(this);
+			if (level < 3)
+				StopExplosionTimer();
+		}
+		else if (level < 2)
+		{
 			CDelayedActionFuse::Reset();
 		}
-		if (level < 1)
-		{
-			m_damage_particles.Stop1(this);
-		}
-	}
 
-	CDamagableItem::ApplyDamage(level);
+		if (level < 2)
+			m_damage_particles.Stop2(this);
+		if (level < 1)
+			m_damage_particles.Stop1(this);
+	}
 }
 
 void CCar::UpdateDamageEffects()
@@ -3286,7 +3357,10 @@ bool CCar::RepairFromItem()
 	const float MaxHealth = GetMaxHealth();
 	if (MaxHealth > 0.f)
 	{
-		const float OldHealth = GetfHealth();
+		// A burning car can have negative health after Die(). Repair from the
+		// burning state must restore health from zero, otherwise one repair
+		// item would leave the car below zero and consume the item for nothing.
+		const float OldHealth = std::max(GetfHealth(), 0.f);
 		if (OldHealth < MaxHealth)
 		{
 			float Fraction = RepairAmount;
@@ -3318,9 +3392,63 @@ bool CCar::RepairFromItem()
 float CCar::SetfHealth(float value)
 {
 	float result = CEntity::SetfHealth(value);
+	if (m_zero_health_explosion_timer)
+	{
+		if (value > 0.f)
+			StopExplosionTimer();
+		else
+			StartExplosionTimer();
+	}
 	CDamagableItem::HitEffect();
 	UpdateDamageEffects();
 	return result;
+}
+
+void CCar::StartExplosionTimer(float time)
+{
+	if (b_exploded || !m_zero_health_explosion_timer)
+		return;
+
+	if (time < 0.f)
+	{
+		if (CDelayedActionFuse::isActive())
+			return;
+		time = m_explosion_delay;
+	}
+
+	if (time <= 0.f)
+	{
+		CarExplode();
+		return;
+	}
+
+	CDelayedActionFuse::Reset();
+	CDelayedActionFuse::Initialize(time, 0.f);
+	if (!CDelayedActionFuse::isInitialized())
+	{
+		CarExplode();
+		return;
+	}
+
+	CDelayedActionFuse::CheckCondition(0.f);
+	m_damage_particles.Play3(this);
+}
+
+void CCar::StopExplosionTimer()
+{
+	CDelayedActionFuse::Reset();
+	m_damage_particles.Stop3(this);
+}
+
+void CCar::RestoreExplosionState()
+{
+	if (!m_zero_health_explosion_timer)
+		return;
+
+	if (m_saved_explosion_pending)
+		StartExplosionTimer(m_saved_explosion_time);
+	else if (GetfHealth() <= 0.f)
+		StartExplosionTimer();
 }
 
 void CCar::RecalculateExitPosition()
@@ -4344,7 +4472,14 @@ void CCar::Init()
 
 	m_current_transmission_num=0;
 	CDamagableItem::Init(GetfHealth(),3);
-	CDelayedActionFuse::Initialize(READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion", 120.f), CDamagableItem::DamageLevelToHealth(2));
+	m_zero_health_explosion_timer = READ_IF_EXISTS(ini, r_bool, "car_definition", "zero_health_explosion_timer", false);
+	// Legacy configs never had an explicit default; keep the original 120 s
+	// fuse length when time_to_explosion is missing. New-mode configs use an
+	// immediate explosion in that case.
+	m_explosion_delay = READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion",
+		m_zero_health_explosion_timer ? 0.f : 120.f);
+	CDelayedActionFuse::Initialize(m_explosion_delay,
+		m_zero_health_explosion_timer ? 0.f : CDamagableItem::DamageLevelToHealth(2));
 	{
 		for (auto& i : m_wheels_map)
 		{
@@ -4478,6 +4613,10 @@ void CCar::SyncServerRuntimeState()
 		{
 			Secar->Engine = b_engine_on ? 1 : 0;
 			Secar->Light = m_lights.IsOn() ? 1 : 0;
+			Secar->Exploded = b_exploded ? 1 : 0;
+			const bool ExplosionPending = m_zero_health_explosion_timer && CDelayedActionFuse::isActive();
+			Secar->ExplosionPending = ExplosionPending ? 1 : 0;
+			Secar->ExplosionTime = ExplosionPending ? CDelayedActionFuse::Time() : 0.f;
 		}
 	}
 }
@@ -6914,6 +7053,9 @@ void CCar::CarExplode()
 
 	if(b_exploded) return;
 
+	m_fuel = 0.f;
+	StopExplosionTimer();
+
 	for (auto& i_w : m_wheels_map)
 	{
 		if (i_w.second.tire_drive._p)
@@ -6930,6 +7072,7 @@ void CCar::CarExplode()
 	m_enginelights.TurnOffLights();
 	m_reverselights.TurnOffLights();
 	b_exploded=true;
+	SyncServerRuntimeState();
 	b_event_drag_activated = false;
 	CExplosive::GenExplodeEvent(Position(),Fvector().set(0.f,1.f,0.f));
 	if(CPHDestroyable::CanDestroy())
@@ -7181,7 +7324,8 @@ void CCar::DropTrunkContents()
 
 void		CCar::SetExplodeTime				(u32 et)	
 {
-	CDelayedActionFuse::Initialize(float(et)/1000.f,CDamagableItem::DamageLevelToHealth(2));
+	CDelayedActionFuse::Initialize(float(et)/1000.f,
+		m_zero_health_explosion_timer ? 0.f : CDamagableItem::DamageLevelToHealth(2));
 }
 u32			CCar::ExplodeTime					()			
 {
@@ -7193,7 +7337,10 @@ u32			CCar::ExplodeTime					()
 void	CCar::		Die					(CObject* who)
 {
 	inherited::Die(who);
-	CarExplode();
+	if (m_zero_health_explosion_timer)
+		StartExplosionTimer();
+	else
+		CarExplode();
 }
 
 Fvector	CCar::		ExitVelocity				()
