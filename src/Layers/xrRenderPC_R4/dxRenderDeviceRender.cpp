@@ -334,6 +334,7 @@ void dxRenderDeviceRender::End()
 		RImplementation.Target->PhaseGammaApply(Cmd);
 	}
 	RImplementation.NriPasses.EndFrame();
+	RImplementation.Scene.EndFrame();
 
 	Cmd.OnFrameEnd();
 	{

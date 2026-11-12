@@ -24,6 +24,8 @@ public:
 	virtual void Copy			(dxRender_Visual *pFrom	) override;
 	virtual void Release		() override;
 
+	const Fmatrix& GetTransform() const { return xform; }
+
 	FTreeVisual(void);
 	virtual ~FTreeVisual(void) override;
 };

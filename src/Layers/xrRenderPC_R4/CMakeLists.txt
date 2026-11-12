@@ -70,6 +70,7 @@ target_link_libraries(xrRender_R4 PUBLIC xrEngineCore)
 target_link_libraries(xrRender_R4 PRIVATE xrRHI)
 target_link_libraries(xrRender_R4 PUBLIC NvTriStrip)
 target_link_libraries(xrRender_R4 PUBLIC lunasvg)
+target_link_libraries(xrRender_R4 PRIVATE meshoptimizer)
 
 if (NOT WIN32)
     target_compile_definitions(xrRender_R4 PRIVATE XR_USE_NATIVE_D3D11=1)

@@ -46,6 +46,11 @@ void CRender::init_cacades()
 {
 	m_sun_cascades.resize(3);
 	m_sun_cascades[0].reset_chain = true;
+	for (R_dsgraph_structure& Graph : GraphSun)
+	{
+		Graph.SkipDepthBatched = true;
+	}
+	GraphRain.SkipDepthBatched = true;
 	ResetSunShadowCache();
 }
 
@@ -488,21 +493,30 @@ void CRender::render_sun_cascades(GfxCmdList& Cmd)
 			GRHI->ApplyRenderTargetChange();
 			// Empty captures must discard the previous slice as well.
 			Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+			if (IsSunCascadeCollected(i))
+			{
+				GpuScene::DepthDraw Draw = { Target->rt_smap_depth_sun_dsv[i], i };
+				Draw.Look = fuckingsun->direction;
+				Scene.DrawDepth(Cmd, Graph, Draw);
+			}
 
 			bool bNormal = Graph.HasPasses(0);
 			bool bSpecial = Graph.HasPasses(1) || Graph.mapSorted.size();
 
-			if (bNormal || bSpecial)
+			// The batch can leave the graph empty; the grass is not in the graph
+			CDetailManager* ActiveDetails = GetDetails();
+			const bool HasDetails = ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (int)i < ps_r2_sun_details_cascades;
+			if (bNormal || bSpecial || HasDetails)
 			{
 				Cmd.SetObjectTransform(Fidentity);
 				Cmd.SetView(Fidentity, fuckingsun->X.D.combine);
 
 				Graph.r_dsgraph_render_graph(0);
 
-				CDetailManager* ActiveDetails = GetDetails();
-				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (int)i < ps_r2_sun_details_cascades)
+				if (HasDetails)
 				{
-					ActiveDetails->hw_Render(Cmd, &fuckingsun->X.D.combine, i > 0);
+					const GpuScene::DepthDraw GrassDraw = { Target->rt_smap_depth_sun_dsv[i], i };
+					ActiveDetails->hw_Render(Cmd, &fuckingsun->X.D.combine, i > 0, &GrassDraw);
 				}
 
 				fuckingsun->X.D.transluent = false;

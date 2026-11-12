@@ -138,6 +138,7 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 					const bool HasDecorObject = (L->decor_object[0] && !L->decor_object[0]->getDestroy()) || (L->decor_object[1] && !L->decor_object[1]->getDestroy()) || (L->decor_object[2] && !L->decor_object[2]->getDestroy()) || (L->decor_object[3] && !L->decor_object[3]->getDestroy()) || (L->decor_object[4] && !L->decor_object[4]->getDestroy()) || (L->decor_object[5] && !L->decor_object[5]->getDestroy());
 
 					bool decorative_light = false;
+					bool IsBatched = false;
 					R_dsgraph_structure* Graph = &GraphPass;
 					if (L->flags.bHudMode)
 					{
@@ -159,16 +160,29 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 					}
 					else
 					{
+						// The level geometry and the opaque models of this view are drawn as one batch
+						IsBatched = Scene.HasDepthBatch() && !Device.IsEditorMode();
+						GraphPass.SkipDepthBatched = IsBatched;
 						Graph = &BuildPassGraph(Cmd, ShadowView, L->ignore_object);
+						GraphPass.SkipDepthBatched = false;
 					}
 
 					bool bNormal = Graph->HasPasses(0);
 					bool bSpecial = Graph->HasPasses(1) || Graph->mapSorted.size();
-					if (bNormal || bSpecial)
+					// What the batch will draw is not known here: its view counts as having casters
+					if (bNormal || bSpecial || IsBatched)
 					{
 						stats.s_merged++;
 						L_spot_s.push_back(L);
 						Target->phase_smap_spot(Cmd, L);
+						if (IsBatched)
+						{
+							const RHIViewport Area = { float(L->X.S.posX), float(L->X.S.posY), float(L->X.S.size), float(L->X.S.size), 0.0f, 1.0f };
+							GpuScene::DepthDraw Draw = { Target->rt_smap_depth->pZRT, 0, &Area };
+							Draw.Eye = &L->position;
+							Draw.IsSpot = true;
+							Scene.DrawDepth(Cmd, *Graph, Draw);
+						}
 						Cmd.SetObjectTransform(Fidentity);
 						Cmd.SetView(L->X.S.view, L->X.S.project);
 						Graph->r_dsgraph_render_graph(0);
@@ -178,7 +192,10 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 							GetDetails() && GetDetails()->dtSlots &&
 							L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) <= _sqr(40.f + L->SpatialComponent->sphere.R))
 						{
-							GetDetails()->hw_Render(Cmd, &L->X.S.combine);
+							const RHIViewport GrassArea = { float(L->X.S.posX), float(L->X.S.posY), float(L->X.S.size), float(L->X.S.size), 0.0f, 1.0f };
+							GpuScene::DepthDraw GrassDraw = { Target->rt_smap_depth->pZRT, 0, &GrassArea };
+							GrassDraw.IsSpot = true;
+							GetDetails()->hw_Render(Cmd, &L->X.S.combine, false, &GrassDraw);
 						}
 
 						L->X.S.transluent = false;

@@ -28,30 +28,17 @@ static bool IsShadowBaseShader(const shared_str& Name)
 	{
 		return false;
 	}
+	// The rest is the hash of the shader's defines: "_%08x"
 	const char* Suffix = *Name + Length;
-	while (*Suffix)
+	if (*Suffix && *Suffix++ != '_')
 	{
-		if (*Suffix++ != '_')
-		{
-			return false;
-		}
-		if (*Suffix >= '0' && *Suffix <= '9')
-		{
-			do
-			{
-				++Suffix;
-			} while (*Suffix >= '0' && *Suffix <= '9');
-		}
-		else if (strncmp(Suffix, "puddles", 7) == 0)
-		{
-			Suffix += 7;
-		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
-	return true;
+	while (isxdigit(u8(*Suffix)))
+	{
+		++Suffix;
+	}
+	return !*Suffix;
 }
 
 static bool IsDepthOnlyShadowPass(const SPass& Pass)
@@ -264,6 +251,21 @@ ICF float GetDistFromCamera(const R_dsgraph_structure& Graph, const Fvector& fro
 	return adjusted_distane;
 }
 
+static Fvector4 static_sizes[12] =
+{
+	o_optimize_static_l1_size, o_optimize_static_l2_size, o_optimize_static_l3_size,
+	o_optimize_static_l4_size, o_optimize_static_l5_size, o_optimize_static_l6_size,
+	o_optimize_static_l7_size, o_optimize_static_l8_size, o_optimize_static_l9_size,
+	o_optimize_static_l10_size, o_optimize_static_l11_size, o_optimize_static_l12_size
+};
+static Fvector4 static_dists[12] =
+{
+	o_optimize_static_l1_dist, o_optimize_static_l2_dist, o_optimize_static_l3_dist,
+	o_optimize_static_l4_dist, o_optimize_static_l5_dist, o_optimize_static_l6_dist,
+	o_optimize_static_l7_dist, o_optimize_static_l8_dist, o_optimize_static_l9_dist,
+	o_optimize_static_l10_dist, o_optimize_static_l11_dist, o_optimize_static_l12_dist
+};
+
 ICF bool IsValuableToRender(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual, bool isStatic, bool sm, Fmatrix& transform_matrix, bool ignore_optimize = false)
 {
 	if (ignore_optimize || (isStatic &&
@@ -293,20 +295,6 @@ ICF bool IsValuableToRender(const R_dsgraph_structure& Graph, dxRender_Visual* p
 	float adjusted_distance = GetDistFromCamera(Graph, pos);
 
 	// Настройки для статических и динамических объектов
-	static Fvector4 static_sizes[12] =
-	{
-		o_optimize_static_l1_size, o_optimize_static_l2_size, o_optimize_static_l3_size,
-		o_optimize_static_l4_size, o_optimize_static_l5_size, o_optimize_static_l6_size,
-		o_optimize_static_l7_size, o_optimize_static_l8_size, o_optimize_static_l9_size,
-		o_optimize_static_l10_size, o_optimize_static_l11_size, o_optimize_static_l12_size
-	};
-	static Fvector4 static_dists[12] =
-	{
-		o_optimize_static_l1_dist, o_optimize_static_l2_dist, o_optimize_static_l3_dist,
-		o_optimize_static_l4_dist, o_optimize_static_l5_dist, o_optimize_static_l6_dist,
-		o_optimize_static_l7_dist, o_optimize_static_l8_dist, o_optimize_static_l9_dist,
-		o_optimize_static_l10_dist, o_optimize_static_l11_dist, o_optimize_static_l12_dist
-	};
 	static Fvector4 dynamic_sizes[5] =
 	{
 		o_optimize_dynamic_l1_size, o_optimize_dynamic_l2_size, o_optimize_dynamic_l3_size,
@@ -363,6 +351,29 @@ ICF bool IsValuableToRender(const R_dsgraph_structure& Graph, dxRender_Visual* p
 	}
 
 	return CheckLevelLabmda(dynamic_sizes, dynamic_dists, std::size(dynamic_sizes), opt_level, sphere_volume, adjusted_distance);
+}
+
+// The size steps of IsValuableToRender for statics: below the sphere volume (x) a static is dropped
+// beyond the distance (y)
+u32 GetStaticCullSteps(bool Shadow, float Fov, Hlsl::float4* Steps)
+{
+	static_assert(std::size(static_sizes) + 1 == SCENE_VIEW_STEPS);
+	if (opt_static < 1)
+	{
+		return 0;
+	}
+	const float Scale = BASE_FOV / Fov;
+	const u32 Column = opt_static >= 2 && opt_static <= 4 ? u32(opt_static) - 1 : 0;
+	u32 Count = 0;
+	if (Shadow && ps_r__common_flags.test(RFLAG_OPT_SHAD_GEOM))
+	{
+		Steps[Count++].set(50000.f, 160.f * Scale, 0.f, 0.f);
+	}
+	for (u32 Step = 0; Step < std::size(static_sizes); ++Step)
+	{
+		Steps[Count++].set((&static_sizes[Step].x)[Column], (&static_dists[Step].x)[Column] * Scale, 0.f, 0.f);
+	}
+	return Count;
 }
 
 ICF R_dsgraph::StaticPacket MakeStaticPacket(const R_dsgraph_structure& Graph, float Ssa, dxRender_Visual* pVisual)
@@ -615,6 +626,10 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 {
 	CRender& RI = RImplementation;
+	if (pVisual->IsDepthBatched && (SkipDepthBatched || (SkipLevelBatched && !pVisual->IsBatchedTree)))
+	{
+		return;
+	}
 	if (SpotShadowCachedCasters && SpotShadowCachedCasters->contains(pVisual))
 	{
 		++SpotShadowCachedSkips;

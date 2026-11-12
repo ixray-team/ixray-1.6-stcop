@@ -270,7 +270,7 @@ void CDetailManager::hw_Unload()
 	TrampleActiveSlots.clear();
 }
 
-void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, bool Trimmed)
+void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, bool Trimmed, const GpuDepthDraw* Batch)
 {
 	if (!psDeviceFlags.is(rsDetails)) return;
 	PROF_EVENT("CDetailManager::hw_Render");
@@ -290,7 +290,7 @@ void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, bool Trimmed
 		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
-		hw_Render_dump(Cmd, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, CullFrustum, Trimmed);
+		hw_Render_dump(Cmd, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, CullFrustum, Trimmed, Batch);
 	}
 
 	// Wave1
@@ -298,7 +298,7 @@ void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, bool Trimmed
 		PROF_EVENT("Wave1")
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
-		hw_Render_dump(Cmd, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, CullFrustum, Trimmed);
+		hw_Render_dump(Cmd, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, CullFrustum, Trimmed, Batch);
 	}
 
 	// Still
@@ -311,7 +311,7 @@ void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, bool Trimmed
 	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 }
 
-void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum, bool Trimmed)
+void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum, bool Trimmed, const GpuDepthDraw* Batch)
 {
 	const bool EditorMode = Device.IsEditorMode();
 	if (!EditorMode && !objects.empty())
@@ -360,6 +360,36 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 
 	if (phase_shmap && CullFrustum)
 	{
+		// The scene culls the instances on the GPU and draws each model from the result
+		GpuScene::GrassBin Bins[SCENE_GRASS_BINS];
+		u32 BinCount = 0;
+		bool IsBatched = Batch && !EditorMode;
+		for (CDetail* ObjectPtr : objects)
+		{
+			const CDetail& Object = *ObjectPtr;
+			const auto& Items = Object.m_items[render_key][var_id];
+			if (Items.empty() || !IsBatched)
+			{
+				continue;
+			}
+			const ShaderElement* Element = Object.shader ? Object.shader->E[lod_id]._get() : nullptr;
+			if (BinCount == SCENE_GRASS_BINS || !Element || Element->passes.empty() || !Element->passes[0])
+			{
+				IsBatched = false;
+				continue;
+			}
+			const GeometryAlloc& Block = Trimmed && Object.TrimAlloc.Ref ? Object.TrimAlloc : Object.Alloc;
+			Bins[BinCount++] = { Items.data(), u32(Items.size()), Object.bv_sphere.P.magnitude() + Object.bv_sphere.R, Block.IndexBase, Block.IndexCount, Block.VertexBase, Block.Page, Element->passes[0]._get() };
+		}
+		if (IsBatched && ps_trample_enabled)
+		{
+			Cmd.Constants.Write<CBDetail>().trample_params.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
+		}
+		if (IsBatched && RImplementation.Scene.DrawGrass(Cmd, var_id - 1, Device.dwFrame, Bins, BinCount, *CullFrustum, *Batch))
+		{
+			return;
+		}
+
 		for (CDetail* ObjectPtr : objects)
 		{
 			CDetail& Object = *ObjectPtr;

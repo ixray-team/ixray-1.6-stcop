@@ -219,7 +219,8 @@ public:
 
 	void							hw_Load			();
 	void							hw_Unload		();
-	void							hw_Render		(GfxCmdList& Cmd, Fmatrix* CullXform = nullptr, bool Trimmed = false);
+	// Batch: the depth target of a shadow view, for the scene to draw the grass culled on the GPU
+	void							hw_Render		(GfxCmdList& Cmd, Fmatrix* CullXform = nullptr, bool Trimmed = false, const struct GpuDepthDraw* Batch = nullptr);
 
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
 
@@ -238,7 +239,7 @@ public:
 	void							TrampleAnimateItems		();
 	xr_vector<u32>					TrampleActiveSlots;
 
-	void							hw_Render_dump	(GfxCmdList& Cmd, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum = nullptr, bool Trimmed = false);
+	void							hw_Render_dump	(GfxCmdList& Cmd, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum = nullptr, bool Trimmed = false, const struct GpuDepthDraw* Batch = nullptr);
 
 	// get unpacked slot
 	DetailSlot&						QueryDB			(int sx, int sz);

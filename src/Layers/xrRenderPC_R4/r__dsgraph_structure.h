@@ -84,6 +84,9 @@ public:
 	bool SpotShadowPass = false;
 	const xr_hash_set<dxRender_Visual*>* SpotShadowCachedCasters = nullptr;
 	u32 SpotShadowCachedSkips = 0;
+	// The view's depth batch draws these (GpuScene)
+	bool SkipDepthBatched = false;
+	bool SkipLevelBatched = false;
 	u32 SpotShadowDuplicateSkips = 0;
 	u32 SpotShadowStaticItems = 0;
 	u32 SpotShadowDynamicItems = 0;

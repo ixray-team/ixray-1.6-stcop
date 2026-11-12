@@ -264,9 +264,16 @@ void CRender::render_rain(GfxCmdList& Cmd)
 	bool bNormal = Graph.HasPasses(0);
 	bool bSpecial = Graph.HasPasses(1) || Graph.mapSorted.size();
 
-	if (bNormal || bSpecial)
+	if (bNormal || bSpecial || Graph.SkipDepthBatched)
 	{
 		Target->phase_smap_direct(Cmd, &RainLight, SE_SUN_RAIN_SMAP);
+		if (Graph.SkipDepthBatched)
+		{
+			const RHIViewport Area = { float(RainLight.X.D.minX), float(RainLight.X.D.minY), float(RainLight.X.D.maxX - RainLight.X.D.minX), float(RainLight.X.D.maxY - RainLight.X.D.minY), 0.0f, 1.0f };
+			GpuScene::DepthDraw Draw = { Target->rt_smap_depth->pZRT, 0, &Area };
+			Draw.Look = RainLight.direction;
+			Scene.DrawDepth(Cmd, Graph, Draw);
+		}
 		Cmd.SetObjectTransform(Fidentity);
 		Cmd.SetView(Fidentity, RainLight.X.D.combine);
 		Graph.r_dsgraph_render_graph(0);

@@ -50,6 +50,8 @@ public:
     ogf_desc					desc		;
 
 	shared_str					dbg_name	;
+	bool						IsDepthBatched = false;	// drawn by the depth batch of GpuScene
+	bool						IsBatchedTree = false;
     virtual shared_str getDebugName() override { return dbg_name; }
     virtual shared_str getShaderName() override { return shader_name; }
     virtual shared_str getTextureName() override { return texture_name; }

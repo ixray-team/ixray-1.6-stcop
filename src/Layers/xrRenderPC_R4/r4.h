@@ -29,6 +29,7 @@ class CGlowManager;
 #include "PackedVertex.h"
 #include "SkinningPass.h"
 #include "NriPass.h"
+#include "GpuScene.h"
 #include <atomic>
 
 class dxRender_Visual;
@@ -113,6 +114,7 @@ public:
 	GeometryHeap Geometry;
 	SkinningPass Skinning;
 	NriPass NriPasses;
+	GpuScene Scene;
 	GfxCmdList Backend;
 	GfxCmdList& Imm() { return Backend; }
 

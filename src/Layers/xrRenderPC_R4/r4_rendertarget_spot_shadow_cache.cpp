@@ -92,6 +92,26 @@ static bool CanStoreDepth(const light& Source)
 		   !Source.flags.bHudMode && Source.SpatialComponent && Source.SpatialComponent->sector;
 }
 
+static bool HasStaticCasters(const xr_vector<dxRender_Visual*>& Cached)
+{
+	return !Cached.empty() || RImplementation.Scene.HasDepthBatch();
+}
+
+static bool DrawLevelBatch(GfxCmdList& Cmd, R_dsgraph_structure& Renderer, const light& Source, IRHIDepthStencilView* Target, const RHIViewport* Area)
+{
+	if (!RImplementation.Scene.HasDepthBatch())
+	{
+		return true;
+	}
+
+	Renderer.Traverse();
+	GpuScene::DepthDraw Draw = { Target, 0, Area };
+	Draw.Eye = &Source.position;
+	Draw.IsSpot = true;
+	Draw.IsKept = true;
+	return RImplementation.Scene.DrawDepth(Cmd, Renderer, Draw);
+}
+
 static u32 DepthTexelBytes(ERHI_FORMAT Format)
 {
 	return Format == ERHI_FORMAT::D16_UNORM || Format == ERHI_FORMAT::R16_TYPELESS ? 2 : 4;
@@ -348,7 +368,7 @@ bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& En
 
 	Entry.State = SpotShadowCacheState::Pending;
 
-	if (!Entry.CachedCasters.empty())
+	if (SpotShadowCacheUtils::HasStaticCasters(Entry.CachedCasters))
 	{
 		const u64 Bytes = u64(Entry.Key.Size) * Entry.Key.Size * SpotShadowCacheUtils::DepthTexelBytes(Entry.Key.Format);
 		if (!Entry.Depth)
@@ -394,9 +414,14 @@ bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& En
 		Cmd.SetObjectTransform(Fidentity);
 		Cmd.SetView(Source.X.S.view, Source.X.S.project);
 		Renderer.r_dsgraph_render_graph(0);
+		const bool HasLevel = SpotShadowCacheUtils::DrawLevelBatch(Cmd, Renderer, Source, Entry.Depth->pZRT, nullptr);
 		// Detach the cache DSV before the atlas restore reads its SRV.
 		phase_smap_spot(Cmd, &Source);
 		Cmd.ApplyRenderTargets();
+		if (!HasLevel)
+		{
+			return false;
+		}
 	}
 	else if (Entry.Depth)
 	{
@@ -508,6 +533,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	const Fmatrix World = Cmd.GetObjectTransform();
 	const GfxView View = Cmd.GetView();
 	const bool PreviousPass = Renderer.SpotShadowPass;
+	const bool PreviousSkip = Renderer.SkipLevelBatched;
 	auto* PreviousContext = Renderer.SpotShadowBuild;
 	auto* PreviousCachedCasters = Renderer.SpotShadowCachedCasters;
 	const u32 PreviousCachedSkips = Renderer.SpotShadowCachedSkips;
@@ -520,6 +546,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	auto RestoreStateLambda = [&]
 	{
 		Renderer.SpotShadowPass = PreviousPass;
+		Renderer.SkipLevelBatched = PreviousSkip;
 		Renderer.SpotShadowBuild = PreviousContext;
 		Renderer.SpotShadowCachedCasters = PreviousCachedCasters;
 		SpotShadowStatistics.CachedSkips += Renderer.SpotShadowCachedSkips;
@@ -537,6 +564,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	};
 	xr_scope_exit RestoreState(std::move(RestoreStateLambda));
 	Renderer.SpotShadowPass = true;
+	Renderer.SkipLevelBatched = RImplementation.Scene.HasDepthBatch();
 	Renderer.SpotShadowBuild = nullptr;
 	Renderer.SpotShadowCachedCasters = nullptr;
 	Renderer.SpotShadowCachedSkips = 0;
@@ -573,7 +601,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	{
 		ClassifySpotShadowCasters(Source, *Entry);
 	}
-	const bool NeedsDepth = Entry->State == SpotShadowCacheState::Ready && !Entry->CachedCasters.empty();
+	const bool NeedsDepth = Entry->State == SpotShadowCacheState::Ready && SpotShadowCacheUtils::HasStaticCasters(Entry->CachedCasters);
 	const bool HasDepth = Entry->Depth && Entry->Depth->pSurface && Entry->Depth->pZRT && Entry->Depth->pTexture && Entry->Depth->pTexture->get_SRView();
 	const bool HasCopyShader = Entry->CopyShader && Entry->CopyShader->E[0] && !Entry->CopyShader->E[0]->passes.empty();
 	if ((NeedsDepth || Entry->Depth) && (!HasDepth || !HasCopyShader))
@@ -612,7 +640,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		UseCache = false;
 	}
 
-	const bool HasStatic = !Entry->CachedCasters.empty();
+	const bool HasStatic = SpotShadowCacheUtils::HasStaticCasters(Entry->CachedCasters);
 	if (HasStatic && !UseCache)
 	{
 		PROF_EVENT("SpotShadowCache::DirectStatic");
@@ -635,6 +663,8 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		Cmd.SetObjectTransform(Fidentity);
 		Cmd.SetView(Source.X.S.view, Source.X.S.project);
 		Renderer.r_dsgraph_render_graph(0);
+		const RHIViewport Area = { float(Source.X.S.posX), float(Source.X.S.posY), float(Source.X.S.size), float(Source.X.S.size), 0.0f, 1.0f };
+		SpotShadowCacheUtils::DrawLevelBatch(Cmd, Renderer, Source, rt_smap_depth->pZRT, &Area);
 	}
 	Renderer.SpotShadowCachedCasters = &Entry->CachedCasterSet;
 	Renderer.private_visuals.clear();
@@ -660,7 +690,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		++SpotShadowStatistics.Direct;
 	}
 
-	const bool HasCachedDepth = UseCache && Entry && !Entry->CachedCasters.empty();
+	const bool HasCachedDepth = UseCache && HasStatic;
 	const bool HasNormal = SpotShadowCacheUtils::HasGeometry(Renderer, 0);
 	const bool HasSpecial = SpotShadowCacheUtils::HasGeometry(Renderer, 1) || Renderer.mapSorted.size();
 	if (!HasStatic && !HasNormal && !HasSpecial)
@@ -677,6 +707,15 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	if (HasNormal)
 	{
 		GPU_EVENT(SpotShadowCacheDynamic);
+		if (RImplementation.Scene.HasDepthBatch())
+		{
+			const RHIViewport Area = { float(Source.X.S.posX), float(Source.X.S.posY), float(Source.X.S.size), float(Source.X.S.size), 0.0f, 1.0f };
+			GpuScene::DepthDraw Draw = { rt_smap_depth->pZRT, 0, &Area };
+			Draw.Eye = &Source.position;
+			Draw.IsSpot = true;
+			Draw.IsDynamicOnly = true;
+			RImplementation.Scene.DrawDepth(Cmd, Renderer, Draw);
+		}
 		Renderer.r_dsgraph_render_graph(0);
 		++SpotShadowStatistics.DynamicPasses;
 	}
@@ -684,7 +723,10 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		RImplementation.GetDetails() && RImplementation.GetDetails()->dtSlots && Source.SpatialComponent &&
 		Source.SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 	{
-		RImplementation.GetDetails()->hw_Render(Cmd, &Source.X.S.combine);
+		const RHIViewport GrassArea = { float(Source.X.S.posX), float(Source.X.S.posY), float(Source.X.S.size), float(Source.X.S.size), 0.0f, 1.0f };
+		GpuScene::DepthDraw GrassDraw = { rt_smap_depth->pZRT, 0, &GrassArea };
+		GrassDraw.IsSpot = true;
+		RImplementation.GetDetails()->hw_Render(Cmd, &Source.X.S.combine, false, &GrassDraw);
 	}
 	if (HasSpecial)
 	{

@@ -100,6 +100,15 @@ struct	FTreeVisual_setup
 	}
 };
 
+void GetTreeWave(Fvector4& Wave, Fvector4& Wind, float& Scale)
+{
+	FTreeVisual_setup Setup;
+	Setup.calculate();
+	Wave = Setup.wave;
+	Wind = Setup.wind;
+	Scale = Setup.scale;
+}
+
 void FTreeVisual::Render	(GfxCmdList& Cmd, float LOD)
 {
 	//PROF_EVENT("FTreeVisual::Render");

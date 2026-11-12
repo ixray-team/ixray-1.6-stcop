@@ -17,6 +17,11 @@ struct InstanceData
 };
 
 StructuredBuffer<InstanceData> detail_buffer : register(t25);
+#ifdef DETAIL_VISIBLE_LIST
+// The scene batch: detail_buffer holds the frame's instances, and a list culled on the GPU names
+// the ones in view
+Buffer<uint> detail_visible : register(t56);
+#endif
 
 #ifndef DETAIL_SHADOW_PASS
 	#define OutStructure p_bumped_new
@@ -81,10 +86,17 @@ float windFBM(float2 p, float seed)
     return val * 0.6667;
 }
 
+#ifdef DETAIL_VISIBLE_LIST
+void main(uint VertexId : SV_VertexID, uint Instance : SV_InstanceID, out OutStructure O)
+{
+    PulledVertex V = PullVertex(VertexId);
+    InstanceData det = detail_buffer[detail_visible[detail_first + Instance]];
+#else
 void main(PULL_INPUT, out OutStructure O)
 {
     PulledVertex V = PullVertex(VertexId);
     InstanceData det = detail_buffer[DrawId];
+#endif
 
     float w = sqrt(max(0.0, 1.0 - dot(det.quat, det.quat)));
     float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));

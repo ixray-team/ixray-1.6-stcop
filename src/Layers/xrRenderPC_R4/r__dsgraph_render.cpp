@@ -363,10 +363,19 @@ void R_dsgraph_structure::CaptureStatic()
 		for (IRender_Sector* Item : PortalTraverser.r_sectors)
 		{
 			CSector* Sector = (CSector*)Item;
+			const xr_vector<dxRender_Visual*>* Leftover = SkipDepthBatched ? RImplementation.Scene.GetLeftover(Sector->index) : nullptr;
 			for (CFrustum& Frustum : PortalTraverser.local_frustums[Sector->index])
 			{
 				View = &Frustum;
-				add_Static(Sector->root(), Frustum.getMask());
+				if (!Leftover)
+				{
+					add_Static(Sector->root(), Frustum.getMask());
+					continue;
+				}
+				for (dxRender_Visual* Visual : *Leftover)
+				{
+					add_Static(Visual, Frustum.getMask());
+				}
 			}
 		}
 	}

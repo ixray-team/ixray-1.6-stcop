@@ -27,7 +27,8 @@ u32 GetD3D11BindFlags(ERHI_BUFFER_TYPE bufferType)
 	case ERHI_BUFFER_TYPE::VERTEX:
 		return D3D11_BIND_VERTEX_BUFFER;
 	case ERHI_BUFFER_TYPE::INDEX:
-		return D3D11_BIND_INDEX_BUFFER;
+		// The scene batch reads the indices of the geometry heap in a vertex shader
+		return D3D11_BIND_INDEX_BUFFER | D3D11_BIND_SHADER_RESOURCE;
 	case ERHI_BUFFER_TYPE::CONSTANT:
 		return D3D11_BIND_CONSTANT_BUFFER;
 	case ERHI_BUFFER_TYPE::STRUCTURED:

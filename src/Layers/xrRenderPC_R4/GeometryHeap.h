@@ -36,6 +36,7 @@ public:
 	bool HasPending() const { return Pending; }
 	u32 PageCount() const { return Opened; }
 	IRHIBuffer* IndexBuffer(u32 Page) const { return Pages[Page].Indices; }
+	IRHIBuffer* VertexBuffer(u32 Page) const { return Pages[Page].Vertices; }
 	IRHIShaderResourceView* VertexView(u32 Page) const { return Pages[Page].View; }
 
 private:

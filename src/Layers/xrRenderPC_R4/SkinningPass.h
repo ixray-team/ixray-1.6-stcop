@@ -16,6 +16,7 @@ public:
 	void Flush(GfxCmdList& Cmd);
 	void Snapshot(CKinematics& Kinematics, const Fmatrix& World);
 	u32 GetFrame() const { return Frame; }
+	IRHIBuffer* GetOutput() const { return Output; }
 
 private:
 	struct Item

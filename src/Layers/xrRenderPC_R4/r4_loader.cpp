@@ -78,6 +78,81 @@ using namespace FVF;
 
 #pragma warning(pop)
 
+// What a loaded level holds. These numbers size the GPU scene tables.
+static void LogSceneCounts(const xr_vector<dxRender_Visual*>& Visuals, size_t Sectors)
+{
+	u32 Types[32] = {};
+	u32 Meshes = 0;
+	u32 LargestMesh = 0;
+	u64 Vertices = 0;
+	u64 Indices = 0;
+	u32 Passes = 0;
+	xr_hash_set<Shader*> Shaders;
+	xr_hash_set<STextureList*> Lists;
+	xr_hash_set<CTexture*> Textures;
+	for (dxRender_Visual* Visual : Visuals)
+	{
+		++Types[std::min<u32>(Visual->Type, 31)];
+		if (const IRender_Mesh* Mesh = dynamic_cast<const IRender_Mesh*>(Visual))
+		{
+			++Meshes;
+			Vertices += Mesh->vCount;
+			Indices += u64(Mesh->dwPrimitives) * 3;
+			LargestMesh = std::max(LargestMesh, Mesh->vCount);
+		}
+
+		Shader* Material = Visual->shader._get();
+		if (!Material || !Shaders.insert(Material).second)
+		{
+			continue;
+		}
+		for (const ref_selement& Element : Material->E)
+		{
+			if (!Element._get())
+			{
+				continue;
+			}
+			for (u32 Pass = 0; Pass < Element->passes.size(); ++Pass)
+			{
+				STextureList* List = Element->passes[Pass]._get() ? Element->passes[Pass]->T._get() : nullptr;
+				++Passes;
+				if (!List || !Lists.insert(List).second)
+				{
+					continue;
+				}
+				for (const auto& [Stage, Texture] : *List)
+				{
+					if (Texture._get())
+					{
+						Textures.insert(Texture._get());
+					}
+				}
+			}
+		}
+	}
+
+	// Textures by their larger side, as a power of two; still loading ones have no surface yet
+	u32 Sizes[14] = {};
+	u32 Pending = 0;
+	for (CTexture* Texture : Textures)
+	{
+		if (!Texture->pSurface)
+		{
+			++Pending;
+			continue;
+		}
+		const u32 Side = std::max(Texture->pSurface->GetWidth(), Texture->pSurface->GetHeight());
+		++Sizes[std::min<u32>(std::bit_width(std::max(Side, 1u)) - 1, 13)];
+	}
+
+	Msg("* [scene] visuals %u in %u sectors: meshes %u (normal %u, progressive %u, tree %u), hierarchy %u, LOD %u, MU LODs %u",
+		u32(Visuals.size()), u32(Sectors), Meshes, Types[MT_NORMAL], Types[MT_PROGRESSIVE], Types[MT_TREE_ST] + Types[MT_TREE_PM], Types[MT_HIERRARHY], Types[MT_LOD], Types[MT_MESH_LODS]);
+	Msg("* [scene] vertices %llu, indices %llu, largest mesh %u vertices", Vertices, Indices, LargestMesh);
+	Msg("* [scene] shaders %u, passes %u, texture lists %u, textures %u (%u still loading)", u32(Shaders.size()), Passes, u32(Lists.size()), u32(Textures.size()), Pending);
+	Msg("* [scene] textures by size: <=64 %u, 128 %u, 256 %u, 512 %u, 1024 %u, 2048 %u, 4096 %u, larger %u",
+		Sizes[0] + Sizes[1] + Sizes[2] + Sizes[3] + Sizes[4] + Sizes[5] + Sizes[6], Sizes[7], Sizes[8], Sizes[9], Sizes[10], Sizes[11], Sizes[12], Sizes[13]);
+}
+
 void CRender::level_Load(IReader* fs)
 {
 	PROF_EVENT(__FUNCTION__);
@@ -222,13 +297,7 @@ void CRender::level_Load(IReader* fs)
 		}
 		chunk->close				();
 
-		for (u32 Alternative = 0; Alternative < 2; ++Alternative)
-		{
-			LevelVertices[Alternative] = {};
-			LevelIndices[Alternative] = {};
-		}
 		LevelScratch = {};
-		LevelMeshes = {};
 		Geometry.Reserve(0, 0);
 
 		// Details
@@ -275,6 +344,16 @@ void CRender::level_Load(IReader* fs)
 		LoadPuddles();
 		LoadPlanars();
 	}
+
+	LogSceneCounts(Visuals, Sectors.size());
+	Scene.Load(Visuals, Sectors);
+	// The scene was the last reader of the level's geometry chunks
+	for (u32 Alternative = 0; Alternative < 2; ++Alternative)
+	{
+		LevelVertices[Alternative] = {};
+		LevelIndices[Alternative] = {};
+	}
+	LevelMeshes = {};
 
 	// End
 	pApp->LoadEnd				();
@@ -420,6 +499,7 @@ void CRender::level_Unload()
 	{
 		Graph.r_dsgraph_clear_passes();
 	});
+	Scene.Unload();
 	if (Target)
 	{
 		Target->InvalidateSpotShadowCache();
