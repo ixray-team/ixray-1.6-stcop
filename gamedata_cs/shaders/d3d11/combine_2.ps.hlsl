@@ -93,7 +93,7 @@ float3 main(PSInputFullscreen I) : SV_Target
 #endif
     
 #ifdef USE_CGIM_COLOR_TWEAK
-	Color = Uncharted2Tonemap(Color);
+	Color = CGIMTonemap(Color);
 #endif
 	
 #ifdef USE_LUT_TEXTURE
