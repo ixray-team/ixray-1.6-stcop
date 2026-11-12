@@ -81,6 +81,7 @@ void CELComponentBase::Attach()
 		return;
 	}
 	ReceiveAfter = 0;
+	Adapter->Monster().UsesExtendedCombat = Profile.HasCharacter && Profile.CanUseBehaviors && !Profile.IsPassive;
 	HasAttached = true;
 }
 
@@ -91,6 +92,7 @@ void CELComponentBase::Detach()
 	{
 		return;
 	}
+	Adapter->Monster().UsesExtendedCombat = false;
 	Adapter->ReleaseControl();
 	Adapter->Monster().EnemyMemory.clear();
 	Memory.Clear();

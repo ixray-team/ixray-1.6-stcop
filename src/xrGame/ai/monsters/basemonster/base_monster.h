@@ -423,6 +423,7 @@ public:
 		u32 ThreatTier = 1;
 		u32 EmmiPainProtection = 1;
 		float CharacterCourage = .5f;
+		bool UsesExtendedCombat = false;
 		const char* NativeMeleeReason = "not_checked";
 		u32 NativeMeleeCheckedAt = 0;
 		u32 NativeHitAttemptAt = 0;

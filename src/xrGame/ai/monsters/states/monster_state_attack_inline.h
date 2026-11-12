@@ -87,7 +87,14 @@ void CStateMonsterAttackAbstract::execute()
 {
 	bool	can_attack_on_move		=	this->object->can_attack_on_move();
 
-	if		(check_home_point())		this->select_state(eStateAttack_MoveToHomePoint);
+	// New movement decisions must not hand a ready close attack to an unrelated home/camp maneuver.
+	if (this->object->UsesExtendedCombat && this->object->EnemyMan.get_enemy() &&
+		((this->prev_substate == eStateAttack_Melee && !this->get_state(eStateAttack_Melee)->check_completion()) ||
+		 this->get_state(eStateAttack_Melee)->check_start_conditions()))
+	{
+		this->select_state(eStateAttack_Melee);
+	}
+	else if (check_home_point()) this->select_state(eStateAttack_MoveToHomePoint);
 	else if (check_steal_state())		this->select_state(eStateAttack_Steal);
 	else if (check_camp_state()) 		this->select_state(eStateAttackCamp);
 	else if (check_find_enemy_state()) 	this->select_state(eStateAttack_FindEnemy);
