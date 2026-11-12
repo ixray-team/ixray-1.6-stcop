@@ -52,6 +52,7 @@ list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 # xrRender_R4 project
 add_library(xrRender_R4 SHARED ${XRR4_SRC_FILES})
 target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
+set_source_files_properties("../xrRender/StbImageWrite.cpp" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
