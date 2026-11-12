@@ -1998,6 +1998,11 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16(id);
 			CObject* O = Level().Objects.net_Find(id);
 			VERIFY(O);
+			if (!O)
+			{
+				Msg("! GE_OWNERSHIP_TAKE: Object not found. object_id = [%d]", id);
+				break;
+			}
 
 			CGameObject* GO = O->cast_game_object();
 			CInventoryItem* pIItem = GO->cast_inventory_item();
@@ -2014,6 +2019,11 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16(id);
 			CObject* O = Level().Objects.net_Find(id);
 			VERIFY(O);
+			if (!O)
+			{
+				Msg("! GE_OWNERSHIP_REJECT: Object not found. object_id = [%d]", id);
+				break;
+			}
 
 			bool just_before_destroy = !P.r_eof() && P.r_u8();
 			bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;
