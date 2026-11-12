@@ -60,7 +60,14 @@ Fsphere CalculateMagic(xr_vector<Fvector>& V)
 // Оптимизированная проверка валидности с ранним выходом
 bool SphereValid_Fast(const xr_vector<Fvector>& points, const Fsphere& S)
 {
-	float max_dist_sqr = S.R * S.R + 0.001f; // небольшой запас на погрешность float
+	// Tolerance goes on the radius: adding it to the squared radius accepted
+	// a zero-radius sphere for visuals a few centimetres across, and they were culled
+	if (!f_valid(S.P.x) || !f_valid(S.P.y) || !f_valid(S.P.z) || !f_valid(S.R) || S.R < 0.f)
+	{
+		return false;
+	}
+	const float max_dist = S.R + EPS_L;
+	const float max_dist_sqr = max_dist * max_dist;
 
 	for (const auto& pt : points)
 	{

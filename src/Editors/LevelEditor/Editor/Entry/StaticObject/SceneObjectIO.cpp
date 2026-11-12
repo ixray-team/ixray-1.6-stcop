@@ -49,6 +49,19 @@ bool CSceneObject::ResolveReference(const char* Name)
 
 void CSceneObject::ApplySurfaceOverrides()
 {
+    if (PendingSurfaces.empty())
+    {
+        return;
+    }
+
+    if (!m_pReference)
+    {
+        m_Flags.set(flUseSurface, true);
+        return;
+    }
+
+    m_Flags.set(flUseSurface, true);
+
     for (const SSurfaceOverride& Override : PendingSurfaces)
     {
         CSurface* Surf = nullptr;
@@ -84,7 +97,7 @@ void CSceneObject::ApplySurfaceOverrides()
 
 void CSceneObject::CaptureSurfaceOverrides(xr_vector<SSurfaceOverride>& Dest) const
 {
-    if (ReferencePending)
+    if (ReferencePending || !m_pReference)
     {
         Dest = PendingSurfaces;
         return;
