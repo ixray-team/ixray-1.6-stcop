@@ -666,11 +666,13 @@ function CSurgeManager:ProcessDelayedKills()
             
             local cl_obj = level.object_by_id(id)
             if cl_obj ~= nil then 
-                cl_obj:kill(cl_obj)
-                kills = kills + 1
+                if cl_obj:alive() then
+                    cl_obj:kill(cl_obj)
+                    kills = kills + 1
+                end
             else
                 local srv_obj = alife():object(id)
-                if srv_obj ~= nil then
+                if srv_obj ~= nil and srv_obj:alive() then
                     srv_obj:kill()
                     kills = kills + 1
                 end
@@ -678,7 +680,7 @@ function CSurgeManager:ProcessDelayedKills()
             
             table.remove(ids_to_kill, i)
     
-            if kills > MAX_KILLS_PER_ONE_ITERATION then
+            if kills >= MAX_KILLS_PER_ONE_ITERATION then
                 break
             end
         end
