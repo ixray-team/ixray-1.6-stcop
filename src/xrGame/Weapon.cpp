@@ -2866,7 +2866,7 @@ void CWeapon::UpdateScopePosition()
 
 	bool is_16x9 = UI().is_widescreen();
 
-	if (GetScopeAttached())
+	if (IsScopeAttachable() && IsScopeAttached())
 	{
 		if (hands_section != scope_section)
 		{
