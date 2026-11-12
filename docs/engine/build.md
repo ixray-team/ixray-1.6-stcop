@@ -1,6 +1,6 @@
 # Build
 
-CMake ≥ 3.26, C++23. Compiler settings: `cmake/msvc.cmake` for MSVC, `cmake/clang.cmake` for Clang or Apple, `cmake/gcc.cmake` otherwise. Generate into `build/`. Startup project: `xrEngine` (`xrCompress` if `IXRAY_COMPRESSOR_ONLY`). Output: `build/bin/<Config>/`. Edit `src/` and `cmake/`. `build/` is generated.
+CMake ≥ 3.30, C++23. Compiler settings: `cmake/msvc.cmake` for MSVC, `cmake/clang.cmake` for Clang or Apple, `cmake/gcc.cmake` otherwise. Generate into `build/`. Startup project: `xrEngine` (`xrCompress` if `IXRAY_COMPRESSOR_ONLY`). Output: `build/bin/<Config>/`. Edit `src/` and `cmake/`. `build/` is generated.
 
 Default Windows targets (`src/CMakeLists.txt`). Compressor-only builds retain `xrCore` and omit the other listed engine targets:
 
