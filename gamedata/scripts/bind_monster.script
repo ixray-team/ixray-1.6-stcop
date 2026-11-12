@@ -56,6 +56,24 @@ function generic_object_binder:reinit()
 	manage_callbacks(self, true) -- IX-Ray SET CALLBACKS
 end
 
+local RESTRICTOR_TYPE_NONE = 3
+
+local function apply_base_restrictions(monster, squad)
+	if not squad or not sim_squad_scripted.is_squad_monster[squad.player_id]
+		or (squad.action_condlist and next(squad.action_condlist)) then
+		return
+	end
+
+	local manager = restrictor_manager.get_restrictor_manager(monster)
+	for _, zone_name in ipairs(simulation_objects.base_zone_names) do
+		local zone = db.zone_by_name[zone_name]
+		if zone and not manager.base_in_restrictions[zone_name] and zone:get_restrictor_type() ~= RESTRICTOR_TYPE_NONE then
+			monster:add_restrictions("", zone_name)
+			manager.base_in_restrictions[zone_name] = true
+		end
+	end
+end
+
 function generic_object_binder:update(delta)
 	object_binder.update(self, delta)
 
@@ -74,6 +92,7 @@ function generic_object_binder:update(delta)
 		return
 	end
 
+	apply_base_restrictions(self.object, squad)
 	local st = db.storage[self.object:id()]
 	
 	if st ~= nil and st.active_scheme ~= nil then
@@ -309,8 +328,16 @@ function generic_object_binder:net_spawn(sobject)
 		self.object:set_npc_position(level.vertex_position(db.spawned_vertex_by_id[se_obj.id]))
 		db.spawned_vertex_by_id[se_obj.id] = nil
 	elseif db.offline_objects[se_obj.id] ~= nil and db.offline_objects[se_obj.id].level_vertex_id ~= nil then
-		printf("changing position for object[%s] from %s to %s : level vertex [%s] to [%s]", se_obj:name(), vec_to_str(se_obj.position), vec_to_str(level.vertex_position(db.offline_objects[se_obj.id].level_vertex_id)), tostring(se_obj.m_level_vertex_id), tostring(db.offline_objects[se_obj.id].level_vertex_id))
-		self.object:set_npc_position(level.vertex_position(db.offline_objects[se_obj.id].level_vertex_id))
+		local saved_vertex = db.offline_objects[se_obj.id].level_vertex_id
+		local saved_position = level.vertex_position(saved_vertex)
+		local squad = get_object_squad(self.object)
+		if squad and sim_squad_scripted.is_squad_monster[squad.player_id]
+			and simulation_objects.is_in_base_zone(se_obj, saved_position) and squad:get_script_target() == nil then
+			db.offline_objects[se_obj.id].level_vertex_id = nil
+		else
+			printf("changing position for object[%s] from %s to %s : level vertex [%s] to [%s]", se_obj:name(), vec_to_str(se_obj.position), vec_to_str(saved_position), tostring(se_obj.m_level_vertex_id), tostring(saved_vertex))
+			self.object:set_npc_position(saved_position)
+		end
 	elseif se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id then
 		local smart_terrain = alife():object(se_obj.m_smart_terrain_id)
 		if smart_terrain.arriving_npc[se_obj.id] == nil then

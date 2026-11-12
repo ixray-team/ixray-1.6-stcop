@@ -921,7 +921,10 @@ end
 
 function sim_squad_scripted:can_switch_online()
 	return PROF_EVENT_CLOSURE("can_switch_online", function()
-	    return cse_alife_online_offline_group.can_switch_online(self)
+        if is_squad_monster[self.player_id] and simulation_objects.is_in_base_zone(self) and self:get_script_target() == nil then
+            return false
+        end
+        return cse_alife_online_offline_group.can_switch_online(self)
     end)
 end
 
@@ -1085,14 +1088,19 @@ end
 
 function sim_squad_scripted:get_current_task()
 	return PROF_EVENT_CLOSURE("get_current_task", function()
-        if self.assigned_target_id ~= nil and alife():object(self.assigned_target_id) ~= nil then
-            local smart_terrain = alife():object(self.assigned_target_id)
-            if smart_terrain.arriving_npc ~= nil and smart_terrain.arriving_npc[self:commander_id()] == nil
-                and smart_terrain.npc_info and smart_terrain.npc_info[self:commander_id()]
-                and smart_terrain.npc_info[self:commander_id()].job_id and smart_terrain.job_data[smart_terrain.npc_info[self:commander_id()].job_id] then
-                return smart_terrain.job_data[smart_terrain.npc_info[self:commander_id()].job_id].alife_task
+        local target = self.assigned_target_id and alife():object(self.assigned_target_id)
+        if target then
+            -- ALife requests the movement task before the squad revalidates its target.
+            if is_squad_monster[self.player_id] and simulation_objects.is_protected_monster_target(target)
+                and self:get_script_target() == nil then
+                return self:get_alife_task()
             end
-            return alife():object(self.assigned_target_id):get_alife_task()
+            if target.arriving_npc ~= nil and target.arriving_npc[self:commander_id()] == nil
+                and target.npc_info and target.npc_info[self:commander_id()]
+                and target.npc_info[self:commander_id()].job_id and target.job_data[target.npc_info[self:commander_id()].job_id] then
+                return target.job_data[target.npc_info[self:commander_id()].job_id].alife_task
+            end
+            return target:get_alife_task()
         end
         return self:get_alife_task()
     end)
@@ -1131,15 +1139,9 @@ function sim_squad_scripted:get_alife_task()
     end)
 end
 
-local smarts_by_no_assault_zones = {
-	["zat_a2_sr_no_assault"] 	= "zat_stalker_base_smart",
-	["jup_a6_sr_no_assault"] 	= "jup_a6",
-	["jup_b41_sr_no_assault"] 	= "jup_b41"
-}
-
 function sim_squad_scripted:sim_available()
 	return PROF_EVENT_CLOSURE("sim_available", function()
-        for k,v in pairs (smarts_by_no_assault_zones) do
+        for k,v in pairs(simulation_objects.smarts_by_no_assault_zones) do
             local zone = db.zone_by_name[k]
             if zone and zone:inside(self.position) then
                 local smart = sim_board.get_sim_board():get_smart_by_name(v)
@@ -1153,14 +1155,12 @@ function sim_squad_scripted:sim_available()
             return true
         end
         -- Удалять из регистра сим обьектов если мы идем на базу.
-        local props_base = alife():object(self.smart_id).props and alife():object(self.smart_id).props["base"]
-        if props_base and tonumber(props_base) > 0 then
+        local smart = alife():object(self.smart_id)
+        if simulation_objects.is_base_smart(smart) then
             return false
         end
-    
-    
-        local smart = alife():object(self.smart_id)
-        if smart.base_on_actor_control ~= nil and smart.base_on_actor_control.status ~= smart_terrain_control.NORMAL then
+
+        if smart and smart.base_on_actor_control ~= nil and smart.base_on_actor_control.status ~= smart_terrain_control.NORMAL then
             if db.zone_by_name[smart.base_on_actor_control.noweap_zone] == nil or not db.zone_by_name[smart.base_on_actor_control.noweap_zone]:inside(self.position) then
                 return false
             end
@@ -1177,12 +1177,10 @@ function sim_squad_scripted:target_precondition(squad)
             return false
         end
     
-        local smart = alife():object(self.smart_id)
-	    if smart then
-	    	if tonumber(smart.props["base"]) > 0 then
-	    		return false
-	    	end
-	    end
+        local smart = self.smart_id and alife():object(self.smart_id)
+        if simulation_objects.is_base_smart(smart) then
+            return false
+        end
 
         local self_params = squad_params.squad[self.player_id]
         if self_params == nil or self_params.prec(squad, self) == false then

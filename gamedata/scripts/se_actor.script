@@ -103,19 +103,13 @@ function se_actor:get_alife_task()
 	return CALifeSmartTerrainTask(self.m_game_vertex_id, self.m_level_vertex_id)
 end
 
-local smarts_by_no_assault_zones = {
-									["zat_a2_sr_no_assault"] 	= "zat_stalker_base_smart",
-									["jup_a6_sr_no_assault"] 	= "jup_a6",
-									["jup_b41_sr_no_assault"] 	= "jup_b41"
-}
-
 function se_actor:sim_available()
 	-- Проверить не находится ли игрок ближе чем 50 метров к смарту закрытому для симуляции.
 	if smart_terrain.nearest_to_actor_smart.dist < 50
 		and simulation_objects.get_sim_obj_registry().objects[smart_terrain.nearest_to_actor_smart.id] == nil then
 		return false
 	end
-	for k,v in pairs (smarts_by_no_assault_zones) do
+	for k,v in pairs(simulation_objects.smarts_by_no_assault_zones) do
 		local zone = db.zone_by_name[k]
 		if zone and zone:inside(self.position) then
 			local smart = sim_board.get_sim_board():get_smart_by_name(v)
@@ -153,7 +147,7 @@ function se_actor:target_precondition(squad)
 	if squad_params == nil or squad_params.actor == nil or squad_params.actor.prec(squad, self) == false then
 		return false
 	end
-	return true
+	return not (sim_squad_scripted.is_squad_monster[squad.player_id] and simulation_objects.is_in_base_zone(self))
 
 --[[
 	if squad.player_id == "killer" then

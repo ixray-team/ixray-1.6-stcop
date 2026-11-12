@@ -27,7 +27,22 @@ function reach_target:update(under_simulation)
 		squad:clear_assigned_target()
 		return true
 	end
+	if under_simulation and not squad.online and sim_squad_scripted.is_squad_monster[squad.player_id]
+		and squad_target:clsid() == clsid.smart_terrain
+		and simulation_objects.is_in_base_zone(squad)
+		and not simulation_objects.is_protected_monster_target(squad_target) then
+		if self.base_escape_target_id ~= squad_target.id then
+			-- The way out can cross vertices excluded by the destination smart's masks.
+			squad:set_location_types_section("squad_terrain")
+			self.base_escape_target_id = squad_target.id
+		end
+		return false
+	end
+
 	if squad_target:am_i_reached(squad) then
+		if self.base_escape_target_id == squad_target.id then
+			squad:set_location_types(squad_target:name())
+		end
 		squad_target:on_after_reach(squad)
 		return true
 	end

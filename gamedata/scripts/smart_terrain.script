@@ -1353,7 +1353,10 @@ function se_smart_terrain:target_precondition(squad, need_to_dec_population)
         if self.respawn_only_smart == true then
             return false
         end
-    
+        if is_squad_monster[squad.player_id] and simulation_objects.is_protected_monster_target(self) then
+            return false
+        end
+
         local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
         if need_to_dec_population then
             squad_count = squad_count - 1

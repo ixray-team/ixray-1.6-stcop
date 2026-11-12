@@ -92,6 +92,45 @@ function is_on_the_same_level(obj1, obj2)
     end)
 end
 
+smarts_by_no_assault_zones = {
+	["zat_a2_sr_no_assault"] = "zat_stalker_base_smart",
+	["jup_a6_sr_no_assault"] = "jup_a6",
+	["jup_b41_sr_no_assault"] = "jup_b41"
+}
+
+base_zone_names = {"jup_a6_sr_noweap", "pri_a16_sr_noweap"}
+for zone_name in pairs(smarts_by_no_assault_zones) do
+	table.insert(base_zone_names, zone_name)
+end
+
+function is_base_smart(smart)
+	return smart ~= nil and smart.props ~= nil and (tonumber(smart.props["base"]) or 0) > 0
+end
+
+function is_in_base_zone(target, position)
+	local actor = alife():actor()
+	if actor == nil or not is_on_the_same_level(target, actor) then
+		return false
+	end
+
+	position = position or target.position
+	for _, zone_name in ipairs(base_zone_names) do
+		local zone = db.zone_by_name[zone_name]
+		if zone and zone:inside(position) then
+			return true
+		end
+	end
+	return false
+end
+
+function is_protected_monster_target(target)
+	local smart = target
+	if target:clsid() == clsid.online_offline_group_s then
+		smart = target.smart_id and alife():object(target.smart_id)
+	end
+	return is_base_smart(smart) or is_in_base_zone(target)
+end
+
 function evaluate_prior(target, squad)
 	return PROF_EVENT_CLOSURE("evaluate_prior", function()
         local prior = 0

@@ -14,6 +14,19 @@ group_id_by_levels = {zaton = 1,
 
 local board = nil
 
+local function can_hunt_squad(squad, target, start_hour, end_hour)
+	return in_time_interval(start_hour, end_hour) and simulation_objects.sim_dist_to(squad, target) <= 150
+		and not simulation_objects.is_protected_monster_target(target)
+end
+
+local function can_hunt_squad_by_day(squad, target)
+	return can_hunt_squad(squad, target, 6, 19)
+end
+
+local function can_hunt_squad_by_night(squad, target)
+	return can_hunt_squad(squad, target, 19, 6)
+end
+
 simulation_activities = {
 	stalker = {
 			squad = nil,
@@ -73,12 +86,12 @@ simulation_activities = {
 
 	},
 	monster_predatory_day = {
-			squad = { 	monster_vegetarian			= { prec = function() return in_time_interval(6,19)	end	},
-						stalker						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						bandit						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						dolg						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						freedom						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						killer						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
+			squad = { 	monster_vegetarian			= { prec = function(_, target) return in_time_interval(6,19) and not simulation_objects.is_protected_monster_target(target) end },
+						stalker						= { prec = can_hunt_squad_by_day },
+						bandit						= { prec = can_hunt_squad_by_day },
+						dolg						= { prec = can_hunt_squad_by_day },
+						freedom						= { prec = can_hunt_squad_by_day },
+						killer						= { prec = can_hunt_squad_by_day }
 					},
 			smart = { 	territory= { prec = function() return  in_time_interval(6, 19)  end },
 						lair	 = { prec = function() return in_time_interval(19,6) end }
@@ -86,12 +99,12 @@ simulation_activities = {
 			actor = { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
 	},
 	monster_predatory_night = {
-			squad = { 	monster_vegetarian			= { prec = function() return in_time_interval(21,6)	end	},
-						stalker						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						bandit						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						dolg						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						freedom						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						killer						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
+			squad = { 	monster_vegetarian			= { prec = function(_, target) return in_time_interval(21,6) and not simulation_objects.is_protected_monster_target(target) end },
+						stalker						= { prec = can_hunt_squad_by_night },
+						bandit						= { prec = can_hunt_squad_by_night },
+						dolg						= { prec = can_hunt_squad_by_night },
+						freedom						= { prec = can_hunt_squad_by_night },
+						killer						= { prec = can_hunt_squad_by_night }
 					},
 			smart = { 	territory= { prec = function() return  in_time_interval(19,6)  end },
 						lair	 = { prec = function() return in_time_interval(6,19) end }
@@ -106,11 +119,11 @@ simulation_activities = {
 			actor = { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
 	},
 	monster_zombied_day = {
-			squad = {	stalker						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						bandit						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						dolg						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						freedom						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						killer						= { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
+			squad = {	stalker						= { prec = can_hunt_squad_by_day },
+						bandit						= { prec = can_hunt_squad_by_day },
+						dolg						= { prec = can_hunt_squad_by_day },
+						freedom						= { prec = can_hunt_squad_by_day },
+						killer						= { prec = can_hunt_squad_by_day }
 					 },
 			smart = { 	territory= { prec = function() return  not xr_conditions.surge_started()  end },
 						lair	 = { prec = function() return in_time_interval(19,6) end }
@@ -118,11 +131,11 @@ simulation_activities = {
 			actor = { prec = function(squad, target) return in_time_interval(6, 19) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
 	},
 	monster_zombied_night = {
-			squad = {	stalker						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						bandit						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						dolg						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						freedom						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end },
-						killer						= { prec = function(squad, target) return in_time_interval(19,6) and simulation_objects.sim_dist_to(squad, target) <= 150 end }
+			squad = {	stalker						= { prec = can_hunt_squad_by_night },
+						bandit						= { prec = can_hunt_squad_by_night },
+						dolg						= { prec = can_hunt_squad_by_night },
+						freedom						= { prec = can_hunt_squad_by_night },
+						killer						= { prec = can_hunt_squad_by_night }
 					 },
 			smart = { 	territory= { prec = function() return  in_time_interval(19,6)  end },
 						lair	 = { prec = function() return in_time_interval(6,19) end }
@@ -494,7 +507,15 @@ function sim_board:get_squad_target(squad)
         end
         --print_table(available_targets)
         --printf("end of List of available target for %s", squad.id)
-        return most_priority_task or (squad.smart_id and alife():object(squad.smart_id)) or squad
+        if most_priority_task then
+            return most_priority_task
+        end
+
+        local smart = squad.smart_id and alife():object(squad.smart_id)
+        if smart and sim_squad_scripted.is_squad_monster[squad.player_id] and simulation_objects.is_protected_monster_target(smart) then
+            return squad
+        end
+        return smart or squad
     end)
 end
 
