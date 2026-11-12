@@ -46,7 +46,7 @@ void RainPuddleWaterMap::Build(CObjectSpace* Space)
 	if (Space)
 	{
 		static CDB::COLLIDER xrc;
-		xrc.custom_query(*Space->GetStaticModel(), [](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
+		xrc.custom_query(*Space, [](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
 		{
 			return true;
 		}, nullptr,

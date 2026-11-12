@@ -392,7 +392,7 @@ void  PLC_calc3_SSE(int& c0, int& c1, int& c2, CRenderDevice& Device_, Fvector* 
 void CLightShadows::render	()
 {
 	
-	CDB::MODEL*		DB		= g_pGameLevel->ObjectSpace.GetStaticModel();
+	CObjectSpace* DB = &g_pGameLevel->ObjectSpace;
 
 	int			slot_line	= S_rt_size/S_size;
 

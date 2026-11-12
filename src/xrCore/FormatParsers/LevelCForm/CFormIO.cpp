@@ -6,6 +6,37 @@
 
 using namespace XRay;
 
+namespace
+{
+	void WriteTriangles(IWriter& Writer, const CDB::TRI* Tris, size_t Count)
+	{
+		for (size_t Index = 0; Index < Count; ++Index)
+		{
+			const auto& Tri = Tris[Index];
+			CDB::TRI_Vanilla Packed{{Tri.verts[0], Tri.verts[1], Tri.verts[2]}, Tri.dummy};
+			Writer.w(&Packed, sizeof(Packed));
+		}
+	}
+
+	bool ReadTriangles(IReader& Reader, xr_vector<CDB::TRI>& Tris, size_t Count)
+	{
+		if (Count > Reader.elapsed() / sizeof(CDB::TRI_Vanilla))
+		{
+			return false;
+		}
+		Tris.resize(Count);
+		for (auto& Tri : Tris)
+		{
+			CDB::TRI_Vanilla Packed;
+			Reader.r(&Packed, sizeof(Packed));
+			std::copy(std::begin(Packed.verts), std::end(Packed.verts), Tri.verts);
+			Tri.dummy = Packed.dummy;
+			Tri.StreamedSectorID = 0;
+		}
+		return true;
+	}
+}
+
 CForm::ChunkHeader& CForm::IFormat::GetHeader()
 {
     return Header;
@@ -28,10 +59,6 @@ CForm::CFormatVanilla::CFormatVanilla()
 
 CForm::CFormatVanilla::~CFormatVanilla()
 {
-	if (FileReader)
-	{
-		xr_delete(FileReader);
-	}
 }
 
 bool CForm::CFormatVanilla::Write(xr_string_view FileName)
@@ -47,7 +74,7 @@ bool CForm::CFormatVanilla::Write(xr_string_view FileName)
 
     Writer->w(&Header, sizeof(Header));
     Writer->w(VertsPtr, Header.vertcount*sizeof(Fvector));
-    Writer->w(TrisPtr, Header.facecount*sizeof(CDB::TRI));
+    WriteTriangles(*Writer, TrisPtr, Header.facecount);
     
     return true;
 }
@@ -57,12 +84,16 @@ bool CForm::CFormatVanilla::Read(xr_string_view FileName)
     xr_stack_string_path Path = FileName.data();
     Path.append(".cform");
 
-    FileReader = FS.r_open(Path.c_str());
+    FileReader = FS.rg_open(Path.c_str());
     if (!I_ASSERT_M(FileReader, "Unable to open file [%s]", Path.c_str()))
     {
         return false;
     }
 
+    if (FileReader->length() < sizeof(Header))
+    {
+        return false;
+    }
     FileHash = crc32(FileReader->pointer(), FileReader->length());
     
     FileReader->r(&Header, sizeof(Header));
@@ -70,9 +101,17 @@ bool CForm::CFormatVanilla::Read(xr_string_view FileName)
     {
         return false;
     }
+	if (Header.vertcount > FileReader->elapsed() / sizeof(Fvector))
+	{
+		return false;
+	}
 	VertsPtr = (Fvector*)FileReader->pointer();
 	FileReader->advance(Header.vertcount*sizeof(Fvector));
-	TrisPtr = (CDB::TRI*)FileReader->pointer();
+	if (!ReadTriangles(*FileReader, ReadTris, Header.facecount))
+	{
+		return false;
+	}
+	TrisPtr = ReadTris.data();
 
     return true;
 }
@@ -258,10 +297,6 @@ CForm::CFormatInstanced::CFormatInstanced()
 
 CForm::CFormatInstanced::~CFormatInstanced()
 {
-	if (FileReader)
-	{
-		xr_delete(FileReader);
-	}
 }
 
 bool CForm::CFormatInstanced::Write(xr_string_view FileName)
@@ -277,7 +312,7 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 
 	Writer->w(&Header, sizeof(Header));
 	Writer->w(VertsPtr, Header.vertcount*sizeof(Fvector));
-	Writer->w(TrisPtr, Header.facecount*sizeof(CDB::TRI));
+	WriteTriangles(*Writer, TrisPtr, Header.facecount);
 	
 	Writer->w_u64(instances.size());
 	for (auto& elem : instances)
@@ -288,7 +323,7 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 		Writer->w_u64(Model.VertsCount);
 		Writer->w(Model.VertsPtr, Model.VertsCount*sizeof(Fvector));
 		Writer->w_u64(Model.TrisCount);
-		Writer->w(Model.TrisPtr, Model.TrisCount*sizeof(CDB::TRI));
+		WriteTriangles(*Writer, Model.TrisPtr, Model.TrisCount);
 		
 		Writer->w_u64(elem.second.size());
 		Writer->w(elem.second.data(), elem.second.size()*sizeof(decltype(elem.second)::value_type));
@@ -302,12 +337,16 @@ bool CForm::CFormatInstanced::Read(xr_string_view FileName)
 	xr_stack_string_path Path = FileName.data();
 	Path.append(".cform");
 
-	FileReader = FS.r_open(Path.c_str());
+	FileReader = FS.rg_open(Path.c_str());
 	if (!I_ASSERT_M(FileReader, "Unable to open file [%s]", Path.c_str()))
 	{
 		return false;
 	}
 
+	if (FileReader->length() < sizeof(Header))
+	{
+		return false;
+	}
 	FileHash = crc32(FileReader->pointer(), FileReader->length());
     
 	FileReader->r(&Header, sizeof(Header));
@@ -315,10 +354,17 @@ bool CForm::CFormatInstanced::Read(xr_string_view FileName)
 	{
 		return false;
 	}
+	if (Header.vertcount > FileReader->elapsed() / sizeof(Fvector))
+	{
+		return false;
+	}
 	VertsPtr = (Fvector*)FileReader->pointer();
 	FileReader->advance(Header.vertcount*sizeof(Fvector));
-	TrisPtr = (CDB::TRI*)FileReader->pointer();
-	FileReader->advance(Header.facecount*sizeof(CDB::TRI));
+	if (!ReadTriangles(*FileReader, ReadTris, Header.facecount))
+	{
+		return false;
+	}
+	TrisPtr = ReadTris.data();
 	
 	size_t InstancesCount = FileReader->r_u64();
 	for (size_t i = 0; i < InstancesCount; ++i)
@@ -331,8 +377,12 @@ bool CForm::CFormatInstanced::Read(xr_string_view FileName)
 		Model.VertsPtr = (Fvector*)FileReader->pointer();
 		FileReader->advance(Model.VertsCount*sizeof(Fvector));
 		Model.TrisCount = FileReader->r_u64();
-		Model.TrisPtr = (CDB::TRI*)FileReader->pointer();
-		FileReader->advance(Model.TrisCount*sizeof(CDB::TRI));
+		auto& PrototypeTris = ReadModelTris[ObjectName];
+		if (!ReadTriangles(*FileReader, PrototypeTris, Model.TrisCount))
+		{
+			return false;
+		}
+		Model.TrisPtr = PrototypeTris.data();
 		
 		auto& Slot = instances[ObjectName];
 		size_t xformCount = FileReader->r_u64();
@@ -357,13 +407,13 @@ void CForm::CFormatInstanced::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB:
 	TrisPtr = Tris.data();
 }
 
-void CForm::CFormatInstanced::AddInstanceRef(shared_str Path, const Fmatrix& xform, const Fbox& AABB, const CDB::MODEL& Collsion, u16 Sector)
+void CForm::CFormatInstanced::AddInstanceRef(shared_str Path, const Fmatrix& xform, const Fbox& AABB, const CDB::MODEL& Collsion, u16 Sector, u32 StreamingSector)
 {
 	instances.try_emplace(Path).first->second.emplace_back(xform, AABB, Sector);
 	auto& Data = Models.try_emplace(Path).first->second;
 	Data.VertsPtr = Collsion.get_verts().data();
 	Data.TrisPtr = Collsion.get_tris().data();
-	Data.VertsCount = Collsion.get_tris().size();
+	Data.VertsCount = Collsion.get_verts().size();
 	Data.TrisCount = Collsion.get_tris().size();
 }
 
@@ -377,9 +427,9 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 	xr_task_group LoadTaskGroup;
 	for (auto& elem : instances)
 	{
-		LoadTaskGroup.run([&]()
+		LoadTaskGroup.run([&, Entry = &elem]()
 		{
-			PROF_START_THREAD((xr_string("LoadTaskGroup") + std::to_string(std::this_thread::get_id()._Get_underlying_id()).c_str()).c_str())
+			PROF_START_THREAD("CFormPrototypeLoad")
 			PROF_EVENT("CForm::CFormatInstanced::ReadData::Task")
 			size_t Index;
 			CDB::MODEL* Prototype;
@@ -388,7 +438,7 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 				Index = Model.models.size();
 				Prototype = Model.models.emplace_back(new CDB::MODEL);
 			}
-			auto& PrototypeData = Models.at(elem.first);
+			auto& PrototypeData = Models.at(Entry->first);
 			Prototype->get_verts().resize(PrototypeData.VertsCount);
 			std::memcpy(Prototype->get_verts().data(), PrototypeData.VertsPtr, PrototypeData.VertsCount * sizeof(Fvector));
 			Prototype->get_tris().resize(PrototypeData.TrisCount);
@@ -398,7 +448,7 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 				bc(Prototype->get_verts().data(), Prototype->get_verts().size(), Prototype->get_tris().data(), Prototype->get_tris().size(), bcp);
 			}
 			Prototype->build_simple();
-			for(auto& trans : elem.second)
+			for(auto& trans : Entry->second)
 			{
 				Fmatrix Inv = trans.xform;
 				Inv.invert();
@@ -439,11 +489,33 @@ XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(const char* Initial, xr_str
         {
             return nullptr;
         }
+        if (Reader->length() < sizeof(Header))
+        {
+            return nullptr;
+        }
         Reader->r(&Header, sizeof(Header));
     }
 
     switch (Header.version)
     {
+    case CFormVersions::Streamed:
+    case CFormVersions::StreamedInstanced:
+        {
+            xr_unique_ptr<CForm::IFormat> Parsed;
+            if (Header.version == CFormVersions::Streamed)
+            {
+                Parsed.reset(new CFormatStreamed());
+            }
+            else
+            {
+                Parsed.reset(new CFormatStreamedInstanced());
+            }
+            if (!Parsed->Read(Path.c_str()))
+            {
+                return nullptr;
+            }
+            return Parsed;
+        }
     case CFormVersions::Vanilla:
         {
             auto Parsed = new CFormatVanilla();

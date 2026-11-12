@@ -851,7 +851,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 	query.get_CD	(q_c,q_d);
 	thread_local CDB::COLLIDER XRC;
 	XRC.box_options(0);
-	XRC.box_query(*inl_ph_world().ObjectSpace().GetStaticModel(),q_c,q_d);
+	XRC.box_query(inl_ph_world().ObjectSpace(),q_c,q_d);
 
 	Fvector sd_dir;sd_dir.set(-accel.z,0,accel.x);
 	Fvector obb_fb;obb_fb.set(m_radius*0.5f,m_radius*2.f,m_radius*0.7f);

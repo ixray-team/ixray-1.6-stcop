@@ -40,6 +40,7 @@ source_group("ODE" FILES ${XPH_SOURCE_ODE_FILES})
 # Apply list
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_ALL_FILES})
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_NET_FILES})
+list(FILTER XPH_SRC_FILES EXCLUDE REGEX "/Tests/")
 
 # One backend per build: ODE/ or Box3D/
 if(IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
@@ -79,3 +80,15 @@ target_link_libraries(xrPhysics PUBLIC xrEngineCore)
 
 # Move precompiled header
 target_validate_pch(xrPhysics ${CMAKE_CURRENT_SOURCE_DIR})
+
+if(IXRAY_TESTS AND IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
+    # Compile the same backend into the test: its internal classes are not DLL exports.
+    add_executable(TestBox3DCollision EXCLUDE_FROM_ALL Tests/Box3DCollision.cpp ${XPH_SRC_FILES})
+    target_include_directories(TestBox3DCollision PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/Box3D"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/" "${IXRAY_SDK_INC}")
+    target_compile_definitions(TestBox3DCollision PRIVATE XRPHYSICS_EXPORTS dSINGLE IXRAY_PHYSICS_BOX3D)
+    target_link_libraries(TestBox3DCollision PRIVATE xrCore xrEngineCore box3d::box3d)
+    target_validate_pch(TestBox3DCollision ${CMAKE_CURRENT_SOURCE_DIR})
+    set_target_properties(TestBox3DCollision PROPERTIES FOLDER "Test")
+endif()

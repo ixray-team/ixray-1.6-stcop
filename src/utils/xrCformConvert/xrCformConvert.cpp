@@ -174,6 +174,7 @@ void CFormConverter::SaveCompilerCfg()
 	Serializer->Write("LC_GeomType", CFormConverter::GetConverterSettings().LC_GeomType);
 	Serializer->Write("LC_CFormChunkSize", CFormConverter::GetConverterSettings().LC_CFormChunkSize);
 	Serializer->Write("LC_GeomChunkSize", CFormConverter::GetConverterSettings().LC_GeomChunkSize);
+	Serializer->Write("LC_CFormTileSize", CFormConverter::GetConverterSettings().LC_CFormTileSize);
 	Serializer->Save();
 }
 
@@ -205,6 +206,7 @@ int APIENTRY WinMain
 	Serializer->Read("LC_GeomType", CFormConverter::GetConverterSettings().LC_GeomType);
 	Serializer->Read("LC_CFormChunkSize", CFormConverter::GetConverterSettings().LC_CFormChunkSize);
 	Serializer->Read("LC_GeomChunkSize", CFormConverter::GetConverterSettings().LC_GeomChunkSize);
+	Serializer->Read("LC_CFormTileSize", CFormConverter::GetConverterSettings().LC_CFormTileSize);
 
 	CFormConverter::InitializeUIData();
 	SDL_Application();

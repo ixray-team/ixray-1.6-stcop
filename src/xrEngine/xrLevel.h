@@ -59,7 +59,10 @@ enum class CFormVersions : u32 // because old CForm version was just an 4-b int
 	VanillaChunkedData,
 	Instanced,
 	InstancedChunked,
-	InstancedChunkedData
+	InstancedChunkedData,
+	// Keep existing version numbers stable. Streamed masters contain metadata only.
+	Streamed,
+	StreamedInstanced
 };
 
 #pragma pack(push,8)

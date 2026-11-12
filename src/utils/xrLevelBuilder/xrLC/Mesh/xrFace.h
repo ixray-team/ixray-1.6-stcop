@@ -61,6 +61,7 @@ public:
 	CDeflector* pDeflector;		// does the face has LM-UV map?
 	CLightmap* lmap_layer;
 	u32 sm_group;
+	u32 CollisionStreamingSector = 0;
 	virtual Fvector2*		getTC0			( ) { return tc[0].uv; }
 
 

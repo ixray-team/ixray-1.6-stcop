@@ -246,7 +246,7 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal(const 
 	Fvector bbc,bbd;
 	matrix_builder.FindBoxCenterAndDim(bbc,bbd);
 	xrc.box_options(CDB::OPT_FULL_TEST);
-	xrc.box_query(*g_pGameLevel->ObjectSpace.GetStaticModel(),bbc,bbd);
+	xrc.box_query(g_pGameLevel->ObjectSpace,bbc,bbd);
 	u32	triCount = xrc.r_count();
 	if (!triCount)
 	{

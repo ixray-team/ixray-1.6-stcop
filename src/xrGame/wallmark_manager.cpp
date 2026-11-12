@@ -64,7 +64,7 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
 
     thread_local CDB::COLLIDER XRC;
     XRC.box_options(0);
-    XRC.box_query(*Level().ObjectSpace.GetStaticModel(), m_pos, Fvector().set(m_trace_dist, m_trace_dist, m_trace_dist));
+    XRC.box_query(Level().ObjectSpace, m_pos, Fvector().set(m_trace_dist, m_trace_dist, m_trace_dist));
 
 	u32 wm_count = 0;
 	for (auto& elem : XRC.r_vec())

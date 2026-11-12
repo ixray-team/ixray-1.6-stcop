@@ -381,7 +381,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	else
 	{
 		xrc.box_options(CDB::OPT_FULL_TEST);
-		xrc.box_query(*g_pGameLevel->ObjectSpace.GetStaticModel(), D.vis.box);
+		xrc.box_query(g_pGameLevel->ObjectSpace, D.vis.box);
 		triCount = xrc.r_count();
 		results = &xrc.r_vec();
 	}

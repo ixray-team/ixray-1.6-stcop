@@ -34,10 +34,10 @@ struct CompilersMode
 	bool CUDA = true;
 	bool Vulkan = false;
 
- 	bool EmbreeBVHCompact	= false; //  Traversing
-	bool EmbreeBVHRobust	= false; //  Traversing
+ 	bool EmbreeBVHCompact	= false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Traversing
+	bool EmbreeBVHRobust	= false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Traversing
 	bool EmbreeRays8		= true;  // x2 Speed
-	bool EmbreeInstaces     = false; //  Traversing
+	bool EmbreeInstaces     = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Traversing
 
 	bool ClearTemp = false;
 
@@ -61,6 +61,7 @@ struct CompilersMode
 	CFormVersions LC_CformType = CFormVersions::Vanilla;
 	int LC_CFormChunkSize = 75;
 	int LC_GeomChunkSize = 75;
+	int LC_CFormTileSize = 100;
 	 
 	// Lightmaps
  	int  LC_BORDER = 1;
@@ -97,14 +98,14 @@ struct CompilersMode
 	xr_vector<LevelFileData> Files;
 	ImFont* CompilerIconsFont;
 
-	//  
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	xr_string compilation_level;
 	LPCSTR get_lname()
 	{
 		return compilation_level.c_str();
 	}
 
-	//  !
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ !
 	int ThreadsPerWork = 14;
 };
 

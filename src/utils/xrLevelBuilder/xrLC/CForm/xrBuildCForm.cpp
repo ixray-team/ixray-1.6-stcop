@@ -121,7 +121,7 @@ void CBuild::BuildCForm	()
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
 			T->dwMaterialGame, 
 			GetMaterialSector(*T),
-			T->sm_group
+			T->sm_group, T->CollisionStreamingSector
 		);
 		Progress(p_total += p_cost);		// progress
 	}
@@ -178,6 +178,11 @@ void CBuild::BuildCForm	()
 			{
 				FormatPtr.reset(new XRay::CForm::CFormatVanillaChunked(Number+1));
 			}
+			break;
+		}
+	case CFormVersions::Streamed:
+		{
+			FormatPtr.reset(new XRay::CForm::CFormatStreamed());
 			break;
 		}
 	default:
@@ -272,9 +277,8 @@ void CBuild::BuildCTree()
 		CL.add_face(
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
 			T->dwMaterialGame, 
-			GetMaterialSector(*T), 
-			T->flags.bSharedMaterial,
-			T->sm_group
+			GetMaterialSector(*T),
+			T->sm_group, T->CollisionStreamingSector
 		);
 		Progress(p_total += p_cost);		// progress
 	}
@@ -314,6 +318,11 @@ void CBuild::BuildCTree()
 			FormatPtr.reset(new XRay::CForm::CFormatInstanced());
 			break;
 		}
+		case CFormVersions::StreamedInstanced:
+		{
+			FormatPtr.reset(new XRay::CForm::CFormatStreamedInstanced());
+			break;
+		}
 		default:
 		{
 			FATAL("Invalid CForm type!");
@@ -335,7 +344,7 @@ void CBuild::BuildCTree()
 				elem->xform.transform_tiny(gv, v);
 				GlobalAABB.modify(gv);
 			}
-			FormatPtr->AddInstanceRef(elem->model->m_name, elem->xform, GlobalAABB, elem->model->CollisionModel, elem->sector);
+			FormatPtr->AddInstanceRef(elem->model->m_name, elem->xform, GlobalAABB, elem->model->CollisionModel, elem->sector, elem->CollisionStreamingSector);
 		}
 	}
 	xr_stack_string_path level_path = pBuild->path;

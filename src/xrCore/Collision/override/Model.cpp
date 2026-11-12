@@ -30,7 +30,6 @@ namespace CDB::Internal
 			Node->GetElement(i).p = ChildNode;
 			ChildNode->SetParent(Node);
 		}
-		*((BuilderConfig::Data*)userPtr)->Ptr = Node;
 	}
 
 	/* Callback to set the bounds of all children */
@@ -55,6 +54,8 @@ namespace CDB::Internal
 		auto Node = (BVHNode*)EmbreeCreateNodeFunction(allocator, primitiveCount, userPtr);
 		for (size_t i = 0; i < primitiveCount; i++)
 		{
+			Node->GetAABB(i).min.set(primitives[i].lower_x, primitives[i].lower_y, primitives[i].lower_z);
+			Node->GetAABB(i).max.set(primitives[i].upper_x, primitives[i].upper_y, primitives[i].upper_z);
 			Node->GetElement(i).IsNotPointer = true;
 			Node->GetElement(i).IsInstance = primitives[i].geomID != u32(-1);
 			Node->GetElement(i).Index = primitives[i].primID;
@@ -121,7 +122,7 @@ RTCBVH CDB::BuildModel(const BuilderConfig& config)
 	}
 	
 	auto args = rtcDefaultBuildArguments();
-	args.byteSize = 8;
+	args.byteSize = sizeof(args);
 	args.buildQuality = RTC_BUILD_QUALITY_HIGH;
 	args.maxBranchingFactor = 4;
 	args.maxLeafSize = 4;
@@ -135,6 +136,6 @@ RTCBVH CDB::BuildModel(const BuilderConfig& config)
 	args.setNodeBounds = &EmbreeSetNodeBoundsFunction;
 	args.createLeaf = &EmbreeCreateLeafFunction;
 	args.userPtr = config.UserData;
-	rtcBuildBVH(&args);
+	*((BuilderConfig::Data*)config.UserData)->Ptr = static_cast<BVHNode*>(rtcBuildBVH(&args));
 	return model;
 }

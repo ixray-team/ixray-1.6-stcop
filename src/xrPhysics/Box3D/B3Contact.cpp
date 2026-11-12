@@ -66,7 +66,7 @@ bool CPHContact::GetLastPosition(bool First, Fvector& Position) const
 	return true;
 }
 
-bool CPHContact::GetPushingNegTriangle(bool First, const Fvector* Verts, Fvector& Normal, float& Dist) const
+bool CPHContact::GetPushingNegTriangle(bool First, Fvector& Normal, float& Dist) const
 {
 	// Box3D has no negative-triangle push-out.
 	return false;

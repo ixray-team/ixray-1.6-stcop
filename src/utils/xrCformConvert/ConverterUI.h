@@ -19,6 +19,7 @@ namespace CFormConverter
 		int LC_CFormChunkSize = 75;
 		int LC_sizeLmaps = 1024 * 4;
 		int ThreadsPerWork = 14;
+		int LC_CFormTileSize = 100;
 		GeomVanillaType LC_GeomType = GeomVanillaType::Vanilla;
 
 		bool Geom;

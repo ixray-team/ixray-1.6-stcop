@@ -181,7 +181,7 @@ bool trajectory_check_collision (float 							low,
 
 		obb.m_halfsize.set(box_size.x * 0.5f, box_size.y * 0.5f, box_size.z * 0.5f);
 		obb_collider.obb_options(CDB::OPT_FULL_TEST);
-		obb_collider.obb_query(*Level().ObjectSpace.GetStaticModel(), obb);
+		obb_collider.obb_query(Level().ObjectSpace, obb);
 		box_result = obb_collider.r_vec().empty();
 
 		if (out_collide_tris)
@@ -253,4 +253,3 @@ bool trajectory_intersects_geometry	(float							trajectory_time,
 
 	return						false;
 }
-

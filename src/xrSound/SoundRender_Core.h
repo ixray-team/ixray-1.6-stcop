@@ -2,6 +2,7 @@
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
 class SoundVoiceChat;
+class CObjectSpace;
 
 class CSoundRender_Core	: 
 	public CSound_manager_interface
@@ -32,7 +33,7 @@ public:
 protected:
 	// Collider
 	CDB::MODEL*							geom_SOM;
-	CDB::MODEL*							geom_MODEL;
+	CObjectSpace*						geom_MODEL;
 	CDB::MODEL*							geom_ENV;
 
 	// Containers
@@ -71,13 +72,13 @@ public:
 	virtual void						set_master_volume		( float			f );
 	virtual void						set_geometry_env		( IReader*		I );
 	virtual void						set_geometry_som		( IReader*		I );
-	virtual void						set_geometry_occ		( CDB::MODEL*	M );
+	virtual void						set_geometry_occ		( CObjectSpace*	M );
 	virtual void						set_handler				( sound_event*	E );
 	
 	virtual CDB::COLLIDER*				get_geometry_db         ( );
 	virtual CDB::MODEL*					get_geometry_env        ( );
 	virtual CDB::MODEL*					get_geometry_som        ( );
-	virtual CDB::MODEL*					get_geometry_occ        ( );
+	virtual CObjectSpace*				get_geometry_occ        ( );
 
 	virtual void                        debug_draw              ();
 	virtual void						update					(const Fvector& P, const Fvector& D, const Fvector& N );

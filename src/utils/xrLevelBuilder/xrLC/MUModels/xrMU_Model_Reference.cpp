@@ -18,6 +18,7 @@ void xrMU_Reference::Load( IReader& F, xr_vector<xrMU_Model*>& mu_models )
 	xform				= R.transform;
 	flags				= R.flags;
 	sector				= R.sector;
+	CollisionStreamingSector = R.CollisionStreamingSector;
 
 	c_scale.rgb.set		(1,1,1);
 	c_scale.hemi		= 1;
@@ -86,7 +87,7 @@ void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 		xform.transform_tiny	(P[1],T->v[1]->P);
 		xform.transform_tiny	(P[2],T->v[2]->P);
 
-		CL.add_face( P[0], P[1], P[2], T->dwMaterialGame, sector, T->sm_group);
+		CL.add_face( P[0], P[1], P[2], T->dwMaterialGame, sector, T->sm_group, CollisionStreamingSector);
 	}
 
 	xr_delete		(cfFaces);

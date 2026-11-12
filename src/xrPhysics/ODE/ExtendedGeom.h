@@ -125,6 +125,7 @@ struct dxGeomUserData
 	void						*callback_data									;
 	CObjectContactCallback		*object_callbacks								;
 	xr_vector<TriabgleCDBData> cashed_tries;
+	u64 CollisionStreamingRevision = 0;
 	Fvector						last_aabb_size									;
 	Fvector						last_aabb_pos									;
 	bool						pushing_neg, pushing_b_neg, b_static_colide;

@@ -109,7 +109,18 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 	box.setb(cast_fv(p), AABB);
 
 	//VERIFY( g_pGameLevel );
-	auto& Model = *inl_ph_world().ObjectSpace().GetStaticModel();
+	auto& ObjectSpace = inl_ph_world().ObjectSpace();
+	const bool Streaming = ObjectSpace.IsStreamingEnabled();
+	const auto StaticModels = Streaming ? ObjectSpace.GetActiveStreamedModels() : xr_vector<xr_shared_ptr<CDB::MODEL>>{};
+	const u64 Revision = Streaming ? ObjectSpace.GetStreamingRevision() : 0;
+	if (data->CollisionStreamingRevision != Revision)
+	{
+		// Cached triangle pointers and negative contacts may refer to unloaded tiles.
+		data->CollisionStreamingRevision = Revision;
+		data->pushing_neg = false;
+		data->pushing_b_neg = false;
+		no_last_pos = true;
+	}
 	if (no_last_pos || !last_box.contains(box))
 	{
 		Fvector aabb;
@@ -118,7 +129,6 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		thread_local CDB::COLLIDER XRC;
 		XRC.box_options(0);
-		XRC.box_query(Model, cast_fv(p), aabb);
 
 #ifdef DEBUG
 
@@ -126,6 +136,7 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide(
 		debug_output().dbg_new_queries_per_step()++;
 #endif
 		data->cashed_tries.resize(0);
+		XRC.box_query(ObjectSpace, cast_fv(p), aabb);
 		for (auto& elem : XRC.r_vec())
 		{
 			auto& Slot = data->cashed_tries.emplace_back();

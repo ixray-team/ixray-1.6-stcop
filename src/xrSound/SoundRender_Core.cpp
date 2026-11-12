@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Collision/xr_area.h"
 
 #include "../xrEngine/xrLevel.h"
 #include "../xrCore/Collision/cl_intersect.h"
@@ -100,23 +101,29 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 		bool bNeedFullTest = true;
 		// 1. Check cached polygon
 		float _u, _v, _range;
-		if (CDB::TestRayTri(base, dir, occ, _u, _v, _range, true))
+		if (!geom_MODEL->IsStreamingEnabled() && CDB::TestRayTri(base, dir, occ, _u, _v, _range, true))
 			if (_range > 0 && _range < range) { occ_value = psSoundOcclusionScale; bNeedFullTest = false; }
 		// 2. Polygon doesn't picked up - real database query
 		if (bNeedFullTest)
 		{
 			geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
-			geom_DB.ray_query(*geom_MODEL, base, dir, range);
-			if (0 != geom_DB.r_count())
+			const auto Models = geom_MODEL->GetStaticModels();
+			float NearestRange = range;
+			for (const auto& Model : Models)
 			{
-				// cache polygon
-				auto& R_ = geom_DB.r_any();
-				auto& T = R_.model->get_tris()[R_.tris_id];
-				const xr_vector<Fvector>& V = geom_MODEL->get_verts();
-				occ[0].set(V[T.verts[0]]);
-				occ[1].set(V[T.verts[1]]);
-				occ[2].set(V[T.verts[2]]);
-				occ_value = OcclusionMaterialCallback(T.material);
+				geom_DB.ray_query(*Model, base, dir, NearestRange);
+				if (geom_DB.r_count())
+				{
+					const auto& Result = geom_DB.r_any();
+					const auto& Tri = Result.model->get_tris()[Result.tris_id];
+					const auto& Verts = Result.model->get_verts();
+					for (u32 Index = 0; Index < 3; ++Index)
+					{
+						Result.ModelWorldTransform.transform_tiny(occ[Index], Verts[Tri.verts[Index]]);
+					}
+					NearestRange = Result.range;
+					occ_value = OcclusionMaterialCallback(Tri.material);
+				}
 			}
 		}
 	}
@@ -275,7 +282,7 @@ CDB::MODEL*CSoundRender_Core::get_geometry_som()
 	return geom_SOM;
 }
 
-CDB::MODEL* CSoundRender_Core::get_geometry_occ()
+CObjectSpace* CSoundRender_Core::get_geometry_occ()
 {
 	return geom_MODEL;
 }
@@ -285,7 +292,7 @@ void CSoundRender_Core::set_handler(sound_event* E)
 	Handler = E;
 }
 
-void CSoundRender_Core::set_geometry_occ(CDB::MODEL* M)
+void CSoundRender_Core::set_geometry_occ(CObjectSpace* M)
 {
 	geom_MODEL = M;
 }

@@ -62,9 +62,20 @@ RTCDevice CDB::GetEmbreeDevice()
 CDB::MODEL::~MODEL()
 {
 	load_task.wait();
+	if (InstaceScene)
+	{
+		rtcReleaseScene(InstaceScene);
+	}
+	for (auto*& Model : models)
+	{
+		xr_delete(Model);
+	}
 	delete_data(verts);
 	delete_data(tris);
-	rtcReleaseBVH(tree);
+	if (tree)
+	{
+		rtcReleaseBVH(tree);
+	}
 }
 
 void MODEL::build_simple()
@@ -150,6 +161,7 @@ void MODEL::build_simple()
 void COLLIDER::ray_query(const MODEL& m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
 	PROF_EVENT("COLLIDER::ray_query");
+	r_clear();
 	if (!m_def.IsBuilt)
 	{
 		m_def.load_task.wait();
@@ -159,7 +171,6 @@ void COLLIDER::ray_query(const MODEL& m_def, const Fvector& r_start, const Fvect
 		return;
 	}
 	
-	r_clear();
 	r_vec().reserve(16);
 	
 	struct ColliderContext : public RTCRayQueryContext
@@ -302,7 +313,12 @@ void COLLIDER::ray_query(const MODEL& m_def, const Fvector& r_start, const Fvect
 				RESULT* R;
 				if (!!(self->ray_mode & OPT_ONLYNEAREST) && !self->rd.empty())
 				{
-					R = self->r_any().range > Range ? self->rd.data() : self->rd.data()+1;
+					if (Range >= self->rd.front().range)
+					{
+						args->valid[0] = 0;
+						return;
+					}
+					R = self->rd.data();
 				} else
 				{
 					R = &self->r_add();
@@ -323,7 +339,13 @@ void COLLIDER::ray_query(const MODEL& m_def, const Fvector& r_start, const Fvect
 					R->Sector = Data->Sector;
 				} else
 				{
+					R->ModelWorldTransform.identity();
 					R->Sector = model->tris[PrimID].sector;
+				}
+				if (!(self->ray_mode & OPT_ONLYNEAREST))
+				{
+					// Continue traversal without shortening the ray to this hit.
+					args->valid[0] = 0;
 				}
 				
 				/*if(!!(self->ray_mode & OPT_ONLYNEAREST) && self->rd.size() > 1)
@@ -471,6 +493,10 @@ struct cform_frustum_collider final
 					continue;
 				}
 				Stab(node.GetNode(i), mask, ToWorldTransform);
+				if (bFirst && !dest->empty())
+				{
+					return;
+				}
 			}
 			else
 			{
@@ -489,16 +515,16 @@ struct cform_frustum_collider final
 void COLLIDER::frustum_query(const MODEL& m_def, const CFrustum& F, ColliderCallback OnCheckNode)
 {
 	PROF_EVENT("COLLIDER::frustum_query");
+	r_clear();
 	if (!m_def.IsBuilt)
 	{
 		m_def.load_task.wait();
 	}
-	if (!m_def.InstaceScene)
+	if (!m_def.root)
 	{
 		return;
 	}
 
-	r_clear();
 	r_vec().reserve(16);
 
 	cform_stack S = m_def;
@@ -506,8 +532,8 @@ void COLLIDER::frustum_query(const MODEL& m_def, const CFrustum& F, ColliderCall
 	BC.dest = &rd;
 	BC.stack = &S;
 	BC.F = &F;
-	BC.bClass3 = box_mode & OPT_FULL_TEST;
-	BC.bFirst = box_mode & OPT_ONLYFIRST;
+	BC.bClass3 = frustum_mode & OPT_FULL_TEST;
+	BC.bFirst = frustum_mode & OPT_ONLYFIRST;
 	BC.OnCheckNode = OnCheckNode;
 	BC.Stab(*m_def.root, F.getMask(), Fmatrix{Fmatrix::EIdentity::Identity});
 }
@@ -574,6 +600,10 @@ struct cform_shape_collider final
 					continue;
 				}
 				Stab(node.GetNode(i), ToWorldTransform);
+				if (bFirst && !dest->empty())
+				{
+					return;
+				}
 			}
 			else
 			{
@@ -743,7 +773,7 @@ static void ColliderSubstep(cform_shape_collider<_sphere<T>>& GlobalCollider, El
 		NewToWorld.transform_tiny(tri_verts[1], R.model->verts[CurrentTris.verts[1]]);
 		NewToWorld.transform_tiny(tri_verts[2], R.model->verts[CurrentTris.verts[2]]);
 				
-		if (!GlobalCollider.shape.intersectTri(tri_verts, GlobalCollider.bClass3))
+		if (GlobalCollider.shape.intersectTri(tri_verts, GlobalCollider.bClass3))
 		{
 			GlobalCollider.dest->push_back(R);
 		}
@@ -1215,17 +1245,17 @@ template <class Shape>
 void COLLIDER::shape_query(const MODEL& m_def, const Shape& shape, u32 mode, ColliderCallback OnCheckNode)
 {
 	PROF_EVENT("COLLIDER::shape_query");
+	r_clear();
 	
 	if (!m_def.IsBuilt)
 	{
 		m_def.load_task.wait();
 	}
-	if (!m_def.InstaceScene)
+	if (!m_def.root)
 	{
 		return;
 	}
 
-	r_clear();
 	r_vec().reserve(16);
 
 	cform_stack S = m_def;
@@ -1329,11 +1359,12 @@ struct cform_custom_collider final
 void COLLIDER::custom_query(const MODEL& m_def, CheckFunc AABBCheckF, void* paabbc, TrisFunc GetTrisF, void* ptric)
 {
 	PROF_EVENT("COLLIDER::custom_query");
+	r_clear();
 	if (!m_def.IsBuilt)
 	{
 		m_def.load_task.wait();
 	}
-	if (!m_def.InstaceScene)
+	if (!m_def.root)
 	{
 		return;
 	}

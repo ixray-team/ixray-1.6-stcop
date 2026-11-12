@@ -3925,6 +3925,7 @@ void LevelInspector::DrawCFORM()
 		}
 	} temp_prims[2];
 	static xr_task_group cform_task;
+	static xr_vector<xr_shared_ptr<CDB::MODEL>> SelectedModels;
 
 	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
 	{
@@ -3937,24 +3938,27 @@ void LevelInspector::DrawCFORM()
 		{
 			task_finished.store(false);
 			std::swap(prims_calc, prims_render);
-			cform_task.run([this]()
+			cform_task.run([this, Models = g_pGameLevel->ObjectSpace.GetStaticModels()]()
 			{
 				PROF_EVENT("build_cform_tree");
+				SelectedModels = Models;
 				static CDB::COLLIDER xrc;
 				temp_prims[prims_calc].clear();
 
 				if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
 				{
 					xrc.ray_options(CDB::OPT_ONLYNEAREST);
-					xrc.ray_query(*g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
-					if (!xrc.r_vec().empty())
+					selected_prim.model = nullptr;
+					selected_prim.tris_id = -1;
+					float NearestRange = 10000.f;
+					for (const auto& Model : Models)
 					{
-						selected_prim = xrc.r_vec()[0];
-					}
-					else
-					{
-						selected_prim.model = nullptr;
-						selected_prim.tris_id = -1;
+						xrc.ray_query(*Model, Device.vCameraPosition, Device.vCameraDirection, NearestRange);
+						if (xrc.r_count())
+						{
+							selected_prim = xrc.r_any();
+							NearestRange = selected_prim.range;
+						}
 					}
 				}
 				else
@@ -3967,7 +3971,9 @@ void LevelInspector::DrawCFORM()
 				static float max_dist; max_dist = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
 				static CFrustum ViewBaseCopy; ViewBaseCopy = Render->ViewBase;
 
-				xrc.custom_query(*g_pGameLevel->ObjectSpace.GetStaticModel(),
+				for (const auto& Model : Models)
+				{
+				xrc.custom_query(*Model,
 				[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
 				{
 					LevelInspector* LE = (LevelInspector*)ptr;
@@ -4015,7 +4021,7 @@ void LevelInspector::DrawCFORM()
 					}
 
 					auto Copy = mask;
-					if (fcvNone == Render->ViewBase.testAABB(WorldAABB.data(), Copy))
+					if (fcvNone == ViewBaseCopy.testAABB(WorldAABB.data(), Copy))
 					{
 						return false;
 					}
@@ -4110,10 +4116,14 @@ void LevelInspector::DrawCFORM()
 					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
 
 				} : nullptr, nullptr);
+				}
 
 				task_finished.store(true);
 			});
 		}
+		// Selection references model memory, unlike the copied debug primitives.
+		// Finish publishing the snapshot before reading it on the render thread.
+		cform_task.wait();
 		bool delete_last = false;
 		if (selected_prim.model && selected_prim.tris_id != -1)
 		{
@@ -4207,6 +4217,7 @@ void LevelInspector::DrawCFORM()
 	else
 	{
 		cform_task.wait();
+		SelectedModels.clear();
 		temp_prims[0].clear();
 		temp_prims[0].temp_tris.shrink_to_fit();
 		temp_prims[0].temp_lines.shrink_to_fit();

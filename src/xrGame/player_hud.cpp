@@ -496,7 +496,7 @@ void attachable_hud_item::update_hud_additional(Fmatrix& trans)
 
 	CDB::COLLIDER xrc;
 	xrc.obb_options(CDB::OPT_FULL_TEST);
-	xrc.obb_query(*Level().ObjectSpace.GetStaticModel(), m_collision_box);
+	xrc.obb_query(Level().ObjectSpace, m_collision_box);
 
 	float nearest_obb_dist = 1000.0f;
 

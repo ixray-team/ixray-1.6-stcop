@@ -46,6 +46,7 @@ public:
 	int l_face_it;
     xr_vector<b_vertex> l_verts;
     xr_vector<b_face> l_faces;
+	xr_vector<b_face_extra> l_faces_extra;
     xr_vector<u32> l_smgroups;
 
     xr_vector<b_mu_model>		l_mu_models;
@@ -85,15 +86,15 @@ public:
 
     bool    BuildGlow       (CGlow* e);
     void    BuildPortal   	(b_portal* b, CPortal* e);
-    bool    BuildMesh       (const Fmatrix& parent, CEditableObject* object, CEditableMesh* mesh, int sector_num,
+    bool    BuildMesh       (const Fmatrix& parent, CEditableObject* object, CEditableMesh* mesh, CSector* Sector,
     						xr_vector<b_vertex>& verts, int& vert_it,
-                            xr_vector<b_face>& faces, int& face_it, 
+                            xr_vector<b_face>& faces, int& face_it, xr_vector<b_face_extra>& faces_extra,
                             xr_vector<u32>& smooth_groups, const Fmatrix& real_transform, CSceneObject* obj);
     bool    BuildObject     (CSceneObject* obj);
     bool    BuildEditableObject(CEditableObject* obj, Fmatrix T, CSceneObject* Owner);
     bool    BuildMUObject   (CSceneObject* obj);
-	bool BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, int sect_num);
-	u32 BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, int sect_num);
+	bool BuildMUObjectLOD(CSceneObject* obj, b_mu_mesh_lods& Slot, u8 LODID, CSector* sect_num);
+	u32 BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, CSector* sect);
 
     void    Clear 			();
 

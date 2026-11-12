@@ -471,7 +471,8 @@ class CB3Character :
 		Ray.Hit->Normal = B3Math::FromB3(Normal);
 		Ray.Hit->Distance = Fraction;
 		Ray.Hit->Material = Other && Other->Owner ? Other->Owner->Material : u16(UserMaterial);
-		Ray.Hit->Triangle = Triangle;
+		Ray.Hit->ShapeTriangle = Triangle;
+		Ray.Hit->Geom = const_cast<CODEGeom*>(Other);
 		Ray.Hit->Shape = Shape;
 		Ray.Found = true;
 		return Fraction;
@@ -479,12 +480,17 @@ class CB3Character :
 
 	bool CastRay(const Fvector& From, const Fvector& Dir, float Range, u64 Mask, SB3RayHit& Hit)
 	{
+		Hit = {};
 		b3QueryFilter Filter = b3DefaultQueryFilter();
 		Filter.categoryBits = B3Category::Dynamic | B3Category::ActorObstacleQuery;
 		Filter.maskBits = Mask;
 		SRay Ray{this, &Hit, false};
 		b3World_CastRay(g_B3World->Id(), B3Math::ToB3(From), B3Math::ToB3(Fvector().mul(Dir, Range)), Filter, &RayCallback, &Ray);
-		Hit.Distance *= Range;
+		if (Ray.Found)
+		{
+			Hit.Distance *= Range;
+			g_B3World->ResolveRayHit(Hit);
+		}
 		return Ray.Found;
 	}
 
@@ -848,11 +854,12 @@ class CB3Character :
 		u16 Foot = GAMEMTL_NONE_IDX;
 		const float R = Radius();
 		Collider.box_options(0);
-		Collider.box_query(g_B3World->ObjectSpace().GetStaticModel(), Fbox().set(Position.x - R, Position.y, Position.z - R, Position.x + R, Position.y + Size.y, Position.z + R));
+		Collider.box_query(g_B3World->ObjectSpace(), Fbox().set(Position.x - R, Position.y, Position.z - R, Position.x + R, Position.y + Size.y, Position.z + R));
 		ContactCallbackFun* Mark = g_B3World->DefaultCharacterContactShotMark();
-		for (CDB::RESULT* Result = Collider.r_begin(); Result != Collider.r_end(); ++Result)
+		for (const CDB::RESULT& Result : Collider.r_vec())
 		{
-			const u16 Index = u16(Result->material);
+			const TriabgleCDBData Triangle{Result.ModelWorldTransform, Result.model, Result.tris_id};
+			const u16 Index = u16(Triangle.GetTri().material);
 			const SGameMtl* Mtl = MaterialOf(Index);
 			if (!Mtl->Flags.test(SGameMtl::flPassable) || Mtl->Flags.test(SGameMtl::flActorObstacle))
 			{
@@ -872,7 +879,9 @@ class CB3Character :
 				SlowDown = std::max(SlowDown, 1.f - Mtl->fFlotationFactor);
 			}
 			Fvector Normal;
-			Normal.mknormal(Result->verts[0], Result->verts[1], Result->verts[2]);
+			Fvector Verts[3];
+			Triangle.GetVerts(Verts);
+			Normal.mknormal(Verts[0], Verts[1], Verts[2]);
 			const float Speed = Velocity.magnitude() * Mtl->fBounceDamageFactor;
 			if (Actor && Speed > DamageInfo.Velocity)
 			{
@@ -881,7 +890,7 @@ class CB3Character :
 			if (Mark && Velocity.square_magnitude() > 0.01f)
 			{
 				SPHShotMarkContact Shot;
-				Shot.Position.mad(BodyPos, Normal, -Normal.dotproduct(Fvector().sub(BodyPos, Result->verts[0])));
+				Shot.Position.mad(BodyPos, Normal, -Normal.dotproduct(Fvector().sub(BodyPos, Verts[0])));
 				Shot.Normal = Normal;
 				Shot.Object = Owner.RefObject;
 				Shot.Material = Owner.Material;
@@ -889,7 +898,7 @@ class CB3Character :
 				Shot.HasEffect = true;
 				Shot.HasUserData = true;
 				Shot.IsCharacter = true;
-				Mark(&g_B3World->ObjectSpace().GetStaticTris()[Result->id], Shot);
+				Mark(Triangle.GetTri(), Verts, Shot);
 				Mark = nullptr;
 			}
 		}
@@ -1105,7 +1114,7 @@ class CB3Character :
 		}
 
 		ContactCallbackFun* Mark = g_B3World->DefaultCharacterContactShotMark();
-		if (Mark && -Before.dotproduct(Normal) > 1.f && Hit.Geom == nullptr && Hit.Triangle >= 0)
+		if (Mark && -Before.dotproduct(Normal) > 1.f && Hit.Geom == nullptr && Hit.Triangle.Valid())
 		{
 			SPHShotMarkContact Shot;
 			Shot.Position = PlanePoints[Best];
@@ -1116,7 +1125,9 @@ class CB3Character :
 			Shot.HasEffect = true;
 			Shot.HasUserData = true;
 			Shot.IsCharacter = true;
-			Mark(&g_B3World->ObjectSpace().GetStaticTris()[Hit.Triangle], Shot);
+			Fvector Verts[3];
+			Hit.Triangle.GetVerts(Verts);
+			Mark(Hit.Triangle.GetTri(), Verts, Shot);
 		}
 	}
 
@@ -1745,7 +1756,7 @@ public:
 		BoneQuery.r_clear();
 		if (g_B3World->ObjectSpace().RayQuery(BoneQuery, Object->ObjectCollisionModel(), Query))
 		{
-			return u16(BoneQuery.r_begin()->element);
+			return u16(BoneQuery.r_results().front().element);
 		}
 
 		IKinematics* Kinematics = Object->ObjectKinematics();

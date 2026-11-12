@@ -942,6 +942,7 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_legacyLM", gCompilerMode.LC_legacyLM);
 	Serializer->Write("LC_CformType", gCompilerMode.LC_CformType);
 	Serializer->Write("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
+	Serializer->Write("LC_CFormTileSize", gCompilerMode.LC_CFormTileSize);
 	Serializer->Write("LC_GeomType", gCompilerMode.LC_GeomType);
 	Serializer->Write("LC_GeomChunkSize", gCompilerMode.LC_GeomChunkSize);
 
@@ -1024,6 +1025,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Serializer->Read("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Read("LC_GeomType", gCompilerMode.LC_GeomType);
 	Serializer->Read("LC_GeomChunkSize", gCompilerMode.LC_GeomChunkSize);
+	Serializer->Read("LC_CFormTileSize", gCompilerMode.LC_CFormTileSize);
 
 	Serializer->Read("LC_Skip_Progressive", gCompilerMode.LC_OGF_PROGRESSIVE);
 	Serializer->Read("LC_Skip_Striptify", gCompilerMode.LC_OGF_STRIPTIFY);

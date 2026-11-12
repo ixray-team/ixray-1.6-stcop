@@ -43,7 +43,7 @@ struct TriabgleCDBData
 {
 	Fmatrix InvXFORM{Fmatrix::EIdentity::Identity};
 	const CDB::MODEL* model = nullptr;
-	size_t tris_id = -1;
+	size_t tris_id = size_t(-1);
 	
 	ICF bool Valid() const
 	{

@@ -46,6 +46,15 @@ class ENGINE_API	IGame_Level	:
 {
 	friend class CCameraManager;
 
+private:
+	bool FirstStreamingUpdate = true;
+	bool StreamingStopped = false;
+	bool StreamingTaskScheduled = false;
+	xr_atomic_bool StreamingTaskRunning = false;
+	xr_unique_ptr<CObjectSpace::StreamingUpdate> PendingStreamingUpdate;
+	void UpdateCollisionStreaming();
+	void StopCollisionStreaming();
+
 protected:
 	// Network interface
 	CObject*					pCurrentEntity;
@@ -78,6 +87,8 @@ public:
 
 	CObjectList					Objects; 
 	CObjectSpace				ObjectSpace;
+	float StreamingLoadRadius = 250.f;
+	float StreamingUnloadRadius = 300.f;
 	CCameraManager&				Cameras			()				{return *m_pCameras;};
 
 	bool						bReady;
