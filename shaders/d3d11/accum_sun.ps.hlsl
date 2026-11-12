@@ -86,7 +86,7 @@ float4 main(PSInput I) : SV_Target
 #ifdef USE_HUD_SHADOWS
 	// Contact shadows treat back-lit surfaces as occluded by themselves, so keep translucency out of them
 	if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > EPS) {
-		Light *= RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz);
+		Light *= RayTraceContactShadow(I.texcoord, O.PointHud, O.Normal, Ldynamic_dir.xyz);
 	}
 #endif
 

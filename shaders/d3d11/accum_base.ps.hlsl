@@ -36,7 +36,7 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 		[branch]
 		if (O.Depth < 0.02f && dot(Lightmap.xyz, Light.xyz) > EPS_S)
 		{
-			Lightmap *= RayTraceContactShadow(I.tc.xy / I.tc.w, O.PointHud, LightDirection);
+			Lightmap *= RayTraceContactShadow(I.tc.xy / I.tc.w, O.PointHud, O.Normal, LightDirection);
 		}
     #endif
 #endif

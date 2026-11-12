@@ -46,15 +46,43 @@ float3 geometric_normal(int2 pixel, float3 center)
 	return dot(ng, center) > 0.0f ? -ng : ng;
 }
 
+// Next to another surface the neighbours with the nearest depth can belong to it: of the four triangles
+// around the pixel, take the one that agrees most with the shaded normal
+float3 surface_normal(int2 pixel, float3 center, float3 normal)
+{
+	float3 dx[2] = { center - screen_to_view(pixel - int2(1, 0)), screen_to_view(pixel + int2(1, 0)) - center };
+	float3 dy[2] = { center - screen_to_view(pixel - int2(0, 1)), screen_to_view(pixel + int2(0, 1)) - center };
+	float3 best = 0.0f;
+	float agreement = -2.0f;
+
+	for (int i = 0; i < 4; ++i) {
+		float3 x = dx[i & 1];
+		float3 y = dy[i >> 1];
+		if (max(abs(x.z), abs(y.z)) > center.z * 0.1f) {
+			continue;
+		}
+
+		float3 ng = normalize(cross(x, y));
+		ng = dot(ng, center) > 0.0f ? -ng : ng;
+		if (dot(ng, normal) > agreement) {
+			agreement = dot(ng, normal);
+			best = ng;
+		}
+	}
+
+	return best;
+}
+
 float terminator_gate(int2 pixel, float3 center, float3 normal, float3 L)
 {
-	float3 ng = geometric_normal(pixel, center);
+	float3 ng = surface_normal(pixel, center, normal);
 	return any(ng) ? saturate(-dot(normalize(normal + ng), L) * 5.0f) : 1.0f;
 }
 
-float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 L)
+float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 Normal, float3 L)
 {
-	float3 ng = geometric_normal(int2(TexCoord * pos_decompression_params2.xy), Point);
+	float2 pixel = TexCoord * pos_decompression_params2.xy;
+	float3 ng = surface_normal(int2(pixel), Point, Normal);
 	float plane = any(ng) ? dot(ng, Point) + Point.z * 0.01f : -1.0f;
 
 	Point.xyz *= 0.99f;
@@ -74,9 +102,12 @@ float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 L)
 	
 	float visibility = 0.0f;	
 	
+	// Steps of one length: jittering each one changes how far the ray reaches from pixel to pixel
+	start.xyz += L * (Hash(pixel) - 1.0f);
+
 	[loop]
 	for (int i = 0; i < HUD_SHADOWS_STEPS; ++i) {
-		start.xyz += L * float(0.8f + 0.4f * Hash(start.xyz));
+		start.xyz += L;
 		float depth = s_position.SampleLevel(smp_nofilter, start.xy, 0).x;
 		
 		if (depth <= start.z && dot(ng, uv_to_view(start.xy, depth)) > plane) {
