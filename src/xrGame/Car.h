@@ -616,4 +616,8 @@ public:
 private:
 	xr_hash_map<u16, shared_str> UsableBones;
 	u16 UsableBonesActive = BI_NONE;
-};
+	
+	class MountedWeaponVision;
+	MountedWeaponVision* WeaponVision = nullptr;
+};
+
