@@ -89,6 +89,7 @@ void CExplosive::Load(const char* section)
 
 void CExplosive::Load(CInifile const *ini,const char* section)
 {
+	m_model_ini_sound = (ini != pSettings);
 	m_bDisableEffector = pSettings->read_if_exists<bool>(section, "disable_effector", false);
 	m_fBlastHit			= ini->r_float(section,"blast");
 	m_fBlastRadius		= ini->r_float(section,"blast_r");
@@ -336,11 +337,11 @@ void CExplosive::Explode()
 
 	if (Sound->object_in_audiozone(pos) && m_layered_sounds.FindSoundItem("sndExplodeIndoor", false))
 	{
-		m_layered_sounds.PlaySound("sndExplodeIndoor", pos, who, false, false, true, (u8)-1);
+		m_layered_sounds.PlaySound("sndExplodeIndoor", pos, who, false, false, !m_model_ini_sound, (u8)-1);
 	}
 	else
 	{
-		m_layered_sounds.PlaySound("sndExplode", pos, who, false, false, true, (u8)-1);
+		m_layered_sounds.PlaySound("sndExplode", pos, who, false, false, !m_model_ini_sound, (u8)-1);
 	}
 
 	//показываем эффекты

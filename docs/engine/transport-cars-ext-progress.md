@@ -842,3 +842,26 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - `CDamagableItem::DamageLevel()` получил допуск `1e-4` при переводе здоровья в уровень. Без него здоровье ровно на пороге `1/3` считалось уровнем 1 из-за `1.9999999` во float, и legacy-фитиль сразу сбрасывался. `CCar::ApplyDamage()` теперь фиксирует уровень до эффектов, как оригинальный код, поэтому запуск фитиля не повторно входит в `ApplyDamage(2)`.
 - Проверка legacy: `veh_zaz968`, `SetfHealth(0.2)` на `t=3` → фитиль активен, здоровье `0.333`, затем линейно `0.32…0.02`, взрыв на `t=23`; `p3=0`. Проверка нового режима: здоровье 0 на `t=3` → `pending=1`, `p3=1`; ремонт на `t=5` отменил таймер; повторный 0 на `t=7` → взрыв на `t=27`. Autotest — `RESULT: PASS`, `errors=0`.
 - В активном `veh_base.ltx` параметр возвращён в `zero_health_explosion_timer = true`.
+
+### Этап 79: звук взрыва машины
+
+- Причина молчания: `CExplosive::Load(ini, "explosion")` для машины читает модельный user data, но `HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const*, ...)` в обычной ветке вызывал `HUD_SOUND_COLLECTION::LoadSound(const char*, ...)`, а тот искал `snd_explode` в глобальном `pSettings`. В глобальных конфигах секции `[explosion]` машины нет, поэтому звук не загружался: `item=1`, `count=0`.
+- Гранаты и другое оружие работали, потому что у них `CExplosive::Load(section)` сразу читает глобальный `pSettings`.
+- Добавлены перегрузки `HUD_SOUND_ITEM::LoadSound(CInifile const*, ...)` и `HUD_SOUND_COLLECTION::LoadSound(CInifile const*, ...)`. Слоистый загрузчик для модельного `ini` теперь передаёт его во все вложенные вызовы, включая `snd_N_layer`.
+- В LA `CExplosive` хранит обычный `ref_sound sndExplode`, создаёт его через `ini->r_string(section, "snd_explode")` и играет через `Sound->play_at_pos(sndExplode, 0, pos, false)`, поэтому звук сразу получает позицию взрыва.
+- В нашем слоистом пути вызов с `allowOverlap = true` уходил в `play_no_feedback`. У нового `ref_sound` ещё нет слота микшера (`slot() == 0`), поэтому `Mixer::PlayNoFeedback` не применял переданные позицию и громкость: звук стартовал в начале координат и был не слышен. Взрыв теперь играется с `allowOverlap = false`, то есть через `play_at_pos`, как в LA.
+- Проверка: до исправления загрузки `[expl snd] explosion item=1 count=0 data=0`, после — `item=1 count=1 data=1`; после перехода на `play_at_pos` — `[expl play] item=1 playing=1 pos=264.23,19.40,550.84`. Autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 80: учёт проигрывания слоистого звука взрыва
+
+- После перехода на `m_layered_sounds` старый `CExplosive::IsSoundPlaying()` всё ещё проверял неиспользуемый `ref_sound sndExplode`, поэтому всегда возвращал `false`. `CCar::CanRemoveObject()` из-за этого мог удалить машину сразу после взрыва, обрезав звук.
+- `IsSoundPlaying()` теперь ищет `sndExplode` и `sndExplodeIndoor` в `m_layered_sounds` и проверяет их `playing()`. Неиспользуемый `ref_sound sndExplode` удалён.
+- Autotest — `RESULT: PASS`, `errors=0`.
+
+### Этап 81: область действия правок звука взрыва
+
+- Загрузка звука для глобальных `CExplosive::Load(section)` (гранаты, ракеты, взрывные предметы) не менялась: перегрузки `HudSound` с `ini = pSettings` повторяют прежнюю логику.
+- Воспроизведение теперь выбирается по источнику: для модельного `ini` (машины, вертолёты) `allowOverlap = false`, то есть `play_at_pos` с позицией взрыва; для глобального `pSettings` остаётся прежний `allowOverlap = true`, то есть `play_no_feedback`.
+- `IsSoundPlaying()` используется только в `CCar::CanRemoveObject()`, поэтому его исправление влияет только на машины.
+- Неиспользуемый `ref_sound sndExplode` удалён; других обращений к нему не было.
+- Autotest — `RESULT: PASS`, `errors=0`.
