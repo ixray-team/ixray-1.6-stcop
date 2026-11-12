@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #ifndef PCF_FILTER_H
+#define PCF_FILTER_H
 
 //http://the-witness.net/news/2013/09/shadow-mapping-summary-part-1/
 //https://github.com/TheRealMJP
@@ -160,19 +161,19 @@ float pcf_7x7(Texture2DArray<float> shadow_tex, SamplerComparisonState shadow_co
 	return sum / 2704.0;
 }
 
-//LVutner: Duplicate, for Tex2D. We use it for local lights
-float pcf_3x3(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float2 shadow_res, float bias)
+// Texture2D dimensions: width, height, inverse width, inverse height.
+float pcf_3x3(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float4 shadow_res, float bias)
 {
 	tc.z -= bias;
 
-	float2 uv = tc.xy * shadow_res.x;
+	float2 uv = tc.xy * shadow_res.xy;
 
-    float2 base_uv = floor(uv.xy + 0.5);
-    float2 st = (uv.xy + 0.5 - base_uv.xy);
+	float2 base_uv = floor(uv.xy + 0.5);
+	float2 st = (uv.xy + 0.5 - base_uv.xy);
 
-    base_uv -= float2(0.5, 0.5);
-    base_uv *= shadow_res.y;
-	
+	base_uv -= float2(0.5, 0.5);
+	base_uv *= shadow_res.zw;
+
 	float uw0 = (3.0 - 2.0 * st.x);
 	float uw1 = (1.0 + 2.0 * st.x);
 
@@ -186,25 +187,69 @@ float pcf_3x3(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sa
 	float v1 = st.y / vw1 + 1.0;
 
 	float sum = 0.0;
-	sum += uw0 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v0) * shadow_res.y, tc.z);
-	sum += uw1 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v0) * shadow_res.y, tc.z);
-	sum += uw0 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v1) * shadow_res.y, tc.z);
-	sum += uw1 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v1) * shadow_res.y, tc.z);
+	sum += uw0 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v0) * shadow_res.zw, tc.z);
+	sum += uw1 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v0) * shadow_res.zw, tc.z);
+	sum += uw0 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v1) * shadow_res.zw, tc.z);
+	sum += uw1 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v1) * shadow_res.zw, tc.z);
 
-	return sum / 16.0;	
+	return sum / 16.0;
 }
 
-float pcf_7x7(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float2 shadow_res, float bias)
+float pcf_5x5(Texture2D<float> ShadowTexture, SamplerComparisonState ShadowSampler, float3 Coord, float4 Dimensions, float Bias)
+{
+	Coord.z -= Bias;
+
+	float2 UV = Coord.xy * Dimensions.xy;
+
+	float2 BaseUV = floor(UV.xy + 0.5);
+	float2 Fraction = (UV.xy + 0.5 - BaseUV.xy);
+
+	BaseUV -= float2(0.5, 0.5);
+	BaseUV *= Dimensions.zw;
+
+	float UWeight0 = (4.0 - 3.0 * Fraction.x);
+	float UWeight1 = 7.0;
+	float UWeight2 = (1.0 + 3.0 * Fraction.x);
+
+	float U0 = (3.0 - 2.0 * Fraction.x) / UWeight0 - 2;
+	float U1 = (3.0 + Fraction.x) / UWeight1;
+	float U2 = Fraction.x / UWeight2 + 2.0;
+
+	float VWeight0 = (4.0 - 3.0 * Fraction.y);
+	float VWeight1 = 7.0;
+	float VWeight2 = (1.0 + 3.0 * Fraction.y);
+
+	float V0 = (3.0 - 2.0 * Fraction.y) / VWeight0 - 2.0;
+	float V1 = (3.0 + Fraction.y) / VWeight1;
+	float V2 = Fraction.y / VWeight2 + 2.0;
+
+	float Sum = 0.0;
+	Sum += UWeight0 * VWeight0 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U0, V0) * Dimensions.zw, Coord.z);
+	Sum += UWeight1 * VWeight0 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U1, V0) * Dimensions.zw, Coord.z);
+	Sum += UWeight2 * VWeight0 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U2, V0) * Dimensions.zw, Coord.z);
+
+	Sum += UWeight0 * VWeight1 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U0, V1) * Dimensions.zw, Coord.z);
+	Sum += UWeight1 * VWeight1 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U1, V1) * Dimensions.zw, Coord.z);
+	Sum += UWeight2 * VWeight1 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U2, V1) * Dimensions.zw, Coord.z);
+
+	Sum += UWeight0 * VWeight2 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U0, V2) * Dimensions.zw, Coord.z);
+	Sum += UWeight1 * VWeight2 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U1, V2) * Dimensions.zw, Coord.z);
+	Sum += UWeight2 * VWeight2 * ShadowTexture.SampleCmpLevelZero(ShadowSampler, BaseUV + float2(U2, V2) * Dimensions.zw, Coord.z);
+
+	return Sum / 144.0;
+}
+
+float pcf_7x7(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float4 shadow_res, float bias)
 {
 	tc.z -= bias;
 
-	float2 uv = tc.xy * shadow_res.x;
+	float2 uv = tc.xy * shadow_res.xy;
 
-    float2 base_uv = floor(uv.xy + 0.5);
-    float2 st = (uv.xy + 0.5 - base_uv.xy);
+	float2 base_uv = floor(uv.xy + 0.5);
+	float2 st = (uv.xy + 0.5 - base_uv.xy);
 
-    base_uv -= float2(0.5, 0.5);
-    base_uv *= shadow_res.y;
+	base_uv -= float2(0.5, 0.5);
+	base_uv *= shadow_res.zw;
 
 	float uw0 = (5.0 * st.x - 6.0);
 	float uw1 = (11.0 * st.x - 28.0);
@@ -227,27 +272,38 @@ float pcf_7x7(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sa
 	float v3 = -st.y / vw3 + 3.0;
 
 	float sum = 0.0;
-	sum += uw0 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v0) * shadow_res.y, tc.z);
-	sum += uw1 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v0) * shadow_res.y, tc.z);
-	sum += uw2 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v0) * shadow_res.y, tc.z);
-	sum += uw3 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v0) * shadow_res.y, tc.z);
+	sum += uw0 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v0) * shadow_res.zw, tc.z);
+	sum += uw1 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v0) * shadow_res.zw, tc.z);
+	sum += uw2 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v0) * shadow_res.zw, tc.z);
+	sum += uw3 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v0) * shadow_res.zw, tc.z);
 
-	sum += uw0 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v1) * shadow_res.y, tc.z);
-	sum += uw1 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v1) * shadow_res.y, tc.z);
-	sum += uw2 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v1) * shadow_res.y, tc.z);
-	sum += uw3 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v1) * shadow_res.y, tc.z);
+	sum += uw0 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v1) * shadow_res.zw, tc.z);
+	sum += uw1 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v1) * shadow_res.zw, tc.z);
+	sum += uw2 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v1) * shadow_res.zw, tc.z);
+	sum += uw3 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v1) * shadow_res.zw, tc.z);
 
-	sum += uw0 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v2) * shadow_res.y, tc.z);
-	sum += uw1 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v2) * shadow_res.y, tc.z);
-	sum += uw2 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v2) * shadow_res.y, tc.z);
-	sum += uw3 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v2) * shadow_res.y, tc.z);
+	sum += uw0 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v2) * shadow_res.zw, tc.z);
+	sum += uw1 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v2) * shadow_res.zw, tc.z);
+	sum += uw2 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v2) * shadow_res.zw, tc.z);
+	sum += uw3 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v2) * shadow_res.zw, tc.z);
 
-	sum += uw0 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v3) * shadow_res.y, tc.z);
-	sum += uw1 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v3) * shadow_res.y, tc.z);
-	sum += uw2 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v3) * shadow_res.y, tc.z);
-	sum += uw3 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v3) * shadow_res.y, tc.z);
+	sum += uw0 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v3) * shadow_res.zw, tc.z);
+	sum += uw1 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v3) * shadow_res.zw, tc.z);
+	sum += uw2 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v3) * shadow_res.zw, tc.z);
+	sum += uw3 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v3) * shadow_res.zw, tc.z);
 
 	return sum / 2704.0;
+}
+
+// Preserve the square-map interface used by existing local lights.
+float pcf_3x3(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float2 shadow_res, float bias)
+{
+	return pcf_3x3(shadow_tex, shadow_comp_sampler, tc, float4(shadow_res.xx, shadow_res.yy), bias);
+}
+
+float pcf_7x7(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float2 shadow_res, float bias)
+{
+	return pcf_7x7(shadow_tex, shadow_comp_sampler, tc, float4(shadow_res.xx, shadow_res.yy), bias);
 }
 
 #endif //PCF_FILTER_H

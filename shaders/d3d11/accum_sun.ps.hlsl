@@ -2,6 +2,7 @@
 #include "metalic_roughness_light.hlsli"
 #include "ScreenSpaceContactShadows.hlsl"
 #include "shadow.hlsli"
+#include "heightfield_shadow_common.hlsli"
 
 Texture2D s_sun_contact : register(t26);
 
@@ -16,23 +17,12 @@ float4 main(PSInput I) : SV_Target
     IXRayGbuffer O = (IXRayGbuffer)NULL;
     GbufferUnpack((uint2)I.hpos.xy, O);
 	
-	float3 Shift = O.Normal;
-	
-	if (O.SSS > 0.0f)
-	{
-		Shift *= dot(Ldynamic_dir.xyz, Shift) >= 0.0 ? -1.0f : 1.0f;
-	}
-	
-	float4 Point = float4(O.Point.xyz, 1.f);
-	Point.xyz = Shift * 0.025f + Point.xyz * 0.999f;
-
-	if (O.Depth < 0.02f) {
-		Point.xyz = -Ldynamic_dir.xyz * 0.4f;
-	}
+	float4 Point = SunCascadeReceiver(O);
 
 	int cascade_index;
 	float3 smap_texcoord;
 	float Shadow = 1.0f;
+	float HeightfieldLinearShadow = -1.0f;
 	
 	float3 world = mul(m_invV, Point).xyz;
 	bool is_in_bounds = calc_cascades(world, m_shadow_sun, cascade_index, smap_texcoord);
@@ -60,17 +50,43 @@ float4 main(PSInput I) : SV_Target
 	}
 	
 	if (cascade_index >= 2) {
-		float3 Factor = smoothstep(0.5f, 0.49f, abs(smap_texcoord - 0.5f));
-		float Fade = Factor.x * Factor.y * Factor.z;
+		float Fade = SunLastCascadeFade(smap_texcoord);
+		float HeightfieldFade = is_in_bounds ? HeightfieldCascadeFade(smap_texcoord) : 0.0f;
 	
 		O.SSS *= 0.5f + 0.5f * Fade;	
 		float FarShadow = dot(Ldynamic_dir.xyz, O.Normal.xyz);
 		FarShadow = smoothstep(0.75f, 0.6f, FarShadow) * saturate(O.Hemi * 8.0f - 2.0f);
+		[branch]
+		if (HeightfieldParams.x > 0.0f && O.Depth >= 0.02f && O.Depth < 1.0f && HeightfieldFade < 1.0f)
+		{
+			float3 Receiver = mul(m_invV, float4(O.Point, 1.0f)).xyz;
+			float Coverage = HeightfieldCoverage(Receiver);
+			if (Coverage > 0.0f)
+			{
+				// Noise only perturbs the interior of the overlap; both endpoints stay exact.
+				[branch]
+				if (HeightfieldFade > 0.0f && HeightfieldFade < 1.0f)
+				{
+					uint NoiseFrame = m_taa_jitter.z < 0.0f ? 0 : uint(m_taa_jitter.w) % 32;
+					float Noise = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, NoiseFrame)].x;
+					HeightfieldFade = saturate(HeightfieldFade + 0.10f * (2.0f * Noise - 1.0f) * 4.0f * HeightfieldFade * (1.0f - HeightfieldFade));
+				}
+				float Visibility = HeightfieldShadowVisibility(Receiver);
+                float Legacy = GammaToLinear(lerp(FarShadow, Shadow, Fade)); // remove gamma to linear
+                float Extended = lerp(Visibility, GammaToLinear(Shadow), HeightfieldFade); // remove gamma to linear
+				HeightfieldLinearShadow = lerp(Legacy, Extended, Coverage);
+			}
+		}
 		Shadow = lerp(FarShadow, Shadow, Fade);
 	}
 	
 #ifdef USE_SUNMASK
-	Shadow *= sunmask(Point);
+	float CloudShadow = sunmask(Point);
+	Shadow *= CloudShadow;
+	if (HeightfieldLinearShadow >= 0.0f)
+	{
+		HeightfieldLinearShadow *= GammaToLinear(CloudShadow);
+	}
 #endif
 	
 #ifdef USE_LEGACY_LIGHT
@@ -98,10 +114,17 @@ float4 main(PSInput I) : SV_Target
 		Light += SkinTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal, O.View) * O.SSS * SkinScale * O.Color;
 	}
 
-	if (Shadow > 0.0f) {
-		Light *= GammaToLinear(min(1.0f, s_sun_contact.Load(int3(I.hpos.xy, 0)).x / Shadow));
+	if (HeightfieldLinearShadow >= 0.0f)
+	{
+		// PCF averages linear visibility; do not gamma it again.
+		Light *= min(HeightfieldLinearShadow, GammaToLinear(s_sun_contact.Load(int3(I.hpos.xy, 0)).x)); // remove gamma to linear
 	}
-
-	Light *= GammaToLinear(Shadow);
+	else
+	{
+		if (Shadow > 0.0f) {
+            Light *= GammaToLinear(min(1.0f, s_sun_contact.Load(int3(I.hpos.xy, 0)).x / Shadow)); // remove gamma to linear
+        }
+        Light *= GammaToLinear(Shadow); // remove gamma to linear
+    }
 	return float4(Light, 0);
 }

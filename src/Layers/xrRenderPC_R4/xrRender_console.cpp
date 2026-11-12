@@ -298,6 +298,17 @@ float		ps_r2_slight_fade			= 0.6f;				// 1.f
 float		ps_r4_vslr_distance			= 0.7f;				// 1.f
 
 u32			g_SunContactQuality			= 2;
+int g_HeightfieldShadows = 0;
+float g_HeightfieldBias = 0.75f;
+u32 g_HeightfieldFiltering = 0;
+static xr_token HeightfieldFilteringTokens[] =
+	{
+		{"default", 0},
+		{"3x3", 1},
+		{"5x5", 2},
+		{"7x7", 3},
+		{nullptr, 0}
+};
 float		g_SunShaftsFalloff			= 0.01f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
@@ -1059,6 +1070,9 @@ RENDER_API void		xrRender_initconsole	()
 {
 	CMD4(CCC_Integer, "r4_spot_shadow_cache", &g_SpotShadowCacheMode, 0, 2);
 	CMD4(CCC_Integer, "r4_sun_shadow_cache", &g_SunShadowCacheMode, 0, 2);
+	CMD4(CCC_Integer, "r4_heightfield_shadows", &g_HeightfieldShadows, 0, 1);
+	CMD4(CCC_Float, "r4_heightfield_bias", &g_HeightfieldBias, 0.0f, 5.0f);
+	CMD3(CCC_Token, "heighfield_filtering", &g_HeightfieldFiltering, HeightfieldFilteringTokens);
 	CMD1(SunShadowCacheStats, "r4_sun_shadow_cache_stats");
 	CMD4(CCC_Integer, "r4_spot_shadow_cache_mb", &g_SpotShadowCacheBudgetMb, 1, 1024);
 	CMD1(CCC_SpotShadowCacheClear, "r4_spot_shadow_cache_clear");

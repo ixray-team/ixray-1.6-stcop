@@ -28,6 +28,8 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 	C.r_dx10Texture("s_lmap", r2_sunmask);
 	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
 	C.r_dx10Texture("s_sun_contact", r2_RT_sun_contact);
+	C.r_dx10Texture("s_heightfield_shadow", "$user$heightfield_shadow");
+	C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
 
 	jitter(C);
 

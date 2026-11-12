@@ -163,6 +163,9 @@ extern RENDER_API int			ps_r2_dhemi_count;			// 5
 extern RENDER_API float			ps_r2_slight_fade;			// 1.f
 extern RENDER_API float			ps_r4_vslr_distance;		// 1.f
 extern RENDER_API u32			g_SunContactQuality;
+extern RENDER_API int g_HeightfieldShadows;
+extern RENDER_API float g_HeightfieldBias;
+extern RENDER_API u32 g_HeightfieldFiltering;
 extern RENDER_API float			g_SunShaftsFalloff;
 extern RENDER_API int			ps_r2_wait_sleep;
 

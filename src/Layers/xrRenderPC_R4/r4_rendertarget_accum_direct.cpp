@@ -38,6 +38,7 @@ void CRenderTarget::accum_direct_cascade(GfxCmdList& Cmd)
 	L_spec = u_diffuse2s(L_clr);
 	Device.mView.transform_dir(L_dir, fuckingsun->direction);
 	L_dir.normalize();
+	PhaseHeightfieldShadows(Cmd, fuckingsun->direction);
 
 	//inv_view
 	Fmatrix xf_invview;

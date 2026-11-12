@@ -157,6 +157,7 @@ void CRender::level_Load(IReader* fs)
 {
 	PROF_EVENT(__FUNCTION__);
 	ResetSunShadowCache();
+	HeightfieldShadows.Destroy();
 
 	if (Target)
 	{
@@ -182,6 +183,10 @@ void CRender::level_Load(IReader* fs)
 		RainPuddleWater.Destroy();
 	}
 	Target->CreateRainShaders();
+	if (LightingModeIsDynamicRender())
+	{
+		HeightfieldShadows.Load(g_pGameLevel->name().c_str());
+	}
 
 	// ShadersLevel
 	g_pGamePersistent->SetLoadStageTitle("st_loading_shaders");
@@ -490,6 +495,7 @@ void CRender::level_Unload()
 	// It walks the sectors and static visuals deleted here.
 	Device.PreRenderThread.Wait();
 	ResetSunShadowCache();
+	HeightfieldShadows.Destroy();
 	if (0==g_pGameLevel)		return;
 	if (!GraphMain.b_loaded)
 	{

@@ -326,6 +326,12 @@ private:
 	ref_shader					s_accum_direct_volumetric;
 	ref_shader					SunContactShader;
 	ref_rt						SunContactTarget;
+	ref_shader HeightfieldShadowShader;
+	ref_rt HeightfieldShadowTarget;
+	ref_rt HeightfieldShadowLocal;
+	ref_rt HeightfieldShadowBlocks;
+	ref_rt HeightfieldShadowPrefix;
+	void PhaseHeightfieldShadows(GfxCmdList& Cmd, const Fvector& SunDirection);
 	ref_shader					s_accum_point	;
 	ref_shader					s_accum_spot	;
 	ref_shader					s_accum_reflected;

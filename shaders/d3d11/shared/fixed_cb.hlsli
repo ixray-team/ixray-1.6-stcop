@@ -90,6 +90,11 @@ CBUFFER(CBLight, 4)
 	float4 SunReceiverWarpBias[3];
 	float4 SunCacheParams;
 	int SunContactStart;
+	float4 HeightfieldWorldToGrid;
+	float4 HeightfieldDecode;
+	float4 HeightfieldGrid; // Width, height, scan length, active shear rows.
+	float4 HeightfieldParams; // Enabled, height drop per scan step, receiver bias, filter (default/3x3/5x5/7x7).
+	float4 HeightfieldScan; // Major axis, major sign, shear, row offset.
 CBUFFER_END
 
 CBUFFER(CBPass, 5)

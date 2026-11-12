@@ -26,6 +26,7 @@ class CGlowManager;
 #include "../../xrEngine/Fmesh.h"
 #include "r4_editor_hiz.h"
 #include "RainPuddleWaterMap.h"
+#include "HeightfieldShadowMap.h"
 #include "PackedVertex.h"
 #include "SkinningPass.h"
 #include "NriPass.h"
@@ -44,6 +45,7 @@ public:
 	enum { PHASE_POINT = 3, PHASE_SPOT = 4, PHASE_LMODELS = 5 };
 	bool vis_intersect = false;
 	RainPuddleWaterMap RainPuddleWater;
+	HeightfieldShadowMap HeightfieldShadows;
 	void UpdateRainPuddleMode();
 	CLightR_Manager* L_Dynamic = nullptr;
 	CLightProjector* L_Projector = nullptr;

@@ -228,6 +228,7 @@ void CRender::destroy()
 	// alive - their destructors dereference DEV, which is null by DLL detach time.
 	DetailLayers_EditorDestroy();
 	RainPuddleWater.Destroy();
+	HeightfieldShadows.Destroy();
 
 	m_bMakeAsyncSS = false;
 	if (LightingModeIsDynamicRender())
@@ -327,6 +328,7 @@ void CRender::reset_begin() {
 	// Its pipelines and wrappers refer to targets that are about to be recreated
 	NriPasses.Destroy();
 	ResetSunShadowCache();
+	HeightfieldShadows.Destroy();
 	// Its compute pass reads the scene depth target, which is recreated
 	if (Device.IsEditorMode())
 	{
@@ -360,6 +362,10 @@ void CRender::reset_begin() {
 
 void CRender::reset_end()
 {
+	if (GraphMain.b_loaded && g_pGameLevel && LightingModeIsDynamicRender())
+	{
+		HeightfieldShadows.Load(g_pGameLevel->name().c_str());
+	}
 	//	Prevent error on first get data
 	if (o.ProceduralRainPuddles)
 	{
