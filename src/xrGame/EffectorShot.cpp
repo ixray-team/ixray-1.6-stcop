@@ -148,7 +148,12 @@ void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 
 void CWeaponShotEffector::Shot2Legacy(float angle)
 {
-	m_angle_vert += angle * (current_recoil.DispersionFrac + m_Random.randF(-1.0f, 1.0f) * (1.0f - current_recoil.DispersionFrac));
+	float VerticalImpulse = angle * (current_recoil.DispersionFrac + m_Random.randF(-1.0f, 1.0f) * (1.0f - current_recoil.DispersionFrac));
+	if (current_recoil.LegacyRecoil)
+	{
+		VerticalImpulse *= 2.0f;
+	}
+	m_angle_vert += VerticalImpulse;
 
 	clamp(m_angle_vert, -current_recoil.MaxAngleVert, current_recoil.MaxAngleVert);
 	if (fis_zero(m_angle_vert - current_recoil.MaxAngleVert))
@@ -342,30 +347,6 @@ CCameraShotEffector::~CCameraShotEffector()
 
 bool CCameraShotEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	if (current_recoil.LegacyRecoil)
-	{
-		if (m_actived)
-		{
-			float h, p;
-			info.d.getHP(h, p);
-			if (m_single_shot)
-			{
-				if (!m_shot_end)
-				{
-					info.d.setHP(h + m_delta_horz, p + m_delta_vert);
-				}
-			}
-			else
-			{
-				info.d.setHP(h + m_angle_horz, p + m_angle_vert);
-			}
-
-			Update();
-		}
-	}
-	else
-	{
-		Update();
-	}
+	Update();
 	return true;
 }
