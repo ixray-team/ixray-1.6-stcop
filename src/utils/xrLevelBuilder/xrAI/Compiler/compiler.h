@@ -97,36 +97,13 @@ using Lights_it = Lights::iterator;
 extern	Nodes				g_nodes;
 extern	SAIParams			g_params;
 
-struct b_BuildTexture : public b_texture
-{
-	STextureParams THM;
-
-	u32& Texel(u32 x, u32 y)
-	{
-		return ((u32*)*pSurface)[y * dwWidth + x];
-	}
-
-	void Vflip()
-	{
-		R_ASSERT(!pSurface.Empty());
-		for (u32 y = 0; y < dwHeight / 2; y++)
-		{
-			u32 y2 = dwHeight - y - 1;
-			for (u32 x = 0; x < dwWidth; x++)
-			{
-				u32 t = Texel(x, y);
-				Texel(x, y) = Texel(x, y2);
-				Texel(x, y2) = t;
-			}
-		}
-	}
-};
+#include "../../xrLC/Base/b_build_texture.h"
 
 #include "compiler_data.h"
 extern IComputeData comp_data;
 
 // phases
-void	xrLoad			(const char* name, bool draft_mode, bool skipThm);
+void	xrLoad			(const char* name, bool draft_mode);
 void	xrCover			(bool pure_covers);
 void	xrMerge			();
 void	xrConvertAndLink();

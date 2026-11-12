@@ -40,7 +40,6 @@ struct CompilersMode
 	bool EmbreeInstaces     = false; //  Traversing
 
 	bool ClearTemp = false;
-	bool SkipTHM = false;
 
 	bool AI = false;
 	bool DO = false;

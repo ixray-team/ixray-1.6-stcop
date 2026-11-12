@@ -18,7 +18,7 @@ extern const char* LEVEL_GRAPH_NAME;
 extern const char* GAME_CONFIG;
 
 extern void clear_temp_folder();
-extern void	xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipThm, const char* out_name);
+extern void	xrCompiler(const char* name, bool draft_mode, bool pure_covers, const char* out_name);
 extern void	verify_level_graph(const char* name, bool verbose);
  
 static LPVOID __cdecl luabind_allocator(luabind::memory_allocation_function_parameter const, void const* const pointer, size_t const size)
@@ -106,7 +106,7 @@ void StartupAI()
 
 			char* output = (char*)LEVEL_GRAPH_NAME;
 
-			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, gCompilerMode.SkipTHM, output);
+			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, output);
 		}
 
 		if (gCompilerMode.AI_Verify)

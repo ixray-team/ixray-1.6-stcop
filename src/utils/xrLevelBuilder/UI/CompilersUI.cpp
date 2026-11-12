@@ -1132,8 +1132,6 @@ void DrawCompilerConfig()
 
 	ImGui::Checkbox("Clear Temporary Files", &gCompilerMode.ClearTemp);
 	ImGui::SetItemTooltip("Not used by the compilers yet.");
-	ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
-	ImGui::SetItemTooltip("Do not abort the build when texture THM or TGA files are missing.");
 	ImGui::Checkbox("Save CForm to obj", &SaveCForm);
 	ImGui::SetItemTooltip("Not used: the CForm optimizer that writes cform_source.obj is disabled.");
 

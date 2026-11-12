@@ -32,11 +32,11 @@ IC void CNodePositionConverter(const SNodePositionOld& Psrc, hdrNODES& m_header,
 
 //-----------------------------------------------------------------
 
-void xrLoad(const char* name, bool draft_mode, bool skipThm)
+void xrLoad(const char* name, bool draft_mode)
 {
 	FS.get_path("$level$")->_set((LPSTR)name);
 
-	comp_data.xrLoadData(name, draft_mode, skipThm);
+	comp_data.xrLoadData(name, draft_mode);
 
 	// Load initial map from the Level Editor
 	{

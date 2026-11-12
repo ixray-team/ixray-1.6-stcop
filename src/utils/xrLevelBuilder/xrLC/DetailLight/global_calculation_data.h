@@ -33,7 +33,7 @@ struct global_claculation_data
 
 	// Mu Stuff
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
-	void	xrLoad						(bool skipThm);
+	void	xrLoad						();
 	void	xrUnload();
 	
 	void	xrLoadGeometry				(IReader* fs);

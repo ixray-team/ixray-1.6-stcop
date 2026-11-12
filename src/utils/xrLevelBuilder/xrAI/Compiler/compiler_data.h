@@ -21,7 +21,7 @@ public:
 	static b_texture& GetTexture(u32 ID, bool Shared);
 	static Shader_xrLC& GetShaderXRLC(u32 ID, bool Shared);
 	
-	void xrLoadData(const char* name, bool draft_mode, bool skipThm);
+	void xrLoadData(const char* name, bool draft_mode);
 	void xrLoadGeometry(IReader* fs);
 	
 	void xrUnload();

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "compiler.h"
+#include "../../xrLC/Base/BuildTextureLoader.h"
 #include "../../UI/CompilersUI.h"
 #include "compiler_embree.h"
 #include "xrCore/SharedMaterialLibrary.h"
@@ -21,20 +22,8 @@ void transfer(const char* name, xr_vector<T>& dest, IReader& F, u32 chunk)
 	}
 }
 
-inline bool Surface_Detect(string_path& F, LPSTR N)
-{
-	FS.update_path(F, "$game_textures$", xr_strconcat(F, N, ".dds"));
-	FILE* file = fopen(F, "rb");
-	if (file)
-	{
-		fclose(file);
-		return true;
-	}
-
-	return false;
-}
  
-void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
+void IComputeData::xrLoadData(const char* name, bool draft_mode)
 {
 	string256 N;
 	if (!draft_mode)
@@ -67,100 +56,9 @@ void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
 			transfer("shaders_xrlc", comp_data.g_shader_compile, *fs, EB_Shaders_Compile);
 
 			// process textures
-			bool is_thm_missing = false;
-			bool is_tga_missing = false;
-
 			Status("Processing textures...");
 			{
-				auto TextureProcess = [&](b_BuildTexture& BT)
-				{
-					string128& N_ = BT.name;
-					char* extension = strext(N_);
-
-					if (extension)
-					{
-						*extension = 0;
-					}
-
-					xr_strlwr(N_);
-
-					if (0 == xr_strcmp(N_, "level_lods"))
-					{
-						// HACK for merged lod textures
-						BT.dwWidth = 1024;
-						BT.dwHeight = 1024;
-						BT.bHasAlpha = true;
-					}
-					else
-					{
-						string_path th_name;
-						xr_strconcat(th_name, N_, ".thm");
-						IReader* THM = FS.r_open("$game_textures$", th_name);
-
-						if (!THM)
-						{
-							BT.dwWidth = 1024;
-							BT.dwHeight = 1024;
-							BT.bHasAlpha = false;
-							clMsg("cannot find thm: %s", th_name);
-							is_thm_missing = true;
-							return;
-						}
-
-						// version
-						u32 version_ = 0;
-						R_ASSERT(THM->r_chunk(THM_CHUNK_VERSION, &version_));
-						
-						// analyze thumbnail information
-						R_ASSERT(THM->find_chunk(THM_CHUNK_TEXTUREPARAM));
-						THM->r(&BT.THM.fmt, sizeof(STextureParams::ETFormat));
-						BT.THM.flags.assign(THM->r_u32());
-						BT.THM.border_color = THM->r_u32();
-						BT.THM.fade_color = THM->r_u32();
-						BT.THM.fade_amount = THM->r_u32();
-						BT.THM.mip_filter = THM->r_u32();
-						BT.THM.width = THM->r_u32();
-						BT.THM.height = THM->r_u32();
-						bool bLOD = false;
-						if (N_[0] == 'l' && N_[1] == 'o' && N_[2] == 'd' && N_[3] == '\\')
-						{
-							bLOD = true;
-						}
-
-						// load surface if it has an alpha channel or has "implicit lighting" flag
-						BT.dwWidth = BT.THM.width;
-						BT.dwHeight = BT.THM.height;
-						BT.bHasAlpha = BT.THM.HasAlphaChannel();
-						if (!bLOD)
-						{
-							if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
-							{
-								clMsg("- loading: %s", N_);
-
-								string_path OutName;
-								if (!Surface_Detect(OutName, N_) || !BT.pSurface.LoadFromFile(OutName))
-								{
-									clMsg("cannot find tga texture: %s", N_);
-									is_tga_missing = true;
-									return;
-								}
-
-								BT.pSurface.ClearMipLevels();
-								BT.pSurface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-								BT.pSurface.SwapRB();
-
-								if ((BT.pSurface.GetWidth() != BT.dwWidth) || (BT.pSurface.GetHeight() != BT.dwHeight))
-								{
-									Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetWidth(), BT.pSurface.GetHeight());
-
-									BT.dwWidth = BT.THM.width = BT.pSurface.GetWidth();
-									BT.dwHeight = BT.THM.height = BT.pSurface.GetHeight();
-								}
-							}
-						}
-					}
-				};
-				
+				CBuildTextureLoader TextureLoader;
 				u32 TotalCount = g_materials_shared.size();
 				u32 tex_count = 0;
 				if (auto F = fs->open_chunk(EB_Textures); F)
@@ -179,7 +77,7 @@ void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
 						CopyMemory(&BT, &TEX, sizeof(TEX) - 4);
 
 						// load thumbnail
-						TextureProcess(BT);
+						TextureLoader.Load(BT);
 
 						// save all the stuff we've created
 						comp_data.g_textures.push_back(BT);
@@ -194,14 +92,9 @@ void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
 					b_BuildTexture& BT = g_textures_shared.try_emplace(&elem).first->second;
 					xr_strcpy(BT.name, Data->m_Texture.c_str());
 					
-					TextureProcess(BT);
+					TextureLoader.Load(BT);
 				}
 
-				if (!skipThm)
-				{
-					R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
-					R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
-				}
 			}
 
 			Status("Loading Geometry ...");

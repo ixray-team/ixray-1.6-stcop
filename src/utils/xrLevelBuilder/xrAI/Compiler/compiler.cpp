@@ -73,10 +73,10 @@ void mem_Optimize()
 	Msg("* Memory usage: %d M", Memory.mem_usage() / (1024 * 1024));
 }
 
-void xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipThm, const char* out_name)
+void xrCompiler(const char* name, bool draft_mode, bool pure_covers, const char* out_name)
 {
 	Phase("Loading level...");
-	xrLoad(name, draft_mode, skipThm);
+	xrLoad(name, draft_mode);
 	mem_Optimize();
 
 	if (!draft_mode) 

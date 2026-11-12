@@ -903,7 +903,6 @@ void SaveCompilerCfg()
 	Serializer->Write("EmbreeRays8", gCompilerMode.EmbreeRays8);
 	Serializer->Write("EmbreeInstaces", gCompilerMode.EmbreeInstaces);
 	Serializer->Write("ClearTemp", gCompilerMode.ClearTemp);
-	Serializer->Write("SkipTHM", gCompilerMode.SkipTHM);
 
 	Serializer->Write("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Write("LC_NoSun", gCompilerMode.LC_NoSun);
@@ -986,7 +985,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Serializer->Read("EmbreeRays8", gCompilerMode.EmbreeRays8);
 	Serializer->Read("EmbreeInstaces", gCompilerMode.EmbreeInstaces);
 	Serializer->Read("ClearTemp", gCompilerMode.ClearTemp);
-	Serializer->Read("SkipTHM", gCompilerMode.SkipTHM);
 	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Read("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Read("LC_NoHemi", gCompilerMode.LC_NoHemi);
