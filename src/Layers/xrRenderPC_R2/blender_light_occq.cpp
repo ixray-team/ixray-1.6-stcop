@@ -20,5 +20,10 @@ void	CBlender_light_occq::Compile(CBlender_Compile& C)
 		C.r_Pass	("null", "dumb",false,false,false,false);
 		C.r_End		();
 		break;
+	case 3: // HOM occluders in the sun cascades
+		C.r_Pass("dumb", "dumb", false, true, true, false);
+		C.r_ColorWriteEnable(false, false, false, false);
+		C.r_End();
+		break;
 	}
 }

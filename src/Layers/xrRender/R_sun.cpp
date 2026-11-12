@@ -41,6 +41,64 @@ Fvector3		wform	(Fmatrix& m, Fvector3 const& v)
 	return		r3;
 }
 
+bool CRenderTarget::PrepareSunHOM()
+{
+	if (SunHOMPrepared)
+	{
+		return SunHOMTriangleCount != 0;
+	}
+
+	SunHOMPrepared = true;
+	const auto Vertices = RImplementation.HOM.GetOccluderVertices();
+	const auto Triangles = RImplementation.HOM.GetOccluderTriangles();
+	if (Triangles.empty() || Triangles.size() > u32(-1) / (3 * sizeof(Fvector)))
+	{
+		return false;
+	}
+
+	xr_vector<Fvector> Positions;
+	Positions.reserve(Triangles.size() * 3);
+	for (const auto& Triangle : Triangles)
+	{
+		for (const u32 Index : Triangle.verts)
+		{
+			Positions.push_back(Vertices[Index]);
+		}
+	}
+
+	if (!RHIUtils::CreateVertexBuffer(&SunHOMVertices, Positions.data(), static_cast<u32>(Positions.size() * sizeof(Fvector))))
+	{
+		Msg("! Failed to create the HOM vertex buffer for sun shadows");
+		return false;
+	}
+
+	SunHOMGeometry.create(D3DFVF_XYZ, SunHOMVertices, nullptr);
+	SunHOMTriangleCount = static_cast<u32>(Triangles.size());
+	return true;
+}
+
+void CRenderTarget::RenderSunHOM()
+{
+	GPU_EVENT(SUN_HOM);
+	RCache.set_Element(s_occq->E[3]);
+	RCache.set_Geometry(SunHOMGeometry);
+#ifndef USE_DX11
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+#endif
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, SunHOMTriangleCount);
+#ifndef USE_DX11
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+#endif
+}
+
+void CRenderTarget::ReleaseSunHOM()
+{
+	SunHOMGeometry.destroy();
+	_RELEASE(SunHOMVertices);
+	SunHOMTriangleCount = 0;
+	SunHOMPrepared = false;
+}
+
 void CRender::init_cacades()
 {
 	u32 cascade_count = 3;
@@ -356,12 +414,18 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 			bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 
-			if (bNormal || bSpecial)
-			{
-#ifndef USE_DX11
-				Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
+			const bool RenderHOM = ps_r2_ls_flags_ext.test(RFLAG_SUN_HOM) && Target->PrepareSunHOM();
+
+			// Empty cascades must also discard depth written in previous frames.
+#ifdef USE_DX11
+			GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
 #else
-				GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+			Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
+#endif
+			fuckingsun->X.D.transluent = false;
+			if (bNormal || bSpecial || RenderHOM)
+			{
+#ifdef USE_DX11
 				Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
 #endif
 				RCache.set_xform_world(Fidentity);
@@ -369,14 +433,16 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 				RCache.set_xform_project(fuckingsun->X.D.combine);
 
+				if (RenderHOM)
+				{
+					Target->RenderSunHOM();
+				}
 				r_dsgraph_render_graph(0);
 
 				if (Details && Details->dtFS && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				{
 					Details->hw_Render();
 				}
-
-				fuckingsun->X.D.transluent = false;
 
 				if (bSpecial)
 				{

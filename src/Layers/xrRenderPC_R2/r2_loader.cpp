@@ -149,6 +149,7 @@ void CRender::level_Unload()
 	u32 I;
 
 	// HOM
+	Target->ReleaseSunHOM();
 	HOM.Unload				();
 
 	//*** Details

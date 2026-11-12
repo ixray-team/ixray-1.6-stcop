@@ -523,6 +523,7 @@ CRenderTarget::CRenderTarget		()
 
 CRenderTarget::~CRenderTarget	()
 {
+	ReleaseSunHOM();
 	_RELEASE(pFB);
 
 	// Textures

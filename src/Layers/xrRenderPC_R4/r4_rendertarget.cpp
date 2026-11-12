@@ -1071,6 +1071,7 @@ void CRenderTarget::CreateFSTriangle()
 
 CRenderTarget::~CRenderTarget	()
 {
+	ReleaseSunHOM();
 	_RELEASE					(t_ss_async);
 
 	rt_smap_depth_sun->surface_set(nullptr);

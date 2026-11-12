@@ -31,5 +31,12 @@ void	CBlender_light_occq::Compile(CBlender_Compile& C) {
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0x00, 0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
 		C.r_End();
 		break;
+		case 3: // HOM occluders in the sun cascades
+		C.r_Pass("dumb", "null", false, true, true, false);
+		C.r_ColorWriteEnable(false, false, false, false);
+		C.r_CullMode(D3DCULL_NONE);
+		C.r_Stencil(false, D3DCMP_ALWAYS, 0xff, 0x00);
+		C.r_End();
+		break;
 	}
 }
