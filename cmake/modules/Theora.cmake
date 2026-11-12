@@ -25,8 +25,9 @@ else()
                 ${THEORA_INSTALL_DIR}/include/theora/theora.h
             COMMAND ${CMAKE_COMMAND} -E make_directory ${THEORA_BUILD_DIR}
             COMMAND cd ${THEORA_BUILD_DIR} &&
-                wget -q -nc https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.gz &&
-                tar -xzf libtheora-1.1.1.tar.gz &&
+                sh -c "wget --timeout=30 --tries=3 -O libtheora-1.1.1.tar.bz2.tmp https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2 || wget --timeout=30 --tries=3 -O libtheora-1.1.1.tar.bz2.tmp https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.1.1.tar.bz2" &&
+                echo "b6ae1ee2fa3d42ac489287d3ec34c5885730b1296f0801ae577a35193d3affbc  libtheora-1.1.1.tar.bz2.tmp" | sha256sum -c - &&
+                ${CMAKE_COMMAND} -E tar xf libtheora-1.1.1.tar.bz2.tmp &&
                 cd libtheora-1.1.1 &&
                 CC=${CMAKE_C_COMPILER}
                 CXX=${CMAKE_CXX_COMPILER}
