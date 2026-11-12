@@ -21,6 +21,10 @@ private:
 	u32							dwAccumulatorClearMark;
 	float NightVisionInterference = 0.0f;
 	bool NightVisionInterferenceInitialized = false;
+	ref_geom SunHOMGeometry;
+	IRHIBuffer* SunHOMVertices = nullptr;
+	u32 SunHOMTriangleCount = 0;
+	bool SunHOMPrepared = false;
 public:
 	enum	eStencilOptimizeMode
 	{
@@ -386,6 +390,9 @@ public:
 	void						draw_rain				(light &RainSetup);
 
 	bool						need_to_render_sunshafts();
+	bool PrepareSunHOM();
+	void RenderSunHOM();
+	void ReleaseSunHOM();
 
 	bool						enable_scissor			(light* L);		// true if intersects near plane
 	void						enable_dbt_bounds		(light* L);

@@ -18,6 +18,10 @@ private:
 	u32							dwWidth;
 	u32							dwHeight;
 	u32							dwAccumulatorClearMark;
+	ref_geom SunHOMGeometry;
+	IRHIBuffer* SunHOMVertices = nullptr;
+	u32 SunHOMTriangleCount = 0;
+	bool SunHOMPrepared = false;
 public:
 
 	u32							dwLightMarkerID;
@@ -237,6 +241,9 @@ public:
 	void						shadow_direct			(light* L, u32 dls_phase);
 
 	bool						need_to_render_sunshafts();
+	bool PrepareSunHOM();
+	void RenderSunHOM();
+	void ReleaseSunHOM();
 
 	bool						enable_scissor			(light* L);		// true if intersects near plane
 	void						enable_dbt_bounds		(light* L);

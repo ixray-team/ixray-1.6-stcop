@@ -41,6 +41,8 @@ public:
 	void MT_RENDER();
 
 	CDB::MODEL* GetHOMModel() { return m_pModel; }
+	xr_span<const Fvector> GetOccluderVertices() const { return CL.verts; }
+	xr_span<const CDB::TRI> GetOccluderTriangles() const { return CL.faces; }
 	xr_vector<u32>* get_invaltids() { return &invaltids; }
 
 	ICF	bool xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)

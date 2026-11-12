@@ -168,6 +168,9 @@ Flags32 ps_r2_ls_flags_ext =
 	RFLAG_CLOUD_SHADOWS |
 	R4FLAG_SCREEN_SPACE_HUD_SHADOWS |
 	R4FLAG_HASHED_ALPHA_TEST
+#if RENDER == R_R2 || RENDER == R_R4
+	| RFLAG_SUN_HOM
+#endif
 };
 
 
@@ -780,6 +783,8 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
+	CMD3(CCC_Mask32, "r2_sun_hom", &ps_r2_ls_flags_ext, RFLAG_SUN_HOM);
+
 	CMD3(CCC_Token,		"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 
 	CMD3(CCC_Mask32,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
