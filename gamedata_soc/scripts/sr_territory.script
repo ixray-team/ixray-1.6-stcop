@@ -22,7 +22,7 @@ function action_territory:hit_callback(obj, amount, local_direction, who, bone_i
 	if obj:relation(db.actor) == game_object.enemy then
 		return
 	end	
-	xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.territory_hit)
+	xr_logic.pick_section_from_condlist(db.actor, obj, self.st.territory_hit)
 end
 function action_territory:death_callback(victim, who)
 	printf("territory death callback: [%s]", tostring(victim:name()), tostring(who:name()))
@@ -32,7 +32,7 @@ function action_territory:death_callback(victim, who)
 	if victim:relation(db.actor) == game_object.enemy then
 		return
 	end	
-	xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.territory_death)		return
+	xr_logic.pick_section_from_condlist(db.actor, victim, self.st.territory_death)		return
 end
 
 ---------------------------------------------------------------------------------------------------------------------
