@@ -3262,8 +3262,10 @@ void CCC_RegisterCommands()
 	extern bool rs_car_info;
 	CMD2(CCC_Boolean, "rs_car_info", &rs_car_info);
 
+#ifndef MASTER_GOLD
 	extern bool rs_car_unlimitedfuel;
 	CMD2(CCC_Boolean, "rs_car_unlimitedfuel", &rs_car_unlimitedfuel);
+#endif
 
 	extern float rs_car_steer_factor;
 	CMD4(CCC_Float, "rs_car_steer_factor", &rs_car_steer_factor, 0.5f, 3.f);
@@ -3271,11 +3273,13 @@ void CCC_RegisterCommands()
 	extern float rs_car_fov_effects;
 	CMD4(CCC_Float, "rs_car_fov_effects", &rs_car_fov_effects, 0.f, 2.f);
 
+#ifndef MASTER_GOLD
 	extern bool rs_car_god;
 	CMD2(CCC_Boolean, "rs_car_god", &rs_car_god);
 
 	CMD1(CCC_CarRepair, "rs_car_repair");
 	CMD1(CCC_CarRefuel, "rs_car_refuel");
+#endif
 
 	extern float bullet_manager_time_factor;
 	CMD4(CCC_Float, "bullet_manager_time_factor", &bullet_manager_time_factor, EPS_L, 10.f);

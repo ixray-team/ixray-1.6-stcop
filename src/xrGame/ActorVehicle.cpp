@@ -65,9 +65,8 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
 	// temp play animation
 	u16 anim_type = car->DriverAnimationType();
-	SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
-	V->PlayCycle(anims.idles[0], false);
-	V->PlayCycle(anims.idles[1], false);
+	SVehicleAnimCollection& anims = m_vehicle_anims->GetCollection(anim_type, car->UseOldDriverAnimations());
+	anims.PlayIdles(V, false);
 
 	ResetCallbacks();
 	u16 head_bone = pK->LL_BoneID("bip01_head");
@@ -133,18 +132,19 @@ void CActor::ReapplyVehicleVisual()
 		pK->LL_GetBoneInstance(HeadBone).set_callback(bctPhysics, VehicleHeadCallback, this);
 	}
 
-	SVehicleAnimCollection& Anims = m_vehicle_anims->m_vehicles_type_collections[car->DriverAnimationType()];
+	SVehicleAnimCollection& Anims = m_vehicle_anims->GetCollection(car->DriverAnimationType(), car->UseOldDriverAnimations());
 	switch (car->e_state_steer)
 	{
 	case CCar::right:
-		V->PlayCycle(Anims.steer_right, false);
+		if (Anims.steer_right.valid())
+			V->PlayCycle(Anims.steer_right, false);
 		break;
 	case CCar::left:
-		V->PlayCycle(Anims.steer_left, false);
+		if (Anims.steer_left.valid())
+			V->PlayCycle(Anims.steer_left, false);
 		break;
 	default:
-		V->PlayCycle(Anims.idles[0], false);
-		V->PlayCycle(Anims.idles[1], false);
+		Anims.PlayIdles(V, false);
 		break;
 	}
 

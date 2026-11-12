@@ -334,6 +334,7 @@ public:
 	float m_fuel_rpm_factor;
 	float m_fuel_gas_factor;
 	u16	  m_driver_anim_type;
+	bool  m_driver_anim_old;
 
 	float   m_break_start;
 	float	m_handbreak_start;
@@ -665,6 +666,7 @@ virtual void ApplyDamage			(u16 level);
 		bool			non_exitable;
 		bool			broken_door_handle;
 		bool			spring_loaded_door;
+		bool			hold_at_speed;
 		bool			lamba_door;
 
 // 		float			dist_to_door;
@@ -773,6 +775,7 @@ virtual void ApplyDamage(u16 level);
 			non_exitable = false;
 			broken_door_handle = false;
 			spring_loaded_door = false;
+			hold_at_speed = false;
 			lamba_door = false;
 
 			real_close_time = 0;
@@ -935,6 +938,7 @@ private:
 	/////////////////////////////////////////////////////////////
 	float					m_doors_torque_factor;
 	float					m_doors_hold_factor;
+	bool					m_doors_hold_at_speed;
 	float					m_doors_vel_factor;
 	/////////////////////////////////////////////////////////////
 	// Cars-Ext tire trails use dedicated wallmark arrays because the stock
@@ -1496,6 +1500,7 @@ public:
 	float					BurerGraviImpulseFactor		() const		{ return m_burer_gravi_impulse_factor; }
 	u16						GetTrunkBone				() const		{return m_bone_trunk;};
 	u16						DriverAnimationType 		();
+	bool					UseOldDriverAnimations		() const		{ return m_driver_anim_old; }
 	virtual	bool			register_schedule() const { return false; }
 	// Core events
 	virtual DLL_Pure		*_construct					();

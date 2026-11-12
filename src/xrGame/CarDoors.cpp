@@ -48,6 +48,7 @@ void CCar::SDoor::Init()
 	float OpenTorqueFactor = pcar->m_doors_torque_factor;
 	float HoldTorqueFactor = pcar->m_doors_hold_factor;
 	float OpenVelFactor = pcar->m_doors_vel_factor;
+	hold_at_speed = pcar->m_doors_hold_at_speed;
 	joint = pcar->bone_map.find(bone_id)->second.joint;
 	if (joint == nullptr || joint->PSecond_element() == nullptr)
 	{
@@ -96,6 +97,8 @@ void CCar::SDoor::Init()
 					non_exitable = !!ini->r_bool(bone_name, "non_exitable");
 				if (ini->line_exist(bone_name, "spring_loaded"))
 					spring_loaded_door = !!ini->r_bool(bone_name, "spring_loaded");
+				if (ini->line_exist(bone_name, "hold_at_speed"))
+					hold_at_speed = !!ini->r_bool(bone_name, "hold_at_speed");
 				if (ini->line_exist(bone_name, "broken_door_handle"))
 					broken_door_handle = !!ini->r_bool(bone_name, "broken_door_handle");
 				if (ini->line_exist(bone_name, "lamba_door"))
@@ -451,8 +454,9 @@ void CCar::SDoor::Update()
 				// A parked car must not lose the door hold. The moving-car
 				// branch used to replace it with a near-zero motor force while
 				// the car slowly rolled on a slope, and the door then closed
-				// under gravity.
-				if (!pcar->m_pPhysicsShell->isEnabled() || pcar->GetVelocityM() <= CarDoorHoldSpeed)
+				// under gravity. hold_at_speed keeps the hold active even when
+				// the car is moving.
+				if (hold_at_speed || !pcar->m_pPhysicsShell->isEnabled() || pcar->GetVelocityM() <= CarDoorHoldSpeed)
 				{
 					NeutralTorque(hold_torque);
 					break;
