@@ -77,7 +77,14 @@ public:
 			float				GetFragsHit				() {return m_fFragHit;}
 			float				GetFragsRadius			() {return m_fFragsRadius;}
 protected:
-			bool				IsSoundPlaying			(){return (sndExplode.is_playing());}
+			bool				IsSoundPlaying			()
+			{
+				HUD_SOUND_ITEM* Item = m_layered_sounds.FindSoundItem("sndExplode", false);
+				if (Item != nullptr && Item->playing())
+					return true;
+				Item = m_layered_sounds.FindSoundItem("sndExplodeIndoor", false);
+				return Item != nullptr && Item->playing();
+			}
 			bool				IsExploded				(){return !!m_explosion_flags.test(flExploded);}
 public:
 			bool				IsExploding				(){return !!m_explosion_flags.test(flExploding);}
@@ -93,6 +100,10 @@ static		float				TestPassEffect			(const	Fvector	&source_p,	const	Fvector	&dir,f
 protected:
 	//Alundaio: LAYERED_SND_SHOOT
 	HUD_SOUND_COLLECTION_LAYERED m_layered_sounds;
+	// Model user data (cars, helicopters) needs play_at_pos so the first
+	// playback gets its position. Global pSettings explosions keep the old
+	// overlapping play_no_feedback path.
+	bool m_model_ini_sound = false;
 	//-Alundaio
 
 	CWalmarkManager				m_wallmark_manager;
@@ -152,7 +163,6 @@ protected:
 	float						m_fFragmentSpeed;
 	
 	//звуки
-	ref_sound					sndExplode;
 	ESoundTypes					m_eSoundExplode;
 
 	//размер отметки на стенах
