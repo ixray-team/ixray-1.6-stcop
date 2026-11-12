@@ -139,7 +139,8 @@ void		game_cl_mp::OnMessageSelected		(CUISpeechMenu* pMenu, u8 PhraseID)
 void				game_cl_mp::OnSpeechMessage			(NET_Packet& P)
 {
 	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) return;
-	u16	PlayerID = P.r_u16();
+	ALife::_OBJECT_ID PlayerID;
+	P >> PlayerID;
 	game_PlayerState* ps = GetPlayerByGameID(PlayerID);
 	if (!ps) return;
 
