@@ -18,6 +18,19 @@
 #include "../Include/xrRender/UIRender.h"
 #include "ui/UIScriptWnd.h"
 
+namespace
+{
+	CWeapon* GetTriStateShotgun(CGameObject& Object)
+	{
+		CWeapon* Weapon = Object.cast_weapon();
+		if (Weapon && Weapon->IsTriStateReload() && (Weapon->cast_weapon_shotgun() || Weapon->cast_weapon_auto_shotgun()) && !Weapon->cast_weapon_rg6())
+		{
+			return Weapon;
+		}
+		return nullptr;
+	}
+}
+
 CHudItem::CHudItem()
 {
 	m_eDevicesFlags.zero();
@@ -207,6 +220,13 @@ void CHudItem::SwitchState(u8 S)
 		NET_Packet				P;
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
 		P.w_u8					(S);
+		if (S == CWeapon::eReload && !IsGameTypeSingle())
+		{
+			if (const CWeapon* Shotgun = GetTriStateShotgun(object()))
+			{
+				P.w_u8(Shotgun->GetReloadState());
+			}
+		}
 		object().u_EventSend	(P);
 	}
 }
@@ -221,6 +241,17 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 			P.r_u8			(S);
 			if (OnClient())
 			{
+				if (S == CWeapon::eReload && !P.r_eof())
+				{
+					if (CWeapon* Shotgun = GetTriStateShotgun(object()))
+					{
+						const u8 Phase = P.r_u8();
+						if (Phase <= CWeapon::eSubstateReloadEnd)
+						{
+							Shotgun->m_sub_state = Phase;
+						}
+					}
+				}
 				OnStateSwitch(S);
 			}
 		}

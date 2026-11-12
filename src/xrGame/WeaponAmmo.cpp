@@ -257,6 +257,20 @@ void CWeaponAmmo::net_Import(NET_Packet& P)
 	P.r_u16					(m_boxCurr);
 }
 
+void CWeaponAmmo::SetBoxCurr(u16 Count)
+{
+	if (m_boxCurr == Count)
+	{
+		return;
+	}
+
+	m_boxCurr = Count;
+	if (m_pInventory)
+	{
+		m_pInventory->InvalidateState();
+	}
+}
+
 CInventoryItem* CWeaponAmmo::can_make_killing(const CInventory* inventory) const
 {
 	VERIFY(inventory);

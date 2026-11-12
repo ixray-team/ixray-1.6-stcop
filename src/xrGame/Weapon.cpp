@@ -1249,7 +1249,9 @@ void CWeapon::net_Import(NET_Packet& P)
 	u8 flags = 0;
 	P.r_u8(flags);
 
-	P.r_u16(AmmoElapsed.data);
+	AmmoElapsedType ReceivedAmmo;
+	P.r_u16(ReceivedAmmo.data);
+	AmmoElapsed.GrenadeElapsed = ReceivedAmmo.GrenadeElapsed;
 
 	u8 NewAddonState;
 	P.r_u8(NewAddonState);
@@ -1308,7 +1310,7 @@ void CWeapon::net_Import(NET_Packet& P)
 		break;
 		default:
 		{
-			SetAmmoElapsed(AmmoElapsed.MagazineElapsed);
+			SetAmmoElapsed(ReceivedAmmo.MagazineElapsed);
 			if (m_bAmmoInChamber)
 			{
 				SetChamberAmmoElapsed(chamber_ammo_elapsed);

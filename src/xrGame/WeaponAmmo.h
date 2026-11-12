@@ -82,6 +82,8 @@ public:
 
 	bool							Get					(CCartridge &cartridge);
 
+	void SetBoxCurr(u16 Count);
+
 	virtual bool Repack(PIItem Other) override;
 	virtual bool IsValid() const override;
 	

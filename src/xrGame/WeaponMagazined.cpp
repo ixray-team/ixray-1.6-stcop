@@ -36,6 +36,46 @@
 #include "WeaponBinocularsVision.h"
 #include "../xrEngine/GamepadService.h"
 
+namespace
+{
+	struct ShotgunLoadState
+	{
+		u8 MagazineType;
+		u16 MagazineCount;
+		u8 ChamberType;
+		u16 ChamberCount;
+	};
+
+	void SyncReloadAmmo(CWeaponMagazined& Weapon, CWeaponAmmo* Ammo, const ShotgunLoadState* LoadedAmmo = nullptr)
+	{
+		if (IsGameTypeSingle() || !Level().Server)
+		{
+			return;
+		}
+
+		NET_Packet Packet;
+		CGameObject::u_EventGen(Packet, GE_WPN_UPDATE_AMMO, Weapon.ID());
+		Packet.w_u32(Ammo ? 1 : 0);
+		if (Ammo)
+		{
+			CSE_Abstract* Entity = Level().Server->ID_to_entity(Ammo->ID());
+			if (CSE_ALifeItemAmmo* ServerAmmo = Entity ? Entity->cast_item_ammo() : nullptr)
+			{
+				ServerAmmo->a_elapsed = Ammo->m_boxCurr;
+			}
+			Packet << Ammo->ID() << Ammo->m_boxCurr;
+		}
+		if (LoadedAmmo)
+		{
+			Packet.w_u8(LoadedAmmo->MagazineType);
+			Packet.w_u16(LoadedAmmo->MagazineCount);
+			Packet.w_u8(LoadedAmmo->ChamberType);
+			Packet.w_u16(LoadedAmmo->ChamberCount);
+		}
+		CGameObject::u_EventSend(Packet, net_flags(true, true));
+	}
+}
+
 CUIXml* pWpnScopeXml = nullptr;
 
 void CWeaponMagazined::net_Destroy()
@@ -938,7 +978,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	}
 }
 
-void CWeaponMagazined::ReloadMagazine() 
+void CWeaponMagazined::ReloadMagazine()
 {
 	m_BriefInfo_CalcFrame = 0;	
 
@@ -1085,6 +1125,12 @@ bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 
 u8 CWeaponMagazined::AddCartridge(u8 cnt)
 {
+	const bool SyncShotgunReload = !IsGameTypeSingle() && (cast_weapon_shotgun() || cast_weapon_auto_shotgun()) && !cast_weapon_rg6();
+	if (SyncShotgunReload && OnClient())
+	{
+		return 0;
+	}
+
 	if (IsMisfire())
 	{
 		bMisfire = false;
@@ -1111,6 +1157,8 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 		m_DefaultCartridge.Load(m_ammoTypes[AmmoType.MagazineType].c_str(), AmmoType.MagazineType);
 	}
 
+	const u8 RequestedCount = cnt;
+	const u16 PreviousBoxCount = m_pCurrentAmmo ? m_pCurrentAmmo->m_boxCurr : 0;
 	CCartridge l_cartridge = m_DefaultCartridge;
 	while (cnt)
 	{
@@ -1138,6 +1186,16 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	if (!m_bIsPumpEnabled)
 	{
 		GiveAmmoFromMagToChamber();
+	}
+
+	if (SyncShotgunReload && cnt != RequestedCount)
+	{
+		const ShotgunLoadState LoadedAmmo{
+			AmmoType.MagazineType, AmmoElapsed.MagazineElapsed, m_ChamberAmmoType, static_cast<u16>(iAmmoChamberElapsed)
+		};
+
+		CWeaponAmmo* ChangedBox = m_pCurrentAmmo && m_pCurrentAmmo->m_boxCurr != PreviousBoxCount ? m_pCurrentAmmo : nullptr;
+		SyncReloadAmmo(*this, ChangedBox, &LoadedAmmo);
 	}
 
 	return cnt;
@@ -3707,7 +3765,23 @@ void CWeaponMagazined::OnEvent(NET_Packet& P, u16 type)
 
 			if (CWeaponAmmo* pA = obj != nullptr ? obj->cast_weapon_ammo() : nullptr)
 			{
-				pA->m_boxCurr = boxSize;
+				pA->SetBoxCurr(boxSize);
+			}
+		}
+		constexpr u32 LoadedAmmoSize = 2 * sizeof(u8) + 2 * sizeof(u16);
+		if (OnClient() && P.r_elapsed() >= LoadedAmmoSize)
+		{
+			const u8 MagazineType = P.r_u8();
+			const u16 MagazineCount = P.r_u16();
+			const u8 ChamberType = P.r_u8();
+			const u16 ChamberCount = P.r_u16();
+			if (MagazineType < m_ammoTypes.size() && (!ChamberCount || ChamberType < m_ammoTypes.size()))
+			{
+				AmmoType.MagazineType = MagazineType;
+				m_ChamberAmmoType = ChamberType;
+				m_set_next_ammoType_on_reload = undefined_ammo_type;
+				SetAmmoElapsed(MagazineCount);
+				SetChamberAmmoElapsed(ChamberCount);
 			}
 		}
 	}break;
