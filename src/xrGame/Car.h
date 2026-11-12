@@ -1660,7 +1660,7 @@ public:
 	virtual void			g_fireParams				(const CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/)											{};
 	virtual ALife::_OBJECT_ID				Initiator					();
 	// HUD
-	virtual void			OnHUDDraw					(CCustomHUD* hud);
+	virtual void			OnHUDDraw					(CCustomHUD* hud) override;
 			void			DBGDraw						()																				;
 	
 	CCameraBase*			Camera						();

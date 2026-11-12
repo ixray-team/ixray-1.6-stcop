@@ -19,7 +19,8 @@ IC	const CEntity &vision_client::object		() const
 
 vision_client::vision_client					(CEntity *object, const u32 &update_interval) :
 	Feel::Vision				(object),
-	m_object					(object)
+	m_object					(object),
+	m_time_stamp			(Device.dwTimeGlobal)
 {
 	VERIFY						(m_object);
 
