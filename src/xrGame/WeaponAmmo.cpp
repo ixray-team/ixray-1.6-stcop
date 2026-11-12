@@ -254,7 +254,7 @@ void CWeaponAmmo::net_Import(NET_Packet& P)
 {
 	inherited::net_Import	(P);
 
-	P.r_u16					(m_boxCurr);
+	SetBoxCurr(P.r_u16());
 }
 
 void CWeaponAmmo::SetBoxCurr(u16 Count)

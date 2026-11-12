@@ -990,7 +990,16 @@ void CWeaponMagazined::ReloadMagazine()
 		m_pCurrentAmmo		= nullptr;
 	}
 	
-	if (!m_pInventory) return;
+	if (!m_pInventory)
+	{
+		return;
+	}
+
+	if (OnClient())
+	{
+		m_set_next_ammoType_on_reload = undefined_ammo_type;
+		return;
+	}
 
 	if ( m_set_next_ammoType_on_reload != undefined_ammo_type )
 	{
@@ -1046,6 +1055,7 @@ void CWeaponMagazined::ReloadMagazine()
 	if (m_DefaultCartridge.m_LocalAmmoType != AmmoType.MagazineType)
 		m_DefaultCartridge.Load( m_ammoTypes[AmmoType.MagazineType].c_str(), AmmoType.MagazineType );
 
+	const u16 PreviousBoxCount = m_pCurrentAmmo ? m_pCurrentAmmo->m_boxCurr : 0;
 	CCartridge l_cartridge = m_DefaultCartridge;
 	while(AmmoElapsed.MagazineElapsed < iMagazineSize)
 	{
@@ -1059,6 +1069,11 @@ void CWeaponMagazined::ReloadMagazine()
 	}
 
 	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
+
+	if (m_pCurrentAmmo && m_pCurrentAmmo->m_boxCurr != PreviousBoxCount)
+	{
+		SyncReloadAmmo(*this, m_pCurrentAmmo);
+	}
 
 	//выкинуть коробку патронов, если она пустая
 	if(m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer()) 
@@ -2058,20 +2073,6 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 						m_bJustAfterReload = true;
 					}
 
-					if (g_pGamePersistent->GameType() == eGameIDFreeMP && m_pCurrentAmmo != nullptr)
-					{
-						xr_map<ALife::_OBJECT_ID, u16> ammos_to_sync;
-						ammos_to_sync[m_pCurrentAmmo->ID()] = m_pCurrentAmmo->m_boxCurr;
-						NET_Packet	P;
-						CGameObject::u_EventGen(P, GE_WPN_UPDATE_AMMO, ID());
-						
-						P.w_u32(ammos_to_sync.size());
-						for (auto _it = ammos_to_sync.begin(); ammos_to_sync.end() != _it; ++_it)
-						{
-							P << _it->first << _it->second;
-						}
-						CGameObject::u_EventSend(P);
-					}
 				}
 				GiveAmmoFromMagToChamber();
 			}
