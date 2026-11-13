@@ -41,8 +41,12 @@ bool CELGroundLocalSearch::Resolve(IELAdapter& Adapter, const Fvector& Position,
 }
 
 // Execute a short tactical step immediately, within the existing collision-query budget.
-bool CELGroundLocalSearch::MoveDirect(IELAdapter& Adapter, CELGroundMovement& Movement, const Fvector& Goal, bool Runs, const char** Failure)
+bool CELGroundLocalSearch::MoveDirect(IELAdapter& Adapter, CELGroundMovement& Movement, const Fvector& Goal, bool Runs, const char** Failure, bool* WaitingForBudget)
 {
+	if (WaitingForBudget)
+	{
+		*WaitingForBudget = false;
+	}
 	const auto Report = [Failure](const char* Reason)
 	{
 		if (Failure)
@@ -75,6 +79,10 @@ bool CELGroundLocalSearch::MoveDirect(IELAdapter& Adapter, CELGroundMovement& Mo
 	}
 	if (!ExtendedEntityes::Navigation().TryGeometryRays(3))
 	{
+		if (WaitingForBudget)
+		{
+			*WaitingForBudget = true;
+		}
 		return Report("ожидание квоты проверки геометрии");
 	}
 	Direction.div(Length);

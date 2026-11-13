@@ -256,7 +256,7 @@ void CELSharedSight::Clear()
 	ExtendedEntityesSight::EvasionContacts.clear();
 }
 
-void CELSharedSight::KeepEvasionTarget(CBaseMonster& Owner, CEntityAlive& Target, u32 Until)
+void CELSharedSight::KeepEvasionTarget(CBaseMonster& Owner, CEntityAlive& Target, u32 Until, bool Confirmed)
 {
 	if (!CELSharedSettings::Profile(*Owner.cNameSect()).DodgeTrackTarget)
 	{
@@ -268,6 +268,11 @@ void CELSharedSight::KeepEvasionTarget(CBaseMonster& Owner, CEntityAlive& Target
 	if (Found != Cache.end() && Found->second.Target == Target.ID() && Found->second.OwnerGeneration == ExtendedEntityes::OwnerGeneration(Owner.ID()) && Found->second.TargetGeneration == ExtendedEntityes::OwnerGeneration(Target.ID()) && s32(Found->second.Until - Now) > 0)
 	{
 		Found->second.Until = Until;
+		if (Confirmed)
+		{
+			Found->second.Visible = true;
+			Found->second.VerifiedAt = Now;
+		}
 		return;
 	}
 	// Called only for the already confirmed target of an accepted maneuver.

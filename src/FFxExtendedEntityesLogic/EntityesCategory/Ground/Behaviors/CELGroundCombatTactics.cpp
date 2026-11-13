@@ -15,8 +15,20 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedDeaths.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
 
-void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, const CELSharedHearing* Hearing)
+void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, const CELSharedHearing* Hearing, bool Defensive)
 {
+	if (!Defensive && DefensiveMode)
+	{
+		RejectDefensiveGoal();
+		DefensiveMode = FreeEvasion = DefensiveSawTarget = false;
+	}
+	if (Defensive || s32(HitReactionUntil - Device.dwTimeGlobal) > 0 || FreeEvasion)
+	{
+		if (UpdateAvoidance(Adapter, Profile, Target, Visible, Defensive, Hearing) || Defensive)
+		{
+			return;
+		}
+	}
 	CBaseMonster& Owner = Adapter.Monster();
 	const u32 Now = Device.dwTimeGlobal;
 	const float Elapsed = LastSampleAt ? std::min(10.f, float(Now - LastSampleAt) * .001f) : 0.f;
@@ -508,10 +520,298 @@ void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProf
 	}
 }
 
+// A hit starts one bounded decision, not a chance roll on every update of a burst.
+void CELGroundCombatTactics::RegisterHit(const SELPerceptionProfile& Profile, const Fvector& Direction)
+{
+	const u32 Now = Device.dwTimeGlobal;
+	if (!Profile.CanDodge || Profile.DodgeStrength <= 0.f || s32(Now - HitReactionAfter) < 0)
+	{
+		return;
+	}
+	HitReactionAfter = Now + Profile.HitEvasionCooldown;
+	if (Random.randF() >= Profile.HitEvasionChance)
+	{
+		return;
+	}
+	HitDirection = Direction;
+	HitDirection.y = 0.f;
+	if (HitDirection.square_magnitude() > EPS_L)
+	{
+		HitDirection.normalize_safe();
+		HitReactionUntil = Now + Profile.HitEvasionMemory;
+	}
+}
+
+void CELGroundCombatTactics::RejectDefensiveGoal()
+{
+	HasTacticalGoal = false;
+	ManeuverUntil = 0;
+	DodgeSide = -DodgeSide;
+}
+
+// Defensive evasion scores free lateral/retreat space; it never requires getting closer to the enemy.
+bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, bool Defensive, const CELSharedHearing* Hearing)
+{
+	CBaseMonster& Owner = Adapter.Monster();
+	const u32 Now = Device.dwTimeGlobal;
+	const bool SameTarget = TargetIdentifier == Target.ID();
+	const bool Impact = s32(HitReactionUntil - Now) > 0;
+	const float Elapsed = LastSampleAt ? std::min(1.f, float(Now - LastSampleAt) * .001f) : 0.f;
+	const bool Sprinting = s32(SprintUntil - Now) > 0 && Stamina > 0.f;
+	Stamina = clampr(Stamina + Elapsed * (Sprinting ? -1000.f / float(Profile.SprintDuration) : 1000.f / float(Profile.SprintCooldown)), 0.f, 1.f);
+	LastSampleAt = Now;
+	TargetIdentifier = Target.ID();
+	if (DefensiveMode != Defensive || !SameTarget)
+	{
+		HasTacticalGoal = false;
+		ManeuverUntil = CounterUntil = LastAimAt = 0;
+		HadRecoveryWindow = false;
+	}
+	DefensiveMode = Defensive;
+	if (Visible)
+	{
+		LastVisibleAt = Now;
+	}
+	SELWeaponThreat Weapon = CELSharedWeaponThreat::Observe(Adapter, Target, OwnerVelocity, true);
+	DefensiveSawTarget = Weapon.HasWeapon && Weapon.ObserverFacesTarget;
+	if (DefensiveSawTarget)
+	{
+		DefensiveEyePosition = Weapon.AimOrigin;
+		// Only an actual material-aware sight result may refresh this short contact bridge.
+		CELSharedSight::KeepEvasionTarget(Owner, Target, Now + std::max(Profile.DodgeVisibilityGrace, Profile.DodgeTrackInterval), true);
+		LastVisibleAt = Now;
+	}
+	const bool RecoveryWindow = Weapon.HasRecoveryWindow && ((Weapon.RecoveryType == EELNoiseType::Reload && Profile.CounterOnReload) || (Weapon.RecoveryType == EELNoiseType::EmptyClick && Profile.CounterOnEmptyClick));
+	u32 HeardAt = 0;
+	const bool HeardWindow = Hearing && Hearing->GetCounterOpportunity(Target.ID(), HeardAt) && s32(HeardAt - LastCounterEventAt) > 0;
+	const bool NewOpportunity = (RecoveryWindow && !HadRecoveryWindow) || HeardWindow;
+	HadRecoveryWindow = RecoveryWindow;
+	if (HeardWindow)
+	{
+		LastCounterEventAt = HeardAt;
+	}
+	if (Defensive && Profile.HasCharacter && Profile.CanCounterAttack && (Visible || DefensiveSawTarget) && NewOpportunity && s32(Now - OpportunityAfter) >= 0)
+	{
+		OpportunityAfter = Now + Profile.CounterOpportunityCooldown;
+		if (Random.randF() < Profile.CharacterCounterChance)
+		{
+			Intent = EELCombatIntent::Counter;
+			CounterUntil = Now + Profile.CounterAttackDuration;
+			HasTacticalGoal = FreeEvasion = false;
+			DodgeReason = "опасаюсь врага, но использую подтверждённое окно контратаки";
+			Owner.movement().detail().SetMovementFactor(1.f);
+			return true;
+		}
+	}
+	bool AimPredicted = false;
+	Fvector PredictedAim = Weapon.AimDirection;
+	if (Weapon.HasWeapon && Weapon.ObserverFacesTarget)
+	{
+		if (LastAimAt && Now > LastAimAt && Now - LastAimAt <= Profile.DodgeVisibilityGrace + Profile.DodgeTrackInterval)
+		{
+			AimPredicted = true;
+			const float SampleTime = float(Now - LastAimAt) * .001f;
+			Fvector Change = Fvector().sub(Weapon.AimDirection, LastAimDirection);
+			PredictedAim.mad(Change, Profile.DefensiveAimPrediction / SampleTime);
+			PredictedAim.normalize_safe();
+			if (PredictedAim.square_magnitude() < EPS_L)
+			{
+				PredictedAim = Weapon.AimDirection;
+			}
+			const float Angle = std::acos(clampr(PredictedAim.dotproduct(Weapon.AimDirection), -1.f, 1.f));
+			if (Angle > deg2rad(Profile.DefensiveAimMaxAngle) && Angle > EPS_L)
+			{
+				Fvector Tangent = Fvector().mad(PredictedAim, Weapon.AimDirection, -std::cos(Angle));
+				Tangent.normalize_safe();
+				if (Tangent.square_magnitude() > EPS_L)
+				{
+					PredictedAim.mul(Weapon.AimDirection, std::cos(deg2rad(Profile.DefensiveAimMaxAngle)));
+					PredictedAim.mad(Tangent, std::sin(deg2rad(Profile.DefensiveAimMaxAngle)));
+				}
+				else
+				{
+					PredictedAim = Weapon.AimDirection;
+				}
+			}
+		}
+		LastAimDirection = Weapon.AimDirection;
+		LastAimAt = Now;
+	}
+	else
+	{
+		LastAimAt = 0;
+	}
+	if (Elapsed > EPS_L && SameTarget)
+	{
+		OwnerVelocity.sub(Owner.Position(), LastOwnerPosition).div(Elapsed);
+	}
+	else
+	{
+		OwnerVelocity.set(0.f, 0.f, 0.f);
+	}
+	LastOwnerPosition = Owner.Position();
+	DodgeStrength = clampr(Profile.DodgeStrength * (Profile.HasCharacter ? 1.f + (1.f - Owner.CharacterCourage) * Profile.CharacterDodgeCaution : 1.f), 0.f, 1.f);
+	const bool Threat = Weapon.HasWeapon && Weapon.ObserverFacesTarget && (!Weapon.IsMelee || Weapon.IsSwinging) && (Weapon.IsAiming || Weapon.IsLeading || Weapon.IsPreciseAim || Weapon.IsFocusing);
+	const auto AimSeparation = [&](const Fvector& Point, const Fvector& Aim)
+	{
+		const Fvector Offset = Fvector().sub(Point, Weapon.AimOrigin);
+		const float Along = Offset.dotproduct(Aim);
+		return std::sqrt(std::max(0.f, Offset.square_magnitude() - Along * Along));
+	};
+	Fvector GoalBody;
+	Owner.Center(GoalBody);
+	GoalBody.add(Fvector().sub(TacticalGoal, Owner.Position()));
+	const bool ActiveStep = FreeEvasion && HasTacticalGoal && SameTarget && s32(ManeuverUntil - Now) > 0 &&
+		Owner.Position().distance_to_sqr(TacticalGoal) > _sqr(Profile.DodgeStepArrivalDistance * Owner.GetVisualScale());
+	const bool CorrectStep = ActiveStep && Threat && s32(Now - DodgeDirectionAfter) >= 0 &&
+		AimSeparation(GoalBody, PredictedAim) < Owner.Radius() + Profile.DodgeConeMargin * Owner.GetVisualScale();
+	// Basic retreat always runs. This ratio now triggers a brief catch-up sprint, never a relaxed walk.
+	if (Defensive && DefensiveSawTarget && Profile.CanSprint && Stamina > .95f && s32(Now - SprintAfter) >= 0 &&
+		Owner.Position().distance_to_sqr(Target.Position()) > _sqr(Profile.CharacterWatchDistance * Profile.CharacterWatchRunRatio))
+	{
+		SprintUntil = Now + Profile.SprintDuration;
+		SprintAfter = SprintUntil + Profile.SprintCooldown;
+	}
+	const auto ApplySpeed = [&]()
+	{
+		Owner.movement().detail().SetMovementFactor(s32(SprintUntil - Now) > 0 && Stamina > 0.f ? 1.f + Profile.SprintBonus : 1.f);
+		CELSharedHuntGroups::ReportStamina(Owner, Stamina);
+	};
+	if (ActiveStep && !CorrectStep && !Impact)
+	{
+		ApplySpeed();
+		return true;
+	}
+	HasTacticalGoal = FreeEvasion = false;
+	Intent = EELCombatIntent::Close;
+	if (!Defensive && !Impact && !ActiveStep)
+	{
+		ApplySpeed();
+		return false;
+	}
+	if (!Profile.CanDodge || DodgeStrength <= 0.f || (!Impact && (!Threat || !Profile.CanDodgeFire || (!CorrectStep && s32(Now - DodgeAfter) < 0))))
+	{
+		DodgeReason = "защитный манёвр не требуется";
+		ApplySpeed();
+		return false;
+	}
+	Fvector Forward;
+	if (Impact)
+	{
+		Forward = Fvector().mul(HitDirection, -1.f);
+	}
+	else
+	{
+		Forward.sub(Target.Position(), Owner.Position());
+		Forward.y = 0.f;
+		Forward.normalize_safe();
+	}
+	const Fvector Side = {Forward.z, 0.f, -Forward.x};
+	const float Angle = deg2rad(Profile.DefensiveStepAngle);
+	float BestScore = -flt_max;
+	Fvector BestPoint;
+	float BestSide = DodgeSide;
+	const float Step = Profile.DodgeStepDistance * Owner.GetVisualScale();
+	Fvector Body;
+	Owner.Center(Body);
+
+	for (u32 Attempt = 0; Attempt < 2; ++Attempt)
+	{
+		const float Sign = DodgeSide * (Attempt ? -1.f : 1.f);
+		Fvector Direction = Fvector().mul(Forward, std::cos(Angle));
+		Direction.mad(Side, Sign * std::sin(Angle));
+		if (Impact)
+		{
+			Direction.add(HitDirection);
+		}
+		Direction.normalize_safe();
+		Fvector Point = Fvector().mad(Owner.Position(), Direction, Step);
+		u32 Vertex;
+		if (!CELGroundLocalSearch::Resolve(Adapter, Point, Point, Vertex) || CELSharedAnomalies::Crosses(Owner.ID(), Owner.Position(), Point) || CELSharedDeaths::Crosses(Owner.ID(), Owner.Position(), Point))
+		{
+			continue;
+		}
+		Fvector CandidateBody = Fvector().add(Body, Fvector().sub(Point, Owner.Position()));
+		const float Score = Weapon.HasWeapon ? std::min(AimSeparation(CandidateBody, Weapon.AimDirection), AimSeparation(CandidateBody, PredictedAim)) : Fvector().sub(Point, Owner.Position()).dotproduct(HitDirection);
+		if (Score > BestScore)
+		{
+			BestScore = Score;
+			BestPoint = Point;
+			BestSide = Sign;
+		}
+	}
+	HitReactionUntil = 0;
+	if (BestScore == -flt_max)
+	{
+		DodgeReason = "нет безопасного направления защитного уворота";
+		ApplySpeed();
+		return false;
+	}
+	const bool CanJump = Profile.CanDodgeJump && Profile.DodgeJumpChance > 0.f &&
+		s32(Now - DodgeJumpAfter) >= 0 && (Impact || Profile.DodgeJumpOnAim || Weapon.IsPreciseAim || Weapon.IsLeading || !Profile.CanDodgeStep);
+	CControlJump* Jump = Owner.com_man().get_jump_control();
+	if (CanJump && Jump)
+	{
+		DodgeJumpAfter = Now + Profile.DodgeJumpRetry;
+		if (Random.randF() < Profile.DodgeJumpChance)
+		{
+			const float Minimum = std::max(Jump->get_min_distance(), Profile.DodgeJumpDistanceMin * Owner.GetVisualScale());
+			const float Maximum = std::min(Jump->get_max_distance(), Profile.DodgeJumpDistanceMax * Owner.GetVisualScale());
+			Fvector Direction = Fvector().sub(BestPoint, Owner.Position());
+			Direction.y = 0.f;
+			Direction.normalize_safe();
+			Fvector Landing = Fvector().mad(Owner.Position(), Direction, Maximum);
+			u32 Vertex;
+			Fvector LandingBody = Fvector().add(Body, Fvector().sub(Landing, Owner.Position()));
+			const bool ClearAim = !Threat || std::min(AimSeparation(LandingBody, Weapon.AimDirection), AimSeparation(LandingBody, PredictedAim)) > Owner.Radius() + Profile.DodgeConeMargin * Owner.GetVisualScale();
+			if (ClearAim && Maximum >= Minimum && CELGroundLocalSearch::Resolve(Adapter, Landing, Landing, Vertex) &&
+				Landing.distance_to_sqr(Owner.Position()) >= _sqr(Minimum) && Landing.distance_to_sqr(Owner.Position()) <= _sqr(Maximum) + EPS_L &&
+				!CELSharedAnomalies::Crosses(Owner.ID(), Owner.Position(), Landing) && !CELSharedDeaths::Crosses(Owner.ID(), Owner.Position(), Landing) &&
+				ExtendedEntityes::Navigation().TryGeometryRays(12) && Jump->can_jump(Landing, false, PI) && !Jump->jump_intersect_geometry(Landing, nullptr, true) &&
+				Owner.com_man().jump_if_possible(Landing, nullptr, false, false, true, PI, true))
+			{
+				Intent = EELCombatIntent::EvasionJump;
+				DodgeJumpAfter = Now + Profile.DodgeJumpCooldown;
+				DodgeReason = EvasionJumpReason = Impact ? "защитный прыжок от попадания" : "защитный прыжок из линии огня";
+				if (CELSharedDebug::Instance().CanLogCombat(Owner.Position()))
+				{
+					CELSharedDebug::Instance().LogCombat(Owner.ID(), "[monsters_debug] DEFENSIVE_JUMP t=%u id=%u target=%u impact=%d goal=%.2f,%.2f,%.2f", Now, Owner.ID(), Target.ID(), int(Impact), Landing.x, Landing.y, Landing.z);
+				}
+				ApplySpeed();
+				return true;
+			}
+		}
+	}
+	if (Profile.CanDodgeStep)
+	{
+		Intent = Weapon.IsMelee ? EELCombatIntent::DodgeMelee : EELCombatIntent::DodgeFire;
+		TacticalGoal = BestPoint;
+		DodgeSide = BestSide;
+		HasTacticalGoal = FreeEvasion = true;
+		ManeuverUntil = ActiveStep ? ManeuverUntil : Now + Profile.DodgeDurationMin;
+		DodgeDirectionAfter = Now + Profile.DodgeDirectionInterval;
+		DodgeAfter = Now + Profile.DodgeStepCooldown;
+		DodgeReason = Impact ? "попадание: смена траектории и рывок" : "уход из текущей и прогнозируемой линии огня без сближения";
+		if (Profile.CanSprint && Stamina > 0.f && s32(Now - SprintAfter) >= 0)
+		{
+			SprintUntil = Now + Profile.SprintDuration;
+			SprintAfter = SprintUntil + Profile.SprintCooldown;
+		}
+	}
+	ApplySpeed();
+	if (HasTacticalGoal && CELSharedDebug::Instance().CanLogCombat(Owner.Position()))
+	{
+		CELSharedDebug::Instance().LogCombat(Owner.ID(), "[monsters_debug] DEFENSIVE_MANEUVER t=%u id=%u target=%u defensive=%d impact=%d aim_predicted=%d side=%.0f goal=%.2f,%.2f,%.2f", Now, Owner.ID(), Target.ID(), int(Defensive), int(Impact), int(AimPredicted), DodgeSide, TacticalGoal.x, TacticalGoal.y, TacticalGoal.z);
+	}
+	return HasTacticalGoal;
+}
+
 void CELGroundCombatTactics::Release(IELAdapter& Adapter)
 {
 	Adapter.Monster().movement().detail().SetMovementFactor(1.f);
 	SprintUntil = ManeuverUntil = FocusUntil = LastVisibleAt = CounterUntil = 0;
+	LastAimAt = HitReactionUntil = 0;
+	DefensiveMode = FreeEvasion = DefensiveSawTarget = false;
 	HasTacticalGoal = false;
 }
 

@@ -13,7 +13,6 @@ public:
 protected:
 	void FillGroundDebug(SELDebugRecord& Record) const override;
 	EELControl UpdateTarget(const SELObservation& Observation, float DeltaTime) override;
-	CELGroundCombatTactics Tactics;
 	CELGroundAttackBehavior AttackBehavior;
 	CELGroundSearchBehavior SearchBehavior;
 	u32 NextAttackTrace = 0;

@@ -26,7 +26,9 @@ enum class EELCombatIntent : u8
 class CELGroundCombatTactics
 {
 public:
-	void Update(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, const CELSharedHearing* Hearing = nullptr);
+	void Update(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, const CELSharedHearing* Hearing = nullptr, bool Defensive = false);
+	void RegisterHit(const SELPerceptionProfile& Profile, const Fvector& Direction);
+	void RejectDefensiveGoal();
 	void Release(IELAdapter& Adapter);
 	void FillDebug(SELDebugRecord& Record) const;
 	bool IsEvading() const { return Intent == EELCombatIntent::EvasionJump || Intent == EELCombatIntent::DodgeFire || Intent == EELCombatIntent::DodgeMelee || Intent == EELCombatIntent::Feint || Intent == EELCombatIntent::EvadeDive; }
@@ -35,8 +37,21 @@ public:
 	bool HasGoal() const { return HasTacticalGoal; }
 	const Fvector& Goal() const { return TacticalGoal; }
 	bool OwnsMovement() const { return Intent == EELCombatIntent::EvasionJump || Intent == EELCombatIntent::DodgeFire || Intent == EELCombatIntent::DodgeMelee || Intent == EELCombatIntent::EvadeDive || Intent == EELCombatIntent::Feint || Intent == EELCombatIntent::PairedAttack; }
+	const Fvector& DefensiveEye() const { return DefensiveEyePosition; }
+	bool HasDefensiveSight() const { return DefensiveSawTarget; }
 	bool StartedJump() const { return Intent == EELCombatIntent::EvasionJump || Intent == EELCombatIntent::PursuitJump || Intent == EELCombatIntent::FlyingIntercept; }
 private:
+	bool UpdateAvoidance(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, bool Defensive, const CELSharedHearing* Hearing);
+	Fvector DefensiveEyePosition = {0.f, 0.f, 0.f};
+	Fvector LastAimDirection = {0.f, 0.f, 0.f};
+	Fvector HitDirection = {0.f, 0.f, 0.f};
+	u32 LastAimAt = 0;
+	u32 HitReactionUntil = 0;
+	u32 HitReactionAfter = 0;
+	bool DefensiveMode = false;
+	bool DefensiveSawTarget = false;
+	bool HadRecoveryWindow = false;
+	bool FreeEvasion = false;
 	EELCombatIntent Intent = EELCombatIntent::Close;
 	Fvector TacticalGoal = {0.f, 0.f, 0.f};
 	Fvector LastTargetPosition = {0.f, 0.f, 0.f};

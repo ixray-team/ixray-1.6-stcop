@@ -9,7 +9,7 @@ class CELGroundLocalSearch final
 public:
 	void Reset();
 	bool Move(IELAdapter& Adapter, CELGroundMovement& Movement, const SELPerceptionProfile& Profile, const Fvector& Center, bool Runs);
-	static bool MoveDirect(IELAdapter& Adapter, CELGroundMovement& Movement, const Fvector& Goal, bool Runs, const char** Failure = nullptr);
+	static bool MoveDirect(IELAdapter& Adapter, CELGroundMovement& Movement, const Fvector& Goal, bool Runs, const char** Failure = nullptr, bool* WaitingForBudget = nullptr);
 	static bool Resolve(IELAdapter& Adapter, const Fvector& Position, Fvector& Result, u32& Vertex);
 
 private:

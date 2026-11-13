@@ -302,6 +302,17 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.CharacterWatchRunRatio = Number(SystemSettings, Section, "monster_character_watch_run_ratio", "monster_character_watch_run_ratio", 1.35f, 1.f, 4.f);
 	Result.CharacterWatchAngle = deg2rad(Number(SystemSettings, Section, "monster_character_watch_angle", "monster_character_watch_angle", 20.0535f, 1.f, 90.f));
 	Result.CharacterWatchAngleStep = deg2rad(Number(SystemSettings, Section, "monster_character_watch_angle_step", "monster_character_watch_angle_step", 6.87549f, 0.f, 45.f));
+	Result.CharacterWatchVisibilityRatio = Number(SystemSettings, Section, "eel__watch__visibility_ratio", "eel__watch__visibility_ratio", .8f, 0.2f, 1.f);
+	Result.CharacterWatchMinLeg = Number(SystemSettings, Section, "eel__watch__min_leg", "eel__watch__min_leg", 4.f, 1.f, 20.f);
+	Result.CharacterWatchCoverWeight = Number(SystemSettings, Section, "eel__watch__cover_weight", "eel__watch__cover_weight", 2.f, 0.f, 10.f);
+	Result.CharacterWatchRevisitTime = u32(Number(SystemSettings, Section, "eel__watch__revisit_time", "eel__watch__revisit_time", 8.f, 0.f, 60.f) * 1000.f);
+	Result.DefensiveViewAngle = Number(SystemSettings, Section, "eel__dodge__defensive_view_angle", "eel__dodge__defensive_view_angle", 240.f, 1.f, 300.f);
+	Result.DefensiveAimPrediction = Number(SystemSettings, Section, "eel__dodge__defensive_aim_prediction", "eel__dodge__defensive_aim_prediction", 0.25f, 0.f, 0.5f);
+	Result.DefensiveAimMaxAngle = Number(SystemSettings, Section, "eel__dodge__defensive_aim_max_angle", "eel__dodge__defensive_aim_max_angle", 30.f, 0.f, 90.f);
+	Result.DefensiveStepAngle = Number(SystemSettings, Section, "eel__dodge__defensive_step_angle", "eel__dodge__defensive_step_angle", 90.f, 45.f, 135.f);
+	Result.HitEvasionChance = Number(SystemSettings, Section, "eel__dodge__hit_evasion_chance", "eel__dodge__hit_evasion_chance", .6f, 0.f, 1.f);
+	Result.HitEvasionMemory = u32(Number(SystemSettings, Section, "eel__dodge__hit_evasion_memory", "eel__dodge__hit_evasion_memory", 1.5f, 0.1f, 5.f) * 1000.f);
+	Result.HitEvasionCooldown = u32(Number(SystemSettings, Section, "eel__dodge__hit_evasion_cooldown", "eel__dodge__hit_evasion_cooldown", 1.f, 0.1f, 10.f) * 1000.f);
 	Result.CharacterSizeScaleMin = Number(SystemSettings, Section, "", "monster_character_size_scale_min", 0.7f, 0.05f, 0.99f);
 	Result.CharacterSizeScaleMax = Number(SystemSettings, Section, "", "monster_character_size_scale_max", 1.3f, 1.01f, 3.f);
 	Result.CharacterContactGrace = u32(Number(SystemSettings, Section, "", "monster_character_contact_grace", 0.5f, 0.f, 5.f) * 1000.f);

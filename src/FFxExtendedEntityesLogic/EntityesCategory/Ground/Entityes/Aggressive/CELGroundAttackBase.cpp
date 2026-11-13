@@ -132,6 +132,10 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 
 void CELGroundAttackBase::FillGroundDebug(SELDebugRecord& Record) const
 {
+	if (IsFleeingPredator)
+	{
+		return;
+	}
 	if (TargetIdentifier != u16(-1))
 	{
 		Record.IsCounterAttacking = Record.IsCounterAttacking || Tactics.IsCounterAttacking();

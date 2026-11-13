@@ -422,6 +422,9 @@ public:
 		u32 ProvokedEnemyUntil = 0;
 		u32 ThreatTier = 1;
 		u32 EmmiPainProtection = 1;
+		Fvector ExtendedPhysicalHitDirection = {0.f, 0.f, 0.f};
+		u32 ExtendedPhysicalHitAt = 0;
+		u16 ExtendedPhysicalHitSource = u16(-1);
 		float CharacterCourage = .5f;
 		bool UsesExtendedCombat = false;
 		float ExtendedMeleeHitTolerance = .3f;

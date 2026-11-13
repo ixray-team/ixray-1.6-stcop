@@ -20,7 +20,7 @@ public:
 	static bool HasCloseContact(CBaseMonster& OwnerMonster, const CEntityAlive& Candidate);
 	static void Remove(ALife::_OBJECT_ID Identifier);
 	static void Clear();
-	static void KeepEvasionTarget(CBaseMonster& Owner, CEntityAlive& Target, u32 Until);
+	static void KeepEvasionTarget(CBaseMonster& Owner, CEntityAlive& Target, u32 Until, bool Confirmed = false);
 	static void UpdateEvasionTarget(CBaseMonster& Owner);
 	static bool HasEvasionTarget(CBaseMonster& Owner, const CEntityAlive& Target);
 	static EELSightResult Check(CBaseMonster& OwnerMonster, CObject& Candidate, float Angle, float Radius, bool UseWeather = true);

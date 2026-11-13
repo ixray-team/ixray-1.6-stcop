@@ -1,9 +1,10 @@
 #pragma once
 #include <cmath>
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
 #include "FFxExtendedEntityesLogic/Interfaces/IELAdapter.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
-#include "xrGame/Actor.h"
+#include "xrGame/InventoryOwner.h"
 #include "xrGame/inventory.h"
 #include "xrGame/Weapon.h"
 #include "xrGame/WeaponKnife.h"
@@ -30,15 +31,17 @@ struct SELWeaponThreat
 class CELSharedWeaponThreat
 {
 public:
-	static SELWeaponThreat Observe(IELAdapter& Adapter, CEntityAlive& Target, const Fvector& OwnerVelocity)
+	static SELWeaponThreat Observe(IELAdapter& Adapter, CEntityAlive& Target, const Fvector& OwnerVelocity, bool Defensive = false)
 	{
 		SELWeaponThreat Result;
-		CActor* Player = smart_cast<CActor*>(&Target);
-		if (!Player || !Adapter.CanSee(Target))
+		CInventoryOwner* InventoryOwner = Target.cast_inventory_owner();
+		const SELPerceptionProfile& Profile = CELSharedSettings::Profile(*Adapter.Monster().cNameSect());
+		// Defensive contact renewal must use a fresh ray, never renew its own retained visibility.
+		if (!InventoryOwner || (Defensive ? CELSharedSight::Check(Adapter.Monster(), Target, Profile.DefensiveViewAngle, Adapter.Monster().eye_range) != EELSightResult::Visible : !Adapter.CanSee(Target)))
 		{
 			return Result;
 		}
-		CInventoryItem* Item = Player->inventory().ActiveItem();
+		CInventoryItem* Item = InventoryOwner->inventory().ActiveItem();
 		CWeapon* Weapon = Item ? Item->cast_weapon() : nullptr;
 		if (!Weapon)
 		{
@@ -59,10 +62,17 @@ public:
 		const float AlongView = ToTarget.dotproduct(Forward);
 		const float ViewWidth = AlongView * std::tan(deg2rad(clampr(Observer.eye_fov, 1.f, 179.f) * .5f));
 		Result.ObserverFacesTarget = AlongView > EPS_L && std::abs(ToTarget.dotproduct(Right)) <= ViewWidth && std::abs(ToTarget.dotproduct(Up)) <= ViewWidth;
-		const SELPerceptionProfile& Profile = CELSharedSettings::Profile(*Adapter.Monster().cNameSect());
-		Fvector Origin;
-		Fvector Direction;
-		Player->g_fireParams(Weapon, Origin, Direction);
+		if (Defensive)
+		{
+			Fvector Horizontal = ToTarget;
+			Horizontal.y = Forward.y = 0.f;
+			Horizontal.normalize_safe();
+			Forward.normalize_safe();
+			Result.ObserverFacesTarget = Horizontal.dotproduct(Forward) >= std::cos(deg2rad(Profile.DefensiveViewAngle * .5f));
+		}
+		Fvector Origin = TargetCenter;
+		Fvector Direction = Target.Direction();
+		Target.g_fireParams(Weapon, Origin, Direction);
 		Direction.normalize_safe();
 		Result.AimOrigin = Origin;
 		Result.AimDirection = Direction;
@@ -100,7 +110,7 @@ public:
 			Result.IsAiming = Result.ObserverFacesTarget && IsReady && InCone(std::sin(AimHalfAngle), std::cos(AimHalfAngle));
 			// A slightly wider release cone avoids toggling on the ten-degree boundary.
 			Result.IsFocusing = Result.ObserverFacesTarget && IsReady && InCone(std::sin(ReleaseHalfAngle), std::cos(ReleaseHalfAngle));
-			Fvector TowardPlayer = Fvector().sub(Player->Position(), Adapter.Monster().Position());
+			Fvector TowardPlayer = Fvector().sub(Target.Position(), Adapter.Monster().Position());
 			TowardPlayer.y = 0.f;
 			TowardPlayer.normalize_safe();
 			const Fvector Side = {TowardPlayer.z, 0.f, -TowardPlayer.x};

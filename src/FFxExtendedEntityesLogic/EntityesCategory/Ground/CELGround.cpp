@@ -21,6 +21,7 @@ CELGround::~CELGround()
 // Снимает управление расширения и освобождает регистрации владельца.
 void CELGround::Detach()
 {
+	Tactics.Release(*Adapter);
 	CloseScent.Clear();
 	BehaviorManager.Clear();
 	CELComponentBase::Detach();
@@ -90,6 +91,10 @@ void CELGround::FrameUpdate(float DeltaTime)
 		}
 	}
 	CloseScent.FillDebug(Record, Profile);
+	if (IsFleeingPredator)
+	{
+		Tactics.FillDebug(Record);
+	}
 	CELGroundFlyingGrab::FillDebug(Adapter->Monster().ID(), Record);
 	FillGroundDebug(Record);
 	FillDebugRecord(Record);
@@ -136,5 +141,44 @@ void CELGround::FillCombatDebug(SELDebugRecord& Record) const
 	Record.Mode = "Ground";
 	CloseScent.FillDebug(Record, Profile);
 	Record.State = BehaviorManager.HasActiveBehavior() ? BehaviorManager.GetValidation().Reason : "native_control";
+	if (IsFleeingPredator)
+	{
+		Tactics.FillDebug(Record);
+	}
 	FillGroundDebug(Record);
+}
+
+// Queue only a real physical impact; its direction does not reveal a hidden attacker's position.
+void CELGround::RecordCombatHit(CEntityAlive& Opponent, float HealthFraction, bool Received)
+{
+	CELComponentBase::RecordCombatHit(Opponent, HealthFraction, Received);
+	const CBaseMonster& Monster = Adapter->Monster();
+	if (Received && HealthFraction > 0.f && !Profile.IsPassive && Adapter->IsEnemy(Opponent) &&
+		Monster.ExtendedPhysicalHitAt == Device.dwTimeGlobal && Monster.ExtendedPhysicalHitSource == Opponent.ID())
+	{
+		Tactics.RegisterHit(Profile, Monster.ExtendedPhysicalHitDirection);
+	}
+}
+
+// Commit a perceived opportunity long enough to act; fear cannot cancel it on the following update.
+void CELGround::BeginDefensiveCounter(CEntityAlive& Target)
+{
+	const u32 Now = Device.dwTimeGlobal;
+	SEncounter& State = Encounter(Target);
+	State.Fleeing = State.Withdrawn = false;
+	State.Engaged = true;
+	State.ClosePressureSince = 0;
+	State.DecisionUntil = State.NextDecisionAt = Now + Profile.CharacterDecisionHold;
+	State.HasCombatDecision = State.CombatAccepted = true;
+	State.CombatDecisionAt = Now;
+	State.CombatReason = "observed_counter_opportunity";
+	if (CELSharedDebug::Instance().CanLogCombat(Adapter->Monster().Position()))
+	{
+		CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] COUNTERATTACK t=%u id=%u target=%u reason=observed_counter_opportunity hold_ms=%u", Now, Adapter->Monster().ID(), Target.ID(), Profile.CharacterDecisionHold);
+	}
+	CharacterCounterTarget = Target.ID();
+	CharacterCounterAttackUntil = State.DecisionUntil;
+	IsFleeingPredator = IsWatchingThreat = false;
+	PublishNativeMemory();
+	Adapter->Monster().EnemyMan.update();
 }

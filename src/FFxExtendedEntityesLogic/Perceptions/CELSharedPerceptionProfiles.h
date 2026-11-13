@@ -92,6 +92,17 @@ struct SELPerceptionProfile
 	float CharacterWatchRunRatio = 0;
 	float CharacterWatchAngle = 0;
 	float CharacterWatchAngleStep = 0;
+	float CharacterWatchVisibilityRatio = 0;
+	float CharacterWatchMinLeg = 0;
+	float CharacterWatchCoverWeight = 0;
+	u32 CharacterWatchRevisitTime = 0;
+	float DefensiveViewAngle = 0;
+	float DefensiveAimPrediction = 0;
+	float DefensiveAimMaxAngle = 0;
+	float DefensiveStepAngle = 0;
+	float HitEvasionChance = 0;
+	u32 HitEvasionMemory = 0;
+	u32 HitEvasionCooldown = 0;
 	float CharacterSizeScaleMin = 0;
 	float CharacterSizeScaleMax = 0;
 	u32 CharacterContactGrace = 0;

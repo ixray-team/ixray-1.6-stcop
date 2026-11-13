@@ -363,6 +363,22 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 	CEntityAlive* TargetEntity = ExtendedEntityes::FindEntity(Observation.TargetIdentifier);
 	// A nearby ally can identify its personal attacker through a valid communication channel below.
 	const bool DefensiveAlert = Profile.HasCharacter && TargetEntity && SourceMonster.ProvokedEnemyIdentifier == TargetEntity->ID() && s32(SourceMonster.ProvokedEnemyUntil - Device.dwTimeGlobal) > 0;
+	// Support is a separate fact from coordinates. A duplicate position must not discard an ally's engagement.
+	const auto RegisterAssistance = [&]()
+	{
+		if (!Profile.HasCharacter || Profile.CharacterAggression <= 0.f || Observation.Kind != EELObservationKind::Enemy ||
+			!TargetEntity || !Adapter->IsEnemy(*TargetEntity) || SourceMonster.EnemyMan.get_enemy() != TargetEntity)
+		{
+			return;
+		}
+		SEncounter& State = Encounter(*TargetEntity);
+		const bool WasSupported = s32(State.AssistanceUntil - Device.dwTimeGlobal) > 0;
+		State.AssistanceUntil = Device.dwTimeGlobal + Profile.CharacterDecisionHold;
+		if (!WasSupported && CELSharedDebug::Instance().CanLogCombat(OwnerMonster.Position()))
+		{
+			CELSharedDebug::Instance().LogCombat(OwnerMonster.ID(), "[monsters_debug] ALLY_SUPPORT t=%u id=%u sender=%u target=%u resolve=%.1f roll=%.1f", Device.dwTimeGlobal, OwnerMonster.ID(), SourceMonster.ID(), TargetEntity->ID(), CharacterResolve(State), State.Initiative);
+		}
+	};
 	const float Distance = OwnerMonster.Position().distance_to(SourceMonster.Position());
 	if (!Observation.HasParentalChannel)
 	{
@@ -386,6 +402,11 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 			}
 			const bool SeesSender = Distance <= SourceProfile.SharingRadius && SharingSightVisible;
 			if (!SeesSender && !HeardCall) { return false; }
+			if (SeesSender && TargetEntity && Memory.Find(TargetEntity->ID()))
+			{
+				// This only supports an independently known threat; it does not deliver hidden enemy coordinates.
+				RegisterAssistance();
+			}
 			if (HeardCall && (!SeesSender || (Observation.Kind == EELObservationKind::Enemy && (!TargetEntity || !Adapter->CanSee(*TargetEntity)))))
 			{
 				// Hearing a hidden ally reveals the caller, never the caller's enemy position.
@@ -428,6 +449,10 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 		OwnerMonster.ProvokedEnemyIdentifier = TargetEntity->ID();
 		OwnerMonster.ProvokedEnemyUntil = Device.dwTimeGlobal + Profile.CharacterMemory;
 	}
+	if (TargetEntity && Memory.Find(TargetEntity->ID()))
+	{
+		RegisterAssistance();
+	}
 	const SELObservation* ExistingObservation = Memory.Find(Observation.TargetIdentifier);
 	if (ExistingObservation && (s32(Observation.ObservedAt - ExistingObservation->ObservedAt) < 0 || (!Observation.HasLivePosition && Observation.ObservedAt - ExistingObservation->ObservedAt < 1000 && Observation.Position.distance_to_sqr(ExistingObservation->Position) < 16.f)))
 	{
@@ -441,10 +466,7 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 	{
 		return false;
 	}
-	if (Profile.HasCharacter && Profile.CharacterAggression > 0.f && TargetEntity && SourceMonster.EnemyMan.get_enemy() == TargetEntity)
-	{
-		Encounter(*TargetEntity).AssistanceUntil = Device.dwTimeGlobal + Profile.CharacterDecisionHold;
-	}
+	RegisterAssistance();
 	if (Observation.HasParentalChannel)
 	{
 		TargetIdentifier = Observation.TargetIdentifier;
@@ -1210,7 +1232,7 @@ bool CELComponentBase::CanEngage(const SELObservation& Observation)
 		}
 		return Accepted;
 	};
-	if (State.Withdrawn && !RecentHit && !UnderAttack && !Berserk)
+	if (State.Withdrawn && !RecentHit && !UnderAttack && !Berserk && s32(State.AssistanceUntil - Now) <= 0)
 	{
 		if (s32(Now - State.DecisionUntil) < 0 || CharacterResolve(State) < CharacterResumeResolve(State))
 		{
@@ -1301,6 +1323,19 @@ bool CELComponentBase::ShouldFleeCharacter(const SELObservation* Observation)
 	const u32 Now = Device.dwTimeGlobal;
 	SEncounter& State = Encounter(*Target);
 	const float Resolve = CharacterResolve(State);
+	if ((State.Fleeing || State.Withdrawn) && Profile.CharacterAggression > 0.f && s32(State.AssistanceUntil - Now) > 0 && Resolve >= CharacterResumeResolve(State))
+	{
+		State.Fleeing = State.Withdrawn = false;
+		State.Engaged = true;
+		State.DecisionUntil = State.NextDecisionAt = Now + Profile.CharacterDecisionHold;
+		State.CombatReason = "supported_return_to_combat";
+		PublishNativeMemory();
+		Monster.EnemyMan.update();
+		if (CELSharedDebug::Instance().CanLogCombat(Monster.Position()))
+		{
+			CELSharedDebug::Instance().LogCombat(Monster.ID(), "[monsters_debug] RETURN_TO_COMBAT t=%u id=%u target=%u reason=ally_support resolve=%.1f resume=%.1f", Now, Monster.ID(), Target->ID(), Resolve, CharacterResumeResolve(State));
+		}
+	}
 	const bool WasFleeing = State.Fleeing;
 	// Being caught repeatedly is failure to escape even when locomotion itself still makes progress.
 	const bool Perceived = Adapter->CanSee(*Target);

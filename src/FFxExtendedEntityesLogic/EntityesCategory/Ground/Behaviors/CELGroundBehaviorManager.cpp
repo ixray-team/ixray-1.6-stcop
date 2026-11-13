@@ -82,25 +82,63 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	}
 	if (Owner.ShouldFleePredator(SelectedObservation))
 	{
+		bool Visible = SelectedObservation && SelectedTarget && Adapter.CanSee(*SelectedTarget);
+		if (SelectedTarget && SelectedObservation)
+		{
+			Owner.Tactics.Update(Adapter, Profile, *SelectedTarget, Visible, &Owner.Hearing, true);
+			if (Owner.Tactics.HasDefensiveSight())
+			{
+				Visible = true;
+				Owner.RememberEntity(*SelectedTarget, EELObservationSource::Vision, Device.dwTimeGlobal);
+				SelectedObservation = Owner.Memory.Find(SelectedTarget->ID());
+			}
+			if (Owner.Tactics.IsCounterAttacking())
+			{
+				Owner.BeginDefensiveCounter(*SelectedTarget);
+				Clear();
+				return Owner.UpdateTarget(*SelectedObservation, DeltaTime);
+			}
+			if (Owner.Tactics.StartedJump())
+			{
+				Clear();
+				return EELControl::Native;
+			}
+		}
 		if (Owner.IsWatchingThreat && SelectedObservation && SelectedTarget)
 		{
-			if (Adapter.CanSee(*SelectedTarget))
+			// Hidden targets contribute only their last observed position, never a current orientation.
+			const Fvector Forward = Visible ? SelectedTarget->Direction() : Fvector().set(0.f, 0.f, 0.f);
+			Fvector Eye;
+			if (Visible)
 			{
-				ReactionBehavior.ConfigureWatching(SelectedObservation->Position, SelectedTarget->Direction(), Device.dwTimeGlobal + Profile.ReactionCommandTime);
+				SelectedTarget->Center(Eye);
+				if (Owner.Tactics.HasDefensiveSight())
+				{
+					Eye = Owner.Tactics.DefensiveEye();
+				}
 			}
-			else
-			{
-				ReactionBehavior.Configure(SelectedObservation->Position, Device.dwTimeGlobal + Profile.ReactionCommandTime, false);
-			}
+			ReactionBehavior.ConfigureWatching(SelectedObservation->Position, Forward, Device.dwTimeGlobal + Profile.ReactionCommandTime, Visible, Visible ? &Eye : nullptr);
 		}
 		else
 		{
 			ReactionBehavior.Configure(SelectedObservation ? SelectedObservation->Position : Owner.LastFearPosition, Device.dwTimeGlobal + Profile.ReactionCommandTime, true);
 		}
+		ReactionBehavior.SetEvasionGoal(SelectedObservation && Owner.Tactics.HasGoal() ? &Owner.Tactics.Goal() : nullptr);
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
-		SetValidationReason(Owner.IsWatchingThreat ? "Осторожное сопровождение: держу дистанцию и обхожу сбоку" : Profile.HasCharacter ? "Отступление: характер и полученный отпор" : "Бегство от видового хищника");
+		if (ReactionBehavior.EvasionBlocked())
+		{
+			Owner.Tactics.RejectDefensiveGoal();
+		}
+		if (GetValidation().State == EELBehaviorState::Running && !Owner.Tactics.HasGoal())
+		{
+			SetValidationReason(Owner.IsWatchingThreat ? "Осторожное сопровождение: свободное пространство и укрытия" : Profile.HasCharacter ? "Отступление: характер и полученный отпор" : "Бегство от видового хищника");
+		}
 		return EELControl::Extended;
+	}
+	if (!SelectedObservation)
+	{
+		Owner.Tactics.Release(Adapter);
 	}
 	// A perceived but inaccessible enemy is a waiting stimulus, not a stale sound task.
 	for (const SELObservation& Known : Owner.Memory.GetRecords())
@@ -109,7 +147,10 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		CEntityAlive* VisibleEnemy = ExtendedEntityes::FindEntity(Known.TargetIdentifier);
 		if (!VisibleEnemy || !Adapter.IsEnemy(*VisibleEnemy) || !Adapter.CanSee(*VisibleEnemy) || !Owner.CanEngage(Known)) { continue; }
 		const bool CanPursue = Adapter.CanPursue(*VisibleEnemy, Known.Position);
-		if (CanPursue && Adapter.CanReach(Known.Position, Known.VertexIdentifier)) { continue; }
+		Fvector GroundPoint;
+		u32 GroundVertex;
+		// A stale but valid actor vertex does not prove that its current position lies on the graph.
+		if (CanPursue && CELGroundLocalSearch::Resolve(Adapter, Known.Position, GroundPoint, GroundVertex)) { continue; }
 		// Preserve legal bites and native jumps at graph edges, and the aerial interception executor.
 		if (CanPursue && ((!VisibleEnemy->UsedAI_Locations() && Profile.CanInterceptFlying) || Monster.MeleeChecker.can_start_melee(VisibleEnemy))) { continue; }
 		if (CanPursue && Profile.CanAttackJump && Monster.com_man().get_jump_control() && Monster.Position().distance_to_sqr(Known.Position) <= _sqr(Profile.LungeMaxDistance) && Monster.com_man().check_if_jump_possible(Known.Position, true)) { continue; }
@@ -119,18 +160,11 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		}
 		else
 		{
-			Fvector Away = Fvector().sub(Monster.Position(), Known.Position);
-			const float Angle = atan2f(Away.x, Away.z) + (Monster.ID() % 2 ? .35f : -.35f);
-			const float Radius = std::max(3.f, Profile.NativeAttackDistance * 1.5f);
-			Fvector WaitingPoint = Known.Position;
-			WaitingPoint.x += sinf(Angle) * Radius;
-			WaitingPoint.z += cosf(Angle) * Radius;
-			WaitingPoint.y = Monster.Position().y;
-			ReactionBehavior.Configure(WaitingPoint, Device.dwTimeGlobal + Profile.ReactionCommandTime, false);
+			ReactionBehavior.ConfigureObstacle(Known.Position, Device.dwTimeGlobal + Profile.ReactionCommandTime);
 		}
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
-		SetValidationReason(Owner.IsFleeingPredator ? "Отход от недосягаемой угрозы" : "Ожидание: противник обнаружен, подход недоступен");
+		// Preserve the execution reason: sniff, movement and a blocked path are different outcomes.
 		return EELControl::Extended;
 	}
 	const bool HasThreat = SelectedObservation && CELSharedTargets::ThreatPriority(*SelectedObservation, Adapter);

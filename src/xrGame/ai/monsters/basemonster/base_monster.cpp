@@ -508,6 +508,13 @@ void CBaseMonster::Hit(SHit* pHDS)
 			pHDS->add_wound = false; 	//раны нет
 		}
 	}
+	if (g_Alive() && (pHDS->hit_type == ALife::eHitTypeFireWound || pHDS->hit_type == ALife::eHitTypeStrike ||
+		pHDS->hit_type == ALife::eHitTypeWound || pHDS->hit_type == ALife::eHitTypeWound_2 || pHDS->hit_type == ALife::eHitTypeExplosion))
+	{
+		ExtendedPhysicalHitDirection = pHDS->dir;
+		ExtendedPhysicalHitAt = Device.dwTimeGlobal;
+		ExtendedPhysicalHitSource = pHDS->who ? u16(pHDS->who->ID()) : u16(-1);
+	}
 	inherited::Hit(pHDS);
 }
 
