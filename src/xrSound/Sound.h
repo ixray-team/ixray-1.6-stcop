@@ -247,6 +247,15 @@ typedef void sound_event (ref_sound_data_ptr S, float range);
 
 /// definition (Sound Manager Interface)
 class SoundEnvironment_LIB;
+
+struct SoundEnvironmentInfo
+{
+	shared_str Name;
+	float DecayTime;
+	float Reverb;
+};
+
+XRSOUND_API bool GetSoundEnvironmentInfo(SoundEnvironment_LIB& Library, u16 Id, SoundEnvironmentInfo& Info);
 class XRSOUND_API	CSound_manager_interface
 {
 	virtual void	  				_initialize				(int stage)																			= 0;

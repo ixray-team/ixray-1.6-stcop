@@ -231,6 +231,23 @@ void	SoundEnvironment_LIB::Unload	()
 		xr_delete(library[chunk]);
 	library.clear		();
 }
+bool GetSoundEnvironmentInfo(SoundEnvironment_LIB& Library, u16 Id, SoundEnvironmentInfo& Info)
+{
+	if (Id >= Library.Library().size())
+	{
+		return false;
+	}
+
+	const auto* Environment = Library.Get(Id);
+	if (!Environment)
+	{
+		return false;
+	}
+
+	Info = { Environment->name, Environment->DecayTime, Environment->Reverb };
+	return true;
+}
+
 int		SoundEnvironment_LIB::GetID		(const char* name)
 {
 	for (SE_IT it=library.begin(); it!=library.end(); it++)

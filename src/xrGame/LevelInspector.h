@@ -22,6 +22,7 @@ struct LevelInspector final
 		ESF_DRAW_CFORM_TRIS			= bit_lshift(14U),
 		ESF_DRAW_LEVEL_BOUNDS		= bit_lshift(15U),
 		ESF_DRAW_SOM				= (1 << 16),
+		ESF_DRAW_SOUND_ZONES		= bit_lshift(17U),
 	};
 	
 	enum ESELECTION_FLAGS
@@ -505,6 +506,7 @@ struct LevelInspector final
 	void DrawHOM();
 	void DrawCFORM();
 	void DrawSOM();
+	void DrawSoundZones();
 
 	void DrawLevelGraph();
 
