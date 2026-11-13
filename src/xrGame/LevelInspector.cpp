@@ -547,6 +547,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::Separator();
 
 					ImGui::CheckboxFlags("SOM", &m_flags.flags, LevelInspector::ESF_DRAW_SOM);
+					ImGui::CheckboxFlags("Sound Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SOUND_ZONES);
 					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
 					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
@@ -854,6 +855,10 @@ void LevelInspector::OnRender()
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOM))
 		{
 			DrawSOM();
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOUND_ZONES))
+		{
+			DrawSoundZones();
 		}
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
 		{
@@ -3991,6 +3996,78 @@ void LevelInspector::DrawCFORM()
 		temp_prims[1].clear();
 		temp_prims[1].temp_tris.shrink_to_fit();
 		temp_prims[1].temp_lines.shrink_to_fit();
+	}
+}
+
+void LevelInspector::DrawSoundZones()
+{
+	auto* Geometry = ::Sound ? ::Sound->get_geometry_env() : nullptr;
+	if (!Geometry)
+	{
+		return;
+	}
+
+	constexpr u32 LineColor = color_rgba(40, 220, 255, 255);
+	constexpr u32 FillColor = color_rgba(40, 220, 255, 40);
+
+	const auto& Vertices = Geometry->get_verts();
+	for (const CDB::TRI& Triangle : Geometry->get_tris())
+	{
+		const Fvector Points[3] =
+		{
+			Vertices[Triangle.verts[0]],
+			Vertices[Triangle.verts[1]],
+			Vertices[Triangle.verts[2]]
+		};
+		append_tri(Points[0], Points[1], Points[2], FillColor);
+		append_line(Points[0], Points[1], LineColor);
+		append_line(Points[1], Points[2], LineColor);
+		append_line(Points[2], Points[0], LineColor);
+	}
+
+	const Fvector& Origin = Device.vCameraPosition;
+	const Fvector& Direction = Device.vCameraDirection;
+	const float Range = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+	CDB::COLLIDER Picker;
+	Picker.ray_options(CDB::OPT_ONLYNEAREST);
+	Picker.ray_query(Geometry, Origin, Direction, Range);
+	if (Picker.r_count() == 0)
+	{
+		return;
+	}
+
+	const CDB::RESULT& Hit = *Picker.r_begin();
+	if (!visible_currents && zbuffer_enable && psDeviceFlags.test(rsDrawStatic))
+	{
+		collide::rq_result Obstacle;
+		if (Level().ObjectSpace.RayPick(Origin, Direction, Hit.range - EPS_L, collide::rqtStatic, Obstacle, nullptr))
+		{
+			return;
+		}
+	}
+
+	Fvector HitPosition;
+	HitPosition.mad(Origin, Direction, Hit.range);
+	if (!append_text3d(HitPosition, shared_str().printf("Sound Zone | %.1f m", Hit.range), LineColor))
+	{
+		return;
+	}
+
+	auto* Library = ::Sound->get_env_library();
+	const u16 Ids[] = { u16(Hit.dummy & 0xffff), u16(Hit.dummy >> 16) };
+	const char* Sides[] = { "Front", "Back" };
+	for (u32 Side = 0; Side < 2; ++Side)
+	{
+		SoundEnvironmentInfo Info{};
+		if (Library && GetSoundEnvironmentInfo(*Library, Ids[Side], Info))
+		{
+			append_text_next(shared_str().printf("%s [%u] %s | Decay %.2f s | Reverb %.2f",
+				Sides[Side], unsigned(Ids[Side]), *Info.Name ? *Info.Name : "", Info.DecayTime, Info.Reverb));
+		}
+		else
+		{
+			append_text_next(shared_str().printf("%s [%u]", Sides[Side], unsigned(Ids[Side])));
+		}
 	}
 }
 
