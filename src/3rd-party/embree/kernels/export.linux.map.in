@@ -1,4 +1,4 @@
-﻿{
+{
 global:
   rtc*;
   _ZN?@EMBREE_API_NAMESPACE@rtc*;
