@@ -15,6 +15,10 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 
 BOOL rs_car_wheel_friction_direction = false;
 
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+extern bool rs_car_anti_gravity;
+#endif
+
 CCar::SWheel::SWheelCollisionParams::SWheelCollisionParams()
 {
 		spring_factor								=1.0f	;
@@ -188,6 +192,16 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 		sp.mu *= cp.friction_slip_factor;
 		sp.mu2 *= cp.friction2_slip_factor;
 
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+		if (!rs_car_anti_gravity)
+		{
+			// Without anti-gravity the car is twice as heavy; halve the tire
+			// grip so the debug test reflects the increased load.
+			sp.mu *= 0.5f;
+			sp.mu2 *= 0.5f;
+		}
+#endif
+
 		cp.current_friction_factor = sp.mu;
 		cp.current_friction2_factor = sp.mu2;
 		MulSprDmp(sp.soft_cfm,sp.soft_cfm,cp.spring_factor,cp.damping_factor)				;
@@ -255,6 +269,7 @@ void CCar::SWheel::Init()
 	WheelFlags.set(eWheelType::wheel, TRUE);
 
 	joint->GetJointSDfactors(spring_factor_default, damping_factor_default);
+	spring_damping_scale = 1.f;
 	dJointGetHinge2Axis2(joint->GetDJoint(), (float*)&default_axis2);
 }
 
@@ -581,6 +596,9 @@ void CCar::SWheel::Repair()
 		if (damage_level >= 1)
 		{
 			joint->SetJointSDfactors(spring_factor_default, damping_factor_default);
+			// The next suspension update will reapply the debug scale if
+			// anti-gravity is disabled.
+			spring_damping_scale = 1.f;
 		}
 		if (damage_level >= 2)
 		{

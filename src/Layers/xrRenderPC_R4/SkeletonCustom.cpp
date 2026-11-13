@@ -497,16 +497,13 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 
 	visimask.set(bone_id, val);
 
+	// Keep hidden bones at their original origin. Moving them to the parent's
+	// transform center makes zero-scaled car-light vertices collapse at the
+	// door/trunk hinge instead of disappearing inside the lamp housing.
+	const Fvector last_pos = bone_instances[bone_id].mTransform.c;
 	if(!visimask.is(bone_id))
 	{
         bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
-
-		u16 parentID = LL_GetData(bone_id).GetParentID();
-		if (parentID != BI_NONE)
-		{
-			CBoneInstance& BI = LL_GetBoneInstance(parentID);
-			bone_instances[bone_id].mTransform.c = BI.mTransform.c;
-		}
 	}
 	else
 	{
@@ -519,6 +516,7 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 		for(CBoneData* BD : (*bones)[bone_id]->children)
 			LL_SetBoneVisible(BD->GetSelfID(), val, bRecursive);
 	}
+	bone_instances[bone_id].mTransform.c = last_pos;
 	Visibility_Invalidate();
 }
 

@@ -263,6 +263,7 @@ CCar::CCar()
 	m_engine_drive = 0.f;
 	m_engine_drive_noswitch = 0.f;
 	m_engine_drive_time = 0.f;
+	m_engine_idle_time = 0.f;
 	m_engine_heavy = 0.f;
 	m_engine_heavy_constant = 0.2f;
 	m_engine_heavy_rpm = 0.2f;
@@ -273,7 +274,6 @@ CCar::CCar()
 	m_sound_rpm = 0.0f;
 	m_wheels_spin_factor_start = 0.75f;
 	m_wheels_spin_factor_stop = 0.8f;
-	b_auto_switch_transmission = false;
 	b_auto_transmission_stop = false;
 	b_cvt_transmission = false;
 	mb_traction = false;
@@ -431,6 +431,8 @@ CCar::~CCar(void)
 		xr_delete(camera[i]);
 
 	xr_delete			(m_car_sound);
+
+	DestroyCharacterScraper();
 
 	ClearExhausts		();
 
@@ -1512,7 +1514,10 @@ void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, S
 	CPhysicsShellHolder* Other = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(!bo1));
 	if (Other != nullptr)
 	{
-		if (do_colide && Other != Car)
+		// Characters already produce their own footsteps/hit sounds. Feeding
+		// their contacts into the car body impact table made small movable
+		// parts such as engine doors rattle audibly when the actor touched them.
+		if (do_colide && Other != Car && Other->cast_actor() == nullptr)
 		{
 			Fvector CarVelocity;
 			Fvector OtherVelocity;
@@ -2066,6 +2071,17 @@ void	CCar::net_Destroy()
 	Engine.Sheduler.Unregister(this);
 }
 
+void CCar::DestroyCharacterScraper()
+{
+	if (!characters_scraper_shell)
+		return;
+
+	characters_scraper_shell->Deactivate();
+	characters_scraper_shell->ZeroCallbacks();
+	xr_delete(characters_scraper_shell);
+	characters_scraper_shell = nullptr;
+}
+
 void CCar::net_Save(NET_Packet& P)
 {
 	inherited::net_Save(P);
@@ -2184,6 +2200,12 @@ void CCar::shedule_Update(u32 dt)
 	inherited::shedule_Update(dt);
 	if(CPHDestroyable::Destroyed())CPHDestroyable::SheduleUpdate(dt);
 	else	CPHSkeleton::Update(dt);
+
+	// The explosion itself can run inside physics processing, where a shell
+	// cannot be deactivated. Release the character scraper on the next
+	// schedule tick instead.
+	if (b_exploded)
+		DestroyCharacterScraper();
 	
 	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetfHealth()))
 		CarExplode();
@@ -2423,6 +2445,10 @@ bool rs_car_info = false;
 bool rs_car_transmission = false;
 bool rs_car_hud_draw = true;
 bool rs_car_unlimitedfuel = false;
+bool rs_car_auto_transmission = true;
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+bool rs_car_anti_gravity = true;
+#endif
 
 void CCar::DrawCarInfo()
 {
@@ -2666,12 +2692,17 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 		DrawCarInfo();
 	if (e_state_drive == drive && ((!IsTransmissionSwitching() || b_transmission_switch_drive) || brp))
 	{
+		if (m_engine_valve == 0 && Device.fTimeGlobal - m_engine_idle_time < 3.f * Device.fTimeDelta && m_transmission_switch_time + m_transmission_switch_delay + 3.f * Device.fTimeDelta < Device.fTimeGlobal) // anti-spam disables valve sound
+			m_car_sound->snd_valve.set_volume(0.f);
+
+		// valve resets to 1 so it can be triggered again
 		m_engine_valve = 1;
 		m_engine_drive = 1.f;
-		m_car_sound->snd_valve.set_volume(0.f);
+		m_engine_idle_time = Device.fTimeGlobal;
 	}
 	else
 	{
+		//Msg("%f", Device.fTimeGlobal - m_engine_idle_time);
 		if (m_engine_valve_switch)
 		{
 			if (m_car_sound->snd_valve._p && m_engine_valve == 1 && !(fwp && bkp))
@@ -3169,6 +3200,12 @@ void	CCar::Hit							(SHit* pHDS)
 	}
 
 	inherited::Hit(pHDS);
+
+	// CEntity::CalcCondition() sets health through CEntity::SetfHealth, which
+	// bypasses the CCar override, so stall here as well.
+	if (!b_exploded && GetfHealth() <= 0.f && b_engine_on)
+		Stall();
+
 	if (m_zero_health_explosion_timer)
 	{
 		if (GetfHealth() <= 0.f)
@@ -3392,6 +3429,20 @@ bool CCar::RepairFromItem()
 float CCar::SetfHealth(float value)
 {
 	float result = CEntity::SetfHealth(value);
+
+	// A destroyed engine cannot keep running. Stall before the explosion
+	// timer starts so the car stops immediately at zero health.
+	if (value <= 0.f && b_engine_on)
+		Stall();
+
+	if (m_car_sound)
+	{
+		if (value > 0.f)
+			m_car_sound->StopFire();
+		else
+			m_car_sound->StartFire();
+	}
+
 	if (m_zero_health_explosion_timer)
 	{
 		if (value > 0.f)
@@ -3408,6 +3459,9 @@ void CCar::StartExplosionTimer(float time)
 {
 	if (b_exploded || !m_zero_health_explosion_timer)
 		return;
+
+	if (GetfHealth() <= 0.f && b_engine_on)
+		Stall();
 
 	if (time < 0.f)
 	{
@@ -3432,12 +3486,16 @@ void CCar::StartExplosionTimer(float time)
 
 	CDelayedActionFuse::CheckCondition(0.f);
 	m_damage_particles.Play3(this);
+	if (m_car_sound)
+		m_car_sound->StartFire();
 }
 
 void CCar::StopExplosionTimer()
 {
 	CDelayedActionFuse::Reset();
 	m_damage_particles.Stop3(this);
+	if (m_car_sound)
+		m_car_sound->StopFire();
 }
 
 void CCar::RestoreExplosionState()
@@ -4126,7 +4184,6 @@ void CCar::LoadSoundDefinitions(CInifile* ini)
 
 void CCar::LoadTransmissionDefinitions(CInifile* ini)
 {
-	b_auto_switch_transmission = !!ini->r_bool("car_definition", "auto_transmission");
 	b_cvt_transmission = READ_IF_EXISTS(ini, r_bool, "car_definition", "cvt_transmission", b_cvt_transmission);
 	m_transmission_switch_delay = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_delay", m_transmission_switch_delay);
 	m_transmission_switch_power_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_power_factor", m_transmission_switch_power_factor);
@@ -4623,6 +4680,15 @@ void CCar::SyncServerRuntimeState()
 
 void CCar::StartEngine()
 {
+	if (GetfHealth() <= 0.f)
+	{
+		// A destroyed car cannot be started; the engine stays off even if
+		// the script or the engine key asks for it.
+		b_engine_on = false;
+		b_starting = false;
+		return;
+	}
+
 	if(b_engine_on || b_starting) return;
 
 	const bool HasFuel = m_fuel >= EPS;
@@ -4645,7 +4711,7 @@ void CCar::StartEngine()
 
 void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
 {
-	if (EngineOn)
+	if (EngineOn && GetfHealth() > 0.f)
 	{
 		// Resume a running engine without replaying the starter sequence.
 		if (!b_engine_on)
@@ -4721,6 +4787,7 @@ float CCar::EngineStartSuccessChance() const
 }
 void CCar::StopEngine()
 {
+	b_starting = false;
 	if(!b_engine_on) return;
 	AscCall(ascSndStall);
 	AscCall(ascExhoustStop);
@@ -4733,6 +4800,7 @@ void CCar::StopEngine()
 
 void CCar::Stall()
 {
+	b_starting = false;
 	AscCall(ascSndStall);
 	AscCall(ascExhoustStop);
 	NeutralDrive();//set zero speed
@@ -4809,7 +4877,7 @@ void CCar::UpdatePower()
 			m_current_rpm = EngineDriveSpeed();
 			if (!b_cvt_transmission)
 			{
-				if (!b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty())
+				if (rs_car_auto_transmission && !b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty())
 				{
 					if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) TransmissionDown();
 					if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2] && GetSpeedKmH() > m_gear_ratious[CurrentTransmission()][3]) TransmissionUp();
@@ -5178,6 +5246,11 @@ void CCar::TransmissionDown()
 
 void CCar::PhTune(float step)
 {
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+	if (!rs_car_anti_gravity)
+		return;
+#endif
+
 	for(u16 i=PPhysicsShell()->get_ElementsNumber();i!=0;i--)	
 	{
 		CPhysicsElement* e=PPhysicsShell()->get_ElementByStoreOrder(i-1);
@@ -6124,6 +6197,34 @@ void CCar::PhDataUpdate(float step)
 	UpdateTractionAndSuspension(Slip);
 	UpdateWaterDrag(step);
 	UpdateReturnBones(step);
+
+	// A car that is already almost at rest gets a small velocity decay. The
+	// hinge-based suspension can keep a light car oscillating around its rest
+	// position under a character's weight; damping that residual motion lets
+	// the shell settle and disable normally. This is only needed while the
+	// anti-gravity handling aid is active: with full weight the car settles
+	// by itself.
+	bool ApplyRestDamping = true;
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+	ApplyRestDamping = rs_car_anti_gravity;
+#endif
+
+	if (ApplyRestDamping && m_pPhysicsShell && m_pPhysicsShell->isEnabled()
+		&& GetVelocityM() < 0.2f && GetAVelocityM() < 0.2f)
+	{
+		if (CPhysicsElement* Root = m_pPhysicsShell->get_ElementByStoreOrder(0))
+		{
+			Fvector Vel;
+			Root->get_LinearVel(Vel);
+			Vel.y *= 0.9f;
+			Root->set_LinearVel(Vel);
+
+			Fvector AVel;
+			Root->get_AngularVel(AVel);
+			AVel.mul(0.9f);
+			Root->set_AngularVel(AVel);
+		}
+	}
 }
 
 void CCar::UpdatePhDataObjects()
@@ -6144,7 +6245,8 @@ void CCar::UpdatePhDataObjects()
 
 	if (characters_scraper_shell)
 	{
-		characters_scraper_shell->Enable();
+		if (Owner() != nullptr && !characters_scraper_shell->isEnabled())
+			characters_scraper_shell->Enable();
 		characters_scraper_shell->SetTransform(XFORM(), mh_clear);
 		characters_scraper_shell->set_LinearVel(zero_vel);
 		characters_scraper_shell->set_AngularVel(zero_vel);
@@ -6156,27 +6258,37 @@ void CCar::UpdatePhDataObjects()
 		CWPB->PhDataUpdate();
 	}
 
-	for (auto& it : engine_door)
+	// Enabling an element calls CPHShell::EnableObject(), which wakes the
+	// whole car. Only do it when the body is actually disabled, otherwise a
+	// parked car with a character on it never gets a chance to settle.
+	if (m_pPhysicsShell && m_pPhysicsShell->isEnabled())
 	{
-		if (!it.joint || !it.joint->bActive) continue;
-
-		float lo_limit, hi_limit;
-		it.joint->GetLimits(lo_limit, hi_limit, 0);
-		if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+		for (auto& it : engine_door)
 		{
-			it.joint->PSecond_element()->Enable();
+			if (!it.joint || !it.joint->bActive) continue;
+
+			float lo_limit, hi_limit;
+			it.joint->GetLimits(lo_limit, hi_limit, 0);
+			if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+			{
+				CPhysicsElement* element = it.joint->PSecond_element();
+				if (element && element->isActive() && !dBodyIsEnabled(element->get_body()))
+					element->Enable();
+			}
 		}
-	}
 
-	for (auto& it : headlight_hideaways)
-	{
-		if (!it.joint || !it.joint->bActive) continue;
-
-		float lo_limit, hi_limit;
-		it.joint->GetLimits(lo_limit, hi_limit, 0);
-		if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+		for (auto& it : headlight_hideaways)
 		{
-			it.joint->PSecond_element()->Enable();
+			if (!it.joint || !it.joint->bActive) continue;
+
+			float lo_limit, hi_limit;
+			it.joint->GetLimits(lo_limit, hi_limit, 0);
+			if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+			{
+				CPhysicsElement* element = it.joint->PSecond_element();
+				if (element && element->isActive() && !dBodyIsEnabled(element->get_body()))
+					element->Enable();
+			}
 		}
 	}
 }
@@ -6569,13 +6681,14 @@ bool CCar::UpdateWheelPhysics()
 
 void CCar::UpdateWheelSuspension(SWheel& Wheel)
 {
+	float spring_ = Wheel.spring_factor_default;
+	float damping_ = Wheel.damping_factor_default;
+
 	if (Wheel.suspension_force_inc > 0.f)
 	{
 		Fmatrix bone_bxform = bones_bind_forms[Wheel.bone_id];
 		Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform(Wheel.bone_id);
 
-		float spring_ = Wheel.spring_factor_default;
-		float damping_ = Wheel.damping_factor_default;
 		float median = (spring_ + damping_) * 0.5f;
 
 		if (bone_bxform.c.distance_to(bone_xform.c) > Wheel.suspension_distance)
@@ -6596,14 +6709,40 @@ void CCar::UpdateWheelSuspension(SWheel& Wheel)
 		}
 		Wheel.spring_last = spring_;
 		Wheel.damping_last = damping_;
-
-
-		Wheel.joint->SetJointSDfactors(spring_, damping_);
 	}
 	else
 	{
 		Wheel.spring_last = Wheel.spring_factor_default;
 		Wheel.damping_last = Wheel.damping_factor_default;
+	}
+
+	float SpringDampingScale = 1.f;
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+	if (!rs_car_anti_gravity)
+	{
+		// With anti-gravity disabled the car is much heavier. Stiffen the
+		// suspension in the same proportion to keep the wheels off the body.
+		SpringDampingScale = 2.f;
+	}
+#endif
+
+	if (Wheel.suspension_force_inc > 0.f)
+	{
+		Wheel.joint->SetJointSDfactors(spring_ * SpringDampingScale, damping_ * SpringDampingScale);
+		Wheel.spring_damping_scale = SpringDampingScale;
+	}
+	else if (Wheel.spring_damping_scale != SpringDampingScale)
+	{
+		// Scale the current joint values instead of resetting them to the OGF
+		// defaults, so wheel damage and other runtime joint changes survive
+		// toggling the debug switch.
+		float SpringFactor = 0.f;
+		float DampingFactor = 0.f;
+		Wheel.joint->GetJointSDfactors(SpringFactor, DampingFactor);
+
+		const float Ratio = SpringDampingScale / Wheel.spring_damping_scale;
+		Wheel.joint->SetJointSDfactors(SpringFactor * Ratio, DampingFactor * Ratio);
+		Wheel.spring_damping_scale = SpringDampingScale;
 	}
 }
 

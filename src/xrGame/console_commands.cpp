@@ -3252,6 +3252,11 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Float, "air_resistance_epsilon", &air_resistance_epsilon, .0f, 1.f);
 #endif // #ifdef DEBUG
 
+#if defined(DEBUG) || defined(DEBUG_DRAW)
+	extern bool rs_car_anti_gravity;
+	CMD2(CCC_Boolean, "rs_car_anti_gravity", &rs_car_anti_gravity);
+#endif
+
 	CMD4(CCC_Integer, "g_sleep_time", &psActorSleepTime, 1, 24);
 	
 	CMD2(CCC_Boolean, "g_artefacts_on_hud", &g_artefacts_on_hud);
@@ -3261,6 +3266,9 @@ void CCC_RegisterCommands()
 
 	extern bool rs_car_info;
 	CMD2(CCC_Boolean, "rs_car_info", &rs_car_info);
+
+	extern bool rs_car_auto_transmission;
+	CMD2(CCC_Boolean, "rs_car_auto_transmission", &rs_car_auto_transmission);
 
 #ifndef MASTER_GOLD
 	extern bool rs_car_unlimitedfuel;

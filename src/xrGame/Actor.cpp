@@ -2928,7 +2928,16 @@ void CActor::renderable_Render()
 {
 	VERIFY(_valid(XFORM()));
 	inherited::renderable_Render();
-	CInventoryOwner::renderable_Render();
+
+	// CInventoryOwner::renderable_Render() draws the active item and the
+	// strapped-back weapons manually, bypassing their visibility flags. While
+	// the actor occupies a vehicle holder, the car camera must not show any of
+	// those inventory visuals.
+	if (m_holder == nullptr)
+	{
+		CInventoryOwner::renderable_Render();
+	}
+
 	VERIFY(_valid(XFORM()));
 }
 
