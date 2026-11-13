@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "base_monster.h"
 #include "../../../ai_space.h"
@@ -265,9 +266,9 @@ void CBaseMonster::reload	(const char* section)
 
 	// save panic_threshold
 	m_default_panic_threshold = m_panic_threshold;
-	ThreatTier = pSettings->read_if_exists<u32>(section, "monster_threat_tier", 1u);
+	ThreatTier = ExtendedEntityesOptions::Read<u32>(pSettings, section, "monster_threat_tier", 1u);
 	clamp(ThreatTier, 1u, 5u);
-	EmmiPainProtection = pSettings->read_if_exists<u32>(section, "emmi_pain_protection", ThreatTier);
+	EmmiPainProtection = ExtendedEntityesOptions::Read<u32>(pSettings, section, "emmi_pain_protection", ThreatTier);
 	clamp(EmmiPainProtection, 1u, 5u);
 }
 

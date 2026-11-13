@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include <algorithm>
+#include <cmath>
 #include "control_animation_base.h"
 #include "control_direction_base.h"
 #include "control_movement_base.h"
@@ -690,60 +692,86 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 
 void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 {
-	if (!m_object->EnemyMan.get_enemy()) return;
-	const CEntityAlive *enemy = m_object->EnemyMan.get_enemy();
-
-	SAAParam &params		= AA_GetParams(motion,time_perc);
-	
-	m_object->sound().play	(MonsterSound::eMonsterSoundAttackHit);
-
-	bool should_hit = true;
-	// определить дистанцию до врага
-	Fvector d;
-	d.sub(enemy->Position(),m_object->Position());
-	if (m_object->MeleeChecker.TargetDistance(enemy) > params.dist * m_object->GetVisualScale())
-		should_hit = false;
-	
-	// проверка на  Field-Of-Hit
-	float my_h,my_p;
-	float h,p;
-
-	m_object->Direction().getHP(my_h,my_p);
-	d.getHP(h,p);
-	
-	float from	= angle_normalize(my_h + params.foh.from_yaw);
-	float to	= angle_normalize(my_h + params.foh.to_yaw);
-	
-	if (!is_angle_between(h, from, to)) 
-		should_hit = false;
-
-	from		= angle_normalize(my_p + params.foh.from_pitch);
-	to			= angle_normalize(my_p + params.foh.to_pitch);
-
-	if (!is_angle_between(p, from, to)) 
-		should_hit = false;
-
-	CEntityAlive* not_const_enemy = const_cast<CEntityAlive*>(enemy);
-	const CActor* pA = not_const_enemy != nullptr ? not_const_enemy->cast_actor() : nullptr;
-	if (should_hit && pA) {
-		Fvector C, enemy_center;
-		m_object->Center(C);
-		enemy->Center(enemy_center);
-		Fvector dir;
-		dir.sub(enemy_center, C);
-		dir.normalize();
-		collide::rq_results RQR;
-		const float HitRange = m_object->GetVisualScale() == 1.f && enemy->GetVisualScale() == 1.f ? params.dist : C.distance_to(enemy_center) + EPS_L;
-		collide::ray_defs RD(C, dir, HitRange, CDB::OPT_CULL, collide::rqtBoth);
-		ray_query_param params(m_object, enemy);
-		Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
-		should_hit = params.m_can_hit_enemy;
+	if (!m_object->EnemyMan.get_enemy())
+	{
+		return;
 	}
+	const CEntityAlive* Enemy = m_object->EnemyMan.get_enemy();
+	SAAParam& Attack = AA_GetParams(motion, time_perc);
+	m_object->sound().play(MonsterSound::eMonsterSoundAttackHit);
 
-	if (should_hit) 
-		m_object->HitEntity(enemy, params.hit_power, params.impulse, params.impulse_dir);
+	const float Distance = m_object->MeleeChecker.TargetDistance(Enemy);
+	const float Range = Attack.dist * m_object->GetVisualScale();
+	const bool CanCorrect = m_object->UsesExtendedCombat && m_object->EnemyMan.see_enemy_now(Enemy);
+	const float Tolerance = CanCorrect ? m_object->ExtendedMeleeHitTolerance : 0.f;
+	m_object->NativeHitDistance = Distance;
+	m_object->NativeHitRange = Range;
+	m_object->NativeHitCorrected = false;
+	m_object->NativeHitReason = "hit";
 
-	m_object->MeleeChecker.on_hit_attempt(should_hit);
+	Fvector Direction = Fvector().sub(Enemy->Position(), m_object->Position());
+	float OwnerYaw, OwnerPitch, TargetYaw, TargetPitch;
+	m_object->Direction().getHP(OwnerYaw, OwnerPitch);
+	Direction.getHP(TargetYaw, TargetPitch);
+	// Express the same small positional error as an angular margin, capped at fifteen degrees.
+	const float AngleTolerance = std::min(PI / 12.f, std::atan2(Tolerance, std::max(.1f, Direction.magnitude())));
+	const auto InArc = [](float Angle, float Origin, float From, float To, float Margin)
+	{
+		return is_angle_between(Angle, angle_normalize(Origin + From), angle_normalize(Origin + To)) ||
+			(Margin > 0.f && (angle_difference(Angle, Origin + From) <= Margin || angle_difference(Angle, Origin + To) <= Margin));
+	};
+	const bool OriginalYaw = InArc(TargetYaw, OwnerYaw, Attack.foh.from_yaw, Attack.foh.to_yaw, 0.f);
+	const bool OriginalPitch = InArc(TargetPitch, OwnerPitch, Attack.foh.from_pitch, Attack.foh.to_pitch, 0.f);
+	bool ShouldHit = true;
+	if (Distance > Range + Tolerance)
+	{
+		ShouldHit = false;
+		m_object->NativeHitReason = "outside_hit_distance";
+	}
+	else if (!InArc(TargetYaw, OwnerYaw, Attack.foh.from_yaw, Attack.foh.to_yaw, AngleTolerance))
+	{
+		ShouldHit = false;
+		m_object->NativeHitReason = "outside_hit_yaw";
+	}
+	else if (!InArc(TargetPitch, OwnerPitch, Attack.foh.from_pitch, Attack.foh.to_pitch, AngleTolerance))
+	{
+		ShouldHit = false;
+		m_object->NativeHitReason = "outside_hit_pitch";
+	}
+	m_object->NativeHitCorrected = ShouldHit && (Distance > Range || !OriginalYaw || !OriginalPitch);
+
+	// Every corrected hit uses the current body position and an unbudgeted impact-time obstruction test.
+	// The event still owns damage timing; no damage is synthesized between animation events.
+	const CActor* Player = const_cast<CEntityAlive*>(Enemy)->cast_actor();
+	if (ShouldHit && (Player || m_object->UsesExtendedCombat))
+	{
+		Fvector Origin, Center;
+		m_object->Center(Origin);
+		Enemy->Center(Center);
+		Fvector RayDirection = Fvector().sub(Center, Origin);
+		const float Length = RayDirection.magnitude();
+		if (Length > EPS_L)
+		{
+			RayDirection.div(Length);
+			collide::rq_results Results;
+			const float HitRange = m_object->UsesExtendedCombat || m_object->GetVisualScale() != 1.f || Enemy->GetVisualScale() != 1.f ? Length + EPS_L : Attack.dist;
+			collide::ray_defs Ray(Origin, RayDirection, HitRange, CDB::OPT_CULL, collide::rqtBoth);
+			ray_query_param Query(m_object, Enemy);
+			Level().ObjectSpace.RayQuery(Results, Ray, check_hit_trace_callback, &Query, nullptr, m_object);
+			ShouldHit = Query.m_can_hit_enemy;
+			if (!ShouldHit)
+			{
+				m_object->NativeHitReason = "hit_obstructed";
+				m_object->NativeHitCorrected = false;
+			}
+		}
+	}
+	if (ShouldHit)
+	{
+		m_object->NativeHitReason = m_object->NativeHitCorrected ? "hit_with_tolerance" : "hit";
+		m_object->HitEntity(Enemy, Attack.hit_power, Attack.impulse, Attack.impulse_dir);
+	}
+	m_object->MeleeChecker.on_hit_attempt(ShouldHit);
 }
 
 void parse_anim_params(const char* val, SAAParam &anim) 

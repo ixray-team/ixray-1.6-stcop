@@ -122,7 +122,7 @@ void ExtendedEntityes::RecordDeath(CBaseMonster& Victim, CObject* Killer)
 {
 	if (CELSharedDebug::Instance().CanLogCombat(Victim.Position()))
 	{
-		Msg("[monsters_debug] DEATH t=%u victim=%u section=%s killer=%u pos=%.2f,%.2f,%.2f", Device.dwTimeGlobal, Victim.ID(), *Victim.cNameSect(), Killer ? Killer->ID() : u16(-1), Victim.Position().x, Victim.Position().y, Victim.Position().z);
+		CELSharedDebug::Instance().LogCombat(Victim.ID(), "[monsters_debug] DEATH t=%u victim=%u section=%s killer=%u pos=%.2f,%.2f,%.2f", Device.dwTimeGlobal, Victim.ID(), *Victim.cNameSect(), Killer ? Killer->ID() : u16(-1), Victim.Position().x, Victim.Position().y, Victim.Position().z);
 	}
 	CELSharedDeaths::Record(Victim, Killer);
 	Detach(Victim);
@@ -545,7 +545,7 @@ void ExtendedEntityes::RecordHit(CEntityAlive& Target, u16 AttackerIdentifier, f
 {
 	if (CELSharedDebug::Instance().CanLogCombat(Target.Position()))
 	{
-		Msg("[monsters_debug] HIT t=%u attacker=%u victim=%u section=%s hp_before=%.4f hp_after=%.4f", Device.dwTimeGlobal, AttackerIdentifier, Target.ID(), *Target.cNameSect(), PreviousHealth, Target.GetfHealth());
+		CELSharedDebug::Instance().LogCombat(Target.ID(), "[monsters_debug] HIT t=%u attacker=%u victim=%u section=%s hp_before=%.4f hp_after=%.4f", Device.dwTimeGlobal, AttackerIdentifier, Target.ID(), *Target.cNameSect(), PreviousHealth, Target.GetfHealth());
 	}
 	CELSharedDebug::Instance().RecordHit(Target, AttackerIdentifier, PreviousHealth);
 	CELSharedTargets::RecordHit(Target, AttackerIdentifier, PreviousHealth);

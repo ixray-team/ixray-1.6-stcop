@@ -21,7 +21,15 @@ TEMPLATE_SPECIALIZATION
 void CStateMonsterAttackMeleeAbstract::execute()
 {
 	this->object->set_action			(ACT_ATTACK);
-	if (this->object->control().direction().is_face_target(this->object->EnemyMan.get_enemy(), PI_DIV_3))
+	if (this->object->UsesExtendedCombat)
+	{
+		if (this->object->EnemyMan.see_enemy_now())
+		{
+			const Fvector Aim = this->object->MeleeChecker.PredictTargetPosition(this->object->EnemyMan.get_enemy(), .1f);
+			this->object->dir().face_target(Aim, 0);
+		}
+	}
+	else if (this->object->control().direction().is_face_target(this->object->EnemyMan.get_enemy(), PI_DIV_3))
 		this->object->dir().face_target	(this->object->EnemyMan.get_enemy(), 800);
 	else 
 		this->object->dir().face_target	(this->object->EnemyMan.get_enemy(), 0, deg(15));

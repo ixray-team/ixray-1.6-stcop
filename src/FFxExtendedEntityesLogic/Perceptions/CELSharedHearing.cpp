@@ -99,6 +99,10 @@ float CELSharedHearing::HearingRadius(const SELSoundEvent& Event, const SELPerce
 
 u32 CELSharedHearing::Priority(EELNoiseType Type, const SELPerceptionProfile& Profile)
 {
+	if (Type == EELNoiseType::AllyCall)
+	{
+		return std::max({Profile.NoiseDangerPriority, Profile.NoiseShotPriority, Profile.NoiseOtherPriority}) + 1u;
+	}
 	if (Type == EELNoiseType::Explosion || Type == EELNoiseType::Injury || Type == EELNoiseType::Death)
 	{
 		return Profile.NoiseDangerPriority;
@@ -162,6 +166,7 @@ bool CELSharedHearing::RememberInterest(const SELObservation& Observation, const
 		return false;
 	}
 	const EELNoiseType Type = EELNoiseType(Observation.InterestType);
+	if (Type == EELNoiseType::AllyCall) { return false; }
 	if (Type != EELNoiseType::Light && !(Profile.InterestNoiseTypes & ELNoiseTypeMask(Type)))
 	{
 		return false;
@@ -178,7 +183,7 @@ void CELSharedHearing::ExportInterests(CELSharedMemory::Records& Records) const
 {
 	const auto Append = [&Records](const Fvector& Position, u16 Source, EELNoiseType Type, u32 Until, u32 ObservedAt)
 	{
-		if (s32(Until - Device.dwTimeGlobal) <= 0)
+		if (Type == EELNoiseType::AllyCall || s32(Until - Device.dwTimeGlobal) <= 0)
 		{
 			return;
 		}
@@ -207,6 +212,10 @@ void CELSharedHearing::ResumeInterest(const Fvector& Position)
 	}
 	const auto Best = std::max_element(Pending.begin(), Pending.end(), [&Position](const SPendingInterest& A, const SPendingInterest& B)
 	{
+		if ((A.Type == EELNoiseType::AllyCall) != (B.Type == EELNoiseType::AllyCall))
+		{
+			return B.Type == EELNoiseType::AllyCall;
+		}
 		return float(A.Priority) / (1.f + Position.distance_to(A.Position)) < float(B.Priority) / (1.f + Position.distance_to(B.Position));
 	});
 	AttentionPosition = Best->Position;
@@ -246,6 +255,22 @@ void CELSharedHearing::Investigate(const Fvector& Position, u16 Source, u32 Dura
 	PanicUntil = 0;
 	DamagePanic = false;
 	InvestigateUntil = AttentionStartedAt + Duration;
+}
+
+// Calls are complete interests, independent of ordinary sound accumulation and reaction throttling.
+void CELSharedHearing::ReceiveCall(const Fvector& Position, u16 Source, const SELPerceptionProfile& Profile)
+{
+	const u32 Now = Device.dwTimeGlobal;
+	if (s32(InvestigateUntil - Now) > 0 && AttentionNoiseType == EELNoiseType::AllyCall)
+	{
+		if (AttentionSource != Source || AttentionPosition.distance_to_sqr(Position) >= 1.f)
+		{
+			QueueInterest(Position, Source, EELNoiseType::AllyCall, Now + Profile.NoiseSearchTime, Priority(EELNoiseType::AllyCall, Profile), false, Now);
+		}
+		return;
+	}
+	Investigate(Position, Source, Profile.NoiseSearchTime, Priority(EELNoiseType::AllyCall, Profile));
+	AttentionNoiseType = EELNoiseType::AllyCall;
 }
 
 bool CELSharedHearing::GetCounterOpportunity(u16 Source, u32& OccurredAt) const
@@ -299,7 +324,7 @@ void CELSharedHearing::FillDebug(SELDebugRecord& Record) const
 }
 
 // Обрабатывает принятое звуковое событие по настроенным правилам реакции.
-bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerPosition, const SELPerceptionProfile& Profile, u16 ListenerIdentifier)
+bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerPosition, const SELPerceptionProfile& Profile, u16 ListenerIdentifier, bool AllowAttraction)
 {
 	if (Event.Power < Profile.NoiseMinPower || !Event.SoundType || Event.SoundType == u32(-1) || !_valid(Event.Position))
 	{
@@ -309,7 +334,7 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	const u32 TypeMask = ELNoiseTypeMask(Type);
 	const bool IsLight = Type == EELNoiseType::Light;
 	const bool CanFrighten = !IsLight && (Profile.FearNoiseTypes & TypeMask) != 0;
-	const bool CanAttract = IsLight || (!CanFrighten && (Profile.InterestNoiseTypes & TypeMask) != 0);
+	const bool CanAttract = AllowAttraction && (IsLight || (!CanFrighten && (Profile.InterestNoiseTypes & TypeMask) != 0));
 	const bool CounterEvent = Profile.CanCounterAttack &&
 		((Type == EELNoiseType::Reload && Profile.CounterOnReload && Profile.CanHearWorld) ||
 		 (Type == EELNoiseType::EmptyClick && Profile.CounterOnEmptyClick && Profile.CanHearWorld) ||
@@ -555,6 +580,38 @@ void CELSharedHearing::Clear()
 }
 
 // Удаляет накопленный шум и активную реакцию исчезнувшего источника.
+// Cancel investigation without erasing fear, damage panic or real counterattack cues.
+void CELSharedHearing::SuppressInterest(u16 SourceIdentifier)
+{
+	if (SourceIdentifier == u16(-1))
+	{
+		return;
+	}
+	Pending.erase(std::remove_if(Pending.begin(), Pending.end(), [SourceIdentifier](const SPendingInterest& Task) { return Task.Source == SourceIdentifier; }), Pending.end());
+	for (SELNoiseAttention& Record : Attention)
+	{
+		if (Record.SourceIdentifier == SourceIdentifier)
+		{
+			Record.Interest = 0.f;
+		}
+	}
+	if (LookSource == SourceIdentifier)
+	{
+		LookUntil = 0;
+		LookSource = u16(-1);
+	}
+	if (AttentionSource == SourceIdentifier)
+	{
+		InvestigateUntil = 0;
+		if (s32(PanicUntil - Device.dwTimeGlobal) <= 0)
+		{
+			AttentionSource = u16(-1);
+			AttentionIsActorSound = false;
+			AttentionPriority = AttentionStartedAt = LastAttentionEventAt = 0;
+		}
+	}
+}
+
 void CELSharedHearing::RemoveObject(u16 SourceIdentifier)
 {
 	if (OpportunitySource == SourceIdentifier)

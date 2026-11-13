@@ -31,6 +31,7 @@ public:
 
 protected:
 	void FillDebugRecord(SELDebugRecord& Record) const;
+	void FillCharacterDecisions(SELDebugRecord& Record) const;
 	virtual void FillCombatDebug(SELDebugRecord&) const {}
 	void UpdateFieldExposure();
 	void UpdateCharacter();
@@ -40,6 +41,7 @@ protected:
 	u32 NextRallyCapture = 0;
 	bool HasEnemyPressure();
 	bool ShouldFleeCharacter(const SELObservation* Observation);
+	bool IsCharacterCounterAttacking() const;
 	bool ShouldFleePredator(const SELObservation* Observation);
 	virtual const SELObservation* SelectTarget();
 	void RememberEntity(CEntityAlive& TargetEntity, EELObservationSource Source, u32 ObservedAt);
@@ -49,6 +51,7 @@ protected:
 	virtual void ObserveCloseScent() {}
 	void ObservePeriphery();
 	void UpdateAuditoryAttention();
+	bool ShouldSuppressInterest(u16 SourceIdentifier) const;
 	virtual void ObserveVision(CBaseMonster& OwnerMonster, u32 CurrentTime);
 	void ObserveDamage(CBaseMonster& OwnerMonster, u32 CurrentTime);
 	bool HasVisualAcquired(CEntityAlive& Candidate, u32 CurrentTime);
@@ -72,6 +75,8 @@ protected:
 		u32 AssistanceUntil = 0;
 		u32 DecisionUntil = 0;
 		u32 NextDecisionAt = 0;
+		u32 ClosePressureSince = 0;
+		u32 LastClosePressureAt = 0;
 		float Initiative = 0.f;
 		float ResolveBias = 0.f;
 		float Experience = 0.f;
@@ -82,17 +87,25 @@ protected:
 		bool Engaged = false;
 		bool Fleeing = false;
 		bool Withdrawn = false;
+		u32 CombatDecisionAt = 0;
+		bool HasCombatDecision = false;
+		bool CombatAccepted = false;
+		const char* CombatReason = "not_evaluated";
 	};
 	SEncounter& Encounter(CEntityAlive& Target);
 	float CharacterConfidence(const SEncounter& State) const;
 	float CharacterResolve(const SEncounter& State) const;
+	float CharacterResumeResolve(const SEncounter& State) const;
 	xr_map<u16, SEncounter> Encounters;
 	float CharacterShock = 0.f;
 	float PackCourage = 0.f;
 	u32 CharacterUpdatedAt = 0;
+	u32 CharacterCounterAttackUntil = 0;
+	u16 CharacterCounterTarget = u16(-1);
 	u16 FearTarget = u16(-1);
 	u32 FearDecisionUntil = 0;
 	bool IsFleeingPredator = false;
+	bool IsWatchingThreat = false;
 	float Courage = 0.f;
 	u32 LastCourageAt = 0;
 	u16 TargetIdentifier = u16(-1);
@@ -102,14 +115,11 @@ protected:
 	bool SharingSightVisible = false;
 	Fvector LastFearPosition = {0.f, 0.f, 0.f};
 	u32 LastFearAt = 0;
-	u32 ReceiveAfter = 0;
 	u32 NextCloseProbe = 0;
 	u32 NextPeripheralProbe = 0;
 	u32 NextSoundLook = 0;
 	u32 SoundLookAppliedUntil = 0;
 	u32 PeripheralCursor = 0;
-	u32 LastReceivedAt = 0;
-	u16 LastSender = u16(-1);
 	bool HasAttached = false;
 	u16 ProvokedTarget = u16(-1);
 	u32 ProvokedUntil = 0;
@@ -118,6 +128,7 @@ protected:
 
 private:
 	u32 NextCandidateTrace = 0;
+	u32 NextHearingDecisionTrace = 0;
 	u32 NextCombatSample = 0;
 	u32 LastCombatLog = 0;
 	xr_string LastCombatState;

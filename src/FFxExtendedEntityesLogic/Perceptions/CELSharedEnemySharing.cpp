@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedMemory.h"
@@ -45,6 +46,64 @@ bool CELSharedEnemySharing::CanReceive(CBaseMonster& Receiver, CBaseMonster& Sou
 	return Receiver.g_Alive() && !Receiver.getDestroy() && Source.g_Alive() && !Source.getDestroy() && AreFriends(Receiver, Source);
 }
 
+// Help requests share the existing audible range and cooldown; movement never waits for delivery.
+bool CELSharedEnemySharing::TryCall(CBaseMonster& SourceMonster, const SELPerceptionProfile& Profile, bool IsHelp)
+{
+	const u32 CurrentTime = Device.dwTimeGlobal;
+	if (!Profile.CanCall || !CELSharedSettings::CanPlayCalls() || s32(CurrentTime - NextCall) < 0)
+	{
+		return false;
+	}
+	if (Profile.CallSound.size())
+	{
+		const u32 CallIdentifier = MonsterSound::eMonsterSoundCustom + 1;
+		if (SourceMonster.sound().objects().find(CallIdentifier) == SourceMonster.sound().objects().end())
+		{
+			SourceMonster.sound().add(Profile.CallSound.c_str(), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_TALKING, MonsterSound::eNormalPriority + 2, u32(MonsterSound::eBaseChannel), CallIdentifier, ExtendedEntityesOptions::Read<str_c>(pSettings, SourceMonster.cNameSect().c_str(), "bone_head", "bip01_head"));
+		}
+		SourceMonster.sound().play(CallIdentifier);
+	}
+	else
+	{
+		SourceMonster.sound().play(MonsterSound::eMonsterSoundAggressive);
+	}
+	NextCall = CurrentTime + Profile.CallCooldown;
+	if (CELSharedDebug::Instance().IsDrawEnabled())
+	{
+		SELDebugEvent Event;
+		Event.Kind = EELDebugEvent::Call;
+		Event.OwnerIdentifier = SourceMonster.ID();
+		Event.Start = Event.Finish = SourceMonster.Position();
+		Event.Radius = Profile.SharingRadius * Profile.CallSharingRatio;
+		Event.Label = IsHelp ? "Клич помощи перед отступлением" : "Клич";
+		CELSharedDebug::Instance().PublishEvent(std::move(Event), 2000);
+	}
+	if (CELSharedDebug::Instance().CanLogCombat(SourceMonster.Position()))
+	{
+		CELSharedDebug::Instance().LogCombat(SourceMonster.ID(), "[monsters_debug] CALL t=%u id=%u reason=%s radius=%.1f", CurrentTime, SourceMonster.ID(), IsHelp ? "retreat_help" : "contact", Profile.SharingRadius * Profile.CallSharingRatio);
+	}
+	return true;
+}
+
+void CELSharedEnemySharing::RequestHelp(CBaseMonster& SourceMonster, const SELPerceptionProfile& Profile)
+{
+	if (Profile.IsPassive || !Profile.CanShare)
+	{
+		return;
+	}
+	const u32 Now = Device.dwTimeGlobal;
+	const bool Called = TryCall(SourceMonster, Profile, true);
+	if (Called)
+	{
+		HelpCallUntil = Now + 2000u;
+	}
+	NextSession = Now;
+	if (CELSharedDebug::Instance().CanLogCombat(SourceMonster.Position()))
+	{
+		CELSharedDebug::Instance().LogCombat(SourceMonster.ID(), "[monsters_debug] HELP_REQUEST t=%u id=%u called=%d cooldown_ms=%u", Now, SourceMonster.ID(), int(Called), NextCall > Now ? NextCall - Now : 0u);
+	}
+}
+
 // Обновляет согласованный обмен сведениями о врагах и обрабатывает текущий результат выполнения.
 void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedMemory& Memory, const SELPerceptionProfile& Profile, const CELSharedHearing& Hearing, u16 PriorityTarget)
 {
@@ -75,34 +134,8 @@ void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedM
 	{
 		return;
 	}
-	const bool HasCall = Profile.CanCall && CELSharedSettings::CanPlayCalls() && s32(CurrentTime - NextCall) >= 0;
-	if (HasCall)
-	{
-		if (Profile.CallSound.size())
-		{
-			const u32 CallIdentifier = MonsterSound::eMonsterSoundCustom + 1;
-			if (SourceMonster.sound().objects().find(CallIdentifier) == SourceMonster.sound().objects().end())
-			{
-				SourceMonster.sound().add(Profile.CallSound.c_str(), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_TALKING, MonsterSound::eNormalPriority + 2, u32(MonsterSound::eBaseChannel), CallIdentifier, (pSettings)->read_if_exists<str_c>(SourceMonster.cNameSect().c_str(), "bone_head", "bip01_head"));
-			}
-			SourceMonster.sound().play(CallIdentifier);
-		}
-		else
-		{
-			SourceMonster.sound().play(MonsterSound::eMonsterSoundAggressive);
-		}
-		NextCall = CurrentTime + Profile.CallCooldown;
-		if (CELSharedDebug::Instance().IsDrawEnabled())
-		{
-			SELDebugEvent Event;
-			Event.Kind = EELDebugEvent::Call;
-			Event.OwnerIdentifier = SourceMonster.ID();
-			Event.Start = Event.Finish = SourceMonster.Position();
-			Event.Radius = Profile.SharingRadius * Profile.CallSharingRatio;
-			Event.Label = "Клич";
-			CELSharedDebug::Instance().PublishEvent(std::move(Event), 2000);
-		}
-	}
+	const bool HasCall = s32(HelpCallUntil - CurrentTime) > 0 || TryCall(SourceMonster, Profile, false);
+	HelpCallUntil = 0;
 	const xr_vector<u16>& Receivers = ExtendedEntityes::Owners();
 	u32 ReceiverCount = 0;
 	u32 RecordCount;
@@ -182,13 +215,7 @@ void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedM
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.
 void CELSharedEnemySharing::Clear()
 {
-	NextSession = NextCall = ReceiverCursor = ObservationCursor = LastUrgentAt = LastOwnContactAt = 0;
-}
-
-// Запоминает получение звукового клича для согласованных правил обмена.
-void CELSharedEnemySharing::OnReceivedCall(u32 Cooldown)
-{
-	NextCall = Device.dwTimeGlobal + Cooldown;
+	NextSession = NextCall = ReceiverCursor = ObservationCursor = LastUrgentAt = LastOwnContactAt = HelpCallUntil = 0;
 }
 
 void CELSharedEnemySharing::NotifyOwnContact(u32 ObservedAt)

@@ -107,7 +107,7 @@ EELSightResult CELSharedSight::CheckFrom(CBaseMonster& OwnerMonster, CObject& Ca
 		if (CELSharedDebug::Instance().CanLogCombat(OwnerMonster.Position()) && s32(Device.dwTimeGlobal - OwnerMonster.NextSightTraceAt) >= 0)
 		{
 			OwnerMonster.NextSightTraceAt = Device.dwTimeGlobal + 1000;
-			Msg("[monsters_debug] SIGHT t=%u id=%u candidate=%u result=%s radius=%.1f angle=%.1f", Device.dwTimeGlobal, OwnerMonster.ID(), Candidate.ID(), Reason, Radius, Angle);
+			CELSharedDebug::Instance().LogCombat(OwnerMonster.ID(), "[monsters_debug] SIGHT t=%u id=%u candidate=%u result=%s radius=%.1f angle=%.1f", Device.dwTimeGlobal, OwnerMonster.ID(), Candidate.ID(), Reason, Radius, Angle);
 		}
 		return Result;
 	};
@@ -362,7 +362,7 @@ EELSightResult CELSharedSight::CheckScent(CBaseMonster& Owner, CEntityAlive& Can
 	if (CELSharedDebug::Instance().CanLogCombat(Owner.Position()) && s32(Now - Owner.NextSightTraceAt) >= 0)
 	{
 		Owner.NextSightTraceAt = Now + 1000u;
-		Msg("[monsters_debug] SIGHT t=%u id=%u candidate=%u result=%s radius=%.1f remaining_ms=%u", Now, Owner.ID(), Candidate.ID(), Query.IsVisible ? "scent_contact" : "scent_blocked_by_geometry", Radius, Until - Now);
+		CELSharedDebug::Instance().LogCombat(Owner.ID(), "[monsters_debug] SIGHT t=%u id=%u candidate=%u result=%s radius=%.1f remaining_ms=%u", Now, Owner.ID(), Candidate.ID(), Query.IsVisible ? "scent_contact" : "scent_blocked_by_geometry", Radius, Until - Now);
 	}
 	return Query.IsVisible ? EELSightResult::Visible : EELSightResult::Occluded;
 }

@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <cmath>
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedSoundEvents.h"
@@ -78,8 +79,8 @@ void CELSharedSoundEvents::Describe(const CObject* SourceObject, SELSoundEvent& 
 	}
 	Event.IsSuppressed = Weapon->IsSilencerAttached();
 	const char* Section = Weapon->cNameSect().c_str();
-	const char* Kind = (pSettings)->read_if_exists<str_c>(Section, "weapon_class", "");
-	const int WeaponType = (pSettings)->read_if_exists<s32>(Section, "ef_weapon_type", 8);
+	const char* Kind = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "weapon_class", "");
+	const int WeaponType = ExtendedEntityesOptions::Read<s32>(pSettings, Section, "ef_weapon_type", 8);
 	CWeaponMagazinedWGrenade* Launcher = Weapon->cast_weapon_magazined_w_grenade();
 	if ((Launcher && Launcher->IsGrenadeMode()) || WeaponType == 12)
 	{

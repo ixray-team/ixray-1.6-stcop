@@ -12,6 +12,50 @@ struct SColumn
 	u32 Row = 0;
 };
 
+// Fixed world-size billboards; dark backgrounds show the unfilled portion of each 0..100 scale.
+void DrawBarQuad(const Fvector& Center, float Left, float Right, u32 Color)
+{
+	const auto Point = [&Center](float X, float Y)
+	{
+		return Fvector().mad(Center, Device.vCameraRight, X).mad(Device.vCameraTop, Y);
+	};
+	const Fvector BottomLeft = Point(Left, -.0175f);
+	const Fvector BottomRight = Point(Right, -.0175f);
+	const Fvector TopLeft = Point(Left, .0175f);
+	const Fvector TopRight = Point(Right, .0175f);
+	HUD().world_prims.append_tri(TopLeft, BottomLeft, BottomRight, Color);
+	HUD().world_prims.append_tri(TopLeft, BottomRight, TopRight, Color);
+}
+
+void DrawBar(const Fvector& Position, float Value, float Baseline, u32 FillColor, u32 BackgroundColor)
+{
+	constexpr float Width = .5f;
+	const float Fraction = _valid(Value) ? std::clamp(Value * .01f, 0.f, 1.f) : 0.f;
+	const float BaseFraction = _valid(Baseline) ? std::clamp(Baseline * .01f, 0.f, 1.f) : 0.f;
+	DrawBarQuad(Position, -Width * .5f, Width * .5f, BackgroundColor);
+	if (Fraction > EPS_L)
+	{
+		const Fvector FillPosition = Fvector().mad(Position, Device.vCameraDirection, -.002f);
+		DrawBarQuad(FillPosition, -Width * .5f, Width * (Fraction - .5f), FillColor);
+	}
+	const Fvector Tick = Fvector().mad(Position, Device.vCameraRight, Width * (BaseFraction - .5f)).mad(Device.vCameraDirection, -.004f);
+	const Fvector TickBottom = Fvector().mad(Tick, Device.vCameraTop, -.028f);
+	const Fvector TickTop = Fvector().mad(Tick, Device.vCameraTop, .028f);
+	HUD().world_prims.append_line(TickBottom, TickTop, color_rgba(255, 255, 255, 255));
+}
+
+void DrawBars(const SELDebugRecord& Record)
+{
+	const Fvector HealthPosition = Fvector().mad(Record.BarsPosition, Device.vCameraTop, .14f);
+	DrawBar(HealthPosition, Record.HealthPercent, 100.f, color_rgba(245, 45, 45, 255), color_rgba(70, 15, 15, 255));
+	if (Record.HasCharacterBars)
+	{
+		const Fvector CouragePosition = Fvector().mad(Record.BarsPosition, Device.vCameraTop, .07f);
+		DrawBar(CouragePosition, Record.CouragePercent, Record.BaseCouragePercent, color_rgba(55, 135, 255, 255), color_rgba(12, 25, 65, 255));
+		DrawBar(Record.BarsPosition, Record.AggressionPercent, Record.BaseAggressionPercent, color_rgba(255, 220, 35, 255), color_rgba(65, 55, 8, 255));
+	}
+}
+
 // Draw a column at its own world point with consistent screen spacing.
 void AppendAt(SColumn& Column, const char* Label, u32 Color)
 {
@@ -58,12 +102,27 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 	// Сначала закрепляем колонки у тел: события могут находиться далеко от своего слушателя.
 	for (RecordIterator = Records.begin(); RecordIterator != Records.end(); ++RecordIterator)
 	{
-		Column.Anchor = RecordIterator->Position;
+		// All owner labels, including event labels, start above the complete bar stack.
+		Column.Anchor = RecordIterator->HasVitalBars ? Fvector().mad(RecordIterator->BarsPosition, Device.vCameraTop, .25f) : RecordIterator->Position;
+		if (DrawGeometry && (RecordIterator->IsAfraidOfActor || RecordIterator->IsCounterAttacking || RecordIterator->IsBerserk))
+		{
+			Fvector MarkerTop = RecordIterator->StateMarkerPosition;
+			MarkerTop.y += RecordIterator->IsBerserk ? 1.4f : RecordIterator->IsCounterAttacking ? .7f : 0.f;
+			const Fvector AboveMarker = Fvector().mad(MarkerTop, Device.vCameraTop, .45f);
+			if (Fvector().sub(AboveMarker, Column.Anchor).dotproduct(Device.vCameraTop) > 0.f)
+			{
+				Column.Anchor = AboveMarker;
+			}
+		}
 		Column.Row = 0;
 		Columns.emplace(RecordIterator->OwnerIdentifier, Column);
 	}
 	for (RecordIterator = Records.begin(); RecordIterator != Records.end(); ++RecordIterator)
 	{
+		if (DrawGeometry && RecordIterator->HasVitalBars)
+		{
+			ExtendedEntityesWorldLabels::DrawBars(*RecordIterator);
+		}
 		if (RecordIterator->PsiGuideIdentifier != u16(-1))
 		{
 			const u32 PsiColor = color_rgba(30, 100, 255, 255);
@@ -73,6 +132,22 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 			}
 			xr_sprintf(Label, "ПСИ-НАВЕДЕНИЕ ОТ #%u", RecordIterator->PsiGuideIdentifier);
 			ExtendedEntityesWorldLabels::Append(Columns, RecordIterator->OwnerIdentifier, RecordIterator->Position, Label, PsiColor, DrawText);
+		}
+		if (DrawGeometry && RecordIterator->IsAfraidOfActor)
+		{
+			HUD().world_prims.append_sphere(RecordIterator->StateMarkerPosition, .3f, color_rgba(255, 255, 255, 255));
+		}
+		if (DrawGeometry && RecordIterator->IsCounterAttacking && !RecordIterator->IsBerserk)
+		{
+			Fvector Position = RecordIterator->StateMarkerPosition;
+			Position.y += .7f;
+			HUD().world_prims.append_sphere(Position, .3f, color_rgba(255, 150, 30, 255));
+		}
+		if (DrawGeometry && RecordIterator->IsBerserk)
+		{
+			Fvector Position = RecordIterator->StateMarkerPosition;
+			Position.y += 1.4f;
+			HUD().world_prims.append_sphere(Position, .3f, color_rgba(255, 30, 30, 255));
 		}
 		if (RecordIterator->ScentRadius > 0.f)
 		{

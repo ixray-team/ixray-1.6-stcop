@@ -11,16 +11,33 @@
 // Настраивает условия следующего запуска схемы.
 void CELGroundReactionBehavior::Configure(const Fvector& SoundPosition, u32 ReactionUntil, bool ShouldFlee)
 {
-	if (IsFleeing != ShouldFlee || (HasPoint ? PlannedSourcePosition : SourcePosition).distance_to_sqr(SoundPosition) > 4.f)
+	if (IsFleeing != ShouldFlee || (HasPoint ? PlannedSourcePosition : SourcePosition).distance_to_sqr(SoundPosition) > _sqr(Profile.ReactionReplanDistance))
 	{
 		HasPoint = false;
 		NextPoint = 0;
 		SearchPhase = 0;
 	}
+	IsWatching = false;
 	SourcePosition = SoundPosition;
 	Until = ReactionUntil;
 	ActionUntil = Until;
 	IsFleeing = ShouldFlee;
+}
+
+// Reuse bounded graph navigation for cautious following; enemy orientation is sampled only while perceived.
+void CELGroundReactionBehavior::ConfigureWatching(const Fvector& EnemyPosition, const Fvector& EnemyForward, u32 WatchUntil)
+{
+	const bool WasWatching = IsWatching;
+	Configure(EnemyPosition, WatchUntil, false);
+	IsWatching = true;
+	WatchedForward = EnemyForward;
+	WatchedForward.y = 0.f;
+	WatchedForward.normalize_safe();
+	if (!WasWatching)
+	{
+		HasPoint = false;
+		NextPoint = 0;
+	}
 }
 
 // Подготавливает схему к запуску и сбрасывает состояние предыдущего выполнения.
@@ -54,14 +71,25 @@ bool CELGroundReactionBehavior::SelectPoint()
 	}
 	Away.normalize_safe();
 	Away.getHP(Heading, Pitch);
-	for (Attempt = 0; Attempt < 8; ++Attempt)
+	for (Attempt = 0; Attempt < Profile.ReactionPointAttempts; ++Attempt)
 	{
-		if (IsFleeing)
+		if (IsWatching)
 		{
-			Angle = Heading + float(Attempt % 2 ? s32(Attempt) : -s32(Attempt)) * PI_DIV_6;
+			// Move around the current side of the enemy instead of crossing through it.
+			const float Cross = WatchedForward.z * Away.x - WatchedForward.x * Away.z;
+			const float Side = std::abs(Cross) > Profile.ReactionSideEpsilon ? (Cross > 0.f ? 1.f : -1.f) : (Adapter.Monster().ID() % 2 ? 1.f : -1.f);
+			const float Step = Profile.CharacterWatchAngle + Profile.CharacterWatchAngleStep * float(Attempt / 2);
+			Angle = atan2f(Away.x, Away.z) + Side * Step * (Attempt % 2 ? -1.f : 1.f);
+			Candidate = SourcePosition;
+			Candidate.x += std::sin(Angle) * Profile.CharacterWatchDistance;
+			Candidate.z += std::cos(Angle) * Profile.CharacterWatchDistance;
+		}
+		else if (IsFleeing)
+		{
+			Angle = Heading + float(Attempt % 2 ? s32(Attempt) : -s32(Attempt)) * Profile.ReactionEscapeAngle;
 			Candidate = Adapter.Monster().Position();
-			Candidate.x -= std::sin(Angle) * 12.f;
-			Candidate.z += std::cos(Angle) * 12.f;
+			Candidate.x -= std::sin(Angle) * Profile.ReactionEscapeStep;
+			Candidate.z += std::cos(Angle) * Profile.ReactionEscapeStep;
 		}
 		else
 		{
@@ -69,8 +97,8 @@ bool CELGroundReactionBehavior::SelectPoint()
 			if (SearchPhase || Attempt)
 			{
 				const u32 Phase = SearchPhase + Attempt;
-				Angle = float(Phase) * (PI * .25f) + float(Adapter.Monster().ID() % 8) * (PI * .25f);
-				const float Radius = std::min(Profile.SearchRadius, 2.f + float(Phase / 8) * 3.f);
+				Angle = float(Phase) * (PI_MUL_2 / float(Profile.ReactionSearchDirections)) + float(Adapter.Monster().ID() % Profile.ReactionSearchDirections) * (PI_MUL_2 / float(Profile.ReactionSearchDirections));
+				const float Radius = std::min(Profile.SearchRadius, Profile.ReactionSearchStartRadius + float(Phase / Profile.ReactionSearchDirections) * Profile.ReactionSearchRadiusStep);
 				Candidate.x += std::sin(Angle) * Radius;
 				Candidate.z += std::cos(Angle) * Radius;
 			}
@@ -96,7 +124,7 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 		Validation = {EELBehaviorState::Completed, "Реакция на шум завершена"};
 		return;
 	}
-	if (IsFleeing && HasPoint && Adapter.Monster().Position().distance_to_sqr(ReactionPosition) < _sqr(CELSharedSettings::Work().GroundWaypointLookahead))
+	if ((IsFleeing || IsWatching) && HasPoint && Adapter.Monster().Position().distance_to_sqr(ReactionPosition) < _sqr(CELSharedSettings::Work().GroundWaypointLookahead))
 	{
 		HasPoint = false;
 		NextPoint = 0;
@@ -117,7 +145,7 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 	}
 	if (!HasPoint)
 	{
-		if (!IsFleeing && LocalSearch.Move(Adapter, Movement, Profile, SourcePosition, true))
+		if (!IsFleeing && !IsWatching && LocalSearch.Move(Adapter, Movement, Profile, SourcePosition, true))
 		{
 			HasMoveCommand = true;
 			Validation = {EELBehaviorState::Running, "Обход недоступного источника шума"};
@@ -128,7 +156,7 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 		Validation = {EELBehaviorState::Running, "Нет безопасного прохода по АИ-сетке: выбираю обход"};
 		return;
 	}
-	if (!IsFleeing && Profile.CanExpandNoiseSearch && (Adapter.Monster().Position().distance_to_sqr(ReactionPosition) < 2.25f || Device.dwTimeGlobal - PointStartedAt >= Profile.SearchPointTime))
+	if (!IsFleeing && !IsWatching && Profile.CanExpandNoiseSearch && (Adapter.Monster().Position().distance_to_sqr(ReactionPosition) < _sqr(Profile.ReactionArrivalDistance) || Device.dwTimeGlobal - PointStartedAt >= Profile.SearchPointTime))
 	{
 		++SearchPhase;
 		HasPoint = false;
@@ -137,10 +165,10 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 		Move(SourcePosition, ai().level_graph().vertex_id(SourcePosition), true);
 		return;
 	}
-	if (Adapter.Monster().Position().distance_to_sqr(ReactionPosition) < 2.25f)
+	if (Adapter.Monster().Position().distance_to_sqr(ReactionPosition) < _sqr(Profile.ReactionArrivalDistance))
 	{
 		Movement.Stop();
-		HasPoint = !IsFleeing;
+		HasPoint = !IsFleeing && !IsWatching;
 		Validation = {EELBehaviorState::Running, IsFleeing ? "Бегство от шума" : "Осмотр источника шума"};
 		ProgressTime = Device.dwTimeGlobal;
 		return;
@@ -153,11 +181,11 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 		Event.Start = Adapter.Monster().Position();
 		Event.Finish = ReactionPosition;
 		Event.Radius = .4f;
-		Event.Label = IsFleeing ? "Уход от шума" : "Исследование шума";
+		Event.Label = IsWatching ? "Осторожное сопровождение: боковой обход" : IsFleeing ? "Уход от шума" : "Исследование шума";
 		CELSharedDebug::Instance().PublishEvent(std::move(Event));
 	}
-	Validation = {EELBehaviorState::Running, IsFleeing ? "Бегство от шума" : "Подход к источнику шума"};
-	if (!Move(ReactionPosition, ReactionVertex, true))
+	Validation = {EELBehaviorState::Running, IsWatching ? "Наблюдение за угрозой: смена позиции" : IsFleeing ? "Бегство от шума" : "Подход к источнику шума"};
+	if (!Move(ReactionPosition, ReactionVertex, !IsWatching || Adapter.Monster().Position().distance_to_sqr(SourcePosition) > _sqr(Profile.CharacterWatchDistance * Profile.CharacterWatchRunRatio)))
 	{
 		HasPoint = false;
 		Validation = {EELBehaviorState::Blocked, "Путь к источнику шума перекрыт"};
@@ -166,5 +194,5 @@ void CELGroundReactionBehavior::Update(float DeltaTime)
 
 bool CELGroundReactionBehavior::IsCornered() const
 {
-	return IsFleeing && ((EscapeBlockedSince && Device.dwTimeGlobal - EscapeBlockedSince >= 2000) || (HasMoveCommand && Device.dwTimeGlobal - ProgressTime >= 3000));
+	return IsFleeing && ((EscapeBlockedSince && Device.dwTimeGlobal - EscapeBlockedSince >= Profile.ReactionCornerBlockedTime) || (HasMoveCommand && Device.dwTimeGlobal - ProgressTime >= Profile.ReactionCornerStallTime));
 }

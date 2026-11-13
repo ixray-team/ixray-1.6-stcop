@@ -179,7 +179,10 @@ void CStateGroupAttackAbstract::execute()
 		aggressive = true;
 	}
 
-	if ( check_home_point() )
+	// A reachable close-range attack must not be replaced by the home-return substate.
+	const bool CloseCombat = this->object->UsesExtendedCombat && this->object->EnemyMan.see_enemy_now(enemy) &&
+		this->object->MeleeChecker.distance_to_enemy(enemy) <= this->object->MeleeChecker.get_max_distance();
+	if (!CloseCombat && check_home_point())
 	{
 		if (this->prev_substate == eStateAttack_MoveToHomePoint )
 		{

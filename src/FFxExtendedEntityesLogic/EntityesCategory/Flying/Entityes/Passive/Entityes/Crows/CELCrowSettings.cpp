@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Passive/Entityes/Crows/CELCrowSettings.h"
 
@@ -9,7 +10,7 @@ xr_map<shared_str, SELCrowSettings> Cache;
 // Читает числовой параметр, заменяет недопустимое значение и ограничивает диапазон.
 float Number(const char* Section, const char* Key, float DefaultValue, float Minimum, float Maximum)
 {
-	float Value = (pSettings)->read_if_exists<float>(Section, Key, DefaultValue);
+	float Value = ExtendedEntityesOptions::Read<float>(pSettings, Section, Key, DefaultValue);
 	if (!_valid(Value))
 	{
 		Value = DefaultValue;
@@ -37,30 +38,30 @@ SELCrowPoseSettings LoadPose(const char* Section)
 	u32 BoneIndex;
 	for (BoneIndex = 0; BoneIndex < 8; ++BoneIndex)
 	{
-		Result.WingNames[BoneIndex] = (pSettings)->read_if_exists<str_c>(Section, WingKeys[BoneIndex], "");
+		Result.WingNames[BoneIndex] = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, WingKeys[BoneIndex], "");
 	}
 	for (BoneIndex = 0; BoneIndex < 4; ++BoneIndex)
 	{
-		Result.WingAngles[BoneIndex] = (pSettings)->read_if_exists<Fvector>(Section, AngleKeys[BoneIndex], Fvector().set(0.f, 0.f, 0.f));
+		Result.WingAngles[BoneIndex] = ExtendedEntityesOptions::Read<Fvector>(pSettings, Section, AngleKeys[BoneIndex], Fvector().set(0.f, 0.f, 0.f));
 		if (!_valid(Result.WingAngles[BoneIndex]))
 		{
 			Result.WingAngles[BoneIndex].set(0.f, 0.f, 0.f);
 		}
 		Result.WingAngles[BoneIndex].mul(PI / 180.f);
 	}
-	Result.NeckName = (pSettings)->read_if_exists<str_c>(Section, "crow_peck_neck_bone", "bip01_neck");
-	Result.HeadName = (pSettings)->read_if_exists<str_c>(Section, "crow_peck_head_bone", "bip01_head");
-	Result.BodyName = (pSettings)->read_if_exists<str_c>(Section, "crow_idle_body_bone", "bip01_pelvis");
-	Result.TailName = (pSettings)->read_if_exists<str_c>(Section, "crow_idle_tail_bone", "bip01_tail");
-	Result.LegNames[0] = (pSettings)->read_if_exists<str_c>(Section, "crow_idle_left_leg_bone", "bip01_l_thigh");
-	Result.LegNames[1] = (pSettings)->read_if_exists<str_c>(Section, "crow_idle_right_leg_bone", "bip01_r_thigh");
-	Result.BeakOffset = (pSettings)->read_if_exists<Fvector>(Section, "crow_peck_beak_offset", Result.BeakOffset);
+	Result.NeckName = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "crow_peck_neck_bone", "bip01_neck");
+	Result.HeadName = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "crow_peck_head_bone", "bip01_head");
+	Result.BodyName = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "crow_idle_body_bone", "bip01_pelvis");
+	Result.TailName = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "crow_idle_tail_bone", "bip01_tail");
+	Result.LegNames[0] = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "crow_idle_left_leg_bone", "bip01_l_thigh");
+	Result.LegNames[1] = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "crow_idle_right_leg_bone", "bip01_r_thigh");
+	Result.BeakOffset = ExtendedEntityesOptions::Read<Fvector>(pSettings, Section, "crow_peck_beak_offset", Result.BeakOffset);
 	if (!_valid(Result.BeakOffset))
 	{
 		Result.BeakOffset.set(.12f, 0.f, 0.f);
 	}
-	Result.LookYawAxis = (pSettings)->read_if_exists<Fvector>(Section, "crow_look_yaw_axis", Result.LookYawAxis);
-	Result.LookPitchAxis = (pSettings)->read_if_exists<Fvector>(Section, "crow_look_pitch_axis", Result.LookPitchAxis);
+	Result.LookYawAxis = ExtendedEntityesOptions::Read<Fvector>(pSettings, Section, "crow_look_yaw_axis", Result.LookYawAxis);
+	Result.LookPitchAxis = ExtendedEntityesOptions::Read<Fvector>(pSettings, Section, "crow_look_pitch_axis", Result.LookPitchAxis);
 	if (!_valid(Result.LookYawAxis) || Result.LookYawAxis.square_magnitude() < EPS_L)
 	{
 		Result.LookYawAxis.set(0.f, 1.f, 0.f);
@@ -71,8 +72,8 @@ SELCrowPoseSettings LoadPose(const char* Section)
 	}
 	Result.LookYawAxis.normalize_safe();
 	Result.LookPitchAxis.normalize_safe();
-	Result.PeckAngles[0] = (pSettings)->read_if_exists<Fvector>(Section, "crow_peck_neck_angles", Fvector().set(35.f, 0.f, 0.f));
-	Result.PeckAngles[1] = (pSettings)->read_if_exists<Fvector>(Section, "crow_peck_head_angles", Fvector().set(20.f, 0.f, 0.f));
+	Result.PeckAngles[0] = ExtendedEntityesOptions::Read<Fvector>(pSettings, Section, "crow_peck_neck_angles", Fvector().set(35.f, 0.f, 0.f));
+	Result.PeckAngles[1] = ExtendedEntityesOptions::Read<Fvector>(pSettings, Section, "crow_peck_head_angles", Fvector().set(20.f, 0.f, 0.f));
 	for (BoneIndex = 0; BoneIndex < 2; ++BoneIndex)
 	{
 		if (!_valid(Result.PeckAngles[BoneIndex]))
@@ -81,7 +82,7 @@ SELCrowPoseSettings LoadPose(const char* Section)
 		}
 		Result.PeckAngles[BoneIndex].mul(PI / 180.f);
 	}
-	Result.HasInverseKinematics = (pSettings)->read_if_exists<bool>(Section, "crow_peck_ik_enabled", true);
+	Result.HasInverseKinematics = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_peck_ik_enabled", true);
 	Result.FoldSpeed = Number(Section, "crow_fold_speed", 8.f, .1f, 20.f);
 	Result.OpenSpeed = Number(Section, "crow_fold_open_speed", 10.f, .1f, 20.f);
 	Result.FeatherWidth = Number(Section, "crow_fold_feather_width", .35f, .2f, 1.f);
@@ -111,13 +112,13 @@ SELCrowSettings Load(const char* Section)
 {
 	SELCrowSettings Result;
 	Result.Pose = LoadPose(Section);
-	Result.Enabled = (pSettings)->read_if_exists<bool>(Section, "crow_ai_enabled", true);
-	Result.Mapwide = (pSettings)->read_if_exists<bool>(Section, "crow_roam_entire_level", true);
-	Result.NightEnabled = (pSettings)->read_if_exists<bool>(Section, "crow_night_enabled", true);
-	Result.RainEnabled = (pSettings)->read_if_exists<bool>(Section, "crow_rain_shelter_enabled", true);
-	Result.TreeShelter = (pSettings)->read_if_exists<bool>(Section, "crow_tree_shelter_enabled", true);
-	const char* GroundMovement = (pSettings)->read_if_exists<str_c>(Section, "flight_ground_movement", "walk");
-	Result.GroundHops = (pSettings)->read_if_exists<bool>(Section, "crow_ground_hops", GroundMovement && !xr_strcmp(GroundMovement, "hop"));
+	Result.Enabled = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_ai_enabled", true);
+	Result.Mapwide = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_roam_entire_level", true);
+	Result.NightEnabled = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_night_enabled", true);
+	Result.RainEnabled = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_rain_shelter_enabled", true);
+	Result.TreeShelter = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_tree_shelter_enabled", true);
+	const char* GroundMovement = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "flight_ground_movement", "walk");
+	Result.GroundHops = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "crow_ground_hops", GroundMovement && !xr_strcmp(GroundMovement, "hop"));
 	Result.HungerTime = Number(Section, "crow_hunger_time", 900.f, 1.f, 86400.f);
 	Result.Hungry = Number(Section, "crow_hungry_threshold", .35f, 0.f, 1.f);
 	Result.Full = Number(Section, "crow_full_threshold", .9f, 0.f, 1.f);
@@ -231,6 +232,7 @@ const SELCrowSettings& CELCrowSettings::Read(const char* Section)
 	{
 		return Found->second;
 	}
+	ExtendedEntityesOptions::ValidateReferences(pSettings, Section);
 	return ExtendedEntityesCrowSettings::Cache.emplace(Section, ExtendedEntityesCrowSettings::Load(Section)).first->second;
 }
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.

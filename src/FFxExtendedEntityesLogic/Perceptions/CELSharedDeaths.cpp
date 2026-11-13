@@ -221,7 +221,7 @@ bool CELSharedDeaths::Witness(CBaseMonster& Observer, const SELPerceptionProfile
 			if (Local.WitnessTrace.size() >= 32 && Existing == Local.WitnessTrace.end()) { Local.WitnessTrace.erase(Local.WitnessTrace.begin()); }
 			Local.NextWitnessTraceAt = Device.dwTimeGlobal + 200;
 			Local.WitnessTrace[Death.Identifier] = {Death.Time, Reason};
-			Msg("[monsters_debug] WITNESS_CHECK t=%u id=%u victim=%u killer=%u age_ms=%u window_ms=%u reason=%s", Device.dwTimeGlobal, Observer.ID(), Death.Identifier, Death.Killer, Device.dwTimeGlobal - Death.Time, Profile.WitnessWindow, Reason);
+			CELSharedDebug::Instance().LogCombat(Observer.ID(), "[monsters_debug] WITNESS_CHECK t=%u id=%u victim=%u killer=%u age_ms=%u window_ms=%u reason=%s", Device.dwTimeGlobal, Observer.ID(), Death.Identifier, Death.Killer, Device.dwTimeGlobal - Death.Time, Profile.WitnessWindow, Reason);
 		};
 		if (Death.IsEnvironmental || Device.dwTimeGlobal - Death.Time > Profile.WitnessWindow ||
 			(Local.WitnessedAt && s32(Death.Time - Local.WitnessedAt) <= 0))

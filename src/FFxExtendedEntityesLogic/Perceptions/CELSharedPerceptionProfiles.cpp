@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <algorithm>
 #include <cmath>
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedPerceptionProfiles.h"
@@ -6,19 +7,19 @@
 
 namespace ExtendedEntityesProfiles
 {
-const char* const NoiseNames[] = {"shot", "explosion", "actor_steps", "monster_steps", "jump", "melee", "attack", "injury", "death", "bullet_hit", "breaking", "collision", "talking", "eating", "idle", "ambient", "pickup", "drop", "hide", "take", "use", "empty_click", "reload", "other", "light"};
+const char* const NoiseNames[] = {"shot", "explosion", "actor_steps", "monster_steps", "jump", "melee", "attack", "injury", "death", "bullet_hit", "breaking", "collision", "talking", "eating", "idle", "ambient", "pickup", "drop", "hide", "take", "use", "empty_click", "reload", "other", "light", "ally_call"};
 
 // Читает числовой параметр, заменяет недопустимое значение и ограничивает диапазон.
 float Number(const CInifile* SystemSettings, const char* Section, const char* LocalKey, const char* SharedKey, float DefaultValue, float Minimum, float Maximum)
 {
-	float Value = SystemSettings && *SharedKey ? (SystemSettings)->read_if_exists<float>(CELSharedSettings::SectionName(), SharedKey, DefaultValue) : DefaultValue;
+	float Value = SystemSettings && *SharedKey ? ExtendedEntityesOptions::Read<float>(SystemSettings, CELSharedSettings::SectionName(), SharedKey, DefaultValue) : DefaultValue;
 	if (!_valid(Value))
 	{
 		Value = DefaultValue;
 	}
 	if (*LocalKey)
 	{
-		Value = (pSettings)->read_if_exists<float>(Section, LocalKey, Value);
+		Value = ExtendedEntityesOptions::Read<float>(pSettings, Section, LocalKey, Value);
 	}
 	if (!_valid(Value))
 	{
@@ -35,17 +36,17 @@ SELNoiseProfile Noise(const CInifile* SystemSettings, const char* Section, const
 	string128 Key;
 	string128 SharedKey;
 	xr_sprintf(Key, "%s_enabled", Prefix);
-	Result.IsEnabled = (pSettings)->read_if_exists<bool>(Section, Key, false);
+	Result.IsEnabled = ExtendedEntityesOptions::Read<bool>(pSettings, Section, Key, false);
 	xr_sprintf(Key, "%s_radius", Prefix);
 	Result.Radius = Number(SystemSettings, Section, Key, "", 0.f, 0.f, 500.f);
 	xr_sprintf(Key, "%s_panic_chance", Prefix);
 	Result.PanicChance = Number(SystemSettings, Section, Key, "", 0.f, 0.f, 1.f);
 	xr_sprintf(Key, "%s_attract", Prefix);
-	Result.CanAttract = (pSettings)->read_if_exists<bool>(Section, Key, false);
+	Result.CanAttract = ExtendedEntityesOptions::Read<bool>(pSettings, Section, Key, false);
 	xr_sprintf(Key, "%s_interest_enabled", Prefix);
-	Result.CanAttract = (pSettings)->read_if_exists<bool>(Section, Key, Result.CanAttract);
+	Result.CanAttract = ExtendedEntityesOptions::Read<bool>(pSettings, Section, Key, Result.CanAttract);
 	xr_sprintf(Key, "%s_fear_enabled", Prefix);
-	Result.CanFrighten = (pSettings)->read_if_exists<bool>(Section, Key, Result.PanicChance > 0.f);
+	Result.CanFrighten = ExtendedEntityesOptions::Read<bool>(pSettings, Section, Key, Result.PanicChance > 0.f);
 	xr_sprintf(Key, "%s_interest_step", Prefix);
 	xr_sprintf(SharedKey, "%sInterestStep", SharedPrefix);
 	Result.InterestStep = Number(SystemSettings, Section, Key, SharedKey, .25f, 0.f, 1.f);
@@ -74,11 +75,11 @@ u32 ReadNoiseTypes(const CInifile* SystemSettings, const char* Section, const ch
 	const CInifile* SelectedSettings = nullptr;
 	const char* SelectedSection = Section;
 	const char* SelectedKey = LocalKey;
-	if (pSettings->line_exist(Section, LocalKey))
+	if (ExtendedEntityesOptions::Has(pSettings, Section, LocalKey))
 	{
 		SelectedSettings = pSettings;
 	}
-	else if (SystemSettings && SystemSettings->line_exist(CELSharedSettings::SectionName(), SharedKey))
+	else if (SystemSettings && ExtendedEntityesOptions::Has(SystemSettings, CELSharedSettings::SectionName(), SharedKey))
 	{
 		SelectedSettings = SystemSettings;
 		SelectedSection = CELSharedSettings::SectionName();
@@ -88,7 +89,7 @@ u32 ReadNoiseTypes(const CInifile* SystemSettings, const char* Section, const ch
 	{
 		return DefaultTypes;
 	}
-	const char* ConfiguredTypes = SelectedSettings->r_string(SelectedSection, SelectedKey);
+	const char* ConfiguredTypes = ExtendedEntityesOptions::String(SelectedSettings, SelectedSection, SelectedKey);
 	// CInifile represents an explicitly empty value as nullptr, not an absent key.
 	if (!ConfiguredTypes || !*ConfiguredTypes)
 	{
@@ -224,9 +225,9 @@ void ReadHearing(SELPerceptionProfile& Result, const CInifile* SystemSettings, c
 // Читает правила обнаружения тел и учёта опасных областей.
 void ReadDeaths(SELPerceptionProfile& Result, const CInifile* SystemSettings, const char* Section)
 {
-	Result.CanInspectBodies = (pSettings)->read_if_exists<bool>(Section, "monster_corpse_investigation_enabled", SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterCorpseInvestigationEnabled", true) : true);
-	Result.CanAvoidDeaths = (pSettings)->read_if_exists<bool>(Section, "monster_death_hazard_enabled", SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterDeathHazardEnabled", true) : true);
-	Result.CanHearDeaths = (pSettings)->read_if_exists<bool>(Section, "monster_death_alert_enabled", SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterDeathAlertEnabled", true) : true);
+	Result.CanInspectBodies = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_corpse_investigation_enabled", SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "MonsterCorpseInvestigationEnabled", true) : true);
+	Result.CanAvoidDeaths = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_death_hazard_enabled", SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "MonsterDeathHazardEnabled", true) : true);
+	Result.CanHearDeaths = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_death_alert_enabled", SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "MonsterDeathAlertEnabled", true) : true);
 	Result.DeathHearingRadius = Number(SystemSettings, Section, "monster_death_hearing_radius", "MonsterDeathHearingRadius", 20.f, 0.f, 100.f);
 	Result.BodyDetectionRadius = Number(SystemSettings, Section, "monster_corpse_detection_radius", "MonsterCorpseDetectionRadius", 25.f, 0.f, 100.f);
 	Result.BodyInterestTime = u32(Number(SystemSettings, Section, "monster_corpse_interest_time", "MonsterCorpseInterestTime", 90.f, 0.f, 600.f) * 1000.f);
@@ -242,7 +243,7 @@ void ReadStrategies(SELPerceptionProfile& Result, const char* Section)
 {
 	const char* StrategyNames[] = {"direct", "flank", "wide", "lunge", "charge", "encircle", "pressure", "retreat"};
 	static_assert(std::size(StrategyNames) == u32(EELApproachStrategy::Count));
-	const char* ConfiguredStrategies = (pSettings)->read_if_exists<str_c>(Section, "monster_behavior_strategies", "direct,flank,pressure");
+	const char* ConfiguredStrategies = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "monster_behavior_strategies", "direct,flank,pressure");
 	string64 StrategyName;
 	u32 StrategyIndex;
 	u32 TokenIndex;
@@ -275,11 +276,12 @@ void ReadStrategies(SELPerceptionProfile& Result, const char* Section)
 // Возвращает кэшированный профиль секции, загружая его при первом обращении.
 SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, const CInifile* SystemSettings)
 {
+	ExtendedEntityesOptions::ValidateReferences(pSettings, Section);
 	using namespace ExtendedEntityesProfiles;
 	SELPerceptionProfile Result;
-	Result.CanUseBehaviors = (pSettings)->read_if_exists<bool>(Section, "monster_behavior_enabled", (SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterBehaviorEnabled", true) : true));
-	Result.IsPassive = (pSettings)->read_if_exists<bool>(Section, "monster_peaceful", false);
-	Result.HasCharacter = pSettings->line_exist(Section, "monster_character_aggression") && pSettings->line_exist(Section, "monster_character_courage");
+	Result.CanUseBehaviors = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_behavior_enabled", (SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "MonsterBehaviorEnabled", true) : true));
+	Result.IsPassive = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_peaceful", false);
+	Result.HasCharacter = ExtendedEntityesOptions::Has(pSettings, Section, "monster_character_aggression") && ExtendedEntityesOptions::Has(pSettings, Section, "monster_character_courage");
 	Result.CharacterAggression = Number(SystemSettings, Section, "monster_character_aggression", "", 50.f, 0.f, 100.f);
 	Result.CharacterCourage = Number(SystemSettings, Section, "monster_character_courage", "", 50.f, 0.f, 100.f);
 	Result.CharacterSizeCourage = Number(SystemSettings, Section, "monster_character_size_courage", "monster_character_size_courage", 15.f, 0.f, 50.f);
@@ -293,19 +295,40 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.CharacterTierPressure = Number(SystemSettings, Section, "monster_character_tier_pressure", "monster_character_tier_pressure", 12.f, 0.f, 50.f);
 	Result.CharacterPackBonus = Number(SystemSettings, Section, "monster_character_pack_bonus", "monster_character_pack_bonus", 18.f, 0.f, 50.f);
 	Result.CharacterCounterChance = Number(SystemSettings, Section, "monster_character_counter_chance", "monster_character_counter_chance", .15f, 0.f, .95f);
+	Result.CharacterCornerPressureTime = u32(Number(SystemSettings, Section, "monster_character_corner_pressure_time", "monster_character_corner_pressure_time", 2.f, 0.f, 30.f) * 1000.f);
 	Result.CharacterSafeDistance = Number(SystemSettings, Section, "monster_character_safe_distance", "monster_character_safe_distance", 25.f, 5.f, 100.f);
+	Result.CharacterWatchDistance = Number(SystemSettings, Section, "monster_character_watch_distance", "monster_character_watch_distance", Result.CharacterSafeDistance, 0.5f, 150.f);
+	Result.CharacterWatchRetreatRatio = Number(SystemSettings, Section, "monster_character_watch_retreat_ratio", "monster_character_watch_retreat_ratio", 0.8f, 0.1f, 1.f);
+	Result.CharacterWatchRunRatio = Number(SystemSettings, Section, "monster_character_watch_run_ratio", "monster_character_watch_run_ratio", 1.35f, 1.f, 4.f);
+	Result.CharacterWatchAngle = deg2rad(Number(SystemSettings, Section, "monster_character_watch_angle", "monster_character_watch_angle", 20.0535f, 1.f, 90.f));
+	Result.CharacterWatchAngleStep = deg2rad(Number(SystemSettings, Section, "monster_character_watch_angle_step", "monster_character_watch_angle_step", 6.87549f, 0.f, 45.f));
+	Result.CharacterSizeScaleMin = Number(SystemSettings, Section, "", "monster_character_size_scale_min", 0.7f, 0.05f, 0.99f);
+	Result.CharacterSizeScaleMax = Number(SystemSettings, Section, "", "monster_character_size_scale_max", 1.3f, 1.01f, 3.f);
+	Result.CharacterContactGrace = u32(Number(SystemSettings, Section, "", "monster_character_contact_grace", 0.5f, 0.f, 5.f) * 1000.f);
+	Result.ReactionCommandTime = u32(Number(SystemSettings, Section, "", "monster_reaction_command_time", 1.f, 0.1f, 10.f) * 1000.f);
+	Result.ReactionPointAttempts = u32(Number(SystemSettings, Section, "", "monster_reaction_point_attempts", 8.f, 1.f, 32.f));
+	Result.ReactionReplanDistance = Number(SystemSettings, Section, "", "monster_reaction_replan_distance", 2.f, 0.1f, 20.f);
+	Result.ReactionSideEpsilon = Number(SystemSettings, Section, "", "monster_reaction_side_epsilon", 0.1f, 0.f, 0.9f);
+	Result.ReactionEscapeStep = Number(SystemSettings, Section, "", "monster_reaction_escape_step", 12.f, 1.f, 50.f);
+	Result.ReactionEscapeAngle = deg2rad(Number(SystemSettings, Section, "", "monster_reaction_escape_angle", 30.f, 1.f, 90.f));
+	Result.ReactionSearchDirections = u32(Number(SystemSettings, Section, "", "monster_reaction_search_directions", 8.f, 3.f, 32.f));
+	Result.ReactionSearchStartRadius = Number(SystemSettings, Section, "", "monster_reaction_search_start_radius", 2.f, 0.1f, 30.f);
+	Result.ReactionSearchRadiusStep = Number(SystemSettings, Section, "", "monster_reaction_search_radius_step", 3.f, 0.1f, 30.f);
+	Result.ReactionArrivalDistance = Number(SystemSettings, Section, "", "monster_reaction_arrival_distance", 1.5f, 0.1f, 5.f);
+	Result.ReactionCornerBlockedTime = u32(Number(SystemSettings, Section, "", "monster_reaction_corner_blocked_time", 2.f, 0.1f, 30.f) * 1000.f);
+	Result.ReactionCornerStallTime = u32(Number(SystemSettings, Section, "", "monster_reaction_corner_stall_time", 3.f, 0.1f, 30.f) * 1000.f);
 	Result.CharacterDodgeCaution = Number(SystemSettings, Section, "monster_character_dodge_caution", "monster_character_dodge_caution", .5f, 0.f, 1.f);
 	Result.CharacterMemory = u32(Number(SystemSettings, Section, "monster_character_memory", "monster_character_memory", 180.f, 10.f, 3600.f) * 1000.f);
 	Result.CharacterReevaluate = u32(Number(SystemSettings, Section, "monster_character_reevaluate", "monster_character_reevaluate", 2.f, .1f, 30.f) * 1000.f);
 	Result.CharacterDecisionHold = u32(Number(SystemSettings, Section, "monster_character_decision_hold", "monster_character_decision_hold", 6.f, 1.f, 60.f) * 1000.f);
 	Result.CharacterResumeThreshold = std::max(Result.CharacterRetreatThreshold + 1.f, Result.CharacterResumeThreshold);
-	Result.CanShare = (pSettings)->read_if_exists<bool>(Section, "monster_enemy_sharing_enabled", true);
-	Result.IsWireless = (pSettings)->read_if_exists<bool>(Section, "monster_enemy_sharing_wireless", false);
-	Result.CanTrackLive = (pSettings)->read_if_exists<bool>(Section, "monster_enemy_tracking_live", false);
-	Result.CanCall = (pSettings)->read_if_exists<bool>(Section, "monster_enemy_call_enabled", true);
-	Result.CanAutoFocus = (pSettings)->read_if_exists<bool>(Section, "autofocus_attacker", false);
-	Result.CanPanicOnDamage = (pSettings)->read_if_exists<bool>(Section, "autopanic_on_invisible_damage", false);
-	Result.CanCornerBerserk = pSettings->read_if_exists<bool>(Section, "monster_cornered_berserk_enabled", true);
+	Result.CanShare = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_enemy_sharing_enabled", true);
+	Result.IsWireless = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_enemy_sharing_wireless", false);
+	Result.CanTrackLive = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_enemy_tracking_live", false);
+	Result.CanCall = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_enemy_call_enabled", true);
+	Result.CanAutoFocus = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "autofocus_attacker", false);
+	Result.CanPanicOnDamage = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "autopanic_on_invisible_damage", false);
+	Result.CanCornerBerserk = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_cornered_berserk_enabled", true);
 	Result.CornerBerserkHealth = Number(SystemSettings, Section, "monster_cornered_berserk_health", "", .3f, .01f, 1.f);
 	Result.CornerBerserkDamage = Number(SystemSettings, Section, "monster_cornered_berserk_damage", "", 2.f, 1.f, 10.f);
 	Result.CornerBerserkDuration = u32(Number(SystemSettings, Section, "monster_cornered_berserk_duration", "", 60.f, 1.f, 600.f) * 1000.f);
@@ -313,23 +336,23 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.FieldHeadacheGain = Number(SystemSettings, Section, "emmi_pain_gain", "", Number(SystemSettings, Section, "monster_field_headache_gain", "", .08f, .001f, 10.f), .001f, 10.f);
 	Result.FieldHeadacheRecovery = Number(SystemSettings, Section, "emmi_pain_recovery", "", Number(SystemSettings, Section, "monster_field_headache_recovery", "", .12f, .001f, 10.f), .001f, 10.f);
 	Result.FieldHeadacheResume = Number(SystemSettings, Section, "emmi_pain_resume", "", Number(SystemSettings, Section, "monster_field_headache_resume", "", .25f, 0.f, .95f), 0.f, .95f);
-	Result.CanFearPredators = pSettings->read_if_exists<bool>(Section, "monster_predator_fear_enabled", true);
+	Result.CanFearPredators = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_predator_fear_enabled", true);
 	Result.PackRegroupTime = u32(Number(SystemSettings, Section, "monster_pack_regroup_time", "monster_pack_regroup_time", 60.f, 0.f, 300.f) * 1000.f);
 	Result.PackRegroupDistance = Number(SystemSettings, Section, "monster_pack_regroup_distance", "monster_pack_regroup_distance", 10.f, 2.f, 50.f);
-	Result.UsesPackCourage = pSettings->read_if_exists<bool>(Section, "monster_pack_courage_enabled", true);
-	Result.PredatorSpecies = pSettings->read_if_exists<str_c>(Section, "monster_predator_species", "");
+	Result.UsesPackCourage = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_pack_courage_enabled", true);
+	Result.PredatorSpecies = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "monster_predator_species", "");
 	Result.PredatorFearChance = ExtendedEntityesProfiles::Number(SystemSettings, Section, "monster_predator_fear_chance", "", .65f, .05f, .95f);
 	Result.PackCourageRadius = ExtendedEntityesProfiles::Number(SystemSettings, Section, "monster_pack_courage_radius", "", 25.f, 1.f, 100.f);
 	Result.PackCourageGain = ExtendedEntityesProfiles::Number(SystemSettings, Section, "monster_pack_courage_gain", "", .08f, 0.f, 1.f);
 	Result.SoloCourageDecay = ExtendedEntityesProfiles::Number(SystemSettings, Section, "monster_solo_courage_decay", "", .15f, 0.f, 1.f);
 	Result.PackCouragePerAlly = ExtendedEntityesProfiles::Number(SystemSettings, Section, "monster_pack_courage_per_ally", "", .2f, 0.f, 1.f);
-	Result.CanInspect = (pSettings)->read_if_exists<bool>(Section, "monster_search_sniff", false);
+	Result.CanInspect = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_search_sniff", false);
 	Result.SharingRadius = Number(SystemSettings, Section, "monster_enemy_sharing_radius", "", 40.0f, 0.0f, 500.0f);
 	Result.CloseSharingRatio = Number(SystemSettings, Section, "monster_enemy_sharing_close_ratio", "MonsterEnemySharingCloseRatio", 0.25f, 0.0f, 1.0f);
 	Result.CallSharingRatio = Number(SystemSettings, Section, "monster_enemy_sharing_call_ratio", "MonsterEnemySharingCallRatio", 2.f, 0.0f, 4.0f);
 	Result.CloseDetectionRadius = Number(SystemSettings, Section, "monster_enemy_close_detection_radius", "", 0.0f, 0.0f, 100.0f);
 	Result.AutoFocusRadius = Number(SystemSettings, Section, "autofocus_max_dist", "", 200.0f, 0.0f, 500.0f);
-	Result.CanRecordTrail = (pSettings)->read_if_exists<bool>(Section, "monster_trail_enabled", SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterTrailEnabled", true) : true);
+	Result.CanRecordTrail = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_trail_enabled", SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "MonsterTrailEnabled", true) : true);
 	Result.TargetCrowdDistance = Number(SystemSettings, Section, "monster_target_crowd_distance", "MonsterTargetCrowdDistance", 20.f, 1.f, 100.f);
 	Result.TargetSwitchDistanceRatio = Number(SystemSettings, Section, "monster_target_switch_distance_ratio", "", .6f, .1f, 1.f);
 	Result.TargetCloseThreatDistance = Number(SystemSettings, Section, "monster_target_close_threat_distance", "", 12.f, 1.f, 100.f);
@@ -353,10 +376,10 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.ApproachWidth = Number(SystemSettings, Section, "monster_approach_width", "MonsterApproachWidth", 5.0f, 0.0f, 20.0f);
 	Result.SearchRadius = Number(SystemSettings, Section, "monster_search_radius", "MonsterSearchRadius", 12.0f, 1.0f, 50.0f);
 	Result.SearchAngle = Number(SystemSettings, Section, "monster_search_angle", "MonsterSearchAngle", 60.0f, 10.0f, 180.0f);
-	Result.CanHearActorSteps = (pSettings)->read_if_exists<bool>(Section, "monster_noise_actor_steps_enabled", true);
-	Result.CanHearMonsterSteps = (pSettings)->read_if_exists<bool>(Section, "monster_noise_monster_steps_enabled", true);
-	Result.CanHearCombat = (pSettings)->read_if_exists<bool>(Section, "monster_noise_combat_enabled", true);
-	Result.CanHearWorld = (pSettings)->read_if_exists<bool>(Section, "monster_noise_world_enabled", true);
+	Result.CanHearActorSteps = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_noise_actor_steps_enabled", true);
+	Result.CanHearMonsterSteps = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_noise_monster_steps_enabled", true);
+	Result.CanHearCombat = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_noise_combat_enabled", true);
+	Result.CanHearWorld = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_noise_world_enabled", true);
 	Result.NoiseInterestStep = Number(SystemSettings, Section, "monster_noise_interest_step", "MonsterNoiseInterestStep", .25f, 0.f, 1.f);
 	Result.NoiseInterestThreshold = Number(SystemSettings, Section, "monster_noise_interest_threshold", "MonsterNoiseInterestThreshold", .65f, .01f, 1.f);
 	Result.NoiseSearchTime = u32(Number(SystemSettings, Section, "monster_noise_search_time", "MonsterNoiseSearchTime", 60.f, 1.f, 3600.f) * 1000.f);
@@ -369,9 +392,9 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.SearchPointTime = u32(Number(SystemSettings, Section, "monster_search_point_time", "", 3.f, .1f, 60.f) * 1000.f);
 	Result.BodyInspectMin = u32(Number(SystemSettings, Section, "monster_body_inspect_time_min", "", 3.f, .1f, 60.f) * 1000.f);
 	Result.BodyInspectMax = std::max(Result.BodyInspectMin, u32(Number(SystemSettings, Section, "monster_body_inspect_time_max", "", 6.f, .1f, 60.f) * 1000.f));
-	Result.CanWitnessAggression = (pSettings)->read_if_exists<bool>(Section, "monster_witness_aggression", true);
+	Result.CanWitnessAggression = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_witness_aggression", true);
 	Result.WitnessWindow = u32(Number(SystemSettings, Section, "monster_witness_window", "", .75f, .1f, 3.f) * 1000.f);
-	Result.CanExpandNoiseSearch = (pSettings)->read_if_exists<bool>(Section, "monster_noise_expand_search", true);
+	Result.CanExpandNoiseSearch = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_noise_expand_search", true);
 	Result.NoiseImmediateChance = Number(SystemSettings, Section, "monster_noise_immediate_interest_chance", "MonsterNoiseImmediateInterestChance", 0.35f, 0.0f, 1.0f);
 	Result.NoiseDecay = Number(SystemSettings, Section, "monster_noise_interest_decay", "MonsterNoiseInterestDecay", 0.1f, 0.0f, 1.0f);
 	Result.GeneralNoiseRadius = Number(SystemSettings, Section, "monster_sound_reaction_radius", "MonsterSoundReactionRadius", 25.0f, 0.0f, 500.0f);
@@ -395,9 +418,9 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.SearchMax = std::max(Result.SearchMin, Result.SearchMax);
 	Result.ApproachMin = std::min(Result.ApproachMin, Result.ApproachMax);
 	Result.VisualAcquireTime = u32(Number(SystemSettings, Section, "monster_player_visual_acquire_time", "MonsterPlayerVisualAcquireTime", 400.f, 0.f, 10000.f));
-	Result.CanIgnoreFoliage = (pSettings)->read_if_exists<bool>(Section, "monster_vision_ignore_foliage", false) && (!SystemSettings || (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "EnableMonsterVisionIgnoreFoliage", true));
+	Result.CanIgnoreFoliage = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_vision_ignore_foliage", false) && (!SystemSettings || ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "EnableMonsterVisionIgnoreFoliage", true));
 	Result.CloseVisualRadius = Number(SystemSettings, Section, "monster_close_visual_radius", "MonsterCloseVisualRadius", 10.f, 0.f, 100.f);
-	const char* Schemes = (pSettings)->read_if_exists<str_c>(Section, "monster_behavior_schemes", "");
+	const char* Schemes = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "monster_behavior_schemes", "");
 	bool AllowsCloseScent = false;
 	for (int Index = 0; Index < _GetItemCount(Schemes); ++Index)
 	{
@@ -410,11 +433,13 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.CloseScentTime = u32(Number(SystemSettings, Section, "monster_close_scent_time", "", 5.f, 0.f, 60.f) * 1000.f);
 	Result.CloseVisualTime = u32(Number(SystemSettings, Section, "monster_close_visual_time", "MonsterCloseVisualTime", 5.f, 0.f, 60.f) * 1000.f);
 	Result.NativeAttackDistance = Number(SystemSettings, Section, "monster_enemy_close_attack_distance", "MonsterEnemyCloseAttackDistance", 5.f, .1f, 30.f);
-	Result.CanUsePeriphery = (pSettings)->read_if_exists<bool>(Section, "monster_peripheral_enabled", SystemSettings ? (SystemSettings)->read_if_exists<bool>(CELSharedSettings::SectionName(), "MonsterPeripheralEnabled", true) : true);
+	Result.MeleeHitTolerance = Number(SystemSettings, Section, "monster_melee_hit_tolerance", "MonsterMeleeHitTolerance", .3f, 0.f, .5f);
+	Result.MeleePredictionTime = Number(SystemSettings, Section, "monster_melee_prediction_time", "MonsterMeleePredictionTime", .35f, 0.f, .5f);
+	Result.CanUsePeriphery = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_peripheral_enabled", SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "MonsterPeripheralEnabled", true) : true);
 	Result.PeripheralAngle = Number(SystemSettings, Section, "monster_peripheral_angle", "MonsterPeripheralAngle", 150.f, 0.f, 360.f);
 	Result.PeripheralRadius = Number(SystemSettings, Section, "monster_peripheral_radius", "MonsterPeripheralRadius", 25.f, 0.f, 100.f);
 	Result.PeripheralInterval = u32(Number(SystemSettings, Section, "monster_peripheral_interval", "MonsterPeripheralInterval", 1.f, .1f, 10.f) * 1000.f);
-	Result.CanAvoidAnomalies = (pSettings)->read_if_exists<bool>(Section, "monster_anomaly_avoidance_enabled", false);
+	Result.CanAvoidAnomalies = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_anomaly_avoidance_enabled", false);
 	Result.AnomalyScanRadius = Number(SystemSettings, Section, "monster_anomaly_scan_radius", "MonsterAnomalyScanRadius", 60.f, 5.f, 150.f);
 	Result.AnomalyMargin = Number(SystemSettings, Section, "monster_anomaly_margin", "MonsterAnomalyMargin", 1.f, 0.f, 5.f);
 	Result.DayVision = Number(SystemSettings, Section, "monster_vision_day_factor", "", 1.f, .1f, 2.f);
@@ -423,21 +448,21 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.NightAcquire = Number(SystemSettings, Section, "monster_acquire_night_factor", "", 1.f, .1f, 5.f);
 	Result.RainVisionLoss = Number(SystemSettings, Section, "monster_rain_vision_loss", "", .15f, 0.f, .15f);
 	Result.FogVisionLoss = Number(SystemSettings, Section, "monster_fog_vision_loss", "", .4f, 0.f, .4f);
-	const bool LegacyDodge = pSettings->read_if_exists<bool>(Section, "monster_dodge_enabled", true);
-	Result.CanDodgeFire = pSettings->read_if_exists<bool>(Section, "monster_dodge_fire_enabled", true);
-	Result.CanDodgeStep = pSettings->read_if_exists<bool>(Section, "monster_dodge_step_enabled", LegacyDodge);
-	Result.CanDodgeJump = pSettings->read_if_exists<bool>(Section, "monster_dodge_jump_enabled", false);
-	Result.DodgeJumpOnAim = pSettings->read_if_exists<bool>(Section, "monster_dodge_jump_on_aim", false);
-	Result.DodgeTrackTarget = pSettings->read_if_exists<bool>(Section, "monster_dodge_track_target", true);
+	const bool LegacyDodge = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_dodge_enabled", true);
+	Result.CanDodgeFire = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_dodge_fire_enabled", true);
+	Result.CanDodgeStep = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_dodge_step_enabled", LegacyDodge);
+	Result.CanDodgeJump = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_dodge_jump_enabled", false);
+	Result.DodgeJumpOnAim = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_dodge_jump_on_aim", false);
+	Result.DodgeTrackTarget = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_dodge_track_target", true);
 	Result.DodgeTrackInterval = u32(Number(SystemSettings, Section, "monster_dodge_track_interval", "", .1f, .05f, 1.f) * 1000.f);
 	Result.CanDodge = Result.CanDodgeStep || Result.CanDodgeJump;
-	Result.CanAttackJump = pSettings->read_if_exists<bool>(Section, "monster_attack_jump_enabled", true);
-	Result.CanEvadeDive = pSettings->read_if_exists<bool>(Section, "monster_evade_dive_enabled", true);
-	Result.CanCounterAttack = pSettings->read_if_exists<bool>(Section, "monster_counterattack_enabled", true);
+	Result.CanAttackJump = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_attack_jump_enabled", true);
+	Result.CanEvadeDive = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_evade_dive_enabled", true);
+	Result.CanCounterAttack = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_counterattack_enabled", true);
 	Result.CounterAttackDuration = u32(Number(SystemSettings, Section, "monster_counterattack_duration", "", 1.5f, .1f, 10.f) * 1000.f);
-	Result.CounterOnReload = pSettings->read_if_exists<bool>(Section, "monster_counterattack_on_reload", true);
-	Result.CounterOnEmptyClick = pSettings->read_if_exists<bool>(Section, "monster_counterattack_on_empty_click", true);
-	Result.CounterOnNearMiss = pSettings->read_if_exists<bool>(Section, "monster_counterattack_on_near_miss", true);
+	Result.CounterOnReload = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_counterattack_on_reload", true);
+	Result.CounterOnEmptyClick = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_counterattack_on_empty_click", true);
+	Result.CounterOnNearMiss = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_counterattack_on_near_miss", true);
 	Result.CounterNearMissRadius = Number(SystemSettings, Section, "monster_counterattack_near_miss_radius", "", 3.f, .1f, 20.f);
 	Result.CounterOpportunityTime = u32(Number(SystemSettings, Section, "monster_counterattack_opportunity_time", "", 2.f, .1f, 10.f) * 1000.f);
 	Result.CounterOpportunityCooldown = u32(Number(SystemSettings, Section, "monster_counterattack_opportunity_cooldown", "", 2.f, .1f, 30.f) * 1000.f);
@@ -478,28 +503,28 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.DodgeStepDistance = Number(SystemSettings, Section, "monster_dodge_step_distance", "", 4.f, .5f, 12.f);
 	Result.DodgeStepArrivalDistance = Number(SystemSettings, Section, "monster_dodge_step_arrival_distance", "", 1.f, .1f, 3.f);
 	Result.DodgeJumpMaxAngle = std::max(Result.DodgeApproachAngle, Result.DodgeJumpMaxAngle);
-	Result.CanFeint = pSettings->read_if_exists<bool>(Section, "monster_feint_enabled", false);
+	Result.CanFeint = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_feint_enabled", false);
 	Result.FeintChance = Number(SystemSettings, Section, "monster_feint_chance", "", .25f, 0.f, 1.f);
 	Result.PairedAttackDelay = u32(Number(SystemSettings, Section, "monster_paired_attack_delay", "", .22f, 0.f, 1.f) * 1000.f);
-	Result.CanSprint = pSettings->read_if_exists<bool>(Section, "monster_sprint_enabled", false);
+	Result.CanSprint = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_sprint_enabled", false);
 	Result.SprintBonus = Number(SystemSettings, Section, "monster_sprint_bonus", "", .3f, 0.f, 1.f);
 	Result.SprintDuration = u32(Number(SystemSettings, Section, "monster_sprint_duration", "", 3.f, .1f, 30.f) * 1000.f);
 	Result.SprintCooldown = u32(Number(SystemSettings, Section, "monster_sprint_cooldown", "", 8.f, .5f, 120.f) * 1000.f);
 	Result.SprintDistance = Number(SystemSettings, Section, "monster_sprint_distance", "", 10.f, 1.f, 100.f);
-	Result.CanPursuitJump = pSettings->read_if_exists<bool>(Section, "monster_pursuit_jump_enabled", false);
-	Result.CanInterceptFlying = pSettings->read_if_exists<bool>(Section, "monster_flying_intercept_enabled", false);
+	Result.CanPursuitJump = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_pursuit_jump_enabled", false);
+	Result.CanInterceptFlying = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_flying_intercept_enabled", false);
 	Result.InterceptChance = Number(SystemSettings, Section, "monster_flying_intercept_chance", "", .35f, 0.f, 1.f);
 	Result.TacticalJumpCooldown = u32(Number(SystemSettings, Section, "monster_tactical_jump_cooldown", "", 4.f, .5f, 60.f) * 1000.f);
-	Result.CanAmbush = pSettings->read_if_exists<bool>(Section, "monster_ambush_enabled", false);
+	Result.CanAmbush = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_ambush_enabled", false);
 	Result.GroupInterceptDistance = Number(SystemSettings, Section, "monster_group_intercept_distance", "", 15.f, 1.f, 100.f);
-	Result.CanGrabFlying = pSettings->read_if_exists<bool>(Section, "monster_flying_grab_enabled", false);
+	Result.CanGrabFlying = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_flying_grab_enabled", false);
 	Result.GrabHealthThreshold = Number(SystemSettings, Section, "monster_flying_grab_health", "", .3f, .01f, 1.f);
 	Result.GrabMassRatio = Number(SystemSettings, Section, "monster_flying_grab_mass_ratio", "", .5f, .01f, 1.f);
 	Result.GrabDuration = u32(Number(SystemSettings, Section, "monster_flying_grab_duration", "", .65f, .2f, 2.f) * 1000.f);
 	Result.GrabThrowSpeed = Number(SystemSettings, Section, "monster_flying_grab_throw_speed", "", 6.f, 0.f, 15.f);
 	Result.GrabMouthOffset = Number(SystemSettings, Section, "monster_flying_grab_mouth_offset", "", .15f, -.5f, 1.f);
-	Result.GrabBone = pSettings->read_if_exists<str_c>(Section, "monster_flying_grab_bone", pSettings->read_if_exists<str_c>(Section, "bone_head", "bip01_head"));
-	Result.CallSound = (pSettings)->read_if_exists<str_c>(Section, "monster_enemy_call_sound", "");
+	Result.GrabBone = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "monster_flying_grab_bone", ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "bone_head", "bip01_head"));
+	Result.CallSound = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "monster_enemy_call_sound", "");
 	Result.Shot = Noise(SystemSettings, Section, "monster_shot_reaction", "MonsterShotReaction");
 	Result.Explosion = Noise(SystemSettings, Section, "monster_explosion_reaction", "MonsterExplosionReaction");
 	ExtendedEntityesProfiles::ReadHearing(Result, SystemSettings, Section);
@@ -520,7 +545,7 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 // Возвращает русское название типа шума для отладки; ключи LTX не изменяются.
 const char* CELSharedPerceptionProfiles::NoiseName(EELNoiseType Type)
 {
-	static const char* Names[] = {"Выстрел", "Взрыв", "Шаги", "Шаги существа", "Прыжок", "Удар вблизи", "Атака", "Ранение", "Смерть", "Попадание пули", "Разрушение", "Столкновение", "Голос / вокализация", "Кормление", "Покой", "Окружение", "Подбор", "Бросок предмета", "Убирание", "Доставание", "Использование", "Пустой щелчок", "Перезарядка", "Прочий шум", "Свет"};
+	static const char* Names[] = {"Выстрел", "Взрыв", "Шаги", "Шаги существа", "Прыжок", "Удар вблизи", "Атака", "Ранение", "Смерть", "Попадание пули", "Разрушение", "Столкновение", "Голос / вокализация", "Кормление", "Покой", "Окружение", "Подбор", "Бросок предмета", "Убирание", "Доставание", "Использование", "Пустой щелчок", "Перезарядка", "Прочий шум", "Свет", "Клич союзника"};
 	static_assert(sizeof(Names) / sizeof(Names[0]) == u32(EELNoiseType::Count));
 	return u32(Type) < u32(EELNoiseType::Count) ? Names[u32(Type)] : "Прочий шум";
 }

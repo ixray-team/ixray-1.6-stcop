@@ -117,7 +117,9 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 	const Fvector PreviousKnown = LastKnownPosition;
 	LastKnownPosition = KnownPosition;
 	LastSampleAt = Now;
-	if (s32(Device.dwTimeGlobal - ReconsiderAt) < 0 && PreviousKnown.distance_to_sqr(KnownPosition) < _sqr(CELSharedSettings::Work().GroundRouteReplanDistance) &&
+	const float ContactDistance = OwnerMonster.Position().distance_to(KnownPosition);
+	const bool CloseVisible = HasVision && ContactDistance <= Profile.NativeAttackDistance * 2.f;
+	if (!CloseVisible && s32(Device.dwTimeGlobal - ReconsiderAt) < 0 && PreviousKnown.distance_to_sqr(KnownPosition) < _sqr(CELSharedSettings::Work().GroundRouteReplanDistance) &&
 		OwnerMonster.Position().distance_to_sqr(GoalPosition) > 2.25f * _sqr(PathScale))
 	{
 		return;
@@ -134,7 +136,7 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 	const u32 NearbyCount = Group.Count > 0 ? Group.Count - 1 : 0;
 	const float Distance = OwnerMonster.Position().distance_to(KnownPosition);
 	ChooseStrategy(Adapter, Profile, Distance, HasVision, NearbyCount, KnownPosition);
-	if (ForceDirect)
+	if (ForceDirect || CloseVisible)
 	{
 		Strategy = EELApproachStrategy::Direct;
 	}
@@ -216,7 +218,23 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 				GoalPosition.mad(Lateral, std::min(Width, 1.5f * PathScale));
 			}
 		}
-		GoalPosition.add(Separation);
+		if (CloseVisible)
+		{
+			// Close combat must not aim at an ally's side slot or a former encirclement point.
+			GoalPosition = KnownPosition;
+			Fvector Lead = ObservedVelocity;
+			Lead.mul(Profile.MeleePredictionTime);
+			const float LeadLength = Lead.magnitude();
+			if (LeadLength > 2.f)
+			{
+				Lead.mul(2.f / LeadLength);
+			}
+			GoalPosition.add(Lead);
+		}
+		else
+		{
+			GoalPosition.add(Separation);
+		}
 	}
 	GoalVertex = ai().level_graph().vertex_id(GoalPosition);
 	if (ai().level_graph().valid_vertex_id(GoalVertex))

@@ -45,6 +45,7 @@ enum class EELNoiseType : u8
 	Reload,
 	Other,
 	Light,
+	AllyCall,
 	Count
 };
 
@@ -84,7 +85,28 @@ struct SELPerceptionProfile
 	float CharacterTierPressure = 12.f;
 	float CharacterPackBonus = 18.f;
 	float CharacterCounterChance = .15f;
+	u32 CharacterCornerPressureTime = 2000;
 	float CharacterSafeDistance = 25.f;
+	float CharacterWatchDistance = 0;
+	float CharacterWatchRetreatRatio = 0;
+	float CharacterWatchRunRatio = 0;
+	float CharacterWatchAngle = 0;
+	float CharacterWatchAngleStep = 0;
+	float CharacterSizeScaleMin = 0;
+	float CharacterSizeScaleMax = 0;
+	u32 CharacterContactGrace = 0;
+	u32 ReactionCommandTime = 0;
+	u32 ReactionPointAttempts = 0;
+	float ReactionReplanDistance = 0;
+	float ReactionSideEpsilon = 0;
+	float ReactionEscapeStep = 0;
+	float ReactionEscapeAngle = 0;
+	u32 ReactionSearchDirections = 0;
+	float ReactionSearchStartRadius = 0;
+	float ReactionSearchRadiusStep = 0;
+	float ReactionArrivalDistance = 0;
+	u32 ReactionCornerBlockedTime = 0;
+	u32 ReactionCornerStallTime = 0;
 	float CharacterDodgeCaution = .5f;
 	u32 CharacterMemory = 180000;
 	u32 CharacterReevaluate = 2000;
@@ -213,6 +235,8 @@ struct SELPerceptionProfile
 	float CloseVisualRadius = 10.f;
 	u32 CloseVisualTime = 5000;
 	float NativeAttackDistance = 5.f;
+	float MeleeHitTolerance = .3f;
+	float MeleePredictionTime = .35f;
 	bool CanAvoidAnomalies = false;
 	bool CanUsePeriphery = true;
 	float PeripheralAngle = 150.f;

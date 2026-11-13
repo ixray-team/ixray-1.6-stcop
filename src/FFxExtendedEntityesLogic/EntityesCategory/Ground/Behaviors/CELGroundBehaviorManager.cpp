@@ -54,11 +54,11 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		const bool HasStimulus = Owner.Memory.Find(Owner.TargetIdentifier) || s32(Owner.Hearing.InvestigateUntil - Device.dwTimeGlobal) > 0;
 		if (Inside)
 		{
-			ReactionBehavior.Configure(Source, Device.dwTimeGlobal + 1000, true);
+			ReactionBehavior.Configure(Source, Device.dwTimeGlobal + Profile.ReactionCommandTime, true);
 		}
 		else if (HasStimulus && CBaseMonster::FindPanicPerimeter(Monster.Position(), Monster.EmmiPainProtection, Monster.ID() % 2 ? .12f : -.12f, Goal))
 		{
-			ReactionBehavior.Configure(Goal, Device.dwTimeGlobal + 1000, false);
+			ReactionBehavior.Configure(Goal, Device.dwTimeGlobal + Profile.ReactionCommandTime, false);
 		}
 		else
 		{
@@ -82,10 +82,24 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	}
 	if (Owner.ShouldFleePredator(SelectedObservation))
 	{
-		ReactionBehavior.Configure(SelectedObservation ? SelectedObservation->Position : Owner.LastFearPosition, Device.dwTimeGlobal + 1000, true);
+		if (Owner.IsWatchingThreat && SelectedObservation && SelectedTarget)
+		{
+			if (Adapter.CanSee(*SelectedTarget))
+			{
+				ReactionBehavior.ConfigureWatching(SelectedObservation->Position, SelectedTarget->Direction(), Device.dwTimeGlobal + Profile.ReactionCommandTime);
+			}
+			else
+			{
+				ReactionBehavior.Configure(SelectedObservation->Position, Device.dwTimeGlobal + Profile.ReactionCommandTime, false);
+			}
+		}
+		else
+		{
+			ReactionBehavior.Configure(SelectedObservation ? SelectedObservation->Position : Owner.LastFearPosition, Device.dwTimeGlobal + Profile.ReactionCommandTime, true);
+		}
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
-		SetValidationReason(Profile.HasCharacter ? "Отступление: характер и полученный отпор" : "Бегство от видового хищника");
+		SetValidationReason(Owner.IsWatchingThreat ? "Осторожное сопровождение: держу дистанцию и обхожу сбоку" : Profile.HasCharacter ? "Отступление: характер и полученный отпор" : "Бегство от видового хищника");
 		return EELControl::Extended;
 	}
 	// A perceived but inaccessible enemy is a waiting stimulus, not a stale sound task.
@@ -101,7 +115,7 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		if (CanPursue && Profile.CanAttackJump && Monster.com_man().get_jump_control() && Monster.Position().distance_to_sqr(Known.Position) <= _sqr(Profile.LungeMaxDistance) && Monster.com_man().check_if_jump_possible(Known.Position, true)) { continue; }
 		if (Owner.ShouldFleePredator(&Known))
 		{
-			ReactionBehavior.Configure(Known.Position, Device.dwTimeGlobal + 1000u, true);
+			ReactionBehavior.Configure(Known.Position, Device.dwTimeGlobal + Profile.ReactionCommandTime, true);
 		}
 		else
 		{
@@ -112,7 +126,7 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 			WaitingPoint.x += sinf(Angle) * Radius;
 			WaitingPoint.z += cosf(Angle) * Radius;
 			WaitingPoint.y = Monster.Position().y;
-			ReactionBehavior.Configure(WaitingPoint, Device.dwTimeGlobal + 1000u, false);
+			ReactionBehavior.Configure(WaitingPoint, Device.dwTimeGlobal + Profile.ReactionCommandTime, false);
 		}
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
@@ -137,7 +151,7 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		}
 		else
 		{
-			ReactionBehavior.Configure(Rally, Device.dwTimeGlobal + 1000, false);
+			ReactionBehavior.Configure(Rally, Device.dwTimeGlobal + Profile.ReactionCommandTime, false);
 			Select(&ReactionBehavior);
 			Update(DeltaTime);
 		}

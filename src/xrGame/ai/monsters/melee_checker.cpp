@@ -38,6 +38,34 @@ float CMeleeChecker::TargetDistance(const CEntityAlive* Enemy) const
 	return MonsterScale::MeleeDistance(Distance, OwnerScale, TargetScale, TargetRadius);
 }
 
+// Only a currently perceived opponent supplies live motion for melee correction.
+Fvector CMeleeChecker::TargetVelocity(const CEntityAlive* Enemy) const
+{
+	Fvector Velocity = {0.f, 0.f, 0.f};
+	if (Enemy && m_object->UsesExtendedCombat && m_object->EnemyMan.see_enemy_now(Enemy))
+	{
+		const_cast<CEntityAlive*>(Enemy)->PHGetLinearVell(Velocity);
+		Velocity.y = 0.f;
+		if (!_valid(Velocity.x) || !_valid(Velocity.z) || Velocity.square_magnitude() > 400.f)
+		{
+			Velocity.set(0.f, 0.f, 0.f);
+		}
+	}
+	return Velocity;
+}
+
+Fvector CMeleeChecker::PredictTargetPosition(const CEntityAlive* Enemy, float Horizon) const
+{
+	Fvector Lead = TargetVelocity(Enemy);
+	Lead.mul(clampr(Horizon, 0.f, m_object->ExtendedMeleePredictionTime));
+	const float Length = Lead.magnitude();
+	if (Length > 2.f)
+	{
+		Lead.mul(2.f / Length);
+	}
+	return Fvector().add(Enemy->Position(), Lead);
+}
+
 float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 {
 	if (m_object->GetVisualScale() != 1.f || enemy->GetVisualScale() != 1.f)

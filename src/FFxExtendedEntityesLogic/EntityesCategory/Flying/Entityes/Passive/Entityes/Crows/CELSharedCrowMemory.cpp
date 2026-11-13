@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Passive/Entityes/Crows/CELSharedCrowMemory.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
@@ -384,35 +385,35 @@ void CELSharedCrowMemory::LoadSettings()
 		Msg("! [ExtendedEntityesLogic] Missing crow shared memory section in system.ltx: [%s]", Section && *Section ? Section : "<empty>");
 		return;
 	}
-	Settings.CorpseLimit = pSettings->read_if_exists<u32>(Section, "corpse_limit", Settings.CorpseLimit);
+	Settings.CorpseLimit = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "corpse_limit", Settings.CorpseLimit);
 	clamp(Settings.CorpseLimit, 0u, 65535u);
-	Settings.ObservationLimit = pSettings->read_if_exists<u32>(Section, "observation_limit", Settings.ObservationLimit);
+	Settings.ObservationLimit = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "observation_limit", Settings.ObservationLimit);
 	clamp(Settings.ObservationLimit, 0u, 65535u);
-	Settings.PerchCount = pSettings->read_if_exists<u32>(Section, "perches_per_corpse", Settings.PerchCount);
+	Settings.PerchCount = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "perches_per_corpse", Settings.PerchCount);
 	clamp(Settings.PerchCount, 0u, 128u);
-	Settings.CorpseRefresh = pSettings->read_if_exists<u32>(Section, "corpse_refresh_ms", Settings.CorpseRefresh);
+	Settings.CorpseRefresh = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "corpse_refresh_ms", Settings.CorpseRefresh);
 	clamp(Settings.CorpseRefresh, 0u, 3600000u);
-	Settings.ObservationRefresh = pSettings->read_if_exists<u32>(Section, "observation_refresh_ms", Settings.ObservationRefresh);
+	Settings.ObservationRefresh = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "observation_refresh_ms", Settings.ObservationRefresh);
 	clamp(Settings.ObservationRefresh, 16u, 60000u);
-	Settings.PerchAttempts = pSettings->read_if_exists<u32>(Section, "perch_search_attempts", Settings.PerchAttempts);
+	Settings.PerchAttempts = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "perch_search_attempts", Settings.PerchAttempts);
 	clamp(Settings.PerchAttempts, 1u, 1024u);
-	Settings.PerchRetry = pSettings->read_if_exists<u32>(Section, "perch_retry_ms", Settings.PerchRetry);
+	Settings.PerchRetry = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "perch_retry_ms", Settings.PerchRetry);
 	clamp(Settings.PerchRetry, 250u, 60000u);
-	Settings.CorpseIdle = pSettings->read_if_exists<u32>(Section, "corpse_idle_ms", Settings.CorpseIdle);
+	Settings.CorpseIdle = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "corpse_idle_ms", Settings.CorpseIdle);
 	clamp(Settings.CorpseIdle, 250u, 3600000u);
-	Settings.ObservationIdle = pSettings->read_if_exists<u32>(Section, "observation_idle_ms", Settings.ObservationIdle);
+	Settings.ObservationIdle = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "observation_idle_ms", Settings.ObservationIdle);
 	clamp(Settings.ObservationIdle, 250u, 3600000u);
-	Settings.MaintenanceInterval = pSettings->read_if_exists<u32>(Section, "maintenance_ms", Settings.MaintenanceInterval);
+	Settings.MaintenanceInterval = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "maintenance_ms", Settings.MaintenanceInterval);
 	clamp(Settings.MaintenanceInterval, 16u, 10000u);
-	Settings.PerchProbes = pSettings->read_if_exists<u32>(Section, "perch_probes_per_frame", Settings.PerchProbes);
+	Settings.PerchProbes = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "perch_probes_per_frame", Settings.PerchProbes);
 	clamp(Settings.PerchProbes, 1u, 64u);
-	Settings.ObservationQueries = pSettings->read_if_exists<u32>(Section, "observation_queries_per_frame", Settings.ObservationQueries);
+	Settings.ObservationQueries = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "observation_queries_per_frame", Settings.ObservationQueries);
 	clamp(Settings.ObservationQueries, 1u, 64u);
 
-	Settings.ScanEntries = pSettings->read_if_exists<u32>(Section, "cache_scan_entries_per_frame", Settings.ScanEntries);
+	Settings.ScanEntries = ExtendedEntityesOptions::Read<u32>(pSettings, Section, "cache_scan_entries_per_frame", Settings.ScanEntries);
 	clamp(Settings.ScanEntries, 1u, 4096u);
-	Settings.CellSize = pSettings->read_if_exists<float>(Section, "observation_cell_size", 16.f);
-	Settings.CorpseMoveDistance = pSettings->read_if_exists<float>(Section, "corpse_move_distance", .05f);
+	Settings.CellSize = ExtendedEntityesOptions::Read<float>(pSettings, Section, "observation_cell_size", 16.f);
+	Settings.CorpseMoveDistance = ExtendedEntityesOptions::Read<float>(pSettings, Section, "corpse_move_distance", .05f);
 	if (!_valid(Settings.CellSize))
 	{
 		Settings.CellSize = 16.f;

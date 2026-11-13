@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Passive/Entityes/Crows/CELCrowServer.h"
 #ifdef XRGAME_EXPORTS
@@ -37,7 +38,7 @@ void CELCrowServer::Initialize()
 		State.Valid = true;
 	}
 	IsRaining = State.Rain.Observed;
-	m_fCurrentLevelGoingSpeed = (pSettings)->read_if_exists<float>(s_name.c_str(), "flight_speed", 6.f);
+	m_fCurrentLevelGoingSpeed = ExtendedEntityesOptions::Read<float>(pSettings, s_name.c_str(), "flight_speed", 6.f);
 	if (!_valid(m_fCurrentLevelGoingSpeed))
 	{
 		m_fCurrentLevelGoingSpeed = 6.f;

@@ -38,6 +38,11 @@ bool CELBaseAdapter::CanControl() const
 		}
 	}
 	const EMotionAnim Override = OwnerMonster.anim().get_override_animation();
+	if (OwnerMonster.UsesExtendedCombat && (Override == eAnimAttackOnRunLeft || Override == eAnimAttackOnRunRight))
+	{
+		// Preserve the running attack through its impact event, just like a stationary melee animation.
+		return false;
+	}
 	if (Override != eAnimUndefined && Override != eAnimAttackOnRunLeft && Override != eAnimAttackOnRunRight && Override != eAnimSniff)
 	{
 		return false;

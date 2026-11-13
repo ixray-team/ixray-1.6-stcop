@@ -32,6 +32,8 @@ public:
 			// ѕолучить рассто€ние от fire_bone до врага
 			// ¬ыполнить RayQuery от fire_bone в enemy.center
 	float TargetDistance(const CEntityAlive* Enemy) const;
+	Fvector TargetVelocity(const CEntityAlive* Enemy) const;
+	Fvector PredictTargetPosition(const CEntityAlive* Enemy, float Horizon) const;
 			float	distance_to_enemy		(const CEntityAlive *enemy);
 
 			float	get_min_distance		();

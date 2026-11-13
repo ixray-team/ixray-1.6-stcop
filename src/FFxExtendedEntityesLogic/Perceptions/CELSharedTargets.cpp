@@ -166,6 +166,8 @@ const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IE
 	const SELObservation* BestObservation = nullptr;
 	u32 BestAssignedCount = u32(-1);
 	float BestScore = FLT_MAX;
+	bool BestVisible = false;
+	float BestVisibleDistance = FLT_MAX;
 	for (const SELObservation& Observation : Memory.GetRecords())
 	{
 		CEntityAlive* Candidate = ExtendedEntityes::FindEntity(Observation.TargetIdentifier);
@@ -181,7 +183,8 @@ const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IE
 		}
 		const auto CountIterator = Counts.find(Observation.TargetIdentifier);
 		const u32 AssignedCount = CountIterator != Counts.end() ? CountIterator->second : 0;
-		const float DistanceSquared = Adapter.Monster().Position().distance_to_sqr(Observation.Position);
+		const bool Visible = Adapter.CanSee(*Candidate);
+		const float DistanceSquared = Adapter.Monster().Position().distance_to_sqr(Visible ? Candidate->Position() : Observation.Position);
 		const auto PersonalIterator = State.Interests.find(Observation.TargetIdentifier);
 		const float PersonalInterest = PersonalIterator != State.Interests.end() ? PersonalIterator->second.Value : 0.f;
 		// All enemies use the same cost model. No identity-specific player bonus is applied.
@@ -196,8 +199,15 @@ const SELObservation* CELSharedTargets::Select(const CELSharedMemory& Memory, IE
 			Score *= Committed ? _sqr(Profile.TargetSwitchDistanceRatio) : 1.f;
 			State.PreviousCost = Score;
 		}
-		if (!BestObservation || Score < BestScore || (Score == BestScore && AssignedCount < BestAssignedCount))
+		// Visibility and then true distance outrank damage history, interest and squad load.
+		const bool BetterVisible = Visible && (!BestVisible || DistanceSquared < BestVisibleDistance ||
+			(DistanceSquared == BestVisibleDistance && BestObservation && Observation.TargetIdentifier < BestObservation->TargetIdentifier));
+		const bool BetterRemembered = !Visible && !BestVisible && (!BestObservation || Score < BestScore ||
+			(Score == BestScore && AssignedCount < BestAssignedCount));
+		if (BetterVisible || BetterRemembered)
 		{
+			BestVisible = Visible;
+			BestVisibleDistance = Visible ? DistanceSquared : FLT_MAX;
 			BestAssignedCount = AssignedCount;
 			BestScore = Score;
 			BestObservation = &Observation;

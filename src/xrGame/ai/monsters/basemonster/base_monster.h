@@ -424,6 +424,12 @@ public:
 		u32 EmmiPainProtection = 1;
 		float CharacterCourage = .5f;
 		bool UsesExtendedCombat = false;
+		float ExtendedMeleeHitTolerance = .3f;
+		float ExtendedMeleePredictionTime = .35f;
+		const char* NativeHitReason = "not_checked";
+		float NativeHitDistance = 0.f;
+		float NativeHitRange = 0.f;
+		bool NativeHitCorrected = false;
 		const char* NativeMeleeReason = "not_checked";
 		u32 NativeMeleeCheckedAt = 0;
 		u32 NativeHitAttemptAt = 0;

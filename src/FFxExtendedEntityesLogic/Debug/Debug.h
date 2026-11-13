@@ -28,6 +28,18 @@ struct SELDebugRecord
 	float Radius = .5f;
 	float Speed = 0.f;
 	float ScentRadius = 0.f;
+	bool HasVitalBars = false;
+	bool HasCharacterBars = false;
+	Fvector BarsPosition = {0.f, 0.f, 0.f};
+	float HealthPercent = 100.f;
+	float CouragePercent = 0.f;
+	float AggressionPercent = 0.f;
+	float BaseCouragePercent = 0.f;
+	float BaseAggressionPercent = 0.f;
+	bool IsAfraidOfActor = false;
+	bool IsCounterAttacking = false;
+	bool IsBerserk = false;
+	Fvector StateMarkerPosition = {0.f, 0.f, 0.f};
 	u16 PsiGuideIdentifier = u16(-1);
 	Fvector PsiGuidePosition = {0.f, 0.f, 0.f};
 	u16 TargetIdentifier = u16(-1);
@@ -135,6 +147,7 @@ public:
 	void SetDrawEnabled(bool IsGeometryEnabled, bool IsTextEnabled);
 	void SetStatsEnabled(bool IsEnabled);
 	void SetCombatLog(bool Enabled);
+	void LogCombat(u16 OwnerIdentifier, const char* Format, ...);
 	bool CanLogCombat(const Fvector& Position) const;
 	void SetDetails(u32 Mask) { Details = Mask; }
 	bool Detail(u32 Index) const { return (Details.load() & (1u << Index)) != 0; }
@@ -155,6 +168,12 @@ public:
 
 private:
 	xrCriticalSection QueueLock;
+	struct SCombatTime
+	{
+		u32 Generation = 0;
+		u32 Time = 0;
+	};
+	xr_map<u16, SCombatTime> CombatTimes;
 	xr_vector<SELDebugRecord> Records;
 	xr_vector<SELDebugEvent> Events;
 

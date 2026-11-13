@@ -129,6 +129,12 @@ void   ATTACK_ON_RUN_STATE::set_movement_phaze (phaze const new_phaze)
 TEMPLATE_SIGNATURE
 void   ATTACK_ON_RUN_STATE::calculate_predicted_enemy_pos ()
 {
+	if (this->object->UsesExtendedCombat)
+	{
+		m_predicted_enemy_velocity = this->object->MeleeChecker.TargetVelocity(this->object->EnemyMan.get_enemy());
+		m_predicted_enemy_pos = this->object->MeleeChecker.PredictTargetPosition(this->object->EnemyMan.get_enemy(), this->object->ExtendedMeleePredictionTime);
+		return;
+	}
 	float const		prediction_factor		=	this->object->get_attack_on_move_prediction_factor();
 
 	float const		epsilon					=	0.0001f;
@@ -256,6 +262,26 @@ void   ATTACK_ON_RUN_STATE::update_movement_target ()
 	Fvector	const		self2enemy			=	enemy_pos - self_pos;
 	float const			self2enemy_mag		=	self2enemy.magnitude();
 	
+	// Keep steering during the windup instead of running past the victim toward a frozen tangent.
+	if (this->object->UsesExtendedCombat && this->object->EnemyMan.see_enemy_now(enemy) &&
+		self2enemy_mag <= this->object->MeleeChecker.get_max_distance() * 3.f)
+	{
+		u32 ContactVertex;
+		const u32 OwnerVertex = this->object->ai_location().level_vertex_id();
+		if (is_valid_point_to_move(m_predicted_enemy_pos, &ContactVertex) &&
+			ai().level_graph().valid_vertex_id(OwnerVertex) &&
+			ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(OwnerVertex, self_pos, m_predicted_enemy_pos)))
+		{
+			m_target = m_predicted_enemy_pos;
+			m_target_vertex = ContactVertex;
+			m_reach_old_target = false;
+			if (m_phaze != go_close)
+			{
+				set_movement_phaze(go_close);
+			}
+			return;
+		}
+	}
 	if ( self2enemy_mag > far_radius*2 )
 	{
 		m_target_vertex						=	enemy->ai_location().level_vertex_id();
@@ -472,7 +498,11 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 										++it )
 		{
 			CEntityAlive const* const enemy	=	it->first;
-			Fvector const enemy_pos			=	enemy == main_enemy ? 
+			if (this->object->UsesExtendedCombat && (enemy != main_enemy || !this->object->EnemyMan.see_enemy_now(enemy)))
+			{
+				continue;
+			}
+			Fvector const enemy_pos			=	!this->object->UsesExtendedCombat && enemy == main_enemy ?
 												m_predicted_enemy_pos : enemy->Position();
 
 
@@ -495,10 +525,19 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 			bool const good_attack_angle	=	attack_angle < deg2rad(30.f);
 
 			//bool const see_enemy_now		=	this->object->EnemyMan.see_enemy_now(enemy);
-			bool const good_attack_dist		=	current_atack_dist < allowed_atack_distance &&
-												current_atack_dist > disallowed_atack_distance;
+			bool good_attack_dist = current_atack_dist < allowed_atack_distance && current_atack_dist > disallowed_atack_distance;
+			if (this->object->UsesExtendedCombat)
+			{
+				Fvector ToEnemy = self_to_enemy_xz;
+				ToEnemy.normalize_safe();
+				const float ClosingSpeed = velocity * self_direction_xz.dotproduct(ToEnemy) - m_predicted_enemy_velocity.dotproduct(ToEnemy);
+				const float ImpactDistance = current_atack_dist - ClosingSpeed * m_animation_hit_time[m_attack_side];
+				// Relative speed determines the windup; close victims have no minimum-range dead zone.
+				good_attack_dist = current_atack_dist <= melee_max_distance ||
+					(ImpactDistance >= -melee_min_distance * .5f && ImpactDistance <= melee_max_distance + this->object->ExtendedMeleeHitTolerance);
+			}
 
-			if ( current_atack_dist < disallowed_atack_distance && 
+			if (!this->object->UsesExtendedCombat && current_atack_dist < disallowed_atack_distance &&
 				 m_phaze == go_close && 
 				 current_time() > m_phaze_chosen_time + 3000 &&
 				 enemy == main_enemy )
@@ -551,11 +590,20 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 TEMPLATE_SIGNATURE
 void   ATTACK_ON_RUN_STATE::execute ()
 {
-	calculate_predicted_enemy_pos				();
-	update_movement_target						();
-	update_try_min_time							();
-	update_attack								();
-	update_aim_side								();
+	const bool HasContact = !this->object->UsesExtendedCombat || this->object->EnemyMan.see_enemy_now();
+	if (HasContact)
+	{
+		calculate_predicted_enemy_pos();
+		update_movement_target();
+	}
+	update_try_min_time();
+	update_attack();
+	this->object->NativeAttackSubstate = eStateAttack_Attack_On_Run;
+	this->object->NativeAttackDecision = m_attacking ? "on_run_windup" : "on_run_closing";
+	if (HasContact)
+	{
+		update_aim_side();
+	}
 
 	this->object->set_action							(ACT_RUN);
 
@@ -563,15 +611,15 @@ void   ATTACK_ON_RUN_STATE::execute ()
 	this->object->anim().accel_set_braking			(false);
 
 	this->object->path().set_target_point				(m_target, m_target_vertex);
-	this->object->path().set_rebuild_time				(m_attacking ? 20 : 150);//this->object->get_attack_rebuild_time());
+	this->object->path().set_rebuild_time				(m_attacking ? 20 : this->object->UsesExtendedCombat ? 50 : 150);//this->object->get_attack_rebuild_time());
 
-	this->object->path().set_use_covers				();
+	this->object->path().set_use_covers(!this->object->UsesExtendedCombat);
 	this->object->path().set_cover_params				(0.1f, 30.f, 1.f, 30.f);
 	
 	this->object->path().set_try_min_time				(m_phaze == go_close);
 
 	this->object->set_state_sound						(MonsterSound::eMonsterSoundAggressive);
-	this->object->path().extrapolate_path				(true);
+	this->object->path().extrapolate_path(!this->object->UsesExtendedCombat);
 	
 	// обработать squad инфо	
 	this->object->path().set_use_dest_orient			(false);

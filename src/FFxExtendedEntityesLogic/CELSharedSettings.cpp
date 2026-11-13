@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
 #include "FFxExtendedEntityesLogic/Debug/DebugCommands.h"
@@ -42,27 +43,27 @@ void CELSharedSettings::Initialize()
 	}
 	if (SystemSettings)
 	{
-		CanShareFriends = (SystemSettings)->read_if_exists<bool>(SectionName(), "EnableMonsterFriendlyEnemySharing", true);
-		CanDistribute = (SystemSettings)->read_if_exists<bool>(SectionName(), "EnableMonsterDistributedTargeting", true);
-		WorkSettings.PerceptionOperations = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedPerceptionOperationsPerFrame", 384u);
-		WorkSettings.PerceptionRays = (SystemSettings)->read_if_exists<u32>(SectionName(), "MonsterBehaviorRaysPerFrame", 16u);
-		WorkSettings.SpatialQueries = (SystemSettings)->read_if_exists<u32>(SectionName(), "MonsterBehaviorQueriesPerFrame", 2u);
-		WorkSettings.SharingSessions = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedSharingSessionsPerFrame", 12u);
-		WorkSettings.TargetAssignments = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedTargetAssignmentsPerFrame", 64u);
-		WorkSettings.SharingTransfers = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedSharingTransfersPerFrame", 32u);
-		WorkSettings.NavigationCaptureNodes = (SystemSettings)->read_if_exists<u32>(SectionName(), "MonsterBehaviorNodesPerFrame", 72u);
-		WorkSettings.NavigationSteps = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationStepsPerFrame", 256u);
-		WorkSettings.NavigationSliceMicroseconds = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationSliceMicroseconds", 1500u);
-		WorkSettings.FlightDynamicChecks = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedFlightDynamicChecksPerFrame", 4u);
-		WorkSettings.FlightGeometryRays = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedFlightGeometryRaysPerFrame", 350u);
-		WorkSettings.NavigationTaskLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationTaskLimit", 256u);
-		WorkSettings.NavigationGraphNodeLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationGraphNodeLimit", 16384u);
-		WorkSettings.GroundCaptureTaskLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundCaptureTaskLimit", 128u);
-		WorkSettings.GroundCaptureNodeLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundCaptureNodeLimit", 4096u);
-		WorkSettings.GroundCaptureTimeout = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundCaptureTimeoutMs", 20000u);
-		WorkSettings.GroundRouteReplanDistance = (SystemSettings)->read_if_exists<float>(SectionName(), "ExtendedGroundRouteReplanDistance", 2.f);
-		WorkSettings.GroundWaypointLookahead = (SystemSettings)->read_if_exists<float>(SectionName(), "ExtendedGroundWaypointLookahead", 4.f);
-		WorkSettings.GroundRouteRetryDelay = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundRouteRetryDelayMs", 250u);
+		CanShareFriends = ExtendedEntityesOptions::Read<bool>(SystemSettings, SectionName(), "EnableMonsterFriendlyEnemySharing", true);
+		CanDistribute = ExtendedEntityesOptions::Read<bool>(SystemSettings, SectionName(), "EnableMonsterDistributedTargeting", true);
+		WorkSettings.PerceptionOperations = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedPerceptionOperationsPerFrame", 384u);
+		WorkSettings.PerceptionRays = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "MonsterBehaviorRaysPerFrame", 16u);
+		WorkSettings.SpatialQueries = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "MonsterBehaviorQueriesPerFrame", 2u);
+		WorkSettings.SharingSessions = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedSharingSessionsPerFrame", 12u);
+		WorkSettings.TargetAssignments = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedTargetAssignmentsPerFrame", 64u);
+		WorkSettings.SharingTransfers = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedSharingTransfersPerFrame", 32u);
+		WorkSettings.NavigationCaptureNodes = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "MonsterBehaviorNodesPerFrame", 72u);
+		WorkSettings.NavigationSteps = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedNavigationStepsPerFrame", 256u);
+		WorkSettings.NavigationSliceMicroseconds = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedNavigationSliceMicroseconds", 1500u);
+		WorkSettings.FlightDynamicChecks = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedFlightDynamicChecksPerFrame", 4u);
+		WorkSettings.FlightGeometryRays = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedFlightGeometryRaysPerFrame", 350u);
+		WorkSettings.NavigationTaskLimit = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedNavigationTaskLimit", 256u);
+		WorkSettings.NavigationGraphNodeLimit = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedNavigationGraphNodeLimit", 16384u);
+		WorkSettings.GroundCaptureTaskLimit = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedGroundCaptureTaskLimit", 128u);
+		WorkSettings.GroundCaptureNodeLimit = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedGroundCaptureNodeLimit", 4096u);
+		WorkSettings.GroundCaptureTimeout = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedGroundCaptureTimeoutMs", 20000u);
+		WorkSettings.GroundRouteReplanDistance = ExtendedEntityesOptions::Read<float>(SystemSettings, SectionName(), "ExtendedGroundRouteReplanDistance", 2.f);
+		WorkSettings.GroundWaypointLookahead = ExtendedEntityesOptions::Read<float>(SystemSettings, SectionName(), "ExtendedGroundWaypointLookahead", 4.f);
+		WorkSettings.GroundRouteRetryDelay = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedGroundRouteRetryDelayMs", 250u);
 		if (!_valid(WorkSettings.GroundRouteReplanDistance))
 		{
 			WorkSettings.GroundRouteReplanDistance = 2.f;
@@ -90,7 +91,7 @@ void CELSharedSettings::Initialize()
 		clamp(WorkSettings.NavigationSliceMicroseconds, 100u, 5000u);
 		clamp(WorkSettings.FlightGeometryRays, 16u, 512u);
 		clamp(WorkSettings.FlightDynamicChecks, 1u, std::max(1u, WorkSettings.FlightGeometryRays / 18u));
-		CanCall = (SystemSettings)->read_if_exists<bool>(SectionName(), "EnableMonsterEnemySharingCallSounds", true);
+		CanCall = ExtendedEntityesOptions::Read<bool>(SystemSettings, SectionName(), "EnableMonsterEnemySharingCallSounds", true);
 	}
 	IsInitialized = true;
 }

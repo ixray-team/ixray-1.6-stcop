@@ -3,6 +3,8 @@
 #include "FFxExtendedEntityesLogic/Debug/DebugDrawHud.h"
 #include "FFxExtendedEntityesLogic/Debug/DebugDrawWorld.h"
 #include <algorithm>
+#include <cstdarg>
+#include <cstdio>
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "xrGame/entity_alive.h"
 #include "xrGame/Actor.h"
@@ -123,6 +125,7 @@ void CELSharedDebug::Clear()
 	xrCriticalSectionGuard Guard(QueueLock);
 	Records.clear();
 	Events.clear();
+	CombatTimes.clear();
 	Frame = SELDebugFrame();
 	Performance = SELDebugPerformance();
 	TimingStartedAt = Device.dwFrame;
@@ -380,6 +383,7 @@ bool CELSharedDebug::CanLogCombat(const Fvector& Position) const
 bool CELSharedDebug::DrawDetail(const char* Label) const
 {
 	const xr_string Text = Label ? Label : "";
+	if (Text.starts_with("БОЮСЬ") || Text.starts_with("НЕ АТАКУЮ") || Text.starts_with("ОТКАЗ") || Text.starts_with("КОНТРАТАКА")) { return Detail(3); }
 	if (Text.starts_with("ANIM")) { return Detail(0); }
 	if (Text.starts_with("СЛУХ") || Text.starts_with("ПАМЯТЬ") || Text.starts_with("ВНИМАНИЕ")) { return Detail(1); }
 	if (Text.starts_with("ЗРЕНИЕ") || Text.starts_with("ВОСПРИЯТИЕ") || Text.starts_with("АКТОР") || Text.starts_with("ПОМНЮ") || Text.starts_with("ПРЕСЛЕДУЮ") || Text.starts_with("Передал") || Text.starts_with("ОСОБЫЙ")) { return Detail(2); }
@@ -388,11 +392,43 @@ bool CELSharedDebug::DrawDetail(const char* Label) const
 	return Detail(4);
 }
 
+// Keep the numeric timestamp for parsers and append a readable clock plus the per-owner interval.
+void CELSharedDebug::LogCombat(u16 OwnerIdentifier, const char* Format, ...)
+{
+	char Message[4096] = {};
+	va_list Arguments;
+	va_start(Arguments, Format);
+	std::vsnprintf(Message, sizeof(Message), Format, Arguments);
+	va_end(Arguments);
+	Message[sizeof(Message) - 1] = 0;
+	const u32 Now = Device.dwTimeGlobal;
+	const u32 Generation = ExtendedEntityes::OwnerGeneration(OwnerIdentifier);
+	u32 Delta = 0;
+	{
+		xrCriticalSectionGuard Guard(QueueLock);
+		const auto Previous = CombatTimes.find(OwnerIdentifier);
+		if (Previous != CombatTimes.end() && Previous->second.Generation == Generation)
+		{
+			Delta = s32(Now - Previous->second.Time) >= 0 ? Now - Previous->second.Time : 0;
+		}
+		if (CombatTimes.size() >= 1024 && Previous == CombatTimes.end())
+		{
+			CombatTimes.clear();
+		}
+		CombatTimes[OwnerIdentifier] = {Generation, Now};
+	}
+	Msg("%s clock=%02u:%02u:%02u.%03u dt_owner_ms=%u frame=%u", Message, Now / 3600000u, Now / 60000u % 60u, Now / 1000u % 60u, Now % 1000u, Delta, Device.dwFrame);
+}
+
 void CELSharedDebug::SetCombatLog(bool Enabled)
 {
 	if (HasCombatLog.exchange(Enabled) != Enabled)
 	{
-		Msg("[monsters_debug] CAPTURE t=%u enabled=%d actor_ignored=%d radius=60m sample=500ms heartbeat=2000ms", Device.dwTimeGlobal, int(Enabled), int(Actor() && ExtendedEntityes::IsIgnored(*Actor())));
+		{
+			xrCriticalSectionGuard Guard(QueueLock);
+			CombatTimes.clear();
+		}
+		LogCombat(u16(-1), "[monsters_debug] CAPTURE t=%u enabled=%d actor_ignored=%d radius=60m sample=500ms heartbeat=2000ms", Device.dwTimeGlobal, int(Enabled), int(Actor() && ExtendedEntityes::IsIgnored(*Actor())));
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/CELGroundAdapter.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
@@ -10,9 +11,9 @@
 CELGroundAdapter::CELGroundAdapter(CBaseMonster& OwnerMonster) : CELBaseAdapter(OwnerMonster)
 {
 	const char* Section = OwnerMonster.cNameSect().c_str();
-	if (OwnerMonster.com_man().get_jump_control() && pSettings->line_exist(Section, "jump_max_height"))
+	if (OwnerMonster.com_man().get_jump_control() && ExtendedEntityesOptions::Has(pSettings, Section, "jump_max_height"))
 	{
-		JumpHeight = pSettings->r_float(Section, "jump_max_height");
+		JumpHeight = ExtendedEntityesOptions::Float(pSettings, Section, "jump_max_height");
 		if (!_valid(JumpHeight) || JumpHeight < 0.f)
 		{
 			JumpHeight = 0.f;

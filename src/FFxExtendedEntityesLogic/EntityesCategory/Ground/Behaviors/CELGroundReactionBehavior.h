@@ -6,6 +6,7 @@ class CELGroundReactionBehavior final : public CELGroundBehaviorBase
 public:
 	using CELGroundBehaviorBase::CELGroundBehaviorBase;
 	void Configure(const Fvector& SoundPosition, u32 ReactionUntil, bool ShouldFlee);
+	void ConfigureWatching(const Fvector& EnemyPosition, const Fvector& EnemyForward, u32 WatchUntil);
 	void Enter() override;
 	void Update(float DeltaTime) override;
 	bool IsCornered() const;
@@ -21,6 +22,8 @@ private:
 	u32 NextPoint = 0;
 	u32 SearchPhase = 0;
 	u32 PointStartedAt = 0;
+	Fvector WatchedForward = {0.f, 0.f, 1.f};
+	bool IsWatching = false;
 	bool IsFleeing = false;
 	bool HasPoint = false;
 };

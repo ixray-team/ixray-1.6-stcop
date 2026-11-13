@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include "control_jump.h"
 #include "basemonster/base_monster.h"
 #include "control_manager.h"
@@ -36,15 +37,15 @@ void CControlJump::reinit()
 
 void CControlJump::load(const char* section)
 {
-	AttackJumpEnabled = pSettings->read_if_exists<bool>(section, "monster_attack_jump_enabled", true);
-	float Recovery = pSettings->read_if_exists<float>(section, "monster_dodge_attack_jump_delay", .6f);
+	AttackJumpEnabled = ExtendedEntityesOptions::Read<bool>(pSettings, section, "monster_attack_jump_enabled", true);
+	float Recovery = ExtendedEntityesOptions::Read<float>(pSettings, section, "monster_dodge_attack_jump_delay", .6f);
 	clamp(Recovery, 0.f, 5.f);
 	EvasionRecoveryTime = u32(Recovery * 1000.f);
-	EvasiveAnimationSpeedMax = pSettings->read_if_exists<float>(section, "monster_dodge_jump_animation_speed_max", 1.35f);
+	EvasiveAnimationSpeedMax = ExtendedEntityesOptions::Read<float>(pSettings, section, "monster_dodge_jump_animation_speed_max", 1.35f);
 	clamp(EvasiveAnimationSpeedMax, 1.f, 2.f);
-	EvasiveDistanceMax = pSettings->read_if_exists<float>(section, "monster_dodge_jump_distance_max", 5.f);
+	EvasiveDistanceMax = ExtendedEntityesOptions::Read<float>(pSettings, section, "monster_dodge_jump_distance_max", 5.f);
 	clamp(EvasiveDistanceMax, .5f, 12.f);
-	EvasiveDistanceMin = pSettings->read_if_exists<float>(section, "monster_dodge_jump_distance_min", .5f);
+	EvasiveDistanceMin = ExtendedEntityesOptions::Read<float>(pSettings, section, "monster_dodge_jump_distance_min", .5f);
 	clamp(EvasiveDistanceMin, .1f, EvasiveDistanceMax);
 	m_delay_after_jump				= pSettings->r_u32	(section,"jump_delay");
 	m_jump_factor					= pSettings->r_float(section,"jump_factor");
@@ -368,7 +369,7 @@ void CControlJump::update_frame()
 	}
 
 	// check if all jump stages are ended
-	if ( m_velocity_bounced && m_man->path_builder().is_path_end(0.1f) ) 
+	if (!IsEvasiveFlight() && m_velocity_bounced && m_man->path_builder().is_path_end(0.1f))
 	{
 		stop			();
 		return;
@@ -394,7 +395,7 @@ void CControlJump::update_frame()
 	hit_test			();
 
 	// set velocity from path if we are on it
-	if (m_man->path_builder().is_moving_on_path()) {
+	if (!IsEvasiveFlight() && m_man->path_builder().is_moving_on_path()) {
 		//---------------------------------------------------------------------------------------------------------------------------------
 		// Set Velocity from path
 		//---------------------------------------------------------------------------------------------------------------------------------
@@ -542,8 +543,10 @@ void CControlJump::on_event(ControlCom::EEventType type, ControlCom::IEventData 
 				m_velocity_bounced	= true;
 				grounding();
 			}
-			else 
+			else if (!IsEvasiveFlight())
 			{
+				// Ground-path bounce notifications must not cancel an airborne point-directed evasion.
+				// Physical collision remains active; touchdown still ends the ballistic controller.
 				stop();
 			}
 		}

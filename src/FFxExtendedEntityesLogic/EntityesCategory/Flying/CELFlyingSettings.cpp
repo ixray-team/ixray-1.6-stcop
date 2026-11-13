@@ -1,4 +1,5 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
+#include "xrGame/ai/monsters/monster_options.h"
 #include <cmath>
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/CELFlyingSettings.h"
@@ -11,7 +12,7 @@ xr_map<shared_str, SELFlyingSettings> Profiles;
 // Читает числовой параметр, заменяет недопустимое значение и ограничивает диапазон.
 float Number(const char* Section, const char* Key, float DefaultValue, float Minimum, float Maximum)
 {
-	float Value = (pSettings)->read_if_exists<float>(Section, Key, DefaultValue);
+	float Value = ExtendedEntityesOptions::Read<float>(pSettings, Section, Key, DefaultValue);
 	if (!_valid(Value))
 	{
 		Value = DefaultValue;
@@ -71,7 +72,7 @@ void ReadWander(SELFlyingSettings& Result, const char* Section)
 {
 	const char* const ManeuverNames[] = {"glide", "arch", "wave", "weave", "spiral", "loop"};
 	static_assert(sizeof(ManeuverNames) / sizeof(ManeuverNames[0]) == u32(EELFlightManeuver::Count));
-	const char* Names = (pSettings)->read_if_exists<str_c>(Section, "flight_wander_modes", "glide, arch, wave, weave, spiral, loop");
+	const char* Names = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "flight_wander_modes", "glide, arch, wave, weave, spiral, loop");
 	xr_string Token;
 	int TokenIndex;
 	u32 ModeIndex;
@@ -154,18 +155,19 @@ const SELFlyingSettings& CELFlyingSettings::Read(const char* Section)
 		return ProfileIterator->second;
 	}
 	SELFlyingSettings Result;
-	Result.CanWander = (pSettings)->read_if_exists<bool>(Section, "flight_free_wander", true);
+	Result.CanWander = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "flight_free_wander", true);
 	ExtendedEntityesFlightSettings::ReadKinematics(Result, Section);
 	ExtendedEntityesFlightSettings::ReadNavigation(Result, Section);
 	ExtendedEntityesFlightSettings::ReadWander(Result, Section);
 	ExtendedEntityesFlightSettings::ReadAttack(Result, Section);
 	ExtendedEntityesFlightSettings::ReadRest(Result, Section);
-	const char* FlightCycle = (pSettings)->read_if_exists<str_c>(Section, "flight_animation", "fly_idle");
+	const char* FlightCycle = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "flight_animation", "fly_idle");
 	Result.FlightAnimation = FlightCycle && *FlightCycle ? FlightCycle : "fly_idle";
-	const char* AttackCycle = (pSettings)->read_if_exists<str_c>(Section, "flight_attack_animation", Result.FlightAnimation.c_str());
+	const char* AttackCycle = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "flight_attack_animation", Result.FlightAnimation.c_str());
 	Result.AttackAnimation = AttackCycle && *AttackCycle ? AttackCycle : Result.FlightAnimation.c_str();
-	const char* IdleCycle = (pSettings)->read_if_exists<str_c>(Section, "flight_idle_animation", Result.FlightAnimation.c_str());
+	const char* IdleCycle = ExtendedEntityesOptions::Read<str_c>(pSettings, Section, "flight_idle_animation", Result.FlightAnimation.c_str());
 	Result.IdleAnimation = IdleCycle && *IdleCycle ? IdleCycle : Result.FlightAnimation.c_str();
+	ExtendedEntityesOptions::ValidateReferences(pSettings, Section);
 	return ExtendedEntityesFlightSettings::Profiles.emplace(shared_str(Section), std::move(Result)).first->second;
 }
 

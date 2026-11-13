@@ -46,7 +46,7 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 		return EELControl::Native;
 	}
 	const bool IsBerserk = s32(Adapter->Monster().CorneredBerserkUntil - Device.dwTimeGlobal) > 0;
-	if (IsBerserk)
+	if (IsBerserk || IsCharacterCounterAttacking())
 	{
 		Tactics.Release(*Adapter);
 	}
@@ -59,7 +59,7 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 		BehaviorManager.Clear();
 		return EELControl::Native;
 	}
-	AttackBehavior.SetForceDirect(IsBerserk || Tactics.IsCounterAttacking() || Tactics.IsFireEvading());
+	AttackBehavior.SetForceDirect(IsBerserk || IsCharacterCounterAttacking() || Tactics.IsCounterAttacking() || Tactics.IsFireEvading());
 	AttackBehavior.SetTacticalGoal(Tactics.HasGoal() ? &Tactics.Goal() : nullptr);
 	Fvector TargetPosition = Observation.Position;
 	if (HasVision)
@@ -70,11 +70,15 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 	Adapter->Monster().Center(OwnerPosition);
 	const float Distance = OwnerPosition.distance_to(TargetPosition);
 	const bool CanUseNativeJump = Profile.CanAttackJump && HasVision && !TargetEntity->UsedAI_Locations() && Adapter->Monster().com_man().get_jump_control() && Adapter->Monster().com_man().check_if_jump_possible(TargetPosition, true);
-	const bool CanUseNativeAttack = HasVision && (TargetEntity->UsedAI_Locations() ? Distance < Profile.NativeAttackDistance : Adapter->Monster().MeleeChecker.can_start_melee(TargetEntity) || CanUseNativeJump);
+	// Give actors on navigable ground the same native windup space as other opponents.
+	// Switching back at the start-distance boundary used to cancel running bites before impact.
+	const bool HasNativeApproach = HasVision && Distance < Profile.NativeAttackDistance &&
+		Adapter->CanReach(TargetEntity->Position(), ai().level_graph().vertex_id(TargetEntity->Position()));
+	const bool CanUseNativeAttack = HasVision && (HasNativeApproach || Adapter->Monster().MeleeChecker.can_start_melee(TargetEntity) || CanUseNativeJump);
 	if (CELSharedDebug::Instance().CanLogCombat(Adapter->Monster().Position()) && s32(Device.dwTimeGlobal - NextAttackTrace) >= 0)
 	{
 		NextAttackTrace = Device.dwTimeGlobal + 1000;
-		Msg("[monsters_debug] ATTACK_GATE t=%u id=%u target=%u visible=%d distance=%.2f native_range=%.2f target_ai=%d native_eligible=%d native_jump=%d tactics_owns=%d evade=%d berserk=%d", Device.dwTimeGlobal, Adapter->Monster().ID(), TargetIdentifier, int(HasVision), Distance, Profile.NativeAttackDistance, int(TargetEntity->UsedAI_Locations()), int(CanUseNativeAttack), int(CanUseNativeJump), int(Tactics.OwnsMovement()), int(Tactics.IsEvading()), int(IsBerserk));
+		CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] ATTACK_GATE t=%u id=%u target=%u visible=%d distance=%.2f native_range=%.2f target_ai=%d native_eligible=%d native_jump=%d tactics_owns=%d evade=%d berserk=%d", Device.dwTimeGlobal, Adapter->Monster().ID(), TargetIdentifier, int(HasVision), Distance, Profile.NativeAttackDistance, int(TargetEntity->UsedAI_Locations()), int(CanUseNativeAttack), int(CanUseNativeJump), int(Tactics.OwnsMovement()), int(Tactics.IsEvading()), int(IsBerserk));
 	}
 	if (CanUseNativeAttack && !Tactics.OwnsMovement())
 	{
@@ -130,6 +134,7 @@ void CELGroundAttackBase::FillGroundDebug(SELDebugRecord& Record) const
 {
 	if (TargetIdentifier != u16(-1))
 	{
+		Record.IsCounterAttacking = Record.IsCounterAttacking || Tactics.IsCounterAttacking();
 		Tactics.FillDebug(Record);
 		CControlJump* Jump = Adapter->Monster().com_man().get_jump_control();
 		if (Jump && Jump->is_active() && Jump->setup_data().flags.test(SControlJumpData::eEvasiveJump))

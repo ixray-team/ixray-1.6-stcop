@@ -62,7 +62,7 @@ class CELSharedHearing
 public:
 	static EELNoiseType Classify(const SELSoundEvent& Event);
 	static float HearingRadius(const SELSoundEvent& Event, const SELPerceptionProfile& Profile);
-	bool Hear(const SELSoundEvent& Event, const Fvector& ListenerPosition, const SELPerceptionProfile& Profile, u16 ListenerIdentifier);
+	bool Hear(const SELSoundEvent& Event, const Fvector& ListenerPosition, const SELPerceptionProfile& Profile, u16 ListenerIdentifier, bool AllowAttraction = true);
 	void PublishDebug(const Fvector& ListenerPosition, const SELPerceptionProfile& Profile, u16 ListenerIdentifier) const;
 	void Clear();
 	bool GetLookPoint(Fvector& Position) const;
@@ -76,8 +76,10 @@ public:
 	void CompleteAttention();
 	u32 PendingCount() const { return u32(Pending.size()); }
 	void Investigate(const Fvector& Position, u16 Source, u32 Duration, u32 Importance);
+	void ReceiveCall(const Fvector& Position, u16 Source, const SELPerceptionProfile& Profile);
 	static u32 Priority(EELNoiseType Type, const SELPerceptionProfile& Profile);
 	static u32 PanicDuration(EELNoiseType Type, const SELPerceptionProfile& Profile, float Scale);
+	void SuppressInterest(u16 SourceIdentifier);
 	void RemoveObject(u16 SourceIdentifier);
 	bool IsReactingTo(u16 SourceIdentifier) const;
 	void SetSource(u16 SourceIdentifier) { AttentionSource = SourceIdentifier; }
