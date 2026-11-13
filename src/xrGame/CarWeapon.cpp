@@ -956,7 +956,7 @@ CCarWeapon::CCarWeapon(CCar* pcar, LPCSTR definition, int idx)
 	xr_sprintf(line_prefix, "aftershot_delay_%d", idx);
 	m_aftershot_delay	= READ_IF_EXISTS(pUserData, r_bool, definition, idx ? line_prefix : "aftershot_delay", false);
 	xr_sprintf(line_prefix, "unlimited_ammo_%d", idx);
-	m_unlimited_ammo = READ_IF_EXISTS(pUserData, r_bool, definition, idx ? line_prefix : "unlimited_ammo", false);
+	m_unlimited_ammo = READ_IF_EXISTS(pUserData, r_bool, definition, idx ? line_prefix : "unlimited_ammo", true);
 	//mgun
 	xr_sprintf(line_prefix, "wpn_section_%d", idx);
 	if(pUserData->line_exist(definition, idx ? line_prefix : "wpn_section"))

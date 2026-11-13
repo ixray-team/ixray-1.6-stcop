@@ -477,6 +477,10 @@ public:
 
 		float								spring_factor_default;
 		float								damping_factor_default;
+		// Current spring/damping multiplier applied to the joint. Used to
+		// restore the original OGF values when the debug anti-gravity switch
+		// is toggled.
+		float								spring_damping_scale = 1.f;
 		Fvector								default_axis2;
 
 		bool								tire_sounds;
@@ -820,6 +824,7 @@ virtual void ApplyDamage(u16 level);
 		ref_sound					snd_whine							;
 		ref_sound					snd_horn							;
 		ref_sound					snd_pop								;
+		ref_sound					snd_fire							;
 		//ref_sound					snd_idle_exhaust					;
 		//ref_sound					snd_engine_exhaust					;
 		//ref_sound					snd_engine_decel_exhaust			;
@@ -859,6 +864,8 @@ virtual void ApplyDamage(u16 level);
 		void	PopSound			()							;
 		void	Whine				()							;
 		void	Horn				(bool start)				;
+		void	StartFire			()							;
+		void	StopFire			()							;
 
 				SCarSound			(CCar* car)					;
 				~SCarSound			()							;
@@ -941,7 +948,6 @@ private:
 	float					m_current_gear_ratio;
 
 	/////////////////////////////////////////////////////////////
-	bool					b_auto_switch_transmission;
 	bool					b_auto_transmission_stop;
 	bool					b_cvt_transmission;
 	bool					b_nitro_engage;
@@ -1093,6 +1099,7 @@ private:
 	float					m_engine_drive;
 	float					m_engine_drive_noswitch;
 	float					m_engine_drive_time;
+	float					m_engine_idle_time;
 	float					m_engine_heavy;
 	float					m_engine_heavy_constant;
 	float					m_engine_heavy_rpm;
@@ -1621,6 +1628,7 @@ public:
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
 	void					CreateCharacterScraper			(IKinematics* K, CInifile* ini);
+	void					DestroyCharacterScraper			();
 	void					CreateCarTurrets				(CInifile* ini);
 	void					ApplyBonePhysicsParams			(IKinematics* K, CInifile* ini);
 	void					BindGaugeAndSuspensionCallbacks	(IKinematics* K, CInifile* ini);

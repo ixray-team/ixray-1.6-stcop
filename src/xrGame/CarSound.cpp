@@ -146,6 +146,9 @@ void CCar::SCarSound::Init()
 		if (!snd_pop._p && ini->line_exist("car_sound", "pop_sound"))
 			snd_pop.create(ini->r_string("car_sound", "pop_sound"), st_Effect, sg_SourceType);
 
+		if (!snd_fire._p && ini->line_exist("car_sound", "fire_sound"))
+			snd_fire.create(ini->r_string("car_sound", "fire_sound"), st_Effect, sg_SourceType);
+
 		//if (!snd_engine_exhaust._p && ini->line_exist("car_sound", "snd_name_exhaust"))
 		//{
 		//	snd_engine_exhaust.create(ini->r_string("car_sound", "snd_name_exhaust"), st_Effect, sg_SourceType);
@@ -697,6 +700,8 @@ void CCar::SCarSound::Update()
 {
 	VERIFY(!physics_world()->Processing());
 
+	SetSoundPosition(snd_fire);
+
 	// A running engine must not stay in a stop/stall sound state. This can
 	// happen after loading when the restored engine state arrives after an
 	// older Stop()/Stall(), leaving the stop sound fading over the idle loop.
@@ -758,6 +763,7 @@ void CCar::SCarSound::Destroy()
 	snd_nitro_stop.destroy();
 	snd_pop.destroy();
 	snd_whine.destroy();
+	snd_fire.destroy();
 }
 
 void CCar::SCarSound::SwitchOff()
@@ -1064,4 +1070,19 @@ void CCar::SCarSound::Horn(bool start)
 		}
 			SetSoundPosition(snd_horn);
 	}
+}
+
+void CCar::SCarSound::StartFire()
+{
+	if (!snd_fire._p || snd_fire.is_playing())
+		return;
+
+	snd_fire.play(pcar, sm_Looped | sm_NoOCC);
+	snd_fire.set_volume(volume);
+}
+
+void CCar::SCarSound::StopFire()
+{
+	if (snd_fire._p && snd_fire.is_playing())
+		snd_fire.stop_deffered(CarDeferredStopFade);
 }
