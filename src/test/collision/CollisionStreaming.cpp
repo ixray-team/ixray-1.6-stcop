@@ -295,6 +295,167 @@ void TestStreamed(const xr_string& Base, bool Instanced)
 	Check(!Space.RayTest(Fvector{2.f, 10.f, 2.f}, Fvector{0.f, -1.f, 0.f}, 20.f, collide::rqtStatic, &Cache, nullptr), "ray cache cannot return a hit from unloaded geometry");
 }
 
+template <class Shape>
+void CheckInstancedCurvedQuery(CObjectSpace& Space, const CDB::MODEL& Flat, const Shape& Query, const char* Scenario)
+{
+	for (u32 Options : {0u, u32(CDB::OPT_FULL_TEST), u32(CDB::OPT_ONLYFIRST), u32(CDB::OPT_FULL_TEST | CDB::OPT_ONLYFIRST)})
+	{
+		xr_vector<u32> Expected;
+		for (const auto& Triangle : Flat.tris)
+		{
+			const Fvector Vertices[]{Flat.verts[Triangle.verts[0]], Flat.verts[Triangle.verts[1]], Flat.verts[Triangle.verts[2]]};
+			if (Query.intersectTri(Vertices, bool(Options & CDB::OPT_FULL_TEST)))
+			{
+				Expected.push_back(Triangle.material);
+			}
+		}
+		CDB::COLLIDER Collider;
+		if constexpr (std::is_same_v<Shape, Fcylinder>)
+		{
+			Collider.cylinder_options(Options);
+			Collider.cylinder_query(Space, Query);
+		}
+		else
+		{
+			Collider.cone_options(Options);
+			Collider.cone_query(Space, Query);
+		}
+		xr_vector<u32> Actual;
+		for (const auto& Result : Collider.r_vec())
+		{
+			const auto& Triangle = Result.model->tris[Result.tris_id];
+			Actual.push_back(Triangle.material);
+			for (u32 Vertex = 0; Vertex < 3; ++Vertex)
+			{
+				Fvector WorldVertex;
+				Result.ModelWorldTransform.transform_tiny(WorldVertex, Result.model->verts[Triangle.verts[Vertex]]);
+				Check(WorldVertex.similar(Flat.verts[Flat.tris[Triangle.material].verts[Vertex]], EPS_L), "curved instance queries preserve source world transforms");
+			}
+		}
+		std::sort(Expected.begin(), Expected.end());
+		std::sort(Actual.begin(), Actual.end());
+		const bool First = Options & CDB::OPT_ONLYFIRST;
+		const bool Matches = First ? (Actual.size() == (Expected.empty() ? 0u : 1u) && (Actual.empty() || std::binary_search(Expected.begin(), Expected.end(), Actual.front()))) : Actual == Expected;
+		if (!Check(Matches, "instanced cylinder/cone results match direct world-space triangle tests"))
+		{
+			std::fprintf(stderr, "  %s, %s, options=%u: %zu hits, %zu expected\n", Scenario, std::is_same_v<Shape, Fcylinder> ? "cylinder" : "cone", Options, Actual.size(), Expected.size());
+		}
+	}
+}
+
+void TestInstancedCurvedQueries(const xr_string& Base, bool Streaming)
+{
+	Fmatrix QueryFrame;
+	QueryFrame.setHPB(0.45f, -0.3f, 0.2f);
+	QueryFrame.c.set(13.f, -4.f, 21.f);
+	for (u32 Variant = 0; Variant < 7; ++Variant)
+	{
+		Fmatrix Transform{Fmatrix::EIdentity::Identity};
+		if (Variant >= 2)
+		{
+			Transform.setHPB(0.37f * Variant, -0.19f * Variant, 0.13f * Variant);
+		}
+		if (Variant >= 1)
+		{
+			Transform.c.set(-8.f + Variant, 6.f, 3.f);
+		}
+		if (Variant >= 3)
+		{
+			Transform.i.mul(Variant == 5 ? -0.4f : 0.2f);
+			Transform.j.mul(Variant == 4 ? 10.f : 3.f);
+			Transform.k.mul(1.7f);
+		}
+		if (Variant == 6)
+		{
+			Transform.i.set(1.f, 0.2f, -0.4f);
+			Transform.j.set(0.7f, 2.f, 0.1f);
+			Transform.k.set(-0.3f, 0.4f, 0.8f);
+		}
+		Fmatrix Inverse;
+		Inverse.invert(Transform);
+		CDB::MODEL Prototype, Flat;
+		const auto AddTriangle = [&](const Fvector& A, const Fvector& B, const Fvector& C)
+		{
+			CDB::TRI Triangle{};
+			Triangle.material = u16(Prototype.tris.size());
+			const Fvector Vertices[]{A, B, C};
+			for (u32 Index = 0; Index < 3; ++Index)
+			{
+				Fvector World, Local;
+				QueryFrame.transform_tiny(World, Vertices[Index]);
+				Inverse.transform_tiny(Local, World);
+				Transform.transform_tiny(World, Local);
+				Triangle.verts[Index] = u32(Prototype.verts.size());
+				Prototype.verts.push_back(Local);
+				Flat.verts.push_back(World);
+			}
+			Prototype.tris.push_back(Triangle);
+			Flat.tris.push_back(Triangle);
+		};
+		// The first face is inside the bounding box/pyramid but outside both curved
+		// volumes. Only-first must continue after a rejected broad-phase candidate.
+		AddTriangle(Fvector{1.7f, 1.7f, 2.f}, Fvector{1.8f, 1.7f, 2.f}, Fvector{1.7f, 1.8f, 2.f});
+		AddTriangle(Fvector{-0.1f, -0.1f, 2.f}, Fvector{0.1f, -0.1f, 2.f}, Fvector{0.f, 0.1f, 2.f});
+		AddTriangle(Fvector{-3.f, 0.f, 2.f}, Fvector{3.f, 0.f, 2.f}, Fvector{0.f, 3.f, 2.f});
+		for (float Z : {-1.f, 0.3f, 2.f, 3.8f, 5.f})
+		{
+			for (float X : {-3.f, -1.5f, 0.f, 1.5f, 3.f})
+			{
+				for (float Y : {-3.f, -1.5f, 0.f, 1.5f, 3.f})
+				{
+					AddTriangle(Fvector{X, Y, Z}, Fvector{X + 0.08f, Y, Z}, Fvector{X, Y + 0.08f, Z});
+				}
+			}
+		}
+		Fbox Bounds;
+		Bounds.invalidate();
+		for (const auto& Vertex : Flat.verts)
+		{
+			Bounds.modify(Vertex);
+		}
+		xr_unique_ptr<XRay::CForm::IFormat> Format;
+		if (Streaming)
+		{
+			Format.reset(new XRay::CForm::CFormatStreamedInstanced(5.f));
+		}
+		else
+		{
+			Format.reset(new XRay::CForm::CFormatInstanced());
+		}
+		xr_vector<Fvector> EmptyVertices;
+		xr_vector<CDB::TRI> EmptyTriangles;
+		Format->AddStaticGeom(EmptyVertices, EmptyTriangles);
+		Format->AddInstanceRef("curved-query-prototype", Transform, Bounds, Prototype, 17, 0);
+		const xr_string Name = Base + "_" + std::to_string(Variant).c_str();
+		if (!Check(Format->Write(Name.c_str()), "write transformed cylinder/cone query fixture"))
+		{
+			continue;
+		}
+		CObjectSpace Space;
+		Space.Load(nullptr, Name.c_str(), nullptr);
+		if (Streaming)
+		{
+			Space.UpdateStreaming(QueryFrame.c, 20.f, 30.f);
+		}
+		Fcylinder Cylinder;
+		QueryFrame.transform_tiny(Cylinder.m_center, Fvector{0.f, 0.f, 2.f});
+		Cylinder.m_direction = QueryFrame.k;
+		Cylinder.m_radius = 2.f;
+		Cylinder.m_height = 4.f;
+		CheckInstancedCurvedQuery(Space, Flat, Cylinder, Name.c_str());
+		Fcone Cone;
+		Cone.m_translate = QueryFrame.c;
+		Cone.m_direction = QueryFrame.k;
+		Cone.m_radius = 2.f;
+		Cone.m_height = 4.f;
+		CheckInstancedCurvedQuery(Space, Flat, Cone, Name.c_str());
+		Cylinder.m_center.mad(QueryFrame.i, 30.f);
+		Cone.m_translate.mad(QueryFrame.i, 30.f);
+		CheckInstancedCurvedQuery(Space, Flat, Cylinder, Name.c_str());
+		CheckInstancedCurvedQuery(Space, Flat, Cone, Name.c_str());
+	}
+}
+
 void TestInvalidMaster(const xr_string& Base)
 {
 	{
@@ -339,6 +500,8 @@ int main(int ArgCount, char** Arguments)
 		TestVanilla(Base + "_vanilla");
 		TestStreamed(Base + "_streamed", false);
 		TestStreamed(Base + "_instanced", true);
+		TestInstancedCurvedQueries(Base + "_curved_instanced", false);
+		TestInstancedCurvedQueries(Base + "_curved_streamed", true);
 		TestInvalidMaster(Base + "_invalid");
 	}
 	xr_delete(g_SpatialSpace);
