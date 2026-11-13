@@ -85,6 +85,12 @@ function is_empty_string(str)
 	return (str == nil or tostring(str) == "")
 end
 
+-- Проверить, что значение не является строкой или является пустой строкой.
+-- Возвращает true для nil, других типов и ""; строка из пробелов не считается пустой.
+function is_empty_or_not_string(value)
+	return type(value) ~= "string" or value == ""
+end
+
 --[[
 Description:
   Checks if the object is a Lua number.

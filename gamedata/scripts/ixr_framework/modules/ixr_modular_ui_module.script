@@ -1,0 +1,777 @@
+--[[
+	IX-Ray Modular UI
+	Version: 1.0
+	Author: FFx0001
+]]
+
+local ixr_modular_ui = {
+	use_file_log = true,
+	use_console_log = false,
+	use_time_log = true,
+	dynamic_vars = {
+		initialized = false,
+		interfaces = {},
+		ui_window_owners = {},
+	},
+	ui = {},
+	rendering = {},
+	controlls = {},
+	xml_array = {},
+}
+
+local ixr_controlls_registry = {
+	factory = {},
+	library = {
+		xml = {},
+	},
+}
+
+-- Описание управляемого модуля.
+function get_module_info()
+	return {
+		alias_name = "ixr_modular_ui",
+		category = "sub_system",
+		version = 1.0,
+		init_function_name = "init",
+		authors = "FFx0001",
+		description = "Модульный UI для централизованного хранения и управления скриптовыми интерфейсами. Позволяет создавать независимые UI по уникальным именам, хранить и получать их контролы по именам внутри каждого интерфейса, собирать вложенные деревья из движковых и пользовательских контролов. Предоставляет готовые обёртки для создания контролов кодом и из XML с общим кешем парсеров, сокращая повторяющийся код. Поддерживает встраивание интерфейсов в существующие игровые окна и другие UI, фоновое отображение без захвата ввода и показ в режиме диалога. Управляет видимостью, положением, размерами, порядком отображения веток и выгрузкой UI вместе с вложенными контролами. Сохраняет интерфейсы в модуле при пересоздании игровых окон и позволяет подключать их к новым окнам без повторного создания контролов.",
+	}
+end
+
+-- Настроить журнал и отметить готовность без создания окон и сброса данных.
+function init()
+	if is_initialized() then
+		return true
+	end
+
+	IXRLogUseFileLog(ixr_modular_ui.use_file_log)
+	IXRLogUseConsoleLog(ixr_modular_ui.use_console_log)
+	IXRLogUseTimeInLog(ixr_modular_ui.use_time_log)
+
+	ixr_modular_ui.dynamic_vars.initialized = true
+	IXRLog("::INIT::")
+
+	return true
+end
+
+-- Проверить готовность модуля.
+function is_initialized()
+	return ixr_modular_ui.dynamic_vars.initialized
+end
+
+-- Получить библиотеку фабрик контролов.
+function controlls_library()
+	ixr_controlls_registry.xml_loader = ixr_modular_ui.register_and_get_xml
+	return ixr_controlls_registry.library
+end
+
+-- Проверить наличие UI без его создания.
+function is_ui_exists(key_name)
+	return ixr_modular_ui.dynamic_vars.interfaces[key_name] ~= nil
+end
+
+-- Создать пустой UI, выгрузив прежний с тем же именем.
+function set_ui(key_name, x, y, width, height)
+	if ffx_compare_utils.is_empty_or_not_string(key_name) then
+		IXRLog("::ERROR:: set_ui(...) требуется имя интерфейса")
+		return false
+	end
+
+	local previous = ixr_modular_ui.dynamic_vars.interfaces[key_name]
+	if previous then
+		ixr_modular_ui.ui.remove(previous)
+	end
+
+	local ui = ixr_modular_ui.ui.get_or_create(key_name)
+	if not ui then
+		return false
+	end
+
+	local window = ui.GetReference()
+	if height ~= nil or width ~= nil then
+		window:SetWndSize(width or window:GetWidth(), height or window:GetHeight())
+	end
+
+	if x ~= nil or y ~= nil then
+		local position = window:GetWndPos()
+		window:SetWndPos(x or position.x, y or position.y)
+	end
+
+	return ui
+end
+
+-- Получить существующий UI или создать изолированный интерфейс.
+function get_or_create_ui(key_name)
+	return ixr_modular_ui.ui.get_or_create(key_name)
+end
+
+-- Получить парсер из кеша или загрузить XML при первом обращении.
+function ixr_modular_ui.register_and_get_xml(name)
+	if not ixr_modular_ui.xml_array[name] then
+		local xml = CScriptXmlInit()
+		xml:ParseFile(name)
+		ixr_modular_ui.xml_array[name] = xml
+	end
+	return ixr_modular_ui.xml_array[name]
+end
+
+-- Получить окно; выгруженные объекты повторно не используются.
+function ixr_modular_ui.ui.get_window(state)
+	if not state.window then
+		IXRLog("::ERROR:: get_window(...) интерфейс уже выгружен: " .. tostring(state.key_name))
+		return false
+	end
+
+	return state.window
+end
+
+-- Проверить принадлежность окна ветке, включая сам корень.
+function ixr_modular_ui.controlls.is_inside(control, parent)
+	while control do
+		if control == parent then
+			return true
+		end
+		control = control:GetParent()
+	end
+	return false
+end
+
+-- Запретить присоединение окна к самому себе или своему потомку.
+function ixr_modular_ui.controlls.check_parent(control, parent)
+	if ixr_modular_ui.controlls.is_inside(parent, control) then
+		IXRLog("::ERROR:: attach(...) циклическое присоединение окна")
+		return false
+	end
+
+	return true
+end
+
+-- Найти ближайший UI, содержащий контрол.
+function ixr_modular_ui.controlls.get_ui_owner(control)
+	local parent = control:GetParent()
+	while parent do
+		local owner = ixr_modular_ui.dynamic_vars.ui_window_owners[parent]
+		if owner then
+			return owner
+		end
+		parent = parent:GetParent()
+	end
+end
+
+-- Отсоединить окно без удаления его дерева.
+function ixr_modular_ui.controlls.detach(control)
+	control:SetAutoDelete(false)
+	local parent = control:GetParent()
+	if parent then
+		parent:DetachChild(control)
+	end
+end
+
+-- Перенести контрол; корневые окна UI остаются во владении модуля.
+function ixr_modular_ui.controlls.attach(control, parent)
+	if not ixr_modular_ui.controlls.check_parent(control, parent) then
+		return false
+	end
+
+	if control:GetParent() ~= parent then
+		ixr_modular_ui.controlls.detach(control)
+		control:SetAutoDelete(ixr_modular_ui.dynamic_vars.ui_window_owners[control] == nil)
+		parent:AttachChild(control)
+	end
+	return control
+end
+
+-- Удалить дерево через движковое владение, в том числе для отсоединённого окна.
+function ixr_modular_ui.controlls.destroy(control)
+	local parent = control:GetParent()
+	if not parent then
+		parent = CUIWindow()
+		parent:AttachChild(control)
+	end
+	control:SetAutoDelete(true)
+	parent:DetachChild(control)
+end
+
+-- Снять самостоятельный UI с отрисовки или скрыть вложенный.
+function ixr_modular_ui.rendering.hide(state)
+	local window = ixr_modular_ui.ui.get_window(state)
+	if not window then
+		return false
+	end
+
+	if state.mode == "dialog" and state.dialog and state.dialog:GetHolder() then
+		state.dialog:HideDialog()
+	elseif state.mode == "background" and window:IsShown() and state.holder then
+		state.holder:RemoveDialogToRender(window)
+	end
+	state.holder = nil
+	window:Show(false)
+
+	return true
+end
+
+-- Подключить UI к актуальному окну или держателю и показать его.
+function ixr_modular_ui.rendering.draw(state, ref, mode, hide_indicators)
+	local window = ixr_modular_ui.ui.get_window(state)
+	if not window then
+		return false
+	end
+
+	if mode == "parent" then
+		if not ref then
+			IXRLog("::ERROR:: draw_parent(...) не передано родительское окно: " .. tostring(state.key_name))
+			return false
+		end
+
+		if not ixr_modular_ui.controlls.check_parent(window, ref) then
+			return false
+		end
+	else
+		ref = ref or GetCurrentDialogHolder()
+		if not ref then
+			return false
+		end
+	end
+
+	ixr_modular_ui.rendering.hide(state)
+	ixr_modular_ui.controlls.detach(window)
+	state.mode = mode
+	state.hide_indicators = hide_indicators
+
+	if mode == "parent" then
+		ixr_modular_ui.controlls.attach(window, ref)
+		window:Show(true)
+	elseif mode == "background" then
+		state.holder = ref
+		ref:AddDialogToRender(window)
+	else
+		if not state.dialog then
+			state.dialog = CreateScriptWindow()
+			state.dialog:SetWndSize(vector2():set(1024, 768))
+			state.dialog:Show(false)
+		end
+		ixr_modular_ui.controlls.attach(window, state.dialog)
+		window:Show(true)
+		ref:start_stop_menu(state.dialog, hide_indicators ~= false)
+	end
+	return true
+end
+
+-- Проверить собственную видимость UI с учётом диалоговой оболочки.
+function ixr_modular_ui.rendering.is_visible(state)
+	local window = ixr_modular_ui.ui.get_window(state)
+	if not window then
+		return false
+	end
+
+	return window:IsShown()
+		and (state.mode ~= "dialog" or state.dialog:IsShown())
+end
+
+-- Изменить видимость без сохранения устаревающего родительского референса.
+function ixr_modular_ui.rendering.show(state, visible)
+	if not visible then
+		return ixr_modular_ui.rendering.hide(state)
+	end
+
+	local window = ixr_modular_ui.ui.get_window(state)
+	if not window then
+		return false
+	end
+
+	if state.mode == "parent" then
+		if not window:GetParent() then
+			return false
+		end
+		window:Show(true)
+		return true
+	end
+	if ixr_modular_ui.rendering.is_visible(state) then
+		return true
+	end
+	return ixr_modular_ui.rendering.draw(state, nil, state.mode or "background", state.hide_indicators)
+end
+
+-- Сохранить контрол с его деревом; имя позволяет получать его как в модуле опций.
+function ixr_modular_ui.ui.set_controll(state, name, control)
+	local window = ixr_modular_ui.ui.get_window(state)
+	if not window then
+		return false
+	end
+
+	if control == nil and type(name) ~= "string" then
+		control = name
+		name = nil
+	end
+
+	if not control then
+		IXRLog("::ERROR:: set_controll(...) не передан контрол: " .. tostring(state.key_name))
+		return false
+	end
+
+	name = name or control:WindowName()
+	if not name or ffx_compare_utils.is_empty_string(name) then
+		name = control
+	end
+
+	if state.controlls[name] and state.controlls[name] ~= control then
+		IXRLog("::ERROR:: set_controll(...) имя контрола уже занято: " .. tostring(state.key_name) .. "/" .. tostring(name))
+		return false
+	end
+
+	local previous_owner = ixr_modular_ui.controlls.get_ui_owner(control)
+	if previous_owner ~= state then
+		if not ixr_modular_ui.controlls.attach(control, window) then
+			return false
+		end
+
+		if previous_owner then
+			for key, registered in pairs(previous_owner.controlls) do
+				if ixr_modular_ui.controlls.is_inside(registered, control) then
+					previous_owner.controlls[key] = nil
+				end
+			end
+		end
+	end
+
+	state.controlls[name] = control
+
+	return control
+end
+
+-- Выгрузить UI с принадлежащими ему контролами и вложенными UI модуля.
+function ixr_modular_ui.ui.remove(state)
+	if not state.window then
+		return false
+	end
+	ixr_modular_ui.rendering.hide(state)
+	local window = state.window
+	for _, child in pairs(ixr_modular_ui.dynamic_vars.interfaces) do
+		if child ~= state and ixr_modular_ui.controlls.is_inside(child.window, window) then
+			ixr_modular_ui.ui.remove(child)
+		end
+	end
+	ixr_modular_ui.dynamic_vars.interfaces[state.key_name] = nil
+	ixr_modular_ui.dynamic_vars.ui_window_owners[window] = nil
+	state.window = nil
+	state.controlls = nil
+	state.xml_path = nil
+	state.xml_factories = nil
+
+	ixr_modular_ui.controlls.destroy(window)
+	state.dialog = nil
+	return true
+end
+
+-- Получить фабрику этого UI; парсеры общие для всех UI и кешируются по пути файла.
+function ixr_modular_ui.ui.xml(state, path)
+	if not ixr_modular_ui.ui.get_window(state) then
+		return false
+	end
+
+	path = path or state.xml_path
+	if ffx_compare_utils.is_empty_or_not_string(path) then
+		IXRLog("::ERROR:: xml(...) требуется путь к XML: " .. tostring(state.key_name))
+		return false
+	end
+
+	state.xml_path = path
+	if state.xml_factories[path] then
+		return state.xml_factories[path]
+	end
+
+	ixr_modular_ui.register_and_get_xml(path)
+	local factory = {}
+
+	-- Создать и зарегистрировать контрол: имя, тип, XML-узел, затем аргументы XML-фабрики.
+	function factory.set_controll(name, kind, node, ...)
+		if not ixr_modular_ui.ui.get_window(state) then
+			return false
+		end
+
+		if name ~= nil and state.controlls[name] then
+			IXRLog("::ERROR:: xml.set_controll(...) имя контрола уже занято: " .. tostring(state.key_name) .. "/" .. tostring(name))
+			return false
+		end
+
+		local create = type(kind) == "string" and controlls_library().xml["make_" .. kind]
+		if not create then
+			IXRLog("::ERROR:: xml.set_controll(...) неизвестный тип XML-контрола: " .. tostring(kind))
+			return false
+		end
+
+		local control = create(path, node, ...)
+		local registered = ixr_modular_ui.ui.set_controll(state, name, control)
+		if not registered and control then
+			ixr_modular_ui.controlls.destroy(control)
+		end
+
+		return registered
+	end
+
+	state.xml_factories[path] = factory
+	return factory
+end
+
+-- Создать публичный объект с замыканиями на приватное состояние UI.
+function ixr_modular_ui.ui.get_or_create(key_name)
+	if ffx_compare_utils.is_empty_or_not_string(key_name) then
+		IXRLog("::ERROR:: get_or_create_ui(...) требуется имя интерфейса: " .. tostring(key_name))
+		return false
+	end
+
+	local interfaces = ixr_modular_ui.dynamic_vars.interfaces
+	if interfaces[key_name] then
+		return interfaces[key_name].api
+	end
+
+	local state = { key_name = key_name, window = CUIStatic(), controlls = {}, xml_factories = {} }
+	state.window:SetWndSize(vector2():set(1024, 768))
+	state.window:Show(false)
+
+	local api = {}
+
+	-- Получить фабрику с загруженным XML и регистрацией контролов в этом UI.
+	function api.xml(path)
+		return ixr_modular_ui.ui.xml(state, path)
+	end
+
+	-- Добавить готовый контрол или целую ветку; вернуть UI для продолжения цепочки.
+	function api.set_controll(name, control)
+		return ixr_modular_ui.ui.set_controll(state, name, control) and api
+	end
+
+	-- Получить зарегистрированный контрол по имени, не обращаясь к окну меню.
+	function api.get_controll(name)
+		if not ixr_modular_ui.ui.get_window(state) then
+			return false
+		end
+
+		return state.controlls[name]
+	end
+
+	-- Показать внутри актуального игрового окна или другого UI.
+	function api.draw_parent(wnd_ref)
+		return ixr_modular_ui.rendering.draw(state, wnd_ref, "parent") and api
+	end
+
+	-- Показать фоном или снять с показа; visible по умолчанию true.
+	function api.draw(holder_ref, visible)
+		if visible == false then
+			return ixr_modular_ui.rendering.show(state, false) and api
+		end
+		return ixr_modular_ui.rendering.draw(state, holder_ref, "background") and api
+	end
+
+	-- Открыть диалог; скрытие HUD-индикаторов по умолчанию включено.
+	function api.draw_dialog(holder_ref, hide_indicators)
+		return ixr_modular_ui.rendering.draw(state, holder_ref, "dialog", hide_indicators) and api
+	end
+
+	-- Показать или скрыть; после пересоздания родителя нужен draw_parent.
+	function api.show(visible)
+		return ixr_modular_ui.rendering.show(state, visible) and api
+	end
+
+	-- Проверить собственную видимость окна.
+	function api.is_visible()
+		return ixr_modular_ui.rendering.is_visible(state)
+	end
+
+	-- Поднять ветку среди соседей; порядок самостоятельных диалогов не меняется.
+	function api.push_to_forward()
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:ToFrontTree()
+		return api
+	end
+
+	-- Опустить ветку среди соседей.
+	function api.push_to_back()
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:ToBackTree()
+		return api
+	end
+
+	-- Получить размер: x — ширина, y — высота.
+	function api.get_size()
+		local window = ixr_modular_ui.ui.get_window(state)
+		return window and vector2():set(window:GetWidth(), window:GetHeight())
+	end
+
+	-- Задать размер окна.
+	function api.set_size(size)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:SetWndSize(size)
+		return api
+	end
+
+	-- Получить позицию относительно родителя.
+	function api.get_position()
+		local window = ixr_modular_ui.ui.get_window(state)
+		return window and window:GetWndPos()
+	end
+
+	-- Задать позицию относительно родителя.
+	function api.set_position(position)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:SetWndPos(position)
+		return api
+	end
+
+	-- Получить корневое окно для присоединения другого UI.
+	function api.get_window()
+		return ixr_modular_ui.ui.get_window(state)
+	end
+
+	-- Задать прозрачность оформления UI.
+	function api.SetOpacity(value)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:SetOpacity(value)
+		return api
+	end
+
+	-- Задать прозрачность UI вместе с дочерними контролами.
+	function api.SetOpacityTree(value)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:SetTreeOpacity(value)
+		return api
+	end
+
+	-- Повернуть оформление окна UI.
+	function api.SetRotate(angle)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:EnableHeading(true)
+		window:SetHeading(angle)
+		return api
+	end
+
+	-- Повернуть UI вместе с дочерними контролами.
+	function api.SetRotateTree(angle, pivot, offset)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:EnableHeading(true)
+		window:SetTreeHeading(angle, pivot, offset)
+		return api
+	end
+
+	-- Задать рамку и скругление UI.
+	function api.SetBorder(thickness, radius, color)
+		local window = ixr_modular_ui.ui.get_window(state)
+		if not window then
+			return false
+		end
+
+		window:SetBorder(thickness, radius, color)
+		return api
+	end
+
+	-- Получить исходное движковое окно UI.
+	function api.GetReference()
+		return ixr_modular_ui.ui.get_window(state)
+	end
+
+	-- Снять с показа и выгрузить UI вместе с принадлежащими ему контролами.
+	function api.remove()
+		return ixr_modular_ui.ui.remove(state) and api
+	end
+
+	state.api = api
+	interfaces[key_name] = state
+	ixr_modular_ui.dynamic_vars.ui_window_owners[state.window] = state
+
+	return api
+end
+
+-- Общий способ создания: движковый конструктор или XML; nil сохраняет исходный параметр.
+function ixr_controlls_registry.factory.create(xml, method, constructor, node, parent, x, y, width, height, text, font)
+	local control
+
+	if xml then
+		xml = ixr_controlls_registry.xml_loader(xml)
+		control = xml[method](xml, node, parent)
+	else
+		control = constructor()
+		control:SetFont(GetFontLetterica16Russian())
+	end
+
+	if font ~= nil then
+		control:SetFont(font)
+	end
+
+	if text ~= nil then
+		control:SetText(text)
+	end
+
+	if x ~= nil or y ~= nil then
+		local position = control:GetWndPos()
+		control:SetWndPos(x or position.x, y or position.y)
+	end
+
+	if width ~= nil or height ~= nil then
+		control:SetWndSize(width or control:GetWidth(), height or control:GetHeight())
+	end
+
+	if not xml and parent then
+		control:SetAutoDelete(true)
+		parent:AttachChild(control)
+	end
+
+	return control
+end
+
+-- Общая фабрика статика, изображения и текста; все переопределения необязательны.
+function ixr_controlls_registry.factory.static(xml, node, parent, x, y, width, height, texture, color, text, font, text_color)
+	local control = ixr_controlls_registry.factory.create(xml, "InitStatic", CUIStatic, node, parent, x, y, width, height, text, font)
+
+	if texture then
+		control:InitTexture(texture)
+		control:SetStretchTexture(true)
+	end
+
+	if color ~= nil then
+		control:SetTextureColor(color)
+	end
+
+	if text_color ~= nil then
+		control:SetTextColor(text_color)
+	end
+
+	return control
+end
+
+-- Общая фабрика кнопки: CUIButton кодом или CUI3tButton из XML.
+function ixr_controlls_registry.factory.button(xml, node, parent, callback, callback_self, text, x, y, width, height, font)
+	local control = ixr_controlls_registry.factory.create(xml, "Init3tButton", CUIButton, node, parent, x, y, width, height, text, font)
+
+	if callback then
+		if callback_self ~= nil then
+			control:AddSelfCallback(ui_events.BUTTON_CLICKED, callback, callback_self)
+		else
+			control:AddSelfCallback(ui_events.BUTTON_CLICKED, callback)
+		end
+	end
+
+	return control
+end
+
+-- Общая фабрика CUIEditBox; пропущенные значения не меняют параметры XML.
+function ixr_controlls_registry.factory.text_box(xml, node, parent, text, x, y, width, height, texture, font)
+	local control = ixr_controlls_registry.factory.create(xml, "InitEditBox", CUIEditBox, node, parent, x, y, width, height, text, font)
+
+	if texture then
+		control:InitTexture(texture)
+	end
+
+	return control
+end
+
+-- Создать CUIStatic без XML: контейнер, заливку или изображение.
+function ixr_controlls_registry.library.make_static(x, y, width, height, texture, color, parent, font)
+	return ixr_controlls_registry.factory.static(nil, nil, parent, x, y, width, height, texture, color, nil, font)
+end
+
+-- Создать текстовый CUIStatic без XML.
+function ixr_controlls_registry.library.make_text(text, x, y, width, height, font, color, parent)
+	return ixr_controlls_registry.factory.static(nil, nil, parent, x, y, width, height, nil, nil, text, font, color)
+end
+
+-- Создать CUIButton без XML.
+function ixr_controlls_registry.library.make_button(text, x, y, width, height, callback, callback_self, parent, font)
+	return ixr_controlls_registry.factory.button(nil, nil, parent, callback, callback_self, text, x, y, width, height, font)
+end
+
+-- Создать CUIEditBox без XML.
+function ixr_controlls_registry.library.make_text_box(text, x, y, width, height, texture, font, parent)
+	return ixr_controlls_registry.factory.text_box(nil, nil, parent, text, x, y, width, height, texture, font)
+end
+
+-- Создать CUIStatic из XML.
+function ixr_controlls_registry.library.xml.make_static(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.static(xml_name, node, parent, nil, nil, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать текстовый CUIStatic из XML.
+function ixr_controlls_registry.library.xml.make_text(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.static(xml_name, node, parent, nil, nil, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUI3tButton; callback и callback_self — как у make_button.
+function ixr_controlls_registry.library.xml.make_button(xml_name, node, parent, callback, callback_self, font)
+	return ixr_controlls_registry.factory.button(xml_name, node, parent, callback, callback_self, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIEditBox из XML.
+function ixr_controlls_registry.library.xml.make_text_box(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.text_box(xml_name, node, parent, nil, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIFrameWindow из XML.
+function ixr_controlls_registry.library.xml.make_frame_window(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitFrame", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIFrameLineWnd из XML.
+function ixr_controlls_registry.library.xml.make_frame_line(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitFrameLine", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIListBox из XML.
+function ixr_controlls_registry.library.xml.make_list_box(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitListBox", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIScrollView с инициализацией прокрутки из XML.
+function ixr_controlls_registry.library.xml.make_scroll_view(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitScrollView", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIGamepadLegend из XML.
+function ixr_controlls_registry.library.xml.make_gamepad_legend(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitGamepadLegend", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUITrackBar из XML.
+function ixr_controlls_registry.library.xml.make_track_bar(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitTrackBar", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUICheckButton из XML.
+function ixr_controlls_registry.library.xml.make_check_box(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitCheck", nil, node, parent, nil, nil, nil, nil, nil, font)
+end
+
+-- Создать CUIComboBox из XML.
+function ixr_controlls_registry.library.xml.make_combo_box(xml_name, node, parent, font)
+	return ixr_controlls_registry.factory.create(xml_name, "InitComboBox", nil, node, parent, nil, nil, nil, nil, nil, font)
+end

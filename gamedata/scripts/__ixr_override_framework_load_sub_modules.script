@@ -14,6 +14,7 @@ function configure(_ref_ixr_framework)
 	--------------------------------------------
 	_ref_ixr_framework.load_module_by_script_name("ixr_module_signals") -- alias:[ixr_signals]
 	_ref_ixr_framework.load_module_by_script_name("ixr_module_global_registry") -- alias:[ixr_registry]
+	_ref_ixr_framework.load_module_by_script_name("ixr_modular_ui_module") -- alias:[ixr_modular_ui]
 	_ref_ixr_framework.load_module_by_script_name("ixr_module_options") -- alias:[ixr_options]
 	_ref_ixr_framework.load_module_by_script_name("ixr_module_storage") -- alias:[ixr_storage]
 	

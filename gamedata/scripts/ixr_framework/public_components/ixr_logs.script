@@ -5,6 +5,7 @@ local GLOBAL_USE_TIME = true
 local CONST_LOG_FILE_PREFIX = "__log__"
 local TIME_PREFIX_FORMAT = "[%Y-%m-%d %H:%M:%S]  "
 local CONST_TRACE_LEVEL = 4
+local CONST_ASSERT_TRACE_LEVEL = 4
 
 local log_system = {
 	use_time = GLOBAL_USE_TIME,
@@ -64,6 +65,14 @@ function log(text, clear_log, custom_script)
 	end
 	
 	return log_system.to_log(caller_script_name, text, clear_log)
+end
+
+-- Остановить выполнение с записью ошибки; caller_offset учитывает дополнительные обёртки.
+function assert_with_caller(error_source, error_message, caller_offset)
+	local trace_level = CONST_ASSERT_TRACE_LEVEL + (caller_offset or 0)
+
+	-- Вызов без return сохраняет кадр этого метода при определении источника ошибки.
+	ffx_dump_utils.AssertWithCaller(trace_level, error_source, error_message)
 end
 
 function empty_line(pereat_cnt, custom_script)

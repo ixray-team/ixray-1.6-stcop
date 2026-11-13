@@ -157,6 +157,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'IXR AUTOLOADER<br>(Модуль автозагрузки)', link: '/scripting/ixr-framework/modules/ixr_autoloader' },
           { text: 'IXR SIGNALS<br>(Модуль сигналов)', link: '/scripting/ixr-framework/modules/ixr_signals' },
           { text: 'IXR OPTIONS<br>(Модуль опций)', link: '/scripting/ixr-framework/modules/ixr_options' },
+          { text: 'IXR MODULAR UI<br>(Модуль интерфейсов)', link: '/scripting/ixr-framework/modules/ixr_modular_ui' },
           { text: 'IXR TRIGGERS<br>(Модуль триггеров)', link: '/scripting/ixr-framework/modules/ixr_triggers' },
           { text: 'IXR TIMERS<br>(Модуль таймеров)', link: '/scripting/ixr-framework/modules/ixr_timers' },
         ],

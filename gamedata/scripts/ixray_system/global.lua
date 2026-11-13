@@ -438,6 +438,69 @@ function UnsetRegistryValue(key, subkey)
 end
 
 --  ####################################################################################################################
+-- 													IXR MODULAR UI
+--  ####################################################################################################################
+
+--[[
+Description: Получить существующий UI по имени или создать новый.
+Parameters:
+  key_name (string)(required) - уникальное непустое имя интерфейса в модуле.
+Returns: (table|false) - публичный объект UI; false при ошибке или отсутствии модуля.
+--]]
+function GetOrCreateUI(key_name)
+	if IsModuleLoaded("ixr_modular_ui") then
+		return GetModule("ixr_modular_ui").get_or_create_ui(key_name)
+	end
+
+	return false
+end
+
+--[[
+Description: Проверить, зарегистрирован ли UI с этим именем.
+Parameters:
+  key_name (string)(required) - имя UI.
+Returns: (bool) - существует ли UI.
+--]]
+function IsUiExists(key_name)
+	if IsModuleLoaded("ixr_modular_ui") then
+		return GetModule("ixr_modular_ui").is_ui_exists(key_name)
+	end
+
+	return false
+end
+
+--[[
+Description: Создать пустой UI, удалив прежний UI с тем же именем.
+Parameters:
+  key_name (string)(required) - непустое имя UI.
+  x (number)(optional) - положение по горизонтали; nil сохраняет начальное значение.
+  y (number)(optional) - положение по вертикали; nil сохраняет начальное значение.
+  width (number)(optional) - ширина; nil сохраняет начальную ширину.
+  height (number)(optional) - высота; nil сохраняет начальную высоту.
+Returns: (table|false) - новый UI; false при ошибке или отсутствии модуля.
+--]]
+function SetUI(key_name, x, y, width, height)
+	if IsModuleLoaded("ixr_modular_ui") then
+		return GetModule("ixr_modular_ui").set_ui(key_name, x, y, width, height)
+	end
+
+	return false
+end
+
+--[[
+Description: Получить библиотеку создания движковых контролов кодом и из XML.
+Parameters: (none)
+Returns: (table|false) - библиотека make_* и xml.make_*; false при отсутствии модуля.
+--]]
+function GetUIControllsLibrary()
+	if IsModuleLoaded("ixr_modular_ui") then
+		return GetModule("ixr_modular_ui").controlls_library()
+	end
+
+	return false
+end
+
+--  ####################################################################################################################
 -- 													IXR TIMERS
 --  ####################################################################################################################
 
@@ -817,6 +880,18 @@ Return: (any) - Result from ixr_logs.log.
 ]]
 function IXRLog(text, clear_log, custom_script)
     return ixr_logs.log(text, clear_log, custom_script)
+end
+
+--[[
+Описание: Критическая остановка с окном ошибки и записью в движковый лог.
+Параметры:
+  error_source (string) - название подсистемы.
+  error_message (string) - описание ошибки.
+Вызывающий скрипт определяется автоматически, независимо от настроек IXRLogUse... .
+]]
+function IXRLogAssert(error_source, error_message)
+	-- Этот кадр добавляет один уровень; вызов без return сохраняет его в стеке.
+	ixr_logs.assert_with_caller(error_source, error_message, 1)
 end
 
 --[[
