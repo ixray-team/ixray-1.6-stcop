@@ -798,7 +798,9 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 	// 1. A = M^{-1}  (4x3 invert; M - аффинное "локальные <- глобальные")
 	// ---------------------------------------------------------------
 	_matrix<T> A;
-	A.invert(ToWorldTransform);
+	// The query is expressed in the containing model's coordinates. Only the
+	// instance inverse maps it to this prototype; ToWorldTransform is accumulated.
+	A = Prototype.InvTransform;
 
 	// ---------------------------------------------------------------
 	// 2. Образ центра и оси цилиндра
@@ -842,8 +844,6 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 		ev = u; // вырожденный случай: цилиндр схлопнулся
 	}
 
-	const auto ext_v = half_h * v_len; // полуразмер вдоль оси v
-	
 	// ---------------------------------------------------------------
 	// 5. Базис плоскости, перпендикулярной ev
 	//    (две оставшиеся оси OBB лежат в этой плоскости)
@@ -852,9 +852,7 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 	_vector3<T>::generate_orthonormal_basis(ev, p1, p2);
 
 	// ---------------------------------------------------------------
-	// 6. Опорная функция "эллиптической" части:
-	//    ext_perp(f) = r * || P A^T f ||,  P = I - u u^T
-	//    где f - единичный вектор в плоскости, перпендикулярной v.
+	// Support of the transformed enclosing square cross-section.
 	// ---------------------------------------------------------------
 	auto ext_perp = [&](const _vector3<T>& f) -> T
 	{
@@ -862,11 +860,12 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 		_vector3<T> w;
 		A.transform_dirT(w, f);
 
-		// ||P w||^2 = ||w||^2 - (w.u)^2
-		const auto du = w.dotproduct(u);
-		const auto sq = w.square_magnitude() - du * du;
-
-		return r * _sqrt(sq > T(0) ? sq : T(0));
+		// intersectTri uses a finite SAT axis set, including the cylinder's
+		// enclosing square. Preserve those conservative hits as well: a tighter
+		// circular support bound could reject triangles accepted by that test.
+		_vector3<T> Side1, Side2;
+		_vector3<T>::generate_orthonormal_basis(u, Side1, Side2);
+		return r * (std::abs(w.dotproduct(Side1)) + std::abs(w.dotproduct(Side2)));
 	};
 
 	// ---------------------------------------------------------------
@@ -897,34 +896,21 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 	const auto theta = T(0.5) * std::atan2(T(2) * C12, C11 - C22);
 	const auto ct = std::cos(theta);
 	const auto st = std::sin(theta);
-	
+
 	// Оси OBB в плоскости, перпендикулярной ev:
 	auto f1 = p1 * ct + p2 * st;
 	auto f2 = p1 * (-st) + p2 * ct;
-	
-	// ---------------------------------------------------------------
-	// 9. Полуразмеры по точной опорной функции образа цилиндра:
-	//    ext(f) = (h/2) * |f . v| + r * || P A^T f ||
-	//    Для f1, f2, лежащих в плоскости _|_ v, f.v = 0 (с точностью
-	//    до округления), поэтому ext(f1) = ext_perp(f1), ext(f2) = ext_perp(f2).
-	//    Для ev: f.v != 0, но P A^T ev может быть ненулевым из-за
-	//    неортогональности ev и u после трансформации.
-	//    Поэтому ev считаем по полной формуле.
-	// ---------------------------------------------------------------
-	const auto ext1 = ext_perp(f1);
-	const auto ext2 = ext_perp(f2);
-	
-	// Полная опорная функция для ev:
-	auto ext_ev = half_h * std::abs(ev.dotproduct(v));
-	{
-		_vector3<T> w;
-		A.transform_dirT(w, ev);
-		const auto du = w.dotproduct(u);
-		const auto sq = w.square_magnitude() - du * du;
-		ext_ev += r * _sqrt(sq > T(0) ? sq : T(0));
-	}
 
-	
+	// ---------------------------------------------------------------
+	// Include both axial and transverse support on every OBB axis.
+	// ---------------------------------------------------------------
+	const auto ext1 = half_h * std::abs(f1.dotproduct(v)) + ext_perp(f1);
+	const auto ext2 = half_h * std::abs(f2.dotproduct(v)) + ext_perp(f2);
+
+	// Полная опорная функция для ev:
+	const auto ext_ev = half_h * std::abs(ev.dotproduct(v)) + ext_perp(ev);
+
+
 	// ---------------------------------------------------------------
 	// 10. Сборка результата.
 	//     Оси OBB должны быть ортонормированными:
@@ -944,6 +930,7 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 	}
 	obb.m_rotate.k.normalize_safe();
 	obb.m_halfsize.set(ext_ev, ext1, ext2);
+	obb.m_halfsize.add(EPS_L);
 	VERIFY(_valid(obb));
 
 	Fmatrix NewToWorld;
@@ -954,23 +941,31 @@ static void ColliderSubstep(cform_shape_collider<_cylinder<T>>& GlobalCollider, 
 		GlobalCollider.stack,
 		GlobalCollider.OnCheckNode,
 		obb,
-		GlobalCollider.bClass3,
-		GlobalCollider.bFirst
+		false,
+		false // Only-first applies after the curved-volume filter, not to candidates.
 	};
 	OC.Stab(*ChildModel->root, NewToWorld);
 
-	for(auto& R : local_results)
+	Fmatrix WorldToQuery;
+	WorldToQuery.invert(ToWorldTransform);
+	for (auto& R : local_results)
 	{
 		auto& CurrentTris = R.model->tris[R.tris_id];
-				
+
 		Fvector tri_verts[3] = {};
-		NewToWorld.transform_tiny(tri_verts[0], R.model->verts[CurrentTris.verts[0]]);
-		NewToWorld.transform_tiny(tri_verts[1], R.model->verts[CurrentTris.verts[1]]);
-		NewToWorld.transform_tiny(tri_verts[2], R.model->verts[CurrentTris.verts[2]]);
-				
-		if (!GlobalCollider.shape.intersectTri(tri_verts, GlobalCollider.bClass3))
+		Fmatrix TriangleToQuery;
+		TriangleToQuery.mul(WorldToQuery, R.ModelWorldTransform);
+		TriangleToQuery.transform_tiny(tri_verts[0], R.model->verts[CurrentTris.verts[0]]);
+		TriangleToQuery.transform_tiny(tri_verts[1], R.model->verts[CurrentTris.verts[1]]);
+		TriangleToQuery.transform_tiny(tri_verts[2], R.model->verts[CurrentTris.verts[2]]);
+
+		if (GlobalCollider.shape.intersectTri(tri_verts, GlobalCollider.bClass3))
 		{
 			GlobalCollider.dest->push_back(R);
+			if (GlobalCollider.bFirst)
+			{
+				return;
+			}
 		}
 	}
 }
@@ -989,254 +984,79 @@ static void ColliderSubstep(cform_shape_collider<_cone<T>>& GlobalCollider, Elem
 		GlobalCollider.stack->Pop();
 	};
 
-	
-    // ---- 1. Обратная матрица (4x3 достаточно для аффинных, но 4x4 надёжнее
-    //         для случая, когда M содержит перспективу) -------------------
-    Fmatrix Minv;
-    Minv.invert_b(ToWorldTransform);   // 4x3 invert; для аффинных матриц ок
 
-    // Линейная часть и сдвиг локального преобразования
-    // L(p) = Minv₃ₓ₃ * p + Minv.c
-    const Fmatrix& Mi = Minv;
+	const auto& Cone = GlobalCollider.shape;
 
-    // ---- 2. Apex и основание оси в локальном пространстве ---------------
-    auto xform_point = [&](const _vector3<T>& p) -> _vector3<T> {
-        _vector3<T> r;
-        r.x = p.x*Mi._11 + p.y*Mi._21 + p.z*Mi._31 + Mi._41;
-        r.y = p.x*Mi._12 + p.y*Mi._22 + p.z*Mi._32 + Mi._42;
-        r.z = p.x*Mi._13 + p.y*Mi._23 + p.z*Mi._33 + Mi._43;
-        return r;
-    };
+	if (Cone.m_height <= T(1e-6))
+	{
+		return;
+	}
 
-	const auto& apex = GlobalCollider.shape.m_translate;
-	const auto height = GlobalCollider.shape.m_height;
-	const auto& d = GlobalCollider.shape.m_direction;
-	const auto radius = GlobalCollider.shape.m_radius;
-	
-    const auto A_l   = xform_point(apex);
-    const auto Base_g = apex; // (A + h*d)
-    auto base_g = apex;
-    base_g.mad(d, height);
-    const auto B_l   = xform_point(base_g);
+	_vector3<T> Side1, Side2;
+	_vector3<T>::generate_orthonormal_basis(Cone.m_direction, Side1, Side2);
+	const T Slope = Cone.m_radius / Cone.m_height;
 
-    _vector3<T> d_l;
-	d_l.sub(B_l, A_l);
-    const auto len_AB = d_l.magnitude();
+	// A square pyramid circumscribes the cone in query coordinates. Transforming
+	// its plane equations preserves containment under nonuniform scale and shear.
+	Fplane Planes[6];
 
-    // d' — единичная ось; h' — проекция AB на d' (совпадает с len_AB,
-    // т.к. base_g лежит ровно на оси; на случай вырожденного Minv оставим
-    // именно проекцию — она устойчивее).
-    d_l.mul(1.f / len_AB);
-    const auto h_l = len_AB;
+	for (u32 Index = 0; Index < 4; ++Index)
+	{
+		const auto& Side = Index < 2 ? Side1 : Side2;
+		Planes[Index].n.mul(Side, Index % 2 ? -1.f : 1.f).mad(Cone.m_direction, -Slope);
+		Planes[Index].d = -Planes[Index].n.dotproduct(Cone.m_translate);
+	}
 
-    // ---- 3. Базис сечения (u, v ⊥ d) в ГЛОБАЛЬНОМ пространстве ----------
-    _vector3<T> u, v;
-    _vector3<T>::generate_orthonormal_basis(d, u, v);
-
-    // ---- 4. Образ базиса сечения в локальном пространстве ---------------
-    // W = L * U, где U = [u v] (3x2), L — линейная часть Minv.
-    // Столбцы W:  w0 = L*u,  w1 = L*v
-    auto xform_dir = [&](const _vector3<T>& p) -> _vector3<T> {
-        _vector3<T> r;
-        r.x = p.x*Mi._11 + p.y*Mi._21 + p.z*Mi._31;
-        r.y = p.x*Mi._12 + p.y*Mi._22 + p.z*Mi._32;
-        r.z = p.x*Mi._13 + p.y*Mi._23 + p.z*Mi._33;
-        return r;
-    };
-    const auto w0 = xform_dir(u);
-    const auto w1 = xform_dir(v);
-
-    // ---- 5. 2x2 SVD WᵀW замкнутой формулой -------------------------------
-    // G = WᵀW (2x2):
-    //   g00 = w0·w0,  g01 = w0·w1,  g11 = w1·w1
-    const auto g00 = w0.dotproduct(w0);
-    const auto g01 = w0.dotproduct(w1);
-    const auto g11 = w1.dotproduct(w1);
-
-    // Собственные значения G = [[g00,g01],[g01,g11]]
-    const auto tr   = g00 + g11;
-    const auto det  = g00*g11 - g01*g01;
-    auto disc = tr*tr*0.25f - det;
-    if (disc < 0.f)
-    {
-	    disc = 0.f; // клампим численный шум
-    }
-	const auto sq = std::sqrt(disc);
-
-    const auto lam_max = tr*0.5f + sq;          // σ_max²
-    const auto lam_min = tr*0.5f - sq;          // σ_min²
-
-    // σ (сингулярные числа) — это и есть максимальные полуоси эллипса
-    // в локальном пространстве, соответствующие направлениям u и v.
-    const auto sig_max = std::sqrt(std::max(lam_max, 0.f));
-    const auto sig_min = std::sqrt(std::max(lam_min, 0.f));
-
-    // Собственные векторы G (направления в пространстве (u,v))
-    // Для lam_max: (g01, lam_max - g00) либо (lam_max - g11, g01)
-    T c0, s0;   // cos/sin в базисе (u, v) для первой главной оси
-    if (std::abs(g01) > 1e-6f) {
-        c0 = g01;
-        s0 = lam_max - g00;
-    } else {
-        // g01 ≈ 0 — оси эллипса уже совпадают с u,v
-        if (g00 >= g11) { c0 = 1.f; s0 = 0.f; }
-        else            { c0 = 0.f; s0 = 1.f; }
-    }
-    auto n0 = std::sqrt(c0*c0 + s0*s0);
-    if (n0 < 1e-6f) { c0 = 1.f; s0 = 0.f; n0 = 1.f; }
-    c0 /= n0; s0 /= n0;
-    // Вторая ось — ортогональна первой
-    const auto c1 = -s0;
-    const auto s1 =  c0;
-
-    // Главные направления в ЛОКАЛЬНОМ пространстве:
-    //   e0 = c0*w0 + s0*w1,  e1 = c1*w0 + s1*w1
-    _vector3<T> e0, e1;
-    e0.mul(w0, c0); e0.mad(w1, s0);
-    e1.mul(w0, c1); e1.mad(w1, s1);
-
-    // Нормируем (должны быть единичными, но подстрахуемся)
-    VERIFY(e0.square_magnitude() < EPS || e1.square_magnitude() < EPS);
-    e0.normalize();
-    e1.normalize();
-
-    // Полуоси эллипса в локальном пространстве = sig_max * r, sig_min * r.
-    // Это НАСТОЯЩИЕ полуоси эллипса (после min-max по параметру).
-    const auto a_l = radius * sig_max;
-    const auto b_l = radius * sig_min;
-
-    // Если эллипс слишком сплющен (sig_min ~ 0), зажимаем b_l, чтобы
-    // не получить вырожденный фрустум — это допустимое «расширение»,
-    // которое делает фрустум больше, но не ломает геометрию.
-    const auto min_extent = 1e-3f * (a_l > EPS ? a_l : 1.f);
-    const auto b_l_safe = std::max(b_l, min_extent);
-
-    // ---- 6. Боковые плоскости ------------------------------------------
-    // Касательные к эллипсу с полуосями (a_l, b_l), центр в B_l,
-    // оси (e0, e1). Ось конуса — d_l (единичная).
-    //
-    // В базисе (e0, e1, d_l) конус имеет apex A_l и основание B_l с
-    // эллипсом (a_l, b_l). Боковая плоскость, касающаяся эллипса в точке
-    // на направлении phi (в плоскости e0,e1), имеет нормаль:
-    //
-    //   n_side = ( cos(phi)/a_l * e0 + sin(phi)/b_l * e1 ) * cos(beta)
-    //          - sin(beta) * d_l
-    //
-    // где beta — угол наклона образующей к оси:  tan(beta) = a_eff/h_l,
-    // а a_eff — расстояние от оси до точки касания в направлении phi.
-    //
-    // Для минимального фрустума берём phi = 0, 90, 180, 270 градусов
-    // (касание в вершинах главных осей эллипса).
-
-    Fplane planes[5];
-
-    // Вспомогательные: для каждой из 4 сторон — точка касания в локальных
-    // координатах (в плоскости основания) и нормаль.
-    // Точка касания на эллипсе в направлении phi:
-    //   P(phi) = B_l + a_l*cos(phi)*e0 + b_l*sin(phi)*e1
-    // Расстояние от оси до P(phi) в плоскости (e0,e1):
-    //   rad(phi) = sqrt( (a_l*cos)^2 + (b_l*sin)^2 )
-    // Наклон образующей в этом сечении:
-    //   tan(beta_phi) = rad(phi) / h_l
-    // Нормаль боковой плоскости (внутрь смотрит -n, наружу +n):
-    //   n = cos(beta_phi) * dir_radial - sin(beta_phi) * d_l
-    // где dir_radial — единичный вектор от оси к точке касания в плоскости
-    // основания:  dir_radial = normalize( a_l*cos*e0 + b_l*sin*e1 ).
-
-    const float inv_h = 1.f / h_l;
-
-    for (int i = 0; i < 4; ++i)
-    {
-        // phi = i * 90 град:  0, PI/2, PI, 3PI/2
-        float phi = (float)(i * PI_DIV_2);
-        float cs = std::cos(phi);
-        float sn = std::sin(phi);
-
-        // Вектор от оси до точки касания (в локальных координатах, но
-        // масштабированный: a_l*cs*e0 + b_l*sn*e1)
-        Fvector rad_vec;
-        rad_vec.mul(e0, a_l * cs);
-        rad_vec.mad(e1, b_l_safe * sn);
-
-        float rad_len = rad_vec.magnitude();
-        if (rad_len < 1e-6f) {
-            // Вырожденный случай (a_l ~ 0 или b_l ~ 0) — пропускаем,
-            // поставим плоскость-заглушку далеко наружу.
-            planes[i].n.set(0.f, 0.f, 1.f);
-            planes[i].d = 1e30f;
-            continue;
-        }
-
-        // Единичный радиальный вектор в локальном пространстве
-        Fvector dir_rad;
-        dir_rad.mul(rad_vec, 1.f / rad_len);
-
-        // Угол beta: tan(beta) = rad_len / h_l
-        // cos(beta) = h_l / sqrt(h_l^2 + rad_len^2)
-        // sin(beta) = rad_len / sqrt(h_l^2 + rad_len^2)
-        float denom = std::sqrt(h_l*h_l + rad_len*rad_len);
-        float cb = h_l    / denom;
-        float sb = rad_len / denom;
-
-        // Нормаль: n = cos(beta)*dir_rad - sin(beta)*d_l
-        Fvector n;
-        n.mul(dir_rad, cb);
-        n.mad(d_l, -sb);
-        n.normalize_safe();
-
-        // Плоскость проходит через apex A_l:
-        //   n·(p - A_l) = 0  =>  n·p = n·A_l
-        planes[i].n = n;
-        planes[i].d = n.dotproduct(A_l);
-    }
-
-    // ---- 7. Плоскость основания ----------------------------------------
-    // Внешняя нормаль — вдоль +d_l (от apex к основанию).
-    // Уравнение:  d_l · (p - B_l) = 0  =>  d_l·p = d_l·B_l
-    planes[4].n = d_l;
-    planes[4].d = d_l.dotproduct(B_l);
-
-    // ---- 8. Проверка знака нормалей ------------------------------------
-    // Точка строго внутри конуса (центр основания, чуть смещённый):
-    Fvector inside = B_l;
-    inside.mad(d_l, -0.5f * h_l);   // середина оси
-    for (int i = 0; i < 5; ++i) {
-        float s = planes[i].n.dotproduct(inside) - planes[i].d;
-        if (s > 0.f) {
-            // Нормаль смотрит не туда — инвертируем
-            planes[i].n.invert();
-            planes[i].d = -planes[i].d;
-        }
-    }
-
-    // ---- 9. Заполняем фрустум ------------------------------------------
+	Planes[4].n.invert(Cone.m_direction);
+	Planes[4].d = -Planes[4].n.dotproduct(Cone.m_translate);
+	Fvector Base;
+	Base.mad(Cone.m_translate, Cone.m_direction, Cone.m_height);
+	Planes[5].n = Cone.m_direction;
+	Planes[5].d = -Planes[5].n.dotproduct(Base);
+	// For x_query = L * x_local + t, n_query dot x_query + d <= 0
+	// becomes (L^T * n_query) dot x_local + d + n_query dot t <= 0.
+	for (auto& Plane : Planes)
+	{
+		const Fvector Normal = Plane.n;
+		Plane.n.set(Normal.dotproduct(Prototype.Transform.i), Normal.dotproduct(Prototype.Transform.j), Normal.dotproduct(Prototype.Transform.k));
+		Plane.d += Normal.dotproduct(Prototype.Transform.c);
+		Plane.d -= EPS_L * Plane.n.magnitude();
+	}
 	CFrustum FLocal;
-	FLocal.CreateFromPlanes(planes, 5);
+	FLocal.CreateFromPlanes(Planes, 6);
 	xr_vector<RESULT> local_results;
 	cform_frustum_collider FC;
 	FC.OnCheckNode = GlobalCollider.OnCheckNode;
 	FC.dest = &local_results;
 	FC.stack = GlobalCollider.stack;
-	FC.bClass3 = GlobalCollider.bClass3;
-	FC.bFirst = GlobalCollider.bFirst;
+	FC.bClass3 = false;
+	FC.bFirst = false; // Only-first applies after the curved-volume filter.
 	FC.F = &FLocal;
-	
+
 	Fmatrix NewToWorld;
 	NewToWorld.mul(ToWorldTransform, Prototype.Transform);
 	FC.Stab(*ChildModel->root, FLocal.getMask(), NewToWorld);
 
-	for(auto& R : local_results)
+	Fmatrix WorldToQuery;
+	WorldToQuery.invert(ToWorldTransform);
+	for (auto& R : local_results)
 	{
 		auto& CurrentTris = R.model->tris[R.tris_id];
-				
+
 		Fvector tri_verts[3] = {};
-		NewToWorld.transform_tiny(tri_verts[0], R.model->verts[CurrentTris.verts[0]]);
-		NewToWorld.transform_tiny(tri_verts[1], R.model->verts[CurrentTris.verts[1]]);
-		NewToWorld.transform_tiny(tri_verts[2], R.model->verts[CurrentTris.verts[2]]);
-				
-		if (!GlobalCollider.shape.intersectTri(tri_verts, GlobalCollider.bClass3))
+		Fmatrix TriangleToQuery;
+		TriangleToQuery.mul(WorldToQuery, R.ModelWorldTransform);
+		TriangleToQuery.transform_tiny(tri_verts[0], R.model->verts[CurrentTris.verts[0]]);
+		TriangleToQuery.transform_tiny(tri_verts[1], R.model->verts[CurrentTris.verts[1]]);
+		TriangleToQuery.transform_tiny(tri_verts[2], R.model->verts[CurrentTris.verts[2]]);
+
+		if (GlobalCollider.shape.intersectTri(tri_verts, GlobalCollider.bClass3))
 		{
 			GlobalCollider.dest->push_back(R);
+			if (GlobalCollider.bFirst)
+			{
+				return;
+			}
 		}
 	}
 }
