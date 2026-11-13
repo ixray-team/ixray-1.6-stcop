@@ -1,6 +1,7 @@
 #include "../../xrCore/stdafx.h"
 #include "../../xrCore/Collision/xr_area.h"
 #include "../../xrCore/Collision/ISpatial.h"
+#include "../../xrCore/Collision/Frustum.h"
 
 namespace
 {
@@ -23,6 +24,75 @@ void CheckRay(CDB::MODEL& Model, const Fvector& Start)
 	Collider.ray_query(Model, Start, Fvector{0.f, -1.f, 0.f}, 20.f);
 	Check(Collider.r_count() == 1, "loaded geometry answers ray queries");
 	Check(Model.root != nullptr, "single-leaf BVH has a root");
+}
+
+void CheckSpatialQueries(CObjectSpace& Space, bool Instanced)
+{
+	CDB::COLLIDER Collider;
+	const Fvector Center{2.f, 0.f, 2.f};
+	Collider.box_options(CDB::OPT_FULL_TEST);
+	Collider.box_query(Space, Center, Fvector{1.f, 1.f, 1.f});
+	Check(Collider.r_count() == 1, "AABB query returns one world triangle across resident models");
+	Fmatrix Rotation;
+	Rotation.setHPB(0.7f, 0.2f, 0.f);
+	Rotation.c = Center;
+	Fobb Box;
+	Box.xform_set(Rotation);
+	Box.m_halfsize.set(1.f, 1.f, 1.f);
+	Collider.obb_options(CDB::OPT_FULL_TEST);
+	Collider.obb_query(Space, Box);
+	Check(Collider.r_count() == 1, "rotated OBB query does not duplicate boundary triangles");
+	Collider.sphere_options(CDB::OPT_FULL_TEST);
+	Collider.sphere_query(Space, Fsphere{Center, 1.f});
+	Check(Collider.r_count() == 1, "sphere query traverses resident models once");
+	Fcylinder Cylinder;
+	Cylinder.m_center = Center;
+	Cylinder.m_direction.set(0.f, 1.f, 0.f);
+	Cylinder.m_radius = 1.f;
+	Cylinder.m_height = 2.f;
+	Collider.cylinder_options(CDB::OPT_FULL_TEST);
+	Collider.cylinder_query(Space, Cylinder);
+	Check(Collider.r_count() == 1, "cylinder query traverses resident models once");
+	Fcone Cone;
+	Cone.m_translate.set(2.f, 2.f, 2.f);
+	Cone.m_direction.set(0.f, -1.f, 0.f);
+	Cone.m_radius = 2.f;
+	Cone.m_height = 3.f;
+	Collider.cone_options(CDB::OPT_FULL_TEST);
+	Collider.cone_query(Space, Cone);
+	Check(Collider.r_count() == 1, "cone query traverses resident models once");
+	Fmatrix View, Projection, Combined;
+	View.build_camera_dir(Fvector{2.f, 10.f, 2.f}, Fvector{0.f, -1.f, 0.f}, Fvector{0.f, 0.f, 1.f});
+	Projection.build_projection(PI_DIV_2, 1.f, 0.1f, 12.f);
+	Combined.mul(Projection, View);
+	CFrustum Frustum;
+	Frustum.CreateFromMatrix(Combined, FRUSTUM_P_ALL);
+	Collider.box_options(CDB::OPT_ONLYFIRST);
+	Collider.frustum_options(CDB::OPT_FULL_TEST);
+	Collider.frustum_query(Space, Frustum);
+	Check(Collider.r_count() == (Instanced ? 2 : 1), "frustum options are independent of box options and include instances");
+	Collider.frustum_options(CDB::OPT_ONLYFIRST);
+	Collider.frustum_query(Space, Frustum);
+	Check(Collider.r_count() == 1, "frustum only-first mode survives resident-model aggregation");
+	Collider.sphere_options(CDB::OPT_ONLYFIRST);
+	Collider.sphere_query(Space, Fsphere{Fvector{2.f, 2.f, 2.f}, 10.f});
+	Check(Collider.r_count() == 1, "sphere only-first mode is passed to per-model queries");
+	Cylinder.m_height = 20.f;
+	Collider.cylinder_options(CDB::OPT_ONLYFIRST);
+	Collider.cylinder_query(Space, Cylinder);
+	Check(Collider.r_count() == 1, "cylinder only-first mode is passed to per-model queries");
+	Cone.m_translate.y = 10.f;
+	Cone.m_height = 12.f;
+	Cone.m_radius = 10.f;
+	Collider.cone_options(CDB::OPT_ONLYFIRST);
+	Collider.cone_query(Space, Cone);
+	Check(Collider.r_count() == 1, "cone only-first mode is passed to per-model queries");
+	if (Instanced)
+	{
+		Collider.sphere_options(CDB::OPT_FULL_TEST);
+		Collider.sphere_query(Space, Fsphere{Fvector{2.f, 5.f, 2.f}, 0.25f});
+		Check(Collider.r_count() == 1 && Collider.r_any().ModelWorldTransform.c.y == 5.f, "shape results retain the instance world transform for inspector rendering");
+	}
 }
 
 void TestVanilla(const xr_string& Base)
@@ -54,6 +124,9 @@ void TestVanilla(const xr_string& Base)
 	CDB::MODEL Model;
 	Read->ReadData(Model);
 	CheckRay(Model, Fvector{1.f, 10.f, 1.f});
+	CObjectSpace Space;
+	Space.Load(nullptr, Base.c_str(), nullptr);
+	CheckSpatialQueries(Space, false);
 }
 
 void TestStreamed(const xr_string& Base, bool Instanced)
@@ -185,6 +258,7 @@ void TestStreamed(const xr_string& Base, bool Instanced)
 	Collider.box_options(0);
 	Collider.box_query(Space, Fvector{2.f, 0.f, 2.f}, Fvector{1.f, 1.f, 1.f});
 	Check(Collider.r_count() == 1, "physics box query traverses streamed models once");
+	CheckSpatialQueries(Space, Instanced);
 	Prepared = Space.PrepareStreamingUpdate(Fvector{1000.f, 0.f, 1000.f}, 0.f, 20.f);
 	Check(Space.LoadStreamedSector(99), "object space loads a manual sector");
 	Check(!Space.ApplyStreamingUpdate(std::move(Prepared)), "manual residency changes reject a stale background update");
@@ -202,6 +276,22 @@ void TestStreamed(const xr_string& Base, bool Instanced)
 	Check(Space.GetActiveStreamedModels().empty(), "all streamed geometry can be unloaded");
 	Collider.ray_query(Space, Fvector{2.f, 10.f, 2.f}, Fvector{0.f, -1.f, 0.f}, 20.f);
 	Check(Collider.r_count() == 0, "empty residency clears previous collision results");
+	Collider.sphere_query(Space, Fsphere{Fvector{2.f, 0.f, 2.f}, 10.f});
+	Check(Collider.r_count() == 0, "sphere queries clear results after all models unload");
+	Fcylinder EmptyCylinder;
+	EmptyCylinder.m_center.set(2.f, 0.f, 2.f);
+	EmptyCylinder.m_direction.set(0.f, 1.f, 0.f);
+	EmptyCylinder.m_radius = 2.f;
+	EmptyCylinder.m_height = 10.f;
+	Collider.cylinder_query(Space, EmptyCylinder);
+	Check(Collider.r_count() == 0, "cylinder queries clear results after all models unload");
+	Fcone EmptyCone;
+	EmptyCone.m_translate.set(2.f, 10.f, 2.f);
+	EmptyCone.m_direction.set(0.f, -1.f, 0.f);
+	EmptyCone.m_radius = 2.f;
+	EmptyCone.m_height = 10.f;
+	Collider.cone_query(Space, EmptyCone);
+	Check(Collider.r_count() == 0, "cone queries clear results after all models unload");
 	Check(!Space.RayTest(Fvector{2.f, 10.f, 2.f}, Fvector{0.f, -1.f, 0.f}, 20.f, collide::rqtStatic, &Cache, nullptr), "ray cache cannot return a hit from unloaded geometry");
 }
 
