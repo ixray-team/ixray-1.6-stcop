@@ -64,6 +64,9 @@ enum class EEngineExternalGame
 	EnableSaveOnNewGame,
 	EnableSuicideByController,
 	Enable3DIcons,
+	EnableImprovedBulletDamage,
+	EnableImprovedWeaponDispersion,
+	EnableDifficultyHitProbability,
 	None
 };
 
