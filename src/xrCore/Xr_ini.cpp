@@ -257,13 +257,17 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 		};
 
 	// Insert variables of own data
-	auto InsertData = [&SectName, &InsertItemWithDelete](xr_string_map<xr_string, Sect>& Data, bool bIsBase)
+	auto InsertData = [&SectName, &InsertItemWithDelete, CurrentSect](xr_string_map<xr_string, Sect>& Data, bool bIsBase)
 		{
 			auto It = Data.find(SectName);
 
 			if (It != Data.end())
 			{
 				Sect* DataSection = &It->second;
+				if (!bIsBase || !CurrentSect->SourceFile)
+				{
+					CurrentSect->SourceFile = DataSection->SourceFile;
+				}
 				for (const Item& CurrentItem : DataSection->Data)
 					InsertItemWithDelete(CurrentItem, bIsBase ? InsertType::Base : InsertType::Override);
 
@@ -1491,6 +1495,17 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 
 void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Sect>& OutputData, xr_string_map<xr_string, xr_vector<xr_string>>& ParentDataMap, bool bOverridesOnly, bool bIsRootFile, const char* SourceFileName)
 {
+	shared_str SourceFile;
+	if (xr_strcmp(SourceFileName, "<memory>") != 0)
+	{
+		xr_path SourcePath(SourceFileName);
+		if (SourcePath.is_absolute())
+		{
+			SourcePath = SourcePath.lexically_relative(std::filesystem::current_path());
+		}
+		SourceFile = xr_path(SourcePath.lexically_normal()).xstring().c_str();
+	}
+
 	string4096 LTXHelpStr1;
 	string4096 LTXHelpStr2;
 
@@ -1551,6 +1566,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 				}
 
 				// Overwrite existing override data
+				OutputData[CurrentNameStr].SourceFile = Current->SourceFile;
 				for (const Item& CurrentItem : Current->Data)
 				{
 					insert_item(&OutputData[CurrentNameStr], CurrentItem);
@@ -1773,6 +1789,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			}
 
 			Current = new Sect();
+			Current->SourceFile = SourceFile;
 			*strchr(LTXHelpStr1, ']') = 0;
 			Current->Name = strlwr(&LTXHelpStr1[3]);
 
@@ -1794,6 +1811,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			bIsCurrentSectionOverride = strstr(LTXHelpStr1, "![") == &LTXHelpStr1[0]; // Used to detect bad or unintended overrides
 
 			Current = new Sect();
+			Current->SourceFile = SourceFile;
 
 			u32 SectionNameStartPos = (bIsCurrentSectionOverride ? 2 : 1);
 			xr_string SecName = xr_string(LTXHelpStr1).substr(SectionNameStartPos, strchr(LTXHelpStr1, ']') - LTXHelpStr1 - SectionNameStartPos).c_str();

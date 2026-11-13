@@ -24,6 +24,8 @@ public:
 	{
 		shared_str		Name;
 		Items			Data;
+		// Last override or original declaration file, relative to the working directory; null if unknown.
+		shared_str		SourceFile;
 
 		bool			line_exist	(str_c L, str_c* val=nullptr);
 	};
