@@ -22,6 +22,7 @@ struct LevelInspector final
 		ESF_DRAW_CFORM_TRIS			= bit_lshift(14U),
 		ESF_DRAW_LEVEL_BOUNDS		= bit_lshift(15U),
 		ESF_DRAW_SOM				= (1 << 16),
+		ESF_DRAW_CDB_QUERY			= bit_lshift(17U),
 	};
 	
 	enum ESELECTION_FLAGS
@@ -120,6 +121,34 @@ struct LevelInspector final
 	float cform_ssa = 0.00005;
 	float cform_aabb_aspect_ratio = 1.0f;
 	float zbuff_shift = 0.005f;
+
+	enum class CollisionQueryShape
+	{
+		Box,
+		Frustum,
+		Obb,
+		Sphere,
+		Cylinder,
+		Cone
+	};
+	struct CollisionQuerySettings
+	{
+		CollisionQueryShape Shape = CollisionQueryShape::Box;
+		Fvector Position{0.f, 0.f, 0.f};
+		Fvector Rotation{0.f, 0.f, 0.f}; // Heading, pitch, bank in degrees.
+		Fvector HalfSize{2.f, 2.f, 2.f};
+		float Radius = 2.f;
+		float Height = 5.f;
+		float Fov = 60.f;
+		float Aspect = 16.f / 9.f; // Width / height, unlike Fmatrix::build_projection.
+		float NearPlane = 0.1f;
+		float FarPlane = 10.f;
+		bool FullTest = true;
+	} CollisionQuery;
+	int CollisionQueryTriangleCount = 0;
+	bool IsCollisionQueryValid() const;
+	void DrawCollisionQueryUI();
+	void DrawCollisionQuery();
 
 	Flags32 m_flags = { 0 };
 	Flags32 m_selection_flags = { 0 };

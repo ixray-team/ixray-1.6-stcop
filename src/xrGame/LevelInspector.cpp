@@ -557,6 +557,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
 					ImGui::CheckboxFlags("CForm All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
+					ImGui::CheckboxFlags("CDB Query", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CDB_QUERY);
 					ImGui::CheckboxFlags("Level Bounds", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS);
 					ImGui::CheckboxFlags("Spatials Registred", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE);
 					ImGui::CheckboxFlags("Spatials Unregistred", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL);
@@ -633,6 +634,12 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 						}
 					}
 					ImGui::EndDisabled();
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("CDB Queries"))
+				{
+					DrawCollisionQueryUI();
 					ImGui::EndTabItem();
 				}
 
@@ -955,7 +962,7 @@ void LevelInspector::OnRender()
 
 	if (!hud_mode)
 	{
-		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CDB_QUERY))
 		{
 			DrawCFORM();
 		}
@@ -3910,6 +3917,210 @@ void LevelInspector::DrawHOM()
 	}
 }
 
+bool LevelInspector::IsCollisionQueryValid() const
+{
+	const auto IsFinite = [](const Fvector& Value)
+	{
+		return std::isfinite(Value.x) && std::isfinite(Value.y) && std::isfinite(Value.z);
+	};
+	const auto IsPositive = [](float Value)
+	{
+		return std::isfinite(Value) && Value >= 0.01f && Value <= 10000.f;
+	};
+	const auto& Query = CollisionQuery;
+	if (!IsFinite(Query.Position) || !IsFinite(Query.Rotation))
+	{
+		return false;
+	}
+	switch (Query.Shape)
+	{
+	case CollisionQueryShape::Box:
+	case CollisionQueryShape::Obb:
+		return IsPositive(Query.HalfSize.x) && IsPositive(Query.HalfSize.y) && IsPositive(Query.HalfSize.z);
+	case CollisionQueryShape::Frustum:
+		return std::isfinite(Query.Fov) && Query.Fov >= 1.f && Query.Fov <= 175.f && IsPositive(Query.Aspect)
+			&& IsPositive(Query.NearPlane) && IsPositive(Query.FarPlane) && Query.FarPlane > Query.NearPlane;
+	case CollisionQueryShape::Sphere:
+		return IsPositive(Query.Radius);
+	case CollisionQueryShape::Cylinder:
+	case CollisionQueryShape::Cone:
+		return IsPositive(Query.Radius) && IsPositive(Query.Height);
+	}
+	return false;
+}
+
+void LevelInspector::DrawCollisionQueryUI()
+{
+	ImGui::CheckboxFlags("Test static collision queries", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CDB_QUERY);
+	int Shape = int(CollisionQuery.Shape);
+	if (ImGui::Combo("Shape / query", &Shape, "Box (AABB)\0Frustum\0OBB\0Sphere\0Cylinder\0Cone\0"))
+	{
+		CollisionQuery.Shape = CollisionQueryShape(Shape);
+	}
+	if (ImGui::Button("Reset to defaults"))
+	{
+		CollisionQuery = {};
+		CollisionQueryTriangleCount = 0;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Move to camera"))
+	{
+		CollisionQuery.Position = Device.vCameraPosition;
+		Fmatrix Camera{Fmatrix::EIdentity::Identity};
+		Camera.k = Device.vCameraDirection;
+		Camera.j = Device.vCameraTop;
+		Camera.i.crossproduct(Camera.j, Camera.k).normalize_safe();
+		Camera.getHPB(CollisionQuery.Rotation);
+		CollisionQuery.Rotation.mul(rad2deg(1.f));
+	}
+	ImGui::InputFloat3("Position (world)", &CollisionQuery.Position.x);
+	const auto Type = CollisionQuery.Shape;
+	if (Type != CollisionQueryShape::Box && Type != CollisionQueryShape::Sphere)
+	{
+		ImGui::DragFloat3("Heading / pitch / bank (deg)", &CollisionQuery.Rotation.x, 0.5f, -360.f, 360.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+	}
+	if (Type == CollisionQueryShape::Box || Type == CollisionQueryShape::Obb)
+	{
+		ImGui::DragFloat3("Half extents (m)", &CollisionQuery.HalfSize.x, 0.05f, 0.01f, 1000.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	}
+	if (Type == CollisionQueryShape::Sphere || Type == CollisionQueryShape::Cylinder || Type == CollisionQueryShape::Cone)
+	{
+		ImGui::DragFloat("Radius (m)", &CollisionQuery.Radius, 0.05f, 0.01f, 1000.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	}
+	if (Type == CollisionQueryShape::Cylinder || Type == CollisionQueryShape::Cone)
+	{
+		ImGui::DragFloat("Height (m)", &CollisionQuery.Height, 0.05f, 0.01f, 1000.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::TextWrapped(Type == CollisionQueryShape::Cone ? "Position is the apex; the axis is local +Z." : "Position is the center; the axis is local +Z.");
+	}
+	if (Type == CollisionQueryShape::Frustum)
+	{
+		ImGui::DragFloat("Vertical FOV (deg)", &CollisionQuery.Fov, 0.5f, 1.f, 175.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::DragFloat("Aspect (width / height)", &CollisionQuery.Aspect, 0.01f, 0.1f, 10.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::DragFloat("Near plane (m)", &CollisionQuery.NearPlane, 0.01f, 0.01f, 1000.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::DragFloat("Far plane (m)", &CollisionQuery.FarPlane, 0.1f, 0.02f, 10000.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::TextWrapped("Position is the eye; the view direction is local +Z.");
+	}
+	ImGui::Checkbox("Full triangle test (OPT_FULL_TEST)", &CollisionQuery.FullTest);
+	if (!IsCollisionQueryValid())
+	{
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.2f, 1.f), "Invalid parameters (all values must be finite, near < far).");
+	}
+	else if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CDB_QUERY))
+	{
+		ImGui::Text("Triangles: %d", CollisionQueryTriangleCount);
+	}
+	ImGui::TextWrapped("Updates every render frame. Yellow: query volume. Orange: matching triangles. Only resident static collision is queried.");
+}
+
+void LevelInspector::DrawCollisionQuery()
+{
+	CollisionQueryTriangleCount = 0;
+	if (!g_pGameLevel || !IsCollisionQueryValid())
+	{
+		return;
+	}
+	PROF_EVENT("LevelInspector::DrawCollisionQuery");
+	const auto& Query = CollisionQuery;
+	Fmatrix Transform;
+	Transform.setHPB(deg2rad(Query.Rotation.x), deg2rad(Query.Rotation.y), deg2rad(Query.Rotation.z));
+	Transform.c = Query.Position;
+	const u32 ShapeColor = color_rgba(255, 230, 30, 255);
+	const u32 Options = Query.FullTest ? CDB::OPT_FULL_TEST : 0;
+	CDB::COLLIDER Collider;
+	auto& Space = g_pGameLevel->ObjectSpace;
+	switch (Query.Shape)
+	{
+	case CollisionQueryShape::Box:
+	{
+		Fbox Box;
+		Box.setb(Query.Position, Query.HalfSize);
+		Collider.box_options(Options);
+		Collider.box_query(Space, Box);
+		append_aabb(Box, ShapeColor);
+		break;
+	}
+	case CollisionQueryShape::Obb:
+	{
+		Fobb Box;
+		Box.xform_set(Transform);
+		Box.m_halfsize = Query.HalfSize;
+		Collider.obb_options(Options);
+		Collider.obb_query(Space, Box);
+		append_obb(Box, ShapeColor);
+		break;
+	}
+	case CollisionQueryShape::Sphere:
+	{
+		const Fsphere Sphere{Query.Position, Query.Radius};
+		Collider.sphere_options(Options);
+		Collider.sphere_query(Space, Sphere);
+		append_sphere(Sphere, ShapeColor);
+		break;
+	}
+	case CollisionQueryShape::Cylinder:
+	{
+		Fcylinder Cylinder;
+		Cylinder.m_center = Query.Position;
+		Cylinder.m_direction = Transform.k;
+		Cylinder.m_radius = Query.Radius;
+		Cylinder.m_height = Query.Height;
+		Collider.cylinder_options(Options);
+		Collider.cylinder_query(Space, Cylinder);
+		append_cylinder(Cylinder, ShapeColor);
+		break;
+	}
+	case CollisionQueryShape::Cone:
+	{
+		Fcone Cone;
+		Cone.m_translate = Query.Position;
+		Cone.m_direction = Transform.k;
+		Cone.m_radius = Query.Radius;
+		Cone.m_height = Query.Height;
+		Collider.cone_options(Options);
+		Collider.cone_query(Space, Cone);
+		append_cone(Cone, ShapeColor);
+		break;
+	}
+	case CollisionQueryShape::Frustum:
+	{
+		Fmatrix View, Projection, ViewProjection;
+		View.build_camera_dir(Query.Position, Transform.k, Transform.j);
+		Projection.build_projection(deg2rad(Query.Fov), 1.f / Query.Aspect, Query.NearPlane, Query.FarPlane);
+		ViewProjection.mul(Projection, View);
+		CFrustum Frustum;
+		Frustum.CreateFromMatrix(ViewProjection, FRUSTUM_P_ALL);
+		Collider.frustum_options(Options);
+		Collider.frustum_query(Space, Frustum);
+		Fvector Corners[8];
+		const float Slope = std::tan(deg2rad(Query.Fov) * 0.5f);
+		for (u32 Index = 0; Index < 8; ++Index)
+		{
+			const float Depth = Index < 4 ? Query.NearPlane : Query.FarPlane;
+			const float HalfHeight = Depth * Slope;
+			const Fvector Local{(Index & 1 ? 1.f : -1.f) * HalfHeight * Query.Aspect, (Index & 2 ? 1.f : -1.f) * HalfHeight, Depth};
+			Transform.transform_tiny(Corners[Index], Local);
+		}
+		constexpr lindex Edges[]{{0, 1}, {1, 3}, {3, 2}, {2, 0}, {4, 5}, {5, 7}, {7, 6}, {6, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+		for (const auto& Edge : Edges)
+		{
+			append_line(Corners[Edge.i1], Corners[Edge.i2], ShapeColor);
+		}
+		break;
+	}
+	}
+	CollisionQueryTriangleCount = Collider.r_count();
+	for (const auto& Result : Collider.r_vec())
+	{
+		const auto& Triangle = Result.model->tris[Result.tris_id];
+		Fvector Vertices[3];
+		for (u32 Index = 0; Index < 3; ++Index)
+		{
+			Result.ModelWorldTransform.transform_tiny(Vertices[Index], Result.model->verts[Triangle.verts[Index]]);
+		}
+		append_trilines(Vertices, color_rgba(255, 120, 20, 80), color_rgba(255, 150, 30, 255));
+	}
+}
+
 void LevelInspector::DrawCFORM()
 {
 	PROF_EVENT(__FUNCTION__);
@@ -4224,6 +4435,21 @@ void LevelInspector::DrawCFORM()
 		temp_prims[1].clear();
 		temp_prims[1].temp_tris.shrink_to_fit();
 		temp_prims[1].temp_lines.shrink_to_fit();
+	}
+	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CDB_QUERY))
+	{
+		DrawCollisionQuery();
+		UIRender->CacheSetXformWorld(Fidentity);
+		if (Device.m_pRender)
+		{
+			Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+		}
+		UIRender->SetShader(*shader);
+		UIRender->zb_enable(zbuffer_enable);
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
+		TrisRender(tris);
+		LinesRender(lines);
+		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 	}
 }
 
