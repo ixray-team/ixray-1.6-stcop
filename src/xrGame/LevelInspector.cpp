@@ -468,9 +468,9 @@ ICF void setkey(u32& zbufKey, u8 idx, const char* label_name = "ZBuff")
 	else
 	{
 		if (ImGui::Button(*shared_str().printf("%s %s: %s",
-		                                       label_name,
-		                                       HUD().world_prims.key_toggle_mode ? "switch key" : "disable key",
-		                                       SDL_GetScancodeName(SDL_Scancode(zbufKey)))))
+											   label_name,
+											   HUD().world_prims.key_toggle_mode ? "switch key" : "disable key",
+											   SDL_GetScancodeName(SDL_Scancode(zbufKey)))))
 			waitingKey[idx] = true;
 	}
 }
@@ -717,19 +717,41 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 
 					ImGui::SeparatorText("Details");
 
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.05f, 0.05f, 0.05f, 0.8f));
-					if (ImGui::BeginChild("InfoBox", ImVec2(0, 150), true))
+					static xr_string SourceInfo;
+					static xr_string DisplayInfo;
+					xr_string Snapshot = selected_info_str.c_str();
+					if (!Snapshot.empty() && SourceInfo != Snapshot)
 					{
-						ImGui::TextWrapped("%s", selected_info_str.c_str());
+						SourceInfo = std::move(Snapshot);
+						DisplayInfo.clear();
+						size_t Start = 0;
+						while (Start <= SourceInfo.size())
+						{
+							size_t End = SourceInfo.find('\n', Start);
+							if (End == xr_string::npos)
+							{
+								End = SourceInfo.size();
+							}
+
+							xr_string Line = SourceInfo.substr(Start, End - Start);
+							DisplayInfo += IsUTF8(Line.c_str()) ? Line : Platform::ANSI_TO_UTF8(Line);
+							if (End < SourceInfo.size())
+							{
+								DisplayInfo += '\n';
+							}
+							Start = End + 1;
+						}
 					}
-					ImGui::EndChild();
+
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.05f, 0.05f, 0.05f, 0.8f));
+					ImGui::InputTextMultiline("##InfoBox", DisplayInfo.data(), DisplayInfo.size() + 1, ImVec2(ImGui::GetContentRegionAvail().x, 150), ImGuiInputTextFlags_ReadOnly);
 					ImGui::PopStyleColor();
 
 					fontselectioncombo(*this);
 
 					if (ImGui::Button("Copy"))
 					{
-						ImGui::SetClipboardText(selected_info_str.c_str());
+						ImGui::SetClipboardText(DisplayInfo.c_str());
 					}
 
 					ImGui::EndTabItem();
@@ -1773,7 +1795,7 @@ void LevelInspector::DrawGameGraph()
 					}
 
 					if (!lgraph.valid_vertex_id(global_vertex->level_vertex_id()) || !lgraph.valid_vertex_id(child_vertex->level_vertex_id()))
-                        continue;
+						continue;
 
 					auto it = m_links.find({ global_vid, child_id });
 					if (it != m_links.end())
@@ -2814,7 +2836,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 	{
 		if (text3d)
 			append_text_next(GO->Name());
-        else
+		else
 			text3d = append_text3d(pos, GO->Name(), color_green, CGameFont::alLeft);
 		if (!visible_currents)
 		{
@@ -2828,9 +2850,9 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 	{
 		string16 temp; CLSID2TEXT(GO->CLS_ID, temp);
 		shared_str str = shared_str().printf("%s[%d]", temp, GO->CLS_ID);
-        if (text3d)
+		if (text3d)
 			append_text_next(str);
-        else
+		else
 			text3d = append_text3d(pos, str, color_green, CGameFont::alLeft);
 		if (!visible_currents)
 		{
@@ -2856,7 +2878,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 		if (text3d)
 			append_text_next(GO->cNameVisual());
 		else
-            text3d = append_text3d(pos, GO->cNameVisual(), color_green, CGameFont::alLeft);
+			text3d = append_text3d(pos, GO->cNameVisual(), color_green, CGameFont::alLeft);
 		if (!visible_currents)
 		{
 			selected_info_str += *GO->cNameVisual();
@@ -2870,7 +2892,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 		if (text3d)
 			append_text_next(shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())));
 		else
-            text3d = append_text3d(pos, shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())), color_green, CGameFont::alLeft);
+			text3d = append_text3d(pos, shared_str().printf("pos[%3.3f, %3.3f, %3.3f]", VPUSH(GO->Position())), color_green, CGameFont::alLeft);
 		if (!visible_currents)
 		{
 			selected_info_str += *str;
