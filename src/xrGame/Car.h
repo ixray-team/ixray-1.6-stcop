@@ -228,11 +228,17 @@ static	const u16				cAsCallsnum						= 3;
 	void								DropTrunkContents			();
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
+	// Characters touched by the scraper or a wheel during the current physics
+	// step. Their vertical speed is capped in PhDataUpdate so a deep contact
+	// cannot launch them into the air.
+	xr_vector<IPHCharacter*>			m_character_contacts;
 	BONE_P_MAP							bone_map;					//interface for PhysicsShell
 	xr_set<u16>							pribor_arrows;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void						CarBodySurfaceCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
+	void								RegisterCharacterContact	(IPHCharacter* Character);
+	void								ClampCharacterContacts		();
 	virtual void						PhDataUpdate				(float step)			;
 	void						UpdatePhDataObjects		();
 	void						UpdateEngineAndBrakes		(float step);
@@ -399,8 +405,6 @@ public:
 			Switch();
 		}
 		void Switch(bool doors_up = false);
-		// Keep the current hinge angle instead of driving the leaf closed.
-		void Hold();
 	};
 	xr_vector<SEngineDoor> engine_door;
 

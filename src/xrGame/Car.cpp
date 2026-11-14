@@ -2,6 +2,7 @@
 #include "pch_script.h"
 #include "ParticlesObject.h"
 #include "../xrPhysics/ODE/Physics.h"
+#include "../xrPhysics/IPHCharacter.h"
 
 #ifdef DEBUG
 #	include "../xrEngine/StatGraph.h"
@@ -1485,12 +1486,35 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 	if(!l_pUD1) return;
 	if(!l_pUD2) return;
 
+	CCar* Car = nullptr;
+	if (cphc.GetObject(bo1) == nullptr)
+		Car = static_cast<CCar*>(cphc.GetCallbackData(bo1));
+	else if (cphc.GetObject(!bo1) == nullptr)
+		Car = static_cast<CCar*>(cphc.GetCallbackData(!bo1));
+
+	// The scraper is a kinematic shell that follows the car. A live character
+	// caught by it can be ejected with a large impulse, so remember the
+	// character and cap its upward velocity after the physics step.
+	IPHCharacter* Character = cphc.GetCharacter(bo1);
+	if (Character == nullptr)
+		Character = cphc.GetCharacter(!bo1);
+	if (Character != nullptr)
+	{
+		// Characters collide with the scraper regardless of whether their
+		// shell is represented by CPhysicsShellHolder::m_pPhysicsShell. The
+		// generic object filter below must not turn them into pass-through.
+		if (Car != nullptr)
+			Car->RegisterCharacterContact(Character);
+		do_colide = true;
+		return;
+	}
+
 	CPhysicsShellHolder *Collided_object = NULL;
 	CPhysicsShellHolder *ME = smart_cast<CPhysicsShellHolder*>(l_pUD1->ph_ref_object);
 	CPhysicsShellHolder *WHO = smart_cast<CPhysicsShellHolder*>(l_pUD2->ph_ref_object);
 	Collided_object = ME ? ME : WHO ? WHO : NULL;
 	CGameObject* Collided_gobject = smart_cast<CGameObject*>(Collided_object);
-	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_actor() || Collided_gobject->cast_car() || Collided_gobject->cast_inventory_item())
+	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_car() || Collided_gobject->cast_inventory_item())
 	{
 		do_colide = false;
 		return;
@@ -1508,6 +1532,15 @@ void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, S
 	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
 	if (!Car || Car->getDestroy())
 		return;
+
+	// Characters collide with the car body but must not push or launch it.
+	// Remember real contacts; the car velocity/pin and character velocity
+	// clamps are applied after the physics step.
+	IPHCharacter* Character = cphc.GetCharacter(bo1);
+	if (Character == nullptr)
+		Character = cphc.GetCharacter(!bo1);
+	if (Character != nullptr && do_colide)
+		Car->RegisterCharacterContact(Character);
 
 	// The car surface table describes static level surfaces only. Other cars,
 	// characters and dynamic props keep their normal material behaviour.
@@ -1611,6 +1644,13 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	}
 
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+	m_character_contacts.clear();
+
+	// Characters collide with the separate scraper shell. The main car body
+	// must ignore them: a mutant/NPC contact may push or brake the dynamic
+	// shell, but it must never move the car itself.
+	m_pPhysicsShell->DisableCharacterCollision();
+
 	StoreAllElementSpawnLocalTransforms();
 }
 
@@ -1644,6 +1684,47 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		HasGeometry = true;
 	}
 
+	// Bone boxes leave gaps under the chassis. Close the underbody with a
+	// plate and low side skirts so characters cannot crawl through the car
+	// from below or through the wheel wells.
+	Fbox Bounds = BoundingBox();
+	if (Bounds.is_valid())
+	{
+		Fvector Center;
+		Fvector Half;
+		Bounds.get_CD(Center, Half);
+
+		constexpr float BottomThickness = 0.2f;
+		constexpr float SkirtHalfHeight = 0.35f;
+		constexpr float SkirtThickness = 0.1f;
+
+		Fobb BottomBox;
+		BottomBox.m_rotate.identity();
+		BottomBox.m_translate.set(Center.x, Bounds.min.y + BottomThickness, Center.z);
+		BottomBox.m_halfsize.set(Half.x * 0.98f, BottomThickness, Half.z * 0.98f);
+		RootElement->add_Box(BottomBox);
+
+		const float SkirtY = Bounds.min.y + SkirtHalfHeight;
+		const float SkirtOffsetX = Half.x - SkirtThickness;
+		const float SkirtOffsetZ = Half.z - SkirtThickness;
+
+		Fobb Skirt;
+		Skirt.m_rotate.identity();
+		Skirt.m_halfsize.set(SkirtThickness, SkirtHalfHeight, Half.z * 0.98f);
+		Skirt.m_translate.set(Center.x - SkirtOffsetX, SkirtY, Center.z);
+		RootElement->add_Box(Skirt);
+		Skirt.m_translate.set(Center.x + SkirtOffsetX, SkirtY, Center.z);
+		RootElement->add_Box(Skirt);
+
+		Skirt.m_halfsize.set(Half.x * 0.98f, SkirtHalfHeight, SkirtThickness);
+		Skirt.m_translate.set(Center.x, SkirtY, Center.z - SkirtOffsetZ);
+		RootElement->add_Box(Skirt);
+		Skirt.m_translate.set(Center.x, SkirtY, Center.z + SkirtOffsetZ);
+		RootElement->add_Box(Skirt);
+
+		HasGeometry = true;
+	}
+
 	if (!HasGeometry)
 	{
 		Fobb FallbackBox;
@@ -1666,6 +1747,7 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	characters_scraper_shell->SetPrefereExactIntegration();
 	characters_scraper_shell->mXFORM.set(XFORM());
 	characters_scraper_shell->Activate();
+	characters_scraper_shell->set_CallbackData(this);
 }
 
 void CCar::CreateCarTurrets(CInifile* ini)
@@ -2074,6 +2156,8 @@ void	CCar::net_Destroy()
 
 void CCar::DestroyCharacterScraper()
 {
+	m_character_contacts.clear();
+
 	if (!characters_scraper_shell)
 		return;
 
@@ -2178,11 +2262,11 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	else
 		PPhysicsShell()->Disable();
 
-	// Door leaves keep the pose stored in the save. Engine door motors would
-	// otherwise drive them closed right after loading, so hold the restored
-	// hinge angle until the engine state changes.
+	// Door leaves keep the pose stored in the save. Engine door motors are
+	// applied according to the engine state restored below; SetForce/SetVelocity
+	// do not wake the car while it is still disabled.
 	for (SEngineDoor& Door : engine_door)
-		Door.Hold();
+		Door.Switch(b_engine_on);
 
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
@@ -4786,6 +4870,7 @@ void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
 		m_lights.SwitchHeadLights();
 
 	SyncServerRuntimeState();
+	SwitchEngineDoors();
 }
 
 float CCar::EngineStartSuccessChance() const
@@ -6215,6 +6300,7 @@ void CCar::UpdateRecursiveDoors()
 
 void CCar::PhDataUpdate(float step)
 {
+	ClampCharacterContacts();
 	UpdatePhDataObjects();
 	UpdateEngineAndBrakes(step);
 	UpdateDoorState();
@@ -6259,6 +6345,40 @@ void CCar::PhDataUpdate(float step)
 	}
 }
 
+void CCar::RegisterCharacterContact(IPHCharacter* Character)
+{
+	if (Character == nullptr)
+		return;
+
+	if (std::find(m_character_contacts.begin(), m_character_contacts.end(), Character) == m_character_contacts.end())
+		m_character_contacts.push_back(Character);
+}
+
+void CCar::ClampCharacterContacts()
+{
+	// A car wheel or the kinematic scraper can resolve deep penetration with a
+	// large impulse. Cap only the upward part of the character velocity after
+	// the physics step so the contact still pushes the character sideways but
+	// cannot launch it into the sky.
+	constexpr float MaxUpwardSpeed = 4.f;
+
+	for (IPHCharacter* Character : m_character_contacts)
+	{
+		if (Character == nullptr || Character->IsActorCharacter())
+			continue;
+
+		Fvector Velocity;
+		Character->GetVelocity(Velocity);
+		if (Velocity.y > MaxUpwardSpeed)
+		{
+			Velocity.y = MaxUpwardSpeed;
+			Character->SetVelocity(Velocity);
+		}
+	}
+
+	m_character_contacts.clear();
+}
+
 void CCar::UpdatePhDataObjects()
 {
 	if (!getDestroy() && !b_exploded && b_event_drag_activated)
@@ -6277,8 +6397,9 @@ void CCar::UpdatePhDataObjects()
 
 	if (characters_scraper_shell)
 	{
-		if (Owner() != nullptr && !characters_scraper_shell->isEnabled())
+		if (!characters_scraper_shell->isEnabled())
 			characters_scraper_shell->Enable();
+
 		characters_scraper_shell->SetTransform(XFORM(), mh_clear);
 		characters_scraper_shell->set_LinearVel(zero_vel);
 		characters_scraper_shell->set_AngularVel(zero_vel);
@@ -7707,12 +7828,13 @@ void CCar::SHeadlightHideaway::Switch(bool hideaways_up)
 }
 void CCar::SEngineDoor::Switch(bool doors_up)
 {
-	joint->SetForceAndVelocity(force, doors_up ? velocity : -velocity, axis_num);
-}
-void CCar::SEngineDoor::Hold()
-{
-	if (joint != nullptr)
-		joint->SetForceAndVelocity(force, 0.f, axis_num);
+	if (joint == nullptr)
+		return;
+
+	// Do not use SetForceAndVelocity here: it calls PShell->Enable() and wakes
+	// the car even when the engine-door force is applied during loading.
+	joint->SetForce(force, axis_num);
+	joint->SetVelocity(doors_up ? velocity : -velocity, axis_num);
 }
 void CCar::SSuspension::Update()
 {
