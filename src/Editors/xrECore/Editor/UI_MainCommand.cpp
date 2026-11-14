@@ -797,6 +797,12 @@ bool TUI::ApplyShortCut(u32 Key, TShiftState Shift)
 {
 	VERIFY(m_bReady);
 
+	// The keys drive the camera while it flies (RMB + WASD/QE)
+	if (ActiveViewport().Camera.IsFlying())
+	{
+		return true;
+	}
+
 	if (ApplyGlobalShortCut(Key, Shift))
 	{
 		return true;

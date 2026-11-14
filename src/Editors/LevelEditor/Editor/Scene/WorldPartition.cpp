@@ -9,7 +9,7 @@ static Fvector StreamCameraPosition()
 	{
 		return EDevice->vCameraPosition;
 	}
-	return EContext.UI->CurrentView().m_Camera.GetPosition();
+	return EContext.UI->ActiveViewport().Camera.GetPosition();
 }
 
 static bool ObjectCenter(CCustomObject* Object, Fvector& Center)

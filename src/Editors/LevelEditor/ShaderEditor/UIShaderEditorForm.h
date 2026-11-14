@@ -22,19 +22,20 @@ public:
 	static bool IsActive();
 	// Shader tool while the Shaders tab is active, otherwise nullptr
 	static CShaderTool* GetActiveTool();
-	static void Update();
 	// Saves every library of the shader tools
 	static bool SaveAll();
 	// Reloads the library of the current shader tool
 	static bool ReloadCurrent();
 
 private:
+	// Viewport activation, with the tab
+	static void OnViewActivate();
+	static void OnViewDeactivate();
+
 	void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
 	void DrawItemList();
 
 	static UIShaderEditorForm* Form;
 
 	CShaderTool* Tool = nullptr;
-	bool WasActive = false;
-	size_t PrevViewID = 0;
 };

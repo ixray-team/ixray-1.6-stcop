@@ -432,7 +432,7 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
 				Fvector p, n;
 
 				EContext.UI->GetRenderMousePosition();
-				EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->m_CurrentCp);
+				EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->m_CurrentCp);
 				if (LUI->PickGround(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, 1, &n))
 				{
 					for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
@@ -464,9 +464,9 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
 		}
 		else
 		{
-			m_MovingXVector.set(EContext.UI->CurrentView().m_Camera.GetRight());
+			m_MovingXVector.set(EContext.UI->ActiveViewport().Camera.GetRight());
 			m_MovingXVector.y = 0;
-			m_MovingYVector.set(EContext.UI->CurrentView().m_Camera.GetDirection());
+			m_MovingYVector.set(EContext.UI->ActiveViewport().Camera.GetDirection());
 			m_MovingYVector.y = 0;
 			m_MovingXVector.normalize_safe();
 			m_MovingYVector.normalize_safe();

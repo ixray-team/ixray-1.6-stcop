@@ -16,10 +16,12 @@
 
 UIMainForm* MainForm = nullptr;
 
-static void ViewportFocusCallback()
+static void ViewportActivate()
 {
-	LUI->EndEState(esEditLibrary);
-	LUI->BeginEState(esEditScene);
+	if (LUI->GetEState() != esEditScene)
+	{
+		LUI->BeginEState(esEditScene);
+	}
 }
 
 UIMainForm::UIMainForm()
@@ -40,7 +42,7 @@ UIMainForm::UIMainForm()
 	m_WorldProperties = new UIWorldPropertiesFrom();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
-	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
+	m_Render->GetViewport().OnActivate = (xr_delegate<void()>)ViewportActivate;
 
 	// Action
 	m_tMenu         = DEV->_CreateTexture("ed\\bar\\menu");
@@ -574,7 +576,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	ImGui::PopStyleVar(2);
 	ImGui::EndChild();
 
-	if (EContext.UI->ViewID == 0)
+	if (EContext.UI->IsViewportActive(EditorViewport::MainId))
 	{
 		imManipulator.Render(Pos.x, Pos.y, Size.x, Size.y);
 	}
@@ -713,7 +715,7 @@ void UIMainForm::RenderOldCameraButtons()
 	ImGui::BeginGroup();
 	if (XRay::ImGui::ToolbarIconButton("##ViewFront", m_tVFront->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
 	{
-		EContext.UI->CurrentView().m_Camera.ViewFront();
+		EContext.UI->ActiveViewport().Camera.ViewFront();
 		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
@@ -725,7 +727,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewBack", m_tVBack->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		EContext.UI->CurrentView().m_Camera.ViewBack();
+		EContext.UI->ActiveViewport().Camera.ViewBack();
 		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
@@ -737,7 +739,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewLeft", m_tVLeft->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		EContext.UI->CurrentView().m_Camera.ViewLeft();
+		EContext.UI->ActiveViewport().Camera.ViewLeft();
 		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
@@ -749,7 +751,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewRight", m_tVRight->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		EContext.UI->CurrentView().m_Camera.ViewRight();
+		EContext.UI->ActiveViewport().Camera.ViewRight();
 		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
@@ -761,7 +763,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewBottom", m_tVBottom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersNone))
 	{
-		EContext.UI->CurrentView().m_Camera.ViewBottom();
+		EContext.UI->ActiveViewport().Camera.ViewBottom();
 		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
@@ -773,7 +775,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##ViewTop", m_tVTop->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
 	{
-		EContext.UI->CurrentView().m_Camera.ViewTop();
+		EContext.UI->ActiveViewport().Camera.ViewTop();
 		EContext.UI->RedrawScene();
 	}
 	if (ImGui::IsItemHovered())
@@ -789,7 +791,7 @@ void UIMainForm::RenderOldCameraButtons()
 	//	{
 	//		if (ImGui::ImageButton("##DrawRenderToolBar1343", m_tVReset->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
 	//		{
-	//			EContext.UI->CurrentView().m_Camera.ViewReset();
+	//			EContext.UI->ActiveViewport().Camera.ViewReset();
 	//			EContext.UI->RedrawScene();
 	//		}
 	//	}
@@ -804,7 +806,7 @@ void UIMainForm::RenderOldCameraButtons()
 	ImGui::SameLine(0, 4);
 
 	ImGui::BeginGroup();
-	ECameraStyle Camera = EContext.UI->CurrentView().m_Camera.GetStyle();
+	ECameraStyle Camera = EContext.UI->ActiveViewport().Camera.GetStyle();
 
 	bool CamPlane = Camera == csPlaneMove;
 	bool CamArcBall = Camera == cs3DArcBall;
@@ -812,7 +814,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##CamPlane", m_tPlaneMove->get_SRView()->GetRawSRV(), &CamPlane, ImDrawFlags_RoundCornersLeft))
 	{
-		EContext.UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
+		EContext.UI->ActiveViewport().Camera.SetStyle(csPlaneMove);
 		EContext.UI->RedrawScene();
 	}
 
@@ -826,7 +828,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##CamArcBall", m_tArcBall->get_SRView()->GetRawSRV(), &CamArcBall, ImDrawFlags_RoundCornersNone))
 	{
-		EContext.UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
+		EContext.UI->ActiveViewport().Camera.SetStyle(cs3DArcBall);
 		EContext.UI->RedrawScene();
 	}
 
@@ -840,7 +842,7 @@ void UIMainForm::RenderOldCameraButtons()
 
 	if (XRay::ImGui::ToolbarIconButton("##CamFreeFly", m_tFreeFly->get_SRView()->GetRawSRV(), &CamFly, ImDrawFlags_RoundCornersRight))
 	{
-		EContext.UI->CurrentView().m_Camera.SetStyle(csFreeFly);
+		EContext.UI->ActiveViewport().Camera.SetStyle(csFreeFly);
 		EContext.UI->RedrawScene();
 	}
 

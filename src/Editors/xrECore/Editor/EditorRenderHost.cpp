@@ -100,7 +100,7 @@ namespace
 			pt.y = iFloor(EContext.UI->GetRenderHeight() - _wh);
 
 			Fvector dir;
-			EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(M.c, dir, pt);
+			EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(M.c, dir, pt);
 
 			M.c.mad(dir, _kl);
 			AxisObject->Render(NULL, M, 2, false);

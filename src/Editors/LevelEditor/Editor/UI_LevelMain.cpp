@@ -402,7 +402,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 	// Clear on the Shaders tab resets the preview camera
 	if (UIShaderEditorForm::IsActive())
 	{
-		EContext.UI->CurrentView().m_Camera.Reset();
+		EContext.UI->ActiveViewport().Camera.Reset();
 		return true;
 	}
 
@@ -417,7 +417,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 			return true;
 		}
 
-		EContext.UI->CurrentView().m_Camera.Reset();
+		EContext.UI->ActiveViewport().Camera.Reset();
 		Scene->Reset();
 		Scene->m_LevelOp.Reset();
 		LTools->m_LastFileName = "";
@@ -1648,10 +1648,10 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 	SRayPickInfo pinf;
 	for (int i = 0; i < 4; i++)
 	{
-		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
+		EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(st, d, pt[i]);
 		if (EPrefs->bp_lim_depth)
 		{
-			pinf.inf.range = EContext.UI->CurrentView().m_Camera._Zfar(); // max pick range
+			pinf.inf.range = EContext.UI->ActiveViewport().Camera._Zfar(); // max pick range
 			if (Scene->RayPickObject(pinf.inf.range, st, d, OBJCLASS_SCENEOBJECT, &pinf, 0))
 			{
 				if (pinf.inf.range > depth)
@@ -1661,9 +1661,9 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 			}
 		}
 	}
-	if (depth < EContext.UI->CurrentView().m_Camera._Znear())
+	if (depth < EContext.UI->ActiveViewport().Camera._Znear())
 	{
-		depth = EContext.UI->CurrentView().m_Camera._Zfar();
+		depth = EContext.UI->ActiveViewport().Camera._Zfar();
 	}
 	else
 	{
@@ -1672,11 +1672,11 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 
 	for (int i = 0; i < 4; i++)
 	{
-		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
+		EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(st, d, pt[i]);
 		p[i].mad(st, d, depth);
 	}
 
-	Fvector Pos = EContext.UI->CurrentView().m_Camera.GetPosition();
+	Fvector Pos = EContext.UI->ActiveViewport().Camera.GetPosition();
 	frustum.CreateFromPoints(p, 4, Pos);
 
 	Fplane P;
@@ -1803,8 +1803,8 @@ void CLevelMain::LoadSettings(nlohmann::json& js)
 
 Ivector2 CLevelMain::GetRenderMousePosition() const
 {
-	TUI::Viewport& Viewport = EContext.UI->CurrentView();
-	return Viewport.ViewportForm->GetMousePos();
+	EditorViewport& Viewport = EContext.UI->ActiveViewport();
+	return Viewport.Form->GetMousePos();
 }
 
 void CLevelMain::OnDrawUI()
@@ -1821,8 +1821,6 @@ void CLevelMain::OnDrawUI()
 	UIWorldPartition::Update();
 	UIGitWindow::Update();
 	UILevelSelector::Update();
-	UIActorEditorForm::Update();
-	UIShaderEditorForm::Update();
 	if (LTools->GetToolForm())
 	{
 		LTools->GetToolForm()->OnDrawUI();

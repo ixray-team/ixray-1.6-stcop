@@ -498,7 +498,7 @@ void CEditableObject::GetLODFrame(int frame, Fvector p[4], Fvector2 t[4], const 
 void CEditableObject::RenderLOD(const Fmatrix& parent)
 {
 	Fvector C;
-	C.sub(parent.c, EContext.UI->CurrentView().m_Camera.GetPosition());
+	C.sub(parent.c, EContext.UI->ActiveViewport().Camera.GetPosition());
 	C.y = 0;
 	float m = C.magnitude();
 	if (m < EPS)

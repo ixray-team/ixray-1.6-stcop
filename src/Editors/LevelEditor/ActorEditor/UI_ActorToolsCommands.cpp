@@ -228,7 +228,7 @@ CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 		return false;
 
 	m_LastFileName = "";
-	EContext.UI->CurrentView().m_Camera.Reset();
+	EContext.UI->ActiveViewport().Camera.Reset();
 	Clear();
 	UpdateProperties();
 	UndoClear();

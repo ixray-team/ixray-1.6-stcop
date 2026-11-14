@@ -129,7 +129,7 @@ void ISHTools::ZoomObject(bool bOnlySel)
 {
 	Fbox BB;
 	BB.set(-5,-5,-5,5,5,5);
-	EContext.UI->CurrentView().m_Camera.ZoomExtents(BB);
+	EContext.UI->ActiveViewport().Camera.ZoomExtents(BB);
 }
 //---------------------------------------------------------------------------
 

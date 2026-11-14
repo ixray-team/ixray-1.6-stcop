@@ -745,7 +745,7 @@ void UIActorLibrary::PickCallback()
 		Itm->SetUnselect();
 	}
 
-	EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(StartPos, StartDir, View->GetMousePos());
+	EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(StartPos, StartDir, View->GetMousePos());
 
 	// The edited object: the picked surface is selected in the object items and shown in Properties
 	CEditableObject* Edited = ATools != nullptr ? ATools->CurrentObject() : nullptr;

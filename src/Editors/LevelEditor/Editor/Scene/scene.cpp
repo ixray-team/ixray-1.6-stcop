@@ -350,7 +350,7 @@ void EScene::Clear(bool bEditableToolsOnly)
 
 const Fvector& EScene::GetCameraPosition() const
 {
-	return EContext.UI->CurrentView().m_Camera.GetPosition();
+	return EContext.UI->ActiveViewport().Camera.GetPosition();
 }
 
 bool EScene::GetBox(Fbox& box, ObjClassID classfilter)
@@ -773,20 +773,19 @@ void EScene::Play()
 
 	if (MainForm->GetTopBarForm()->UseCameraPosForActor)
 	{
-		ActorNewPos = EContext.UI->CurrentView().m_Camera.GetPosition();
-		ActorNewDir = EContext.UI->CurrentView().m_Camera.GetHPB();
+		ActorNewPos = EContext.UI->ActiveViewport().Camera.GetPosition();
+		ActorNewDir = EContext.UI->ActiveViewport().Camera.GetHPB();
 	}
 
 	if (!BuildSpawn())
 		return;
 
+	// The game is played in the main view
+	EContext.UI->ActivateViewport(EditorViewport::MainId);
 	EContext.UI->Invalidate();
 
 	pInput->acquire();
 	EContext.UI->IsEnableInput = false;
-
-	// FX: Set first viewport for PIE
-	EContext.UI->ViewID = 0;
 
 	g_pGamePersistent->m_game_params.reset();
 	g_pGamePersistent->m_game_params.m_e_game_type = eGameIDNoGame;

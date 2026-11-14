@@ -183,6 +183,21 @@ static const Fvector down_dir={0.f,-1.f,0.f};
 
 void CUI_Camera::Update(float dt)
 {
+	if (FlyMode)
+	{
+		if (FlyInput.x != 0.f || FlyInput.y != 0.f || FlyInput.z != 0.f)
+		{
+			const float Speed = m_FlySpeed * FlySpeedScale * (FlyBoost ? 4.f : 1.f) * dt;
+			m_Position.mad(m_CamMat.k, FlyInput.z * Speed);
+			m_Position.mad(m_CamMat.i, FlyInput.x * Speed);
+			// Q/E move along world up, like UE5
+			m_Position.y += FlyInput.y * Speed;
+			BuildCamera();
+			EContext.UI->RedrawScene();
+		}
+		return;
+	}
+
 	if (m_bMoving){
     	bool bLeftDn = m_Shift&ssLeft;
     	bool bRightDn = m_Shift&ssRight;
@@ -244,6 +259,25 @@ void CUI_Camera::Rotate(float dx, float dy)
 
 bool CUI_Camera::MoveStart(TShiftState Shift)
 {
+	// UE5-like: hold RMB (no modifiers) to look around and fly with WASD/QE
+	if (!m_bMoving && !FlyMode && (Shift & ssRight) && !(Shift & (ssShift | ssCtrl | ssAlt | ssLeft)) && m_Style != cs3DArcBall)
+	{
+		ShowCursor(false);
+		EContext.UI->IR_GetMousePosReal(m_StartPos);
+		FlyMode = true;
+		FlyBoost = false;
+		FlyInput.set(0.f, 0.f, 0.f);
+		m_bMoving = true;
+		m_Shift = Shift;
+		return true;
+	}
+
+	if (FlyMode)
+	{
+		m_Shift = Shift;
+		return true;
+	}
+
     const bool bTest = Shift&ssShift;
     if (bTest && !m_bMoving)
     {
@@ -259,9 +293,24 @@ bool CUI_Camera::MoveStart(TShiftState Shift)
 bool CUI_Camera::MoveEnd(TShiftState Shift)
 {
     m_Shift = Shift;
+    if (FlyMode)
+    {
+        if (Shift & ssRight)
+        {
+            return false;
+        }
+
+        SDL_WarpMouseInWindow(EContext.UI->ActiveViewport().Window, m_StartPos.x, m_StartPos.y);
+        ShowCursor(true);
+        FlyMode = false;
+        FlyInput.set(0.f, 0.f, 0.f);
+        m_bMoving = false;
+        return true;
+    }
+
     if (!(Shift & ssLeft) || !(Shift & ssShift))
     {
-        SDL_WarpMouseInWindow(EContext.UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
+        SDL_WarpMouseInWindow(EContext.UI->ActiveViewport().Window, m_StartPos.x, m_StartPos.y);
         ShowCursor(true);
         m_bMoving = false;
         return true;
@@ -277,7 +326,13 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
 // camera move
         if( dx || dy )
         {
-            SDL_WarpMouseInWindow(EContext.UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
+            SDL_WarpMouseInWindow(EContext.UI->ActiveViewport().Window, m_StartPos.x, m_StartPos.y);
+            if (FlyMode)
+            {
+                Rotate(dx, dy);
+                EContext.UI->RedrawScene();
+                return true;
+            }
             switch (m_Style){
             case csPlaneMove:
                 if ((m_Shift & ssLeft) && (m_Shift & ssRight)) 
@@ -307,8 +362,38 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
     return false;
 }
 
+namespace
+{
+	bool FlyKeyAxis(WORD Key, Fvector& Axis, float Value)
+	{
+		switch (Key)
+		{
+		case SDL_SCANCODE_W: Axis.z = Value; break;
+		case SDL_SCANCODE_S: Axis.z = -Value; break;
+		case SDL_SCANCODE_D: Axis.x = Value; break;
+		case SDL_SCANCODE_A: Axis.x = -Value; break;
+		case SDL_SCANCODE_E: Axis.y = Value; break;
+		case SDL_SCANCODE_Q: Axis.y = -Value; break;
+		default: return false;
+		}
+		return true;
+	}
+}
+
 bool CUI_Camera::KeyDown(WORD Key, TShiftState Shift)
 {
+    if (FlyMode)
+    {
+        if (Key == SDL_SCANCODE_LSHIFT || Key == SDL_SCANCODE_RSHIFT)
+        {
+            FlyBoost = true;
+            return true;
+        }
+        // Swallow every key while flying so tool shortcuts don't fire
+        FlyKeyAxis(Key, FlyInput, 1.f);
+        return true;
+    }
+
     if (m_bMoving){
     	switch (Key){
         case SDL_SCANCODE_LCTRL:  m_Shift = ssCtrl | m_Shift; break;
@@ -321,6 +406,24 @@ bool CUI_Camera::KeyDown(WORD Key, TShiftState Shift)
 
 bool CUI_Camera::KeyUp(WORD Key, TShiftState Shift)
 {
+    if (FlyMode)
+    {
+        if (Key == SDL_SCANCODE_LSHIFT || Key == SDL_SCANCODE_RSHIFT)
+        {
+            FlyBoost = false;
+            return true;
+        }
+        Fvector Released = {0.f, 0.f, 0.f};
+        if (FlyKeyAxis(Key, Released, 1.f))
+        {
+            // Clear only the axis that matches the released key direction
+            if (Released.z != 0.f && ((Key == SDL_SCANCODE_W) == (FlyInput.z > 0.f))) FlyInput.z = 0.f;
+            if (Released.x != 0.f && ((Key == SDL_SCANCODE_D) == (FlyInput.x > 0.f))) FlyInput.x = 0.f;
+            if (Released.y != 0.f && ((Key == SDL_SCANCODE_E) == (FlyInput.y > 0.f))) FlyInput.y = 0.f;
+        }
+        return true;
+    }
+
     if (m_bMoving){
     	switch (Key){
         case SDL_SCANCODE_LSHIFT:  m_Shift = ~ssShift & m_Shift; MoveEnd(m_Shift); break;
@@ -332,10 +435,23 @@ bool CUI_Camera::KeyUp(WORD Key, TShiftState Shift)
 	return false;
 }
 
+bool CUI_Camera::MouseWheel(int Direction)
+{
+    if (!FlyMode)
+    {
+        return false;
+    }
+
+    // Wheel while flying changes speed, like UE5
+    FlySpeedScale *= (Direction > 0) ? 1.25f : 0.8f;
+    clamp(FlySpeedScale, 0.05f, 50.f);
+    return true;
+}
+
 void CUI_Camera::MouseRayFromPoint( Fvector& start, Fvector& direction, const Ivector2& point )
 {
-	int halfwidth  = EContext.UI->CurrentView().RTSize.x * 0.5f;
-	int halfheight = EContext.UI->CurrentView().RTSize.y * 0.5f;
+	int halfwidth  = EContext.UI->ActiveViewport().Size.x * 0.5f;
+	int halfheight = EContext.UI->ActiveViewport().Size.y * 0.5f;
 
     if (!halfwidth||!halfheight) return;
 

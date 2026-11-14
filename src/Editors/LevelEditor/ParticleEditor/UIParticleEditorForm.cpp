@@ -18,16 +18,20 @@ static const char* PreviewWindow = "Preview###ParticlePreview";
 static const char* PropertiesWindow = "Properties";
 static const char* ReferencesWindow = ICON_FA_DIAGRAM_PROJECT " References###ParticleReferences";
 
-static void ParticleEditorFocusCallback()
+static void ParticleViewActivate()
 {
-	LUI->EndEState(esEditLibrary);
-	LUI->EndEState(esEditScene);
 	LUI->BeginEState(esEditCustom);
+}
+
+static void ParticleViewDeactivate()
+{
+	LUI->EndEState(esEditCustom);
 }
 
 UIParticleEditorForm::UIParticleEditorForm()
 {
-	View.OnFocusCallback = (xr_delegate<void()>)ParticleEditorFocusCallback;
+	View.GetViewport().OnActivate = (xr_delegate<void()>)ParticleViewActivate;
+	View.GetViewport().OnDeactivate = (xr_delegate<void()>)ParticleViewDeactivate;
 	View.SetToolBarEvent(TOnRenderToolBar(this, &UIParticleEditorForm::DrawRenderToolBar));
 	ViewName = "Particle Editor";
 
@@ -49,6 +53,7 @@ void UIParticleEditorForm::Create(int Tab)
 	R_ASSERT(Form == nullptr);
 	Form = new UIParticleEditorForm();
 	Form->TabIndex = Tab;
+	EContext.UI->BindViewportToTab(Form->View.ViewportId, Tab);
 	EContext.UI->Push(Form, false);
 
 	ContentBrowser = new CContentView("Content Browser##PE");
@@ -100,23 +105,7 @@ void UIParticleEditorForm::Update()
 		return;
 	}
 
-	const bool Active = EContext.UI->ActiveTabIndex == Form->TabIndex;
-	if (Active != Form->WasActive)
-	{
-		Form->WasActive = Active;
-		if (Active)
-		{
-			Form->PrevViewID = EContext.UI->ViewID;
-			EContext.UI->ViewID = Form->View.ViewportID;
-			ParticleEditorFocusCallback();
-		}
-		else if (EContext.UI->ViewID == Form->View.ViewportID)
-		{
-			EContext.UI->ViewID = Form->PrevViewID;
-		}
-	}
-
-	if (Active)
+	if (IsActive())
 	{
 		Form->Tool->OnFrame();
 	}
@@ -211,7 +200,7 @@ void UIParticleEditorForm::Draw()
 
 void UIParticleEditorForm::Render()
 {
-	if (EContext.UI->ViewID != View.ViewportID)
+	if (!View.IsActive())
 	{
 		return;
 	}
@@ -279,7 +268,7 @@ void UIParticleEditorForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	}
 	if (Button(ICON_FA_ERASER " Clear", ImDrawFlags_RoundCornersRight))
 	{
-		EContext.UI->CurrentView().m_Camera.Reset();
+		EContext.UI->ActiveViewport().Camera.Reset();
 		Tool->ResetPreviewObject();
 	}
 	ImGui::PopStyleVar();

@@ -343,7 +343,7 @@ private:
 
 	// Luminance
 	ref_shader			s_luminance;
-	float						f_luminance_adapt;
+	float						f_luminance_adapt = 0.f;
 
 	//================= new bloom and lum =================
 	ref_shader					s_bloom_downsample;

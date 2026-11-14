@@ -4,7 +4,7 @@
 
 UIMoveToCamera::UIMoveToCamera()
 {
-	const Fvector& CameraCurrentPosition = EContext.UI->CurrentView().m_Camera.GetPosition();
+	const Fvector& CameraCurrentPosition = EContext.UI->ActiveViewport().Camera.GetPosition();
 
 	OldCameraPosition = CameraCurrentPosition;
 	NewCameraPosition = CameraCurrentPosition;
@@ -39,7 +39,7 @@ void UIMoveToCamera::Draw()
 
 void UIMoveToCamera::Ok()
 {
-	EContext.UI->CurrentView().m_Camera.Set(EContext.UI->CurrentView().m_Camera.GetHPB(), NewCameraPosition);
+	EContext.UI->ActiveViewport().Camera.Set(EContext.UI->ActiveViewport().Camera.GetHPB(), NewCameraPosition);
 	EContext.UI->RedrawScene();
 }
 

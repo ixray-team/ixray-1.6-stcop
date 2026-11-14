@@ -268,7 +268,7 @@ void CSHEngineTools::ZoomObject(bool bOnlySel)
 {
 	if (m_PreviewObject){
 		Fbox bb = m_PreviewObject->GetBox();
-		EContext.UI->CurrentView().m_Camera.ZoomExtents(bb);
+		EContext.UI->ActiveViewport().Camera.ZoomExtents(bb);
 	}else{
 		ISHTools::ZoomObject(bOnlySel);
 	}

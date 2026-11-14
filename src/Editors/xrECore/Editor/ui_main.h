@@ -6,6 +6,7 @@
 using json = nlohmann::json;
 
 #include "UI_MainCommand.h"
+#include "EditorViewport.h"
 #include "../../xrEngine/IInputReceiver.h"
 
 // refs
@@ -148,7 +149,7 @@ public:
 	int 			GetRealWidth	()	{   return EDevice->Width; }
 	int 			GetRealHeight	()  {   return EDevice->Height; }
 
-	IC float 		ZFar			()	{	return CurrentView().m_Camera.m_Zfar; }
+	IC float 		ZFar			()	{	return ActiveViewport().Camera.m_Zfar; }
 	IC TShiftState	GetShiftState 	()	{	return m_ShiftState; }
 
 	virtual bool 	OnCreate		();
@@ -251,36 +252,32 @@ public:
 	using ModifierCallback = bool(*)();
 	xr_vector <std::pair<shared_str, ModifierCallback>> GeneralTabs;
 
-	// Render form
-	ref_rt RT;
-	ref_rt RTCopy;
+	// Viewports
+	EditorViewport& ActiveViewport();
+	EditorViewport& MainViewport() { return Viewports.at(EditorViewport::MainId); }
+	EditorViewport* FindViewport(int Id);
+	int GetActiveViewportId() const { return ActiveViewportId; }
+	bool IsViewportActive(int Id) const { return ActiveViewportId == Id; }
 
-	struct Viewport
-	{
-		UIRenderForm* ViewportForm = nullptr;
-		CUI_Camera m_Camera;
-		ref_rt RTFreez;
-		Ivector2 RTSize;
+	EditorViewport& CreateViewport(int Id, UIRenderForm* Form);
+	void DestroyViewport(int Id);
+	// Makes the view active: OnDeactivate of the previous one, then OnActivate of this one, once per change
+	void ActivateViewport(int Id);
+	// The view becomes active with this editor tab (see GeneralTabs / ActiveTabIndex)
+	void BindViewportToTab(int Id, int TabIndex);
 
-		Fmatrix PrevView;
-		Fmatrix PrevProject;
-		bool HasPrevTransform = false;
+private:
+	void UpdateTabViewport();
 
-		SDL_Window* WndHandle = nullptr;
-		int ViewGlobalIDX = -1;
+	xr_map<int, EditorViewport> Viewports;
+	int ActiveViewportId = EditorViewport::MainId;
+	int ViewportTabIndex = -1;
 
-		bool operator==(const Viewport& Right) const
-		{
-			return ViewGlobalIDX == Right.ViewGlobalIDX;
-		}
-	};
+	// The renderer has one set of targets and one temporal history: the view and the mode they were made for
+	int RenderedViewportId = -1;
+	u32 RenderedUpscaler = 0;
 
-	Viewport& CurrentView();
-	void CreateViewport(int ID, UIRenderForm* Form);
-	void DestroyViewport(int ID);
-
-	size_t ViewID = -1;
-	xr_map<int, Viewport> Views;
+public:
 
 	ref_texture	m_HeaderLogo = nullptr;
 	ref_texture	m_WinMin = nullptr;
@@ -306,7 +303,7 @@ void ECORE_API ResetActionToSelect();
 #include "EditorContext.h"
 IC float CalcSSA(Fvector& C, float R)
 {
-	float distSQ = EContext.UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(C);
+	float distSQ = EContext.UI->ActiveViewport().Camera.GetPosition().distance_to_sqr(C);
 	return R * R / distSQ;
 }
 

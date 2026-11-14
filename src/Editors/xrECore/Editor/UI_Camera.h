@@ -18,6 +18,12 @@ class ECORE_API CUI_Camera
     float 			m_FlySpeed;
     float 			m_FlyAltitude;
 
+	// UE5-like viewport fly (hold RMB + WASD/QE)
+	bool			FlyMode = false;
+	bool			FlyBoost = false;
+	float			FlySpeedScale = 1.f;
+	Fvector			FlyInput = {0.f, 0.f, 0.f};
+
     Fmatrix			m_CamMat;
     Fvector			m_HPB;
     Fvector			m_Position;
@@ -53,6 +59,8 @@ public:
 	bool 			Process		(TShiftState Shift, int dx, int dy);
     bool			KeyDown		(WORD Key, TShiftState Shift);
     bool			KeyUp		(WORD Key, TShiftState Shift);
+    bool			MouseWheel	(int Direction);
+    bool			IsFlying	() const {return FlyMode;}
 
     void			ViewFront	(){m_HPB.set(0.f,0.f,0.f); 			BuildCamera();}
     void			ViewBack 	(){m_HPB.set(M_PI,0.f,0.f); 		BuildCamera();}

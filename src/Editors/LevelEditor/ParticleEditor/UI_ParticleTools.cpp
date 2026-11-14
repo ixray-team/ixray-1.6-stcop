@@ -349,7 +349,7 @@ void CParticleTool::ZoomObject(bool bSelOnly)
 {
 	VERIFY(m_bReady);
 	if (!bSelOnly&&m_EditObject){
-		EContext.UI->CurrentView().m_Camera.ZoomExtents(m_EditObject->GetBox());
+		EContext.UI->ActiveViewport().Camera.ZoomExtents(m_EditObject->GetBox());
 	}else{
 		Fbox box; box.invalidate();
 		switch(m_EditMode){
@@ -387,7 +387,7 @@ void CParticleTool::ZoomObject(bool bSelOnly)
 				THROW;
 			}
 		}
-		if (box.is_valid()){ box.grow(1.f); EContext.UI->CurrentView().m_Camera.ZoomExtents(box); }
+		if (box.is_valid()){ box.grow(1.f); EContext.UI->ActiveViewport().Camera.ZoomExtents(box); }
 	}
 }
 

@@ -74,6 +74,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 
 	// Engine flow-control
 	fTimeDelta		= 0;
+	fTimeDeltaSmoothing = 0;
 	fTimeGlobal		= 0;
 	dwTimeDelta		= 0;
 	dwTimeGlobal	= 0;
@@ -488,7 +489,7 @@ void CEditorRenderDevice::UpdateView()
 // set camera matrix
 	if (!Tools->UpdateCamera())
 	{
-		EContext.UI->CurrentView().m_Camera.GetView(mView);
+		EContext.UI->ActiveViewport().Camera.GetView(mView);
 	}
     RCache.set_xform_view(mView);
     RCache.set_xform_project(mProject);
@@ -506,6 +507,8 @@ void CEditorRenderDevice::FrameMove()
     float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
     fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
     if (fTimeDelta>.1f) fTimeDelta=.1f;									// limit to 15fps minimum
+	// Read by the renderer (eye adaptation)
+	fTimeDeltaSmoothing = fTimeDelta;
 
     fTimeGlobal		= TimerGlobal.GetElapsed_sec(); //float(qTime)*CPU::cycles2seconds;
     dwTimeGlobal	= TimerGlobal.GetElapsed_ms	();	//u32((qTime*u64(1000))/CPU::cycles_per_second);
@@ -525,7 +528,7 @@ void CEditorRenderDevice::FrameMove()
 
 	if (!Tools->UpdateCamera())
 	{
-		EContext.UI->CurrentView().m_Camera.Update(g_pauseMngr.Paused() ? CameraDelta : fTimeDelta);
+		EContext.UI->ActiveViewport().Camera.Update(g_pauseMngr.Paused() ? CameraDelta : fTimeDelta);
 	}
 
     // process objects

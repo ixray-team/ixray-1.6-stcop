@@ -545,7 +545,7 @@ void UIObjectList::FocusSelected()
 
 	if (Box.is_valid())
 	{
-		EContext.UI->CurrentView().m_Camera.ZoomExtents(Box);
+		EContext.UI->ActiveViewport().Camera.ZoomExtents(Box);
 		EContext.UI->RedrawScene();
 	}
 }

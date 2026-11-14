@@ -727,7 +727,7 @@ void FlipVertical(xr_vector<u32>& pixels, int width, int height)
 // The editor scene goes through the deferred renderer, so the presented frame is the only finished image.
 static bool GetViewportSquare(U32Vec& Pixels, u32& Width, u32& Height)
 {
-	ref_rt& Frame = EContext.UI->RTCopy;
+	ref_rt& Frame = EContext.UI->ActiveViewport().Target;
 	U32Vec FramePixels;
 	if (!Frame || !EDevice->ReadbackRT(Frame, FramePixels))
 	{

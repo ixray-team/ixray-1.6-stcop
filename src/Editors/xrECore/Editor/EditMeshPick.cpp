@@ -350,7 +350,7 @@ void CEditableMesh::FrustumPickFaces(const CFrustum& frustum, const Fmatrix& par
 		{
 			Fplane P;
 			P.build(p[0], p[1], p[2]);
-			if (P.classify(EContext.UI->CurrentView().m_Camera.GetPosition()) < 0)
+			if (P.classify(EContext.UI->ActiveViewport().Camera.GetPosition()) < 0)
 			{
 				continue;
 			}

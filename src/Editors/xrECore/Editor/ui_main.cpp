@@ -124,8 +124,8 @@ TUI::TUI()
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
-	Viewport& MainView = Views[0];
-	ViewID = 0;
+	Viewports.emplace(EditorViewport::MainId, EditorViewport(EditorViewport::MainId));
+	Viewports.at(EditorViewport::MainId).TabIndex = 0;
 
 	m_Size.set(DisplayX, DisplayY);
 
@@ -221,7 +221,7 @@ bool TUI::KeyDown(WORD Key, TShiftState Shift)
 		return true;
 	}
 
-	if (CurrentView().m_Camera.KeyDown(Key, Shift))
+	if (ActiveViewport().Camera.KeyDown(Key, Shift))
 	{
 		return true;
 	}
@@ -235,7 +235,7 @@ bool TUI::KeyUp(WORD Key, TShiftState Shift)
 		return false;
 	}
 
-	if (CurrentView().m_Camera.KeyUp(Key, Shift))
+	if (ActiveViewport().Camera.KeyUp(Key, Shift))
 	{
 		return true;
 	}
@@ -248,12 +248,20 @@ bool TUI::KeyPress(WORD Key, TShiftState Shift)
 	{
 		return false;
 	}
+	if (ActiveViewport().Camera.IsFlying())
+	{
+		return true;
+	}
 	return Tools->KeyPress(Key, Shift);
 }
 //----------------------------------------------------
 void TUI::IR_OnMouseWheel(int direction)
 {
 	if (!m_bReady)
+	{
+		return;
+	}
+	if (ActiveViewport().Camera.MouseWheel(direction))
 	{
 		return;
 	}
@@ -280,7 +288,7 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 	m_ShiftState = Shift;
 
 	// camera activate
-	if (!CurrentView().m_Camera.MoveStart(m_ShiftState))
+	if (!ActiveViewport().Camera.MoveStart(m_ShiftState))
 	{
 		if (Tools->Pick(Shift))
 		{
@@ -298,7 +306,7 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 			{
 				m_CurrentCp = GetRenderMousePosition();
 				m_StartCp = m_CurrentCp;
-				CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
+				ActiveViewport().Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 				m_StartRDir = m_CurrentRDir;
 			}
 
@@ -324,9 +332,9 @@ void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 
 	m_ShiftState = Shift;
 
-	if (CurrentView().m_Camera.IsMoving())
+	if (ActiveViewport().Camera.IsMoving())
 	{
-		if (CurrentView().m_Camera.MoveEnd(m_ShiftState))
+		if (ActiveViewport().Camera.MoveEnd(m_ShiftState))
 		{
 			bMouseInUse = false;
 		}
@@ -339,7 +347,7 @@ void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 			if (!Tools->HiddenMode())
 			{
 				m_CurrentCp = GetRenderMousePosition();
-				CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
+				ActiveViewport().Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 			}
 
 			bool bIsHiddenMode = Tools->HiddenMode();
@@ -378,7 +386,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 
 	bool bRayUpdated = false;
 
-	if (!CurrentView().m_Camera.Process(m_ShiftState, x, y))
+	if (!ActiveViewport().Camera.Process(m_ShiftState, x, y))
 	{
 		if (m_MouseCaptured || m_MouseMultiClickCaptured)
 		{
@@ -393,7 +401,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 			else
 			{
 				m_CurrentCp = GetRenderMousePosition();
-				CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
+				ActiveViewport().Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 				Tools->MouseMove(m_ShiftState);
 			}
 
@@ -405,7 +413,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 	if (!bRayUpdated)
 	{
 		m_CurrentCp = GetRenderMousePosition();
-		CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
+		ActiveViewport().Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 	}
 }
 //---------------------------------------------------------------------------
@@ -499,8 +507,9 @@ void TUI::PrepareRedraw()
 
 void TUI::Invalidate()
 {
-	RT.destroy();
-	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+	// Recreated at the next redraw
+	ActiveViewport().DestroyTarget();
+	RenderedViewportId = -1;
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
@@ -513,10 +522,12 @@ void TUI::Redraw()
 
 	PrepareRedraw();
 
-	Viewport& View = CurrentView();
+	UpdateTabViewport();
+
+	EditorViewport& View = ActiveViewport();
 
 	// The viewport window is 0x0 until ImGui lays it out: there is nothing to draw and no target size yet
-	if (View.RTSize.x <= 0 || View.RTSize.y <= 0)
+	if (!View.HasSize())
 	{
 		return;
 	}
@@ -525,79 +536,64 @@ void TUI::Redraw()
 	// with the selected upscaler
 	ps_r_scale_mode = ps_proxy_r_scale_mode = GEditorDraw.Upscaler;
 
-	const Ivector2 SceneSize = GetSceneSize(View.RTSize);
-
-	// The temporal upscalers keep one history: start it over on another viewport, size or mode
-	static int UpscaledViewID = -1;
-	static u32 UpscaledMode = 0;
-	bool UpscalerReset = UpscaledViewID != View.ViewGlobalIDX;
-	bool TargetsReset = UpscalerReset;
-
-	if (UpscalerReset)
+	// The view target follows the view size. While a dock splitter is dragged the old target is kept
+	// (shown stretched) and rebuilt once the mouse is released
+	bool TargetsReset = false;
+	if (!View.Target || !View.Target->pSurface || !ImGui::IsMouseDown(ImGuiMouseButton_Left))
 	{
-		View.m_Camera.BuildCamera();
+		TargetsReset = View.UpdateTarget();
+	}
+
+	const Ivector2 TargetSize = {int(View.Target->dwWidth), int(View.Target->dwHeight)};
+	const Ivector2 SceneSize = GetSceneSize(TargetSize);
+
+	// The renderer targets and the temporal history are shared by the views: rebuild them
+	// for the view being drawn when it is another view, size or upscaler
+	const bool ViewChanged = RenderedViewportId != View.Id;
+	bool UpscalerReset = ViewChanged;
+
+	if (ViewChanged)
+	{
+		View.Camera.BuildCamera();
 		m_Flags.set(flRedraw, true);
 	}
 
-	if (u32(View.RTSize.x) != EDevice->TargetWidth || u32(View.RTSize.y) != EDevice->TargetHeight || SceneSize.x != HalfTarget.x || SceneSize.y != HalfTarget.y || UpscaledMode != GEditorDraw.Upscaler || !RT->pSurface)
+	if (u32(TargetSize.x) != EDevice->TargetWidth || u32(TargetSize.y) != EDevice->TargetHeight || SceneSize.x != HalfTarget.x || SceneSize.y != HalfTarget.y || RenderedUpscaler != GEditorDraw.Upscaler)
 	{
-		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-		{
-			// The DLSS / FSR contexts are created with the render targets
-			UpscaledMode = GEditorDraw.Upscaler;
-			UpscalerReset = true;
-			TargetsReset = true;
+		// The DLSS / FSR contexts are created with the render targets
+		RenderedUpscaler = GEditorDraw.Upscaler;
+		UpscalerReset = true;
+		TargetsReset = true;
 
-			EDevice->TargetWidth = View.RTSize.x;
-			EDevice->TargetHeight = View.RTSize.y;
+		EDevice->TargetWidth = TargetSize.x;
+		EDevice->TargetHeight = TargetSize.y;
 
-			RT.destroy();
-			RTCopy.destroy();
-			View.RTFreez.destroy();
+		// The renderer targets follow the viewport size, the scene resolution (HalfTarget)
+		// follows the render quality
+		HalfTarget = SceneSize;
 
-			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+		::Render->reset_begin();
+		::Render->reset_end();
 
-			// The renderer targets follow the viewport size, the scene resolution (HalfTarget)
-			// follows the render quality
-			HalfTarget = SceneSize;
+		m_Flags.set(flRedraw, true);
 
-			::Render->reset_begin();
-			::Render->reset_end();
-
-			m_Flags.set(flRedraw, true);
-
-			EDevice->fASPECT = float(View.RTSize.y) / float(View.RTSize.x);
-			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
-			EDevice->m_fNearer = EDevice->mProject._43;
-
-			EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
-			EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
-			RCache.set_xform_project(EDevice->mProject);
-			RCache.set_xform_world(Fidentity);
-		}
-		else
-		{
-			// Soft render update when resizing window
-			EDevice->fASPECT = float(View.RTSize.y) / float(View.RTSize.x);
-			m_Flags.set(flRedraw, true);
-		}
+		EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
+		EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
+		RCache.set_xform_world(Fidentity);
 	}
 
 	if (!IsPlayInEditor())
 	{
-		// The aspect is shared by the views: take the current one, its size may have changed while another view was drawn
-		if (View.RTSize.x > 0 && View.RTSize.y > 0)
+		// The aspect is shared by the views: take the one of the view drawn, also while its target is stretched
+		const float Aspect = float(View.Size.y) / float(View.Size.x);
+		if (!fsimilar(Aspect, EDevice->fASPECT))
 		{
-			const float Aspect = float(View.RTSize.y) / float(View.RTSize.x);
-			if (!fsimilar(Aspect, EDevice->fASPECT))
-			{
-				EDevice->fASPECT = Aspect;
-				m_Flags.set(flRedraw, true);
-			}
+			EDevice->fASPECT = Aspect;
+			m_Flags.set(flRedraw, true);
 		}
-		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
+		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.Camera._Znear(), View.Camera._Zfar());
+		EDevice->m_fNearer = EDevice->mProject._43;
+		RCache.set_xform_project(EDevice->mProject);
 	}
 
 	if (EDevice->Begin())
@@ -641,7 +637,7 @@ void TUI::Redraw()
 			View.PrevProject = EDevice->mProject;
 
 			GEditorDraw.UpscalerReset = UpscalerReset;
-			UpscaledViewID = View.ViewGlobalIDX;
+			RenderedViewportId = View.Id;
 
 			for (u32 k = 0; k < Caps.raster.dwStages; k++)
 			{
@@ -706,7 +702,7 @@ void TUI::Redraw()
 			// draw axis
 			if (psDeviceFlags.test(rsDrawAxis) && !psDeviceFlags.test(rsDisableAxisCube))
 			{
-				DU_impl.DrawAxis(CurrentView().m_Camera.GetTransform());
+				DU_impl.DrawAxis(View.Camera.GetTransform());
 			}
 
 
@@ -724,8 +720,7 @@ void TUI::Redraw()
 			g_FontManager->Render();
 
 			// Resolve into the viewport target
-			RImplementation.EditorPresent(RT->pRT);
-			GRHI->CopySurface(RTCopy->pRT, RT->pRT);
+			RImplementation.EditorPresent(View.Target->pRT);
 		}
 
 		g_bRendering = false;
@@ -914,26 +909,18 @@ bool TUI::OnCreate()
 
 	BeginEState(esEditScene);
 
+	// The renderer starts small; the active view resizes it on its first redraw
 	GetRenderWidth() = 128;
 	GetRenderHeight() = 128;
 
-	for (auto& [ID, View] : Views)
-	{
-		View.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-	}
-
 	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
 
-	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, CurrentView().m_Camera.m_Znear, CurrentView().m_Camera.m_Zfar);
+	EditorViewport& View = ActiveViewport();
+	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.Camera._Znear(), View.Camera._Zfar());
 	EDevice->m_fNearer = EDevice->mProject._43;
 
 	RCache.set_xform_project(EDevice->mProject);
 	RCache.set_xform_world(Fidentity);
-
-
-	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-	RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 
 	return true;
 }
@@ -943,15 +930,12 @@ void TUI::OnDestroy()
 	Console->Destroy();
 	xr_delete(Console);
 
-	for (auto& [ID, View] : Views)
+	for (auto& [Id, View] : Viewports)
 	{
-		View.RTFreez.destroy();
+		View.DestroyTarget();
 	}
 
 	TextureStack.clear();
-
-	RT.destroy();
-	RTCopy.destroy();
 
 	VERIFY(m_bReady);
 	m_bReady = false;
@@ -1015,41 +999,128 @@ void TUI::ProgressDraw()
 	}
 }
 
-TUI::Viewport& TUI::CurrentView()
+EditorViewport& TUI::ActiveViewport()
 {
-	if (!Views.contains(ViewID))
+	auto It = Viewports.find(ActiveViewportId);
+	if (It == Viewports.end())
 	{
-		ViewID = 0;
+		ActiveViewportId = EditorViewport::MainId;
+		return MainViewport();
 	}
-
-	return Views[ViewID];
+	return It->second;
 }
 
-void TUI::CreateViewport(int ID, UIRenderForm* Form)
+EditorViewport* TUI::FindViewport(int Id)
 {
-	Viewport& MainView = Views[ID];
-	MainView.m_Camera.SetViewport(EPrefs->view_np, EPrefs->view_fp, EPrefs->view_fov, true);
-	MainView.m_Camera.SetSensitivity(EPrefs->cam_sens_move, EPrefs->cam_sens_rot);
-	MainView.m_Camera.SetFlyParams(EPrefs->cam_fly_speed, EPrefs->cam_fly_alt);
-	MainView.m_Camera.Reset();
-
-	MainView.ViewportForm = Form;
-	MainView.ViewGlobalIDX = ID;
-
-	MainView.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+	auto It = Viewports.find(Id);
+	return It != Viewports.end() ? &It->second : nullptr;
 }
 
-void TUI::DestroyViewport(int ID)
+EditorViewport& TUI::CreateViewport(int Id, UIRenderForm* Form)
 {
-	auto Iter = Views.find(ID);
-	if (Iter != Views.end())
+	// The main view exists from the start (the scene camera is loaded before its form is made)
+	auto [It, Inserted] = Viewports.try_emplace(Id, Id);
+	EditorViewport& View = It->second;
+	View.Form = Form;
+
+	if (Inserted)
 	{
-		Views.erase(Iter);
+		View.Camera.SetViewport(EPrefs->view_np, EPrefs->view_fp, EPrefs->view_fov, true);
+		View.Camera.SetSensitivity(EPrefs->cam_sens_move, EPrefs->cam_sens_rot);
+		View.Camera.SetFlyParams(EPrefs->cam_fly_speed, EPrefs->cam_fly_alt);
+		View.Camera.Reset();
+	}
+	return View;
+}
+
+void TUI::DestroyViewport(int Id)
+{
+	auto It = Viewports.find(Id);
+	if (It == Viewports.end())
+	{
+		VERIFY(!"Viewport not found!");
 		return;
 	}
 
-	VERIFY(!"Viewport not found!");
+	if (Id == EditorViewport::MainId)
+	{
+		// The main view outlives its form: only the form goes
+		It->second.Form = nullptr;
+		return;
+	}
+
+	if (ActiveViewportId == Id)
+	{
+		ActivateViewport(EditorViewport::MainId);
+	}
+	if (RenderedViewportId == Id)
+	{
+		RenderedViewportId = -1;
+	}
+
+	It->second.DestroyTarget();
+	Viewports.erase(It);
+}
+
+void TUI::ActivateViewport(int Id)
+{
+	if (Id == ActiveViewportId || !Viewports.contains(Id))
+	{
+		return;
+	}
+
+	if (EditorViewport* Previous = FindViewport(ActiveViewportId))
+	{
+		if (Previous->OnDeactivate)
+		{
+			Previous->OnDeactivate();
+		}
+	}
+
+	ActiveViewportId = Id;
+
+	EditorViewport& View = Viewports.at(Id);
+	if (View.OnActivate)
+	{
+		View.OnActivate();
+	}
+
+	RedrawScene();
+}
+
+void TUI::BindViewportToTab(int Id, int TabIndex)
+{
+	if (EditorViewport* View = FindViewport(Id))
+	{
+		View->TabIndex = TabIndex;
+	}
+	// Apply it on the next redraw even if the tab is already shown
+	ViewportTabIndex = -1;
+}
+
+void TUI::UpdateTabViewport()
+{
+	// The game is played in the main view whatever the tab
+	if (ViewportTabIndex == ActiveTabIndex || IsPlayInEditor())
+	{
+		return;
+	}
+	ViewportTabIndex = ActiveTabIndex;
+
+	// The view of the tab; a tab without one gives the scene back its view
+	for (auto& [Id, View] : Viewports)
+	{
+		if (View.TabIndex == ActiveTabIndex)
+		{
+			ActivateViewport(Id);
+			return;
+		}
+	}
+
+	if (ActiveViewport().TabIndex != EditorViewport::NoTab)
+	{
+		ActivateViewport(EditorViewport::MainId);
+	}
 }
 
 void TUI::InitWindowIcons()

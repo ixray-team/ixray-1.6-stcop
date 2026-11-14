@@ -37,7 +37,7 @@ void CCustomObject::AnimationUpdate(float t)
 	m_CO_Flags.set			(flAutoKey,bAK);
 	if (m_CO_Flags.is(flCameraView))
 	{
-		EContext.UI->CurrentView().m_Camera.Set(-r.y, -r.x, -r.z, P.x, P.y, P.z);
+		EContext.UI->ActiveViewport().Camera.Set(-r.y, -r.x, -r.z, P.x, P.y, P.z);
 	}
 }
 
@@ -85,7 +85,7 @@ void CCustomObject::AnimationDrawPath()
 		{
 			m_Motion->_Evaluate((*k_it)->time, T, r);
 
-			if (EContext.UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f)
+			if (EContext.UI->ActiveViewport().Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f)
 			{
 				DU_impl.DrawCross(T, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, clr, false);
 

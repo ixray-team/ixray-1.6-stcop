@@ -1,16 +1,20 @@
 #include "stdafx.h"
 #include "ViewportMesh.h"
 
-static void ViewportFocusCallback()
+static void ViewportActivate()
 {
-	LUI->EndEState(esEditLibrary);
-	LUI->EndEState(esEditScene);
 	LUI->BeginEState(esEditCustom);
+}
+
+static void ViewportDeactivate()
+{
+	LUI->EndEState(esEditCustom);
 }
 
 CViewportMesh::CViewportMesh()
 {
-	View.OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
+	View.GetViewport().OnActivate = (xr_delegate<void()>)ViewportActivate;
+	View.GetViewport().OnDeactivate = (xr_delegate<void()>)ViewportDeactivate;
 	ViewName = "Empty mesh";
 }
 
@@ -27,11 +31,6 @@ void CViewportMesh::Draw()
 		return;
 	}
 
-	if (ImGui::IsWindowFocused())
-	{
-		EContext.UI->ViewID = View.ViewportID;
-	}
-
 	View.DrawVP();
 
 	ImGui::End();
@@ -39,7 +38,7 @@ void CViewportMesh::Draw()
 
 void CViewportMesh::Render()
 {
-	if (EContext.UI->ViewID != View.ViewportID)
+	if (!View.IsActive())
 	{
 		return;
 	}

@@ -39,7 +39,6 @@ public:
 	static bool IsActive();
 	// Actor tool while the Actor Editor tab is active, otherwise nullptr
 	static CActorTools* GetActiveTool();
-	static void Update();
 	// Menus of the main menu bar while the tab is active
 	static void DrawMainMenu();
 	// .object, .skl and .omf files dropped on the editor
@@ -52,6 +51,10 @@ public:
 	static CContentView* GetContentView() { return ContentBrowser; }
 
 private:
+	// Viewport activation, with the tab
+	static void OnViewActivate();
+	static void OnViewDeactivate();
+
 	void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
 	void DrawObjectTool();
 	void DrawObjectItems();
@@ -69,8 +72,6 @@ private:
 	CActorTools* Tool = nullptr;
 	UIKeyForm* KeyForm = nullptr;
 	UIActorLibrary* Library = nullptr;
-	bool WasActive = false;
-	size_t PrevViewID = 0;
 	int PickMode = 2;
 	RenderMode Mode = Render_Editor;
 	EAnimMode AnimMode = e8bit;

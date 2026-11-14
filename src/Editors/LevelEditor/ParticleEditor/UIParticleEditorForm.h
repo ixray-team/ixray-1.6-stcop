@@ -34,7 +34,5 @@ private:
 	static CContentView* ContentBrowser;
 
 	CParticleTool* Tool = nullptr;
-	bool WasActive = false;
-	int PrevViewID = 0;
 	string256 SearchFilter = {};
 };

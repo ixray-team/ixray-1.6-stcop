@@ -339,7 +339,7 @@ bool CLevelTool::Pick(TShiftState Shift)
 	if( Scene->locked() && (esEditLibrary==EContext.UI->GetEState())){
 		EContext.UI->m_CurrentCp = MainForm->GetRenderForm()->GetMousePos();
 		EContext.UI->m_StartCp = EContext.UI->m_CurrentCp;
-		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->m_CurrentCp );
+		EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, EContext.UI->m_CurrentCp );
 		SRayPickInfo pinf;
 		//TfrmEditLibrary::RayPick(EContext.UI->m_CurrentRStart,EContext.UI->m_CurrentRDir,&pinf);
 		return true;
@@ -554,7 +554,7 @@ void CLevelTool::Render()
 	{
 		case esEditLightAnim:
 		case esEditScene:
-			Scene->Render(EContext.UI->CurrentView().m_Camera.GetTransform());
+			Scene->Render(EContext.UI->ActiveViewport().Camera.GetTransform());
 		    if (psDeviceFlags.is(rsEnvironment) || EContext.UI->IsPlayInEditor())
 		    {
 		        g_pGamePersistent->Environment().RenderFlares();

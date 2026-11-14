@@ -91,9 +91,9 @@ bool  CToolCustom::MouseStart(TShiftState Shift)
 			}
 			else
 			{
-				m_MoveXVector.set(EContext.UI->CurrentView().m_Camera.GetRight());
+				m_MoveXVector.set(EContext.UI->ActiveViewport().Camera.GetRight());
 				m_MoveXVector.y = 0;
-				m_MoveYVector.set(EContext.UI->CurrentView().m_Camera.GetDirection());
+				m_MoveYVector.set(EContext.UI->ActiveViewport().Camera.GetDirection());
 				m_MoveYVector.y = 0;
 				m_MoveXVector.normalize_safe();
 				m_MoveYVector.normalize_safe();

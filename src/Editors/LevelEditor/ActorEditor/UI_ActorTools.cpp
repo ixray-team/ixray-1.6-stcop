@@ -359,7 +359,7 @@ void CActorTools::ZoomObject(bool bSelOnly)
 		default:
 			BB = m_pEditObject->GetBox();
 		}
-		EContext.UI->CurrentView().m_Camera.ZoomExtents(BB);
+		EContext.UI->ActiveViewport().Camera.ZoomExtents(BB);
 	}
 }
 

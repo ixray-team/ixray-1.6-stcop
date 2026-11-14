@@ -81,7 +81,7 @@ bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 
 bool CEditorRenderDevice::RenderSceneFrame(const Fmatrix& View, const Fmatrix& Project, U32Vec& Pixels, u32& Width, u32& Height)
 {
-	ref_rt& Target = EContext.UI->RT;
+	ref_rt& Target = EContext.UI->ActiveViewport().Target;
 	if (!b_is_Ready || !Target || Target->pRT == nullptr)
 	{
 		return false;

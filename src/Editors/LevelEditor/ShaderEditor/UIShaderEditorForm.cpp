@@ -12,16 +12,32 @@ static const char* PreviewWindow = "Preview###ShaderPreview";
 // Same window as the Scene View properties, so it keeps the shared dock slot
 static const char* PropertiesWindow = "Properties";
 
-static void ShaderEditorFocusCallback()
+void UIShaderEditorForm::OnViewActivate()
 {
-	LUI->EndEState(esEditLibrary);
-	LUI->EndEState(esEditScene);
 	LUI->BeginEState(esEditCustom);
+	Tools = Form->Tool;
+
+	if (Form->Tool->m_Current != nullptr && Form->Tool->m_Current->ID() == aeEngine)
+	{
+		static_cast<CSHEngineTools*>(Form->Tool->m_Current)->RestoreForceBlender();
+	}
+}
+
+void UIShaderEditorForm::OnViewDeactivate()
+{
+	Tools = LTools;
+	LUI->EndEState(esEditCustom);
+
+	// The forced blender is for the preview only: the scene must compile its shaders as usual,
+	// and the ones built while it was set are rebuilt
+	DEV->SetForceBlenderShader(nullptr);
+	DEV->RecompileShaders();
 }
 
 UIShaderEditorForm::UIShaderEditorForm()
 {
-	View.OnFocusCallback = (xr_delegate<void()>)ShaderEditorFocusCallback;
+	View.GetViewport().OnActivate = (xr_delegate<void()>)&UIShaderEditorForm::OnViewActivate;
+	View.GetViewport().OnDeactivate = (xr_delegate<void()>)&UIShaderEditorForm::OnViewDeactivate;
 	View.SetToolBarEvent(TOnRenderToolBar(this, &UIShaderEditorForm::DrawRenderToolBar));
 	ViewName = "Shader Editor";
 
@@ -47,6 +63,7 @@ void UIShaderEditorForm::Create(int Tab)
 	R_ASSERT(Form == nullptr);
 	Form = new UIShaderEditorForm();
 	Form->TabIndex = Tab;
+	EContext.UI->BindViewportToTab(Form->View.ViewportId, Tab);
 	EContext.UI->Push(Form, false);
 }
 
@@ -89,49 +106,6 @@ bool UIShaderEditorForm::ReloadCurrent()
 
 	Form->Tool->Reload();
 	return true;
-}
-
-void UIShaderEditorForm::Update()
-{
-	if (Form == nullptr)
-	{
-		return;
-	}
-
-	const bool Active = EContext.UI->ActiveTabIndex == Form->TabIndex;
-	if (Active == Form->WasActive)
-	{
-		return;
-	}
-
-	Form->WasActive = Active;
-	if (Active)
-	{
-		Form->PrevViewID = EContext.UI->ViewID;
-		EContext.UI->ViewID = Form->View.ViewportID;
-		ShaderEditorFocusCallback();
-		Tools = Form->Tool;
-
-		if (Form->Tool->m_Current != nullptr && Form->Tool->m_Current->ID() == aeEngine)
-		{
-			static_cast<CSHEngineTools*>(Form->Tool->m_Current)->RestoreForceBlender();
-		}
-	}
-	else
-	{
-		Tools = LTools;
-
-		// The forced blender is for the preview only: the scene must compile its shaders as usual,
-		// and the ones built while it was set are rebuilt
-		DEV->SetForceBlenderShader(nullptr);
-		DEV->RecompileShaders();
-		if (EContext.UI->ViewID == (size_t)Form->View.ViewportID)
-		{
-			EContext.UI->ViewID = Form->PrevViewID;
-		}
-	}
-
-	EContext.UI->RedrawScene();
 }
 
 // The workspace windows get dock nodes of their own, split off the scene viewport node.

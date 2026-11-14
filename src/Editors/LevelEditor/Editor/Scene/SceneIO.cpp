@@ -357,8 +357,8 @@ void EScene::SaveMainLTX(CInifile& ini)
 	ini.w_string		("level_tag","owner",m_OwnerName.c_str());
 	ini.w_u32			("level_tag","create_time",m_CreateTime);
 
-	ini.w_fvector3		("camera","hpb",EContext.UI->Views[0].m_Camera.GetHPB());
-	ini.w_fvector3		("camera","pos",EContext.UI->Views[0].m_Camera.GetPosition());
+	ini.w_fvector3		("camera","hpb",EContext.UI->MainViewport().Camera.GetHPB());
+	ini.w_fvector3		("camera","pos",EContext.UI->MainViewport().Camera.GetPosition());
 
 	for(ObjectIt SO=m_ESO_SnapObjects.begin(); SO!=m_ESO_SnapObjects.end(); ++SO)
 	{
@@ -797,8 +797,8 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		Fvector hpb, pos;
 		pos					= ini.r_fvector3("camera","pos");
 		hpb					= ini.r_fvector3("camera","hpb");
-		EContext.UI->Views[0].m_Camera.Set(hpb,pos);
-		EContext.UI->Views[0].m_Camera.SetStyle(EContext.UI->Views[0].m_Camera.GetStyle());
+		EContext.UI->MainViewport().Camera.Set(hpb,pos);
+		EContext.UI->MainViewport().Camera.SetStyle(EContext.UI->MainViewport().Camera.GetStyle());
 
 		m_GUID.LoadLTX			(ini,"guid","guid");
 
@@ -910,8 +910,8 @@ bool EScene::Load(const char* map_name, bool bUndo)
 			Fvector hpb, pos;
 			F->r_fvector3	(hpb);
 			F->r_fvector3	(pos);
-			EContext.UI->CurrentView().m_Camera.Set(hpb,pos);
-			EContext.UI->CurrentView().m_Camera.SetStyle(EContext.UI->CurrentView().m_Camera.GetStyle());
+			EContext.UI->ActiveViewport().Camera.Set(hpb,pos);
+			EContext.UI->ActiveViewport().Camera.SetStyle(EContext.UI->ActiveViewport().Camera.GetStyle());
 		}
 
 		if (F->find_chunk(CHUNK_TOOLS_GUID))

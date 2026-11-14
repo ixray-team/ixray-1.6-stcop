@@ -30,16 +30,22 @@ static void ActorViewportDrop(const xr_string& File, int)
 	UIActorEditorForm::DropFile(File);
 }
 
-static void ActorEditorFocusCallback()
+void UIActorEditorForm::OnViewActivate()
 {
-	LUI->EndEState(esEditLibrary);
-	LUI->EndEState(esEditScene);
 	LUI->BeginEState(esEditCustom);
+	Tools = Form->Tool;
+}
+
+void UIActorEditorForm::OnViewDeactivate()
+{
+	Tools = LTools;
+	LUI->EndEState(esEditCustom);
 }
 
 UIActorEditorForm::UIActorEditorForm()
 {
-	View.OnFocusCallback = (xr_delegate<void()>)ActorEditorFocusCallback;
+	View.GetViewport().OnActivate = (xr_delegate<void()>)&UIActorEditorForm::OnViewActivate;
+	View.GetViewport().OnDeactivate = (xr_delegate<void()>)&UIActorEditorForm::OnViewDeactivate;
 	View.SetToolBarEvent(TOnRenderToolBar(this, &UIActorEditorForm::DrawRenderToolBar));
 	View.DragFunctor = ActorViewportDrop;
 	ViewName = "Actor Editor";
@@ -82,6 +88,7 @@ void UIActorEditorForm::Create(int Tab)
 	R_ASSERT(Form == nullptr);
 	Form = new UIActorEditorForm();
 	Form->TabIndex = Tab;
+	EContext.UI->BindViewportToTab(Form->View.ViewportId, Tab);
 	Form->Tool->BoneView->TabIndex = Tab;
 	Form->Tool->UVView->TabIndex = Tab;
 	EContext.UI->Push(Form, false);
@@ -124,38 +131,7 @@ CActorTools* UIActorEditorForm::GetActiveTool()
 	return IsActive() ? Form->Tool : nullptr;
 }
 
-void UIActorEditorForm::Update()
-{
-	if (Form == nullptr)
-	{
-		return;
-	}
 
-	const bool Active = EContext.UI->ActiveTabIndex == Form->TabIndex;
-	if (Active == Form->WasActive)
-	{
-		return;
-	}
-
-	Form->WasActive = Active;
-	if (Active)
-	{
-		Form->PrevViewID = EContext.UI->ViewID;
-		EContext.UI->ViewID = Form->View.ViewportID;
-		ActorEditorFocusCallback();
-		Tools = Form->Tool;
-	}
-	else
-	{
-		Tools = LTools;
-		if (EContext.UI->ViewID == (size_t)Form->View.ViewportID)
-		{
-			EContext.UI->ViewID = Form->PrevViewID;
-		}
-	}
-
-	EContext.UI->RedrawScene();
-}
 
 UIActorEditorForm::RenderMode UIActorEditorForm::GetRenderMode()
 {

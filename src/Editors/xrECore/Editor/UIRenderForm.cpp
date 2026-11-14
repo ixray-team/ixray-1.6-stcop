@@ -13,24 +13,25 @@ UIRenderForm::UIRenderForm()
 	m_mouse_move = false;
 	m_shiftstate_down = false;
 
-	ViewportID = GlobalViewportIndex++;
-	sprintf(ViewportName, "%s##%d", "Render", ViewportID);
+	ViewportId = GlobalViewportIndex++;
+	sprintf(ViewportName, "%s##%d", "Render", ViewportId);
 
-	if (ViewportID != 0)
-	{
-		EContext.UI->CreateViewport(ViewportID, this);
-	}
-	else
-	{
-		TUI::Viewport& MainView = EContext.UI->CurrentView();
-		MainView.ViewGlobalIDX = ViewportID;
-		MainView.ViewportForm = this;
-	}
+	EContext.UI->CreateViewport(ViewportId, this);
 }
 
 UIRenderForm::~UIRenderForm()
 {
-	EContext.UI->DestroyViewport(ViewportID);
+	EContext.UI->DestroyViewport(ViewportId);
+}
+
+EditorViewport& UIRenderForm::GetViewport() const
+{
+	return *EContext.UI->FindViewport(ViewportId);
+}
+
+bool UIRenderForm::IsActive() const
+{
+	return EContext.UI->IsViewportActive(ViewportId);
 }
 
 void UIRenderForm::DrawStatistics()
@@ -78,7 +79,7 @@ void UIRenderForm::DrawStatistics()
 	Print("POLY", "%d",		s->lastDPS_polys);
 	Print("DIP/DP", "%d",	s->lastDPS_calls);
 
-	if (ViewportID == 0 && EPrefs->bMoreStats)
+	if (ViewportId == EditorViewport::MainId && EPrefs->bMoreStats)
 	{
 		Print("SH/T/M/C", "%d/%d/%d/%d", s->dwShader_Codes, s->dwShader_Textures, s->dwShader_Matrices, s->dwShader_Constants);
 		Print("Skeletons", "%2.2fms, %d", s->Animation.result, s->Animation.count);
@@ -102,7 +103,8 @@ void UIRenderForm::DrawStatistics()
     }
 
     ImGui::NewLine();
-	Print("Camera Pos", "%2.2f, %2.2f, %2.2f", EContext.UI->CurrentView().m_Camera.GetPosition().x, EContext.UI->CurrentView().m_Camera.GetPosition().y, EContext.UI->CurrentView().m_Camera.GetPosition().z);
+	const Fvector& CameraPos = GetViewport().Camera.GetPosition();
+	Print("Camera Pos", "%2.2f, %2.2f, %2.2f", CameraPos.x, CameraPos.y, CameraPos.z);
 
 	ImGui::EndTable();
 	ImGui::PopStyleVar();
@@ -134,30 +136,15 @@ void UIRenderForm::DrawVP()
 
 	float ScreenDPI = GUIManager->GetScaleDpi();
 
-	if (EContext.UI->Views[ViewportID].ViewGlobalIDX != ViewportID)
-	{
-		return;
-	}
+	EditorViewport& View = GetViewport();
 
-	if (ImGui::IsWindowFocused() || EContext.UI->ViewID == ViewportID)
+	// While playing in the editor only the main view is driven
+	const bool CanActivate = !EContext.UI->IsPlayInEditor() || ViewportId == EditorViewport::MainId;
+	if (CanActivate && ImGui::IsWindowFocused())
 	{
-		if ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || !EContext.UI->IsPlayInEditor())
-		{
-			EContext.UI->ViewID = ViewportID;
-
-			if (OnFocusCallback)
-			{
-				OnFocusCallback();
-			}
-		}
+		EContext.UI->ActivateViewport(ViewportId);
 	}
-
-	auto& View = EContext.UI->Views[ViewportID];
-	const bool SameSize = View.RTFreez && EContext.UI->RT && View.RTFreez->dwWidth == EContext.UI->RT->dwWidth && View.RTFreez->dwHeight == EContext.UI->RT->dwHeight;
-	if (SameSize && ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID))
-	{
-		GRHI->CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
-	}
+	const bool Active = IsActive();
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
 	m_render_pos.left = ImGui::GetWindowPos().x;
@@ -166,14 +153,13 @@ void UIRenderForm::DrawVP()
 	m_render_pos.top = ImGui::GetWindowPos().y;
 
 	bool CursorInZone = true;
-	if (EContext.UI && EContext.UI->Views[ViewportID].RTFreez->pSurface)
 	{
 		int ShiftState = ssNone;
 
-		if (ViewportID == EContext.UI->ViewID)
+		if (Active)
 		{
 			auto ViewHandle = ImGui::GetWindowViewport();
-			EContext.UI->Views[ViewportID].WndHandle = SDL_GetWindowFromID((SDL_WindowID)(size_t)ViewHandle->PlatformHandle);
+			View.Window = SDL_GetWindowFromID((SDL_WindowID)(size_t)ViewHandle->PlatformHandle);
 
 			if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
 			if (ImGui::GetIO().KeyCtrl)	ShiftState |= ssCtrl;
@@ -210,17 +196,21 @@ void UIRenderForm::DrawVP()
 			mouse_pos.y = canvas_pos.y + canvas_size.y;
 		}
 
-		bool curent_shiftstate_down = EContext.UI->CurrentView().m_Camera.IsMoving();
+		bool curent_shiftstate_down = View.Camera.IsMoving();
 
 
 		if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
 		if (canvas_size.y < 32.0f * ScreenDPI) canvas_size.y = 32.0f * ScreenDPI;
-		EContext.UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
+		View.Size.set(canvas_size.x, canvas_size.y);
 
+		// The view keeps its last frame while another view is active; none yet before its first redraw
 		ImGui::SetCursorScreenPos(canvas_pos);
-		draw_list->AddImage(EContext.UI->Views[ViewportID].RTFreez->pTexture->get_SRView()->GetRawSRV(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		if (View.Target && View.Target->pTexture)
+		{
+			draw_list->AddImage(View.Target->pTexture->get_SRView()->GetRawSRV(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		}
 
-		if (ViewportID != EContext.UI->ViewID && ImGui::IsWindowFocused())
+		if (!Active && ImGui::IsWindowFocused())
 		{
 			return;
 		}
@@ -228,7 +218,7 @@ void UIRenderForm::DrawVP()
 		if (m_OnToolBar)
 			m_OnToolBar(canvas_pos, canvas_size);
 
-		if (ViewportID == EContext.UI->ViewID && !EContext.UI->IsPlayInEditor())
+		if (Active && !EContext.UI->IsPlayInEditor())
 		{
 			//Statistic
 			DrawStatistics();
@@ -250,7 +240,7 @@ void UIRenderForm::DrawVP()
 
 				if (ImGuizmo::IsUsingViewManipulate())
 				{
-					CUI_Camera& Camera = EContext.UI->CurrentView().m_Camera;
+					CUI_Camera& Camera = View.Camera;
 
 					Fvector OldDir = Camera.GetDirection();
 					Fvector LookAt;
@@ -347,8 +337,7 @@ void UIRenderForm::DrawVP()
 		HandleDragDrop(canvas_pos);
 	}
 
-	// MainViewport
-	if (ViewportID == 0)
+	if (ViewportId == EditorViewport::MainId)
 	{
 		if (CursorInZone && UseHint)
 		{
@@ -363,7 +352,7 @@ void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 
 	// Secondary viewports take drops only when they handle them
 	bool Previewing = false;
-	if ((ViewportID == 0 || DragFunctor != nullptr) && ImGui::BeginDragDropTarget())
+	if ((ViewportId == EditorViewport::MainId || DragFunctor != nullptr) && ImGui::BeginDragDropTarget())
 	{
 		// Accepted while hovering too, so the dragged object can be shown before the drop
 		bool IsDelivery = false;

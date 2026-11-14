@@ -1,4 +1,5 @@
 #pragma once
+class EditorViewport;
 using TOnRenderContextMenu = xr_delegate<void()>;
 using TOnRenderToolBar = xr_delegate<void(ImVec2, ImVec2)>;
 
@@ -25,9 +26,12 @@ public:
 	IC void		SetContextMenuEvent(TOnRenderContextMenu e) { m_OnContextMenu = e; }
 	IC void		SetToolBarEvent(TOnRenderToolBar e) { m_OnToolBar = e; }
 
-	xr_delegate<void()> OnFocusCallback;
+	// The view drawn by this form (owned by TUI)
+	EditorViewport& GetViewport() const;
+	bool IsActive() const;
+
 	xr_delegate<void()> OnClickCallback;
-	int ViewportID = 0;
+	int ViewportId = 0;
 	string32 ViewportName;
 
 	bool UseHint = false;

@@ -379,7 +379,7 @@ void UIWorldPartition::FocusCell(u64 Key)
 {
 	Fbox Box;
 	GWorldPartition.CellBox(CWorldPartition::KeyX(Key), CWorldPartition::KeyZ(Key), Box);
-	EContext.UI->CurrentView().m_Camera.ZoomExtents(Box);
+	EContext.UI->ActiveViewport().Camera.ZoomExtents(Box);
 	EContext.UI->RedrawScene();
 }
 

@@ -61,14 +61,14 @@ void C3DCursor::GetPickPoint(Fvector& src, Fvector& dst, Fvector* N)
 
 void C3DCursor::Render()
 {
-	if (m_Visible && !EContext.UI->CurrentView().m_Camera.IsMoving())
+	if (m_Visible && !EContext.UI->ActiveViewport().Camera.IsMoving())
 	{
 		SRayPickInfo pinf;
 		Fvector start, dir, N, D;
 		Ivector2 pt;
 
 		pt = MainForm->GetRenderForm()->GetMousePos();
-		EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(start, dir, pt);
+		EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(start, dir, pt);
 		if (LUI->PickGround(pinf.pt, start, dir, -1))
 		{
 			N.set(0, 1, 0);
@@ -129,7 +129,7 @@ bool C3DCursor::PrepareBrush()
 	Ivector2 pt;
 
 	pt.set(iFloor(start_pt.x), iFloor(start_pt.y));
-	EContext.UI->CurrentView().m_Camera.MouseRayFromPoint(brush_start, brush_dir, pt);
+	EContext.UI->ActiveViewport().Camera.MouseRayFromPoint(brush_start, brush_dir, pt);
 	bPickObject = !!Scene->RayPickObject(pinf.inf.range, brush_start, brush_dir, OBJCLASS_SCENEOBJECT, &pinf, Scene->GetSnapList(false));
 	if (!bPickObject)
 	{
