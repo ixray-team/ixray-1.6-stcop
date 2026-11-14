@@ -40,6 +40,7 @@ public:
 	virtual void			Update							();
 
 	virtual void			Show							(bool status);
+	virtual void			HideDialog						() override;
 
 	virtual CUIDragDropListEx*	GetActorList				() { return m_pUIBagList; }
 	virtual CUIDragDropListEx*	GetBeltList					() { return m_pUIBeltList; }

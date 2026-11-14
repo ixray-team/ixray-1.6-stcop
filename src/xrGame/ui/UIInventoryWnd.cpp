@@ -51,6 +51,23 @@ CUIInventoryWnd::CUIInventoryWnd()
 	m_currMenuMode						= mmInventory;
 }
 
+void CUIInventoryWnd::HideDialog()
+{
+	if (!IsShown())
+	{
+		return;
+	}
+
+	CActor* actor = m_pInvOwner ? m_pInvOwner->cast_actor() : nullptr;
+	CBackpackAnimator* backpackAnimator = actor ? actor->HudAnimator()->BackpackAnimator() : nullptr;
+	if (backpackAnimator && backpackAnimator->GetState() != CHudStateAnimator::eHidden && backpackAnimator->GetState() != CHudStateAnimator::eHiding)
+	{
+		backpackAnimator->SetState(CHudStateAnimator::eHiding);
+	}
+
+	inherited::HideDialog();
+}
+
 void CUIInventoryWnd::Init()
 {
 	CUIXml								uiXml;
