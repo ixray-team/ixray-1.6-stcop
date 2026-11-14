@@ -148,6 +148,7 @@ public:																																				//
 	virtual	void						Disable									() override;																			//
 	virtual	void						ReEnable								() override;																			//
 	virtual	void						Enable									() override;																			//aux
+	virtual	void						ResetInterpolation						() override { FillInterpolation(); }
 	virtual	bool						isEnabled								() const override {return isActive()&&dBodyIsEnabled(m_body);}
 	virtual	bool						isFullActive							() const override {return isActive()&&!m_flags.test(flActivating);}
 	virtual	bool						isActive								() const override {return !!m_flags.test(flActive);}

@@ -179,6 +179,8 @@ public:
 	CPHElement();
 	virtual ~CPHElement() override;
 
+	virtual void ResetInterpolation() override {}
+
 	void CreateBody(const Fmatrix& Form, bool Disable);
 	void DestroyBody();
 	void PullState(bool StorePrev);

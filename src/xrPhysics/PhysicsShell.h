@@ -85,6 +85,7 @@ public:
 	virtual		bool			isFullActive							() const																														= 0;
 	virtual		void			Deactivate								()																														= 0;
 	virtual		void			Enable									()																														= 0;
+	virtual		void			ResetInterpolation						()																														{}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void			setMass									(float M)																												= 0;
 	virtual		void			setDensity								(float M)																												= 0;

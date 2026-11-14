@@ -1611,6 +1611,7 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	}
 
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+	StoreAllElementSpawnLocalTransforms();
 }
 
 void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
@@ -2124,49 +2125,70 @@ void CCar::SaveNetState(NET_Packet& P)
 void CCar::RestoreNetState(CSE_PHSkeleton* po)
 {
 	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))return;
+
+	// flActive is the shell state saved by CPHSkeleton::SaveNetState().
+	// Read it before RestoreNetState() clears flSavedData.
+	const bool SavedEnabled = po->_flags.test(CSE_PHSkeleton::flActive);
+
 	CPHSkeleton::RestoreNetState(po);
 	
 	CSE_ALifeCar* co=smart_cast<CSE_ALifeCar*>(po);
-
+	if (co != nullptr)
 	{
-		xr_vector<CSE_ALifeCar::SDoorState>::iterator ii = co->door_states.begin();
+		// Saved bone transforms are authoritative for an online car. The
+		// server o_Position/o_Angle is only a coarse ALife position and can be
+		// one frame behind the shell. Transforming the shell by that delta
+		// moved cars into the ground or rotated them on uneven terrain, and
+		// the next physics step launched them.
+		size_t DoorIndex = 0;
 		for (auto& Door : m_doors)
 		{
-			Door.second.RestoreNetState(*ii);
-			++ii;
+			if (DoorIndex >= co->door_states.size())
+				break;
+			Door.second.RestoreNetState(co->door_states[DoorIndex++]);
 		}
-	}
-	{
-		xr_vector<CSE_ALifeCar::SWheelState>::iterator ii = co->wheel_states.begin();
+
+		size_t WheelIndex = 0;
 		for (auto& Wheel : m_wheels_map)
 		{
-			Wheel.second.RestoreNetState(*ii);
-			++ii;
+			if (WheelIndex >= co->wheel_states.size())
+				break;
+			Wheel.second.RestoreNetState(co->wheel_states[WheelIndex++]);
 		}
 	}
-	//as later may kill diable/enable state save it;
-	bool enable = PPhysicsShell()->isEnabled();
-/////////////////////////////////////////////////////////////////////////
-	Fmatrix restored_form;
-	PPhysicsShell()->GetGlobalTransformDynamic(&restored_form);
-/////////////////////////////////////////////////////////////////////
-	Fmatrix inv ,replace,sof;
-	sof.setXYZ(co->o_Angle.x,co->o_Angle.y,co->o_Angle.z);
-	sof.c.set(co->o_Position);
-	inv.set(restored_form);
-	inv.invert();
-	replace.mul(sof,inv);
-////////////////////////////////////////////////////////////////////
-	{
-		PKinematics(Visual())->CalculateBones_Invalidate();
-		PKinematics(Visual())->CalculateBones(TRUE);
-	}
-////////////////////////////////////////////////////////////////////
-	replace.mul(sof,inv);
-	PPhysicsShell()->TransformPosition(replace, mh_clear);
-	if(enable)PPhysicsShell()->Enable();
-	else PPhysicsShell()->Disable();
-	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+
+	// GetGlobalTransformDynamic() refreshes every element mXFORM from its body
+	// and then builds the shell transform through m_object_in_root. Calculate
+	// the bones only after that: physics bone callbacks subtract the shell
+	// transform, so a stale or root-only transform offsets the visual parts
+	// from the chassis.
+	Fmatrix RestoredForm;
+	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
+	XFORM().set(RestoredForm);
+
+	// Saved element states can be malformed (old saves, interrupted physics,
+	// or a body that was already displaced when the save was made). Put every
+	// active element back on its spawn-local position relative to the saved car
+	// root. This keeps the joints satisfied and prevents them from snapping and
+	// launching the car on the first touch.
+	RestoreAllElementSpawnLocalTransforms(RestoredForm);
+
+	if (SavedEnabled)
+		PPhysicsShell()->Enable();
+	else
+		PPhysicsShell()->Disable();
+
+	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
+	XFORM().set(RestoredForm);
+
+	PKinematics(Visual())->CalculateBones_Invalidate();
+	PKinematics(Visual())->CalculateBones(TRUE);
+
+	// Suspension bone callbacks read wheel bone transforms, so a single pass
+	// leaves the suspension bones one frame stale. Recalculate after the wheel
+	// bones have been placed.
+	PKinematics(Visual())->CalculateBones_Invalidate();
+	PKinematics(Visual())->CalculateBones(TRUE);
 }
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
@@ -2438,6 +2460,7 @@ void CCar::UpdateCL				( )
 	if (b_exploded)DoExit();
 	if(Owner()) return;
 	VisualUpdate(90);
+
 	if (GetScriptControl())
 			ProcessScripts();
 }
@@ -6677,6 +6700,67 @@ bool CCar::UpdateWheelPhysics()
 	}
 
 	return Slip;
+}
+
+void CCar::StoreAllElementSpawnLocalTransforms()
+{
+	if (m_pPhysicsShell == nullptr)
+	{
+		m_element_spawn_local.clear();
+		return;
+	}
+
+	Fmatrix RootForm;
+	m_pPhysicsShell->GetGlobalTransformDynamic(&RootForm);
+
+	Fmatrix InvRoot;
+	InvRoot.invert(RootForm);
+
+	const u16 Count = m_pPhysicsShell->get_ElementsNumber();
+	m_element_spawn_local.resize(Count);
+
+	for (u16 i = 0; i < Count; ++i)
+	{
+		SElementSpawnLocalForm& Saved = m_element_spawn_local[i];
+		Saved.valid = false;
+
+		CPhysicsElement* Element = m_pPhysicsShell->get_ElementByStoreOrder(i);
+		if (Element == nullptr || !Element->isActive())
+			continue;
+
+		Fmatrix BodyForm;
+		Element->GetGlobalTransformDynamic(&BodyForm);
+		Saved.form.mul_43(InvRoot, BodyForm);
+		Saved.valid = true;
+	}
+}
+
+void CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm)
+{
+	if (m_pPhysicsShell == nullptr)
+		return;
+
+	const u16 Count = m_pPhysicsShell->get_ElementsNumber();
+	const u16 SavedCount = (u16)m_element_spawn_local.size();
+
+	for (u16 i = 0; i < Count && i < SavedCount; ++i)
+	{
+		const SElementSpawnLocalForm& Saved = m_element_spawn_local[i];
+		if (!Saved.valid)
+			continue;
+
+		CPhysicsElement* Element = m_pPhysicsShell->get_ElementByStoreOrder(i);
+		if (Element == nullptr || !Element->isActive())
+			continue;
+
+		Fmatrix Target;
+		Target.mul_43(RestoredForm, Saved.form);
+
+		Element->SetTransform(Target, mh_clear);
+		Element->ResetInterpolation();
+		Element->set_LinearVel(zero_vel);
+		Element->set_AngularVel(zero_vel);
+	}
 }
 
 void CCar::UpdateWheelSuspension(SWheel& Wheel)

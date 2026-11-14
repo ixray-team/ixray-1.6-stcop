@@ -248,6 +248,8 @@ static	const u16				cAsCallsnum						= 3;
 	bool						UpdateWheelPhysics		();
 	struct SWheel;
 	void						UpdateWheelSuspension		(SWheel& Wheel);
+	void						StoreAllElementSpawnLocalTransforms	();
+	void						RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm);
 	void						UpdateWheelDownforce		(SWheel& Wheel);
 	void						UpdateWheelTireSound		(SWheel& Wheel);
 	bool						UpdateWheelTraction		(SWheel& Wheel);
@@ -444,6 +446,16 @@ public:
 		}
 	};
 	xr_vector<SReturnBone> return_bones;
+
+	// Spawn-local transform of every element in the main car shell, used as a
+	// final repair for jointed parts that do not have a dedicated handler
+	// (for example a truck cab without return_force).
+	struct SElementSpawnLocalForm
+	{
+		Fmatrix form;
+		bool valid = false;
+	};
+	xr_vector<SElementSpawnLocalForm> m_element_spawn_local;
 
 	struct SWheel: 
 	public CDamagableHealthItem
