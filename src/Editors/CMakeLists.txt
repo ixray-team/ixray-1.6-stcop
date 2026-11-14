@@ -12,6 +12,13 @@ if (IXRAY_EDITORS)
 
     # Main Editors
     add_subdirectory("LevelEditor")
+    if(WIN32)
+        option(IXRAY_SDK_MCP "Include the Python MCP server with Level Editor" OFF)
+        if(IXRAY_SDK_MCP)
+            add_subdirectory("${IXRay_SOURCE_DIR}/util/sdk-mcp" "${CMAKE_CURRENT_BINARY_DIR}/sdk-mcp")
+            add_dependencies(LevelEditor sdk_mcp)
+        endif()
+    endif()
 endif()
 
 # Groups
