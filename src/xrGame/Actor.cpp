@@ -261,13 +261,6 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 CActor::~CActor()
 {
-	const static bool fp_die = EngineExternal()[EEngineExternalGame::EnableFirstPersonDie];
-
-	if (fp_die)
-	{
-		Device.time_factor(1.f);
-	}
-
 	Device.seqFrame.Remove(this);
 
 	xr_delete				(m_location_manager);

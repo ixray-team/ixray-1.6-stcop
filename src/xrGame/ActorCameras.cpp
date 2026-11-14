@@ -540,10 +540,6 @@ void CActor::cam_Update(float dt, float fFOV)
 
 		if (!g_Alive() && cam_active == eacFirstEye && fp_die)
 		{
-			float& time_factor_value = const_cast<float&>(Device.time_factor());
-			time_factor_value = _inertion(time_factor_value, .01, powf(.99, Device.fTimeDelta * 144.f));
-			Device.time_factor(time_factor_value);
-
 			Fmatrix world_head;
 			Visual()->dcast_PKinematics()->LL_GetBoneWorldTransform(m_head, XFORM(), world_head);
 
