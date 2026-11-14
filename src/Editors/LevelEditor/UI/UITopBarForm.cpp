@@ -456,7 +456,14 @@ void UITopBarForm::ClickGGraph()
 }
 void UITopBarForm::ClickPlayInEditor()
 {
-	Scene->Play();
+	if (Scene->IsPlayInEditor())
+	{
+		return;
+	}
+	if (const char* Error = Scene->Play())
+	{
+		ELog.DlgMsg(mtError, mbOK, "%s", Error);
+	}
 }
 void UITopBarForm::ClickBuildAndMake()
 {

@@ -1,30 +1,27 @@
 #include "stdafx.h"
 #include "AI/game_spawn_constructor.h"
 
-bool EScene::BuildSpawn()
+const char* EScene::BuildSpawn()
 {
 	if (m_cform_builder.empty())
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\nCheck log.");
-			return false;
+			return "CForm is empty!\nCheck log.";
 		}
 	}
 	if (m_level_graph.empty())
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\nCheck log.");
-			return false;
+			return "AI-Map is empty!\nCheck log.";
 		}
 	}
 	if (m_game_graph.empty())
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\nCheck log.");
-			return false;
+			return "Game Graph is empty!\nCheck log.";
 		}
 	}
 
@@ -32,11 +29,10 @@ bool EScene::BuildSpawn()
 	CGameSpawnConstructor SpawnConstructor;
 	if (!SpawnConstructor.build(Scene->m_LevelOp.m_FNLevelPath.c_str(), m_spawn_data, Scene->m_LevelOp.m_FNLevelPath.c_str(), true))
 	{
-		ELog.DlgMsg(mtError, mbOK, "! Failed build spawn! \nSee log.");
-		return false;
+		return "! Failed build spawn! \nSee log.";
 	}
 
-	return true;
+	return nullptr;
 }
 
 

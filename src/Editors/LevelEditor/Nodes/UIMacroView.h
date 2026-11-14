@@ -27,8 +27,11 @@ public:
 	virtual void SerializeMode(nlohmann::json& Data, bool IsSaving) override;
 
 	void Exec();
+	static nlohmann::json RunBatch(const nlohmann::json& Data);
 
 private:
+	explicit CUIMacroView(bool Batch);
+
 	struct SCommand
 	{
 		xr_string Name;
@@ -73,12 +76,12 @@ private:
 	void RemoveNode(int Id);
 
 	nlohmann::json Write() const;
-	void Read(const nlohmann::json& Data);
+	bool Read(const nlohmann::json& Data, bool Strict = false);
 	bool LoadFile();
 	void PushUndo();
 	void MarkModified();
 
-	void ExecNode(const SNode& Node, xr_set<int>& Visited);
+	bool ExecNode(const SNode& Node, xr_set<int>& Visited, nlohmann::json* Results = nullptr);
 	void Layout();
 
 	void DrawGraph();

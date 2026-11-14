@@ -81,6 +81,7 @@ public:
 
     virtual Fmatrix GetTransform    () const;
 
+    xr_vector<Fvector> GetPointPositions() const;
     CWayPoint*		AppendWayPoint	();
     CWayPoint*		GetFirstSelected();
     int 			GetSelectedPoints(WPVec& lst);

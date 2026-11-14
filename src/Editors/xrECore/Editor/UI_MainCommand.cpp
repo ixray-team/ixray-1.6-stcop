@@ -588,8 +588,19 @@ CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
 	return true;
 }
 
-CCommandVar ExecuteCommandList(const char* text)
+CCommandVar ExecuteCommandList(const char* text, bool Interactive = true)
 {
+	const auto ReportError = [Interactive](const char* Format, const char* Name)
+	{
+		if (Interactive)
+		{
+			ELog.DlgMsg(mtError, Format, Name);
+		}
+		else
+		{
+			ELog.Msg(mtError, Format, Name);
+		}
+	};
 	CCommandVar res = true;
 	IReader F((void*)text, xr_strlen(text));
 	while (!F.eof())
@@ -616,10 +627,10 @@ CCommandVar ExecuteCommandList(const char* text)
 			SECommand* CMD = FindCommandByName(cmd_name.c_str());
 			if (CMD)
 			{
-				SESubCommand* SUB = FindSubCommandByName(CMD, sub_cmd_name.c_str());
+				SESubCommand* SUB = sub_cmd_name.empty() ? nullptr : FindSubCommandByName(CMD, sub_cmd_name.c_str());
 				if (!sub_cmd_name.empty() && !SUB)
 				{
-					ELog.DlgMsg(mtError, "Can't find sub-command: '%s'", sub_cmd_name.c_str());
+					ReportError("Can't find sub-command: '%s'", sub_cmd_name.c_str());
 					res = false;
 					break;
 				}
@@ -635,14 +646,14 @@ CCommandVar ExecuteCommandList(const char* text)
 				// execute command
 				if (false == ExecCommand(CMD->idx, p1, p2))
 				{
-					ELog.DlgMsg(mtError, "Can't execute command: '%s'", cmd.c_str());
+					ReportError("Can't execute command: '%s'", cmd.c_str());
 					res = false;
 					break;
 				}
 			}
 			else
 			{
-				ELog.DlgMsg(mtError, "Can't find command: '%s'", cmd.c_str());
+				ReportError("Can't find command: '%s'", cmd.c_str());
 				res = false;
 				break;
 			}
@@ -654,7 +665,7 @@ CCommandVar ExecuteCommandList(const char* text)
 CCommandVar CommandExecuteCommandList(CCommandVar _p1, CCommandVar _p2)
 {
 	xr_string cmds_text = _p1;
-	return ExecuteCommandList(cmds_text.c_str());
+	return ExecuteCommandList(cmds_text.c_str(), !_p2.IsInteger() || u32(_p2) == 0);
 }
 
 CCommandVar CommandLogCommands(CCommandVar _p1, CCommandVar _p2)
@@ -676,9 +687,9 @@ CCommandVar CommandRunMacro(CCommandVar p1, CCommandVar p2)
 		}
 		if (F)
 		{
-			ExecCommand(COMMAND_EXECUTE_COMMAND_LIST, xr_string((const char*)F->pointer()));
+			const xr_string Text(static_cast<const char*>(F->pointer()), static_cast<size_t>(F->length()));
 			FS.r_close(F);
-			return true;
+			return ExecCommand(COMMAND_EXECUTE_COMMAND_LIST, Text, p2);
 		}
 	}
 	else

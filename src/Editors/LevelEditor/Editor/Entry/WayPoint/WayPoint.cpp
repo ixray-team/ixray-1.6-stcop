@@ -376,6 +376,17 @@ int CWayObject::GetSelectedPoints(WPVec& lst)
 	return lst.size();
 }
 
+xr_vector<Fvector> CWayObject::GetPointPositions() const
+{
+	xr_vector<Fvector> Positions;
+	Positions.reserve(m_WayPoints.size());
+	for (const auto* Point : m_WayPoints)
+	{
+		Positions.push_back(Point->m_vPosition);
+	}
+	return Positions;
+}
+
 CWayPoint* CWayObject::GetFirstSelected()
 {
 	for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++)

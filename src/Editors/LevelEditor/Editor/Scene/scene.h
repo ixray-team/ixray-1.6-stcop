@@ -313,7 +313,7 @@ public:
 
 	void 			FillProp(const char* pref, PropItemVec& items, ObjClassID cls_id);
 	void 			FillPropObjects(const char* pref, PropItemVec& items, ObjClassID cls_id);
-	void Play();
+	const char* Play();
 	bool IsPlayInEditor();
 	virtual void Stop();
 
@@ -322,7 +322,7 @@ public:
 	virtual IGameGraph* GetGameGraph();
 	virtual ILevelGraph* GetLevelGraph();
 
-	bool BuildSpawn();
+	const char* BuildSpawn();
 	bool BuildAIMap();
 	bool BuildGameGraph();
 	bool BuildCForm();

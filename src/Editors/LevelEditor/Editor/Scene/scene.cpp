@@ -761,10 +761,12 @@ void EScene::FillPropObjects(const char* pref, PropItemVec& items, ObjClassID cl
 	}
 }
 
-void EScene::Play()
+const char* EScene::Play()
 {
 	if (IsPlayInEditor())
-		return;
+	{
+		return "Play in Editor is already running.";
+	}
 
 	if (UILogForm::ClearInPIE())
 	{
@@ -777,8 +779,10 @@ void EScene::Play()
 		ActorNewDir = EContext.UI->CurrentView().m_Camera.GetHPB();
 	}
 
-	if (!BuildSpawn())
-		return;
+	if (const char* Error = BuildSpawn())
+	{
+		return Error;
+	}
 
 	EContext.UI->Invalidate();
 
@@ -792,7 +796,11 @@ void EScene::Play()
 	g_pGamePersistent->m_game_params.m_e_game_type = eGameIDNoGame;
 	g_hud = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
 	g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_EDITOR_LEVEL);
-	g_pGameLevel->net_Start("all/single/alife/new", "localhost");
+	if (!g_pGameLevel->net_Start("all/single/alife/new", "localhost"))
+	{
+		Stop();
+		return "Failed to start Play in Editor.\nCheck log.";
+	}
 	g_pGameLevel->LoadEditor(m_LevelOp.m_FNLevelPath);
 	g_pGameLevel->IR_Capture();
 	GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, false);
@@ -800,6 +808,7 @@ void EScene::Play()
 	Device.seqFrameMT.Add(this);
 
 	ShowCursor(false);
+	return nullptr;
 }
 
 bool EScene::IsPlayInEditor()

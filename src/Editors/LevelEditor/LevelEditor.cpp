@@ -1,4 +1,4 @@
-// LevelEditor.cpp : Определяет точку входа для приложения.
+// Level Editor entry point.
 //
 #include "stdafx.h"
 
@@ -10,6 +10,7 @@
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
 #include "Nodes/UINodesEditorForm.h"
+#include "Nodes/UIMacroView.h"
 #include "ParticleEditor/UI_ParticleTools.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
@@ -35,13 +36,128 @@
 
 #include "IconsFontAwesome7.h"
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <shellapi.h>
+
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
 void DragPreview(const xr_string*, int);
 
 
+namespace SdkMacro
+{
+	constexpr ULONG_PTR SdkMacroMessage = 0x4958524d;
+	constexpr wchar_t SdkMacroWindowProperty[] = L"IXRay.SdkMacro.v1";
+	WNDPROC g_EditorWindowProc = nullptr;
+	std::filesystem::path g_EditorSdkConfig;
+	nlohmann::json g_PendingMacro;
+	bool g_RunningMacro = false;
+
+	LRESULT CALLBACK SdkMacroWindowProc(HWND Window, UINT Message, WPARAM First, LPARAM Second)
+	{
+		if (Message == WM_COPYDATA)
+		{
+			const auto* Copy = reinterpret_cast<const COPYDATASTRUCT*>(Second);
+			if (Copy && Copy->dwData == SdkMacroMessage && Copy->lpData && Copy->cbData <= 65536)
+			{
+				const auto* Start = static_cast<const char*>(Copy->lpData);
+				auto Request = nlohmann::json::parse(Start, Start + Copy->cbData, nullptr, false);
+				if (!Request.is_array() || Request.size() != 3 ||
+					!Request[0].is_string() || !Request[1].is_string() || !Request[2].is_string())
+				{
+					return 0;
+				}
+
+				std::error_code Error;
+				if (!std::filesystem::equivalent(g_EditorSdkConfig,
+					std::filesystem::u8path(Request[0].get_ref<const std::string&>()), Error))
+				{
+					return 2;
+				}
+				if (g_RunningMacro || !g_PendingMacro.is_null())
+				{
+					return 3;
+				}
+				g_PendingMacro = std::move(Request);
+				return 1;
+			}
+		}
+		return CallWindowProcW(g_EditorWindowProc, Window, Message, First, Second);
+	}
+
+	int RunMacroBatch(const wchar_t* MacroPath, const wchar_t* ResultPath, bool KeepOpen)
+	{
+		std::ofstream Output(std::filesystem::path(ResultPath), std::ios::binary | std::ios::trunc);
+		if (!Output)
+		{
+			return 2;
+		}
+
+		const std::filesystem::path Path(MacroPath);
+		nlohmann::json Response;
+		const auto Extension = Path.extension().string();
+		if (xr_stricmp(Extension.c_str(), ".json") == 0)
+		{
+			std::ifstream Input(Path, std::ios::binary);
+			Response = CUIMacroView::RunBatch(nlohmann::json::parse(Input, nullptr, false));
+		}
+		else
+		{
+			const auto Macro = Path.string();
+			if (Macro.size() >= sizeof(string_path))
+			{
+				return 2;
+			}
+
+			if (!FS.exist(Macro.c_str()))
+			{
+				const auto Directory = Path.parent_path().string() + "\\";
+				FS.append_path("$sdk_macro_batch$", Directory.c_str(), nullptr, false);
+			}
+			auto Result = ExecCommand(COMMAND_RUN_MACRO, xr_string(Macro.c_str()), u32(1));
+			if (Result.IsInteger())
+			{
+				Response = {{"success", u32(Result) != 0}, {"result", u32(Result)}};
+			}
+			else
+			{
+				Response = {{"success", true}, {"result", xr_string(Result).c_str()}};
+			}
+		}
+		if (KeepOpen)
+		{
+			Response["editor_pid"] = GetCurrentProcessId();
+		}
+		const auto& LogPath = xrLogger::GetLogPath();
+		if (LogPath[0])
+		{
+			Response["log_path"] = LogPath;
+		}
+		xrLogger::FlushLog();
+		Output << Response.dump(-1, ' ', true, nlohmann::json::error_handler_t::replace) << '\n';
+		Output.close();
+		return Output ? (Response["success"].get<bool>() ? 0 : 1) : 2;
+	}
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
+	int ArgumentCount = 0;
+	const std::unique_ptr<wchar_t*, decltype(&LocalFree)> Arguments(
+		CommandLineToArgvW(GetCommandLineW(), &ArgumentCount), LocalFree);
+	const std::wstring_view Mode = Arguments && ArgumentCount > 1 ? Arguments.get()[1] : L"";
+	const bool KeepOpen = Mode == L"--open-sdk-macro";
+	const bool MacroBatch = KeepOpen || Mode == L"--run-sdk-macro";
+	if (MacroBatch && ArgumentCount != 4 && ArgumentCount != 6)
+	{
+		return 2;
+	}
+	if (MacroBatch && ArgumentCount == 6 && std::wstring_view(Arguments.get()[4]) != L"-fsltx")
+	{
+		return 2;
+	}
+
 	bIsLevelEditor = true;
 
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS))
@@ -55,6 +171,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	CRenderDevice::SetStartupStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
+	if (MacroBatch)
+	{
+		ignore_error_window = true;
+	}
 	
 	CRenderDevice::SetStartupStatus(10, "Initializing Core System");
 
@@ -62,7 +182,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	const char* fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
 
-	if (strstr(pCmdLine, fsgame_ltx_name)) {
+	if (MacroBatch && ArgumentCount == 6)
+	{
+		const auto Config = std::filesystem::path(Arguments.get()[5]).string();
+		if (Config.size() >= sizeof(fsgame))
+		{
+			return 2;
+		}
+		xr_strcpy(fsgame, Config.c_str());
+	}
+	else if (!MacroBatch && strstr(pCmdLine, fsgame_ltx_name)) {
 		int						sz = xr_strlen(fsgame_ltx_name);
 		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%519[^ ] ", fsgame);
 	}
@@ -180,20 +309,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	EContext.UI->PushBegin(GContentView);
 
 	// An .object passed on the command line opens in the Actor Editor tab
+	if (Arguments && ArgumentCount > 1)
 	{
-		int ArgsCount = 0;
-		LPWSTR* Args = CommandLineToArgvW(GetCommandLineW(), &ArgsCount);
-		if (Args != nullptr)
+		xr_string FirstArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Arguments.get()[1]));
+		if (FirstArg.ends_with(".object"))
 		{
-			if (ArgsCount > 1)
-			{
-				xr_string FirstArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Args[1]));
-				if (FirstArg.ends_with(".object"))
-				{
-					UIActorEditorForm::Open(FirstArg.c_str());
-				}
-			}
-			LocalFree(Args);
+			UIActorEditorForm::Open(FirstArg.c_str());
 		}
 	}
 
@@ -205,6 +326,32 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	// The startup screen polls the events: SDL_EVENT_WINDOW_SHOWN never reaches the loop below
 	Device.b_is_Active = true;
 	
+	const int ExitCode = MacroBatch ? SdkMacro::RunMacroBatch(Arguments.get()[2], Arguments.get()[3], KeepOpen) : 0;
+	if (MacroBatch && (!KeepOpen || ExitCode != 0))
+	{
+		GContentView->Destroy();
+		NeedExit = true;
+	}
+	if (KeepOpen && ExitCode == 0)
+	{
+		ignore_error_window = false;
+	}
+	const auto Window = static_cast<HWND>(SDL_GetPointerProperty(
+		SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
+	if (!NeedExit && Window)
+	{
+		std::error_code Error;
+		SdkMacro::g_EditorSdkConfig = std::filesystem::absolute(fsgame[0] ? fsgame : FSName, Error);
+		if (!Error)
+		{
+			SdkMacro::g_EditorWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(Window, GWLP_WNDPROC,
+				reinterpret_cast<LONG_PTR>(SdkMacro::SdkMacroWindowProc)));
+			if (SdkMacro::g_EditorWindowProc)
+			{
+				SetPropW(Window, SdkMacro::SdkMacroWindowProperty, reinterpret_cast<HANDLE>(1));
+			}
+		}
+	}
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -342,6 +489,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			}
 		}
 
+		if (!NeedExit && !SdkMacro::g_PendingMacro.is_null() && !LUI->LoaderEvent.IsBusy() &&
+			EContext.UI->GetEState() == esEditScene)
+		{
+			const auto Request = std::exchange(SdkMacro::g_PendingMacro, nullptr);
+			const auto Macro = std::filesystem::u8path(Request[1].get_ref<const std::string&>());
+			const auto Result = std::filesystem::u8path(Request[2].get_ref<const std::string&>());
+			std::error_code Error;
+			if (std::filesystem::is_directory(Result.parent_path(), Error))
+			{
+				SdkMacro::g_RunningMacro = true;
+				SdkMacro::RunMacroBatch(Macro.c_str(), Result.c_str(), true);
+				SdkMacro::g_RunningMacro = false;
+				SDL_RaiseWindow(g_AppInfo.Window);
+			}
+		}
 		MainForm->Frame();
 		LUI->UpdateTaskbar();
 
@@ -350,6 +512,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	}
 	//s.join();
 
+	if (SdkMacro::g_EditorWindowProc)
+	{
+		RemovePropW(Window, SdkMacro::SdkMacroWindowProperty);
+		SetWindowLongPtrW(Window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(SdkMacro::g_EditorWindowProc));
+	}
 	CTaskbarProgress::Instance().Release();
 
 	// Windows are destroyed before the preferences are saved: keep their full state
@@ -376,7 +543,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	xr_delete(MainForm);
 
-	//очищение памяти таблицы строк
+	// Release the string table.
 	CStringTable::Destroy();
 
 	xr_delete(pApp);
@@ -384,5 +551,5 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	xr_delete(g_SEFactoryManager);
 
 	Core._destroy();
-	return 0;
+	return ExitCode;
 }

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <nlohmann/json.hpp>
 #include "Utils/Cursor3D.h"
 #include "../xrengine\GameFont.h"
 #include "Editor/Utils/ContentView.h"
@@ -226,20 +227,30 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			if (!Scene->IfModified())
 				return false;
 
-			EContext.UI->SetStatus("Level loading...");
-			ExecCommand(COMMAND_CLEAR);
+			const bool Immediate = p2.IsInteger() && u32(p2) == static_cast<u32>(LevelLoadMode::Immediate);
 			FS.TryLoad(temp_fn.c_str());
 			IReader* R = FS.r_open(temp_fn.c_str());
-			if (!R)return false;
+			if (!R)
+			{
+				const auto Error = make_string<xr_string>("Can't open level file '%s'.", temp_fn.c_str());
+				if (Immediate)
+				{
+					ELog.Msg(mtError, "%s", Error.c_str());
+					return Error;
+				}
+				ELog.DlgMsg(mtError, "%s", Error.c_str());
+				return false;
+			}
 			char ch;
 			R->r(&ch, sizeof(ch));
 			bool is_ltx = (ch == '[');
 			FS.r_close(R);
+
+			EContext.UI->SetStatus("Level loading...");
+			ExecCommand(COMMAND_CLEAR);
 			LTools->m_LastFileName = temp_fn.c_str();
 
-			LUI->LoaderEvent.Run
-			(
-				[temp_fn, is_ltx]
+			auto LoadLevel = [temp_fn, is_ltx]
 				{
 					bool Result = (is_ltx) ? Scene->LoadLTX(temp_fn.c_str(), false) : Scene->Load(temp_fn.c_str(), false);
 
@@ -268,9 +279,13 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 					// update props
 					ExecCommand(COMMAND_UPDATE_PROPERTIES);
 					EContext.UI->RedrawScene();
-				},
-				"Loading level..."
-			);
+					return Result;
+				};
+			if (Immediate)
+			{
+				return u32(LoadLevel());
+			}
+			LUI->LoaderEvent.Run(std::move(LoadLevel), "Loading level...");
 		}
 
 		return true;
@@ -1352,6 +1367,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_LANIM_EDITOR,            	CommandLAnimEditor);
 	REGISTER_CMD_S		(COMMAND_LOAD_LEVEL_PART,			CommandLoadLevelPart);
 	REGISTER_CMD_S		(COMMAND_UNLOAD_LEVEL_PART,			CommandUnloadLevelPart);
+	RegisterMacroCommands();
 	REGISTER_CMD_SE	    (COMMAND_LOAD,              		"File\\Load Level", 			CommandLoad, 			true);
 	REGISTER_SUB_CMD_SE (COMMAND_SAVE, 						"File",							CommandSave,			true);
 		APPEND_SUB_CMD	("Save",							0,								0);

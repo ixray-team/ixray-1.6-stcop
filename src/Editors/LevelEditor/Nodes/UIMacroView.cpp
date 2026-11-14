@@ -1,8 +1,16 @@
 #include "stdafx.h"
 #include "UIMacroView.h"
+#include "../Editor/UI_LevelMacroCommands.h"
 #include "../../xrEUI/IconsFontAwesome7.h"
 #include "NodesCommon.h"
 #include "UINodesEditorForm.h"
+
+template<>
+struct magic_enum::customize::enum_range<ELECommand>
+{
+	static constexpr int min = COMMAND_EXTFIRST_EXT;
+	static constexpr int max = COMMAND_LE_END;
+};
 
 namespace ed = ax::NodeEditor;
 using namespace NodesUI;
@@ -36,8 +44,15 @@ static std::array<size_t, 13> CommandsOneArgsInt =
 	COMMAND_SHOWCONTEXTMENU   // u32
 };
 
-static std::array<size_t, 8> CommandsOneArgsString =
+static std::array<size_t, 15> CommandsOneArgsString =
 {
+	COMMAND_ADD_AI_NODE,
+	COMMAND_SET_LEVEL_MODE,
+	COMMAND_VALIDATE_LEVEL_MODE,
+	COMMAND_INSPECT_SCENE_OBJECT,
+	COMMAND_SAVE_NEW_LEVEL,
+	COMMAND_SEARCH_LIBRARY_MODELS,
+	COMMAND_DELETE_SCENE_OBJECT,
 	COMMAND_ICON_REMOVE,      // string
 	COMMAND_LOAD,             // string
 	COMMAND_UNLOAD_LEVEL_PART,// string
@@ -48,8 +63,23 @@ static std::array<size_t, 8> CommandsOneArgsString =
 	COMMAND_SHOW_PROPERTIES   // string ?
 };
 
-static std::array<size_t, 9> CommandsTwoArgs =
+static std::array<size_t, 24> CommandsTwoArgs =
 {
+	COMMAND_ADD_LIBRARY_OBJECT,
+	COMMAND_MOVE_SCENE_OBJECT,
+	COMMAND_ROTATE_SCENE_OBJECT,
+	COMMAND_DUPLICATE_SCENE_OBJECT,
+	COMMAND_SCALE_SCENE_OBJECT,
+	COMMAND_RENAME_SCENE_OBJECT,
+	COMMAND_GROUP_SCENE_OBJECTS,
+	COMMAND_ADD_SPAWN_ENTITY,
+	COMMAND_ADD_SPHERICAL_ZONE,
+	COMMAND_ADD_PLAYER_RESPAWN,
+	COMMAND_CREATE_WAYPOINT_ROUTE,
+	COMMAND_ASSIGN_NPC_LOGIC,
+	COMMAND_BUILD_AI_MAP,
+	COMMAND_VERIFY_AI_MAP,
+	COMMAND_BUILD_AI_SPAWN,
 	COMMAND_SET_SETTINGS,
 	COMMAND_IMAGE_EDITOR_SELECT,
 	COMMAND_RUN_MACRO,
@@ -110,7 +140,7 @@ static u32 CommandGroup(std::string_view Name)
 		return 2;
 	if (Name.starts_with("TOGGLE") || Has("GRID") || Has("SIMULATE") || Is({ "ZOOM_EXTENTS", "MOVE_CAMERA_TO", "SCENE_HIGHLIGHT_TEXTURE", "CLEAR_DEBUG_DRAW", "MUTE_SOUND" }))
 		return 4;
-	if (Name.starts_with("MAKE") || Has("COMPILER_ERROR") || Is({ "BUILD", "VALIDATE_SCENE" }))
+	if (Name.starts_with("MAKE") || Has("COMPILER_ERROR") || Name.starts_with("BUILD") || Is({ "PLAY_IN_EDITOR", "VALIDATE_SCENE" }))
 		return 5;
 	if (Has("EDITOR") || Name.starts_with("SHOW") || Has("PROPERTIES") || Is({ "OPTIONS", "SET_SETTINGS" }))
 		return 7;
@@ -119,7 +149,11 @@ static u32 CommandGroup(std::string_view Name)
 	return 8;
 }
 
-CUIMacroView::CUIMacroView()
+CUIMacroView::CUIMacroView() : CUIMacroView(false)
+{
+}
+
+CUIMacroView::CUIMacroView(bool Batch)
 {
 	// "COMMAND_LOAD_LEVEL_PART" is shown as "Load level part"
 	auto AddCommand = [this](u32 Command, std::string_view EnumName)
@@ -158,6 +192,11 @@ CUIMacroView::CUIMacroView()
 	{
 		return Left.Group != Right.Group ? Left.Group < Right.Group : Left.Name < Right.Name;
 	});
+
+	if (Batch)
+	{
+		return;
+	}
 
 	ed::Config Config;
 	Config.SettingsFile = nullptr;
@@ -318,7 +357,7 @@ nlohmann::json CUIMacroView::Write() const
 	return Data;
 }
 
-void CUIMacroView::Read(const nlohmann::json& Data)
+bool CUIMacroView::Read(const nlohmann::json& Data, bool Strict)
 {
 	Nodes.clear();
 	NextId = StartId + 1;
@@ -326,28 +365,56 @@ void CUIMacroView::Read(const nlohmann::json& Data)
 	PropertiesNode = -1;
 
 	auto Iter = Data.find("nodes");
+	if (Strict && (Iter == Data.end() || !Iter->is_array()))
+	{
+		return false;
+	}
 	if (Iter != Data.end() && Iter->is_array())
 	{
 		for (const nlohmann::json& Item : *Iter)
 		{
 			if (!Item.is_object() || !Item.contains("id") || !Item["id"].is_number_integer())
 			{
+				if (Strict)
+				{
+					return false;
+				}
 				continue;
+			}
+
+			if (Strict && (Item["id"] < StartId || Item["id"] >= std::numeric_limits<int>::max() ||
+				(Item.contains("next") && !Item["next"].is_array()) ||
+				(Item.contains("first") && !Item["first"].is_string()) ||
+				(Item.contains("second") && !Item["second"].is_string())))
+			{
+				return false;
 			}
 
 			SNode Node;
 			Node.Id = Item["id"].get<int>();
+			if (Strict && (Find(Node.Id) != nullptr || (Node.Id == StartId && Item.contains("command"))))
+			{
+				return false;
+			}
 			if (Item.contains("command") && Item["command"].is_string())
 			{
 				Node.Command = FindCommand(Item["command"].get_ref<const nlohmann::json::string_t&>().c_str());
 				if (Node.Command < 0)
 				{
 					Msg("! Macros: unknown command [%s]", Item["command"].get_ref<const nlohmann::json::string_t&>().c_str());
+					if (Strict)
+					{
+						return false;
+					}
 					continue;
 				}
 			}
 			else if (Node.Id != StartId)
 			{
+				if (Strict)
+				{
+					return false;
+				}
 				continue;
 			}
 
@@ -368,6 +435,10 @@ void CUIMacroView::Read(const nlohmann::json& Data)
 			{
 				for (const nlohmann::json& Next : Item["next"])
 				{
+					if (Strict && (!Next.is_number_integer() || Next <= StartId || Next >= std::numeric_limits<int>::max()))
+					{
+						return false;
+					}
 					if (Next.is_number_integer())
 					{
 						Node.Next.push_back(Next.get<int>());
@@ -382,6 +453,10 @@ void CUIMacroView::Read(const nlohmann::json& Data)
 
 	if (Find(StartId) == nullptr)
 	{
+		if (Strict)
+		{
+			return false;
+		}
 		SNode Start;
 		Start.Id = StartId;
 		Start.HasPosition = true;
@@ -391,8 +466,13 @@ void CUIMacroView::Read(const nlohmann::json& Data)
 	// Links to the nodes that were not read
 	for (SNode& Node : Nodes)
 	{
-		std::erase_if(Node.Next, [this](int Id) { return Id == StartId || Find(Id) == nullptr; });
+		const auto InvalidLink = [this](int Id) { return Id == StartId || Find(Id) == nullptr; };
+		if (std::erase_if(Node.Next, InvalidLink) != 0 && Strict)
+		{
+			return false;
+		}
 	}
+	return true;
 }
 
 bool CUIMacroView::LoadFile()
@@ -511,17 +591,42 @@ void CUIMacroView::Exec()
 	Messages.push_back({ false, StartId, make_string<xr_string>("Done: %u commands", (u32)Visited.size() - 1) });
 }
 
-void CUIMacroView::ExecNode(const SNode& Node, xr_set<int>& Visited)
+nlohmann::json CUIMacroView::RunBatch(const nlohmann::json& Data)
+{
+	CUIMacroView Graph(true);
+	nlohmann::json Results = nlohmann::json::array();
+	if (!Graph.Read(Data, true))
+	{
+		return {{"success", false}, {"nodes", std::move(Results)}, {"error", "Invalid Macro Editor graph"}};
+	}
+
+	const SNode& Start = *Graph.Find(StartId);
+	if (Start.Next.empty())
+	{
+		return {{"success", false}, {"nodes", std::move(Results)}, {"error", "Nothing is linked to the Start node"}};
+	}
+
+	xr_set<int> Visited;
+	const bool Success = Graph.ExecNode(Start, Visited, &Results);
+	return {{"success", Success}, {"nodes", std::move(Results)}};
+}
+
+bool CUIMacroView::ExecNode(const SNode& Node, xr_set<int>& Visited, nlohmann::json* Results)
 {
 	if (!Visited.insert(Node.Id).second)
 	{
+		if (Results != nullptr)
+		{
+			Results->push_back({{"id", Node.Id}, {"success", false}, {"error", "The node was already executed"}});
+		}
 		Messages.push_back({ true, Node.Id, "The node is run again: the loop is stopped" });
-		return;
+		return false;
 	}
 
 	if (const SCommand* Command = CommandOf(Node))
 	{
 		CCommandVar Result;
+		nlohmann::json Report = nlohmann::json::object();
 		if (Command->Type == MacroType::eVoid)
 		{
 			Result = ExecCommand(Command->Command);
@@ -530,9 +635,18 @@ void CUIMacroView::ExecNode(const SNode& Node, xr_set<int>& Visited)
 		{
 			Result = ExecCommand(Command->Command, u32(Node.First.empty() ? 0 : atoi(Node.First.c_str())));
 		}
+		else if (Results != nullptr && Command->Command == COMMAND_LOAD)
+		{
+			Result = ExecCommand(COMMAND_LOAD, Node.First, static_cast<u32>(LevelLoadMode::Immediate));
+		}
 		else if (Command->Type == MacroType::eOneArg)
 		{
 			Result = ExecCommand(Command->Command, Node.First);
+		}
+		else if (Results != nullptr && (Command->Command == COMMAND_BUILD_AI_MAP ||
+			Command->Command == COMMAND_VERIFY_AI_MAP || Command->Command == COMMAND_BUILD_AI_SPAWN))
+		{
+			Result = ExecAIStageMacroCommand(Command->Command, Node.First, Node.Second, Report);
 		}
 		else
 		{
@@ -540,8 +654,46 @@ void CUIMacroView::ExecNode(const SNode& Node, xr_set<int>& Visited)
 		}
 
 		// The commands return 0 when they fail
-		const bool Failed = Result.IsInteger() && (u32)Result == 0;
-		Messages.push_back({ Failed, Node.Id, Command->Name + (Failed ? ": failed" : ": done") });
+		const auto Validation = Command->Command == COMMAND_VALIDATE_LEVEL_MODE && Result.IsString()
+			? nlohmann::json::parse(xr_string(Result).c_str()) : nlohmann::json();
+		const bool CommandFailed = Result.IsString() && (Command->Command == COMMAND_LOAD || Command->Command == COMMAND_PLAY_IN_EDITOR ||
+			Command->Command == COMMAND_ADD_AI_NODE || Command->Command == COMMAND_GENERATE_AI_MAP);
+		const bool Failed = Validation.is_object() ? !Validation.at("ready").get<bool>()
+			: CommandFailed || (Result.IsInteger() && (u32)Result == 0);
+		if (Results != nullptr)
+		{
+			auto& Entry = Report;
+			Entry["id"] = Node.Id;
+			Entry["command"] = Command->Name.c_str();
+			Entry["success"] = !Failed;
+			if (Validation.is_object())
+			{
+				Entry["result"] = Validation;
+			}
+			else if (Result.IsInteger())
+			{
+				Entry["result"] = u32(Result);
+			}
+			else if (Command->Command == COMMAND_SEARCH_LIBRARY_MODELS || Command->Command == COMMAND_LIST_SCENE_OBJECTS ||
+				Command->Command == COMMAND_INSPECT_SCENE_OBJECT)
+			{
+				Entry["result"] = nlohmann::json::parse(xr_string(Result).c_str());
+			}
+			else
+			{
+				Entry["result"] = xr_string(Result).c_str();
+			}
+			Results->push_back(std::move(Entry));
+		}
+		else
+		{
+			Messages.push_back({ Failed, Node.Id, Command->Name +
+				(CommandFailed ? xr_string(": ") + xr_string(Result) : (Failed ? ": failed" : ": done")) });
+		}
+		if (Results != nullptr && Failed)
+		{
+			return false;
+		}
 	}
 
 	// The copy: a command may change the graph
@@ -550,9 +702,13 @@ void CUIMacroView::ExecNode(const SNode& Node, xr_set<int>& Visited)
 	{
 		if (const SNode* Target = Find(Id))
 		{
-			ExecNode(*Target, Visited);
+			if (!ExecNode(*Target, Visited, Results) && Results != nullptr)
+			{
+				return false;
+			}
 		}
 	}
+	return true;
 }
 
 void CUIMacroView::Layout()
