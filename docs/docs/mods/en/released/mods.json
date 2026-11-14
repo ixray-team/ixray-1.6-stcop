@@ -8,6 +8,54 @@
   },
   "mods": [
     {
+      "id": "deathsgame",
+      "title": "Death Games",
+      "description": "A group of stalkers has been tasked with eliminating a stalker nicknamed the Mathematician. He is known to be in the vicinity of the Agroprom Research Institute right now, so the group heads there.",
+      "author": "AlgerCodos",
+      "link": "https://ap-pro.ru/forums/topic/15728-stalker-igry-smerti",
+      "image": "https://dummyimage.com/262x241/84868f/f2f2f2.png&text=Игры смерти"
+    },
+    {
+      "id": "sundeath",
+      "title": "Sun for the Dead! No Tribute for “Danya”",
+      "description": "The story follows mercenary Sam, who after a failed job ends up the sole survivor in the dungeons of Agroprom.",
+      "author": "ChemicusOrdinarius",
+      "link": "https://ap-pro.ru/forums/topic/15707-solnce-myortvym-net-dani-dlya-dani",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/Danya.png"
+    },
+    {
+      "id": "uznik",
+      "title": "Prisoners of Agroprom",
+      "description": "“Boomer sets off to carry out another simple job for Sidorovich, when suddenly something goes wrong...”",
+      "author": "It's boomer",
+      "link": "https://ap-pro.ru/forums/topic/15708-uzniki-agroproma",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/Uznik.png"
+    },
+    {
+      "id": "obj№32",
+      "title": "Object No. 32: The Abyss. Prologue",
+      "description": "You are an ordinary employee of the Agroprom Research Institute. Your job is to do your work and stay alive while doing it.",
+      "author": "It's boomer",
+      "link": "https://ap-pro.ru/forums/topic/15659-obaekt-%E2%84%9632-bezdna-prolog",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/obj32.png"
+    },
+    {
+      "id": "echo",
+      "title": "Echo, Episode 0.5: “Changes Hold No Fear”",
+      "description": "After the massive emission and the disappearance of most of Clear Sky, things changed. The factions could not withstand the new onslaught of mutants, and Duty decided to redeploy to the Rostok factory. But Voronin was unhappy with Krylov's leadership and was preparing a plan of his own.",
+      "author": "TheDisam",
+      "link": "https://ap-pro.ru/forums/topic/15713-eho-epizod-05-ne-strashny-peremeny",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/echo.png"
+    },
+    {
+      "id": "hellmag",
+      "title": "Shop from Hell BETA",
+      "description": "Your boyfriend was bitten by a zombie, and now you have to work four nights at a barter shop to earn money for the medicine. What could possibly go wrong?",
+      "author": "Mawrak",
+      "link": "https://ap-pro.ru/forums/topic/15259-konkurs-kvestov-2026-igra-v-kalmara-ap-pro-edition/page/44/?tab=comments#comment-577096",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/hellmag.png"
+    },
+    {
       "id": "chronicles_of_pripyat",
       "title": "Chronicles of Pripyat",
       "description": "A gameplay-narrative project. Free exploration of Pripyat without a mandatory storyline, notes about the city's residents, stashes, vehicles, PDA and other mechanics.",
@@ -156,54 +204,6 @@
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png",
       "score": "Ap-Pro: 7.4"
-    },
-    {
-      "id": "deathsgame",
-      "title": "Death Games",
-      "description": "A group of stalkers has been tasked with eliminating a stalker nicknamed the Mathematician. He is known to be in the vicinity of the Agroprom Research Institute right now, so the group heads there.",
-      "author": "AlgerCodos",
-      "link": "https://ap-pro.ru/forums/topic/15728-stalker-igry-smerti",
-      "image": "https://dummyimage.com/262x241/84868f/f2f2f2.png&text=Игры смерти"
-    },
-    {
-      "id": "sundeath",
-      "title": "Sun for the Dead! No Tribute for “Danya”",
-      "description": "The story follows mercenary Sam, who after a failed job ends up the sole survivor in the dungeons of Agroprom.",
-      "author": "ChemicusOrdinarius",
-      "link": "https://ap-pro.ru/forums/topic/15707-solnce-myortvym-net-dani-dlya-dani",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/Danya.png"
-    },
-    {
-      "id": "uznik",
-      "title": "Prisoners of Agroprom",
-      "description": "“Boomer sets off to carry out another simple job for Sidorovich, when suddenly something goes wrong...”",
-      "author": "It's boomer",
-      "link": "https://ap-pro.ru/forums/topic/15708-uzniki-agroproma",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/Uznik.png"
-    },
-    {
-      "id": "obj№32",
-      "title": "Object No. 32: The Abyss. Prologue",
-      "description": "You are an ordinary employee of the Agroprom Research Institute. Your job is to do your work and stay alive while doing it.",
-      "author": "It's boomer",
-      "link": "https://ap-pro.ru/forums/topic/15659-obaekt-%E2%84%9632-bezdna-prolog",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/obj32.png"
-    },
-    {
-      "id": "echo",
-      "title": "Echo, Episode 0.5: “Changes Hold No Fear”",
-      "description": "After the massive emission and the disappearance of most of Clear Sky, things changed. The factions could not withstand the new onslaught of mutants, and Duty decided to redeploy to the Rostok factory. But Voronin was unhappy with Krylov's leadership and was preparing a plan of his own.",
-      "author": "TheDisam",
-      "link": "https://ap-pro.ru/forums/topic/15713-eho-epizod-05-ne-strashny-peremeny",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/echo.png"
-    },
-    {
-      "id": "hellmag",
-      "title": "Shop from Hell BETA",
-      "description": "Your boyfriend was bitten by a zombie, and now you have to work four nights at a barter shop to earn money for the medicine. What could possibly go wrong?",
-      "author": "Mawrak",
-      "link": "https://ap-pro.ru/forums/topic/15259-konkurs-kvestov-2026-igra-v-kalmara-ap-pro-edition/page/44/?tab=comments#comment-577096",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/hellmag.png"
     }
   ]
 }
