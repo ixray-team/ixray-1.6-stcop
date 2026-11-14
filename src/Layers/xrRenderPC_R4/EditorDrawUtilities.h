@@ -81,6 +81,9 @@ public:
 		DrawCross(p, sz, sz, sz, sz, sz, sz, clr, bRot45);
 	}
 	virtual void DrawEntity(u32 clr, ref_shader s);
+	void DrawIdentZone(bool Sphere, u32 Color, bool Selected);
+	void BatchIdentBox(const Fmatrix& World, bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
+	void BatchIdentSphere(const Fmatrix& World, bool bSolid, bool bWire, u32 clr_s, u32 clr_w);
 	// Camera-facing icons of constant screen size, drawn in one batch with one shader
 	void DrawIcons(const ref_shader& Shader, const Fvector* Positions, const u32* Colors, u32 Count, float PixelSize);
 	virtual void DrawRomboid(const Fvector& p, float radius, u32 clr) override;

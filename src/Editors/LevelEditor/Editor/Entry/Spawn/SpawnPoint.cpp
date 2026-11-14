@@ -6,6 +6,7 @@
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "../xrServerEntities/xrServer_Objects.h"
 #include "../xrServerEntities/xrServer_Objects_Alife_Smartcovers.h"
+#include "../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 #include "../xrCore/Save/MemoryBuffer.h"
 #include "../xrCore/Save/SaveManager.h"
 #include "../../../../xrECore/Editor/Intersect.h"
@@ -694,6 +695,11 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 	}
 }
 
+bool CSpawnPoint::IsSmartCover() const
+{
+	return m_SpawnData.Valid() && smart_cast<CSE_SmartCover*>(m_SpawnData.m_Data) != nullptr;
+}
+
 bool CSpawnPoint::SSpawnData::IsSmartCoverVisualReady(xr_string* Error) const
 {
 	CSE_SmartCover* Cover = smart_cast<CSE_SmartCover*>(m_Data);
@@ -805,10 +811,10 @@ void CSpawnPoint::SSpawnData::CheckLoopholeVisuals()
 
 bool CSpawnPoint::SSpawnData::IsIdleParticleInRange() const
 {
-	return EDevice->vCameraPosition.distance_to(m_owner->FPosition) < EDevice->RenderRadius * 0.25f;
+	return GWorldPartition.IsPointActive(m_owner->FPosition);
 }
 
-void CSpawnPoint::SSpawnData::OnFrame()
+void CSpawnPoint::SSpawnData::OnFrame(bool OnScreen)
 {
 	xrCriticalSectionGuard guard(FrameMutex);
 
@@ -824,7 +830,7 @@ void CSpawnPoint::SSpawnData::OnFrame()
 	}
 
 	// Idle particles advance once per frame by the frame time, like CParticlesObject in game
-	if (IdleParticle && IsIdleParticleInRange())
+	if (OnScreen && IdleParticle && IsIdleParticleInRange())
 	{
 		IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
 		static Fvector Velocity = { 0.f, 0.f, 0.f };
@@ -847,7 +853,7 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		}
 
 		IKinematics* KinematicsObj = PKinematics(m_Visual->visual);
-		if (m_Visual->visual && KinematicsObj != nullptr)
+		if (m_Visual->visual && KinematicsObj != nullptr && (OnScreen || m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange)))
 		{
 			bool IsForce = m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange) || m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange);
 			KinematicsObj->CalculateBones(IsForce);
@@ -858,7 +864,7 @@ void CSpawnPoint::SSpawnData::OnFrame()
 	{
 		if (m_Data->m_editor_flags.is(CSE_Abstract::flMotionChange))
 			m_Motion->OnChangeMotion();
-		if (m_Motion->animator)
+		if (m_Motion->animator && OnScreen)
 			m_Motion->animator->Update(EDevice->fTimeDelta);
 	}
 
@@ -888,7 +894,8 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		CheckLoopholeVisuals();
 	}
 
-	xr_vector<CLE_Visual*>::iterator it 	= m_VisualHelpers.begin();
+	const bool AnimateHelpers = OnScreen || m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange);
+	xr_vector<CLE_Visual*>::iterator it 	= AnimateHelpers ? m_VisualHelpers.begin() : m_VisualHelpers.end();
 	xr_vector<CLE_Visual*>::iterator it_e 	= m_VisualHelpers.end();
 	for (; it != it_e; ++it)
 	{
@@ -1205,14 +1212,16 @@ void CSpawnPoint::OnFrame()
 	if (m_AttachedObject) 		m_AttachedObject->OnFrame	();
 	if (m_SpawnData.Valid() && NeedsSpawnDataFrame())
 	{
+		constexpr u32 VisibleFrames = 2;
+		const bool OnScreen = Selected() || Device.dwFrame - LastRenderFrame.load() <= VisibleFrames;
 		if(m_physics_shell&&m_SpawnData.m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange))
 		{
 			DeletePhysicsShell			();
-			m_SpawnData.OnFrame			();
+			m_SpawnData.OnFrame			(OnScreen);
 			CreatePhysicsShell			( &FTransform );
 		}
 		else 
-		  m_SpawnData.OnFrame			();
+		  m_SpawnData.OnFrame			(OnScreen);
 	}
 
 	if(m_Type == ptEnvMod)
@@ -1527,6 +1536,42 @@ bool CSpawnPoint::RayPick(float& distance, const Fvector& start, const Fvector& 
 	return bPick;
 }
 
+namespace
+{
+	u32 GetAnomalyZoneColor(const char* Section, u32 Fallback)
+	{
+		struct SZoneKind
+		{
+			const char* Keys[6];
+			u32 Color;
+		};
+
+		static const SZoneKind Kinds[] =
+		{
+			{{"radioactive", "radiation", "radio"}, color_rgba(255, 220, 40, 255)},
+			{{"thermal", "fire", "burning", "zhar", "flame"}, color_rgba(255, 120, 30, 255)},
+			{{"acidic", "chemical", "gas", "fuzz", "kisel"}, color_rgba(90, 255, 60, 255)},
+			{{"electric", "electra", "witch", "tesla"}, color_rgba(80, 170, 255, 255)},
+			{{"gravi", "mincer", "vortex", "springboard", "nogravity", "teleport"}, color_rgba(190, 90, 255, 255)},
+			{{"psychic", "psy"}, color_rgba(255, 70, 200, 255)},
+			{{"minefield", "mine_field"}, color_rgba(255, 50, 50, 255)},
+		};
+
+		for (const SZoneKind& Kind : Kinds)
+		{
+			for (const char* Key : Kind.Keys)
+			{
+				if (Key != nullptr && strstr(Section, Key) != nullptr)
+				{
+					return Kind.Color;
+				}
+			}
+		}
+
+		return subst_alpha(Fallback, 255);
+	}
+}
+
 bool CSpawnPoint::OnAppendObject(CCustomObject* object)
 {
 	R_ASSERT(!m_AttachedObject);
@@ -1539,10 +1584,18 @@ bool CSpawnPoint::OnAppendObject(CCustomObject* object)
 	CEditShape* sh = smart_cast<CEditShape*>(m_AttachedObject);
 	if(m_SpawnData.Valid())
 	{
+		const char* Section = m_SpawnData.m_Data->name();
+		const bool IsAnomalyField = pSettings->line_exist(Section, "script_binding") && strstr(pSettings->r_string(Section, "script_binding"), "bind_anomaly_zone") != nullptr;
+		sh->IsAnomalyZone = IsAnomalyField || smart_cast<CSE_ALifeAnomalyZone*>(m_SpawnData.m_Data) != nullptr;
+
 		if(pSettings->line_exist(m_SpawnData.m_Data->name(),"shape_transp_color"))
 		{
 			sh->m_DrawTranspColor = pSettings->r_color(m_SpawnData.m_Data->name(),"shape_transp_color");
 			sh->m_DrawEdgeColor = pSettings->r_color(m_SpawnData.m_Data->name(),"shape_edge_color");
+		}
+		if (sh->IsAnomalyZone)
+		{
+			sh->ZoneColor = GetAnomalyZoneColor(m_SpawnData.m_Data->name(), sh->m_DrawTranspColor);
 		}
 	}
 

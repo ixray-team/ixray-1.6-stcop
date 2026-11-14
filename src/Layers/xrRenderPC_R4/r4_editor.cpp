@@ -155,6 +155,45 @@ namespace
 
 namespace
 {
+	// Anomaly zone shell: blended over the lit scene, tested against the overlay depth, reads the scene depth
+	class CBlender_EditorZone final : public IBlender
+	{
+	public:
+		CBlender_EditorZone()
+		{
+			description.CLS = 0;
+		}
+
+		const char* getComment() override
+		{
+			return "INTERNAL: editor anomaly zone";
+		}
+
+		bool canBeDetailed() override
+		{
+			return false;
+		}
+
+		bool canBeLMAPped() override
+		{
+			return false;
+		}
+
+		void Compile(CBlender_Compile& C) override
+		{
+			IBlender::Compile(C);
+
+			C.r_Pass("editor_zone", "editor_zone", false, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+			C.r_CullMode(D3DCULL_NONE);
+			C.r_dx10Texture("s_position", r2_RT_P);
+			C.r_dx10Sampler("smp_nofilter");
+			C.r_End();
+		}
+	};
+}
+
+namespace
+{
 	// x: 1 in the unlit view (no weather): forward shaders that depend on the environment
 	// (water) show their base texture instead
 	class CEditorParamsBinder final : public RHIShaderConstant::Setup
@@ -182,6 +221,9 @@ void CRender::EditorCreate()
 	EditorDepthUpscaleBlender = new CBlender_EditorDepthUpscale();
 	EditorDepthUpscaleShader.create(EditorDepthUpscaleBlender);
 
+	EditorZoneBlender = new CBlender_EditorZone();
+	GEditorDraw.ZoneShader.create(EditorZoneBlender);
+
 	// The game loads them with the level; the editors play levels without it (PIE)
 	Wallmarks = new CWallmarksEngine();
 }
@@ -201,6 +243,8 @@ void CRender::EditorDestroy()
 	xr_delete(EditorUnlitBlender);
 	EditorDepthUpscaleShader.destroy();
 	xr_delete(EditorDepthUpscaleBlender);
+	GEditorDraw.ZoneShader.destroy();
+	xr_delete(EditorZoneBlender);
 }
 
 bool CRender::EditorIsLit() const
@@ -234,8 +278,7 @@ void CRender::EditorRenderUnlit()
 	Target->phase_scene_prepare();
 	GRHI->ClearTarget(Target->rt_Color->pRT, ClearColor);
 
-	// The unlit image has no distortion pass: keep distortive visuals out of mapDistort,
-	// like the deferred path does before its main calc
+	// Distortive visuals join mapDistort in the forward pass only, like the deferred path does
 	o.distortion = false;
 
 	r_pmask(true, false, true);
@@ -277,10 +320,14 @@ void CRender::EditorRenderUnlit()
 	RCache.set_Geometry(Target->FSTriangleGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 
-	// Forward geometry (blended surfaces, particles)
+	// Forward geometry (blended surfaces, particles): the objects recorded by the deferred pass,
+	// as render_forward does in the lit view
 	r_pmask(false, true);
 	phase = PHASE_NORMAL;
+	o.distortion = o.distortion_enabled;
+	EditorForwardPass = true;
 	render_main(false);
+	EditorForwardPass = false;
 
 	Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, RDepth);
 	rmNormal();
@@ -288,6 +335,37 @@ void CRender::EditorRenderUnlit()
 	RCache.set_xform_view(Device.mView);
 	RCache.set_xform_project(Device.mProject);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+
+	{
+		CEditorFillModeScope FillModeScope(true);
+		r_dsgraph_render_graph(1);
+	}
+
+	// Distortion over the unlit image, as render_forward does over the lit one:
+	// the distortive visuals into rt_Generic_1, then the combine shifts rt_Generic_0 by it
+	if (mapDistort.size() || mapHUDDistort.size())
+	{
+		GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
+		Target->u_setrt(Width, Height, Target->rt_Generic_1->pRT, nullptr, nullptr, nullptr, RDepth);
+		rmNormal();
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+		RCache.set_Stencil(FALSE);
+		RCache.set_ColorWriteEnable();
+		r_dsgraph_render_distort();
+
+		Target->u_setrt(Width, Height, Target->rt_Accumulator->pRT, nullptr, nullptr, nullptr, nullptr);
+		rmNormal();
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_Element(Target->s_combine->E[1]);
+		RCache.set_Geometry(Target->FSTriangleGeom);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		GRHI->CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
+
+		Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, RDepth);
+		rmNormal();
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	}
+	o.distortion = false;
 
 	// Helpers under the blended geometry
 	if (g_EditorRenderHost)
@@ -297,7 +375,6 @@ void CRender::EditorRenderUnlit()
 
 	{
 		CEditorFillModeScope FillModeScope(true);
-		r_dsgraph_render_graph(1);
 		r_dsgraph_render_sorted(false);
 	}
 

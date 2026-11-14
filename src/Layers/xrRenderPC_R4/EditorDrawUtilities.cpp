@@ -522,6 +522,26 @@ void CEditorDrawUtilities::DrawIdentSphere	(bool bSolid, bool bWire, u32 clr_s, 
 	DU_DRAW_RS	(D3DRS_TEXTUREFACTOR,	0xffffffff);
 }
 
+void CEditorDrawUtilities::DrawIdentZone(bool Sphere, u32 Color, bool Selected)
+{
+	if (!GEditorDraw.ZoneShader)
+	{
+		return;
+	}
+
+	GEditorDraw.ZoneParams.set(Sphere ? 1.f : 0.f, Selected ? 1.f : 0.f, Selected ? Device.fTimeGlobal : 0.f, 0.f);
+	DU_DRAW_SH_C(GEditorDraw.ZoneShader, Color);
+	if (Sphere)
+	{
+		m_SolidSphere.Render();
+	}
+	else
+	{
+		m_SolidBox.Render();
+	}
+	DU_DRAW_RS(D3DRS_TEXTUREFACTOR, 0xffffffff);
+}
+
 void CEditorDrawUtilities::DrawIdentSpherePart(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
 	if (bWire){
@@ -1247,11 +1267,81 @@ void CEditorDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, F
 	if (!bCull) DU_DRAW_RS(D3DRS_CULLMODE,D3DCULL_CCW);
 }
 
+static xr_vector<FVF::L> g_lineVerts;
 static xr_vector<FVF::L> g_idxVerts[2]; // 0 = LINE_LIST, 1 = TRIANGLE_LIST
 static xr_vector<u16>    g_idxIdx[2];
 static u32               g_idxPrims[2] = {0, 0};
 
 static void FlushIndexBatch(int slot);
+
+static void BatchIndexedXform(int Slot, const Fmatrix& World, const Fvector* Vertices, u32 VertexCount, const WORD* Indices, u32 IndexCount, u32 PrimitiveCount, u32 Color)
+{
+	if (GEditorDraw.IsSubmitPass())
+	{
+		return;
+	}
+
+	if (g_idxVerts[Slot].size() + VertexCount > 65000 || g_idxIdx[Slot].size() + IndexCount > 120000)
+	{
+		FlushIndexBatch(Slot);
+	}
+
+	const u32 Base = (u32)g_idxVerts[Slot].size();
+	for (u32 Index = 0; Index < VertexCount; ++Index)
+	{
+		Fvector Position;
+		World.transform_tiny(Position, Vertices[Index]);
+		FVF::L Vertex;
+		Vertex.set(Position, Color);
+		g_idxVerts[Slot].push_back(Vertex);
+	}
+	for (u32 Index = 0; Index < IndexCount; ++Index)
+	{
+		g_idxIdx[Slot].push_back(u16(Base + Indices[Index]));
+	}
+	g_idxPrims[Slot] += PrimitiveCount;
+}
+
+static void BatchLinesXform(const Fmatrix& World, const Fvector* Vertices, const WORD* Lines, u32 LineCount, u32 Color)
+{
+	if (GEditorDraw.IsSubmitPass())
+	{
+		return;
+	}
+
+	for (u32 Line = 0; Line < LineCount * 2; ++Line)
+	{
+		Fvector Position;
+		World.transform_tiny(Position, Vertices[Lines[Line]]);
+		FVF::L Vertex;
+		Vertex.set(Position, Color);
+		g_lineVerts.push_back(Vertex);
+	}
+}
+
+void CEditorDrawUtilities::BatchIdentBox(const Fmatrix& World, bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
+{
+	if (bWire)
+	{
+		BatchLinesXform(World, du_box_vertices, du_box_lines, DU_BOX_NUMLINES, clr_w);
+	}
+	if (bSolid)
+	{
+		BatchIndexedXform(1, World, du_box_vertices, DU_BOX_NUMVERTEX, du_box_faces, DU_BOX_NUMFACES * 3, DU_BOX_NUMFACES, clr_s);
+	}
+}
+
+void CEditorDrawUtilities::BatchIdentSphere(const Fmatrix& World, bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
+{
+	if (bWire)
+	{
+		BatchLinesXform(World, du_sphere_verticesl, du_sphere_lines, DU_SPHERE_NUMLINES, clr_w);
+	}
+	if (bSolid)
+	{
+		BatchIndexedXform(1, World, du_sphere_vertices, DU_SPHERE_NUMVERTEX, du_sphere_faces, DU_SPHERE_NUMFACES * 3, DU_SPHERE_NUMFACES, clr_s);
+	}
+}
 
 void CEditorDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
 											u32 pc, 
@@ -1302,6 +1392,7 @@ static void FlushIndexBatch(int slot)
 
 	RCache.set_xform_world(Fidentity);
 	GEditorDraw.SetShader(GEditorDraw.SelectionShader);
+	GEditorDraw.SetRS(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
 	DU_DRAW_DIP(
 		(slot == 0) ? ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST : ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
 		DU_impl.vs_L,
@@ -1404,7 +1495,6 @@ void CEditorDrawUtilities::OutText(const Fvector& pos, const char* text, u32 col
 
 const int kMaxLineVBSize = 10240;
 
-static xr_vector<FVF::L> g_lineVerts;
 
 static void PushLineVert(const Fvector& p, u32 clr)
 {
@@ -1476,6 +1566,7 @@ RENDER_API void FlushDU()
 	{
 		RCache.set_xform_world(Fidentity);
 		GEditorDraw.SetShader(GEditorDraw.WireShader);
+		GEditorDraw.SetRS(D3DRS_TEXTUREFACTOR, 0xFFFFFFFF);
 
 		_VertexStream* Stream = &RCache.Vertex;
 

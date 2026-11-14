@@ -186,7 +186,6 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Viewport\\Near Plane", 						&view_np, 				0.01f, 	10.f);
 	PHelper().CreateFloat	(props,"Viewport\\Far Plane", 						&view_fp, 				10.f, 	10000.f);
 	PHelper().CreateFloat	(props,"Viewport\\FOV", 							&view_fov, 				0.1f, 	170.f);
-	PHelper().CreateFloat	(props,"Viewport\\Render Radius", 					&EDevice->RenderRadius, 10.f, 	100000.f);
 	PHelper().CreateColor	(props,"Viewport\\Clear Color", 					&scene_clear_color);
 	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
 	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
@@ -496,7 +495,6 @@ void CCustomPreferences::Load()
 	// --- RENDER ---
 	if (const auto* render = GetObjectSafe(JSONData, "render"))
 	{
-		GetSafe(*render, "render_radius", EDevice->RenderRadius);
 		GetSafe(*render, "light_distance", LightDistance);
 		GetSafe(*render, "occlusion_culling", OcclusionCulling);
 		GetSafe(*render, "instancing", Instancing);
@@ -658,7 +656,6 @@ void CCustomPreferences::Save()
 	JSONData["render"]["y"]=Y;
 
 	JSONData["windows"]["log"]=bAllowLogCommands;
-	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
 	JSONData["render"]["light_distance"]=LightDistance;
 	JSONData["render"]["occlusion_culling"]=OcclusionCulling;
 	JSONData["render"]["instancing"]=Instancing;

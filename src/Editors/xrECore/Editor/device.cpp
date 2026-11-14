@@ -60,7 +60,6 @@ void setup_luabind_allocator()
 
 CEditorRenderDevice::CEditorRenderDevice()
 {
-	RenderRadius = 400;
 	psDeviceFlags.assign(rsStatistic | rsFilterLinear | rsFog | rsDrawGrid | rsDetails);
 	// default initialization
     TargetWidth = TargetHeight 	= 256;

@@ -34,6 +34,8 @@ public:
 	ref_shader WireShader;
 	ref_shader SelectionShader;
 	ref_shader ShaderTL;
+	ref_shader ZoneShader;
+	Fvector4 ZoneParams = {0.f, 0.f, 0.f, 0.f};
 
 	u32 FillMode = D3DFILL_SOLID;
 	u32 ShadeMode = D3DSHADE_GOURAUD;
@@ -57,6 +59,7 @@ public:
 
 private:
 	void BindDetailInstance(ref_shader& Shader, u32 Pass);
+	void BindZoneParams(const ref_shader& Shader);
 
 	ref_shader CurrentShader;
 

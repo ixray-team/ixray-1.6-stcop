@@ -536,6 +536,7 @@ private:
 	ref_shader						EditorUnlitShader;
 	IBlender*						EditorDepthUpscaleBlender	= nullptr;
 	ref_shader						EditorDepthUpscaleShader;
+	IBlender*						EditorZoneBlender			= nullptr;
 
 private:
 	ShaderExternalMap				m_ShaderOptions;

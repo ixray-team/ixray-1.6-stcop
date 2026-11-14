@@ -96,7 +96,7 @@ void ESceneLightTool::RenderIcons()
 	for (CCustomObject* Object : GetObjects())
 	{
 		CLight* Light = smart_cast<CLight*>(Object);
-		if (!Light || !Light->Visible())
+		if (!Light || !Light->Visible() || !GWorldPartition.IsPointActive(Light->GetPosition()))
 		{
 			continue;
 		}

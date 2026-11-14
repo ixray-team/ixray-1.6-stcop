@@ -39,15 +39,8 @@ CCustomObject::~CCustomObject()
 }
 bool CCustomObject::IsRender()
 {
+	// The distance is the world partition's (EScene::Render takes the objects of its cells)
 	Fbox bb; GetBox(bb);
-    float distance = 0.f;
-    {
-        Fvector center;
-        bb.getcenter(center);
-        distance = center.distance_to(EDevice->vCameraPosition);
-    }
-    if (distance > bb.getradius() + EDevice->RenderRadius)
-        return false;
     return ::Render->occ_visible(bb)||( Selected() && m_CO_Flags.is_any(flRenderAnyWayIfSelected|flMotion) );
 }
 

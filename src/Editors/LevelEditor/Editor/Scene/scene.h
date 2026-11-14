@@ -202,6 +202,8 @@ public:
 	int 			ObjCount();
 
 	void 			Render(const Fmatrix& camera);
+	// Objects seen by the view being rendered (world partition, frustum, occlusion); valid within Render
+	const xr_vector<CCustomObject*>& GetVisibleObjects() const;
 	// Geometry of the scene objects only (shadow-map passes of the renderer)
 	void 			RenderShadowCasters();
 	// Hash of the shadow casters touching the sphere (see IEditorRenderHost::GetShadowCasterSignature)

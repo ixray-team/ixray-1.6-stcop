@@ -506,12 +506,41 @@ bool CWorldPartition::CollectActive(xr_vector<CCustomObject*>& Out) const
 		return false;
 	}
 
-	Out.insert(Out.end(), Spanning.begin(), Spanning.end());
-
 	const Fvector Camera = StreamCameraPosition();
+	if (ActiveCacheFrame != Device.dwFrame || !ActiveCacheCamera.similar(Camera, 0.f) || ActiveCacheRadius != StreamRadius || ActiveCacheStream != StreamAroundCamera)
+	{
+		ActiveCacheFrame = Device.dwFrame;
+		ActiveCacheCamera = Camera;
+		ActiveCacheRadius = StreamRadius;
+		ActiveCacheStream = StreamAroundCamera;
+		ActiveCache.clear();
+		CollectActiveUncached(ActiveCache);
+	}
+
+	Out.insert(Out.end(), ActiveCache.begin(), ActiveCache.end());
+	return true;
+}
+
+void CWorldPartition::CollectActiveUncached(xr_vector<CCustomObject*>& Out) const
+{
+	const Fvector Camera = StreamCameraPosition();
+
+	// Objects over several cells (large meshes, restrictors with shapes far apart) by their box:
+	// the large meshes cover the camera and stay, their chunks hide by themselves
+	for (CCustomObject* Object : Spanning)
+	{
+		Fbox Box;
+		if (!StreamAroundCamera || !Object->GetBox(Box) || IsBoxInStreamRadius(Box, Camera))
+		{
+			Out.push_back(Object);
+		}
+	}
+
 	// Objects are binned by their center: a cell farther than the radius by half a cell
 	// diagonal can still hold objects reaching into the circle
 	const float Reach = StreamRadius + CellSize * 0.75f;
+	// A cell this close lies in the circle whole
+	const float Inside = StreamRadius - CellSize * 0.71f;
 
 	for (const auto& [Key, Cell] : Cells)
 	{
@@ -524,15 +553,54 @@ bool CWorldPartition::CollectActive(xr_vector<CCustomObject*>& Out) const
 		{
 			const float CX = (float(KeyX(Key)) + 0.5f) * CellSize;
 			const float CZ = (float(KeyZ(Key)) + 0.5f) * CellSize;
-			if (_sqr(CX - Camera.x) + _sqr(CZ - Camera.z) > _sqr(Reach))
+			const float Distance2 = _sqr(CX - Camera.x) + _sqr(CZ - Camera.z);
+			if (Distance2 > _sqr(Reach))
 			{
+				continue;
+			}
+
+			// A cell on the edge of the circle: each object by its own box
+			if (Inside <= 0.f || Distance2 > _sqr(Inside))
+			{
+				for (CCustomObject* Object : Cell.List)
+				{
+					Fbox Box;
+					if (!Object->GetBox(Box) || IsBoxInStreamRadius(Box, Camera))
+					{
+						Out.push_back(Object);
+					}
+				}
 				continue;
 			}
 		}
 
 		Out.insert(Out.end(), Cell.List.begin(), Cell.List.end());
 	}
-	return true;
+}
+
+bool CWorldPartition::IsBoxInStreamRadius(const Fbox& Box, const Fvector& Camera) const
+{
+	// Closest point of the box to the camera, on the ground plane
+	const float X = std::clamp(Camera.x, Box.min.x, Box.max.x);
+	const float Z = std::clamp(Camera.z, Box.min.z, Box.max.z);
+	return _sqr(X - Camera.x) + _sqr(Z - Camera.z) <= _sqr(StreamRadius);
+}
+
+bool CWorldPartition::IsBoxActive(const Fbox& Box) const
+{
+	if (!Enabled)
+	{
+		return true;
+	}
+
+	Fvector Center;
+	Box.getcenter(Center);
+	if (UnloadDisabled && IsPointDisabled(Center))
+	{
+		return false;
+	}
+
+	return !StreamAroundCamera || IsBoxInStreamRadius(Box, StreamCameraPosition());
 }
 
 bool CWorldPartition::CollectAlongRay(const Fvector& Start, const Fvector& Direction, float Distance, xr_vector<CCustomObject*>& Out) const

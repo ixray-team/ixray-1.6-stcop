@@ -423,6 +423,11 @@ void CEditShape::Render(int priority, bool strictB2F)
 	inherited::Render(priority, strictB2F);
     if (1==priority){
         if (strictB2F){
+            if (IsAnomalyZone && !Selected() && !IsZoneShellVisible())
+            {
+                return;
+            }
+
 	        EDevice->SetShader			(GEditorDraw.WireShader);
             EDevice->SetRS				(D3DRS_CULLMODE,D3DCULL_NONE);
             u32 clr 					= Selected()?subst_alpha(m_DrawTranspColor, color_get_A(m_DrawTranspColor)*2):m_DrawTranspColor;
@@ -441,15 +446,34 @@ void CEditShape::Render(int priority, bool strictB2F)
                     B.mulA_43			(_Transform());
                     RCache.set_xform_world(B);
                     EDevice->SetShader	(GEditorDraw.WireShader);
+                    if (IsAnomalyZone)
+                    {
+                        DU_impl.DrawIdentZone(true, ZoneColor, Selected());
+                        if (Selected())
+                        {
+                            AddCross(zero,1.f,1.f,1.f,1.f,1.f,1.f,m_DrawEdgeColor,false);
+                            DU_impl.BatchIdentSphere(B,false,true,clr,m_DrawEdgeColor);
+                        }
+                        break;
+                    }
                     AddCross(zero,1.f,1.f,1.f,1.f,1.f,1.f,m_DrawEdgeColor,false);
-                    DU_impl.DrawIdentSphere	(true,true,clr,m_DrawEdgeColor);
+                    DU_impl.BatchIdentSphere(B,true,true,clr,m_DrawEdgeColor);
                 }break;
                 case cfBox:
                 {
                     Fmatrix B			= it->data.box;
                     B.mulA_43			(_Transform());
                     RCache.set_xform_world(B);
-                    DU_impl.DrawIdentBox(true,true,clr,m_DrawEdgeColor);
+                    if (IsAnomalyZone)
+                    {
+                        DU_impl.DrawIdentZone(false, ZoneColor, Selected());
+                        if (Selected())
+                        {
+                            DU_impl.BatchIdentBox(B,false,true,clr,m_DrawEdgeColor);
+                        }
+                        break;
+                    }
+                    DU_impl.BatchIdentBox(B,true,true,clr,m_DrawEdgeColor);
                 }break;
                 }
             }
@@ -466,9 +490,37 @@ void CEditShape::Render(int priority, bool strictB2F)
     }
 }
 
+namespace
+{
+	constexpr float ZoneShellFadeEnd = 200.f;
+	constexpr float ZoneAnimationStep = 1.f / 30.f;
+}
+
+bool CEditShape::IsZoneShellVisible()
+{
+	Fbox Box;
+	if (!GetBox(Box))
+	{
+		return true;
+	}
+
+	const Fvector& Camera = EDevice->vCameraPosition;
+	Fvector Closest;
+	Closest.set(std::clamp(Camera.x, Box.min.x, Box.max.x), std::clamp(Camera.y, Box.min.y, Box.max.y), std::clamp(Camera.z, Box.min.z, Box.max.z));
+	return Closest.distance_to_sqr(Camera) < _sqr(ZoneShellFadeEnd);
+}
+
 void CEditShape::OnFrame()
 {
 	inherited::OnFrame();
+
+	// The animation of the selected zone needs frames; the editor redraws on demand only
+	if (IsAnomalyZone && Selected() && EDevice->fTimeGlobal - LastZoneRedraw >= ZoneAnimationStep)
+	{
+		LastZoneRedraw = EDevice->fTimeGlobal;
+		EContext.UI->RedrawScene();
+	}
+
     if(m_shape_type==eShapeLevelBound)
     {
         UIShapeTool* F 		= (UIShapeTool*)FParentTools->pForm;

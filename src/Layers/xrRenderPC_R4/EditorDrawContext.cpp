@@ -23,6 +23,14 @@ void CEditorDrawContext::OnDeviceDestroy()
 	_RELEASE(DetailInstanceBuffer);
 }
 
+void CEditorDrawContext::BindZoneParams(const ref_shader& Shader)
+{
+	if (ZoneShader && Shader._get() == ZoneShader._get())
+	{
+		RCache.set_c("zone_params", ZoneParams);
+	}
+}
+
 void CEditorDrawContext::SetShader(const ref_shader& Shader)
 {
 	CurrentShader = Shader;
@@ -103,6 +111,7 @@ void CEditorDrawContext::DP(ERHI_PRIMITIVE_TOPOLOGY Topology, ref_geom Geom, u32
 	{
 		RCache.set_Shader(S, Pass);
 		BindDetailInstance(S, Pass);
+		BindZoneParams(S);
 		SetRS(D3DRS_FILLMODE, FillMode);
 		RCache.set_Geometry(Geom);
 		RCache.Render(Topology, BaseVertex, PrimitiveCount);
@@ -124,6 +133,7 @@ void CEditorDrawContext::DIP(ERHI_PRIMITIVE_TOPOLOGY Topology, ref_geom Geom, u3
 	{
 		RCache.set_Shader(S, Pass);
 		BindDetailInstance(S, Pass);
+		BindZoneParams(S);
 		SetRS(D3DRS_FILLMODE, FillMode);
 		RCache.Render(Topology, BaseVertex, StartVertex, VertexCount, StartIndex, PrimitiveCount);
 	}

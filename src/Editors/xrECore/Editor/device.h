@@ -47,8 +47,6 @@ public:
 	ref_texture texture_null;
 	Fmaterial m_DefaultMat;
 
-	float RenderRadius;
-
 	RECT NormalWinSize;
 	bool NormalWinSizeSaved = false;
 	bool isZoomed = false;

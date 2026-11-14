@@ -30,6 +30,15 @@ struct tools_rp_pred
 DEFINE_MSET_PRED(ESceneToolBase*,SceneMToolsSet,SceneMToolsIt,tools_rp_pred);
 DEFINE_MSET_PRED(ESceneCustomOTool*,SceneOToolsSet,SceneOToolsIt,tools_rp_pred);
 
+// Visible objects of the view: the deferred, forward and overlay passes of a frame share the
+// camera, so the walk (partition, tool, frustum and occlusion tests) runs once per view
+static xr_vector<CCustomObject*> VisibleList;
+
+const xr_vector<CCustomObject*>& EScene::GetVisibleObjects() const
+{
+	return VisibleList;
+}
+
 void EScene::Render(const Fmatrix& camera)
 {
 	PROF_EVENT("EScene::Render")
@@ -75,40 +84,67 @@ void EScene::Render(const Fmatrix& camera)
 		return ForwardOnly && Obj->FClassID == OBJCLASS_SCENEOBJECT && !GEditorSceneSubmit.ForwardParents.contains(Obj);
 	};
 
-	// The partition hands over only the objects of the cells around the camera
-	static xr_vector<CCustomObject*> Candidates;
-	Candidates.clear();
-	if (GWorldPartition.CollectActive(Candidates))
+	static u32 VisibleFrame = u32(-1);
+	static u32 VisibleObjectCount = u32(-1);
+	static Fmatrix VisibleTransform;
+	const bool SameView = VisibleFrame == Device.dwFrame && VisibleObjectCount == u32(ObjCount()) &&
+		0 == memcmp(&VisibleTransform, &Device.mFullTransform, sizeof(Fmatrix));
+
+	if (!SameView)
 	{
-		PROF_EVENT("EScene::Render collect partition")
-		for (CCustomObject* Obj : Candidates)
+		VisibleFrame = Device.dwFrame;
+		VisibleObjectCount = u32(ObjCount());
+		VisibleTransform = Device.mFullTransform;
+		VisibleList.clear();
+
+		// The partition hands over only the objects of the cells around the camera
+		static xr_vector<CCustomObject*> Candidates;
+		Candidates.clear();
+		if (GWorldPartition.CollectActive(Candidates))
 		{
-			ESceneCustomOTool* SceneTool = GetOTool(Obj->FClassID);
-			if (SceneTool && SceneTool->IsLoaded && SceneTool->IsVisible() && !IsSkippedForward(Obj) && Obj->Visible() && Obj->IsRender())
+			PROF_EVENT("EScene::Render collect partition")
+			// Objects of one class come in runs: look the tool up once per run
+			ObjClassID LastClass = OBJCLASS_DUMMY;
+			ESceneCustomOTool* LastTool = nullptr;
+			for (CCustomObject* Obj : Candidates)
 			{
-				RenderList.push_back(Obj);
+				if (Obj->FClassID != LastClass)
+				{
+					LastClass = Obj->FClassID;
+					LastTool = GetOTool(LastClass);
+				}
+				if (LastTool && LastTool->IsLoaded && LastTool->IsVisible() && Obj->Visible() && Obj->IsRender())
+				{
+					VisibleList.push_back(Obj);
+				}
+			}
+		}
+		else
+		{
+			PROF_EVENT("EScene::Render collect all")
+			for (auto SceneTool : ObjTools)
+			{
+				if (!SceneTool->IsLoaded || !SceneTool->IsVisible())
+				{
+					continue;
+				}
+
+				for (CCustomObject* Obj : SceneTool->GetObjects())
+				{
+					if (Obj->Visible() && Obj->IsRender())
+					{
+						VisibleList.push_back(Obj);
+					}
+				}
 			}
 		}
 	}
-	else
+
+	for (CCustomObject* Obj : VisibleList)
 	{
-		PROF_EVENT("EScene::Render collect all")
-		for (auto SceneTool : ObjTools)
+		if (!IsSkippedForward(Obj))
 		{
-			if (!SceneTool->IsLoaded || !SceneTool->IsVisible())
-			{
-				continue;
-			}
-
-			ObjectList& lst = SceneTool->GetObjects();
-
-			for (CCustomObject* Obj : lst)
-			{
-				if (!IsSkippedForward(Obj) && Obj->Visible() && Obj->IsRender())
-				{
-					RenderList.push_back(Obj);
-				}
-			}
+			RenderList.push_back(Obj);
 		}
 	}
 
@@ -126,7 +162,13 @@ void EScene::Render(const Fmatrix& camera)
 		}
 	};
 
-	RenderBuckets RBucket;
+	// Kept between the calls: the vectors keep their memory
+	static RenderBuckets RBucket;
+	for (u32 P = 0; P < 4; ++P)
+	{
+		RBucket.Normal[P].clear();
+		RBucket.Alpha[P].clear();
+	}
 	RenderBucketsData = &RBucket;
 	for (CCustomObject* Object : RenderList)
 	{

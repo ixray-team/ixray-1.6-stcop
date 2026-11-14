@@ -93,7 +93,7 @@ public:
 		void			FillProp		(const char* pref, PropItemVec& values);
 
 		void    		Render			(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
-		void    		OnFrame			();
+		void    		OnFrame			(bool OnScreen);
 		// Visuals only (scene collection passes)
 		void			RenderVisuals	(bool bSelected, const Fmatrix& parent, int priority, bool strictB2F);
 		bool			IsIdleParticleInRange() const;
@@ -195,6 +195,7 @@ public:
     virtual void	PreExportSpawn();
 	bool IsGraphPoint()const;
 public:
+	bool IsSmartCover() const;
 
     IC CSE_Abstract* GetEntity() { PreExportSpawn(); return m_SpawnData.GetEntity(); }
     virtual	IKinematics*	   _BCL	ObjectKinematics	 ()				 	{ if(!m_SpawnData.m_Visual||!m_SpawnData.m_Visual->visual)return 0;return m_SpawnData.m_Visual->visual->dcast_PKinematics();}

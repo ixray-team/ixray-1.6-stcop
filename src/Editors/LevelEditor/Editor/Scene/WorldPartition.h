@@ -31,6 +31,8 @@ public:
 	bool IsPointDisabled(const Fvector& Position) const;
 	// Disabled cell or outside the streaming radius: chunks of large meshes there hide
 	bool IsPointHidden(const Fvector& Position) const;
+	bool IsPointActive(const Fvector& Position) const { return IsPositionActive(Position, 1.0f); }
+	bool IsBoxActive(const Fbox& Box) const;
 	void SetCellDisabled(u64 Key, bool Disabled);
 	void EnableAll();
 	bool HasDisabledCells() const { return !DisabledCells.empty(); }
@@ -85,6 +87,14 @@ public:
 
 private:
 	bool IsPositionActive(const Fvector& Position, float RadiusScale) const;
+	bool IsBoxInStreamRadius(const Fbox& Box, const Fvector& Camera) const;
+	void CollectActiveUncached(xr_vector<CCustomObject*>& Out) const;
+
+	mutable xr_vector<CCustomObject*> ActiveCache;
+	mutable u32 ActiveCacheFrame = u32(-1);
+	mutable Fvector ActiveCacheCamera = {flt_max, flt_max, flt_max};
+	mutable float ActiveCacheRadius = -1.f;
+	mutable bool ActiveCacheStream = false;
 	void UpdateStreaming();
 
 	u32 PendingCount = 0;

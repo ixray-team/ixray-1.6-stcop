@@ -19,6 +19,10 @@ public:
 	u8				m_shape_type;
 	u32				m_DrawTranspColor;
 	u32				m_DrawEdgeColor;
+	bool			IsAnomalyZone = false;
+	u32				ZoneColor = 0xFFFFFFFF;
+	float			LastZoneRedraw = 0.f;
+	bool			IsZoneShellVisible();
 
 	void			SetDrawColor	(u32 transp, u32 edge){m_DrawTranspColor=transp;m_DrawEdgeColor=edge;}
 	void			ApplyScale		();

@@ -65,4 +65,19 @@ public:
 */
     virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
    CEditableObject*		get_draw_visual			(u8 _RP_TeamID, u8 _RP_Type, const GameTypeChooser& _GameType); 
+
+	virtual void		OnRender				(int priority, bool strictB2F) override;
+	virtual void		OnDeviceDestroy			() override;
+
+private:
+	// Smart covers are drawn by their loophole models: an icon over them tells them apart
+	void				RenderSmartCoverIcons	();
+
+	struct SIconBatch
+	{
+		ref_shader Shader;
+		xr_vector<Fvector> Positions;
+		xr_vector<u32> Colors;
+	};
+	SIconBatch			SmartCoverIcons;
 };

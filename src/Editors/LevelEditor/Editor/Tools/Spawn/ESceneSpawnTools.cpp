@@ -157,6 +157,77 @@ void ESceneSpawnTool::FillProp(const char* pref, PropItemVec& items)
 	inherited::FillProp	(pref, items);
 }
 
+void ESceneSpawnTool::OnRender(int priority, bool strictB2F)
+{
+	inherited::OnRender(priority, strictB2F);
+
+	// Icons are helpers: the overlay pass only
+	if (1 == priority && strictB2F && !GEditorDraw.IsSubmitPass())
+	{
+		RenderSmartCoverIcons();
+	}
+}
+
+void ESceneSpawnTool::OnDeviceDestroy()
+{
+	inherited::OnDeviceDestroy();
+	SmartCoverIcons.Shader.destroy();
+}
+
+void ESceneSpawnTool::RenderSmartCoverIcons()
+{
+	if (!IsVisible())
+	{
+		return;
+	}
+
+	SmartCoverIcons.Positions.clear();
+	SmartCoverIcons.Colors.clear();
+	// The objects the scene found visible this frame (world partition, frustum, occlusion)
+	for (CCustomObject* Object : Scene->GetVisibleObjects())
+	{
+		if (Object->FClassID != FClassID)
+		{
+			continue;
+		}
+
+		CSpawnPoint* Spawn = static_cast<CSpawnPoint*>(Object);
+		if (!Spawn->IsSmartCover())
+		{
+			continue;
+		}
+
+		u32 Color = color_rgba(0, 220, 220, 255);
+		if (Spawn->Locked())
+		{
+			Color = 0xFFFF4040;
+		}
+		else if (Spawn->Selected())
+		{
+			Color = 0xFFFFFFFF;
+		}
+
+		// Over the loophole models, so they do not hide it
+		Fvector Position = Spawn->GetPosition();
+		Position.y += 2.2f;
+		SmartCoverIcons.Positions.push_back(Position);
+		SmartCoverIcons.Colors.push_back(Color);
+	}
+
+	if (SmartCoverIcons.Positions.empty())
+	{
+		return;
+	}
+
+	if (!SmartCoverIcons.Shader)
+	{
+		SmartCoverIcons.Shader.create("editor\\light_icon", "ed\\ed_smart_cover");
+	}
+
+	constexpr float IconPixels = 28.f;
+	DU_impl.DrawIcons(SmartCoverIcons.Shader, SmartCoverIcons.Positions.data(), SmartCoverIcons.Colors.data(), (u32)SmartCoverIcons.Positions.size(), IconPixels);
+}
+
 ref_shader ESceneSpawnTool::CreateIcon(const shared_str& name)
 {
     ref_shader S;
