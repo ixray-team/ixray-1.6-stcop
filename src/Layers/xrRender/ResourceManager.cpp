@@ -38,6 +38,10 @@ static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures)
 	xr_string key = s_shader ? s_shader : "";
 	key += "|";
 	key += s_textures ? s_textures : "";
+	key += "|";
+	char SkinningMode[16];
+	xr_sprintf(SkinningMode, "%d", Engine.External.GetSkinningMode());
+	key += SkinningMode;
 	return key;
 }
 
