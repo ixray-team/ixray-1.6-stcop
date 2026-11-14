@@ -10,6 +10,8 @@
 #include "../../movement_manager_space.h"
 #include "../../level_path_manager.h"
 #include "../../Actor.h"
+#include "../../Car.h"
+#include "../../PHMovementControl.h"
 #include "../../actor_memory.h"
 #include "../../visual_memory_manager.h"
 
@@ -19,6 +21,7 @@ extern bool show_restrictions(CRestrictedObject *object);
 
 CControlPathBuilder::CControlPathBuilder(CCreature *monster) : CMovementManager(monster)
 {
+	CarCandidates.reserve			(16);
 }
 
 CControlPathBuilder::~CControlPathBuilder()
@@ -129,6 +132,127 @@ void CControlPathBuilder::on_travel_point_change(const u32 &previous_travel_poin
 void CControlPathBuilder::on_build_path()
 {
 	m_man->notify	(ControlCom::eventPathBuilt, 0);
+}
+
+void CControlPathBuilder::move_along_path(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta)
+{
+	const bool Moving = inherited::move_along_path();
+
+	inherited::move_along_path(movement_control, dest_position, time_delta);
+
+	if (!Moving || movement_control == nullptr)
+		return;
+
+	SteerAroundCars(movement_control);
+}
+
+void CControlPathBuilder::SteerAroundCars(CPHMovementControl *movement_control)
+{
+	if (!movement_control->CharacterExist())
+		return;
+
+	const float Speed = old_desirable_speed();
+	if (Speed <= 0.1f)
+		return;
+
+	Fvector Dir = detail().direction();
+	Dir.y = 0.f;
+	if (Dir.magnitude() <= EPS_L)
+		return;
+	Dir.normalize();
+
+	const Fvector Origin = object().Position();
+
+	constexpr float LookAhead = 6.f;
+	g_SpatialSpace->q_sphere(CarCandidates, 0, ESPATIAL_TYPE::COLLIDEABLE, Origin, LookAhead + 3.f);
+
+	CCar *BlockingCar = nullptr;
+	float BlockingForward = flt_max;
+
+	for (const ISpatialShared &Spatial : CarCandidates)
+	{
+		CObject *Object = Spatial.get() != nullptr ? Spatial->dcast_CObject() : nullptr;
+		CCar *Car = Object != nullptr ? Object->cast_car() : nullptr;
+		if (Car == nullptr || Car->getDestroy())
+			continue;
+
+		// A car with the actor at the wheel is the current attack target. The
+		// combat logic already routes the monster to its surface, so steering
+		// away would make it circle the car instead of attacking.
+		if (Car->OwnerActor() != nullptr)
+			continue;
+
+		// Do not react to a car on a bridge or in the air above the monster.
+		if (std::abs(Car->Position().y - Origin.y) > 2.5f)
+			continue;
+
+		Fvector ToCar;
+		ToCar.sub(Car->Position(), Origin);
+		ToCar.y = 0.f;
+
+		const float Forward = ToCar.dotproduct(Dir);
+		if (Forward <= 0.f || Forward > LookAhead)
+			continue;
+
+		Fvector Lateral;
+		Lateral.mad(ToCar, Dir, -Forward);
+
+		float CarRadius = 1.5f;
+		Fbox Box = Car->BoundingBox();
+		if (Box.is_valid())
+			CarRadius = 0.5f * std::max(Box.max.x - Box.min.x, Box.max.z - Box.min.z);
+
+		const float Clearance = CarRadius + object().Radius() + 0.5f;
+		if (Lateral.magnitude() >= Clearance)
+			continue;
+
+		if (Forward < BlockingForward)
+		{
+			BlockingForward = Forward;
+			BlockingCar = Car;
+		}
+	}
+
+	if (BlockingCar == nullptr)
+		return;
+
+	// Keep the monster on the side it already occupies. Using the car center
+	// as the reference makes the choice stable while the body slides along the
+	// car and prevents left/right oscillation.
+	Fvector Away;
+	Away.sub(Origin, BlockingCar->Position());
+	Away.y = 0.f;
+
+	Fvector Side = BlockingCar->XFORM().i;
+	Side.y = 0.f;
+	if (Side.magnitude() <= EPS_L)
+		Side.set(Dir.z, 0.f, -Dir.x);
+	else
+		Side.normalize();
+
+	Fvector LateralAway;
+	LateralAway.mad(Away, Dir, -Away.dotproduct(Dir));
+	LateralAway.y = 0.f;
+
+	if (LateralAway.magnitude() <= 0.1f)
+		LateralAway = Side;
+	else
+		LateralAway.normalize();
+
+	// Turn the desired velocity away from the car. The forward component is
+	// kept, so the monster slides around the body instead of stopping.
+	Fvector Steered = Dir;
+	Steered.mad(LateralAway, 1.2f);
+	if (Steered.magnitude() <= EPS_L)
+		return;
+	Steered.normalize();
+
+	float SpeedFactor = BlockingForward / LookAhead;
+	clamp(SpeedFactor, 0.5f, 1.f);
+
+	Fvector Velocity;
+	Velocity.mul(Steered, Speed * SpeedFactor);
+	movement_control->SetCharacterVelocity(Velocity);
 }
 
 

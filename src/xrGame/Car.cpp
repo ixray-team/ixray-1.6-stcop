@@ -34,6 +34,7 @@
 #include "../xrPhysics/ODE/PHActivationShape.h"
 #include "../xrPhysics/PHCollideValidator.h"
 #include "CharacterPhysicsSupport.h"
+#include "PHMovementControl.h"
 #include "car_memory.h"
 
 #include "UIGameSP.h"
@@ -1504,7 +1505,10 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 		// shell is represented by CPhysicsShellHolder::m_pPhysicsShell. The
 		// generic object filter below must not turn them into pass-through.
 		if (Car != nullptr)
+		{
 			Car->RegisterCharacterContact(Character);
+			Car->HitCharacterFromCar(Character, cphc.GetPosition());
+		}
 		do_colide = true;
 		return;
 	}
@@ -1645,6 +1649,7 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 	m_character_contacts.clear();
+	m_character_hit_times.clear();
 
 	// Characters collide with the separate scraper shell. The main car body
 	// must ignore them: a mutant/NPC contact may push or brake the dynamic
@@ -2157,6 +2162,7 @@ void	CCar::net_Destroy()
 void CCar::DestroyCharacterScraper()
 {
 	m_character_contacts.clear();
+	m_character_hit_times.clear();
 
 	if (!characters_scraper_shell)
 		return;
@@ -3214,10 +3220,10 @@ void CCar::HitFromCreature(CObject* who, float value, float impulse, const Fvect
 	// The attack impulse is tuned for the actor, while the monster body adds
 	// momentum of its own. Convert both to momentum, cap the result and divide
 	// by the car mass: a heavy truck moves much less than a light car.
-	constexpr float ImpulseToMomentum = 8.f;  // kg*m/s per attack impulse unit
-	constexpr float AttackerBodySpeed = 3.f;  // m/s, monster body momentum
-	constexpr float MaxMomentum = 2400.f;     // kg*m/s, strongest melee hit
-	constexpr float MaxSpeed = 3.f;           // m/s, guard for very light cars
+	constexpr float ImpulseToMomentum = 16.f; // kg*m/s per attack impulse unit
+	constexpr float AttackerBodySpeed = 4.f;  // m/s, monster body momentum
+	constexpr float MaxMomentum = 5000.f;     // kg*m/s, strongest melee hit
+	constexpr float MaxSpeed = 4.f;           // m/s, guard for very light cars
 
 	const float AttackerMass = GetCarAttackerMass(who);
 	const float AttackImpulse = std::max(impulse, 0.f);
@@ -3229,8 +3235,26 @@ void CCar::HitFromCreature(CObject* who, float value, float impulse, const Fvect
 
 	const float Speed = std::min(Momentum / CarMass, MaxSpeed);
 
+	// The animation impulse direction is often mostly vertical (a dog bite
+	// points up). A hit like that only lifts the car and looks like no reaction
+	// at all. Push the car away from the attacker horizontally and keep only a
+	// small vertical part of the animation direction.
+	Fvector PushDir = dir;
+	if (who != nullptr)
+	{
+		Fvector ToCar;
+		ToCar.sub(Position(), who->Position());
+		ToCar.y = 0.f;
+		if (ToCar.magnitude() > EPS_L)
+		{
+			ToCar.normalize();
+			PushDir = ToCar;
+			PushDir.y = dir.y * 0.2f;
+		}
+	}
+
 	const Fvector Contact = GetNearestPoint(who != nullptr ? who->Position() : Position());
-	ApplyPush(dir, Speed, Contact);
+	ApplyPush(PushDir, Speed, Contact);
 }
 
 void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point)
@@ -3238,8 +3262,8 @@ void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point
 	if (getDestroy() || m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
 		return;
 
-	if (OwnerActor() && rs_car_god)
-		return;
+	// rs_car_god protects the car from damage, not from physical reactions.
+	// A mutant bite must still rock and move the body.
 
 	if (speed <= 0.f)
 		return;
@@ -3266,6 +3290,12 @@ void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point
 	{
 		LocalPoint.y = (Box.min.y + Box.max.y) * 0.5f;
 	}
+
+	// A parked car can be in the disabled state. A deliberate hit must wake
+	// the shell, otherwise the impulse is applied to a sleeping body and the
+	// car does not react at all.
+	if (!m_pPhysicsShell->isEnabled())
+		m_pPhysicsShell->Enable();
 
 	// ODE expects the point in body space and the direction in world space.
 	m_pPhysicsShell->applyImpulseTrace(LocalPoint, PushDir, speed * Mass);
@@ -6352,6 +6382,82 @@ void CCar::RegisterCharacterContact(IPHCharacter* Character)
 
 	if (std::find(m_character_contacts.begin(), m_character_contacts.end(), Character) == m_character_contacts.end())
 		m_character_contacts.push_back(Character);
+}
+
+void CCar::HitCharacterFromCar(IPHCharacter* Character, const Fvector& ContactPos)
+{
+	if (Character == nullptr || Character->IsActorCharacter())
+		return;
+
+	if (m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
+		return;
+
+	CGameObject* Target = smart_cast<CGameObject*>(Character->PhysicsRefObject());
+	if (Target == nullptr || Target->getDestroy())
+		return;
+
+	Fvector CarVelocity;
+	m_pPhysicsShell->get_LinearVel(CarVelocity);
+	const float Speed = CarVelocity.magnitude();
+	constexpr float MinHitSpeed = 2.f; // ~7.2 km/h
+	if (Speed < MinHitSpeed)
+		return;
+
+	const u32 Now = Device.dwTimeGlobal;
+	u32& LastHit = m_character_hit_times[Target->ID()];
+	if (Now - LastHit < 1000)
+		return;
+	LastHit = Now;
+
+	Fvector Dir = CarVelocity;
+	if (!safe_normalize(Dir))
+	{
+		Dir.sub(ContactPos, Position());
+		if (!safe_normalize(Dir))
+			return;
+	}
+
+	// A car must knock characters down and damage them, but a light touch must
+	// not be lethal. Both values start from zero at the minimum speed and grow
+	// with the speed above it. Power is in condition units: 1.0 is full health,
+	// while a dog bite is about 0.10 and a pseudogiant strike is about 0.90.
+	const float HitScale = Speed - MinHitSpeed;
+	const float Mass = m_pPhysicsShell->getMass();
+	const float Impulse = std::min(Mass * HitScale * 0.06f, 600.f);
+	const float Power = std::min(HitScale * 0.04f, 0.5f);
+
+	// The generic SHit impulse is applied to physics shells, while a live
+	// NPC/mutant keeps its body in CPHMovementControl. Push it directly so the
+	// car actually knocks the character back instead of only reducing health.
+	CEntityAlive* Alive = Target->cast_entity_alive();
+	CCharacterPhysicsSupport* Support = Alive != nullptr ? Alive->character_physics_support() : nullptr;
+	CPHMovementControl* Movement = Support != nullptr ? Support->movement() : nullptr;
+
+	if (Alive != nullptr && Alive->g_Alive() && Movement != nullptr)
+	{
+		Fvector KnockDir = Dir;
+		KnockDir.y = 0.35f;
+		KnockDir.normalize();
+		Movement->ApplyImpulse(KnockDir, Impulse);
+	}
+
+	NET_Packet Packet;
+	SHit Hit;
+	Hit.GenHeader(GE_HIT, Target->ID());
+	// Use the driver as the initiator when the car is occupied. With the car
+	// object as initiator the generic hit path cannot register a fight between
+	// the actor and the NPC, so the victim never turns hostile.
+	const u16 InitiatorID = OwnerActor() != nullptr ? OwnerActor()->ID() : ID();
+	Hit.whoID = InitiatorID;
+	Hit.weaponID = InitiatorID;
+	Hit.dir = Dir;
+	Hit.power = Power;
+	Hit.boneID = BI_NONE;
+	Hit.p_in_bone_space.set(0.f, 0.f, 0.f);
+	Hit.impulse = Impulse;
+	Hit.hit_type = ALife::eHitTypeStrike;
+	Hit.Write_Packet(Packet);
+	u_EventSend(Packet);
 }
 
 void CCar::ClampCharacterContacts()
