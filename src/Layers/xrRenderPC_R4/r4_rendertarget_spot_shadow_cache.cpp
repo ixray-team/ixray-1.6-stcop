@@ -3,12 +3,31 @@
 #include "FBasicVisual.h"
 #include "../../xrEngine/xr_object.h"
 #include "r4_fullscreen_pass.h"
+#include "EditorRenderHost.h"
 
 namespace SpotShadowCacheUtils
 {
 constexpr u32 MaxEntries = 128;
 constexpr u32 Lifetime = 1000;
 constexpr u32 TextureRetryFrames = 30;
+// Every face of a shadowed point light owns an entry in the editor
+constexpr u32 EditorMaxEntries = 1024;
+constexpr u64 EditorBudgetMb = 512;
+
+static u32 MaxEntryCount()
+{
+	return Device.IsEditorMode() ? EditorMaxEntries : MaxEntries;
+}
+
+static u64 BudgetBytes()
+{
+	u64 BudgetMb = u64(g_SpotShadowCacheBudgetMb);
+	if (Device.IsEditorMode())
+	{
+		BudgetMb = std::max(BudgetMb, EditorBudgetMb);
+	}
+	return BudgetMb * 1024 * 1024;
+}
 
 class CopyBlender final : public IBlender
 {
@@ -199,7 +218,7 @@ void CRenderTarget::BeginSpotShadowCacheFrame()
 
 void CRenderTarget::TrimSpotShadowCache(u64 RequiredBytes, SpotShadowCacheEntry* Keep)
 {
-	const u64 Budget = u64(g_SpotShadowCacheBudgetMb) * 1024 * 1024;
+	const u64 Budget = SpotShadowCacheUtils::BudgetBytes();
 	while (SpotShadowCacheBytes + RequiredBytes > Budget)
 	{
 		SpotShadowCacheEntry* Oldest = nullptr;
@@ -244,7 +263,7 @@ CRenderTarget::SpotShadowCacheEntry* CRenderTarget::FindSpotShadowCache(const li
 			return &Entry;
 		}
 	}
-	if (SpotShadowCache.size() >= SpotShadowCacheUtils::MaxEntries)
+	if (SpotShadowCache.size() >= SpotShadowCacheUtils::MaxEntryCount())
 	{
 		const auto OlderLambda = [](const auto& Left, const auto& Right)
 		{
@@ -337,6 +356,132 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 	Entry.State = SpotShadowCacheState::Pending;
 }
 
+bool CRenderTarget::CreateSpotShadowDepth(SpotShadowCacheEntry& Entry)
+{
+	if (!Entry.Depth)
+	{
+		const u64 Bytes = u64(Entry.Key.Size) * Entry.Key.Size * SpotShadowCacheUtils::DepthTexelBytes(Entry.Key.Format);
+		TrimSpotShadowCache(Bytes, &Entry);
+		if (SpotShadowCacheBytes + Bytes > SpotShadowCacheUtils::BudgetBytes())
+		{
+			++SpotShadowStatistics.BudgetLimited;
+			return false;
+		}
+		string128 Name;
+		xr_sprintf(Name, "$user$spot_shadow_cache_%llu", static_cast<unsigned long long>(++SpotShadowResourceSerial));
+		Entry.Depth.create(Name, Entry.Key.Size, Entry.Key.Size, Entry.Key.Format);
+		if (!Entry.Depth || !Entry.Depth->pSurface || !Entry.Depth->pZRT || !Entry.Depth->pTexture || !Entry.Depth->pTexture->get_SRView())
+		{
+			ReleaseSpotShadowDepth(Entry);
+			++SpotShadowStatistics.ResourceFailures;
+			return false;
+		}
+		Entry.Bytes = Bytes;
+		SpotShadowCacheBytes += Bytes;
+		CreateEffectSQ<SpotShadowCacheUtils::CopyBlender>(Entry.CopyShader, nullptr, Name);
+	}
+	if (!Entry.CopyShader || !Entry.CopyShader->E[0] || Entry.CopyShader->E[0]->passes.empty())
+	{
+		ReleaseSpotShadowDepth(Entry);
+		++SpotShadowStatistics.ResourceFailures;
+		return false;
+	}
+	return true;
+}
+
+bool CRenderTarget::RenderEditorShadow(light& Source)
+{
+	PROF_EVENT("EditorShadowCache");
+	if (g_EditorRenderHost == nullptr || !Source.X.S.size || !SpotShadowCacheUtils::ValidMatrix(Source.X.S.view) ||
+		!SpotShadowCacheUtils::ValidMatrix(Source.X.S.project) || !CheckSpotShadowGraph())
+	{
+		return false;
+	}
+
+	const u64 Signature = g_EditorRenderHost->GetShadowCasterSignature(Source.position, Source.range);
+	if (Signature == 0)
+	{
+		return false;
+	}
+
+	// The caster signature stands in for the sector and content revision of the game cache
+	SpotShadowCacheKey Key = MakeSpotShadowCacheKey(Source);
+	Key.Sector = nullptr;
+	Key.Revision = Signature;
+	SpotShadowCacheEntry* Entry = FindSpotShadowCache(Source, Key);
+	if (Entry == nullptr || Entry->EditorUncacheable)
+	{
+		return false;
+	}
+	Entry->LastUsedFrame = Device.dwFrame;
+	++SpotShadowStatistics.Lights;
+	Source.X.S.transluent = false;
+
+	CRender& Renderer = RImplementation;
+	const bool HasDepth = Entry->Depth && Entry->Depth->pZRT && Entry->Depth->pTexture && Entry->Depth->pTexture->get_SRView();
+	if (Entry->State != SpotShadowCacheState::Ready || !HasDepth)
+	{
+		if (!CreateSpotShadowDepth(*Entry))
+		{
+			return false;
+		}
+
+		PROF_EVENT("EditorShadowCache::Build");
+		GPU_EVENT(EditorShadowCacheBuild);
+		CFrustum Frustum;
+		Frustum.CreateFromMatrix(Source.X.S.combine, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
+		Renderer.EditorRenderSubspace(Frustum);
+
+		RCache.set_xform_world(Fidentity);
+		RCache.set_xform_view(Source.X.S.view);
+		RCache.set_xform_project(Source.X.S.project);
+
+		const bool HasSpecial = SpotShadowCacheUtils::HasGeometry(Renderer, 1) || Renderer.mapSorted.size();
+		if (HasSpecial)
+		{
+			// Translucent casters write the colour target every frame: render this light directly
+			// now and keep using the regular path until its casters change
+			Entry->EditorUncacheable = true;
+			ReleaseSpotShadowDepth(*Entry);
+			phase_smap_spot(&Source);
+			Renderer.r_dsgraph_render_graph(0);
+			Source.X.S.transluent = true;
+			phase_smap_spot_tsh(&Source);
+			Renderer.r_dsgraph_render_graph(1);
+			Renderer.r_dsgraph_render_sorted(false);
+			++SpotShadowStatistics.SpecialPasses;
+			++SpotShadowStatistics.Direct;
+			return CheckSpotShadowGraph();
+		}
+
+		RCache.set_Textures(&SpotShadowEmptyTextures);
+		GRHI->ShaderResourceCache->Apply();
+		RHIViewport Viewport = {0.f, 0.f, float(Entry->Key.Size), float(Entry->Key.Size), 0.f, 1.f};
+		SetupSpotShadowTarget(Entry->Depth->pZRT, Entry->Key.Size, Entry->Key.Size, Viewport);
+		GRHI->ClearDepthStencil(Entry->Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+		Renderer.r_dsgraph_render_graph(0);
+
+		if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) && psDeviceFlags.is(rsDetails) && Renderer.GetDetails() && Renderer.GetDetails()->dtSlots && Source.flags.bShadow)
+		{
+			Renderer.GetDetails()->hw_Render(&Source);
+		}
+
+		// Detach the cache DSV before the atlas restore reads its SRV
+		phase_smap_spot(&Source);
+		GRHI->ApplyRenderTargetChange();
+		Entry->State = SpotShadowCacheState::Ready;
+		++SpotShadowStatistics.Builds;
+	}
+	else
+	{
+		++SpotShadowStatistics.Hits;
+	}
+
+	RestoreSpotShadowCache(Source, *Entry);
+	phase_smap_spot(&Source);
+	return CheckSpotShadowGraph();
+}
+
 bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& Entry)
 {
 	PROF_EVENT("SpotShadowCache::Build");
@@ -355,32 +500,8 @@ bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& En
 
 	if (!Entry.CachedCasters.empty())
 	{
-		const u64 Bytes = u64(Entry.Key.Size) * Entry.Key.Size * SpotShadowCacheUtils::DepthTexelBytes(Entry.Key.Format);
-		if (!Entry.Depth)
+		if (!CreateSpotShadowDepth(Entry))
 		{
-			TrimSpotShadowCache(Bytes, &Entry);
-			if (SpotShadowCacheBytes + Bytes > u64(g_SpotShadowCacheBudgetMb) * 1024 * 1024)
-			{
-				++SpotShadowStatistics.BudgetLimited;
-				return false;
-			}
-			string128 Name;
-			xr_sprintf(Name, "$user$spot_shadow_cache_%llu", static_cast<unsigned long long>(++SpotShadowResourceSerial));
-			Entry.Depth.create(Name, Entry.Key.Size, Entry.Key.Size, Entry.Key.Format);
-			if (!Entry.Depth || !Entry.Depth->pSurface || !Entry.Depth->pZRT || !Entry.Depth->pTexture || !Entry.Depth->pTexture->get_SRView())
-			{
-				ReleaseSpotShadowDepth(Entry);
-				++SpotShadowStatistics.ResourceFailures;
-				return false;
-			}
-			Entry.Bytes = Bytes;
-			SpotShadowCacheBytes += Bytes;
-			CreateEffectSQ<SpotShadowCacheUtils::CopyBlender>(Entry.CopyShader, nullptr, Name);
-		}
-		if (!Entry.CopyShader || !Entry.CopyShader->E[0] || Entry.CopyShader->E[0]->passes.empty())
-		{
-			ReleaseSpotShadowDepth(Entry);
-			++SpotShadowStatistics.ResourceFailures;
 			return false;
 		}
 		GPU_EVENT(SpotShadowCacheBuild);

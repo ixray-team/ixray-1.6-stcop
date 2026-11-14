@@ -165,11 +165,44 @@ void CEditorSceneSubmit::AddSingle(CCustomObject* Parent, CEditableMesh* Mesh, C
 	::Render->add_Visual(Visual, true);
 }
 
+bool CEditorSceneSubmit::IsForwardShader(const Shader* ShaderPtr)
+{
+	// Elements 0 and 1 are the scene LODs; the others are shadow and light elements
+	for (u32 Index = 0; Index < 2; ++Index)
+	{
+		const ShaderElement* Element = &*ShaderPtr->E[Index];
+		if (Element == nullptr)
+		{
+			continue;
+		}
+
+		// The scene graph keeps priorities 2..3 (and strict B2F, distortion) for the forward pass
+		if (Element->flags.iPriority >= 2 || Element->flags.bStrictB2F || Element->flags.bDistort)
+		{
+			return true;
+		}
+
+		for (const ref_pass& Pass : Element->passes)
+		{
+			if (Pass && Pass->iPriority != u8(-1) && Pass->iPriority >= 2)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void CEditorSceneSubmit::AddSurface(CCustomObject* Parent, CEditableMesh* Mesh, CSurface* Surface, const ref_shader& Shader, const ref_shader& InstancedShader, const Fmatrix& Transform, bool Skeleton)
 {
 	if (!Shader)
 	{
 		return;
+	}
+
+	if (Parent && !ShadowCollect && !ForwardOnly && IsForwardShader(&*Shader))
+	{
+		ForwardParents.insert(Parent);
 	}
 
 	// Skeletons have bones, highlighted objects a per-object selection tint, chunked meshes per-copy culling

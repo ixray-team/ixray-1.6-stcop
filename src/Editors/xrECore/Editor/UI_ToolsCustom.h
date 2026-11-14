@@ -255,6 +255,7 @@ public:
     // Placed point/spot lights for the game lighting pipeline (LevelEditor).
     // Returns the total number of eligible lights; writes up to Capacity.
     virtual u32			CollectEditorLights	(EditorLightDescriptor* Out, u32 Capacity) { (void)Out; (void)Capacity; return 0; }
+    virtual u64			GetShadowCasterSignature(const Fvector& Center, float Radius) { (void)Center; (void)Radius; return 0; }
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }
 

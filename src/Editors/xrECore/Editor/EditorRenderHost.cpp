@@ -127,10 +127,30 @@ namespace
 			}
 			else if (Tools)
 			{
+				// A full pass records again which objects have forward surfaces
+				GEditorSceneSubmit.ForwardParents.clear();
 				Tools->Render();
 			}
 			GEditorSceneSubmit.WaitPrepared();
 			GEditorSceneSubmit.Flush();
+		}
+
+		void SubmitForwardScene() override
+		{
+			if (GEditorSceneSubmit.IsolatedObject)
+			{
+				SubmitScene();
+				return;
+			}
+
+			GEditorSceneSubmit.ForwardOnly = true;
+			if (Tools)
+			{
+				Tools->Render();
+			}
+			GEditorSceneSubmit.WaitPrepared();
+			GEditorSceneSubmit.Flush();
+			GEditorSceneSubmit.ForwardOnly = false;
 		}
 
 		void DrawSceneHelpers() override
@@ -168,6 +188,16 @@ namespace
 				return Tools->CollectEditorLights(Out, Capacity);
 			}
 			return 0;
+		}
+
+		u64 GetShadowCasterSignature(const Fvector& Center, float Radius) override
+		{
+			// Isolated previews and the played level change every frame
+			if (!Tools || GEditorSceneSubmit.IsolatedObject || IsPlayInEditor())
+			{
+				return 0;
+			}
+			return Tools->GetShadowCasterSignature(Center, Radius);
 		}
 
 		IBlender* CreateBlender(CLASS_ID Class) override

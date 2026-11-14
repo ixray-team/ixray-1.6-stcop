@@ -858,7 +858,9 @@ void CRender::render_forward()
 	r_pmask(false, true);
 	phase = PHASE_NORMAL;
 
+	EditorForwardPass = true;
 	render_main(false);
+	EditorForwardPass = false;
 	mapLOD.clear();
 
 	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size();

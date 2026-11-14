@@ -56,6 +56,10 @@ public:
 	// Called once the view frustum of the frame is built, before the scene passes
 	virtual void PrepareScene() {}
 	virtual void SubmitScene() = 0;
+	virtual void SubmitForwardScene()
+	{
+		SubmitScene();
+	}
 	virtual void SubmitShadowCasters()
 	{
 		SubmitScene();
@@ -76,6 +80,15 @@ public:
 	{
 		(void)Out;
 		(void)Capacity;
+		return 0;
+	}
+
+	// Signature of the shadow casters touching the sphere. The renderer keeps a light's
+	// shadow depth while it stays the same; 0 means the shadow must be rendered every frame.
+	virtual u64 GetShadowCasterSignature(const Fvector& Center, float Radius)
+	{
+		(void)Center;
+		(void)Radius;
 		return 0;
 	}
 };

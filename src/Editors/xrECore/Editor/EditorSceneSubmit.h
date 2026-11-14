@@ -108,6 +108,10 @@ public:
 	// When set, the scene passes draw only this object at the origin (LOD capture)
 	CEditableObject* IsolatedObject = nullptr;
 
+	xr_hash_set<CCustomObject*> ForwardParents;
+	bool ForwardOnly = false;
+	static bool IsForwardShader(const Shader* ShaderPtr);
+
 	void BeginFrame();
 	void Clear();
 

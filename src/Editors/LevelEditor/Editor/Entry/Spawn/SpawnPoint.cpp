@@ -1170,6 +1170,28 @@ bool CSpawnPoint::GetBox( Fbox& box )
 }
 Fvector u32_3f(u32);
 
+bool CSpawnPoint::NeedsSpawnDataFrame() const
+{
+	// Pending editor changes (visual, animation, motion, properties) are applied at once
+	constexpr u32 PendingFlags = CSE_Abstract::flUpdateProperties | CSE_Abstract::flVisualChange |
+		CSE_Abstract::flVisualAnimationChange | CSE_Abstract::flMotionChange;
+	if (m_SpawnData.m_Data->m_editor_flags.test(PendingFlags))
+	{
+		return true;
+	}
+
+	// Smart covers keep their name in sync for the logic even when unseen
+	if (smart_cast<CSE_SmartCover*>(m_SpawnData.m_Data) != nullptr)
+	{
+		return true;
+	}
+
+	// Bones, animators and idle particles only matter for spawns on screen. A spawn that comes
+	// back into view draws the last pose for one frame, then resumes.
+	constexpr u32 VisibleFrames = 2;
+	return Selected() || Device.dwFrame - LastRenderFrame.load() <= VisibleFrames;
+}
+
 void CSpawnPoint::OnFrame()
 {
 	xrCriticalSectionGuard guard(&OnFrameLock);
@@ -1181,7 +1203,7 @@ void CSpawnPoint::OnFrame()
 
 	inherited::OnFrame();
 	if (m_AttachedObject) 		m_AttachedObject->OnFrame	();
-	if (m_SpawnData.Valid())
+	if (m_SpawnData.Valid() && NeedsSpawnDataFrame())
 	{
 		if(m_physics_shell&&m_SpawnData.m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange))
 		{
@@ -1252,6 +1274,8 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 {
 	if (!IsLoaded)
 		return;
+
+	LastRenderFrame.store(Device.dwFrame);
 
 	if (m_CO_Flags.test(flObjectInGroup))
 	{

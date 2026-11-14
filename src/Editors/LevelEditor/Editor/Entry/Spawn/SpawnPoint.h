@@ -204,4 +204,7 @@ private:
     void			RenderSimBox	();
 
     xr_atomic_u32 dwFrameUpdate = 0;
+    // Last frame a viewport drew this spawn: hidden spawns skip the visual update
+    xr_atomic_u32 LastRenderFrame = 0;
+    bool NeedsSpawnDataFrame() const;
 };

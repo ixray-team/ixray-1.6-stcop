@@ -204,6 +204,8 @@ public:
 	void 			Render(const Fmatrix& camera);
 	// Geometry of the scene objects only (shadow-map passes of the renderer)
 	void 			RenderShadowCasters();
+	// Hash of the shadow casters touching the sphere (see IEditorRenderHost::GetShadowCasterSignature)
+	u64 			GetShadowCasterSignature(const Fvector& Center, float Radius);
 	// Static objects of the scene passes, for the frame-wide prepared submit list
 	void 			PrepareSubmit();
 	void 			OnFrame(float dT);

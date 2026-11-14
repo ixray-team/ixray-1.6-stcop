@@ -67,6 +67,14 @@ void EScene::Render(const Fmatrix& camera)
 	RenderList.reserve(8192);
 	RenderList.clear();
 
+	// Forward pass: static objects without forward surfaces gave all their geometry to the
+	// deferred pass already
+	const bool ForwardOnly = GEditorSceneSubmit.ForwardOnly;
+	auto IsSkippedForward = [ForwardOnly](CCustomObject* Obj)
+	{
+		return ForwardOnly && Obj->FClassID == OBJCLASS_SCENEOBJECT && !GEditorSceneSubmit.ForwardParents.contains(Obj);
+	};
+
 	// The partition hands over only the objects of the cells around the camera
 	static xr_vector<CCustomObject*> Candidates;
 	Candidates.clear();
@@ -76,7 +84,7 @@ void EScene::Render(const Fmatrix& camera)
 		for (CCustomObject* Obj : Candidates)
 		{
 			ESceneCustomOTool* SceneTool = GetOTool(Obj->FClassID);
-			if (SceneTool && SceneTool->IsLoaded && SceneTool->IsVisible() && Obj->Visible() && Obj->IsRender())
+			if (SceneTool && SceneTool->IsLoaded && SceneTool->IsVisible() && !IsSkippedForward(Obj) && Obj->Visible() && Obj->IsRender())
 			{
 				RenderList.push_back(Obj);
 			}
@@ -96,7 +104,7 @@ void EScene::Render(const Fmatrix& camera)
 
 			for (CCustomObject* Obj : lst)
 			{
-				if (Obj->Visible() && Obj->IsRender())
+				if (!IsSkippedForward(Obj) && Obj->Visible() && Obj->IsRender())
 				{
 					RenderList.push_back(Obj);
 				}
@@ -234,6 +242,144 @@ void EScene::PrepareSubmit()
 	}
 }
 
+namespace ShadowCasterSignature
+{
+	// FNV-1a over raw bytes
+	constexpr u64 Seed = 14695981039346656037ull;
+
+	inline u64 Mix(u64 Hash, const void* Data, size_t Size)
+	{
+		const u8* Bytes = static_cast<const u8*>(Data);
+		for (size_t Index = 0; Index < Size; ++Index)
+		{
+			Hash ^= Bytes[Index];
+			Hash *= 1099511628211ull;
+		}
+		return Hash;
+	}
+
+	inline bool IsCasterClass(ObjClassID ClassID)
+	{
+		return ClassID == OBJCLASS_SCENEOBJECT || ClassID == OBJCLASS_SPAWNPOINT || ClassID == OBJCLASS_TERRAIN;
+	}
+}
+
+u64 EScene::GetShadowCasterSignature(const Fvector& Center, float Radius)
+{
+	PROF_EVENT("EScene::GetShadowCasterSignature")
+	if (!valid())
+	{
+		return 0;
+	}
+
+	// The casters are gathered once per frame into a flat list; each light only tests boxes
+	struct SCaster
+	{
+		Fbox Box;
+		u64 Hash;
+	};
+	static xr_vector<SCaster> Casters;
+	static u32 CastersFrame = u32(-1);
+	static u32 CastersModifyCount = u32(-1);
+
+	// Edits that keep the transform (mesh, material, flags) bump the modify count
+	const u32 ModifyCount = GetModifyCount();
+	if (CastersFrame != Device.dwFrame || CastersModifyCount != ModifyCount)
+	{
+		PROF_EVENT("EScene::GetShadowCasterSignature gather")
+		CastersFrame = Device.dwFrame;
+		CastersModifyCount = ModifyCount;
+		Casters.clear();
+
+		auto AddCaster = [](CCustomObject* Object)
+		{
+			if (!Object->Visible())
+			{
+				return;
+			}
+
+			SCaster Caster;
+			if (!Object->GetBox(Caster.Box))
+			{
+				// No bounds: treat it as touching every light
+				Caster.Box.set(-flt_max, -flt_max, -flt_max, flt_max, flt_max, flt_max);
+			}
+			const CCustomObject* Pointer = Object;
+			Caster.Hash = ShadowCasterSignature::Mix(ShadowCasterSignature::Seed, &Pointer, sizeof(Pointer));
+			Caster.Hash = ShadowCasterSignature::Mix(Caster.Hash, &Object->_Transform(), sizeof(Fmatrix));
+			Casters.push_back(Caster);
+		};
+
+		static xr_vector<CCustomObject*> Candidates;
+		Candidates.clear();
+		if (GWorldPartition.CollectActive(Candidates))
+		{
+			for (CCustomObject* Object : Candidates)
+			{
+				if (!ShadowCasterSignature::IsCasterClass(Object->FClassID))
+				{
+					continue;
+				}
+
+				ESceneCustomOTool* SceneTool = GetOTool(Object->FClassID);
+				if (SceneTool && SceneTool->IsLoaded && SceneTool->IsVisible())
+				{
+					AddCaster(Object);
+				}
+			}
+		}
+		else
+		{
+			for (ObjClassID ClassID : { OBJCLASS_SCENEOBJECT, OBJCLASS_SPAWNPOINT, OBJCLASS_TERRAIN })
+			{
+				ESceneCustomOTool* SceneTool = GetOTool(ClassID);
+				if (SceneTool == nullptr || !SceneTool->IsLoaded || !SceneTool->IsVisible())
+				{
+					continue;
+				}
+
+				for (CCustomObject* Object : SceneTool->GetObjects())
+				{
+					AddCaster(Object);
+				}
+			}
+		}
+	}
+
+	u64 Hash = ShadowCasterSignature::Mix(ShadowCasterSignature::Seed, &ModifyCount, sizeof(ModifyCount));
+	const float RadiusSqr = _sqr(Radius);
+	u32 Touching = 0;
+	for (const SCaster& Caster : Casters)
+	{
+		// Squared distance from the sphere centre to the box
+		float DistanceSqr = 0.f;
+		for (u32 Axis = 0; Axis < 3; ++Axis)
+		{
+			const float Value = Center[Axis];
+			if (Value < Caster.Box.min[Axis])
+			{
+				DistanceSqr += _sqr(Caster.Box.min[Axis] - Value);
+			}
+			else if (Value > Caster.Box.max[Axis])
+			{
+				DistanceSqr += _sqr(Value - Caster.Box.max[Axis]);
+			}
+		}
+		if (DistanceSqr > RadiusSqr)
+		{
+			continue;
+		}
+
+		// Order-independent combine: the partition does not keep a stable order
+		Hash ^= Caster.Hash * 0x9E3779B97F4A7C15ull + (Caster.Hash >> 29);
+		++Touching;
+	}
+
+	Hash = ShadowCasterSignature::Mix(Hash, &Touching, sizeof(Touching));
+	// 0 is reserved for "do not cache"
+	return Hash ? Hash : 1;
+}
+
 void EScene::RenderShadowCasters()
 {
 	PROF_EVENT("EScene::RenderShadowCasters")
@@ -242,7 +388,6 @@ void EScene::RenderShadowCasters()
 		return;
 	}
 
-	// Classes whose objects add geometry to the scene graph; the others only draw helpers
 	static const ObjClassID CasterClasses[] = { OBJCLASS_SCENEOBJECT, OBJCLASS_SPAWNPOINT, OBJCLASS_TERRAIN };
 
 	auto RenderCaster = [](CCustomObject* Object)

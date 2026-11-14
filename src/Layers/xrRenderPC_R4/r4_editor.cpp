@@ -509,9 +509,16 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 		{
 			g_EditorRenderHost->SubmitShadowCasters();
 		}
+		else if (!Deferred && EditorForwardPass && EditorDeferredCollected)
+		{
+			// The deferred pass of this view already recorded the objects with forward surfaces
+			g_EditorRenderHost->SubmitForwardScene();
+			EditorDeferredCollected = false;
+		}
 		else
 		{
 			g_EditorRenderHost->SubmitScene();
+			EditorDeferredCollected = Deferred;
 		}
 	}
 

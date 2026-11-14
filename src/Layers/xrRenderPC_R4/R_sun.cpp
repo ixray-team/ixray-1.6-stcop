@@ -85,7 +85,12 @@ void CRender::ResetSunShadowCache()
 
 int CRender::GetSunShadowCacheMode() const
 {
-	return Device.IsEditorMode() || !LightingModeIsDynamicRender() ? 0 : g_SunShadowCacheMode;
+	if (Device.IsEditorMode())
+	{
+		// Staggered cascades: one cascade per frame, the others reprojected from their capture
+		return 1;
+	}
+	return !LightingModeIsDynamicRender() ? 0 : g_SunShadowCacheMode;
 }
 
 u32 CRender::GetSunCascadePlacement(u32 Index) const
@@ -194,7 +199,24 @@ void CRender::render_sun_cascades()
 	};
 
 	const bool IsCached = GetSunShadowCacheMode() > 0;
-	if (!IsCached || LastSunUpdateFrame != Device.dwFrame)
+	bool OtherCamera = false;
+	if (IsCached && Device.IsEditorMode())
+	{
+		// Another editor viewport (or a camera jump): the captured cascades do not cover this view
+		// Within one frame any change means another viewport; between frames only a jump
+		// (focus on an object, viewport switch) is too far for the staggered refresh
+		const bool SameFrame = LastSunUpdateFrame == Device.dwFrame;
+		const float MaxMove = SameFrame ? 0.01f : 5.f;
+		const float MinCosine = SameFrame ? 0.9999f : 0.5f;
+		OtherCamera = IsSunCacheInitialized && (!LastSunCameraPosition.similar(Device.vCameraPosition, MaxMove) ||
+			LastSunCameraDirection.dotproduct(Device.vCameraDirection) < MinCosine);
+		if (OtherCamera)
+		{
+			IsSunCacheInitialized = false;
+		}
+	}
+
+	if (!IsCached || LastSunUpdateFrame != Device.dwFrame || !IsSunCacheInitialized)
 	{
 		GRHI->SetViewport(viewport);
 		for (u32 Index = 0; Index < m_sun_cascades.size(); ++Index)
@@ -217,6 +239,8 @@ void CRender::render_sun_cascades()
 		NextSunCascade = ShouldRenderAll ? 0 : (NextSunCascade + 1) % 3;
 		IsSunCacheInitialized = true;
 		LastSunUpdateFrame = Device.dwFrame;
+		LastSunCameraPosition = Device.vCameraPosition;
+		LastSunCameraDirection = Device.vCameraDirection;
 		++SunUpdateCount;
 	}
 

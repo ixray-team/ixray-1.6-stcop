@@ -145,6 +145,9 @@ private:
 	STextureList SunShadowEmptyTextures;
 	u32 NextSunCascade = 0;
 	u32 LastSunUpdateFrame = u32(-1);
+	// Editor viewports render one after another within a frame: each camera needs its own cascades
+	Fvector LastSunCameraPosition = {};
+	Fvector LastSunCameraDirection = {};
 	u32 SunUpdateCount = 0;
 	u32 SunUpdatedMask = 0;
 	int LastSunCacheMode = 0;
@@ -512,6 +515,9 @@ public:
 	float							EditorHemi					= 0.5f;
 	bool							EditorDynamicLights			= true;
 	bool							EditorLightShadows			= true;
+	// render_forward is collecting; the deferred collection of this view is still current
+	bool							EditorForwardPass			= false;
+	bool							EditorDeferredCollected		= false;
 
 	void							EditorRenderMain			(bool Deferred);
 	void							EditorRenderSubspace		(CFrustum& Frustum);

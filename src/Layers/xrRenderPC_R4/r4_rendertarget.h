@@ -63,6 +63,8 @@ private:
 		xr_vector<ref_texture> PendingTextures;
 		u64 Bytes = 0;
 		xr_string PerFrameReason;
+		// Editor: casters need the translucent pass, which the depth cache cannot hold
+		bool EditorUncacheable = false;
 	};
 
 	struct SpotShadowCacheStatistics
@@ -114,6 +116,7 @@ private:
 	bool HasSpotShadowTextureChanges(const SpotShadowCacheEntry& Entry) const;
 	bool HasSpotShadowPendingTextureChanges(SpotShadowCacheEntry& Entry);
 	bool BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& Entry);
+	bool CreateSpotShadowDepth(SpotShadowCacheEntry& Entry);
 	void RestoreSpotShadowCache(const light& Source, SpotShadowCacheEntry& Entry);
 	void ReleaseSpotShadowDepth(SpotShadowCacheEntry& Entry);
 	void TrimSpotShadowCache(u64 RequiredBytes = 0, SpotShadowCacheEntry* Keep = nullptr);
@@ -128,6 +131,8 @@ public:
 		++SpotShadowStatistics.LegacyLights;
 	}
 	bool RenderSpotShadow(light& Source);
+	// Editor scenes are static: keep each shadowed light's depth until its casters change
+	bool RenderEditorShadow(light& Source);
 	void ClearSpotShadowCache();
 	void InvalidateSpotShadowCache();
 	void DumpSpotShadowCache() const;

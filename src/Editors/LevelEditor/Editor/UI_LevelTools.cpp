@@ -614,6 +614,16 @@ void CLevelTool::SubmitShadowCasters()
 	Render();
 }
 
+u64 CLevelTool::GetShadowCasterSignature(const Fvector& Center, float Radius)
+{
+	EEditorState est = EContext.UI->GetEState();
+	if (!Scene || (est != esEditScene && est != esEditLightAnim))
+	{
+		return 0;
+	}
+	return Scene->GetShadowCasterSignature(Center, Radius);
+}
+
 u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
 {
 	if (!Scene)

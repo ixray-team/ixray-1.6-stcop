@@ -114,7 +114,12 @@ void	CRender::render_lights	(light_Package& LP)
 				phase = PHASE_SMAP;
 				r_pmask(true, /*!!RImplementation.o.Tshadows*/ ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
 
-				if (Target->CanCacheSpotShadow(*L))
+				if (Device.IsEditorMode() && Target->RenderEditorShadow(*L))
+				{
+					++stats.s_merged;
+					L_spot_s.push_back(L);
+				}
+				else if (Target->CanCacheSpotShadow(*L))
 				{
 					if (Target->RenderSpotShadow(*L))
 					{

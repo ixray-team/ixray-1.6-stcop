@@ -116,6 +116,7 @@ public:
 
 	virtual u32			CollectEditorLights	(EditorLightDescriptor* Out, u32 Capacity);
 	virtual void		SubmitShadowCasters	();
+	virtual u64			GetShadowCasterSignature(const Fvector& Center, float Radius);
 	virtual void		PrepareScene		();
 	virtual CDetailManager*	GetSceneDetails		();
 
