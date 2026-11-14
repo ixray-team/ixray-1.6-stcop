@@ -127,7 +127,14 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 				}
 				else
 				{
-					R_ASSERT3(*b_it!=BI_NONE, "Can't find bone:", buf);
+					if (*b_it == BI_NONE)
+					{
+						Debug.fatal(DEBUG_INFO, "Motion file '%s': bone '%s' is missing from the model skeleton.", N, buf);
+					}
+					if (m_idx >= rm_bones.size())
+					{
+						Debug.fatal(DEBUG_INFO, "Motion file '%s': bone '%s' has an invalid index %u (model has %zu bones).", N, buf, m_idx, bones->size());
+					}
 				}
 
 				if (bRes) 
@@ -211,7 +218,10 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 		for (u32 i = 0; i < bones->size(); i++)
 		{
 			u16 bone_id = rm_bones[i];
-			VERIFY2(bone_id!=BI_NONE, "Invalid remap index.");
+			if (bone_id >= bones->size())
+			{
+				Debug.fatal(DEBUG_INFO, "Motion file '%s': no valid model bone mapping for motion bone index %u (model has %zu bones).", N, i, bones->size());
+			}
 			CMotion& M = m_motions[bones->at(bone_id)->name][m_idx];
 			M.set_count(dwLen);
 			M.set_flags(MS->r_u8());
