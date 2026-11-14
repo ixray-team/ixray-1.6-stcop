@@ -473,6 +473,16 @@ void CRender::Render()
 		}
 	}
 
+	if (!EditorMode && LightingModeIsDynamicRender())
+	{
+		GrassTerrainTint.Update(*this);
+		if (g_GrassTerrainTintEnabled && g_GrassTerrainTintDebug == 2 && GrassTerrainTint.IsReady())
+		{
+			GrassTerrainTint.DrawDebug(*this);
+			return;
+		}
+	}
+
 	// Depth of a recent frame for the occlusion culling of this one
 	if (EditorMode && EditorOcclusionCulling)
 	{

@@ -25,6 +25,7 @@ class CGlowManager;
 #include "../../xrEngine/Fmesh.h"
 #include "r4_editor_hiz.h"
 #include "RainPuddleWaterMap.h"
+#include "GrassTerrainTintMap.h"
 
 class dxRender_Visual;
 class CLightR_Manager;
@@ -36,6 +37,7 @@ public:
 	enum { PHASE_POINT = 3, PHASE_SPOT = 4, PHASE_LMODELS = 5 };
 	bool vis_intersect = false;
 	RainPuddleWaterMap RainPuddleWater;
+	GrassTerrainTintMap GrassTerrainTint;
 	void UpdateRainPuddleMode();
 	CLightR_Manager* L_Dynamic = nullptr;
 	CLightProjector* L_Projector = nullptr;
