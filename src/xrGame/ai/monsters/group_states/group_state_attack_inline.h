@@ -110,6 +110,9 @@ void CStateGroupAttackAbstract::execute()
 	bool	can_attack_on_move	=	this->object->can_attack_on_move();
 	const bool enemy_in_car		=	this->object->IsEnemyInCar();
 	CEntityAlive* enemy	= const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
+	const bool car_melee		=	enemy_in_car && enemy != nullptr &&
+									this->object->MeleeChecker.distance_to_enemy(enemy) <
+									this->object->MeleeChecker.get_max_distance() + 0.5f;
 
 	bool const enemy_is_actor = enemy != nullptr && enemy->cast_actor() != nullptr;
 
@@ -207,7 +210,7 @@ void CStateGroupAttackAbstract::execute()
 				b_melee = true;
 			}
 		} 
-		else if (this->get_state(eStateAttack_Melee)->check_start_conditions() )
+		else if (car_melee || this->get_state(eStateAttack_Melee)->check_start_conditions() )
 		{
 			b_melee = true;
 		}

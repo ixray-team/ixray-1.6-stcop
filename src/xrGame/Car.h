@@ -232,12 +232,14 @@ static	const u16				cAsCallsnum						= 3;
 	// step. Their vertical speed is capped in PhDataUpdate so a deep contact
 	// cannot launch them into the air.
 	xr_vector<IPHCharacter*>			m_character_contacts;
+	xr_map<u32, u32>					m_character_hit_times;
 	BONE_P_MAP							bone_map;					//interface for PhysicsShell
 	xr_set<u16>							pribor_arrows;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void						CarBodySurfaceCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	void								RegisterCharacterContact	(IPHCharacter* Character);
+	void								HitCharacterFromCar		(IPHCharacter* Character, const Fvector& ContactPos);
 	void								ClampCharacterContacts		();
 	virtual void						PhDataUpdate				(float step)			;
 	void						UpdatePhDataObjects		();

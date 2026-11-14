@@ -31,6 +31,16 @@ void CMonsterStateManagerAbstract::update()
 		return;		
 	}	
 
+	// The regular state choice depends on visibility and home/squad logic. A
+	// mutant close to a car with the actor inside would otherwise stay in a
+	// non-combat state and push into the body, especially at the front and rear.
+	if (this->object->ShouldAttackCar())
+	{
+		this->select_state(eStateAttack);
+		this->get_state_current()->execute();
+		return;
+	}
+
 	this->execute();
 }
 

@@ -7,6 +7,7 @@
 #include "../../memory_manager.h"
 #include "../../visual_memory_manager.h"
 #include "../../Actor.h"
+#include "../../Car.h"
 #include "../../actor_memory.h"
 #include "../../../xrCore/Kernel/EngineExternal.h"
 #include "../../../xrCore/Collision/xr_area.h"
@@ -29,6 +30,61 @@ namespace
 		static CMonsterEnemySharingBudget Budget;
 		Budget.BeginFrame(Device.dwFrame);
 		return Budget;
+	}
+
+	// The nearest point on the car moves along its perimeter as the monster
+	// walks around it, so a nav point built from that point keeps moving too and
+	// makes the monster circle the car. Pick the centre of the car side the
+	// monster is facing and keep that target while the car itself is stationary.
+	bool GetCarSideNavPoint(CCar* Car, const Fvector& MonsterPosition, Fvector& NavPoint)
+	{
+		if (Car == nullptr)
+			return false;
+
+		Fbox Box = Car->BoundingBox();
+		if (!Box.is_valid())
+			return false;
+
+		Fvector BoxCenter;
+		Fvector BoxHalf;
+		Box.get_CD(BoxCenter, BoxHalf);
+		BoxHalf.x = std::max(BoxHalf.x, 0.25f);
+		BoxHalf.z = std::max(BoxHalf.z, 0.25f);
+
+		Fmatrix Inverse;
+		Inverse.invert(Car->XFORM());
+		Fvector Local;
+		Inverse.transform_tiny(Local, MonsterPosition);
+
+		const float SideX = (Local.x - BoxCenter.x) / BoxHalf.x;
+		const float SideZ = (Local.z - BoxCenter.z) / BoxHalf.z;
+
+		Fvector LocalSide = BoxCenter;
+		Fvector LocalNormal;
+		if (std::abs(SideX) >= std::abs(SideZ))
+		{
+			LocalNormal.set(SideX >= 0.f ? 1.f : -1.f, 0.f, 0.f);
+			LocalSide.x = BoxCenter.x + LocalNormal.x * BoxHalf.x;
+		}
+		else
+		{
+			LocalNormal.set(0.f, 0.f, SideZ >= 0.f ? 1.f : -1.f);
+			LocalSide.z = BoxCenter.z + LocalNormal.z * BoxHalf.z;
+		}
+
+		Fvector WorldSide;
+		Car->XFORM().transform_tiny(WorldSide, LocalSide);
+
+		Fvector WorldNormal;
+		Car->XFORM().transform_dir(WorldNormal, LocalNormal);
+		WorldNormal.y = 0.f;
+		if (WorldNormal.magnitude() <= EPS_L)
+			return false;
+		WorldNormal.normalize();
+
+		NavPoint = WorldSide;
+		NavPoint.mad(WorldNormal, 1.f);
+		return true;
 	}
 }
 
@@ -238,6 +294,8 @@ void CMonsterEnemyManager::reinit()
 	enemy_vertex_enemy_last_seen	= u32(-1);
 	CarAwareVertex					= u32(-1);
 	CarAwareVertexTime				= 0;
+	CarAwareCarPosition.set			(0.f, 0.f, 0.f);
+	CarAwareCarForward.set			(0.f, 0.f, 0.f);
 
 	m_time_updated				= 0;
 	m_time_start_see_enemy		= 0;
@@ -460,33 +518,52 @@ u32 CMonsterEnemyManager::GetTrackingVertex()
 	if (monster->IsEnemyInCar())
 	{
 		// The actor's own vertex is under the car, so pathing to it makes the
-		// monster push the car. Use a graph vertex just outside the car surface
-		// the monster is actually approaching.
-		const Fvector CarPoint = monster->GetEnemyAttackPosition();
-		Fvector CarCenter = CarPoint;
+		// monster push the car. Use a stable point just outside one car side.
+		CCar* Car = nullptr;
 		if (CObject* CarObject = monster->GetEnemyCarObject())
-			CarCenter = CarObject->Position();
+			Car = CarObject->cast_car();
 
-		Fvector Outward;
-		Outward.sub(CarPoint, CarCenter);
-		Outward.y = 0.f;
-		if (Outward.magnitude() < EPS_L)
-		{
-			Outward.sub(monster->Position(), CarCenter);
-			Outward.y = 0.f;
-		}
-		Outward.normalize_safe();
+		Fvector NavPoint;
+		const bool HasNavPoint = GetCarSideNavPoint(Car, monster->Position(), NavPoint);
 
-		Fvector NavPoint = CarPoint;
-		NavPoint.mad(Outward, 1.f);
+		const Fvector CarPosition = Car != nullptr ? Car->Position() : Fvector().set(0.f, 0.f, 0.f);
+		const Fvector CarForward = Car != nullptr ? Car->XFORM().k : Fvector().set(0.f, 0.f, 1.f);
+		const bool CarMoved = CarAwareCarPosition.distance_to_sqr(CarPosition) > 4.f;
+		const bool CarTurned = CarAwareCarForward.dotproduct(CarForward) < 0.96f;
 
-		if (!CarAwareVertexTime || Device.dwTimeGlobal - CarAwareVertexTime >= 250 ||
-			CarAwareVertexPosition.distance_to_sqr(NavPoint) > 1.f)
+		if (HasNavPoint && (CarAwareVertex == u32(-1) || CarMoved || CarTurned))
 		{
 			CarAwareVertexTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
 			CarAwareVertexPosition = NavPoint;
+			CarAwareCarPosition = CarPosition;
+			CarAwareCarForward = CarForward;
 			CarAwareVertex = CControlPathBuilder::find_nearest_vertex(
 				monster->ai_location().level_vertex_id(), NavPoint, 10.f);
+		}
+		if (!HasNavPoint)
+		{
+			// Fallback for a car without a usable bounding box: use the old
+			// nearest-surface point, refreshed periodically.
+			const Fvector CarPoint = monster->GetEnemyAttackPosition();
+			Fvector CarCenter = CarPoint;
+			if (CObject* CarObject = monster->GetEnemyCarObject())
+				CarCenter = CarObject->Position();
+
+			Fvector Outward;
+			Outward.sub(CarPoint, CarCenter);
+			Outward.y = 0.f;
+			Outward.normalize_safe();
+			NavPoint = CarPoint;
+			NavPoint.mad(Outward, 1.f);
+
+			if (!CarAwareVertexTime || Device.dwTimeGlobal - CarAwareVertexTime >= 250 ||
+				CarAwareVertexPosition.distance_to_sqr(NavPoint) > 1.f)
+			{
+				CarAwareVertexTime = Device.dwTimeGlobal ? Device.dwTimeGlobal : 1;
+				CarAwareVertexPosition = NavPoint;
+				CarAwareVertex = CControlPathBuilder::find_nearest_vertex(
+					monster->ai_location().level_vertex_id(), NavPoint, 10.f);
+			}
 		}
 		if (ai().level_graph().valid_vertex_id(CarAwareVertex))
 			return CarAwareVertex;

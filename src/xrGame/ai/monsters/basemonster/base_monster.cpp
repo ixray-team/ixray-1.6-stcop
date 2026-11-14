@@ -1061,6 +1061,27 @@ CObject* CBaseMonster::GetEnemyCarObject()
 	return Actor != nullptr ? Actor->GetCarObject() : nullptr;
 }
 
+bool CBaseMonster::ShouldAttackCar()
+{
+	if (!g_Alive() || MonsterPeaceful || GetScriptControl() || control().is_captured_pure() ||
+		(m_controlled && m_controlled->is_under_control()))
+		return false;
+
+	const CEntityAlive* Enemy = EnemyMan.get_enemy();
+	if (Enemy == nullptr || Enemy->getDestroy() || !Enemy->g_Alive())
+		return false;
+
+	CActor* Actor = const_cast<CEntityAlive*>(Enemy)->cast_actor();
+	if (Actor == nullptr || !Actor->IsInCar() || !Actor->IsMutantBiteBlocked())
+		return false;
+
+	// Once the monster is close to the car surface it must attack instead of
+	// walking into the body. This also covers the front and rear, where the
+	// stable side approach point can be blocked by the car itself.
+	const float Distance = MeleeChecker.distance_to_enemy(Enemy);
+	return Distance < MeleeChecker.get_max_distance() + 1.f;
+}
+
 Fvector CBaseMonster::GetEnemyAttackPosition()
 {
 	const CEntityAlive* Enemy = EnemyMan.get_enemy();
