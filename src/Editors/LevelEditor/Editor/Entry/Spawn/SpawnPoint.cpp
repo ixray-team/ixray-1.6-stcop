@@ -5,6 +5,7 @@
 #include "../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "../xrServerEntities/xrServer_Objects.h"
+#include "../xrServerEntities/xrServer_Objects_Alife_Smartcovers.h"
 #include "../xrCore/Save/MemoryBuffer.h"
 #include "../xrCore/Save/SaveManager.h"
 #include "../../../../xrECore/Editor/Intersect.h"
@@ -627,15 +628,22 @@ void CSpawnPoint::SSpawnData::RenderVisuals(bool bSelected, const Fmatrix& paren
 		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
 	}
 
-	if (bSelected)
+	// Loophole models of smart covers are the cover itself in the viewport: drawn always
+	Fmatrix M;
+	for (u32 Index = 0; Index < m_VisualHelpers.size(); ++Index)
 	{
-		Fmatrix M;
-		for (u32 Index = 0; Index < m_VisualHelpers.size(); ++Index)
+		if (m_VisualHelpers[Index]->visual == nullptr)
 		{
-			visual_data* vc = m_Data->visual_collection() + Index;
-			M.mul(parent, vc->matrix);
-			::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
+			continue;
 		}
+
+		visual_data* vc = m_Data->visual_collection() + Index;
+		M.mul(parent, vc->matrix);
+		if (Index < m_VisualHelperRoots.size())
+		{
+			M.mulB_43(m_VisualHelperRoots[Index]);
+		}
+		::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
 	}
 }
 
@@ -659,19 +667,138 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
 	}
 
-	if(bSelected)
+	Fmatrix M;
+	for (u32 Index = 0; Index < m_VisualHelpers.size(); ++Index)
 	{
-		xr_vector<CLE_Visual*>::iterator it 	= m_VisualHelpers.begin();
-		xr_vector<CLE_Visual*>::iterator it_e 	= m_VisualHelpers.end();
-		Fmatrix M;
-		u32 idx = 0;
-
-		for(;it!=it_e;++it,++idx)
+		if (m_VisualHelpers[Index]->visual == nullptr)
 		{
-			visual_data* vc 		= m_Data->visual_collection()+idx;
-			M.mul					(parent, vc->matrix);
-			CLE_Visual* v 			= *it;
-			::RImplementation.model_Render	(v->visual,M,priority,strictB2F,1.f);
+			continue;
+		}
+
+		visual_data* vc = m_Data->visual_collection() + Index;
+		M.mul(parent, vc->matrix);
+		if (Index < m_VisualHelperRoots.size())
+		{
+			M.mulB_43(m_VisualHelperRoots[Index]);
+		}
+		::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
+	}
+
+	// A smart cover without its loophole models shows the shape and the reason on it
+	xr_string Error;
+	if ((1 == priority) && (false == strictB2F) && smart_cast<CSE_SmartCover*>(m_Data) && !IsSmartCoverVisualReady(&Error))
+	{
+		Fvector Pos = parent.c;
+		Pos.y += 0.5f;
+		DU_impl.OutText(Pos, ("! " + Error).c_str(), color_rgba(255, 80, 80, 255));
+	}
+}
+
+bool CSpawnPoint::SSpawnData::IsSmartCoverVisualReady(xr_string* Error) const
+{
+	CSE_SmartCover* Cover = smart_cast<CSE_SmartCover*>(m_Data);
+	if (Cover == nullptr)
+	{
+		return false;
+	}
+
+	xr_string Reason;
+	if (*Cover->draw_error())
+	{
+		Reason = Cover->draw_error();
+	}
+	else if (!LoopholeVisualError.empty())
+	{
+		Reason = LoopholeVisualError;
+	}
+	else if (m_VisualHelpers.empty())
+	{
+		Reason = Cover->m_description.size() ? "loophole visuals are not built yet" : "description is not set";
+	}
+
+	if (Error != nullptr)
+	{
+		*Error = Reason;
+	}
+	return Reason.empty();
+}
+
+// Root bone transform on the last frame of Animation, identity when it is not in the model
+static Fmatrix RootAtAnimationEnd(CLE_Visual* Visual, const char* Animation)
+{
+	Fmatrix Result = Fidentity;
+	CKinematicsAnimated* Animated = PKinematicsAnimated(Visual->visual);
+	IKinematics* Kinematics = PKinematics(Visual->visual);
+	if (Animated == nullptr || Kinematics == nullptr || Animation == nullptr || *Animation == '\0')
+	{
+		return Result;
+	}
+
+	const MotionID Motion = Animated->ID_Cycle_Safe(Animation);
+	if (!Motion.valid())
+	{
+		return Result;
+	}
+
+	Visual->StopAllAnimations();
+	Animated->PlayCycle(Motion, FALSE);
+	for (u16 Part = 0; Part < MAX_PARTS; ++Part)
+	{
+		for (u32 Index = 0; Index < Animated->LL_PartBlendsCount(Part); ++Index)
+		{
+			CBlend* Blend = Animated->LL_PartBlend(Part, Index);
+			Blend->timeCurrent = Blend->timeTotal - SAMPLE_SPF;
+			Blend->blendAmount = Blend->blendPower;
+			Blend->playing = false;
+		}
+	}
+
+	Kinematics->CalculateBones_Invalidate();
+	Kinematics->CalculateBones(true);
+	Result = Kinematics->LL_GetTransform(Kinematics->LL_GetBoneRoot());
+
+	// The helper plays its own animation again
+	Visual->PlayAnimation();
+	Kinematics->CalculateBones_Invalidate();
+	return Result;
+}
+
+void CSpawnPoint::SSpawnData::CheckLoopholeVisuals()
+{
+	LoopholeVisualError.clear();
+
+	m_VisualHelperRoots.assign(m_VisualHelpers.size(), Fidentity);
+	visual_data* RootData = m_Data->visual_collection();
+	for (u32 Index = 0; Index < m_VisualHelpers.size(); ++Index, ++RootData)
+	{
+		if (RootData->root_animation.size() && m_VisualHelpers[Index]->visual != nullptr)
+		{
+			m_VisualHelperRoots[Index] = RootAtAnimationEnd(m_VisualHelpers[Index], RootData->root_animation.c_str());
+		}
+	}
+
+	visual_data* Data = m_Data->visual_collection();
+	for (u32 Index = 0; Index < m_VisualHelpers.size(); ++Index, ++Data)
+	{
+		CLE_Visual* Visual = m_VisualHelpers[Index];
+		CSE_Visual* Source = Data->visual;
+		if (Visual->visual == nullptr)
+		{
+			LoopholeVisualError = make_string<xr_string>("model [%s] not found", Source->visual_name.c_str());
+			return;
+		}
+
+		CKinematicsAnimated* Animated = PKinematicsAnimated(Visual->visual);
+		if (Animated == nullptr)
+		{
+			LoopholeVisualError = make_string<xr_string>("model [%s] has no animations", Source->visual_name.c_str());
+			return;
+		}
+
+		if (!Animated->ID_Cycle_Safe(Source->startup_animation.c_str()).valid())
+		{
+			LoopholeVisualError = make_string<xr_string>("animation [%s] not found in [%s]", Source->startup_animation.c_str(), Source->visual_name.c_str());
+			return;
 		}
 	}
 }
@@ -684,6 +811,17 @@ bool CSpawnPoint::SSpawnData::IsIdleParticleInRange() const
 void CSpawnPoint::SSpawnData::OnFrame()
 {
 	xrCriticalSectionGuard guard(FrameMutex);
+
+	// Smart covers find their NPC by the object name: the logic refers to the cover by it
+	if (CSE_SmartCover* Cover = smart_cast<CSE_SmartCover*>(m_Data))
+	{
+		const char* Name = m_owner->GetName();
+		if (Name != nullptr && xr_strcmp(m_Data->name_replace(), Name) != 0)
+		{
+			m_Data->set_name_replace(Name);
+			Cover->m_need_to_reparse_loopholes = true;
+		}
+	}
 
 	// Idle particles advance once per frame by the frame time, like CParticlesObject in game
 	if (IdleParticle && IsIdleParticleInRange())
@@ -746,6 +884,8 @@ void CSpawnPoint::SSpawnData::OnFrame()
 			m_VisualHelpers.push_back(V);
 			V->PlayAnimation();
 		}
+
+		CheckLoopholeVisuals();
 	}
 
 	xr_vector<CLE_Visual*>::iterator it 	= m_VisualHelpers.begin();
@@ -753,6 +893,30 @@ void CSpawnPoint::SSpawnData::OnFrame()
 	for (; it != it_e; ++it)
 	{
 		CLE_Visual* v = *it;
+
+		// Smart cover animations stop at their end: the game selects the next one when it
+		// does (smart_cover animation_selector::on_animation_end), the editor loops it
+		if (CKinematicsAnimated* Animated = PKinematicsAnimated(v->visual))
+		{
+			bool Playing = false;
+			for (u32 Index = 0; Index < Animated->LL_PartBlendsCount(0); ++Index)
+			{
+				const CBlend* Blend = Animated->LL_PartBlend(0, Index);
+				// The time freezes at timeTotal - END_EPS; reaching the end clears the callback flag
+				const bool Finished = Blend->stop_at_end && !Blend->stop_at_end_callback;
+				if (Blend->playing && !Finished)
+				{
+					Playing = true;
+					break;
+				}
+			}
+
+			if (!Playing)
+			{
+				v->PlayAnimation();
+			}
+		}
+
 		if (IKinematics* KinematicsObj = PKinematics(v->visual))
 		{
 			bool bForce = m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange);
@@ -1098,6 +1262,8 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 		}
 	}
 	Fmatrix SaveTransform = FTransformRP;
+	// A smart cover with its loophole models is shown by them, not by its shape
+	const bool HideShape = m_SpawnData.Valid() && m_SpawnData.IsSmartCoverVisualReady();
 
 	// Scene collection (main and shadow passes): only visuals reach the scene graph, the
 	// helpers (icons, names, shapes, selection) are drawn in the overlay pass
@@ -1109,7 +1275,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 		}
 
 		// Shapes skip the submit pass themselves; attached particles add their visual
-		if (m_AttachedObject)
+		if (m_AttachedObject && !HideShape)
 		{
 			m_AttachedObject->Render(priority, strictB2F);
 		}
@@ -1142,7 +1308,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 	Scene->SelectLightsForObject(this);
 	
 	// render attached object
-	if (m_AttachedObject)
+	if (m_AttachedObject && !HideShape)
 			m_AttachedObject->Render(priority, strictB2F);
 	if (m_SpawnData.Valid())
 			m_SpawnData.Render(Selected(),FTransformRP,priority, strictB2F);
@@ -1153,8 +1319,13 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 			if (m_SpawnData.Valid()){
 				// render icon
 				ESceneSpawnTool* st	= smart_cast<ESceneSpawnTool*>(FParentTools); VERIFY(st);
-				ref_shader s 	   	= st->GetIcon(m_SpawnData.m_Data->name());
-				DU_impl.DrawEntity		(0xffffffff,s);
+				// Icons hide the scene: drawn for the selection, or for all when asked.
+				// The loophole models stand for a smart cover, the icon would only cover them
+				if (!HideShape && (Selected() || st->m_Flags.is(ESceneSpawnTool::flShowIcons)))
+				{
+					ref_shader s 	   	= st->GetIcon(m_SpawnData.m_Data->name());
+					DU_impl.DrawEntity	(0xffffffff,s);
+				}
 			}else{
 				switch (m_Type)
 				{

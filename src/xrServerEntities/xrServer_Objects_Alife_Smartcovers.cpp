@@ -17,6 +17,7 @@
 #ifdef XRSE_FACTORY_EXPORTS
 #	include "ai_space.h"
 #	include "../xrScripts/script_engine.h"
+#	include "SmartCoverNpcAnalyzer.h"
 #	pragma warning(push)
 #	pragma warning(disable:4995)
 #		include <luabind/luabind.hpp>
@@ -382,28 +383,61 @@ void CSE_SmartCover::fill_visuals()
 {
 	delete_data(m_visuals);
 
-	xr_vector<SSCDrawHelper>::iterator I = m_draw_data.begin();
-	xr_vector<SSCDrawHelper>::iterator E = m_draw_data.end();
-	for ( ; I != E; ++I) {
-		if (!I->is_enterable)
-			return;
+	if (!m_draw_error.empty())
+	{
+		return;
+	}
 
-		CSE_Visual *visual			= new CSE_SmartVisual();
-		visual->set_visual			("actors\\stalker_neutral\\stalker_neutral_1");
+	const char* VisualName = pSettings->read_if_exists<const char*>(s_name, "editor_visual", "actors\\stalker_neutral\\stalker_neutral_1");
 
-		if (I->animation_id.size() == 0) {
-			Msg						("cover [%s] doesn't have idle_2_fire animation", I->string_identifier.c_str());
+	SmartCoverNpc::Candidate Npc;
+	u32 NpcCount = 0;
+	const bool HasNpc = SmartCoverNpc::Pick(name_replace(), Npc, NpcCount);
+	const bool AnimpointCover = SmartCoverNpc::IsAnimpointCover(name_replace(), m_description.c_str());
+	m_editor_npc = HasNpc ? make_string<xr_string>("%s (%u)", Npc.Npc.c_str(), NpcCount) : xr_string();
+
+	size_t NpcLoophole = 0;
+	for (size_t Index = 0; Index < m_draw_data.size(); ++Index)
+	{
+		if (m_draw_data[Index].is_enterable)
+		{
+			NpcLoophole = Index;
+			break;
+		}
+	}
+
+	for (size_t Index = 0; Index < m_draw_data.size(); ++Index)
+	{
+		SSCDrawHelper const& Helper = m_draw_data[Index];
+		if (Helper.animation_id.size() == 0)
+		{
+			m_draw_error = make_string<xr_string>("loophole [%s] has no idle animation (actions.idle.animations.idle)", Helper.string_identifier.c_str());
+			delete_data(m_visuals);
 			return;
 		}
 
-		visual->startup_animation	= I->animation_id;
+		const bool UseNpc = HasNpc && Index == NpcLoophole;
+		CSE_Visual* Visual = new CSE_SmartVisual();
+		Visual->set_visual(UseNpc ? Npc.Visual.c_str() : VisualName);
+		Visual->startup_animation = (UseNpc && !Npc.Animation.empty()) ? Npc.Animation.c_str() : Helper.animation_id.c_str();
 
-		visual_data					tmp;
-		tmp.visual					= visual;
-		tmp.matrix.rotation			(I->enter_direction, Fvector().set(0.f, 1.f, 0.f));
-		tmp.matrix.c				= I->point_position;
+		const bool Animpoint = UseNpc ? Npc.Animpoint : AnimpointCover;
+		visual_data Data;
+		Data.visual = Visual;
+		if (Animpoint)
+		{
+			Data.matrix.identity();
 
-		m_visuals.push_back			(tmp);
+			const xr_string State = (UseNpc && !Npc.State.empty()) ? Npc.State : xr_string(m_description.c_str());
+			Data.root_animation = SmartCoverNpc::IntoAnimation(State.c_str()).c_str();
+		}
+		else
+		{
+			Data.matrix.rotation(Helper.enter_direction, Fvector().set(0.f, 1.f, 0.f));
+			Data.matrix.c = Helper.point_position;
+		}
+
+		m_visuals.push_back(Data);
 	}
 }
 
@@ -479,6 +513,32 @@ shared_str animation_id(luabind::object table)
 	return			("");
 }
 
+// actions.idle.animations.idle[1]: what a stalker plays while it holds the loophole
+static shared_str idle_animation_id(luabind::object const& loophole)
+{
+	luabind::object Table = loophole;
+	for (const char* Key : {"actions", "idle", "animations", "idle"})
+	{
+		if (luabind::get_type(Table) != LUA_TTABLE)
+		{
+			return "";
+		}
+		Table = Table[Key];
+	}
+
+	if (luabind::get_type(Table) != LUA_TTABLE)
+	{
+		return "";
+	}
+
+	return animation_id(Table);
+}
+
+static bool has_field(luabind::object const& table, const char* identifier, int type)
+{
+	return luabind::get_type(table[identifier]) == type;
+}
+
 void CSE_SmartCover::load_draw_data () {
 	string256					temp;
 	xr_strcpy					(temp, "smart_covers.descriptions.");
@@ -486,6 +546,14 @@ void CSE_SmartCover::load_draw_data () {
 	xr_strcat					(temp, ".loopholes");
 
 	m_draw_data.clear			();
+	m_draw_error.clear			();
+
+	if (m_description.size() == 0)
+	{
+		m_draw_error			= "description is not set";
+		fill_visuals			();
+		return;
+	}
 
 	luabind::object				loopholes;
 	bool						result = 
@@ -497,6 +565,8 @@ void CSE_SmartCover::load_draw_data () {
 
 	if (!result) {
 		Msg						("no or invalid smart cover description (bad or missing loopholes table in smart_cover [%s])", temp);
+		m_draw_error			= make_string<xr_string>("no description [%s] in smart_covers.descriptions", m_description.c_str());
+		fill_visuals			();
 		return;
 		//		VERIFY2					(result, make_string<const char*>("bad or missing loopholes table in smart_cover [%s]", temp));
 	}
@@ -535,6 +605,13 @@ void CSE_SmartCover::load_draw_data () {
 			VERIFY	(luabind::get_type(table) != LUA_TNIL);
 			continue;
 		}
+
+		if (!has_field(table, "id", LUA_TSTRING) || !has_field(table, "fov_position", LUA_TUSERDATA) || !has_field(table, "enter_direction", LUA_TUSERDATA) || !has_field(table, "fov_direction", LUA_TUSERDATA))
+		{
+			m_draw_error		= make_string<xr_string>("loophole of [%s] has no id, fov_position, fov_direction or enter_direction", m_description.c_str());
+			continue;
+		}
+
 		m_draw_data.resize		(m_draw_data.size()+1);
 		SSCDrawHelper& H		= m_draw_data.back();
 
@@ -584,7 +661,12 @@ void CSE_SmartCover::load_draw_data () {
 		}
 */
 
-	H.animation_id	= make_string<const char*>("loophole_%s_visual", H.string_identifier.c_str());
+		H.animation_id			= idle_animation_id(table);
+	}
+
+	if (m_draw_data.empty() && m_draw_error.empty())
+	{
+		m_draw_error			= make_string<xr_string>("[%s] has no usable loopholes", m_description.c_str());
 	}
 
 	check_enterable_loopholes	(m_description);
@@ -615,6 +697,12 @@ void CSE_SmartCover::on_render	(CDUInterface* du, ISE_AbstractLEOwner* owner_, b
 		parent.transform_tiny	(pos);
 
 		du->OutText(pos, H.string_identifier.c_str(), color_rgba(255,255,255,255));
+		if (!m_editor_npc.empty() && &H == &m_draw_data.front())
+		{
+			Fvector npc_pos = pos;
+			npc_pos.y += 0.25f;
+			du->OutText(npc_pos, ("npc: " + m_editor_npc).c_str(), color_rgba(120,200,255,255));
+		}
 
 		Fvector dir = H.fov_direction;
 		parent.transform_dir(dir);

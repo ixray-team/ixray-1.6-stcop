@@ -354,6 +354,79 @@ void CEditorDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 	}
 }
 
+void CEditorDrawUtilities::DrawIcons(const ref_shader& Shader, const Fvector* Positions, const u32* Colors, u32 Count, float PixelSize)
+{
+	if (Count == 0 || !Shader || Device.TargetHeight == 0)
+	{
+		return;
+	}
+
+	// World size of one pixel at unit distance
+	const float PixelScale = 2.f * std::tan(deg2rad(Device.fFOV) * 0.5f) / float(Device.TargetHeight);
+	const float HalfPixels = PixelSize * 0.5f;
+	const Fvector& CameraPosition = Device.vCameraPosition;
+	const Fvector& CameraDirection = Device.vCameraDirection;
+	const Fvector& CameraRight = Device.vCameraRight;
+	const Fvector& CameraTop = Device.vCameraTop;
+
+	RCache.set_xform_world(Fidentity);
+	DU_DRAW_SH(Shader);
+
+	// Dynamic stream chunks keep the lock size bounded
+	constexpr u32 IconsPerBatch = 1024;
+	_VertexStream* Stream = &RCache.Vertex;
+	u32 Index = 0;
+	while (Index < Count)
+	{
+		const u32 BatchCount = std::min(Count - Index, IconsPerBatch);
+		u32 VertexBase = 0;
+		FVF::LIT* Vertex = (FVF::LIT*)Stream->Lock(BatchCount * 6, vs_LIT->vb_stride, VertexBase);
+		u32 Written = 0;
+		for (u32 Local = 0; Local < BatchCount; ++Local)
+		{
+			const Fvector& Position = Positions[Index + Local];
+			Fvector ToIcon;
+			ToIcon.sub(Position, CameraPosition);
+			const float Depth = ToIcon.dotproduct(CameraDirection);
+			if (Depth <= EPS_L)
+			{
+				continue;
+			}
+
+			const float HalfSize = Depth * PixelScale * HalfPixels;
+			Fvector Right;
+			Fvector Top;
+			Right.mul(CameraRight, HalfSize);
+			Top.mul(CameraTop, HalfSize);
+
+			Fvector LeftTop;
+			Fvector RightTop;
+			Fvector RightBottom;
+			Fvector LeftBottom;
+			LeftTop.sub(Position, Right).add(Top);
+			RightTop.add(Position, Right).add(Top);
+			RightBottom.add(Position, Right).sub(Top);
+			LeftBottom.sub(Position, Right).sub(Top);
+
+			const u32 Color = Colors[Index + Local];
+			Vertex[0].set(LeftTop, Color, 0.f, 0.f);
+			Vertex[1].set(RightTop, Color, 1.f, 0.f);
+			Vertex[2].set(RightBottom, Color, 1.f, 1.f);
+			Vertex[3].set(LeftTop, Color, 0.f, 0.f);
+			Vertex[4].set(RightBottom, Color, 1.f, 1.f);
+			Vertex[5].set(LeftBottom, Color, 0.f, 1.f);
+			Vertex += 6;
+			++Written;
+		}
+		Stream->Unlock(Written * 6, vs_LIT->vb_stride);
+		if (Written != 0)
+		{
+			DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vs_LIT, VertexBase, Written * 2);
+		}
+		Index += BatchCount;
+	}
+}
+
 void CEditorDrawUtilities::DrawRomboid(const Fvector& p, float r, u32 c)
 {
 static const u32 IL[24]={0,2, 2,5, 0,5, 3,5, 3,0, 4,3, 4,0, 4,2, 1,2, 1,5, 1,3, 1,4};

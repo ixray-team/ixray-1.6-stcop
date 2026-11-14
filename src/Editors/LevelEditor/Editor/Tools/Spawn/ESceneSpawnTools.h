@@ -11,6 +11,8 @@ protected:
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
 	enum{
+		// Icons of every spawn element; off: only the selected ones show it
+		flShowIcons		= (1<<29),
     	flPickSpawnType	= (1<<30),
     	flShowSpawnType	= (1<<31),
     };

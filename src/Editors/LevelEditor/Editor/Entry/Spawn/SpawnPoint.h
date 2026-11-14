@@ -54,6 +54,8 @@ public:
         CLE_Visual*		m_Visual;
         Flags8			m_flags;
         xr_vector<CLE_Visual*> m_VisualHelpers;
+		// Per helper: root pose its animation goes on from (visual_data::root_animation)
+		xr_vector<Fmatrix> m_VisualHelperRoots;
         IRenderVisual*  IdleParticle = nullptr;
 		xr_shared_ptr<EWallmarkWrapper> Wallmark = nullptr;
         CLE_Motion*		m_Motion;
@@ -95,6 +97,12 @@ public:
 		// Visuals only (scene collection passes)
 		void			RenderVisuals	(bool bSelected, const Fmatrix& parent, int priority, bool strictB2F);
 		bool			IsIdleParticleInRange() const;
+		// Smart cover: true when every loophole has its model and idle animation; the shape
+		// is then hidden. Otherwise Error says why
+		bool			IsSmartCoverVisualReady(xr_string* Error = nullptr) const;
+		void			CheckLoopholeVisuals	();
+		// Editor side failure of the loophole visuals (missing model or animation)
+		xr_string		LoopholeVisualError;
     	void 	OnAnimControlClick		(ButtonValue* value, bool& bModif, bool& bSafe);  
 		void	OnWallmarkUpdateClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 		void	OnWallmarkDetachClick	(ButtonValue* value, bool& bModif, bool& bSafe);

@@ -7,6 +7,7 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "UI/UIGitWindow.h"
+#include "UI/UILevelSelector.h"
 #include "ParticleEditor/UI_ParticleTools.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
@@ -208,9 +209,8 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 
 		if (!p1.IsString())
 		{
-			xr_string temp_fn = LTools->m_LastFileName.c_str();
-			if (EFS.GetOpenName(_maps_, temp_fn, false, 0, -1, "*.level;*.tmp"))
-				return 			ExecCommand(COMMAND_LOAD, temp_fn);
+			UILevelSelector::Show();
+			return true;
 		}
 		else
 		{
@@ -1820,6 +1820,7 @@ void CLevelMain::OnDrawUI()
 	UIObjectList::Update();
 	UIWorldPartition::Update();
 	UIGitWindow::Update();
+	UILevelSelector::Update();
 	UIActorEditorForm::Update();
 	UIShaderEditorForm::Update();
 	if (LTools->GetToolForm())

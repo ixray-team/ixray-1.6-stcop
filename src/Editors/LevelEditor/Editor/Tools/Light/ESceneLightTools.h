@@ -19,7 +19,7 @@ class ESceneLightTool: public ESceneCustomOTool
 
     void OnLightSunChanged(PropValue* sender);
 
-protected:
+public:
     enum
     {
         flShowSun         = (1 << 31),
@@ -73,6 +73,7 @@ public:
     virtual void		BeforeRender			();
     virtual void		OnRender				(int priority, bool strictB2F);
     virtual void		AfterRender				();
+    virtual void		OnDeviceDestroy			();
 
 	void 				SelectLightsForObject	(CCustomObject* obj);
     
@@ -88,4 +89,14 @@ public:
     virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
 private:
     virtual void OnDrawUI();
+	void RenderIcons();
+
+	struct SIconBatch
+	{
+		ref_shader Shader;
+		xr_vector<Fvector> Positions;
+		xr_vector<u32> Colors;
+	};
+	SIconBatch LightIcons;
+	SIconBatch HemiIcons;
 };

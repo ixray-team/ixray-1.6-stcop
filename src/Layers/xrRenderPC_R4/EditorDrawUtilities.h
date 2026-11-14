@@ -81,6 +81,8 @@ public:
 		DrawCross(p, sz, sz, sz, sz, sz, sz, clr, bRot45);
 	}
 	virtual void DrawEntity(u32 clr, ref_shader s);
+	// Camera-facing icons of constant screen size, drawn in one batch with one shader
+	void DrawIcons(const ref_shader& Shader, const Fvector* Positions, const u32* Colors, u32 Count, float PixelSize);
 	virtual void DrawRomboid(const Fvector& p, float radius, u32 clr) override;
 	virtual void DrawJoint(const Fvector& p, float radius, u32 clr) override;
 

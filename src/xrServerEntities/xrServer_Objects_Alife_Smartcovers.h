@@ -36,6 +36,8 @@ public:
 	bool							m_is_combat_cover;
 	bool							m_can_fire;
 	bool							m_need_to_reparse_loopholes;
+	xr_string						m_draw_error;
+	const char*						draw_error				() const { return m_draw_error.c_str(); }
 #ifndef AI_COMPILER
 	luabind::object					m_available_loopholes;
 #endif // #ifndef AI_COMPILER
@@ -50,6 +52,7 @@ private:
 
 private:
 	mutable visuals_collection		m_visuals;
+	xr_string						m_editor_npc;
 #endif // #ifdef XRSE_FACTORY_EXPORTS
 
 

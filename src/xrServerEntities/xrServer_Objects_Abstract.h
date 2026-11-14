@@ -94,6 +94,7 @@ public:
 struct visual_data {
 	Fmatrix		matrix;
 	CSE_Visual	*visual;
+	shared_str	root_animation;
 }; // struct visual_data
 #pragma pack(pop)
 

@@ -153,6 +153,7 @@ void ESceneSpawnTool::FillProp(const char* pref, PropItemVec& items)
 {            
 //.	PHelper().CreateFlag(items, PrepareKey(pref,"Common\\Show Spawn Type"),	&m_Flags,		flShowSpawnType);
 //.	PHelper().CreateFlag(items, PrepareKey(pref,"Common\\Trace Visibility"),	&m_Flags,		flPickSpawnType);
+	PHelper().CreateFlag(items, PrepareKey(pref, "Common\\Show Icons"), &m_Flags, flShowIcons);
 	inherited::FillProp	(pref, items);
 }
 

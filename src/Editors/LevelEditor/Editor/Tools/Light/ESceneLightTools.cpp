@@ -75,6 +75,78 @@ void ESceneLightTool::AfterRender()
 	frame_light.clear();
 }
 
+void ESceneLightTool::OnDeviceDestroy()
+{
+	inherited::OnDeviceDestroy();
+	LightIcons.Shader.destroy();
+	HemiIcons.Shader.destroy();
+}
+
+void ESceneLightTool::RenderIcons()
+{
+	if (!IsVisible())
+	{
+		return;
+	}
+
+	LightIcons.Positions.clear();
+	LightIcons.Colors.clear();
+	HemiIcons.Positions.clear();
+	HemiIcons.Colors.clear();
+	for (CCustomObject* Object : GetObjects())
+	{
+		CLight* Light = smart_cast<CLight*>(Object);
+		if (!Light || !Light->Visible())
+		{
+			continue;
+		}
+
+		u32 Color;
+		if (Light->Locked())
+		{
+			Color = 0xFFFF4040;
+		}
+		else if (Light->Selected())
+		{
+			Color = 0xFFFFFFFF;
+		}
+		else
+		{
+			// Tint by the light colour, kept bright enough to read on dark geometry
+			Fcolor Tint = Light->m_Color;
+			const float MaxChannel = std::max({ Tint.r, Tint.g, Tint.b, EPS_S });
+			Tint.mul_rgb(1.f / MaxChannel);
+			Color = color_rgba_f(Tint.r * 0.75f + 0.25f, Tint.g * 0.75f + 0.25f, Tint.b * 0.75f + 0.25f, 1.f);
+		}
+
+		// Hemi-controlled lights only feed the lightmap hemisphere, so they get their own icon
+		const char* ControlName = Light->GetLControlName();
+		const bool IsHemi = Light->m_LControl == m_HemiControl || (ControlName && 0 == xr_strcmp(ControlName, LCONTROL_HEMI));
+		SIconBatch& Batch = IsHemi ? HemiIcons : LightIcons;
+		Batch.Positions.push_back(Light->GetPosition());
+		Batch.Colors.push_back(Color);
+	}
+
+	constexpr float IconPixels = 32.f;
+	auto DrawBatch = [IconPixels](SIconBatch& Batch, const char* Texture)
+	{
+		if (Batch.Positions.empty())
+		{
+			return;
+		}
+
+		if (!Batch.Shader)
+		{
+			Batch.Shader.create("editor\\light_icon", Texture);
+		}
+
+		DU_impl.DrawIcons(Batch.Shader, Batch.Positions.data(), Batch.Colors.data(), (u32)Batch.Positions.size(), IconPixels);
+	};
+
+	DrawBatch(LightIcons, "ed\\ed_light");
+	DrawBatch(HemiIcons, "ed\\ed_light_hemi");
+}
+
 #define VIS_RADIUS 0.03f
 void  ESceneLightTool::OnRender(int priority, bool strictB2F)
 {
@@ -92,6 +164,11 @@ void  ESceneLightTool::OnRender(int priority, bool strictB2F)
 		m_Flags.set(flWthrHemi, true);
 	else
 		m_Flags.set(flWthrHemi, false);
+
+	if ((1 == priority) && (true == strictB2F))
+	{
+		RenderIcons();
+	}
 
 	if (m_Flags.is(flShowSun))
 	{

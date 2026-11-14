@@ -641,7 +641,17 @@ u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
 			continue;
 		}
 
-		// $hemi lights only emulate hemisphere lighting for the lightmap builder
+		if (!Light->m_Flags.is(ELight::flAffectDynamic))
+		{
+			continue;
+		}
+
+		ESceneLightTool* SceneLightTool = smart_cast<ESceneLightTool*>(LightTool);
+		if (SceneLightTool && Light->m_LControl == SceneLightTool->m_HemiControl)
+		{
+			continue;
+		}
+
 		const char* ControlName = Light->GetLControlName();
 		if (ControlName && 0 == xr_strcmp(ControlName, LCONTROL_HEMI))
 		{

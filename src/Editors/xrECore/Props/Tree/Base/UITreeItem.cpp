@@ -16,6 +16,12 @@ UITreeItem::~UITreeItem()
 UITreeItem* UITreeItem::AppendItem(const char* Path, char PathChar )
 {
 	VERIFY(Path && *Path);
+	// Empty segments ("\a", "a\\b") would create a nameless node: its ID clashes with its parent
+	while (PathChar && *Path == PathChar)
+	{
+		++Path;
+	}
+
 	if (PathChar&&strchr(Path, PathChar))
 	{
 		string_path Name;
@@ -45,6 +51,12 @@ UITreeItem* UITreeItem::AppendItem(const char* Path, char PathChar )
 
 UITreeItem* UITreeItem::FindItem(const char* Path, char PathChar )
 {
+	// Same path rules as AppendItem
+	while (PathChar && *Path == PathChar)
+	{
+		++Path;
+	}
+
 	if (PathChar&&strchr(Path, PathChar))
 	{
 		string_path Name;
