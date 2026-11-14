@@ -153,6 +153,12 @@ if(WIN32)
     add_custom_command(TARGET xrCore POST_BUILD
     	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/embree4.dll ${IXRAY_OUTPUT}
     )
+elseif(APPLE)
+	add_custom_command(TARGET xrCore POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:embree>" "$<TARGET_FILE_DIR:xrCore>"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_SONAME_FILE:embree>" "$<TARGET_FILE_DIR:xrCore>"
+		VERBATIM
+	)
 else ()
     add_custom_command(TARGET xrCore POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/libembree4.so ${IXRAY_OUTPUT}
