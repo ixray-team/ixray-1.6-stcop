@@ -615,6 +615,11 @@ void CActor::Load	(const char* section )
 	m_fDispBase					= deg2rad(m_fDispBase);
 
 	m_fDispAim					= pSettings->r_float		(section,"disp_aim"		 );
+	// Improved weapon dispersion: an optional finer spread of the aiming actor
+	if (EngineExternal()[EEngineExternalGame::EnableImprovedWeaponDispersion] && pSettings->line_exist(section, "disp_aim_improved"))
+	{
+		m_fDispAim				= pSettings->r_float(section, "disp_aim_improved");
+	}
 	m_fDispAim					= deg2rad(m_fDispAim);
 
 	m_fDispVelFactor			= pSettings->r_float		(section,"disp_vel_factor"	 );

@@ -96,6 +96,8 @@ protected:
 
 	//рассеивание во время стрельбы
 	float					fireDispersionBase;
+	// fire_dispersion_base_improved / fire_dispersion_base, applied to the actor with EnableImprovedWeaponDispersion
+	float					FireDispersionImprovedFactor = 1.0f;
 
 	//счетчик времени, затрачиваемого на выстрел
 	float					fShotTimeCounter;

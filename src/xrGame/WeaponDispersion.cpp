@@ -56,7 +56,13 @@ void CWeapon::setFireDispersionConditionFactor(float value)
 
 float CWeapon::GetBaseDispersion(float cartridge_k)
 {
-	return fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor();
+	float Dispersion = fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor();
+	// Only the actor gets the finer base: stalkers keep the original spread, so they do not hit the actor more often
+	if (EngineExternal()[EEngineExternalGame::EnableImprovedWeaponDispersion] && ParentIsActor())
+	{
+		Dispersion *= FireDispersionImprovedFactor;
+	}
+	return Dispersion;
 }
 
 //текущая дисперсия (в радианах) оружия с учетом используемого патрона

@@ -43,7 +43,22 @@ void TDamageManager::reload(const char* section, CInifile const* ini)
 void TDamageManager::reload(const char* section, const char* line, CInifile const * ini)
 {
 	if (ini && ini->section_exist(section) && ini->line_exist(section,line)) 
-		reload(ini->r_string(section,line),ini);	
+	{
+		const char* DamageSection = ini->r_string(section, line);
+
+		// Improved bullet damage: an optional "<damage section>_improved" bone table replaces the regular one
+		if (EngineExternal()[EEngineExternalGame::EnableImprovedBulletDamage])
+		{
+			string256 ImprovedSection;
+			xr_strconcat(ImprovedSection, DamageSection, "_improved");
+			if (ini->section_exist(ImprovedSection))
+			{
+				reload(ImprovedSection, ini);
+				return;
+			}
+		}
+		reload(DamageSection, ini);
+	}
 	else 
 		reload(section,0);
 }

@@ -51,6 +51,19 @@
 #include "Legacy/StalkerPlanner/stalker_planner.h"
 #include "../../trajectories.h"
 
+namespace ImprovedHitBalance
+{
+	// Bone armor stops a share of the bullet instead of being subtracted from its power, so armored
+	// stalkers stop being bullet sponges. Armor piercing lowers the armor the way Shadow of Chernobyl
+	// lowers outfit armor: Armor * (1 - AP). The share that passes is never below HitFraction.
+	float StalkerBulletDamage(float HitPower, float BoneArmor, float ArmorPiercing, float HitFraction)
+	{
+		const float EffectiveArmor = std::clamp(BoneArmor, 0.0f, 1.0f) * (1.0f - std::clamp(ArmorPiercing, 0.0f, 1.0f));
+		const float PassedShare = std::clamp(1.0f - EffectiveArmor, std::clamp(HitFraction, 0.0f, 1.0f), 1.0f);
+		return HitPower * PassedShare;
+	}
+}
+
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
 #else
@@ -283,6 +296,10 @@ void CAI_Stalker::Hit(SHit* pHDS)
         if (wounded()) // уже лежит => добивание
         {
             hit_power = 1000.f;
+        }
+        else if (EngineExternal()[EEngineExternalGame::EnableImprovedBulletDamage])
+        {
+            hit_power = ImprovedHitBalance::StalkerBulletDamage(hit_power, BoneArmor, HDS.armor_piercing, m_boneHitProtection->m_fHitFrac);
         }
         else if (Balance == EEngineExternalBalance::CallOfPripyat ||
 			(Balance == EEngineExternalBalance::Auto && m_boneHitProtection->m_hitFracType == SBoneProtections::HitFractionNPC))

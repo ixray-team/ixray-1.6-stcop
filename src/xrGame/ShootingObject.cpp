@@ -123,6 +123,18 @@ void CShootingObject::LoadFireParams( const char* section )
 	//базовая дисперсия оружия
 	fireDispersionBase	= deg2rad( pSettings->r_float(section,"fire_dispersion_base"	) );
 
+	// Improved weapon dispersion: "fire_dispersion_base_improved" is the base used with the option on.
+	// It is kept as a factor of the regular base, so upgrades that add to the base keep their share.
+	FireDispersionImprovedFactor = 1.0f;
+	if (pSettings->line_exist(section, "fire_dispersion_base_improved"))
+	{
+		const float RegularBase = pSettings->r_float(section, "fire_dispersion_base");
+		if (RegularBase > EPS)
+		{
+			FireDispersionImprovedFactor = pSettings->r_float(section, "fire_dispersion_base_improved") / RegularBase;
+		}
+	}
+
 	//сила выстрела и его мощьность
 	s_sHitPower			= pSettings->r_string_wb(section, "hit_power" );//читаем строку силы хита пули оружия
 	s_sHitPowerCritical	= READ_IF_EXISTS(pSettings, r_string_wb, section, "hit_power_critical", "0.0, 0.0, 0.0, 0.0");
