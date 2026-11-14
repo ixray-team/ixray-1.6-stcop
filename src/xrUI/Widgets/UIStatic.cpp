@@ -515,7 +515,7 @@ void CUIStatic::DrawTexture()
 	if (!m_bTextureEnable || !GetShader() || !GetShader()->inited())
 		return;
 
-	if (BlurredShadowEnabled && BlurredShadowOpacity > 0.0f)
+	if (!BlurredShadowDrawnInParent && BlurredShadowEnabled && BlurredShadowOpacity > 0.0f)
 	{
 		DrawBlurredTextureShadow();
 	}
@@ -535,6 +535,14 @@ void CUIStatic::DrawTexture()
 		}
 	}
 
+	if (AltTextureEnabled && UIRender->TextureBlendMask.Shader)
+	{
+		PrepareTextureItem();
+		if (m_UIStaticItem.RenderTextureBlend(AltTextureItem, Heading(), GetHeading(), IsAspectRatioCorrectionActive()))
+		{
+			return;
+		}
+	}
 	DrawTexturePass(textureColor, Fvector2().set(0.0f, 0.0f));
 }
 
@@ -733,6 +741,196 @@ void CUIStatic::SetBorder(float Thickness, float Radius, u32 Color)
 	BorderColor = Color;
 }
 
+void CUIStatic::InitAltTexture(const char* Texture)
+{
+	AltTextureEnabled = Texture && Texture[0];
+	if (AltTextureEnabled)
+	{
+		AltTextureItem.ResetOriginalRect();
+		CUITextureMaster::InitTexture(Texture, &AltTextureItem);
+	}
+	else
+	{
+		AltTextureItem.hShader->destroy();
+	}
+}
+
+void CUIStatic::SetTextureBlendMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition)
+{
+	TextureBlendMaskAssigned = true;
+	const shared_str Name = Texture ? Texture : "";
+	if (Name != TextureBlendMaskName)
+	{
+		TextureBlendMaskName = Name;
+		if (Texture && Texture[0])
+		{
+			// Mask paths refer to whole raster textures; grayscale is read from the red channel.
+			TextureBlendMaskShader->create("hud\\default", Texture);
+		}
+		else
+		{
+			TextureBlendMaskShader->destroy();
+		}
+	}
+	SetTextureBlendMaskPosition(X, Y);
+	TextureBlendMaskWidth = std::isfinite(Width) ? std::clamp(Width, 0.0f, 8192.0f) : 400.0f;
+	TextureBlendMaskHeight = std::isfinite(Height) ? std::clamp(Height, 0.0f, 8192.0f) : 400.0f;
+	TextureBlendMaskScale = std::isfinite(Scale) ? std::clamp(Scale, 0.0f, 64.0f) : 1.0f;
+	TextureBlendMaskUseMouse = IsUseMousePosition;
+}
+
+void CUIStatic::SetTextureBlendMaskPosition(float X, float Y)
+{
+	TextureBlendMaskX = std::isfinite(X) ? std::clamp(X, -8192.0f, 8192.0f) : 0.0f;
+	TextureBlendMaskY = std::isfinite(Y) ? std::clamp(Y, -8192.0f, 8192.0f) : 0.0f;
+	TextureBlendMaskUseMouse = false;
+}
+
+UITextureBlendMask CUIStatic::ResolveTextureMask(IUIShader& Shader, float X, float Y, float Width, float Height, float Scale, bool UseMouse)
+{
+	UITextureBlendMask Mask;
+	if (UI().m_currentPointType == IUIRender::pttTL && Shader.inited() && Width > 0.0f && Height > 0.0f && Scale > 0.0f)
+	{
+		Mask.Shader = &Shader;
+		Fvector2 Center;
+		if (UseMouse)
+		{
+			Center = GetUICursor().GetCursorPosition();
+			UI().ClientToScreenScaled(Center);
+		}
+		else
+		{
+			GetAbsolutePos(Center);
+			Center.add(Fvector2().set(X, Y));
+			UI().ClientToScreenScaled(Center);
+			UIRender->Transform2D.Apply(Center.x, Center.y);
+		}
+		Mask.X = Center.x;
+		Mask.Y = Center.y;
+		Mask.Width = UI().ClientToScreenScaledX(Width * Scale);
+		Mask.Height = UI().ClientToScreenScaledY(Height * Scale);
+		if (Mask.Width <= EPS_S || Mask.Height <= EPS_S)
+		{
+			Mask.Shader = nullptr;
+		}
+	}
+	return Mask;
+}
+
+void CUIStatic::ApplyTextureBlendMask()
+{
+	if (TextureBlendMaskAssigned)
+	{
+		UIRender->TextureBlendMask = TextureBlendMaskName.size() ?
+			ResolveTextureMask(*TextureBlendMaskShader, TextureBlendMaskX, TextureBlendMaskY, TextureBlendMaskWidth, TextureBlendMaskHeight, TextureBlendMaskScale, TextureBlendMaskUseMouse) : UITextureBlendMask{};
+	}
+}
+
+void CUIStatic::SetFlashlightMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition)
+{
+	const shared_str Name = Texture ? Texture : "";
+	if (Name != FlashlightMaskName)
+	{
+		FlashlightMaskName = Name;
+		if (Texture && Texture[0])
+		{
+			FlashlightMaskShader->create("hud\\default", Texture);
+		}
+		else
+		{
+			FlashlightMaskShader->destroy();
+		}
+	}
+	SetFlashlightMaskPosition(X, Y);
+	FlashlightMaskWidth = std::isfinite(Width) ? std::clamp(Width, 0.0f, 8192.0f) : 400.0f;
+	FlashlightMaskHeight = std::isfinite(Height) ? std::clamp(Height, 0.0f, 8192.0f) : 400.0f;
+	FlashlightMaskScale = std::isfinite(Scale) ? std::clamp(Scale, 0.0f, 64.0f) : 1.0f;
+	FlashlightMaskUseMouse = IsUseMousePosition;
+}
+
+void CUIStatic::SetFlashlightMaskPosition(float X, float Y)
+{
+	FlashlightMaskX = std::isfinite(X) ? std::clamp(X, -8192.0f, 8192.0f) : 0.0f;
+	FlashlightMaskY = std::isfinite(Y) ? std::clamp(Y, -8192.0f, 8192.0f) : 0.0f;
+	FlashlightMaskUseMouse = false;
+}
+
+void CUIStatic::SetFlashlightVolume(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps)
+{
+	Flashlight.VolumeEnabled = Enabled;
+	Flashlight.SourceX = std::isfinite(SourceX) ? std::clamp(SourceX, -8192.0f, 8192.0f) : 1100.0f;
+	Flashlight.SourceY = std::isfinite(SourceY) ? std::clamp(SourceY, -8192.0f, 8192.0f) : -100.0f;
+	Flashlight.SourceDistancePixels = std::isfinite(DistancePixels) ? std::clamp(DistancePixels, 1.0f, 16384.0f) : 650.0f;
+	Flashlight.VolumeDensity = std::isfinite(Density) ? std::clamp(Density, 0.0f, 1.0f) : 0.08f;
+	Flashlight.VolumeSteps = std::clamp(Steps, 8, 64);
+}
+
+void CUIStatic::SetFlashlightVolumeColor(float Red, float Green, float Blue)
+{
+	const auto Channel = [](float Value) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f; };
+	Flashlight.VolumeRed = Channel(Red);
+	Flashlight.VolumeGreen = Channel(Green);
+	Flashlight.VolumeBlue = Channel(Blue);
+}
+
+void CUIStatic::SetFlashlightDustColor(float Red, float Green, float Blue)
+{
+	const auto Channel = [](float Value) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f; };
+	Flashlight.DustRed = Channel(Red);
+	Flashlight.DustGreen = Channel(Green);
+	Flashlight.DustBlue = Channel(Blue);
+}
+
+void CUIStatic::SetFlashlightVolumeNearClip(float DistancePixels)
+{
+	Flashlight.VolumeNearClipPixels = std::isfinite(DistancePixels) ? std::clamp(DistancePixels, 0.0f, 16384.0f) : 0.0f;
+}
+
+void CUIStatic::SetFlashlightDust(bool Enabled, int Count, float Size, float Speed, float Opacity)
+{
+	Flashlight.DustEnabled = Enabled;
+	Flashlight.DustCount = std::clamp(Count, 0, 2048);
+	Flashlight.DustSize = std::isfinite(Size) ? std::clamp(Size, 0.1f, 8.0f) : 0.8f;
+	Flashlight.DustSpeed = std::isfinite(Speed) ? std::clamp(Speed, 0.0f, 10.0f) : 0.6f;
+	Flashlight.DustOpacity = std::isfinite(Opacity) ? std::clamp(Opacity, 0.0f, 1.0f) : 0.16f;
+}
+
+void CUIStatic::SetFlashlightIsolation(bool Enabled)
+{
+	Flashlight.IsolatedLayer = Enabled;
+}
+
+void CUIStatic::SetFlashlightDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity)
+{
+	Flashlight.DustAnimationEnabled = Enabled;
+	Flashlight.DustMotionPhase = std::isfinite(MotionPhase) ? std::max(MotionPhase, 0.0f) : 0.0f;
+	Flashlight.DustGlintPhase = std::isfinite(GlintPhase) ? std::max(GlintPhase, 0.0f) : 0.0f;
+	Flashlight.DustGlintIntensity = std::isfinite(GlintIntensity) ? std::clamp(GlintIntensity, 0.0f, 8.0f) : 1.0f;
+}
+
+void CUIStatic::SetFlashlightInterference(bool Enabled, float Strength)
+{
+	Flashlight.InterferenceEnabled = Enabled;
+	Flashlight.InterferenceStrength = std::isfinite(Strength) ? std::clamp(Strength, 0.0f, 0.9f) : 0.0f;
+}
+
+void CUIStatic::SetFlashlight(bool Enabled, float Radius, float Softness, float Darkness, float Saturation, float Multiply)
+{
+	const auto Unit = [](float Value, float Fallback) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : Fallback; };
+	Flashlight.Enabled = Enabled;
+	Flashlight.Radius = std::isfinite(Radius) ? std::clamp(Radius, 1.0f, 8192.0f) : 300.0f;
+	Flashlight.Softness = Unit(Softness, 0.8f);
+	Flashlight.Darkness = Unit(Darkness, 0.4f);
+	Flashlight.Saturation = Unit(Saturation, 0.9f);
+	Flashlight.Multiply = Unit(Multiply, 0.65f);
+}
+
+void CUIStatic::SetFlashlightPosition(float X, float Y)
+{
+	Flashlight.X = std::isfinite(X) ? std::clamp(X, -8192.0f, 8192.0f) : 512.0f;
+	Flashlight.Y = std::isfinite(Y) ? std::clamp(Y, -8192.0f, 8192.0f) : 384.0f;
+}
+
 UIRoundedRect CUIStatic::GetBorderRect()
 {
 	UIRoundedRect Rect;
@@ -802,6 +1000,30 @@ UIRoundedRect CUIStatic::GetBorderRect()
 			Rect.Radius = std::min(BorderRadius * ScaleY, PhysicalLimit);
 			Rect.Thickness = std::min(BorderThickness * ScaleY, PhysicalLimit);
 		}
+	}
+	if (!BorderEnabled)
+	{
+		Rect.Radius = Rect.Thickness = 0.0f;
+		Rect.Color = 0;
+	}
+	Rect.Flashlight = Flashlight;
+	// Cursor/light coordinates are absolute root UI coordinates, independent of widget transforms.
+	Rect.Flashlight.X = UI().ClientToScreenScaledX(Flashlight.X);
+	Rect.Flashlight.Y = UI().ClientToScreenScaledY(Flashlight.Y);
+	Rect.Flashlight.Radius = UI().ClientToScreenScaledY(Flashlight.Radius);
+	Rect.Flashlight.Enabled = Flashlight.Enabled && Rect.ScreenSpace;
+	Rect.Flashlight.SourceX = UI().ClientToScreenScaledX(Flashlight.SourceX);
+	Rect.Flashlight.SourceY = UI().ClientToScreenScaledY(Flashlight.SourceY);
+	Rect.Flashlight.DustSize = UI().ClientToScreenScaledY(Flashlight.DustSize);
+	Rect.Flashlight.MaskEnabled = FlashlightMaskName.size() && Rect.ScreenSpace;
+	if (Rect.Flashlight.MaskEnabled)
+	{
+		const UITextureBlendMask Mask = ResolveTextureMask(*FlashlightMaskShader, FlashlightMaskX, FlashlightMaskY, FlashlightMaskWidth, FlashlightMaskHeight, FlashlightMaskScale, FlashlightMaskUseMouse);
+		Rect.Flashlight.MaskShader = Mask.Shader;
+		Rect.Flashlight.MaskX = Mask.X;
+		Rect.Flashlight.MaskY = Mask.Y;
+		Rect.Flashlight.MaskWidth = Mask.Width;
+		Rect.Flashlight.MaskHeight = Mask.Height;
 	}
 	return Rect;
 }

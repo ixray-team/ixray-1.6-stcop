@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "dxUIRender.h"
+#include "../../Include/xrRender/UIShader.h"
 
 namespace
 {
@@ -19,6 +20,7 @@ dxUIRender::RoundedLayer::~RoundedLayer()
 void dxUIRender::RoundedLayer::ReleaseResources()
 {
 	Shader = nullptr;
+	FlashlightMaskName = "";
 	if (Background)
 	{
 		Background->surface_set(nullptr);
@@ -125,8 +127,9 @@ bool dxUIRender::BeginRoundedRect(const UIRoundedRect& Rect)
 		Layer.Background->surface_set(Layer.BackgroundSurface);
 		Layer.Content.create(ContentName);
 		Layer.Content->surface_set(Layer.ContentSurface);
-		xr_string Textures = xr_string(ContentName) + "," + BackgroundName;
+		xr_string Textures = xr_string(ContentName) + "," + BackgroundName + ",null";
 		Layer.Shader.create(Samples > 1 ? "hud\\ui_rounded_ms" : "hud\\ui_rounded", Textures.c_str());
+		Layer.FlashlightMaskName = "null";
 		Layer.Width = Width;
 		Layer.Height = Height;
 		Layer.Samples = Samples;
@@ -252,7 +255,15 @@ bool dxUIRender::BeginRoundedRect(const UIRoundedRect& Rect)
 	}
 	ClearRoundedTextures();
 	GRHI->CopySurface(Layer.BackgroundSurface, Surface);
-	GRHI->CopySurface(Layer.ContentSurface, Surface);
+	if (Rect.Flashlight.Enabled && Rect.Flashlight.IsolatedLayer)
+	{
+		// Preserve only this subtree's premultiplied color and coverage, excluding lower siblings.
+		GRHI->ClearTarget(Layer.ContentView);
+	}
+	else
+	{
+		GRHI->CopySurface(Layer.ContentSurface, Surface);
+	}
 	if (Depth)
 	{
 		GRHI->CopySurface(Layer.DepthSurface, Depth->GetSurface());
@@ -291,6 +302,22 @@ void dxUIRender::EndRoundedRect()
 	CompositeScissor.x2 = std::max(CompositeScissor.x1, std::min(CompositeScissor.x2, iCeil(Layer.Viewport.TopLeftX + Layer.Viewport.Width)));
 	CompositeScissor.y2 = std::max(CompositeScissor.y1, std::min(CompositeScissor.y2, iCeil(Layer.Viewport.TopLeftY + Layer.Viewport.Height)));
 	SetScissor(&CompositeScissor);
+	const UIFlashlight& Light = Layer.Rect.Flashlight;
+	shared_str MaskName = "null";
+	if (Light.Enabled && Light.MaskEnabled && Light.MaskShader && Light.MaskShader->inited())
+	{
+		SetShader(*Light.MaskShader);
+		if (CTexture* Texture = RCache.get_ActiveTexture(0))
+		{
+			MaskName = Texture->cName;
+		}
+	}
+	if (Layer.FlashlightMaskName != MaskName)
+	{
+		const xr_string Textures = xr_string(Layer.Content->cName.c_str()) + "," + Layer.Background->cName.c_str() + "," + MaskName.c_str();
+		Layer.Shader.create(Layer.Samples > 1 ? "hud\\ui_rounded_ms" : "hud\\ui_rounded", Textures.c_str());
+		Layer.FlashlightMaskName = MaskName;
+	}
 	RCache.set_Shader(Layer.Shader);
 	RCache.set_Stencil(FALSE);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
@@ -304,6 +331,23 @@ void dxUIRender::EndRoundedRect()
 	RCache.set_c("ui_round_depth_z", Layer.DepthZ);
 	RCache.set_c("ui_round_depth_w", Layer.DepthW);
 	RCache.set_c("ui_round_depth_range", Layer.Viewport.MinDepth, Layer.Viewport.MaxDepth - Layer.Viewport.MinDepth, 0.0f, 0.0f);
+	RCache.set_c("ui_flashlight_spot", Light.X, Light.Y, Light.Radius, Light.Softness);
+	RCache.set_c("ui_flashlight_grade", Light.Darkness, Light.Saturation, Light.Multiply, Light.Enabled ? 1.0f : 0.0f);
+	RCache.set_c("ui_flashlight_mask_rect", Light.MaskX, Light.MaskY, 1.0f / std::max(Light.MaskWidth, EPS_S), 1.0f / std::max(Light.MaskHeight, EPS_S));
+	RCache.set_c("ui_flashlight_mask_state", Light.MaskEnabled ? 1.0f : 0.0f, MaskName != "null" ? 1.0f : 0.0f,
+		Light.InterferenceEnabled ? Light.InterferenceStrength : 0.0f, Light.IsolatedLayer ? 1.0f : 0.0f);
+	RCache.set_c("ui_flashlight_volume_source", Light.SourceX, Light.SourceY, Light.SourceDistancePixels, Light.VolumeDensity);
+	// UI canvas at Z=0, viewer halfway to the hidden emitter: only a truncated light volume is visible.
+	const float CameraDistance = Light.SourceDistancePixels * 0.5f;
+	const float DistanceFactor = 1.0f + Light.SourceDistancePixels / 900.0f;
+	RCache.set_c("ui_flashlight_volume_view", CameraDistance, 1.0f / (DistanceFactor * DistanceFactor),
+		Light.VolumeNearClipPixels, std::max(Light.VolumeNearClipPixels * 0.05f, 1.0f));
+	RCache.set_c("ui_flashlight_volume_settings", Light.VolumeEnabled && Light.VolumeDensity > 0.0f ? float(Light.VolumeSteps) : 0.0f, float(Device.dwTimeContinual) * 0.001f,
+		Layer.Viewport.TopLeftX + Layer.Viewport.Width * 0.5f, Layer.Viewport.TopLeftY + Layer.Viewport.Height * 0.5f);
+	RCache.set_c("ui_flashlight_dust", Light.DustEnabled ? float(Light.DustCount) : 0.0f, Light.DustSize, Light.DustSpeed, Light.DustOpacity);
+	RCache.set_c("ui_flashlight_volume_color", Light.VolumeRed, Light.VolumeGreen, Light.VolumeBlue, 1.0f);
+	RCache.set_c("ui_flashlight_dust_color", Light.DustRed, Light.DustGreen, Light.DustBlue, 1.0f);
+	RCache.set_c("ui_flashlight_dust_animation", Light.DustMotionPhase, Light.DustGlintPhase, Light.DustGlintIntensity, Light.DustAnimationEnabled ? 1.0f : 0.0f);
 	// The compositor uses target coordinates directly, without a second tree transform.
 	u32 Offset;
 	FVF::TL* Vertices = static_cast<FVF::TL*>(RCache.Vertex.Lock(4, hGeom_TL.stride(), Offset));

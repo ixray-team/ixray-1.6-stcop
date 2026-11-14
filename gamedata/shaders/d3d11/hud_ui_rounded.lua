@@ -5,4 +5,6 @@ function normal(shader, t_base, t_second, t_detail)
         :blend(false, blend.one, blend.zero)
     shader:dx10texture("s_round_content", t_base)
     shader:dx10texture("s_round_background", t_second)
+    shader:dx10texture("s_flashlight_mask", t_detail)
+    shader:dx10sampler("smp_base")
 end

@@ -8,6 +8,8 @@ void dxUIShader::Copy(IUIShader&_in)
 
 void dxUIShader::create(const char* sh, const char* tex)
 {
+	TextureBlendShader = nullptr;
+	TextureBlendKey = "";
 	BlurredShadowScreen = nullptr;
 	BlurredShadowWorld = nullptr;
 	hShader.create(sh,tex);
@@ -15,6 +17,8 @@ void dxUIShader::create(const char* sh, const char* tex)
 
 void dxUIShader::destroy()
 {
+	TextureBlendShader = nullptr;
+	TextureBlendKey = "";
 	BlurredShadowScreen = nullptr;
 	BlurredShadowWorld = nullptr;
 	hShader.destroy();

@@ -205,6 +205,27 @@ void CUIStaticItem::Render(float Angle, bool CorrectedAspect)
 }
 
 
+bool CUIStaticItem::RenderTextureBlend(CUIStaticItem& Alt, bool Rotated, float Angle, bool CorrectedAspect)
+{
+	if (UI().m_currentPointType != IUIRender::pttTL || !UIRender->TextureBlendMask.Shader ||
+		!UIRender->SetTextureBlendShader(*hShader, *Alt.hShader, TextureRect, Alt.TextureRect,
+			uFlags.test(flValidTextureRect), Alt.uFlags.test(flValidTextureRect)))
+	{
+		return false;
+	}
+	UIRender->StartPrimitive(32, IUIRender::ptTriList, UI().m_currentPointType);
+	if (Rotated)
+	{
+		RenderInternal(Angle, CorrectedAspect);
+	}
+	else
+	{
+		RenderInternal(vPos);
+	}
+	UIRender->FlushPrimitive();
+	return true;
+}
+
 void CUIStaticItem::RenderBlurredShadow(const Fvector2& Light, float ProjectionScale, float LightHeight, float LightRadius,
 	float Radius, float Sigma, float Falloff, float MinOpacityRatio, u32 Color, bool Rotated, float Angle, bool CorrectedAspect)
 {

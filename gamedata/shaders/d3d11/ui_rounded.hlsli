@@ -5,6 +5,8 @@ Texture2DMS<float4> s_round_background;
 Texture2D<float4> s_round_content;
 Texture2D<float4> s_round_background;
 #endif
+Texture2D<float4> s_flashlight_mask;
+SamplerState smp_base;
 // Slots b0-b5 belong to the engine's fixed constants and are rebound on view restoration.
 cbuffer UIRoundedPixelConstants : register(b6)
 {
@@ -12,7 +14,19 @@ cbuffer UIRoundedPixelConstants : register(b6)
     float4 ui_round_color;
     float4 ui_round_inverse0, ui_round_inverse1, ui_round_inverse2;
     float4 ui_round_depth_z, ui_round_depth_w, ui_round_depth_range;
+    float4 ui_flashlight_spot; // center in pixels, radius in pixels, soft edge fraction
+    float4 ui_flashlight_grade; // darkness, saturation, self-multiply amount, enabled
+    float4 ui_flashlight_mask_rect; // center in pixels, inverse screen size
+    float4 ui_flashlight_mask_state; // textured mask selected, valid mask, scripted brightness drop, isolated subtree
+    float4 ui_flashlight_volume_source; // source XYZ, scattering density
+    float4 ui_flashlight_volume_view; // internal view depth, distance attenuation, near clip, clip feather
+    float4 ui_flashlight_volume_settings; // march steps (0 disables), time, camera center XY
+    float4 ui_flashlight_dust; // count (0 disables), size, speed, opacity
+    float4 ui_flashlight_volume_color; // independent RGB multiplier, white by default
+    float4 ui_flashlight_dust_color;
+    float4 ui_flashlight_dust_animation; // accumulated motion/glint phases, glint gain, explicit phases enabled
 };
+#include "ui_flashlight_volume.hlsli"
 struct RoundedOutput
 {
     float4 Color : SV_TARGET;
@@ -52,8 +66,37 @@ RoundedOutput main(float4 Position : SV_POSITION
     // With no stroke the inner and outer coverage must coincide exactly.
     if (ui_round_shape.w <= 0.0) { Inner = Outer; }
     float Stroke = max(Outer - Inner, 0.0) * ui_round_color.a;
+    bool Isolated = ui_flashlight_grade.w > 0.5 && ui_flashlight_mask_state.w > 0.5;
+    float Coverage = saturate(Content.a * (Outer - Stroke) + Stroke);
     RoundedOutput Result;
     Result.Color = Background * (1.0 - Outer) + Content * (Outer - Stroke) + float4(ui_round_color.rgb, 1.0) * Stroke;
+    if (Isolated)
+    {
+        // The offscreen subtree is premultiplied; grade straight color before compositing once.
+        Result.Color = float4((Content.rgb * (Outer - Stroke) + ui_round_color.rgb * Stroke) / max(Coverage, 1e-6), 1.0);
+    }
+    if (ui_flashlight_grade.w > 0.5)
+    {
+        float Power = FlashlightPower();
+        float Cookie = FlashlightCookie(Position.xy);
+        float3 Original = Result.Color.rgb;
+        float Luminance = dot(Original, float3(0.2126, 0.7152, 0.0722));
+        float3 Dark = lerp(Luminance.xxx, Original, ui_flashlight_grade.y);
+        // Multiply by the image's own luminance: deepen shadow tones without shifting hue.
+        Dark *= lerp(1.0, Luminance, ui_flashlight_grade.z);
+        Dark *= 1.0 - ui_flashlight_grade.x;
+        // Restore a luminous footprint independently of the weaker airborne shaft.
+        // Power scales all emitted surface light, including the reflector's bright core.
+        float3 Surface = lerp(Dark, Original, Cookie) + Original * (0.40 * Cookie * Cookie);
+        float EffectCoverage = Isolated ? 1.0 : Outer;
+        Result.Color.rgb = lerp(Original, lerp(Dark, Surface, Power), EffectCoverage);
+        Result.Color.rgb += FlashlightVolume(Position.xy) * EffectCoverage * Power;
+    }
+    if (Isolated)
+    {
+        Result.Color.rgb = Result.Color.rgb * Coverage + Background.rgb * (1.0 - Coverage);
+        Result.Color.a = Coverage + Background.a * (1.0 - Coverage);
+    }
     float3 LocalPoint = float3(Local, 1.0);
     Result.Depth = ui_round_depth_range.x + ui_round_depth_range.y * saturate(dot(ui_round_depth_z.xyz, LocalPoint) / max(dot(ui_round_depth_w.xyz, LocalPoint), 1e-10));
     return Result;

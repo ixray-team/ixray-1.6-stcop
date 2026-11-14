@@ -54,9 +54,34 @@ struct UITransform2D
 	}
 };
 
+class IUIShader;
+
+// Screen-space light; radius is measured in physical pixels at composition time.
+struct UIFlashlight
+{
+	bool Enabled = false, IsolatedLayer = false;
+	float X = 512.0f, Y = 384.0f, Radius = 300.0f, Softness = 0.8f;
+	float Darkness = 0.4f, Saturation = 0.9f, Multiply = 0.65f;
+	bool MaskEnabled = false;
+	IUIShader* MaskShader = nullptr;
+	float MaskX = 0.0f, MaskY = 0.0f, MaskWidth = 1.0f, MaskHeight = 1.0f;
+	bool VolumeEnabled = false, DustEnabled = false;
+	float SourceX = 1100.0f, SourceY = -100.0f, SourceDistancePixels = 650.0f, VolumeDensity = 0.08f;
+	float VolumeNearClipPixels = 0.0f;
+	int VolumeSteps = 24, DustCount = 48;
+	float VolumeRed = 1.0f, VolumeGreen = 1.0f, VolumeBlue = 1.0f;
+	float DustRed = 1.0f, DustGreen = 1.0f, DustBlue = 1.0f;
+	float DustSize = 0.8f, DustSpeed = 0.6f, DustOpacity = 0.16f;
+	bool DustAnimationEnabled = false;
+	float DustMotionPhase = 0.0f, DustGlintPhase = 0.0f, DustGlintIntensity = 1.0f;
+	bool InterferenceEnabled = false;
+	float InterferenceStrength = 0.0f;
+};
+
 // Coordinates are in control units; Transform maps them into the current UI draw space.
 struct UIRoundedRect
 {
+	UIFlashlight Flashlight;
 	UITransform2D Transform;
 	float Width = 0.0f, Height = 0.0f;
 	float Radius = 0.0f, Thickness = 0.0f;

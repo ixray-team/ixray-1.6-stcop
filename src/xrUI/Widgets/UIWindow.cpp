@@ -6,6 +6,7 @@
 
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UIRender.h"
+#include "../Include/xrRender/UIShader.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "UIBtnHint.h"
 #include "UIStatic.h"
@@ -603,19 +604,45 @@ void CUIWindow::DrawWithTransform(float ComponentOpacity)
 		IUIRender* Render;
 		UITransform2D Previous;
 		float PreviousOpacity;
+		UITextureBlendMask PreviousMask;
 		~RestoreTransform()
 		{
 			Render->Transform2D = Previous;
 			Render->VertexOpacity = PreviousOpacity;
+			Render->TextureBlendMask = PreviousMask;
 		}
-	} Restore{UIRender, UIRender->Transform2D, UIRender->VertexOpacity};
+	} Restore{UIRender, UIRender->Transform2D, UIRender->VertexOpacity, UIRender->TextureBlendMask};
 	UIRender->Transform2D = GetTreeTransform();
 	UIRender->VertexOpacity = OpacityValue * TreeOpacity * ComponentOpacity;
 	CUIStatic* Static = ui_cast_static();
-	const bool NeedsLayer = Static && Static->BorderEnabled;
+	if (Static)
+	{
+		Static->ApplyTextureBlendMask();
+	}
+	const bool NeedsLayer = Static && (Static->BorderEnabled || Static->GetFlashlightEnabled());
 	if (NeedsLayer)
 	{
 		UI().RenderFont();
+	}
+	// An isolated control casts its own shadow onto its parent's receivers, before opening its layer.
+	// Descendant shadows are then drawn inside that layer, in normal UI traversal order.
+	struct RestoreShadowPass
+	{
+		bool* Flag;
+		bool Previous;
+		~RestoreShadowPass()
+		{
+			if (Flag)
+			{
+				*Flag = Previous;
+			}
+		}
+	} ShadowRestore{Static ? &Static->BlurredShadowDrawnInParent : nullptr, Static && Static->BlurredShadowDrawnInParent};
+	if (NeedsLayer && Static->Flashlight.Enabled && Static->Flashlight.IsolatedLayer &&
+		Static->m_bTextureEnable && Static->GetShader() && Static->GetShader()->inited())
+	{
+		Static->DrawBlurredTextureShadow();
+		Static->BlurredShadowDrawnInParent = true;
 	}
 	struct RoundedScope
 	{

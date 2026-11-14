@@ -173,10 +173,74 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, const char* path, int index, CUISta
 	}
 
 	pWnd->InitSVG(xml_doc, path, index);
+	{
+		string512 LightPath;
+		xr_strconcat(LightPath, path, ":flashlight");
+		const bool Present = xml_doc.NavigateToNode(LightPath, index) != nullptr;
+		pWnd->SetFlashlight(Present && xml_doc.ReadAttribInt(LightPath, index, "enabled", 1) != 0,
+			xml_doc.ReadAttribFlt(LightPath, index, "radius", 300.0f),
+			xml_doc.ReadAttribFlt(LightPath, index, "softness", 0.8f),
+			xml_doc.ReadAttribFlt(LightPath, index, "darkness", 0.4f),
+			xml_doc.ReadAttribFlt(LightPath, index, "saturation", 0.9f),
+			xml_doc.ReadAttribFlt(LightPath, index, "multiply", 0.65f));
+		pWnd->SetFlashlightPosition(xml_doc.ReadAttribFlt(LightPath, index, "x", 512.0f),
+			xml_doc.ReadAttribFlt(LightPath, index, "y", 384.0f));
+		xr_strconcat(LightPath, path, ":flashlight_mask");
+		if (xml_doc.NavigateToNode(LightPath, index))
+		{
+			pWnd->SetFlashlightMask(xml_doc.Read(LightPath, index, ""),
+				xml_doc.ReadAttribFlt(LightPath, index, "x", 0.0f),
+				xml_doc.ReadAttribFlt(LightPath, index, "y", 0.0f),
+				xml_doc.ReadAttribFlt(LightPath, index, "width", 400.0f),
+				xml_doc.ReadAttribFlt(LightPath, index, "height", 400.0f),
+				xml_doc.ReadAttribFlt(LightPath, index, "scale", 1.0f),
+				xml_doc.ReadAttribInt(LightPath, index, "is_use_mouse_position", 0) != 0);
+		}
+	}
+
+	{
+		string512 VolumePath;
+		xr_strconcat(VolumePath, path, ":flashlight_volume");
+		if (xml_doc.NavigateToNode(VolumePath, index))
+		{
+			pWnd->SetFlashlightVolume(xml_doc.ReadAttribInt(VolumePath, index, "enabled", 1) != 0,
+				xml_doc.ReadAttribFlt(VolumePath, index, "source_x", 1100.0f),
+				xml_doc.ReadAttribFlt(VolumePath, index, "source_y", -100.0f),
+				xml_doc.ReadAttribFlt(VolumePath, index, "distance_pixels", 650.0f),
+				xml_doc.ReadAttribFlt(VolumePath, index, "density", 0.08f),
+				xml_doc.ReadAttribInt(VolumePath, index, "steps", 24));
+			pWnd->SetFlashlightVolumeNearClip(xml_doc.ReadAttribFlt(VolumePath, index, "near_clip_pixels", 0.0f));
+		}
+		xr_strconcat(VolumePath, path, ":flashlight_dust");
+		if (xml_doc.NavigateToNode(VolumePath, index))
+		{
+			pWnd->SetFlashlightDust(xml_doc.ReadAttribInt(VolumePath, index, "enabled", 1) != 0,
+				xml_doc.ReadAttribInt(VolumePath, index, "count", 48),
+				xml_doc.ReadAttribFlt(VolumePath, index, "size", 0.8f),
+				xml_doc.ReadAttribFlt(VolumePath, index, "speed", 0.6f),
+				xml_doc.ReadAttribFlt(VolumePath, index, "opacity", 0.16f));
+		}
+	}
 
 	string256			buf;
 	pWnd->m_text_control_exists	= InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, pWnd);
 	InitTexture			(xml_doc, path, index, pWnd, fatal);
+	{
+		string512 BlendPath;
+		xr_strconcat(BlendPath, path, ":alt_texture");
+		pWnd->InitAltTexture(xml_doc.Read(BlendPath, index, ""));
+		xr_strconcat(BlendPath, path, ":texture_blend_mask");
+		if (xml_doc.NavigateToNode(BlendPath, index))
+		{
+			pWnd->SetTextureBlendMask(xml_doc.Read(BlendPath, index, ""),
+				xml_doc.ReadAttribFlt(BlendPath, index, "x", 0.0f),
+				xml_doc.ReadAttribFlt(BlendPath, index, "y", 0.0f),
+				xml_doc.ReadAttribFlt(BlendPath, index, "width", 400.0f),
+				xml_doc.ReadAttribFlt(BlendPath, index, "height", 400.0f),
+				xml_doc.ReadAttribFlt(BlendPath, index, "scale", 1.0f),
+				xml_doc.ReadAttribInt(BlendPath, index, "is_use_mouse_position", 0) != 0);
+		}
+	}
 	InitTextureOffset	(xml_doc,path,index,pWnd);
 
 	{

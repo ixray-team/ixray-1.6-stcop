@@ -19,6 +19,8 @@ public:
 private:
 	ref_shader		hShader;
 	ref_shader BlurredShadowScreen, BlurredShadowWorld;
+	ref_shader TextureBlendShader;
+	shared_str TextureBlendKey;
 };
 
 #endif	//	dxUIShader_included

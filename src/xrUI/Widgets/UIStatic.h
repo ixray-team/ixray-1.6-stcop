@@ -34,6 +34,7 @@ class UI_API CUIStatic :
 {
 	friend class CUIXmlInit;
 	friend class CUIWindow;
+	bool BlurredShadowDrawnInParent = false;
 private:
 	typedef CUIWindow inherited;
 	lanim_cont_xf			m_lanim_xform;
@@ -55,6 +56,22 @@ private:
 	u32 BackgroundColor = 0;
 	bool BackgroundColorAssigned = false;
 	bool BorderEnabled = false;
+	UIFlashlight Flashlight;
+	ui_shader FlashlightMaskShader;
+	shared_str FlashlightMaskName;
+	bool FlashlightMaskUseMouse = false;
+	float FlashlightMaskX = 0.0f, FlashlightMaskY = 0.0f;
+	float FlashlightMaskWidth = 400.0f, FlashlightMaskHeight = 400.0f, FlashlightMaskScale = 1.0f;
+	CUIStaticItem AltTextureItem;
+	bool AltTextureEnabled = false;
+	ui_shader TextureBlendMaskShader;
+	shared_str TextureBlendMaskName;
+	bool TextureBlendMaskAssigned = false;
+	bool TextureBlendMaskUseMouse = false;
+	float TextureBlendMaskX = 0.0f, TextureBlendMaskY = 0.0f;
+	float TextureBlendMaskWidth = 400.0f, TextureBlendMaskHeight = 400.0f, TextureBlendMaskScale = 1.0f;
+	void ApplyTextureBlendMask();
+	UITextureBlendMask ResolveTextureMask(IUIShader& Shader, float X, float Y, float Width, float Height, float Scale, bool UseMouse);
 	float BorderThickness = 0.0f, BorderRadius = 0.0f;
 	u32 BorderColor = 0;
 	UIRoundedRect GetBorderRect();
@@ -83,6 +100,26 @@ public:
 	void SetBorder(float Thickness, float Radius, u32 Color);
 	virtual void SetBackgroundOpacity(float Value);
 	void SetBorderOpacity(float Value);
+	// Applies once to the composited control and its children, within its bounds.
+	void SetFlashlight(bool Enabled, float Radius, float Softness, float Darkness, float Saturation, float Multiply);
+	void SetFlashlightPosition(float X, float Y);
+	void SetFlashlightIsolation(bool Enabled);
+	void SetFlashlightMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition);
+	void SetFlashlightMaskPosition(float X, float Y);
+	void SetFlashlightVolume(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps);
+	void SetFlashlightVolumeColor(float Red, float Green, float Blue);
+	void SetFlashlightDustColor(float Red, float Green, float Blue);
+	void SetFlashlightVolumeNearClip(float DistancePixels);
+	void SetFlashlightDust(bool Enabled, int Count, float Size, float Speed, float Opacity);
+	// Explicit accumulated phases prevent position jumps when Lua changes flow speed.
+	void SetFlashlightDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity);
+	// Instantaneous brightness loss; Lua schedules and smooths intermittent bursts.
+	void SetFlashlightInterference(bool Enabled, float Strength);
+	bool GetFlashlightEnabled() const { return Flashlight.Enabled; }
+	void InitAltTexture(const char* Texture);
+	void SetTextureBlendMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition);
+	// Switches to manual positioning, relative to this static's top-left corner.
+	void SetTextureBlendMaskPosition(float X, float Y);
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 	void InitSVG(CUIXml& xml_doc, const char* path, int index) override;
 	bool isSVGPresented(void) const override;

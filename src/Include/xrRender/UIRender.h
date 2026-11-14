@@ -24,10 +24,18 @@ inline u32 WithAlpha(u32 Color, float Value)
 
 class IUIShader;
 
+// Inherited screen-space mask, shared by all paired textures in a widget subtree.
+struct UITextureBlendMask
+{
+	IUIShader* Shader = nullptr;
+	float X = 0.0f, Y = 0.0f, Width = 1.0f, Height = 1.0f;
+};
+
 class IUIRender
 {
 public:
 	UITransform2D Transform2D;
+	UITextureBlendMask TextureBlendMask;
 	float VertexOpacity = 1.0f;
 	u32 ApplyOpacity(u32 Color) const
 	{
@@ -75,6 +83,7 @@ public:
 	virtual void DestroyUIGeom() = 0;
 
 	virtual void SetShader(IUIShader &shader) = 0;
+	virtual bool SetTextureBlendShader(IUIShader& Base, IUIShader& Alt, const Frect& BaseRect, const Frect& AltRect, bool BaseAtlas, bool AltAtlas) { return false; }
 	virtual void SetAlphaRef(int aref) = 0;
 	virtual void SetScissor(Irect* rect=NULL) = 0;
 	virtual Irect GetScissor() const = 0;

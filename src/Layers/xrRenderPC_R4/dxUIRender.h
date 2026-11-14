@@ -12,6 +12,7 @@ public:
 	virtual void DestroyUIGeom() override;
 
 	virtual void SetShader(IUIShader &shader) override;
+	bool SetTextureBlendShader(IUIShader& Base, IUIShader& Alt, const Frect& BaseRect, const Frect& AltRect, bool BaseAtlas, bool AltAtlas) override;
 	virtual void SetAlphaRef(int aref) override;
 	virtual void SetScissor(Irect* rect= nullptr) override;
 
@@ -46,6 +47,7 @@ private:
 	{
 		ref_texture Background, Content;
 		ref_shader Shader;
+		shared_str FlashlightMaskName;
 		IRHISurface* BackgroundSurface = nullptr;
 		IRHISurface* ContentSurface = nullptr;
 		IRHIRenderTargetView* ContentView = nullptr;
@@ -71,6 +73,7 @@ private:
 	};
 	xr_vector<xr_unique_ptr<RoundedLayer>> RoundedLayers;
 	size_t RoundedDepth = 0;
+	bool TextureShadowPass = false;
 	ref_geom		hGeom_L;
 	ref_geom		hGeom_TL;
 	ref_geom		hGeom_LIT;

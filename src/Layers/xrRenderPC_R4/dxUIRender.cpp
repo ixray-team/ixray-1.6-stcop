@@ -29,6 +29,43 @@ void dxUIRender::SetShader(IUIShader &shader)
 	RCache.set_Shader(pShader->hShader);
 }
 
+bool dxUIRender::SetTextureBlendShader(IUIShader& Base, IUIShader& Alt, const Frect& BaseRect, const Frect& AltRect, bool BaseAtlas, bool AltAtlas)
+{
+	if (!TextureBlendMask.Shader)
+	{
+		return false;
+	}
+	SetShader(Base);
+	CTexture* BaseTexture = RCache.get_ActiveTexture(0);
+	SetShader(Alt);
+	CTexture* AltTexture = RCache.get_ActiveTexture(0);
+	SetShader(*TextureBlendMask.Shader);
+	CTexture* MaskTexture = RCache.get_ActiveTexture(0);
+	if (!BaseTexture || !AltTexture || !MaskTexture)
+	{
+		SetShader(Base);
+		return false;
+	}
+	dxUIShader& Source = static_cast<dxUIShader&>(Base);
+	const xr_string Textures = xr_string(BaseTexture->cName.c_str()) + "," + AltTexture->cName.c_str() + "," + MaskTexture->cName.c_str();
+	if (!Source.TextureBlendShader || Source.TextureBlendKey != Textures.c_str())
+	{
+		Source.TextureBlendShader.create("hud\\ui_texture_blend", Textures.c_str());
+		Source.TextureBlendKey = Textures.c_str();
+	}
+	RCache.set_Shader(Source.TextureBlendShader);
+	const auto NormalizeRect = [](const Frect& Rect, CTexture* Texture, bool Atlas)
+	{
+		const float Width = float(std::max(Texture->get_Width(), 1u));
+		const float Height = float(std::max(Texture->get_Height(), 1u));
+		return Atlas ? Fvector4().set(Rect.x1 / Width, Rect.y1 / Height, Rect.width() / Width, Rect.height() / Height) : Fvector4().set(0.0f, 0.0f, 1.0f, 1.0f);
+	};
+	RCache.set_c("ui_blend_base_rect", NormalizeRect(BaseRect, BaseTexture, BaseAtlas));
+	RCache.set_c("ui_blend_alt_rect", NormalizeRect(AltRect, AltTexture, AltAtlas));
+	RCache.set_c("ui_blend_mask_rect", TextureBlendMask.X, TextureBlendMask.Y, 1.0f / TextureBlendMask.Width, 1.0f / TextureBlendMask.Height);
+	return true;
+}
+
 bool dxUIRender::DrawBlurredTextureShadow(IUIShader& Shader, const Fvector2* Positions,
 	const Frect& UVRect, const Fvector2& UVRadius, const Fvector2& UVPadding, const Fvector4& LightParams, const Fvector4& Basis, float SigmaRatio, float Falloff, float MinOpacityRatio, u32 Color, bool ScreenSpace)
 {
@@ -60,7 +97,9 @@ bool dxUIRender::DrawBlurredTextureShadow(IUIShader& Shader, const Fvector2* Pos
 		const float V = Corner >= 2 ? Expanded.y2 : Expanded.y1;
 		PushPoint(Positions[Corner].x, Positions[Corner].y, 0.0f, Color, U, V);
 	}
+	TextureShadowPass = true;
 	FlushPrimitive();
+	TextureShadowPass = false;
 	SetShader(Shader);
 	return true;
 }
@@ -226,8 +265,28 @@ void dxUIRender::FlushPrimitive()
 		NODEFAULT;
 	}
 
-	if (primCount>0) 
-		RCache.Render(d3dPrimType,vOffset,primCount);
+	if (primCount > 0)
+	{
+		bool IsolatedSubtree = false;
+		for (size_t Index = 0; Index < RoundedDepth; ++Index)
+		{
+			const auto& Light = RoundedLayers[Index]->Rect.Flashlight;
+			if (Light.Enabled && Light.IsolatedLayer)
+			{
+				IsolatedSubtree = true;
+				break;
+			}
+		}
+		if (IsolatedSubtree)
+		{
+			// A shadow darkens receivers already drawn in this subtree, without adding coverage.
+			// In particular, it cannot create a dark silhouette over a transparent window.
+			GRHI->StateManager->SetRenderState(D3DRS_SRCBLENDALPHA, TextureShadowPass ? D3DBLEND_ZERO : D3DBLEND_ONE);
+			GRHI->StateManager->SetRenderState(D3DRS_DESTBLENDALPHA, TextureShadowPass ? D3DBLEND_ONE : D3DBLEND_INVSRCALPHA);
+			GRHI->StateManager->SetRenderState(D3DRS_BLENDOPALPHA, D3DBLENDOP_ADD);
+		}
+		RCache.Render(d3dPrimType, vOffset, primCount);
+	}
 
 	PrimitiveType	= ptNone;
 	m_PointType		= pttNone;
