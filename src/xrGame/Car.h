@@ -399,6 +399,8 @@ public:
 			Switch();
 		}
 		void Switch(bool doors_up = false);
+		// Keep the current hinge angle instead of driving the leaf closed.
+		void Hold();
 	};
 	xr_vector<SEngineDoor> engine_door;
 

@@ -2178,6 +2178,12 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	else
 		PPhysicsShell()->Disable();
 
+	// Door leaves keep the pose stored in the save. Engine door motors would
+	// otherwise drive them closed right after loading, so hold the restored
+	// hinge angle until the engine state changes.
+	for (SEngineDoor& Door : engine_door)
+		Door.Hold();
+
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
 
@@ -4730,6 +4736,7 @@ void CCar::StartEngine()
 	m_current_rpm_brp_n = 1.f;
 	Starter();
 	SyncServerRuntimeState();
+	SwitchEngineDoors();
 }
 
 void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
@@ -4819,6 +4826,7 @@ void CCar::StopEngine()
 	UpdatePower();//set engine friction;
 	m_current_rpm=0.f;
 	SyncServerRuntimeState();
+	SwitchEngineDoors();
 }
 
 void CCar::Stall()
@@ -4831,6 +4839,7 @@ void CCar::Stall()
 	UpdatePower();//set engine friction;
 	m_current_rpm=0.f;
 	SyncServerRuntimeState();
+	SwitchEngineDoors();
 }
 
 void CCar::SwitchEngine()
@@ -6743,6 +6752,24 @@ void CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm)
 	const u16 Count = m_pPhysicsShell->get_ElementsNumber();
 	const u16 SavedCount = (u16)m_element_spawn_local.size();
 
+	// Doors must keep the element transform written to the save: an open door
+	// should load open, not snap back to its spawn pose. The cab and other
+	// parts are still normalised to the spawn pose below.
+	auto IsDoorElement = [this](const CPhysicsElement* Element)
+	{
+		for (const auto& Door : m_doors)
+		{
+			if (Door.second.joint != nullptr && Door.second.joint->PSecond_element() == Element)
+				return true;
+		}
+		for (const SEngineDoor& Door : engine_door)
+		{
+			if (Door.joint != nullptr && Door.joint->PSecond_element() == Element)
+				return true;
+		}
+		return false;
+	};
+
 	for (u16 i = 0; i < Count && i < SavedCount; ++i)
 	{
 		const SElementSpawnLocalForm& Saved = m_element_spawn_local[i];
@@ -6751,6 +6778,9 @@ void CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm)
 
 		CPhysicsElement* Element = m_pPhysicsShell->get_ElementByStoreOrder(i);
 		if (Element == nullptr || !Element->isActive())
+			continue;
+
+		if (IsDoorElement(Element))
 			continue;
 
 		Fmatrix Target;
@@ -7678,6 +7708,11 @@ void CCar::SHeadlightHideaway::Switch(bool hideaways_up)
 void CCar::SEngineDoor::Switch(bool doors_up)
 {
 	joint->SetForceAndVelocity(force, doors_up ? velocity : -velocity, axis_num);
+}
+void CCar::SEngineDoor::Hold()
+{
+	if (joint != nullptr)
+		joint->SetForceAndVelocity(force, 0.f, axis_num);
 }
 void CCar::SSuspension::Update()
 {

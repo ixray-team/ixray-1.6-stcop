@@ -275,7 +275,7 @@ void CCar::OnKeyboardPress(int cmd)
 		case kL_STRAFE:	PressLeft();				UpdateSteerAnimation();	break;
 		case kJUMP:		PressBreaks();				break;
 		case kDROP:			m_car_sound->Horn(true);	break;
-		case kDETECTOR:	SwitchEngine(); SwitchEngineDoors();	break;
+		case kDETECTOR:	SwitchEngine();	break;
 		case kSPRINT_TOGGLE: b_nitro_engage = true; break;
 		case kTORCH:
 		{
@@ -290,7 +290,7 @@ void CCar::OnKeyboardPress(int cmd)
 
 	switch (get_binded_action(cmd, agTransport))
 	{
-		case kENGINE:			SwitchEngine(); SwitchEngineDoors();	break;
+		case kENGINE:			SwitchEngine();						break;
 		case kBRAKE:			PressBreaks();						break;
 		// Explicit transmission bindings are only an alias. If the same key is
 		// already used by accel/crouch/sprint_toggle (or any other action),
