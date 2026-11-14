@@ -143,17 +143,24 @@ namespace SdkMacro
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
-	int ArgumentCount = 0;
-	const std::unique_ptr<wchar_t*, decltype(&LocalFree)> Arguments(
-		CommandLineToArgvW(GetCommandLineW(), &ArgumentCount), LocalFree);
-	const std::wstring_view Mode = Arguments && ArgumentCount > 1 ? Arguments.get()[1] : L"";
+	xr_vector<std::wstring> Arguments;
+	{
+		int ArgumentCount = 0;
+		wchar_t** const RawArguments = CommandLineToArgvW(GetCommandLineW(), &ArgumentCount);
+		if (RawArguments)
+		{
+			const xr_scope_exit FreeArguments([RawArguments] { LocalFree(RawArguments); });
+			Arguments.assign(RawArguments, RawArguments + ArgumentCount);
+		}
+	}
+	const xr_wstring_view Mode = Arguments.size() > 1 ? xr_wstring_view(Arguments[1]) : L"";
 	const bool KeepOpen = Mode == L"--open-sdk-macro";
 	const bool MacroBatch = KeepOpen || Mode == L"--run-sdk-macro";
-	if (MacroBatch && ArgumentCount != 4 && ArgumentCount != 6)
+	if (MacroBatch && Arguments.size() != 4 && Arguments.size() != 6)
 	{
 		return 2;
 	}
-	if (MacroBatch && ArgumentCount == 6 && std::wstring_view(Arguments.get()[4]) != L"-fsltx")
+	if (MacroBatch && Arguments.size() == 6 && Arguments[4] != L"-fsltx")
 	{
 		return 2;
 	}
@@ -182,9 +189,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	const char* fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
 
-	if (MacroBatch && ArgumentCount == 6)
+	if (MacroBatch && Arguments.size() == 6)
 	{
-		const auto Config = std::filesystem::path(Arguments.get()[5]).string();
+		const auto Config = std::filesystem::path(Arguments[5]).string();
 		if (Config.size() >= sizeof(fsgame))
 		{
 			return 2;
@@ -309,9 +316,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	EContext.UI->PushBegin(GContentView);
 
 	// An .object passed on the command line opens in the Actor Editor tab
-	if (Arguments && ArgumentCount > 1)
+	if (Arguments.size() > 1)
 	{
-		xr_string FirstArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Arguments.get()[1]));
+		xr_string FirstArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Arguments[1].c_str()));
 		if (FirstArg.ends_with(".object"))
 		{
 			UIActorEditorForm::Open(FirstArg.c_str());
@@ -326,7 +333,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	// The startup screen polls the events: SDL_EVENT_WINDOW_SHOWN never reaches the loop below
 	Device.b_is_Active = true;
 	
-	const int ExitCode = MacroBatch ? SdkMacro::RunMacroBatch(Arguments.get()[2], Arguments.get()[3], KeepOpen) : 0;
+	const int ExitCode = MacroBatch ? SdkMacro::RunMacroBatch(Arguments[2].c_str(), Arguments[3].c_str(), KeepOpen) : 0;
 	if (MacroBatch && (!KeepOpen || ExitCode != 0))
 	{
 		GContentView->Destroy();
