@@ -115,6 +115,17 @@ void CCar::SDoor::Init()
 	Fmatrix inv_car_form = pcar->XFORM();
 	inv_car_form.invert();
 	closed_door_form_in_object.mul(inv_car_form, door_transform);
+
+	{
+		Fvector WorldAxis;
+		joint->GetAxisDirDynamic(0, WorldAxis);
+		inv_car_form.transform_dir(hinge_axis_in_object, WorldAxis);
+		hinge_axis_in_object.normalize();
+
+		Fvector WorldAnchor;
+		joint->GetAnchorDynamic(WorldAnchor);
+		inv_car_form.transform_tiny(hinge_anchor_in_object, WorldAnchor);
+	}
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -592,16 +603,112 @@ void CCar::SDoor::ClosingToClosed(bool obuser)
 	//RemoveFromUpdate();
 }
 
+void CCar::SDoor::ClosedBoneCallback(CBoneInstance* B)
+{
+	SDoor* Door = static_cast<SDoor*>(B->callback_param());
+	if (Door == nullptr)
+		return;
+	B->mTransform.set(Door->closed_door_form_in_object);
+}
+
+void CCar::SDoor::PinClosedPose()
+{
+	if (pcar == nullptr || joint == nullptr || bone_id == BI_NONE)
+		return;
+
+	IKinematics* K = PKinematics(pcar->Visual());
+	if (K == nullptr || bone_id >= K->LL_BoneCount())
+		return;
+
+	CBoneInstance& B = K->LL_GetBoneInstance(bone_id);
+	// The closed door is deactivated, so there is no physics callback. A
+	// custom callback is needed: CalculateBones() would otherwise rebuild the
+	// bone from its bind transform on the next frame and the leaf could snap
+	// away from the car until the door is activated again.
+	B.set_callback(bctCustom, ClosedBoneCallback, this, true);
+	B.mTransform.set(closed_door_form_in_object);
+}
+
+void CCar::SDoor::RebuildFromSavedOrientation()
+{
+	if (pcar == nullptr || joint == nullptr || joint->PSecond_element() == nullptr)
+		return;
+
+	CPhysicsElement* Element = joint->PSecond_element();
+	if (!Element->isActive())
+		return;
+
+	Fmatrix Before;
+	Element->GetGlobalTransformDynamic(&Before);
+
+	Fmatrix InvCar = pcar->XFORM();
+	InvCar.invert();
+	Fmatrix SavedLocal;
+	SavedLocal.mul_43(InvCar, Before);
+
+	Fvector Axis = hinge_axis_in_object;
+	Axis.normalize();
+
+	Fvector Helper = _abs(Axis.x) < 0.9f ? Fvector().set(1.f, 0.f, 0.f) : Fvector().set(0.f, 1.f, 0.f);
+	Fvector Probe;
+	Probe.crossproduct(Axis, Helper);
+	if (!safe_normalize(Probe))
+		return;
+
+	Fvector BindProbe;
+	Fvector SavedProbe;
+	closed_door_form_in_object.transform_dir(BindProbe, Probe);
+	SavedLocal.transform_dir(SavedProbe, Probe);
+
+	const float CosAngle = BindProbe.dotproduct(SavedProbe);
+	Fvector Cross;
+	Cross.crossproduct(BindProbe, SavedProbe);
+	const float SinAngle = Axis.dotproduct(Cross);
+	const float Angle = atan2f(SinAngle, CosAngle);
+
+	Fmatrix Rot;
+	Rot.rotation(Axis, Angle);
+
+	Fmatrix Target = closed_door_form_in_object;
+	Fvector AxisI;
+	Fvector AxisJ;
+	Fvector AxisK;
+	Rot.transform_dir(AxisI, Target.i);
+	Rot.transform_dir(AxisJ, Target.j);
+	Rot.transform_dir(AxisK, Target.k);
+	Target.i = AxisI;
+	Target.j = AxisJ;
+	Target.k = AxisK;
+
+	Fvector Relative;
+	Relative.sub(Target.c, hinge_anchor_in_object);
+	Fvector Rotated;
+	Rot.transform_tiny(Rotated, Relative);
+	Target.c.add(hinge_anchor_in_object, Rotated);
+
+	Fmatrix World;
+	World.mul_43(pcar->XFORM(), Target);
+	Element->SetTransform(World, mh_clear);
+	Element->ResetInterpolation();
+	Element->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
+	Element->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
+}
+
 void CCar::SDoor::Deactivate()
 {
 	if (state != closed) return;
 	if (!joint) return;
-	if (!joint->bActive)return;
 	if(no_deactivate) return;
-	joint->PSecond_element()->Deactivate();
-	joint->Deactivate();
+
+	if (joint->bActive)
+	{
+		joint->PSecond_element()->Deactivate();
+		joint->Deactivate();
+	}
+
 	RemoveFromUpdate();
 	real_close_time = 0;
+	PinClosedPose();
 }
 
 
