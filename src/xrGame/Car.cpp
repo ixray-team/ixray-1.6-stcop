@@ -45,6 +45,7 @@
 #include "../xrPhysics/ODE/PHShell.h"
 #include "ExplosiveRocket.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/EnnumerateVertices.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 
@@ -3954,6 +3955,11 @@ void CCar::detach_Actor()
 {
 	if(!Owner()) return;
 
+	const bool SprintHeld =
+		Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT) ||
+		Level().IR_GetKeyState(SDL_SCANCODE_RSHIFT) ||
+		(pInput->GetControllerMode() && pInput->iGetAsyncGamepadKeyState(get_action_dik(kSPRINT_TOGGLE)));
+
 	// The actor can be detached without a prior CCar::Exit() call (death,
 	// forced exit, vehicle destruction). Recompute the point from the current
 	// car transform, otherwise the body is moved to a stale exit position or
@@ -3972,7 +3978,10 @@ void CCar::detach_Actor()
 	Unclutch();
 	ResetKeys();
 	CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
-	PressBreaks();
+	if (SprintHeld)
+		ReleaseBreaks();
+	else
+		PressBreaks();
 	for (CCarTurret* CWPB : m_car_weapons)
 	{
 		CWPB->Action(CCarTurret::eWpnActivate, 0);
