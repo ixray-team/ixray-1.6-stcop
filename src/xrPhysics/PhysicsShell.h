@@ -380,6 +380,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			bool						IsCollisionDisabled							() const																					= 0;
 	virtual			void						SetRemoveCharacterCollLADisable				()																							= 0;
 	virtual			void						DisableCharacterCollision					()																							= 0;
+	virtual			void						EnableCharacterCollision					()																							= 0;
 	virtual			void						PureStep									(float step = fixed_step)																	= 0;
 	virtual			void						SetGlTransformDynamic						(const Fmatrix &form)																		= 0;
 	virtual			void						CollideAll									()																							= 0;

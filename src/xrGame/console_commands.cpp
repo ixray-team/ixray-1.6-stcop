@@ -3275,6 +3275,9 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "rs_car_scraper_helpers", &rs_car_scraper_helpers);
 #endif
 
+	extern bool rs_car_legacy_character_push;
+	CMD2(CCC_Boolean, "rs_car_legacy_character_push", &rs_car_legacy_character_push);
+
 #ifndef MASTER_GOLD
 	extern bool rs_car_unlimitedfuel;
 	CMD2(CCC_Boolean, "rs_car_unlimitedfuel", &rs_car_unlimitedfuel);

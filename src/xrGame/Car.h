@@ -229,6 +229,9 @@ static	const u16				cAsCallsnum						= 3;
 	void								DropTrunkContents			();
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
+	// Character collisions stay enabled on the main shell. In the default
+	// mode they are rejected per contact; legacy mode lets them push the car.
+	bool								m_legacy_character_push;
 	// The scraper mirrors the real car bone shapes to keep mutants from
 	// crawling under the car. Its helper plate/skirts are invisible, so human
 	// contacts with them are ignored in CollisionDetectionCallback.
@@ -1691,6 +1694,7 @@ public:
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
 	void					CreateCharacterScraper			(IKinematics* K, CInifile* ini);
+	void					ApplyCharacterCollisionMode		();
 	void					CreateDoorScrapers				(IKinematics* K, CInifile* ini);
 	void					UpdateDoorScrapers				();
 	void					DestroyDoorScrapers				();

@@ -89,6 +89,11 @@ void CPHShell::DisableCharacterCollision()
 	CPHCollideValidator::SetCharacterClassNotCollide(*this);
 }
 
+void CPHShell::EnableCharacterCollision()
+{
+	CPHCollideValidator::SetCharacterClassCollide(*this);
+}
+
 void CPHShell::Disable()
 {
 	ELEMENT_I i,e;
