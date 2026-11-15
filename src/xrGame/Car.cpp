@@ -390,6 +390,8 @@ CCar::CCar()
 	m_hit_anomaly_scale = 1.f;
 	m_mutant_hit_impulse_factor = 1.f;
 	m_burer_gravi_impulse_factor = 1.f;
+	m_ram_damage_factor = 1.f;
+	m_push_impulse_factor = 1.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
 	m_brakes_pressure_current = 0.f;
@@ -1395,6 +1397,11 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 			m_pPhysicsShell->RegisterToCLGroup(ScraperGroup);
 		}
 		characters_scraper_shell->RegisterToCLGroup(ScraperGroup);
+		for (SDoorScraper& Door : m_door_scrapers)
+		{
+			if (Door.shell != nullptr)
+				Door.shell->RegisterToCLGroup(ScraperGroup);
+		}
 	}
 
 	setEnabled						(TRUE);
@@ -1501,11 +1508,44 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 		Character = cphc.GetCharacter(!bo1);
 	if (Character != nullptr)
 	{
+		// The underbody plate and side skirts are invisible helpers. They must
+		// stop low mutants from crawling under the car, but human characters
+		// (the actor and NPCs) should not hit an invisible box around the
+		// bodywork. Bone boxes of the visible hull stay solid for everyone.
+		bool IsMonster = true;
+		if (CGameObject* Target = smart_cast<CGameObject*>(Character->PhysicsRefObject()))
+		{
+			if (CEntityAlive* Alive = Target->cast_entity_alive())
+				IsMonster = Alive->cast_base_monster() != nullptr;
+		}
+
+		if (Car != nullptr && !IsMonster)
+		{
+			const dGeomID G1 = c.geom.g1;
+			const dGeomID G2 = c.geom.g2;
+			for (const CODEGeom* Geom : Car->m_scraper_underbody_geoms)
+			{
+				if (Geom == nullptr)
+					continue;
+
+				const dGeomID Inner = Geom->geometry();
+				const dGeomID Transform = Geom->geometry_transform();
+				if ((Inner != nullptr && (Inner == G1 || Inner == G2)) ||
+					(Transform != nullptr && (Transform == G1 || Transform == G2)))
+				{
+					Car->WakePhysics();
+					do_colide = false;
+					return;
+				}
+			}
+		}
+
 		// Characters collide with the scraper regardless of whether their
 		// shell is represented by CPhysicsShellHolder::m_pPhysicsShell. The
 		// generic object filter below must not turn them into pass-through.
 		if (Car != nullptr)
 		{
+			Car->WakePhysics();
 			Car->RegisterCharacterContact(Character);
 			Car->HitCharacterFromCar(Character, cphc.GetPosition());
 		}
@@ -1631,6 +1671,22 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 
 	ApplyBonePhysicsParams(K, ini);
 
+	// A new car starts with its engine doors closed. A loaded car must keep
+	// the saved leaf pose until the shell is restored; applying the motor here
+	// would move an open leaf only after the car is woken by the first touch.
+	if (!so->_flags.test(CSE_PHSkeleton::flSavedData))
+	{
+		SwitchEngineDoors();
+	}
+	else
+	{
+		// A loaded car keeps the saved leaf pose, but the hinge must not be
+		// left free: without a motor the doors swing under gravity after the
+		// shell is woken. Hold the current angle with zero velocity.
+		for (SEngineDoor& Door : engine_door)
+			Door.Hold();
+	}
+
 	BindGaugeAndSuspensionCallbacks(K, ini);
 
 	NeutralDrive();
@@ -1661,6 +1717,8 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 
 void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 {
+	m_scraper_underbody_geoms.clear();
+
 	if (!ini->line_exist("car_definition", "character_scraper"))
 		return;
 
@@ -1668,13 +1726,45 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	CPhysicsElement* RootElement = P_create_Element();
 	bool HasGeometry = false;
 
+	Fbox BoneBounds;
+	BoneBounds.invalidate();
+
+	auto ExtendBounds = [](Fbox& Bounds, const Fobb& Box)
+	{
+		for (int ix = 0; ix < 2; ++ix)
+		{
+			for (int iy = 0; iy < 2; ++iy)
+			{
+				for (int iz = 0; iz < 2; ++iz)
+				{
+					Fvector Corner = Box.m_translate;
+					Corner.mad(Box.m_rotate.i, ix ? Box.m_halfsize.x : -Box.m_halfsize.x);
+					Corner.mad(Box.m_rotate.j, iy ? Box.m_halfsize.y : -Box.m_halfsize.y);
+					Corner.mad(Box.m_rotate.k, iz ? Box.m_halfsize.z : -Box.m_halfsize.z);
+					Bounds.modify(Corner);
+				}
+			}
+		}
+	};
+
 	// Build a compound from the car bone boxes instead of one visual AABB.
 	// The AABB includes empty corners outside the bodywork and makes the car
 	// push nearby ragdolls from several metres away.
+	auto IsDoorBone = [this, ini, K](u16 BoneId)
+	{
+		return m_doors.find(BoneId) != m_doors.end() ||
+			ini->line_exist(K->LL_BoneName_dbg(BoneId), "engine_door");
+	};
+
 	for (auto& Bone : bone_map)
 	{
 		const u16 BoneId = Bone.first;
 		if (BoneId >= bones_bind_forms.size())
+			continue;
+
+		// Dynamic door leaves get their own followers in UpdateDoorScrapers():
+		// their bind-pose box would otherwise stay behind when a door opens.
+		if (IsDoorBone(BoneId))
 			continue;
 
 		Fobb BoneBox = K->LL_GetBox(BoneId);
@@ -1686,13 +1776,19 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		LocalBox.m_halfsize.add(0.05f);
 
 		RootElement->add_Box(LocalBox);
+		ExtendBounds(BoneBounds, LocalBox);
 		HasGeometry = true;
 	}
 
 	// Bone boxes leave gaps under the chassis. Close the underbody with a
 	// plate and low side skirts so characters cannot crawl through the car
-	// from below or through the wheel wells.
-	Fbox Bounds = BoundingBox();
+	// from below or through the wheel wells. Remember these helper geoms: the
+	// actor must be able to approach the visible bodywork, so his contacts
+	// with them are ignored below.
+	// Use the tight union of the bone boxes instead of the visual AABB: the
+	// AABB can include open doors and empty corners and then blocks nearby
+	// characters far outside the bodywork.
+	Fbox Bounds = BoneBounds.is_valid() ? BoneBounds : BoundingBox();
 	if (Bounds.is_valid())
 	{
 		Fvector Center;
@@ -1703,11 +1799,18 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		constexpr float SkirtHalfHeight = 0.35f;
 		constexpr float SkirtThickness = 0.1f;
 
+		auto AddHelperBox = [this, RootElement](const Fobb& Box)
+		{
+			RootElement->add_Box(Box);
+			if (CODEGeom* Geom = RootElement->last_geom())
+				m_scraper_underbody_geoms.push_back(Geom);
+		};
+
 		Fobb BottomBox;
 		BottomBox.m_rotate.identity();
 		BottomBox.m_translate.set(Center.x, Bounds.min.y + BottomThickness, Center.z);
 		BottomBox.m_halfsize.set(Half.x * 0.98f, BottomThickness, Half.z * 0.98f);
-		RootElement->add_Box(BottomBox);
+		AddHelperBox(BottomBox);
 
 		const float SkirtY = Bounds.min.y + SkirtHalfHeight;
 		const float SkirtOffsetX = Half.x - SkirtThickness;
@@ -1717,15 +1820,15 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		Skirt.m_rotate.identity();
 		Skirt.m_halfsize.set(SkirtThickness, SkirtHalfHeight, Half.z * 0.98f);
 		Skirt.m_translate.set(Center.x - SkirtOffsetX, SkirtY, Center.z);
-		RootElement->add_Box(Skirt);
+		AddHelperBox(Skirt);
 		Skirt.m_translate.set(Center.x + SkirtOffsetX, SkirtY, Center.z);
-		RootElement->add_Box(Skirt);
+		AddHelperBox(Skirt);
 
 		Skirt.m_halfsize.set(Half.x * 0.98f, SkirtHalfHeight, SkirtThickness);
 		Skirt.m_translate.set(Center.x, SkirtY, Center.z - SkirtOffsetZ);
-		RootElement->add_Box(Skirt);
+		AddHelperBox(Skirt);
 		Skirt.m_translate.set(Center.x, SkirtY, Center.z + SkirtOffsetZ);
-		RootElement->add_Box(Skirt);
+		AddHelperBox(Skirt);
 
 		HasGeometry = true;
 	}
@@ -1753,6 +1856,97 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	characters_scraper_shell->mXFORM.set(XFORM());
 	characters_scraper_shell->Activate();
 	characters_scraper_shell->set_CallbackData(this);
+
+	CreateDoorScrapers(K, ini);
+}
+
+void CCar::CreateDoorScrapers(IKinematics* K, CInifile* ini)
+{
+	if (K == nullptr)
+		return;
+
+	auto AddDoor = [this, K](u16 BoneId)
+	{
+		for (const SDoorScraper& Existing : m_door_scrapers)
+		{
+			if (Existing.bone_id == BoneId)
+				return;
+		}
+
+		Fobb Box = K->LL_GetBox(BoneId);
+		if (Box.m_halfsize.magnitude() < EPS_L)
+			return;
+
+		Box.m_halfsize.add(0.03f);
+
+		CPhysicsShell* Shell = P_create_Shell();
+		CPhysicsElement* Element = P_create_Element();
+		Element->add_Box(Box);
+		Shell->add_Element(Element);
+		Shell->SetIgnoreStatic();
+		Shell->set_ApplyByGravity(FALSE);
+		Shell->setMass(25.f);
+		Shell->SetMaterial(K->LL_GetData(K->LL_GetBoneRoot()).game_mtl_idx);
+		Shell->set_PhysicsRefObject(nullptr);
+		Shell->add_ObjectContactCallback(CollisionDetectionCallback);
+		Shell->SetPrefereExactIntegration();
+		Shell->mXFORM.set(XFORM());
+		Shell->Activate();
+		Shell->set_CallbackData(this);
+
+		m_door_scrapers.push_back({Shell, BoneId});
+	};
+
+	for (const auto& Door : m_doors)
+		AddDoor(Door.first);
+
+	// Engine doors are collected later than SDoor, so detect them by the ini
+	// section name.
+	for (auto& Bone : bone_map)
+	{
+		const u16 BoneId = Bone.first;
+		if (BoneId >= K->LL_BoneCount())
+			continue;
+		if (ini != nullptr && ini->line_exist(K->LL_BoneName_dbg(BoneId), "engine_door"))
+			AddDoor(BoneId);
+	}
+}
+
+void CCar::UpdateDoorScrapers()
+{
+	if (m_door_scrapers.empty())
+		return;
+
+	IKinematics* K = PKinematics(Visual());
+	if (K == nullptr)
+		return;
+
+	for (SDoorScraper& Door : m_door_scrapers)
+	{
+		if (Door.shell == nullptr || !Door.shell->isActive() || Door.bone_id >= K->LL_BoneCount())
+			continue;
+
+		Fmatrix World;
+		World.mul_43(XFORM(), K->LL_GetTransform(Door.bone_id));
+
+		Door.shell->SetTransform(World, mh_clear);
+		Door.shell->set_LinearVel(zero_vel);
+		Door.shell->set_AngularVel(zero_vel);
+		Door.shell->Update();
+	}
+}
+
+void CCar::DestroyDoorScrapers()
+{
+	for (SDoorScraper& Door : m_door_scrapers)
+	{
+		if (Door.shell == nullptr)
+			continue;
+		Door.shell->Deactivate();
+		Door.shell->ZeroCallbacks();
+		xr_delete(Door.shell);
+	}
+	m_door_scrapers.clear();
 }
 
 void CCar::CreateCarTurrets(CInifile* ini)
@@ -1816,7 +2010,37 @@ void CCar::ApplyBonePhysicsParams(IKinematics* K, CInifile* ini)
 						if (ini->line_exist(b_name, "headlight_hideaway"))
 							headlight_hideaways.push_back(SHeadlightHideaway(Bone.second.joint, velocity_, force_, axis_));
 						else if (ini->line_exist(b_name, "engine_door"))
-							engine_door.push_back(SEngineDoor(Bone.second.joint, velocity_, force_, axis_));
+						{
+							SEngineDoor Door(this, Bone.second.joint, velocity_, force_, axis_);
+							Door.bone_id = Bone.first;
+							Door.closed_local = Bone.first < bones_bind_forms.size()
+								? bones_bind_forms[Bone.first] : Fidentity;
+							Fmatrix InvCar = XFORM();
+							InvCar.invert();
+							Fvector WorldAxis;
+							Bone.second.joint->GetAxisDirDynamic(0, WorldAxis);
+							InvCar.transform_dir(Door.axis_local, WorldAxis);
+							Door.axis_local.normalize();
+							Fvector WorldAnchor;
+							Bone.second.joint->GetAnchorDynamic(WorldAnchor);
+							InvCar.transform_tiny(Door.anchor_local, WorldAnchor);
+							Door.bind_angle = dJointGetHingeAngle(Bone.second.joint->GetDJoint());
+
+							float Lo = 0.f;
+							float Hi = 0.f;
+							Bone.second.joint->GetLimits(Lo, Hi, 0);
+							if (_abs(Lo) > _abs(Hi))
+							{
+								Door.opened_angle = Lo;
+								Door.closed_angle = Hi;
+							}
+							else
+							{
+								Door.opened_angle = Hi;
+								Door.closed_angle = Lo;
+							}
+							engine_door.push_back(Door);
+						}
 						else if (ini->line_exist(b_name, "suspension_joint"))
 							suspension_joints.push_back(SSuspension(Bone.second.joint, velocity_, force_, axis_, ini->line_exist(b_name, "suspension_indpnd") ? ini->r_bool(b_name, "suspension_indpnd") : false));
 						else
@@ -2093,6 +2317,18 @@ void	CCar::net_Destroy()
 			ResetCallback(BoneId);
 		for (u16 BoneId : m_suspension_bones)
 			ResetCallback(BoneId);
+
+		// Closed doors use a custom callback to stay in their closed pose.
+		// Clear it before m_doors is destroyed so it cannot keep a dangling
+		// SDoor pointer in the visual.
+		for (const auto& Door : m_doors)
+		{
+			if (Door.first == BI_NONE || Door.first >= pKinematics->LL_BoneCount())
+				continue;
+			CBoneInstance& BI = pKinematics->LL_GetBoneInstance(Door.first);
+			if (BI.callback_type() == bctCustom && BI.callback() == SDoor::ClosedBoneCallback)
+				BI.reset_callback();
+		}
 	}
 	m_gauge_params.clear();
 	m_suspension_params.clear();
@@ -2163,6 +2399,8 @@ void CCar::DestroyCharacterScraper()
 {
 	m_character_contacts.clear();
 	m_character_hit_times.clear();
+	m_scraper_underbody_geoms.clear();
+	DestroyDoorScrapers();
 
 	if (!characters_scraper_shell)
 		return;
@@ -2263,19 +2501,35 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	// launching the car on the first touch.
 	RestoreAllElementSpawnLocalTransforms(RestoredForm);
 
+	// A closed door is deactivated and has no bone callback, so
+	// CPHSkeleton::RestoreNetState() cannot apply its saved transform. The door
+	// now pins its visual bone in SDoor::Deactivate(); nothing else to do here.
+
 	if (SavedEnabled)
 		PPhysicsShell()->Enable();
 	else
 		PPhysicsShell()->Disable();
 
-	// Door leaves keep the pose stored in the save. Engine door motors are
-	// applied according to the engine state restored below; SetForce/SetVelocity
-	// do not wake the car while it is still disabled.
-	for (SEngineDoor& Door : engine_door)
-		Door.Switch(b_engine_on);
+	// Door state is restored from the save. Do not drive the engine-door
+	// motors here: a disabled car keeps its leaves at the saved pose until the
+	// shell is woken, so applying a motor now would make an open leaf snap
+	// shut on the first touch. SwitchEngineDoors() is called only when the
+	// engine state actually changes.
 
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
+
+	// Engine doors follow the saved engine state and are snapped to the
+	// matching hinge limit. Normal doors keep the state stored in the save.
+	const bool EngineOn = m_has_saved_runtime_state ? m_saved_engine_on : b_engine_on;
+	for (SEngineDoor& Door : engine_door)
+		Door.ApplyEngineDoorState(EngineOn);
+
+	for (auto& Door : m_doors)
+	{
+		if (Door.second.state != SDoor::closed && Door.second.state != SDoor::broken)
+			Door.second.RebuildFromSavedOrientation();
+	}
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
@@ -2285,6 +2539,7 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	// bones have been placed.
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
+
 }
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
@@ -3301,6 +3556,32 @@ void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point
 	m_pPhysicsShell->applyImpulseTrace(LocalPoint, PushDir, speed * Mass);
 }
 
+void CCar::PushByActor(const Fvector& dir, const Fvector& world_point)
+{
+	constexpr float BaseImpulse = 750.f;
+
+	const float Impulse = BaseImpulse * m_push_impulse_factor;
+	if (Impulse <= 0.f || getDestroy() || m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
+		return;
+
+	Fvector PushDir = dir;
+	if (!safe_normalize(PushDir))
+		return;
+
+	// Apply the impulse exactly at the point the player is aiming at and in
+	// the view direction. This lets a hit on a door, fender or wheel produce
+	// the corresponding torque instead of always pushing the mid-body.
+	Fvector LocalPoint;
+	Fmatrix Inv;
+	Inv.invert(XFORM());
+	Inv.transform_tiny(LocalPoint, world_point);
+
+	if (!m_pPhysicsShell->isEnabled())
+		m_pPhysicsShell->Enable();
+
+	m_pPhysicsShell->applyImpulseTrace(LocalPoint, PushDir, Impulse);
+}
+
 //void CCar::Hit(float P,Fvector &dir,CObject * who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 bool CCar::CollisionHitStartsCooldown(u16 bone_id, float power)
 {
@@ -4182,6 +4463,10 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	clamp(m_mutant_hit_impulse_factor, 0.f, 5.f);
 	m_burer_gravi_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "burer_gravi_impulse_factor", m_burer_gravi_impulse_factor);
 	clamp(m_burer_gravi_impulse_factor, 0.f, 5.f);
+	m_ram_damage_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_damage_factor", m_ram_damage_factor);
+	clamp(m_ram_damage_factor, 0.f, 10.f);
+	m_push_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "push_impulse_factor", m_push_impulse_factor);
+	clamp(m_push_impulse_factor, 0.f, 10.f);
 
 	loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
 	loadcamera("car_look_cam", ini, camera[EctSecondCam]);
@@ -4900,7 +5185,11 @@ void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
 		m_lights.SwitchHeadLights();
 
 	SyncServerRuntimeState();
-	SwitchEngineDoors();
+
+	// The client state chunk can arrive after net_Spawn; make the engine-door
+	// pose match the final engine state even in that case.
+	for (SEngineDoor& Door : engine_door)
+		Door.ApplyEngineDoorState(b_engine_on);
 }
 
 float CCar::EngineStartSuccessChance() const
@@ -4968,7 +5257,7 @@ void CCar::SwitchEngineDoors()
 	VERIFY(!physics_world()->Processing());
 
 	for (auto &it : engine_door)
-		it.Switch(b_engine_on);
+		it.Switch(!b_engine_on);
 }
 
 void CCar::Clutch()
@@ -6384,6 +6673,16 @@ void CCar::RegisterCharacterContact(IPHCharacter* Character)
 		m_character_contacts.push_back(Character);
 }
 
+void CCar::WakePhysics()
+{
+	// A car that was saved at rest is restored with a disabled shell. A
+	// character touching the scraper must wake it, otherwise it stays inert
+	// and its doors / suspension never start simulating until the player
+	// enters the car.
+	if (m_pPhysicsShell != nullptr && m_pPhysicsShell->isActive() && !m_pPhysicsShell->isEnabled())
+		m_pPhysicsShell->Enable();
+}
+
 void CCar::HitCharacterFromCar(IPHCharacter* Character, const Fvector& ContactPos)
 {
 	if (Character == nullptr || Character->IsActorCharacter())
@@ -6421,10 +6720,12 @@ void CCar::HitCharacterFromCar(IPHCharacter* Character, const Fvector& ContactPo
 	// not be lethal. Both values start from zero at the minimum speed and grow
 	// with the speed above it. Power is in condition units: 1.0 is full health,
 	// while a dog bite is about 0.10 and a pseudogiant strike is about 0.90.
+	// There is deliberately no upper cap: a fast car can kill in one hit.
+	// ram_damage_factor scales the health damage only, not the knockback.
 	const float HitScale = Speed - MinHitSpeed;
 	const float Mass = m_pPhysicsShell->getMass();
 	const float Impulse = std::min(Mass * HitScale * 0.06f, 600.f);
-	const float Power = std::min(HitScale * 0.04f, 0.5f);
+	const float Power = HitScale * 0.04f * m_ram_damage_factor;
 
 	// The generic SHit impulse is applied to physics shells, while a live
 	// NPC/mutant keeps its body in CPHMovementControl. Push it directly so the
@@ -6511,6 +6812,8 @@ void CCar::UpdatePhDataObjects()
 		characters_scraper_shell->set_AngularVel(zero_vel);
 		characters_scraper_shell->Update();
 	}
+
+	UpdateDoorScrapers();
 
 	for (CCarTurret* CWPB : m_car_weapons)
 	{
@@ -7932,6 +8235,114 @@ void CCar::SHeadlightHideaway::Switch(bool hideaways_up)
 {
 	joint->SetForceAndVelocity(force, hideaways_up ? velocity : -velocity, axis_num);
 }
+Fmatrix CCar::SEngineDoor::BuildLocalTarget(bool engine_on, int depth)
+{
+	constexpr int MaxDepth = 8;
+
+	Fmatrix ParentTarget = Fidentity;
+	Fmatrix ParentClosed = Fidentity;
+
+	// One door leaf can be hinged to the previous leaf instead of the chassis.
+	// Build the parent pose first, then express this leaf's bind transform in
+	// the parent's space.
+	CPhysicsElement* First = joint != nullptr ? joint->PFirst_element() : nullptr;
+	if (First != nullptr && pcar != nullptr && depth < MaxDepth)
+	{
+		for (SEngineDoor& Other : pcar->engine_door)
+		{
+			if (&Other == this || Other.joint == nullptr)
+				continue;
+			if (Other.joint->PSecond_element() != First)
+				continue;
+
+			ParentTarget = Other.BuildLocalTarget(engine_on, depth + 1);
+			ParentClosed = Other.closed_local;
+			break;
+		}
+	}
+
+	Fmatrix InvParent;
+	InvParent.invert(ParentClosed);
+
+	Fmatrix Relative;
+	Relative.mul_43(InvParent, closed_local);
+
+	Fvector Axis;
+	InvParent.transform_dir(Axis, axis_local);
+	Axis.normalize();
+	Fvector Anchor;
+	InvParent.transform_tiny(Anchor, anchor_local);
+
+	// The engine doors are open with the engine off and closed with it on.
+	const float TargetODE = engine_on ? closed_angle : opened_angle;
+	const float VisualAngle = -(TargetODE - bind_angle);
+
+	if (_abs(VisualAngle) > EPS)
+	{
+		Fmatrix Rot;
+		Rot.rotation(Axis, VisualAngle);
+
+		Fvector AxisI;
+		Fvector AxisJ;
+		Fvector AxisK;
+		Rot.transform_dir(AxisI, Relative.i);
+		Rot.transform_dir(AxisJ, Relative.j);
+		Rot.transform_dir(AxisK, Relative.k);
+		Relative.i = AxisI;
+		Relative.j = AxisJ;
+		Relative.k = AxisK;
+
+		Fvector Offset;
+		Offset.sub(Relative.c, Anchor);
+		Fvector RotatedOffset;
+		Rot.transform_tiny(RotatedOffset, Offset);
+		Relative.c.add(Anchor, RotatedOffset);
+	}
+
+	Fmatrix Target;
+	Target.mul_43(ParentTarget, Relative);
+	return Target;
+}
+
+void CCar::SEngineDoor::ApplyEngineDoorState(bool engine_on)
+{
+	if (pcar == nullptr || joint == nullptr || joint->PSecond_element() == nullptr)
+		return;
+
+	CPhysicsElement* Element = joint->PSecond_element();
+	if (!Element->isActive())
+		return;
+
+	const Fmatrix Target = BuildLocalTarget(engine_on, 0);
+	Fmatrix World;
+	World.mul_43(pcar->XFORM(), Target);
+
+	Element->SetTransform(World, mh_clear);
+	Element->ResetInterpolation();
+	Element->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
+	Element->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
+
+	// Apply the same motor command as the first engine toggle, but do it at
+	// load. This makes the hinge hold the leaf immediately instead of leaving
+	// it free until StartEngine()/StopEngine() runs.
+	Switch(!engine_on);
+	joint->SetForce(force * 5.f, axis_num);
+}
+
+void CCar::SEngineDoor::Hold()
+{
+	if (joint == nullptr)
+		return;
+
+	// Zero-velocity motor: keeps the saved hinge angle without driving the
+	// leaf open or closed. The normal motor force is enough to move the leaf,
+	// but gravity can make a heavy bus door creep; hold it with extra force.
+	// Do not call SetForceAndVelocity here because it enables the shell and
+	// wakes a disabled car.
+	joint->SetForce(force * 5.f, axis_num);
+	joint->SetVelocity(0.f, axis_num);
+}
+
 void CCar::SEngineDoor::Switch(bool doors_up)
 {
 	if (joint == nullptr)
@@ -7939,8 +8350,15 @@ void CCar::SEngineDoor::Switch(bool doors_up)
 
 	// Do not use SetForceAndVelocity here: it calls PShell->Enable() and wakes
 	// the car even when the engine-door force is applied during loading.
+	const float Target = doors_up ? opened_angle : closed_angle;
+	const float Delta = Target - dJointGetHingeAngle(joint->GetDJoint());
+	const float Speed = _abs(velocity);
+
 	joint->SetForce(force, axis_num);
-	joint->SetVelocity(doors_up ? velocity : -velocity, axis_num);
+	if (_abs(Delta) < 0.001f)
+		joint->SetVelocity(0.f, axis_num);
+	else
+		joint->SetVelocity(Delta > 0.f ? Speed : -Speed, axis_num);
 }
 void CCar::SSuspension::Update()
 {

@@ -238,7 +238,10 @@ void  CCar::SWheel::WheellCollisionCallback(bool& do_colide,bool bo1,CPHContact&
 		Params = (SWheelCollisionParams*)ud2->callback_data;
 
 	if (Params != nullptr && Params->pwheel != nullptr && Params->pwheel->car != nullptr && do_colide && Character != nullptr)
+	{
+		Params->pwheel->car->WakePhysics();
 		Params->pwheel->car->RegisterCharacterContact(Character);
+	}
 
 	applywheelCollisionParams		(ud1,do_colide,cphc,material_1,material_2)						;
 	applywheelCollisionParams		(ud2,do_colide,cphc,material_1,material_2)						;

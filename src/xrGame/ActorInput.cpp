@@ -1803,6 +1803,20 @@ void CActor::ActorUse()
 
 		if (object && isKeyHeld)
 		{
+			// Sprint + use on a car pushes it instead of entering it. The
+			// impulse is fixed and independent of car mass; the per-section
+			// push_impulse_factor lets vehicles.ltx tune the strength.
+			if (CHolderCustom* holder = object->cast_holder_custom())
+			{
+				if (CCar* car = holder->cast_car())
+				{
+					Fvector HitPoint;
+					HitPoint.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
+					car->PushByActor(Device.vCameraDirection, HitPoint);
+					return;
+				}
+			}
+
 			bool b_allow = !!pSettings->line_exist("ph_capture_visuals", object->cNameVisual());
 			if (b_allow && !character_physics_support()->movement()->PHCapture())
 			{

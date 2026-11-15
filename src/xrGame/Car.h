@@ -177,6 +177,7 @@ struct						dSurfaceParameters;
 
 class CScriptEntityAction;
 class car_memory;
+class CODEGeom;
 
 XREFLECT(LuaExport, Bases = "CGameObject,CHolderCustom")
 class CCar final :
@@ -228,6 +229,17 @@ static	const u16				cAsCallsnum						= 3;
 	void								DropTrunkContents			();
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
+	// The bottom plate and side skirts are added to the scraper to keep low
+	// mutants from crawling under the car. The actor must still be able to
+	// walk up to the bodywork, so his contacts with these helper geoms are
+	// ignored in CollisionDetectionCallback.
+	xr_vector<CODEGeom*>				m_scraper_underbody_geoms;
+	struct SDoorScraper
+	{
+		CPhysicsShell* shell;
+		u16 bone_id;
+	};
+	xr_vector<SDoorScraper>				m_door_scrapers;
 	// Characters touched by the scraper or a wheel during the current physics
 	// step. Their vertical speed is capped in PhDataUpdate so a deep contact
 	// cannot launch them into the air.
@@ -241,6 +253,7 @@ static	const u16				cAsCallsnum						= 3;
 	void								RegisterCharacterContact	(IPHCharacter* Character);
 	void								HitCharacterFromCar		(IPHCharacter* Character, const Fvector& ContactPos);
 	void								ClampCharacterContacts		();
+	void								WakePhysics				();
 	virtual void						PhDataUpdate				(float step)			;
 	void						UpdatePhDataObjects		();
 	void						UpdateEngineAndBrakes		(float step);
@@ -373,6 +386,8 @@ public:
 	float	m_hit_anomaly_scale;
 	float	m_mutant_hit_impulse_factor;
 	float	m_burer_gravi_impulse_factor;
+	float	m_ram_damage_factor;
+	float	m_push_impulse_factor;
 
 	struct SHeadlightHideaway
 	{
@@ -394,19 +409,35 @@ public:
 
 	struct SEngineDoor
 	{
+		CCar* pcar;
 		CPhysicsJoint* joint;
+		u16 bone_id;
+		Fmatrix closed_local;
+		Fvector axis_local;
+		Fvector anchor_local;
+		float opened_angle;
+		float closed_angle;
+		float bind_angle;
 		float velocity;
 		float force;
 		int axis_num;
-		SEngineDoor(CPhysicsJoint* joint_ = NULL, float vel = 0.0f, float force_ = 0.0f, int axis = -1)
+		SEngineDoor(CCar* car_ = nullptr, CPhysicsJoint* joint_ = nullptr,
+			float vel = 0.0f, float force_ = 0.0f, int axis = -1)
 		{
+			pcar = car_;
 			joint = joint_;
+			bone_id = BI_NONE;
+			opened_angle = 0.f;
+			closed_angle = 0.f;
+			bind_angle = 0.f;
 			velocity = vel;
 			force = force_;
 			axis_num = axis;
-			Switch();
 		}
+		Fmatrix BuildLocalTarget(bool engine_on, int depth);
+		void ApplyEngineDoorState(bool engine_on);
 		void Switch(bool doors_up = false);
+		void Hold();
 	};
 	xr_vector<SEngineDoor> engine_door;
 
@@ -685,6 +716,8 @@ virtual void ApplyDamage			(u16 level);
 	public CDamagableHealthItem
 	{
 		typedef CDamagableHealthItem inherited;
+		static void ClosedBoneCallback(CBoneInstance* B);
+		void PinClosedPose();
 		u16 bone_id;
 		CCar* pcar;
 		bool  update;
@@ -745,6 +778,9 @@ virtual void ApplyDamage			(u16 level);
 		_vector2<int>	door_plane_axes;
 		Fvector			door_dir_in_door;
 		Fmatrix			closed_door_form_in_object;
+		Fvector			hinge_axis_in_object;
+		Fvector			hinge_anchor_in_object;
+		void RebuildFromSavedOrientation();
 		void Use();
 		void Switch();
 		void Init();
@@ -820,6 +856,8 @@ virtual void ApplyDamage(u16 level);
 			default_lin_resist =0.f;
 			default_ang_resist =0.f;
 			saved_mass = 0.f;
+			hinge_axis_in_object.set(0.f, 1.f, 0.f);
+			hinge_anchor_in_object.set(0.f, 0.f, 0.f);
 		}
 	};
 
@@ -1465,6 +1503,7 @@ public:
 	void					HitFrom						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					HitFromCreature				(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					ApplyPush					(const Fvector& dir, float speed, const Fvector& world_point);
+	void					PushByActor					(const Fvector& dir, const Fvector& world_point);
 	bool					CollisionHitStartsCooldown	(u16 bone_id, float power) override;
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
@@ -1648,6 +1687,9 @@ public:
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
 	void					CreateCharacterScraper			(IKinematics* K, CInifile* ini);
+	void					CreateDoorScrapers				(IKinematics* K, CInifile* ini);
+	void					UpdateDoorScrapers				();
+	void					DestroyDoorScrapers				();
 	void					DestroyCharacterScraper			();
 	void					CreateCarTurrets				(CInifile* ini);
 	void					ApplyBonePhysicsParams			(IKinematics* K, CInifile* ini);
