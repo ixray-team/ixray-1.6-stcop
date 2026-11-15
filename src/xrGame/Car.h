@@ -229,17 +229,20 @@ static	const u16				cAsCallsnum						= 3;
 	void								DropTrunkContents			();
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
-	// The bottom plate and side skirts are added to the scraper to keep low
-	// mutants from crawling under the car. The actor must still be able to
-	// walk up to the bodywork, so his contacts with these helper geoms are
-	// ignored in CollisionDetectionCallback.
+	// The scraper mirrors the real car bone shapes to keep mutants from
+	// crawling under the car. Its helper plate/skirts are invisible, so human
+	// contacts with them are ignored in CollisionDetectionCallback.
 	xr_vector<CODEGeom*>				m_scraper_underbody_geoms;
 	struct SDoorScraper
 	{
 		CPhysicsShell* shell;
+		CPhysicsElement* element;
 		u16 bone_id;
 	};
 	xr_vector<SDoorScraper>				m_door_scrapers;
+	// Door scraper boxes are separate from the main scraper so they can follow
+	// an opening leaf while the car body stays static.
+	xr_vector<CODEGeom*>				m_door_scraper_geoms;
 	// Characters touched by the scraper or a wheel during the current physics
 	// step. Their vertical speed is capped in PhDataUpdate so a deep contact
 	// cannot launch them into the air.

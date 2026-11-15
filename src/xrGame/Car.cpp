@@ -1509,10 +1509,6 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 		Character = cphc.GetCharacter(!bo1);
 	if (Character != nullptr)
 	{
-		// The underbody plate and side skirts are invisible helpers. They must
-		// stop low mutants from crawling under the car, but human characters
-		// (the actor and NPCs) should not hit an invisible box around the
-		// bodywork. Bone boxes of the visible hull stay solid for everyone.
 		bool IsMonster = true;
 		if (CGameObject* Target = smart_cast<CGameObject*>(Character->PhysicsRefObject()))
 		{
@@ -1520,11 +1516,13 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 				IsMonster = Alive->cast_base_monster() != nullptr;
 		}
 
-		if (Car != nullptr && !IsMonster)
+		const dGeomID G1 = c.geom.g1;
+		const dGeomID G2 = c.geom.g2;
+		bool IsDoorScraper = false;
+		bool IsHelper = false;
+		if (Car != nullptr)
 		{
-			const dGeomID G1 = c.geom.g1;
-			const dGeomID G2 = c.geom.g2;
-			for (const CODEGeom* Geom : Car->m_scraper_underbody_geoms)
+			for (const CODEGeom* Geom : Car->m_door_scraper_geoms)
 			{
 				if (Geom == nullptr)
 					continue;
@@ -1534,21 +1532,50 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 				if ((Inner != nullptr && (Inner == G1 || Inner == G2)) ||
 					(Transform != nullptr && (Transform == G1 || Transform == G2)))
 				{
-					Car->WakePhysics();
-					do_colide = false;
-					return;
+					IsDoorScraper = true;
+					break;
+				}
+			}
+
+			if (!IsMonster)
+			{
+				for (const CODEGeom* Geom : Car->m_scraper_underbody_geoms)
+				{
+					if (Geom == nullptr)
+						continue;
+
+					const dGeomID Inner = Geom->geometry();
+					const dGeomID Transform = Geom->geometry_transform();
+					if ((Inner != nullptr && (Inner == G1 || Inner == G2)) ||
+						(Transform != nullptr && (Transform == G1 || Transform == G2)))
+					{
+						IsHelper = true;
+						break;
+					}
 				}
 			}
 		}
 
-		// Characters collide with the scraper regardless of whether their
-		// shell is represented by CPhysicsShellHolder::m_pPhysicsShell. The
-		// generic object filter below must not turn them into pass-through.
+		// The underbody plate and side skirts are invisible helpers that only
+		// keep mutants from crawling under the car. Humans must not hit them.
+		if (Car != nullptr && !IsMonster && IsHelper)
+		{
+			// Even though the contact itself is rejected, touching the car
+			// must wake a shell restored from a save in the disabled state.
+			Car->WakePhysics();
+			do_colide = false;
+			return;
+		}
+
+		// The scraper now mirrors the real car bone shapes, so its body boxes
+		// are what the player and NPCs collide with. Door followers are
+		// separate and do not deal ram damage.
 		if (Car != nullptr)
 		{
 			Car->WakePhysics();
 			Car->RegisterCharacterContact(Character);
-			Car->HitCharacterFromCar(Character, cphc.GetPosition());
+			if (!IsDoorScraper)
+				Car->HitCharacterFromCar(Character, cphc.GetPosition());
 		}
 		do_colide = true;
 		return;
@@ -1748,9 +1775,46 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		}
 	};
 
-	// Build a compound from the car bone boxes instead of one visual AABB.
-	// The AABB includes empty corners outside the bodywork and makes the car
-	// push nearby ragdolls from several metres away.
+	auto ExtendShapeBounds = [&ExtendBounds](Fbox& Bounds, const SBoneShape& Shape, const Fmatrix& Xform)
+	{
+		switch (Shape.type)
+		{
+		case SBoneShape::stBox:
+		{
+			Fobb Box;
+			Box.transform(Shape.box, Xform);
+			ExtendBounds(Bounds, Box);
+			break;
+		}
+		case SBoneShape::stSphere:
+		{
+			Fvector Center;
+			Xform.transform_tiny(Center, Shape.sphere.P);
+			const float Radius = Shape.sphere.R;
+			Bounds.modify(Fvector(Center.x - Radius, Center.y - Radius, Center.z - Radius));
+			Bounds.modify(Fvector(Center.x + Radius, Center.y + Radius, Center.z + Radius));
+			break;
+		}
+		case SBoneShape::stCylinder:
+		{
+			Fvector Center;
+			Xform.transform_tiny(Center, Shape.cylinder.m_center);
+			const float Radius = Shape.cylinder.m_radius;
+			const float HalfHeight = Shape.cylinder.m_height * 0.5f;
+			const float Extent = sqrtf(Radius * Radius + HalfHeight * HalfHeight);
+			Bounds.modify(Fvector(Center.x - Extent, Center.y - Extent, Center.z - Extent));
+			Bounds.modify(Fvector(Center.x + Extent, Center.y + Extent, Center.z + Extent));
+			break;
+		}
+		default:
+			break;
+		}
+	};
+
+	// Build the character shell from the same bone shapes as the real car
+	// shell. Using the visual bone OBB (LL_GetBox) also added bones without a
+	// physics shape, such as exhausts, and those visual boxes blocked the
+	// player far outside the bodywork.
 	auto IsDoorBone = [this, ini, K](u16 BoneId)
 	{
 		return m_doors.find(BoneId) != m_doors.end() ||
@@ -1768,16 +1832,12 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 		if (IsDoorBone(BoneId))
 			continue;
 
-		Fobb BoneBox = K->LL_GetBox(BoneId);
-		if (BoneBox.m_halfsize.magnitude() < EPS_L)
+		const SBoneShape& Shape = K->LL_GetData(BoneId).shape;
+		if (Shape.type == SBoneShape::stNone || Shape.flags.test(SBoneShape::sfNoPhysics))
 			continue;
 
-		Fobb LocalBox;
-		LocalBox.transform(BoneBox, bones_bind_forms[BoneId]);
-		LocalBox.m_halfsize.add(0.05f);
-
-		RootElement->add_Box(LocalBox);
-		ExtendBounds(BoneBounds, LocalBox);
+		RootElement->add_Shape(Shape, bones_bind_forms[BoneId]);
+		ExtendShapeBounds(BoneBounds, Shape, bones_bind_forms[BoneId]);
 		HasGeometry = true;
 	}
 
@@ -1874,15 +1934,19 @@ void CCar::CreateDoorScrapers(IKinematics* K, CInifile* ini)
 				return;
 		}
 
-		Fobb Box = K->LL_GetBox(BoneId);
+		const SBoneShape& Shape = K->LL_GetData(BoneId).shape;
+		Fobb Box;
+		if (Shape.type == SBoneShape::stBox)
+			Box = Shape.box;
+		else
+			Box = K->LL_GetBox(BoneId);
 		if (Box.m_halfsize.magnitude() < EPS_L)
 			return;
-
-		Box.m_halfsize.add(0.03f);
 
 		CPhysicsShell* Shell = P_create_Shell();
 		CPhysicsElement* Element = P_create_Element();
 		Element->add_Box(Box);
+		CODEGeom* Geom = Element->last_geom();
 		Shell->add_Element(Element);
 		Shell->SetIgnoreStatic();
 		Shell->set_ApplyByGravity(FALSE);
@@ -1891,11 +1955,20 @@ void CCar::CreateDoorScrapers(IKinematics* K, CInifile* ini)
 		Shell->set_PhysicsRefObject(nullptr);
 		Shell->add_ObjectContactCallback(CollisionDetectionCallback);
 		Shell->SetPrefereExactIntegration();
-		Shell->mXFORM.set(XFORM());
+		Fmatrix World;
+		World.mul_43(XFORM(), K->LL_GetTransform(BoneId));
+		Shell->mXFORM.set(World);
 		Shell->Activate();
 		Shell->set_CallbackData(this);
 
-		m_door_scrapers.push_back({Shell, BoneId});
+		CPhysicsElement* DoorElement = nullptr;
+		auto BoneIt = bone_map.find(BoneId);
+		if (BoneIt != bone_map.end())
+			DoorElement = BoneIt->second.element;
+
+		m_door_scrapers.push_back({Shell, DoorElement, BoneId});
+		if (Geom != nullptr)
+			m_door_scraper_geoms.push_back(Geom);
 	};
 
 	for (const auto& Door : m_doors)
@@ -1934,6 +2007,23 @@ void CCar::UpdateDoorScrapers()
 		Door.shell->set_LinearVel(zero_vel);
 		Door.shell->set_AngularVel(zero_vel);
 		Door.shell->Update();
+
+		// The real door element is deactivated while the door is closed. In
+		// that state the kinematic box keeps the door solid for characters.
+		// An active element already has real collision (and can swing when the
+		// player pushes it), so the follower is switched off to avoid a second,
+		// immovable door in the same place.
+		const bool RealCollision =
+			Door.element != nullptr && Door.element->isActive() && Door.element->isEnabled();
+		if (RealCollision)
+		{
+			if (Door.shell->isEnabled())
+				Door.shell->Disable();
+		}
+		else if (!Door.shell->isEnabled())
+		{
+			Door.shell->Enable();
+		}
 	}
 }
 
@@ -1948,6 +2038,7 @@ void CCar::DestroyDoorScrapers()
 		xr_delete(Door.shell);
 	}
 	m_door_scrapers.clear();
+	m_door_scraper_geoms.clear();
 }
 
 void CCar::CreateCarTurrets(CInifile* ini)
