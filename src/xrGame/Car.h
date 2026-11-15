@@ -274,6 +274,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						UpdateWheelSuspension		(SWheel& Wheel);
 	void						StoreAllElementSpawnLocalTransforms	();
 	void						RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm);
+	void						ResolveLoadPenetration				();
 	void						UpdateWheelDownforce		(SWheel& Wheel);
 	void						UpdateWheelTireSound		(SWheel& Wheel);
 	bool						UpdateWheelTraction		(SWheel& Wheel);
