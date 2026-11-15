@@ -221,6 +221,7 @@ public:
 	virtual	void				EnableCollision					() override;
 	virtual	bool				IsCollisionDisabled				()const override {return CPHObject::IsCollisionDisabled();}
 	virtual	void				DisableCharacterCollision		() override;
+	virtual	void				EnableCharacterCollision		() override;
 	virtual	void				SetRemoveCharacterCollLADisable	() override {m_flags.set(flRemoveCharacterCollisionAfterDisable,true);}
 	virtual	bool				isEnabled						()const override {return CPHObject::is_active();}
 	virtual	bool				isActive						()const override {return !!m_flags.test(flActive);}

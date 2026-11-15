@@ -54,6 +54,11 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 // collisions for every physics object, 1 restores the normal behaviour.
 bool rs_car_scraper_helpers = false;
 
+// Temporary test switch: 1 restores the pre-refactor behaviour where mutants
+// and NPCs push the car through the main shell. 0 keeps the per-contact
+// character filter.
+bool rs_car_legacy_character_push = false;
+
 namespace
 {
 	constexpr const char* DefaultExhaustParticles = "vehiclefx\\exhaust_1";
@@ -426,6 +431,7 @@ CCar::CCar()
 	m_torch_usage = false;
 	m_camera_last_mmove_time = Device.dwTimeGlobal + 3000;
 	characters_scraper_shell = NULL;
+	m_legacy_character_push = false;
 	b_event_exit_car = false;
 	m_exit_car_time = 0;
 	m_exit_door_bone = BI_NONE;
@@ -1484,6 +1490,22 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 void CCar::ActorObstacleCallback					(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2)	
 {
 	dContact& c = cphc.Native();
+
+	// The default mode rejects every character contact before the solver.
+	// Do not let an actor-obstacle material re-enable it afterwards.
+	CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(bo1));
+	if (Holder == nullptr)
+		Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(!bo1));
+	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
+	if (Car != nullptr && !Car->m_legacy_character_push)
+	{
+		IPHCharacter* Character = cphc.GetCharacter(bo1);
+		if (Character == nullptr)
+			Character = cphc.GetCharacter(!bo1);
+		if (Character != nullptr)
+			return;
+	}
+
 	if(!do_colide)
 	{
 		if(material_1&&material_1->Flags.test(SGameMtl::flActorObstacle))do_colide=true;
@@ -1609,24 +1631,37 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 
 void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl* material_1, SGameMtl* material_2)
 {
-	// Wheels are handled by WheellCollisionCallback, where the surface friction
-	// override is applied before the wheel-specific multipliers.
-	if (cphc.HasObjectCallback(bo1, &CCar::SWheel::WheellCollisionCallback))
-		return;
-
 	CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(bo1));
 	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
 	if (!Car || Car->getDestroy())
 		return;
 
-	// Characters collide with the car body but must not push or launch it.
-	// Remember real contacts; the car velocity/pin and character velocity
-	// clamps are applied after the physics step.
+	// New mode: reject character contacts before the solver; the scraper then
+	// blocks them without pushing the car. Legacy mode: let the main shell
+	// push the car and report ram damage here. This must run before the wheel
+	// early-out, otherwise wheel contacts still push the car in the new mode.
 	IPHCharacter* Character = cphc.GetCharacter(bo1);
 	if (Character == nullptr)
 		Character = cphc.GetCharacter(!bo1);
-	if (Character != nullptr && do_colide)
-		Car->RegisterCharacterContact(Character);
+	if (Character != nullptr)
+	{
+		if (!Car->m_legacy_character_push)
+		{
+			do_colide = false;
+			return;
+		}
+
+		if (do_colide)
+		{
+			Car->RegisterCharacterContact(Character);
+			Car->HitCharacterFromCar(Character, cphc.GetPosition());
+		}
+	}
+
+	// Wheels are handled by WheellCollisionCallback, where the surface friction
+	// override is applied before the wheel-specific multipliers.
+	if (cphc.HasObjectCallback(bo1, &CCar::SWheel::WheellCollisionCallback))
+		return;
 
 	// The car surface table describes static level surfaces only. Other cars,
 	// characters and dynamic props keep their normal material behaviour.
@@ -1749,10 +1784,11 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	m_character_contacts.clear();
 	m_character_hit_times.clear();
 
-	// Characters collide with the separate scraper shell. The main car body
-	// must ignore them: a mutant/NPC contact may push or brake the dynamic
-	// shell, but it must never move the car itself.
-	m_pPhysicsShell->DisableCharacterCollision();
+	// The main shell always keeps character collisions. In the default mode
+	// CarBodySurfaceCallback rejects them so the scraper can block characters
+	// without pushing the car. Legacy mode lets them push the car normally.
+	m_legacy_character_push = rs_car_legacy_character_push;
+	ApplyCharacterCollisionMode();
 
 	StoreAllElementSpawnLocalTransforms();
 }
@@ -1933,6 +1969,29 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	characters_scraper_shell->set_CallbackData(this);
 
 	CreateDoorScrapers(K, ini);
+}
+
+void CCar::ApplyCharacterCollisionMode()
+{
+	if (m_pPhysicsShell == nullptr)
+		return;
+
+	// The main shell always keeps character collisions. In the new mode the
+	// per-contact filter in CarBodySurfaceCallback rejects them; in legacy mode
+	// they are allowed to push the car.
+	m_pPhysicsShell->EnableCharacterCollision();
+
+	if (characters_scraper_shell != nullptr)
+	{
+		if (m_legacy_character_push)
+			characters_scraper_shell->DisableCharacterCollision();
+		else
+			characters_scraper_shell->EnableCharacterCollision();
+	}
+
+#ifdef DEBUG
+	Msg("[car collision mode] legacy=%d", m_legacy_character_push ? 1 : 0);
+#endif
 }
 
 void CCar::CreateDoorScrapers(IKinematics* K, CInifile* ini)
@@ -2777,6 +2836,12 @@ void CCar::RemoveGrassSpheres()
 }
 void CCar::UpdateCL				( )
 {
+	if (m_legacy_character_push != rs_car_legacy_character_push)
+	{
+		m_legacy_character_push = rs_car_legacy_character_push;
+		ApplyCharacterCollisionMode();
+	}
+
 	// Apply saved engine/light state here as well as in net_Spawn. Depending on
 	// the serialization path the client chunk may arrive after net_Spawn, and
 	// then the car would keep b_engine_on but never call SCarSound::Drive().

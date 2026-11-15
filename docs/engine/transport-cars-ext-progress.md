@@ -1046,3 +1046,12 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - Максимальное значение `ram_damage_factor` в конфиге поднято с `10` до `100` (clamp в `CCar::LoadHandlingAndCameraDefinitions()`).
 - `rs_car_scraper_helpers` остаётся временным переключателем: по умолчанию `0` (плита и юбки не сталкиваются). Команда регистрируется только при `!MASTER_GOLD`, то есть недоступна в Release; значение по умолчанию там всё равно `false`.
 - Проверка: autotest Debug/RelWithDebInfo/Release — `RESULT: PASS`, `errors=0`; загрузка `car_load_test2`, `bus_test`, `bus_closed_test` и спавн машины/собаки проходят.
+
+### Этап 106: новый режим character-коллизий и legacy-переключатель
+
+- Старый режим с `DisableCharacterCollision()` на основном shell удалён. Основной shell всегда сохраняет character-коллизии, а `CarBodySurfaceCallback()` в обычном режиме отклоняет их до solver’а. Scraper при этом блокирует персонажей и наносит урон тарана.
+- Проверка character-контакта перенесена до раннего выхода для колёс, поэтому новый режим работает и для колёсных элементов, а не только для кузова.
+- `ActorObstacleCallback()` не позволяет material-флагу `flActorObstacle` повторно включить отклонённый character-контакт.
+- Добавлен переключатель `rs_car_legacy_character_push`: `0` — новый режим (по умолчанию), `1` — legacy, где мутанты и НПС снова толкают машину через основной shell. В legacy scraper игнорирует character-класс, а урон тарана сообщается из `CarBodySurfaceCallback()`.
+- `rs_car_scraper_helpers` остаётся отдельным тестовым переключателем helper-геометрий.
+- Проверка: autotest Debug/RelWithDebInfo/Release — `RESULT: PASS`, `errors=0`; загрузка `car_load_test2`, спавн машины и собак у колёс в обоих режимах.

@@ -816,6 +816,7 @@ public:
 		RemoveCharCollOnDisable = true;
 	}
 	virtual void DisableCharacterCollision() override;
+	virtual void EnableCharacterCollision() override;
 	virtual void PureStep(float step = fixed_step) override;
 	virtual void SetGlTransformDynamic(const Fmatrix& form) override;
 	virtual void CollideAll() override;
