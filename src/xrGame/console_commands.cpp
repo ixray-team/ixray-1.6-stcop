@@ -3271,6 +3271,11 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "rs_car_auto_transmission", &rs_car_auto_transmission);
 
 #ifndef MASTER_GOLD
+	extern bool rs_car_scraper_helpers;
+	CMD2(CCC_Boolean, "rs_car_scraper_helpers", &rs_car_scraper_helpers);
+#endif
+
+#ifndef MASTER_GOLD
 	extern bool rs_car_unlimitedfuel;
 	CMD2(CCC_Boolean, "rs_car_unlimitedfuel", &rs_car_unlimitedfuel);
 #endif
