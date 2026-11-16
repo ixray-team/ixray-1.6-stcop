@@ -21,6 +21,10 @@ CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool de
 			IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
 			time_limit = V->GetTimeLimit();
 		}
+		else
+		{
+			Msg("! Particle effect or group doesn't exist: '%s'", p_name ? p_name : "<null>");
+		}
 	}
 
 	if (time_limit > 0.f)
@@ -60,7 +64,10 @@ const shared_str CParticlesObject::Name()
 
 PAPI::ParticleAction* CParticlesObject::FindAction(shared_str PEName, PAPI::PActionEnum type)
 {
-	if(g_dedicated_server)	return nullptr;
+	if (g_dedicated_server || renderable.visual == nullptr)
+	{
+		return nullptr;
+	}
 
 	IParticleCustom* V	= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
 	return (V) ? V->FindPA(PEName, type) : nullptr;
@@ -268,6 +275,11 @@ bool CParticlesObject::IsPlaying()
 
 u32 CParticlesObject::GetSpriteCount()
 {
+	if (renderable.visual == nullptr)
+	{
+		return 0;
+	}
+
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
 
 	return V->SpriteCount();

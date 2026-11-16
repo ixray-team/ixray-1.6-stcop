@@ -466,16 +466,17 @@ IRenderVisual* CRender::model_CreatePE(const char* name) {
 	return Models->CreatePE(SE);
 }
 
-IRenderVisual* CRender::model_CreateParticles(const char* name) {
-	PS::CPEDef* SE = PSLibrary.FindPED(name);
-	if(SE) {
-		return Models->CreatePE(SE);
+IRenderVisual* CRender::model_CreateParticles(const char* name)
+{
+	if (PS::CPEDef* Effect = PSLibrary.FindPED(name))
+	{
+		return Models->CreatePE(Effect);
 	}
-	else {
-		PS::CPGDef* SG = PSLibrary.FindPGD(name);
-		R_ASSERT3(SG, "Particle effect or group doesn't exist", name);
-		return Models->CreatePG(SG);
+	if (PS::CPGDef* Group = PSLibrary.FindPGD(name))
+	{
+		return Models->CreatePG(Group);
 	}
+	return nullptr;
 }
 
 RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
