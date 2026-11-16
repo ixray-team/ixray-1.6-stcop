@@ -256,7 +256,13 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 				{
 					for (auto& Line : pOptions.r_section("shaders_options").Data)
 					{
-						desc.m_spec->ShadersOptions[*Line.first] = *Line.second;
+						const char* Value = Line.second.c_str();
+						if (!Value || !*Value)
+						{
+							Msg("! Ignoring shader option without a value in %s: %s", thm_overrider, *Line.first);
+							continue;
+						}
+						desc.m_spec->ShadersOptions[*Line.first] = Value;
 					}
 				}
 			}
@@ -372,7 +378,7 @@ bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 
 ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_name) const
 {
-	if (auto I = m_texture_details.find(tex_name); I != m_texture_details.end())
+	if (auto I = m_texture_details.find(tex_name); I != m_texture_details.end() && I->second.m_spec)
 	{
 		return &I->second.m_spec->ShadersOptions;
 	}

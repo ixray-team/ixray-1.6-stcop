@@ -16,10 +16,17 @@ CEngineExternal::CEngineExternal() :
 	{
 		for (auto& Line : pOptions->r_section("shaders_options").Data)
 		{
-			if (!!xr_strcmp(Line.second, "0"))
+			const char* Value = Line.second.c_str();
+			if (!Value || !*Value)
+			{
+				Msg("! Ignoring shader option without a value: %s", *Line.first);
+				continue;
+			}
+
+			if (xr_strcmp(Value, "0") != 0)
 			{
 				Msg("Enable shader option: %s", *Line.first);
-				ShadersOptions[*Line.first] = *Line.second;
+				ShadersOptions[*Line.first] = Value;
 			}
 			else
 			{
