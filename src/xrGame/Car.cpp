@@ -391,6 +391,7 @@ CCar::CCar()
 	m_mutant_hit_impulse_factor = 1.f;
 	m_burer_gravi_impulse_factor = 1.f;
 	m_push_impulse_factor = 1.f;
+	m_ram_damage_min_speed = 0.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
 	m_brakes_pressure_current = 0.f;
@@ -4185,6 +4186,9 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	clamp(m_burer_gravi_impulse_factor, 0.f, 5.f);
 	m_push_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "push_impulse_factor", m_push_impulse_factor);
 	clamp(m_push_impulse_factor, 0.f, 10.f);
+	m_ram_damage_min_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_damage_min_speed", m_ram_damage_min_speed);
+	if (m_ram_damage_min_speed < 0.f)
+		m_ram_damage_min_speed = 0.f;
 
 	loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
 	loadcamera("car_look_cam", ini, camera[EctSecondCam]);
