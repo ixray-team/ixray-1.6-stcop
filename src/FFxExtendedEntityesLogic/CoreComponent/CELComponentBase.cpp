@@ -9,6 +9,7 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedAnomalies.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedDeaths.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedSoundEvents.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnvironment.h"
 #include "xrGame/ai/monsters/control_direction_base.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
@@ -84,6 +85,9 @@ void CELComponentBase::Attach()
 	Adapter->Monster().UsesExtendedCombat = Profile.HasCharacter && Profile.CanUseBehaviors && !Profile.IsPassive;
 	Adapter->Monster().ExtendedMeleeHitTolerance = Profile.MeleeHitTolerance;
 	Adapter->Monster().ExtendedMeleePredictionTime = Profile.MeleePredictionTime;
+	Adapter->Monster().ExtendedMeleePredictionDistance = Profile.MeleePredictionDistance;
+	Adapter->Monster().ExtendedIntelligence = Profile.CharacterIntelligence;
+	Adapter->Monster().ExtendedScaleAttackDamage = Profile.ScaleAttackDamage;
 	HasAttached = true;
 }
 
@@ -95,6 +99,7 @@ void CELComponentBase::Detach()
 		return;
 	}
 	Adapter->Monster().UsesExtendedCombat = false;
+	Adapter->Monster().ExtendedScaleAttackDamage = false;
 	Adapter->ReleaseControl();
 	Adapter->Monster().EnemyMemory.clear();
 	Memory.Clear();
@@ -174,7 +179,7 @@ void CELComponentBase::RememberEntity(CEntityAlive& TargetEntity, EELObservation
 	Observation.VertexIdentifier = TargetEntity.ai_location().level_vertex_id();
 	Observation.ObservedAt = ObservedAt;
 	Observation.Source = Source;
-	Memory.Remember(Observation, Device.dwTimeGlobal, Random.randI(Profile.MemoryMin, Profile.MemoryMax + 1), Profile.CanRecordTrail ? Profile.TrailLength : 0.f);
+	Memory.Remember(Observation, Device.dwTimeGlobal, Random.randI(Profile.MemoryMin, Profile.MemoryMax + 1), Profile.CanRecordTrail ? Profile.TrailLength : 0.f, Profile);
 }
 
 // Обновляет личные наблюдения владельца с учётом доступного бюджета.
@@ -217,7 +222,7 @@ void CELComponentBase::Observe()
 		}
 		if (Witnessed.TargetIdentifier != u16(-1))
 		{
-			Memory.Remember(Witnessed, CurrentTime, Profile.NoiseSearchTime, Profile.TrailLength);
+			Memory.Remember(Witnessed, CurrentTime, Profile.NoiseSearchTime, Profile.TrailLength, Profile);
 			ProvokedTarget = Witnessed.TargetIdentifier;
 			ProvokedUntil = CurrentTime + Profile.NoiseSearchTime;
 		}
@@ -376,7 +381,7 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 		State.AssistanceUntil = Device.dwTimeGlobal + Profile.CharacterDecisionHold;
 		if (!WasSupported && CELSharedDebug::Instance().CanLogCombat(OwnerMonster.Position()))
 		{
-			CELSharedDebug::Instance().LogCombat(OwnerMonster.ID(), "[monsters_debug] ALLY_SUPPORT t=%u id=%u sender=%u target=%u resolve=%.1f roll=%.1f", Device.dwTimeGlobal, OwnerMonster.ID(), SourceMonster.ID(), TargetEntity->ID(), CharacterResolve(State), State.Initiative);
+			CELSharedDebug::Instance().LogCombat(OwnerMonster.ID(), "[monsters_debug] ALLY_SUPPORT t=%u id=%u sender=%u target=%u resolve=%.1f", Device.dwTimeGlobal, OwnerMonster.ID(), SourceMonster.ID(), TargetEntity->ID(), CharacterResolve(State));
 		}
 	};
 	const float Distance = OwnerMonster.Position().distance_to(SourceMonster.Position());
@@ -462,7 +467,7 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 	ReceivedObservation.SenderIdentifier = SourceMonster.ID();
 	ReceivedObservation.SenderGeneration = ExtendedEntityes::OwnerGeneration(SourceMonster.ID());
 	ReceivedObservation.IsPsiShared = SourceProfile.IsWireless || SourceProfile.CanTrackLive || Observation.HasParentalChannel;
-	if (!ExtendedEntityes::PerceptionBudget().TryTransfer() || !Memory.Remember(ReceivedObservation, Device.dwTimeGlobal, Random.randI(Profile.MemoryMin, Profile.MemoryMax + 1), Profile.CanRecordTrail ? Profile.TrailLength : 0.f))
+	if (!ExtendedEntityes::PerceptionBudget().TryTransfer() || !Memory.Remember(ReceivedObservation, Device.dwTimeGlobal, Random.randI(Profile.MemoryMin, Profile.MemoryMax + 1), Profile.CanRecordTrail ? Profile.TrailLength : 0.f, Profile))
 	{
 		return false;
 	}
@@ -503,12 +508,13 @@ bool CELComponentBase::ShouldSuppressInterest(u16 SourceIdentifier) const
 	{
 		return false;
 	}
-	return (Profile.CharacterAggression < 100.f && Profile.CharacterAggression <= State.Initiative) || CharacterResolve(State) < Profile.CharacterRetreatThreshold;
+	return !CharacterCanInitiate(State);
 }
 
 void CELComponentBase::Hear(const SELSoundEvent& SoundEvent)
 {
-	if (!HasAttached || SoundEvent.SourceIdentifier == Adapter->Monster().ID())
+	if (!HasAttached || SoundEvent.SourceIdentifier == Adapter->Monster().ID() ||
+		SoundEvent.SourceGeneration != ExtendedEntityes::OwnerGeneration(SoundEvent.SourceIdentifier))
 	{
 		return;
 	}
@@ -525,8 +531,30 @@ void CELComponentBase::Hear(const SELSoundEvent& SoundEvent)
 	}
 	const EELNoiseType SoundKind = CELSharedHearing::Classify(SoundEvent);
 	const bool RefusedSource = ShouldSuppressInterest(SoundEvent.SourceIdentifier);
-	const bool ActiveEnemy = SoundEvent.SourceIdentifier == TargetIdentifier && Memory.Find(TargetIdentifier) && SourceEntity &&
-		(Adapter->CanSee(*SourceEntity) || IsFleeingPredator);
+	const SELObservation* KnownSource = Memory.Find(SoundEvent.SourceIdentifier);
+	const bool ActiveEnemy = KnownSource && SourceEntity && SourceEntity->g_Alive() && Adapter->IsEnemy(*SourceEntity) &&
+		(SoundEvent.SourceIdentifier == TargetIdentifier || RefusedSource);
+	const bool Steps = SoundKind == EELNoiseType::ActorSteps || SoundKind == EELNoiseType::MonsterSteps || SoundKind == EELNoiseType::Jump;
+	const bool Enabled = Steps ? (SoundEvent.IsActorSound ? Profile.CanHearActorSteps : Profile.CanHearMonsterSteps) : Profile.CanHearCombat;
+	const bool LocatesSource = SoundKind == EELNoiseType::Shot || Steps || SoundKind == EELNoiseType::Melee ||
+		SoundKind == EELNoiseType::Attack || SoundKind == EELNoiseType::Injury;
+	const float Radius = CELSharedHearing::HearingRadius(SoundEvent, Profile);
+	if (ActiveEnemy && Enabled && LocatesSource && SoundEvent.LocatesSource && Radius > 0.f && _valid(SoundEvent.Position) &&
+		Adapter->Monster().Position().distance_to_sqr(SoundEvent.Position) <= _sqr(Radius))
+	{
+		SELObservation Heard = *KnownSource;
+		Heard.Position = SoundEvent.Position;
+		Heard.VertexIdentifier = u32(-1);
+		Heard.Source = EELObservationSource::Sound;
+		Heard.HasLivePosition = false;
+		Heard.ObservedAt = SoundEvent.OccurredAt;
+		Heard.VisualGraceUntil = 0;
+		if (Memory.Remember(Heard, Device.dwTimeGlobal, Profile.MemoryMax, Profile.TrailLength, Profile))
+		{
+			const auto EncounterState = Encounters.find(SoundEvent.SourceIdentifier);
+			if (EncounterState != Encounters.end()) { EncounterState->second.LastContactAt = SoundEvent.OccurredAt; }
+		}
+	}
 	const bool AllowAttraction = !RefusedSource && !ActiveEnemy;
 	if (!AllowAttraction)
 	{
@@ -579,6 +607,7 @@ void CELComponentBase::UpdateAuditoryAttention()
 // Удаляет знания и ссылки, связанные с исчезнувшим объектом.
 void CELComponentBase::RemoveObject(u16 ObjectIdentifier)
 {
+	CELSharedSoundEvents::RemoveSource(ObjectIdentifier);
 	if (CharacterCounterTarget == ObjectIdentifier)
 	{
 		CharacterCounterAttackUntil = 0;
@@ -742,7 +771,7 @@ void CELComponentBase::FillCharacterDecisions(SELDebugRecord& Record) const
 		}
 		++Details;
 		const char* Reason = Afraid ? (State.Withdrawn ? "восстановление после отхода" : "испуг: отступаю") :
-			!xr_strcmp(State.CombatReason, "initiative_roll") ? "не прошёл бросок агрессии" :
+			!xr_strcmp(State.CombatReason, "insufficient_motivation") ? "недостаточно мотивации для нападения" :
 			!xr_strcmp(State.CombatReason, "risk_too_high") ? "не хватает смелости" :
 			!xr_strcmp(State.CombatReason, "withdrawal_hold") ? "удержание решения об отходе" :
 			!xr_strcmp(State.CombatReason, "confidence_not_recovered") ? "смелость ещё не восстановилась" : State.CombatReason;
@@ -754,7 +783,7 @@ void CELComponentBase::FillCharacterDecisions(SELDebugRecord& Record) const
 		}
 		else
 		{
-			xr_sprintf(Label, "ОТКАЗ #%u%s: %s | агрессия %.1f / бросок %.1f | решимость %.1f / порог %.1f", Item.first, State.IsActor ? " (ГГ)" : "", Reason, Profile.CharacterAggression, State.Initiative, CharacterResolve(State), Profile.CharacterRetreatThreshold);
+			xr_sprintf(Label, "ОТКАЗ #%u%s: %s | агрессия+решимость %.1f / порог %.1f | решимость %.1f / порог %.1f", Item.first, State.IsActor ? " (ГГ)" : "", Reason, CharacterAggression(State) + CharacterResolve(State), Profile.CharacterInitiateThreshold, CharacterResolve(State), Profile.CharacterRetreatThreshold);
 		}
 		Record.Senses.push_back(Label);
 		if (Afraid && State.ClosePressureSince && Profile.CharacterCornerPressureTime)
@@ -790,7 +819,8 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 	Record.HasCharacterBars = Profile.HasCharacter;
 	Record.HealthPercent = std::clamp(Adapter->Monster().GetfHealth() / std::max(EPS_L, Adapter->Monster().conditions().GetMaxHealth()), 0.f, 1.f) * 100.f;
 	Record.CouragePercent = std::clamp(Courage * 100.f, 0.f, 100.f);
-	Record.AggressionPercent = Profile.CharacterAggression;
+	const auto AggressionState = Encounters.find(TargetIdentifier);
+	Record.AggressionPercent = CharacterAggression(AggressionState != Encounters.end() ? AggressionState->second : SEncounter());
 	Record.BaseCouragePercent = Profile.CharacterCourage;
 	Record.BaseAggressionPercent = Profile.CharacterAggression;
 	Fbox DebugBounds;
@@ -827,7 +857,7 @@ void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 	Record.Senses.push_back(EnvironmentLabel);
 	if (Profile.HasCharacter)
 	{
-		xr_sprintf(EnvironmentLabel, "ХАРАКТЕР: агрессия %.0f | смелость %.0f / база %.0f | стая +%.1f | потрясение -%.1f | %s", Profile.CharacterAggression, Courage * 100.f, Profile.CharacterCourage, PackCourage * Profile.CharacterPackBonus, CharacterShock, IsFleeingPredator ? "отход" : "бой/наблюдение");
+		xr_sprintf(EnvironmentLabel, "ХАРАКТЕР: агрессия %.0f | смелость %.0f / база %.0f | стая +%.1f | потрясение -%.1f | %s", Record.AggressionPercent, Courage * 100.f, Profile.CharacterCourage, PackCourage * Profile.CharacterPackBonus, CharacterShock, IsFleeingPredator ? "отход" : "бой/наблюдение");
 	}
 	else
 	{
@@ -1106,8 +1136,6 @@ CELComponentBase::SEncounter& CELComponentBase::Encounter(CEntityAlive& Target)
 		State.EnemyTier = std::clamp(ExtendedEntityesOptions::Read<u32>(pSettings, *Target.cNameSect(), "monster_threat_tier", 2u), 1u, 5u);
 		State.UpdatedAt = Now;
 		State.LastContactAt = Now;
-		State.Initiative = Random.randF(0.f, 100.f);
-		State.ResolveBias = Random.randF(-5.f, 5.f);
 	}
 	return State;
 }
@@ -1149,6 +1177,19 @@ void CELComponentBase::UpdateCharacter()
 			continue;
 		}
 		const float Recovery = Profile.CharacterRecovery * std::min(1.f, float(Now - State.UpdatedAt) * .001f);
+		const float CharacterElapsed = std::min(1.f, float(Now - State.UpdatedAt) * .001f);
+		CEntityAlive* Threat = ExtendedEntityes::FindEntity(Iterator->first);
+		const bool ClosePressure = (State.Fleeing || State.Withdrawn) && Threat && Adapter->CanSee(*Threat) &&
+			Monster.Position().distance_to_sqr(Threat->Position()) < _sqr(Profile.CharacterWatchDistance);
+		if (ClosePressure)
+		{
+			State.AggressionPressure = std::min(100.f, State.AggressionPressure + Profile.AggressionPressureGain * CharacterElapsed);
+			State.AggressionStimulusAt = Now;
+		}
+		else if (Now - State.AggressionStimulusAt >= Profile.AggressionMemory)
+		{
+			State.AggressionPressure = std::max(0.f, State.AggressionPressure - Profile.AggressionRecovery * CharacterElapsed);
+		}
 		State.UpdatedAt = Now;
 		if (Iterator->first != TargetIdentifier || State.Fleeing || State.Withdrawn)
 		{
@@ -1166,11 +1207,10 @@ float CELComponentBase::CharacterConfidence(const SEncounter& State) const
 {
 	CBaseMonster& Monster = Adapter->Monster();
 	const float Health = std::clamp(Monster.GetfHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth()), 0.f, 1.f);
-	const float SizeSpan = Monster.GetVisualScale() < 1.f ? 1.f - Profile.CharacterSizeScaleMin : Profile.CharacterSizeScaleMax - 1.f;
-	const float Size = std::clamp((Monster.GetVisualScale() - 1.f) / SizeSpan, -1.f, 1.f) * Profile.CharacterSizeCourage;
-	const float Bonus = std::max(0.f, Size) + PackCourage * Profile.CharacterPackBonus + std::max(0.f, State.Experience);
-	// Positive support uses remaining headroom; injuries and resistance retain their full weight.
-	return Profile.CharacterCourage + std::min(0.f, Size) + Bonus * (1.f - Profile.CharacterCourage * .01f) + std::min(0.f, State.Experience) - CharacterShock - (1.f - Health) * Profile.CharacterHealthPenalty;
+	const float SizeFactor = std::max(EPS_L, 1.f + (Monster.GetVisualScale() - 1.f) * Profile.CharacterSizeInfluence);
+	const float BaseCourage = std::clamp(Profile.CharacterCourage * SizeFactor, 0.f, 100.f);
+	const float Bonus = PackCourage * Profile.CharacterPackBonus + std::max(0.f, State.Experience);
+	return BaseCourage + Bonus * (1.f - BaseCourage * .01f) + std::min(0.f, State.Experience) - CharacterShock - (1.f - Health) * Profile.CharacterHealthPenalty;
 }
 
 float CELComponentBase::CharacterResolve(const SEncounter& State) const
@@ -1182,7 +1222,7 @@ float CELComponentBase::CharacterResolve(const SEncounter& State) const
 	const float RankPressure = IsActor || !Profile.CanFearPredators ? 0.f : std::max(0.f, float(std::min(5u, EnemyTier)) - float(Monster.ThreatTier)) * Profile.CharacterTierPressure;
 	const float EnemyWeakness = IsActor ? 0.f : (1.f - State.EnemyHealth) * Profile.CharacterHealthPenalty * .5f;
 	const float RelativeSize = IsActor ? 0.f : std::clamp(State.EnemyScale - Monster.GetVisualScale(), -.6f, .6f) * Profile.CharacterSizeCourage;
-	return Confidence - RankPressure - RelativeSize + EnemyWeakness + State.ResolveBias;
+	return Confidence - RankPressure - RelativeSize + EnemyWeakness;
 }
 
 // The resume threshold must be attainable without receiving external support or growing in size.
@@ -1190,6 +1230,101 @@ float CELComponentBase::CharacterResumeResolve(const SEncounter& State) const
 {
 	const float RestedResolve = CharacterResolve(State) + CharacterShock - std::min(0.f, State.Experience);
 	return std::min(Profile.CharacterResumeThreshold, std::max(Profile.CharacterRetreatThreshold, RestedResolve - .5f));
+}
+
+float CELComponentBase::CharacterAggression(const SEncounter& State) const
+{
+	const float SizeFactor = std::max(EPS_L, 1.f + (Adapter->Monster().GetVisualScale() - 1.f) * Profile.CharacterSizeInfluence);
+	return std::clamp(Profile.CharacterAggression * SizeFactor + State.AggressionPressure, 0.f, 100.f);
+}
+
+bool CELComponentBase::CharacterCanInitiate(const SEncounter& State) const
+{
+	const float Resolve = CharacterResolve(State);
+	return !Profile.IsPassive && Profile.CharacterAggression > 0.f && Resolve >= Profile.CharacterRetreatThreshold &&
+		CharacterAggression(State) + Resolve >= Profile.CharacterInitiateThreshold;
+}
+
+bool CELComponentBase::UpdatePersonalDefense(CEntityAlive& Target, SEncounter& State, bool Cornered)
+{
+	if (Profile.IsPassive || !Adapter->CanControl() || ExtendedEntityes::IsIgnored(Target) || !Adapter->IsEnemy(Target))
+	{
+		return false;
+	}
+	CBaseMonster& Monster = Adapter->Monster();
+	const u32 Now = Device.dwTimeGlobal;
+	const bool Perceived = Adapter->CanSee(Target);
+	// Never obtain a hidden target's current coordinates for a distance decision.
+	const float Distance = Perceived ? Monster.Position().distance_to(Target.Position()) : flt_max;
+	if (Perceived && Distance > Profile.CharacterPersonalReleaseDistance)
+	{
+		State.BerserkUsed = false;
+	}
+	if (State.PersonalDefense && s32(Now - State.DecisionUntil) >= 0 &&
+		(!Perceived || Distance > Profile.CharacterPersonalReleaseDistance))
+	{
+		State.PersonalDefense = false;
+		if (CharacterCounterTarget == Target.ID())
+		{
+			CharacterCounterAttackUntil = 0;
+		}
+	}
+	const bool Pressured = (State.Fleeing || State.Withdrawn || State.PersonalDefense ||
+		(Profile.CharacterAggression > 0.f && !CharacterCanInitiate(State))) && Perceived;
+	const float ContactRange = Monster.MeleeChecker.get_max_distance() + Target.Radius() + Monster.ExtendedMeleeHitTolerance;
+	if (Pressured && Distance <= ContactRange)
+	{
+		if (!State.ClosePressureSince || Now - State.LastClosePressureAt > Profile.CharacterContactGrace)
+		{
+			State.ClosePressureSince = Now;
+		}
+		State.LastClosePressureAt = Now;
+	}
+	else if (Now - State.LastClosePressureAt > Profile.CharacterContactGrace)
+	{
+		State.ClosePressureSince = 0;
+	}
+	Cornered = Cornered || (Profile.CharacterCornerPressureTime && State.ClosePressureSince &&
+		Pressured && Now - State.ClosePressureSince >= Profile.CharacterCornerPressureTime);
+	const bool Intrusion = Profile.CharacterPersonalDistance > 0.f && Distance <= Profile.CharacterPersonalDistance;
+	const bool BerserkActive = s32(Monster.CorneredBerserkUntil - Now) > 0;
+	const float Health = Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth());
+	const float Threshold = Profile.BerserkHealthForScale(Monster.GetVisualScale());
+	const bool StartBerserk = Pressured && (Intrusion || Cornered || State.PersonalDefense) &&
+		Profile.CanCornerBerserk && !State.BerserkUsed && !BerserkActive && Health <= Threshold;
+	const bool StartCounter = Pressured && (Intrusion || Cornered) && !State.PersonalDefense && !BerserkActive;
+	if (StartBerserk || StartCounter)
+	{
+		State.PersonalDefense = true;
+		State.DecisionUntil = Now + Profile.CharacterDecisionHold;
+		State.NextDecisionAt = State.DecisionUntil;
+		State.HasCombatDecision = State.CombatAccepted = true;
+		State.CombatDecisionAt = Now;
+		State.CombatReason = StartBerserk ? "cornered_berserk" : "personal_distance_counterattack";
+		CharacterCounterTarget = Target.ID();
+		CharacterCounterAttackUntil = State.DecisionUntil;
+		if (StartBerserk)
+		{
+			State.BerserkUsed = true;
+			Monster.CorneredBerserkUntil = Now + Profile.CornerBerserkDuration;
+			Monster.CorneredBerserkDamage = Profile.CornerBerserkDamage;
+			Monster.set_berserk();
+		}
+		if (CELSharedDebug::Instance().CanLogCombat(Monster.Position()))
+		{
+			CELSharedDebug::Instance().LogCombat(Monster.ID(), "[monsters_debug] COUNTERATTACK t=%u id=%u target=%u reason=%s distance=%.2f scale=%.2f hp_fraction=%.3f base_threshold=%.3f threshold=%.3f hold_ms=%u", Now, Monster.ID(), Target.ID(), State.CombatReason, Distance, Monster.GetVisualScale(), Health, Profile.CornerBerserkHealth, Threshold, StartBerserk ? Profile.CornerBerserkDuration : Profile.CharacterDecisionHold);
+		}
+	}
+	if (State.PersonalDefense || BerserkActive || StartBerserk)
+	{
+		State.Fleeing = State.Withdrawn = false;
+		State.Engaged = true;
+		CharacterCounterTarget = Target.ID();
+		CharacterCounterAttackUntil = Now + Profile.CharacterDecisionHold;
+		IsFleeingPredator = IsWatchingThreat = false;
+		return true;
+	}
+	return false;
 }
 
 bool CELComponentBase::CanEngage(const SELObservation& Observation)
@@ -1209,7 +1344,7 @@ bool CELComponentBase::CanEngage(const SELObservation& Observation)
 	}
 	const u32 Now = Device.dwTimeGlobal;
 	SEncounter& State = Encounter(*Target);
-	// Sampling takes place once per encounter, never once per sight update or candidate scan.
+	// Refresh urgent defense before ordinary admission and withdrawal holds.
 	const bool Provoked = s32(State.ProvokedUntil - Now) > 0 || (ProvokedTarget == Target->ID() && s32(ProvokedUntil - Now) > 0);
 	const bool Berserk = s32(Adapter->Monster().CorneredBerserkUntil - Now) > 0;
 	CBaseMonster* Other = smart_cast<CBaseMonster*>(Target);
@@ -1228,10 +1363,14 @@ bool CELComponentBase::CanEngage(const SELObservation& Observation)
 		if (CELSharedDebug::Instance().CanLogCombat(Adapter->Monster().Position()) && s32(Now - NextCandidateTrace) >= 0)
 		{
 			NextCandidateTrace = Now + 2000;
-			CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] CANDIDATE t=%u id=%u candidate=%u accepted=%d reason=%s aggression=%.1f roll=%.1f resolve=%.1f experience=%.1f engaged=%d withdrawn=%d provoked=%d under_attack=%d resume_resolve=%.1f", Now, Adapter->Monster().ID(), Target->ID(), int(Accepted), Reason, Profile.CharacterAggression, State.Initiative, CharacterResolve(State), State.Experience, int(State.Engaged), int(State.Withdrawn), int(Provoked), int(UnderAttack), CharacterResumeResolve(State));
+			CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] CANDIDATE t=%u id=%u candidate=%u accepted=%d reason=%s aggression=%.1f initiate_threshold=%.1f resolve=%.1f experience=%.1f engaged=%d withdrawn=%d provoked=%d under_attack=%d resume_resolve=%.1f", Now, Adapter->Monster().ID(), Target->ID(), int(Accepted), Reason, CharacterAggression(State), Profile.CharacterInitiateThreshold, CharacterResolve(State), State.Experience, int(State.Engaged), int(State.Withdrawn), int(Provoked), int(UnderAttack), CharacterResumeResolve(State));
 		}
 		return Accepted;
 	};
+	if (UpdatePersonalDefense(*Target, State))
+	{
+		return Report(true, State.CombatReason);
+	}
 	if (State.Withdrawn && !RecentHit && !UnderAttack && !Berserk && s32(State.AssistanceUntil - Now) <= 0)
 	{
 		if (s32(Now - State.DecisionUntil) < 0 || CharacterResolve(State) < CharacterResumeResolve(State))
@@ -1255,7 +1394,7 @@ bool CELComponentBase::CanEngage(const SELObservation& Observation)
 		return Report(true, Berserk ? "berserk" : Provoked || UnderAttack ? "self_defence" : s32(State.AssistanceUntil - Now) > 0 ? "ally_in_combat" : "committed_target");
 	}
 	const float Resolve = CharacterResolve(State);
-	if (Resolve < Profile.CharacterRetreatThreshold && Adapter->CanSee(*Target) &&
+	if (!CharacterCanInitiate(State) && Adapter->CanSee(*Target) &&
 		Adapter->Monster().Position().distance_to_sqr(Target->Position()) < _sqr(Profile.CharacterSafeDistance))
 	{
 		// Refusing combat is not indifference: keep a perceived nearby enemy as an avoidance target.
@@ -1263,10 +1402,10 @@ bool CELComponentBase::CanEngage(const SELObservation& Observation)
 		State.Withdrawn = true;
 		State.DecisionUntil = Now + Profile.CharacterDecisionHold;
 		State.NextDecisionAt = Now + Profile.CharacterReevaluate;
-		return Report(true, "avoiding_visible_enemy_low_courage");
+		return Report(true, Resolve < Profile.CharacterRetreatThreshold ? "avoiding_visible_enemy_low_courage" : "watching_enemy_low_motivation");
 	}
-	const bool Allowed = (Profile.CharacterAggression >= 100.f || Profile.CharacterAggression > State.Initiative) && Resolve >= Profile.CharacterRetreatThreshold;
-	return Report(Allowed, Allowed ? "initiate" : Resolve < Profile.CharacterRetreatThreshold ? "risk_too_high" : "initiative_roll");
+	const bool Allowed = CharacterCanInitiate(State);
+	return Report(Allowed, Allowed ? "initiate" : Resolve < Profile.CharacterRetreatThreshold ? "risk_too_high" : "insufficient_motivation");
 }
 
 void CELComponentBase::RecordCombatHit(CEntityAlive& Opponent, float HealthFraction, bool Received)
@@ -1289,6 +1428,8 @@ void CELComponentBase::RecordCombatHit(CEntityAlive& Opponent, float HealthFract
 	State.Experience = std::clamp(State.Experience + HealthFraction * (Received ? -Profile.CharacterHitLoss : Profile.CharacterHitGain), -40.f, 20.f);
 	if (Received)
 	{
+		State.AggressionPressure = std::min(100.f, State.AggressionPressure + HealthFraction * Profile.AggressionHitGain);
+		State.AggressionStimulusAt = Device.dwTimeGlobal;
 		State.ProvokedUntil = Device.dwTimeGlobal + Profile.CharacterMemory;
 	}
 	else
@@ -1337,50 +1478,13 @@ bool CELComponentBase::ShouldFleeCharacter(const SELObservation* Observation)
 		}
 	}
 	const bool WasFleeing = State.Fleeing;
-	// Being caught repeatedly is failure to escape even when locomotion itself still makes progress.
 	const bool Perceived = Adapter->CanSee(*Target);
-	const float ContactRange = Monster.MeleeChecker.get_max_distance() + Target->Radius() + Monster.ExtendedMeleeHitTolerance;
-	const bool ClosePressure = (State.Fleeing || State.Withdrawn) && Perceived &&
-		Monster.Position().distance_to_sqr(Target->Position()) <= _sqr(ContactRange);
-	if (ClosePressure)
+	if (UpdatePersonalDefense(*Target, State))
 	{
-		if (!State.ClosePressureSince || Now - State.LastClosePressureAt > Profile.CharacterContactGrace)
+		if (Monster.EnemyMan.get_enemy() != Target)
 		{
-			State.ClosePressureSince = Now;
-		}
-		State.LastClosePressureAt = Now;
-	}
-	else if (Now - State.LastClosePressureAt > Profile.CharacterContactGrace || (!State.Fleeing && !State.Withdrawn))
-	{
-		State.ClosePressureSince = 0;
-	}
-	if (s32(Monster.CorneredBerserkUntil - Now) <= 0 && ClosePressure && Profile.CharacterCornerPressureTime && State.ClosePressureSince &&
-		Now - State.ClosePressureSince >= Profile.CharacterCornerPressureTime)
-	{
-		const float Health = Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth());
-		const bool Berserk = Profile.CanCornerBerserk && Health < Profile.CornerBerserkHealth;
-		State.Fleeing = State.Withdrawn = false;
-		State.Engaged = true;
-		State.ClosePressureSince = 0;
-		State.DecisionUntil = Now + Profile.CharacterDecisionHold;
-		State.NextDecisionAt = State.DecisionUntil;
-		State.HasCombatDecision = State.CombatAccepted = true;
-		State.CombatDecisionAt = Now;
-		State.CombatReason = Berserk ? "cornered_berserk" : "cornered_counterattack";
-		CharacterCounterTarget = Target->ID();
-		CharacterCounterAttackUntil = Berserk ? 0u : State.DecisionUntil;
-		IsFleeingPredator = false;
-		if (Berserk)
-		{
-			Monster.CorneredBerserkUntil = Now + Profile.CornerBerserkDuration;
-			Monster.CorneredBerserkDamage = Profile.CornerBerserkDamage;
-			Monster.set_berserk();
-		}
-		PublishNativeMemory();
-		Monster.EnemyMan.update();
-		if (CELSharedDebug::Instance().CanLogCombat(Monster.Position()))
-		{
-			CELSharedDebug::Instance().LogCombat(Monster.ID(), "[monsters_debug] COUNTERATTACK t=%u id=%u target=%u reason=%s hp_fraction=%.3f contact_range=%.2f hold_ms=%u", Now, Monster.ID(), Target->ID(), Berserk ? "cornered_berserk" : "cornered_counterattack", Health, ContactRange, Berserk ? Profile.CornerBerserkDuration : Profile.CharacterDecisionHold);
+			PublishNativeMemory();
+			Monster.EnemyMan.update();
 		}
 		return false;
 	}
@@ -1395,7 +1499,7 @@ bool CELComponentBase::ShouldFleeCharacter(const SELObservation* Observation)
 		}
 		if (CELSharedDebug::Instance().CanLogCombat(Monster.Position()))
 		{
-			CELSharedDebug::Instance().LogCombat(Monster.ID(), "[monsters_debug] COUNTER_CHECK t=%u id=%u target=%u visible=%d chance=%.3f roll=%.3f chosen=%d hp_fraction=%.3f berserk_health=%.3f berserk_enabled=%d close_pressure_ms=%u required_ms=%u", Now, Monster.ID(), Target->ID(), int(Perceived), Profile.CharacterCounterChance, Roll, int(Chosen), Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth()), Profile.CornerBerserkHealth, int(Profile.CanCornerBerserk), State.ClosePressureSince ? Now - State.ClosePressureSince : 0u, Profile.CharacterCornerPressureTime);
+			CELSharedDebug::Instance().LogCombat(Monster.ID(), "[monsters_debug] COUNTER_CHECK t=%u id=%u target=%u visible=%d chance=%.3f roll=%.3f chosen=%d hp_fraction=%.3f berserk_health=%.3f berserk_enabled=%d close_pressure_ms=%u required_ms=%u", Now, Monster.ID(), Target->ID(), int(Perceived), Profile.CharacterCounterChance, Roll, int(Chosen), Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth()), Profile.BerserkHealthForScale(Monster.GetVisualScale()), int(Profile.CanCornerBerserk), State.ClosePressureSince ? Now - State.ClosePressureSince : 0u, Profile.CharacterCornerPressureTime);
 		}
 		return Chosen;
 	};
@@ -1412,7 +1516,7 @@ bool CELComponentBase::ShouldFleeCharacter(const SELObservation* Observation)
 		if (s32(Now - State.DecisionUntil) >= 0 && s32(Now - State.NextDecisionAt) >= 0)
 		{
 			State.NextDecisionAt = Now + Profile.CharacterReevaluate;
-			State.Fleeing = Resolve < CharacterResumeResolve(State) && !TryCounterAttack();
+			State.Fleeing = (Resolve < CharacterResumeResolve(State) || !CharacterCanInitiate(State)) && !TryCounterAttack();
 			State.DecisionUntil = Now + Profile.CharacterDecisionHold;
 			if (!State.Fleeing)
 			{

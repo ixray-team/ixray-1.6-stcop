@@ -33,7 +33,7 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	}
 	CBaseMonster& Monster = Adapter.Monster();
 	const float Health = Monster.conditions().GetHealth() / std::max(EPS_L, Monster.conditions().GetMaxHealth());
-	if (!Profile.IsPassive && Profile.CanCornerBerserk && Health < Profile.CornerBerserkHealth && IsActive(ReactionBehavior) && ReactionBehavior.IsCornered() && (!Profile.HasCharacter || Owner.HasEnemyPressure()))
+	if (!Profile.HasCharacter && !Profile.IsPassive && Profile.CanCornerBerserk && s32(Monster.CorneredBerserkUntil - Device.dwTimeGlobal) <= 0 && Health <= Profile.BerserkHealthForScale(Monster.GetVisualScale()) && IsActive(ReactionBehavior) && ReactionBehavior.IsCornered() && (!Profile.HasCharacter || Owner.HasEnemyPressure()))
 	{
 		Monster.CorneredBerserkUntil = Device.dwTimeGlobal + Profile.CornerBerserkDuration;
 		Monster.CorneredBerserkDamage = Profile.CornerBerserkDamage;
@@ -79,6 +79,21 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 	{
 		SelectedObservation = nullptr;
 		Owner.TargetIdentifier = u16(-1);
+	}
+	if (Profile.HasCharacter && SelectedTarget && IsActive(ReactionBehavior) && ReactionBehavior.IsCornered())
+	{
+		Owner.UpdatePersonalDefense(*SelectedTarget, Owner.Encounter(*SelectedTarget), true);
+	}
+	Fvector ImpactPoint;
+	u32 ImpactAt = 0;
+	if (!SelectedTarget && Owner.Hearing.GetDanger(Monster.Position(), ImpactPoint, ImpactAt) &&
+		Monster.Position().distance_to_sqr(ImpactPoint) <= _sqr(Profile.SuppressionRadius))
+	{
+		ReactionBehavior.Configure(ImpactPoint, ImpactAt + Profile.SuppressionMemory, true);
+		Select(&ReactionBehavior);
+		Update(DeltaTime);
+		SetValidationReason("Ухожу из-под близких попаданий; стрелок не установлен");
+		return EELControl::Extended;
 	}
 	if (Owner.ShouldFleePredator(SelectedObservation))
 	{
@@ -146,21 +161,22 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		if (SelectedObservation && Known.TargetIdentifier != SelectedObservation->TargetIdentifier) { continue; }
 		CEntityAlive* VisibleEnemy = ExtendedEntityes::FindEntity(Known.TargetIdentifier);
 		if (!VisibleEnemy || !Adapter.IsEnemy(*VisibleEnemy) || !Adapter.CanSee(*VisibleEnemy) || !Owner.CanEngage(Known)) { continue; }
-		const bool CanPursue = Adapter.CanPursue(*VisibleEnemy, Known.Position);
+		const Fvector CurrentPosition = VisibleEnemy->Position();
+		const bool CanPursue = Adapter.CanPursue(*VisibleEnemy, CurrentPosition);
 		Fvector GroundPoint;
 		u32 GroundVertex;
 		// A stale but valid actor vertex does not prove that its current position lies on the graph.
-		if (CanPursue && CELGroundLocalSearch::Resolve(Adapter, Known.Position, GroundPoint, GroundVertex)) { continue; }
+		if (CanPursue && CELGroundLocalSearch::Resolve(Adapter, CurrentPosition, GroundPoint, GroundVertex)) { continue; }
 		// Preserve legal bites and native jumps at graph edges, and the aerial interception executor.
 		if (CanPursue && ((!VisibleEnemy->UsedAI_Locations() && Profile.CanInterceptFlying) || Monster.MeleeChecker.can_start_melee(VisibleEnemy))) { continue; }
-		if (CanPursue && Profile.CanAttackJump && Monster.com_man().get_jump_control() && Monster.Position().distance_to_sqr(Known.Position) <= _sqr(Profile.LungeMaxDistance) && Monster.com_man().check_if_jump_possible(Known.Position, true)) { continue; }
+		if (CanPursue && Profile.CanAttackJump && Monster.com_man().get_jump_control() && Monster.Position().distance_to_sqr(CurrentPosition) <= _sqr(Profile.LungeMaxDistance) && Monster.com_man().check_if_jump_possible(CurrentPosition, true)) { continue; }
 		if (Owner.ShouldFleePredator(&Known))
 		{
-			ReactionBehavior.Configure(Known.Position, Device.dwTimeGlobal + Profile.ReactionCommandTime, true);
+			ReactionBehavior.Configure(CurrentPosition, Device.dwTimeGlobal + Profile.ReactionCommandTime, true);
 		}
 		else
 		{
-			ReactionBehavior.ConfigureObstacle(Known.Position, Device.dwTimeGlobal + Profile.ReactionCommandTime);
+			ReactionBehavior.ConfigureObstacle(CurrentPosition, Device.dwTimeGlobal + Profile.ReactionCommandTime);
 		}
 		Select(&ReactionBehavior);
 		Update(DeltaTime);

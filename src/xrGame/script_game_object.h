@@ -284,6 +284,8 @@ public:
 			void				berserk					();
 			void				set_custom_panic_threshold	(float value);
 			void				set_default_panic_threshold	();
+	void SetEelIntelligence(float Value);
+	float GetEelIntelligence();
 
 	// CAI_Trader
 			void				set_trader_global_anim	(const char* anim);

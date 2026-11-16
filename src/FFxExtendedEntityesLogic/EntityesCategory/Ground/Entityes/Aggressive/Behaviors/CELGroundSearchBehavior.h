@@ -11,10 +11,14 @@ public:
 	void Update(float DeltaTime) override;
 
 private:
+	void ResolveAnchor();
 	CELGroundInspection Inspection;
 	u32 SearchUntil = 0;
 	u32 TravelUntil = 0;
 	bool HasReachedAnchor = false;
+	bool HasCheckedForward = false;
+	u32 AnchorObservationAt = 0;
+	u32 TotalUntil = 0;
 	Fvector SearchAnchor = {0.f, 0.f, 0.f};
 	u32 NextPoint = 0;
 	u32 SearchPhase = 0;

@@ -45,7 +45,21 @@ void CELSharedSettings::Initialize()
 	{
 		CanShareFriends = ExtendedEntityesOptions::Read<bool>(SystemSettings, SectionName(), "EnableMonsterFriendlyEnemySharing", true);
 		CanDistribute = ExtendedEntityesOptions::Read<bool>(SystemSettings, SectionName(), "EnableMonsterDistributedTargeting", true);
+		WorkSettings.PackRoleHold = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__pack__role_hold_ms", 3000u);
+		clamp(WorkSettings.PackRoleHold, 100u, 30000u);
+		WorkSettings.PackSnapshotTime = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__pack__snapshot_ms", 100u);
+		clamp(WorkSettings.PackSnapshotTime, 16u, 1000u);
+		WorkSettings.PackStatusMemory = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__pack__status_memory_ms", 2000u);
+		clamp(WorkSettings.PackStatusMemory, 100u, 30000u);
+		WorkSettings.SoundDeliveries = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__hearing__deliveries_per_frame", 512u);
+		clamp(WorkSettings.SoundDeliveries, 1u, 4096u);
+		WorkSettings.SoundQueueLimit = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__hearing__queue_limit", 128u);
+		clamp(WorkSettings.SoundQueueLimit, 8u, 1024u);
+		WorkSettings.SoundEventMaxAge = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__hearing__event_max_age_ms", 2000u);
+		clamp(WorkSettings.SoundEventMaxAge, 100u, 10000u);
 		WorkSettings.PerceptionOperations = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedPerceptionOperationsPerFrame", 384u);
+		WorkSettings.UrgentPerceptionRays = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "eel__budget__urgent_rays_per_frame", 4u);
+		clamp(WorkSettings.UrgentPerceptionRays, 0u, 64u);
 		WorkSettings.PerceptionRays = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "MonsterBehaviorRaysPerFrame", 16u);
 		WorkSettings.SpatialQueries = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "MonsterBehaviorQueriesPerFrame", 2u);
 		WorkSettings.SharingSessions = ExtendedEntityesOptions::Read<u32>(SystemSettings, SectionName(), "ExtendedSharingSessionsPerFrame", 12u);

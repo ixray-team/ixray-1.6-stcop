@@ -95,12 +95,12 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 	if ((HasVision || Profile.CanTrackLive) && LastSampleAt && Now > LastSampleAt)
 	{
 		const float Delta = float(Now - LastSampleAt) * .001f;
-		if (Delta < .5f)
+		if (Delta * 1000.f <= float(Profile.VelocitySampleTime))
 		{
 			Fvector Sample;
 			Sample.sub(KnownPosition, LastKnownPosition).div(Delta);
 			Sample.y = 0.f;
-			if (Sample.magnitude() <= 50.f)
+			if (Sample.magnitude() <= Profile.ObservedSpeedLimit)
 			{
 				ObservedVelocity.lerp(ObservedVelocity, Sample, clampr(Delta * 5.f, 0.f, 1.f));
 			}
@@ -225,14 +225,22 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 			Fvector Lead = ObservedVelocity;
 			Lead.mul(Profile.MeleePredictionTime);
 			const float LeadLength = Lead.magnitude();
-			if (LeadLength > 2.f)
+			if (LeadLength > Profile.MeleePredictionDistance && LeadLength > EPS_L)
 			{
-				Lead.mul(2.f / LeadLength);
+				Lead.mul(Profile.MeleePredictionDistance / LeadLength);
 			}
 			GoalPosition.add(Lead);
 		}
 		else
 		{
+			if (HasVision && GroupRank == 0 && ObservedVelocity.dotproduct(Fvector().sub(KnownPosition, OwnerMonster.Position())) > 0.f)
+			{
+				Fvector Lead = ObservedVelocity;
+				Lead.mul(Profile.PursuitPrediction * OwnerMonster.ExtendedIntelligence);
+				const float Length = Lead.magnitude();
+				if (Length > Profile.PursuitPredictionDistance && Length > EPS_L) { Lead.mul(Profile.PursuitPredictionDistance / Length); }
+				GoalPosition.add(Lead);
+			}
 			GoalPosition.add(Separation);
 		}
 	}

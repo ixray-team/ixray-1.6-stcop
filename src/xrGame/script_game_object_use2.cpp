@@ -389,3 +389,16 @@ void CScriptGameObject::set_default_panic_threshold()
 		monster->set_default_panic_threshold();
 	}
 }
+void CScriptGameObject::SetEelIntelligence(float Value)
+{
+	if (CBaseMonster* Monster = object().cast_base_monster())
+	{
+		Monster->ExtendedIntelligence = _valid(Value) ? clampr(Value, 0.f, 1.f) : 1.f;
+	}
+}
+
+float CScriptGameObject::GetEelIntelligence()
+{
+	CBaseMonster* Monster = object().cast_base_monster();
+	return Monster ? Monster->ExtendedIntelligence : 0.f;
+}

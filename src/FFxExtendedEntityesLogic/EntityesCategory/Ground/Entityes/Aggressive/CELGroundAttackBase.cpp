@@ -10,6 +10,7 @@
 #include "xrGame/CharacterPhysicsSupport.h"
 #include "xrGame/PHMovementControl.h"
 #include "xrPhysics/IPHCharacter.h"
+#include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Navigation/CELGroundLocalSearch.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 // Связывает общую логику атакующих наземных существ с необходимыми службами и состоянием владельца.
 CELGroundAttackBase::CELGroundAttackBase(xr_unique_ptr<IELAdapter> OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELGround(std::move(OwnerAdapter), OwnerProfile), AttackBehavior(*Adapter, Profile), SearchBehavior(*Adapter, Profile) {}
@@ -72,23 +73,27 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 	const bool CanUseNativeJump = Profile.CanAttackJump && HasVision && !TargetEntity->UsedAI_Locations() && Adapter->Monster().com_man().get_jump_control() && Adapter->Monster().com_man().check_if_jump_possible(TargetPosition, true);
 	// Give actors on navigable ground the same native windup space as other opponents.
 	// Switching back at the start-distance boundary used to cancel running bites before impact.
+	Fvector ReachPoint;
+	u32 ReachVertex;
 	const bool HasNativeApproach = HasVision && Distance < Profile.NativeAttackDistance &&
-		Adapter->CanReach(TargetEntity->Position(), ai().level_graph().vertex_id(TargetEntity->Position()));
+		CELGroundLocalSearch::Resolve(*Adapter, TargetEntity->Position(), ReachPoint, ReachVertex);
 	const bool CanUseNativeAttack = HasVision && (HasNativeApproach || Adapter->Monster().MeleeChecker.can_start_melee(TargetEntity) || CanUseNativeJump);
 	if (CELSharedDebug::Instance().CanLogCombat(Adapter->Monster().Position()) && s32(Device.dwTimeGlobal - NextAttackTrace) >= 0)
 	{
 		NextAttackTrace = Device.dwTimeGlobal + 1000;
-		CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] ATTACK_GATE t=%u id=%u target=%u visible=%d distance=%.2f native_range=%.2f target_ai=%d native_eligible=%d native_jump=%d tactics_owns=%d evade=%d berserk=%d", Device.dwTimeGlobal, Adapter->Monster().ID(), TargetIdentifier, int(HasVision), Distance, Profile.NativeAttackDistance, int(TargetEntity->UsedAI_Locations()), int(CanUseNativeAttack), int(CanUseNativeJump), int(Tactics.OwnsMovement()), int(Tactics.IsEvading()), int(IsBerserk));
+		const Fvector Hypothesis = Observation.Predict(Device.dwTimeGlobal, Profile, Adapter->Monster().ExtendedIntelligence);
+		CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] PURSUIT_FACT t=%u frame=%u id=%u target=%u observed_at=%u received_at=%u visual_at=%u fact=(%.2f,%.2f,%.2f) predicted=(%.2f,%.2f,%.2f)", Device.dwTimeGlobal, Device.dwFrame, Adapter->Monster().ID(), TargetIdentifier, Observation.ObservedAt, Observation.ReceivedAt, Observation.VisualSampleAt, Observation.Position.x, Observation.Position.y, Observation.Position.z, Hypothesis.x, Hypothesis.y, Hypothesis.z);
+		CELSharedDebug::Instance().LogCombat(Adapter->Monster().ID(), "[monsters_debug] ATTACK_GATE t=%u id=%u target=%u visible=%d distance=%.2f native_range=%.2f target_ai=%d native_eligible=%d native_jump=%d tactics_owns=%d evade=%d berserk=%d fact_at=%u fact_age_ms=%u fact_source=%u has_velocity=%d", Device.dwTimeGlobal, Adapter->Monster().ID(), TargetIdentifier, int(HasVision), Distance, Profile.NativeAttackDistance, int(TargetEntity->UsedAI_Locations()), int(CanUseNativeAttack), int(CanUseNativeJump), int(Tactics.OwnsMovement()), int(Tactics.IsEvading()), int(IsBerserk), Observation.ObservedAt, Device.dwTimeGlobal - Observation.ObservedAt, u32(Observation.Source), int(Observation.HasObservedVelocity));
 	}
 	if (CanUseNativeAttack && !Tactics.OwnsMovement())
 	{
 		BehaviorManager.Clear();
 		return EELControl::Native;
 	}
-	// Loss of sight selects search immediately; search owns the run to the last known point.
-	const bool ContactGrace = !HasVision && Device.dwTimeGlobal - Observation.ObservedAt < 1000u &&
-		(Observation.Source == EELObservationSource::Vision || Observation.Source == EELObservationSource::CloseContact || Observation.Source == EELObservationSource::CloseScent) &&
-		Adapter->Monster().Position().distance_to_sqr(Observation.Position) <= _sqr(Profile.NativeAttackDistance * 2.f);
+	// Continue a bounded pursuit hypothesis before switching to local investigation.
+	const bool ContactGrace = !HasVision && Device.dwTimeGlobal - Observation.ObservedAt < Profile.PursuitContinuity &&
+		(Observation.Source == EELObservationSource::Vision || Observation.Source == EELObservationSource::Sound ||
+		 Observation.Source == EELObservationSource::CloseContact || Observation.Source == EELObservationSource::CloseScent);
 	if (!HasVision && !Profile.CanTrackLive && !ContactGrace)
 	{
 		if (SearchedTarget == TargetIdentifier && SearchedObservation == Observation.ObservedAt && BehaviorManager.IsActive(SearchBehavior) && BehaviorManager.GetValidation().State == EELBehaviorState::Completed)
@@ -108,7 +113,13 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 	}
 	else
 	{
-		AttackBehavior.SetObservation(Observation);
+		SELObservation Pursuit = Observation;
+		if (!HasVision && !Profile.CanTrackLive)
+		{
+			Pursuit.Position = Observation.Predict(Device.dwTimeGlobal, Profile, Adapter->Monster().ExtendedIntelligence);
+			Pursuit.VertexIdentifier = u32(-1);
+		}
+		AttackBehavior.SetObservation(Pursuit);
 		BehaviorManager.Select(&AttackBehavior);
 	}
 	BehaviorManager.Update(DeltaTime);
@@ -125,7 +136,7 @@ EELControl CELGroundAttackBase::UpdateTarget(const SELObservation& Observation, 
 	{
 		SuppressedTarget = TargetIdentifier;
 		SuppressedObservation = Observation.ObservedAt;
-		SuppressedUntil = Device.dwTimeGlobal + 5000;
+		SuppressedUntil = Device.dwTimeGlobal + Profile.PursuitRetry;
 	}
 	return EELControl::Extended;
 }

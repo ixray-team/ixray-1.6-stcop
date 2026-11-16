@@ -31,6 +31,7 @@ enum class EELMovementNoise : u8
 struct SELSoundEvent
 {
 	u16 SourceIdentifier = u16(-1);
+	u32 SourceGeneration = 0;
 	u32 SoundType = 0;
 	u32 OccurredAt = 0;
 	Fvector Position = {0.f, 0.f, 0.f};
@@ -38,6 +39,7 @@ struct SELSoundEvent
 	EELSoundKind Kind = EELSoundKind::Native;
 	EELWeaponKind WeaponKind = EELWeaponKind::Automatic;
 	EELMovementNoise Movement = EELMovementNoise::None;
+	bool LocatesSource = true;
 	bool IsSuppressed = false;
 	bool IsActorSound = false;
 	Fvector ActorPosition = {0.f, 0.f, 0.f};
@@ -67,6 +69,7 @@ public:
 	void Clear();
 	bool GetLookPoint(Fvector& Position) const;
 	bool GetCounterOpportunity(u16 Source, u32& OccurredAt) const;
+	bool GetDanger(const Fvector& Listener, Fvector& Point, u32& At) const;
 	void FillDebug(struct SELDebugRecord& Record) const;
 	void QueueInterest(const Fvector& Position, u16 Source, EELNoiseType Type, u32 Until, u32 Importance, bool IsActorSound, u32 ObservedAt = 0);
 	bool RememberInterest(const SELObservation& Observation, const SELPerceptionProfile& Profile);
@@ -89,6 +92,13 @@ public:
 	bool DamagePanic = false;
 
 private:
+	struct SDanger
+	{
+		Fvector Point;
+		u32 At;
+		u32 Until;
+	};
+	xr_vector<SDanger> Dangers;
 	struct SPendingInterest
 	{
 		Fvector Position;

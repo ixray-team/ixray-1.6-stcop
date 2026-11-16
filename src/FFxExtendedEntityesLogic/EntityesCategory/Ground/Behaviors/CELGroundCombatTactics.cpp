@@ -17,12 +17,29 @@
 
 void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProfile& Profile, CEntityAlive& Target, bool Visible, const CELSharedHearing* Hearing, bool Defensive)
 {
+	if (!Defensive && Visible && Adapter.Monster().MeleeChecker.can_start_melee(&Target))
+	{
+		if (DefensiveMode)
+		{
+			RejectDefensiveGoal();
+		}
+		HasTacticalGoal = FreeEvasion = DefensiveMode = DefensiveSawTarget = false;
+		TargetIdentifier = Target.ID();
+		LastVisibleAt = LastSampleAt = Device.dwTimeGlobal;
+		SprintUntil = 0;
+		Adapter.Monster().movement().detail().SetMovementFactor(1.f);
+		Intent = EELCombatIntent::Close;
+		return;
+	}
 	if (!Defensive && DefensiveMode)
 	{
 		RejectDefensiveGoal();
 		DefensiveMode = FreeEvasion = DefensiveSawTarget = false;
 	}
-	if (Defensive || s32(HitReactionUntil - Device.dwTimeGlobal) > 0 || FreeEvasion)
+	Fvector DangerPoint;
+	u32 DangerAt = 0;
+	const bool Suppressed = Hearing && Hearing->GetDanger(Adapter.Monster().Position(), DangerPoint, DangerAt);
+	if (Defensive || Suppressed || s32(HitReactionUntil - Device.dwTimeGlobal) > 0 || FreeEvasion)
 	{
 		if (UpdateAvoidance(Adapter, Profile, Target, Visible, Defensive, Hearing) || Defensive)
 		{
@@ -32,7 +49,7 @@ void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProf
 	CBaseMonster& Owner = Adapter.Monster();
 	const u32 Now = Device.dwTimeGlobal;
 	const float Elapsed = LastSampleAt ? std::min(10.f, float(Now - LastSampleAt) * .001f) : 0.f;
-	DodgeStrength = Profile.DodgeStrength * (Profile.HasCharacter ? 1.f + (1.f - Adapter.Monster().CharacterCourage) * Profile.CharacterDodgeCaution : 1.f);
+	DodgeStrength = (.25f + .75f * Owner.ExtendedIntelligence) * Profile.DodgeStrength * (Profile.HasCharacter ? 1.f + (1.f - Adapter.Monster().CharacterCourage) * Profile.CharacterDodgeCaution : 1.f);
 	clamp(DodgeStrength, 0.f, 1.f);
 	const bool SameTarget = TargetIdentifier == Target.ID();
 	const bool LandedEvasiveJump = Intent == EELCombatIntent::EvasionJump;
@@ -64,15 +81,18 @@ void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProf
 		if (SameTarget && IsEvading() && HasTacticalGoal && Now - LastVisibleAt < Profile.DodgeVisibilityGrace && s32(ManeuverUntil - Now) > 0)
 		{
 			DodgeReason = "завершаю шаг по последнему подтверждению";
-			Owner.movement().detail().SetMovementFactor(1.f);
+			Owner.movement().detail().SetMovementFactor(SameTarget && s32(SprintUntil - Now) > 0 && Stamina > 0.f ? 1.f + Profile.SprintBonus : 1.f);
 			LastSampleAt = Now;
 			return;
 		}
 		DodgeReason = "нет зрительного контакта";
 		HasTacticalGoal = false;
 		Intent = EELCombatIntent::Close;
-		SprintUntil = 0;
-		Owner.movement().detail().SetMovementFactor(1.f);
+		if (!SameTarget || Now - LastVisibleAt >= Profile.PursuitContinuity)
+		{
+			SprintUntil = 0;
+		}
+		Owner.movement().detail().SetMovementFactor(SameTarget && s32(SprintUntil - Now) > 0 && Stamina > 0.f ? 1.f + Profile.SprintBonus : 1.f);
 		LastSampleAt = Now;
 		TargetVelocity.set(0.f, 0.f, 0.f);
 		return;
@@ -462,7 +482,7 @@ void CELGroundCombatTactics::Update(IELAdapter& Adapter, const SELPerceptionProf
 			{
 				JumpReason = "штатная проверка траектории/позы не разрешила";
 				Fvector JumpGoal = Position;
-				JumpGoal.mad(TargetVelocity, std::min(.5f, Distance / 15.f));
+				JumpGoal.mad(TargetVelocity, Profile.PursuitPrediction * Owner.ExtendedIntelligence);
 				if (Distance > Reach && CanPursue)
 				{
 					Fvector Direction;
@@ -555,7 +575,12 @@ bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerce
 	CBaseMonster& Owner = Adapter.Monster();
 	const u32 Now = Device.dwTimeGlobal;
 	const bool SameTarget = TargetIdentifier == Target.ID();
-	const bool Impact = s32(HitReactionUntil - Now) > 0;
+	Fvector DangerPoint;
+	u32 DangerAt = 0;
+	const bool Suppressed = Hearing && Hearing->GetDanger(Owner.Position(), DangerPoint, DangerAt);
+	const bool Wounded = s32(HitReactionUntil - Now) > 0;
+	const bool ReactSuppression = Suppressed && s32(DangerAt - LastSuppressionAt) > 0 && s32(Now - SuppressionAfter) >= 0;
+	const bool Impact = Wounded || ReactSuppression;
 	const float Elapsed = LastSampleAt ? std::min(1.f, float(Now - LastSampleAt) * .001f) : 0.f;
 	const bool Sprinting = s32(SprintUntil - Now) > 0 && Stamina > 0.f;
 	Stamina = clampr(Stamina + Elapsed * (Sprinting ? -1000.f / float(Profile.SprintDuration) : 1000.f / float(Profile.SprintCooldown)), 0.f, 1.f);
@@ -650,7 +675,7 @@ bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerce
 		OwnerVelocity.set(0.f, 0.f, 0.f);
 	}
 	LastOwnerPosition = Owner.Position();
-	DodgeStrength = clampr(Profile.DodgeStrength * (Profile.HasCharacter ? 1.f + (1.f - Owner.CharacterCourage) * Profile.CharacterDodgeCaution : 1.f), 0.f, 1.f);
+	DodgeStrength = clampr((.25f + .75f * Owner.ExtendedIntelligence) * Profile.DodgeStrength * (Profile.HasCharacter ? 1.f + (1.f - Owner.CharacterCourage) * Profile.CharacterDodgeCaution : 1.f), 0.f, 1.f);
 	const bool Threat = Weapon.HasWeapon && Weapon.ObserverFacesTarget && (!Weapon.IsMelee || Weapon.IsSwinging) && (Weapon.IsAiming || Weapon.IsLeading || Weapon.IsPreciseAim || Weapon.IsFocusing);
 	const auto AimSeparation = [&](const Fvector& Point, const Fvector& Aim)
 	{
@@ -698,7 +723,9 @@ bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerce
 	Fvector Forward;
 	if (Impact)
 	{
-		Forward = Fvector().mul(HitDirection, -1.f);
+		Forward = Suppressed && !Wounded ? Fvector().sub(DangerPoint, Owner.Position()) : Fvector().mul(HitDirection, -1.f);
+		Forward.y = 0.f;
+		Forward.normalize_safe();
 	}
 	else
 	{
@@ -722,7 +749,7 @@ bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerce
 		Direction.mad(Side, Sign * std::sin(Angle));
 		if (Impact)
 		{
-			Direction.add(HitDirection);
+			Direction.add(Suppressed && !Wounded ? Fvector().sub(Owner.Position(), DangerPoint).normalize_safe() : HitDirection);
 		}
 		Direction.normalize_safe();
 		Fvector Point = Fvector().mad(Owner.Position(), Direction, Step);
@@ -731,8 +758,14 @@ bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerce
 		{
 			continue;
 		}
+		if (!Defensive)
+		{
+			const Fvector Known = Visible ? Target.Position() : Owner.EnemyMan.get_enemy_position();
+			if (Point.distance_to_sqr(Known) >= Owner.Position().distance_to_sqr(Known)) { continue; }
+		}
 		Fvector CandidateBody = Fvector().add(Body, Fvector().sub(Point, Owner.Position()));
-		const float Score = Weapon.HasWeapon ? std::min(AimSeparation(CandidateBody, Weapon.AimDirection), AimSeparation(CandidateBody, PredictedAim)) : Fvector().sub(Point, Owner.Position()).dotproduct(HitDirection);
+		const float DangerScore = Suppressed ? Point.distance_to(DangerPoint) - Owner.Position().distance_to(DangerPoint) : 0.f;
+		const float Score = DangerScore + (Weapon.HasWeapon ? std::min(AimSeparation(CandidateBody, Weapon.AimDirection), AimSeparation(CandidateBody, PredictedAim)) : Fvector().sub(Point, Owner.Position()).dotproduct(HitDirection));
 		if (Score > BestScore)
 		{
 			BestScore = Score;
@@ -741,6 +774,11 @@ bool CELGroundCombatTactics::UpdateAvoidance(IELAdapter& Adapter, const SELPerce
 		}
 	}
 	HitReactionUntil = 0;
+	if (ReactSuppression)
+	{
+		LastSuppressionAt = DangerAt;
+		SuppressionAfter = Now + Profile.HitEvasionCooldown;
+	}
 	if (BestScore == -flt_max)
 	{
 		DodgeReason = "нет безопасного направления защитного уворота";

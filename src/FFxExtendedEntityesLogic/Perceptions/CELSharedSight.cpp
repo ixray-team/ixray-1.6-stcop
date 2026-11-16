@@ -130,7 +130,8 @@ EELSightResult CELSharedSight::CheckFrom(CBaseMonster& OwnerMonster, CObject& Ca
 	{
 		return Report(EELSightResult::Occluded, "outside_view_cone");
 	}
-	if (!ExtendedEntityes::PerceptionBudget().TryRay())
+	const bool Urgent = TargetEntity && OwnerMonster.EnemyMan.get_enemy() == TargetEntity && Distance <= CELSharedSettings::Profile(*OwnerMonster.cNameSect()).NativeAttackDistance;
+	if (!ExtendedEntityes::PerceptionBudget().TryRay(Urgent))
 	{
 		return Report(EELSightResult::WaitingForBudget, "ray_budget");
 	}
@@ -336,7 +337,7 @@ EELSightResult CELSharedSight::CheckScent(CBaseMonster& Owner, CEntityAlive& Can
 	{
 		return Previous->second.Visible ? EELSightResult::Visible : EELSightResult::Occluded;
 	}
-	if (!ExtendedEntityes::PerceptionBudget().TryRay()) { return EELSightResult::WaitingForBudget; }
+	if (!ExtendedEntityes::PerceptionBudget().TryRay(true)) { return EELSightResult::WaitingForBudget; }
 	Fvector Center;
 	Candidate.Center(Center);
 	Fvector Direction = Fvector().sub(Center, Owner.eye_matrix.c);

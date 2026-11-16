@@ -1,6 +1,7 @@
 #pragma once
 
 class CEntityAlive;
+struct SELPerceptionProfile;
 
 enum class EELObservationSource : u8
 {
@@ -29,6 +30,13 @@ struct SELObservation
 	Fvector Position = {0.f, 0.f, 0.f};
 	u32 VertexIdentifier = u32(-1);
 	u32 ObservedAt = 0;
+	u32 TargetGeneration = 0;
+	u32 ReceivedAt = 0;
+	u32 VisualSampleAt = 0;
+	Fvector VisualSample = {0.f, 0.f, 0.f};
+	Fvector ObservedVelocity = {0.f, 0.f, 0.f};
+	bool HasObservedVelocity = false;
+	Fvector Predict(u32 Now, const SELPerceptionProfile& Profile, float Intelligence) const;
 	u32 ExpiresAt = 0;
 	u32 RetentionTime = 0;
 	u32 TaskUntil = 0;
@@ -48,7 +56,7 @@ class CELSharedMemory
 {
 public:
 	using Records = xr_vector<SELObservation>;
-	bool Remember(const SELObservation& Observation, u32 CurrentTime, u32 RetentionTime, float TrailLength);
+	bool Remember(const SELObservation& Observation, u32 CurrentTime, u32 RetentionTime, float TrailLength, const SELPerceptionProfile& Profile);
 	void KeepUntil(u16 TargetIdentifier, u32 Deadline);
 	void Expire(u32 CurrentTime);
 	void Remove(u16 TargetIdentifier);

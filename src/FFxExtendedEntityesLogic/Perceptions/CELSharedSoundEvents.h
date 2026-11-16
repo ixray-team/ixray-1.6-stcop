@@ -9,5 +9,6 @@ public:
 	static void Describe(const CObject* SourceObject, SELSoundEvent& Event);
 	static bool HasPublished(const SELSoundEvent& Event);
 	static void Dispatch();
+	static void RemoveSource(u16 Identifier);
 	static void Clear();
 };

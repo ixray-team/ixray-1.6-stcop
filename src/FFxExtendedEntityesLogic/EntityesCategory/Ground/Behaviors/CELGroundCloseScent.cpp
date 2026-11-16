@@ -46,7 +46,7 @@ void CELGroundCloseScent::Update(IELAdapter& Adapter, CELSharedMemory& Memory, c
 			Observation.VertexIdentifier = Target->ai_location().level_vertex_id();
 			Observation.Source = EELObservationSource::CloseScent;
 			Observation.ObservedAt = Device.dwTimeGlobal;
-			Memory.Remember(Observation, Device.dwTimeGlobal, Profile.MemoryMax, Profile.CanRecordTrail ? Profile.TrailLength : 0.f);
+			Memory.Remember(Observation, Device.dwTimeGlobal, Profile.MemoryMax, Profile.CanRecordTrail ? Profile.TrailLength : 0.f, Profile);
 		}
 		++It;
 	}

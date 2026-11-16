@@ -1,5 +1,24 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedMemory.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedPerceptionProfiles.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include <algorithm>
+
+Fvector SELObservation::Predict(u32 Now, const SELPerceptionProfile& Profile, float Intelligence) const
+{
+	if (!HasObservedVelocity || s32(Now - ObservedAt) < 0 || Now - VisualSampleAt > Profile.PursuitContinuity)
+	{
+		return Position;
+	}
+	Fvector Lead = ObservedVelocity;
+	Lead.mul(std::min(Profile.PursuitPrediction * (.25f + .75f * Intelligence), float(Now - ObservedAt) * .001f));
+	const float Length = Lead.magnitude();
+	if (Length > Profile.PursuitPredictionDistance && Length > EPS_L)
+	{
+		Lead.mul(Profile.PursuitPredictionDistance / Length);
+	}
+	return Fvector().add(Position, Lead);
+}
 
 // Ищет сохранённую запись по владельцу или идентификатору цели.
 const SELObservation* CELSharedMemory::Find(u16 TargetIdentifier) const
@@ -7,7 +26,8 @@ const SELObservation* CELSharedMemory::Find(u16 TargetIdentifier) const
 	Records::const_iterator ObservationIterator;
 	for (ObservationIterator = Observations.begin(); ObservationIterator != Observations.end(); ++ObservationIterator)
 	{
-		if (ObservationIterator->TargetIdentifier == TargetIdentifier)
+		if (ObservationIterator->TargetIdentifier == TargetIdentifier &&
+			ObservationIterator->TargetGeneration == ExtendedEntityes::OwnerGeneration(TargetIdentifier))
 		{
 			return &*ObservationIterator;
 		}
@@ -16,7 +36,7 @@ const SELObservation* CELSharedMemory::Find(u16 TargetIdentifier) const
 }
 
 // Запоминает допустимое наблюдение, сохраняя срок памяти и ограниченный след.
-bool CELSharedMemory::Remember(const SELObservation& Observation, u32 CurrentTime, u32 RetentionTime, float TrailLength)
+bool CELSharedMemory::Remember(const SELObservation& Observation, u32 CurrentTime, u32 RetentionTime, float TrailLength, const SELPerceptionProfile& Profile)
 {
 	if (Observation.Kind != EELObservationKind::Enemy || Observation.TargetIdentifier == u16(-1) || s32(CurrentTime - Observation.ObservedAt) < 0 || CurrentTime - Observation.ObservedAt >= RetentionTime)
 	{
@@ -32,7 +52,22 @@ bool CELSharedMemory::Remember(const SELObservation& Observation, u32 CurrentTim
 			break;
 		}
 	}
-	if (ExistingObservation && (s32(Observation.ObservedAt - ExistingObservation->ObservedAt) < 0 || (Observation.ObservedAt == ExistingObservation->ObservedAt && (!Observation.HasLivePosition || ExistingObservation->Position.distance_to_sqr(Observation.Position) < .25f))))
+	const u32 Generation = ExtendedEntityes::OwnerGeneration(Observation.TargetIdentifier);
+	if (Observation.TargetGeneration && Observation.TargetGeneration != Generation) { return false; }
+	if (ExistingObservation && ExistingObservation->TargetGeneration != Generation)
+	{
+		*ExistingObservation = SELObservation();
+		ExistingObservation->RetentionTime = RetentionTime;
+	}
+	const auto OwnSource = [](EELObservationSource Source)
+	{
+		return Source == EELObservationSource::Vision || Source == EELObservationSource::CloseContact || Source == EELObservationSource::CloseScent;
+	};
+	const bool MoreReliable = ExistingObservation && ((OwnSource(Observation.Source) && !OwnSource(ExistingObservation->Source)) ||
+		(Observation.Source == EELObservationSource::Vision && ExistingObservation->Source != EELObservationSource::Vision));
+	if (ExistingObservation && (s32(Observation.ObservedAt - ExistingObservation->ObservedAt) < 0 ||
+		(Observation.ObservedAt == ExistingObservation->ObservedAt && !MoreReliable &&
+		 (!Observation.HasLivePosition || OwnSource(ExistingObservation->Source) || ExistingObservation->Position.distance_to_sqr(Observation.Position) < .25f))))
 	{
 		return false;
 	}
@@ -45,6 +80,28 @@ bool CELSharedMemory::Remember(const SELObservation& Observation, u32 CurrentTim
 		Observations.emplace_back();
 		ExistingObservation = &Observations.back();
 		ExistingObservation->RetentionTime = RetentionTime;
+	}
+	ExistingObservation->TargetGeneration = Generation;
+	ExistingObservation->ReceivedAt = CurrentTime;
+	const bool OwnContact = Observation.Source == EELObservationSource::Vision ||
+		Observation.Source == EELObservationSource::CloseContact || Observation.Source == EELObservationSource::CloseScent;
+	if (OwnContact && s32(Observation.ObservedAt - ExistingObservation->VisualSampleAt) > 0)
+	{
+		const u32 Elapsed = Observation.ObservedAt - ExistingObservation->VisualSampleAt;
+		if (ExistingObservation->VisualSampleAt && Elapsed <= Profile.VelocitySampleTime)
+		{
+			Fvector Velocity = Fvector().sub(Observation.Position, ExistingObservation->VisualSample);
+			Velocity.y = 0.f;
+			Velocity.mul(1000.f / float(Elapsed));
+			ExistingObservation->HasObservedVelocity = _valid(Velocity) && Velocity.square_magnitude() <= _sqr(Profile.ObservedSpeedLimit);
+			ExistingObservation->ObservedVelocity = ExistingObservation->HasObservedVelocity ? Velocity : Fvector().set(0.f, 0.f, 0.f);
+		}
+		else
+		{
+			ExistingObservation->HasObservedVelocity = false;
+		}
+		ExistingObservation->VisualSample = Observation.Position;
+		ExistingObservation->VisualSampleAt = Observation.ObservedAt;
 	}
 	if (TrailLength <= 0.f)
 	{
@@ -71,6 +128,7 @@ bool CELSharedMemory::Remember(const SELObservation& Observation, u32 CurrentTim
 	ExistingObservation->VertexIdentifier = Observation.VertexIdentifier;
 	ExistingObservation->ObservedAt = Observation.ObservedAt;
 	ExistingObservation->Source = Observation.Source;
+	ExistingObservation->HasLivePosition = Observation.HasLivePosition;
 	ExistingObservation->SenderIdentifier = Observation.SenderIdentifier;
 	ExistingObservation->SenderGeneration = Observation.SenderGeneration;
 	ExistingObservation->IsPsiShared = Observation.IsPsiShared;

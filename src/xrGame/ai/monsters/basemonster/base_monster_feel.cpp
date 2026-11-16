@@ -109,6 +109,19 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 }
 #define MAX_LOCK_TIME 2.f
 
+float CBaseMonster::ScaledAttackDamage(float Damage) const
+{
+	if (UsesExtendedCombat && ExtendedScaleAttackDamage)
+	{
+		Damage *= GetVisualScale();
+	}
+	if (s32(CorneredBerserkUntil - Device.dwTimeGlobal) > 0)
+	{
+		Damage *= CorneredBerserkDamage;
+	}
+	return Damage;
+}
+
 void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
 {
 	if (!g_Alive()) return;
@@ -116,10 +129,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 	if (!EnemyMan.get_enemy()) return;
 
-	if (s32(CorneredBerserkUntil - Device.dwTimeGlobal) > 0)
-	{
-		fDamage *= CorneredBerserkDamage;
-	}
+	fDamage = ScaledAttackDamage(fDamage);
 	if (EnemyMan.get_enemy() == pEntity) {
 		Fvector position_in_bone_space;
 		position_in_bone_space.set(0.f,0.f,0.f);
@@ -382,6 +392,7 @@ void CBaseMonster::SetAttackEffector()
 
 void CBaseMonster::Hit_Psy(CObject *object, float value) 
 {
+	value = ScaledAttackDamage(value);
 	NET_Packet		P;
 	SHit			HS;
 	HS.GenHeader		(GE_HIT, object->ID());				//					//	u_EventGen		(P,GE_HIT, object->ID());				// 
@@ -399,6 +410,7 @@ void CBaseMonster::Hit_Psy(CObject *object, float value)
 
 void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, float impulse) 
 {
+	value = ScaledAttackDamage(value);
 	NET_Packet	P;
 	SHit		HS;
 	HS.GenHeader(GE_HIT, object->ID());														//	u_EventGen	(P,GE_HIT, object->ID());

@@ -2,6 +2,8 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedHuntGroups.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai/monsters/control_animation_base.h"
 #include "xrGame/ai_monster_space.h"
@@ -30,6 +32,13 @@ struct SStatus
 xr_map<u16, SStatus> Statuses;
 xr_map<u64, xr_vector<SMember>> Groups;
 xr_map<u64, xr_vector<SMember>> Packs;
+struct SRoleLease
+{
+	u32 Until = 0;
+	u32 TargetGeneration = 0;
+	xr_vector<SMember> Members;
+};
+xr_map<u64, SRoleLease> RoleLeases;
 u32 SampleAt = 0;
 u64 Key(const CBaseMonster& Owner, u16 Target)
 {
@@ -37,7 +46,7 @@ u64 Key(const CBaseMonster& Owner, u16 Target)
 }
 void Refresh()
 {
-	if (SampleAt && Device.dwTimeGlobal - SampleAt < 100u)
+	if (SampleAt && Device.dwTimeGlobal - SampleAt < CELSharedSettings::Work().PackSnapshotTime)
 	{
 		return;
 	}
@@ -46,7 +55,7 @@ void Refresh()
 	Packs.clear();
 	for (auto It = Statuses.begin(); It != Statuses.end();)
 	{
-		if (It->second.Generation != ExtendedEntityes::OwnerGeneration(It->first) || Device.dwTimeGlobal - It->second.At > 2000u)
+		if (It->second.Generation != ExtendedEntityes::OwnerGeneration(It->first) || Device.dwTimeGlobal - It->second.At > CELSharedSettings::Work().PackStatusMemory)
 		{
 			It = Statuses.erase(It);
 		}
@@ -90,7 +99,58 @@ void Refresh()
 	for (auto& Group : Groups)
 	{
 		std::sort(Group.second.begin(), Group.second.end(), [](const SMember& A, const SMember& B) { return A.Distance != B.Distance ? A.Distance < B.Distance : A.Identifier < B.Identifier; });
+		SRoleLease& Lease = RoleLeases[Group.first];
+		const u32 TargetGeneration = ExtendedEntityes::OwnerGeneration(u16(Group.first & 0xffffu));
+		if (s32(Lease.Until - Device.dwTimeGlobal) > 0 && Lease.TargetGeneration == TargetGeneration)
+		{
+			xr_map<u64, size_t> Slots;
+			for (size_t Index = 0; Index < Lease.Members.size(); ++Index)
+			{
+				const SMember& Member = Lease.Members[Index];
+				Slots[(u64(Member.Generation) << 16) | Member.Identifier] = Index;
+			}
+			const auto Slot = [&](const SMember& Member)
+			{
+				const auto Found = Slots.find((u64(Member.Generation) << 16) | Member.Identifier);
+				return Found == Slots.end() ? Lease.Members.size() : Found->second;
+			};
+			std::stable_sort(Group.second.begin(), Group.second.end(), [&](const SMember& A, const SMember& B) { return Slot(A) < Slot(B); });
+		}
+		else
+		{
+			Lease.Until = Device.dwTimeGlobal + CELSharedSettings::Work().PackRoleHold;
+			Lease.TargetGeneration = TargetGeneration;
+			Lease.Members = Group.second;
+			for (size_t Rank = 0; Rank < Lease.Members.size(); ++Rank)
+			{
+				const SMember& Member = Lease.Members[Rank];
+				if (CELSharedDebug::Instance().CanLogCombat(Member.Position))
+				{
+					CELSharedDebug::Instance().LogCombat(Member.Identifier, "[monsters_debug] PACK_ROLE t=%u id=%u target=%u rank=%u count=%u until=%u", Device.dwTimeGlobal, Member.Identifier, u32(Group.first & 0xffffu), u32(Rank), u32(Lease.Members.size()), Lease.Until);
+				}
+			}
+		}
+
 	}
+	for (auto It = RoleLeases.begin(); It != RoleLeases.end();)
+	{
+		if (Groups.find(It->first) == Groups.end())
+		{
+			for (const SMember& Member : It->second.Members)
+			{
+				if (CELSharedDebug::Instance().CanLogCombat(Member.Position))
+				{
+					CELSharedDebug::Instance().LogCombat(Member.Identifier, "[monsters_debug] PACK_ROLE_RELEASE t=%u frame=%u id=%u target=%u reason=group_inactive", Device.dwTimeGlobal, Device.dwFrame, Member.Identifier, u32(It->first & 0xffffu));
+				}
+			}
+			It = RoleLeases.erase(It);
+		}
+		else
+		{
+			++It;
+		}
+	}
+
 }
 }
 
@@ -176,6 +236,7 @@ void CELSharedHuntGroups::ReportStamina(CBaseMonster& Owner, float Stamina)
 
 void CELSharedHuntGroups::Clear()
 {
+	RoleLeases.clear();
 	Statuses.clear();
 	Groups.clear();
 	Packs.clear();

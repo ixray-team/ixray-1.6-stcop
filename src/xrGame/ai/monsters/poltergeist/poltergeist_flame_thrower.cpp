@@ -172,7 +172,7 @@ void CFlamePoltergeist::update_schedule()
 							HS.whoID			= (poltergeist->ID());						//					P.w_u16			(ID());
 							HS.weaponID			= (poltergeist->ID());						//					P.w_u16			(ID());
 							HS.dir				= (elem->target_dir);					//					P.w_dir			(element->target_dir);
-							HS.power			= (hit_value);							//					P.w_float		(m_flame_hit_value);
+							HS.power			= poltergeist->ScaledAttackDamage(hit_value);							//					P.w_float		(m_flame_hit_value);
 							HS.boneID			= (BI_NONE);							//					P.w_s16			(BI_NONE);
 							HS.p_in_bone_space	= (Fvector().set(0.f,0.f,0.f));			//					P.w_vec3		(Fvector().set(0.f,0.f,0.f));
 							HS.impulse			= (0.f);								//					P.w_float		(0.f);

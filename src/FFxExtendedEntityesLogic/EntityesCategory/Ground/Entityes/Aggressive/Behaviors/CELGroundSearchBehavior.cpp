@@ -10,6 +10,7 @@
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
 #include "xrGame/monster_scale.h"
+#include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Navigation/CELGroundLocalSearch.h"
 
 // Связывает поиск противника у последней известной позиции с необходимыми службами и состоянием владельца.
 CELGroundSearchBehavior::CELGroundSearchBehavior(IELAdapter& OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELGroundBehaviorBase(OwnerAdapter, OwnerProfile), Inspection(OwnerAdapter.Monster()) {}
@@ -22,13 +23,55 @@ void CELGroundSearchBehavior::Exit()
 }
 
 // Подготавливает схему к запуску и сбрасывает состояние предыдущего выполнения.
+void CELGroundSearchBehavior::ResolveAnchor()
+{
+	Fvector Ground;
+	u32 Vertex;
+	if (CELGroundLocalSearch::Resolve(Adapter, SearchAnchor, Ground, Vertex))
+	{
+		SearchAnchor = Ground;
+		return;
+	}
+	if (!ai().get_level_graph()) { return; }
+	Vertex = ai().level_graph().vertex_id(SearchAnchor);
+	if (ai().level_graph().valid_vertex_id(Vertex))
+	{
+		const Fvector Nearby = ai().level_graph().vertex_position(Vertex);
+		if (Nearby.distance_to_sqr(SearchAnchor) <= _sqr(Profile.SearchRadius) && CELGroundLocalSearch::Resolve(Adapter, Nearby, Ground, Vertex))
+		{
+			SearchAnchor = Ground;
+		}
+	}
+}
+
 void CELGroundSearchBehavior::Enter()
 {
 	CELGroundBehaviorBase::Enter();
 	SearchUntil = 0;
 	TravelUntil = Device.dwTimeGlobal + Profile.ApproachMax;
-	HasReachedAnchor = false;
+	HasReachedAnchor = HasCheckedForward = false;
+	AnchorObservationAt = Observation.ObservedAt;
+	TotalUntil = TravelUntil + Profile.SearchMax;
+	const SELHuntGroup SearchGroup = CELSharedHuntGroups::Observe(Adapter.Monster(), Observation.TargetIdentifier, Profile.SharingRadius);
 	SearchAnchor = Observation.Position;
+	if (SearchGroup.Rank && Observation.HasObservedVelocity && Adapter.Monster().ExtendedIntelligence > 0.f)
+	{
+		Fvector Travel = Observation.ObservedVelocity;
+		Travel.y = 0.f;
+		Travel.normalize_safe();
+		Fvector Lane = {Travel.z, 0.f, -Travel.x};
+		Fvector Exit = Fvector().mad(SearchAnchor, Travel, Profile.SearchForwardDistance * Adapter.Monster().ExtendedIntelligence);
+		Exit.mad(Lane, Profile.ApproachWidth * (SearchGroup.Rank % 2 ? 1.f : -1.f));
+		Fvector Point;
+		u32 Vertex;
+		if (CELGroundLocalSearch::Resolve(Adapter, Exit, Point, Vertex))
+		{
+			SearchAnchor = Point;
+			HasCheckedForward = true;
+		}
+	}
+
+	ResolveAnchor();
 	ActionUntil = TravelUntil;
 	NextPoint = 0;
 	SearchPhase = 0;
@@ -37,16 +80,26 @@ void CELGroundSearchBehavior::Enter()
 // Обновляет поиск противника у последней известной позиции и обрабатывает текущий результат выполнения.
 void CELGroundSearchBehavior::Update(float DeltaTime)
 {
-	if (SearchAnchor.distance_to_sqr(Observation.Position) >= _sqr(CELSharedSettings::Work().GroundRouteReplanDistance))
+	if (s32(Observation.ObservedAt - AnchorObservationAt) > 0)
 	{
+		AnchorObservationAt = Observation.ObservedAt;
+		HasCheckedForward = false;
 		SearchAnchor = Observation.Position;
 		HasReachedAnchor = false;
 		SearchUntil = 0;
 		TravelUntil = Device.dwTimeGlobal + Profile.ApproachMax;
+		TotalUntil = TravelUntil + Profile.SearchMax;
 		ActionUntil = TravelUntil;
+		ResolveAnchor();
 		NextPoint = SearchPhase = 0;
 		Inspection.Clear();
 		InvalidateRoute();
+	}
+	if (s32(Device.dwTimeGlobal - TotalUntil) >= 0)
+	{
+		Movement.Stop();
+		Validation = {EELBehaviorState::Completed, "Истёк общий срок поиска"};
+		return;
 	}
 	if (!HasReachedAnchor)
 	{
@@ -58,15 +111,36 @@ void CELGroundSearchBehavior::Update(float DeltaTime)
 				Validation = {EELBehaviorState::Completed, "Поиск: не достиг последней точки за отведённое время"};
 				return;
 			}
-			Move(SearchAnchor, Observation.VertexIdentifier, true);
+			Move(SearchAnchor, ai().level_graph().vertex_id(SearchAnchor), true);
 			if (HasMoveCommand)
 			{
 				Validation = {EELBehaviorState::Running, "Поиск: бег к последней известной точке"};
 			}
 			return;
 		}
+		if (!HasCheckedForward && Observation.HasObservedVelocity && Profile.SearchForwardDistance > 0.f)
+		{
+			HasCheckedForward = true;
+			Fvector Direction = Observation.ObservedVelocity;
+			Direction.y = 0.f;
+			if (Direction.square_magnitude() > EPS_L)
+			{
+				Direction.normalize_safe();
+				Fvector Ahead = Fvector().mad(Observation.Position, Direction, Profile.SearchForwardDistance);
+				Fvector Point;
+				u32 Vertex;
+				if (CELGroundLocalSearch::Resolve(Adapter, Ahead, Point, Vertex))
+				{
+					SearchAnchor = Point;
+					InvalidateRoute();
+					Move(SearchAnchor, Vertex, true);
+					Validation = {EELBehaviorState::Running, "Проверяю продолжение следа за преградой"};
+					return;
+				}
+			}
+		}
 		HasReachedAnchor = true;
-		SearchUntil = Device.dwTimeGlobal + Random.randI(Profile.SearchMin, Profile.SearchMax + 1);
+		SearchUntil = Device.dwTimeGlobal + std::min(u32(Random.randI(Profile.SearchMin, Profile.SearchMax + 1)), TotalUntil - Device.dwTimeGlobal);
 		ActionUntil = SearchUntil;
 		InvalidateRoute();
 	}
@@ -87,7 +161,12 @@ void CELGroundSearchBehavior::Update(float DeltaTime)
 	if (SearchPhase == 0 || (Device.dwTimeGlobal >= NextPoint))
 	{
 		Fvector TrailDirection = Adapter.Monster().XFORM().k;
-		if (Observation.Trail.size() >= 2)
+		if (Observation.HasObservedVelocity)
+		{
+			TrailDirection = Observation.ObservedVelocity;
+			TrailDirection.normalize_safe();
+		}
+		else if (Observation.Trail.size() >= 2)
 		{
 			TrailDirection.sub(Observation.Trail.back(), Observation.Trail.front()).normalize_safe();
 		}

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai_monster_utils.h"
 #include <algorithm>
 #include <cmath>
 #include "control_animation_base.h"
@@ -712,6 +713,19 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 	Fvector Direction = Fvector().sub(Enemy->Position(), m_object->Position());
 	float OwnerYaw, OwnerPitch, TargetYaw, TargetPitch;
 	m_object->Direction().getHP(OwnerYaw, OwnerPitch);
+	if (CanCorrect && m_object->GetVisualScale() != Enemy->GetVisualScale())
+	{
+		// Aim height at the actual victim's body instead of requiring equal-height skeleton roots.
+		Fvector Body;
+		Enemy->Center(Body);
+		Fvector Origin;
+		m_object->Center(Origin);
+		if (PKinematics(m_object->Visual())->LL_BoneID(m_object->get_head_bone_name()) != BI_NONE)
+		{
+			Origin = get_head_position(m_object);
+		}
+		Direction.sub(Body, Origin);
+	}
 	Direction.getHP(TargetYaw, TargetPitch);
 	// Express the same small positional error as an angular margin, capped at fifteen degrees.
 	const float AngleTolerance = std::min(PI / 12.f, std::atan2(Tolerance, std::max(.1f, Direction.magnitude())));

@@ -273,6 +273,25 @@ void CELSharedHearing::ReceiveCall(const Fvector& Position, u16 Source, const SE
 	AttentionNoiseType = EELNoiseType::AllyCall;
 }
 
+bool CELSharedHearing::GetDanger(const Fvector& Listener, Fvector& Point, u32& At) const
+{
+	bool Found = false;
+	float Closest = flt_max;
+	for (const SDanger& Danger : Dangers)
+	{
+		if (s32(Danger.Until - Device.dwTimeGlobal) <= 0) { continue; }
+		const float Distance = Listener.distance_to_sqr(Danger.Point);
+		if (Distance < Closest)
+		{
+			Closest = Distance;
+			Point = Danger.Point;
+			At = Danger.At;
+			Found = true;
+		}
+	}
+	return Found;
+}
+
 bool CELSharedHearing::GetCounterOpportunity(u16 Source, u32& OccurredAt) const
 {
 	if (Source != OpportunitySource || s32(OpportunityUntil - Device.dwTimeGlobal) <= 0)
@@ -335,11 +354,11 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	const bool IsLight = Type == EELNoiseType::Light;
 	const bool CanFrighten = !IsLight && (Profile.FearNoiseTypes & TypeMask) != 0;
 	const bool CanAttract = AllowAttraction && (IsLight || (!CanFrighten && (Profile.InterestNoiseTypes & TypeMask) != 0));
+	const bool SuppressionEvent = Type == EELNoiseType::BulletHit && Profile.CanHearCombat && Profile.CounterOnNearMiss;
 	const bool CounterEvent = Profile.CanCounterAttack &&
 		((Type == EELNoiseType::Reload && Profile.CounterOnReload && Profile.CanHearWorld) ||
-		 (Type == EELNoiseType::EmptyClick && Profile.CounterOnEmptyClick && Profile.CanHearWorld) ||
-		 (Type == EELNoiseType::BulletHit && Profile.CounterOnNearMiss && Profile.CanHearCombat && ListenerPosition.distance_to_sqr(Event.Position) <= _sqr(Profile.CounterNearMissRadius)));
-	if (!CanAttract && !CanFrighten && !CounterEvent)
+		 (Type == EELNoiseType::EmptyClick && Profile.CounterOnEmptyClick && Profile.CanHearWorld));
+	if (!CanAttract && !CanFrighten && !CounterEvent && !SuppressionEvent)
 	{
 		return false;
 	}
@@ -355,6 +374,23 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	if (!IsLight && (Radius <= 0.f || ListenerPosition.distance_to_sqr(Event.Position) > Radius * Radius))
 	{
 		return false;
+	}
+	if (SuppressionEvent && ListenerPosition.distance_to_sqr(Event.Position) <= _sqr(Profile.SuppressionRadius))
+	{
+		Dangers.erase(std::remove_if(Dangers.begin(), Dangers.end(), [](const SDanger& Item) { return s32(Device.dwTimeGlobal - Item.Until) >= 0; }), Dangers.end());
+		auto Found = std::find_if(Dangers.begin(), Dangers.end(), [&](const SDanger& Item) { return Item.Point.distance_to_sqr(Event.Position) <= _sqr(Profile.SuppressionMergeDistance); });
+		if (Found != Dangers.end())
+		{
+			*Found = {Event.Position, Event.OccurredAt, Event.OccurredAt + Profile.SuppressionMemory};
+		}
+		else
+		{
+			if (Dangers.size() >= Profile.SuppressionLimit)
+			{
+				Dangers.erase(Dangers.begin());
+			}
+			Dangers.push_back({Event.Position, Event.OccurredAt, Event.OccurredAt + Profile.SuppressionMemory});
+		}
 	}
 	if (CounterEvent && Event.SourceIdentifier != u16(-1) && s32(Device.dwTimeGlobal - Event.OccurredAt) >= 0 &&
 		Device.dwTimeGlobal - Event.OccurredAt < Profile.CounterOpportunityTime && s32(Event.OccurredAt - OpportunityAt) >= 0)
@@ -567,6 +603,7 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.
 void CELSharedHearing::Clear()
 {
+	Dangers.clear();
 	DamagePanic = false;
 	LookUntil = LookEventAt = LookPriority = OpportunityUntil = OpportunityAt = 0;
 	OpportunitySource = u16(-1);

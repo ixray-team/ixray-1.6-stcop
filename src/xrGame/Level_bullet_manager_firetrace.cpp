@@ -4,6 +4,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include "xrSound/ai_sounds.h"
 #include "Level_Bullet_Manager.h"
 #include "Entity.h"
 #include "../xrEngine/GameMtlLib.h"
@@ -162,6 +164,8 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 {
 	PROF_EVENT(__FUNCTION__);
 	
+	// Publish physical impact information independently of sound assets and visual marks.
+	ExtendedEntityes::PublishSound(Level().Objects.net_Find(bullet->parent_id), SOUND_TYPE_WEAPON_BULLET_HIT, vEnd);
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir	= vNormal;
 

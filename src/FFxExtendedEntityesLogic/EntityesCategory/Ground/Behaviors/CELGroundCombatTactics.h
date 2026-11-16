@@ -46,6 +46,8 @@ private:
 	Fvector LastAimDirection = {0.f, 0.f, 0.f};
 	Fvector HitDirection = {0.f, 0.f, 0.f};
 	u32 LastAimAt = 0;
+	u32 LastSuppressionAt = 0;
+	u32 SuppressionAfter = 0;
 	u32 HitReactionUntil = 0;
 	u32 HitReactionAfter = 0;
 	bool DefensiveMode = false;

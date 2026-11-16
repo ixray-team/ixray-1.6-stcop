@@ -1,5 +1,8 @@
 #include "StdAfx.h"
 #include "melee_checker.h"
+#include "ai_monster_utils.h"
+#include <algorithm>
+#include <cmath>
 #include "../../monster_scale.h"
 #include "basemonster/base_monster.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
@@ -22,6 +25,31 @@ float CMeleeChecker::TargetDistance(const CEntityAlive* Enemy) const
 	Fvector Direction;
 	Direction.sub(Enemy->Position(), m_object->Position());
 	const float Distance = Direction.magnitude();
+	if (m_object->UsesExtendedCombat)
+	{
+		Fvector Planar = Direction;
+		Planar.y = 0.f;
+		const float PlanarDistance = Planar.magnitude();
+		Planar.normalize_safe();
+		Fvector Head;
+		m_object->Center(Head);
+		if (PKinematics(m_object->Visual())->LL_BoneID(m_object->get_head_bone_name()) != BI_NONE)
+		{
+			Head = get_head_position(m_object);
+		}
+		const Fvector HeadOffset = Fvector().sub(Head, m_object->Position());
+		const float HeadLead = std::clamp(HeadOffset.dotproduct(Planar), 0.f, m_object->Radius());
+		Fvector HalfSize;
+		Enemy->BoundingBox().getradius(HalfSize);
+		const float BodyRadius = std::abs(Planar.dotproduct(Enemy->XFORM().i)) * HalfSize.x + std::abs(Planar.dotproduct(Enemy->XFORM().k)) * HalfSize.z;
+		const float Gap = std::max(0.f, PlanarDistance - HeadLead - std::min(BodyRadius, m_object->ExtendedMeleeHitTolerance));
+		const float OwnerBottom = m_object->Position().y + m_object->BoundingBox().min.y;
+		const float OwnerTop = m_object->Position().y + m_object->BoundingBox().max.y;
+		const float TargetBottom = Enemy->Position().y + Enemy->BoundingBox().min.y;
+		const float TargetTop = Enemy->Position().y + Enemy->BoundingBox().max.y;
+		const float HeightGap = std::max({0.f, TargetBottom - OwnerTop, OwnerBottom - TargetTop});
+		return std::sqrt(Gap * Gap + HeightGap * HeightGap);
+	}
 	const float OwnerScale = m_object->GetVisualScale();
 	const float TargetScale = Enemy->GetVisualScale();
 	if (OwnerScale == TargetScale)
@@ -59,16 +87,16 @@ Fvector CMeleeChecker::PredictTargetPosition(const CEntityAlive* Enemy, float Ho
 	Fvector Lead = TargetVelocity(Enemy);
 	Lead.mul(clampr(Horizon, 0.f, m_object->ExtendedMeleePredictionTime));
 	const float Length = Lead.magnitude();
-	if (Length > 2.f)
+	if (Length > m_object->ExtendedMeleePredictionDistance && Length > EPS_L)
 	{
-		Lead.mul(2.f / Length);
+		Lead.mul(m_object->ExtendedMeleePredictionDistance / Length);
 	}
 	return Fvector().add(Enemy->Position(), Lead);
 }
 
 float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 {
-	if (m_object->GetVisualScale() != 1.f || enemy->GetVisualScale() != 1.f)
+	if (m_object->UsesExtendedCombat || m_object->GetVisualScale() != 1.f || enemy->GetVisualScale() != 1.f)
 	{
 		return TargetDistance(enemy);
 	}
@@ -128,13 +156,20 @@ bool	CMeleeChecker::can_start_melee (const CEntityAlive *enemy)
 		m_object->NativeMeleeReason = "no_native_vision";
 		return false;
 	}
-	const bool Allowed = distance_to_enemy(enemy) < get_min_distance();
+	const float Tolerance = m_object->UsesExtendedCombat ? m_object->ExtendedMeleeHitTolerance : 0.f;
+	const float Distance = distance_to_enemy(enemy);
+	const float StartRange = m_object->UsesExtendedCombat && m_object->NativeHitAttemptAt && !m_object->NativeHitAttemptSuccess && m_object->NativeHitRange > EPS_L ?
+		std::min(get_min_distance() + Tolerance, m_object->NativeHitRange + Tolerance) : get_min_distance() + Tolerance;
+	const bool Allowed = Distance < StartRange;
 	m_object->NativeMeleeReason = Allowed ? "start_allowed" : "outside_start_distance";
 	return Allowed;
 }
 
 bool	CMeleeChecker::should_stop_melee (const CEntityAlive *enemy)
 {
-	return distance_to_enemy(enemy) > get_max_distance();
+	const float Tolerance = m_object->UsesExtendedCombat ? m_object->ExtendedMeleeHitTolerance : 0.f;
+	const float ContinueRange = m_object->UsesExtendedCombat && m_object->NativeHitAttemptAt && !m_object->NativeHitAttemptSuccess && m_object->NativeHitRange > EPS_L ?
+		std::min(get_max_distance() + Tolerance, m_object->NativeHitRange + Tolerance) : get_max_distance() + Tolerance;
+	return distance_to_enemy(enemy) > ContinueRange;
 }
 

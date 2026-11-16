@@ -11,6 +11,7 @@ void CELSharedPerceptionBudget::BeginFrame(u32 FrameIdentifier)
 		LastFrame = FrameIdentifier;
 		RemainingOperations = CELSharedSettings::Work().PerceptionOperations;
 		RemainingRays = CELSharedSettings::Work().PerceptionRays;
+		RemainingUrgentRays = CELSharedSettings::Work().UrgentPerceptionRays;
 		RemainingSpatial = CELSharedSettings::Work().SpatialQueries;
 		RemainingSessions = CELSharedSettings::Work().SharingSessions;
 		RemainingTransfers = CELSharedSettings::Work().SharingTransfers;
@@ -29,10 +30,15 @@ bool CELSharedPerceptionBudget::TryConsume(u32 OperationCount)
 }
 
 // Резервирует луч из общего бюджета восприятия.
-bool CELSharedPerceptionBudget::TryRay()
+bool CELSharedPerceptionBudget::TryRay(bool Urgent)
 {
 	if (!RemainingRays)
 	{
+		if (Urgent && RemainingUrgentRays)
+		{
+			--RemainingUrgentRays;
+			return true;
+		}
 		return false;
 	}
 	--RemainingRays;
@@ -66,7 +72,7 @@ void CELSharedPerceptionBudget::Clear()
 {
 	SpatialWaiters.clear();
 	LastFrame = u32(-1);
-	RemainingOperations = RemainingRays = RemainingSpatial = RemainingSessions = RemainingTransfers = 0;
+	RemainingOperations = RemainingRays = RemainingUrgentRays = RemainingSpatial = RemainingSessions = RemainingTransfers = 0;
 }
 
 // Резервирует пространственный запрос в текущем кадре.

@@ -5,6 +5,12 @@
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedPerceptionProfiles.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
 
+float SELPerceptionProfile::BerserkHealthForScale(float Scale) const
+{
+	const float Smallness = std::clamp((1.f - Scale) / (1.f - CornerBerserkSmallScale), 0.f, 1.f);
+	return CornerBerserkHealth + (std::max(CornerBerserkHealth, CornerBerserkSmallScaleHealth) - CornerBerserkHealth) * Smallness;
+}
+
 namespace ExtendedEntityesProfiles
 {
 const char* const NoiseNames[] = {"shot", "explosion", "actor_steps", "monster_steps", "jump", "melee", "attack", "injury", "death", "bullet_hit", "breaking", "collision", "talking", "eating", "idle", "ambient", "pickup", "drop", "hide", "take", "use", "empty_click", "reload", "other", "light", "ally_call"};
@@ -284,7 +290,29 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.HasCharacter = ExtendedEntityesOptions::Has(pSettings, Section, "monster_character_aggression") && ExtendedEntityesOptions::Has(pSettings, Section, "monster_character_courage");
 	Result.CharacterAggression = Number(SystemSettings, Section, "monster_character_aggression", "", 50.f, 0.f, 100.f);
 	Result.CharacterCourage = Number(SystemSettings, Section, "monster_character_courage", "", 50.f, 0.f, 100.f);
+	Result.CharacterInitiateThreshold = Number(SystemSettings, Section, "eel__character__initiate_threshold", "eel__character__initiate_threshold", 100.f, 0.f, 200.f);
+	Result.CharacterPersonalDistance = Number(SystemSettings, Section, "eel__fear__personal_distance", "eel__fear__personal_distance", 6.f, 0.f, 100.f);
+	Result.CharacterPersonalReleaseDistance = Number(SystemSettings, Section, "eel__fear__personal_release_distance", "eel__fear__personal_release_distance", 9.f, Result.CharacterPersonalDistance, 150.f);
+	Result.PursuitContinuity = u32(Number(SystemSettings, Section, "eel__search__continuity_time", "eel__search__continuity_time", 4.0f, 0.0f, 30.0f) * 1000.f);
+	Result.PursuitPrediction = Number(SystemSettings, Section, "eel__search__prediction_time", "eel__search__prediction_time", 0.75f, 0.0f, 3.0f);
+	Result.PursuitPredictionDistance = Number(SystemSettings, Section, "eel__search__prediction_distance", "eel__search__prediction_distance", 10.0f, 0.0f, 30.0f);
+	Result.VelocitySampleTime = u32(Number(SystemSettings, Section, "eel__search__velocity_sample_time", "eel__search__velocity_sample_time", 1.0f, 0.05f, 5.0f) * 1000.f);
+	Result.ObservedSpeedLimit = Number(SystemSettings, Section, "eel__search__observed_speed_limit", "eel__search__observed_speed_limit", 20.0f, 1.0f, 100.0f);
+	Result.SearchForwardDistance = Number(SystemSettings, Section, "eel__search__forward_distance", "eel__search__forward_distance", 8.0f, 0.0f, 30.0f);
+	Result.PursuitRetry = u32(Number(SystemSettings, Section, "eel__search__retry_time", "eel__search__retry_time", 1.0f, 0.1f, 10.0f) * 1000.f);
+	Result.SuppressionMemory = u32(Number(SystemSettings, Section, "eel__dodge__suppression_memory", "eel__dodge__suppression_memory", 2.0f, 0.1f, 10.0f) * 1000.f);
+	Result.SuppressionLimit = u32(Number(SystemSettings, Section, "eel__dodge__suppression_limit", "eel__dodge__suppression_limit", 8.0f, 1.0f, 32.0f));
+	Result.SuppressionMergeDistance = Number(SystemSettings, Section, "eel__dodge__suppression_merge_distance", "eel__dodge__suppression_merge_distance", 1.0f, 0.1f, 5.0f);
+	Result.CharacterIntelligence = Number(SystemSettings, Section, "eel__character__intelligence", "eel__character__intelligence", 1.0f, 0.0f, 1.0f);
+	Result.AggressionHitGain = Number(SystemSettings, Section, "eel__character__aggression_hit_gain", "eel__character__aggression_hit_gain", 40.0f, 0.0f, 200.0f);
+	Result.AggressionPressureGain = Number(SystemSettings, Section, "eel__character__aggression_pressure_gain", "eel__character__aggression_pressure_gain", 4.0f, 0.0f, 30.0f);
+	Result.AggressionRecovery = Number(SystemSettings, Section, "eel__character__aggression_recovery", "eel__character__aggression_recovery", 2.0f, 0.0f, 50.0f);
+	Result.AggressionMemory = u32(Number(SystemSettings, Section, "eel__character__aggression_memory", "eel__character__aggression_memory", 5.0f, 0.0f, 60.0f) * 1000.f);
+	Result.MeleePredictionDistance = Number(SystemSettings, Section, "eel__melee__prediction_distance", "eel__melee__prediction_distance", 2.0f, 0.0f, 5.0f);
 	Result.CharacterSizeCourage = Number(SystemSettings, Section, "monster_character_size_courage", "monster_character_size_courage", 15.f, 0.f, 50.f);
+	Result.CharacterSizeInfluence = Number(SystemSettings, Section, "eel__character__size_influence", "eel__character__size_influence", Result.CharacterSizeCourage / 15.f, 0.f, 2.f);
+	const bool SharedDamageScale = SystemSettings ? ExtendedEntityesOptions::Read<bool>(SystemSettings, CELSharedSettings::SectionName(), "eel__damage__scale_enabled", true) : true;
+	Result.ScaleAttackDamage = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "eel__damage__scale_enabled", SharedDamageScale);
 	Result.CharacterHealthPenalty = Number(SystemSettings, Section, "monster_character_health_penalty", "monster_character_health_penalty", 45.f, 0.f, 100.f);
 	Result.CharacterHitLoss = Number(SystemSettings, Section, "monster_character_hit_loss", "monster_character_hit_loss", 70.f, 0.f, 200.f);
 	Result.CharacterHitGain = Number(SystemSettings, Section, "monster_character_hit_gain", "monster_character_hit_gain", 18.f, 0.f, 100.f);
@@ -340,6 +368,8 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.CanAutoFocus = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "autofocus_attacker", false);
 	Result.CanPanicOnDamage = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "autopanic_on_invisible_damage", false);
 	Result.CanCornerBerserk = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_cornered_berserk_enabled", true);
+	Result.CornerBerserkSmallScaleHealth = Number(SystemSettings, Section, "eel__berserk__small_scale_health", "eel__berserk__small_scale_health", .45f, .01f, 1.f);
+	Result.CornerBerserkSmallScale = Number(SystemSettings, Section, "eel__berserk__small_scale", "eel__berserk__small_scale", .6f, .05f, .99f);
 	Result.CornerBerserkHealth = Number(SystemSettings, Section, "monster_cornered_berserk_health", "", .3f, .01f, 1.f);
 	Result.CornerBerserkDamage = Number(SystemSettings, Section, "monster_cornered_berserk_damage", "", 2.f, 1.f, 10.f);
 	Result.CornerBerserkDuration = u32(Number(SystemSettings, Section, "monster_cornered_berserk_duration", "", 60.f, 1.f, 600.f) * 1000.f);
@@ -475,6 +505,12 @@ SELPerceptionProfile CELSharedPerceptionProfiles::Read(const char* Section, cons
 	Result.CounterOnEmptyClick = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_counterattack_on_empty_click", true);
 	Result.CounterOnNearMiss = ExtendedEntityesOptions::Read<bool>(pSettings, Section, "monster_counterattack_on_near_miss", true);
 	Result.CounterNearMissRadius = Number(SystemSettings, Section, "monster_counterattack_near_miss_radius", "", 3.f, .1f, 20.f);
+	Result.SuppressionRadius = Number(SystemSettings, Section, "eel__dodge__suppression_radius", "eel__dodge__suppression_radius", 6.0f, 0.0f, 30.0f);
+	if (!ExtendedEntityesOptions::Has(pSettings, Section, "eel__dodge__suppression_radius") &&
+		ExtendedEntityesOptions::Has(pSettings, Section, "monster_counterattack_near_miss_radius"))
+	{
+		Result.SuppressionRadius = Result.CounterNearMissRadius;
+	}
 	Result.CounterOpportunityTime = u32(Number(SystemSettings, Section, "monster_counterattack_opportunity_time", "", 2.f, .1f, 10.f) * 1000.f);
 	Result.CounterOpportunityCooldown = u32(Number(SystemSettings, Section, "monster_counterattack_opportunity_cooldown", "", 2.f, .1f, 30.f) * 1000.f);
 	Result.DodgeStrength = Number(SystemSettings, Section, "monster_dodge_strength", "", .45f, 0.f, 1.f);

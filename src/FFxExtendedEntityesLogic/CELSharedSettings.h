@@ -3,8 +3,15 @@
 
 struct SELSharedWorkSettings
 {
+	u32 PackRoleHold = 3000;
+	u32 PackSnapshotTime = 100;
+	u32 PackStatusMemory = 2000;
+	u32 SoundDeliveries = 512;
+	u32 SoundQueueLimit = 128;
+	u32 SoundEventMaxAge = 2000;
 	u32 PerceptionOperations = 384;
 	u32 PerceptionRays = 16;
+	u32 UrgentPerceptionRays = 4;
 	u32 SpatialQueries = 2;
 	u32 SharingSessions = 12;
 	u32 SharingTransfers = 32;

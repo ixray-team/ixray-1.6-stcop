@@ -427,6 +427,10 @@ public:
 		u16 ExtendedPhysicalHitSource = u16(-1);
 		float CharacterCourage = .5f;
 		bool UsesExtendedCombat = false;
+		float ExtendedIntelligence = 1.f;
+		bool ExtendedScaleAttackDamage = false;
+		float ExtendedMeleePredictionDistance = 2.f;
+		float ScaledAttackDamage(float Damage) const;
 		float ExtendedMeleeHitTolerance = .3f;
 		float ExtendedMeleePredictionTime = .35f;
 		const char* NativeHitReason = "not_checked";

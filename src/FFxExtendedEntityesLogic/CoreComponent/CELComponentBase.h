@@ -77,9 +77,11 @@ protected:
 		u32 NextDecisionAt = 0;
 		u32 ClosePressureSince = 0;
 		u32 LastClosePressureAt = 0;
-		float Initiative = 0.f;
-		float ResolveBias = 0.f;
+		bool PersonalDefense = false;
+		bool BerserkUsed = false;
 		float Experience = 0.f;
+		float AggressionPressure = 0.f;
+		u32 AggressionStimulusAt = 0;
 		float EnemyHealth = 1.f;
 		float EnemyScale = 1.f;
 		bool IsActor = false;
@@ -93,6 +95,9 @@ protected:
 		const char* CombatReason = "not_evaluated";
 	};
 	SEncounter& Encounter(CEntityAlive& Target);
+	float CharacterAggression(const SEncounter& State) const;
+	bool CharacterCanInitiate(const SEncounter& State) const;
+	bool UpdatePersonalDefense(CEntityAlive& Target, SEncounter& State, bool Cornered = false);
 	float CharacterConfidence(const SEncounter& State) const;
 	float CharacterResolve(const SEncounter& State) const;
 	float CharacterResumeResolve(const SEncounter& State) const;

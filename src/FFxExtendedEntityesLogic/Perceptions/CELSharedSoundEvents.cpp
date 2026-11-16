@@ -41,6 +41,15 @@ void CELSharedSoundEvents::Describe(const CObject* SourceObject, SELSoundEvent& 
 	if (OwnerObject)
 	{
 		Event.SourceIdentifier = OwnerObject->ID();
+		Event.SourceGeneration = ExtendedEntityes::OwnerGeneration(Event.SourceIdentifier);
+	}
+	// Keep ownership for ignore/friend filters, but never mistake impact coordinates for the shooter.
+	if (Event.SoundType & SOUND_TYPE_BULLET_HIT)
+	{
+		Event.LocatesSource = false;
+		Event.IsActorSound = false;
+		Event.ActorPosition = Event.Position;
+		return;
 	}
 	CActor* Actor = OwnerObject ? OwnerObject->cast_actor() : nullptr;
 	Event.IsActorSound = Actor != nullptr;
@@ -119,12 +128,12 @@ void CELSharedSoundEvents::Publish(const CObject* SourceObject, u32 SoundType, c
 		return;
 	}
 	xrCriticalSectionGuard Guard(ExtendedEntityesSoundEvents::EventLock);
-	if (ExtendedEntityesSoundEvents::Pending.size() >= 128)
+	if (ExtendedEntityesSoundEvents::Pending.size() >= CELSharedSettings::Work().SoundQueueLimit)
 	{
 		return;
 	}
 	ExtendedEntityesSoundEvents::Pending.push_back(PendingEvent);
-	if (ExtendedEntityesSoundEvents::Recent.size() >= 128)
+	if (ExtendedEntityesSoundEvents::Recent.size() >= CELSharedSettings::Work().SoundQueueLimit)
 	{
 		ExtendedEntityesSoundEvents::Recent.erase(ExtendedEntityesSoundEvents::Recent.begin());
 	}
@@ -143,7 +152,7 @@ bool CELSharedSoundEvents::HasPublished(const SELSoundEvent& Event)
 			continue;
 		}
 		if (EventIterator->Kind == EELSoundKind::Explosion ||
-			(Event.SourceIdentifier == EventIterator->SourceIdentifier && Event.SoundType == EventIterator->SoundType && Event.Kind == EventIterator->Kind))
+			(Event.SourceIdentifier == EventIterator->SourceIdentifier && Event.SourceGeneration == EventIterator->SourceGeneration && Event.SoundType == EventIterator->SoundType && Event.Kind == EventIterator->Kind))
 		{
 			return true;
 		}
@@ -155,7 +164,7 @@ bool CELSharedSoundEvents::HasPublished(const SELSoundEvent& Event)
 void CELSharedSoundEvents::Dispatch()
 {
 	xrCriticalSectionGuard Guard(ExtendedEntityesSoundEvents::EventLock);
-	u32 RemainingDeliveries = 512;
+	u32 RemainingDeliveries = CELSharedSettings::Work().SoundDeliveries;
 	xr_vector<ExtendedEntityesSoundEvents::SPending>::iterator EventIterator = ExtendedEntityesSoundEvents::Pending.begin();
 	const xr_vector<u16>& Receivers = ExtendedEntityes::Owners();
 	CEntityAlive* ReceiverEntity;
@@ -167,7 +176,7 @@ void CELSharedSoundEvents::Dispatch()
 			++EventIterator;
 			continue;
 		}
-		if (Device.dwTimeGlobal - EventIterator->Event.OccurredAt > 2000)
+		if (Device.dwTimeGlobal - EventIterator->Event.OccurredAt > CELSharedSettings::Work().SoundEventMaxAge)
 		{
 			EventIterator = ExtendedEntityesSoundEvents::Pending.erase(EventIterator);
 			continue;
@@ -221,6 +230,15 @@ void CELSharedSoundEvents::Dispatch()
 }
 
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.
+void CELSharedSoundEvents::RemoveSource(u16 Identifier)
+{
+	xrCriticalSectionGuard Guard(ExtendedEntityesSoundEvents::EventLock);
+	auto& Pending = ExtendedEntityesSoundEvents::Pending;
+	auto& Recent = ExtendedEntityesSoundEvents::Recent;
+	Pending.erase(std::remove_if(Pending.begin(), Pending.end(), [Identifier](const ExtendedEntityesSoundEvents::SPending& Item) { return Item.Event.SourceIdentifier == Identifier; }), Pending.end());
+	Recent.erase(std::remove_if(Recent.begin(), Recent.end(), [Identifier](const SELSoundEvent& Item) { return Item.SourceIdentifier == Identifier; }), Recent.end());
+}
+
 void CELSharedSoundEvents::Clear()
 {
 	xrCriticalSectionGuard Guard(ExtendedEntityesSoundEvents::EventLock);
