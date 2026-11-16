@@ -351,6 +351,7 @@ void dxUIRender::EndRoundedRect()
 		Layer.Viewport.TopLeftX + Layer.Viewport.Width * 0.5f, Layer.Viewport.TopLeftY + Layer.Viewport.Height * 0.5f);
 	RCache.set_c("ui_flashlight_dust", Light.DustEnabled ? float(Light.DustCount) : 0.0f, Light.DustSize, Light.DustSpeed, Light.DustOpacity);
 	RCache.set_c("ui_flashlight_volume_color", Light.VolumeRed, Light.VolumeGreen, Light.VolumeBlue, 1.0f);
+	RCache.set_c("ui_flashlight_volume_noise", Light.VolumeNoiseScale, Light.VolumeNoiseSpeed, Light.VolumeNoiseAmount, Light.VolumeNoiseEnabled ? 1.0f : 0.0f);
 	RCache.set_c("ui_flashlight_surface_color", Light.SurfaceRed, Light.SurfaceGreen, Light.SurfaceBlue, 1.0f + Light.DustIntensity);
 	RCache.set_c("ui_flashlight_dust_color", Light.DustRed, Light.DustGreen, Light.DustBlue, 1.0f);
 	RCache.set_c("ui_flashlight_dust_animation", Light.DustMotionPhase, Light.DustGlintPhase, Light.DustGlintIntensity, Light.DustAnimationEnabled ? 1.0f : 0.0f);

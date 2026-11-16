@@ -26,6 +26,7 @@ cbuffer UIRoundedPixelConstants : register(b6)
     float4 ui_flashlight_dust_color;
     float4 ui_flashlight_dust_animation; // accumulated motion/glint phases, glint gain, explicit phases enabled
     float4 ui_flashlight_surface_color; // footprint RGB multiplier, 1 + dust intensity (0 for legacy binaries)
+    float4 ui_flashlight_volume_noise; // medium feature size, drift speed, density variation, enabled
 };
 #include "ui_flashlight_volume.hlsli"
 struct RoundedOutput

@@ -112,6 +112,7 @@ public:
 	void SetFlashlightDustIntensity(float Intensity);
 	void SetFlashlightDustColor(float Red, float Green, float Blue);
 	void SetFlashlightVolumeNearClip(float DistancePixels);
+	void SetFlashlightVolumeNoise(bool Enabled, float Scale, float Speed, float Amount);
 	void SetFlashlightDust(bool Enabled, int Count, float Size, float Speed, float Opacity);
 	// Explicit accumulated phases prevent position jumps when Lua changes flow speed.
 	void SetFlashlightDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity);

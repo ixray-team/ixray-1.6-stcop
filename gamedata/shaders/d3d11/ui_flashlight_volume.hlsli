@@ -23,8 +23,8 @@ float FlashlightCookie(float2 Pixel)
 }
 
 // The surface footprint keeps its full size; airborne scattering uses a narrower, clearer core.
-static const float FlashlightShaftWidth = 0.35;
-static const float FlashlightShaftFadeLength = 0.65;
+static const float FlashlightShaftWidth = 0.245;
+static const float FlashlightShaftFadeLength = 0.91;
 
 float FlashlightShaftCookie(float2 Pixel, float2 Center)
 {
@@ -46,6 +46,47 @@ float3 FlashlightRandom(uint Index)
     return float3(FlashlightHash(Index * 3u + 1u), FlashlightHash(Index * 3u + 2u), FlashlightHash(Index * 3u + 3u)) / 4294967296.0;
 }
 
+float FlashlightNoise3D(float3 Position)
+{
+    int3 Cell = int3(floor(Position));
+    float3 Fraction = frac(Position);
+    float3 Weight = Fraction * Fraction * Fraction * (Fraction * (Fraction * 6.0 - 15.0) + 10.0);
+    uint Seed = asuint(Cell.x) * 1597334677u + asuint(Cell.y) * 3812015801u + asuint(Cell.z) * 2798796415u;
+    float4 Lower = float4(FlashlightHash(Seed), FlashlightHash(Seed + 1597334677u),
+        FlashlightHash(Seed + 3812015801u), FlashlightHash(Seed + 1114383182u)) / 4294967296.0;
+    Seed += 2798796415u;
+    float4 Upper = float4(FlashlightHash(Seed), FlashlightHash(Seed + 1597334677u),
+        FlashlightHash(Seed + 3812015801u), FlashlightHash(Seed + 1114383182u)) / 4294967296.0;
+    float2 XY = lerp(lerp(float2(Lower.x, Upper.x), float2(Lower.y, Upper.y), Weight.x),
+        lerp(float2(Lower.z, Upper.z), float2(Lower.w, Upper.w), Weight.x), Weight.y);
+    return lerp(XY.x, XY.y, Weight.z);
+}
+
+float FlashlightMediumDensity(float3 Point)
+{
+    if (ui_flashlight_volume_noise.w < 0.5 || ui_flashlight_volume_noise.z <= 0.0) { return 1.0; }
+    // Sample one room-space field for both the integration points and individual dust motes.
+    // Screen XY is normalized to vertical UI units; virtual Z already uses those units.
+    float PixelScale = max(ui_flashlight_volume_settings.w * 2.0 / 768.0, 1e-4);
+    float3 Position = float3((Point.xy - ui_flashlight_volume_settings.zw) / PixelScale, Point.z);
+    float Size = max(ui_flashlight_volume_noise.x, 1.0);
+    float Travel = ui_flashlight_volume_settings.y * ui_flashlight_volume_noise.y / Size;
+    // Separate local folds across all three axes instead of a depth-stretched wave over the column.
+    float3 P = Position / Size;
+    // Nested smooth flow bends the density into curling sheets instead of thresholded solid blobs.
+    float3 Drift = normalize(float3(0.24, -0.36, 0.17)) * Travel;
+    float3 Flow = P + Drift;
+    float3 Warp = sin(Flow.yzx * 1.3 + sin(Flow.zxy * 1.7 + float3(0.7, 2.1, 4.3)) + Travel * 0.2) * 0.65;
+    float Coarse = FlashlightNoise3D(P + Drift + Warp);
+    float Fine = FlashlightNoise3D((Flow + Warp) * 2.03 + float3(11.4, 5.2, 17.8));
+    // A soft isodensity band produces translucent wisps, with finer breakup along each sheet.
+    float Fold = Coarse + (Fine - 0.5) * 0.18;
+    float Wisp = 1.0 - smoothstep(0.02, 0.11, abs(Fold - 0.5));
+    Wisp *= lerp(0.4, 1.0, smoothstep(0.2, 0.8, Fine));
+    // Smoke adds lit particulate scattering; it never carves dark holes into the existing shaft.
+    return 1.0 + 1.2 * Wisp * saturate(ui_flashlight_volume_noise.z);
+}
+
 float FlashlightPower()
 {
     return 1.0 - saturate(ui_flashlight_mask_state.z);
@@ -55,10 +96,10 @@ float FlashlightVolumeCoverage(float Z, float CameraZ, float VisibleDepth)
 {
     float NearClip = ui_flashlight_volume_view.z;
     float Clip = NearClip > 0.0 ? smoothstep(NearClip, NearClip + ui_flashlight_volume_view.w, CameraZ - Z) : 1.0;
-    // Dense at the visible entrance; only ~2% remains halfway toward the canvas.
+    // Fade toward the canvas over the extended shaft, keeping a soft termination near the spot.
     float Along = saturate(1.0 - Z / max(VisibleDepth, 1.0));
     float Fade = 1.0 - smoothstep(0.0, FlashlightShaftFadeLength, Along);
-    // Boost only the entrance: keep the far half almost transparent.
+    // Boost only the entrance, independently of the extended far-end fade.
     float Entrance = 1.0 + 2.2 * exp(-Along * 8.0);
     return Clip * Fade * Fade * Entrance;
 }
@@ -104,7 +145,11 @@ float3 FlashlightVolume(float2 Pixel)
         float Coverage = FlashlightVolumeCoverage(Z, CameraZ, VisibleDepth);
         if (Coverage > 0.0)
         {
-            Integral += FlashlightShaftCookie(Footprint, Center) * Coverage * FlashlightShaftFadeLength;
+            float Cookie = FlashlightShaftCookie(Footprint, Center);
+            if (Cookie > 0.0)
+            {
+                Integral += Cookie * Coverage * FlashlightShaftFadeLength * FlashlightMediumDensity(Point);
+            }
         }
     }
     float Attenuation = ui_flashlight_volume_view.y;
@@ -165,11 +210,12 @@ float3 FlashlightVolume(float2 Pixel)
                     // Depth changes brightness and parallax without turning nearby motes into snowflakes.
                     float Coverage = Clip * smoothstep(0.02, 0.9, DepthFraction);
                     float Illumination = saturate(FlashlightShaftCookie(Footprint, Center));
+                    if (Illumination <= 0.0 || Coverage <= 0.0) { continue; }
                     // Compact antialiased grains: most are faint, a few catch a moving glint.
                     float Profile = exp2(-R2 * 3.0) * (Radius * Radius) / (FilteredRadius * FilteredRadius);
                     float GlintPhase = sin(GlintTime * (1.1 + Random.z * 1.7) + Random.x * 47.0);
                     float Glint = smoothstep(0.82, 1.0, GlintPhase);
-                    float Brightness = lerp(0.20, 0.45, Random.y) + Glint * GlintIntensity * lerp(0.60, 1.40, Random.z);
+                    float Brightness = (lerp(0.20, 0.45, Random.y) + Glint * GlintIntensity * lerp(0.60, 1.40, Random.z)) * FlashlightMediumDensity(Point);
                     Dust += Profile * Illumination * Coverage * EdgeFade.x * EdgeFade.y *
                         ui_flashlight_dust.w * Brightness;
                 }

@@ -894,6 +894,14 @@ void CUIStatic::SetFlashlightDustIntensity(float Intensity)
 	Flashlight.DustIntensity = std::isfinite(Intensity) ? std::clamp(Intensity, 0.0f, 8.0f) : 1.0f;
 }
 
+void CUIStatic::SetFlashlightVolumeNoise(bool Enabled, float Scale, float Speed, float Amount)
+{
+	Flashlight.VolumeNoiseEnabled = Enabled;
+	Flashlight.VolumeNoiseScale = std::isfinite(Scale) ? std::clamp(Scale, 1.0f, 1024.0f) : 120.0f;
+	Flashlight.VolumeNoiseSpeed = std::isfinite(Speed) ? std::clamp(Speed, 0.0f, 128.0f) : 14.0f;
+	Flashlight.VolumeNoiseAmount = std::isfinite(Amount) ? std::clamp(Amount, 0.0f, 1.0f) : 0.75f;
+}
+
 void CUIStatic::SetFlashlightVolumeNearClip(float DistancePixels)
 {
 	Flashlight.VolumeNearClipPixels = std::isfinite(DistancePixels) ? std::clamp(DistancePixels, 0.0f, 16384.0f) : 0.0f;

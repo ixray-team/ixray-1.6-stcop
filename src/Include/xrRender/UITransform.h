@@ -68,6 +68,8 @@ struct UIFlashlight
 	bool VolumeEnabled = false, DustEnabled = false;
 	float SourceX = 1100.0f, SourceY = -100.0f, SourceDistancePixels = 650.0f, VolumeDensity = 0.08f;
 	float VolumeNearClipPixels = 0.0f;
+	bool VolumeNoiseEnabled = false;
+	float VolumeNoiseScale = 120.0f, VolumeNoiseSpeed = 14.0f, VolumeNoiseAmount = 0.75f;
 	int VolumeSteps = 24, DustCount = 48;
 	float VolumeRed = 1.0f, VolumeGreen = 1.0f, VolumeBlue = 1.0f;
 	float SurfaceRed = 1.0f, SurfaceGreen = 1.0f, SurfaceBlue = 1.0f;
