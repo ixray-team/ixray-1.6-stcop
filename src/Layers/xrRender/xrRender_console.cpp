@@ -147,6 +147,8 @@ float		ps_r2_ssaLOD_B				= 32.f	;
 Fvector3	ps_r_taa_jitter = { 0,0,0 };
 Fvector3	ps_r_taa_jitter_full = { 0,0,0 };
 Fvector3	ps_r_taa_jitter_scale = { 1,1,0 };
+Fvector3	ps_r_xess_jitter_scale = { 1,1,0 };
+Fvector3	ps_r_xess_mv_scale = { 1,1,0 };
 
 // R2-specific
 Flags32		ps_r2_ls_flags = {
@@ -911,6 +913,8 @@ void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "r_particles_real_dt", &ps_r2_particle_dt);
 	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
 	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
+	CMD4(CCC_Vector3, "r_xess_jitter_scale", &ps_r_xess_jitter_scale, tw_min, tw_max);
+	CMD4(CCC_Vector3, "r_xess_mv_scale", &ps_r_xess_mv_scale, tw_min, tw_max);
 
 	// test
 	CMD4(CCC_Float, "r_developer_float_1", &ps_r__test_exp_to_shaders_1, -10000000.0f, 10000000.0f);

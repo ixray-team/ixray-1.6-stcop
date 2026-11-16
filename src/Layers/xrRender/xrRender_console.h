@@ -62,6 +62,8 @@ extern ECORE_API	int			ps_r1_use_terrain_mask;
 extern ECORE_API	Fvector3	ps_r_taa_jitter;
 extern ECORE_API	Fvector3	ps_r_taa_jitter_full;
 extern ECORE_API	Fvector3	ps_r_taa_jitter_scale;
+extern ECORE_API	Fvector3	ps_r_xess_jitter_scale;
+extern ECORE_API	Fvector3	ps_r_xess_mv_scale;
 
 enum
 {
