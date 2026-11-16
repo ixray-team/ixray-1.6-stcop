@@ -64,6 +64,8 @@ public:
 	static bool 	InitProgressShape		(CUIXml& xml_doc, const char* path, int index, CUIProgressShape* pWnd);
 	static bool 	InitLoadscreenProgress	(CUIXml& xml_doc, const char* path, int index, CUILoadingScreenProgress* pWnd);
 	static bool 	InitFont				(CUIXml& xml_doc, const char* path, int index, u32 &color, CGameFont *&pFnt);
+	// Resolves an XML font alias (graffiti22, letterica16, ...) or a font section name
+	static CGameFont* FindFont				(const char* font_name);
 	static bool 	InitTabButtonMP			(CUIXml& xml_doc, const char* path, int index, CUITabButtonMP *pWnd);
 	static bool 	InitTabControl			(CUIXml& xml_doc, const char* path, int index, CUITabControl *pWnd);
 	static bool 	InitAnimatedStatic		(CUIXml& xml_doc, const char* path, int index, CUIAnimatedStatic *pWnd);

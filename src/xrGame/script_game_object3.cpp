@@ -47,6 +47,7 @@
 #include "CustomOutfit.h"
 #include "player_hud.h"
 #include "../xrUI/ui_base.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../xrEngine/string_table.h"
 #include "ActorHelmet.h"
 #include "antigas.h"
@@ -1914,7 +1915,7 @@ void CScriptGameObject::SetSubIconText(const char* m_custom_text, int m_custom_t
 	{
 		iitem->m_custom_text = m_custom_text;
 		iitem->m_custom_text_clr_inv = m_custom_text_clr_inv;
-		iitem->m_custom_text_font = UI().Font().GetFont(item_custom_text_font);
+		iitem->m_custom_text_font = CUIXmlInit::FindFont(item_custom_text_font);
 		iitem->m_custom_text_offset = m_custom_text_offset;
 	}
 }

@@ -14,6 +14,7 @@
 #include "Level.h"
 #include "Actor.h"
 #include "../../xrUI/ui_base.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "ui/UIGameSP.h"
 #include "ui/UIActorMenu.h"
 #include "../xrEngine/string_table.h"
@@ -324,8 +325,7 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 	m_custom_text_font = nullptr;
 	if (pSettings->line_exist(section, "item_custom_text_font"))
 	{
-		shared_str font_str = pSettings->r_string(section, "item_custom_text_font");
-		m_custom_text_font = UI().Font().GetFont(font_str);
+		m_custom_text_font = CUIXmlInit::FindFont(pSettings->r_string(section, "item_custom_text_font"));
 	}
 
 	if (pSettings->line_exist(section, "item_custom_text_clr_inv"))
