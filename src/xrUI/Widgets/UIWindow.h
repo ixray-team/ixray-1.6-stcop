@@ -49,6 +49,8 @@ private:
 	bool DispatchSelfCallbacks(s16 Event);
 	float OpacityValue = 1.0f;
 	float TreeOpacityValue = 1.0f;
+	float ScaleValue = 1.0f;
+	Fvector2 ScaleOffset = {0.0f, 0.0f};
 	float GetTreeOpacityProduct() const;
 	float TreeHeading = 0.0f;
 	float TargetTreeHeading = 0.0f;
@@ -64,6 +66,7 @@ private:
 	bool RotationEnabled = true;
 	bool UseAspectRatioCorrection = false;
 	UITransform2D GetLocalRotationTransform();
+	UITransform2D GetLocalScaleTransform();
 	UITransform2D BuildTreeTransform(const UITransform2D& Parent);
 	UITransform2D GetLocalTreeTransform();
 	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
@@ -79,6 +82,8 @@ public:
 	void DetachFromDialogHolders();
 	void SetOpacity(float Value);
 	void SetTreeOpacity(float Value);
+	void SetScale(float Factor, float OffsetX, float OffsetY);
+	Fvector2 RootToLocal(const Fvector2& Position);
 	bool ToFront();
 	bool ToBack();
 	bool ToFrontTree();

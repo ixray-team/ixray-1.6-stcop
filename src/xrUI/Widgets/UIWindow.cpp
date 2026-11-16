@@ -499,11 +499,37 @@ bool CUIWindow::IsAspectRatioCorrectionActive() const
 	return false;
 }
 
+void CUIWindow::SetScale(float Factor, float OffsetX, float OffsetY)
+{
+	ScaleValue = std::isfinite(Factor) ? std::clamp(Factor, 0.001f, 64.0f) : 1.0f;
+	ScaleOffset.x = std::isfinite(OffsetX) ? std::clamp(OffsetX, -8192.0f, 8192.0f) : 0.0f;
+	ScaleOffset.y = std::isfinite(OffsetY) ? std::clamp(OffsetY, -8192.0f, 8192.0f) : 0.0f;
+}
+
+UITransform2D CUIWindow::GetLocalScaleTransform()
+{
+	UITransform2D Result;
+	if (ScaleValue == 1.0f && ScaleOffset.x == 0.0f && ScaleOffset.y == 0.0f)
+	{
+		return Result;
+	}
+	Fvector2 Origin;
+	GetAbsolutePos(Origin);
+	const bool ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
+	const float ScaleX = ScreenSpace ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
+	const float ScaleY = ScreenSpace ? UI().ClientToScreenScaledY(1.0f) : 1.0f;
+	Result.XX = Result.YY = ScaleValue;
+	// Scale around the configured top-left; offsets are in the parent's unscaled UI units.
+	Result.TX = (Origin.x * (1.0f - ScaleValue) + ScaleOffset.x) * ScaleX;
+	Result.TY = (Origin.y * (1.0f - ScaleValue) + ScaleOffset.y) * ScaleY;
+	return Result;
+}
+
 UITransform2D CUIWindow::BuildTreeTransform(const UITransform2D& Parent)
 {
 	if (!IsAspectRatioCorrectionActive())
 	{
-		return Parent.Compose(GetLocalRotationTransform());
+		return Parent.Compose(GetLocalRotationTransform()).Compose(GetLocalScaleTransform());
 	}
 	UITransform2D Aspect;
 	// A branch inherits its parent's correction; repeated flags do not multiply it.
@@ -521,7 +547,7 @@ UITransform2D CUIWindow::BuildTreeTransform(const UITransform2D& Parent)
 			Aspect.TX = UI().ClientToScreenScaledX(ParentOrigin.x) * (1.0f - Factor);
 		}
 	}
-	UITransform2D Result = Parent.Compose(Aspect);
+	UITransform2D Result = Parent.Compose(Aspect).Compose(GetLocalScaleTransform());
 	if (RotationEnabled && (TreeHeading != 0.0f || TreeOffset.x != 0.0f || TreeOffset.y != 0.0f))
 	{
 		Fvector2 Pivot;
@@ -549,7 +575,7 @@ UITransform2D CUIWindow::GetLocalTreeTransform()
 {
 	if (!IsAspectRatioCorrectionActive())
 	{
-		return GetLocalRotationTransform();
+		return GetLocalRotationTransform().Compose(GetLocalScaleTransform());
 	}
 	const UITransform2D Parent = GetParent() ? GetParent()->GetTreeTransform() : UITransform2D{};
 	return Parent.Inverted().Compose(BuildTreeTransform(Parent));
@@ -676,6 +702,15 @@ Fvector2 CUIWindow::ToUntransformedPoint(const Fvector2& Position)
 	GetTreeTransform().ApplyInverse(Point.x, Point.y);
 	Point.x /= ScaleX;
 	Point.y /= ScaleY;
+	return Point;
+}
+
+Fvector2 CUIWindow::RootToLocal(const Fvector2& Position)
+{
+	Fvector2 Point = ToUntransformedPoint(Position);
+	Fvector2 Origin;
+	GetAbsolutePos(Origin);
+	Point.sub(Origin);
 	return Point;
 }
 
