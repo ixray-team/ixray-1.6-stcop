@@ -453,7 +453,16 @@ function actor_binder:update(delta)
 		self.st.sleep_relocate_time = nil
 	end
 
-	-- Апдейт прятание оружия игрока во время диалога
+	-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
+	if self.next_restrictors_update_time < time then
+		bind_restrictor.actor_update(delta)
+
+		self.next_restrictors_update_time = time + 200
+
+		task_manager.actor_update()
+	end
+
+	-- Апдейт прятание оружия игрока во время диалога (после рестрикторов, чтобы зона без оружия срабатывала в том же кадре)
 	if weapon_hide == true or self.object:is_talking() then
 		if self.weapon_hide == false then
 			self.object:hide_weapon()
@@ -465,15 +474,6 @@ function actor_binder:update(delta)
 			self.weapon_hide = false
 		end
 	end	
-
-	-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
-	if self.next_restrictors_update_time < time then
-		bind_restrictor.actor_update(delta)
-
-		self.next_restrictors_update_time = time + 200
-
-		task_manager.actor_update()
-	end
 
 	-- обновление постпроцессов
 	if post_process ~= 0 then
