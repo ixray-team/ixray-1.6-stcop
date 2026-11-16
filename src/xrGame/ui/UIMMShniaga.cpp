@@ -483,6 +483,10 @@ bool b_shniaganeed_pp = true;
 void CUIMMShniaga::SetVisibleMagnifier(bool f)
 {
 	b_shniaganeed_pp = f;
+	if (!m_magnifier)
+	{
+		return;
+	}
 	Fvector2 pos = m_magnifier->GetWndPos();
 	if (f)
 		pos.x = m_mag_pos;
