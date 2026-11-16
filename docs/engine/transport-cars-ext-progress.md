@@ -1065,3 +1065,12 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - Удалён добавленный для нового режима API `EnableCharacterCollision()`/`SetCharacterClassCollide()`.
 - Сохранены не связанные с character-коллизиями изменения: двери и их коллизионные box’ы (`80d7213ac0`), `ResolveLoadPenetration()`, `PushByActor()` и отключение стояночного тормоза при выходе на sprint (`2cb815d622`).
 - Параметр `ram_damage_factor` удалён: его единственным потребителем был `HitCharacterFromCar()`, поэтому после отката он только читался из конфига и ни на что не влиял. Урон персонажам от машины снова считается через `ph_crash_speed_min`/`ph_crash_speed_max` и `ph_collision_damage_factor`.
+
+### Этап 108: настраиваемый порог скорости тарана
+
+- Жёсткая проверка `SafeCarCollisionSpeed = 5 км/ч` удалена из `CPHMovementControl::UpdateCollisionDamage()`; порог больше не привязан к мутантам и не обнуляет урон до расчёта.
+- `CCar` отдаёт порог через `GetRamDamageMinSpeed()`; в `CPhysicsShellHolder` по умолчанию возвращается `0`.
+- `CPHMovementControl::UpdateCollisionDamage()` сам определяет машину по инициатору урона: для занятой машины — через `CActor::GetCarObject()`, иначе — через `cast_physics_shell_holder()` инициатора. Если порог задан и скорость машины ниже него, `fContactSpeed` обнуляется до расчёта урона. Это работает и для прямых контактов с кузовом, и для контактов через scraper/скрытое тело водителя, и для мутантов, и для НПС.
+- `ram_damage_min_speed` читается в `CCar::LoadHandlingAndCameraDefinitions()` из секции машины (`[m_car_base]` или конкретная модель в `vehicles.ltx`). Единицы — км/ч. Если ключ отсутствует, значение остаётся `0`, то есть дополнительного порога нет и работает прежний legacy-путь. Пример: `ram_damage_min_speed = 5` — ниже `5 км/ч` урон не начисляется.
+- `ph_crash_speed_min`/`ph_crash_speed_max` остаются порогами контактной скорости персонажа, а не скорости автомобиля; они по-прежнему применяются после проверки `ram_damage_min_speed`.
+- Проверка: сборка Debug/RelWithDebInfo/Release; autotest-загрузка `car_load_test2` и спавн машины с собакой/кровососом — без регрессий.

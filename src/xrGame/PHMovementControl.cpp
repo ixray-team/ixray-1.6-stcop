@@ -192,40 +192,40 @@ void CPHMovementControl::UpdateCollisionDamage( )
 	const ICollisionDamageInfo* di=m_character->CollisionDamageInfo();
  	fContactSpeed=di->ContactVelocity();
 
-	// A monster attacking the actor inside a car must not kill itself by
-	// running into the body. Ramming with a moving car still hurts it.
-	if (pObject && pObject->cast_base_monster())
+	if (fContactSpeed > 0.f)
 	{
-		constexpr float SafeCarCollisionSpeed = 5.f;
 		CObject* InitiatorObject = di->DamageInitiator();
-		CGameObject* Initiator = InitiatorObject != nullptr ? InitiatorObject->cast_game_object() : nullptr;
-		// The character scraper that follows a car is not a physics object of
-		// its own; contacts with it are reported as the actor. The hidden actor
-		// body must not hurt a monster through the car.
-		if (CActor* InitiatorActor = InitiatorObject != nullptr ? InitiatorObject->cast_actor() : nullptr)
+		CPhysicsShellHolder* Car = nullptr;
+		if (InitiatorObject != nullptr)
 		{
-			if (InitiatorActor->IsInCar())
+			if (CActor* InitiatorActor = InitiatorObject->cast_actor())
 			{
-				fContactSpeed = 0.f;
-				return;
+				if (CObject* CarObject = InitiatorActor->GetCarObject())
+					Car = CarObject->cast_physics_shell_holder();
+			}
+			else
+			{
+				Car = InitiatorObject->cast_physics_shell_holder();
 			}
 		}
-		if (Initiator != nullptr && Initiator->IsDrivenByActor())
+
+		if (Car != nullptr)
 		{
-			float CarSpeed = 0.f;
-			if (CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(Initiator))
+			const float MinSpeed = Car->GetRamDamageMinSpeed();
+			if (MinSpeed > 0.f)
 			{
-				if (Holder->PPhysicsShell() != nullptr)
+				float CarSpeed = 0.f;
+				if (Car->PPhysicsShell() != nullptr && Car->PPhysicsShell()->isActive() && Car->PPhysicsShell()->isEnabled())
 				{
 					Fvector Velocity;
-					Holder->PPhysicsShell()->get_LinearVel(Velocity);
+					Car->PPhysicsShell()->get_LinearVel(Velocity);
 					CarSpeed = Velocity.magnitude() * 3.6f;
 				}
-			}
-			if (CarSpeed < SafeCarCollisionSpeed)
-			{
-				fContactSpeed = 0.f;
-				return;
+				if (CarSpeed < MinSpeed)
+				{
+					fContactSpeed = 0.f;
+					return;
+				}
 			}
 		}
 	}

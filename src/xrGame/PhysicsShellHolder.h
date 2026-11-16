@@ -73,6 +73,7 @@ public:
 	virtual	CCharacterPhysicsSupport* character_physics_support() { return nullptr; }
 	virtual	const CCharacterPhysicsSupport* character_physics_support() const { return nullptr; }
 	virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
+	virtual float GetRamDamageMinSpeed() const { return 0.f; }
 
 	virtual void set_collision_hit_callback(ICollisionHitCallback* cc) {}
 	virtual void _BCL enable_notificate() override {}

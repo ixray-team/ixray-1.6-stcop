@@ -367,6 +367,7 @@ public:
 	float	m_mutant_hit_impulse_factor;
 	float	m_burer_gravi_impulse_factor;
 	float	m_push_impulse_factor;
+	float	m_ram_damage_min_speed;
 
 	struct SHeadlightHideaway
 	{
@@ -1484,6 +1485,7 @@ public:
 	void					ApplyPush					(const Fvector& dir, float speed, const Fvector& world_point);
 	void					PushByActor					(const Fvector& dir, const Fvector& world_point);
 	bool					CollisionHitStartsCooldown	(u16 bone_id, float power) override;
+	virtual float			GetRamDamageMinSpeed		() const override { return m_ram_damage_min_speed; }
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
 	float					GetRepairAmount			() const		{ return RepairAmount; }
