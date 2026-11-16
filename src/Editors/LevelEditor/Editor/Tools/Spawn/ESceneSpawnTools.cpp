@@ -154,6 +154,7 @@ void ESceneSpawnTool::FillProp(const char* pref, PropItemVec& items)
 //.	PHelper().CreateFlag(items, PrepareKey(pref,"Common\\Show Spawn Type"),	&m_Flags,		flShowSpawnType);
 //.	PHelper().CreateFlag(items, PrepareKey(pref,"Common\\Trace Visibility"),	&m_Flags,		flPickSpawnType);
 	PHelper().CreateFlag(items, PrepareKey(pref, "Common\\Show Icons"), &m_Flags, flShowIcons);
+	PHelper().CreateFlag(items, PrepareKey(pref, "Common\\Show Smart Terrain Shapes"), &m_Flags, flShowSmartTerrainShapes);
 	inherited::FillProp	(pref, items);
 }
 
@@ -172,6 +173,7 @@ void ESceneSpawnTool::OnDeviceDestroy()
 {
 	inherited::OnDeviceDestroy();
 	SmartCoverIcons.Shader.destroy();
+	SmartTerrainIcons.Shader.destroy();
 }
 
 void ESceneSpawnTool::RenderSmartCoverIcons()
@@ -183,6 +185,8 @@ void ESceneSpawnTool::RenderSmartCoverIcons()
 
 	SmartCoverIcons.Positions.clear();
 	SmartCoverIcons.Colors.clear();
+	SmartTerrainIcons.Positions.clear();
+	SmartTerrainIcons.Colors.clear();
 	// The objects the scene found visible this frame (world partition, frustum, occlusion)
 	for (CCustomObject* Object : Scene->GetVisibleObjects())
 	{
@@ -192,12 +196,13 @@ void ESceneSpawnTool::RenderSmartCoverIcons()
 		}
 
 		CSpawnPoint* Spawn = static_cast<CSpawnPoint*>(Object);
-		if (!Spawn->IsSmartCover())
+		const bool SmartCover = Spawn->IsSmartCover();
+		if (!SmartCover && !Spawn->IsSmartTerrain())
 		{
 			continue;
 		}
 
-		u32 Color = color_rgba(0, 220, 220, 255);
+		u32 Color = SmartCover ? color_rgba(0, 220, 220, 255) : color_rgba(255, 190, 40, 255);
 		if (Spawn->Locked())
 		{
 			Color = 0xFFFF4040;
@@ -210,22 +215,26 @@ void ESceneSpawnTool::RenderSmartCoverIcons()
 		// Over the loophole models, so they do not hide it
 		Fvector Position = Spawn->GetPosition();
 		Position.y += 2.2f;
-		SmartCoverIcons.Positions.push_back(Position);
-		SmartCoverIcons.Colors.push_back(Color);
-	}
-
-	if (SmartCoverIcons.Positions.empty())
-	{
-		return;
-	}
-
-	if (!SmartCoverIcons.Shader)
-	{
-		SmartCoverIcons.Shader.create("editor\\light_icon", "ed\\ed_smart_cover");
+		SIconBatch& Batch = SmartCover ? SmartCoverIcons : SmartTerrainIcons;
+		Batch.Positions.push_back(Position);
+		Batch.Colors.push_back(Color);
 	}
 
 	constexpr float IconPixels = 28.f;
-	DU_impl.DrawIcons(SmartCoverIcons.Shader, SmartCoverIcons.Positions.data(), SmartCoverIcons.Colors.data(), (u32)SmartCoverIcons.Positions.size(), IconPixels);
+	const std::pair<SIconBatch*, const char*> Batches[] = { { &SmartCoverIcons, "ed\\ed_smart_cover" }, { &SmartTerrainIcons, "ed\\ed_smart_terrain" } };
+	for (const auto& [Batch, Texture] : Batches)
+	{
+		if (Batch->Positions.empty())
+		{
+			continue;
+		}
+
+		if (!Batch->Shader)
+		{
+			Batch->Shader.create("editor\\light_icon", Texture);
+		}
+		DU_impl.DrawIcons(Batch->Shader, Batch->Positions.data(), Batch->Colors.data(), (u32)Batch->Positions.size(), IconPixels);
+	}
 }
 
 ref_shader ESceneSpawnTool::CreateIcon(const shared_str& name)

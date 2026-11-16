@@ -1472,24 +1472,29 @@ void CEditorDrawUtilities::OnRender()
 
 void CEditorDrawUtilities::OutText(const Fvector& pos, const char* text, u32 color, u32 shadow_color)
 {
+	OutText(pos, text, m_Font, color, shadow_color);
+}
+
+void CEditorDrawUtilities::OutText(const Fvector& Pos, const char* Text, CGameFont* Font, u32 Color, u32 ShadowColor)
+{
 	// Text is queued for the frame: only the overlay (or immediate) pass adds it
-	if (GEditorDraw.IsSubmitPass())
+	if (GEditorDraw.IsSubmitPass() || Font == nullptr)
 	{
 		return;
 	}
 
-	Fvector p;
-	float   w = pos.x * Device.mFullTransform._14 + pos.y * Device.mFullTransform._24 + pos.z * Device.mFullTransform._34 + Device.mFullTransform._44;
-	if (w >= 0)
+	Fvector P;
+	const float W = Pos.x * Device.mFullTransform._14 + Pos.y * Device.mFullTransform._24 + Pos.z * Device.mFullTransform._34 + Device.mFullTransform._44;
+	if (W >= 0)
 	{
-		Device.mFullTransform.transform(p, pos);
-		p.x = (float)iFloor(_x2real(p.x));
-		p.y = (float)iFloor(_y2real(-p.y));
+		Device.mFullTransform.transform(P, Pos);
+		P.x = (float)iFloor(_x2real(P.x));
+		P.y = (float)iFloor(_y2real(-P.y));
 
-		m_Font->SetColor(shadow_color);
-		m_Font->Out(p.x, p.y, (LPSTR)text);
-		m_Font->SetColor(color);
-		m_Font->Out(p.x - 1, p.y - 1, (LPSTR)text);
+		Font->SetColor(ShadowColor);
+		Font->Out(P.x, P.y, (LPSTR)Text);
+		Font->SetColor(Color);
+		Font->Out(P.x - 1, P.y - 1, (LPSTR)Text);
 	}
 }
 

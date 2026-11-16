@@ -293,6 +293,7 @@ void CSpawnPoint::SSpawnData::Create(const char* _entity_ref)
 
 void CSpawnPoint::SSpawnData::Destroy()
 {
+	ClearSquadPreviews();
 	g_SEFactoryManager->destroy_entity(m_Data);
 	xr_delete(m_Visual);
 	xr_delete(m_Motion);
@@ -646,6 +647,369 @@ void CSpawnPoint::SSpawnData::RenderVisuals(bool bSelected, const Fmatrix& paren
 		}
 		::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
 	}
+
+	RenderSquadPreviews(parent, priority, strictB2F);
+}
+
+void CSpawnPoint::SSpawnData::ClearSquadPreviews()
+{
+	xrCriticalSectionGuard guard(mLuaEnter);
+	for (SSquadPreview& Preview : SquadPreviews)
+	{
+		xr_delete(Preview.Visual);
+		g_SEFactoryManager->destroy_entity(Preview.Entity);
+	}
+	SquadPreviews.clear();
+	SquadPreviewText.clear();
+}
+
+void CSpawnPoint::SSpawnData::RenderSquadPreviews(const Fmatrix& parent, int priority, bool strictB2F)
+{
+	Fmatrix M;
+	for (const SSquadPreview& Preview : SquadPreviews)
+	{
+		if (Preview.Visual->visual == nullptr)
+		{
+			continue;
+		}
+		M.mul(parent, Preview.Offset);
+		::RImplementation.model_Render(Preview.Visual->visual, M, priority, strictB2F, 1.f);
+	}
+}
+
+namespace SmartTerrainSquads
+{
+	// Smart name -> squads that other configs put there: start squads of misc\simulation.ltx
+	// (sim_board:fill_start_position) and create_squad(squad:smart) of the logic configs
+	struct SSources
+	{
+		xr_hash_map<xr_string, xr_vector<xr_string>> Start;
+		xr_hash_map<xr_string, xr_vector<xr_string>> Script;
+	};
+
+	void AddUnique(xr_vector<xr_string>& List, const xr_string& Value)
+	{
+		if (std::find(List.begin(), List.end(), Value) == List.end())
+		{
+			List.push_back(Value);
+		}
+	}
+
+	xr_string Trimmed(const char* Begin, const char* End)
+	{
+		while (Begin < End && (*Begin == ' ' || *Begin == '\t'))
+		{
+			++Begin;
+		}
+		while (End > Begin && (End[-1] == ' ' || End[-1] == '\t'))
+		{
+			--End;
+		}
+		return xr_string(Begin, size_t(End - Begin));
+	}
+
+	const SSources& Get()
+	{
+		static SSources Sources;
+		static bool Loaded = false;
+		if (Loaded)
+		{
+			return Sources;
+		}
+		Loaded = true;
+
+		string_path FileName;
+		FS.update_path(FileName, _game_config_, "misc\\simulation.ltx");
+		if (FS.exist(FileName))
+		{
+			CInifile Simulation(FileName);
+			for (const CInifile::Sect& Sect : Simulation.sections())
+			{
+				for (const CInifile::Item& Line : Sect.Data)
+				{
+					if (Line.first.size() && Line.second.size())
+					{
+						AddUnique(Sources.Start[Line.second.c_str()], Line.first.c_str());
+					}
+				}
+			}
+		}
+
+		FS_FileSet Files;
+		FS.update_path(FileName, _game_config_, "scripts\\");
+		FS.file_list(Files, FileName, FS_ListFiles, "*.ltx");
+		for (const FS_File& File : Files)
+		{
+			string_path Path;
+			xr_strconcat(Path, FileName, File.name.c_str());
+			IReader* Reader = FS.r_open(Path);
+			if (Reader == nullptr)
+			{
+				continue;
+			}
+
+			const char* Text = (const char*)Reader->pointer();
+			const char* End = Text + Reader->length();
+			constexpr char Tag[] = "create_squad(";
+			for (const char* It = Text; It < End;)
+			{
+				It = std::search(It, End, Tag, Tag + sizeof(Tag) - 1);
+				if (It == End)
+				{
+					break;
+				}
+				It += sizeof(Tag) - 1;
+
+				// create_squad(squad:smart[:...])
+				const char* Close = std::find(It, End, ')');
+				const char* Colon = std::find(It, Close, ':');
+				if (Colon == Close)
+				{
+					continue;
+				}
+				const char* SmartEnd = std::find(Colon + 1, Close, ':');
+				xr_string Squad = Trimmed(It, Colon);
+				xr_string Smart = Trimmed(Colon + 1, SmartEnd);
+				if (!Squad.empty() && !Smart.empty())
+				{
+					AddUnique(Sources.Script[Smart], Squad);
+				}
+			}
+			FS.r_close(Reader);
+		}
+		return Sources;
+	}
+}
+
+void CSpawnPoint::SSpawnData::UpdateSquadPreviews()
+{
+	if (m_Data->cast_smart_zone() == nullptr)
+	{
+		return;
+	}
+
+	const char* SmartName = m_owner->GetName() ? m_owner->GetName() : "";
+	shared_str Source = make_string<xr_string>("%s\n%s", SmartName, m_Data->m_ini_string.c_str()).c_str();
+	if (SquadPreviewSource == Source)
+	{
+		return;
+	}
+
+	// Entity creation runs the script engine: spawn points load in parallel (LoadLTX) and
+	// render under the same lock
+	xrCriticalSectionGuard guard(mLuaEnter);
+	SquadPreviewSource = Source;
+	ClearSquadPreviews();
+
+	const char* SmartSect = "smart_terrain";
+	const char* ConfigPath = FS.get_path(_game_config_)->m_Path;
+	IReader InlineReader((void*)m_Data->m_ini_string.c_str(), m_Data->m_ini_string.size());
+	CInifile InlineIni(&InlineReader, ConfigPath);
+	xr_unique_ptr<CInifile> CfgIni;
+	CInifile* Ini = &InlineIni;
+
+	// The smart reads its settings from "cfg" when it is set (se_smart_terrain:read_params)
+	if (Ini->line_exist(SmartSect, "cfg"))
+	{
+		string_path FileName;
+		FS.update_path(FileName, _game_config_, Ini->r_string(SmartSect, "cfg"));
+		if (!FS.exist(FileName))
+		{
+			SquadPreviewText = make_string<xr_string>("! cfg [%s] not found", Ini->r_string(SmartSect, "cfg"));
+			return;
+		}
+		CfgIni.reset(new CInifile(FileName));
+		Ini = CfgIni.get();
+	}
+
+	// Squads by source: the first one with a model gives the preview
+	xr_vector<xr_string> Respawn;
+	string256 Item;
+	if (Ini->line_exist(SmartSect, "respawn_params"))
+	{
+		const char* RespawnSect = Ini->r_string(SmartSect, "respawn_params");
+		if (!Ini->section_exist(RespawnSect))
+		{
+			SquadPreviewText = make_string<xr_string>("! respawn_params [%s] not found", RespawnSect);
+			return;
+		}
+
+		for (const auto& Prop : Ini->r_section(RespawnSect).Data)
+		{
+			if (!Ini->line_exist(Prop.first, "spawn_squads"))
+			{
+				continue;
+			}
+			const char* Squads = Ini->r_string(Prop.first, "spawn_squads");
+			for (u32 SquadIndex = 0, SquadCount = _GetItemCount(Squads); SquadIndex < SquadCount; ++SquadIndex)
+			{
+				_Trim(_GetItem(Squads, SquadIndex, Item));
+				SmartTerrainSquads::AddUnique(Respawn, Item);
+			}
+		}
+	}
+
+	const SmartTerrainSquads::SSources& Sources = SmartTerrainSquads::Get();
+	const auto StartIt = Sources.Start.find(SmartName);
+	const auto ScriptIt = Sources.Script.find(SmartName);
+	const xr_vector<xr_string> NoSquads;
+	const std::pair<const char*, const xr_vector<xr_string>*> Groups[] = {
+		{ "start", StartIt != Sources.Start.end() ? &StartIt->second : &NoSquads },
+		{ "respawn", &Respawn },
+		{ "script", ScriptIt != Sources.Script.end() ? &ScriptIt->second : &NoSquads },
+	};
+
+	constexpr u32 MaxTextSquads = 4;
+	xr_vector<shared_str> NpcSections;
+	for (const auto& [Label, Squads] : Groups)
+	{
+		if (Squads->empty())
+		{
+			continue;
+		}
+
+		if (!SquadPreviewText.empty())
+		{
+			SquadPreviewText += "\n";
+		}
+		SquadPreviewText += Label;
+		SquadPreviewText += ": ";
+		for (u32 Index = 0; Index < Squads->size(); ++Index)
+		{
+			const xr_string& Squad = (*Squads)[Index];
+			if (Index == MaxTextSquads)
+			{
+				SquadPreviewText += make_string<xr_string>(", +%u", u32(Squads->size() - MaxTextSquads));
+			}
+			else if (Index < MaxTextSquads)
+			{
+				SquadPreviewText += Index ? ", " : "";
+				SquadPreviewText += Squad;
+			}
+
+			if (!pSettings->section_exist(Squad.c_str()))
+			{
+				if (Index < MaxTextSquads)
+				{
+					SquadPreviewText += " (?)";
+				}
+				continue;
+			}
+
+			// sim_squad_scripted:create_npc spawns "npc" and picks from "npc_random"
+			for (const char* Line : { "npc", "npc_random" })
+			{
+				if (!pSettings->line_exist(Squad.c_str(), Line))
+				{
+					continue;
+				}
+				const char* List = pSettings->r_string(Squad.c_str(), Line);
+				for (u32 NpcIndex = 0, NpcCount = _GetItemCount(List); NpcIndex < NpcCount; ++NpcIndex)
+				{
+					_Trim(_GetItem(List, NpcIndex, Item));
+					shared_str Npc = Item;
+					if (Npc.size() && pSettings->section_exist(Npc) && std::find(NpcSections.begin(), NpcSections.end(), Npc) == NpcSections.end())
+					{
+						NpcSections.push_back(Npc);
+					}
+				}
+			}
+		}
+	}
+
+	if (SquadPreviewText.empty())
+	{
+		SquadPreviewText = "simulation only";
+	}
+
+	// One model in the center: the first NPC that has one
+	const bool OldLock = CLE_Visual::g_tmp_lock;
+	for (u32 Index = 0; Index < NpcSections.size() && SquadPreviews.empty(); ++Index)
+	{
+		CSE_Abstract* Entity = g_SEFactoryManager->create_entity(NpcSections[Index].c_str());
+		if (Entity == nullptr || Entity->visual() == nullptr)
+		{
+			g_SEFactoryManager->destroy_entity(Entity);
+			continue;
+		}
+
+		Entity->set_name(NpcSections[Index].c_str());
+		// HACK: stalkers take their model from the specific character of the profile.
+		// specific_character() is not exported from the entity factory; the "npc profile"
+		// change event is the exported way that picks it and sets the model
+		if (CSE_ALifeTraderAbstract* Trader = smart_cast<CSE_ALifeTraderAbstract*>(Entity))
+		{
+			PropItemVec Items;
+			Entity->FillProp("", Items);
+			for (PropItem* Prop : Items)
+			{
+				RListValue* Value = smart_cast<RListValue*>(Prop->GetFrontValue());
+				if (Value != nullptr && Value->value == &Trader->m_sCharacterProfile && !Value->OnChangeEvent.empty())
+				{
+					Value->OnChangeEvent(Value);
+				}
+			}
+			for (PropItem* Prop : Items)
+			{
+				xr_delete(Prop);
+			}
+		}
+
+		SSquadPreview Preview;
+		Preview.Entity = Entity;
+		Preview.Visual = new CLE_Visual(Entity->visual());
+		// Lock skips the "model not found" dialog for a missing preview model
+		CLE_Visual::g_tmp_lock = true;
+		Preview.Visual->OnChangeVisual();
+		CLE_Visual::g_tmp_lock = OldLock;
+		if (Preview.Visual->visual == nullptr)
+		{
+			xr_delete(Preview.Visual);
+			g_SEFactoryManager->destroy_entity(Entity);
+			continue;
+		}
+
+		Entity->visual()->startup_animation = FindIdleCycle(Preview.Visual->visual);
+		Preview.Visual->PlayAnimation();
+		Preview.Offset.identity();
+		SquadPreviews.push_back(Preview);
+	}
+}
+
+shared_str CSpawnPoint::SSpawnData::FindIdleCycle(IRenderVisual* Visual)
+{
+	CKinematicsAnimated* Animated = PKinematicsAnimated(Visual);
+	if (Animated == nullptr)
+	{
+		return {};
+	}
+
+	// Common idle cycles of monsters and stalkers first, then any cycle named idle
+	for (const char* Name : { "stand_idle_0", "idle_0", "idle", "norm_torso_0_idle_0", "norm_torso_0_idle_1" })
+	{
+		if (Animated->ID_Cycle_Safe(Name).valid())
+		{
+			return Name;
+		}
+	}
+
+	for (u16 Slot = 0; Slot < Animated->LL_MotionsSlotCount(); ++Slot)
+	{
+		shared_motions Motions = Animated->LL_MotionsSlot(Slot);
+		accel_map* Cycles = Motions.cycle();
+		if (Cycles == nullptr)
+		{
+			continue;
+		}
+		for (const auto& Cycle : *Cycles)
+		{
+			if (strstr(Cycle.first.c_str(), "idle") != nullptr)
+			{
+				return Cycle.first;
+			}
+		}
+	}
+	return {};
 }
 
 void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
@@ -685,6 +1049,32 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
 	}
 
+	RenderSquadPreviews(parent, priority, strictB2F);
+	if ((1 == priority) && (false == strictB2F) && bSelected && !SquadPreviewText.empty())
+	{
+		// Right of the icon (ESceneSpawnTool, 28 px at 2.2 m over the point): pixels to meters
+		// at the icon distance
+		Fvector Pos = parent.c;
+		Pos.y += 2.2f;
+		const float Distance = Pos.distance_to(Device.vCameraPosition);
+		const float MetersPerPixel = Distance * 2.f * std::tan(deg2rad(Device.fFOV) * 0.5f) / float(Device.TargetHeight);
+		Pos.mad(Device.vCameraRight, 18.f * MetersPerPixel);
+		Pos.mad(Device.vCameraTop, 9.f * MetersPerPixel);
+		const u32 Color = SquadPreviewText[0] == '!' ? color_rgba(255, 80, 80, 255) : color_rgba(255, 255, 255, 255);
+		// OutText draws one line: lines go down by the font height
+		// fonts.ltx sets the size: ui_font_letterica16 is 18 px
+		CGameFont* Font = g_FontManager->GetFont("ui_font_letterica16");
+		constexpr float LinePixels = 20.f;
+		for (size_t Begin = 0; Begin < SquadPreviewText.size();)
+		{
+			size_t End = SquadPreviewText.find('\n', Begin);
+			End = End == xr_string::npos ? SquadPreviewText.size() : End;
+			DU_impl.OutText(Pos, SquadPreviewText.substr(Begin, End - Begin).c_str(), Font, Color, color_rgba(0, 0, 0, 255));
+			Pos.mad(Device.vCameraTop, -LinePixels * MetersPerPixel);
+			Begin = End + 1;
+		}
+	}
+
 	// A smart cover without its loophole models shows the shape and the reason on it
 	xr_string Error;
 	if ((1 == priority) && (false == strictB2F) && smart_cast<CSE_SmartCover*>(m_Data) && !IsSmartCoverVisualReady(&Error))
@@ -693,6 +1083,11 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		Pos.y += 0.5f;
 		DU_impl.OutText(Pos, ("! " + Error).c_str(), color_rgba(255, 80, 80, 255));
 	}
+}
+
+bool CSpawnPoint::IsSmartTerrain() const
+{
+	return m_SpawnData.Valid() && m_SpawnData.m_Data->cast_smart_zone() != nullptr;
 }
 
 bool CSpawnPoint::IsSmartCover() const
@@ -928,6 +1323,18 @@ void CSpawnPoint::SSpawnData::OnFrame(bool OnScreen)
 		{
 			bool bForce = m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange);
 			KinematicsObj->CalculateBones(bForce);
+		}
+	}
+
+	UpdateSquadPreviews();
+	if (OnScreen)
+	{
+		for (SSquadPreview& Preview : SquadPreviews)
+		{
+			if (IKinematics* KinematicsObj = PKinematics(Preview.Visual->visual))
+			{
+				KinematicsObj->CalculateBones(false);
+			}
 		}
 	}
 
@@ -1295,8 +1702,11 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 		}
 	}
 	Fmatrix SaveTransform = FTransformRP;
-	// A smart cover with its loophole models is shown by them, not by its shape
-	const bool HideShape = m_SpawnData.Valid() && m_SpawnData.IsSmartCoverVisualReady();
+	// A smart cover with its loophole models is shown by them, not by its shape. A smart
+	// terrain is shown by its icon and preview model unless its shape is asked for
+	ESceneSpawnTool* SpawnTool = smart_cast<ESceneSpawnTool*>(FParentTools);
+	const bool HideSmartTerrainShape = IsSmartTerrain() && SpawnTool && !SpawnTool->m_Flags.is(ESceneSpawnTool::flShowSmartTerrainShapes);
+	const bool HideShape = m_SpawnData.Valid() && (m_SpawnData.IsSmartCoverVisualReady() || HideSmartTerrainShape);
 
 	// Scene collection (main and shadow passes): only visuals reach the scene graph, the
 	// helpers (icons, names, shapes, selection) are drawn in the overlay pass

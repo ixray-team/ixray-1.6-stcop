@@ -10,8 +10,9 @@ protected:
     // controls
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
-	enum{
-		// Icons of every spawn element; off: only the selected ones show it
+	enum
+    {
+		flShowSmartTerrainShapes = (1<<28),
 		flShowIcons		= (1<<29),
     	flPickSpawnType	= (1<<30),
     	flShowSpawnType	= (1<<31),
@@ -59,10 +60,6 @@ public:
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 	virtual int 		MultiRenameObjects		();
-/*
-    virtual void		GetStaticDesc			(int& v_cnt, int& f_cnt, bool b_selected_only);
-    virtual bool		ExportStatic			(SceneBuilder* B, bool b_selected_only);
-*/
     virtual CCustomObject* CreateObject			(LPVOID data, const char* name);
    CEditableObject*		get_draw_visual			(u8 _RP_TeamID, u8 _RP_Type, const GameTypeChooser& _GameType); 
 
@@ -70,7 +67,6 @@ public:
 	virtual void		OnDeviceDestroy			() override;
 
 private:
-	// Smart covers are drawn by their loophole models: an icon over them tells them apart
 	void				RenderSmartCoverIcons	();
 
 	struct SIconBatch
@@ -80,4 +76,5 @@ private:
 		xr_vector<u32> Colors;
 	};
 	SIconBatch			SmartCoverIcons;
+	SIconBatch			SmartTerrainIcons;
 };

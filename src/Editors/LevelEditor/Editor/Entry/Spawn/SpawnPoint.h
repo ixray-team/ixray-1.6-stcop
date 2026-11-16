@@ -103,6 +103,21 @@ public:
 		void			CheckLoopholeVisuals	();
 		// Editor side failure of the loophole visuals (missing model or animation)
 		xr_string		LoopholeVisualError;
+
+		// Smart terrain: models of the NPC its respawn_params squads spawn, drawn in a ring
+		struct SSquadPreview
+		{
+			CSE_Abstract* Entity = nullptr;
+			CLE_Visual* Visual = nullptr;
+			Fmatrix Offset;
+		};
+		xr_vector<SSquadPreview> SquadPreviews;
+		xr_string		SquadPreviewText;
+		shared_str		SquadPreviewSource;
+		void			UpdateSquadPreviews		();
+		void			ClearSquadPreviews		();
+		void			RenderSquadPreviews		(const Fmatrix& parent, int priority, bool strictB2F);
+		static shared_str FindIdleCycle			(IRenderVisual* Visual);
     	void 	OnAnimControlClick		(ButtonValue* value, bool& bModif, bool& bSafe);  
 		void	OnWallmarkUpdateClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 		void	OnWallmarkDetachClick	(ButtonValue* value, bool& bModif, bool& bSafe);
@@ -196,6 +211,7 @@ public:
 	bool IsGraphPoint()const;
 public:
 	bool IsSmartCover() const;
+	bool IsSmartTerrain() const;
 
     IC CSE_Abstract* GetEntity() { PreExportSpawn(); return m_SpawnData.GetEntity(); }
     virtual	IKinematics*	   _BCL	ObjectKinematics	 ()				 	{ if(!m_SpawnData.m_Visual||!m_SpawnData.m_Visual->visual)return 0;return m_SpawnData.m_Visual->visual->dcast_PKinematics();}

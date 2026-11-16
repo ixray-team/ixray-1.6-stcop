@@ -174,6 +174,7 @@ public:
 	virtual void DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, bool bCull, bool bCycle);
 
 	virtual void OutText(const Fvector& pos, const char* text, u32 color = 0xFF000000, u32 shadow_color = 0xFF909090) override;
+	void OutText(const Fvector& Pos, const char* Text, CGameFont* Font, u32 Color, u32 ShadowColor);
 
 	virtual void OnRender() override;
 };
