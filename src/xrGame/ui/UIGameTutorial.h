@@ -39,6 +39,7 @@ public:
 
 
 	const char*					m_name;
+	bool PdaOpenedByTutorial = false;
 	//IInputReceiver
 	virtual void			IR_OnMousePress		(int btn);
 	virtual void			IR_OnMouseRelease	(int btn);
