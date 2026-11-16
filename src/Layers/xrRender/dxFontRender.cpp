@@ -81,6 +81,23 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	_RELEASE(rhiSurface);
 }
 
+namespace
+{
+	u32 LerpColor(u32 From, u32 To, float Factor)
+	{
+		auto Channel = [Factor](u32 A, u32 B)
+		{
+			return u32(iFloor(float(A) + (float(B) - float(A)) * Factor + 0.5f));
+		};
+
+		return color_argb(
+			Channel(color_get_A(From), color_get_A(To)),
+			Channel(color_get_R(From), color_get_R(To)),
+			Channel(color_get_G(From), color_get_G(To)),
+			Channel(color_get_B(From), color_get_B(To)));
+	}
+}
+
 void dxFontRender::RenderBase(CGameFont& owner)
 {
 	if(pShader != nullptr) {
@@ -110,7 +127,6 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 			float X = float(iFloor(str.x));
 			float Y = float(iFloor(str.y));
-			float Y2 = Y + str.height;
 			const float xs = g_current_font_scale.x;
 
 			if(str.align)
@@ -135,7 +151,6 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 			X -= 0.5f;
 			Y -= 0.5f;
-			Y2 -= 0.5f;
 
 			const xr_special_char* UniStr = nullptr; 
 			bool IsUTF8Str = IsUTF8(str.string);
@@ -225,7 +240,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				}
 
 				float GlyphY = Y + glyphInfo->yOffset;
-				float GlyphY2 = Y2 + glyphInfo->yOffset;
+				float GlyphY2 = GlyphY + float(glyphInfo->TextureCoord.bottom - glyphInfo->TextureCoord.top);
 
 				float X2 = X + glyphInfo->Abc.abcB * owner.GetWidthCoef() * xs;
 
@@ -234,6 +249,18 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 				float v1 = float(glyphInfo->TextureCoord.top) / fHeight;
 				float v2 = float(glyphInfo->TextureCoord.bottom) / fHeight;
+
+				// Vertical gradients span a line-high cell that ends at the glyph bottom, as before glyph quads got their own height
+				float TopFactor = 0.f;
+				if (str.gradient && str.height > 0.f)
+				{
+					const float CellTop = GlyphY2 - str.height;
+					TopFactor = clampr((GlyphY - CellTop) / str.height, 0.f, 1.f);
+				}
+				const u32 VertTopClr = LerpColor(clr, clr2, TopFactor);
+				const u32 VertBottomClr = clr2;
+				const u32 VertDownTopClr = LerpColor(clr2, clr, TopFactor);
+				const u32 VertDownBottomClr = clr;
 
 				if (str.gradientMode == CGameFont::gm_horz)
 				{ 
@@ -259,20 +286,20 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				{
 					*vertexes =
 					{
-						Fvector4{X, GlyphY2,.0001f,.9999f}, clr, Fvector2{u1, v2},
-						Fvector4{X, GlyphY,.0001f,.9999f}, clr2, Fvector2{u1, v1},
-						Fvector4{X2, GlyphY2,.0001f,.9999f}, clr, Fvector2{u2, v2},
-						Fvector4{X2, GlyphY,.0001f,.9999f}, clr2, Fvector2{u2, v1}
+						Fvector4{X, GlyphY2,.0001f,.9999f}, VertDownBottomClr, Fvector2{u1, v2},
+						Fvector4{X, GlyphY,.0001f,.9999f}, VertDownTopClr, Fvector2{u1, v1},
+						Fvector4{X2, GlyphY2,.0001f,.9999f}, VertDownBottomClr, Fvector2{u2, v2},
+						Fvector4{X2, GlyphY,.0001f,.9999f}, VertDownTopClr, Fvector2{u2, v1}
 					};
 				}
 				else
 				{
 					*vertexes =
 					{
-						Fvector4{X, GlyphY2,.0001f,.9999f}, clr2, Fvector2{u1, v2},
-						Fvector4{X, GlyphY,.0001f,.9999f}, clr, Fvector2{u1, v1},
-						Fvector4{X2, GlyphY2,.0001f,.9999f}, clr2, Fvector2{u2, v2},
-						Fvector4{X2, GlyphY,.0001f,.9999f}, clr, Fvector2{u2, v1}
+						Fvector4{X, GlyphY2,.0001f,.9999f}, VertBottomClr, Fvector2{u1, v2},
+						Fvector4{X, GlyphY,.0001f,.9999f}, VertTopClr, Fvector2{u1, v1},
+						Fvector4{X2, GlyphY2,.0001f,.9999f}, VertBottomClr, Fvector2{u2, v2},
+						Fvector4{X2, GlyphY,.0001f,.9999f}, VertTopClr, Fvector2{u2, v1}
 					};
 				}
 				++vertexes;
