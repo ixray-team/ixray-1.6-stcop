@@ -204,7 +204,6 @@ public:
 	bool					IsEnemyInCar					();
 	CObject*				GetEnemyCarObject				();
 	Fvector					GetEnemyAttackPosition			();
-	bool					ShouldAttackCar					();
 
 	virtual void			on_before_sell					(CInventoryItem *item) override;
 	virtual bool			unlimited_ammo					() override { return false; }

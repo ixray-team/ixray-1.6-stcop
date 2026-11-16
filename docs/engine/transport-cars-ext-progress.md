@@ -1055,3 +1055,13 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - Добавлен переключатель `rs_car_legacy_character_push`: `0` — новый режим (по умолчанию), `1` — legacy, где мутанты и НПС снова толкают машину через основной shell. В legacy scraper игнорирует character-класс, а урон тарана сообщается из `CarBodySurfaceCallback()`.
 - `rs_car_scraper_helpers` остаётся отдельным тестовым переключателем helper-геометрий.
 - Проверка: autotest Debug/RelWithDebInfo/Release — `RESULT: PASS`, `errors=0`; загрузка `car_load_test2`, спавн машины и собак у колёс в обоих режимах.
+
+### Этап 107: полный откат character-коллизий
+
+- Откатаны `2aca5e5223` и `e1fad7d26d`, а также последующие правки character-коллизий (`59551784e5`, `3cebd25e16`, `678c9ed1c4`). Осталась только прежняя legacy-схема: персонажи сталкиваются с основным shell машины и могут толкать её, scraper остаётся отдельным кинематическим shell’ом для ragdoll’ов и персонажей.
+- Удалены `m_legacy_character_push`, `rs_car_legacy_character_push`, `rs_car_scraper_helpers`, `m_scraper_underbody_geoms`, дверные follower-shell’ы, `m_character_contacts`, `m_character_hit_times`, `RegisterCharacterContact()`, `ClampCharacterContacts()`, `WakePhysics()`, `HitCharacterFromCar()` и `ApplyCharacterCollisionMode()`.
+- `CollisionDetectionCallback()`, `CarBodySurfaceCallback()` и `ActorObstacleCallback()` возвращены к поведению до `2aca5e5223`; `WheellCollisionCallback()` больше не регистрирует character-контакты. Возвращены прежние параметры `HitFromCreature()`/`ApplyPush()` из `e1fad7d26d`.
+- Из AI мутантов убраны изменения `e1fad7d26d`: поиск машины как цели, обход/атака машины и регистрация удара водителя. `PHSimpleCharacterInline.h` также возвращён к состоянию до `e1fad7d26d`.
+- Удалён добавленный для нового режима API `EnableCharacterCollision()`/`SetCharacterClassCollide()`.
+- Сохранены не связанные с character-коллизиями изменения: двери и их коллизионные box’ы (`80d7213ac0`), `ResolveLoadPenetration()`, `PushByActor()` и отключение стояночного тормоза при выходе на sprint (`2cb815d622`).
+- Параметр `ram_damage_factor` удалён: его единственным потребителем был `HitCharacterFromCar()`, поэтому после отката он только читался из конфига и ни на что не влиял. Урон персонажам от машины снова считается через `ph_crash_speed_min`/`ph_crash_speed_max` и `ph_collision_damage_factor`.

@@ -62,26 +62,18 @@ void CMeleeChecker::on_hit_attempt(bool hit_success)
 
 bool	CMeleeChecker::can_start_melee (const CEntityAlive *enemy)
 {
-	const bool EnemyInCar = m_object->IsEnemyInCar();
-
 	// A car body hides the actor from the visual check. The car-surface
 	// distance is authoritative while the enemy is inside a vehicle.
-	if ( !EnemyInCar && !m_object->EnemyMan.see_enemy_now(enemy) )
+	if ( !m_object->IsEnemyInCar() && !m_object->EnemyMan.see_enemy_now(enemy) )
 	{
 		return false;
 	}
 
-	// The level graph rarely has a vertex right next to the car, so the
-	// monster can stop slightly outside the normal melee range. Use the full
-	// melee radius against the car surface instead of the tighter melee-start
-	// distance; otherwise it circles the car and only attacks by accident.
-	const float StartDistance = EnemyInCar ? get_max_distance() : get_min_distance();
-	return distance_to_enemy(enemy) < StartDistance;
+	return distance_to_enemy(enemy) < get_min_distance();
 }
 
 bool	CMeleeChecker::should_stop_melee (const CEntityAlive *enemy)
 {
-	const float StopDistance = m_object->IsEnemyInCar() ? get_max_distance() + 0.3f : get_max_distance();
-	return distance_to_enemy(enemy) > StopDistance;
+	return distance_to_enemy(enemy) > get_max_distance();
 }
 

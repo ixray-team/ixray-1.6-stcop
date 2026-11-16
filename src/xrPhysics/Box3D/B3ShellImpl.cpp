@@ -961,13 +961,6 @@ void CPHShell::DisableCharacterCollision()
 	SetGeomFilter();
 }
 
-void CPHShell::EnableCharacterCollision()
-{
-	CollideMask |= B3Category::Character;
-	CollideClassBits.set(B3CollideClass::NCCharacter, false);
-	SetGeomFilter();
-}
-
 void CPHShell::ResetPairs()
 {
 	const u64 Mask = CollisionDisabled ? 0ull : CollideMask;

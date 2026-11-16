@@ -87,12 +87,6 @@ void CStateMonsterAttackAbstract::execute()
 {
 	bool	can_attack_on_move		=	this->object->can_attack_on_move();
 	const bool enemy_in_car			=	this->object->IsEnemyInCar();
-	// A monster can reach the car from the front or rear before it completes
-	// the path to the chosen side approach vertex. Once it is close enough to
-	// the car surface, switch to melee instead of pushing into the body.
-	const bool car_melee			=	enemy_in_car &&
-										this->object->MeleeChecker.distance_to_enemy(this->object->EnemyMan.get_enemy()) <
-										this->object->MeleeChecker.get_max_distance() + 0.5f;
 
 	if		(check_home_point())		this->select_state(eStateAttack_MoveToHomePoint);
 	else if (check_steal_state())		this->select_state(eStateAttack_Steal);
@@ -113,7 +107,7 @@ void CStateMonsterAttackAbstract::execute()
 				b_melee		=	true;
 			}
 		} 
-		else if (car_melee || this->get_state(eStateAttack_Melee)->check_start_conditions() )
+		else if (this->get_state(eStateAttack_Melee)->check_start_conditions() )
 		{
 			b_melee			=	true;
 		}
