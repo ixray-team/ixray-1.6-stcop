@@ -86,14 +86,13 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 			if (OverrideMode == EOverrideMode::remove)
 			{
 				Original.DeleteChild(OriginalRoot);
+				return;
 			}
 			else if (OverrideMode == EOverrideMode::replace)
 			{
 				Original.DeleteChild(OriginalRoot);
-				tinyxml2::XMLElement* NewRoot = Original.NewElement(ModifElement->Value());
-				Original.InsertFirstChild(NewRoot);
-				CopyAttributes(NewRoot, ModifElement);
-				CopyChildren(NewRoot, ModifElement);
+				Original.InsertFirstChild(ModifElement->DeepClone(&Original));
+				return;
 			}
 			else if (OverrideMode == EOverrideMode::add)
 			{
@@ -104,7 +103,7 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 
 	IterateElement
 	(
-		ModifElement,
+		ModifElement ? ModifElement->FirstChildElement() : nullptr,
 		[&](tinyxml2::XMLElement* ChildElement, EOverrideMode OverrideMode)
 		{
 			if (OverrideMode == EOverrideMode::none)
@@ -142,20 +141,9 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 					IterateElement = IterateElement->FirstChildElement(Element->Value());
 					if (IDAttrib)
 					{
-						shared_str IDAttribShared = IDAttrib;
-						while (IterateElement != nullptr)
+						while (IterateElement != nullptr && !IterateElement->Attribute("id", IDAttrib))
 						{
-							auto CheckID = IterateElement->Attribute("id");
-							if (!I_ASSERT_M(CheckID, "XML element %s doesn't contains ID while others does!", Element->Value()))
-							{
-								IterateElement = nullptr;
-							}
-							if (CheckID == IDAttribShared)
-							{
-								break;
-							}
-
-							IterateElement = IterateElement->NextSiblingElement();
+							IterateElement = IterateElement->NextSiblingElement(Element->Value());
 						}
 					}
 				}
@@ -194,20 +182,9 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 					IterateElement = IterateElement->FirstChildElement(Element->Value());
 					if (IDAttrib)
 					{
-						shared_str IDAttribShared = IDAttrib;
-						while (IterateElement != nullptr)
+						while (IterateElement != nullptr && !IterateElement->Attribute("id", IDAttrib))
 						{
-							auto CheckID = IterateElement->Attribute("id");
-							if (!I_ASSERT_M(CheckID, "XML element %s doesn't contains ID while others does!", Element->Value()))
-							{
-								IterateElement = nullptr;
-							}
-							if (CheckID == IDAttribShared)
-							{
-								break;
-							}
-
-							IterateElement = IterateElement->NextSiblingElement();
+							IterateElement = IterateElement->NextSiblingElement(Element->Value());
 						}
 					}
 				}
@@ -243,25 +220,4 @@ FS_FileSet CXMLOverride::GetModifFiles(const char* Path, const char* File)
 	FS.file_list(ModifyList, _game_config_, FS_ListFiles, ModifPathMask.c_str());
 
 	return ModifyList;
-}
-
-void CXMLOverride::CopyAttributes(tinyxml2::XMLElement* Dest, tinyxml2::XMLElement* Src)
-{
-	const tinyxml2::XMLAttribute* attr = Src->FirstAttribute();
-	while (attr != nullptr)
-	{
-		Dest->SetAttribute(attr->Name(), attr->Value());
-		attr = attr->Next();
-	}
-}
-
-void CXMLOverride::CopyChildren(tinyxml2::XMLElement* Dest, tinyxml2::XMLElement* Src)
-{
-	for (tinyxml2::XMLElement* child = Src->FirstChildElement(); child != nullptr; child = child->NextSiblingElement())
-	{
-		tinyxml2::XMLElement* newChild = Dest->GetDocument()->NewElement(child->Value());
-		Dest->InsertEndChild(newChild);
-		CopyAttributes(newChild, child);
-		CopyChildren(newChild, child);
-	}
 }
