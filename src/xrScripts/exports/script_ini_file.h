@@ -16,8 +16,13 @@ class SCRIPTS_API CScriptIniFile :
 {
 protected:
 	typedef CInifile inherited;
+	using IniProvider = CInifile* (*)();
+	IniProvider Provider = nullptr;
 
 public:
+	explicit CScriptIniFile(IniProvider Source);
+	CInifile& GetIni();
+
 						CScriptIniFile		(IReader *F, const char* path=0);
 						CScriptIniFile		(const char* szFileName, bool ReadOnly=true, bool bLoadAtStart=true, bool SaveAtEnd=true, const char* path=nullptr);
 						CScriptIniFile		(bool read, const char* filepath, const char* game_path, bool loadOnStart = true);

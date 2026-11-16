@@ -12,6 +12,7 @@
 #include "level_graph.h"
 #include "ph_shell_interface.h"
 #include "script_game_object.h"
+#include "../xrScripts/exports/script_ini_file.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "game_cl_base.h"
@@ -331,7 +332,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 #pragma warning(push)
 #pragma warning(disable:4238)
 		IReader MemReader((void*) O->m_ini_string.c_str(), O->m_ini_string.size());
-		m_ini_file = new CInifile(&MemReader, FS.get_path(_game_config_)->m_Path);
+		m_ini_file = new CScriptIniFile(&MemReader, FS.get_path(_game_config_)->m_Path);
 #pragma warning(pop)
 	}
 

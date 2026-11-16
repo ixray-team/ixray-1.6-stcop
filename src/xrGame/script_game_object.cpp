@@ -22,7 +22,7 @@
 #include "WeaponMagazined.h"
 #include "xrMessages.h"
 #include "Inventory.h"
-//#include "script_ini_file.h"
+#include "../xrScripts/exports/script_ini_file.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "HangingLamp.h"
 #include "../xrEngine/LightAnimLibrary.h"
@@ -115,7 +115,7 @@ u32 CScriptGameObject::game_vertex_id() const
 
 CScriptIniFile *CScriptGameObject::spawn_ini() const
 {
-	return (CScriptIniFile*)object().spawn_ini();
+	return static_cast<CScriptIniFile*>(object().spawn_ini());
 }
 
 //////////////////////////////////////////////////////////////////////////

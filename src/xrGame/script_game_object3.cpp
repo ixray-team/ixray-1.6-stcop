@@ -139,7 +139,7 @@ void CScriptGameObject::AttachVehicle(CScriptGameObject* veh, bool bForce)
 {
 	if (CActor* actor = object().cast_actor())
 	{
-		CHolderCustom* vehicle = veh->object().cast_holder_custom();
+		CHolderCustom* vehicle = veh ? veh->object().cast_holder_custom() : nullptr;
 		if (vehicle != nullptr)
 		{
 			actor->use_HolderEx(vehicle, bForce);
@@ -1425,7 +1425,7 @@ void CScriptGameObject::sell_condition(CScriptIniFile* ini_file, const char* sec
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
-		inventory_owner->trade_parameters().process(CTradeParameters::action_sell(0), *ini_file, section);
+		inventory_owner->trade_parameters().process(CTradeParameters::action_sell(0), ini_file->GetIni(), section);
 	}
 	else
 	{
@@ -1449,7 +1449,7 @@ void CScriptGameObject::buy_condition(CScriptIniFile* ini_file, const char* sect
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
-		inventory_owner->trade_parameters().process(CTradeParameters::action_buy(0), *ini_file, section);
+		inventory_owner->trade_parameters().process(CTradeParameters::action_buy(0), ini_file->GetIni(), section);
 	}
 	else
 	{
@@ -1473,7 +1473,7 @@ void CScriptGameObject::show_condition(CScriptIniFile* ini_file, const char* sec
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
-		inventory_owner->trade_parameters().process(CTradeParameters::action_show(0), *ini_file, section);
+		inventory_owner->trade_parameters().process(CTradeParameters::action_show(0), ini_file->GetIni(), section);
 	}
 	else
 	{
@@ -1485,7 +1485,7 @@ void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, const char* secti
 {
 	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
 	{
-		inventory_owner->buy_supplies(*ini_file, section);
+		inventory_owner->buy_supplies(ini_file->GetIni(), section);
 	}
 	else
 	{
@@ -1507,7 +1507,7 @@ void CScriptGameObject::buy_item_condition_factor(float factor)
 
 void sell_condition(CScriptIniFile* ini_file, const char* section)
 {
-	default_trade_parameters().process(CTradeParameters::action_sell(0), *ini_file, section);
+	default_trade_parameters().process(CTradeParameters::action_sell(0), ini_file->GetIni(), section);
 }
 
 void sell_condition(float friend_factor, float enemy_factor)
@@ -1517,7 +1517,7 @@ void sell_condition(float friend_factor, float enemy_factor)
 
 void buy_condition(CScriptIniFile* ini_file, const char* section)
 {
-	default_trade_parameters().process(CTradeParameters::action_buy(0), *ini_file, section);
+	default_trade_parameters().process(CTradeParameters::action_buy(0), ini_file->GetIni(), section);
 }
 
 void buy_condition(float friend_factor, float enemy_factor)
@@ -1527,7 +1527,7 @@ void buy_condition(float friend_factor, float enemy_factor)
 
 void show_condition(CScriptIniFile* ini_file, const char* section)
 {
-	default_trade_parameters().process(CTradeParameters::action_show(0), *ini_file, section);
+	default_trade_parameters().process(CTradeParameters::action_show(0), ini_file->GetIni(), section);
 }
 
 const char* CScriptGameObject::sound_prefix() const

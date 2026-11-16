@@ -22,7 +22,7 @@ const char* get_section_name(const CSE_Abstract *abstract)
 
 CScriptIniFile *get_spawn_ini(CSE_Abstract *abstract)
 {
-	return	((CScriptIniFile*)&abstract->spawn_ini());
+	return static_cast<CScriptIniFile*>(&abstract->spawn_ini());
 }
 
 namespace xrServerObjectsScript

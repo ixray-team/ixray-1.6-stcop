@@ -12,6 +12,7 @@
 #include "game_base_space.h"
 #include "script_value_container_impl.h"
 #include "clsid_game.h"
+#include "../xrScripts/exports/script_ini_file.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -172,7 +173,7 @@ CInifile &CSE_Abstract::spawn_ini			()
 			m_ini_string.size()
 		);
 
-		m_ini_file = new CInifile(
+		m_ini_file = new CScriptIniFile(
 			&temp,
 			FS.get_path(_game_config_)->m_Path
 		);
