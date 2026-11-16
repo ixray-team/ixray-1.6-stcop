@@ -418,8 +418,12 @@ void CUISequenceSimpleItem::Start()
 			}
 
 			bool isPDAShown = pActor->HudAnimator()->PdaAnimator() != nullptr ? pActor->HudAnimator()->PdaAnimator()->IsActive() : CurrentGameUI()->PdaMenu()->IsShown();
-			if ( ( !isPDAShown && bShowPda ) || (isPDAShown && !bShowPda ) )
+
+			const bool OpenPda = !isPDAShown && bShowPda;
+			const bool ClosePda = isPDAShown && !bShowPda && m_owner->PdaOpenedByTutorial;
+			if (OpenPda || ClosePda)
 			{
+				m_owner->PdaOpenedByTutorial = OpenPda;
 				if (pActor->HudAnimator()->PdaAnimator() != nullptr)
 				{
 					pActor->HudAnimator()->PdaAnimator()->SwitchAnimator();
@@ -465,17 +469,13 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 			}
 
 			bool isPDAShown = pActor->HudAnimator()->PdaAnimator() != nullptr ? pActor->HudAnimator()->PdaAnimator()->IsActive() : CurrentGameUI()->PdaMenu()->IsShown();
-			if (isPDAShown)
+			if (isPDAShown && m_owner->PdaOpenedByTutorial)
 			{
 				if (pActor->HudAnimator()->PdaAnimator() == nullptr)
 				{
 					CurrentGameUI()->PdaMenu()->HideDialog();
+					m_owner->PdaOpenedByTutorial = false;
 				}
-			}
-
-			if (CurrentGameUI()->GetActiveInventoryWindow())
-			{
-				CurrentGameUI()->GetActiveInventoryWindow()->HideDialog();
 			}
 		}
 	}
