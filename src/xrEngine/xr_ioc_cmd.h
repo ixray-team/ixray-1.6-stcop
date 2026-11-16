@@ -712,18 +712,17 @@ public:
 
 	virtual void	Execute	(const char* args)
 	{
-		int Value = 0;
-		if (std::from_chars(args, args + std::strlen(args), Value).ec != std::errc{}) 
-		{
-			*value = !strcmp(args, "true");
-		} 
-		else if (EQ(args, "1"))
+		if (EQ(args, "on") || EQ(args, "true") || EQ(args, "1"))
 		{
 			*value = true;
 		}
-		else
+		else if (EQ(args, "off") || EQ(args, "false") || EQ(args, "0"))
 		{
 			*value = false;
+		}
+		else
+		{
+			InvalidSyntax();
 		}
 	}
 
@@ -733,11 +732,16 @@ public:
 		*value ? xr_strcat(S, "true") : xr_strcat(S, "false");
 	}
 
+	void Info(TInfo& I) override
+	{
+		xr_strcpy(I, "'on/off', 'true/false' or '1/0'");
+	}
+
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
 		TStatus str;
 
-		xr_sprintf(str, sizeof(str), "%s [off/false, on/true]", *value ? "true" : "false");
+		xr_sprintf(str, sizeof(str), "%s [off/false/0, on/true/1]", *value ? "true" : "false");
 		tips.emplace_back(str);
 
 		IConsole_Command::fill_tips(tips, mode);

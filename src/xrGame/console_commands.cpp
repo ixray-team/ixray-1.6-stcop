@@ -2297,15 +2297,16 @@ public:
 	}
 
 	virtual void Execute(const char* args) {
-		if (!g_pGamePersistent && !OnServer())
+		if (!g_pGameLevel || !g_pGamePersistent || !OnServer())
 		{
 			return;
 		}
 
 		u32 new_hours = 0, new_mins = 0;
-		int sc = sscanf_s(args, "%u %u", &new_hours, &new_mins);
+		char Extra = 0;
+		const int Count = sscanf_s(args, "%u %u %c", &new_hours, &new_mins, &Extra, 1u);
 
-		if (new_hours > 24 || new_mins > 60)
+		if (Count != 2 || new_hours >= 24 || new_mins >= 60)
 		{
 			Msg("! Time entered incorrectly");
 			return;

@@ -88,21 +88,31 @@ CGamePersistent::CGamePersistent(void)
 	//dSetFreeHandler				(ode_free		);
 
 	// 
-	bool bDemoMode	= Core.ParamsData.test(ECoreParams::demomode);
-	if (bDemoMode)
+	pDemoFile = nullptr;
+	eDemoStart = nullptr;
+	if (Core.ParamsData.test(ECoreParams::demomode))
 	{
-		string256	fname = {};
-		const char*		name	=	strstr(Core.Params,"-demomode ") + 10;
-		sscanf				(name,"%255s",fname);
-		R_ASSERT2			(fname[0],"Missing filename for 'demomode'");
-		Msg					("- playing in demo mode '%s'",fname);
-		pDemoFile			=	FS.r_open	(fname);
-		Device.seqFrame.Add	(this);
-		eDemoStart			= g_pEventManager->Event.Handler_Attach("GAME:demo",this);
-		uTime2Change		=	0;
-	} else {
-		pDemoFile			=	nullptr;
-		eDemoStart			=	nullptr;
+		string256 FileName = {};
+		const char* Argument = strstr(Core.Params, "-demomode ");
+		if (Argument && sscanf(Argument + sizeof("-demomode ") - 1, "%255s", FileName) == 1 && FileName[0] != '-')
+		{
+			pDemoFile = FS.r_open(FileName);
+			if (pDemoFile)
+			{
+				Msg("- playing in demo mode '%s'", FileName);
+				Device.seqFrame.Add(this);
+				eDemoStart = g_pEventManager->Event.Handler_Attach("GAME:demo", this);
+				uTime2Change = 0;
+			}
+			else
+			{
+				Msg("! Cannot open demo list '%s'", FileName);
+			}
+		}
+		else
+		{
+			Msg("! Missing filename for -demomode");
+		}
 	}
 
 	eQuickLoad				= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
