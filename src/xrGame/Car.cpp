@@ -2,7 +2,6 @@
 #include "pch_script.h"
 #include "ParticlesObject.h"
 #include "../xrPhysics/ODE/Physics.h"
-#include "../xrPhysics/IPHCharacter.h"
 
 #ifdef DEBUG
 #	include "../xrEngine/StatGraph.h"
@@ -35,7 +34,6 @@
 #include "../xrPhysics/IActivationShape.h"
 #include "../xrPhysics/PHCollideValidator.h"
 #include "CharacterPhysicsSupport.h"
-#include "PHMovementControl.h"
 #include "car_memory.h"
 
 #include "UIGameSP.h"
@@ -49,15 +47,6 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/EnnumerateVertices.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
-
-// Temporary test switch: 0 disables the underbody plate and side-skirt
-// collisions for every physics object, 1 restores the normal behaviour.
-bool rs_car_scraper_helpers = false;
-
-// Temporary test switch: 1 restores the pre-refactor behaviour where mutants
-// and NPCs push the car through the main shell. 0 keeps the per-contact
-// character filter.
-bool rs_car_legacy_character_push = false;
 
 namespace
 {
@@ -401,7 +390,6 @@ CCar::CCar()
 	m_hit_anomaly_scale = 1.f;
 	m_mutant_hit_impulse_factor = 1.f;
 	m_burer_gravi_impulse_factor = 1.f;
-	m_ram_damage_factor = 1.f;
 	m_push_impulse_factor = 1.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
@@ -431,7 +419,6 @@ CCar::CCar()
 	m_torch_usage = false;
 	m_camera_last_mmove_time = Device.dwTimeGlobal + 3000;
 	characters_scraper_shell = NULL;
-	m_legacy_character_push = false;
 	b_event_exit_car = false;
 	m_exit_car_time = 0;
 	m_exit_door_bone = BI_NONE;
@@ -1409,11 +1396,6 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 			m_pPhysicsShell->RegisterToCLGroup(ScraperGroup);
 		}
 		characters_scraper_shell->RegisterToCLGroup(ScraperGroup);
-		for (SDoorScraper& Door : m_door_scrapers)
-		{
-			if (Door.shell != nullptr)
-				Door.shell->RegisterToCLGroup(ScraperGroup);
-		}
 	}
 
 	setEnabled						(TRUE);
@@ -1490,22 +1472,6 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 void CCar::ActorObstacleCallback					(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2)	
 {
 	dContact& c = cphc.Native();
-
-	// The default mode rejects every character contact before the solver.
-	// Do not let an actor-obstacle material re-enable it afterwards.
-	CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(bo1));
-	if (Holder == nullptr)
-		Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(!bo1));
-	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
-	if (Car != nullptr && !Car->m_legacy_character_push)
-	{
-		IPHCharacter* Character = cphc.GetCharacter(bo1);
-		if (Character == nullptr)
-			Character = cphc.GetCharacter(!bo1);
-		if (Character != nullptr)
-			return;
-	}
-
 	if(!do_colide)
 	{
 		if(material_1&&material_1->Flags.test(SGameMtl::flActorObstacle))do_colide=true;
@@ -1522,107 +1488,12 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 	if(!l_pUD1) return;
 	if(!l_pUD2) return;
 
-	CCar* Car = nullptr;
-	if (cphc.GetObject(bo1) == nullptr)
-		Car = static_cast<CCar*>(cphc.GetCallbackData(bo1));
-	else if (cphc.GetObject(!bo1) == nullptr)
-		Car = static_cast<CCar*>(cphc.GetCallbackData(!bo1));
-
-	const dGeomID G1 = c.geom.g1;
-	const dGeomID G2 = c.geom.g2;
-	bool IsHelper = false;
-	if (Car != nullptr)
-	{
-		for (const CODEGeom* Geom : Car->m_scraper_underbody_geoms)
-		{
-			if (Geom == nullptr)
-				continue;
-
-			const dGeomID Inner = Geom->geometry();
-			const dGeomID Transform = Geom->geometry_transform();
-			if ((Inner != nullptr && (Inner == G1 || Inner == G2)) ||
-				(Transform != nullptr && (Transform == G1 || Transform == G2)))
-			{
-				IsHelper = true;
-				break;
-			}
-		}
-
-		// Temporary test switch: ignore the plate and skirts entirely, so a
-		// test can verify whether they are responsible for a contact. Humans
-		// never hit them even when the helpers are enabled.
-		if (IsHelper && !rs_car_scraper_helpers)
-		{
-			do_colide = false;
-			return;
-		}
-	}
-
-	// The scraper is a kinematic shell that follows the car. A live character
-	// caught by it can be ejected with a large impulse, so remember the
-	// character and cap its upward velocity after the physics step.
-	IPHCharacter* Character = cphc.GetCharacter(bo1);
-	if (Character == nullptr)
-		Character = cphc.GetCharacter(!bo1);
-	if (Character != nullptr)
-	{
-		bool IsMonster = true;
-		if (CGameObject* Target = smart_cast<CGameObject*>(Character->PhysicsRefObject()))
-		{
-			if (CEntityAlive* Alive = Target->cast_entity_alive())
-				IsMonster = Alive->cast_base_monster() != nullptr;
-		}
-
-		bool IsDoorScraper = false;
-		if (Car != nullptr)
-		{
-			for (const CODEGeom* Geom : Car->m_door_scraper_geoms)
-			{
-				if (Geom == nullptr)
-					continue;
-
-				const dGeomID Inner = Geom->geometry();
-				const dGeomID Transform = Geom->geometry_transform();
-				if ((Inner != nullptr && (Inner == G1 || Inner == G2)) ||
-					(Transform != nullptr && (Transform == G1 || Transform == G2)))
-				{
-					IsDoorScraper = true;
-					break;
-				}
-			}
-		}
-
-		// The underbody plate and side skirts are invisible helpers that only
-		// keep mutants from crawling under the car. Humans must not hit them.
-		if (Car != nullptr && !IsMonster && IsHelper)
-		{
-			// Even though the contact itself is rejected, touching the car
-			// must wake a shell restored from a save in the disabled state.
-			Car->WakePhysics();
-			do_colide = false;
-			return;
-		}
-
-		// The scraper now mirrors the real car bone shapes, so its body boxes
-		// are what the player and NPCs collide with. Door followers are
-		// separate and do not deal ram damage.
-		if (Car != nullptr)
-		{
-			Car->WakePhysics();
-			Car->RegisterCharacterContact(Character);
-			if (!IsDoorScraper)
-				Car->HitCharacterFromCar(Character, cphc.GetPosition());
-		}
-		do_colide = true;
-		return;
-	}
-
 	CPhysicsShellHolder *Collided_object = NULL;
 	CPhysicsShellHolder *ME = smart_cast<CPhysicsShellHolder*>(l_pUD1->ph_ref_object);
 	CPhysicsShellHolder *WHO = smart_cast<CPhysicsShellHolder*>(l_pUD2->ph_ref_object);
 	Collided_object = ME ? ME : WHO ? WHO : NULL;
 	CGameObject* Collided_gobject = smart_cast<CGameObject*>(Collided_object);
-	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_car() || Collided_gobject->cast_inventory_item())
+	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_actor() || Collided_gobject->cast_car() || Collided_gobject->cast_inventory_item())
 	{
 		do_colide = false;
 		return;
@@ -1631,36 +1502,14 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 
 void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl* material_1, SGameMtl* material_2)
 {
-	CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(bo1));
-	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
-	if (!Car || Car->getDestroy())
-		return;
-
-	// New mode: reject character contacts before the solver; the scraper then
-	// blocks them without pushing the car. Legacy mode: let the main shell
-	// push the car and report ram damage here. This must run before the wheel
-	// early-out, otherwise wheel contacts still push the car in the new mode.
-	IPHCharacter* Character = cphc.GetCharacter(bo1);
-	if (Character == nullptr)
-		Character = cphc.GetCharacter(!bo1);
-	if (Character != nullptr)
-	{
-		if (!Car->m_legacy_character_push)
-		{
-			do_colide = false;
-			return;
-		}
-
-		if (do_colide)
-		{
-			Car->RegisterCharacterContact(Character);
-			Car->HitCharacterFromCar(Character, cphc.GetPosition());
-		}
-	}
-
 	// Wheels are handled by WheellCollisionCallback, where the surface friction
 	// override is applied before the wheel-specific multipliers.
 	if (cphc.HasObjectCallback(bo1, &CCar::SWheel::WheellCollisionCallback))
+		return;
+
+	CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(bo1));
+	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
+	if (!Car || Car->getDestroy())
 		return;
 
 	// The car surface table describes static level surfaces only. Other cars,
@@ -1781,22 +1630,11 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	}
 
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
-	m_character_contacts.clear();
-	m_character_hit_times.clear();
-
-	// The main shell always keeps character collisions. In the default mode
-	// CarBodySurfaceCallback rejects them so the scraper can block characters
-	// without pushing the car. Legacy mode lets them push the car normally.
-	m_legacy_character_push = rs_car_legacy_character_push;
-	ApplyCharacterCollisionMode();
-
 	StoreAllElementSpawnLocalTransforms();
 }
 
 void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 {
-	m_scraper_underbody_geoms.clear();
-
 	if (!ini->line_exist("car_definition", "character_scraper"))
 		return;
 
@@ -1804,143 +1642,24 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	CPhysicsElement* RootElement = P_create_Element();
 	bool HasGeometry = false;
 
-	Fbox BoneBounds;
-	BoneBounds.invalidate();
-
-	auto ExtendBounds = [](Fbox& Bounds, const Fobb& Box)
-	{
-		for (int ix = 0; ix < 2; ++ix)
-		{
-			for (int iy = 0; iy < 2; ++iy)
-			{
-				for (int iz = 0; iz < 2; ++iz)
-				{
-					Fvector Corner = Box.m_translate;
-					Corner.mad(Box.m_rotate.i, ix ? Box.m_halfsize.x : -Box.m_halfsize.x);
-					Corner.mad(Box.m_rotate.j, iy ? Box.m_halfsize.y : -Box.m_halfsize.y);
-					Corner.mad(Box.m_rotate.k, iz ? Box.m_halfsize.z : -Box.m_halfsize.z);
-					Bounds.modify(Corner);
-				}
-			}
-		}
-	};
-
-	auto ExtendShapeBounds = [&ExtendBounds](Fbox& Bounds, const SBoneShape& Shape, const Fmatrix& Xform)
-	{
-		switch (Shape.type)
-		{
-		case SBoneShape::stBox:
-		{
-			Fobb Box;
-			Box.transform(Shape.box, Xform);
-			ExtendBounds(Bounds, Box);
-			break;
-		}
-		case SBoneShape::stSphere:
-		{
-			Fvector Center;
-			Xform.transform_tiny(Center, Shape.sphere.P);
-			const float Radius = Shape.sphere.R;
-			Bounds.modify(Fvector(Center.x - Radius, Center.y - Radius, Center.z - Radius));
-			Bounds.modify(Fvector(Center.x + Radius, Center.y + Radius, Center.z + Radius));
-			break;
-		}
-		case SBoneShape::stCylinder:
-		{
-			Fvector Center;
-			Xform.transform_tiny(Center, Shape.cylinder.m_center);
-			const float Radius = Shape.cylinder.m_radius;
-			const float HalfHeight = Shape.cylinder.m_height * 0.5f;
-			const float Extent = sqrtf(Radius * Radius + HalfHeight * HalfHeight);
-			Bounds.modify(Fvector(Center.x - Extent, Center.y - Extent, Center.z - Extent));
-			Bounds.modify(Fvector(Center.x + Extent, Center.y + Extent, Center.z + Extent));
-			break;
-		}
-		default:
-			break;
-		}
-	};
-
-	// Build the character shell from the same bone shapes as the real car
-	// shell. Using the visual bone OBB (LL_GetBox) also added bones without a
-	// physics shape, such as exhausts, and those visual boxes blocked the
-	// player far outside the bodywork.
-	auto IsDoorBone = [this, ini, K](u16 BoneId)
-	{
-		return m_doors.find(BoneId) != m_doors.end() ||
-			ini->line_exist(K->LL_BoneName_dbg(BoneId), "engine_door");
-	};
-
+	// Build a compound from the car bone boxes instead of one visual AABB.
+	// The AABB includes empty corners outside the bodywork and makes the car
+	// push nearby ragdolls from several metres away.
 	for (auto& Bone : bone_map)
 	{
 		const u16 BoneId = Bone.first;
 		if (BoneId >= bones_bind_forms.size())
 			continue;
 
-		// Dynamic door leaves get their own followers in UpdateDoorScrapers():
-		// their bind-pose box would otherwise stay behind when a door opens.
-		if (IsDoorBone(BoneId))
+		Fobb BoneBox = K->LL_GetBox(BoneId);
+		if (BoneBox.m_halfsize.magnitude() < EPS_L)
 			continue;
 
-		const SBoneShape& Shape = K->LL_GetData(BoneId).shape;
-		if (Shape.type == SBoneShape::stNone || Shape.flags.test(SBoneShape::sfNoPhysics))
-			continue;
+		Fobb LocalBox;
+		LocalBox.transform(BoneBox, bones_bind_forms[BoneId]);
+		LocalBox.m_halfsize.add(0.05f);
 
-		RootElement->add_Shape(Shape, bones_bind_forms[BoneId]);
-		ExtendShapeBounds(BoneBounds, Shape, bones_bind_forms[BoneId]);
-		HasGeometry = true;
-	}
-
-	// Bone boxes leave gaps under the chassis. Close the underbody with a
-	// plate and low side skirts so characters cannot crawl through the car
-	// from below or through the wheel wells. Remember these helper geoms: the
-	// actor must be able to approach the visible bodywork, so his contacts
-	// with them are ignored below.
-	// Use the tight union of the bone boxes instead of the visual AABB: the
-	// AABB can include open doors and empty corners and then blocks nearby
-	// characters far outside the bodywork.
-	Fbox Bounds = BoneBounds.is_valid() ? BoneBounds : BoundingBox();
-	if (Bounds.is_valid())
-	{
-		Fvector Center;
-		Fvector Half;
-		Bounds.get_CD(Center, Half);
-
-		constexpr float BottomThickness = 0.2f;
-		constexpr float SkirtHalfHeight = 0.35f;
-		constexpr float SkirtThickness = 0.1f;
-
-		auto AddHelperBox = [this, RootElement](const Fobb& Box)
-		{
-			RootElement->add_Box(Box);
-			if (CODEGeom* Geom = RootElement->last_geom())
-				m_scraper_underbody_geoms.push_back(Geom);
-		};
-
-		Fobb BottomBox;
-		BottomBox.m_rotate.identity();
-		BottomBox.m_translate.set(Center.x, Bounds.min.y + BottomThickness, Center.z);
-		BottomBox.m_halfsize.set(Half.x * 0.98f, BottomThickness, Half.z * 0.98f);
-		AddHelperBox(BottomBox);
-
-		const float SkirtY = Bounds.min.y + SkirtHalfHeight;
-		const float SkirtOffsetX = Half.x - SkirtThickness;
-		const float SkirtOffsetZ = Half.z - SkirtThickness;
-
-		Fobb Skirt;
-		Skirt.m_rotate.identity();
-		Skirt.m_halfsize.set(SkirtThickness, SkirtHalfHeight, Half.z * 0.98f);
-		Skirt.m_translate.set(Center.x - SkirtOffsetX, SkirtY, Center.z);
-		AddHelperBox(Skirt);
-		Skirt.m_translate.set(Center.x + SkirtOffsetX, SkirtY, Center.z);
-		AddHelperBox(Skirt);
-
-		Skirt.m_halfsize.set(Half.x * 0.98f, SkirtHalfHeight, SkirtThickness);
-		Skirt.m_translate.set(Center.x, SkirtY, Center.z - SkirtOffsetZ);
-		AddHelperBox(Skirt);
-		Skirt.m_translate.set(Center.x, SkirtY, Center.z + SkirtOffsetZ);
-		AddHelperBox(Skirt);
-
+		RootElement->add_Box(LocalBox);
 		HasGeometry = true;
 	}
 
@@ -1966,152 +1685,6 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	characters_scraper_shell->SetPrefereExactIntegration();
 	characters_scraper_shell->mXFORM.set(XFORM());
 	characters_scraper_shell->Activate();
-	characters_scraper_shell->set_CallbackData(this);
-
-	CreateDoorScrapers(K, ini);
-}
-
-void CCar::ApplyCharacterCollisionMode()
-{
-	if (m_pPhysicsShell == nullptr)
-		return;
-
-	// The main shell always keeps character collisions. In the new mode the
-	// per-contact filter in CarBodySurfaceCallback rejects them; in legacy mode
-	// they are allowed to push the car.
-	m_pPhysicsShell->EnableCharacterCollision();
-
-	if (characters_scraper_shell != nullptr)
-	{
-		if (m_legacy_character_push)
-			characters_scraper_shell->DisableCharacterCollision();
-		else
-			characters_scraper_shell->EnableCharacterCollision();
-	}
-
-#ifdef DEBUG
-	Msg("[car collision mode] legacy=%d", m_legacy_character_push ? 1 : 0);
-#endif
-}
-
-void CCar::CreateDoorScrapers(IKinematics* K, CInifile* ini)
-{
-	if (K == nullptr)
-		return;
-
-	auto AddDoor = [this, K](u16 BoneId)
-	{
-		for (const SDoorScraper& Existing : m_door_scrapers)
-		{
-			if (Existing.bone_id == BoneId)
-				return;
-		}
-
-		const SBoneShape& Shape = K->LL_GetData(BoneId).shape;
-		Fobb Box;
-		if (Shape.type == SBoneShape::stBox)
-			Box = Shape.box;
-		else
-			Box = K->LL_GetBox(BoneId);
-		if (Box.m_halfsize.magnitude() < EPS_L)
-			return;
-
-		CPhysicsShell* Shell = P_create_Shell();
-		CPhysicsElement* Element = P_create_Element();
-		Element->add_Box(Box);
-		CODEGeom* Geom = Element->last_geom();
-		Shell->add_Element(Element);
-		Shell->SetIgnoreStatic();
-		Shell->set_ApplyByGravity(FALSE);
-		Shell->setMass(25.f);
-		Shell->SetMaterial(K->LL_GetData(K->LL_GetBoneRoot()).game_mtl_idx);
-		Shell->set_PhysicsRefObject(nullptr);
-		Shell->add_ObjectContactCallback(CollisionDetectionCallback);
-		Shell->SetPrefereExactIntegration();
-		Fmatrix World;
-		World.mul_43(XFORM(), K->LL_GetTransform(BoneId));
-		Shell->mXFORM.set(World);
-		Shell->Activate();
-		Shell->set_CallbackData(this);
-
-		CPhysicsElement* DoorElement = nullptr;
-		auto BoneIt = bone_map.find(BoneId);
-		if (BoneIt != bone_map.end())
-			DoorElement = BoneIt->second.element;
-
-		m_door_scrapers.push_back({Shell, DoorElement, BoneId});
-		if (Geom != nullptr)
-			m_door_scraper_geoms.push_back(Geom);
-	};
-
-	for (const auto& Door : m_doors)
-		AddDoor(Door.first);
-
-	// Engine doors are collected later than SDoor, so detect them by the ini
-	// section name.
-	for (auto& Bone : bone_map)
-	{
-		const u16 BoneId = Bone.first;
-		if (BoneId >= K->LL_BoneCount())
-			continue;
-		if (ini != nullptr && ini->line_exist(K->LL_BoneName_dbg(BoneId), "engine_door"))
-			AddDoor(BoneId);
-	}
-}
-
-void CCar::UpdateDoorScrapers()
-{
-	if (m_door_scrapers.empty())
-		return;
-
-	IKinematics* K = PKinematics(Visual());
-	if (K == nullptr)
-		return;
-
-	for (SDoorScraper& Door : m_door_scrapers)
-	{
-		if (Door.shell == nullptr || !Door.shell->isActive() || Door.bone_id >= K->LL_BoneCount())
-			continue;
-
-		Fmatrix World;
-		World.mul_43(XFORM(), K->LL_GetTransform(Door.bone_id));
-
-		Door.shell->SetTransform(World, mh_clear);
-		Door.shell->set_LinearVel(zero_vel);
-		Door.shell->set_AngularVel(zero_vel);
-		Door.shell->Update();
-
-		// The real door element is deactivated while the door is closed. In
-		// that state the kinematic box keeps the door solid for characters.
-		// An active element already has real collision (and can swing when the
-		// player pushes it), so the follower is switched off to avoid a second,
-		// immovable door in the same place.
-		const bool RealCollision =
-			Door.element != nullptr && Door.element->isActive() && Door.element->isEnabled();
-		if (RealCollision)
-		{
-			if (Door.shell->isEnabled())
-				Door.shell->Disable();
-		}
-		else if (!Door.shell->isEnabled())
-		{
-			Door.shell->Enable();
-		}
-	}
-}
-
-void CCar::DestroyDoorScrapers()
-{
-	for (SDoorScraper& Door : m_door_scrapers)
-	{
-		if (Door.shell == nullptr)
-			continue;
-		Door.shell->Deactivate();
-		Door.shell->ZeroCallbacks();
-		xr_delete(Door.shell);
-	}
-	m_door_scrapers.clear();
-	m_door_scraper_geoms.clear();
 }
 
 void CCar::CreateCarTurrets(CInifile* ini)
@@ -2562,11 +2135,6 @@ void	CCar::net_Destroy()
 
 void CCar::DestroyCharacterScraper()
 {
-	m_character_contacts.clear();
-	m_character_hit_times.clear();
-	m_scraper_underbody_geoms.clear();
-	DestroyDoorScrapers();
-
 	if (!characters_scraper_shell)
 		return;
 
@@ -2836,12 +2404,6 @@ void CCar::RemoveGrassSpheres()
 }
 void CCar::UpdateCL				( )
 {
-	if (m_legacy_character_push != rs_car_legacy_character_push)
-	{
-		m_legacy_character_push = rs_car_legacy_character_push;
-		ApplyCharacterCollisionMode();
-	}
-
 	// Apply saved engine/light state here as well as in net_Spawn. Depending on
 	// the serialization path the client chunk may arrive after net_Spawn, and
 	// then the car would keep b_engine_on but never call SCarSound::Drive().
@@ -3649,10 +3211,10 @@ void CCar::HitFromCreature(CObject* who, float value, float impulse, const Fvect
 	// The attack impulse is tuned for the actor, while the monster body adds
 	// momentum of its own. Convert both to momentum, cap the result and divide
 	// by the car mass: a heavy truck moves much less than a light car.
-	constexpr float ImpulseToMomentum = 16.f; // kg*m/s per attack impulse unit
-	constexpr float AttackerBodySpeed = 4.f;  // m/s, monster body momentum
-	constexpr float MaxMomentum = 5000.f;     // kg*m/s, strongest melee hit
-	constexpr float MaxSpeed = 4.f;           // m/s, guard for very light cars
+	constexpr float ImpulseToMomentum = 8.f;  // kg*m/s per attack impulse unit
+	constexpr float AttackerBodySpeed = 3.f;  // m/s, monster body momentum
+	constexpr float MaxMomentum = 2400.f;     // kg*m/s, strongest melee hit
+	constexpr float MaxSpeed = 3.f;           // m/s, guard for very light cars
 
 	const float AttackerMass = GetCarAttackerMass(who);
 	const float AttackImpulse = std::max(impulse, 0.f);
@@ -3664,26 +3226,8 @@ void CCar::HitFromCreature(CObject* who, float value, float impulse, const Fvect
 
 	const float Speed = std::min(Momentum / CarMass, MaxSpeed);
 
-	// The animation impulse direction is often mostly vertical (a dog bite
-	// points up). A hit like that only lifts the car and looks like no reaction
-	// at all. Push the car away from the attacker horizontally and keep only a
-	// small vertical part of the animation direction.
-	Fvector PushDir = dir;
-	if (who != nullptr)
-	{
-		Fvector ToCar;
-		ToCar.sub(Position(), who->Position());
-		ToCar.y = 0.f;
-		if (ToCar.magnitude() > EPS_L)
-		{
-			ToCar.normalize();
-			PushDir = ToCar;
-			PushDir.y = dir.y * 0.2f;
-		}
-	}
-
 	const Fvector Contact = GetNearestPoint(who != nullptr ? who->Position() : Position());
-	ApplyPush(PushDir, Speed, Contact);
+	ApplyPush(dir, Speed, Contact);
 }
 
 void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point)
@@ -3691,8 +3235,8 @@ void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point
 	if (getDestroy() || m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
 		return;
 
-	// rs_car_god protects the car from damage, not from physical reactions.
-	// A mutant bite must still rock and move the body.
+	if (OwnerActor() && rs_car_god)
+		return;
 
 	if (speed <= 0.f)
 		return;
@@ -3719,12 +3263,6 @@ void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point
 	{
 		LocalPoint.y = (Box.min.y + Box.max.y) * 0.5f;
 	}
-
-	// A parked car can be in the disabled state. A deliberate hit must wake
-	// the shell, otherwise the impulse is applied to a sleeping body and the
-	// car does not react at all.
-	if (!m_pPhysicsShell->isEnabled())
-		m_pPhysicsShell->Enable();
 
 	// ODE expects the point in body space and the direction in world space.
 	m_pPhysicsShell->applyImpulseTrace(LocalPoint, PushDir, speed * Mass);
@@ -4645,8 +4183,6 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	clamp(m_mutant_hit_impulse_factor, 0.f, 5.f);
 	m_burer_gravi_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "burer_gravi_impulse_factor", m_burer_gravi_impulse_factor);
 	clamp(m_burer_gravi_impulse_factor, 0.f, 5.f);
-	m_ram_damage_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_damage_factor", m_ram_damage_factor);
-	clamp(m_ram_damage_factor, 0.f, 100.f);
 	m_push_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "push_impulse_factor", m_push_impulse_factor);
 	clamp(m_push_impulse_factor, 0.f, 10.f);
 
@@ -6801,7 +6337,6 @@ void CCar::UpdateRecursiveDoors()
 
 void CCar::PhDataUpdate(float step)
 {
-	ClampCharacterContacts();
 	UpdatePhDataObjects();
 	UpdateEngineAndBrakes(step);
 	UpdateDoorState();
@@ -6846,129 +6381,6 @@ void CCar::PhDataUpdate(float step)
 	}
 }
 
-void CCar::RegisterCharacterContact(IPHCharacter* Character)
-{
-	if (Character == nullptr)
-		return;
-
-	if (std::find(m_character_contacts.begin(), m_character_contacts.end(), Character) == m_character_contacts.end())
-		m_character_contacts.push_back(Character);
-}
-
-void CCar::WakePhysics()
-{
-	// A car that was saved at rest is restored with a disabled shell. A
-	// character touching the scraper must wake it, otherwise it stays inert
-	// and its doors / suspension never start simulating until the player
-	// enters the car.
-	if (m_pPhysicsShell != nullptr && m_pPhysicsShell->isActive() && !m_pPhysicsShell->isEnabled())
-		m_pPhysicsShell->Enable();
-}
-
-void CCar::HitCharacterFromCar(IPHCharacter* Character, const Fvector& ContactPos)
-{
-	if (Character == nullptr || Character->IsActorCharacter())
-		return;
-
-	if (m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
-		return;
-
-	CGameObject* Target = smart_cast<CGameObject*>(Character->PhysicsRefObject());
-	if (Target == nullptr || Target->getDestroy())
-		return;
-
-	Fvector CarVelocity;
-	m_pPhysicsShell->get_LinearVel(CarVelocity);
-	const float Speed = CarVelocity.magnitude();
-	constexpr float MinHitSpeedKmh = 10.f;
-	constexpr float MinHitSpeed = MinHitSpeedKmh / 3.6f;
-	if (Speed < MinHitSpeed)
-		return;
-
-	const u32 Now = Device.dwTimeGlobal;
-	u32& LastHit = m_character_hit_times[Target->ID()];
-	if (Now - LastHit < 1000)
-		return;
-	LastHit = Now;
-
-	Fvector Dir = CarVelocity;
-	if (!safe_normalize(Dir))
-	{
-		Dir.sub(ContactPos, Position());
-		if (!safe_normalize(Dir))
-			return;
-	}
-
-	// A car must knock characters down and damage them, but a light touch must
-	// not be lethal. Both values start from zero at the minimum speed and grow
-	// with the speed above it. Power is in condition units: 1.0 is full health,
-	// while a dog bite is about 0.10 and a pseudogiant strike is about 0.90.
-	// There is deliberately no upper cap: a fast car can kill in one hit.
-	// ram_damage_factor scales the health damage only, not the knockback.
-	const float HitScale = Speed - MinHitSpeed;
-	const float Mass = m_pPhysicsShell->getMass();
-	const float Impulse = std::min(Mass * HitScale * 0.06f, 600.f);
-	const float Power = HitScale * 0.08f * m_ram_damage_factor;
-
-	// The generic SHit impulse is applied to physics shells, while a live
-	// NPC/mutant keeps its body in CPHMovementControl. Push it directly so the
-	// car actually knocks the character back instead of only reducing health.
-	CEntityAlive* Alive = Target->cast_entity_alive();
-	CCharacterPhysicsSupport* Support = Alive != nullptr ? Alive->character_physics_support() : nullptr;
-	CPHMovementControl* Movement = Support != nullptr ? Support->movement() : nullptr;
-
-	if (Alive != nullptr && Alive->g_Alive() && Movement != nullptr)
-	{
-		Fvector KnockDir = Dir;
-		KnockDir.y = 0.35f;
-		KnockDir.normalize();
-		Movement->ApplyImpulse(KnockDir, Impulse);
-	}
-
-	NET_Packet Packet;
-	SHit Hit;
-	Hit.GenHeader(GE_HIT, Target->ID());
-	// Use the driver as the initiator when the car is occupied. With the car
-	// object as initiator the generic hit path cannot register a fight between
-	// the actor and the NPC, so the victim never turns hostile.
-	const u16 InitiatorID = OwnerActor() != nullptr ? OwnerActor()->ID() : ID();
-	Hit.whoID = InitiatorID;
-	Hit.weaponID = InitiatorID;
-	Hit.dir = Dir;
-	Hit.power = Power;
-	Hit.boneID = BI_NONE;
-	Hit.p_in_bone_space.set(0.f, 0.f, 0.f);
-	Hit.impulse = Impulse;
-	Hit.hit_type = ALife::eHitTypeStrike;
-	Hit.Write_Packet(Packet);
-	u_EventSend(Packet);
-}
-
-void CCar::ClampCharacterContacts()
-{
-	// A car wheel or the kinematic scraper can resolve deep penetration with a
-	// large impulse. Cap only the upward part of the character velocity after
-	// the physics step so the contact still pushes the character sideways but
-	// cannot launch it into the sky.
-	constexpr float MaxUpwardSpeed = 4.f;
-
-	for (IPHCharacter* Character : m_character_contacts)
-	{
-		if (Character == nullptr || Character->IsActorCharacter())
-			continue;
-
-		Fvector Velocity;
-		Character->GetVelocity(Velocity);
-		if (Velocity.y > MaxUpwardSpeed)
-		{
-			Velocity.y = MaxUpwardSpeed;
-			Character->SetVelocity(Velocity);
-		}
-	}
-
-	m_character_contacts.clear();
-}
-
 void CCar::UpdatePhDataObjects()
 {
 	if (!getDestroy() && !b_exploded && b_event_drag_activated)
@@ -6987,16 +6399,13 @@ void CCar::UpdatePhDataObjects()
 
 	if (characters_scraper_shell)
 	{
-		if (!characters_scraper_shell->isEnabled())
+		if (Owner() != nullptr && !characters_scraper_shell->isEnabled())
 			characters_scraper_shell->Enable();
-
 		characters_scraper_shell->SetTransform(XFORM(), mh_clear);
 		characters_scraper_shell->set_LinearVel(zero_vel);
 		characters_scraper_shell->set_AngularVel(zero_vel);
 		characters_scraper_shell->Update();
 	}
-
-	UpdateDoorScrapers();
 
 	for (CCarTurret* CWPB : m_car_weapons)
 	{
@@ -7580,20 +6989,6 @@ void CCar::ResolveLoadPenetration()
 		characters_scraper_shell->DisableCollision();
 	}
 
-	xr_vector<u8> DoorCollision;
-	DoorCollision.reserve(m_door_scrapers.size());
-	for (SDoorScraper& Door : m_door_scrapers)
-	{
-		if (Door.shell == nullptr)
-		{
-			DoorCollision.push_back(0);
-			continue;
-		}
-
-		DoorCollision.push_back(Door.shell->IsCollisionDisabled() ? 0 : 1);
-		Door.shell->DisableCollision();
-	}
-
 	Fvector OutPos;
 	ActivateShapePhysShellHolder(this, XFORM(), Size, Center, OutPos);
 
@@ -7601,12 +6996,6 @@ void CCar::ResolveLoadPenetration()
 		m_pPhysicsShell->EnableCollision();
 	if (ScraperCollision && characters_scraper_shell != nullptr)
 		characters_scraper_shell->EnableCollision();
-
-	for (size_t i = 0; i < m_door_scrapers.size() && i < DoorCollision.size(); ++i)
-	{
-		if (DoorCollision[i] != 0 && m_door_scrapers[i].shell != nullptr)
-			m_door_scrapers[i].shell->EnableCollision();
-	}
 
 	Fvector Delta;
 	Delta.sub(OutPos, Center);

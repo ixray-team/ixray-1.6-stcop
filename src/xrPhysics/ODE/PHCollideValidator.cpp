@@ -83,11 +83,6 @@ void	CPHCollideValidator::SetCharacterClassNotCollide	(CPHObject& obj)
 	obj.collide_class_bits().set(cbNCClassCharacter,true);
 }
 
-void	CPHCollideValidator::SetCharacterClassCollide		(CPHObject& obj)
-{
-	obj.collide_class_bits().set(cbNCClassCharacter,false);
-}
-
 void	CPHCollideValidator::SetRagDollClass				(CPHObject& obj)
 {
 	obj.collide_class_bits().set(cbClassRagDoll,true);

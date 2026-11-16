@@ -88,9 +88,7 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dB
 	if(c_vel>m_collision_damage_info.m_contact_velocity) 
 	{
 		IPhysicsShellHolder* obj=bo1 ? retrieveRefObject(c->geom.g2) : retrieveRefObject(c->geom.g1);
-		// Auxiliary shells such as the car character scraper have no
-		// IPhysicsShellHolder of their own. The contact still blocks the
-		// character, but there is no object to report collision damage for.
+		VERIFY(obj);
 		if(obj != nullptr && !obj->ObjectGetDestroy())
 		{
 			m_collision_damage_info.m_contact_velocity=c_vel;

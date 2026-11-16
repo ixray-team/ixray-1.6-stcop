@@ -48,7 +48,6 @@ public:
 	virtual void	on_travel_point_change	(const u32 &previous_travel_point_index) override;
 	virtual void	on_build_path			() override;
 	virtual bool	can_use_distributed_computations () const override;
-	virtual void	move_along_path			(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta) override;
 
 			// services
 			bool	is_path_end				(float dist_to_end);
@@ -66,7 +65,4 @@ public:
 private:
 			bool	build_special			(const Fvector &target, u32 node, u32 vel_mask);
 			void	make_inactual			();	
-			void	SteerAroundCars			(CPHMovementControl *movement_control);
-
-			xr_vector<ISpatialShared>	CarCandidates;
 };

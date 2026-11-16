@@ -177,7 +177,6 @@ struct						dSurfaceParameters;
 
 class CScriptEntityAction;
 class car_memory;
-class CODEGeom;
 
 XREFLECT(LuaExport, Bases = "CGameObject,CHolderCustom")
 class CCar final :
@@ -229,37 +228,11 @@ static	const u16				cAsCallsnum						= 3;
 	void								DropTrunkContents			();
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
-	// Character collisions stay enabled on the main shell. In the default
-	// mode they are rejected per contact; legacy mode lets them push the car.
-	bool								m_legacy_character_push;
-	// The scraper mirrors the real car bone shapes to keep mutants from
-	// crawling under the car. Its helper plate/skirts are invisible, so human
-	// contacts with them are ignored in CollisionDetectionCallback.
-	xr_vector<CODEGeom*>				m_scraper_underbody_geoms;
-	struct SDoorScraper
-	{
-		CPhysicsShell* shell;
-		CPhysicsElement* element;
-		u16 bone_id;
-	};
-	xr_vector<SDoorScraper>				m_door_scrapers;
-	// Door scraper boxes are separate from the main scraper so they can follow
-	// an opening leaf while the car body stays static.
-	xr_vector<CODEGeom*>				m_door_scraper_geoms;
-	// Characters touched by the scraper or a wheel during the current physics
-	// step. Their vertical speed is capped in PhDataUpdate so a deep contact
-	// cannot launch them into the air.
-	xr_vector<IPHCharacter*>			m_character_contacts;
-	xr_map<u32, u32>					m_character_hit_times;
 	BONE_P_MAP							bone_map;					//interface for PhysicsShell
 	xr_set<u16>							pribor_arrows;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void						CarBodySurfaceCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
-	void								RegisterCharacterContact	(IPHCharacter* Character);
-	void								HitCharacterFromCar		(IPHCharacter* Character, const Fvector& ContactPos);
-	void								ClampCharacterContacts		();
-	void								WakePhysics				();
 	virtual void						PhDataUpdate				(float step)			;
 	void						UpdatePhDataObjects		();
 	void						UpdateEngineAndBrakes		(float step);
@@ -393,7 +366,6 @@ public:
 	float	m_hit_anomaly_scale;
 	float	m_mutant_hit_impulse_factor;
 	float	m_burer_gravi_impulse_factor;
-	float	m_ram_damage_factor;
 	float	m_push_impulse_factor;
 
 	struct SHeadlightHideaway
@@ -1694,10 +1666,6 @@ public:
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
 	void					CreateCharacterScraper			(IKinematics* K, CInifile* ini);
-	void					ApplyCharacterCollisionMode		();
-	void					CreateDoorScrapers				(IKinematics* K, CInifile* ini);
-	void					UpdateDoorScrapers				();
-	void					DestroyDoorScrapers				();
 	void					DestroyCharacterScraper			();
 	void					CreateCarTurrets				(CInifile* ini);
 	void					ApplyBonePhysicsParams			(IKinematics* K, CInifile* ini);

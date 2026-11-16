@@ -224,25 +224,6 @@ void  CCar::SWheel::WheellCollisionCallback(bool& do_colide,bool bo1,CPHContact&
 	dxGeomUserData					*ud1			=			retrieveGeomUserData(c.geom.g1)	;
 	dxGeomUserData					*ud2			=			retrieveGeomUserData(c.geom.g2)	;
 
-	// Remember live characters that touch a wheel. Their vertical velocity is
-	// capped after the physics step: a wheel can still snag them sideways, but
-	// a deep contact cannot scoop them into the air.
-	IPHCharacter* Character = cphc.GetCharacter(bo1);
-	if (Character == nullptr)
-		Character = cphc.GetCharacter(!bo1);
-
-	SWheelCollisionParams* Params = nullptr;
-	if (ud1 && ud1->object_callbacks && ud1->object_callbacks->HasCallback(WheellCollisionCallback))
-		Params = (SWheelCollisionParams*)ud1->callback_data;
-	else if (ud2 && ud2->object_callbacks && ud2->object_callbacks->HasCallback(WheellCollisionCallback))
-		Params = (SWheelCollisionParams*)ud2->callback_data;
-
-	if (Params != nullptr && Params->pwheel != nullptr && Params->pwheel->car != nullptr && do_colide && Character != nullptr)
-	{
-		Params->pwheel->car->WakePhysics();
-		Params->pwheel->car->RegisterCharacterContact(Character);
-	}
-
 	applywheelCollisionParams		(ud1,do_colide,cphc,material_1,material_2)						;
 	applywheelCollisionParams		(ud2,do_colide,cphc,material_1,material_2)						;
 }

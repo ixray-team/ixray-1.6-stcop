@@ -11,8 +11,6 @@ class CMonsterEnemyManager {
 	Fvector				position;
 	Fvector				CarAwarePosition;
 	Fvector				CarAwareVertexPosition;
-	Fvector				CarAwareCarPosition = {0.f, 0.f, 0.f};
-	Fvector				CarAwareCarForward = {0.f, 0.f, 0.f};
 	u32					CarAwareVertex;
 	u32					CarAwareVertexTime;
 	u32					vertex;
