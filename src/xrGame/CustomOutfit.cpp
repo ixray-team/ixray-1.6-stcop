@@ -69,7 +69,8 @@ void CCustomOutfit::OnMoveToRuck(const SInvItemPlace& prev)
 		if (pActor)
 		{
 			ApplySkinModel(pActor, false, false);
-			if (pActor->GetNightVisionEffector() && !bIsHelmetAvaliable)
+			const CHelmet* Helmet = pActor->GetHelmet();
+			if (pActor->GetNightVisionEffector() && GetNV_Sect().size() && (!Helmet || !Helmet->GetNV_Sect().size()))
 			{
 				pActor->GetNightVisionEffector()->SwitchNightVision(false);
 			}

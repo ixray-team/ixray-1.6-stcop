@@ -3271,7 +3271,8 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	{
 		outfit->ApplySkinModel(this, false, false);
 
-		if (GetNightVisionEffector() && GetNightVisionEffector()->GetStatus() && !outfit->bIsHelmetAvaliable)
+		const CHelmet* Helmet = GetHelmet();
+		if (GetNightVisionEffector() && outfit->GetNV_Sect().size() && (!Helmet || !Helmet->GetNV_Sect().size()))
 		{
 			GetNightVisionEffector()->SwitchNightVision(false);
 		}
