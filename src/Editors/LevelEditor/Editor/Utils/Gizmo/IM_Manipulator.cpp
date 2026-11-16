@@ -50,6 +50,12 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 		if (NodeObject == nullptr)
 			return;
 	}
+	else if (ESceneWallmarkTool* WallmarkTool = smart_cast<ESceneWallmarkTool*>(Scene->GetTool(LTools->CurrentClassID())))
+	{
+		CommandWallmark(WallmarkTool);
+		UpdateActive();
+		return;
+	}
 	else return;
 
 	Fmatrix DeltaMatrix = Fidentity;
@@ -79,6 +85,11 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 		}
 	}
 
+	UpdateActive();
+}
+
+void IM_Manipulator::UpdateActive()
+{
 	if (ImGuizmo::IsUsing() && !m_active)
 	{
 		// activate
@@ -90,6 +101,76 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 		// deactivate
 		Scene->UndoSave();
 		m_active = false;
+	}
+}
+
+void IM_Manipulator::CommandWallmark(ESceneWallmarkTool* Tool)
+{
+	Fmatrix Frame;
+	float Width = 0.f;
+	float Height = 0.f;
+	float Rotate = 0.f;
+	if (!Tool->GetSelectedFrame(Frame, Width, Height, Rotate))
+	{
+		return;
+	}
+
+	const Fmatrix StartFrame = Frame;
+	Fmatrix DeltaMatrix = Fidentity;
+
+	switch (LTools->GetAction())
+	{
+		case etaMove:
+		{
+			float MoveSnap[3];
+			float* PtrMoveSnap = LTools->GetSettings(etfMSnap) ? MoveSnap : nullptr;
+			if (PtrMoveSnap)
+			{
+				std::fill_n(MoveSnap, std::size(MoveSnap), Tools->m_MoveSnap);
+			}
+
+			// Along the surface only: the wallmark is projected back onto it
+			const ImGuizmo::OPERATION Flags = ImGuizmo::TRANSLATE_X | ImGuizmo::TRANSLATE_Y;
+			if (ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, Flags, ImGuizmo::LOCAL, (float*)&Frame, (float*)&DeltaMatrix, PtrMoveSnap))
+			{
+				Tool->EditSelected(Frame.c, StartFrame.j, Width, Height, Rotate);
+			}
+			break;
+		}
+		case etaRotate:
+		{
+			float RotateSnap = 0.f;
+			float* PtrRotateSnap = LTools->GetSettings(etfASnap) ? &RotateSnap : nullptr;
+			if (PtrRotateSnap)
+			{
+				RotateSnap = rad2deg(Tools->m_RotateSnapAngle);
+			}
+
+			// Around the surface normal only
+			if (ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::ROTATE_Z, ImGuizmo::LOCAL, (float*)&Frame, (float*)&DeltaMatrix, PtrRotateSnap))
+			{
+				Fvector Up = Frame.j;
+				Up.normalize_safe();
+				const float Angle = std::atan2(Up.dotproduct(StartFrame.i), Up.dotproduct(StartFrame.j));
+				Tool->EditSelected(StartFrame.c, Up, Width, Height, Rotate + Angle);
+			}
+			break;
+		}
+		case etaScale:
+		{
+			const ImGuizmo::OPERATION Flags = ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
+			if (ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, Flags, ImGuizmo::LOCAL, (float*)&Frame, (float*)&DeltaMatrix))
+			{
+				const float MinSize = 0.01f;
+				const float NewWidth = std::max(Width * DeltaMatrix.i.magnitude(), MinSize);
+				const float NewHeight = std::max(Height * DeltaMatrix.j.magnitude(), MinSize);
+				if (!fsimilar(NewWidth, Width) || !fsimilar(NewHeight, Height))
+				{
+					Tool->EditSelected(StartFrame.c, StartFrame.j, NewWidth, NewHeight, Rotate);
+				}
+			}
+			break;
+		}
 	}
 }
 

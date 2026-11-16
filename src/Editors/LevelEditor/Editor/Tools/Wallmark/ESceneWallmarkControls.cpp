@@ -35,20 +35,37 @@ TUI_ControlWallmarkMove::TUI_ControlWallmarkMove(int st, int act, ESceneToolBase
 
 bool TUI_ControlWallmarkMove::Start(TShiftState Shift)
 {
-	if ((Shift & ssCtrl))
+	// Plain drag is the gizmo; Ctrl drags the wallmark over the surface under the cursor
+	wm_cnt = 0;
+	if (!(Shift & ssCtrl))
 	{
-		ESceneWallmarkTool* S = (ESceneWallmarkTool*)parent_tool;
-		if (S->MoveSelectedWallmarkTo(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir))
-		{
-			Scene->UndoSave();
-		}
+		return false;
 	}
-	return false;
+
+	ESceneWallmarkTool* S = (ESceneWallmarkTool*)parent_tool;
+	if (S->MoveSelectedWallmarkTo(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir))
+	{
+		wm_cnt++;
+	}
+	return true;
 }
 
-void  TUI_ControlWallmarkMove::Move(TShiftState _Shift) {}
-
-bool  TUI_ControlWallmarkMove::End(TShiftState _Shift)
+void TUI_ControlWallmarkMove::Move(TShiftState _Shift)
 {
-    return false;
+	ESceneWallmarkTool* S = (ESceneWallmarkTool*)parent_tool;
+	if (S->MoveSelectedWallmarkTo(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir))
+	{
+		wm_cnt++;
+		EContext.UI->RedrawScene();
+	}
+}
+
+bool TUI_ControlWallmarkMove::End(TShiftState _Shift)
+{
+	if (wm_cnt)
+	{
+		Scene->UndoSave();
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	}
+	return true;
 }

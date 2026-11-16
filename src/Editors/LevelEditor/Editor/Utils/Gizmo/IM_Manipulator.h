@@ -1,8 +1,9 @@
-// Originally by B.O.R.S.C.H.T. team
+﻿// Originally by B.O.R.S.C.H.T. team
 // see https://bitbucket.org/stalker/xray-csky_borscht_sdk
 
 #pragma once
 struct SAINode;
+class ESceneWallmarkTool;
 
 class IM_Manipulator
 {
@@ -19,6 +20,8 @@ private:
     void CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, bool& retFlag);
     void CommandRotate(Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, ObjectList& lst, const bool IsCSParent);
     void CommandMove(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, SAINode* NodeObject);
+    void CommandWallmark(ESceneWallmarkTool* Tool);
+    void UpdateActive();
 };
 
 extern IM_Manipulator imManipulator;

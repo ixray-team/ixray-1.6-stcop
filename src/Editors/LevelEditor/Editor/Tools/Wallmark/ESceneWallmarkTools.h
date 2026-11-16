@@ -8,21 +8,21 @@ public:
 	using LITVertVec = xr_vector<FVF::LIT>;
 	using LITVertVecIt = LITVertVec::iterator;
 
-    struct wm_slot;
+	struct wm_slot;
 	struct wallmark 
 	{
-    	enum{
-    		flSelected	= (1<<0),
+		enum{
+			flSelected	= (1<<0),
 			flRemoved	= (1<<1),
 			flTemporary = (1<<2),
-        };
-        wm_slot*		parent;
-        float			w,h,r;
-        Flags8			flags;
-        Fbox			bbox;
+		};
+		wm_slot*		parent;
+		float			w,h,r;
+		Flags8			flags;
+		Fbox			bbox;
 		Fsphere			bounds;
 		LITVertVec		verts;
-        wallmark		(){flags.zero();parent=0;w=0;h=0;r=0;}
+		wallmark		(){flags.zero();parent=0;w=0;h=0;r=0;}
 	};
 	
 	using WMVec = xr_vector<wallmark*>;
@@ -32,8 +32,10 @@ public:
 		shared_str		sh_name;
 		shared_str		tx_name;
 		ref_shader		shader;
+		ref_shader		preview;
 		WMVec			items;
-						wm_slot	(const shared_str& sh, shared_str tx)		{sh_name=sh;tx_name=tx;shader.create(*sh_name,*tx_name);items.reserve(256);}
+						wm_slot	(const shared_str& sh, shared_str tx);
+		ref_shader& GetDrawShader() { return preview ? preview : shader; }
 	};
 
 	using WMSVec = xr_vector<wm_slot*>;
@@ -55,42 +57,42 @@ private:
 	wm_slot*			FindSlot				(const shared_str& sh_name, shared_str tx_name);
 	wm_slot*			AppendSlot				(const shared_str& sh_name, shared_str tx_name);
 
-    void 				RecurseTri				(u32 t, Fmatrix &mView, wallmark &W);
-	void 				BuildMatrix				(Fmatrix &mView, float inv_w, float inv_h, float angle, const Fvector& from);
+	void 				RecurseTri				(u32 t, Fmatrix &mView, wallmark &W);
+	void 				BuildMatrix				(Fmatrix &mView, float inv_w, float inv_h, float angle, const Fvector& from, const Fvector* ForcedUp = nullptr);
 
 	void				RefiningSlots			();
 private:
 	wallmark*			wm_allocate				();
 	void				wm_destroy				(wallmark*	W);
 private:
-    // controls
-    virtual void 		CreateControls			();
+	// controls
+	virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
 
 	void FilterTempWallmarks(WMSVec& OutVec);
 public:
 	enum{
-    	flDrawWallmark	= (1<<0),
-        flAxisAlign 	= (1<<1)
-    };
-    Flags32				m_Flags;
+		flDrawWallmark	= (1<<0),
+		flAxisAlign 	= (1<<1)
+	};
+	Flags32				m_Flags;
 
-    float				m_MarkWidth;
-    float				m_MarkHeight;
-    float				m_MarkRotate;
-    shared_str			m_ShName;
-    shared_str			m_TxName;
+	float				m_MarkWidth;
+	float				m_MarkHeight;
+	float				m_MarkRotate;
+	shared_str			m_ShName;
+	shared_str			m_TxName;
 
-    int					ObjectCount				();
+	int					ObjectCount				();
 public:
 						ESceneWallmarkTool    	();
 	virtual        	 	~ESceneWallmarkTool 	();
 
 	virtual	bool		AllowEnabling    		(){return true;}
-    virtual bool 		AllowMouseStart			(){return true;}
+	virtual bool 		AllowMouseStart			(){return true;}
 
-    virtual void		OnObjectRemove			(CCustomObject* O, bool bDeleting){}
-    virtual	void		UpdateSnapList			(){}
+	virtual void		OnObjectRemove			(CCustomObject* O, bool bDeleting){}
+	virtual	void		UpdateSnapList			(){}
 	virtual ObjectList*	GetSnapList				(){return 0;}
 
 	// selection manipulate
@@ -102,31 +104,31 @@ public:
 	virtual int    		SelectionCount          (bool testflag);
 	virtual void		ShowObjects				(bool flag, bool bAllowSelectionFlag=false, bool bSelFlag=true){}
 
-    virtual void		Clear					(bool bOnlyNodes=false); 
+	virtual void		Clear					(bool bOnlyNodes=false); 
 
 	// definition
-    IC const char*			ClassName				(){return "wallmark";}
-    IC const char*			ClassDesc				(){return "Wallmarks";}
-    IC int				RenderPriority			(){return 10;}
+	IC const char*			ClassName				(){return "wallmark";}
+	IC const char*			ClassDesc				(){return "Wallmarks";}
+	IC int				RenderPriority			(){return 10;}
 
-    // validation
-    virtual bool   		Valid					();
-    virtual bool		Validate				(bool full_test);
-    virtual bool   		IsNeedSave				();
+	// validation
+	virtual bool   		Valid					();
+	virtual bool		Validate				(bool full_test);
+	virtual bool   		IsNeedSave				();
 
-    // events
+	// events
 	virtual void   		OnFrame					();
-    virtual void   		OnRender				(int priority, bool strictB2F);
+	virtual void   		OnRender				(int priority, bool strictB2F);
 
-    // IO
-    virtual bool   		LoadStream            		(IReader&);
-    virtual bool   		LoadLTX            		(CInifile&);
-    virtual void   		SaveStream            		(IWriter&);
-    virtual void   		SaveLTX            		(CInifile&, int id);
-    virtual bool		can_use_inifile			() {return false;}
-    virtual bool		LoadSelection      		(IReader&);
-    virtual void		SaveSelection      		(IWriter&);
-    virtual bool   		Export          		(const char* fn);
+	// IO
+	virtual bool   		LoadStream            		(IReader&);
+	virtual bool   		LoadLTX            		(CInifile&);
+	virtual void   		SaveStream            		(IWriter&);
+	virtual void   		SaveLTX            		(CInifile&, int id);
+	virtual bool		can_use_inifile			() {return false;}
+	virtual bool		LoadSelection      		(IReader&);
+	virtual void		SaveSelection      		(IWriter&);
+	virtual bool   		Export          		(const char* fn);
 	virtual bool 		ExportStatic			(SceneBuilder* B, bool b_selected_only);
 	virtual void 		GetStaticDesc			(int& v_cnt, int& f_cnt, bool b_selected_only, bool b_cform);
 
@@ -143,11 +145,28 @@ public:
 	virtual void		FillPropObjects(const char* pref, PropItemVec& items);
 	virtual void		FillProp(const char* pref, PropItemVec& items) {}
 
-    // utils
-    virtual void		GetBBox 				(Fbox& bb, bool bSelOnly);
+	// utils
+	virtual void		GetBBox 				(Fbox& bb, bool bSelOnly);
 	bool 				AddWallmark				(const Fvector& start, const Fvector& dir);
-	bool 				AddWallmark_internal	(const Fvector& S, const Fvector& D, const shared_str& s, shared_str t, float w, float h, float r, wallmark** out_wm = nullptr);
+	bool 				AddWallmark_internal	(const Fvector& S, const Fvector& D, const shared_str& s, shared_str t, float w, float h, float r, wallmark** out_wm = nullptr, const Fvector* ForcedUp = nullptr);
 	bool 				MoveSelectedWallmarkTo	(const Fvector& start, const Fvector& dir);
+
+	bool				GetSelectedFrame		(Fmatrix& OutFrame, float& OutW, float& OutH, float& OutR);
+	bool				EditSelected			(const Fvector& Center, const Fvector& Up, float w, float h, float r);
+	static bool			GetWallmarkFrame		(const wallmark* W, Fmatrix& OutFrame);
+
+private:
+	float				SelWidth = 1.f;
+	float				SelHeight = 1.f;
+	float				SelRotate = 0.f;
+	shared_str			SelShName;
+	shared_str			SelTxName;
+
+	void				CollectSelected			(WMVec& OutVec);
+	bool				DetachWallmark			(wallmark* W);
+	bool				ReplaceWallmark			(wallmark* Old, const Fvector& start, const Fvector& dir, const shared_str& sh, shared_str tx, float w, float h, float r, const Fvector* ForcedUp);
+	bool				RebuildAt				(wallmark* W, const Fvector& Center, const Fvector& Up, const shared_str& sh, shared_str tx, float w, float h, float r);
+	void				OnSelectedPropChange	(PropValue* sender);
 };
 
 class EWallmarkWrapper
