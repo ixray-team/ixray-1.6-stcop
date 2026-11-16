@@ -9,31 +9,12 @@
 #include "script_game_object.h"
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/GamepadService.h"
-#include "../xrScripts/exports/script_ini_file.h"
-class CScriptIniFile;
-
-SCRIPTS_API CScriptIniFile* create_ini_file(const char* ini_string);
-extern XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
-
-CScriptIniFile* CacheIni(const char* Name)
-{
-	auto Iter = cached_ini_map->find(Name);
-	if (Iter != std::end(*cached_ini_map))
-	{
-		return (CScriptIniFile*)Iter->second;
-	}
-
-	auto& IniFile = (*cached_ini_map)[Name];
-	IniFile = new CScriptIniFile(Name);
-	return (CScriptIniFile*)IniFile;
-}
 
 void ExportEELayer(lua_State* L)
 {
 	// Other trash module
 	luabind::module(L)
 	[
-		luabind::def("get_cached_ini",   &CacheIni),
 		luabind::def("unlock_trophy",    +[]() {}),
 		luabind::def("get_platform_id",  +[]() { return 7; }),
 		luabind::def("detectKeyboard",   +[]() { return true; }),

@@ -12,6 +12,23 @@
 
 using namespace luabind;
 
+extern XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
+
+namespace
+{
+	CScriptIniFile* GetCachedIni(const char* Name)
+	{
+		if (const auto Iter = cached_ini_map->find(Name); Iter != cached_ini_map->end())
+		{
+			return static_cast<CScriptIniFile*>(Iter->second);
+		}
+
+		auto* Ini = new CScriptIniFile(Name);
+		cached_ini_map->emplace(Name, Ini);
+		return Ini;
+	}
+}
+
 CScriptIniFile *get_system_ini()
 {
 	return	((CScriptIniFile*)pSettings);
@@ -171,6 +188,7 @@ void CScriptIniFile::script_register(lua_State *L)
 #ifdef XRGAME_EXPORTS
 		def("game_ini",				&get_game_ini),
 #endif // XRGAME_EXPORTS
+		def("get_cached_ini", &GetCachedIni),
 		def("create_ini_file",		&create_ini_file,	adopt<0>())
 	];
 }
