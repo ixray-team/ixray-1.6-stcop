@@ -12,6 +12,7 @@
 #include "graph_engine.h"
 #include "ef_storage.h"
 #include "ai_space.h"
+#include "console_registrator.h"
 #include "cover_manager.h"
 #include "cover_point.h"
 #include "../xrScripts/script_engine.h"
@@ -73,6 +74,7 @@ CAI_Space::~CAI_Space				()
 	unload					();
 	
 	try {
+		console_registrator::ClearLuaCommands();
 		xr_delete			(g_pScriptEngine);
 	}
 	catch(...) {

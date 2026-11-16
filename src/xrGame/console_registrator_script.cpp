@@ -42,20 +42,37 @@ public:
 	xr_vector<shared_str> m_fill_tips;
 	luabind::functor<void> functor;
 
-	CCC_ScriptLuaCommand(const char* N, luabind::functor<void>& funct, const char* m_tips_string) : IConsole_Command(N)
-	{
-		bEmptyArgsHandled = true;
-		functor = funct;
+	shared_str CommandName;
 
-		int cnt = _GetItemCount(m_tips_string);
+	CCC_ScriptLuaCommand(const char* N, luabind::functor<void>& funct, const char* m_tips_string) : IConsole_Command(N), CommandName(N)
+	{
+		cName = CommandName.c_str();
+		bEmptyArgsHandled = true;
+		Update(funct, m_tips_string);
+	}
+
+	void Update(const luabind::functor<void>& Handler, const char* Tips)
+	{
+		functor = Handler;
+		m_fill_tips.clear();
+
+		int cnt = _GetItemCount(Tips);
 		m_fill_tips.reserve(cnt);
 
 		for (int i = 0; i < cnt; ++i)
 		{
 			string128 tmp;
-			m_fill_tips.push_back(_GetItem(m_tips_string, i, tmp));
+			m_fill_tips.push_back(_GetItem(Tips, i, tmp));
 		}
-	};
+	}
+
+	~CCC_ScriptLuaCommand() override
+	{
+		if (Console)
+		{
+			Console->RemoveCommand(this);
+		}
+	}
 
 	virtual void Execute(const char* args)
 	{
@@ -68,7 +85,8 @@ public:
 			params_to_lua[i + 1] = _GetItem(args, i, tmp);
 		}
 
-		functor(params_to_lua);
+		const auto Handler = functor;
+		Handler(params_to_lua);
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
@@ -78,26 +96,42 @@ public:
 	}
 };
 
+namespace
+{
+	xr_string_map<xr_string, xr_unique_ptr<CCC_ScriptLuaCommand>> LuaCommands;
+}
+
+void console_registrator::ClearLuaCommands()
+{
+	LuaCommands.clear();
+}
+
 void registerLuaCommand(CConsole* c, const char* command_name, luabind::functor<void> functor, const char* m_tips_string)
 {
-	if (!command_name)
+	if (!command_name || !*command_name)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "! Error missing lua command name");
 		return;
 	}
-	auto it = c->Commands.find(command_name);
-
-	if (it != c->Commands.end())
+	const auto Existing = c->Commands.find(command_name);
+	const auto Owned = LuaCommands.find(xr_string_view(command_name));
+	if (Existing != c->Commands.end() && (Owned == LuaCommands.end() || Existing->second != Owned->second.get()))
 	{
-		if (CCC_ScriptLuaCommand* new_cmd = smart_cast<CCC_ScriptLuaCommand*>(it->second))
-		{
-			delete new_cmd;
-			c->Commands.erase(command_name);
-		}
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "Cannot replace built-in console command '%s'", command_name);
+		return;
 	}
 
-	CCC_ScriptLuaCommand* new_cmd = new CCC_ScriptLuaCommand(command_name, functor, m_tips_string);
-	c->Commands[command_name] = new_cmd;
+	const char* Tips = m_tips_string ? m_tips_string : "";
+	if (Owned != LuaCommands.end())
+	{
+		Owned->second->Update(functor, Tips);
+		c->AddCommand(Owned->second.get());
+		return;
+	}
+
+	auto Command = xr_make_unique<CCC_ScriptLuaCommand>(command_name, functor, Tips);
+	const auto Stored = LuaCommands.emplace(command_name, std::move(Command)).first;
+	c->AddCommand(Stored->second.get());
 }
 
 #pragma optimize("s",on)
