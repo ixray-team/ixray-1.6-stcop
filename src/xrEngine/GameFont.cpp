@@ -248,31 +248,34 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
 
-	auto CopyGlyphImageToAtlas = [&TargetX, &TargetX2, &TargetY, &TargetY2, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
+	// Atlas rows grow to fit the tallest glyph: accented capitals (Ё, Й) can be taller than ascender - descender
+	u32 RowHeight = (u32)FontSizeInPixels;
+	auto CopyGlyphImageToAtlas = [&TargetX, &TargetX2, &TargetY, &TargetY2, &RowHeight, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
 		{
 			TargetX2 = TargetX + GlyphBitmap.width;
 			if (TargetX2 >= TextureDimension)
 			{
 				TargetX = 0;
 				TargetX2 = GlyphBitmap.width;
-				TargetY += (u32)FontSizeInPixels + 5;
-
-				R_ASSERT2(TargetY <= TextureDimension, "Font too large, or dimension texture is too small");
+				TargetY += RowHeight + 5;
+				RowHeight = (u32)FontSizeInPixels;
 			}
+
+			RowHeight = std::max(RowHeight, (u32)GlyphBitmap.rows);
+			R_ASSERT2(TargetY + RowHeight <= TextureDimension, "Font too large, or dimension texture is too small");
 
 			u32 SourceX = 0;
 			u32 SourceY = 0;
 
-			TargetY2 = TargetY + (u32)FontSizeInPixels;
-			u32 TargetYSaved = TargetY;
-			TargetY = TargetY + u32(FontSizeInPixels - (float)GlyphBitmap.rows);
+			const u32 GlyphBottom = TargetY + (u32)GlyphBitmap.rows;
+			TargetY2 = std::max(TargetY2, TargetY + RowHeight);
 
 			switch (GlyphBitmap.pixel_mode)
 			{
 			case FT_PIXEL_MODE_GRAY:
 			{
 				u8* SourceImage = GlyphBitmap.buffer;
-				for (u32 y = TargetY; y < TargetY2; y++, SourceY++)
+				for (u32 y = TargetY; y < GlyphBottom; y++, SourceY++)
 				{
 					for (u32 x = TargetX; x < TargetX2; x++, SourceX++)
 					{
@@ -292,7 +295,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			case FT_PIXEL_MODE_BGRA:
 			{
 				u32* SourceImage = (u32*)GlyphBitmap.buffer;
-				for (u32 y = TargetY; y < TargetY2; y++, SourceY++)
+				for (u32 y = TargetY; y < GlyphBottom; y++, SourceY++)
 				{
 					for (u32 x = TargetX; x < TargetX2; x++, SourceX++)
 					{
@@ -317,8 +320,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			default:
 				break;
 			}
-
-			TargetY = TargetYSaved;
 		};
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
@@ -353,15 +354,15 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		region.left = TargetX;
 		region.right = TargetX + Glyph->bitmap.width;
 		region.top = TargetY;
-		region.bottom = long(TargetY + FontSizeInPixels);
+		region.bottom = long(TargetY + Glyph->bitmap.rows);
 
 		ABC widths;
 		widths.abcA = FT_CEIL(GlyphMetrics.horiBearingX);
 		widths.abcB = Glyph->bitmap.width;
 		widths.abcC = FT_CEIL(GlyphMetrics.horiAdvance) - widths.abcB - widths.abcA;
 
-		int GlyphTopScanlineOffset = int(FontSizeInPixels - Glyph->bitmap.rows);
-		int yOffset = -Glyph->bitmap_top - GlyphTopScanlineOffset;
+		// Top of the glyph bitmap relative to the line top; the quad is exactly the bitmap height
+		int yOffset = -Glyph->bitmap_top;
 		yOffset += (int)FontSizeInPixels; // Return back to the center pos
 		yOffset -= (int)(FontSizeInPixels / 4);
 
