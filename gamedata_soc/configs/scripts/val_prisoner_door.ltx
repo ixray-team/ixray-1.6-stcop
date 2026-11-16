@@ -13,6 +13,7 @@ on_info = {+val_prisoner_door_unlocked} ph_door@unlocked ;%+val_prisoner_free%
 [ph_door@unlocked]
 locked = true ;false
 closed = false
+on_info = {+val_prisoner_door_unlocked -val_prisoner_free} %+val_prisoner_free%
 ;snd_init = trader_door_open_start
 ;snd_open_start = trader_door_open_start
 ;snd_close_start = trader_door_close_start

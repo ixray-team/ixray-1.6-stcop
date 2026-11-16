@@ -177,6 +177,7 @@ combat_ignore_keep_when_attacked    = true
 [remark@outside]
 anim                    = wait
 target                  = actor
+on_info                 = {+val_prisoner_give_info !talking} walker@escape
 on_timer                = 60000 | walker@escape ;%+val_prisoner_scene_end%
 on_actor_dist_ge_nvis   = 20 | walker@escape ;%+val_prisoner_scene_end%
 meet                    = meet@main
@@ -191,6 +192,7 @@ path_look                           = captive_escape_look
 def_state_moving1                   = assault
 def_state_moving2                   = assault
 def_state_moving3                   = assault
+on_info                             = {-val_prisoner_scene_end} %=val_prisoner_remove_jail_restriction%
 on_signal                           = arrived | %+val_prisoner_scene_end%
 meet                                = meet@main
 combat_ignore_cond                  = {=check_fighting(403)}

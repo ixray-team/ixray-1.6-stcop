@@ -463,6 +463,14 @@ end
 
 -- принудительное обновление смарта. Использовать только в КРАЙНИХ случаях!!!
 -- каждое использование согласовывать со мной. Чугай.
+function val_prisoner_remove_jail_restriction(actor, npc)
+	local restriction = "val_prisoner_jail_restr"
+	local restrictions = "," .. npc:in_restrictions() .. ","
+	if string.find(restrictions, "," .. restriction .. ",", 1, true) then
+		npc:remove_restrictions("", restriction)
+	end
+end
+
 function smart_terrain_force_update(actor, npc, p)
 	printf( "xr_effects.smart_terrain_force_update called" )
 
