@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - ubuntu-latest
+          - ubuntu-24.04
         preset:
           - Engine
         platform:
