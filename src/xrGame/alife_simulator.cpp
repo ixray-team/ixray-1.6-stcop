@@ -11,6 +11,7 @@
 #include "alife_simulator.h"
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
+#include "console_registrator.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrScripts/script_engine.h"
 #include "MainMenu.h"
@@ -40,6 +41,7 @@ void restart_all				()
 	object_factory();
 
 	g_pGamePersistent->ixr_framework_onframe.reset();
+	console_registrator::ClearLuaCommands();
 	ai().script_engine().init	();
 	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", g_pGamePersistent->ixr_framework_onframe);
 
