@@ -11,8 +11,7 @@ Disallowed in titles: `?`, `*`, `<`, `>`, `:`
 
 > [!IMPORTANT]  
 > **Status**: [Supported/Deprecated/WIP]  
-> **Minimal version**: [Product version]  
-> **Last updated**: [YYYY-MM-DD]
+> **Minimal version**: [Product version]
 ```
 
 ### 2. Overview

@@ -1,56 +1,59 @@
 # XMLOverride
 
 > [!IMPORTANT]
-> **Статус**: Поддерживается <br>
-> **Минимальная версия**: 1.0
+> **Статус**: Поддерживается<br>
+> **Минимальная версия**: 0.10
 
-## Вводная часть
-**XMLOverride** - система кастомизации XML через отдельный файл без изменения существующего файла. Выглядит следующий образом: 
-```
-mm_ui_test.xml         <-- Orig
-mod_ui_test_myedit.xml <-- Mod file override
-```
-Файл перегрузки строится следующим образом:
->mod_(filename)_(editname).xml
+## Обзор
 
-Перегрузка блоков осуществляется с помощью атрибута `override`, который имеет три значения:
-* add
-* replace
-* remove
+Файл `mod_<исходное_имя>_<имя_правки>.xml` меняет отдельные узлы исходного XML. Разместите его в том же каталоге конфигурации. Например, для `configs/ui/hud.xml` используйте `configs/ui/mod_hud_myaddon.xml`.
 
-## Пример
-Имеем следующий код в оригинальном файле: 
+## Синтаксис
+
+### Выбор узла
+
+Движок проходит по цепочке имён элементов от корня. Если у узла в файле правки есть `id`, поиск идёт по этому значению. Без `id` движок выбирает первый дочерний элемент с подходящим тегом. Координаты и остальные атрибуты не участвуют в выборе. Для одноимённых соседних элементов используйте существующие уникальные `id` в исходном XML.
+
+| Атрибут | Результат |
+| --- | --- |
+| `override="add"` | Добавляет новый элемент в конец списка дочерних элементов найденного родителя. |
+| `override="replace"` | Удаляет найденный элемент и добавляет новый в конец того же списка. Укажите целиком нужные атрибуты, текст и вложенные элементы. |
+| `override="remove"` | Удаляет найденный элемент. |
+
+Для изменения части XML размещайте `override` на дочерних элементах. На корне `replace` заменяет всё дерево, включая текстовые узлы, а `remove` удаляет дерево целиком. Движок пропускает `add` на корне и обрабатывает его дочерние узлы.
+
+## Примеры
+
+В исходном `hud.xml`:
+
 ```xml
 <w>
-  <background x="0" y="0" width="1024" height="768">
-    <auto_static x="500" y="130" width="345" height="160" stretch="1">
-      <texture width="432" height="160">ui\video_voroni_crop</texture>
+  <background>
+    <auto_static id="river" x="432" y="353" width="460" height="416">
+      <texture>ui\video_water_crop</texture>
     </auto_static>
-    <auto_static x="432" y="353" width="460" height="416" stretch="1">
-      <texture x="0" y="0" width="576" height="416">ui\video_water_crop</texture>
-    </auto_static>
-    <auto_static x="0" y="0" width="104" height="768" stretch="1">
-      <texture>ui_inGame2_left_widepanel</texture>
-    </auto_static>
-    <auto_static x="920" y="0" width="104" height="768" stretch="1">
-      <texture>ui_inGame2_right_widepanel</texture>
+    <auto_static id="panel" x="0" y="0" width="104" height="768">
+      <texture>ui\ui_inGame2_left_widepanel</texture>
     </auto_static>
   </background>
 </w>
 ```
-Допустим мы хотим переопределить:
+
+В `mod_hud_myaddon.xml`:
+
 ```xml
-<auto_static x="500" y="130" width="345" height="160" stretch="1">
-  <texture width="432" height="160">ui\video_voroni_crop</texture>
-</auto_static>
-```
-Пишем следующее в mod-файл: 
-```xml {3}
 <w>
-  <background x="0" y="0" width="1024" height="768">
-    <auto_static x="500" y="130" width="345" height="160" stretch="1" override="replace"> <--! Устанавливаем атрибут override со значением replace -->
-      <texture width="432" height="160">ui\video_voroni_crop</texture> <--! Сюда можем ставить своё значение -->
+  <background>
+    <auto_static id="river" x="432" y="353" width="460" height="416" override="replace">
+      <texture>ui\my_river</texture>
     </auto_static>
   </background>
 </w>
 ```
+
+Элемент `river` получит новую текстуру и окажется после `panel`. Остальные элементы, включая `panel`, сохранят свои атрибуты. Если виджет использует порядковый номер дочернего элемента, учтите смену порядка при замене.
+
+## См. также
+
+- [Подключение файлов по маске](group-file-connection-using-masks.md)
+- [Виджеты и XML](../interface/general-information.md)

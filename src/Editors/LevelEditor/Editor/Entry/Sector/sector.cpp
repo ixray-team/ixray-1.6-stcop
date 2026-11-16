@@ -457,7 +457,6 @@ void CSector::LoadSectorDef(IReader* F)
 void CSector::LoadSectorDefLTX(CInifile& ini, const char* sect_name, u32 item_idx)
 {
 	const char* 		o_name = NULL;
-	const char* 		m_name = NULL;
 
 	CSectorItem 	sitem;
 	string512 		buff;
@@ -486,18 +485,39 @@ void CSector::LoadSectorDefLTX(CInifile& ini, const char* sect_name, u32 item_id
 	}
 
 	sprintf(buff, "item_mesh_name_%.4d", item_idx);
-	m_name = ini.r_string(sect_name, buff);
+	const shared_str MeshName = ini.r_string_wb(sect_name, buff);
+	CEditableObject* Reference = sitem.object->GetReference();
+	sitem.mesh = Reference->FindMeshByName(MeshName.c_str());
 
-	sitem.mesh = sitem.object->GetReference()->FindMeshByName(m_name);
-	sitem.MeshName = m_name;
-
-	if (sitem.mesh == 0)
+	if (!sitem.mesh)
 	{
-		ELog.Msg(mtError, "Sector Item contains object '%s' mesh '%s' - can't load.\nMesh not found.", o_name, m_name);
+		// Older LTX files stored mesh names without whitespace.
+		for (CEditableMesh* Mesh : *sitem.object->Meshes())
+		{
+			xr_string LegacyName = Mesh->Name().c_str();
+			LegacyName.erase(std::remove_if(LegacyName.begin(), LegacyName.end(),
+				[](unsigned char Character) { return std::isspace(Character) != 0; }), LegacyName.end());
+			if (0 != stricmp(LegacyName.c_str(), MeshName.c_str()))
+			{
+				continue;
+			}
+			if (sitem.mesh)
+			{
+				sitem.mesh = nullptr;
+				break;
+			}
+			sitem.mesh = Mesh;
+		}
+	}
+
+	if (!sitem.mesh)
+	{
+		ELog.Msg(mtError, "Sector Item contains object '%s' mesh '%s' - can't load.\nMesh not found.", o_name, MeshName.c_str());
 		m_bHasLoadError = true;
 		return;
 	}
 
+	sitem.MeshName = sitem.mesh->Name();
 	sector_items.push_back(sitem);
 }
 
@@ -551,7 +571,16 @@ void CSector::SaveLTX(CInifile& ini, const char* sect_name)
 			sprintf			(buff,"item_object_name_%.4d",count);
 			ini.w_string	(sect_name, buff, it->object->GetName());
 			sprintf			(buff,"item_mesh_name_%.4d",count);
-			ini.w_string	(sect_name, buff, it->mesh->Name().c_str());
+			const xr_string_view MeshName = it->mesh->Name().c_str();
+			if (MeshName.find_first_of(" \t") != xr_string_view::npos)
+			{
+				const xr_string QuotedName = xr_string("\"").append(MeshName).append("\"");
+				ini.w_string(sect_name, buff, QuotedName.c_str());
+			}
+			else
+			{
+				ini.w_string(sect_name, buff, MeshName.data());
+			}
 			++count;
 	}
 	ini.w_u8(sect_name, "change_map_to_idx", m_map_idx);

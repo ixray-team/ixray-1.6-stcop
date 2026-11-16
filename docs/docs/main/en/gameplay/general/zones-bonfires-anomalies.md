@@ -61,3 +61,9 @@ Use fresh bolts with an ordinary lifetime greater than 100 ms.
 | Enter with 100 ms or less remaining | The existing timer is preserved |
 | Enter overlapping zones with `true` and `false` | The zone with `true` can remove the bolt |
 | Enter with a grenade or another item | This setting does not change its behavior |
+
+## Disabling emissions in CoP and CoC
+
+IX-Ray Platform 1.4 adds a disable-emissions toggle to the IXR global options. The script registry stores it as the boolean `disable_emissions` in `ixray_global_options`. It is off by default.
+
+When enabled, scheduled emissions are skipped and anomalies still refresh on the emission schedule. Manual starts through the surge manager are blocked.

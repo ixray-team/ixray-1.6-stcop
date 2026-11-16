@@ -1,7 +1,6 @@
 > [!IMPORTANT]
 > **Status**: Supported <br>
-> **Minimum version**: 1.4 <br>
-> **Last updated**: 2026-09-28
+> **Minimum version**: 1.4
 
 # Horizontal compass, minimap and motion icon features for the minimap
 

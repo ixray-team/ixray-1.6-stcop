@@ -101,7 +101,7 @@ xrEngine.exe -autotest -autotest_frames 120 -autotest_warmup 150 -autotest_timeo
 
 | Flag | Default | Effect |
 | --- | --- | --- |
-| `-autotest` | — | Hide the game window every frame, force windowed mode, suppress the error window, disable sound and mouse capture, set `fps_limit` and `main_menu_fps_limit` to 0, gather statistics and write the report |
+| `-autotest` | — | Hide the game window every frame, force windowed mode, suppress the error window, disable sound and mouse capture, set `rs_fps_limit` and `rs_main_menu_fps_limit` to 0, gather statistics and write the report |
 | `-autotest_frames N` | 120 | Measured frames |
 | `-autotest_warmup N` | 150 | Level frames skipped before measuring |
 | `-autotest_timeout S` | 300 | `exit` after this many seconds |
