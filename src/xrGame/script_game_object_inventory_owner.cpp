@@ -2112,7 +2112,7 @@ void CScriptGameObject::Weapon_AddonAttach(CScriptGameObject* item)
 		return;
 	}
 
-	CInventoryItem* pItm = item->object().cast_inventory_item();
+	CInventoryItem* pItm = item ? item->object().cast_inventory_item() : nullptr;
 	if (!pItm)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazined : trying to attach non-CInventoryItem!");
@@ -2140,12 +2140,17 @@ void CScriptGameObject::Weapon_AddonDetach(const char* item_section, bool b_spaw
 	}
 }
 
-void CScriptGameObject::Weapon_SetCurrentScope(u8 type)
+void CScriptGameObject::Weapon_SetCurrentScope(int type)
 {
 	CWeaponMagazined* weapon = object().cast_weapon_magazined();
 	if (weapon != nullptr)
 	{
-		weapon->m_cur_scope = type;
+		if (type < 0 || type > 255 || size_t(type) >= weapon->m_scopes.size())
+		{
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapon_set_scope: invalid scope index %d", type);
+			return;
+		}
+		weapon->m_cur_scope = static_cast<u8>(type);
 	}
 	else
 	{
@@ -2165,16 +2170,21 @@ u8 CScriptGameObject::Weapon_GetCurrentScope()
 	return 255;
 }
 
-void CScriptGameObject::AddonsAttacher(u8 addons, u8 scope_idx)
+void CScriptGameObject::AddonsAttacher(u8 addons, int scope_idx)
 {
 	if (CWeaponMagazined* weapon = object().cast_weapon_magazined())
 	{
-		weapon->SetAddonsState(addons);
-
-		if (addons & CSE_ALifeItemWeapon::EWeaponAddonState::eWeaponAddonScope)
+		if (weapon->ScopeAttachable() && (addons & CSE_ALifeItemWeapon::EWeaponAddonState::eWeaponAddonScope))
 		{
-			weapon->m_cur_scope = scope_idx;
+			if (scope_idx < 0 || scope_idx > 255 || size_t(scope_idx) >= weapon->m_scopes.size())
+			{
+				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "addons_attach: invalid scope index %d", scope_idx);
+				return;
+			}
+			weapon->m_cur_scope = static_cast<u8>(scope_idx);
 		}
+
+		weapon->SetAddonsState(addons);
 
 		weapon->InitAddons();
 		weapon->UpdateAddonsVisibility();

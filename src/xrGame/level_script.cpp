@@ -1940,8 +1940,8 @@ void CLevel::script_register(lua_State *L)
 		def("get_next_weather", get_next_wdesc),
 		def("enable_rain", +[](bool Value) 
 			{
-				g_pGamePersistent->Environment().eff_Rain->Enable(false);
-				g_pGamePersistent->Environment().eff_Thunderbolt->Enable(false);
+				g_pGamePersistent->Environment().eff_Rain->Enable(Value);
+				g_pGamePersistent->Environment().eff_Thunderbolt->Enable(Value);
 			}
 		),
 

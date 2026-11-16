@@ -947,11 +947,11 @@ public:
 
 			//Weapon
 			const char*				Weapon_GetAmmoSection(u8 ammo_type);
-			void				Weapon_SetCurrentScope(u8 type);
+			void				Weapon_SetCurrentScope(int type);
 			u8					Weapon_GetCurrentScope();
 			void				Weapon_AddonAttach(CScriptGameObject* item);
 			void				Weapon_AddonDetach(const char* item_section, bool b_spawn_item);
-			void				AddonsAttacher(u8 addons, u8 scope_idx);
+			void				AddonsAttacher(u8 addons, int scope_idx);
 			void				SetAmmoType(u8 type);
 			void				SetMainWeaponType(u32 type);
 			void				SetWeaponType(u32 type);
