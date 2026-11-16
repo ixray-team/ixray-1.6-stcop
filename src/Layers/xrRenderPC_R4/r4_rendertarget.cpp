@@ -500,6 +500,8 @@ CRenderTarget::CRenderTarget()
 	param_color_gray = color_rgba(85, 85, 85, 0);
 	//param_color_add		= color_rgba(0,0,0,			0);
 	param_color_add.set(0.0f, 0.0f, 0.0f);
+	param_color_map_influence = 0.0f;
+	param_color_map_interpolate = 1.0f;
 
 	dwAccumulatorClearMark = 0;
 	dxRenderDeviceRender::Instance().Resources->Evict();
