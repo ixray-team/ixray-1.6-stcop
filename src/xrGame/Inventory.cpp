@@ -1964,7 +1964,22 @@ void CInventory::TryDeactivateActiveSlot(bool Force)
 #ifndef MASTER_GOLD
 		Msg("Set slots blocked: activating slot [-1], Frame[%d]", Device.dwFrame);
 #endif // #ifndef MASTER_GOLD
-		ItemFromSlot(ActiveSlot)->DiscardState();
+		active_item->DiscardState();
+
+		CHudItem* HudItem = active_item->cast_hud_item();
+		if (Force && HudItem != nullptr && (HudItem->IsHidden() || HudItem->IsShowing()) && HudItem->GetNextState() != CHUDState::eHiding)
+		{
+			HudItem->StopCurrentAnimWithoutCallback();
+			if (!HudItem->IsHidden())
+			{
+				HudItem->SwitchState(CHUDState::eHidden);
+			}
+
+			m_iNextActiveSlot = NO_ACTIVE_SLOT;
+			SetPrevActiveSlot(ActiveSlot);
+			return;
+		}
+
 		Activate(NO_ACTIVE_SLOT, false, Force);
 		SetPrevActiveSlot(ActiveSlot);
 	}
