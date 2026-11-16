@@ -108,6 +108,8 @@ public:
 	void SetFlashlightMaskPosition(float X, float Y);
 	void SetFlashlightVolume(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps);
 	void SetFlashlightVolumeColor(float Red, float Green, float Blue);
+	void SetFlashlightSurfaceColor(float Red, float Green, float Blue);
+	void SetFlashlightDustIntensity(float Intensity);
 	void SetFlashlightDustColor(float Red, float Green, float Blue);
 	void SetFlashlightVolumeNearClip(float DistancePixels);
 	void SetFlashlightDust(bool Enabled, int Count, float Size, float Speed, float Opacity);

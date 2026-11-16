@@ -70,6 +70,8 @@ struct UIFlashlight
 	float VolumeNearClipPixels = 0.0f;
 	int VolumeSteps = 24, DustCount = 48;
 	float VolumeRed = 1.0f, VolumeGreen = 1.0f, VolumeBlue = 1.0f;
+	float SurfaceRed = 1.0f, SurfaceGreen = 1.0f, SurfaceBlue = 1.0f;
+	float DustIntensity = 1.0f;
 	float DustRed = 1.0f, DustGreen = 1.0f, DustBlue = 1.0f;
 	float DustSize = 0.8f, DustSpeed = 0.6f, DustOpacity = 0.16f;
 	bool DustAnimationEnabled = false;

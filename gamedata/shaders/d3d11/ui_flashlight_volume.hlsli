@@ -177,5 +177,6 @@ float3 FlashlightVolume(float2 Pixel)
         }
     }
     // Fine grains can glint in clear air; no broad halo surrounds the particles.
-    return saturate(Haze * ui_flashlight_volume_color.rgb + Dust * sqrt(saturate(Attenuation)) * 3.0 * ui_flashlight_dust_color.rgb);
+    float DustIntensity = ui_flashlight_surface_color.w >= 1.0 ? ui_flashlight_surface_color.w - 1.0 : 1.0;
+    return saturate(Haze * ui_flashlight_volume_color.rgb + Dust * sqrt(saturate(Attenuation)) * 3.0 * ui_flashlight_dust_color.rgb * DustIntensity);
 }

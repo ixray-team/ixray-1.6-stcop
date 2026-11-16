@@ -25,6 +25,7 @@ cbuffer UIRoundedPixelConstants : register(b6)
     float4 ui_flashlight_volume_color; // independent RGB multiplier, white by default
     float4 ui_flashlight_dust_color;
     float4 ui_flashlight_dust_animation; // accumulated motion/glint phases, glint gain, explicit phases enabled
+    float4 ui_flashlight_surface_color; // footprint RGB multiplier, 1 + dust intensity (0 for legacy binaries)
 };
 #include "ui_flashlight_volume.hlsli"
 struct RoundedOutput
@@ -87,9 +88,13 @@ RoundedOutput main(float4 Position : SV_POSITION
         Dark *= 1.0 - ui_flashlight_grade.x;
         // Restore a luminous footprint independently of the weaker airborne shaft.
         // Power scales all emitted surface light, including the reflector's bright core.
-        float3 Surface = lerp(Dark, Original, Cookie) + Original * (0.40 * Cookie * Cookie);
+        // Neutral grading permits an atmosphere-only parent above independently graded children.
+        bool GradeSurface = ui_flashlight_grade.x > 0.0 || ui_flashlight_grade.y != 1.0 || ui_flashlight_grade.z > 0.0;
+        float3 Surface = lerp(Dark, Original, Cookie) + Original * (GradeSurface ? 0.40 * Cookie * Cookie : 0.0);
         float EffectCoverage = Isolated ? 1.0 : Outer;
         Result.Color.rgb = lerp(Original, lerp(Dark, Surface, Power), EffectCoverage);
+        float3 SurfaceColor = ui_flashlight_surface_color.w >= 1.0 ? ui_flashlight_surface_color.rgb : float3(1.0, 1.0, 1.0);
+        Result.Color.rgb *= lerp(float3(1.0, 1.0, 1.0), SurfaceColor, Cookie * Power * EffectCoverage);
         Result.Color.rgb += FlashlightVolume(Position.xy) * EffectCoverage * Power;
     }
     if (Isolated)

@@ -67,6 +67,7 @@ private:
 		u32 Width = 0, Height = 0, Samples = 0;
 		u32 DepthWidth = 0, DepthHeight = 0;
 		ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
+		ERHI_FORMAT ContentFormat = ERHI_FORMAT::UNKNOWN;
 		ERHI_FORMAT DepthFormat = ERHI_FORMAT::UNKNOWN;
 		~RoundedLayer();
 		void ReleaseResources();

@@ -58,17 +58,22 @@ bool dxUIRender::BeginRoundedRect(const UIRoundedRect& Rect)
 	const u32 DepthWidth = Depth ? Depth->GetSurface()->GetWidth() : 0;
 	const u32 DepthHeight = Depth ? Depth->GetSurface()->GetHeight() : 0;
 	const u32 Width = Surface->GetWidth(), Height = Surface->GetHeight(), Samples = Surface->GetSampleDescCount();
+	const bool Isolated = Rect.Flashlight.Enabled && Rect.Flashlight.IsolatedLayer;
+	// The frame may have only two alpha bits (RGB10A2); subtree coverage needs its own precision.
+	const ERHI_FORMAT ContentFormat = Isolated ? ERHI_FORMAT::R16G16B16A16_FLOAT : Surface->GetFormat();
 	if (Layer.Width != Width || Layer.Height != Height || Layer.Samples != Samples ||
-		Layer.Format != Surface->GetFormat() || Layer.DepthFormat != DepthFormat ||
+		Layer.Format != Surface->GetFormat() || Layer.ContentFormat != ContentFormat || Layer.DepthFormat != DepthFormat ||
 		Layer.DepthWidth != DepthWidth || Layer.DepthHeight != DepthHeight)
 	{
 		Layer.ReleaseResources();
 		Layer.Format = Surface->GetFormat();
+		Layer.ContentFormat = ContentFormat;
 		Layer.DepthFormat = DepthFormat;
 		RHITextureDesc Desc(Width, Height, Layer.Format);
 		Desc.SampleDescCount = Samples;
 		Desc.BindFlags = ERHI_BIND_FLAG::RENDER_TARGET | ERHI_BIND_FLAG::SHADER_RESOURCE;
 		Layer.BackgroundSurface = GRHI->CreateRenderTarget(Desc);
+		Desc.Format = ContentFormat;
 		Layer.ContentSurface = GRHI->CreateRenderTarget(Desc);
 		if (!Layer.BackgroundSurface || !Layer.ContentSurface)
 		{
@@ -76,7 +81,7 @@ bool dxUIRender::BeginRoundedRect(const UIRoundedRect& Rect)
 			return false;
 		}
 		RHIRenderTargetViewDesc ViewDesc;
-		ViewDesc.Format = Layer.Format;
+		ViewDesc.Format = ContentFormat;
 		ViewDesc.ViewDimension = Samples > 1 ? ERHI_RTV_DIMENSION::TEXTURE2DMS : ERHI_RTV_DIMENSION::TEXTURE2D;
 		Layer.ContentView = GRHI->CreateRenderTargetView(Layer.ContentSurface, ViewDesc);
 		if (!Layer.ContentView)
@@ -255,7 +260,7 @@ bool dxUIRender::BeginRoundedRect(const UIRoundedRect& Rect)
 	}
 	ClearRoundedTextures();
 	GRHI->CopySurface(Layer.BackgroundSurface, Surface);
-	if (Rect.Flashlight.Enabled && Rect.Flashlight.IsolatedLayer)
+	if (Isolated)
 	{
 		// Preserve only this subtree's premultiplied color and coverage, excluding lower siblings.
 		GRHI->ClearTarget(Layer.ContentView);
@@ -346,6 +351,7 @@ void dxUIRender::EndRoundedRect()
 		Layer.Viewport.TopLeftX + Layer.Viewport.Width * 0.5f, Layer.Viewport.TopLeftY + Layer.Viewport.Height * 0.5f);
 	RCache.set_c("ui_flashlight_dust", Light.DustEnabled ? float(Light.DustCount) : 0.0f, Light.DustSize, Light.DustSpeed, Light.DustOpacity);
 	RCache.set_c("ui_flashlight_volume_color", Light.VolumeRed, Light.VolumeGreen, Light.VolumeBlue, 1.0f);
+	RCache.set_c("ui_flashlight_surface_color", Light.SurfaceRed, Light.SurfaceGreen, Light.SurfaceBlue, 1.0f + Light.DustIntensity);
 	RCache.set_c("ui_flashlight_dust_color", Light.DustRed, Light.DustGreen, Light.DustBlue, 1.0f);
 	RCache.set_c("ui_flashlight_dust_animation", Light.DustMotionPhase, Light.DustGlintPhase, Light.DustGlintIntensity, Light.DustAnimationEnabled ? 1.0f : 0.0f);
 	// The compositor uses target coordinates directly, without a second tree transform.

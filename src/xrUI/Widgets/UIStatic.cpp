@@ -881,6 +881,19 @@ void CUIStatic::SetFlashlightDustColor(float Red, float Green, float Blue)
 	Flashlight.DustBlue = Channel(Blue);
 }
 
+void CUIStatic::SetFlashlightSurfaceColor(float Red, float Green, float Blue)
+{
+	const auto Channel = [](float Value) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f; };
+	Flashlight.SurfaceRed = Channel(Red);
+	Flashlight.SurfaceGreen = Channel(Green);
+	Flashlight.SurfaceBlue = Channel(Blue);
+}
+
+void CUIStatic::SetFlashlightDustIntensity(float Intensity)
+{
+	Flashlight.DustIntensity = std::isfinite(Intensity) ? std::clamp(Intensity, 0.0f, 8.0f) : 1.0f;
+}
+
 void CUIStatic::SetFlashlightVolumeNearClip(float DistancePixels)
 {
 	Flashlight.VolumeNearClipPixels = std::isfinite(DistancePixels) ? std::clamp(DistancePixels, 0.0f, 16384.0f) : 0.0f;
