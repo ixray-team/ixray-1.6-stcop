@@ -255,6 +255,12 @@ void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 
 void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared_str& section)
 {
+	if (!section.size() || !pSettings->section_exist(section))
+	{
+		Msg("! [%s]: shell section '%s' doesn't exist", __FUNCTION__, section.size() ? section.c_str() : "<empty>");
+		return;
+	}
+
 	Fmatrix xform_shell_point = get_ParticlesXFORM();
 	xform_shell_point.c.set(get_CurrentShellPoint());
 
@@ -263,6 +269,12 @@ void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared
 	eject_dir.normalize_safe();
 
 	CSE_Abstract* o = F_entity_Create(*section);
+	if (!o)
+	{
+		Msg("! [%s]: can't create shell from section '%s'", __FUNCTION__, section.c_str());
+		return;
+	}
+
 	xform_shell_point.getXYZ(o->o_Angle);
 	o->o_Position.set(xform_shell_point.c);
 	o->ID = o->ID_Phantom;
