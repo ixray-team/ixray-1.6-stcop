@@ -1880,8 +1880,28 @@ void CActor::UpdateCL()
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsAnyAnimatorActive())
 	{
-	
-		if (item != nullptr || dev != nullptr)
+		// Combined HUD models (SoC style) carry their own hands, so the hands section can be swapped in place.
+		auto IsCombinedOrEmpty = [](const attachable_hud_item* Item)
+		{
+			return Item == nullptr || Item->m_model_combined;
+		};
+		const bool HandsInItemModels = (g_player_hud->attached_item(0) != nullptr || g_player_hud->attached_item(1) != nullptr) &&
+			IsCombinedOrEmpty(g_player_hud->attached_item(0)) && IsCombinedOrEmpty(g_player_hud->attached_item(1));
+
+		if (HandsInItemModels)
+		{
+			g_player_hud->m_need_reload = true;
+			if (g_player_hud->NextHUDSect.size() > 0)
+			{
+				g_player_hud->load(g_player_hud->NextHUDSect);
+				g_player_hud->NextHUDSect = 0;
+			}
+			else
+			{
+				g_player_hud->load_default();
+			}
+		}
+		else if (item != nullptr || dev != nullptr)
 		{
 			if (dev != nullptr)
 			{
