@@ -343,7 +343,7 @@ end
 -- Существует два способа вызова функции: с передаванием секции или без нее
 -- В обоих случаях передавать gulag_name ОБЯЗАТЕЛЬНО
 -- Если section не передана, то она берется из работы переданного гулага.
-function activate_by_section(npc, ini, section, gulag_name, loading)
+function activate_by_section(npc, ini, section, gulag_name, loading) PROF_EVENT_BEGIN("xr_logic.script:346:activate_by_section"); do
     --printf("LOGIC[%s]: Object '%s': activate_by_section: looking for section '%s'", tostring(time_global()), npc:name(), section)
 
     if loading == nil then
@@ -363,7 +363,7 @@ function activate_by_section(npc, ini, section, gulag_name, loading)
         db.storage[npc_id].active_section = nil
         db.storage[npc_id].active_scheme = nil
 --'		db.storage[npc_id].pstor = nil
-        return
+        PROF_EVENT_END(); return
     end
 
     if section == nil then
@@ -415,7 +415,7 @@ function activate_by_section(npc, ini, section, gulag_name, loading)
     else
         issue_event(npc, db.storage[npc_id][scheme], "reset_scheme", loading, npc)
     end
-end
+end; PROF_EVENT_END(); end
 
 --[[
 -- Предназначение:
@@ -590,7 +590,7 @@ local function GetCondlistFunctionNameParts(Name)
 	return Parts
 end
 
-function pick_section_from_condlist(actor, npc, condlist)
+function pick_section_from_condlist(actor, npc, condlist) PROF_EVENT_BEGIN("xr_logic.script:593:pick_section_from_condlist"); do
 	local rval = nil -- math.random(100)
 		--printf("_bp: pick_section_from_condlist: rval = %d", rval)
 
@@ -732,16 +732,16 @@ function pick_section_from_condlist(actor, npc, condlist)
 				end
 			end
 			if cond.section == "never" then
-				return nil
+				PROF_EVENT_END(); return nil
 			else
-				return cond.section
+				PROF_EVENT_END(); return cond.section
 			end
 		end
 	end
 
 	--printf("_bp: pick_section_from_condlist: nil")
-	return nil
-end
+	PROF_EVENT_END(); return nil
+end; PROF_EVENT_END(); end
 
 
 -- Выполняет переключение на указанную секцию, если задана.
@@ -797,13 +797,13 @@ local function GetSwitchConditionKind(Name)
 	return Kind
 end
 
-function try_switch_to_another_section(npc, st, actor)
+function try_switch_to_another_section(npc, st, actor) PROF_EVENT_BEGIN("xr_logic.script:800:try_switch_to_another_section"); do
 	local l = st.logic
 	local npc_id = npc:id()
 
 	if not actor then
 		abort("try_switch_to_another_section(): error in implementation of scheme '%s': actor is nil", st.scheme)
-		return nil
+		PROF_EVENT_END(); return nil
 	end
 
 	if not l then
@@ -918,8 +918,8 @@ function try_switch_to_another_section(npc, st, actor)
 		end
 	end
 
-	return switched
-end
+	PROF_EVENT_END(); return switched
+end; PROF_EVENT_END(); end
 
 function is_active(npc, st)
     if st.section == nil then

@@ -63,7 +63,7 @@ function action_zombie_shoot:set_state( state, be, pos )
 	self.last_state = state
 end
 
-function action_zombie_shoot:execute()
+function action_zombie_shoot:execute() PROF_EVENT_BEGIN("xr_combat_zombied.script:66:action_zombie_shoot:execute"); do
 	action_base.execute( self )
 
 	local be  = self.object:best_enemy()
@@ -128,7 +128,7 @@ function action_zombie_shoot:execute()
 			end
 		end
 	end
-end
+end; PROF_EVENT_END(); end
 
 function action_zombie_shoot:calc_random_direction()
 	local ang      = math.pi * 2 * math.random()
@@ -196,7 +196,7 @@ function action_zombie_go_to_danger:set_state( state, be, pos )
 	end
 end
 
-function action_zombie_go_to_danger:execute()
+function action_zombie_go_to_danger:execute() PROF_EVENT_BEGIN("xr_combat_zombied.script:199:action_zombie_go_to_danger:execute"); do
 	action_base.execute( self )
 	if self.was_hit then
 		self.was_hit = false
@@ -221,7 +221,7 @@ function action_zombie_go_to_danger:execute()
 			self:set_state( "threat_na",  nil, bd:position() )
 		end
 	end
-end
+end; PROF_EVENT_END(); end
 
 function action_zombie_go_to_danger:finalize()
 	action_base.finalize( self )

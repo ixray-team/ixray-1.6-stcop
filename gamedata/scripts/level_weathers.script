@@ -254,9 +254,9 @@ function WeatherManager:InstallNextRandWeatherSection()
 end
 
 -- обновление погоды
-function WeatherManager:update()
+function WeatherManager:update() PROF_EVENT_BEGIN("level_weathers.script:257:WeatherManager:update"); do
 	if not db.actor then
-		return
+		PROF_EVENT_END(); return
 	end
 
 	-- первая инициализация 
@@ -315,7 +315,7 @@ function WeatherManager:update()
 			self:tick()
 		end
 	end
-end
+end; PROF_EVENT_END(); end
 
 
 function WeatherManager:on_wfx_start()

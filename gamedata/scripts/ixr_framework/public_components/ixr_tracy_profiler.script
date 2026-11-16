@@ -3,12 +3,12 @@ local USE_FILE_LOG = false
 local USE_CONSOLE_LOG = true
 local USE_TIME_IN_LOGS = true
 
-local STACK_TRACE_LEVEL = 3
+local STACK_TRACE_LEVEL = 4
 local USE_DRAW_DETALIZED_INFO_IN_PROFILER = true
 local PROF_EVENT_DETALIZED_INFO_FORMAT = "[%s (%d,%d)] %s"
 local PROF_EVENT_MINIMAL_INFO_FORMAT = "[LUA] %s"
 
-local is_tracy_connected = IsTracyConnected()
+local is_tracy_connected = IsTracyConnected and IsTracyConnected()
 local last_state = nil
 
 function on_game_start()
@@ -55,46 +55,125 @@ function notify_connection_profiler_switch()
 	end
 end
 
-function prof_event_begin(name)
-	if name and is_profiler_connected() and tracy then
+local frame_profiler_enabled, register_marker, begin_marker, end_marker
+if _IXR_FRAME_PROFILER then
+	local ffi = require("ffi")
+	local api = ffi.cast(ffi.typeof([[
+		struct {
+			int (*enabled)(void);
+			uint32_t (*register_marker)(const char *);
+			double (*begin_marker)(uint32_t, double);
+			void (*end_marker)(double);
+		} const *
+	]]), _IXR_FRAME_PROFILER)
+	frame_profiler_enabled = api.enabled
+	register_marker = api.register_marker
+	begin_marker = api.begin_marker
+	end_marker = api.end_marker
+end
+
+local marker_ids = {}
+local invalid_marker = 4294967295
+local main_thread_scopes = { tracy_zones = {} }
+local coroutine_scopes = setmetatable({}, { __mode = "k" })
+
+local function get_scopes()
+	local thread = coroutine.running()
+	if not thread then
+		return main_thread_scopes
+	end
+
+	local scopes = coroutine_scopes[thread]
+	if not scopes then
+		scopes = { tracy_zones = {} }
+		coroutine_scopes[thread] = scopes
+	end
+	return scopes
+end
+
+local function begin_scope(scopes, name, capture_frame, tracy_backend)
+	local depth = #scopes + 1
+	local ticket = 0
+	if tracy_backend then
 		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then
 			local data = ffx_callable_utils.find_caller_source_tracy(STACK_TRACE_LEVEL, true)
-			tracy.ZoneBeginN(string.format(PROF_EVENT_DETALIZED_INFO_FORMAT, tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+			tracy_backend.ZoneBeginN(string.format(PROF_EVENT_DETALIZED_INFO_FORMAT, tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
 		else
-			tracy.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
+			tracy_backend.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
 		end
 	end
+	if capture_frame then
+		local parent = scopes[depth - 1] or 0
+		ticket = -1
+		if parent >= 0 then
+			local label = tostring(name)
+			local marker = marker_ids[label]
+			if marker == nil then
+				marker = register_marker(label)
+				if marker ~= invalid_marker then
+					marker_ids[label] = marker
+				end
+			end
+			if marker ~= invalid_marker then
+				ticket = begin_marker(marker, parent)
+			end
+		end
+	end
+	scopes[depth] = ticket
+	scopes.tracy_zones[depth] = tracy_backend
+end
+
+local function end_scope(scopes, depth)
+	local ticket = scopes[depth]
+	if ticket > 0 then
+		end_marker(ticket)
+	end
+	scopes[depth] = nil
+
+	local tracy_backend = scopes.tracy_zones[depth]
+	scopes.tracy_zones[depth] = nil
+	if tracy_backend then
+		tracy_backend.ZoneEnd()
+	end
+end
+
+function prof_event_begin(name)
+	local capture_frame = name and frame_profiler_enabled and frame_profiler_enabled() ~= 0
+	local tracy_backend = name and is_tracy_connected and tracy or nil
+	begin_scope(get_scopes(), name, capture_frame, tracy_backend)
 end
 
 function prof_event_end()
-	if is_profiler_connected() and tracy then
-        tracy.ZoneEnd()
+	local scopes = get_scopes()
+	local depth = #scopes
+	if depth ~= 0 then
+		end_scope(scopes, depth)
 	end
 end
 
-function prof_event_closure(name, callable)
-	if name and is_profiler_connected() and tracy then
-		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then
-			local data = ffx_callable_utils.find_caller_source_tracy(STACK_TRACE_LEVEL, true)
-			tracy.ZoneBeginN(string.format(PROF_EVENT_DETALIZED_INFO_FORMAT, tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
-		else
-			tracy.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
-		end
-		
-		local result
-		
-		if callable then
-			result = callable()
-		end
-		
-		tracy.ZoneEnd()
-		
-		return result
-    else
-        if callable then
-			return callable()
-		end
+local function finish_closure(scopes, base_depth, success, ...)
+	for depth = #scopes, base_depth + 1, -1 do
+		end_scope(scopes, depth)
 	end
-	
-	return nil
+	if not success then
+		error((...), 0)
+	end
+	return ...
+end
+
+function prof_event_closure(name, callable)
+	if not callable then
+		return nil
+	end
+
+	local capture_frame = name and frame_profiler_enabled and frame_profiler_enabled() ~= 0
+	local tracy_backend = name and is_tracy_connected and tracy or nil
+	if not capture_frame and not tracy_backend then
+		return callable()
+	end
+
+	local scopes = get_scopes()
+	local base_depth = #scopes
+	begin_scope(scopes, name, capture_frame, tracy_backend)
+	return finish_closure(scopes, base_depth, pcall(callable))
 end

@@ -169,7 +169,7 @@ function sim_squad_scripted:update_current_action()
     return true  
 end
 
-function sim_squad_scripted:update()
+function sim_squad_scripted:update() PROF_EVENT_BEGIN("sim_squad_scripted.script:172:sim_squad_scripted:update"); do
     cse_alife_online_offline_group.update (self)
     	self:refresh()
 
@@ -194,7 +194,7 @@ function sim_squad_scripted:update()
     			self:set_location_types()
     			self.need_to_reset_location_masks = false
     		end
-    		return
+			PROF_EVENT_END(); return
     	end
 
     	self.sound_manager:update()
@@ -271,7 +271,7 @@ function sim_squad_scripted:update()
     		SendScriptCallback("squad_on_after_level_change", self, self.level_name, cur_lvl)
     		self.level_name = cur_lvl
     	end
-end
+end; PROF_EVENT_END(); end
 
 
 --***********************************************************************************************

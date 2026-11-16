@@ -14,7 +14,7 @@ function action_idle:reset_scheme()
      self.st.signals = {}
 end
 
-function action_idle:update(delta)
+function action_idle:update(delta) PROF_EVENT_BEGIN("sr_idle.script:17:action_idle:update"); do
 	--printf("_br: sr_idle: action_idle:update()")
 
 	--if not xr_logic.is_active(self.object, self.st) then
@@ -24,9 +24,9 @@ function action_idle:update(delta)
 	local actor = db.actor
 
 	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
-		return
+		PROF_EVENT_END(); return
 	end	
-end
+end; PROF_EVENT_END(); end
 
 ---------------------------------------------------------------------------------------------------------------------
 function add_to_binder(npc, ini, scheme, section, storage)

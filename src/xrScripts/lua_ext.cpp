@@ -216,8 +216,45 @@ bool LoadScriptToGlobal(lua_State* L, const char* name, bool KernelScript)
 	return true;
 };
 
+#ifdef DEBUG_DRAW
+extern "C"
+{
+	static int ScriptProfilerEnabled()
+	{
+		return g_FrameProfiler.Enabled.load(std::memory_order_relaxed);
+	}
+
+	static u32 ScriptProfilerRegister(const char* Name)
+	{
+		return g_FrameProfiler.RegisterScriptMarker(Name);
+	}
+
+	static double ScriptProfilerBegin(u32 Marker, double Parent)
+	{
+		return g_FrameProfiler.BeginScriptMarker(Marker, Parent);
+	}
+
+	static void ScriptProfilerEnd(double Ticket)
+	{
+		g_FrameProfiler.EndScriptMarker(Ticket);
+	}
+}
+
+static struct
+{
+	decltype(&ScriptProfilerEnabled) Enabled;
+	decltype(&ScriptProfilerRegister) Register;
+	decltype(&ScriptProfilerBegin) Begin;
+	decltype(&ScriptProfilerEnd) End;
+} ScriptProfilerApi = { ScriptProfilerEnabled, ScriptProfilerRegister, ScriptProfilerBegin, ScriptProfilerEnd };
+#endif
+
 void lua_init_ext(lua_State* L)
 {
+#ifdef DEBUG_DRAW
+	lua_pushlightuserdata(L, &ScriptProfilerApi);
+	lua_setglobal(L, "_IXR_FRAME_PROFILER");
+#endif
 	luaopen_marshal(L);
     open_string(L);
     open_table(L);

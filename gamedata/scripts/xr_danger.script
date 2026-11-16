@@ -145,7 +145,7 @@ function evaluator_danger:__init(name, storage, npc) super (nil, name)
 	self.a = storage
 end
 
-function evaluator_danger:evaluate()
+function evaluator_danger:evaluate() PROF_EVENT_BEGIN("xr_danger.script:148:evaluator_danger:evaluate"); do
 	--printf("evaluator danger %s",  self.object:name())
 	if self.mgr == nil then
 		self.mgr = self.object:motivation_action_manager()
@@ -156,7 +156,7 @@ function evaluator_danger:evaluate()
 	if flags_into_callbacks.ret_value == false then
 		db.storage[self.object:id()].danger_flag = flags_into_callbacks.ret_value
 		
-		return false 
+		PROF_EVENT_END(); return false
 	end
 
 	-- инерция возврата
@@ -166,14 +166,14 @@ function evaluator_danger:evaluate()
 		db.storage[self.object:id()].danger_flag = true
 		
 		--printf(" [%s] return true by time %s", tostring(time_global()), self.object:name())		
-		return true
+		PROF_EVENT_END(); return true
 	end
 
 
 	if is_danger(self.object) ~= true then
 		db.storage[self.object:id()].danger_flag = false
 		--printf(" [%s] return false %s", tostring(time_global()), self.object:name())
-		return false
+		PROF_EVENT_END(); return false
 	end
 
 	if self.mgr:initialized() and self.mgr:current_action_id() == stalker_ids.action_danger_planner then
@@ -189,8 +189,8 @@ function evaluator_danger:evaluate()
 	end
 	
 	--printf(" [%s] return true %s", tostring(time_global()), self.object:name())
-	return true
-end
+	PROF_EVENT_END(); return true
+end; PROF_EVENT_END(); end
 
 
 ----------------------------------------------------------------------------------------------------------------------

@@ -84,7 +84,7 @@ function actor_binder:__init (obj) super(obj)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:net_spawn(data)
+function actor_binder:net_spawn(data) PROF_EVENT_BEGIN("bind_stalker.script:87:actor_binder:net_spawn"); do
 --	printf("actor net spawn")
 	level.show_indicators()
 	self.bCheckStart = true
@@ -110,8 +110,8 @@ function actor_binder:net_spawn(data)
 
 	SendScriptCallback("on_game_load", binder)
 
-	return true
-end
+	PROF_EVENT_END(); return true
+end; PROF_EVENT_END(); end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
 	SendScriptCallback("actor_on_net_destroy", self) -- IX-Ray
@@ -412,15 +412,15 @@ function actor_binder:on_weapon_no_avialable_ammo(wpn, suitable_ammo_total)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:update(delta)
+function actor_binder:update(delta) PROF_EVENT_BEGIN("bind_stalker.script:415:actor_binder:update"); do
 		if string.find(command_line(), "-designer") then
-			return
+			PROF_EVENT_END(); return
 		end
 
 		if self.already_jumped==false and jump_level.need_jump==true and (device().frame > self.spawn_frame+2000) then
 			jump_level.try_to_jump()
 			self.already_jumped = true
-			return
+			PROF_EVENT_END(); return
 		end
 		-- Вызов апдейта переноса игрока проводником
 		if travel_func ~= nil then
@@ -549,7 +549,7 @@ function actor_binder:update(delta)
 
 		SendScriptCallback("update", delta) -- IX-Ray
 		SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
-end
+end; PROF_EVENT_END(); end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
     if (utils.level_changing()) then

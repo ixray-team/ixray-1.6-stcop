@@ -532,7 +532,7 @@ end
 
 -- Апдейт работ смарттеррейна.
 -- Если передается object, то значит нужно найти только для него
-function se_smart_terrain:update_jobs()
+function se_smart_terrain:update_jobs() PROF_EVENT_BEGIN("smart_terrain.script:535:se_smart_terrain:update_jobs"); do
     self:check_alarm()
     --printf("UPDATE JOBS %s", self:name())
 
@@ -556,7 +556,7 @@ function se_smart_terrain:update_jobs()
     for k,v in pairs(self.npc_info) do
         self:select_npc_job(v)
     end
-end
+end; PROF_EVENT_END(); end
 
 -- Выбор работы для персонажа
 function se_smart_terrain:select_npc_job(npc_info)
@@ -1219,7 +1219,7 @@ end
 -- Обновление.
 -- В онлайне вызывается через binder.
 -- Также может вызваться принудительно из xr_effects
-function se_smart_terrain:update()
+function se_smart_terrain:update() PROF_EVENT_BEGIN("smart_terrain.script:1222:se_smart_terrain:update"); do
     cse_alife_smart_zone.update( self )
     if dev_debug then
         self:refresh() -- Не забыть потом заремить
@@ -1247,7 +1247,7 @@ function se_smart_terrain:update()
     end
 
     if self.check_time~=nil and current_time < self.check_time then
-        return
+        PROF_EVENT_END(); return
     end
 
     --проверить есть ли кто-то в смарте, если есть и костры не включены то включить,
@@ -1287,7 +1287,7 @@ function se_smart_terrain:update()
     simulation_objects.get_sim_obj_registry():update_avaliability(self)
 
     SendScriptCallback("smart_terrain_on_update", self)
-end
+end; PROF_EVENT_END(); end
 
 -- Переведение смарта в напряженное состояние
 function se_smart_terrain:set_alarm()

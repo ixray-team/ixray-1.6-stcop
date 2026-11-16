@@ -553,6 +553,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::Separator();
 
 					ImGui::CheckboxFlags("SOM", &m_flags.flags, LevelInspector::ESF_DRAW_SOM);
+					ImGui::CheckboxFlags("Sound Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SOUND_ZONES);
 					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
 					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
@@ -860,6 +861,10 @@ void LevelInspector::OnRender()
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOM))
 		{
 			DrawSOM();
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOUND_ZONES))
+		{
+			DrawSoundZones();
 		}
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
 		{
@@ -4054,6 +4059,27 @@ void LevelInspector::DrawCFORM()
 		temp_prims[1].clear();
 		temp_prims[1].temp_tris.shrink_to_fit();
 		temp_prims[1].temp_lines.shrink_to_fit();
+	}
+}
+
+void LevelInspector::DrawSoundZones()
+{
+	CDB::MODEL* Geometry = ::Sound ? ::Sound->get_geometry_env() : nullptr;
+	if (!Geometry)
+	{
+		return;
+	}
+
+	const auto& Vertices = Geometry->get_verts();
+	constexpr u32 LineColor = color_rgba(0, 255, 255, 255);
+	for (const CDB::TRI& Triangle : Geometry->get_tris())
+	{
+		const Fvector& A = Vertices[Triangle.verts[0]];
+		const Fvector& B = Vertices[Triangle.verts[1]];
+		const Fvector& C = Vertices[Triangle.verts[2]];
+		append_line({A, B, LineColor});
+		append_line({B, C, LineColor});
+		append_line({C, A, LineColor});
 	}
 }
 

@@ -56,9 +56,9 @@ function action_shoot:initialize()
 	self.st.camper_combat_action = true
 end
 
-function action_shoot:execute()
+function action_shoot:execute() PROF_EVENT_BEGIN("xr_combat_camper.script:59:action_shoot:execute"); do
 	action_base.execute( self )
-end
+end; PROF_EVENT_END(); end
 
 function action_shoot:finalize()
 	action_base.finalize( self )
@@ -93,7 +93,7 @@ function action_look_around:reset()
 	state_mgr.set_state( self.object, "hide", nil, nil, { look_position = self.st.last_seen_pos } )
 end
 
-function action_look_around:execute()
+function action_look_around:execute() PROF_EVENT_BEGIN("xr_combat_camper.script:96:action_look_around:execute"); do
 	action_base.execute( self )
 
 	if self.forget_time < device():time_global() then
@@ -102,7 +102,7 @@ function action_look_around:execute()
 
 		self.st.last_seen_pos = nil
 
-		return
+		PROF_EVENT_END(); return
 	end
 
 	if self.change_dir_time < device():time_global() then
@@ -117,7 +117,7 @@ function action_look_around:execute()
 
 		state_mgr.set_state( self.object, "hide", nil, nil, { look_position = self.object:position():add( dir ) } )
 	end
-end
+end; PROF_EVENT_END(); end
 
 function action_look_around:finalize()
 	action_base.finalize( self )

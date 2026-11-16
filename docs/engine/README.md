@@ -16,6 +16,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
 | [imgui-windows.md](imgui-windows.md) | In-game ImGui panels: detached desktop windows, input and checks |
+| [frame-profiler.md](frame-profiler.md) | In-game frame profiler and script timing markers |
 | [hud-adjust.md](hud-adjust.md) | In-game Hud Adjust: controls, export and screen guides |
 | [cutscene-adjust.md](cutscene-adjust.md) | Legacy cutscene adjustment: configs, controls and closing the tool |
 | [actor-animations.md](actor-animations.md) | Actor animation library, playback and favorites |
