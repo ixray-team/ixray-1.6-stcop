@@ -1,7 +1,7 @@
 # DLTX
 > [!IMPORTANT]
 > **Status**: Supported <br>
-> **Minimum Version**: 1.0
+> **Minimum Version**: 0.10
 
 **DLTX System** - allows you to override values in a separate file, which should significantly reduce the number of mod conflicts and the need to manually merge mods.
 
@@ -52,7 +52,7 @@ price       = 10000
 
 ## Section Deletion
 
-To delete a section, delete all its fields and use the `!!` symbol before the section declaration
+The `!![section]` header marks a section for deletion. The engine removes it if no fields remain after applying overrides and inheritance. Remove its own fields and detach parents as needed.
 
 Let's say you have a section:
 ```ini
@@ -68,6 +68,8 @@ You use:
 !price
 !weight
 !friends
+
+![some_section]:!parent_section
 ```
 
 ## Field Deletion
@@ -87,6 +89,8 @@ You use:
 ![some_section]
 !price
 ```
+
+If a parent defines `price`, removing the local field reveals the inherited value.
 
 ## Adding to Inheritance Section
 

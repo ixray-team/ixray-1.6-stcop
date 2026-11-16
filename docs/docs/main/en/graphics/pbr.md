@@ -1,10 +1,21 @@
 # Physically Based Rendering (PBR)
-> [!IMPORTANT]
-> **Status**: Supported <br>
-> **Minimal version**: 1.3
 
-# PBS lighting model
-Enable **PBS** in **engine_external.ltx** by removing/commenting the first line or setting it to `0`.
+> [!IMPORTANT]
+> **Status**: Supported<br>
+> **Minimum version**: 1.3
+
+## Overview
+
+PBS uses the texture's material metadata and environment maps to calculate lighting.
+
+## Syntax
+
+In R4, enable the PBS lighting path by omitting the global `USE_LEGACY_LIGHT` macro. Set it to `0` or remove its entry in `gamedata/configs/engine_external.ltx`. Restart the game after editing the file.
+
+```ini
+[shaders_options]
+USE_LEGACY_LIGHT = 0
+```
 
 ![image](https://github.com/user-attachments/assets/51dfacd3-f01a-48ae-be84-376d36c8f822)
 
@@ -18,10 +29,9 @@ To enable a PBS material for a texture, choose the lighting model when creating 
 ![image](https://github.com/user-attachments/assets/bf1c7cdc-4071-4c09-b070-dd3cad1c02e6)
 
 
-***
-# PBS material packing
+## PBS material packing
 
-## **BUMP** — Texture 2D — geometry data (classic BC3N packing)
+### **BUMP** — Texture 2D — geometry data (classic BC3N packing)
 - **BUMP R** — Height map for parallax/tessellation (optional) — leave empty by default (BC3N writes garbage)
 - **BUMP G** — Normal map green channel (OpenGL format)
 - **BUMP B** — Blue channel (optional) — reserved; leave empty by default (BC3N writes garbage)
@@ -29,7 +39,7 @@ To enable a PBS material for a texture, choose the lighting model when creating 
 
 ![image](https://github.com/user-attachments/assets/05ae4ef1-98f3-402e-8c28-33a5e5002c67)
 
-## **BUMP#** — Texture 2D — material packing
+### **BUMP#** — Texture 2D — material packing
 - **BUMP# R** — Metalness map
 - **BUMP# G** — Roughness map
 - **BUMP# B** — Translucency (SSS) for vegetation — black by default
@@ -37,8 +47,7 @@ To enable a PBS material for a texture, choose the lighting model when creating 
 
 ![image](https://github.com/user-attachments/assets/9f003bbc-675f-404b-9c1c-e6baf943e8f3)
 
-***
-# IBL lighting
+## IBL lighting
 
 For correct **IBL** you need baked mip levels on environment textures (skyboxes).
 
@@ -47,3 +56,8 @@ For correct **IBL** you need baked mip levels on environment textures (skyboxes)
 The diffuse irradiance map (_small sky_) does not need high resolution. Spherical harmonics for diffuse may be supported later.
 
 ![image](https://github.com/user-attachments/assets/66a7e7fd-66f5-449b-8186-a14a993b9796)
+
+## See also
+
+- [Global shader options](shader-options.md)
+- [THM override](thm-override.md)

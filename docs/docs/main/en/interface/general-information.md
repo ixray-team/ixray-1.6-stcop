@@ -244,3 +244,7 @@ Example:
     <target_font font="letterica18"/>
 </w>
 ```
+
+## Scrollbars
+
+See [scrollbar profiles](scrollbar-profiles.md).

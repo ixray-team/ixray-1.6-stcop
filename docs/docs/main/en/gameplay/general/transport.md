@@ -1,22 +1,21 @@
 # Transport
-## General
-> [!IMPORTANT]  
-> **Status**: Supported <br>
-> **Minimum Version**: 1.1
 
-* Basic vehicle functionality from SoC has been restored
-* Fixed flying in the air on spawn
-* Fixed level transitions 
-* Added the **`SCRPTCAR`** class from 1.5.10
+> [!IMPORTANT]
+> **Status**: Supported<br>
+> **Minimum version**: IX-Ray Platform 1.1
+
+## Overview
+
+Vehicle configuration controls the driver’s seat, cameras, dashboard, usable bones, and trunk. Use the class `SCRPTCAR`.
+
 ```ini
 class = SCRPTCAR
-```
-* Support for `Story ID` (for **`SCRPTCAR`** class):
-```ini
 story_id = aiw_closed
 ```
 
-## Position in Vehicle
+## Syntax
+
+### Position in Vehicle
 Position is configured in the `car_definition` section. There are several modes:
 1. Via bone (original)
 ```ini
@@ -28,6 +27,24 @@ driver_place = seat_left
 driver_position  = 10,10,10 ; Position
 driver_direction = 1,0,1    ; Camera direction
 ```
+
+## Driver cameras
+
+In `[car_definition]`, set `camera_pos` for the first-person camera. `camera_pos2` sets the offset used when switching out of first person. When omitted, it falls back to `camera_pos`.
+
+## Engine and transmission
+
+The table describes the car model user data in IX-Ray Platform 1.4.
+
+| Section and key | Effect |
+| --- | --- |
+| `[car_definition] auto_transmission` | Enables automatic shifting. |
+| `[car_definition] power_increment_factor`, `rpm_increment_factor` | Smoothing factors for increasing power and RPM. Both start at `0.5`. |
+| `[car_definition] power_decrement_factor`, `rpm_decrement_factor` | Smoothing factors for decreasing power and RPM. Each defaults to its corresponding increment factor. |
+| `[car_definition] power_neutral_factor` | Power multiplier when the accelerator is released. Defaults to `0.25`. Set a value strictly between `0.1` and `1.0`. |
+| `[car_definition] fuel_tank`, `fuel_consumption` | Fuel capacity and consumption coefficient. The engine fills the tank when loading these settings and divides the consumption coefficient by `100000`. |
+| `[car_definition] main_gear_ratio` | Final drive ratio. Multiplies the ratio of each gear. |
+| `[transmission_gear_ratio] R`, `N1`, `N2` and higher | Three numbers for reverse and each forward gear. For forward gears, specify the ratio and two RPM limits. Number forward gears consecutively. |
 
 ## Dashboard
 The car supports a dashboard. To do this, you need to create a `dashboard` section in the car model configuration
@@ -69,30 +86,37 @@ To configure the gauge limits, you need to select the extreme left and right pos
 :::
 
 ## Usable Bones 
-This system allows you to set script callbacks on Use() by bone name. To do this, you need to register a list of bones and functions in `car_definition`
+In single-player, `Use()` can invoke a Lua callback for the bone the player is looking at. Configure two lists of equal length in `[car_definition]`.
+
+The engine pairs entries by position. Returning `true` skips the default interaction. Returning `false` or omitting the handler allows default processing to continue.
+
 ```ini
-; Custom usable 
-usable_bones = back_wheel, left_door
-usable_bones_callback = test_car.fuel_test, test_car.block_left_door
+[car_definition]
+usable_bones = back_wheel, steering_wheel
+usable_bones_callback = test_car.fuel_test, test_car.steering_test
 ```
-Example script:
+
+`gamedata/scripts/test_car.script`
+
 ```lua
-function fuel_test(obj_car)
-    obj_car.fuel = 10
-    return false -- Pass further processing to the engine 
+function fuel_test(car)
+    car:add_fuel(10)
+    return true
 end
 
-function block_left_door(obj_car)
-    return true -- Block further Use() event processing for the engine 
+function steering_test(car)
+    return false
 end
 ```
-* Text hint 
+
+Set the interaction prompt with the `car_use` string.
+
 ```xml
 <string id="car_use">
 	<text>Use ($$ACTION_USE$$)</text>
 </string>
 ```
-> For more information on new script exports, see [here](/scripting/new-functions#ccar).
+> For more information on new script exports, see [here](vehicle-lua.md).
 ## UI Indicators
 ![image](https://github.com/ixray-team/ixray-1.6-stcop/assets/13867290/d9b17009-669a-431b-953f-3b44d606f8b8)
 ### Files: 
@@ -167,3 +191,8 @@ This feature is optional. To activate it, add the following lines to the main ca
 name = "niva" ; Car name (Supports text sections)
 icon = ui_npc_monster_pseudodog ; car icon
 ```
+
+## See also
+
+- [Vehicles in Lua](vehicle-lua.md)
+- [Gamepads](gamepads.md)

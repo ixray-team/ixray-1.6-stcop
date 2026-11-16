@@ -1,72 +1,65 @@
-# **Wildcard Support in File Paths**
+# Including resources by pattern
 
-> [!IMPORTANT]  
-> **Status**: Supported <br>
-> **Minimum Version**: IX-Ray Platform 1.2
+> [!IMPORTANT]
+> **Status**: Supported<br>
+> **Minimum version**: IX-Ray Platform 1.2
 
-## **Overview**
+## Overview
 
-You can now use **wildcards** in configuration and binary files to group resources together. This allows you to reduce manual file listing and automate data loading.
+Wildcard patterns let one entry include several resources. LTX and XML use an `#include` directive. An OGF model can use a wildcard in its reference list to load multiple OMF animation files.
 
-## **Usage in Text Configs**
+## Syntax
 
-Previously, you had to explicitly specify each file:
+| Format | Example | Base directory |
+| --- | --- | --- |
+| LTX | `#include "weapons\w_*.ltx"` | Current LTX directory |
+| XML | `#include "ui\hud_widgets\*.xml"` | File-system alias used to load the XML |
+| OGF | `dynamics\weapons\wpn_hand\*.omf` | `$game_meshes$` and `$level$` |
 
-```cpp
-#include "weapons\w_ak74.ltx"
-#include "weapons\w_ak74u.ltx"
-#include "weapons\w_ak101.ltx"
-```
+## Examples
 
-Now you can replace the list with a **template**:
+### Weapon configurations
 
-```cpp
+```ini
 #include "weapons\w_*.ltx"
 ```
 
-→ This will include **all files** in the `weapons` folder that match the mask `w_*.ltx`
+Use this pattern for the `w_` prefix. The file system compares the pattern with the full path relative to `weapons`.
 
-### **Additional Features in Text Configs**
-
-- Recursion is supported:
-
-```cpp
-#include "weapons\*\*.ltx"
-```
-
-→ Will include all `.ltx` files in `weapons` and subfolders
-
-## **Usage in Binary Files (OGF)**
-
-Previously, models required full path specification:
+To include all LTX files inside `weapons` and its subdirectories, use:
 
 ```ini
-"dynamics\weapons\wpn_hand\wpn_abakan_hud_animation.omf"
-"dynamics\weapons\wpn_hand\wpn_ak74_hud_animation.omf"
-"dynamics\weapons\wpn_hand\wpn_ak74u_hud_animation.omf"
+#include "weapons\*.ltx"
 ```
 
-Now you can use a mask:
+Keep the base directory literal. In `#include "weapons\*\*.ltx"`, the LTX parser tries to open `weapons\*\` as the base directory.
 
-```ini
-"dynamics\weapons\wpn_hand\*.omf"
+### HUD widgets
+
+```xml
+<w>
+  #include "ui\hud_widgets\*.xml"
+</w>
 ```
 
-→ This will load **all `.omf` files** from the specified folder
+The XML parser inserts the included contents at the directive. Each file in this example supplies child elements of `w`.
 
-### **Additional Features in Binary Files**
+### OMF animations
 
-- Recursion is supported:
-
-```ini
-"dynamics\weapons\*\*.omf"
+```text
+dynamics\weapons\wpn_hand\*.omf
 ```
 
-→ Will load all `.omf` files in `dynamics\weapons` and subfolders
+The OGF reference selects OMF files under `wpn_hand`, including its subdirectories. The pattern `dynamics\weapons\*\*.omf` requires a subdirectory under `weapons`. To match files directly under `weapons` as well, use `dynamics\weapons\*.omf`.
 
-## **Recommendations**
+## Recommendations and limitations
 
-- ✔ **Use masks** to simplify configs when dealing with many files, or when developing an addon;
-- ✔ **Check the list of loaded files** to avoid unwanted resources being included;
-- ⚠ **Recursive masks** (`*`) may result in loading extra files — use them carefully;
-- ✖ **Don't use masks** if you need strict control over the order or composition of files.
+- Use a pattern containing `*.xml` to include multiple XML files. An exact path includes one XML file.
+- List files explicitly when inclusion order affects the result.
+- Keep animation sets that match the model skeleton under the same OMF pattern.
+
+## See also
+
+- [DLTX](dltx.md)
+- [XMLOverride](xml-override.md)
+- [Animation](../animation-system/general-information.md)

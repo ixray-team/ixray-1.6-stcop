@@ -77,67 +77,9 @@ local IsRight = sp:IsAlignRight() --// получить выравнивание
 * Добавлена возможность настройки UI элемента. Подробности смотреть в ```custom_spin.xml```
 * Добавлена поддержка горизонтальных ползунков при указании атрибута `horz="1"`. Горизонтальные ползунки настраиваются в файле ```custom_spin_horz.xml```
 
-### CUIScrollBar | scroll_profile
-> [!IMPORTANT]  
-> **Статус**: Поддерживается <br>
-> **Минимальная версия**: 1.x
-* Профили скролл-баров задаются в ```gamedata/configs/ui/scroll_bar.xml```. Каждый узел (например, `default`, `pda`, `pda_logs`) описывает стрелки, трек, ползунок и параметры layout.
-* Атрибут `scroll_profile` в XML подключает профиль к `scroll_view` и `list`:
+### CUIScrollBar
 
-```xml
-<logs_list x="45" y="176" width="936" height="523" item_height="35" scroll_profile="pda_logs" always_show_scroll="1">
-```
-
-Параметры профиля в `scroll_bar.xml`:
-
-| Атрибут | Назначение |
-|---------|------------|
-| `layout` | `stretch`, `fixed` или `auto` (по умолчанию `auto`) |
-| `width`, `height` | Размер fixed-бара для горизонтальной оси |
-| `width_v`, `height_v` | Размер fixed-бара для вертикальной оси |
-| `hold_delay` | Задержка автопрокрутки при удержании кнопки (мс) |
-| `scroll_box_offset_x`, `scroll_box_offset_y` | Отступ рабочей области ползунка |
-| `thumb` | `auto`, `button` или `box` (тип ползунка в fixed-режиме) |
-
-Дочерние узлы профиля: `up_arrow` / `down_arrow` / `left_arrow` / `right_arrow`, `back` / `back_v`, `box` / `box_v` (также поддерживаются алиасы `dec`, `inc`, `track`, `thumb`).
-
-> [!WARNING]
-> `SetFixedScrollBar(bool)` у `CUIScrollView` / `CUIListBox` управляет флагом `always_show_scroll` (всегда показывать полосу), а **не** fixed-layout профиля из `scroll_bar.xml`.
-
-Пример Lua (XML-путь без изменений):
-
-```lua
-local view = xml:InitScrollView("my_scroll", self)
-```
-
-Смена профиля в runtime:
-
-```lua
-view:SetScrollBarProfile("pda")
-view:ReinitScrollBar()
-
-local bar = view:ScrollBar()
-bar:SetScrollPos(10)
-```
-
-Standalone скролл-бар (кастомные диалоги, карта PDA):
-
-```lua
-local bar = CUIScrollBar()
-parent:AttachChild(bar)
-bar:InitScrollBarFixed(x, y, false, "pda")
-```
-
-Проверка layout до инициализации:
-
-```lua
-local layout = ui.QueryScrollBarProfileLayout("pda_logs", false)
--- -1: профиль не найден
--- 0: stretch (CUIScrollBar.layout_mode.stretch)
--- 1: fixed (CUIScrollBar.layout_mode.fixed)
-```
-
-Те же методы `SetScrollBarProfile`, `ScrollBar`, `ReinitScrollBar` доступны у `CUIListWnd`.
+См. [профили полос прокрутки](scrollbar-profiles.md).
 
 ## Прочее
 

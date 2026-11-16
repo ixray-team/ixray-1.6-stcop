@@ -1,7 +1,6 @@
 > [!IMPORTANT]
 > **Status**: In development <br>
-> **Minimum version**: rolling <br>
-> **Last update**: 2026-07-31
+> **Minimum version**: 1.4
 
 # Sleep dialog (CUISleepWnd)
 

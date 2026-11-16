@@ -1,4 +1,18 @@
 # Новые функции
+
+> [!IMPORTANT]
+> **Статус**: Поддерживается<br>
+> **Минимальная версия**: зависит от функции
+
+## Обзор
+
+Справочник расширений Lua API для модов IX-Ray. Выберите раздел по типу объекта.
+
+- [Оружие и обвесы](../weapon-system/lua-weapon-api.md)
+- [Транспорт](../gameplay/general/vehicle-lua.md)
+- [Консоль и команды из Lua](../main/console-commands.md)
+- [Экспорты для LTX, костей, брони и полос прогресса](runtime-exports.md)
+
 ## Глобальное пространство
 
 ```lua
@@ -15,9 +29,8 @@ OnServer()
 retval: boolean
 
 --// Получить позицию курсора
-GetCursorPosition(cursor_pos)
+GetCursorPosition()
 retval: vector2
-args: cursor_pos (vector2)
 
 --// Установить позицию курсора
 SetCursorPosition(pos)
@@ -28,13 +41,15 @@ args: pos (vector2)
 ## player_hud
 
 ```lua
---// показать/скрыть ноги
+--// увеличить/уменьшить счётчик видимости ног; вызовы true и false должны быть парными
 player_hud.show_legs(value)
 retval: none
 args: value (boolean)
 ```
 
 ## CActor
+
+В примерах `outfit` — игровой объект костюма или рюкзака.
 
 Скриптовое наведение, приближение и слежение: [Фокусировка камеры](camera-focus.md).
 
@@ -43,51 +58,51 @@ args: value (boolean)
 * Статус ГГ
 ```lua
 --// Находится ли ГГ в "режиме бога"
-db.actor:is_god_mode()
+is_god_mode()
 retval: boolean
 
 --// Установить "Режим Бога"
-db.actor:SetInvulnerable(value)
+db.actor:set_invulnerable(value)
 retval: none
 args: value (boolean)
 
 --// Проверяет, в прыжке ли актер в данный момент
-db.actor:ActorIsJump()
+db.actor:is_jump()
 retval: boolean
 
 --// Возвращает максимальный вес, который актер может нести
-db.actor:GetActorMaxWeight()
+db.actor:get_actor_max_weight()
 retval: number
 
 --// Устанавливает максимальный вес, который актер может нести
-db.actor:SetActorMaxWeight(max_weight)
+db.actor:set_actor_max_weight(max_weight)
 retval: none
 args: max_weight (number)
 
 --// Возвращает максимальный вес, при котором актер может передвигаться
-db.actor:GetActorMaxWalkWeight()
+db.actor:get_actor_max_walk_weight()
 retval: number
 
 --// Устанавливает максимальный вес, при котором актер может передвигаться
-db.actor:SetActorMaxWalkWeight(max_walk_weight)
+db.actor:set_actor_max_walk_weight(max_walk_weight)
 retval: none
 args: max_walk_weight (number)
 
 --// Возвращает дополнительный вес, который костюм актера позволяет нести сверх стандартного лимита
-db.actor:GetAdditionalMaxWeight()
+outfit:get_additional_max_weight()
 retval: number
 
 --// Устанавливает дополнительный вес, который костюм актера позволяет нести сверх стандартного лимита
-db.actor:SetAdditionalMaxWeight(add_max_weight)
+outfit:set_additional_max_weight(add_max_weight)
 retval: none
 args: add_max_weight (number)
 
 --// Возвращает дополнительный вес, при котором актер может передвигаться
-db.actor:GetAdditionalMaxWalkWeight()
+outfit:get_additional_max_walk_weight()
 retval: number
 
 --// Устанавливает дополнительный вес, при котором актер может передвигаться
-db.actor:SetAdditionalMaxWalkWeight(add_max_walk_weight)
+outfit:set_additional_max_walk_weight(add_max_walk_weight)
 retval: none
 args: add_max_walk_weight (number)
 
@@ -134,15 +149,15 @@ args: value (number)
 * Камера
 ```lua
 --// Активна ли камера "От первого лица"
-db.actor:is_first_person()
+is_first_person()
 retval: boolean
 
 --// Установить камеру "От первого лица"
-db.actor:set_first_person()
+set_first_person()
 retval: none
 
 --// Установить камеру "От третьего лица"
-db.actor:set_third_person()
+set_third_person()
 retval: none
 ```
 * [Бустеры](/scripting/exported-enums#eboostparams)
@@ -174,11 +189,11 @@ retval: number
 * Тень от ГГ
 ```lua
 --// Проверить включена ли тень от ГГ
-db.actor:is_actor_shadow()
+is_actor_shadow()
 retval: boolean
 
 --// Включить/выключить тень от ГГ
-db.actor:set_actor_shadow(value)
+set_actor_shadow(value)
 retval: none
 args: value (boolean)
 ```
@@ -378,6 +393,8 @@ retval: number
 weapon:is_weapon_use_chamber()
 retval: boolean
 ```
+
+Маска обвесов и индексы прицелов описаны в [справочнике по оружию](../weapon-system/lua-weapon-api.md).
 * Items
 ```lua
 --// Получить предмет по ID
@@ -411,23 +428,8 @@ args: boneName (string), bVisibility (boolean)
 ```
 
 ## CCar
-`local car = level.object_by_id(car_id)`
-```lua
---// Добавить топливо (с учётом предела m_fuel_tank)
-car:AddFuel(amount)
-retval: none
-args: amount (number)
 
---// Получить текущее топливо
-car.fuel
---// Установить текущее топливо
-car.fuel = value
-
---// Получить размер топливного бака
-car.fuel_tank
---// Установить размер топливного бака  
-car.fuel_tank = value
-```
+См. [транспорт в Lua](../gameplay/general/vehicle-lua.md).
 
 ## From Lost Alpha
 ```lua
@@ -574,7 +576,7 @@ retval: none
 args: count (number)
 
 --// Текущий вес предмета
-bread:Weight()
+bread:weight()
 retval: number
 
 --// Стоимость предмета
@@ -650,46 +652,46 @@ retval: none
 args: float
 
 --// Возвращает суммарный вес инвентаря InventoryOwner'а
-object:GetTotalWeight()
+object:get_total_weight()
 retval: float
 
 --// Возвращает вес конкретного предмета
-object:Weight()
+object:weight()
 retval: float
 
 --// Возвращает скорость прыжка актёра
-object:GetActorJumpSpeed()
+object:get_actor_jump_speed()
 retval: float
 
 --// Устанавливает скорость прыжка актёра
-object:SetActorJumpSpeed(float)
+object:set_actor_jump_speed(float)
 retval: none
 args: float
 
 --// Возвращает коэффициент спринта актёра
-object:GetActorSprintKoef()
+object:get_actor_sprint_koef()
 retval: float
 
 --// Устанавливает коэффициент спринта актёра
-object:SetActorSprintKoef(float)
+object:set_actor_sprint_koef(float)
 retval: none
 args: float
 
 --// Возвращает коэффициент бега актёра
-object:GetActorRunCoef()
+object:get_actor_run_coef()
 retval: float
 
 --// Устанавливает коэффициент бега актёра
-object:SetActorRunCoef(float)
+object:set_actor_run_coef(float)
 retval: none
 args: float
 
 --// Возвращает коэффициент бега назад актёра
-object:GetActorRunBackCoef()
+object:get_actor_runback_coef()
 retval: float
 
 --// Устанавливает коэффициент бега назад актёра
-object:SetActorRunBackCoef(float)
+object:set_actor_runback_coef(float)
 retval: none
 args: float
 
@@ -749,7 +751,7 @@ retval: string
 args: (integer) bone_id
 
 --// Получить идентификатор кости по имени кости у обьекта
-object:get_bone_name_by_id(bone_name)
+object:get_bone_id_by_name(bone_name)
 retval: integer
 args: (string) bone_name
 
@@ -974,7 +976,7 @@ args: bool (state)
 
 ## level
 ```lua
---// enable/disable rain effector
+--// Включает (true) или выключает (false) эффекты дождя и молний.
 level.enable_rain(value)
 retval: none
 args: value (boolean)
@@ -1308,3 +1310,8 @@ retval: bool true если успешно установлено false если 
 args: 
     flag (bool), -- true если требуется чтобы монстры не агрились на живой обьект false обычное поведение
 ```
+
+## См. также
+
+- [Lua callbacks](lua-callbacks.md)
+- [IXR Framework](ixr-framework/general-info.md)

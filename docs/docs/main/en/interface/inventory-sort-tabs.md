@@ -1,7 +1,6 @@
 > [!IMPORTANT]
 > **Status**: Supported <br>
-> **Minimum version**: 1.4 <br>
-> **Last updated**: 2026-07-24
+> **Minimum version**: 1.4
 
 # Inventory sort tabs
 

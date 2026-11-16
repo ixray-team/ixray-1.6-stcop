@@ -1,4 +1,18 @@
 # New Functions
+
+> [!IMPORTANT]
+> **Status**: Supported<br>
+> **Minimum version**: Varies by function
+
+## Overview
+
+Lua API extensions for IX-Ray mods. Choose a section by object type.
+
+- [Weapons and attachments](../weapon-system/lua-weapon-api.md)
+- [Vehicles](../gameplay/general/vehicle-lua.md)
+- [Lua console commands](../main/console-commands.md)
+- [Exports for LTX, bones, armor, and progress bars](runtime-exports.md)
+
 ## Global Namespace
 
 ```lua
@@ -15,9 +29,8 @@ OnServer()
 retval: boolean
 
 --// Get cursor position
-GetCursorPosition(cursor_pos)
+GetCursorPosition()
 retval: vector2
-args: cursor_pos (vector2)
 
 --// Set cursor position
 SetCursorPosition(pos)
@@ -28,13 +41,15 @@ args: pos (vector2)
 ## player_hud
 
 ```lua
---// Show/hide legs
+--// Increment/decrement the leg visibility counter; pair true and false calls
 player_hud.show_legs(value)
 retval: none
 args: value (boolean)
 ```
 
 ## CActor
+
+In the examples, `outfit` is an outfit or backpack game object.
 
 Scripted look-at, zoom and tracking: [Camera focus](camera-focus.md).
 
@@ -43,51 +58,51 @@ Scripted look-at, zoom and tracking: [Camera focus](camera-focus.md).
 * Actor Status
 ```lua
 --// Is the actor in god mode
-db.actor:is_god_mode()
+is_god_mode()
 retval: boolean
 
 --// Enable/disable god mode
-db.actor:SetInvulnerable(value)
+db.actor:set_invulnerable(value)
 retval: none
 args: value (boolean)
 
 --// Check if actor is currently jumping
-db.actor:ActorIsJump()
+db.actor:is_jump()
 retval: boolean
 
 --// Get max weight the actor can carry
-db.actor:GetActorMaxWeight()
+db.actor:get_actor_max_weight()
 retval: number
 
 --// Set max weight the actor can carry
-db.actor:SetActorMaxWeight(max_weight)
+db.actor:set_actor_max_weight(max_weight)
 retval: none
 args: max_weight (number)
 
 --// Get max weight at which the actor can walk
-db.actor:GetActorMaxWalkWeight()
+db.actor:get_actor_max_walk_weight()
 retval: number
 
 --// Set max weight at which the actor can walk
-db.actor:SetActorMaxWalkWeight(max_walk_weight)
+db.actor:set_actor_max_walk_weight(max_walk_weight)
 retval: none
 args: max_walk_weight (number)
 
 --// Get extra carry weight granted by the suit
-db.actor:GetAdditionalMaxWeight()
+outfit:get_additional_max_weight()
 retval: number
 
 --// Set extra carry weight granted by the suit
-db.actor:SetAdditionalMaxWeight(add_max_weight)
+outfit:set_additional_max_weight(add_max_weight)
 retval: none
 args: add_max_weight (number)
 
 --// Get extra walking weight granted by the suit
-db.actor:GetAdditionalMaxWalkWeight()
+outfit:get_additional_max_walk_weight()
 retval: number
 
 --// Set extra walking weight granted by the suit
-db.actor:SetAdditionalMaxWalkWeight(add_max_walk_weight)
+outfit:set_additional_max_walk_weight(add_max_walk_weight)
 retval: none
 args: add_max_walk_weight (number)
 
@@ -134,15 +149,15 @@ args: value (number)
 * Camera
 ```lua
 --// Is first-person camera active
-db.actor:is_first_person()
+is_first_person()
 retval: boolean
 
 --// Switch to first-person camera
-db.actor:set_first_person()
+set_first_person()
 retval: none
 
 --// Switch to third-person camera
-db.actor:set_third_person()
+set_third_person()
 retval: none
 ```
 * [Boosters](/scripting/exported-enums#eboostparams)
@@ -174,11 +189,11 @@ retval: number
 * Actor shadow
 ```lua
 --// Check if actor shadow is enabled
-db.actor:is_actor_shadow()
+is_actor_shadow()
 retval: boolean
 
 --// Enable/disable actor shadow
-db.actor:set_actor_shadow(value)
+set_actor_shadow(value)
 retval: none
 args: value (boolean)
 ```
@@ -378,6 +393,8 @@ retval: number
 weapon:is_weapon_use_chamber()
 retval: boolean
 ```
+
+See the [weapon API](../weapon-system/lua-weapon-api.md) for attachment masks and scope indices.
 * Items
 ```lua
 --// Get item by ID
@@ -411,23 +428,8 @@ args: boneName (string), bVisibility (boolean)
 ```
 
 ## CCar
-`local car = level.object_by_id(car_id)`
-```lua
---// Add fuel (respecting m_fuel_tank limit)
-car:AddFuel(amount)
-retval: none
-args: amount (number)
 
---// Get current fuel
-car.fuel
---// Set current fuel
-car.fuel = value
-
---// Get fuel tank size
-car.fuel_tank
---// Set fuel tank size
-car.fuel_tank = value
-```
+See [vehicles in Lua](../gameplay/general/vehicle-lua.md).
 
 ## From Lost Alpha
 ```lua
@@ -574,7 +576,7 @@ retval: none
 args: count (number)
 
 --// Current item weight
-bread:Weight()
+bread:weight()
 retval: number
 
 --// Item cost
@@ -845,46 +847,46 @@ retval: none
 args: float
 
 --// Get total inventory weight of InventoryOwner
-object:GetTotalWeight()
+object:get_total_weight()
 retval: float
 
 --// Get weight of specific item
-object:Weight()
+object:weight()
 retval: float
 
 --// Get actor jump speed
-object:GetActorJumpSpeed()
+object:get_actor_jump_speed()
 retval: float
 
 --// Set actor jump speed
-object:SetActorJumpSpeed(float)
+object:set_actor_jump_speed(float)
 retval: none
 args: float
 
 --// Get actor sprint coefficient
-object:GetActorSprintKoef()
+object:get_actor_sprint_koef()
 retval: float
 
 --// Set actor sprint coefficient
-object:SetActorSprintKoef(float)
+object:set_actor_sprint_koef(float)
 retval: none
 args: float
 
 --// Get actor run coefficient
-object:GetActorRunCoef()
+object:get_actor_run_coef()
 retval: float
 
 --// Set actor run coefficient
-object:SetActorRunCoef(float)
+object:set_actor_run_coef(float)
 retval: none
 args: float
 
 --// Get actor backward run coefficient
-object:GetActorRunBackCoef()
+object:get_actor_runback_coef()
 retval: float
 
 --// Set actor backward run coefficient
-object:SetActorRunBackCoef(float)
+object:set_actor_runback_coef(float)
 retval: none
 args: float
 
@@ -925,74 +927,74 @@ retval: none
   -- Custom texture on inventory icon
   item:set_sub_inventory_icon(true, vector2():set(3, 3), vector2():set(15, 15), "ui_inGame2_inventory_status_bar", GetARGB(255, 128, 155, 255))
 
-  -- ActorIsJump
-  if actor:ActorIsJump() then
+  -- is_jump
+  if actor:is_jump() then
       print("Actor is jumping")
   end
 
-  -- GetActorMaxWeight
-  local maxWeight = actor:GetActorMaxWeight()
+  -- get_actor_max_weight
+  local maxWeight = actor:get_actor_max_weight()
   print("Actor max weight: " .. maxWeight)
 
-  -- SetActorMaxWeight
-  actor:SetActorMaxWeight(100.0)
+  -- set_actor_max_weight
+  actor:set_actor_max_weight(100.0)
 
-  -- GetActorMaxWalkWeight
-  local maxWalkWeight = actor:GetActorMaxWalkWeight()
+  -- get_actor_max_walk_weight
+  local maxWalkWeight = actor:get_actor_max_walk_weight()
   print("Max walk weight: " .. maxWalkWeight)
 
-  -- SetActorMaxWalkWeight
-  actor:SetActorMaxWalkWeight(80.0)
+  -- set_actor_max_walk_weight
+  actor:set_actor_max_walk_weight(80.0)
 
-  -- GetAdditionalMaxWeight
-  local additionalWeight = actor:GetAdditionalMaxWeight()
+  -- get_additional_max_weight
+  local additionalWeight = outfit:get_additional_max_weight()
   print("Additional weight: " .. additionalWeight)
 
-  -- SetAdditionalMaxWeight
-  actor:SetAdditionalMaxWeight(20.0)
+  -- set_additional_max_weight
+  outfit:set_additional_max_weight(20.0)
 
-  -- GetAdditionalMaxWalkWeight
-  local additionalWalkWeight = actor:GetAdditionalMaxWalkWeight()
+  -- get_additional_max_walk_weight
+  local additionalWalkWeight = outfit:get_additional_max_walk_weight()
   print("Additional walk weight: " .. additionalWalkWeight)
 
-  -- SetAdditionalMaxWalkWeight
-  actor:SetAdditionalMaxWalkWeight(15.0)
+  -- set_additional_max_walk_weight
+  outfit:set_additional_max_walk_weight(15.0)
 
-  -- GetTotalWeight
-  local totalWeight = actor:GetTotalWeight()
+  -- get_total_weight
+  local totalWeight = actor:get_total_weight()
   print("Total inventory weight: " .. totalWeight)
 
-  -- Weight
-  local itemWeight = actor:Weight()
+  -- weight
+  local itemWeight = item:weight()
   print("Item weight: " .. itemWeight)
 
-  -- GetActorJumpSpeed
-  local jumpSpeed = actor:GetActorJumpSpeed()
+  -- get_actor_jump_speed
+  local jumpSpeed = actor:get_actor_jump_speed()
   print("Jump speed: " .. jumpSpeed)
 
-  -- SetActorJumpSpeed
-  actor:SetActorJumpSpeed(5.0)
+  -- set_actor_jump_speed
+  actor:set_actor_jump_speed(5.0)
 
-  -- GetActorSprintKoef
-  local sprintKoef = actor:GetActorSprintKoef()
+  -- get_actor_sprint_koef
+  local sprintKoef = actor:get_actor_sprint_koef()
   print("Sprint coefficient: " .. sprintKoef)
 
-  -- SetActorSprintKoef
-  actor:SetActorSprintKoef(1.5)
+  -- set_actor_sprint_koef
+  actor:set_actor_sprint_koef(1.5)
 
-  -- GetActorRunCoef
-  local runCoef = actor:GetActorRunCoef()
+  -- get_actor_run_coef
+  local runCoef = actor:get_actor_run_coef()
   print("Run coefficient: " .. runCoef)
 
-  -- SetActorRunCoef
-  actor:SetActorRunCoef(1.2)
+  -- set_actor_run_coef
+  actor:set_actor_run_coef(1.2)
 
-  -- GetActorRunBackCoef
-  local runBackCoef = actor:GetActorRunBackCoef()
+  -- get_actor_runback_coef
+  local runBackCoef = actor:get_actor_runback_coef()
   print("Backward run coefficient: " .. runBackCoef)
 
-  -- SetActorRunBackCoef
-  actor:SetActorRunBackCoef(0.8)
+  -- set_actor_runback_coef
+  actor:set_actor_runback_coef(0.8)
   ```
 :::
 
@@ -1106,7 +1108,7 @@ retval: bool
 
 ## level
 ```lua
---// enable/disable rain effector
+--// Enables (true) or disables (false) rain and lightning effects.
 level.enable_rain(value)
 retval: none
 args: value (boolean)
@@ -1414,3 +1416,8 @@ args:
     direction (vector), -- particle direction
     velocity (vector), -- particle velocity alignment
 ``````
+
+## See also
+
+- [Lua callbacks](lua-callbacks.md)
+- [IXR Framework](ixr-framework/general-info.md)

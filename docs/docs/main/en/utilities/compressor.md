@@ -1,8 +1,34 @@
-# Compressor
-## Unpacking resources
-> [!IMPORTANT]  
-> **Status**: Supported <br>
-> **Minimal version**: 1.1
+# xrCompress resource tool
+
+> [!IMPORTANT]
+> **Status**: Supported<br>
+> **Minimum version**: 1.0 for packing, 1.1 for unpacking
+
+## Overview
+
+The tool packs game resources into archives, unpacks mounted archives, and copies changed files from a newer data directory to prepare a patch.
+
+## Syntax
+
+```text
+xrCompress.exe <data_dir> [-ltx <config.ltx>] [-fast] [-store]
+xrCompress.exe <data_dir> -header <header.ltx>
+xrCompress.exe -unpack <fsgame.ltx> <output_dir>
+xrCompress.exe -diff <new_data> <old_data> -out <output_dir> [options]
+```
+
+| Argument | Effect |
+| --- | --- |
+| `-ltx <config.ltx>` | Packs files according to the configuration. |
+| `-header <header.ltx>` | Specifies the archive header configuration when packing a directory without `-ltx`. |
+| `-fast` | Enables fast compression. |
+| `-store` | Stores files without compression. |
+| `-nofileage` | In diff mode, skips file timestamp comparison. |
+| `-nocrc` | In diff mode, skips CRC32 comparison. |
+| `-nobinary` | In diff mode, skips byte-for-byte comparison. |
+| `-nosize` | In diff mode, skips file size comparison. |
+
+## Examples
 
 Command:
 
@@ -10,35 +36,17 @@ Command:
 xrCompress.exe -unpack fsgame.ltx "unpack_dir"
 ```
 
-## Packing resources
-> [!IMPORTANT]  
-> **Status**: Supported <br>
-> **Minimal version**: 1.0
-
-Command:
-```shell
-xrCompress.exe "data_dir" -ltx "file_name.ltx" [options]
+```text
+xrCompress.exe gamedata -ltx datapack.ltx -fast
+xrCompress.exe -diff new_data old_data -out patch_data -nofileage
 ```
 
-Available options:
+## Recommendations and limitations
 
-* **-diff /?** - info about created diffs
-* **-fast** - fast compression
-* **-store** - store files without compression
-* **-ltx <file_name.ltx>** - config with paths for packaged files
+- Use paths without spaces for diff directories and for `-ltx` and `-header` values. A separate parser reads those arguments.
+- The `-diff /?` output lists `-crc` for disabling CRC32 checks. The implementation accepts `-nocrc`.
 
-## Generating diffs (patch creation)
+## See also
 
-Command:
-```shell
-xrCompress.exe -diff "new_data" "old_data" -out "diff_resulf" [options]
-```
-
-Parameters **`"new_data"`**, **`"old_data"`**, **`"diff_resulf"`** are directory names.
-
-Available options:
-
-* **-nofileage** - skip file date check
-* **-crc** - skip CRC32 check
-* **-nobinary** - skip binary check
-* **-nosize** - skip size check
+- [Application launch arguments](../main/launch-keys.md)
+- [Addons](../addon-system/general-information.md)
