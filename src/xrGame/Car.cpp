@@ -1088,25 +1088,33 @@ void CCar::ParseDefinitions()
 	fill_exhaust_vector(ini->r_string("car_definition", "exhausts"), m_exhausts);
 	fill_doors_map(ini->r_string("car_definition", "doors"), m_doors);
 
-	if (ini->line_exist("car_definition", "usable_bones"))
+	UsableBones.clear();
+	if (ini->line_exist("car_definition", "usable_bones") && ini->line_exist("car_definition", "usable_bones_callback"))
 	{
 		const char* Bones = ini->r_string("car_definition", "usable_bones");
 		const char* Callbacks = ini->r_string("car_definition", "usable_bones_callback");
 
-		int BonesCount = _GetItemCount(Bones);
-		R_ASSERT2(BonesCount == _GetItemCount(Callbacks), "Bones list should be equal to callback list!");
+		const int BonesCount = _GetItemCount(Bones);
+		const int CallbackCount = _GetItemCount(Callbacks);
+		if (BonesCount != CallbackCount)
+		{
+			Msg("! usable_bones and usable_bones_callback have different lengths");
+		}
 
 		string32 BoneName = {};
 		string64 CallbackName = {};
 		
-		for (int Iter = 0; Iter < BonesCount; Iter++)
+		for (int Iter = 0; Iter < std::min(BonesCount, CallbackCount); Iter++)
 		{
 			_GetItem(Bones, Iter, BoneName);
 			_GetItem(Callbacks, Iter, CallbackName);
 
 			u16 BoneID = pKinematics->LL_BoneID(BoneName);
 
-			UsableBones[BoneID] = Callbacks;
+			if (BoneID != BI_NONE && CallbackName[0] != '\0')
+			{
+				UsableBones[BoneID] = CallbackName;
+			}
 		}
 	}
 
@@ -1848,11 +1856,10 @@ void CCar::DoExit()
 
 bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 {
-	if (UsableBonesActive != BI_NONE)
+	if (const auto Bone = UsableBones.find(UsableBonesActive); Bone != UsableBones.end())
 	{
 		luabind::functor<bool> Callback;
-		ai().script_engine().functor(UsableBones[UsableBonesActive].c_str(), Callback);
-		bool CheckComplete = Callback(this);
+		const bool CheckComplete = ai().script_engine().functor(Bone->second.c_str(), Callback) && Callback(this);
 
 		if (CheckComplete)
 		{
