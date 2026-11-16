@@ -91,6 +91,7 @@ public:
 	virtual 	~CInifile		( );
     bool		save_as         ( const char* new_fname=nullptr );
 	void		save_as			(IWriter& writer, bool bcheck=false)const;
+	void        set_readonly(bool b){m_flags.set(eReadOnly,b);}
 	void		set_override_names(bool b){m_flags.set(eOverrideNames,b);}
 	void		save_at_end		(bool b){m_flags.set(eSaveAtEnd,b);}
 	const char*		fname			( ) const { return m_file_name; };
