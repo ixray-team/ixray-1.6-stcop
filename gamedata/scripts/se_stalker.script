@@ -199,9 +199,9 @@ function se_stalker:on_death(killer)
 	end
 end
 --------------------
-function se_stalker:update()
+function se_stalker:update() PROF_EVENT_BEGIN("se_stalker.script:202:se_stalker:update"); do
 	cse_alife_human_stalker.update(self)
-end
+end; PROF_EVENT_END(); end
 
 --'Торговец
 class "se_trader" (cse_alife_trader)

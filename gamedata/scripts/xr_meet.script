@@ -180,7 +180,7 @@ function Cmeet_manager:set_start_distance()
     end
 end
 
-function Cmeet_manager:update()
+function Cmeet_manager:update() PROF_EVENT_BEGIN("xr_meet.script:183:Cmeet_manager:update"); do
     -- Определение, в каком радиусе находимся
     	local distance = self.npc:position():distance_to(db.actor:position())
 
@@ -338,7 +338,7 @@ function Cmeet_manager:update()
     			self.trade_enable = trade_enable
     		end
     end
-end
+end; PROF_EVENT_END(); end
 
 function notify_on_use(victim, who)
     --printf("NOTIFY [%s] used by [%s]", victim:name(), who:name())

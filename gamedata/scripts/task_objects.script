@@ -83,7 +83,7 @@ function CGeneralTaskDataOrig:__init(task_ini, id)
     self.current_icon  = task_functor[self.icon_functor](self.id, "icon", self.icon, self.cached_condlist)
 end
 
-function CGeneralTaskDataOrig:update()
+function CGeneralTaskDataOrig:update() PROF_EVENT_BEGIN("task_objects.script:86:CGeneralTaskDataOrig:update"); do
 
 	local task_updated = false
 
@@ -134,8 +134,8 @@ function CGeneralTaskDataOrig:update()
 		self.current_target = t_target
 	end
 
-	return task_updated
-end
+	PROF_EVENT_END(); return task_updated
+end; PROF_EVENT_END(); end
 
 function CGeneralTaskDataOrig:save(packet)
 	packet:w_stringZ(self.current_title)
@@ -309,7 +309,7 @@ function CGeneralTaskDataLogic:try_switch_to_another_section()
 	return switched
 end
 
-function CGeneralTaskDataLogic:update()
+function CGeneralTaskDataLogic:update() PROF_EVENT_BEGIN("task_objects.script:312:CGeneralTaskDataLogic:update"); do
 
 	local task_updated = false
 
@@ -363,8 +363,8 @@ function CGeneralTaskDataLogic:update()
 		self.current_target = t_target
 	end
 
-	return task_updated
-end
+	PROF_EVENT_END(); return task_updated
+end; PROF_EVENT_END(); end
 
 function CGeneralTaskDataLogic:save(packet)
 	packet:w_stringZ(self.current_section)

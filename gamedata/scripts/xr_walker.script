@@ -55,7 +55,7 @@ function action_walker_activity:reset_scheme(loading, npc)
 
 	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info, self.st.team, self.st.suggested_state)
 end
-function action_walker_activity:execute()
+function action_walker_activity:execute() PROF_EVENT_BEGIN("xr_walker.script:58:action_walker_activity:execute"); do
 	action_base.execute(self)
 
 	self.move_mgr:update()
@@ -77,7 +77,7 @@ function action_walker_activity:execute()
 	if not self.in_camp and self.st.sound_idle ~= nil then
 		xr_sound.set_sound_play(self.object:id(), self.st.sound_idle)
 	end
-end
+end; PROF_EVENT_END(); end
 
 function action_walker_activity:update()
 	--printf("update")

@@ -43,10 +43,44 @@ public:
 	void SetThreadName(const char* Name);
 	u32 AddTrack(const char* Name);
 	void Record(u32 TrackId, u32 Depth, const char* Name, u64 Duration);
+	u32 RegisterScriptMarker(const char* Name);
+	double BeginScriptMarker(u32 Marker, double ParentTicket);
+	void EndScriptMarker(double Ticket);
 	u32 NodeCount() const;
 	u32 TrackCount() const;
 
 private:
+	static constexpr u32 MaxScriptSamples = 8192;
+
+	struct ScriptSample
+	{
+		u32 Marker;
+		u32 Parent;
+		u32 Depth;
+		bool Finished;
+		u64 Start;
+		u64 Duration;
+	};
+
+	struct ScriptMarker
+	{
+		const char* Name;
+		u32 LastParent = None;
+		u32 LastNode = None;
+	};
+
+	xr_atomic_u32 ScriptSamplesUsed = 0;
+	u64 FirstScriptTicket = 1;
+	ScriptSample ScriptSamples[MaxScriptSamples];
+	xrCriticalSection ScriptMarkerLock;
+	xr_atomic_u32 ScriptMarkersUsed = 0;
+	ScriptMarker ScriptMarkers[MaxNodes];
+	char ScriptNames[64 * 1024];
+	u32 ScriptNamesUsed = 0;
+	u32 ScriptTrack = None;
+
+	u32 ScriptSampleIndex(double Ticket) const;
+	void FlushScriptMarkers();
 	xrCriticalSection TrackLock;
 	xr_atomic_u32 NodesUsed = 0;
 	xr_atomic_u32 TracksUsed = 0;

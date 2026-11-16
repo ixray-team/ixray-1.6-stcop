@@ -48,10 +48,10 @@ function smart_terrain_binder:net_destroy()
     db.del_smart_terrain( self.se_smart_terrain )
 end
 
-function smart_terrain_binder:update( delta )
+function smart_terrain_binder:update( delta ) PROF_EVENT_BEGIN("bind_smart_terrain.script:51:smart_terrain_binder:update"); do
     SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
     self.se_smart_terrain:update()
-end
+end; PROF_EVENT_END(); end
 
 function smart_terrain_binder:Serialize(Object)
 end

@@ -31,17 +31,17 @@ class "evaluator_check_combat" (property_evaluator)
 function evaluator_check_combat:__init(name, storage) super (nil, name)
 	self.st = storage
 end
-function evaluator_check_combat:evaluate()
+function evaluator_check_combat:evaluate() PROF_EVENT_BEGIN("xr_combat.script:34:evaluator_check_combat:evaluate"); do
 	local st = self.st
 	if st.enabled and self.object:best_enemy() then
 		local actor = db.actor
 		if not actor then
-			return false
+			PROF_EVENT_END(); return false
 		end
-		return st.script_combat_type ~= nil
+		PROF_EVENT_END(); return st.script_combat_type ~= nil
 	end
-	return false
-end
+	PROF_EVENT_END(); return false
+end; PROF_EVENT_END(); end
 
 ----------------------------------------------------------------------------------------------------------------------
 -- Дублирующий эвалуатор врагов для планировщика скриптового боя
@@ -51,9 +51,9 @@ class "evaluator_enemy" (property_evaluator)
 function evaluator_enemy:__init(name) super (nil, name)
 end
 
-function evaluator_enemy:evaluate()
-	return self.object:best_enemy() ~= nil
-end
+function evaluator_enemy:evaluate() PROF_EVENT_BEGIN("xr_combat.script:54:evaluator_enemy:evaluate"); do
+	PROF_EVENT_END(); return self.object:best_enemy() ~= nil
+end; PROF_EVENT_END(); end
 
 ----------------------------------------------------------------------------------------------------------------------
 -- binder

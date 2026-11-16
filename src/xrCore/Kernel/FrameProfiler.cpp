@@ -27,13 +27,16 @@ void CFrameProfiler::SetEnabled(bool Value)
 
 void CFrameProfiler::Frame()
 {
+	const bool CollectFrame = Enabled.load(std::memory_order_relaxed);
+	const u64 Now = CollectFrame ? CPU::QPC() : 0;
+	// The previous frame's work has joined before the primary thread advances the history.
+	FlushScriptMarkers();
 	SetThreadName("Primary");
-	if (!Enabled.load(std::memory_order_relaxed))
+	if (!CollectFrame)
 	{
 		return;
 	}
 
-	const u64 Now = CPU::QPC();
 	const u64 Index = FrameIndex.load(std::memory_order_relaxed);
 	const u32 Next = u32((Index + 1) % HistorySize);
 	const u32 Count = NodeCount();
@@ -135,6 +138,136 @@ void CFrameProfiler::Record(u32 TrackId, u32 Depth, const char* Name, u64 Durati
 	if (Node != None)
 	{
 		Add(Node, Duration);
+	}
+}
+
+u32 CFrameProfiler::RegisterScriptMarker(const char* Name)
+{
+	if (Name == nullptr || *Name == '\0')
+	{
+		return None;
+	}
+
+	xrCriticalSectionGuard Guard(ScriptMarkerLock);
+	const u32 Count = ScriptMarkersUsed.load(std::memory_order_relaxed);
+	for (u32 Index = 0; Index < Count; Index++)
+	{
+		if (xr_strcmp(ScriptMarkers[Index].Name, Name) == 0)
+		{
+			return Index;
+		}
+	}
+
+	const size_t Length = strlen(Name) + 1;
+	if (Count >= MaxNodes || Length > sizeof(ScriptNames) - ScriptNamesUsed)
+	{
+		return None;
+	}
+
+	char* Stored = ScriptNames + ScriptNamesUsed;
+	memcpy(Stored, Name, Length);
+	ScriptNamesUsed += u32(Length);
+	ScriptMarkers[Count].Name = Stored;
+	ScriptMarkersUsed.store(Count + 1, std::memory_order_release);
+	return Count;
+}
+
+u32 CFrameProfiler::ScriptSampleIndex(double Ticket) const
+{
+	// Tickets are exact Lua numbers and distinguish the slots reused in each frame.
+	const double Offset = Ticket - double(FirstScriptTicket);
+	if (Offset >= 0 && Offset < MaxScriptSamples && Offset < ScriptSamplesUsed.load(std::memory_order_relaxed))
+	{
+		return u32(Offset);
+	}
+	return None;
+}
+
+double CFrameProfiler::BeginScriptMarker(u32 Marker, double ParentTicket)
+{
+	if (!Enabled.load(std::memory_order_relaxed) ||
+		Marker >= ScriptMarkersUsed.load(std::memory_order_acquire) ||
+		ScriptSamplesUsed.load(std::memory_order_relaxed) >= MaxScriptSamples)
+	{
+		return -1;
+	}
+
+	const u32 Parent = ScriptSampleIndex(ParentTicket);
+	const u32 Depth = Parent != None ? ScriptSamples[Parent].Depth + 1 : 0;
+	if (Depth >= MaxDepth)
+	{
+		return -1;
+	}
+
+	const u32 Index = ScriptSamplesUsed.fetch_add(1, std::memory_order_relaxed);
+	if (Index >= MaxScriptSamples)
+	{
+		return -1;
+	}
+
+	ScriptSamples[Index] = { Marker, Parent, Depth, false, CPU::QPC(), 0 };
+	return double(FirstScriptTicket + Index);
+}
+
+void CFrameProfiler::EndScriptMarker(double Ticket)
+{
+	const u32 Index = ScriptSampleIndex(Ticket);
+	if (Index != None && !ScriptSamples[Index].Finished)
+	{
+		ScriptSample& Sample = ScriptSamples[Index];
+		Sample.Duration = CPU::QPC() - Sample.Start;
+		Sample.Finished = true;
+	}
+}
+
+void CFrameProfiler::FlushScriptMarkers()
+{
+	const u32 Count = std::min(ScriptSamplesUsed.load(std::memory_order_relaxed), MaxScriptSamples);
+	if (Count == 0)
+	{
+		return;
+	}
+
+	ScriptSamplesUsed.store(0, std::memory_order_relaxed);
+	FirstScriptTicket += MaxScriptSamples;
+	const u32 Slot = u32(FrameIndex.load(std::memory_order_relaxed) % HistorySize);
+	if (!Enabled.load(std::memory_order_relaxed) || FrameBegin[Slot] == 0)
+	{
+		return;
+	}
+
+	u32 SampleNodes[MaxScriptSamples];
+	for (u32 Index = 0; Index < Count; Index++)
+	{
+		const ScriptSample& Sample = ScriptSamples[Index];
+		const u32 ParentNode = Sample.Parent != None ? SampleNodes[Sample.Parent] : None;
+		SampleNodes[Index] = ParentNode;
+		if (!Sample.Finished)
+		{
+			continue;
+		}
+
+		if (ScriptTrack == None)
+		{
+			ScriptTrack = AddTrack("Lua");
+		}
+		if (ScriptTrack >= MaxTracks)
+		{
+			break;
+		}
+
+		const u32 Parent = ParentNode != None ? ParentNode : Tracks[ScriptTrack].Root;
+		ScriptMarker& Marker = ScriptMarkers[Sample.Marker];
+		if (Marker.LastParent != Parent || Marker.LastNode == None)
+		{
+			Marker.LastParent = Parent;
+			Marker.LastNode = Child(Parent, Marker.Name, false);
+		}
+		if (Marker.LastNode != None)
+		{
+			SampleNodes[Index] = Marker.LastNode;
+			Add(Marker.LastNode, Sample.Duration);
+		}
 	}
 }
 

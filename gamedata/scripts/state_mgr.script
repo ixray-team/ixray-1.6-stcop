@@ -542,7 +542,7 @@ function state_manager:get_state()
 	return self.target_state
 end
 
-function state_manager:update()
+function state_manager:update() PROF_EVENT_BEGIN("state_mgr.script:545:state_manager:update"); do
 	--printf("Update called for stalker [%s]", self.npc:name())
 	-- Обрабатываем коллбек
 	if self.animation.states.current_state == state_lib.states[self.target_state].animation then
@@ -571,7 +571,7 @@ function state_manager:update()
 
 	local last_pl_id = nil
 	self.planner:update()
-	if not self.planner:initialized() then return end
+	if not self.planner:initialized() then PROF_EVENT_END(); return end
 	local pl_id = self.planner:current_action_id()
 	while pl_id ~= last_pl_id and
 		 pl_id ~= self.operators["end"] and
@@ -583,7 +583,7 @@ function state_manager:update()
 	end
 
 	--self.planner:show("")
-end
+end; PROF_EVENT_END(); end
 
 
 function set_state(npc, state_name, callback, timeout, target, extra)

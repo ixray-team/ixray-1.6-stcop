@@ -5,13 +5,13 @@ class "evaluator_gather_items" (property_evaluator)
 function evaluator_gather_items:__init(name, storage, npc) super (nil, name)
 	self.a = storage
 end
-function evaluator_gather_items:evaluate()
+function evaluator_gather_items:evaluate() PROF_EVENT_BEGIN("xr_gather_items.script:8:evaluator_gather_items:evaluate"); do
 	if self.a.gather_items_enabled ~= true then
-		return false
+		PROF_EVENT_END(); return false
 	end
 
-	return self.object:is_there_items_to_pickup()
-end
+	PROF_EVENT_END(); return self.object:is_there_items_to_pickup()
+end; PROF_EVENT_END(); end
 
 
 ----------------------------------------------------------------------------------------------------------------------

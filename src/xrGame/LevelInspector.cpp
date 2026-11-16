@@ -553,6 +553,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::Separator();
 
 					ImGui::CheckboxFlags("SOM", &m_flags.flags, LevelInspector::ESF_DRAW_SOM);
+					ImGui::CheckboxFlags("Sound Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SOUND_ZONES);
 					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
 					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
@@ -889,6 +890,10 @@ void LevelInspector::OnRender()
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOM))
 		{
 			DrawSOM();
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOUND_ZONES))
+		{
+			DrawSoundZones();
 		}
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
 		{
@@ -3321,7 +3326,7 @@ void LevelInspector::DrawObjectsInfo()
 	Level().ObjectSpace.RayQuery(
 	RQR, 
 	RD,
-	[](const collide::rq_result & result, LPVOID params) -> bool
+	[](const collide::rq_result& result, void* params) -> bool
 	{
 		collide::rq_result* RQ = (collide::rq_result*)params;
 
@@ -3339,7 +3344,7 @@ void LevelInspector::DrawObjectsInfo()
 		return false;
 	},
 	&RQ,
-	[](const collide::ray_defs& rd, CObject* object, LPVOID params) -> bool
+	[](const collide::ray_defs& rd, CObject* object, void* params) -> bool
 	{
 		if (object && (object->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
@@ -4453,6 +4458,27 @@ void LevelInspector::DrawCFORM()
 		TrisRender(tris);
 		LinesRender(lines);
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
+	}
+}
+
+void LevelInspector::DrawSoundZones()
+{
+	CDB::MODEL* Geometry = ::Sound ? ::Sound->get_geometry_env() : nullptr;
+	if (!Geometry)
+	{
+		return;
+	}
+
+	const auto& Vertices = Geometry->get_verts();
+	constexpr u32 LineColor = color_rgba(0, 255, 255, 255);
+	for (const CDB::TRI& Triangle : Geometry->get_tris())
+	{
+		const Fvector& A = Vertices[Triangle.verts[0]];
+		const Fvector& B = Vertices[Triangle.verts[1]];
+		const Fvector& C = Vertices[Triangle.verts[2]];
+		append_line({A, B, LineColor});
+		append_line({B, C, LineColor});
+		append_line({C, A, LineColor});
 	}
 }
 

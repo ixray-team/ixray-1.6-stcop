@@ -50,7 +50,7 @@ function generic_object_binder:reinit()
 	manage_callbacks(self, true) -- IX-Ray SET CALLBACKS
 end
 
-function generic_object_binder:update(delta)
+function generic_object_binder:update(delta) PROF_EVENT_BEGIN("bind_monster.script:53:generic_object_binder:update"); do
 	SendScriptCallback("monster_on_update", self.object, self.st)
 
 	if xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] and self.object:best_enemy() == nil then
@@ -61,7 +61,7 @@ function generic_object_binder:update(delta)
 	local object_alive = self.object:alive()
 
 	if not object_alive then
-		return
+		PROF_EVENT_END(); return
 	end
 
 	local st = db.storage[self.object:id()]
@@ -90,7 +90,7 @@ function generic_object_binder:update(delta)
 	self.object:info_add(self.object:name().." ["..self.object:team().."]["..self.object:squad().."]["..self.object:group().."]")
 
 	if alife():object(self.object:id()) == nil then
-		return
+		PROF_EVENT_END(); return
 	end
 
 	if squad ~= nil then
@@ -110,14 +110,14 @@ function generic_object_binder:update(delta)
 		if xr_logic.mob_captured(self.object) then
 			xr_logic.mob_release(self.object)
 		end
-		return
+		PROF_EVENT_END(); return
 	end
 
 
 
 	if squad and squad.current_action and squad.current_action.name == "reach_target" then
 		local squad_target = simulation_objects.get_sim_obj_registry().objects[squad.assigned_target_id]
-		if squad_target == nil then return end
+		if squad_target == nil then PROF_EVENT_END(); return end
 	--	printf("_bp: mob_reach_task:reset_scheme: %s", self.object:name())
 
 		local target_pos, target_lv_id, target_gv_id = squad_target:get_location()
@@ -137,9 +137,9 @@ function generic_object_binder:update(delta)
 				cond(cond.move_end))
 			end
 		end
-		return
+		PROF_EVENT_END(); return
 	end
-end
+end; PROF_EVENT_END(); end
 
 function generic_object_binder:extrapolate_callback()
 	-- Проверяем, что объект еще в онлайне
@@ -264,7 +264,7 @@ function generic_object_binder:hear_callback(self, who_id, sound_type, sound_pos
 	xr_hear.hear_callback(self, who_id, sound_type, sound_position, sound_power)
 end
 
-function generic_object_binder:net_spawn(sobject)
+function generic_object_binder:net_spawn(sobject) PROF_EVENT_BEGIN("bind_monster.script:267:generic_object_binder:net_spawn"); do
 	local on_offline_condlist = db.storage[self.object:id()] and db.storage[self.object:id()].overrides and db.storage[self.object:id()].overrides.on_offline_condlist
 	if on_offline_condlist ~= nil then
 		xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
@@ -272,16 +272,16 @@ function generic_object_binder:net_spawn(sobject)
 
 	local se_obj = alife():object(self.object:id())
 	if not (se_obj) then 
-		return false 
+		PROF_EVENT_END(); return false
 	end
 	
 	SendScriptCallback("monster_on_net_spawn", self.object, se_obj)
 
 	if not self.object:alive() then
-		return true
+		PROF_EVENT_END(); return true
 	end
 	if alife():object(self.object:id()) == nil then
-		return false
+		PROF_EVENT_END(); return false
 	end
 
 --	local pos = self.object:position()
@@ -309,8 +309,8 @@ function generic_object_binder:net_spawn(sobject)
 
 	smart_terrain.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded)
 
-	return true
-end
+	PROF_EVENT_END(); return true
+end; PROF_EVENT_END(); end
 
 function generic_object_binder:net_destroy()
 	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS

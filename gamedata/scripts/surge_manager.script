@@ -152,9 +152,9 @@ function CSurgeManager:get_nearest_cover()
     end
 end
 
-function CSurgeManager:update()
+function CSurgeManager:update() PROF_EVENT_BEGIN("surge_manager.script:155:CSurgeManager:update"); do
     if(device().precache_frame > 1) then
-        return
+        PROF_EVENT_END(); return
     end
 
     local flags = {allow = true}
@@ -162,7 +162,7 @@ function CSurgeManager:update()
 
     if not flags.allow then
         log("skip surge")
-        return
+        PROF_EVENT_END(); return
     end
 
     self:ProcessDelayedKills()
@@ -216,16 +216,16 @@ function CSurgeManager:update()
             self.time_forwarded = false
         end
         if(g_time:diffSec(self.last_surge_time) < self._delta) then
-            return
+            PROF_EVENT_END(); return
         end
         if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.condlist) ~= "true") then
-            return
+            PROF_EVENT_END(); return
         end
         if not(self:get_nearest_cover()) then
-            return
+            PROF_EVENT_END(); return
         end
         self:start()
-        return
+        PROF_EVENT_END(); return
     end
     -- update here
     local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
@@ -236,12 +236,12 @@ function CSurgeManager:update()
         if(level_name=="labx8" or level_name=="jupiter_underground") then
             printf("Surge stopped because of level!")
             self:end_surge()
-            return
+            PROF_EVENT_END(); return
         end
         local cover = self:get_nearest_cover()
         if(cover==nil and self.count==0) then
             self:init_surge_covers()
-            return
+            PROF_EVENT_END(); return
         end
         if(diff_sec>=self.surge_time) then
             self:end_surge()
@@ -346,7 +346,7 @@ function CSurgeManager:update()
             end
         end
     end
-end
+end; PROF_EVENT_END(); end
 
 function CSurgeManager:start(manual)
     local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0

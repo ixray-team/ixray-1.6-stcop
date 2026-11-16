@@ -330,7 +330,7 @@ function anomaly_zone_binder:net_destroy()
     db.storage[self.object:id()] = nil
 end
 
-function anomaly_zone_binder:update(delta)
+function anomaly_zone_binder:update(delta) PROF_EVENT_BEGIN("bind_anomaly_zone.script:333:anomaly_zone_binder:update"); do
     SendScriptCallback("anomaly_zone_on_update", self, self.object)
 
     -- Fix actual count of artefacts - like 1.6.03 Unofficial
@@ -365,7 +365,7 @@ function anomaly_zone_binder:update(delta)
     if not(self.disabled) then
         self:disable_anomaly_fields()
     end
-end
+end; PROF_EVENT_END(); end
 
 
 function anomaly_zone_binder:cleanup()
