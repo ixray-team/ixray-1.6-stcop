@@ -50,6 +50,22 @@ IBL_MAX_LOD = 10
 
 Файл рядом с THM задаёт макросы для отдельных материалов. Путь, пример и правила приоритета описаны в [THM override](thm-override.md).
 
+## Lua-функции шейдеров R4
+
+Эти функции глобальны в Lua VM рендерера R4, из которой загружаются шейдерные `.lua`-скрипты. В игровых `.script` они недоступны.
+
+| Вызов | Действие |
+| --- | --- |
+| `GetShaderOption(name)` | Возвращает `boolean`. Проверяет, есть ли ключ в глобальной таблице опций из `engine_external.ltx`. |
+| `AddShaderOption(name, value)` | Добавляет макрос со строковым значением в текущий набор макросов рендерера. Вызывайте до компиляции прохода, которому нужен макрос. |
+| `ClearAllShaderOptions()` | Очищает текущий набор макросов рендерера. Глобальная таблица `engine_external.ltx` сохраняется. |
+
+```lua
+if GetShaderOption("MY_SHADER_TWEAK") then
+    AddShaderOption("MY_SHADER_TWEAK", "1")
+end
+```
+
 ## См. также
 
 - [THM override](thm-override.md)

@@ -57,3 +57,4 @@
 
 - [Подключение файлов по маске](group-file-connection-using-masks.md)
 - [Виджеты и XML](../interface/general-information.md)
+- [Настройка интерфейса через XML](xml-examples.md)

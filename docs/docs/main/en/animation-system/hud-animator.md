@@ -221,3 +221,16 @@ If you need to play an animation (aside from the moment of using an item), you c
 ```lua 
 animslot.play("my_hud_anim", "anm_use")
 ```
+
+## Movement blending, hiding, and field of view
+
+> **Minimum version**: 1.4
+
+In the animator section, `use_blending_movement` enables movement blending and defaults to `false`. `hide_ui` allows animators that read the flag to hide the interface and defaults to `true`. `hide_speed_factor` is the hide speed multiplier and defaults to `1.0`.
+
+`hud_fov_factor` scales the HUD field of view and defaults to `1.0`. When the animator is playing and has a nonzero `hud_fov`, the factor applies to that value. Otherwise it applies to the default HUD FOV.
+
+```ini
+use_blending_movement = true
+hud_fov_factor = 0.9
+```

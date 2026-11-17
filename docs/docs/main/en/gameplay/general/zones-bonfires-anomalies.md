@@ -67,3 +67,83 @@ Use fresh bolts with an ordinary lifetime greater than 100 ms.
 IX-Ray Platform 1.4 adds a disable-emissions toggle to the IXR global options. The script registry stores it as the boolean `disable_emissions` in `ixray_global_options`. It is off by default.
 
 When enabled, scheduled emissions are skipped and anomalies still refresh on the emission schedule. Manual starts through the surge manager are blocked.
+
+## Additional anomaly components
+
+> **Minimum version**: 1.4
+
+Name the component section in the anomaly section. The loader reads the settings from that section. Without a reference, the component keeps its initial state. Movement and electric arcs accept the `draw_debug` option for debug rendering, defaulting to `false`.
+
+### Anomaly movement
+
+Select the section with `movement_options_section`.
+
+| Key | Type and fallback | Effect |
+| --- | --- | --- |
+| `use_movement` | `bool / false` | Enables the movement component. |
+| `use_movement_always_mode` | `bool / false` | Allows movement without a magnetic target. |
+| `use_movement_magnetic_on_inside_alive_mode` | `bool / false` | Allows movement toward a living target in the zone. |
+| `use_movement_magnetic_on_take_artefacts_mode` | `bool / false` | Enables movement triggered by taking an artefact. |
+| `movement_magnetic_on_inside_alive_mode_speed` | `float / 0` | Speed when moving toward a living target. |
+| `movement_magnetic_on_take_artefacts_mode_speed` | `float / 0` | Movement speed after an artefact is taken. |
+| `milliseconds_time_magnetic_on_take_artefacts` | `float / 0` | Duration of the artefact pickup response, in ms. |
+| `movement_speed` | `float / 1.5` | Normal movement and return speed. |
+| `movement_radius` | `float / 15` | Radius used to choose destinations for normal movement. |
+
+### Item attraction
+
+Select the section with `gravity_options_section`.
+
+| Key | Type and fallback | Effect |
+| --- | --- | --- |
+| `use_gravity_effect` | `bool / false` | Enables attraction. A nonpositive radius or processing distance disables it. |
+| `gravity_radius` | `float / 10` | Effect radius. |
+| `min_gravity_radius_factor` | `float / 0.3` | Radius fraction for the inner area. |
+| `max_processing_distance` | `float / 200` | Component processing distance limit. |
+| `max_count_spawn_trash` | `u16 / 0` | Maximum number of debris items to spawn. |
+| `trash_sections` | `list` | Comma-separated section names of debris items. |
+
+### Electric arcs
+
+Select the section with `electric_curve_options_section`.
+
+| Key | Type and fallback | Effect |
+| --- | --- | --- |
+| `use_electric_curve` | `bool / false` | Enables the arc component. |
+| `electric_curve_particle_path` | `string` | Arc particle effect name. |
+| `electric_curve_ground_contact_particle_path` | `string` | Arc contact particle effect name. |
+| `max_count_electric_curves` | `u8 / 1` | Maximum arc count. |
+| `max_trace_curve_distance` | `float / 15` | Ray query distance limit. |
+| `max_processing_distance` | `float / 200` | Component processing distance limit. |
+| `max_curve_atack_damage_time` | `float / 5000` | Arc processing time during the blowout phase. |
+| `max_curve_atack_radius` | `float / 5` | Arc damage radius. |
+| `max_curve_atack_damage` | `float / 0.005` | Maximum arc damage. |
+| `max_curve_atack_impulse` | `float / 0.012` | Maximum arc impulse. |
+| `change_target_timeout_ms_min`, `change_target_timeout_ms_max` | `float / 500, 5000` | Minimum and maximum random target change delay, in ms. |
+| `curve_start_y_offset` | `float / 0` | Vertical offset of the arc origin. |
+| `use_cascade_electric_curves` | `bool / false` | Enables cascading arcs. |
+| `use_touch_objects_by_curves` | `bool / false` | Enables arc contact with objects in cascade mode. |
+
+### Rain contact
+
+Select the section with `rain_collide_particles_section`.
+
+| Key | Type and fallback | Effect |
+| --- | --- | --- |
+| `air_particle_path` | `string` | Particle effect at the rain contact point. |
+| `ground_particle_path` | `string` | Particle effect at the same X and Z, at the anomaly center’s height. |
+
+### Movement example
+
+Add the section reference to an existing anomaly. Define the settings in the same LTX or a file included by `system.ltx`.
+
+```ini
+; existing anomaly section
+movement_options_section = example_anomaly_movement
+
+[example_anomaly_movement]
+use_movement = true
+use_movement_always_mode = true
+movement_speed = 1.5
+movement_radius = 8
+```

@@ -10,6 +10,12 @@
 
 Дополнительно реализована возможность использовать горячие клавиши kQ/kE.
 
+## Разметка в ТЧ, ЧН, ЗП и CoC
+
+В комплекте ЗП вкладки `ordering` подключаются через `mod_actor_menu_sort_order.xml` и `mod_actor_menu_16_sort_order.xml`. В проверенных штатных XML ЧН и CoC базовых узлов `inventory_sort_tabs` и `inventory_sort_order_tabs` нет. В ТЧ отдельный экран инвентаря использует `inventory_new.xml` или `inventory_new_16.xml`.
+
+Для интерфейса, который загружает `actor_menu.xml`, переключатель сортировки в LTX выбирает режим. Вкладки для этого режима создаются только при наличии его базового XML-узла. Дополнительные узлы `*_container_upgrade`, `*_container_trade_actor_bag`, `*_container_trade_partner_bag` и `*_container_deadbody_bag` задают отдельную позицию для каждого экрана. Без соответствующего узла вкладки на этом экране не создаются.
+
 ## Выбор режима
 
 В `configs/mod_system_ixray.ltx` или своем mod LTX:

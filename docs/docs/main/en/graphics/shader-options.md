@@ -50,6 +50,22 @@ Custom shaders can use additional macro names from the same section. A macro aff
 
 An LTX alongside a THM supplies macros for individual materials. See [THM override](thm-override.md) for the path, example, and precedence rules.
 
+## R4 shader Lua functions
+
+These globals belong to the R4 shader VM, which loads shader `.lua` scripts. Game `.script` files run in a separate VM.
+
+| Call | Effect |
+| --- | --- |
+| `GetShaderOption(name)` | Returns a `boolean` indicating whether the key is present in the global options loaded from `engine_external.ltx`. |
+| `AddShaderOption(name, value)` | Adds a macro with a string value to the renderer's current macro set. Call it before compiling the pass that needs it. |
+| `ClearAllShaderOptions()` | Clears the renderer's current macro set. The global `engine_external.ltx` options remain available. |
+
+```lua
+if GetShaderOption("MY_SHADER_TWEAK") then
+    AddShaderOption("MY_SHADER_TWEAK", "1")
+end
+```
+
 ## See also
 
 - [THM override](thm-override.md)

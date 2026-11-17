@@ -166,3 +166,7 @@ friends     = me, myself, i
 ![some_section]
 <friends = myself
 ```
+
+## См. также
+
+- [Настройка LTX и DLTX](ltx-examples.md)

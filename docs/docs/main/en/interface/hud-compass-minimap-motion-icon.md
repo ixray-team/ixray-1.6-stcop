@@ -20,6 +20,19 @@ Switching between the minimap and compass bar happens at runtime without reloadi
 4. Runtime switching: `ActorMenu.get_maingame():SetNavigationMode(bool)`, where `true` is compass bar and `false` is minimap.
 5. Persisting the navigation mode in save/user.ltx is **not implemented**.
 
+## Layouts in the bundled resource sets
+
+| Set | Minimap | Horizontal compass |
+| --- | --- | --- |
+| CoP | `ui/zone_map.xml` uses relative frame dimensions and includes `clock_wnd` and `static_counter`. | Ships `ui/compass_bar.xml`. |
+| CoC | `ui/zone_map.xml` uses relative frame dimensions and includes `clock_wnd` and `static_counter`. | The set has no dedicated `ui/compass_bar.xml`. |
+| CS | `ui/zone_map.xml` and `zone_map_16.xml` use absolute frame dimensions and include `static_counter`. | The set has no dedicated `ui/compass_bar.xml`. |
+| SoC | `ui/zone_map.xml` and `zone_map_16.xml` use absolute frame dimensions and omit `static_counter`. | The set has no dedicated `ui/compass_bar.xml`. |
+
+Paths are relative to `configs`. The engine looks for `compass_bar.xml` in the active resources when switching to the horizontal compass. If the file or its `compass_bar` node is missing, the HUD stays in minimap mode. All four sets ship with `[ui] UseCompassBar` disabled.
+
+The `minimap:compass` child in `zone_map.xml` defines the minimap arrow. Omitting `minimap:static_counter` selects the legacy minimap layout. The bundled CS widescreen `zone_map_16.xml` spells an attribute `s_tretch="0"`. The static widget loader recognizes `stretch`. Use that spelling in your own layout.
+
 ## Lua API
 
 ```lua

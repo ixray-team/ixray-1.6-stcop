@@ -196,3 +196,20 @@ icon = ui_npc_monster_pseudodog ; car icon
 
 - [Vehicles in Lua](vehicle-lua.md)
 - [Gamepads](gamepads.md)
+
+## Objects with a seat
+
+> **Minimum version**: 1.4
+
+`CHolderEntityObject` loads settings from the object's own LTX section. The CoC data set ships an example named `holder_stul` in `configs/models/dynamic_objects.ltx`.
+
+| Key | Type and fallback | Effect |
+| --- | --- | --- |
+| `allow_weapon` | required bool | Allows weapon actions while the actor occupies the seat. |
+| `lock_enter`, `lock_exit` | required bool | Prevent entering and leaving respectively. |
+| `camera_pos` | vector `0, 0, 0` | Camera position in object-local coordinates. The engine transforms it to world coordinates. |
+| `camera_angle` | vector `0, 0, 0` | Vector passed to the camera update along with the position. |
+| `exit_pos` | vector `0, 0, 0` | Position assigned to the actor’s physics controller on exit. This loader returns the value directly, so use level coordinates. |
+| `use_action_hint` | optional string | Tooltip localization key shown when targeting the object. |
+
+For an instance at a known location, put the exit point in clear space next to the seat. For example, if a test object is at `100, 2, 40`, use `exit_pos = 101, 2, 40` when that point is clear.

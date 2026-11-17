@@ -57,3 +57,4 @@ The `river` element receives a new texture and moves after `panel`. If a widget 
 
 - [File masks and includes](group-file-connection-using-masks.md)
 - [Widgets and XML](../interface/general-information.md)
+- [Configuring the UI with XML](xml-examples.md)

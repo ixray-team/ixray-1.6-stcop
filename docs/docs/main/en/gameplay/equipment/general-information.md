@@ -132,3 +132,44 @@ power_restore_speed = 0.0
 ; Class of our backpack
 class = EQ_BAKPK
 ```
+
+## Medication intoxication
+
+Set `EnableMedIntoxication = true` in `[gameplay]` in `configs/engine_external.ltx`. Set the actor parameters in the section selected by `condition_sect`, usually `[actor_condition]`. Set `eat_intoxication` in the consumable item’s LTX section.
+
+| Key | Code fallback | Effect |
+| --- | ---: | --- |
+| `intoxication_critical` | `0.35` | Health damage threshold. The value is clamped to `0–1`. |
+| `intoxication_v` | `-0.00025` | Intoxication change per second of simulation time. A negative value decreases intoxication over time. |
+| `intoxication_power_v` | `-0.005` | Stamina change coefficient. The delta is scaled by current intoxication and elapsed time. |
+| `intoxication_health_v` | `-0.0015` | Health change coefficient above the critical threshold. Its effect increases as intoxication rises. |
+| `intoxication_thirst_k` | `0.3` | Intoxication reduction factor for hydration. Applies when thirst is enabled and `eat_thirst` is positive. |
+| `eat_intoxication` | `0` | Intoxication delta when the item is consumed. The resulting level is clamped to `0–1`. |
+
+Example DLTX for the actor and radioprotector:
+
+```ini
+![actor_condition]
+intoxication_critical = 0.35
+intoxication_v = -0.00025
+
+![drug_radioprotector]
+eat_intoxication = 0.15
+```
+
+With the mechanic enabled, one dose adds `0.15` before any other item adjustments. The global switch is stored separately from these sections.
+
+## Artefact modifiers
+
+The artefact section supplies these floating-point keys. The engine sums contributions from artefacts on the belt and weights each one by its condition.
+
+| Key | Fallback | Contribution of one artefact |
+| --- | --- | --- |
+| `equipment_durability_modifier` | `1` | Adds `(value − 1) × condition` to the equipment wear multiplier. |
+| `inventory_weight_modifier` | `1` | Adds `(value − 1) × condition` to the weight multiplier. |
+| `jump_height_modifier` | `0` | Adds `value × condition` to the jump modifier. |
+| `movement_speed_modifier` | `0` | Adds `value × condition` to the movement modifier. |
+
+For example, `inventory_weight_modifier = 0.9` contributes `−0.1` at full condition and `−0.05` at half condition.
+
+The `degrade_rate` key multiplies condition loss. Its fallback of `0` disables wear in these calculations. For example, `degrade_rate = 0.5` halves the calculated condition loss.

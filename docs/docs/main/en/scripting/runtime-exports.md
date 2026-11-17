@@ -56,6 +56,27 @@ These methods use a `game_object` with a skeletal model. Pass an existing bone n
 | `bar:GetProgressStatic()` | Returns the bar's internal fill `CUIStatic`. The bar owns it. |
 | `bar:SnapProgressPos()` | Moves the visible position to the target immediately after `SetProgressPos`. |
 
+### Window lookup and inventory sorting
+
+| Call | Effect |
+| --- | --- |
+| `window:FindWindow(name)` | Searches the current window and its descendants by name. Returns a `CUIWindow` or `nil`. |
+| `window:FindStatic(name)` | Uses the same search. Returns a `CUIStatic` or `nil` if the first matching control cannot be cast to `CUIStatic`. |
+| `menu:SetInventorySortSystem(system)` | Sets the inventory sort mode. Use `"ordering"` for order-based sorting or `"categories"` for category-based sorting. An empty string leaves the current mode in place. |
+| `menu:GetInventorySortSystem()` | Returns `"ordering"` or `"categories"`. |
+
+Call `ActorMenu.get_actor_menu()` after the in-game UI has been created. If the menu is available, use the returned `CUIActorMenu` instance.
+
+### Medication intoxication
+
+`CEntityCondition:ChangeIntoxication(delta)` adds a numeric delta to the actor's intoxication when `[gameplay] EnableMedIntoxication` is enabled. The value is clamped to `0–1`. `CEntityCondition:GetIntoxication()` returns the current value. Use `CActor:conditions()` to obtain the condition object.
+
+### Object class IDs and active items
+
+`clsid_table` is a global Lua table. Its keys are script class names and its values are numeric IDs from the current registration. Iterate over it with `pairs`.
+
+`owner:iterate_activeitems(callback, context)` calls `callback(owner, item)` for the actor's active-slot item and the item in `DEVICE_SLOT` when present. Both callback arguments are `game_object` instances. The method accepts `context` and omits it from the callback arguments.
+
 ## Examples
 
 ### Read a setting from LTX

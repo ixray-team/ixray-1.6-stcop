@@ -10,6 +10,12 @@ The tab system controls how items are displayed in the inventory, trade, and cor
 
 Hotkeys `kQ`/`kE` are also supported.
 
+## Layouts in SoC, CS, CoP, and CoC
+
+The CoP set supplies `ordering` tabs through `mod_actor_menu_sort_order.xml` and `mod_actor_menu_16_sort_order.xml`. The checked stock CS and CoC XML files have neither the `inventory_sort_tabs` nor the `inventory_sort_order_tabs` root node. SoC’s separate inventory screen uses `inventory_new.xml` or `inventory_new_16.xml`.
+
+For UIs that load `actor_menu.xml`, the LTX sorting setting selects the mode. The UI builds its tabs only when that mode’s base XML node exists. The `*_container_upgrade`, `*_container_trade_actor_bag`, `*_container_trade_partner_bag`, and `*_container_deadbody_bag` nodes position tabs for their respective screens. A screen without its matching node gets no tabs.
+
 ## Mode selection
 
 In `configs/mod_system_ixray.ltx` or your mod LTX:

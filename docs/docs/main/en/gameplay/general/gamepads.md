@@ -50,7 +50,7 @@ The bundled LTX files set `vibration_time = 2.0` for `wpn_gauss`. The other thre
 
 ## Gamepad input
 
-The Lua `gamepad_keys` table exposes button IDs. The face-button IDs `BUTTON_A`, `BUTTON_B`, `BUTTON_X`, and `BUTTON_Y` correspond to Cross, Circle, Square, and Triangle on PlayStation controllers. `BUTTON_LSHOULDER` and `BUTTON_RSHOULDER` correspond to LB/RB or L1/R1. `BUTTON_LSTICK` and `BUTTON_RSTICK` represent stick clicks. Stick directions use `BUTTON_LSTICK_*` and `BUTTON_RSTICK_*`, and D-pad directions use `BUTTON_DPAD_*`.
+The Lua `gamepad_keys` table exposes button IDs. The face-button IDs `BUTTON_A`, `BUTTON_B`, `BUTTON_X`, and `BUTTON_Y` correspond to Cross, Circle, Square, and Triangle on PlayStation controllers. `BUTTON_LSHOULDER` and `BUTTON_RSHOULDER` correspond to LB/RB or L1/R1. `BUTTON_LSTICK` and `BUTTON_RSTICK` represent stick clicks. Stick directions use `BUTTON_LSTICK_*` and `BUTTON_RSTICK_*`, and D-pad directions use `BUTTON_DPAD_*`. `BUTTON_LTRIGGER` and `BUTTON_RTRIGGER` identify LT and RT on Xbox controllers and L2 and R2 on PlayStation controllers.
 
 `IInputReceiver` receives button events through `IR_GamepadKeyPress`, `IR_GamepadKeyRelease`, and `IR_GamepadKeyHold`, and analog input through `IR_GamepadUpdateStick`. `CUIWindow` exposes `OnGamepadKeyAction`, `OnGamepadKeyHold`, and `OnGamepadStickAction`. Lua windows derived from `CUIScriptWnd` can handle the corresponding callbacks.
 
@@ -84,4 +84,28 @@ For analog input, `key` is `0` for the left stick, `1` for the right stick, and 
 
 ```lua
 self.gamepad_legend = xml:InitGamepadLegend("gamepad_legend", self)
+```
+
+## Target selection when aiming
+
+When the aim action comes from a gamepad, the engine can turn the camera toward a visible living enemy. It favors the candidate closest to the camera direction. The engine loads `[auto_aiming]` through `system.ltx`. All four stock sets define the section in `mod_system_ixray.ltx`.
+
+| Key | Code fallback | Effect |
+| --- | --- | --- |
+| `distance_b` | `5.1` | Boundary between the near and far ranges. |
+| `distance_c` | `200.1` | Acquisition distance limit. Targets at or beyond it are skipped. |
+| `dotp_a_norm`, `dotp_a_easy` | `0.5` | Minimum direction dot product at zero distance. |
+| `dotp_b_norm`, `dotp_b_easy` | `0.97` | Threshold at `distance_b`. |
+| `dotp_c_norm`, `dotp_c_easy` | `0.97` | Threshold at the far boundary. |
+| `easiness` | `1.0` | Weight of the `easy` profile. `0` selects `norm`, while `1` selects `easy`. |
+| `height_fraction` | `0.7` | Aim point as a fraction of the target’s bounding box height, measured from its bottom. |
+
+All values are floating point. Use `-1…1` for the angle thresholds. Values closer to `1` allow smaller angles. Set distances in the order `0 < distance_b < distance_c`. The threshold follows a sine interpolation up to `distance_b` and a linear interpolation from `distance_b` to `distance_c`. For example, edit these values in the existing section to limit acquisition to 35 m.
+
+```ini
+[auto_aiming]
+distance_b = 5
+distance_c = 35
+easiness = 0
+height_fraction = 0.72
 ```

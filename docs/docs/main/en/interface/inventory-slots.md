@@ -43,3 +43,22 @@ slot_active_14      = false
 ::: tip Slot numbering
 Numbering starts at **0** in `system.ltx` and at **1** in the `inventory_slot_wnd` list. Slot `14` corresponds to the **15th** `<slot>` element.
 :::
+
+## Weapon placement and cycle order
+
+The game reads these keys from `[inventory]`. Use `![inventory]` when applying a DLTX override.
+
+| Key | Effect |
+| --- | --- |
+| `inventory_secondary_slot_pairing_strict` | With `true`, the menu keeps weapons from slots 2 and 3 in their respective cells. With `false`, the two cells can be used interchangeably. The code fallback is `false`. |
+| `weapon_cycle_slots` | Comma-separated numeric slot IDs in cycle order. The engine uses its built-in order when the list is missing or contains no valid IDs. |
+
+The bundled LTX sets the first key to `true` in SoC and CS and `false` in CoP and CoC. The built-in cycle includes the knife, the dedicated pistol slot when `slot_active_16 = true`, then weapon slots 2 and 3, grenades, and the artefact slot.
+
+To cycle through the two weapon slots and keep each one in its corresponding cell, add this DLTX override:
+
+```ini
+![inventory]
+inventory_secondary_slot_pairing_strict = true
+weapon_cycle_slots = 2, 3
+```

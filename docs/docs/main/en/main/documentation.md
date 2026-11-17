@@ -14,6 +14,7 @@ This reference describes the `default` branch. Check the platform, renderer, and
 | --- | --- |
 | Install the engine or a mod | [Installation](getting-started.md), [addons](../addon-system/general-information.md) |
 | Configure startup | [engine_external.ltx](engine-extension-configuration.md), [launch arguments](launch-keys.md), [console](console-commands.md) |
+| See config examples | [Configuring LTX and DLTX](../configs/ltx-examples.md), [Configuring the UI with XML](../configs/xml-examples.md) |
 | Include or override configuration | [DLTX](../configs/dltx.md), [XMLOverride](../configs/xml-override.md), [file masks](../configs/group-file-connection-using-masks.md) |
 | Write a script | [Lua API](../scripting/new-functions.md), [LTX, bones, armor and UI](../scripting/runtime-exports.md), [callbacks](../scripting/lua-callbacks.md), [IXR Framework](../scripting/ixr-framework/general-info.md) |
 | Configure the interface | [Widgets and XML](../interface/general-information.md), [scrollbar profiles](../interface/scrollbar-profiles.md), [contextual HUD](../interface/hud-display-options.md) |

@@ -28,7 +28,9 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     collapsed: true,
     items: [
       { text: "DLTX", link: "/configs/dltx" },
+      { text: "Настройка LTX и DLTX", link: "/configs/ltx-examples" },
       { text: "XMLOverride", link: "/configs/xml-override" },
+      { text: "Настройка интерфейса через XML", link: "/configs/xml-examples" },
       { text: "Групповое подключение файлов по маске", link: "/configs/group-file-connection-using-masks" },
       { text: "Кодировка файлов", link: "/configs/file-encoding" },
       { text: "Локализация игры", link: "/configs/localization" },
@@ -58,6 +60,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: "Быстрые слоты", link: "/interface/hud-quick-slots-panel" },
           { text: "Навигационная личная метка", link: "/interface/map-personal-navigation-marker" },
           { text: "Сортировка инвентаря", link: "/interface/inventory-sort-tabs" },
+          { text: "Объём инвентаря", link: "/interface/inventory-volume" },
           { text: "Патроны, оружие, режим огня", link: "/interface/hud-weapon-ammo-fire-mode" },
           { text: "Состояние предмета и проценты", link: "/interface/item-condition-percent-display" },
           { text: "Радиальные индикаторы", link: "/interface/radial-progress-shape" },
@@ -73,6 +76,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: "Справочник Lua API", link: "/scripting/new-functions" },
       { text: "Lua для конфигов, объектов и UI", link: "/scripting/runtime-exports" },
+      { text: "Новые экспорты Lua", link: "/scripting/lua-exports" },
       { text: "Базовое пространство имён", link: "/scripting/base-namespace" },
       { text: "Экспорт enum", link: "/scripting/exported-enums" },
       { text: "Lua: Callbacks", link: "/scripting/lua-callbacks" },

@@ -75,3 +75,83 @@ delete_bolts = false
 В IX-Ray Platform 1.4 в меню глобальных опций IXR добавлен переключатель отключения выбросов. Он сохраняется как булево значение `disable_emissions` в группе `ixray_global_options` скриптового реестра. По умолчанию выключен.
 
 При включении переключателя плановый выброс пропускается, но обновление аномалий остаётся на его расписании. Ручной запуск через менеджер выбросов блокируется.
+
+## Дополнительные компоненты аномалий
+
+> **Минимальная версия**: 1.4
+
+Укажите имя секции компонента в секции аномалии. Загрузчик берёт настройки из указанной секции. Без ссылки компонент остаётся в исходном состоянии. Для отладочной отрисовки компоненты движения и дуг принимают `draw_debug`, по умолчанию `false`.
+
+### Движение аномалии
+
+Задайте имя раздела через `movement_options_section`.
+
+| Ключ | Тип и резерв | Назначение |
+| --- | --- | --- |
+| `use_movement` | `bool / false` | Включает компонент движения. |
+| `use_movement_always_mode` | `bool / false` | Разрешает движение без магнитной цели. |
+| `use_movement_magnetic_on_inside_alive_mode` | `bool / false` | Разрешает сближение с живой целью в зоне. |
+| `use_movement_magnetic_on_take_artefacts_mode` | `bool / false` | Разрешает реакцию движения на взятие артефакта. |
+| `movement_magnetic_on_inside_alive_mode_speed` | `float / 0` | Скорость сближения с живой целью. |
+| `movement_magnetic_on_take_artefacts_mode_speed` | `float / 0` | Скорость движения после взятия артефакта. |
+| `milliseconds_time_magnetic_on_take_artefacts` | `float / 0` | Длительность реакции после взятия артефакта, мс. |
+| `movement_speed` | `float / 1.5` | Обычная скорость движения и возврата к исходной точке. |
+| `movement_radius` | `float / 15` | Радиус выбора целей обычного перемещения. |
+
+### Притяжение предметов
+
+Задайте имя раздела через `gravity_options_section`.
+
+| Ключ | Тип и резерв | Назначение |
+| --- | --- | --- |
+| `use_gravity_effect` | `bool / false` | Включает эффект притяжения. Неположительный радиус или дальность обработки выключает его. |
+| `gravity_radius` | `float / 10` | Радиус действия. |
+| `min_gravity_radius_factor` | `float / 0.3` | Доля радиуса для внутренней области. |
+| `max_processing_distance` | `float / 200` | Дальность обработки компонента. |
+| `max_count_spawn_trash` | `u16 / 0` | Максимальное число создаваемых предметов из списка. |
+| `trash_sections` | `list` | Имена секций создаваемых предметов через запятую. |
+
+### Электрические дуги
+
+Задайте имя раздела через `electric_curve_options_section`.
+
+| Ключ | Тип и резерв | Назначение |
+| --- | --- | --- |
+| `use_electric_curve` | `bool / false` | Включает компонент дуг. |
+| `electric_curve_particle_path` | `string` | Имя эффекта частиц дуги. |
+| `electric_curve_ground_contact_particle_path` | `string` | Имя эффекта контакта дуги с поверхностью. |
+| `max_count_electric_curves` | `u8 / 1` | Максимальное число дуг. |
+| `max_trace_curve_distance` | `float / 15` | Предельная длина запроса пересечения. |
+| `max_processing_distance` | `float / 200` | Дальность обработки компонента. |
+| `max_curve_atack_damage_time` | `float / 5000` | Время действия дуг в фазе выброса. |
+| `max_curve_atack_radius` | `float / 5` | Радиус поражения дугой. |
+| `max_curve_atack_damage` | `float / 0.005` | Предельный урон дуги. |
+| `max_curve_atack_impulse` | `float / 0.012` | Предельный импульс дуги. |
+| `change_target_timeout_ms_min`, `change_target_timeout_ms_max` | `float / 500, 5000` | Границы случайной задержки смены цели, мс. |
+| `curve_start_y_offset` | `float / 0` | Смещение начала дуги по вертикали. |
+| `use_cascade_electric_curves` | `bool / false` | Включает каскадный режим дуг. |
+| `use_touch_objects_by_curves` | `bool / false` | Учитывает касание объектов дугами в каскадном режиме. |
+
+### Контакт с дождём
+
+Задайте имя раздела через `rain_collide_particles_section`.
+
+| Ключ | Тип и резерв | Назначение |
+| --- | --- | --- |
+| `air_particle_path` | `string` | Эффект частиц в точке контакта с дождём. |
+| `ground_particle_path` | `string` | Эффект частиц с теми же X и Z, но на высоте центра аномалии. |
+
+### Пример движения
+
+Добавьте ключ ссылки в существующую секцию аномалии. Секцию параметров создайте в том же LTX или в файле, подключаемом из `system.ltx`.
+
+```ini
+; existing anomaly section
+movement_options_section = example_anomaly_movement
+
+[example_anomaly_movement]
+use_movement = true
+use_movement_always_mode = true
+movement_speed = 1.5
+movement_radius = 8
+```

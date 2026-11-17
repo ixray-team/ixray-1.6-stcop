@@ -122,3 +122,9 @@ After rebuilding the changed engine/game/renderer code and installing the matchi
 5. The existing PPE route with `shader_effect_range = 0`, and weapon/scope night vision separately.
 
 Related equipment effects: [Visor glass and rain drops](visor-glass.md).
+
+## Disabling night vision on specific levels
+
+In `configs/game_global.ltx`, `[night_vision] night_vision_section` selects the section containing night-vision sounds. In that section of the `system.ltx` settings, set `night_vision_disabled_maps` to a comma-separated list of internal level names. Activation is blocked on the listed levels and may play the failure sound. The check applies to outfit, helmet, and separate-device night vision.
+
+In the stock `night_vision_base` section, add the level names to the existing list. For example, `night_vision_disabled_maps = ai_test, ai_test2`.

@@ -28,7 +28,9 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     collapsed: true,
     items: [
       { text: "DLTX", link: "/en/configs/dltx" },
+      { text: "Configuring LTX and DLTX", link: "/en/configs/ltx-examples" },
       { text: "XMLOverride", link: "/en/configs/xml-override" },
+      { text: "Configuring the UI with XML", link: "/en/configs/xml-examples" },
       { text: "Batch file connection using masks", link: "/en/configs/group-file-connection-using-masks" },
       { text: "File encoding", link: "/en/configs/file-encoding" },
       { text: "Game localization", link: "/en/configs/localization" },
@@ -58,6 +60,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: "Quick slots", link: "/en/interface/hud-quick-slots-panel" },
           { text: "Personal navigation marker", link: "/en/interface/map-personal-navigation-marker" },
           { text: "Inventory sorting", link: "/en/interface/inventory-sort-tabs" },
+          { text: "Inventory volume", link: "/en/interface/inventory-volume" },
           { text: "Ammo, weapon, fire mode", link: "/en/interface/hud-weapon-ammo-fire-mode" },
           { text: "Item condition and percentages", link: "/en/interface/item-condition-percent-display" },
           { text: "Radial indicators", link: "/en/interface/radial-progress-shape" },
@@ -73,6 +76,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: "Lua API reference", link: "/en/scripting/new-functions" },
       { text: "Lua for configs, objects, and UI", link: "/en/scripting/runtime-exports" },
+      { text: "New Lua exports", link: "/en/scripting/lua-exports" },
       { text: "Base namespace", link: "/en/scripting/base-namespace" },
       { text: "Exported enums", link: "/en/scripting/exported-enums" },
       { text: "Lua: Callbacks", link: "/en/scripting/lua-callbacks" },

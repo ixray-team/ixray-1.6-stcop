@@ -166,3 +166,7 @@ You use:
 ![some_section]
 <friends = myself
 ```
+
+## See also
+
+- [Configuring LTX and DLTX](ltx-examples.md)

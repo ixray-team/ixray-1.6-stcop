@@ -28,6 +28,15 @@ Set `scroll_profile` on a list or scroll-view node. Its name must match an eleme
 
 A profile can define arrows (`up_arrow`, `down_arrow`, `left_arrow`, `right_arrow`), the track (`back` or `back_v`), and the thumb (`box` or `box_v`). Profiles also use `dec`, `inc`, `track`, and `thumb` nodes.
 
+## Bundled profiles and aspect ratios
+
+| Set | Profiles in `scroll_bar.xml` and `scroll_bar_16.xml` |
+| --- | --- |
+| SoC and CS | `default`, `pda` |
+| CoP and CoC | `default`, `pda`, `pda_logs` |
+
+The widescreen loader prefers an existing `scroll_bar_16.xml`. On ultrawide it tries `scroll_bar_21.xml`, then `_16`, then the base file. None of these bundled sets provides the `_21` file. Profile lookup runs inside the selected file. An omitted or empty `scroll_profile` uses `default`. A nonempty unknown name causes initialization with that profile to fail.
+
 ## Examples
 
 ### Switching profiles from Lua
