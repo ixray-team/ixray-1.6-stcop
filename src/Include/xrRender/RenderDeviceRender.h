@@ -78,6 +78,8 @@ public:
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
+	// Re-reads texture descriptions and every loaded texture from FS (gamedata swapped at runtime)
+	virtual void	ReloadTextures() {}
 	virtual const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint = {}) = 0;
 	virtual const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height, SVGTintRGBA tint = {}) = 0;
 	virtual const FactoryPtr<IUIShader>& GetSVGDefaultShader() = 0;

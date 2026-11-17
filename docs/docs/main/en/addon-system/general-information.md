@@ -57,3 +57,30 @@ RegisterScriptCallback("save", my_script.save)     --// calls code during actor:
 * [XMLOverride](../configs/xml-override.md)
 * [DLTX](../configs/dltx.md)
 * [Script callbacks system](../scripting/script-callback-system.md)
+
+## Swapping gamedata while the game runs
+
+A script can overlay a folder or a `.db` archive on top of `gamedata` without restarting the game, for example to switch textures and sounds after a story event.
+
+```lua
+-- the folder must NOT be inside $arch_dir_addons$, otherwise it is mounted at startup
+if game.mount_gamedata("$fs_root$", "eras\\era_2") then
+    game.reload_gamedata(true, true) -- textures, sounds
+end
+```
+
+`game.mount_gamedata(path_alias, path)` – queues the folder or archive for mounting. Its files replace the ones with the same relative path. Returns `false` if the alias or the target does not exist.
+
+`game.unmount_gamedata(path_alias, path)` – removes a mount. Mounts added after it are mounted again on top.
+
+`game.reload_gamedata(textures, sounds)` – queues a reload:
+* `textures` – full device reset (as `vid_restart`): all textures are re-read.
+* `sounds` – all loaded sounds and `sound_env` are re-read. Playing sounds keep playing with the new data.
+
+The work runs at the start of the next frame behind the load screen.
+
+The list of mounts is stored in the save. Loading a save restores its list (a save without one returns to the base gamedata) and reloads textures and sounds if the list changed. A new game starts with the base gamedata.
+
+Limitations:
+* `mount_gamedata` / `unmount_gamedata` only change the file list: call `reload_gamedata` to see the new textures and sounds.
+* Models, configs, shaders and scripts that are already loaded are not reloaded.

@@ -242,6 +242,8 @@ public:
 	void			DeferredUpload			();
 	void WaitForTextureLoading();
 	void ReloadTextureDescriptions();
+	// Unloads and loads every texture, whatever the deferred load flag says
+	void ReloadTextures();
 	void			DeferredUnload			();
 	void			Evict					();
 	void			StoreNecessaryTextures	();

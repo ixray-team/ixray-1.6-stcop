@@ -113,8 +113,13 @@ public:
 	IRHISurface* pSurface;
 	bool can_unload;
 
+	// True when the texture comes from a file and can be loaded again (not a font atlas, RT or surface_set)
+	bool CanReloadFromFile();
+
 private:
 	IRHIShaderResourceView* m_pSRView;
+	// Surface handed in through surface_set, there is no file behind it
+	bool IsExternalSurface = false;
 
 	// Sequence data
 	xr_vector<IRHISurface*> seqDATA;

@@ -25,6 +25,12 @@ public:
 	bool CanApply(xr_string& TempPath, CLocatorAPI::file& Desc);
 
 	void MountAddons();
+	// Overlays a directory or a .db archive on top of $game_data$ while the game runs.
+	// Files in it replace the ones with the same relative path.
+	XRCORE_API bool MountRuntime(const char* FullPath);
+	// Undoes the last MountRuntime (LIFO)
+	XRCORE_API void UnmountRuntime();
+	u32 GetRuntimeMountCount() const { return RuntimeMountCount; }
 	XRCORE_API const AddonInfo* FindAddon(const CLocatorAPI::file& Desc) const;
 
 
@@ -35,6 +41,10 @@ private:
 
 public:
 	xr_vector<AddonInfo> Addons;
+
+private:
+	// Runtime mounts are the last RuntimeMountCount entries of Addons
+	u32 RuntimeMountCount = 0;
 };
 
 extern XRCORE_API CAddonManager* GAddonsManager;

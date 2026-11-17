@@ -726,16 +726,7 @@ void CSoundRender_Core::refresh_env_library()
 
 void CSoundRender_Core::refresh_sources()
 {
-	Mixer::StopAll();
-
-	// TODO: 
-	/*
-	for (u32 sit = 0; sit < s_sources.size(); sit++) {
-		CSoundRender_Source* s = s_sources[sit];
-		s->unload();
-		s->load(*s->fname);
-	}
-	*/
+	Mixer::ReloadSources();
 }
 
 bool CSoundRender_Core::object_in_audiozone(const Fvector& P)

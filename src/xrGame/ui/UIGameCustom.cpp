@@ -894,6 +894,12 @@ void CMapListHelper::Load()
 		CLocatorAPI::archive& A		= *arch_it;
 		if(A.hSrcFile)				continue;
 
+		// Archives without level info (addons, runtime gamedata) are not level archives
+		if (!A.header->line_exist("header", "level_name") || !A.header->line_exist("header", "level_ver"))
+		{
+			continue;
+		}
+
 		const char* ln					= A.header->r_string("header", "level_name");
 		const char* lv					= A.header->r_string("header", "level_ver");
 		FS.LoadArchive				(A, tmp_entrypoint);

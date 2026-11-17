@@ -84,6 +84,18 @@ private:
 
 	bool IsArchivePhase = false;
 
+	// Undo journal of a runtime gamedata mount: what each registered file replaced
+	struct RuntimeLayerRecord
+	{
+		const char* Name = nullptr;
+		bool HasPrevious = false;
+		file Previous = {};
+	};
+
+	using RuntimeLayer = xr_vector<RuntimeLayerRecord>;
+	xr_vector<RuntimeLayer> RuntimeLayers;
+	bool IsRuntimeLayerOpen = false;
+
 	void						Register		(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif);
 	void						ProcessArchive	(const char* path, const char* base_path = nullptr);
 	void						ProcessOne		(const char* path, system_file* F);
@@ -236,6 +248,13 @@ public:
 	void						auth_runtime		(void*);
 
 	void						rescan_path			(const char* full_path, bool bRecurse, bool NeedMountAddons = true);
+	// Registers a .db archive kept in m_archives; its files override already registered ones
+	void						mount_archive		(const char* full_path);
+
+	// Files registered between Begin and End form one layer that PopRuntimeLayer can undo (LIFO)
+	void						BeginRuntimeLayer	();
+	void						EndRuntimeLayer		();
+	void						PopRuntimeLayer		();
 	// editor functions
 	void						rescan_pathes		(bool NeedMountAddons = true);
 	void						lock_rescan			();

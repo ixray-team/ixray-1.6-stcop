@@ -160,8 +160,13 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 		xrSRWLockGuard g(m_files_lock, true);
 		files_it			I = m_files.find(desc);
 
-		if (I != m_files.end()) 
+		if (I != m_files.end())
 		{
+			if (IsRuntimeLayerOpen)
+			{
+				RuntimeLayers.back().push_back({I->name, true, *I});
+			}
+
 			desc.name		= I->name;
 
 			// sad but true, performance option
@@ -179,6 +184,11 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 	{
 		xrSRWLockGuard g(m_files_lock);
 		m_files.insert		(desc);
+
+		if (IsRuntimeLayerOpen)
+		{
+			RuntimeLayers.back().push_back({desc.name, false, {}});
+		}
 	}
 	
 	// Try to register folder(s)
@@ -692,7 +702,8 @@ bool CLocatorAPI::Recurse(const char* path)
 			{
 				if (strext(N) && (0 == strncmp(strext(N), ".db", 3) || 0 == strncmp(strext(N), ".xdb", 4)))
 				{
-					ProcessArchive(N);
+					// Archive entries are gamedata paths: they must skip the addon remap
+					mount_archive(N);
 				}
 				else
 				{
@@ -2098,6 +2109,90 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse, bool NeedMou
 	if (NeedMountAddons && GAddonsManager != nullptr)
 	{
 		GAddonsManager->MountAddons();
+	}
+}
+
+void CLocatorAPI::mount_archive(const char* full_path)
+{
+	const bool OldArchivePhase = IsArchivePhase;
+	IsArchivePhase = true;
+
+	// An archive that was mounted and popped before stays in m_archives: a runtime layer registers its files again.
+	// Outside of a runtime layer a known archive is skipped, so a rescan does not override newer files.
+	bool IsKnown = false;
+	for (archive& A : m_archives)
+	{
+		if (_stricmp(A.path.c_str(), full_path) == 0)
+		{
+			if (IsRuntimeLayerOpen)
+			{
+				A.close();
+				LoadArchive(A);
+			}
+			IsKnown = true;
+			break;
+		}
+	}
+
+	if (!IsKnown)
+	{
+		ProcessArchive(full_path);
+	}
+
+	IsArchivePhase = OldArchivePhase;
+}
+
+void CLocatorAPI::BeginRuntimeLayer()
+{
+	R_ASSERT(!IsRuntimeLayerOpen);
+	RuntimeLayers.emplace_back();
+	IsRuntimeLayerOpen = true;
+}
+
+void CLocatorAPI::EndRuntimeLayer()
+{
+	IsRuntimeLayerOpen = false;
+
+	u32 Replaced = 0;
+	for (const RuntimeLayerRecord& Record : RuntimeLayers.back())
+	{
+		Replaced += Record.HasPrevious ? 1 : 0;
+	}
+	Msg("* FS: runtime layer registered %u files (%u replaced)", (u32)RuntimeLayers.back().size(), Replaced);
+}
+
+void CLocatorAPI::PopRuntimeLayer()
+{
+	if (RuntimeLayers.empty() || IsRuntimeLayerOpen)
+	{
+		return;
+	}
+
+	RuntimeLayer Layer = std::move(RuntimeLayers.back());
+	RuntimeLayers.pop_back();
+
+	xrSRWLockGuard g(m_files_lock);
+	for (auto It = Layer.rbegin(); It != Layer.rend(); ++It)
+	{
+		file Key = {};
+		Key.name = It->Name;
+		files_it I = m_files.find(Key);
+		if (I == m_files.end())
+		{
+			continue;
+		}
+
+		if (It->HasPrevious)
+		{
+			// Same name pointer, so the set order is kept
+			const_cast<file&>(*I) = It->Previous;
+		}
+		else
+		{
+			char* Name = LPSTR(I->name);
+			m_files.erase(I);
+			xr_free(Name);
+		}
 	}
 }
 

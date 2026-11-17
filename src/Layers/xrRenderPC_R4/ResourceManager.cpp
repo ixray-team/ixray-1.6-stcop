@@ -492,6 +492,42 @@ void CResourceManager::DeferredUpload()
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 }
 
+void CResourceManager::ReloadTextures()
+{
+	PROF_EVENT("CResourceManager::ReloadTextures");
+	ReloadTextureDescriptions();
+
+	xrCriticalSectionGuard Guard(creationGuard);
+	WaitForTextureLoading();
+
+	xr_vector<CTexture*> Reloadable;
+	Reloadable.reserve(m_textures.size());
+	for (auto& [Name, Texture] : m_textures)
+	{
+		if (Texture->CanReloadFromFile())
+		{
+			Reloadable.push_back(Texture);
+		}
+	}
+
+	for (CTexture* Texture : Reloadable)
+	{
+		Texture->Unload();
+	}
+
+	const bool IsParallel = !Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD);
+	for (CTexture* Texture : Reloadable)
+	{
+		if (!IsParallel || !Texture->StartLoading())
+		{
+			Texture->Load();
+		}
+	}
+	WaitForTextureLoading();
+
+	Msg("* Reloaded %u of %u textures", (u32)Reloadable.size(), (u32)m_textures.size());
+}
+
 void CResourceManager::DeferredUnload() 
 {
 	xrCriticalSectionGuard Guard(creationGuard);

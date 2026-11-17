@@ -417,6 +417,11 @@ void  dxRenderDeviceRender::OnAssetsChanged()
 	Resources->ReloadTextureDescriptions();
 }
 
+void dxRenderDeviceRender::ReloadTextures()
+{
+	Resources->ReloadTextures();
+}
+
 void dxRenderDeviceRender::PostCreate()
 {
 	R_ASSERT2(Resources, "must be valid or early calling");

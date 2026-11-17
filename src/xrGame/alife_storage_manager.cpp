@@ -27,6 +27,7 @@
 #include "autosave_manager.h"
 #include "../xrCore/Save/SaveManager.h"
 #include "../xrEngine/string_table.h"
+#include "GamedataReloader.h"
 
 XRCORE_API string_path g_bug_report_file;
 
@@ -90,6 +91,7 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 		spawns().Serialize(*SaveObj);
 		objects().Serialize(*SaveObj);
 		registry().Serialize(*SaveObj);
+		CGamedataReloader::Instance().Serialize(*SaveObj);
 		CSaveManager::GetInstance().WriteSavedData(info, SaveObj, temp, !non_async);
 	} else
 	{
@@ -109,6 +111,7 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 			spawns().save(stream);
 			objects().save(stream);
 			registry().save(stream);
+			CGamedataReloader::Instance().Save(stream);
 			source_count = stream.tell();
 			void* source_data = stream.pointer();
 			dest_count = rtc_csize(source_count);
@@ -181,6 +184,7 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 		graph().on_load();
 		objects().Serialize(*Obj);
 		registry().Serialize(*Obj);
+		CGamedataReloader::Instance().Serialize(*Obj);
 		xr_delete(Obj);
 	} else
 	{
@@ -189,6 +193,7 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 		graph().on_load();
 		objects().load(source);
 		registry().load(source);
+		CGamedataReloader::Instance().Load(source);
 	}
 
 	VERIFY(can_register_objects());

@@ -1413,6 +1413,40 @@ void Mixer::ExportConfig()
 	Snd_ExportConfig();
 }
 
+void Mixer::ReloadSources()
+{
+	// Voices keep playing: looped ambients continue with the new data
+	xrSRWLockGuard RenderGuard(GMixer.render_lock);
+	xrSRWLockGuard UpdateGuard(GMixer.update_lock);
+	Snd_ReloadSources();
+
+	xrSRWLockGuard SourceGuard(g_SoundSourceLock, true);
+	for (sound_slot_state& Slot : GMixer.slots)
+	{
+		if (Slot.state == State::Stopped)
+		{
+			continue;
+		}
+
+		const SoundSourceState* Source = Snd_LookupSource(&Slot.sound_name);
+		if (Source == nullptr)
+		{
+			continue;
+		}
+
+		// The new file may be shorter than the old one
+		const u32 LastFrame = Source->Desc.frames_total > 0 ? Source->Desc.frames_total - 1 : 0;
+		Slot.position = std::min(Slot.position, LastFrame);
+		if (Slot.stopping_position != (u32)-1)
+		{
+			Slot.stopping_position = std::min(Slot.stopping_position, LastFrame);
+		}
+
+		Slot.parameters[(u32)ParameterId::VolumePerChannel].x = Source->Desc.volume;
+		Slot.parameters[(u32)ParameterId::DistanceRange] = Fvector(Source->Desc.min_distance, Source->Desc.max_distance, Source->Desc.max_ai_distance);
+	}
+}
+
 bool Mixer::GetSoundConfig(const char* Name, sound_config* Config)
 {
 	return Snd_GetSoundConfig(Name, Config);

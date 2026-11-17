@@ -54,6 +54,7 @@ public:
 	virtual void SetCacheXform(Fmatrix &mView, Fmatrix &mProject) override;
 	virtual void SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) override;
 	virtual void OnAssetsChanged() override;
+	virtual void ReloadTextures() override;
 
 	virtual void PostCreate() override;
 

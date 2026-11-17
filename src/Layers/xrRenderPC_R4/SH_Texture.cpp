@@ -53,6 +53,7 @@ void CTexture::surface_set(IRHISurface* surf)
 
 	pSurface = surf;
 	m_pSRView = nullptr;
+	IsExternalSurface = surf != nullptr;
 
 	if (pSurface)
 	{
@@ -197,6 +198,7 @@ void CTexture::ProcessStaging()
 	pSurface = nullptr;
 
 	surface_set(pTargetSurface);
+	IsExternalSurface = false;
 
 	_RELEASE(pTargetSurface);
 }
@@ -360,6 +362,13 @@ bool CTexture::StartLoading()
 	LoadTask->run(LoadLambda);
 	IsLoading.store(true, std::memory_order_release);
 	return true;
+}
+
+bool CTexture::CanReloadFromFile()
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	FinishLoading();
+	return can_unload && cName.size() != 0 && !strchr(*cName, '$') && !IsExternalSurface && !flags.bUser && !pAVI && !pTheora && seqDATA.empty();
 }
 
 bool CTexture::CanCacheShadow(bool& Pending, u64& Revision)

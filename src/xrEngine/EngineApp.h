@@ -40,6 +40,8 @@ public:
 	virtual void LoadEnd();
 	virtual void LoadTitleInt(const char* str1, const char* str2, const char* str3);
 	virtual void LoadStage();
+	// Draws the load screen and advances the progress bar of a custom MaxStages-long load
+	void LoadStage(int MaxStages);
 	virtual void LoadSwitch();
 	virtual void LoadDraw();
 	virtual void LoadForceFinish();

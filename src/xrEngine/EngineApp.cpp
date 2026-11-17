@@ -259,12 +259,17 @@ void CEngineApp::LoadTitleInt(const char* str1, const char* str2, const char* st
 
 void CEngineApp::LoadStage()
 {
+	if (g_pGamePersistent->GameType() == 1 && !xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife"))
+		LoadStage(17);
+	else
+		LoadStage(14);
+}
+
+void CEngineApp::LoadStage(int MaxStages)
+{
 	VERIFY(ll_dwReference);
 
-	if (g_pGamePersistent->GameType() == 1 && !xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife"))
-		max_load_stage = 17;
-	else
-		max_load_stage = 14;
+	max_load_stage = MaxStages;
 	LoadDraw();
 	++load_stage;
 
@@ -397,6 +402,12 @@ int CEngineApp::Level_ID(const char* name, const char* ver, bool bSet)
 	{
 		if (Arch.hSrcFile == 0)
 		{
+			// Archives without level info (addons, runtime gamedata) are not level archives
+			if (!Arch.header->line_exist("header", "level_name") || !Arch.header->line_exist("header", "level_ver"))
+			{
+				continue;
+			}
+
 			const char* ln = Arch.header->r_string("header", "level_name");
 			const char* lv = Arch.header->r_string("header", "level_ver");
 
@@ -437,6 +448,12 @@ CInifile* CEngineApp::GetArchiveHeader(const char* name, const char* ver)
 	{
 		if (!Arch.header)
 			break;
+
+		// Archives without level info (addons, runtime gamedata) are not level archives
+		if (!Arch.header->line_exist("header", "level_name") || !Arch.header->line_exist("header", "level_ver"))
+		{
+			continue;
+		}
 
 		const char* ln = Arch.header->r_string("header", "level_name");
 		const char* lv = Arch.header->r_string("header", "level_ver");

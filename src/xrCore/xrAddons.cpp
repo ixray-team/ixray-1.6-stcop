@@ -224,6 +224,79 @@ void CAddonManager::MountAddons()
     }
 }
 
+bool CAddonManager::MountRuntime(const char* FullPath)
+{
+	if (FullPath == nullptr || FullPath[0] == 0)
+	{
+		return false;
+	}
+
+	xr_string EntryDir = FullPath;
+	while (!EntryDir.empty() && (EntryDir.back() == '\\' || EntryDir.back() == '/'))
+	{
+		EntryDir.pop_back();
+	}
+
+	std::filesystem::path AddonPath(EntryDir.c_str());
+	const bool IsDirectory = std::filesystem::is_directory(AddonPath);
+	const bool IsArchive = !IsDirectory && AddonPath.extension() == ".db" && std::filesystem::is_regular_file(AddonPath);
+	if (!IsDirectory && !IsArchive)
+	{
+		Msg("! Can't mount gamedata: '%s' is neither a directory nor a .db archive", FullPath);
+		return false;
+	}
+
+	for (const AddonInfo& Addon : Addons)
+	{
+		if (_stricmp(Addon.EntryDir.c_str(), EntryDir.c_str()) == 0)
+		{
+			Msg("! Can't mount gamedata: '%s' is already mounted", FullPath);
+			return false;
+		}
+	}
+
+	AddonInfo Addon;
+	Addon.EntryDir = EntryDir.c_str();
+	Addon.AddonName = AddonPath.filename().string().c_str();
+	Addon.Platforms.insert(currentPlatform.c_str());
+	Addons.push_back(Addon);
+
+	Msg("Mounting gamedata at runtime: %s", EntryDir.c_str());
+
+	FS.BeginRuntimeLayer();
+	if (IsDirectory)
+	{
+		xr_stack_string_path DirPath = EntryDir.c_str();
+		DirPath.append(Platform::kPreferredSeparator);
+
+		// Addon phase remaps files inside the directory onto $game_data$
+		FS.IsAddonPhase = true;
+		FS.rescan_path(DirPath.c_str(), true, false);
+		FS.IsAddonPhase = false;
+	}
+	else
+	{
+		FS.mount_archive(EntryDir.c_str());
+	}
+	FS.EndRuntimeLayer();
+	RuntimeMountCount++;
+
+	return true;
+}
+
+void CAddonManager::UnmountRuntime()
+{
+	if (RuntimeMountCount == 0)
+	{
+		return;
+	}
+
+	Msg("Unmounting runtime gamedata: %s", Addons.back().EntryDir.c_str());
+	FS.PopRuntimeLayer();
+	Addons.pop_back();
+	RuntimeMountCount--;
+}
+
 const CAddonManager::AddonInfo* CAddonManager::FindAddon(const CLocatorAPI::file& Desc) const
 {
 	const char* Archive = Desc.vfs < FS.m_archives.size() ? FS.m_archives[Desc.vfs].path.c_str() : nullptr;

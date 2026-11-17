@@ -12,4 +12,7 @@
 	<string id="Btn_Yes">
 		<text_gamepad override="add">$$ACTION_UI_ACCEPT$$ Да</text_gamepad>
 	</string>
+	<string id="st_loading_gamedata">
+		<text>Обновление игровых данных</text>
+	</string>
 </string_table>

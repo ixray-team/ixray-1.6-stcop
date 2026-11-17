@@ -47,6 +47,7 @@ namespace XRay::Sound::Mixer
     XRSOUND_API u32 FindBus(const char* name);
     XRSOUND_API u32 RegisterEffect(const char* name, SoundEffectProc proc);
     XRSOUND_API void ExportConfig();
+    XRSOUND_API void ReloadSources();
     XRSOUND_API bool GetSoundConfig(const char* name, sound_config* config);
     XRSOUND_API void SetSoundConfig(const char* name, sound_config* config);
     XRSOUND_API bool SaveSoundConfig(const char* name);

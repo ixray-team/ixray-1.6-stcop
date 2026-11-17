@@ -1003,6 +1003,48 @@ void Snd_GetLoadedSources(xr_vector<shared_str>& Names)
 	}
 }
 
+void Snd_ReloadSources()
+{
+	PROF_EVENT("Sound: Reload sources");
+
+	{
+		xrCriticalSectionGuard QueueGuard(GSourcePool.DecodeLock);
+		GSourcePool.DecodeQueue.clear();
+	}
+
+	// Lock order: g_SoundSourceLock -> Source->DecodeLock -> GSourcePool.CacheLock
+	xrSRWLockGuard Guard(g_SoundSourceLock);
+	u32 ReloadedCount = 0;
+	for (auto& [Key, Source] : GSourcePool.Sources)
+	{
+		if (!Source.IsReady)
+		{
+			continue;
+		}
+
+		xrCriticalSectionGuard DecodeGuard(Source.DecodeLock);
+		{
+			xrSRWLockGuard CacheGuard(GSourcePool.CacheLock, false);
+			for (u32 EntryIdx = 0; EntryIdx < SND_CACHE_ENTRY_COUNT; EntryIdx++)
+			{
+				u32 CacheIdx = Source.CacheLines[EntryIdx];
+				if (Snd_IsCacheLineValid(CacheIdx) && Snd_GetCacheLine(CacheIdx)->Owner == &Source)
+				{
+					Snd_PurgeCacheLine(CacheIdx, false);
+				}
+
+				Source.CacheLines[EntryIdx] = 0;
+			}
+		}
+
+		Snd_UnloadSourceFile(&Source);
+		Snd_LoadSourceFile(&Source, Key.c_str());
+		ReloadedCount++;
+	}
+
+	Msg("* Sound: reloaded %u sources", ReloadedCount);
+}
+
 void Snd_ExportConfig()
 {
 	xr_hash_map<shared_str, CInifile*> Inis;
