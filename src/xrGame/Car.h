@@ -375,6 +375,7 @@ public:
 	float	m_ram_min_speed;
 	float	m_ram_separation_bias;
 	float	m_ram_mutant_push_speed;
+	float	m_gigant_kick_impulse;
 
 	struct SHeadlightHideaway
 	{
@@ -1490,6 +1491,7 @@ public:
 	void					HitFrom						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					HitFromCreature				(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					ApplyPush					(const Fvector& dir, float speed, const Fvector& world_point);
+	void					ApplyGigantKick				(const Fvector& dir);
 	void					PushByActor					(const Fvector& dir, const Fvector& world_point);
 	bool					CollisionHitStartsCooldown	(u16 bone_id, float power) override;
 	virtual float			GetRamDamageMinSpeed		() const override { return m_ram_damage_min_speed; }

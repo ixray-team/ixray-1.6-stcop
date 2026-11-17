@@ -399,6 +399,7 @@ CCar::CCar()
 	m_ram_min_speed = 1.f;
 	m_ram_separation_bias = 3.f;
 	m_ram_mutant_push_speed = 0.5f;
+	m_gigant_kick_impulse = -1.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
 	m_brakes_pressure_current = 0.f;
@@ -3376,6 +3377,33 @@ void CCar::ApplyPush(const Fvector& dir, float speed, const Fvector& world_point
 	m_pPhysicsShell->applyImpulseTrace(LocalPoint, PushDir, speed * Mass);
 }
 
+void CCar::ApplyGigantKick(const Fvector& dir)
+{
+	if (getDestroy() || m_pPhysicsShell == nullptr || !m_pPhysicsShell->isActive())
+		return;
+
+	// The gigant ground kick is a physical reaction and intentionally ignores
+	// rs_car_god, matching the legacy mass-scaled impulse.
+	Fvector PushDir = dir;
+	if (!safe_normalize(PushDir))
+		return;
+
+	// Fixed momentum: heavy cars receive less speed than light ones. A
+	// negative configured value keeps the legacy mass-scaled impulse for
+	// sections that do not define the new key.
+	float Impulse = m_gigant_kick_impulse;
+	if (Impulse < 0.f)
+		Impulse = 20.f * m_pPhysicsShell->getMass();
+
+	if (Impulse <= 0.f)
+		return;
+
+	if (!m_pPhysicsShell->isEnabled())
+		m_pPhysicsShell->Enable();
+
+	m_pPhysicsShell->applyImpulse(PushDir, Impulse);
+}
+
 void CCar::PushByActor(const Fvector& dir, const Fvector& world_point)
 {
 	constexpr float BaseImpulse = 750.f;
@@ -4309,6 +4337,12 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	clamp(m_ram_separation_bias, 0.f, 15.f);
 	m_ram_mutant_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_push_speed", m_ram_mutant_push_speed);
 	clamp(m_ram_mutant_push_speed, 0.f, 5.f);
+
+	// Fixed momentum of the pseudogiant ground kick for this car, kg*m/s.
+	// -1 keeps the legacy 20 * car_mass impulse, 0 disables the car push.
+	m_gigant_kick_impulse = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "gigant_kick_impulse", m_gigant_kick_impulse);
+	if (m_gigant_kick_impulse >= 0.f)
+		clamp(m_gigant_kick_impulse, 0.f, 200000.f);
 
 	loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
 	loadcamera("car_look_cam", ini, camera[EctSecondCam]);

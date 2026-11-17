@@ -217,6 +217,11 @@ bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
 	
 	VERIFY(actor);
 
+	// The vampire attack takes control of the actor and must never pull him
+	// out of a car. Regular melee attacks can still damage the car.
+	if ( actor->IsInCar() )
+		return false;
+
 	if ( actor->input_external_handler_installed() )
 		return false;
 
