@@ -679,28 +679,55 @@ void CMissile::Throw()
 	if (pActor && pActor == Level().CurrentControlEntity() || Local())
 	{
 		VERIFY(H_Parent()->cast_entity());
-		setup_throw_params(IsHidden() && GetHUDmode());
+		const bool HudMode = GetHUDmode();
+		const bool Hidden = IsHidden();
+		setup_throw_params(Hidden && HudMode);
 
-		if (m_bUseHudPosition && GetHUDmode() && !IsHidden())
+		if (m_bUseHudPosition && HudMode)
 		{
-			attachable_hud_item* HID = HudItemData();
-			auto Animator = g_player_hud->GetAnimator();
-
-			if (HID || Animator)
+			const Fmatrix* HudTransform = nullptr;
+			if (Hidden)
 			{
-				m_throw_matrix.set(HID ? HID->m_item_transform : Animator && Animator->m_item ? Animator->m_item_transform : Fidentity);
-
-				Fvector cam_pos = Device.vCameraPosition;
-				Fvector throw_pos = m_throw_matrix.c;
-				Fvector dir = Fvector().set(throw_pos).sub(cam_pos);
-				float dist = dir.magnitude();
-				if (dist > EPS)
+				if (g_player_hud)
 				{
-					dir.normalize();
-					collide::rq_result RQ;
-					if (g_pGameLevel->ObjectSpace.RayPick(cam_pos, dir, dist, collide::rqtBoth, RQ, H_Parent()))
+					const auto* Animator = g_player_hud->GetAnimator();
+					if (Animator && Animator->IsPlaying && Animator->m_item &&
+						Animator->m_upd_firedeps_frame != u32(-1))
 					{
-						m_throw_matrix.c.sub(dir.mul(dist - RQ.range + 0.01f));
+						HudTransform = &Animator->m_item_transform;
+					}
+				}
+			}
+			else if (const auto* HudItem = HudItemData(); HudItem && HudItem->m_upd_firedeps_frame != u32(-1))
+			{
+				HudTransform = &HudItem->m_item_transform;
+			}
+
+			if (HudTransform)
+			{
+				m_throw_matrix.set(*HudTransform);
+				Device.transform_hud2world(m_throw_matrix.c);
+
+				const Fsphere& BoundingSphere = m_fake_missile->Visual()->getVisData().sphere;
+				const float Clearance = BoundingSphere.R + 0.01f;
+				Fvector ThrowCenter;
+				m_throw_matrix.transform_tiny(ThrowCenter, BoundingSphere.P);
+
+				const Fvector& CameraPosition = Device.vCameraPosition;
+				Fvector Direction = Fvector().sub(ThrowCenter, CameraPosition);
+				const float DistanceSqr = Direction.square_magnitude();
+				if (DistanceSqr > EPS * EPS)
+				{
+					const float Distance = _sqrt(DistanceSqr);
+					Direction.mul(1.f / Distance);
+
+					collide::rq_result RayQuery;
+					if (g_pGameLevel->ObjectSpace.RayPick(
+							CameraPosition, Direction, Distance + Clearance, collide::rqtBoth, RayQuery, H_Parent()
+						))
+					{
+						const float SafeDistance = RayQuery.range - Clearance;
+						m_throw_matrix.c.mad(Direction, SafeDistance - Distance);
 					}
 				}
 			}
