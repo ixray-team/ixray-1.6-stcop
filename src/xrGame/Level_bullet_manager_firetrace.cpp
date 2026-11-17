@@ -39,6 +39,13 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
 
+	// A car turret passes the carrier car as weapon_id. Its muzzle is usually
+	// inside the car, so the bullet must not collide with its own launcher.
+	if (object->ID() == bullet->weapon_id && object->cast_car() != nullptr)
+	{
+		return false;
+	}
+
 	if ((object->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
 		CGameObject* go = object->cast_game_object() ? object->cast_game_object() : nullptr;
