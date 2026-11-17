@@ -4,25 +4,25 @@
 > **Статус**: Реализовано в исходниках текущей ветки<br>
 > **Доступность**: Экранный UI, D3D11 (R4). Требуются совместимые модули движка и шейдеры основной gamedata.
 
-* `SetFlashlight`
-* `GetFlashlightEnabled`
-* `SetFlashlightPosition`
-* `SetFlashlightMask`
-* `SetFlashlightMaskPosition`
-* `SetFlashlightInterference`
-* `SetFlashlightSurfaceColor`
+* `SetLightEffect`
+* `GetLightEffectEnabled`
+* `SetLightEffectPosition`
+* `SetLightEffectMask`
+* `SetLightEffectMaskPosition`
+* `SetLightEffectIntensity`
+* `SetLightEffectSurfaceColor`
 
 #### Описание методов:
 
 ### Обработка содержимого статика
 
-Методы доступны у `CUIStatic` и его наследников. Тональная обработка применяется один раз к собранному изображению статика и его дочерних элементов в пределах контейнера. Названия API сохранены от первоначального применения эффекта как UI-фонаря.
+Методы доступны у `CUIStatic` и его наследников. Тональная обработка применяется один раз к собранному изображению статика и его дочерних элементов в пределах контейнера. Имена описывают общий световой эффект; фонарь в меню — один из вариантов его применения.
 
 Вне маски изображение затемняется, корректируется его насыщенность и выполняется умножение по собственной яркости. Белые области маски проявляют исходный цвет, серые — промежуточное состояние. Текущий шейдер также добавляет световую составляющую до 40% исходного RGB, пропорциональную квадрату маски: это не строгое переключение только между оригиналом и затемнением.
 
 ```lua
 --// Включить обработку и настроить тональную коррекцию.
-control:SetFlashlight(enabled, radius, softness, darkness, saturation, multiply)
+control:SetLightEffect(enabled, radius, softness, darkness, saturation, multiply)
 args:
   enabled (boolean) - включение обработки
   radius (number) - радиус процедурной маски, 1..8192, в вертикальных единицах UI
@@ -33,12 +33,12 @@ args:
 retval: (void)
 
 --// Получить состояние включения обработки у этого статика.
-control:GetFlashlightEnabled()
+control:GetLightEffectEnabled()
 args: нет
 retval: (boolean) - включена ли обработка у этого статика
 
 --// Центр процедурной маски в абсолютных координатах корневого UI.
-control:SetFlashlightPosition(x, y)
+control:SetLightEffectPosition(x, y)
 args:
   x (number) - абсолютная горизонтальная координата центра в корневом UI
   y (number) - абсолютная вертикальная координата центра в корневом UI
@@ -47,13 +47,13 @@ retval: (void)
 
 При `darkness = 0`, `saturation = 1`, `multiply = 0` тональная обработка и поверхностная световая добавка отключены. Такой контейнер может добавлять только объёмный луч и пыль поверх содержимого, включая потомков с собственным затенением.
 
-Для полностью нейтральной обработки поверхности оставьте также `SetFlashlightSurfaceColor(1, 1, 1)`: явно заданный оттенок пятна применяется и при нейтральных параметрах затемнения.
+Для полностью нейтральной обработки поверхности оставьте также `SetLightEffectSurfaceColor(1, 1, 1)`: явно заданный оттенок пятна применяется и при нейтральных параметрах затемнения.
 
 ### Цвет светового пятна
 
 ```lua
---// Назначить оттенок поверхности в пятне фонарика.
-control:SetFlashlightSurfaceColor(red, green, blue)
+--// Назначить оттенок поверхности внутри световой маски.
+control:SetLightEffectSurfaceColor(red, green, blue)
 args:
   red (number) - множитель красного канала, 0..1; по умолчанию 1
   green (number) - множитель зелёного канала, 0..1; по умолчанию 1
@@ -61,7 +61,7 @@ args:
 retval: (void)
 ```
 
-`control:SetFlashlightSurfaceColor(red, green, blue)` задаёт RGB-множители пятна в диапазоне `0..1` (по умолчанию белый). Цвет применяется по маске и мощности света к собранному изображению до добавления объёмного света и пыли; вне пятна изображение сохраняется. Цвет независим от `SetFlashlightVolumeColor` и `SetFlashlightDustColor`. Вложенному контейнеру с собственным затенением оставляйте белый цвет пятна, если оттенок уже применяется общим родительским проходом.
+`control:SetLightEffectSurfaceColor(red, green, blue)` задаёт RGB-множители пятна в диапазоне `0..1` (по умолчанию белый). Цвет применяется по маске и мощности света к собранному изображению до добавления объёмного света и пыли; вне пятна изображение сохраняется. Цвет независим от `SetVolumetricLightColor` и `SetDustColor`. Вложенному контейнеру с собственным затенением оставляйте белый цвет пятна, если оттенок уже применяется общим родительским проходом.
 
 Метод требует обновлённых xrUI и R4. С прежними бинарниками новые шейдеры сохраняют белый цвет пятна и единичную интенсивность пыли.
 
@@ -69,16 +69,16 @@ retval: (void)
 
 ```lua
 --// Блёклый желтоватый свет на журнале.
-journal:SetFlashlightSurfaceColor(1.0, 0.94, 0.80)
+journal:SetLightEffectSurfaceColor(1.0, 0.94, 0.80)
 --// Комната с готовыми тёмной и светлой текстурами сохраняет их цвет.
-interior:SetFlashlightSurfaceColor(1, 1, 1)
+interior:SetLightEffectSurfaceColor(1, 1, 1)
 ```
 
 ### Текстурная маска
 
 ```lua
 --// Настроить маску одним вызовом.
-control:SetFlashlightMask(texture, x, y, width, height, scale, is_use_mouse_position)
+control:SetLightEffectMask(texture, x, y, width, height, scale, is_use_mouse_position)
 args:
   texture (string) - путь к целой растровой текстуре; пустая строка возвращает процедурную маску
   x (number) - горизонтальный центр относительно левого верхнего угла статика, -8192..8192
@@ -90,7 +90,7 @@ args:
 retval: (void)
 
 --// Задать ручной центр и отключить слежение за курсором.
-control:SetFlashlightMaskPosition(x, y)
+control:SetLightEffectMaskPosition(x, y)
 args:
   x (number) - горизонтальный центр маски относительно статика, -8192..8192
   y (number) - вертикальный центр маски относительно статика, -8192..8192
@@ -99,32 +99,59 @@ retval: (void)
 
 Маска читается из красного канала: чёрный — отсутствие проявления, белый — максимум. Альфа маски не используется. За её прямоугольником проявление равно нулю. Нулевые размеры или масштаб отключают выборку текстурной маски; для возврата процедурной используйте пустой путь. На широком экране одинаковые ширина и высота в логических единицах не обязательно дают физический круг.
 
-`SetFlashlightPosition` не перемещает текстурную маску: для неё используется `SetFlashlightMaskPosition` либо режим курсора.
+`SetLightEffectPosition` не перемещает текстурную маску: для неё используется `SetLightEffectMaskPosition` либо режим курсора.
 
-### Управление мощностью
+### Интенсивность эффекта
 
 ```lua
---// Задать мгновенную просадку мощности света; расписание задаёт скрипт.
-control:SetFlashlightInterference(enabled, strength)
+--// Задать прямой множитель интенсивности света.
+control:SetLightEffectIntensity(intensity)
 args:
-  enabled (boolean) - применять просадку мощности
-  strength (number) - мгновенная потеря мощности, 0..0.9; 0.6 оставляет 40%
+  intensity (number)(required) - интенсивность, 0..1; 1 — полный свет, 0 — свет погашен.
 retval: (void)
 ```
 
-Коэффициент действует на проявление изображения, объёмный луч и пыль. Случайность, расписание и сглаживание перебоев реализует вызывающий скрипт, а не движок.
+Конечные значения ограничиваются диапазоном `0..1`; NaN и бесконечность заменяются на `1`. Значение по умолчанию — `1`. Множитель действует на проявление поверхности по маске, объёмное рассеяние и пыль; он не меняет RGB-оттенок, положение маски или независимый бленд двух текстур. Ноль убирает вклад света, но не выключает расчёт прохода: для его отключения вызови `SetLightEffect(false, ...)`.
 
-`SetFlashlightInterference` сам не меняет оттенок и не управляет независимым блендом двух текстур. Чтобы имитировать остывание нити лампы, скрипт интерполирует базовые RGB к тёплому цвету по той же плавной огибающей `strength`, вызывая `SetFlashlightSurfaceColor`, `SetFlashlightVolumeColor` и `SetFlashlightDustColor`. При восстановлении мощности нужно вернуть исходные RGB. У контейнера комнаты с готовым освещением оставляйте цвет поверхности белым; меняйте цвет пятна только у контейнера с шейдерным затенением.
+Метод задаёт текущее значение без встроенной анимации. Случайность, расписание и сглаживание изменения интенсивности остаются в вызывающем скрипте. Например, при скриптовой просадке `drop = 0.6` передай `SetLightEffectIntensity(1 - drop)`, чтобы оставить 40% света.
+
+Чтобы имитировать остывание нити лампы, скрипт дополнительно интерполирует базовые RGB к тёплому цвету по той же огибающей просадки, вызывая `SetLightEffectSurfaceColor`, `SetVolumetricLightColor` и `SetDustColor`. При восстановлении интенсивности нужно вернуть исходные RGB. У контейнера комнаты с готовым освещением оставляйте цвет поверхности белым; меняйте цвет пятна только у контейнера с шейдерным затенением.
+
+### Совместимость имён
+
+Основные имена Lua API нейтральны к сценарию применения. Прежние экспорты сохранены в движке и Modular UI для существующих скриптов:
+
+| Прежнее имя | Основное имя |
+| --- | --- |
+| `SetFlashlight` | `SetLightEffect` |
+| `SetFlashlightPosition` | `SetLightEffectPosition` |
+| `SetFlashlightIsolation` | `SetLightEffectIsolation` |
+| `SetFlashlightMask` | `SetLightEffectMask` |
+| `SetFlashlightMaskPosition` | `SetLightEffectMaskPosition` |
+| `SetFlashlightSurfaceColor` | `SetLightEffectSurfaceColor` |
+| `SetFlashlightVolume` | `SetVolumetricLight` |
+| `SetFlashlightVolumeNearClip` | `SetVolumetricLightNearClip` |
+| `SetFlashlightVolumeColor` | `SetVolumetricLightColor` |
+| `SetFlashlightVolumeNoise` | `SetVolumetricLightNoise` |
+| `SetFlashlightDust` | `SetDust` |
+| `SetFlashlightDustColor` | `SetDustColor` |
+| `SetFlashlightDustIntensity` | `SetDustIntensity` |
+| `SetFlashlightDustAnimation` | `SetDustAnimation` |
+| `GetFlashlightEnabled` | `GetLightEffectEnabled` |
+
+`SetFlashlightInterference(enabled, strength)` сохраняет прежний контракт: `strength` — потеря мощности в диапазоне `0..0.9`, а не новая интенсивность. Например, `(true, 0.6)` соответствует `SetLightEffectIntensity(0.4)`, `(false, ...)` — интенсивности `1`. Для нового кода используй `SetLightEffectIntensity(intensity)`.
+
+Новые имена требуют пересборки `xrUI`; соответствующие XML-узлы `flashlight`, `flashlight_mask`, `flashlight_volume`, `flashlight_dust` сохраняют прежние имена и формат.
 
 ### Примеры использований:
 
 ```lua
 --// Включить или отключить обработку и задать параметры затемнения и процедурного пятна.
-control:SetFlashlight(true, 300, 0.8, 0.3, 0.9, 0.65)
+control:SetLightEffect(true, 300, 0.8, 0.3, 0.9, 0.65)
 --// Задать текстурную маску света, её размеры, масштаб и источник координат.
-control:SetFlashlightMask([[ui\effects\soft_mask]], 0, 0, 400, 400, 1, true)
+control:SetLightEffectMask([[ui\effects\soft_mask]], 0, 0, 400, 400, 1, true)
 --// Задать мгновенную просадку мощности света; расписание задаёт скрипт.
-control:SetFlashlightInterference(false, 0)
+control:SetLightEffectIntensity(1)
 ```
 
 Собственное затенение ребёнка пока не заменяет родительское: при включении обработки на обоих контейнерах эффекты выполняются последовательно. Наследование индивидуальных коэффициентов без суммирования не реализовано.

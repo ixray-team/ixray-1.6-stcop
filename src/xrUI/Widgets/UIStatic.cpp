@@ -826,7 +826,7 @@ void CUIStatic::ApplyTextureBlendMask()
 	}
 }
 
-void CUIStatic::SetFlashlightMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition)
+void CUIStatic::SetLightEffectMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition)
 {
 	const shared_str Name = Texture ? Texture : "";
 	if (Name != FlashlightMaskName)
@@ -841,21 +841,21 @@ void CUIStatic::SetFlashlightMask(const char* Texture, float X, float Y, float W
 			FlashlightMaskShader->destroy();
 		}
 	}
-	SetFlashlightMaskPosition(X, Y);
+	SetLightEffectMaskPosition(X, Y);
 	FlashlightMaskWidth = std::isfinite(Width) ? std::clamp(Width, 0.0f, 8192.0f) : 400.0f;
 	FlashlightMaskHeight = std::isfinite(Height) ? std::clamp(Height, 0.0f, 8192.0f) : 400.0f;
 	FlashlightMaskScale = std::isfinite(Scale) ? std::clamp(Scale, 0.0f, 64.0f) : 1.0f;
 	FlashlightMaskUseMouse = IsUseMousePosition;
 }
 
-void CUIStatic::SetFlashlightMaskPosition(float X, float Y)
+void CUIStatic::SetLightEffectMaskPosition(float X, float Y)
 {
 	FlashlightMaskX = std::isfinite(X) ? std::clamp(X, -8192.0f, 8192.0f) : 0.0f;
 	FlashlightMaskY = std::isfinite(Y) ? std::clamp(Y, -8192.0f, 8192.0f) : 0.0f;
 	FlashlightMaskUseMouse = false;
 }
 
-void CUIStatic::SetFlashlightVolume(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps)
+void CUIStatic::SetVolumetricLight(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps)
 {
 	Flashlight.VolumeEnabled = Enabled;
 	Flashlight.SourceX = std::isfinite(SourceX) ? std::clamp(SourceX, -8192.0f, 8192.0f) : 1100.0f;
@@ -865,7 +865,7 @@ void CUIStatic::SetFlashlightVolume(bool Enabled, float SourceX, float SourceY, 
 	Flashlight.VolumeSteps = std::clamp(Steps, 8, 64);
 }
 
-void CUIStatic::SetFlashlightVolumeColor(float Red, float Green, float Blue)
+void CUIStatic::SetVolumetricLightColor(float Red, float Green, float Blue)
 {
 	const auto Channel = [](float Value) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f; };
 	Flashlight.VolumeRed = Channel(Red);
@@ -873,7 +873,7 @@ void CUIStatic::SetFlashlightVolumeColor(float Red, float Green, float Blue)
 	Flashlight.VolumeBlue = Channel(Blue);
 }
 
-void CUIStatic::SetFlashlightDustColor(float Red, float Green, float Blue)
+void CUIStatic::SetDustColor(float Red, float Green, float Blue)
 {
 	const auto Channel = [](float Value) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f; };
 	Flashlight.DustRed = Channel(Red);
@@ -881,7 +881,7 @@ void CUIStatic::SetFlashlightDustColor(float Red, float Green, float Blue)
 	Flashlight.DustBlue = Channel(Blue);
 }
 
-void CUIStatic::SetFlashlightSurfaceColor(float Red, float Green, float Blue)
+void CUIStatic::SetLightEffectSurfaceColor(float Red, float Green, float Blue)
 {
 	const auto Channel = [](float Value) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : 1.0f; };
 	Flashlight.SurfaceRed = Channel(Red);
@@ -889,12 +889,12 @@ void CUIStatic::SetFlashlightSurfaceColor(float Red, float Green, float Blue)
 	Flashlight.SurfaceBlue = Channel(Blue);
 }
 
-void CUIStatic::SetFlashlightDustIntensity(float Intensity)
+void CUIStatic::SetDustIntensity(float Intensity)
 {
 	Flashlight.DustIntensity = std::isfinite(Intensity) ? std::clamp(Intensity, 0.0f, 8.0f) : 1.0f;
 }
 
-void CUIStatic::SetFlashlightVolumeNoise(bool Enabled, float Scale, float Speed, float Amount)
+void CUIStatic::SetVolumetricLightNoise(bool Enabled, float Scale, float Speed, float Amount)
 {
 	Flashlight.VolumeNoiseEnabled = Enabled;
 	Flashlight.VolumeNoiseScale = std::isfinite(Scale) ? std::clamp(Scale, 1.0f, 1024.0f) : 120.0f;
@@ -902,12 +902,12 @@ void CUIStatic::SetFlashlightVolumeNoise(bool Enabled, float Scale, float Speed,
 	Flashlight.VolumeNoiseAmount = std::isfinite(Amount) ? std::clamp(Amount, 0.0f, 1.0f) : 0.75f;
 }
 
-void CUIStatic::SetFlashlightVolumeNearClip(float DistancePixels)
+void CUIStatic::SetVolumetricLightNearClip(float DistancePixels)
 {
 	Flashlight.VolumeNearClipPixels = std::isfinite(DistancePixels) ? std::clamp(DistancePixels, 0.0f, 16384.0f) : 0.0f;
 }
 
-void CUIStatic::SetFlashlightDust(bool Enabled, int Count, float Size, float Speed, float Opacity)
+void CUIStatic::SetDust(bool Enabled, int Count, float Size, float Speed, float Opacity)
 {
 	Flashlight.DustEnabled = Enabled;
 	Flashlight.DustCount = std::clamp(Count, 0, 2048);
@@ -916,17 +916,23 @@ void CUIStatic::SetFlashlightDust(bool Enabled, int Count, float Size, float Spe
 	Flashlight.DustOpacity = std::isfinite(Opacity) ? std::clamp(Opacity, 0.0f, 1.0f) : 0.16f;
 }
 
-void CUIStatic::SetFlashlightIsolation(bool Enabled)
+void CUIStatic::SetLightEffectIsolation(bool Enabled)
 {
 	Flashlight.IsolatedLayer = Enabled;
 }
 
-void CUIStatic::SetFlashlightDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity)
+void CUIStatic::SetDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity)
 {
 	Flashlight.DustAnimationEnabled = Enabled;
 	Flashlight.DustMotionPhase = std::isfinite(MotionPhase) ? std::max(MotionPhase, 0.0f) : 0.0f;
 	Flashlight.DustGlintPhase = std::isfinite(GlintPhase) ? std::max(GlintPhase, 0.0f) : 0.0f;
 	Flashlight.DustGlintIntensity = std::isfinite(GlintIntensity) ? std::clamp(GlintIntensity, 0.0f, 8.0f) : 1.0f;
+}
+
+void CUIStatic::SetLightEffectIntensity(float Intensity)
+{
+	Flashlight.InterferenceEnabled = true;
+	Flashlight.InterferenceStrength = 1.0f - (std::isfinite(Intensity) ? std::clamp(Intensity, 0.0f, 1.0f) : 1.0f);
 }
 
 void CUIStatic::SetFlashlightInterference(bool Enabled, float Strength)
@@ -935,7 +941,7 @@ void CUIStatic::SetFlashlightInterference(bool Enabled, float Strength)
 	Flashlight.InterferenceStrength = std::isfinite(Strength) ? std::clamp(Strength, 0.0f, 0.9f) : 0.0f;
 }
 
-void CUIStatic::SetFlashlight(bool Enabled, float Radius, float Softness, float Darkness, float Saturation, float Multiply)
+void CUIStatic::SetLightEffect(bool Enabled, float Radius, float Softness, float Darkness, float Saturation, float Multiply)
 {
 	const auto Unit = [](float Value, float Fallback) { return std::isfinite(Value) ? std::clamp(Value, 0.0f, 1.0f) : Fallback; };
 	Flashlight.Enabled = Enabled;
@@ -946,7 +952,7 @@ void CUIStatic::SetFlashlight(bool Enabled, float Radius, float Softness, float 
 	Flashlight.Multiply = Unit(Multiply, 0.65f);
 }
 
-void CUIStatic::SetFlashlightPosition(float X, float Y)
+void CUIStatic::SetLightEffectPosition(float X, float Y)
 {
 	Flashlight.X = std::isfinite(X) ? std::clamp(X, -8192.0f, 8192.0f) : 512.0f;
 	Flashlight.Y = std::isfinite(Y) ? std::clamp(Y, -8192.0f, 8192.0f) : 384.0f;

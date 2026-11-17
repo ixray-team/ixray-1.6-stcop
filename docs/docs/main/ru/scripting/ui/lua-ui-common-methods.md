@@ -119,7 +119,7 @@ journal:SetScale(1, 0, 0) -- Возврат к настроенному поло
 ```lua
 local cursor = GetCursorPosition()
 local local_cursor = journal:RootToLocal(cursor)
-journal:SetFlashlightMaskPosition(local_cursor.x, local_cursor.y)
+journal:SetLightEffectMaskPosition(local_cursor.x, local_cursor.y)
 ```
 
 Преобразование центра маски не меняет её заданные экранные размеры: маски бленда и фонарика сохраняют семантику своих методов.

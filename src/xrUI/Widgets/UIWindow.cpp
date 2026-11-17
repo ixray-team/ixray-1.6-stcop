@@ -670,7 +670,7 @@ void CUIWindow::DrawWithTransform(float ComponentOpacity)
 	{
 		Static->ApplyTextureBlendMask();
 	}
-	const bool NeedsLayer = Static && (Static->BorderEnabled || Static->GetFlashlightEnabled());
+	const bool NeedsLayer = Static && (Static->BorderEnabled || Static->GetLightEffectEnabled());
 	if (NeedsLayer)
 	{
 		UI().RenderFont();

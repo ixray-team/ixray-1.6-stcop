@@ -101,24 +101,26 @@ public:
 	virtual void SetBackgroundOpacity(float Value);
 	void SetBorderOpacity(float Value);
 	// Applies once to the composited control and its children, within its bounds.
-	void SetFlashlight(bool Enabled, float Radius, float Softness, float Darkness, float Saturation, float Multiply);
-	void SetFlashlightPosition(float X, float Y);
-	void SetFlashlightIsolation(bool Enabled);
-	void SetFlashlightMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition);
-	void SetFlashlightMaskPosition(float X, float Y);
-	void SetFlashlightVolume(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps);
-	void SetFlashlightVolumeColor(float Red, float Green, float Blue);
-	void SetFlashlightSurfaceColor(float Red, float Green, float Blue);
-	void SetFlashlightDustIntensity(float Intensity);
-	void SetFlashlightDustColor(float Red, float Green, float Blue);
-	void SetFlashlightVolumeNearClip(float DistancePixels);
-	void SetFlashlightVolumeNoise(bool Enabled, float Scale, float Speed, float Amount);
-	void SetFlashlightDust(bool Enabled, int Count, float Size, float Speed, float Opacity);
+	void SetLightEffect(bool Enabled, float Radius, float Softness, float Darkness, float Saturation, float Multiply);
+	void SetLightEffectPosition(float X, float Y);
+	void SetLightEffectIsolation(bool Enabled);
+	void SetLightEffectMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition);
+	void SetLightEffectMaskPosition(float X, float Y);
+	void SetVolumetricLight(bool Enabled, float SourceX, float SourceY, float DistancePixels, float Density, int Steps);
+	void SetVolumetricLightColor(float Red, float Green, float Blue);
+	void SetLightEffectSurfaceColor(float Red, float Green, float Blue);
+	void SetDustIntensity(float Intensity);
+	void SetDustColor(float Red, float Green, float Blue);
+	void SetVolumetricLightNearClip(float DistancePixels);
+	void SetVolumetricLightNoise(bool Enabled, float Scale, float Speed, float Amount);
+	void SetDust(bool Enabled, int Count, float Size, float Speed, float Opacity);
 	// Explicit accumulated phases prevent position jumps when Lua changes flow speed.
-	void SetFlashlightDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity);
-	// Instantaneous brightness loss; Lua schedules and smooths intermittent bursts.
+	void SetDustAnimation(bool Enabled, float MotionPhase, float GlintPhase, float GlintIntensity);
+	// Direct intensity multiplier for surface light, scattering and particles.
+	void SetLightEffectIntensity(float Intensity);
+	// Legacy brightness-loss API retained for Lua compatibility.
 	void SetFlashlightInterference(bool Enabled, float Strength);
-	bool GetFlashlightEnabled() const { return Flashlight.Enabled; }
+	bool GetLightEffectEnabled() const { return Flashlight.Enabled; }
 	void InitAltTexture(const char* Texture);
 	void SetTextureBlendMask(const char* Texture, float X, float Y, float Width, float Height, float Scale, bool IsUseMousePosition);
 	// Switches to manual positioning, relative to this static's top-left corner.
