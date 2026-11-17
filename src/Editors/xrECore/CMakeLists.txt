@@ -17,6 +17,7 @@ file(GLOB_RECURSE ECORE_SOURCE_EDITOR_FILES CONFIGURE_DEPENDS
 file(GLOB_RECURSE ECORE_SOURCE_EDITOR_PUBLIC_FILES CONFIGURE_DEPENDS
 	"../Public/VIMP_Processor.*"
 	"../Public/object_sliding.*"
+	"../Public/MeshOptimizer.*"
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_PROPS_FILES CONFIGURE_DEPENDS
@@ -118,6 +119,12 @@ target_link_libraries(xrECore PRIVATE Vorbis::vorbisfile)
 
 if (WIN32)
 	target_link_libraries(xrECore PUBLIC DirectX::Mesh)
+	# DirectXMesh wrapper does not include the PCH
+	if (MSVC)
+		set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/../Public/MeshOptimizer.cpp" PROPERTIES COMPILE_FLAGS "/Y-" SKIP_PRECOMPILE_HEADERS ON)
+	else()
+		set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/../Public/MeshOptimizer.cpp" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+	endif()
 	target_link_libraries(xrECore PUBLIC DirectX::Tex)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::D3D11)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGI)

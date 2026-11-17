@@ -21,7 +21,9 @@
 #	pragma warning(push)
 #	pragma warning(disable:4995)
 #		include <luabind/luabind.hpp>
-#		include <shlwapi.h>
+#		ifdef IXR_WINDOWS
+#			include <shlwapi.h>
+#		endif
 #	pragma warning(pop)
 
 static SFillPropData			fp_data;

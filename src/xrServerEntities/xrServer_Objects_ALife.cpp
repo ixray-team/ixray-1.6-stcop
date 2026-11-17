@@ -31,9 +31,12 @@
 #	pragma warning(push)
 #	pragma warning(disable:4995)
 #		include <luabind/luabind.hpp>
-#		include <shlwapi.h>
+#		ifdef IXR_WINDOWS
+#			include <shlwapi.h>
+#		endif
 #	pragma warning(pop)
 
+#ifdef IXR_WINDOWS
 // #HACK: Definition copied from <shlwapi.h>
 LWSTDAPI_(int) StrCmpLogicalW(__in LPCWSTR psz1, __in LPCWSTR psz2);
 
@@ -79,6 +82,60 @@ struct logical_string_predicate {
 		return			(StrCmpLogicalW(buffer0, buffer1) < 0);
 	}
 }; // struct logical_string_predicate
+#else
+struct logical_string_predicate {
+	// Natural order like StrCmpLogicalW: digit runs compare by value, the rest case-insensitively
+	static bool NaturalLess(const char* A, const char* B)
+	{
+		while (*A && *B)
+		{
+			if (isdigit((unsigned char)*A) && isdigit((unsigned char)*B))
+			{
+				while (*A == '0')
+					++A;
+				while (*B == '0')
+					++B;
+
+				const char* EndA = A;
+				const char* EndB = B;
+				while (isdigit((unsigned char)*EndA))
+					++EndA;
+				while (isdigit((unsigned char)*EndB))
+					++EndB;
+
+				if ((EndA - A) != (EndB - B))
+					return (EndA - A) < (EndB - B);
+
+				for (; A != EndA; ++A, ++B)
+				{
+					if (*A != *B)
+						return *A < *B;
+				}
+				continue;
+			}
+
+			const int CharA = tolower((unsigned char)*A);
+			const int CharB = tolower((unsigned char)*B);
+			if (CharA != CharB)
+				return CharA < CharB;
+
+			++A;
+			++B;
+		}
+		return *B != 0;
+	}
+
+	bool operator()			(const char* const& first, const char* const& second) const
+	{
+		return			NaturalLess(first, second);
+	}
+
+	bool operator()			(shared_str const& first, shared_str const& second) const
+	{
+		return			NaturalLess(first.c_str(), second.c_str());
+	}
+}; // struct logical_string_predicate
+#endif // IXR_WINDOWS
 
 #endif // XRSE_FACTORY_EXPORTS
 

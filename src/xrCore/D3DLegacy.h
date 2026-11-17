@@ -300,15 +300,16 @@ typedef enum _D3DTEXTURETRANSFORMFLAGS {
 	D3DTTFF_COUNT3 = 3,
 } D3DTEXTURETRANSFORMFLAGS;
 
-typedef DWORD D3DCOLOR;
+#define D3DCOLOR unsigned int
 
-typedef struct _D3DVERTEXELEMENT9 {
-	WORD Stream;
-	WORD Offset;
-	BYTE Type;
-	BYTE Method;
-	BYTE Usage;
-	BYTE UsageIndex;
+typedef struct _D3DVERTEXELEMENT9 
+{
+	unsigned short Stream;
+	unsigned short Offset;
+	unsigned char Type;
+	unsigned char Method;
+	unsigned char Usage;
+	unsigned char UsageIndex;
 } D3DVERTEXELEMENT9;
 
 #define D3DCOLORWRITEENABLE_ALPHA 8

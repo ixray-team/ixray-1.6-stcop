@@ -162,6 +162,7 @@ bool CToastNotify::ShowFallback(const std::wstring& title, const std::wstring& m
 		{
 			return {};
 		}
+#ifdef IXR_WINDOWS
 		const int size = WideCharToMultiByte(CP_UTF8, 0, w.c_str(), (int)w.size(), nullptr, 0, nullptr, nullptr);
 		if (size <= 0)
 		{
@@ -170,6 +171,37 @@ bool CToastNotify::ShowFallback(const std::wstring& title, const std::wstring& m
 		std::string out(size, '\0');
 		WideCharToMultiByte(CP_UTF8, 0, w.c_str(), (int)w.size(), out.data(), size, nullptr, nullptr);
 		return out;
+#else
+		// wchar_t holds UTF-32 code points here
+		std::string out;
+		for (wchar_t Ch : w)
+		{
+			const u32 Code = (u32)Ch;
+			if (Code < 0x80)
+			{
+				out += (char)Code;
+			}
+			else if (Code < 0x800)
+			{
+				out += (char)(0xC0 | (Code >> 6));
+				out += (char)(0x80 | (Code & 0x3F));
+			}
+			else if (Code < 0x10000)
+			{
+				out += (char)(0xE0 | (Code >> 12));
+				out += (char)(0x80 | ((Code >> 6) & 0x3F));
+				out += (char)(0x80 | (Code & 0x3F));
+			}
+			else
+			{
+				out += (char)(0xF0 | (Code >> 18));
+				out += (char)(0x80 | ((Code >> 12) & 0x3F));
+				out += (char)(0x80 | ((Code >> 6) & 0x3F));
+				out += (char)(0x80 | (Code & 0x3F));
+			}
+		}
+		return out;
+#endif
 	};
 
 	const std::string TitleU8 = ToUtf8(title);

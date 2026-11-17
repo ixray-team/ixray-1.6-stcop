@@ -29,13 +29,13 @@ else()
     if(NOT TARGET RedImage::RedImage)
         add_library(RedImage::RedImage INTERFACE IMPORTED)
         set_target_properties(RedImage::RedImage PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${redimage_SOURCE_DIR}/RedImage"
+            INTERFACE_INCLUDE_DIRECTORIES "${redimage_SOURCE_DIR};${redimage_SOURCE_DIR}/RedImage"
             INTERFACE_LINK_LIBRARIES RedImage
         )
 
 
         add_library(NVTT::nvtt INTERFACE IMPORTED)
-        target_link_libraries(NVTT::nvtt INTERFACE RedImage)
+        target_link_libraries(NVTT::nvtt INTERFACE RedImage nvtt)
         
         target_include_directories(NVTT::nvtt INTERFACE 
             "${redimage_SOURCE_DIR}/deps/nvtt/src"

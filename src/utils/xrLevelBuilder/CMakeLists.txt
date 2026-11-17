@@ -81,7 +81,7 @@ if (IXRAY_UTILS_VULKAN)
         message(STATUS "Vulkan ray query enabled: ${Vulkan_VERSION}")
         set(VULKAN_RT_AVAILABLE ON)
     else()
-        message(WARNING "Vulkan requested but the Vulkan SDK (with glslangValidator) was not found!")
+        message(STATUS "Vulkan ray query disabled: the Vulkan SDK (with glslangValidator) was not found")
     endif()
 endif()
 
@@ -128,7 +128,6 @@ target_include_directories(xrLevelBuilder PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrServerEntities/"
     "${IXRAY_SDK_INC}"
     "${XLB_PACKAGES}/directxmesh_desktop_2019.2024.6.5.1/include/"
-    "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/include/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../3rd-party/embree/include/"
 )
 target_link_directories(xrLevelBuilder PRIVATE "${IXRAY_SDK_LIB}/")
@@ -158,7 +157,24 @@ endfunction()
 if (MSVC)
     xlb_precompiled_header(xrLC "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/StdAfx.h" "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/StdAfx.cpp" ${XLC_SOURCE_FILES})
     xlb_precompiled_header(xrAI "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/StdAfx.h" "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/StdAfx.cpp" ${XAI_SOURCE_FILES})
+else()
+    # Headers rely on the part's StdAfx.h being force-included, as /FI does on MSVC
+    function(xlb_force_include Header)
+        set(Sources ${ARGN})
+        list(FILTER Sources INCLUDE REGEX "\\.cpp$")
+        set_source_files_properties(${Sources} PROPERTIES COMPILE_OPTIONS "-include;${Header}")
+    endfunction()
+
+    xlb_force_include("${CMAKE_CURRENT_SOURCE_DIR}/xrLC/StdAfx.h" ${XLC_SOURCE_FILES})
+    xlb_force_include("${CMAKE_CURRENT_SOURCE_DIR}/xrAI/StdAfx.h" ${XAI_SOURCE_FILES})
 endif()
+
+# DirectXMesh wrapper: built without the parts' StdAfx.h, see MeshOptimizer.h
+target_sources(xrLevelBuilder PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../Editors/Public/MeshOptimizer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../Editors/Public/MeshOptimizer.h"
+)
+source_group("xrLC/Editor" FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Editors/Public/MeshOptimizer.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/../../Editors/Public/MeshOptimizer.h")
 
 # Apply GPU tracers
 if (OPTIX_AVAILABLE OR VULKAN_RT_AVAILABLE)
@@ -244,14 +260,15 @@ target_link_libraries(xrLevelBuilder PRIVATE
     NvMender2003
     NvTriStrip
     embree
-    "rpcrt4.lib"
-    "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.lib"
+    DirectX::Mesh
     #"${XLB_EMBREE}/runtimes/win-x64/native/Release/embree4.lib"
 )
 
 if (WIN32)
-    target_link_libraries(xrLevelBuilder PRIVATE DirectX::Mesh)
+    target_link_libraries(xrLevelBuilder PRIVATE "rpcrt4.lib")
     target_link_libraries(xrLevelBuilder PRIVATE WindowsSDK::WinMM)
+else()
+    target_link_libraries(xrLevelBuilder PRIVATE RedImage::RedImage)
 endif()
 
 #add_custom_command(TARGET xrLevelBuilder POST_BUILD

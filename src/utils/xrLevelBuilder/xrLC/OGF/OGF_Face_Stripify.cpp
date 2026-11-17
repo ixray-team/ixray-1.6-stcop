@@ -3,7 +3,7 @@
 #include "OGF_Face.h"
 #include "NvTriStrip.h"
 #include "VertexCache.h"
-#include <DirectXMesh.h>
+#include "../../../../Editors/Public/MeshOptimizer.h"
 #include "../../UI/CompilersUI.h"
 
 int xrSimulate (xr_vector<u16> &indices, int iCacheSize )
@@ -70,14 +70,8 @@ void OGF::Stripify()
 		{
 			xr_vector<u32> remap(fast_path_data.faces.size());
 
-			HRESULT rhr = DirectX::OptimizeFacesLRU
-			(
-				&fast_path_data.faces.front().v[0],
-				fast_path_data.faces.size(),
-				remap.data()
-			);
-
-			R_CHK(rhr);
+			const bool Optimized = MeshOptimizer::OptimizeFacesLRU(&fast_path_data.faces.front().v[0], fast_path_data.faces.size(), remap.data());
+			R_ASSERT(Optimized);
 
 			vecOGF_F _source = fast_path_data.faces;
 			for (u32 it = 0; it < _source.size(); ++it)
@@ -90,15 +84,8 @@ void OGF::Stripify()
 		{
 			xr_vector<u32> remap(fast_path_data.vertices.size());
 
-			HRESULT rhr = DirectX::OptimizeVertices
-			(
-				&fast_path_data.faces.front().v[0],
-				fast_path_data.faces.size(),
-				fast_path_data.vertices.size(),
-				remap.data()
-			);
-
-			R_CHK(rhr);
+			const bool Optimized = MeshOptimizer::OptimizeVertices(&fast_path_data.faces.front().v[0], fast_path_data.faces.size(), fast_path_data.vertices.size(), remap.data());
+			R_ASSERT(Optimized);
 
 			vec_XV _source = fast_path_data.vertices;
 			for (u32 it = 0; it < _source.size(); ++it)

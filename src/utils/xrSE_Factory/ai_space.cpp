@@ -6,7 +6,7 @@
 //	Description : AI space class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 

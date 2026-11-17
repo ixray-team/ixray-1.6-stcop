@@ -56,3 +56,28 @@ namespace Platform
         dlclose(Library);
     }
 }
+
+namespace Platform
+{
+    // No address-space walk here: the resident set is reported as committed memory
+    inline void GetVirtualMemoryInfo(size_t* Free, size_t* Reserved, size_t* Committed)
+    {
+        *Free = *Reserved = *Committed = 0;
+
+        FILE* Statm = fopen("/proc/self/statm", "r");
+        if (Statm == nullptr)
+        {
+            return;
+        }
+
+        unsigned long long TotalPages = 0;
+        unsigned long long ResidentPages = 0;
+        if (fscanf(Statm, "%llu %llu", &TotalPages, &ResidentPages) == 2)
+        {
+            const size_t PageSize = (size_t)sysconf(_SC_PAGESIZE);
+            *Committed = (size_t)ResidentPages * PageSize;
+            *Reserved = (size_t)(TotalPages - ResidentPages) * PageSize;
+        }
+        fclose(Statm);
+    }
+}

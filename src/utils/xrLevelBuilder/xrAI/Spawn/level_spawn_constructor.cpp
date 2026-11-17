@@ -10,7 +10,7 @@
 #include "level_spawn_constructor.h"
 #include "../Graph/level_graph.h"
 #include "../Graph/graph_engine.h"
-#include "xrmessages.h"
+#include "xrMessages.h"
 #include "xrServer_Objects_ALife_All.h"
 #include "../factory_api.h"
 #include "clsid_game.h"

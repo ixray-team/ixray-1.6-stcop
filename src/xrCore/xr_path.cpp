@@ -78,7 +78,7 @@ bool CFilePath::exists(const CFilePath& Path)
 XRCORE_API CFilePath operator/(const CFilePath& _Left, const CFilePath& _Right)
 {
 	CFilePath Path = _Left;
-	Path += "\\";
+	Path += std::filesystem::path::preferred_separator;
 	Path += _Right;
 
 	return std::move(Path);

@@ -1,5 +1,5 @@
 #pragma once
-#include <execution>
+#include <tbb/parallel_sort.h>
 
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../Build/Build.h"
@@ -113,7 +113,7 @@ public:
         //----------------------
         // 2. Сортируем вершины
         //----------------------
-        std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
+        tbb::parallel_sort(temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
         {
             if (a.v.x != b.v.x)
             {
@@ -198,7 +198,7 @@ public:
             Temp.emplace_back(triangles[Index], static_cast<uint32_t>(Index));
         }
 
-        std::sort(std::execution::par, Temp.begin(), Temp.end());
+        tbb::parallel_sort(Temp.begin(), Temp.end());
 
         xr_vector<CDB::TRI> NewFaces;
         xr_vector<void*> NewDummies;

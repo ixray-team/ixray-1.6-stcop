@@ -27,6 +27,11 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 	endif()
 
     add_subdirectory("embree")
+    foreach(EmbreeTarget embree lexers math simd sys tasking)
+        if(TARGET ${EmbreeTarget})
+            set_target_properties(${EmbreeTarget} PROPERTIES FOLDER "3rd Party/Embree Lib")
+        endif()
+    endforeach()
     
     if (IXRAY_ENABLE_RESONANCEAUDIO)
         add_subdirectory("resonance-audio")

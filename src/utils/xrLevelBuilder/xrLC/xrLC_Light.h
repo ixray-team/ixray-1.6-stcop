@@ -22,7 +22,8 @@ static const int	idx2edge	[3][3]  = {
 extern XRLC_LIGHT_API bool g_using_smooth_groups;
 extern XRLC_LIGHT_API bool g_smooth_groups_by_faces;
 
-extern "C"	XRLC_LIGHT_API  b_params	&g_params();
+// C++ linkage: a C symbol "g_params" would clash with xrAI's SAIParams g_params on ELF
+XRLC_LIGHT_API b_params	&g_params();
 
 IC	u8	u8_clr				(float a)	{ s32 _a = iFloor(a*255.f); clamp(_a,0,255); return u8(_a);		};
 

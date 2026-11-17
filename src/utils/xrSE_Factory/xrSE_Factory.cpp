@@ -82,11 +82,6 @@ FACTORY_API void SEFactoryDestroy()
 	xr_delete(g_object_factory);
 }
 
-BOOL APIENTRY DllMain(HANDLE, DWORD, LPVOID)
-{
-	return (true);
-}
-
 void _destroy_item_data_vector_cont(T_VECTOR* vec)
 {
 	T_VECTOR::iterator it = vec->begin();

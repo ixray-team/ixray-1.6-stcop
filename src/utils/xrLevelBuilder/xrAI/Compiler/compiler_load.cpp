@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "compiler.h"
 #include "../../../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
-#include "levelgamedef.h"
+#include "LevelGameDef.h"
 #include "../Graph/level_graph.h"
 #include "../AIMapExport.h"
 #include "xrCore/SharedMaterialLibrary.h"
@@ -111,6 +111,6 @@ void xrLoad(const char* name, bool draft_mode)
 		F->close();
 
 		if (strstr(Core.Params, "-clear_temp_files"))
-			DeleteFileA(file_name);
+			FS.file_delete(file_name);
 	}
 }

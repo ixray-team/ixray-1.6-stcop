@@ -91,7 +91,7 @@ void ImplicitDeflector::SaveTextures()
 		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
 		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
-		BYTE* raw_data = LPBYTE(*TEX.pSurface);
+		u8* raw_data = (u8*)(*TEX.pSurface);
 		u32	w = TEX.dwWidth;
 		u32	h = TEX.dwHeight;
 		u32	pitch = w * 4;
@@ -130,7 +130,7 @@ void ImplicitDeflector::SaveTextures()
 			xr_vector<u32> packed;
 			lmap.Pack(packed);
 
-			BYTE* raw_data = LPBYTE(&*packed.begin());
+			u8* raw_data = (u8*)(&*packed.begin());
 			u32	w = TEX.dwWidth;
 			u32	h = TEX.dwHeight;
 			u32	pitch = w * 4;
@@ -141,7 +141,7 @@ void ImplicitDeflector::SaveTextures()
 			xr_vector<u32> packed(4 * 4);
 			for (auto& C : packed)
 				C = color_rgba(0, 0, 0, 255);
- 			BYTE* raw_data = LPBYTE(&*packed.begin());
+ 			u8* raw_data = (u8*)(&*packed.begin());
 			u32 w = 4, h = 4, pitch = w * 4;
  			DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
 		}

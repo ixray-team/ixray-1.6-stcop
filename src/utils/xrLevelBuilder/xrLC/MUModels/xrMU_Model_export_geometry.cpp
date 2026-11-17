@@ -99,7 +99,7 @@ void	export_geometry		( xrMU_Model &	mu_model )
 		}
 
 		// Indices
-		g_IB.Register	(LPWORD(m_subdiv.ogf->data.faces.data()),LPWORD(m_subdiv.ogf->data.faces.data() + m_subdiv.ogf->data.faces.size()),&m_subdiv.ib_id,&m_subdiv.ib_start);
+		g_IB.Register	((u16*)(m_subdiv.ogf->data.faces.data()),(u16*)(m_subdiv.ogf->data.faces.data() + m_subdiv.ogf->data.faces.size()),&m_subdiv.ib_id,&m_subdiv.ib_start);
 
 		// SW
 		if (m_subdiv.ogf->progressive_test())

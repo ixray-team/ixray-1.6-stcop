@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "shapedata.h"
+#include "ShapeData.h"
 
 class CSE_ALifeSpaceRestrictor;
 class CLevelGraph;

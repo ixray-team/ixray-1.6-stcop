@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include <tbb/combinable.h>
+#include <tbb/concurrent_vector.h>
 #include "Build.h"
 #include "xrLC_GlobalData.h"
 #include "../Mesh/xrFace.h"
@@ -43,7 +45,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 	std::unordered_map<_mat_key, size_t> matToIndex;
  
 	// Локальные хранилища для потоков -> потом сведём в общий map
-	concurrency::combinable<std::unordered_map<_mat_key, u32>> localCounts;
+	tbb::combinable<std::unordered_map<_mat_key, u32>> localCounts;
 
  	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
 		{
@@ -76,7 +78,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 	}
 
 	// Performing Subdivs
-	concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> bins;
+	tbb::concurrent_vector<tbb::concurrent_vector<Face*>> bins;
 	bins.reserve(count.size());
 	bins.resize(count.size());
  	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)

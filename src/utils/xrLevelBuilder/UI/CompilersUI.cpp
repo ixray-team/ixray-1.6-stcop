@@ -4,7 +4,7 @@
 #include "CompilersUI.h"
 #include "../Common/cl_log.h"
 #include "GameLevelsRegistry.h"
-#include <timeapi.h>
+#include <SDL3/SDL_timer.h>
 #include <algorithm>
 
 #include "xrLevel.h"
@@ -418,11 +418,13 @@ void RenderMainUI()
 	};
 
 	int Size[2] = {};
+	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 	if (Size[0] != 1100 || Size[1] != 700)
 	{
+		// Resize only on mismatch: X11 window managers move the window on every resize request
 		SDL_SetWindowSize(g_AppInfo.Window, 1100, 700);
+		SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 	}
-	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 
 	ImGui::SetNextWindowPos({0, 0});
 	ImGui::SetNextWindowSize({(float)Size[0], (float)Size[1]});
@@ -1509,7 +1511,7 @@ void RenderCompilerUI(int X, int Y)
 
 				if (phase.status != Complete)
 				{
-					u32 dwCurrentTime = timeGetTime();
+					u32 dwCurrentTime = (u32)SDL_GetTicks();
 					u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
 					u32 secElapsed = dwTimeDiff / 1000;
 					u32 secRemain = u32(float(secElapsed) / PerS) - secElapsed;

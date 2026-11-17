@@ -1,9 +1,7 @@
 #include "StdAfx.h"
 #include "xrDXT.h"
 
-#ifdef IXR_WINDOWS
 #include <RedImage/RedImage.hpp>
-#endif
 
 #include "../../xrEngine/ETextureParams.h"
 
@@ -79,7 +77,6 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 			case STextureParams::kMIPFilterTriangle:
 			case STextureParams::kMIPFilterKaiser:
 			{
-#ifdef IXR_WINDOWS
 				if (fmt->fmt == STextureParams::tfBC7)
 				{
 					// FX: Dirty hack for nvtt
@@ -88,7 +85,13 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 					int RetCode = DXTCompressImageNVTT(out_name, raw_data, w, h, pitch, fmt, depth);
 					fmt->fmt = STextureParams::tfBC7;
 
-					if (!DXTCompressBC7GPU(out_name))
+#ifdef IXR_WINDOWS
+					const bool CompressedOnGPU = DXTCompressBC7GPU(out_name);
+#else
+					// NVTT has no BC7 encoder and the GPU path is D3D11-only
+					const bool CompressedOnGPU = false;
+#endif
+					if (!CompressedOnGPU)
 					{
 						RedImageTool::RedImage Img;
 						Img.LoadFromFile(out_name);
@@ -98,7 +101,6 @@ int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_ma
 
 					return RetCode;
 				}
-#endif
 
 				return DXTCompressImageNVTT(out_name, raw_data, w, h, pitch, fmt, depth);
 			}

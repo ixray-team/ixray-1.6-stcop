@@ -8,7 +8,7 @@
 #include "xrLC_GlobalData.h"
 #include "../Light/Lightmap.h"
 #include "../../UI/CompilersUI.h"
-#include <ppl.h>
+#include <tbb/parallel_for.h>
 
 #include <algorithm>
 
@@ -78,7 +78,7 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	ErrorsPlace = 0;
 	MergedCount = 0;
  
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [Layer, lmap](size_t thread_id)
+	tbb::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [Layer, lmap](size_t thread_id)
 	{
 		static xrCriticalSection IndexLock;
 		while (true)

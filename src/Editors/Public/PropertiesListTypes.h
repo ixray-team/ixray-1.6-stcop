@@ -43,6 +43,7 @@ class PropValue;
 class PropItem;
 using PropItemVec = xr_vector<PropItem*>;
 using PropItemIt = PropItemVec::iterator;
+class UIPropertiesForm;
 
 
 //------------------------------------------------------------------------------

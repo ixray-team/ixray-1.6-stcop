@@ -89,7 +89,7 @@ RTCBVH CDB::BuildModel(const BuilderConfig& config)
 	}
 	xr_vector<RTCBuildPrimitive> Primitives;
 	
-	size_t i = 0;
+	u32 i = 0;
 	if (config.Faces)
 	{
 		for (auto& Face : *config.Faces)

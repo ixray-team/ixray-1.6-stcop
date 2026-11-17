@@ -44,17 +44,19 @@ if (WIN32)
     list(FILTER SEF_SRC_FILES EXCLUDE REGEX "../../xrScripts/luasocket/usocket*.*")
 else()
     list(FILTER SEF_SRC_FILES EXCLUDE REGEX "../../xrScripts/luasocket/wsocket*.*")
+    # Remote script debugger is built on Win32 events and threads
+    list(FILTER SEF_SRC_FILES EXCLUDE REGEX "script_debugger_utils\.")
 endif()
 
 # xrSE_Factory project
 add_library(xrSE_Factory SHARED ${SEF_SRC_FILES})
 
 # XREFLECT Lua bindings for the xrScripts and xrServerEntities sources built into this module
-ixray_reflect_lua(xrSE_Factory xrSE_Factory PCH "stdafx.h" SOURCES ${SEF_SRC_FILES})
+ixray_reflect_lua(xrSE_Factory xrSE_Factory PCH "StdAfx.h" SOURCES ${SEF_SRC_FILES})
 target_include_directories(xrSE_Factory PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrSE_Factory PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_include_directories(xrSE_Factory PRIVATE "../../xrServerEntities/")
-target_precompile_headers(xrSE_Factory PRIVATE "stdafx.h")
+target_precompile_headers(xrSE_Factory PRIVATE "StdAfx.h")
 
 # Disable pch for *.c
 foreach(scr_file ${SEF_SOURCE_SCR_FILES})

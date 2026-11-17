@@ -168,8 +168,8 @@ void EmbreeRayTraceModel::RaytrraceRayPack(xr_vector<RayTask>& rays)
 		args.context = &ctxt;
 		args.flags = RTC_RAY_QUERY_FLAG_COHERENT;
 
-		thread_local alignas(32) RTCRay8 rays8;
-		thread_local alignas(32) int valid[8];
+		alignas(32) thread_local RTCRay8 rays8;
+		alignas(32) thread_local int valid[8];
 		for (u32 rayID = 0; rayID < rays.size(); rayID += 8)
 		{
 			for (auto i = 0; i < 8; i++)

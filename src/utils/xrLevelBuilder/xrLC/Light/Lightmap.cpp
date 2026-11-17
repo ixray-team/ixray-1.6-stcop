@@ -160,7 +160,7 @@ void CLightmap::Save(LPCSTR path)
 			u32	h = lm_texture.dwHeight; 
 			u32	pitch = w * 4;
 
-			BYTE* raw_data = LPBYTE(&*lm_packed.begin());
+			u8* raw_data = (u8*)(&*lm_packed.begin());
 			DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
 		}
 		else
@@ -169,7 +169,7 @@ void CLightmap::Save(LPCSTR path)
 			for (auto& C : colors)
 				C = color_rgba(0, 0, 0, 255);
 
-			BYTE* raw_data = LPBYTE(&*colors.begin());
+			u8* raw_data = (u8*)(&*colors.begin());
 			u32 w = 4, h = 4, pitch = w * 4;
 			DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
 		}
@@ -202,7 +202,7 @@ void CLightmap::Save(LPCSTR path)
 		u32 h = lm_texture.dwHeight;	//lm.height;
 		u32	pitch = w * 4;
 
-		u8* raw_data = LPBYTE(&*hemi_packed.begin());
+		u8* raw_data = (u8*)(&*hemi_packed.begin());
 		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
 	}
 	 

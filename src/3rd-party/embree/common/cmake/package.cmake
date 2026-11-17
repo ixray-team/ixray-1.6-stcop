@@ -324,6 +324,7 @@ ELSE()
 ENDIF()
 
 
+IF (EMBREE_TESTING)
 add_custom_target(
   build ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target package -j8
   COMMAND ${CMAKE_COMMAND} -DPACKAGE_BASENAME=${PACKAGE_BASE_NAME} -DPACKAGE_EXT=${PACKAGE_EXT} -P ${PROJECT_SOURCE_DIR}/scripts/package_build.cmake
@@ -349,3 +350,4 @@ add_custom_target(
   COMMAND cd ${PROJECT_SOURCE_DIR}/tests/integration/test_embree_release && ${CMAKE_COMMAND} --build build --config Release
   COMMAND cd ${PROJECT_SOURCE_DIR}/tests/integration/test_embree_release && ${INTEGRATE_BINARY}
 )
+ENDIF()

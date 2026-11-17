@@ -4,7 +4,6 @@
 #include "UI/CompilersUI.h"
 
 #include <imgui.h>
-#include <timeapi.h>
 
 #include "../../Editors/xrEUI/imgui_impl_sdl3.h"
 #include "UI/imgui_impl_sdlrenderer3.h"
@@ -609,7 +608,7 @@ void Startup(LPSTR lpCmdLine)
 			// <<< UX-PROGRESS
 
 			GetActiveIteration()->status = InProgress;
-			u32 dwTime = timeGetTime();
+			u32 dwTime = (u32)SDL_GetTicks();
 			Phase(phase);
 
 			if (Type == LCBuildingType::eLC)
@@ -625,7 +624,7 @@ void Startup(LPSTR lpCmdLine)
 				StartupAI();
 			}
 
-			dwTime = (timeGetTime() - dwTime) / 1000;
+			dwTime = ((u32)SDL_GetTicks() - dwTime) / 1000;
 
 			GetActiveIteration()->status = Complete;
 			GetActiveIteration()->elapsed_time = dwTime;
@@ -955,11 +954,24 @@ void SaveCompilerCfg()
 	Serializer->Save();
 }
 
-__declspec(dllimport) void SEFactoryEntry();
-__declspec(dllimport) void SEFactoryDestroy();
+void SEFactoryEntry();
+void SEFactoryDestroy();
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int ENTRY_FUNCTION(ENTRY_ARGS)
 {
+#ifndef IXR_WINDOWS
+	// Windows fills Core.Params from GetCommandLine; elsewhere build it from argv
+	xr_string CommandLine;
+	for (int i = 1; i < argc; ++i)
+	{
+		CommandLine += argv[i];
+		CommandLine += " ";
+	}
+	xr_strcpy(Core.Params, sizeof(Core.Params), CommandLine.c_str());
+	xr_strlwr(Core.Params);
+	char* lpCmdLine = CommandLine.data();
+#endif
+
 	Debug._initialize(false);
 
 	const char* fsgame_ltx_name = "-fsltx ";

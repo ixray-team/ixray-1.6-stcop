@@ -4,6 +4,7 @@
 #include "../xrLC/Light/LightingBackend.h"
  
 #include "../UI/CompilersUI.h"
+#include <SDL3/SDL_messagebox.h>
 extern CompilersMode gCompilerMode;
 
 
@@ -39,7 +40,7 @@ void StartupLC()
 		{
 			xr_sprintf(inf, "Build failed!\n! Can't find level: '%s'", Name.data());
 			clMsg(inf);
-			MessageBoxA(nullptr, inf, "Error!", MB_OK | MB_ICONERROR);
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error!", inf, nullptr);
 			return;
 		}
 

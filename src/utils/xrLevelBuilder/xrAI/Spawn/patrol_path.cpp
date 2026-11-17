@@ -8,7 +8,7 @@
 
 #include "StdAfx.h"
 #include "patrol_path.h"
-#include "levelgamedef.h"
+#include "LevelGameDef.h"
 
 const char* TEST_PATROL_PATH_NAME		= "val_dogs_nest4_centre";
 

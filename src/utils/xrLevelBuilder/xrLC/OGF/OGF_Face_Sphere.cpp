@@ -6,7 +6,7 @@
 
 bool	f_valid		(float f)
 {
-	return _finite(f) && !_isnan(f);
+	return std::isfinite(f);
 }
 
 bool	SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)

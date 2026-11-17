@@ -18,7 +18,6 @@
 #include "xr_graph_merge.h"
 #include "../Spawn/level_spawn_constructor.h"
 #include "game_graph_builder.h"
-#include <direct.h>
 #include <random>
 
 #include "../../../../xrCore/Save/SaveManager.h"

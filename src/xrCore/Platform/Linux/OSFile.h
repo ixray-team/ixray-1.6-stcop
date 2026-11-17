@@ -337,11 +337,21 @@ namespace Platform
         return (size_t)bytesRead;
     }
 
-    IC void GetAbsolutePath(char* in_path, char* out_buffer, [[maybe_unused]] size_t BufferSize)
+    // Same argument order as _fullpath: in_path receives the absolute form of out_buffer
+    IC void GetAbsolutePath(char* in_path, char* out_buffer, size_t BufferSize)
     {
         char* tmp_path = realpath(out_buffer, 0);
-        strcpy(in_path, tmp_path);
-        free(tmp_path);
+        if (tmp_path != nullptr)
+        {
+            snprintf(in_path, BufferSize, "%s", tmp_path);
+            free(tmp_path);
+            return;
+        }
+
+        // realpath fails for paths that do not exist yet; _fullpath does not
+        std::error_code Error;
+        const std::string Absolute = std::filesystem::absolute(out_buffer, Error).lexically_normal().string();
+        snprintf(in_path, BufferSize, "%s", Error ? out_buffer : Absolute.c_str());
     }
 }
 

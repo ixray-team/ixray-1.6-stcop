@@ -1,8 +1,8 @@
 # A static mimalloc inside libxrCore freed memory that other dylibs allocated with the
 # system allocator, and the engine died in mi_free within seconds of startup.
-if(APPLE)
+if(APPLE OR LINUX)
     set(IXRAY_MIMALLOC_AVAILABLE FALSE)
-    message(STATUS "Engine heap: CRT (mimalloc disabled on macOS)")
+    message(STATUS "Engine heap: CRT (mimalloc disabled on macOS and Linux)")
     return()
 endif()
 set(IXRAY_MIMALLOC_AVAILABLE TRUE)

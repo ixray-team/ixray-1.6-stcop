@@ -6,7 +6,7 @@
 //	Description : Script properties list helper
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "script_properties_list_helper.h"
 #include "../xrScripts/exports/script_token_list.h"
 #include "xrServer_Object_Base.h"

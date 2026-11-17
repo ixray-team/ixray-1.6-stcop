@@ -52,23 +52,20 @@ SEFactory_SetSpawnWriteVersion* set_spawn_write_version = nullptr;
 static HMODULE hFactory;
 
 void InitialFactory() {
-	const char* g_name = "xrSE_Factory.dll";
-	Msg("Loading DLL: %s", g_name);
-	hFactory = LoadLibraryA(g_name);
-
-	if (0 == hFactory)		
-		R_CHK(GetLastError());
+	const char* g_name = "xrSE_Factory";
+	Msg("Loading library: %s", g_name);
+	hFactory = Platform::LoadLibrary(g_name);
 
 	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
 
-	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
-	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
-	set_spawn_write_version = (SEFactory_SetSpawnWriteVersion*)GetProcAddress(hFactory, "set_spawn_write_version");	R_ASSERT(set_spawn_write_version);
+	create_entity = (SEFactory_Create*)Platform::GetAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
+	destroy_entity = (SEFactory_Destroy*)Platform::GetAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
+	set_spawn_write_version = (SEFactory_SetSpawnWriteVersion*)Platform::GetAddress(hFactory, "set_spawn_write_version");	R_ASSERT(set_spawn_write_version);
 }
 
 void DestroyFactory()
 {
-	FreeLibrary(hFactory);
+	Platform::FreeLibrary(hFactory);
 }
  
 void StartupAI()

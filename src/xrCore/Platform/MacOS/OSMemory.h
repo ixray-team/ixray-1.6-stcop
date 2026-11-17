@@ -64,3 +64,12 @@ namespace Platform
         dlclose(Library);
     }
 }
+
+namespace Platform
+{
+    // Not implemented on this platform
+    inline void GetVirtualMemoryInfo(size_t* Free, size_t* Reserved, size_t* Committed)
+    {
+        *Free = *Reserved = *Committed = 0;
+    }
+}

@@ -2,7 +2,7 @@
 #include "EmbreeGeometryBuilder.h"
 #include "../../../../../xrCore/Collision/xrCDB.h"
  
-#include <execution>
+#include <tbb/parallel_sort.h>
 #include <array>
  
 void TriangleContainer::RemoveDublicatesVertexs( )
@@ -31,7 +31,7 @@ void TriangleContainer::RemoveDublicatesVertexs( )
     //----------------------
     // 2. Сортируем вершины
     //----------------------
-    std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
+    tbb::parallel_sort(temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
         {
             if (a.v.x != b.v.x) return a.v.x < b.v.x;
             if (a.v.y != b.v.y) return a.v.y < b.v.y;
@@ -106,7 +106,7 @@ void TriangleContainer::RemoveDublicatesFaces( )
         temp.emplace_back(faces_v[i], static_cast<uint32_t>(i));
     }
 
-    std::sort(std::execution::par, temp.begin(), temp.end());
+    tbb::parallel_sort(temp.begin(), temp.end());
 
     // создаём новые массивы
     xr_vector<Triangle> new_faces;

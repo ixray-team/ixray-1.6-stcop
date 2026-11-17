@@ -338,31 +338,19 @@ void CGameSpawnConstructor::process_actor			(const char* start_level_name)
 
 void clear_temp_folder	()
 {
-	string_path		query;
-	FS.update_path	(query,"$app_data_root$","temp\\*.*");
-	_finddata_t		file;
-	intptr_t		handle = _findfirst(query, &file);
-	if (handle == intptr_t(-1))
-		return;
+	string_path		folder;
+	FS.update_path	(folder,"$app_data_root$","temp");
 
-	typedef xr_vector<shared_str>	FILES;
-	FILES			files;
-	do {
-		if (file.attrib & _A_SUBDIR)
+	std::error_code	Error;
+	for (const std::filesystem::directory_entry& Entry : std::filesystem::directory_iterator(folder, Error))
+	{
+		if (!Entry.is_regular_file())
 			continue;
 
-		files.push_back		(file.name);
-	}
-    while (!_findnext(handle, &file));
-
-	_findclose		(handle);
-
-	FILES::const_iterator	I = files.begin();
-	FILES::const_iterator	E = files.end();
-	for ( ; I != E; ++I) {
-		if (DeleteFileA(**I))
-			Msg		("file %s is successfully deleted",**I);
+		const xr_string	Name = Entry.path().filename().string().c_str();
+		if (std::filesystem::remove(Entry.path(), Error))
+			Msg		("file %s is successfully deleted",Name.c_str());
 		else
-			Msg		("cannot delete file %s",**I);
+			Msg		("cannot delete file %s",Name.c_str());
 	}
 }

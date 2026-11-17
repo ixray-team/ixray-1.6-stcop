@@ -2,8 +2,7 @@
 #include "../../../xrCore/xrCore.h"
 #include "../UI/CompilerTaskbar.h"
 #include <time.h>
-#include <mmsystem.h>
-#include <CommCtrl.h>
+#include <SDL3/SDL_timer.h>
 #include "cl_log.h"
 
 i_lc_log* lc_log = 0;
@@ -125,7 +124,7 @@ void Phase(const char* phase_name)
 {
 	csLog.Enter();
 
-	phase_total_time = timeGetTime() - phase_start_time;
+	phase_total_time = (u32)SDL_GetTicks() - phase_start_time;
 
 	// Start _new phase
 	if (ActiveIteration->phases.size() > 0)
@@ -136,7 +135,7 @@ void Phase(const char* phase_name)
 
 	ActiveIteration->phases.push_back({ phase_name });
 
-	phase_start_time = timeGetTime();
+	phase_start_time = (u32)SDL_GetTicks();
 	Progress(0);
 
 	Msg("\n* New phase started: %s", phase_name);
