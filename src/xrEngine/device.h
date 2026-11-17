@@ -89,6 +89,8 @@ public:
 
 	float									fTimeDeltaSmoothing;
 	float									fTimeDeltaContinual;
+	// Real frame delta in seconds, independent of gameplay pause and time factor.
+	float fTimeDeltaReal = 0.0f;
 	float									fTimeDelta;
 	float									fTimeGlobal;
 	u32										dwTimeDelta;

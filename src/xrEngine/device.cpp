@@ -532,7 +532,15 @@ bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
 	dwFrame++;
-	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
+	const u32 TimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
+	fTimeDeltaReal = 0.0f;
+	if (dwFrame > 1 && b_is_Active)
+	{
+		// Signed subtraction handles counter wrap and discards clock rollback on focus regain.
+		const s32 ElapsedMilliseconds = static_cast<s32>(TimeContinual - dwTimeContinual);
+		fTimeDeltaReal = static_cast<float>(std::max(ElapsedMilliseconds, s32{0})) * 0.001f;
+	}
+	dwTimeContinual = TimeContinual;
 	
 	float dt = 0;
 	
