@@ -393,6 +393,7 @@ void CDialogHolder::CleanInternals()
 
 bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 {
+	GetUICursor().OnInputActivity();
 	xrCriticalSectionGuard Guard(DialogsLock);
 	CUIDialogWnd*	TIR = TopInputReceiver();
 	if(!TIR)				return false;
@@ -402,6 +403,7 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
 		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_DOWN :(dik==MOUSE_2)?WINDOW_RBUTTON_DOWN:WINDOW_CBUTTON_DOWN;
+		GetUICursor().OnMouseButton(dik == MOUSE_1 ? 0 : dik == MOUSE_2 ? 1 : 2, true);
 		if (TIR->DispatchMouseAction(cp.x,cp.y, action))
             return true;
 	}
@@ -503,6 +505,7 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
 		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_UP :(dik==MOUSE_2)?WINDOW_RBUTTON_UP:WINDOW_CBUTTON_UP;
+		GetUICursor().OnMouseButton(dik == MOUSE_1 ? 0 : dik == MOUSE_2 ? 1 : 2, false);
 		if (TIR->DispatchMouseAction(cp.x, cp.y, action))
             return true;
 	}
@@ -554,6 +557,7 @@ bool CDialogHolder::IR_UIOnMouseWheel (int direction)
 	CUIDialogWnd* TIR		= TopInputReceiver();
 	if(!TIR)				return false;
 	if(!TIR->IR_process())	return false;
+	GetUICursor().OnMouseWheel(direction);
 
 	Fvector2 pos			= GetUICursor().GetCursorPosition();
 

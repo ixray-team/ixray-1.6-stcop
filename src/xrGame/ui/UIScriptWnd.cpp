@@ -30,6 +30,14 @@ void CUIDialogWndEx::Register(CUIWindow* pChild, const char* name)
 	Register(pChild);
 }
 
+bool CUIDialogWndEx::HasClickHandlerFor(CUIWindow* Sender)
+{
+	return Sender && (std::any_of(m_callbacks.begin(), m_callbacks.end(), [Sender](const SCallbackInfo* Entry)
+	{
+		return IsClickEvent(Entry->m_event) && (Entry->m_control_ptr ? Entry->m_control_ptr == Sender : Entry->m_control_name == Sender->WindowName());
+	}) || inherited::HasClickHandlerFor(Sender));
+}
+
 void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	event_comparer ec(pWnd,msg);

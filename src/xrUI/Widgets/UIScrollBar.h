@@ -150,6 +150,7 @@ public:
 	bool OnKeyboardHold(int dik) override;
 
 	void Draw() override;
+	void Update() override;
 
 	void SetWidth(float width) override;
 	void SetHeight(float height) override;

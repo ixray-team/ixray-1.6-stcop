@@ -4,6 +4,7 @@
 #include "UIListBoxItem.h"
 #include "../UIXmlInit.h"
 #include "../UIFontDefines.h"
+#include "../UICursor.h"
 
 #define OFFSET_X (5.0f)
 #define OFFSET_Y (5.0f)
@@ -26,6 +27,7 @@ CUIPropertiesBox::CUIPropertiesBox(CUIPropertiesBox* sub_property_box)
 
 CUIPropertiesBox::~CUIPropertiesBox()
 {
+	GetUICursor().SetContextMenu(this, false);
 	R_ASSERT2(!m_sub_property_box || (!m_sub_property_box->IsShown()),
 		"child sub menu is in shown mode - he'll tries to hide this menu");
 
@@ -168,6 +170,7 @@ void CUIPropertiesBox::Show(const Frect& parent_rect, const Fvector2& point)
 
 	inherited::Show					(true);
 	inherited::Enable				(true);
+	GetUICursor().SetContextMenu(this, true);
 
 	ResetAll						();
 
@@ -185,6 +188,7 @@ void CUIPropertiesBox::Show(const Frect& parent_rect, const Fvector2& point)
 
 void CUIPropertiesBox::Hide()
 {
+	GetUICursor().SetContextMenu(this, false);
 	CUIWindow::Show(false);
 	CUIWindow::Enable(false);
 

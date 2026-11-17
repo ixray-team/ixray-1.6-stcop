@@ -126,8 +126,12 @@ void CUIActorMenuBase::InitSlots(CUIXml& uiXml)
 	XML_NODE* node = uiXml.NavigateToNode("inventory_slot_wnd", 0);
 	uiXml.SetLocalRoot(node);
 
-	u8 slot_count = uiXml.GetNodesNum(node, "slot");
-	for (u8 i = 1; i <= slot_count; ++i)
+	const u32 SlotCount = uiXml.GetNodesNum(node, "slot");
+	if (SlotCount > LAST_SLOT)
+	{
+		Msg("! Actor menu XML declares %u slots; engine supports %u", SlotCount, static_cast<u32>(LAST_SLOT));
+	}
+	for (u32 i = 1; i <= std::min(SlotCount, static_cast<u32>(LAST_SLOT)); ++i)
 	{
 		uiXml.SetLocalRoot(node);
 		XML_NODE* slot_node = uiXml.NavigateToNode("slot", i - 1);
@@ -151,6 +155,7 @@ void CUIActorMenuBase::InitSlots(CUIXml& uiXml)
 		AttachChild(m_pInvList[i]);
 		CUIXmlInitGame::InitDragDropListEx(uiXml, "slot_dragdrop", 0, m_pInvList[i]);
 		m_pInvList[i]->SetAutoDelete(true);
+		m_pInvList[i]->SetCursorSlot(true, true);
 
 		BindDragDropListEvents(m_pInvList[i]);
 
@@ -159,6 +164,8 @@ void CUIActorMenuBase::InitSlots(CUIXml& uiXml)
 			m_pInvSlotHighlight[i] = new CUIStatic();
 			AttachChild(m_pInvSlotHighlight[i]);
 			CUIXmlInit::InitStatic(uiXml, "slot_highlight", 0, m_pInvSlotHighlight[i]);
+			// Decorative overlays must not occlude the slot when picking cursor targets.
+			m_pInvSlotHighlight[i]->SetCursorPickTransparent(true);
 			m_pInvSlotHighlight[i]->SetAutoDelete(true);
 			m_pInvSlotHighlight[i]->Show(false);
 		}
@@ -171,6 +178,7 @@ void CUIActorMenuBase::InitSlots(CUIXml& uiXml)
 			m_pInvSlotProgressLegacy[i] = new CUIProgressBar();
 			AttachChild(m_pInvSlotProgressLegacy[i]);
 			CUIXmlInit::InitProgressBar(uiXml, "slot_progress", 0, m_pInvSlotProgressLegacy[i]);
+			m_pInvSlotProgressLegacy[i]->SetCursorPickTransparent(true);
 			m_pInvSlotProgressLegacy[i]->SetAutoDelete(true);
 		}
 
@@ -179,6 +187,7 @@ void CUIActorMenuBase::InitSlots(CUIXml& uiXml)
 			m_pInvSlotProgressPercent[i] = new CUIItemStateDisplay();
 			AttachChild(m_pInvSlotProgressPercent[i]);
 			CUIXmlInit::InitItemStateDisplay(uiXml, "slot_progress_percent", 0, m_pInvSlotProgressPercent[i]);
+			m_pInvSlotProgressPercent[i]->SetCursorPickTransparent(true);
 			m_pInvSlotProgressPercent[i]->SetAutoDelete(true);
 		}
 	}

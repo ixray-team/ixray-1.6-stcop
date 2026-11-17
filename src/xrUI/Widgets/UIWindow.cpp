@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIWindow.h"
+#include "UIWndCallback.h"
 #include "UIDialogHolder.h"
 #include "UIDialogWnd.h"
 #include "../UICursor.h"
@@ -176,6 +177,30 @@ CUIWindow::~CUIWindow()
 #endif
 }
 
+
+bool CUIWindow::IsClickEvent(s16 Event)
+{
+	return Event == BUTTON_CLICKED || Event == STATIC_MOUSE_LEFT_CLICK || Event == STATIC_MOUSE_RIGHT_CLICK || Event == STATIC_MOUSE_DOUBLE_CLICK || Event == LIST_ITEM_CLICKED;
+}
+
+bool CUIWindow::HasClickHandlerFor(CUIWindow* Sender)
+{
+	if (auto* Callbacks = dynamic_cast<CUIWndCallback*>(this))
+	{
+		return Callbacks->HasClickCallbackFor(Sender);
+	}
+	return false;
+}
+
+bool CUIWindow::HasRegisteredClickHandler()
+{
+	if (SelfCallbacks && std::any_of(SelfCallbacks->Subscriptions.begin(), SelfCallbacks->Subscriptions.end(), [](const auto& Entry) { return IsClickEvent(Entry.Event); }))
+	{
+		return true;
+	}
+	CUIWindow* Target = GetMessageTarget();
+	return Target && Target->HasClickHandlerFor(this);
+}
 
 void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler)
 {
@@ -825,6 +850,11 @@ void CUIWindow::Update()
 			(*it)->Update();
 		}
 	}
+	if (GetUICursor().AreCustomAnimationsEnabled() && IsCursorUncovered() && HasRegisteredClickHandler())
+	{
+		// Inspect registrations only; never execute a click callback to determine hover state.
+		GetUICursor().SetInventoryHover(this, true, true, false, false, nullptr, true);
+	}
 	if (SelfCallbacks && SelfCallbacks->HasUpdateCallback)
 	{
 		DispatchSelfCallbacks(WINDOW_UPDATE);
@@ -1083,9 +1113,9 @@ bool CUIWindow::OnMouseDown(int mouse_btn){
 void CUIWindow::OnMouseUp(int mouse_btn){
 }
 
-CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
+CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable, bool IgnoreMouseCapture)
 {
-	if (!IsShown() || !IsEnabled() || !IsInsideRoundedClips(Position))
+	if (IsCursorPickTransparent || !IsShown() || !IsEnabled() || !IsInsideRoundedClips(Position))
 	{
 		return nullptr;
 	}
@@ -1101,7 +1131,7 @@ CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
 	}
 
 	CUIWindow* Result = OwnHit ? this : nullptr;
-	if (m_pMouseCapturer)
+	if (m_pMouseCapturer && !IgnoreMouseCapture)
 	{
 		if (CUIWindow* Captured = m_pMouseCapturer->PickWindowAt(Position, Reliable))
 		{
@@ -1115,7 +1145,7 @@ CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
 		{
 			if (*Child)
 			{
-				if (CUIWindow* Hit = (*Child)->PickWindowAt(Position, Reliable))
+				if (CUIWindow* Hit = (*Child)->PickWindowAt(Position, Reliable, IgnoreMouseCapture))
 				{
 					Result = Hit;
 					break;
@@ -1133,12 +1163,21 @@ bool CUIWindow::CursorOverWindow(bool Precise)
 	{
 		return CursorOverWindow();
 	}
+	return IsCursorUncovered();
+}
+
+bool CUIWindow::IsCursorUncovered(bool IgnoreMouseCapture)
+{
 	if (!GetUICursor().IsVisible())
 	{
 		return false;
 	}
 
 	const Fvector2 Position = GetUICursor().GetCursorPosition();
+	if (!HitTest(Position) || !IsInsideRoundedClips(Position))
+	{
+		return false;
+	}
 	bool Reliable = true;
 	CUIWindow* Root = GetTop();
 	CDialogHolder* Holder = CurrentDialogHolder();
@@ -1168,7 +1207,7 @@ bool CUIWindow::CursorOverWindow(bool Precise)
 				break;
 			}
 			// Registrations inside this tree are resolved by the child draw order below.
-			if (Item->wnd->GetTop() != Root && Item->wnd->PickWindowAt(Position, Reliable))
+			if (Item->wnd->GetTop() != Root && Item->wnd->PickWindowAt(Position, Reliable, IgnoreMouseCapture))
 			{
 				Blocked = true;
 			}
@@ -1180,7 +1219,7 @@ bool CUIWindow::CursorOverWindow(bool Precise)
 		}
 	}
 
-	for (CUIWindow* Hit = Root->PickWindowAt(Position, Reliable); Reliable && Hit; Hit = Hit->GetParent())
+	for (CUIWindow* Hit = Root->PickWindowAt(Position, Reliable, IgnoreMouseCapture); Reliable && Hit; Hit = Hit->GetParent())
 	{
 		if (Hit == this)
 		{

@@ -49,6 +49,8 @@ private:
 	Ivector2				m_virtual_cells_alignment;
 	bool					m_bConditionProgBarVisible;
 	u32						m_contentGeneration = 1;
+	bool IsCursorSlot = false;
+	bool IsSingleCursorSlot = false;
 protected:
 	CUICellItem*			m_selected_item;
 	CUICellContainer*		m_container;
@@ -79,6 +81,11 @@ public:
 	typedef					xr_delegate<bool(CUICellItem*)>			DRAG_CELL_EVENT;
 	typedef					xr_delegate<void(CUIDragItem*, bool)>	DRAG_ITEM_EVENT;
 	typedef					xr_delegate<void(CUIDragDropListEx*)>	CONTENT_RESET_EVENT;
+	using CURSOR_DROP_QUERY = xr_delegate<bool(CUICellItem*, CUIDragDropListEx*, CUICellItem*)>;
+	CURSOR_DROP_QUERY CursorDropQuery;
+	void SetCursorSlot(bool IsSlot, bool IsSingle = false) { IsCursorSlot = IsSlot; IsSingleCursorSlot = IsSingle; }
+	bool HasCursorDropSpace(CUICellItem* Item, CUICellItem* Replaced = nullptr);
+	CUICellItem* GetCursorItemAtPos(const Fvector2& Position);
 
 	DRAG_CELL_EVENT			m_f_item_drop;
 	DRAG_CELL_EVENT			m_f_item_start_drag;
@@ -164,6 +171,8 @@ public:
 	//UIWindow overriding
 	virtual void		Draw				() override;
 	virtual void		Update				() override;
+	void Show(bool Status) override;
+	void OnFocusLost() override;
 	virtual bool		OnMouseAction		(float x, float y, EUIMessages mouse_action) override;
 	virtual void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 

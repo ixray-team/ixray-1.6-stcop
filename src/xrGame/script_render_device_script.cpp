@@ -10,6 +10,7 @@
 #include "pch_script.h"
 #include "script_render_device.h"
 #include "../xrEngine/SequenceSectionRegistry.h"
+#include "../xrUI/UICursor.h"
 
 using namespace luabind;
 
@@ -97,6 +98,9 @@ void CScriptRenderDevice::script_register(lua_State *L)
 
 		def("app_ready",				&is_app_ready),
 		def("activate_seq_section", +[](const char* Name) { return ActivateSequenceSection(Name); }),
+		def("set_cursor_texture", +[](const char* Texture) { GetUICursor().SetCursorTexture(Texture); }),
+		def("reset_cursor_texture", +[]() { GetUICursor().SetCursorTexture(""); }),
+		def("pause_cursor_sections", +[](bool IsPaused) { GetUICursor().SetAutomaticSectionsPaused(IsPaused); }),
 		def("activate_seq_section", +[](const char* Name, bool WaitForEnd) { return ActivateSequenceSection(Name, WaitForEnd); }),
 		def("activate_seq_section", +[](const char* Name, bool WaitForEnd, bool Restart) { return ActivateSequenceSection(Name, WaitForEnd, Restart); }),
 		def("deactivate_seq_section", +[](const char* Name) { return DeactivateSequenceSection(Name); }),

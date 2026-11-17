@@ -42,6 +42,7 @@ class UI_API CUIWindow  :
 private:
 	friend class CDialogHolder;
 	xr_vector<CDialogHolder*> DialogHolders;
+	bool IsCursorPickTransparent = false;
 	void RegisterDialogHolder(CDialogHolder* Holder);
 	void UnregisterDialogHolder(CDialogHolder* Holder);
 	struct SelfCallbackState;
@@ -69,13 +70,17 @@ private:
 	UITransform2D GetLocalScaleTransform();
 	UITransform2D BuildTreeTransform(const UITransform2D& Parent);
 	UITransform2D GetLocalTreeTransform();
-	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
+	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable, bool IgnoreMouseCapture = false);
 	xr_vector<CUIWindow*> ChildDrawOrder;
 	bool MoveChildInDrawOrder(CUIWindow* Child, bool Front);
 	bool MoveTreeInDrawOrder(bool Front);
 	void RemoveChildDrawOrder(CUIWindow* Child);
 
 public:
+	void SetCursorPickTransparent(bool Transparent) { IsCursorPickTransparent = Transparent; }
+	static bool IsClickEvent(s16 Event);
+	virtual bool HasClickHandlerFor(CUIWindow* Sender);
+	bool HasRegisteredClickHandler();
 	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler);
 	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler, const luabind::object& Object);
 	bool SendMessageToTarget(s16 Event, void* Data = nullptr);
@@ -254,6 +259,7 @@ public:
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
 	bool CursorOverWindow(bool Precise);
+	bool IsCursorUncovered(bool IgnoreMouseCapture = false);
 	IC u32					FocusReceiveTime	() const					{ return m_dwFocusReceiveTime; }
 	
 	IC bool					GetCustomDraw		() const					{return m_bCustomDraw;}

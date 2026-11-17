@@ -187,6 +187,7 @@ protected:
 	bool						OnItemSelected				(CUICellItem* itm);
 	bool						OnItemDeselected			(CUICellItem* itm);
 	bool						OnItemDrop					(CUICellItem* itm);
+	bool CanDropCursorItem(CUICellItem* Item, CUIDragDropListEx* Target, CUICellItem* Hovered);
 	bool						OnItemFocusReceive			(CUICellItem* itm);
 	bool						OnItemDbClick				(CUICellItem* itm);
 

@@ -103,6 +103,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         collapsed: true,
         items: [
           { text: 'Обзор и переключатели', link: '/interface/ui-advanced-features' },
+          { text: 'Анимированный курсор и состояния SEQ', link: '/interface/animated-cursor' },
           { text: 'Горизонтальный компас, миникарта', link: '/interface/hud-compass-minimap-motion-icon' },
           { text: 'Быстрые слоты', link: '/interface/hud-quick-slots-panel' },
           { text: 'Навигационная личная метка', link: '/interface/map-personal-navigation-marker' },

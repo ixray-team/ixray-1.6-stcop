@@ -1018,3 +1018,47 @@ class				= O_TRDBOX
 cform				= skeleton
 visual				= dynamics\equipment_cache\equipment_box_01_case.ogf
 script_binding      = bind_physic_object.init
+
+; Анимированный курсор, движок 1.5+. Выключенный шаблон; имена секций должны быть в выбранном SEQ.
+[ui_cursor]
+enabled = false                         ; Общий выключатель: false сохраняет оригинальные параметры из XML.
+cursor_texture =                        ; Путь от textures без расширения; пусто — из XML. Используется одноимённый SEQ.
+cursor_source_texture_size = 0, 0        ; Размер исходной области текстуры в пикселях; 0, 0 — из XML. Пример: 256, 256.
+cursor_target_size = 0, 0                ; Размер показа в UI-единицах до коррекции пропорций; 0, 0 — из XML. Пример: 64, 64.
+stretch_cursor_texture = true           ; Растягивать исходную область до cursor_target_size; действует при enabled = true.
+cursor_hotspot_offset = 0, 0             ; Точка клика в пикселях исходника: сдвигает изображение, не координаты мыши.
+
+; Для каждого события: *_enabled включает участие в выборе, *_section задаёт имя секции SEQ.
+; Одинаковые имена не перезапускают уже выбранную анимацию; default выбирает исходные кадры вне секций.
+drag_enabled = false                    ; Включить анимацию захвата инвентарного предмета.
+drag_section = cursor_grab              ; Секция захвата / удержания инвентарного предмета.
+drag_hold_delay = 1000                   ; Задержка визуального захвата при удержании ЛКМ без движения, мс; 0 — отключить.
+drop_enabled = false                    ; Включить анимацию отпускания / отмены переноса предмета.
+drop_section = cursor_release           ; Секция отпускания предмета, затем выбирается актуальное состояние.
+
+scroll_drag_enabled = false             ; Включить отдельный захват ползунка прокрутки.
+scroll_drag_section = cursor_scroll_grab ; Секция удержания ползунка; не является переносом предмета.
+scroll_drop_enabled = false             ; Включить отдельное отпускание ползунка прокрутки.
+scroll_drop_section = cursor_scroll_release ; Секция отпускания ползунка, затем актуальное состояние.
+
+click_lmb_enabled = false               ; Включить реакцию на нажатие левой кнопки мыши.
+click_lmb_section = cursor_click_lmb     ; Секция ЛКМ, активная до отпускания кнопки или смены действия.
+click_rmb_enabled = false               ; Включить реакцию на нажатие правой кнопки мыши.
+click_rmb_section = cursor_click_rmb     ; Секция ПКМ, активная до отпускания кнопки или смены действия.
+context_enabled = false                 ; Включить отдельное состояние открытого контекстного меню.
+context_section = cursor_context_menu   ; Секция, выбираемая при открытом контекстном меню.
+scroll_up_enabled = false               ; Включить реакцию на прокрутку колеса вверх.
+scroll_up_section = cursor_scroll_up     ; Секция эффекта колеса вверх.
+scroll_down_enabled = false             ; Включить реакцию на прокрутку колеса вниз.
+scroll_down_section = cursor_scroll_down ; Секция эффекта колеса вниз.
+
+select_enabled = false                  ; Включить SEL при наведении на предмет / занятый слот без переноса.
+select_section = cursor_select          ; Секция выбора инвентарного предмета; пустой слот оставляет default.
+clickable_enabled = false               ; Включить CLC над доступной кнопкой / UI-элементом с обработчиком клика.
+clickable_section = cursor_clickable    ; Секция наведения на кликабельный UI; сам обработчик не вызывается.
+hover_slot_drop_enabled = false         ; Включить DRP над допустимой целью размещения / взаимодействия во время переноса.
+hover_slot_drop_section = cursor_hover_slot_drop ; Секция готовности отпустить; недопустимая цель сохраняет захват.
+
+idle_enabled = false                    ; Включить разминку после отсутствия ввода; захват и контекстное меню блокируют её.
+idle_section = cursor_idle_stretch      ; Секция разминки; после конечной анимации восстанавливается актуальное состояние.
+idle_interval = 15000, 35000             ; Минимальная и максимальная случайная задержка разминки, мс, границы включены.

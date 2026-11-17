@@ -14,6 +14,7 @@ export const supportStatusMap: Record<string, SupportMeta> = {
   '/graphics/weather/snowing': { label: '1.3', state: 'supported' },
   '/graphics/pbr': { label: '1.3', state: 'supported' },
   '/interface/custom-icon-atlases': { label: '1.3', state: 'supported' },
+  '/interface/animated-cursor': { label: '1.5', state: 'supported' },
   '/animation-system/anim-notify': { label: '1.2', state: 'supported' },
   '/sounds/general-information': { label: '2.0', state: 'supported' },
   '/platforms/multiplayer/general-information': { label: '2.0', state: 'supported' },

@@ -733,12 +733,131 @@ bool CUIActorMenuBase::OnItemDbClick(CUICellItem* itm)
 	return true;
 }
 
+bool CUIActorMenuBase::CanDropCursorItem(CUICellItem* Item, CUIDragDropListEx* Target, CUICellItem* Hovered)
+{
+	if (!Item || !Item->m_pData || !Item->OwnerList() || !Target || !GetInventoryOwner())
+	{
+		return false;
+	}
+	PIItem Dragged = static_cast<PIItem>(Item->m_pData);
+	PIItem UnderCursor = Hovered ? static_cast<PIItem>(Hovered->m_pData) : nullptr;
+	if (Hovered == Item || UnderCursor == Dragged)
+	{
+		return false;
+	}
+	CUIDragDropListEx* Source = Item->OwnerList();
+	const EDDListType From = GetListType(Source);
+	const EDDListType To = GetListType(Target);
+	if (!AllowItemDrops(From, To))
+	{
+		return false;
+	}
+	if (UnderCursor)
+	{
+		// Use the same direction as native highlighting: dragged item's list -> target section.
+		for (const auto& Related : Dragged->m_HiglightRelatedItemSections)
+		{
+			if (xr_strcmp(Related.c_str(), UnderCursor->object().cNameSect().c_str()) == 0)
+			{
+				return true;
+			}
+		}
+		if ((Source == GetActorList() || Source == GetTradeActorBagList()) && UnderCursor->CanAttach(Dragged))
+		{
+			return true;
+		}
+		if (Dragged->m_pInventory && Dragged->m_pInventory == UnderCursor->m_pInventory)
+		{
+			if (smart_cast<AntigasFilter*>(Dragged))
+			{
+				if (IAntigas* Mask = smart_cast<IAntigas*>(UnderCursor))
+				{
+					if (Mask->IsAllowed() && !Mask->IsFilterInstalled() && Mask->IsFilterInWhiteList(Dragged->m_section_id))
+					{
+						return true;
+					}
+				}
+			}
+			if (PowerCell* Cell = smart_cast<PowerCell*>(Dragged))
+			{
+				if (PowerBank* Bank = smart_cast<PowerBank*>(UnderCursor))
+				{
+					if (Bank->m_power_cells.size() < Bank->m_max_count_power_cells && Bank->IsPowerCellInWhiteList(Cell->GetPowerCellData().section))
+					{
+						return true;
+					}
+				}
+				if (IPowerManager* Manager = smart_cast<IPowerManager*>(UnderCursor))
+				{
+					if (Manager->initialized && Manager->GetUsePowerCell() && !Manager->IsPowerCellInstalled() && Manager->IsPowerCellInWhiteList(Cell->GetPowerCellData().section))
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+	CInventory& Inventory = GetInventoryOwner()->inventory();
+	if ((To == iActorBag || To == iActorSlot || To == iActorBelt) && Dragged->m_pInventory != &Inventory && !Inventory.CanTakeItem(Dragged))
+	{
+		return false;
+	}
+	if (To == iActorSlot)
+	{
+		u16 Slot = NO_ACTIVE_SLOT;
+		return (!UnderCursor || Inventory.CanPutInRuck(UnderCursor)) && CanSetItemToList(Dragged, Target, Slot) && Inventory.CanPutInSlot(Dragged, Slot, true);
+	}
+	if (To == iQuickSlot)
+	{
+		const Ivector2 Size = Dragged->GetInvGridRect().rb;
+		return Dragged->cast_eatable_item() != nullptr && Size.x <= 1 && Size.y <= 1;
+	}
+	if (To == iTrashSlot)
+	{
+		return !Dragged->IsQuestItem();
+	}
+	if (To == iActorBelt && UnderCursor)
+	{
+		return Dragged->Belt() && Inventory.BeltWidth() > 0 && Inventory.CanPutInRuck(UnderCursor) && Target->HasCursorDropSpace(Item, Hovered);
+	}
+	if (UnderCursor)
+	{
+		// Only explicit native interactions are advertised; never execute a Lua/drop handler here.
+		const bool IsEquipped = Dragged->m_pInventory && Dragged->m_pInventory->ItemFromSlot(Dragged->BaseSlot()) == Dragged;
+		const bool CanGroup = !IsEquipped || (Dragged->BaseSlot() == GRENADE_SLOT && Dragged->cast_grenade() != nullptr);
+		const bool HasMatchingSlot = Dragged->BaseSlot() == GRENADE_SLOT || Dragged->CurrSlot() == UnderCursor->CurrSlot();
+		return Target->IsGrouping() && CanGroup && HasMatchingSlot && Dragged->CanStack() && UnderCursor->CanStack() && Item->ChildsCount() == 0 && Hovered->EqualTo(Item);
+	}
+	if (Source == Target && !Target->GetCustomPlacement())
+	{
+		return false;
+	}
+	if (To == iActorBag && !Inventory.InRuck(Dragged) && !Inventory.CanPutInRuck(Dragged))
+	{
+		return false;
+	}
+	if (To == iActorBelt && !Inventory.CanPutInBelt(Dragged))
+	{
+		return false;
+	}
+	if (To == iDeadBodyBag && (Dragged->IsQuestItem() || (GetPartner() && !GetPartner()->deadbody_can_take_status())))
+	{
+		return false;
+	}
+	if ((To == iPartnerTrade && From != iPartnerTradeBag) || (To == iPartnerTradeBag && From != iPartnerTrade))
+	{
+		return false;
+	}
+	return Target->HasCursorDropSpace(Item);
+}
+
 void CUIActorMenuBase::BindDragDropListEvents(CUIDragDropListEx* lst)
 {
 	if (lst == nullptr)
 		return;
 
 	lst->m_f_item_drop				= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemDrop);
+	lst->CursorDropQuery = CUIDragDropListEx::CURSOR_DROP_QUERY(this, &CUIActorMenuBase::CanDropCursorItem);
 	lst->m_f_item_start_drag		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemStartDrag);
 	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemDbClick);
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenuBase::OnItemSelected);

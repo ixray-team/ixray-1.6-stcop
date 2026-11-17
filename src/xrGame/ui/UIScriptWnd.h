@@ -23,6 +23,7 @@ protected:
 			bool				Load				(const char* xml_name);
 
 public:
+	bool HasClickHandlerFor(CUIWindow* Sender) override;
 	void SetStopAnyMove(bool Stop) { StopMovement = Stop; }
 	bool StopAnyMove() override { return StopMovement; }
 

@@ -16,6 +16,7 @@ using namespace InventoryUtilities;
 
 CUIDragDropReferenceList::CUIDragDropReferenceList()
 {
+	SetCursorSlot(true);
 	AddCallbackStr("cell_item_reference", WINDOW_LBUTTON_DB_CLICK, CUIWndCallback::void_function(this, &CUIDragDropReferenceList::OnItemDBClick));
 }
 CUIDragDropReferenceList::~CUIDragDropReferenceList()

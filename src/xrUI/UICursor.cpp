@@ -27,6 +27,7 @@ CUICursor::CUICursor()
 //--------------------------------------------------------------------
 CUICursor::~CUICursor	()
 {
+	Hide();
     xr_delete(m_static);
     xr_delete(m_3dstatic);
     Device.seqRender.Remove(this);
@@ -52,6 +53,7 @@ void CUICursor::Show()
 	SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
 
 	bVisible = true;
+	OnInputActivity();
 }
 
 void CUICursor::InitInternal()
@@ -59,6 +61,46 @@ void CUICursor::InitInternal()
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "backend\\cursor.xml");
 	m_static = UIHelper::CreateStatic(xml_doc, "cursor", nullptr);
+	OriginalTextureOffset = m_static->GetTextureOffeset();
+
+	const bool IsConfigured = pSettings->section_exist("ui_cursor") && pSettings->read_if_exists<bool>("ui_cursor", "enabled", false);
+	DefaultTexture = xml_doc.Read("cursor:texture", 0, "ui\\ui_ani_cursor");
+	TextureShader = xml_doc.ReadAttrib("cursor:texture", 0, "shader", "hud\\cursor");
+	if (IsConfigured)
+	{
+		const char* CursorTexture = pSettings->read_if_exists<const char*>("ui_cursor", "cursor_texture", "");
+		if (CursorTexture && *CursorTexture)
+		{
+			DefaultTexture = CursorTexture;
+		}
+	}
+	ApplyCursorTexture();
+	const Fvector2 TextureSize = IsConfigured ? pSettings->read_if_exists<Fvector2>("ui_cursor", "cursor_source_texture_size", Fvector2().set(0.0f, 0.0f)) : Fvector2().set(0.0f, 0.0f);
+	const Fvector2 CursorSize = IsConfigured ? pSettings->read_if_exists<Fvector2>("ui_cursor", "cursor_target_size", Fvector2().set(0.0f, 0.0f)) : Fvector2().set(0.0f, 0.0f);
+	const bool HasTextureSize = TextureSize.x > 0.0f && TextureSize.y > 0.0f && _valid(TextureSize.x) && _valid(TextureSize.y);
+	const bool HasCursorSize = CursorSize.x > 0.0f && CursorSize.y > 0.0f && _valid(CursorSize.x) && _valid(CursorSize.y);
+	if (HasTextureSize)
+	{
+		// Source pixels and UI dimensions are independent; preserve the XML texture origin.
+		Frect TextureRect = m_static->GetTextureRect();
+		TextureRect.x2 = TextureRect.x1 + TextureSize.x;
+		TextureRect.y2 = TextureRect.y1 + TextureSize.y;
+		m_static->SetTextureRect(TextureRect);
+	}
+	if (HasCursorSize)
+	{
+		m_static->SetWndSize(CursorSize);
+	}
+	if (IsConfigured)
+	{
+		m_static->SetStretchTexture(pSettings->read_if_exists<bool>("ui_cursor", "stretch_cursor_texture", m_static->GetStretchTexture()));
+	}
+	Hotspot = IsConfigured ? pSettings->read_if_exists<Fvector2>("ui_cursor", "cursor_hotspot_offset", Fvector2().set(0.0f, 0.0f)) : Fvector2().set(0.0f, 0.0f);
+	if (!_valid(Hotspot.x) || !_valid(Hotspot.y))
+	{
+		Hotspot.set(0.0f, 0.0f);
+	}
+	ConfigureAnimations();
 
 	bool native_scale = xml_doc.ReadAttribBool("cursor", 0, "native_scale", false);
 	if (native_scale)
@@ -118,6 +160,14 @@ void CUICursor::OnRender	()
 	g_statHint->OnRender();
 
 	if( !IsVisible() ) return;
+	{
+		xrCriticalSectionGuard Lock(AnimationGuard);
+		if (IsTextureChangePending)
+		{
+			ApplyCursorTexture();
+		}
+	}
+	UpdateAnimation();
 #ifdef DEBUG
 
 	if(bDebug)
@@ -140,10 +190,34 @@ void CUICursor::OnRender	()
     }
     else
     {
-        m_static->SetWndPos(vPos);
+		const Frect& TextureRect = m_static->GetTextureRect();
+		const float ScaleX = m_static->GetStretchTexture() && TextureRect.width() > 0.0f ? m_static->GetWidth() / TextureRect.width() : 1.0f;
+		const float ScaleY = m_static->GetStretchTexture() && TextureRect.height() > 0.0f ? m_static->GetHeight() / TextureRect.height() : 1.0f;
+		m_static->SetTextureOffset(OriginalTextureOffset.x - Hotspot.x * ScaleX, OriginalTextureOffset.y - Hotspot.y * ScaleY);
+		m_static->SetWndPos(vPos);
         m_static->Update();
         m_static->DrawWithTransform();
     }
+}
+
+void CUICursor::SetCursorTexture(const char* Texture)
+{
+	xrCriticalSectionGuard Lock(AnimationGuard);
+	const shared_str Next = Texture ? Texture : "";
+	if (Next != TextureOverride)
+	{
+		TextureOverride = Next;
+		IsTextureChangePending = true;
+	}
+}
+
+void CUICursor::ApplyCursorTexture()
+{
+	// Texture resources are changed only on the UI/render thread, never by the Lua caller.
+	const Frect OriginalRect = m_static->GetTextureRect();
+	m_static->InitTextureEx(TextureOverride.size() ? *TextureOverride : *DefaultTexture, *TextureShader);
+	m_static->SetTextureRect(OriginalRect);
+	IsTextureChangePending = false;
 }
 
 Fvector2 CUICursor::GetCursorPosition()
@@ -158,6 +232,10 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 {
+	if (_dx || _dy)
+	{
+		OnInputActivity();
+	}
 	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
 		vPrevPos = vPos;
@@ -184,6 +262,10 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
 	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
+		if (pos.x != vPos.x || pos.y != vPos.y)
+		{
+			OnInputActivity();
+		}
 		vPos = pos;
 	}
 }

@@ -14,6 +14,14 @@ bool event_comparer::operator ()(SCallbackInfo* i)
 		return false;
 }
 
+bool CUIWndCallback::HasClickCallbackFor(CUIWindow* Sender) const
+{
+	return Sender && std::any_of(m_callbacks.begin(), m_callbacks.end(), [Sender](const SCallbackInfo* Entry)
+	{
+		return CUIWindow::IsClickEvent(Entry->m_event) && (Entry->m_control_ptr ? Entry->m_control_ptr == Sender : Entry->m_control_name == Sender->WindowName());
+	});
+}
+
 CUIWndCallback::~CUIWndCallback()
 {
 	delete_data(m_callbacks);

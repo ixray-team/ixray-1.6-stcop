@@ -19,6 +19,7 @@ private:
 
 public:
 	virtual						~CUIWndCallback		();
+	bool HasClickCallbackFor(CUIWindow* Sender) const;
 	void						ClearCallbacks		();
 	virtual void				OnEvent				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 			void				Register			(CUIWindow* pChild);

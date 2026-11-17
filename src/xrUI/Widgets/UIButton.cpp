@@ -162,6 +162,11 @@ bool is_in2(const Frect& b1, const Frect& b2){
 void  CUIButton::Update()
 {
 	inherited::Update();
+	if (GetUICursor().AreCustomAnimationsEnabled())
+	{
+		// Buttons have their own selection state; only the uncovered control wins.
+		GetUICursor().SetInventoryHover(this, IsCursorUncovered(), true, false, false, nullptr, true);
+	}
 
 	if (CursorOverWindow() && m_hint_text.size() && !g_btnHint->Owner() && Device.dwTimeContinual > m_dwFocusReceiveTime + m_hint_delay)
 	{

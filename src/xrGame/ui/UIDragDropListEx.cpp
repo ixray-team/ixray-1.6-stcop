@@ -95,6 +95,7 @@ void CUIDragDropListEx::EndDragSession()
 	{
 		CUIDragItem* dragItem = m_drag_item;
 		m_drag_item = nullptr;
+		GetUICursor().SetDragging(false);
 		QueuePendingDragItemDestroy(dragItem);
 	}
 
@@ -146,6 +147,7 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 CUIDragDropListEx::~CUIDragDropListEx()
 {
+	GetUICursor().SetInventoryHover(this, false, false);
 	DestroyDragItem();
 	FlushPendingDragItemDestroy();
 
@@ -291,6 +293,7 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 
 	if ( m_drag_item )
 	{
+		GetUICursor().SetDragging(true);
 		GetParent()->SetCapture			(m_drag_item, true);
 	}
 }
@@ -316,6 +319,7 @@ void CUIDragDropListEx::DestroyDragItem()
 	}
 
 	m_drag_item = nullptr;
+	GetUICursor().SetDragging(false);
 
 	if (CUIWindow* parent = GetParent())
 	{
@@ -476,6 +480,7 @@ void CUIDragDropListEx::OnItemRButtonClick(CUIWindow* w, void* pData)
 
 void CUIDragDropListEx::OnItemLButtonClick(CUIWindow* w, void* pData)
 {
+	GetUICursor().OnInventoryItemPressed(w);
 	CUICellItem* itm = w->ui_cast_cell_item();
 	if (m_f_item_lbutton_click)
 	{
@@ -620,6 +625,33 @@ void CUIDragDropListEx::Update()
 {
 	FlushPendingDragItemDestroy();
 	inherited::Update			();
+	if (GetUICursor().AreCustomAnimationsEnabled())
+	{
+		const bool IsSlot = IsCursorSlot || GetVirtualCells();
+		Frect HoverRect;
+		if (IsSlot)
+		{
+			GetAbsoluteRect(HoverRect);
+		}
+		else
+		{
+			GetClientArea(HoverRect);
+		}
+		const Fvector2 CursorPosition = GetUICursor().GetCursorPosition();
+		// Inventory drag owns capture, but target picking must still follow the visible UI stack.
+		const bool IsOverArea = IsShown() && IsEnabled() && HoverRect.in(CursorPosition.x, CursorPosition.y) && IsCursorUncovered(m_drag_item != nullptr);
+		const bool IsOverCell = IsOverArea && (IsSlot || (m_container->HasCells() && m_container->ValidCell(PickCell(CursorPosition))));
+		CUICellItem* Hovered = IsOverCell ? GetCursorItemAtPos(CursorPosition) : nullptr;
+		CUICellItem* Dragged = m_drag_item ? m_drag_item->ParentItem() : nullptr;
+		bool CanDrop = false;
+		if (IsOverCell && Dragged && Hovered != Dragged)
+		{
+			// This query is read-only: never run the actual drop handler while hovering.
+			CanDrop = CursorDropQuery ? CursorDropQuery(Dragged, this, Hovered) : !Hovered && HasCursorDropSpace(Dragged);
+		}
+		// Publish one final result per list update, independently of optional Lua focus callbacks.
+		GetUICursor().SetInventoryHover(this, IsOverCell, Hovered != nullptr, IsSlot, CanDrop, Hovered);
+	}
 
 	if( m_drag_item ){
 		Frect	wndRect;
@@ -633,6 +665,21 @@ void CUIDragDropListEx::Update()
 				m_drag_item->SetBackList(nullptr);
 	}
 	m_selectorFrame->SetVisible(m_selector_shown && pInput->GetControllerMode());
+}
+
+void CUIDragDropListEx::Show(bool Status)
+{
+	if (!Status)
+	{
+		GetUICursor().SetInventoryHover(this, false, false);
+	}
+	inherited::Show(Status);
+}
+
+void CUIDragDropListEx::OnFocusLost()
+{
+	GetUICursor().SetInventoryHover(this, false, false);
+	inherited::OnFocusLost();
 }
 
 void CUIDragDropListEx::ReinitScroll()
@@ -937,6 +984,60 @@ CUICellItem* CUIDragDropListEx::GetItemAtPos(Fvector2 abs_pos)
 		return m_container->GetCellAt(cell).m_item;
 	}
 	return nullptr;
+}
+
+CUICellItem* CUIDragDropListEx::GetCursorItemAtPos(const Fvector2& Position)
+{
+	if (IsSingleCursorSlot || GetVirtualCells())
+	{
+		// A single equipment slot is occupied across its entire rectangle, including icon margins.
+		return ItemsCount() ? GetItemIdx(0) : nullptr;
+	}
+	return m_container->HasCells() ? GetItemAtPos(Position) : nullptr;
+}
+
+bool CUIDragDropListEx::HasCursorDropSpace(CUICellItem* Item, CUICellItem* Replaced)
+{
+	if (!Item || !m_drag_item || !m_container->HasCells())
+	{
+		return false;
+	}
+	const Fvector2 Position = IsCursorSlot || GetVirtualCells() ? GetUICursor().GetCursorPosition() : m_drag_item->GetPosition();
+	const Ivector2 Start = PickCell(Position);
+	Ivector2 Size = Item->GetGridSize();
+	if (GetVerticalPlacement())
+	{
+		std::swap(Size.x, Size.y);
+	}
+	if (Size.x <= 0 || Size.y <= 0 || !m_container->ValidCell(Start))
+	{
+		return false;
+	}
+	if (Item->OwnerList() == this)
+	{
+		const Ivector2 Original = m_container->GetItemPos(Item);
+		if (Start.x == Original.x && Start.y == Original.y)
+		{
+			return false;
+		}
+	}
+	for (int Y = 0; Y < Size.y; ++Y)
+	{
+		for (int X = 0; X < Size.x; ++X)
+		{
+			const Ivector2 Cell = Ivector2().set(Start.x + X, Start.y + Y);
+			if (!m_container->ValidCell(Cell))
+			{
+				return false;
+			}
+			CUICellItem* Occupant = m_container->GetCellAt(Cell).m_item;
+			if (Occupant && Occupant != Item && Occupant != Replaced)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 // =================================================================================================

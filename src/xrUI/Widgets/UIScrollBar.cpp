@@ -3,6 +3,7 @@
 #include "UI3tButton.h"
 #include "UIScrollBox.h"
 #include "UIFrameLineWnd.h"
+#include "../UICursor.h"
 
 CUIScrollBar::CUIScrollBar()
 {
@@ -27,6 +28,24 @@ CUIScrollBar::CUIScrollBar()
 }
 
 CUIScrollBar::~CUIScrollBar() = default;
+
+void CUIScrollBar::Update()
+{
+	ScrollBarBase::Update();
+	CUIWindow* Thumb = GetThumbWindow();
+	if (GetUICursor().AreCustomAnimationsEnabled() && Thumb && GetMouseCapturer() == Thumb)
+	{
+		bool IsActive = true;
+		for (CUIWindow* Window = this; Window; Window = Window->GetParent())
+		{
+			IsActive = IsActive && Window->IsShown() && Window->IsEnabled();
+		}
+		if (IsActive)
+		{
+			GetUICursor().ReportWidgetDrag();
+		}
+	}
+}
 
 float CUIScrollBar::GetDecSpan() const
 {

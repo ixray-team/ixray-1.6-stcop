@@ -114,6 +114,7 @@ void CUIActorMenu::Construct()
 
 	m_pInventoryBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
 	m_pInventoryBeltList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
+	m_pInventoryBeltList->SetCursorSlot(true);
 
 	m_pTradeActorList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
 	m_pTradeActorBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
@@ -284,6 +285,8 @@ void CUIActorMenu::Construct()
 */
 	m_ActorStateInfo					= new ui_actor_state_wnd();
 	m_ActorStateInfo->init_from_xml		(uiXml, "actor_state_info");
+	// This decorative panel may overlap slots positioned by modded actor-menu XML.
+	m_ActorStateInfo->SetCursorPickTransparent(true);
 	m_ActorStateInfo->SetAutoDelete		(true);
 	AttachChild							(m_ActorStateInfo); 
 	
