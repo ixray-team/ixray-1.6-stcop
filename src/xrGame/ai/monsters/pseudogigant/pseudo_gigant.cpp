@@ -3,6 +3,7 @@
 #include "pseudo_gigant_step_effector.h"
 #include "../../../Actor.h"
 #include "../../../ActorEffector.h"
+#include "../../../Car.h"
 #include "../../../Level.h"
 #include "pseudogigant_state_manager.h"
 #include "../monster_velocity_space.h"
@@ -260,8 +261,17 @@ void CPseudoGigant::on_threaten_execute()
 		pos.set(obj->Position());
 		pos.y += 2.f;
 		dir.sub(pos, Position());
+		if (dir.magnitude() < EPS_L)
+			continue;
+
 		dir.normalize();
-		obj->m_pPhysicsShell->applyImpulse(dir,20 * obj->m_pPhysicsShell->getMass());
+
+		// Cars use their own fixed ground-kick momentum. The legacy
+		// mass-scaled impulse would otherwise add a second, untuned push.
+		if (CCar* car = obj->cast_car())
+			car->ApplyGigantKick(dir);
+		else
+			obj->m_pPhysicsShell->applyImpulse(dir, 20.f * obj->m_pPhysicsShell->getMass());
 	}
 	
 	if (IsGameTypeSingle())

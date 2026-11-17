@@ -116,6 +116,7 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 
 	const CActor *actor = cast_enemy->cast_actor();
 	VERIFY(actor);
+	if (actor->IsInCar()) return false;
 	if (actor->input_external_handler_installed()) return false;
 
 	if (CAI_Bloodsucker::m_time_last_vampire + this->object->m_vampire_min_delay > Device.dwTimeGlobal) return false;
