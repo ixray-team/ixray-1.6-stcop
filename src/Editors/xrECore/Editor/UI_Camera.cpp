@@ -390,7 +390,10 @@ bool CUI_Camera::KeyDown(WORD Key, TShiftState Shift)
             return true;
         }
         // Swallow every key while flying so tool shortcuts don't fire
-        FlyKeyAxis(Key, FlyInput, 1.f);
+        if (FlyKeyAxis(Key, FlyInput, 1.f))
+        {
+            EContext.UI->RedrawScene();
+        }
         return true;
     }
 

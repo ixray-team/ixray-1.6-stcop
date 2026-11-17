@@ -140,6 +140,11 @@ void UIRenderForm::DrawVP()
 
 	// While playing in the editor only the main view is driven
 	const bool CanActivate = !EContext.UI->IsPlayInEditor() || ViewportId == EditorViewport::MainId;
+	if (CanActivate && !ImGui::IsWindowFocused() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem)
+		&& (ImGui::IsMouseClicked(ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_Middle)))
+	{
+		ImGui::SetWindowFocus();
+	}
 	if (CanActivate && ImGui::IsWindowFocused())
 	{
 		EContext.UI->ActivateViewport(ViewportId);
@@ -196,7 +201,6 @@ void UIRenderForm::DrawVP()
 			mouse_pos.y = canvas_pos.y + canvas_size.y;
 		}
 
-		bool curent_shiftstate_down = View.Camera.IsMoving();
 
 
 		if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
@@ -270,7 +274,13 @@ void UIRenderForm::DrawVP()
 		ImGui::SetCursorScreenPos(canvas_pos);
 
 		if (!ImGuizmo::IsUsing())
-			ImGui::InvisibleButton("canvas", canvas_size);
+			ImGui::InvisibleButton("canvas", canvas_size, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
+
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && CursorInZone && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenBlockedByPopup))
+		{
+			View.Camera.ResetMoved();
+			m_ContextPending = !ImGui::IsMouseDown(ImGuiMouseButton_Left);
+		}
 
 		if (ImGui::IsItemFocused())
 		{
@@ -315,11 +325,26 @@ void UIRenderForm::DrawVP()
 		m_mouse_position.set(mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 
 
-		if (!m_OnContextMenu.empty() && !curent_shiftstate_down && !EContext.UI->IsPlayInEditor())
+		if (m_ContextPending && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
+			m_ContextPending = false;
+		}
+		const bool OpenContext = m_ContextPending && ImGui::IsMouseReleased(ImGuiMouseButton_Right);
+		if (OpenContext)
+		{
+			m_ContextPending = false;
+		}
+
+		if (!m_OnContextMenu.empty() && !EContext.UI->IsPlayInEditor())
+		{
+			if (OpenContext && !View.Camera.WasMoved())
+			{
+				ImGui::OpenPopup("Menu");
+			}
+
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.f, 6.f));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
-			const bool MenuOpened = ImGui::BeginPopupContextItem("Menu");
+			const bool MenuOpened = ImGui::BeginPopup("Menu");
 			if (MenuOpened)
 			{
 				m_OnContextMenu();

@@ -23,6 +23,8 @@ class ECORE_API CUI_Camera
 	bool			FlyBoost = false;
 	float			FlySpeedScale = 1.f;
 	Fvector			FlyInput = {0.f, 0.f, 0.f};
+	Fvector			MoveStartHPB = {0.f, 0.f, 0.f};
+	Fvector			MoveStartPos = {0.f, 0.f, 0.f};
 
     Fmatrix			m_CamMat;
     Fvector			m_HPB;
@@ -61,6 +63,8 @@ public:
     bool			KeyUp		(WORD Key, TShiftState Shift);
     bool			MouseWheel	(int Direction);
     bool			IsFlying	() const {return FlyMode;}
+    void			ResetMoved	() {MoveStartHPB.set(m_HPB); MoveStartPos.set(m_Position);}
+    bool			WasMoved	() const {return !MoveStartHPB.similar(m_HPB, 0.01f) || !MoveStartPos.similar(m_Position, 0.01f);}
 
     void			ViewFront	(){m_HPB.set(0.f,0.f,0.f); 			BuildCamera();}
     void			ViewBack 	(){m_HPB.set(M_PI,0.f,0.f); 		BuildCamera();}
