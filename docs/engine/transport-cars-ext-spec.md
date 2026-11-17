@@ -214,6 +214,14 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 
 Если меняется layout `CSE_ALifeCar::STATE_*`, поднимается `SPAWN_VERSION`; если только `CCar::save/load`, вводится версия формата CCar. Точный механизм — на этапе реализации; миграция не предусмотрена.
 
+### 2.10. Столкновения с персонажами и мутантами
+
+- Урон от машины считается legacy-путём `CPHMovementControl::UpdateCollisionDamage()` и порогами персонажа `ph_crash_speed_min`/`ph_crash_speed_max`; `ram_damage_min_speed` (км/ч) задаёт дополнительный порог скорости машины для урона.
+- Коммит `08e201a72d` добавил отдельное физическое толкание живых мутантов через `CCar::CarRamCallback()` и `CPHMovementControl::SetCarContact()`. Оно не наносит урон и не заменяет collision damage.
+- Порог толкания `ram_min_speed` задаётся в м/с и не связан с `ram_damage_min_speed`; при низкой скорости машина может толкать мутанта, даже если урон отключён.
+- Новый слой работает на ODE (`CPHSimpleCharacter`); `CB3Character` не реализует `SetExternalPush()`, поэтому на Box3D поведение отличается.
+- Полная таблица параметров, поведение по типам целей и известные риски: `docs/engine/transport-cars-collision.md`.
+
 ## 3. Ограничения и краевые случаи
 
 ### 3.1. Поддерживается

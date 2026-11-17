@@ -1,9 +1,11 @@
 # Прогресс переноса транспорта Cars-Ext
 
-Дата: 2026-11-01  
-Ветка: `feature/transport-cars-ext`  
-Спецификация: `docs/engine/transport-cars-ext-spec.md`  
-План: `docs/engine/transport-cars-ext-plan.md`
+- Дата: 2026-11-01
+- Обновлено: 2026-11-17
+- Ветка: `feature/transport-cars-ext`
+- Спецификация: `docs/engine/transport-cars-ext-spec.md`
+- План: `docs/engine/transport-cars-ext-plan.md`
+- Столкновения и таран: `docs/engine/transport-cars-collision.md`
 
 ## Этап A — завершён
 
@@ -1074,3 +1076,22 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - `ram_damage_min_speed` читается в `CCar::LoadHandlingAndCameraDefinitions()` из секции машины (`[m_car_base]` или конкретная модель в `vehicles.ltx`). Единицы — км/ч. Если ключ отсутствует, значение остаётся `0`, то есть дополнительного порога нет и работает прежний legacy-путь. Пример: `ram_damage_min_speed = 5` — ниже `5 км/ч` урон не начисляется.
 - `ph_crash_speed_min`/`ph_crash_speed_max` остаются порогами контактной скорости персонажа, а не скорости автомобиля; они по-прежнему применяются после проверки `ram_damage_min_speed`.
 - Проверка: сборка Debug/RelWithDebInfo/Release; autotest-загрузка `car_load_test2` и спавн машины с собакой/кровососом — без регрессий.
+
+### Этап 109: новый режим тарана и толкания мутантов
+
+- Коммит `08e201a72d`: на основной physics-shell машины добавлен `CCar::CarRamCallback()`. Для живого `CBaseMonster` он запоминает контакт в `CPHMovementControl::SetCarContact()` и на `ram_contact_memory` мс включает режим внешнего толкания.
+- В `CPHMovementControl` добавлены `SCarContact`, `ApplyCarContact()` и флаг `m_external_push`; `CMovementManager::move_along_path()` каждый кадр ограничивает нормальную скорость мутанта и сохраняет касательную составляющую пути.
+- В `CPHSimpleCharacter` режим отключает обычное управление ускорением/торможением, не даёт персонажу заснуть и поднимает лимит скорости до `100 м/с`; актёр исключён из режима.
+- Новые ключи машины: `ram_push_scale` (`1.5`), `ram_max_push_speed` (`25 м/с`), `ram_contact_memory` (`150 мс`), `ram_min_speed` (`1 м/с`), `ram_separation_bias` (`3 м/с`), `ram_mutant_push_speed` (`0.5 м/с`). Ключ `ram_damage_min_speed` остаётся отдельным порогом урона в км/ч.
+- Важно: `CarRamCallback()` **не наносит урон**, а только толкает мутанта; `ram_damage_min_speed` не отключает это толкание. Медленная машина может сдвинуть/подбросить мутанта, и смерть затем придёт от падения. Толкание реализовано только для мутантов; НПС и актёр получают только legacy collision damage.
+- Найденные риски: `m_external_push` сбрасывается только из `UpdateCarContact()` при обновлении movement manager (у мутанта нет аварийного сброса, как у актёра); `CB3Character` не реализует `SetExternalPush()`, поэтому на Box3D поведение иное; скорость контакта берётся у корневого элемента shell, а не у конкретного элемента; контакт обрабатывается только на основном shell, не на scraper.
+- Проверка: Debug/Release собираются; autotest загрузки и спавна проходит. Отдельного автотеста на `CarRamCallback`, залипание внешнего толкания и Box3D нет.
+
+### Этап 110: псевдогигант и вампир кровососа
+
+- Коммит `5addab76b1` объединяет `0ef0c1585a` (Pseudo gigant car impulse) и `5f33578da4` (Car bloodsucker vampire fix).
+- Для псевдогиганта добавлен `CCar::ApplyGigantKick()` и ключ `gigant_kick_impulse` в кг·м/с. `-1` сохраняет legacy-импульс `20 * масса машины`, `0` отключает реакцию, положительное значение задаёт фиксированный импульс (clamp `0..200000`). Удар намеренно игнорирует `rs_car_god`.
+- Для кровососа вампирская атака не запускается, если актёр находится в машине (`CActor::IsInCar()`); обычные melee-атаки по машине остаются.
+- Найденные замечания: `ApplyGigantKick()` не применяет импульс к неактивному shell; для не-машин в `pseudo_gigant.cpp` сохранено прежнее обращение к `obj->m_pPhysicsShell` без проверки на `nullptr`; проверка `IsInCar()` продублирована в двух заголовках bloodsucker, что безвредно, но избыточно.
+- Подробная таблица параметров, поведение по типам целей и полный список рисков: `docs/engine/transport-cars-collision.md`.
+- Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` и спавна машины с собакой/кровососом — `RESULT: PASS`.
