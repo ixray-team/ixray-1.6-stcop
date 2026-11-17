@@ -7,6 +7,7 @@
 #include "EngineAPI.h"
 #include "../xrCore/EventManager.h"
 #include "xrSheduler.h"
+#include "SequenceSectionRegistry.h"
 
 class ENGINE_API CEngine
 {
@@ -14,6 +15,7 @@ public:
 	// DLL api stuff
 	CEngineAPI			External;
 	CSheduler			Sheduler;
+	SequenceSectionRegistry SequenceSections;
 
 	void				Initialize	();
 	void				Destroy		();

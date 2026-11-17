@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "script_render_device.h"
+#include "../xrEngine/SequenceSectionRegistry.h"
 
 using namespace luabind;
 
@@ -95,6 +96,11 @@ void CScriptRenderDevice::script_register(lua_State *L)
 			.def_readonly("dwtime_continual",	static_cast<u32 CRenderDeviceData::*>(&CRenderDeviceData::dwTimeContinual)),
 
 		def("app_ready",				&is_app_ready),
+		def("activate_seq_section", +[](const char* Name) { return ActivateSequenceSection(Name); }),
+		def("activate_seq_section", +[](const char* Name, bool WaitForEnd) { return ActivateSequenceSection(Name, WaitForEnd); }),
+		def("activate_seq_section", +[](const char* Name, bool WaitForEnd, bool Restart) { return ActivateSequenceSection(Name, WaitForEnd, Restart); }),
+		def("deactivate_seq_section", +[](const char* Name) { return DeactivateSequenceSection(Name); }),
+		def("deactivate_seq_section", +[](const char* Name, bool WaitForEnd) { return DeactivateSequenceSection(Name, WaitForEnd); }),
 
 		class_<SScriptVideoMemoryInfo>("video_memory_info")
 			.def_readonly("valid",			&SScriptVideoMemoryInfo::Valid)

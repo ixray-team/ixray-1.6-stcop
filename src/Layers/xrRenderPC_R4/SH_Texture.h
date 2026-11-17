@@ -2,6 +2,7 @@
 #include "RenderAPI.h"
 
 #include "../../xrCore/xr_resource.h"
+#include "../../xrEngine/TextureSequence.h"
 
 class ENGINE_API CAviPlayerCustom;
 class CTheoraSurface;
@@ -121,6 +122,7 @@ private:
 
 	// Sequence view data
 	xr_vector<IRHIShaderResourceView*> m_seqSRView;
+	xr_unique_ptr<TextureSequence> Sequence;
 };
 
 struct resptrcode_texture :

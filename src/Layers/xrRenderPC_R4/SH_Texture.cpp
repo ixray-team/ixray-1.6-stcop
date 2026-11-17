@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 
 #include "../../xrEngine/Render.h"
+#include "../../xrEngine/TextureSequence.h"
 
 #include "../../xrEngine/tntQAVI.h"
 #include "../../xrEngine/xrTheora_Surface.h"
@@ -289,6 +290,14 @@ void CTexture::apply_avi(u32 dwStage)
 
 void CTexture::apply_seq(u32 dwStage)
 {
+	if (Sequence)
+	{
+		const u32 Frame = Sequence->GetFrame(Device.dwTimeContinual);
+		pSurface = seqDATA[Frame];
+		m_pSRView = m_seqSRView[Frame];
+		Apply(dwStage);
+		return;
+	}
 	// SEQ
 	u32	frame = Device.dwTimeContinual / seqMSPF;
 	u32	frame_data = (u32)seqDATA.size();
@@ -512,40 +521,30 @@ void CTexture::LoadImpl()
 	}
 	else if (FS.exist(fn, _game_textures_, *cName, ".seq"))
 	{
-		// Sequence
-		string256 buffer;
-		IReader* _fs = FS.r_open(fn);
-
-		flags.seqCycles = false;
-		_fs->r_string(buffer, sizeof(buffer));
-		if (0 == _stricmp(buffer, "cycled"))
+		IReader* Reader = FS.r_open(fn);
+		Sequence = xr_make_unique<TextureSequence>();
+		const bool IsValid = Reader && Sequence->Load(*Reader, fn);
+		if (Reader)
 		{
-			flags.seqCycles = true;
-			_fs->r_string(buffer, sizeof(buffer));
+			FS.r_close(Reader);
 		}
-		u32 fps = atoi(buffer);
-		seqMSPF = 1000 / fps;
-
-		while (!_fs->eof())
+		if (IsValid)
 		{
-			_fs->r_string(buffer, sizeof(buffer));
-			_Trim(buffer);
-			if (buffer[0])
+			// All frames are loaded here. Rendering and section commands never reopen the SEQ.
+			for (const auto& Texture : Sequence->GetResources())
 			{
-				// Load another texture
-				u32	mem = 0;
-				pSurface = ::RImplementation.texture_load(buffer, mem);
-				if (pSurface)
-				{
-					seqDATA.push_back(pSurface);
-					m_seqSRView.push_back(nullptr);
-					m_seqSRView.back() = GRHI->CreateShaderResourceView(seqDATA.back(), nullptr);
-					flags.MemoryUsage += mem;
-				}
+				u32 Memory = 0;
+				IRHISurface* Surface = RImplementation.texture_load(*Texture, Memory);
+				seqDATA.push_back(Surface);
+				m_seqSRView.push_back(Surface ? GRHI->CreateShaderResourceView(Surface, nullptr) : nullptr);
+				flags.MemoryUsage += Memory;
 			}
 		}
+		else
+		{
+			Sequence.reset();
+		}
 		pSurface = nullptr;
-		FS.r_close(_fs);
 	}
 	else
 	{
@@ -577,6 +576,7 @@ void CTexture::Unload()
 	xrCriticalSectionGuard Guard(LoadGuard);
 	FinishLoading();
 	if (!can_unload) return;
+	Sequence.reset();
 	ShadowCacheRevision.fetch_add(1, std::memory_order_relaxed);
 	flags.bLoaded = false;
 	flags.bLoadedAsStaging = false;

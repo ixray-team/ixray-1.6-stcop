@@ -31,4 +31,5 @@ void CEngine::Destroy	()
 {
 	Engine.Sheduler.Destroy				( );
 	Engine.External.Destroy				( );
+	SequenceSections.Clear();
 }
