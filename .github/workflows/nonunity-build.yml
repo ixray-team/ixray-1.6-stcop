@@ -66,10 +66,14 @@ jobs:
       - name: Configure engine
         run: |
           cmake `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-NonUnity
+            -S . `
+            -B build/${{ matrix.platform }}/${{ matrix.preset }}-NonUnity `
+            -G "Visual Studio 17 2022" `
+            -A ${{ matrix.platform }} `
+            -DIXRAY_UNITYBUILD=OFF
 
       - name: Build engine
         run: |
           cmake `
-            --build `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-NonUnity-${{ matrix.config }}
+            --build build/${{ matrix.platform }}/${{ matrix.preset }}-NonUnity `
+            --config ${{ matrix.config }}

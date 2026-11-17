@@ -67,16 +67,21 @@ jobs:
       - name: Configure utilities
         run: |
           cmake `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} `
+            -S . `
+            -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} `
+            -G "Visual Studio 17 2022" `
+            -A ${{ matrix.platform }} `
+            -DIXRAY_UTILS=ON `
+            -DIXRAY_MP=ON `
             -DIXRAY_CI=ON `
             -DIXRAY_UTILS_OPTIX=ON
 
       - name: Build utilities
         run: |
           cmake `
-            --build `
-            --target TextureCloner xrCompress mp_configs_verifyer mp_gpprof_server mp_balancer mp_screenshots_info xrLevelBuilder `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
+            --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} `
+            --config ${{ matrix.config }} `
+            --target TextureCloner xrCompress mp_configs_verifyer mp_gpprof_server mp_balancer mp_screenshots_info xrLevelBuilder
 
       - name: Upload binaries
         uses: actions/upload-artifact@v7

@@ -59,8 +59,8 @@ Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, 
 Enable the NVIDIA backend to download its build dependencies automatically:
 
 ```powershell
-cmake --preset Utilities-x64-Windows -DIXRAY_UTILS_OPTIX=ON
-cmake --build --preset Utilities-x64-Windows-RelWithDebInfo --target xrLevelBuilder
+cmake -S . -B build/x64/Utilities-Windows -G "Visual Studio 17 2022" -A x64 -DIXRAY_UTILS=ON -DIXRAY_MP=ON -DIXRAY_UTILS_OPTIX=ON
+cmake --build build/x64/Utilities-Windows --config RelWithDebInfo --target xrLevelBuilder
 ```
 
 Without explicit SDK roots, configuration downloads SHA-256-pinned OptiX 9.0.0 headers
@@ -68,7 +68,7 @@ and the NVCC, CRT, CUDA Runtime, NVML development, CCCL and NVVM components of C
 The NVIDIA release manifest is also pinned by SHA-256.
 They are extracted under `build/x64/Utilities-Windows/_deps/nvidia/`, outside the published
 NuGet packages. No system-wide CUDA installation or GPU is needed to compile PTX.
-MSVC must be supported by the selected CUDA version; use the VS 2022 preset for the
+MSVC must be supported by the selected CUDA version; use the Visual Studio 17 2022 generator for the
 downloaded CUDA 13.4.3 toolchain. The NVIDIA backend requires a compatible GPU and
 driver at runtime. Use a driver supporting CUDA 13.4 PTX (R615 or newer); the lower
 OptiX 9.0.0 driver minimum alone does not guarantee compatibility with newer PTX.
