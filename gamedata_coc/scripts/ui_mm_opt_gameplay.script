@@ -36,6 +36,7 @@ function opt_gameplay:InitControls(x, y, xml, handler)
 	end	
 	handler:addCheck(self, true, "ui_mm_show_weapon", "hud_weapon", system_depends.sdNothing)
 	handler:addCheck(self, true, "ui_mm_crouch_toggle", "g_crouch_toggle", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_simplified_pickup", "cl_cod_pickup_mode", system_depends.sdNothing)
 
 	handler:lineFrame(self, true, "st_ui_settings")
 

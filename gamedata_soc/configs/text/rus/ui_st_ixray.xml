@@ -402,6 +402,9 @@
 	<string id="ui_mm_hit_slowmo">
 		<text>Замедление после урона</text>
 	</string>
+	<string id="ui_mm_simplified_pickup">
+		<text>Упрощенный подбор</text>
+	</string>
 	<string id="ui_mm_wpn_aim_toggle">
 		<text>Прицеливание по клику</text>
 	</string>
