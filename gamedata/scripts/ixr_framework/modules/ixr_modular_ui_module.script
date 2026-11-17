@@ -4,6 +4,61 @@
 	Author: FFx0001
 ]]
 
+local CONST_ROOT_SETTER_METHODS = {
+	"SetScale",
+	"InitTexture",
+	"InitAltTexture",
+	"SetStretchTexture",
+	"SetTextureColor",
+	"SetTextureBlendMask",
+	"SetTextureBlendMaskPosition",
+	"SetLightEffect",
+	"SetLightEffectPosition",
+	"SetLightEffectIsolation",
+	"SetLightEffectMask",
+	"SetLightEffectMaskPosition",
+	"SetLightEffectSurfaceColor",
+	"SetVolumetricLight",
+	"SetVolumetricLightNearClip",
+	"SetVolumetricLightColor",
+	"SetVolumetricLightNoise",
+	"SetDust",
+	"SetDustColor",
+	"SetDustIntensity",
+	"SetDustAnimation",
+	"SetLightEffectIntensity",
+	"SetFlashlightInterference",
+	"SetBlurredTextureShadow",
+	"SetBlurredTextureShadowHeight",
+	"SetBlurredTextureShadowLightRadius",
+	"SetBlurredTextureShadowFalloff",
+	"SetBlurredTextureShadowOpacityRange",
+	"SetBlurredTextureShadowColor",
+}
+
+local CONST_ROOT_GETTER_METHODS = {
+	"GetLightEffectEnabled",
+	"GetBlurredTextureShadowEnabled",
+}
+
+local CONST_ROOT_METHOD_ALIASES = {
+	SetFlashlight = "SetLightEffect",
+	SetFlashlightPosition = "SetLightEffectPosition",
+	SetFlashlightIsolation = "SetLightEffectIsolation",
+	SetFlashlightMask = "SetLightEffectMask",
+	SetFlashlightMaskPosition = "SetLightEffectMaskPosition",
+	SetFlashlightSurfaceColor = "SetLightEffectSurfaceColor",
+	SetFlashlightVolume = "SetVolumetricLight",
+	SetFlashlightVolumeNearClip = "SetVolumetricLightNearClip",
+	SetFlashlightVolumeColor = "SetVolumetricLightColor",
+	SetFlashlightVolumeNoise = "SetVolumetricLightNoise",
+	SetFlashlightDust = "SetDust",
+	SetFlashlightDustColor = "SetDustColor",
+	SetFlashlightDustIntensity = "SetDustIntensity",
+	SetFlashlightDustAnimation = "SetDustAnimation",
+	GetFlashlightEnabled = "GetLightEffectEnabled",
+}
+
 local ixr_modular_ui = {
 	use_file_log = true,
 	use_console_log = false,
@@ -128,7 +183,7 @@ end
 -- Проверить принадлежность окна ветке, включая сам корень.
 function ixr_modular_ui.controlls.is_inside(control, parent)
 	while control do
-		if control == parent then
+		if IsSameUIWindow(control, parent) then
 			return true
 		end
 		control = control:GetParent()
@@ -146,16 +201,36 @@ function ixr_modular_ui.controlls.check_parent(control, parent)
 	return true
 end
 
+-- Найти владельца корневого окна по C++-указателю, независимо от Lua-обёртки.
+function ixr_modular_ui.controlls.get_window_owner(window)
+
+	if not window then
+		return nil
+	end
+
+	for owned_window, owner in pairs(ixr_modular_ui.dynamic_vars.ui_window_owners) do
+
+		if IsSameUIWindow(window, owned_window) then
+			return owner
+		end
+
+	end
+	return nil
+end
+
 -- Найти ближайший UI, содержащий контрол.
 function ixr_modular_ui.controlls.get_ui_owner(control)
 	local parent = control:GetParent()
 	while parent do
-		local owner = ixr_modular_ui.dynamic_vars.ui_window_owners[parent]
+		local owner = ixr_modular_ui.controlls.get_window_owner(parent)
+
 		if owner then
 			return owner
 		end
+
 		parent = parent:GetParent()
 	end
+	return nil
 end
 
 -- Отсоединить окно без удаления его дерева.
@@ -173,9 +248,9 @@ function ixr_modular_ui.controlls.attach(control, parent)
 		return false
 	end
 
-	if control:GetParent() ~= parent then
+	if not IsSameUIWindow(control:GetParent(), parent) then
 		ixr_modular_ui.controlls.detach(control)
-		control:SetAutoDelete(ixr_modular_ui.dynamic_vars.ui_window_owners[control] == nil)
+		control:SetAutoDelete(ixr_modular_ui.controlls.get_window_owner(control) == nil)
 		parent:AttachChild(control)
 	end
 	return control
@@ -314,7 +389,7 @@ function ixr_modular_ui.ui.set_controll(state, name, control)
 		name = control
 	end
 
-	if state.controlls[name] and state.controlls[name] ~= control then
+	if state.controlls[name] and not IsSameUIWindow(state.controlls[name], control) then
 		IXRLog("::ERROR:: set_controll(...) имя контрола уже занято: " .. tostring(state.key_name) .. "/" .. tostring(name))
 		return false
 	end
@@ -560,6 +635,36 @@ function ixr_modular_ui.ui.get_or_create(key_name)
 		window:SetTreeOpacity(value)
 		return api
 	end
+
+	-- Настроить масштаб, текстуры и освещение корня через публичный API UI.
+	for _, method in ipairs(CONST_ROOT_SETTER_METHODS) do
+		local method_name = method
+		api[method_name] = function(...)
+			local window = ixr_modular_ui.ui.get_window(state)
+			if not window then return false end
+			if not window[method_name] then
+				IXRLog("::ERROR:: UI engine method unavailable: " .. method_name .. ", UI: " .. tostring(state.key_name))
+				return false
+			end
+			window[method_name](window, ...)
+			return api
+		end
+	end
+
+	for _, method in ipairs(CONST_ROOT_GETTER_METHODS) do
+		local method_name = method
+		api[method_name] = function()
+			local window = ixr_modular_ui.ui.get_window(state)
+			if not window or not window[method_name] then return false end
+			return window[method_name](window)
+		end
+	end
+
+	-- Legacy names share the same API wrappers.
+	for alias, method in pairs(CONST_ROOT_METHOD_ALIASES) do
+		api[alias] = api[method]
+	end
+
 
 	-- Повернуть оформление окна UI.
 	function api.SetRotate(angle)
