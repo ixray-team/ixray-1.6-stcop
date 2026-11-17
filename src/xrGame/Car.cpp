@@ -34,6 +34,7 @@
 #include "../xrPhysics/IActivationShape.h"
 #include "../xrPhysics/PHCollideValidator.h"
 #include "CharacterPhysicsSupport.h"
+#include "PHMovementControl.h"
 #include "car_memory.h"
 
 #include "UIGameSP.h"
@@ -392,6 +393,12 @@ CCar::CCar()
 	m_burer_gravi_impulse_factor = 1.f;
 	m_push_impulse_factor = 1.f;
 	m_ram_damage_min_speed = 0.f;
+	m_ram_push_scale = 1.5f;
+	m_ram_max_push_speed = 25.f;
+	m_ram_contact_memory = 150.f;
+	m_ram_min_speed = 1.f;
+	m_ram_separation_bias = 3.f;
+	m_ram_mutant_push_speed = 0.5f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
 	m_brakes_pressure_current = 0.f;
@@ -1573,6 +1580,105 @@ void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, S
 	}
 }
 
+void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl* material_1, SGameMtl* material_2)
+{
+	if (!do_colide)
+		return;
+
+	CPhysicsShellHolder* A = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(true));
+	CPhysicsShellHolder* B = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(false));
+
+	CCar* Car = nullptr;
+	CPhysicsShellHolder* Other = nullptr;
+	if (A != nullptr && A->cast_car() != nullptr)
+	{
+		Car = static_cast<CCar*>(A);
+		Other = B;
+	}
+	else if (B != nullptr && B->cast_car() != nullptr)
+	{
+		Car = static_cast<CCar*>(B);
+		Other = A;
+	}
+
+	if (Car == nullptr || Other == nullptr || Car->m_pPhysicsShell == nullptr)
+		return;
+
+	if (Other->cast_actor() != nullptr || Other->cast_car() != nullptr || Other->cast_inventory_item() != nullptr)
+		return;
+
+	// Only living mutants use the additive ram push. Stalkers keep their
+	// existing movement behaviour, and ragdolls are handled by physics.
+	if (Other->cast_base_monster() == nullptr)
+		return;
+
+	CEntityAlive* Alive = Other->cast_entity_alive();
+	if (Alive == nullptr || !Alive->g_Alive() || Other->getDestroy())
+		return;
+
+	CCharacterPhysicsSupport* Support = Other->character_physics_support();
+	if (Support == nullptr || Support->movement() == nullptr)
+		return;
+
+	CPHMovementControl* Movement = Support->movement();
+	if (!Movement->CharacterExist())
+		return;
+
+	// The car's velocity at the actual contact point includes its angular
+	// motion, so a sideways or spinning hit is calculated correctly.
+	CPhysicsElement* CarElement = Car->m_pPhysicsShell->get_ElementByStoreOrder(0);
+	if (CarElement == nullptr)
+		return;
+
+	Fvector CarVelocity;
+	CarElement->GetPointVel(CarVelocity, cphc.GetPosition());
+
+	// The contact normal may be either way. Orient it from the car to the
+	// mutant, then cache the contact for the movement manager.
+	Fvector Normal = cphc.GetNormal();
+	Fvector ToMutant;
+	ToMutant.sub(Other->Position(), cphc.GetPosition());
+	if (Normal.dotproduct(ToMutant) < 0.f)
+		Normal.invert();
+
+	Normal.y = 0.f;
+	if (Normal.magnitude() < EPS_L)
+	{
+		Normal = ToMutant;
+		Normal.y = 0.f;
+	}
+	if (Normal.magnitude() < EPS_L)
+		return;
+	Normal.normalize_safe();
+
+	// Contact points on the far side of a deep overlap can produce a normal
+	// that points into the car. Prefer the stable car-centre-to-mutant
+	// direction in that case, otherwise a single contact set can push the
+	// mutant back and forth between opposite normals.
+	Fvector CenterDirection;
+	CenterDirection.sub(Other->Position(), Car->Position());
+	CenterDirection.y = 0.f;
+	if (CenterDirection.magnitude() > EPS_L)
+	{
+		CenterDirection.normalize_safe();
+		if (Normal.dotproduct(CenterDirection) < 0.25f)
+			Normal = CenterDirection;
+	}
+
+	// No impulse is applied to the car. The car's own collision reaction is
+	// left to ODE. The movement manager combines this contact with the
+	// mutant's path velocity every frame while the contact is fresh.
+	Movement->SetCarContact(
+		Normal,
+		CarVelocity,
+		Car->m_ram_separation_bias,
+		Car->m_ram_push_scale,
+		Car->m_ram_mutant_push_speed,
+		Car->m_ram_min_speed,
+		Car->m_ram_max_push_speed,
+		static_cast<u32>(Car->m_ram_contact_memory));
+}
+
 void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 {
 	CSE_PHSkeleton		*so = smart_cast<CSE_PHSkeleton*>(D);
@@ -1587,6 +1693,7 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	Init							();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
 	PPhysicsShell()->add_ObjectContactCallback(CarBodySurfaceCallback);
+	PPhysicsShell()->add_ObjectContactCallback(CarRamCallback);
 	SetDefaultNetState				(so);
 	CPHUpdateObject::Activate       ();
 
@@ -4189,6 +4296,19 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_ram_damage_min_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_damage_min_speed", m_ram_damage_min_speed);
 	if (m_ram_damage_min_speed < 0.f)
 		m_ram_damage_min_speed = 0.f;
+
+	m_ram_push_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_push_scale", m_ram_push_scale);
+	clamp(m_ram_push_scale, 0.f, 10.f);
+	m_ram_max_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_max_push_speed", m_ram_max_push_speed);
+	clamp(m_ram_max_push_speed, 0.f, 100.f);
+	m_ram_contact_memory = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_contact_memory", m_ram_contact_memory);
+	clamp(m_ram_contact_memory, 0.f, 2000.f);
+	m_ram_min_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_min_speed", m_ram_min_speed);
+	clamp(m_ram_min_speed, 0.f, 50.f);
+	m_ram_separation_bias = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_separation_bias", m_ram_separation_bias);
+	clamp(m_ram_separation_bias, 0.f, 15.f);
+	m_ram_mutant_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_push_speed", m_ram_mutant_push_speed);
+	clamp(m_ram_mutant_push_speed, 0.f, 5.f);
 
 	loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
 	loadcamera("car_look_cam", ini, camera[EctSecondCam]);

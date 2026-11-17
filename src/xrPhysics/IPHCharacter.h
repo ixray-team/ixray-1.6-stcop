@@ -120,6 +120,10 @@ public:
 	virtual void get_State(SPHNetState& State) = 0;
 	virtual void set_State(const SPHNetState& State) = 0;
 
+	// Kept at the end of the interface so adding it does not shift the vtable
+	// slots used by the actor/monster movement code in older modules.
+	virtual void SetExternalPush(bool Value) { (void)Value; }
+
 	virtual ~IPHCharacter() = default;
 };
 

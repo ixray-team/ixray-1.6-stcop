@@ -205,6 +205,8 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 
 	VERIFY				(movement_control);
 
+	movement_control->UpdateCarContact();
+
 	Fvector				motion;
 	dest_position		= object().Position();
 
@@ -216,8 +218,19 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 		
 
 		DBG_PH_MOVE_CONDITIONS( if(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)){movement_control->SetPosition(dest_position);if( movement_control->CharacterExist( ) )movement_control->DisableCharacter();})
+		bool car_contact = movement_control->IsCarContactActive();
+		Fvector contact_velocity;
+		if (car_contact) {
+			contact_velocity.set(0.f, 0.f, 0.f);
+			contact_velocity = movement_control->ApplyCarContact(contact_velocity);
+			movement_control->EnableCharacter();
+			movement_control->SetVelocity(contact_velocity);
+			m_speed = contact_velocity.magnitude();
+		}
 		if(movement_control->IsCharacterEnabled()) {
 			movement_control->Calculate(detail().path(),0.f,detail().m_current_travel_point,precision);
+			if (car_contact)
+				movement_control->SetVelocity(contact_velocity);
 			movement_control->GetPosition(dest_position);
 		}
 
@@ -258,6 +271,32 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 	if (detail().m_current_travel_point != current_travel_point)
 		on_travel_point_change	(detail().m_current_travel_point);
 	detail().m_current_travel_point	= current_travel_point;
+
+	// A fresh car contact is more than a one-shot impulse: every frame the
+	// movement manager decides whether the car pushes the mutant away or the
+	// mutant is allowed to push the car only slowly. The normal component is
+	// constrained, the tangential path component is preserved.
+	if (movement_control->IsCarContactActive()) {
+		Fvector path_velocity = dir_to_target;
+		path_velocity.normalize_safe();
+		if (path_velocity.y > 0.9f)
+			path_velocity.y = 0.8f;
+		if (path_velocity.y < -0.9f)
+			path_velocity.y = -0.8f;
+		path_velocity.normalize_safe();
+		path_velocity.mul(desirable_speed);
+
+		Fvector contact_velocity = movement_control->ApplyCarContact(path_velocity);
+		m_speed = contact_velocity.magnitude();
+
+		movement_control->EnableCharacter();
+		movement_control->SetVelocity(contact_velocity);
+		movement_control->Calculate(detail().path(), desirable_speed, detail().m_current_travel_point, precision);
+		movement_control->SetVelocity(contact_velocity);
+		movement_control->GetPosition(dest_position);
+		apply_collision_hit(movement_control);
+		return;
+	}
 
 	if (dist_to_target < EPS_L) {
 #pragma todo("Dima to ? : is this correct?")

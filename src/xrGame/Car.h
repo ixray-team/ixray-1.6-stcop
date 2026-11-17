@@ -233,6 +233,7 @@ static	const u16				cAsCallsnum						= 3;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void						CarBodySurfaceCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
+	static	void						CarRamCallback					(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	virtual void						PhDataUpdate				(float step)			;
 	void						UpdatePhDataObjects		();
 	void						UpdateEngineAndBrakes		(float step);
@@ -368,6 +369,12 @@ public:
 	float	m_burer_gravi_impulse_factor;
 	float	m_push_impulse_factor;
 	float	m_ram_damage_min_speed;
+	float	m_ram_push_scale;
+	float	m_ram_max_push_speed;
+	float	m_ram_contact_memory;
+	float	m_ram_min_speed;
+	float	m_ram_separation_bias;
+	float	m_ram_mutant_push_speed;
 
 	struct SHeadlightHideaway
 	{

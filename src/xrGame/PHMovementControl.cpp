@@ -62,6 +62,16 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	vPosition.set(0, 0, 0);
 	vExternalImpulse.set(0, 0, 0);
 	bExernalImpulse = false;
+	m_car_contact.normal.set(0.f, 0.f, 1.f);
+	m_car_contact.car_velocity.set(0.f, 0.f, 0.f);
+	m_car_contact.separation_bias = 0.f;
+	m_car_contact.ram_scale = 1.f;
+	m_car_contact.mutant_push_speed = 0.f;
+	m_car_contact.min_car_speed = 0.f;
+	m_car_contact.max_push_speed = 0.f;
+	m_car_contact_end = 0;
+	m_car_contact_active = false;
+
 	fLastMotionMag = 1.f;
 	SetPathDir(Fvector().set(0, 0, 1));
 
@@ -116,6 +126,97 @@ void CPHMovementControl::ApplyImpulse(const Fvector& dir,const float P)
 	
 	AddControlVel(force);
  	m_character->ApplyImpulse(dir,P);
+}
+
+void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car_velocity,
+	float separation_bias, float ram_scale, float mutant_push_speed,
+	float min_car_speed, float max_push_speed, u32 duration_ms)
+{
+	if (!m_character || !m_character->Exists() || m_character->IsActorCharacter() || duration_ms == 0)
+		return;
+
+	Fvector contact_normal = normal;
+	contact_normal.y = 0.f;
+	if (contact_normal.magnitude() < EPS_L)
+		return;
+	contact_normal.normalize_safe();
+
+	m_car_contact.normal = contact_normal;
+	m_car_contact.car_velocity = car_velocity;
+	m_car_contact.car_velocity.y = 0.f;
+	m_car_contact.separation_bias = separation_bias;
+	m_car_contact.ram_scale = ram_scale;
+	m_car_contact.mutant_push_speed = mutant_push_speed;
+	m_car_contact.min_car_speed = min_car_speed;
+	m_car_contact.max_push_speed = max_push_speed;
+	m_car_contact_end = Device.dwTimeGlobal + duration_ms;
+	m_car_contact_active = true;
+
+	m_character->SetExternalPush(true);
+}
+
+void CPHMovementControl::UpdateCarContact()
+{
+	if (!m_car_contact_active)
+		return;
+
+	if (!m_character || !m_character->Exists() || Device.dwTimeGlobal >= m_car_contact_end)
+	{
+		m_car_contact_active = false;
+		m_car_contact_end = 0;
+		if (m_character)
+			m_character->SetExternalPush(false);
+	}
+}
+
+bool CPHMovementControl::IsCarContactActive() const
+{
+	return m_car_contact_active
+		&& m_character
+		&& m_character->Exists()
+		&& Device.dwTimeGlobal < m_car_contact_end;
+}
+
+Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity) const
+{
+	if (!IsCarContactActive())
+		return path_velocity;
+
+	const SCarContact& contact = m_car_contact;
+	const float path_normal = path_velocity.dotproduct(contact.normal);
+	const float car_normal = contact.car_velocity.dotproduct(contact.normal);
+	const bool car_pushes = car_normal > contact.min_car_speed;
+
+	float target_normal = path_normal;
+	if (car_pushes)
+	{
+		const float car_target = car_normal + contact.separation_bias;
+		if (car_target > target_normal)
+			target_normal = car_target;
+	}
+
+	// A mutant may still push a car, but only slowly. This prevents it from
+	// being a kinematic bulldozer while keeping it from getting stuck.
+	if (target_normal < 0.f)
+	{
+		const float slow_push = -contact.mutant_push_speed;
+		if (slow_push > target_normal)
+			target_normal = slow_push;
+	}
+
+	float external_normal = target_normal - path_normal;
+	if (external_normal < 0.f)
+		external_normal = 0.f;
+
+	if (car_pushes && external_normal > 0.f)
+		external_normal *= contact.ram_scale;
+
+	if (external_normal > contact.max_push_speed)
+		external_normal = contact.max_push_speed;
+
+	Fvector result = path_velocity;
+	result.mad(contact.normal, external_normal);
+	return result;
 }
 
 void CPHMovementControl::SetVelocityLimit(float val)
@@ -1575,7 +1676,8 @@ void	CPHMovementControl::GetDeathPosition(Fvector& pos)
 
 bool	CPHMovementControl::IsCharacterEnabled()
 {
-	return m_character->IsEnabled() || bExernalImpulse || bNonInteractiveMode;
+	return m_character->IsEnabled() || bExernalImpulse || bNonInteractiveMode
+		|| IsCarContactActive();
 }
 void	CPHMovementControl::DisableCharacter()
 {

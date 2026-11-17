@@ -175,6 +175,7 @@ CPHSimpleCharacter::CPHSimpleCharacter() :
 	b_collision_restrictor_touch = false;
 	b_foot_mtl_check = true;
 	b_non_interactive = false;
+	m_external_push = false;
 }
 
 void CPHSimpleCharacter::TestPathCallback(bool& do_colide,bool bo1,CPHContact& contact,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
@@ -488,7 +489,7 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
 		return;
 	}
 
-	if (is_contact && !is_control && !b_lose_ground)
+	if (is_contact && !is_control && !b_lose_ground && !m_external_push)
 		Disabling();
 
 	if (ph_world->m_steps_num > m_ext_impuls_stop_step)
@@ -564,6 +565,12 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
 
 void CPHSimpleCharacter::PhTune(dReal step)
 {
+	// The actor never uses the car contact external-push mode. Clear a stale
+	// flag unconditionally so an accidental contact cannot freeze on-foot
+	// movement permanently.
+	if (IsActorCharacter())
+		m_external_push = false;
+
 	m_last_move.set(cast_fv(dBodyGetPosition(m_body)));
 	m_elevator_state.PhTune(step);
 	b_air_contact_state=!is_contact;
@@ -605,7 +612,7 @@ void CPHSimpleCharacter::PhTune(dReal step)
 		return;
 	}
 
-	is_control = m_acceleration.magnitude() > 0.1f;
+	is_control = !m_external_push && m_acceleration.magnitude() > 0.1f;
 
 	b_depart=was_contact&&(!is_contact);
 	b_stop_control=was_control&&(!is_control);
@@ -937,6 +944,12 @@ void CPHSimpleCharacter::ApplyAcceleration()
 {
 	dVectorSetZero(m_control_force);
 
+	// While an external push is active the movement controller owns the
+	// velocity. Path acceleration and the lateral grip would otherwise erase
+	// the sideways component added by a car ram.
+	if (m_external_push)
+		return;
+
 	dMass m;
 	dBodyGetMass(m_body,&m);
 
@@ -1145,7 +1158,15 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 
 		dReal l_limit;
 
-		if (is_control && !b_lose_control)
+		if (m_external_push)
+		{
+			// The car push is capped by the movement controller, but a deep
+			// contact can still eject the body at an absurd speed. Keep a
+			// sane upper bound while the external velocity is active.
+			constexpr float ExternalPushVelocityLimit = 100.f;
+			l_limit = std::max(m_max_velocity, ExternalPushVelocityLimit);
+		}
+		else if (is_control && !b_lose_control)
 			l_limit = m_max_velocity / phTimefactor;
 		else
 			l_limit = default_l_limit;
@@ -1182,7 +1203,7 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 				else
 					CutVelocity(l_limit,0.f);
 
-				if(is_control&&!b_lose_control)
+				if(is_control&&!b_lose_control&&!m_external_push)
 				{
 					dBodySetPosition(m_body,
 					m_safe_position[0]+linear_velocity[0]*fixed_step,
