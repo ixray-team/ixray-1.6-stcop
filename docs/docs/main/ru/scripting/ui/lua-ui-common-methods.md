@@ -26,8 +26,37 @@
 * `SetTreeOpacity`
 * `SetScale`
 * `RootToLocal`
+* `IsSameUIWindow`
 
 #### Описание методов:
+
+### Сравнение окон
+
+Глобальная функция сравнивает C++-указатели окон, включая ссылки на одно окно, возвращённые движком через разные Lua-обёртки или базовые классы. Реализована в исходниках текущей ветки; требуется обновлённый `xrUI`.
+
+```lua
+--// Проверить, относятся ли две ссылки к одному движковому окну.
+IsSameUIWindow(left, right)
+args:
+  left (CUIWindow|nil)(required) - окно, его наследник или nil.
+  right (CUIWindow|nil)(required) - окно, его наследник или nil.
+retval: (boolean) - true для одного C++-окна и для пары nil/nil; иначе false.
+```
+
+Используй эту функцию для сравнения результатов `GetMainMenuWindow()`, `TopInputReceiver()`, `GetParent()` и сохранённых ссылок на контролы. Операторы Lua `==` и `~=` могут вызвать ошибку `No such operator [__eq] defined in class [CUIDialogWnd]`. `rawequal` сравнивает Lua-обёртки, поэтому не определяет тождество разных ссылок на одно C++-окно.
+
+```lua
+local holder = GetCurrentDialogHolder()
+local receiver = holder and holder:TopInputReceiver() or nil
+local menu = GetMainMenuWindow()
+
+if IsSameUIWindow(receiver, menu) then
+	-- Верхнее окно ввода совпадает с главным меню.
+	update_menu(menu)
+end
+```
+
+Функция проверяет только тождество указателей, не состояние видимости или срок жизни окон.
 
 ### Реальная дельта кадра устройства
 

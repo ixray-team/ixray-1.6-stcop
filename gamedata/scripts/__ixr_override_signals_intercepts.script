@@ -8,6 +8,11 @@
 
 
 function configure(_ref_ixr_signals)
+	-- Shared UI-window observer in ixr_framework/extend_callbacks/ixr_callback__ui_window.script.
+	_ref_ixr_signals.add_intercept("on_ui_window_changed", {"CUIDialogWnd_or_nil"})
+	_ref_ixr_signals.add_intercept("on_main_menu_opened", {"CUIScriptWnd"})
+	_ref_ixr_signals.add_intercept("on_main_menu_closed", {})
+	_ref_ixr_signals.add_intercept("on_main_menu_opened_per_frame_update", {"CUIScriptWnd"})
 	--[[ отсуствует по различным причинам
 		_ref_ixr_signals.add_intercept("vehicle_on_death_callback",         		{"number"}) -- ph_car.script отсуствует
 		_ref_ixr_signals.add_intercept("actor_on_frequency_change",       			{"number", "number"}) -- не имплементирован скрипт item_radio.script

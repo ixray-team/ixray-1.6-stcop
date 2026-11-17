@@ -14,6 +14,14 @@
 #include "UIStackPanel.h"
 #include "UIGamepadLegend.h"
 
+namespace
+{
+	bool IsSameUIWindow(const CUIWindow* Left, const CUIWindow* Right)
+	{
+		return Left == Right;
+	}
+}
+
 CFontManager& mngr()
 {
 	return UI().Font();
@@ -128,6 +136,7 @@ void CUIWindow::script_register(lua_State *L)
 		def("GetFontLetterica25",			&ui_font_letter_25),
 		def("GetCursorPosition",			&GetCursorPosition_script),
 		def("GetCurrentDialogHolder", &CurrentDialogHolder),
+		def("IsSameUIWindow", &IsSameUIWindow),
 		def("SetCursorPosition",			&SetCursorPosition_script),
 		def("FitInRect",					&fit_in_rect),
 		def("SetARGB", &SetARGB),

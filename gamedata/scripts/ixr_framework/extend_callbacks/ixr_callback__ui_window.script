@@ -1,0 +1,52 @@
+local started = false
+local menu_window = nil
+local input_window = false
+
+function on_game_start()
+
+	if started then
+		return
+	end
+
+	started = true
+	RegisterScriptCallback("on_frame", on_frame)
+end
+
+function on_frame()
+	local active = IsMainMenuActive()
+
+	if not active and not menu_window and IsActionThrottled("ixr.ui_window.discovery", 250) then
+		return
+	end
+
+	local receiver = GetCurrentDialogHolder()
+	receiver = receiver and receiver:TopInputReceiver() or nil
+	local menu = active and GetMainMenuWindow() or nil
+
+	if menu and (not menu:IsShown() or (receiver and not IsSameUIWindow(receiver, menu))) then
+		menu = nil
+	end
+
+	if menu_window and not IsSameUIWindow(menu_window, menu) then
+		SendScriptCallback("on_main_menu_closed")
+	end
+
+	if input_window == false or not IsSameUIWindow(input_window, receiver) then
+		input_window = receiver
+		SendScriptCallback("on_ui_window_changed", receiver)
+	end
+
+	if not IsSameUIWindow(menu_window, menu) then
+		menu_window = menu
+
+		if menu then
+			SendScriptCallback("on_main_menu_opened", menu)
+		end
+
+	end
+
+	if menu then
+		SendScriptCallback("on_main_menu_opened_per_frame_update", menu)
+	end
+
+end

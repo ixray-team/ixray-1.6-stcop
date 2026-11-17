@@ -18,6 +18,7 @@
 | `ixr_callback__on_game_present.script` | Объединяет `actor_on_spawn` и `on_load_screen_await_any_key_pressed` с учётом режима загрузочного экрана; отправляет `on_game_present`. |
 | `ixr_callback__torch_enable_disable.script` | Раз в 250 мс проверяет фонарь, отправляет `actor_on_torch_enabled`/`actor_on_torch_disabled`; объект может быть `nil`. |
 | `ixr_callback__item_extend_description.script` | После готовности актора обрабатывает фокус предмета, отправляет `on_item_draw_description` с таблицей результата и применяет объединённое описание. |
+| `ixr_callback__ui_window.script` | Через `on_frame` и IXR Throttler наблюдает актуальное окно ввода и главную страницу меню; отправляет `on_ui_window_changed`, `on_main_menu_opened`, `on_main_menu_closed` и `on_main_menu_opened_per_frame_update`. В закрытом меню не рассылает покадровые обновления аддона. |
 
 ## Правила расширения
 
