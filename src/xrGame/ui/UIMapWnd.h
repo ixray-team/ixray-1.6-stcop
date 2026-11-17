@@ -125,6 +125,18 @@ public:
 	CMapLocation*				UnderSpot(Fvector RealPosition, CUILevelMap*);
 	//-qweasdd
 
+	bool						PlacePersonalSpotAtCursor();
+	bool						PlacePersonalSpotAtActor();
+	bool						RemovePersonalSpotAtCursor();
+	bool						TogglePersonalSpotNavigation();
+	bool						FocusPersonalSpot(bool Next);
+
+private:
+	CUILevelMap*				FindLevelMapUnderCursor(Fvector& RealPosition);
+	ALife::_OBJECT_ID			LastFocusedPersonalSpotId = ALife::INVALID_OBJECT_ID;
+
+public:
+
 	void						ViewGlobalMap	();
 	void						ViewActor		();
 	void						ViewZoomIn		();

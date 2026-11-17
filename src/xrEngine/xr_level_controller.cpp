@@ -182,6 +182,16 @@ ENGINE_API _action  actions[]		= {
 	{ "inv_unload_ruck",	kINV_UNLOAD_RUCK		,_both,			agUIGeneral},
 	{ "quick_bolt",			kQUICK_BOLT				,_both,			agDefault},
 
+	{ "pda_tasks_personal_spot_cursor",	kPDA_TASKS_PERSONAL_SPOT_CURSOR,	_both, agUITaskMenu},
+	{ "pda_tasks_personal_spot_actor",	kPDA_TASKS_PERSONAL_SPOT_ACTOR,		_both, agUITaskMenu},
+	{ "pda_tasks_personal_spot_remove",	kPDA_TASKS_PERSONAL_SPOT_REMOVE,	_both, agUITaskMenu},
+	{ "pda_tasks_personal_spot_track",	kPDA_TASKS_PERSONAL_SPOT_TRACK,		_both, agUITaskMenu},
+	{ "pda_tasks_personal_spot_next",	kPDA_TASKS_PERSONAL_SPOT_NEXT,		_both, agUITaskMenu},
+	{ "pda_tasks_personal_spot_prev",	kPDA_TASKS_PERSONAL_SPOT_PREV,		_both, agUITaskMenu},
+	{ "personal_spot_quick",			kPERSONAL_SPOT_QUICK,				_sp,   agDefault},
+	{ "pda_tasks_personal_spots_list",	kPDA_TASKS_PERSONAL_SPOTS_LIST,		_both, agUITaskMenu},
+	{ "pda_tasks_map_show_target",		kPDA_TASKS_MAP_SHOW_TARGET,			_both, agUITaskMenu},
+
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															
 
@@ -1426,6 +1436,16 @@ public:
 		{
 			FS.update_path(_cfg, _game_config_, platformFileDir);
 			xr_strconcat(cmd, "cfg_load ", _cfg);
+			Console->Execute(cmd);
+		}
+
+		string_path ModDir;
+		FS.update_path(ModDir, _game_config_, "ixray_settings\\");
+		FS_FileSet ModFiles;
+		FS.file_list(ModFiles, ModDir, FS_ListFiles, "mod_default_controls_*.ltx");
+		for (const FS_File& ModFile : ModFiles)
+		{
+			xr_strconcat(cmd, "cfg_load ", ModDir, ModFile.name.c_str());
 			Console->Execute(cmd);
 		}
 	}

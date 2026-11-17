@@ -23,16 +23,7 @@ CUIPdaSpot::CUIPdaSpot()
 
 	m_spotID = ALife::_OBJECT_ID(-1);
 
-	m_spotType = pSettings->read_if_exists<str_c>("user_spots", "spot_type", "treasure");
-	// FFx0001 override spot section from global config
-	if (pGameGlobals->section_exist("pda_map") && pGameGlobals->line_exist("pda_map", "hand_spot_icon_xml_section"))
-	{
-		const shared_str override_spot_name = pGameGlobals->r_string("pda_map", "hand_spot_icon_xml_section");
-
-		if (override_spot_name.c_str() != nullptr) {
-			m_spotType = override_spot_name;
-		}
-	}
+	m_spotType = CMapManager::UserSpotType();
 
 	last_cursor_pos.set(UI_BASE_WIDTH / 2.f, UI_BASE_HEIGHT / 2.f);
 	InitControls();
@@ -74,6 +65,11 @@ void CUIPdaSpot::InitControls()
 	Register(m_btn_ok);
 	AddCallback(m_btn_ok, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIPdaSpot::OnApply));
 
+	if (uiXml.NavigateToNode("t_hint", 0))
+	{
+		UIHelper::CreateStatic(uiXml, "t_hint", this);
+	}
+
 	m_btn_cancel = UIHelper::Create3tButton(uiXml, "btn_cancel", this);
 	Register(m_btn_cancel);
 	AddCallback(m_btn_cancel, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIPdaSpot::OnExit));
@@ -81,9 +77,16 @@ void CUIPdaSpot::InitControls()
 
 void CUIPdaSpot::OnAdd(CUIWindow* ui, void* d)
 {
-	CMapLocation* ml = Level().MapManager().AddUserLocation(m_spotType, m_levelName, m_position);
-	ml->SetHint(m_editBox->GetText());
-	ml->SetSerializable(true);
+	CMapManager& MapManager = Level().MapManager();
+	const char* Name = m_editBox->GetText();
+	if (Name && Name[0])
+	{
+		MapManager.AddPersonalSpot(m_levelName, m_position, Name);
+	}
+	else
+	{
+		MapManager.AddPersonalSpot(m_levelName, m_position, MapManager.MakeDefaultPersonalSpotName(m_levelName).c_str());
+	}
 
 	Exit();
 }
@@ -143,6 +146,15 @@ bool CUIPdaSpot::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	switch (dik)
 	{
+	case SDL_SCANCODE_RETURN:
+	case SDL_SCANCODE_KP_ENTER:
+	{
+		if (IsShown() && keyboard_action == WINDOW_KEY_PRESSED)
+		{
+			OnApply(this, nullptr);
+			return true;
+		}
+	}break;
 	case SDL_SCANCODE_ESCAPE:
 	{
 		if (IsShown())

@@ -29,6 +29,7 @@ class CUIActorInfoWnd;
 class CUIDiaryWnd;
 class CUIMapWnd;
 class CUIPdaSpot;
+class CUIHotkeysHint;
 
 class CUIPdaWnd final : public CUIDialogWnd
 {
@@ -66,11 +67,14 @@ protected:
 	CUIFrameLineWnd*		UIMainButtonsBackground;
 	CUIFrameLineWnd*		UITimerBackground;
 	CPdaUiSounds			m_uiSounds;
+	xr_vector<CUIHotkeysHint*> HotkeysHints;
+	bool					HotkeysHintsControllerMode = false;
 
 	void					UpdateDateTime					(bool force = false);
 	void					UpdateLocationName				();
 	void					SetCaptionWithOptionalLocation	(const char* baseText);
 	void					DrawUpdatedSections				();
+	void					RefreshHotkeysHints				(bool Force);
 	void					BuildUpdateBadgeSections		();
 	void					InitTabBackgrounds				(CUIXml& xml);
 	void					SetActiveTabBackground			(const shared_str& sectionId);
@@ -125,6 +129,7 @@ public:
 			void			SetCaption			(const char* text);
 			void			Show_SecondTaskWnd	(bool status);
 			void			Show_MapLegendWnd	(bool status);
+			bool			SwitchSecondaryTab	(bool Next);
 
 			void 			SetActiveDialog		(CUIWindow* pUI) 	{ m_pActiveDialog = pUI; };
 			CUIWindow*		GetActiveDialog		() 					{return m_pActiveDialog;};

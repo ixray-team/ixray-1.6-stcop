@@ -38,7 +38,7 @@ enum ELocationFlags
 };
 
 protected:
-	const char*					m_type;
+	shared_str					m_type;
 	flags32					m_flags;
 	shared_str				m_hint;
 	CMapSpot*				m_level_spot;
@@ -100,7 +100,7 @@ public:
 virtual ~CMapLocation					() override;
 virtual void			destroy							() override;
 
-	IC		const char*			GetType				() const		{ return m_type; };
+	IC		const char*			GetType				() const		{ return m_type.c_str(); };
 	Fvector2				SpotSize			();
 	IC bool					IsUserDefined		() const		{ return !!m_flags.test(eUserDefined); }
 	IC void					SetUserDefinedFlag	(bool state)	{ m_flags.set(eUserDefined, state); }

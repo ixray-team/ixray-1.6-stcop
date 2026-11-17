@@ -35,6 +35,7 @@
 #include "UIGameCustom.h"
 #include "ui/UIPdaWnd.h"
 #include "ui/UITaskWnd.h"
+#include "map_manager.h"
 
 #include "map_manager.h"
 #include "ui/UIMainIngameWnd.h"
@@ -1504,6 +1505,8 @@ void CActor::save(NET_Packet& output_packet)
 	output_packet.w_u32(m_statDeaths);
 	output_packet.w_u32(m_statHelpWounded);
 
+	Level().MapManager().SaveSpotFilter(output_packet);
+
 	//output_packet.w_u8(u8(m_inventory_disabled));
 	//output_packet.w_u8(u8(m_pda_disabled));
 	//output_packet.w_u8(u8(m_use_disabled));
@@ -1522,6 +1525,7 @@ void CActor::load(IReader& input_packet)
 		task_wnd->QuestNpcsEnabled(!!input_packet.r_u8());
 		task_wnd->SecondaryTasksEnabled(!!input_packet.r_u8());
 		task_wnd->PrimaryObjectsEnabled(!!input_packet.r_u8());
+		task_wnd->SyncLegacySpotFilters();
 	}
 	else
 	{
@@ -1560,6 +1564,8 @@ void CActor::load(IReader& input_packet)
 		m_statHelpWounded = 0;
 	}
 	m_isMoneyStatInitialized = true;
+
+	Level().MapManager().LoadSpotFilter(input_packet);
 
 	//set_inventory_disabled(!!input_packet.r_u8());
 	//set_pda_disabled(!!input_packet.r_u8());

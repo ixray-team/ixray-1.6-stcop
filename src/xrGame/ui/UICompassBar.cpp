@@ -2579,7 +2579,7 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
         _activeAltitudeArrow->Show(false);
     }
     CMapLocation* activeLoc = _activeTargetLoc;
-    if (!activeLoc)
+    if (!activeLoc || Level().MapManager().IsSpotHidden(*activeLoc))
     {
         _lastActiveLoc = nullptr;
         return;

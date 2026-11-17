@@ -20,6 +20,7 @@
 #include "map_hint.h"
 #include "../../xrUI/UICursor.h"
 #include "UIPdaSpot.h"
+#include "UITaskWnd.h"
 #include "PdaUiSound.h"
 #include "UIMapZoomScale.h"
 
@@ -1196,8 +1197,151 @@ CMapLocation* CUIMapWnd::UnderSpot(Fvector RealPosition, CUILevelMap* curr_map)
 // -------------------------------------------------------------
 void CUIMapWnd::CreateSpotWindow(Fvector RealPosition, shared_str map_name)
 {
+	if (!Level().MapManager().CanAddPersonalSpot())
+	{
+		if (CUITaskWnd* TaskWnd = smart_cast<CUITaskWnd*>(m_pParentWnd))
+		{
+			TaskWnd->ShowPersonalSpotsLimit();
+		}
+		return;
+	}
+
 	m_UserSpotWnd->Init(u16(-1), map_name.c_str(), RealPosition, true);
 	m_UserSpotWnd->ShowDialog(true);
+}
+
+CUILevelMap* CUIMapWnd::FindLevelMapUnderCursor(Fvector& RealPosition)
+{
+	if (!m_GlobalMap || m_GlobalMap->Locked())
+	{
+		return nullptr;
+	}
+
+	Fvector2 CursorPos = GetUICursor().GetCursorPosition();
+	for (const auto& [MapName, CustomMap] : m_GameMaps)
+	{
+		CUILevelMap* LevelMap = smart_cast<CUILevelMap*>(CustomMap);
+		if (!LevelMap || !LevelMap->IsShown())
+		{
+			continue;
+		}
+
+		Frect MapRect;
+		LevelMap->GetAbsoluteRect(MapRect);
+		if (!MapRect.in(CursorPos))
+		{
+			continue;
+		}
+
+		if (ConvertCursorPosToMap(&RealPosition, LevelMap))
+		{
+			return LevelMap;
+		}
+	}
+
+	return nullptr;
+}
+
+bool CUIMapWnd::PlacePersonalSpotAtCursor()
+{
+	Fvector RealPosition;
+	CUILevelMap* LevelMap = FindLevelMapUnderCursor(RealPosition);
+	if (!LevelMap)
+	{
+		return false;
+	}
+
+	SetPersonalSpotPlacement(false);
+	if (CMapLocation* Under = UnderSpot(RealPosition, LevelMap))
+	{
+		ShowSettingsWindow(Under->ObjectID(), Under->GetLastPosition(), Under->GetLevelName());
+	}
+	else
+	{
+		CreateSpotWindow(RealPosition, LevelMap->MapName());
+	}
+	return true;
+}
+
+bool CUIMapWnd::RemovePersonalSpotAtCursor()
+{
+	Fvector RealPosition;
+	CUILevelMap* LevelMap = FindLevelMapUnderCursor(RealPosition);
+	if (!LevelMap)
+	{
+		return false;
+	}
+
+	CMapLocation* Under = UnderSpot(RealPosition, LevelMap);
+	if (!Under)
+	{
+		return false;
+	}
+
+	HideCurHint();
+	if (m_cur_location == Under)
+	{
+		m_cur_location = nullptr;
+	}
+	if (!Level().MapManager().RemovePersonalSpot(Under))
+	{
+		return false;
+	}
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::Cancel);
+	}
+	return true;
+}
+
+bool CUIMapWnd::TogglePersonalSpotNavigation()
+{
+	Fvector RealPosition;
+	CUILevelMap* LevelMap = FindLevelMapUnderCursor(RealPosition);
+	CMapLocation* Under = LevelMap ? UnderSpot(RealPosition, LevelMap) : nullptr;
+
+	if (!Level().MapManager().TogglePersonalSpotNavigation(Under))
+	{
+		return false;
+	}
+
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::Confirm);
+	}
+	return true;
+}
+
+bool CUIMapWnd::FocusPersonalSpot(bool Next)
+{
+	CMapLocation* Target = Level().MapManager().GetAdjacentPersonalSpot(LastFocusedPersonalSpotId, Next);
+	if (!Target)
+	{
+		return false;
+	}
+
+	LastFocusedPersonalSpotId = Target->ObjectID();
+
+	const Fvector2 Position = Target->CalcPosition();
+	SetTargetMap(Target->GetLevelName(), Position, true);
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::ListSelect);
+	}
+	return true;
+}
+
+bool CUIMapWnd::PlacePersonalSpotAtActor()
+{
+	CObject* Actor = Level().CurrentEntity();
+	if (!Actor)
+	{
+		return false;
+	}
+
+	SetPersonalSpotPlacement(false);
+	CreateSpotWindow(Actor->Position(), Level().name());
+	return true;
 }
 
 Fvector2 CUIMapWnd::GetMapCursorAbsPos()

@@ -10,6 +10,7 @@
 #include "map_location.h"
 #include "GameTask.h"
 #include "GameTaskDefs.h"
+#include "../xrEngine/string_table.h"
 #include "GametaskManager.h"
 #include "xrServer.h"
 #include "game_object_space.h"
@@ -143,6 +144,7 @@ CMapManager::CMapManager()
 	m_locations_wrapper->registry().init(1);
 	m_locations = nullptr;
 	m_activeUserNavigationLocationId = ALife::INVALID_OBJECT_ID;
+	SpotFilterService.LoadCategories();
 }
 
 CMapManager::~CMapManager()
@@ -159,6 +161,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, ALife::_O
 	CMapLocation* l = new CMapLocation(spot_type.c_str(), id);
 	Locations().emplace_back(spot_type, id);
 	Locations().back().location = l;
+	ApplySpotFilterOnAdd(*l);
 	if (g_actor)
 		Actor()->callback(GameObject::eMapLocationAdded)(spot_type.c_str(), id);
 
@@ -210,8 +213,164 @@ CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const sh
 
 	Locations().emplace_back(spot_type, _id);
 	Locations().back().location = l;
+	ApplySpotFilterOnAdd(*l);
 
 	return l;
+}
+
+shared_str CMapManager::UserSpotType()
+{
+	shared_str SpotType = pSettings->read_if_exists<str_c>("user_spots", "spot_type", "treasure");
+	if (pGameGlobals->section_exist("pda_map") && pGameGlobals->line_exist("pda_map", "hand_spot_icon_xml_section"))
+	{
+		const shared_str OverrideSpotName = pGameGlobals->r_string("pda_map", "hand_spot_icon_xml_section");
+		if (OverrideSpotName.c_str() != nullptr)
+		{
+			SpotType = OverrideSpotName;
+		}
+	}
+	return SpotType;
+}
+
+void CMapManager::GetUserLocations(xr_vector<CMapLocation*>& Result)
+{
+	Result.clear();
+	for (const SLocationKey& Key : Locations())
+	{
+		if (Key.location && Key.location->IsUserDefined())
+		{
+			Result.push_back(Key.location);
+		}
+	}
+	std::sort(Result.begin(), Result.end(), [](const CMapLocation* Left, const CMapLocation* Right)
+	{
+		return Left->ObjectID() < Right->ObjectID();
+	});
+}
+
+u32 CMapManager::GetPersonalSpotLimit() const
+{
+	if (!pGameGlobals || !pGameGlobals->line_exist("pda_map", "personal_spot_limit"))
+	{
+		return 0;
+	}
+	const int Limit = pGameGlobals->r_s32("pda_map", "personal_spot_limit");
+	return Limit > 0 ? static_cast<u32>(Limit) : 0;
+}
+
+u32 CMapManager::GetPersonalSpotCount()
+{
+	xr_vector<CMapLocation*> UserLocations;
+	GetUserLocations(UserLocations);
+	return static_cast<u32>(UserLocations.size());
+}
+
+bool CMapManager::CanAddPersonalSpot()
+{
+	const u32 Limit = GetPersonalSpotLimit();
+	return Limit == 0 || GetPersonalSpotCount() < Limit;
+}
+
+xr_string CMapManager::MakeDefaultPersonalSpotName(const shared_str& LevelName)
+{
+	string256 Name;
+	xr_sprintf(Name, "%s %u", g_pStringTable->translate("st_personal_spot_quick_hint").c_str(), GetPersonalSpotCount() + 1);
+
+	xr_string Result = Name;
+	if (LevelName.size())
+	{
+		Result += " \xB7 ";
+		Result += g_pStringTable->translate(LevelName).c_str();
+	}
+	return Result;
+}
+
+CMapLocation* CMapManager::FindPersonalSpot(ALife::_OBJECT_ID Id)
+{
+	xr_vector<CMapLocation*> UserLocations;
+	GetUserLocations(UserLocations);
+	for (CMapLocation* Location : UserLocations)
+	{
+		if (Location->ObjectID() == Id)
+		{
+			return Location;
+		}
+	}
+	return nullptr;
+}
+
+CMapLocation* CMapManager::AddPersonalSpot(const shared_str& LevelName, const Fvector& Position, const char* Hint)
+{
+	if (!CanAddPersonalSpot())
+	{
+		return nullptr;
+	}
+
+	CMapLocation* Location = AddUserLocation(UserSpotType(), LevelName, Position);
+	if (!Location)
+	{
+		return nullptr;
+	}
+
+	Location->SetHint(Hint ? Hint : "");
+	Location->SetSerializable(true);
+	return Location;
+}
+
+bool CMapManager::RemovePersonalSpot(CMapLocation* Location)
+{
+	if (!Location || !Location->IsUserDefined())
+	{
+		return false;
+	}
+
+	RemoveMapLocation(Location);
+	return true;
+}
+
+bool CMapManager::TogglePersonalSpotNavigation(CMapLocation* Location)
+{
+	if (!Location || IsUserNavigationLocation(Location))
+	{
+		if (!HasActiveUserNavigationLocation())
+		{
+			return false;
+		}
+		ClearActiveUserNavigationLocation();
+		return true;
+	}
+
+	if (!Location->IsUserDefined())
+	{
+		return false;
+	}
+
+	SetActiveUserNavigationLocation(Location);
+	return true;
+}
+
+CMapLocation* CMapManager::GetAdjacentPersonalSpot(ALife::_OBJECT_ID CurrentId, bool Next)
+{
+	xr_vector<CMapLocation*> UserLocations;
+	GetUserLocations(UserLocations);
+	if (UserLocations.empty())
+	{
+		return nullptr;
+	}
+
+	const auto Found = std::find_if(UserLocations.begin(), UserLocations.end(), [CurrentId](const CMapLocation* Location)
+	{
+		return Location->ObjectID() == CurrentId;
+	});
+
+	const size_t Count = UserLocations.size();
+	if (Found == UserLocations.end())
+	{
+		return UserLocations[Next ? 0 : Count - 1];
+	}
+
+	const size_t Current = static_cast<size_t>(std::distance(UserLocations.begin(), Found));
+	return UserLocations[Next ? (Current + 1) % Count : (Current + Count - 1) % Count];
 }
 
 void CMapManager::Destroy(CMapLocation* ml)
@@ -481,6 +640,71 @@ Locations&	CMapManager::Locations	()
 	return *m_locations;
 }
 
+void CMapManager::RegisterSpotCategory(const shared_str& Id, const char* Patterns)
+{
+	xrCriticalSectionGuard Guard(UpdateCS);
+	if (SpotFilterService.RegisterCategory(Id, Patterns))
+	{
+		ApplySpotFilter();
+	}
+}
+
+void CMapManager::SetSpotCategoryHidden(const shared_str& Id, bool Hidden)
+{
+	xrCriticalSectionGuard Guard(UpdateCS);
+	if (SpotFilterService.SetCategoryHidden(Id, Hidden))
+	{
+		ApplySpotFilter();
+	}
+}
+
+void CMapManager::ApplySpotFilter()
+{
+	xrCriticalSectionGuard Guard(UpdateCS);
+	for (const SLocationKey& Key : Locations())
+	{
+		CMapLocation* Location = Key.location;
+		if (!Location)
+		{
+			continue;
+		}
+
+		switch (SpotFilterService.Evaluate(*Location))
+		{
+		case EMapSpotFilter::Visible:
+			Location->EnableSpot();
+			break;
+		case EMapSpotFilter::Hidden:
+			Location->DisableSpot();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void CMapManager::SaveSpotFilter(NET_Packet& Packet) const
+{
+	SpotFilterService.Save(Packet);
+}
+
+void CMapManager::LoadSpotFilter(IReader& Reader)
+{
+	xrCriticalSectionGuard Guard(UpdateCS);
+	if (SpotFilterService.Load(Reader))
+	{
+		ApplySpotFilter();
+	}
+}
+
+void CMapManager::ApplySpotFilterOnAdd(CMapLocation& Location) const
+{
+	if (IsSpotHidden(Location))
+	{
+		Location.DisableSpot();
+	}
+}
+
 void CMapManager::OnObjectDestroyNotify(ALife::_OBJECT_ID id)
 {
 	RemoveMapLocationByObjectID(id);
@@ -528,6 +752,34 @@ void CMapManager::AllLocationsForEach(const luabind::functor<bool>& functor)
 #include "map_location.h"
 
 #pragma optimize("s",on)
+namespace MapManagerScript
+{
+CMapLocation* AddPersonalSpot(CMapManager* MapManager, const char* LevelName, Fvector Position, const char* Hint)
+{
+	return MapManager->AddPersonalSpot(LevelName, Position, Hint);
+}
+
+CMapLocation* GetAdjacentPersonalSpot(CMapManager* MapManager, ALife::_OBJECT_ID CurrentId, bool Next)
+{
+	return MapManager->GetAdjacentPersonalSpot(CurrentId, Next);
+}
+
+void SetSpotCategoryHidden(CMapManager* MapManager, const char* Id, bool Hidden)
+{
+	MapManager->SetSpotCategoryHidden(Id, Hidden);
+}
+
+bool IsSpotCategoryHidden(CMapManager* MapManager, const char* Id)
+{
+	return MapManager->IsSpotCategoryHidden(Id);
+}
+
+void RegisterSpotCategory(CMapManager* MapManager, const char* Id, const char* Patterns)
+{
+	MapManager->RegisterSpotCategory(Id, Patterns);
+}
+} // namespace MapManagerScript
+
 void CMapManager::script_register(lua_State* L)
 {
 	module(L)
@@ -544,7 +796,20 @@ void CMapManager::script_register(lua_State* L)
 			//.def("RemoveMapLocation", &CMapManager::RemoveMapLocation_script)
 				.def("DisableAllPointers", &CMapManager::DisableAllPointers)
 				.def("MapLocationsForEach", &CMapManager::MapLocationsForEach)
-				.def("AllLocationsForEach", &CMapManager::AllLocationsForEach),
+				.def("AllLocationsForEach", &CMapManager::AllLocationsForEach)
+				.def("AddPersonalSpot", &MapManagerScript::AddPersonalSpot)
+				.def("RemovePersonalSpot", &CMapManager::RemovePersonalSpot)
+				.def("TogglePersonalSpotNavigation", &CMapManager::TogglePersonalSpotNavigation)
+				.def("SetActiveUserNavigationLocation", &CMapManager::SetActiveUserNavigationLocation)
+				.def("ClearActiveUserNavigationLocation", &CMapManager::ClearActiveUserNavigationLocation)
+				.def("GetActiveUserNavigationLocation", &CMapManager::GetActiveUserNavigationLocation)
+				.def("GetAdjacentPersonalSpot", &MapManagerScript::GetAdjacentPersonalSpot)
+				.def("GetPersonalSpotLimit", &CMapManager::GetPersonalSpotLimit)
+				.def("GetPersonalSpotCount", &CMapManager::GetPersonalSpotCount)
+				.def("CanAddPersonalSpot", &CMapManager::CanAddPersonalSpot)
+				.def("RegisterSpotCategory", &MapManagerScript::RegisterSpotCategory)
+				.def("SetSpotCategoryHidden", &MapManagerScript::SetSpotCategoryHidden)
+				.def("IsSpotCategoryHidden", &MapManagerScript::IsSpotCategoryHidden),
 
 			class_<CMapLocation>("CMapLocation")
 			//.def(constructor<>())

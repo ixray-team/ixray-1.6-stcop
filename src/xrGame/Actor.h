@@ -936,6 +936,7 @@ public:
 			void				ClearMaskCB						();
 			void				MakeKick						();
 			void				MakeThrowBolt					();
+			void				PlaceQuickPersonalSpot			();
 			void				MakeThrowGrenade				();
 			void				UpdatePickupMode				();
 	CNightVisionEffector*		GetNightVisionEffector			() const { return m_night_vision;}

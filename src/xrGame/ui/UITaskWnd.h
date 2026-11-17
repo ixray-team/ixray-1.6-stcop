@@ -19,6 +19,9 @@ class CUICheckButton;
 class UIMapLegend;
 class UIHint;
 class CUIGamepadLegend;
+class CUIHotkeysHint;
+class UIPersonalSpotsWnd;
+class UIActiveTaskCard;
 
 class CUITaskWnd final		:	public CUIWindow, 
 								public CUIWndCallback
@@ -79,6 +82,10 @@ private:
 	UITaskListWnd*			m_task_wnd;
 	bool					m_task_wnd_show;
 	UIMapLegend*			m_map_legend_wnd;
+	UIPersonalSpotsWnd*		PersonalSpotsWnd = nullptr;
+	UIActiveTaskCard*		ActiveTaskCard = nullptr;
+	xr_vector<CUIHotkeysHint*> HotkeysHints;
+	bool					HotkeysHintControllerMode = false;
 
 public:
 	UIHint*					hint_wnd;
@@ -96,12 +103,17 @@ public:
 	virtual void				Show					(bool status) override;
 	virtual void				Reset					() override;
 	virtual bool				OnMouseAction			(float x, float y, EUIMessages mouse_action) override;
+	virtual bool				OnKeyboardAction		(int dik, EUIMessages keyboard_action) override;
 	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
 	virtual bool				OnGamepadKeyHold		(int id) override;
 
 			void				ReloadTaskInfo			();
 			void				ShowMapLegend			(bool status);
 			void				Switch_ShowMapLegend	();
+			void				SyncLegacySpotFilters	();
+			bool				SwitchTaskListTab		(bool Next);
+			void				SwitchPersonalSpotsWnd	();
+			void				ShowPersonalSpotsLimit	();
 
 			bool IsTreasuresEnabled() const { return m_bTreasuresEnabled; };
 			bool IsQuestNpcsEnabled() const { return m_bQuestNpcsEnabled; };
@@ -109,13 +121,13 @@ public:
 			bool IsPrimaryObjectsEnabled() const { return m_bPrimaryObjectsEnabled; };
 			void TreasuresEnabled(bool enable)
 			{
-				m_bTreasuresEnabled = enable;
+				m_bTreasuresEnabled = enable || !m_cbFilters[MAP_MARKS_FILTER_TREASURES];
 				if (m_cbFilters[MAP_MARKS_FILTER_TREASURES])
 					m_cbFilters[MAP_MARKS_FILTER_TREASURES]->SetCheck(enable);
 			};
 			void QuestNpcsEnabled(bool enable)
 			{
-				m_bQuestNpcsEnabled = enable;
+				m_bQuestNpcsEnabled = enable || !m_cbFilters[MAP_MARKS_FILTER_NPCS];
 				if (m_cbFilters[MAP_MARKS_FILTER_NPCS])
 					m_cbFilters[MAP_MARKS_FILTER_NPCS]->SetCheck(enable);
 			};
@@ -123,7 +135,7 @@ public:
 			void ApplySecondaryTasksMapFilter(bool enable);
 			void PrimaryObjectsEnabled(bool enable)
 			{
-				m_bPrimaryObjectsEnabled = enable;
+				m_bPrimaryObjectsEnabled = enable || !m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS];
 				if (m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS])
 					m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS]->SetCheck(enable);
 			};
@@ -131,6 +143,8 @@ public:
 			void				Show_TaskListWnd		(bool status);
 			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 			void				FocusPrimaryTaskOnMap	();
+			void				FocusActiveTarget		();
+			void				ToggleTaskList			();
 
 	virtual CUIWindow* ui_cast_window() override { return this; }
 
@@ -141,6 +155,10 @@ protected:
 	bool						SwitchToPrevFilter		(bool loop);
 	void						UpdateFilterHighlight	();
 	void						UpdateGamepadLegend		();
+	void						UpdateHotkeysHint		();
+	bool						HandleMapAction			(EGameActions Action, bool Execute);
+	void						HideSidePanels			(CUIWindow* Keep);
+	bool						IsCursorOverSidePanel	();
 private:
 	void						TaskSetTargetMap		(CGameTask* task);
 	void						TaskShowMapSpot			(CGameTask* task, bool show);

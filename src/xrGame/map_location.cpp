@@ -32,6 +32,7 @@
 
 CMapLocation::CMapLocation(const char* type, ALife::_OBJECT_ID object_id, bool is_user_loc)
 {
+	m_type					= type;
 	m_flags.zero			();
 
 	m_level_spot			= nullptr;

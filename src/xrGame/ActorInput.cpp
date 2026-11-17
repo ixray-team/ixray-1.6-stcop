@@ -54,6 +54,9 @@
 #include "nvg.h"
 #include "Bolt.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "map_manager.h"
+#include "map_location.h"
+#include "game_news.h"
 
 extern u32 hud_adj_mode;
 
@@ -209,6 +212,11 @@ void CActor::IR_OnKeyboardPress(int dik)
 	case kCLEARGASMASK:
 	{
 		ClearMask();
+		break;
+	}
+	case kPERSONAL_SPOT_QUICK:
+	{
+		PlaceQuickPersonalSpot();
 		break;
 	}
 	case kDETECTOR:
@@ -2399,6 +2407,46 @@ void CActor::ClearMaskCB()
 	{
 		g_pGamePersistent->VisorRain.Clear();
 	}
+}
+
+void CActor::PlaceQuickPersonalSpot()
+{
+	if (!IsGameTypeSingle() || !g_Alive())
+	{
+		return;
+	}
+
+	if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
+	{
+		return;
+	}
+
+	CMapManager& MapManager = Level().MapManager();
+
+	GAME_NEWS_DATA NewsData;
+	NewsData.m_type = GAME_NEWS_DATA::ENewsKind::eNews;
+	NewsData.show_time = 3000;
+	NewsData.texture_name = pGameGlobals->read_if_exists<str_c>("pda_map", "quick_spot_news_icon", "ui_iconsTotal_bar_darklab_documents2");
+
+	if (!MapManager.CanAddPersonalSpot())
+	{
+		string256 LimitText;
+		xr_sprintf(LimitText, "%u / %u", MapManager.GetPersonalSpotCount(), MapManager.GetPersonalSpotLimit());
+		NewsData.news_caption = g_pStringTable->translate("st_personal_spot_limit_caption");
+		NewsData.news_text = LimitText;
+		AddGameNews(NewsData);
+		return;
+	}
+
+	const xr_string Hint = MapManager.MakeDefaultPersonalSpotName(Level().name());
+	if (!MapManager.AddPersonalSpot(Level().name(), Position(), Hint.c_str()))
+	{
+		return;
+	}
+
+	NewsData.news_caption = g_pStringTable->translate("st_personal_spot_quick_caption");
+	NewsData.news_text = Hint.c_str();
+	AddGameNews(NewsData);
 }
 
 void CActor::MakeKick()

@@ -17,6 +17,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UITabButton.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIHint.h"
@@ -31,6 +32,8 @@
 #include "../Actor.h"
 #include "PdaConstants.h"
 #include "PdaUiSound.h"
+#include "UIHotkeysHint.h"
+#include "../../xrEngine/xr_input.h"
 #include "../../xrUI/Widgets/UIMessages.h"
 
 namespace
@@ -137,12 +140,39 @@ void UITaskListWnd::init_from_xml( CUIXml& xml, const char* path )
 		AttachChild(m_filter_tabs);
 		CUIXmlInit::InitTabControl(xml, PdaTaskXml::PanelFilterTabsRel, 0, m_filter_tabs);
 		m_filter_tabs->SetMessageTarget(this);
+
+		if (xml.ReadAttribInt(PdaTaskXml::PanelFilterTabsRel, 0, "counters", 0) != 0)
+		{
+			for (CUITabButton* TabButton : *m_filter_tabs->GetButtonsVector())
+			{
+				const char* BaseText = TabButton->TextItemControl()->GetText();
+				FilterTabTexts.push_back({ TabButton->m_btn_id, BaseText ? BaseText : "" });
+			}
+		}
+	}
+
+	TabHintPrev = CreateTabHint(xml, "tab_hint_prev");
+	TabHintNext = CreateTabHint(xml, "tab_hint_next");
+	TabHintsControllerMode = pInput && pInput->GetControllerMode();
+
+	if (xml.NavigateToNode("t_empty", 0))
+	{
+		EmptyText = UIHelper::CreateStatic(xml, "t_empty", this);
+		EmptyTextDefault = xml.ReadAttrib("t_empty", 0, "text", "");
+		for (u32 FilterIndex = 0; FilterIndex < static_cast<u32>(ETaskListFilter::Count); ++FilterIndex)
+		{
+			string64 AttribName;
+			xr_sprintf(AttribName, "text_%s", TabIdFromFilter(static_cast<ETaskListFilter>(FilterIndex)));
+			EmptyTexts[FilterIndex] = xml.ReadAttrib("t_empty", 0, AttribName, "");
+		}
+		EmptyText->Show(false);
 	}
 
 	xml.SetLocalRoot( stored_root );
 
 	if (m_filter_tabs && m_filter_tabs->GetTabsCount() > 0)
 	{
+		m_filter = FilterFromTabId(m_filter_tabs->GetButtonByIndex(0)->m_btn_id);
 		m_filter_tabs->SetActiveTabByIndex(0);
 	}
 }
@@ -183,7 +213,10 @@ void UITaskListWnd::Show( bool status )
 	inherited::Show( status );
 	SendMessageToTarget(PDA_TASK_HIDE_HINT, nullptr );
 	if(status)
+	{
+		RefreshTabHints();
 		UpdateList();
+	}
 }
 
 void UITaskListWnd::OnFocusReceive()
@@ -201,6 +234,12 @@ void UITaskListWnd::OnFocusLost()
 void UITaskListWnd::Update()
 {
 	inherited::Update();
+	const bool ControllerMode = pInput && pInput->GetControllerMode();
+	if (ControllerMode != TabHintsControllerMode)
+	{
+		TabHintsControllerMode = ControllerMode;
+		RefreshTabHints();
+	}
 	if (_storylineTaskItem && _storylineTaskItem->show_hint && _storylineTaskItem->OwnerTask())
 	{
 		CGameTask* task = _storylineTaskItem->OwnerTask();
@@ -218,18 +257,7 @@ void UITaskListWnd::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 			m_pUiSounds->Play(EPdaUiSound::Tab);
 		}
 
-		const shared_str activeId = m_filter_tabs->GetActiveId();
-		ETaskListFilter mode = ETaskListFilter::All;
-		if (activeId == "story")
-		{
-			mode = ETaskListFilter::Story;
-		}
-		else if (activeId == "side")
-		{
-			mode = ETaskListFilter::Side;
-		}
-
-		SetFilterMode(mode);
+		SetFilterMode(FilterFromTabId(m_filter_tabs->GetActiveId()));
 		return;
 	}
 
@@ -298,40 +326,24 @@ void UITaskListWnd::UpdateList()
 	vGameTasks& tasks = Level().GameTaskManager()->GetGameTasks();
 	vGameTasks::iterator itb = tasks.begin();
 	vGameTasks::iterator ite = tasks.end();
+	u32 addedCount = 0;
 	for ( ; itb != ite; ++itb )
 	{
 		CGameTask* task = (*itb).getGameTask();
-		if ( task && task->GetTaskState() == eTaskStateInProgress )
+		if ( !TaskMatchesFilter( task, m_filter ) )
 		{
-			const ETaskType taskType = task->GetTaskType();
-			switch (m_filter)
-			{
-				case ETaskListFilter::Story:
-					if (taskType != eTaskTypeStoryline)
-					{
-						continue;
-					}
-					break;
+			continue;
+		}
 
-				case ETaskListFilter::Side:
-					if (taskType == eTaskTypeStoryline)
-					{
-						continue;
-					}
-					break;
-
-				case ETaskListFilter::All:
-				default:
-					break;
-			}
-
-			UITaskListWndItem* item = new UITaskListWndItem();
-			if ( item->init_task( task, this ) )
-			{
-				m_list->AddWindow( item, true );
-			}
+		UITaskListWndItem* item = new UITaskListWndItem();
+		if ( item->init_task( task, this ) )
+		{
+			m_list->AddWindow( item, true );
+			++addedCount;
 		}
 	}
+	UpdateFilterTabCounters();
+	UpdateEmptyText(addedCount == 0);
 	m_list->UpdateChildrenLenght();
 	m_list->ForceUpdate();
 	if (!m_list->NeedShowScrollBar())
@@ -355,7 +367,7 @@ void UITaskListWnd::SetFilterMode(ETaskListFilter mode)
 		UpdateList();
 	}
 
-	if (m_filter_tabs)
+	if (m_filter_tabs && GetMessageTarget())
 	{
 		SendMessageToTarget(PDA_TASK_LIST_FILTER_CHANGED,
 			reinterpret_cast<void*>(static_cast<intptr_t>(mode))
@@ -368,7 +380,204 @@ bool UITaskListWnd::SortingLessFunction( CUIWindow* left, CUIWindow* right )
 	UITaskListWndItem* lpi = smart_cast<UITaskListWndItem*>(left);
 	UITaskListWndItem* rpi = smart_cast<UITaskListWndItem*>(right);
 	VERIFY( lpi && rpi );
+	if ( IsFinishedFilter( m_filter ) )
+	{
+		return ( lpi->get_task()->m_FinishTime > rpi->get_task()->m_FinishTime );
+	}
 	return ( lpi->get_priority_task() > rpi->get_priority_task() );
+}
+
+bool UITaskListWnd::SwitchFilterTab(bool Next)
+{
+	if (!m_filter_tabs || m_filter_tabs->GetTabsCount() < 2)
+	{
+		return false;
+	}
+
+	if (Next)
+	{
+		m_filter_tabs->NextTab(true);
+	}
+	else
+	{
+		m_filter_tabs->PrevTab(true);
+	}
+	return true;
+}
+
+CUIHotkeysHint* UITaskListWnd::CreateTabHint(CUIXml& Xml, const char* Path)
+{
+	if (!Xml.NavigateToNode(Path, 0))
+	{
+		return nullptr;
+	}
+
+	CUIHotkeysHint* Hint = new CUIHotkeysHint();
+	Hint->SetAutoDelete(true);
+	AttachChild(Hint);
+	Hint->InitFromXml(Xml, Path);
+	return Hint;
+}
+
+void UITaskListWnd::RefreshTabHints()
+{
+	if (TabHintPrev)
+	{
+		TabHintPrev->Refresh();
+	}
+	if (TabHintNext)
+	{
+		TabHintNext->Refresh();
+	}
+}
+
+ETaskListFilter UITaskListWnd::FilterFromTabId(const shared_str& TabId)
+{
+	if (TabId == "story")
+	{
+		return ETaskListFilter::Story;
+	}
+	if (TabId == "side")
+	{
+		return ETaskListFilter::Side;
+	}
+	if (TabId == "active")
+	{
+		return ETaskListFilter::Active;
+	}
+	if (TabId == "completed")
+	{
+		return ETaskListFilter::Completed;
+	}
+	if (TabId == "failed")
+	{
+		return ETaskListFilter::Failed;
+	}
+	if (TabId == "archive")
+	{
+		return ETaskListFilter::Archive;
+	}
+	return ETaskListFilter::All;
+}
+
+const char* UITaskListWnd::TabIdFromFilter(ETaskListFilter Filter)
+{
+	switch (Filter)
+	{
+	case ETaskListFilter::Story:
+		return "story";
+	case ETaskListFilter::Side:
+		return "side";
+	case ETaskListFilter::Active:
+		return "active";
+	case ETaskListFilter::Completed:
+		return "completed";
+	case ETaskListFilter::Failed:
+		return "failed";
+	case ETaskListFilter::Archive:
+		return "archive";
+	default:
+		return "all";
+	}
+}
+
+bool UITaskListWnd::IsFinishedFilter(ETaskListFilter Filter)
+{
+	return Filter == ETaskListFilter::Completed || Filter == ETaskListFilter::Failed || Filter == ETaskListFilter::Archive;
+}
+
+bool UITaskListWnd::TaskMatchesFilter(const CGameTask* Task, ETaskListFilter Filter)
+{
+	if (!Task)
+	{
+		return false;
+	}
+
+	switch (Filter)
+	{
+	case ETaskListFilter::Completed:
+		return Task->GetTaskState() == eTaskStateCompleted;
+	case ETaskListFilter::Failed:
+		return Task->GetTaskState() == eTaskStateFail;
+	case ETaskListFilter::Archive:
+		return Task->GetTaskState() == eTaskStateCompleted || Task->GetTaskState() == eTaskStateFail;
+	default:
+		break;
+	}
+
+	if (Task->GetTaskState() != eTaskStateInProgress)
+	{
+		return false;
+	}
+
+	switch (Filter)
+	{
+	case ETaskListFilter::Story:
+		return Task->GetTaskType() == eTaskTypeStoryline;
+	case ETaskListFilter::Side:
+		return Task->GetTaskType() != eTaskTypeStoryline;
+	default:
+		return true;
+	}
+}
+
+u32 UITaskListWnd::CountTasks(ETaskListFilter Filter) const
+{
+	u32 Count = 0;
+	for (SGameTaskKey& Key : Level().GameTaskManager()->GetGameTasks())
+	{
+		if (TaskMatchesFilter(Key.getGameTask(), Filter))
+		{
+			++Count;
+		}
+	}
+	return Count;
+}
+
+void UITaskListWnd::UpdateFilterTabCounters()
+{
+	if (!m_filter_tabs)
+	{
+		return;
+	}
+
+	for (const SFilterTabText& TabText : FilterTabTexts)
+	{
+		CUITabButton* TabButton = m_filter_tabs->GetButtonById(TabText.Id);
+		if (!TabButton)
+		{
+			continue;
+		}
+
+		string256 Text;
+		xr_sprintf(Text, "%s (%u)", TabText.BaseText.c_str(), CountTasks(FilterFromTabId(TabText.Id)));
+		TabButton->TextItemControl()->SetText(Text);
+	}
+}
+
+void UITaskListWnd::UpdateEmptyText(bool Empty)
+{
+	if (!EmptyText)
+	{
+		return;
+	}
+
+	EmptyText->Show(Empty);
+	if (!Empty)
+	{
+		return;
+	}
+
+	shared_str TextId = EmptyTexts[static_cast<u32>(m_filter)];
+	if (!TextId.size())
+	{
+		TextId = EmptyTextDefault;
+	}
+
+	if (TextId.size())
+	{
+		EmptyText->TextItemControl()->SetTextST(TextId.c_str());
+	}
 }
 
 
@@ -507,9 +716,10 @@ UITaskListWndItem::UITaskListWndItem()
 	m_task_icon(nullptr),
 	m_bt_focus(nullptr), m_btn_task_focus(nullptr)
 {
-	m_color_states[0] = (u32)(-1);
-	m_color_states[1] = (u32)(-1);
-	m_color_states[2] = (u32)(-1);
+	for (u32& ColorState : m_color_states)
+	{
+		ColorState = (u32)(-1);
+	}
 }
 
 IC u32 UITaskListWndItem::get_priority_task() const
@@ -526,6 +736,8 @@ bool UITaskListWndItem::init_task( CGameTask* task, UITaskListWnd* parent )
 		return false;
 	}
 	m_task = task;
+	Failed = task->GetTaskState() == eTaskStateFail;
+	Finished = Failed || task->GetTaskState() == eTaskStateCompleted;
 	SetMessageTarget( parent );
 	
 	CUIXml		xml;
@@ -540,6 +752,13 @@ bool UITaskListWndItem::init_task( CGameTask* task, UITaskListWnd* parent )
 
 	if (xml.NavigateToNode("second_task_wnd:task_item:st_story"))
 		m_st_story = UIHelper::CreateStatic( xml, "second_task_wnd:task_item:st_story", this );
+
+	if (Finished && xml.NavigateToNode("second_task_wnd:task_item:st_status"))
+	{
+		m_st_status = UIHelper::CreateStatic( xml, "second_task_wnd:task_item:st_status", this );
+		StatusTextCompleted = xml.ReadAttrib( "second_task_wnd:task_item:st_status", 0, "text_completed", "" );
+		StatusTextFailed = xml.ReadAttrib( "second_task_wnd:task_item:st_status", 0, "text_failed", "" );
+	}
 
 	// Optional per-task icon container (uses CGameTask::m_icon_texture_name).
 	if (xml.NavigateToNode("second_task_wnd:task_item:t_icon"))
@@ -575,6 +794,40 @@ bool UITaskListWndItem::init_task( CGameTask* task, UITaskListWnd* parent )
 	m_color_states[stt_activ ] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:activ",  0, (u32)(-1) );
 	m_color_states[stt_unread] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:unread", 0, (u32)(-1) );
 	m_color_states[stt_read  ] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:read",   0, (u32)(-1) );
+	m_color_states[stt_completed] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:completed", 0, m_color_states[stt_read] );
+	m_color_states[stt_failed] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:failed", 0, m_color_states[stt_read] );
+
+	if ( m_st_status )
+	{
+		const shared_str& StatusText = Failed ? StatusTextFailed : StatusTextCompleted;
+		if ( StatusText.size() )
+		{
+			m_st_status->TextItemControl()->SetTextST( StatusText.c_str() );
+		}
+		m_st_status->TextItemControl()->SetTextColor( m_color_states[Failed ? stt_failed : stt_completed] );
+
+		const float NameRight = m_st_status->GetWndPos().x - 6.0f;
+		if ( NameRight > m_name->GetWndPos().x )
+		{
+			m_name->SetWidth( NameRight - m_name->GetWndPos().x );
+		}
+	}
+
+	if ( Finished )
+	{
+		if ( m_bt_view )
+		{
+			m_bt_view->Show( false );
+		}
+		if ( m_bt_focus )
+		{
+			m_bt_focus->Show( false );
+		}
+		if ( m_btn_task_focus )
+		{
+			m_btn_task_focus->Show( false );
+		}
+	}
 	update_view();
 	return true;
 }
@@ -612,9 +865,13 @@ void UITaskListWndItem::update_view()
 {
 	VERIFY( m_task );
 	CMapLocation* ml = m_task->LinkedMapLocation();
-	const bool hasMapTarget = TaskHasMapTarget(m_task);
+	const bool hasMapTarget = !Finished && TaskHasMapTarget(m_task);
 	const bool spotVisible = ml && ml->SpotEnabled();
-	if ( spotVisible )
+	if ( m_bt_view && Finished )
+	{
+		m_bt_view->Show(false);
+	}
+	else if ( spotVisible )
 	{
 		if (m_bt_view)
 		{
@@ -698,7 +955,11 @@ void UITaskListWndItem::update_view()
     const CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
     const CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
     
-    if (m_task == storyTask || m_task == additionalTask)
+    if ( Finished )
+	{
+		m_name->SetStateTextColor( m_color_states[Failed ? stt_failed : stt_completed], S_Enabled );
+	}
+	else if (m_task == storyTask || m_task == additionalTask)
 	{
 		m_name->SetStateTextColor( m_color_states[stt_activ], S_Enabled );
 	}
@@ -717,6 +978,12 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 {
 	const bool isFocusControl = (m_bt_focus && IsWindowOrChildOf(pWnd, m_bt_focus))
 		|| (m_btn_task_focus && IsWindowOrChildOf(pWnd, m_btn_task_focus));
+
+	if ( Finished && ( isFocusControl || pWnd == m_bt_view || pWnd == m_name ) )
+	{
+		inherited::SendMessage( pWnd, msg, pData );
+		return;
+	}
 
 	if (isFocusControl && (msg == BUTTON_DOWN || msg == BUTTON_CLICKED))
 	{

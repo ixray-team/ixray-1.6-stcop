@@ -121,6 +121,20 @@ constexpr const char* ActorBox = "ui_pda2_actor_box_location";
 constexpr const char* ActorSleep = "ui_pda2_actor_sleep_location";
 } // namespace PdaMapSpot
 
+namespace PdaSpotCategory
+{
+constexpr const char* Treasures = "pda_filter_treasures";
+constexpr const char* TreasuresSpots = "treasure";
+constexpr const char* PrimaryObjects = "pda_filter_primary_objects";
+constexpr const char* PrimaryObjectsSpots = "primary_object";
+constexpr const char* SecondaryTasks = "pda_filter_secondary_tasks";
+constexpr const char* SecondaryTasksSpots = "secondary_task_location,secondary_task_location_complex_timer";
+constexpr const char* QuestNpcs = "pda_filter_quest_npcs";
+constexpr const char* QuestNpcsSpots = "ui_pda2_trader_location,ui_pda2_mechanic_location,ui_pda2_scout_location,ui_pda2_quest_npc_location,ui_pda2_medic_location,ui_pda2_actor_box_location,ui_pda2_actor_sleep_location";
+constexpr const char* PersonalSpots = "pda_filter_personal_spots";
+constexpr const char* PersonalSpotsSpots = "$user";
+} // namespace PdaSpotCategory
+
 // pda_tasks.xml node paths (legacy map header vs in-panel task list).
 namespace PdaTaskXml
 {

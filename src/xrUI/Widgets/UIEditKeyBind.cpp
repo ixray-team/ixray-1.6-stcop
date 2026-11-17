@@ -261,6 +261,9 @@ void CUIEditKeyBind::OnMessage(const char* message)
 	if(!is_action_group_matching(m_action->action_group,other_action->action_group))
 		return;
 
+	if (!is_action_group_matching(m_action->action_group, other_action->action_group))
+		return;
+
 	SetText				("---");
 	m_keyboard			= nullptr;
 }

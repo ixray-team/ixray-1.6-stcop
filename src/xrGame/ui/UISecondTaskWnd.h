@@ -25,12 +25,18 @@ class CGameTask;
 class CUITaskItem;
 class UIHint;
 class CPdaUiSounds;
+class CUIHotkeysHint;
 
 enum class ETaskListFilter : u8
 {
 	All = 0,
 	Story,
-	Side
+	Side,
+	Active,
+	Completed,
+	Failed,
+	Archive,
+	Count
 };
 
 class UITaskListWnd final : public CUIWindow, public CUIWndCallback
@@ -61,6 +67,7 @@ public:
 			CUITaskItem* GetStorylineTaskItem() const { return _storylineTaskItem; }
 
 			void	UpdateList			();
+			bool	SwitchFilterTab		(bool Next);
 
 	virtual CUIWindow* ui_cast_window() override { return this; }
 
@@ -78,6 +85,16 @@ private:
 	CGameTask*			StorylineTask		() const;
 	void				UpdateStorylineTaskFocus();
 
+	static ETaskListFilter	FilterFromTabId		(const shared_str& TabId);
+	static const char*		TabIdFromFilter		(ETaskListFilter Filter);
+	static bool				IsFinishedFilter	(ETaskListFilter Filter);
+	static bool				TaskMatchesFilter	(const CGameTask* Task, ETaskListFilter Filter);
+	u32						CountTasks			(ETaskListFilter Filter) const;
+	void					UpdateFilterTabCounters();
+	void					UpdateEmptyText		(bool Empty);
+	CUIHotkeysHint*			CreateTabHint		(CUIXml& Xml, const char* Path);
+	void					RefreshTabHints		();
+
 private: // m_
 	CUIFrameWindow*		m_background;
 	CUIScrollView*		m_list;
@@ -93,6 +110,19 @@ private: // m_
 	float				m_orig_h;
 	ETaskListFilter		m_filter;
 	CPdaUiSounds*		m_pUiSounds = nullptr;
+
+	struct SFilterTabText
+	{
+		shared_str Id;
+		xr_string BaseText;
+	};
+	xr_vector<SFilterTabText> FilterTabTexts;
+	CUIStatic*			EmptyText = nullptr;
+	CUIHotkeysHint*		TabHintPrev = nullptr;
+	CUIHotkeysHint*		TabHintNext = nullptr;
+	bool				TabHintsControllerMode = false;
+	shared_str			EmptyTextDefault;
+	shared_str			EmptyTexts[static_cast<u32>(ETaskListFilter::Count)];
 
 }; // class UITaskListWnd
 
@@ -137,12 +167,19 @@ private: // m_
 	CUIStatic*		m_task_icon;
 	CUI3tButton*	m_bt_focus;
 	CUI3tButton*	m_btn_task_focus;
+	bool			Finished = false;
+	bool			Failed = false;
+	CUIStatic*		m_st_status = nullptr;
+	shared_str		StatusTextCompleted;
+	shared_str		StatusTextFailed;
 
 	enum
 	{
 		stt_activ = 0,
 		stt_unread,
 		stt_read,
+		stt_completed,
+		stt_failed,
 		stt_count
 	};
 	u32				m_color_states[stt_count];

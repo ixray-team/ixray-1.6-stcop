@@ -24,6 +24,9 @@
 #include "../../xrEngine/string_table.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
 #include "PdaConstants.h"
+#include "UIHotkeysHint.h"
+#include "UIPersonalSpotsWnd.h"
+#include "UIActiveTaskCard.h"
 #include "PdaUiSound.h"
 
 CUITaskWnd::CUITaskWnd()
@@ -190,7 +193,17 @@ void CUITaskWnd::Init()
 	}
 	else
 	{
-		OnTaskListFilterChanged(ETaskListFilter::All);
+		OnTaskListFilterChanged(m_task_wnd->GetFilterMode());
+	}
+
+	if (g_pGameLevel)
+	{
+		CMapManager& mapManager			= Level().MapManager();
+		mapManager.RegisterSpotCategory	(PdaSpotCategory::Treasures, PdaSpotCategory::TreasuresSpots);
+		mapManager.RegisterSpotCategory	(PdaSpotCategory::PrimaryObjects, PdaSpotCategory::PrimaryObjectsSpots);
+		mapManager.RegisterSpotCategory	(PdaSpotCategory::SecondaryTasks, PdaSpotCategory::SecondaryTasksSpots);
+		mapManager.RegisterSpotCategory	(PdaSpotCategory::QuestNpcs, PdaSpotCategory::QuestNpcsSpots);
+		mapManager.RegisterSpotCategory	(PdaSpotCategory::PersonalSpots, PdaSpotCategory::PersonalSpotsSpots);
 	}
 
 	m_map_legend_wnd					= new UIMapLegend(); 
@@ -201,7 +214,39 @@ void CUITaskWnd::Init()
 	m_map_legend_wnd->SetMessageTarget	(this);
 	m_map_legend_wnd->Show				(false);
 
+	if (xml.NavigateToNode("personal_spots_wnd", 0))
+	{
+		PersonalSpotsWnd = new UIPersonalSpotsWnd();
+		PersonalSpotsWnd->SetAutoDelete(true);
+		PersonalSpotsWnd->SetUiSounds(m_pUiSounds);
+		PersonalSpotsWnd->SetMapWnd(m_pMapWnd);
+		PersonalSpotsWnd->InitFromXml(xml, "personal_spots_wnd");
+		m_pMapWnd->AttachChild(PersonalSpotsWnd);
+		PersonalSpotsWnd->SetMessageTarget(this);
+		PersonalSpotsWnd->Show(false);
+	}
+
+	if (xml.NavigateToNode("active_task_card", 0))
+	{
+		ActiveTaskCard = new UIActiveTaskCard();
+		ActiveTaskCard->SetAutoDelete(true);
+		ActiveTaskCard->InitFromXml(xml, "active_task_card");
+		ActiveTaskCard->SetOwner(this);
+		m_pMapWnd->AttachChild(ActiveTaskCard);
+		ActiveTaskCard->SetMessageTarget(this);
+	}
+
 	m_gamepad_legend			= UIHelper::CreateGamepadLegend(xml, "gamepad_legend", this, false);
+
+	for (int HintIndex = 0; xml.NavigateToNode("hotkeys_hint", HintIndex); ++HintIndex)
+	{
+		CUIHotkeysHint* Hint = new CUIHotkeysHint();
+		Hint->SetAutoDelete(true);
+		AttachChild(Hint);
+		Hint->InitFromXml(xml, "hotkeys_hint", HintIndex);
+		HotkeysHints.push_back(Hint);
+	}
+	HotkeysHintControllerMode = pInput->GetControllerMode();
 
 	if (m_pUiSounds)
 	{
@@ -236,6 +281,11 @@ void CUITaskWnd::Update()
 	}
 	UpdateFilterHighlight();
 	UpdateGamepadLegend();
+	UpdateHotkeysHint();
+	if (ActiveTaskCard)
+	{
+		ActiveTaskCard->Tick(m_task_wnd && m_task_wnd->IsShown());
+	}
 	inherited::Update				();
 }
 
@@ -337,31 +387,7 @@ void CUITaskWnd::ReloadTaskInfo()
 			m_btn_focus2->Show(true);
 	}
 
-	Locations map_locs			= Level().MapManager().Locations();
-	Locations_it b				= map_locs.begin(),
-				 e				= map_locs.end();
-	for (; b != e; b++)
-	{
-		if (b->location && b->location->IsUserDefined())
-		{
-			const bool showPersonal = !m_cbFilters[MAP_MARKS_FILTER_PERSONAL_SPOTS] || m_bPersonalSpotsEnabled;
-			showPersonal ? b->location->EnableSpot() : b->location->DisableSpot();
-			continue;
-		}
-
-		shared_str spot = b->spot_type;
-		if (spot == PdaMapSpot::Treasure)
-			m_bTreasuresEnabled ? b->location->EnableSpot() : b->location->DisableSpot();
-		else if (spot == PdaMapSpot::PrimaryObject)
-			m_bPrimaryObjectsEnabled ? b->location->EnableSpot() : b->location->DisableSpot();
-		else if (spot == PdaMapSpot::SecondaryTask || spot == PdaMapSpot::SecondaryTaskComplexTimer)
-			m_bSecondaryTasksEnabled ? b->location->EnableSpot() : b->location->DisableSpot();
-		else if (spot == PdaMapSpot::Trader || spot == PdaMapSpot::Mechanic ||
-				 spot == PdaMapSpot::Scout || spot == PdaMapSpot::QuestNpc ||
-				 spot == PdaMapSpot::Medic || spot == PdaMapSpot::ActorBox ||
-				 spot == PdaMapSpot::ActorSleep)
-			m_bQuestNpcsEnabled ? b->location->EnableSpot() : b->location->DisableSpot();
-	}
+	SyncLegacySpotFilters();
 
 	if (primaryTask || secondaryTask)
 	{
@@ -426,8 +452,21 @@ void CUITaskWnd::Show(bool status)
 	m_pMapWnd->Show			(status);
 	m_pMapWnd->HideCurHint	();
 	m_map_legend_wnd->Show	(false);
+	if (PersonalSpotsWnd)
+	{
+		PersonalSpotsWnd->Show(false);
+	}
 	if ( status )
 	{
+		m_map_legend_wnd->SyncFromFilter();
+		for (CUIHotkeysHint* Hint : HotkeysHints)
+		{
+			Hint->Refresh();
+		}
+		if (ActiveTaskCard)
+		{
+			ActiveTaskCard->Refresh();
+		}
 		ReloadTaskInfo();
 		m_task_wnd->Show( m_task_wnd_show );
 	}
@@ -459,11 +498,37 @@ void CUITaskWnd::OnShowTaskListWnd( CUIWindow* w, void* d )
 	{
 		m_pUiSounds->PlayPanel(showList);
 	}
+	if (showList)
+	{
+		HideSidePanels(m_task_wnd);
+	}
 	m_task_wnd->Show(showList);
+}
+
+bool CUITaskWnd::SwitchTaskListTab(bool Next)
+{
+	if (!m_task_wnd || !m_task_wnd->HasFilterTabs())
+	{
+		return false;
+	}
+
+	if (!m_task_wnd->IsShown())
+	{
+		if (m_pUiSounds)
+		{
+			m_pUiSounds->PlayPanel(true);
+		}
+		Show_TaskListWnd(true);
+	}
+	return m_task_wnd->SwitchFilterTab(Next);
 }
 
 void CUITaskWnd::Show_TaskListWnd(bool status)
 {
+	if (status)
+	{
+		HideSidePanels(m_task_wnd);
+	}
 	m_task_wnd->Show( status );
 	m_task_wnd_show = status;
 }
@@ -539,6 +604,43 @@ void CUITaskWnd::FocusPrimaryTaskOnMap()
 	TaskSetTargetMap(primary);
 }
 
+void CUITaskWnd::ToggleTaskList()
+{
+	OnShowTaskListWnd(this, nullptr);
+}
+
+void CUITaskWnd::FocusActiveTarget()
+{
+	CMapManager& MapManager = Level().MapManager();
+	if (CMapLocation* Mark = MapManager.GetActiveUserNavigationLocation())
+	{
+		if (m_pUiSounds)
+		{
+			m_pUiSounds->Play(EPdaUiSound::ListSelect);
+		}
+		const Fvector2 Position = Mark->CalcPosition();
+		m_pMapWnd->SetTargetMap(Mark->GetLevelName(), Position, true);
+		return;
+	}
+
+	CGameTaskManager* TaskManager = Level().GameTaskManager();
+	CGameTask* Task = TaskManager ? TaskManager->ActiveTask(eTaskTypeStoryline) : nullptr;
+	if (!Task && TaskManager)
+	{
+		Task = TaskManager->ActiveTask(eTaskTypeAdditional);
+	}
+	if (!Task || !Task->HasActiveMapTarget())
+	{
+		return;
+	}
+
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::ListSelect);
+	}
+	TaskSetTargetMap(Task);
+}
+
 void CUITaskWnd::OnTask1DbClicked(CUIWindow*, void*)
 {
 	FocusPrimaryTaskOnMap();
@@ -556,8 +658,22 @@ void CUITaskWnd::OnTask2DbClicked(CUIWindow*, void*)
 	TaskSetTargetMap(secondary);
 }
 
+void CUITaskWnd::SyncLegacySpotFilters()
+{
+	CMapManager& mapManager = Level().MapManager();
+	mapManager.SetSpotCategoryHidden(PdaSpotCategory::Treasures, !m_bTreasuresEnabled);
+	mapManager.SetSpotCategoryHidden(PdaSpotCategory::PrimaryObjects, !m_bPrimaryObjectsEnabled);
+	mapManager.SetSpotCategoryHidden(PdaSpotCategory::SecondaryTasks, !m_bSecondaryTasksEnabled);
+	mapManager.SetSpotCategoryHidden(PdaSpotCategory::QuestNpcs, !m_bQuestNpcsEnabled);
+	mapManager.SetSpotCategoryHidden(PdaSpotCategory::PersonalSpots, m_cbFilters[MAP_MARKS_FILTER_PERSONAL_SPOTS] && !m_bPersonalSpotsEnabled);
+}
+
 void CUITaskWnd::ShowMapLegend( bool status )
 {
+	if (status)
+	{
+		HideSidePanels(m_map_legend_wnd);
+	}
 	m_map_legend_wnd->Show( status );
 }
 
@@ -568,7 +684,79 @@ void CUITaskWnd::Switch_ShowMapLegend()
 	{
 		m_pUiSounds->PlayPanel(showLegend);
 	}
+	if (showLegend)
+	{
+		HideSidePanels(m_map_legend_wnd);
+	}
 	m_map_legend_wnd->Show(showLegend);
+}
+
+void CUITaskWnd::SwitchPersonalSpotsWnd()
+{
+	if (!PersonalSpotsWnd)
+	{
+		return;
+	}
+
+	const bool ShowPanel = !PersonalSpotsWnd->IsShown();
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->PlayPanel(ShowPanel);
+	}
+	if (ShowPanel)
+	{
+		HideSidePanels(PersonalSpotsWnd);
+	}
+	PersonalSpotsWnd->Show(ShowPanel);
+}
+
+void CUITaskWnd::ShowPersonalSpotsLimit()
+{
+	if (!PersonalSpotsWnd)
+	{
+		if (m_pUiSounds)
+		{
+			m_pUiSounds->Play(EPdaUiSound::Cancel);
+		}
+		return;
+	}
+
+	if (!PersonalSpotsWnd->IsShown())
+	{
+		HideSidePanels(PersonalSpotsWnd);
+		PersonalSpotsWnd->Show(true);
+	}
+	PersonalSpotsWnd->ShowLimitMessage();
+}
+
+void CUITaskWnd::HideSidePanels(CUIWindow* Keep)
+{
+	if (m_task_wnd && m_task_wnd != Keep && m_task_wnd->IsShown())
+	{
+		m_task_wnd->Show(false);
+		m_task_wnd_show = false;
+	}
+	if (m_map_legend_wnd && m_map_legend_wnd != Keep && m_map_legend_wnd->IsShown())
+	{
+		m_map_legend_wnd->Show(false);
+	}
+	if (PersonalSpotsWnd && PersonalSpotsWnd != Keep && PersonalSpotsWnd->IsShown())
+	{
+		PersonalSpotsWnd->Show(false);
+	}
+}
+
+bool CUITaskWnd::IsCursorOverSidePanel()
+{
+	CUIWindow* Panels[] = { m_task_wnd, m_map_legend_wnd, PersonalSpotsWnd };
+	for (CUIWindow* Panel : Panels)
+	{
+		if (Panel && Panel->IsShown() && Panel->CursorOverWindow())
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void CUITaskWnd::OnShowTreasures(CUIWindow* ui, void* d)
@@ -689,7 +877,7 @@ void CUITaskWnd::SecondaryTasksEnabled(bool enable)
 		return;
 	}
 
-	ApplySecondaryTasksMapFilter(enable);
+	ApplySecondaryTasksMapFilter(enable || !m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS]);
 }
 
 void CUITaskWnd::ApplySecondaryTasksMapFilter(bool enable)
@@ -772,6 +960,57 @@ bool CUITaskWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	return inherited::OnMouseAction(x, y, mouse_action);
 }
 
+bool CUITaskWnd::HandleMapAction(EGameActions Action, bool Execute)
+{
+	using MapActionHandler = void (*)(CUITaskWnd&);
+	struct SMapAction
+	{
+		EGameActions Action;
+		MapActionHandler Handler;
+	};
+
+	static const SMapAction MapActions[] =
+	{
+		{ kPDA_TASKS_TOGGLE_LIST, [](CUITaskWnd& Wnd) { Wnd.OnShowTaskListWnd(&Wnd, nullptr); } },
+		{ kPDA_TASKS_TOGGLE_LEGEND, [](CUITaskWnd& Wnd) { Wnd.Switch_ShowMapLegend(); } },
+		{ kPDA_TASKS_MAP_SHOW_ME, [](CUITaskWnd& Wnd) { Wnd.m_pMapWnd->ViewActor(); } },
+		{ kPDA_TASKS_MAP_SHOW_TARGET, [](CUITaskWnd& Wnd) { Wnd.FocusActiveTarget(); } },
+		{ kPDA_TASKS_PERSONAL_SPOT_CURSOR, [](CUITaskWnd& Wnd) { if (!Wnd.IsCursorOverSidePanel()) { Wnd.m_pMapWnd->PlacePersonalSpotAtCursor(); } } },
+		{ kPDA_TASKS_PERSONAL_SPOT_ACTOR, [](CUITaskWnd& Wnd) { Wnd.m_pMapWnd->PlacePersonalSpotAtActor(); } },
+		{ kPDA_TASKS_PERSONAL_SPOT_REMOVE, [](CUITaskWnd& Wnd) { if (!Wnd.IsCursorOverSidePanel()) { Wnd.m_pMapWnd->RemovePersonalSpotAtCursor(); } } },
+		{ kPDA_TASKS_PERSONAL_SPOT_TRACK, [](CUITaskWnd& Wnd) { if (!Wnd.IsCursorOverSidePanel()) { Wnd.m_pMapWnd->TogglePersonalSpotNavigation(); } } },
+		{ kPDA_TASKS_PERSONAL_SPOT_NEXT, [](CUITaskWnd& Wnd) { Wnd.m_pMapWnd->FocusPersonalSpot(true); } },
+		{ kPDA_TASKS_PERSONAL_SPOT_PREV, [](CUITaskWnd& Wnd) { Wnd.m_pMapWnd->FocusPersonalSpot(false); } },
+		{ kPDA_TASKS_PERSONAL_SPOTS_LIST, [](CUITaskWnd& Wnd) { Wnd.SwitchPersonalSpotsWnd(); } },
+	};
+
+	for (const SMapAction& MapAction : MapActions)
+	{
+		if (MapAction.Action == Action)
+		{
+			if (Execute)
+			{
+				MapAction.Handler(*this);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CUITaskWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
+{
+	if (IsShown())
+	{
+		if (HandleMapAction(get_binded_action(dik, agUITaskMenu), keyboard_action == WINDOW_KEY_PRESSED))
+		{
+			return true;
+		}
+	}
+
+	return inherited::OnKeyboardAction(dik, keyboard_action);
+}
+
 bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 {
 	if (gamepad_action == WINDOW_KEY_PRESSED)
@@ -786,16 +1025,6 @@ bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 					return true;
 				}
 				break;
-			}
-			case kPDA_TASKS_TOGGLE_LIST:
-			{
-				OnShowTaskListWnd(this, nullptr);
-				return true;
-			}
-			case kPDA_TASKS_TOGGLE_LEGEND:
-			{
-				Switch_ShowMapLegend();
-				return true;
 			}
 			case kPDA_TASKS_FILTER_NEXT:
 			{
@@ -828,6 +1057,14 @@ bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 					{
 						OnTask1DbClicked(this, nullptr);
 					}
+					return true;
+				}
+				break;
+			}
+			default:
+			{
+				if (HandleMapAction(get_binded_action(id, agUITaskMenu), true))
+				{
 					return true;
 				}
 				break;
@@ -919,6 +1156,26 @@ void CUITaskWnd::UpdateFilterHighlight()
 		}
 	}
 
+}
+
+void CUITaskWnd::UpdateHotkeysHint()
+{
+	if (HotkeysHints.empty())
+	{
+		return;
+	}
+
+	const bool ControllerMode = pInput->GetControllerMode();
+	const bool ModeChanged = ControllerMode != HotkeysHintControllerMode;
+	HotkeysHintControllerMode = ControllerMode;
+	for (CUIHotkeysHint* Hint : HotkeysHints)
+	{
+		if (ModeChanged)
+		{
+			Hint->Refresh();
+		}
+		Hint->Show(!ControllerMode || !m_gamepad_legend);
+	}
 }
 
 void CUITaskWnd::UpdateGamepadLegend()

@@ -34,6 +34,7 @@
 #include "UIEncyclopediaWnd.h"
 #include "UIActorInfo.h"
 #include "UIDiaryWnd.h"
+#include "UIHotkeysHint.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
 #include "../HudPdaAnimator.h"
@@ -332,6 +333,16 @@ void CUIPdaWnd::Init()
 	}
 	InitTabBackgrounds(uiXml);
 
+	for (int HintIndex = 0; uiXml.NavigateToNode("hotkeys_hint", HintIndex); ++HintIndex)
+	{
+		CUIHotkeysHint* Hint = new CUIHotkeysHint();
+		Hint->SetAutoDelete(true);
+		AttachChild(Hint);
+		Hint->InitFromXml(uiXml, "hotkeys_hint", HintIndex);
+		HotkeysHints.push_back(Hint);
+	}
+	HotkeysHintsControllerMode = pInput && pInput->GetControllerMode();
+
 	const auto tabPresentLambda = [this](const char* sectionId)
 	{
 		return UITabControl->GetButtonById(ResolveTabId(sectionId)) != nullptr;
@@ -474,6 +485,7 @@ void CUIPdaWnd::Show(bool status)
 		InventoryUtilities::SendInfoToActor	(PdaActorInfo::Show);
 		UpdateLocationName();
 		UpdateDateTime(true);
+		RefreshHotkeysHints(true);
 
 		m_uiSounds.Play(EPdaUiSound::Open);
 		m_uiSounds.SetSuppressTabSound(true);
@@ -551,6 +563,26 @@ void CUIPdaWnd::UpdateDateTime(bool force)
 	}
 }
 
+void CUIPdaWnd::RefreshHotkeysHints(bool Force)
+{
+	if (HotkeysHints.empty())
+	{
+		return;
+	}
+
+	const bool ControllerMode = pInput && pInput->GetControllerMode();
+	if (!Force && ControllerMode == HotkeysHintsControllerMode)
+	{
+		return;
+	}
+
+	HotkeysHintsControllerMode = ControllerMode;
+	for (CUIHotkeysHint* Hint : HotkeysHints)
+	{
+		Hint->Refresh();
+	}
+}
+
 void CUIPdaWnd::UpdateLocationName()
 {
 	if (!m_captionLocation)
@@ -591,6 +623,7 @@ void CUIPdaWnd::Update()
 	if (m_clock)
 		m_clock->SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
 	UpdateDateTime();
+	RefreshHotkeysHints(false);
 
 	if (pUILogsWnd && IsShown())
 	{
@@ -841,6 +874,29 @@ void CUIPdaWnd::Show_SecondTaskWnd( bool status )
 		SetActiveSubdialog(ResolveTabId(PdaSectionId::Tasks));
 	}
 	pUITaskWnd->Show_TaskListWnd( status );
+}
+
+bool CUIPdaWnd::SwitchSecondaryTab(bool Next)
+{
+	if (pUIDiaryWnd && m_pActiveDialog == pUIDiaryWnd && pUIDiaryWnd->m_FilterTab)
+	{
+		m_uiSounds.Play(EPdaUiSound::Tab);
+		if (Next)
+		{
+			pUIDiaryWnd->m_FilterTab->NextTab(true);
+		}
+		else
+		{
+			pUIDiaryWnd->m_FilterTab->PrevTab(true);
+		}
+		return true;
+	}
+
+	if (pUITaskWnd && m_pActiveDialog == pUITaskWnd)
+	{
+		return pUITaskWnd->SwitchTaskListTab(Next);
+	}
+	return false;
 }
 
 void CUIPdaWnd::Show_MapLegendWnd( bool status )
@@ -1124,6 +1180,17 @@ bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
+		const bool AltPressed = pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT) || pInput->iGetAsyncKeyState(SDL_SCANCODE_RALT);
+		if (is_binded(kUI_TAB_SECONDARY_LEFT, dik) || (AltPressed && is_binded(kUI_TAB_LEFT, dik)))
+		{
+			SwitchSecondaryTab(false);
+			return true;
+		}
+		if (is_binded(kUI_TAB_SECONDARY_RIGHT, dik) || (AltPressed && is_binded(kUI_TAB_RIGHT, dik)))
+		{
+			SwitchSecondaryTab(true);
+			return true;
+		}
 		if (is_binded(kUI_TAB_LEFT, dik) && !any_binded_key_for_action_pressed_c(kUI_TAB_RIGHT))
 		{
 			UITabControl->PrevTab(true);
@@ -1179,6 +1246,10 @@ bool CUIPdaWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 					ActionRepeaters()->SetActionStarted(this, kUI_TAB_SECONDARY_LEFT);
 					pUIDiaryWnd->m_FilterTab->PrevTab(true);
 				}
+				else
+				{
+					SwitchSecondaryTab(false);
+				}
 				break;
 			}
 			case kUI_TAB_SECONDARY_RIGHT:
@@ -1188,6 +1259,10 @@ bool CUIPdaWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 					m_uiSounds.Play(EPdaUiSound::Tab);
 					ActionRepeaters()->SetActionStarted(this, kUI_TAB_SECONDARY_RIGHT);
 					pUIDiaryWnd->m_FilterTab->NextTab(true);
+				}
+				else
+				{
+					SwitchSecondaryTab(true);
 				}
 				break;
 			}
