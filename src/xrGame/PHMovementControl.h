@@ -58,6 +58,17 @@ void					SetRestrictionType( ERestrictionType rt);
 void					SetActorMovable( bool v );
 void					SetForcedPhysicsControl( bool v );
 bool					ForcedPhysicsControl( );
+	// Car contact constraint. It is refreshed while the character touches a
+	// car and lets the movement manager decide every frame whether the car
+	// pushes the character away or the character is allowed to push the car
+	// only slowly.
+	void					SetCarContact( const Fvector& normal, const Fvector& car_velocity,
+											   float separation_bias, float ram_scale,
+											   float mutant_push_speed, float min_car_speed,
+											   float max_push_speed, u32 duration_ms );
+	void					UpdateCarContact();
+	bool					IsCarContactActive() const;
+	Fvector					ApplyCarContact( const Fvector& path_velocity ) const;
 void					UpdateObjectBox( IPHCharacter *ach );
 void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
 void					BlockDamageSet		( u64 steps_num );
@@ -126,6 +137,21 @@ private:
 
 	Fvector				vVelocity;
 	Fvector				vPosition;
+
+	struct SCarContact
+	{
+		Fvector			normal;
+		Fvector			car_velocity;
+		float			separation_bias;
+		float			ram_scale;
+		float			mutant_push_speed;
+		float			min_car_speed;
+		float			max_push_speed;
+	};
+
+	SCarContact			m_car_contact;
+	u32					m_car_contact_end;
+	bool				m_car_contact_active;
 
 	Fvector				vPathPoint;
 	Fvector				_vPathDir;

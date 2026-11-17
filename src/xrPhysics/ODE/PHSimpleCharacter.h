@@ -126,6 +126,7 @@ protected:
 	bool	b_foot_mtl_check;
 	dReal	m_friction_factor;
 	bool	b_non_interactive;
+	bool	m_external_push;
 public:
 							CPHSimpleCharacter					()									;
 	virtual	~CPHSimpleCharacter					() override {Destroy();}
@@ -219,6 +220,13 @@ public:
 	virtual	float		Mass								() override {return m_mass;};
 	virtual	void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object) override;
 	virtual	void		SetNonInteractive					(bool v) override;
+	virtual	void		SetExternalPush						(bool v) override
+	{
+		// The actor must never enter the external-push mode used by the car
+		// contact constraint; otherwise his on-foot movement is disabled.
+		if (!IsActorCharacter())
+			m_external_push = v;
+	}
 	virtual	bool		IsEnabled							() override
 	{ if(!b_exist)return false; return !!dBodyIsEnabled(m_body);}
 
