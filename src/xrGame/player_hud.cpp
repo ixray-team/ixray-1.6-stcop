@@ -16,6 +16,42 @@ Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 extern float AnimatorHideSpeedFactor;
 
+shared_str ModelName(IKinematicsAnimated* Model)
+{
+	IRenderVisual* Visual = Model != nullptr ? Model->dcast_RenderVisual() : nullptr;
+	return Visual != nullptr ? Visual->getDebugName() : shared_str("<null>");
+}
+
+u32 MotionCount(IKinematicsAnimated* Model, u16 Slot)
+{
+	if (Model == nullptr || Slot >= Model->LL_MotionsSlotCount())
+	{
+		return 0;
+	}
+
+	MotionDefVec* Defs = const_cast<shared_motions&>(Model->LL_MotionsSlot(Slot)).motion_defs();
+	return Defs != nullptr ? (u32)Defs->size() : 0;
+}
+
+bool IsValid(IKinematicsAnimated* Model, const MotionID& Motion)
+{
+	return Model != nullptr && Motion.valid() && Motion.idx < MotionCount(Model, Motion.slot);
+}
+
+void LogInvalid(IKinematicsAnimated* Model, const MotionID& Motion, const char* Context)
+{
+	Msg("! [HUD] Invalid motion %s: slot=%u idx=%u, model [%s] has %u slots and %u motions in slot %u",
+		Context != nullptr ? Context : "<unknown>",
+		(u32)Motion.slot,
+		(u32)Motion.idx,
+		ModelName(Model).c_str(),
+		Model != nullptr ? (u32)Model->LL_MotionsSlotCount() : 0,
+		MotionCount(Model, Motion.slot),
+		(u32)Motion.slot);
+	xrLogger::FlushLog();
+}
+
+
 float CalcMotionSpeed(const shared_str& anim_name)
 {
 	if (!IsGameTypeSingle() && (anim_name == "anm_show" || anim_name == "anm_hide"))
@@ -958,7 +994,20 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	bool need_mix_hands = bMixIn >= EHudMixType::eMixHands;
 
 	IKinematicsAnimated* kaModel = m_model_combined ? m_model->dcast_PKinematicsAnimated() : nullptr;
-	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed, kaModel);
+	IKinematicsAnimated* HandsModel = kaModel != nullptr ? kaModel : g_player_hud->GetModel();
+	u32 ret = 0;
+	if (IsValid(HandsModel, M.mid))
+	{
+		ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed, kaModel);
+	}
+	else
+	{
+		string512 Context;
+		xr_sprintf(Context, "[%s] alias [%s] in [%s], visual [%s], hands [%s], %s model", M.name.c_str(), anm_name_b.c_str(),
+			m_sect_name.c_str(), m_visual_name.c_str(), g_player_hud->section_name().c_str(), m_model_combined ? "combined item" : "hands");
+		LogInvalid(HandsModel, M.mid, Context);
+		md = nullptr;
+	}
 	
 	if(m_model->dcast_PKinematicsAnimated() != nullptr)
 	{
@@ -1603,6 +1652,20 @@ void player_hud::load(const shared_str& player_hud_sect)
 		}
 	}
 
+	if (b_reload && m_model)
+	{
+		for (attachable_hud_item* Item : m_pool)
+		{
+			if (Item->m_model_combined)
+			{
+				continue;
+			}
+
+			Item->m_hand_motions = player_hud_motion_container();
+			Item->m_hand_motions.load(m_model, Item->m_sect_name, Item->m_model->dcast_PKinematicsAnimated());
+		}
+	}
+
 	if(pSettings->line_exist(player_hud_sect, "legs_visual")) {
 		auto model_name = pSettings->r_string(player_hud_sect, "legs_visual");
 		m_legs_model = PKinematics(::Render->model_Create(model_name));
@@ -1803,11 +1866,36 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 		);
 
 	IKinematicsAnimated* modelMotion = pi->m_model_combined ? pi->m_model->dcast_PKinematicsAnimated() : m_model;
-	return motion_length(pm->m_animations[0].mid, md, speed, modelMotion);
+	if (pm->m_animations.empty())
+	{
+		Msg("! [HUD] Motion alias [%s] in [%s] has no animations (hands [%s])", anim_name.c_str(), hud_name.c_str(), m_sect_name.c_str());
+		md = nullptr;
+		return 0;
+	}
+
+	const motion_descr& Anim = pm->m_animations[0];
+	if (!IsValid(modelMotion, Anim.mid))
+	{
+		string512 Context;
+		xr_sprintf(Context, "[%s] alias [%s] in [%s], hands [%s], %s model", Anim.name.c_str(), anim_name.c_str(), hud_name.c_str(),
+			m_sect_name.c_str(), pi->m_model_combined ? "combined item" : "hands");
+		LogInvalid(modelMotion, Anim.mid, Context);
+		md = nullptr;
+		return 0;
+	}
+
+	return motion_length(Anim.mid, md, speed, modelMotion);
 }
 
 u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float speed, IKinematicsAnimated* model)
 {
+	if (!IsValid(model, M))
+	{
+		LogInvalid(model, M, "in player_hud::motion_length");
+		md = nullptr;
+		return 0;
+	}
+
 	md = model->LL_GetMotionDef(M);
 	VERIFY(md);
 	if (md != nullptr && md->flags & esmStopAtEnd)
@@ -2055,6 +2143,15 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotio
 	// 2==right_hand (right hand bone hierarchy)
 	// please append new bone parts for more realistic behavior of animations
 	IKinematicsAnimated* itemModel = model;
+
+	if (!IsValid(itemModel != nullptr ? itemModel : m_model, M))
+	{
+		string256 Context;
+		xr_sprintf(Context, "in player_hud::anim_play, part %u, hands [%s]", (u32)part, m_sect_name.c_str());
+		LogInvalid(itemModel != nullptr ? itemModel : m_model, M, Context);
+		md = nullptr;
+		return 0;
+	}
 
 	if (!itemModel && m_model)
 	{
