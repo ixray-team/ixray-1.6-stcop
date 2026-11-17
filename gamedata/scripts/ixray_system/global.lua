@@ -617,6 +617,90 @@ end
 
 
 --  ####################################################################################################################
+--                                                  IXR HIGH LOAD TIMERS
+--  ####################################################################################################################
+
+--[[
+Description: Create a transient timer, updated on_frame with device().dwtime_continual; never saved.
+Parameters:
+  name (string)(required) - unique HighLoad timer name within the calling script.
+  loop (bool)(optional) - repeat after expiration; nil/invalid defaults to false. At most one call per frame.
+  auto_start (bool)(optional) - start immediately; nil/invalid defaults to true. Explicit false creates a stopped timer.
+  milliseconds (number)(optional) - finite positive interval in milliseconds; nil/invalid defaults to 50 ms.
+  callable_fn (function)(required for a new timer) - callback receiving ...; return value is ignored.
+  ... - callback arguments, including nil values; tables are passed by reference.
+Returns: (table|false) - named timer methods, as with TimerCreate:
+  self:name(): string
+  self:exists(): bool
+  self:play(): bool
+  self:stop(): bool
+  self:delete(): bool
+  Existing names in the same script return a handle without replacing or restarting the timer.
+  False if name is invalid, a new timer has no valid callback or module is unavailable.
+Notes: all five globals resolve caller scope; handles retain their creator scope across scripts.
+  Closures are supported; caller owns deletion. Names do not overlap saved timers.
+--]]
+function CreateHighLoadTimer(name, loop, auto_start, milliseconds, callable_fn, ...)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").high_load_timer_create(ffx_callable_utils.find_caller_source(3), name, loop, auto_start, milliseconds, callable_fn, ...)
+	end
+	return false
+end
+
+--[[
+Description: Check whether a running or stopped HighLoad timer exists.
+Parameters: name (string)(required) - HighLoad timer name in the calling script.
+Returns: (bool) - true if it exists, false otherwise or if module is unavailable.
+--]]
+function ExistsHighLoadTimer(name)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").high_load_timer_exists(ffx_callable_utils.find_caller_source(3), name)
+	end
+
+	return false
+end
+
+--[[
+Description: Start/resume a stopped HighLoad timer using its remaining time.
+Parameters: name (string)(required) - HighLoad timer name in the calling script.
+Returns: (bool) - true if started, false if absent, already running or module is unavailable.
+--]]
+function StartHighLoadTimer(name)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").high_load_timer_start(ffx_callable_utils.find_caller_source(3), name)
+	end
+
+	return false
+end
+
+--[[
+Description: Stop a HighLoad timer, preserving remaining time and callback arguments.
+Parameters: name (string)(required) - HighLoad timer name in the calling script.
+Returns: (bool) - true if stopped, false if absent, already stopped or module is unavailable.
+--]]
+function StopHighLoadTimer(name)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").high_load_timer_stop(ffx_callable_utils.find_caller_source(3), name)
+	end
+
+	return false
+end
+
+--[[
+Description: Delete a HighLoad timer and release its callback/argument references.
+Parameters: name (string)(required) - HighLoad timer name in the calling script.
+Returns: (bool) - true if deleted, false if absent or module is unavailable.
+--]]
+function DeleteHighLoadTimer(name)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").high_load_timer_delete(ffx_callable_utils.find_caller_source(3), name)
+	end
+
+	return false
+end
+
+
+--  ####################################################################################################################
 -- 													IXR TRIGGERS
 --  ####################################################################################################################
 

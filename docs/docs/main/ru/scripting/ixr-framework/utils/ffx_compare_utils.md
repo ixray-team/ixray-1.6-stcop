@@ -13,6 +13,8 @@
 * `is_not_empty_string`
 * `is_empty_string`
 * `is_number`
+* `is_boolean`
+* `is_finite_number`
 * `has_pattern`
 
 #### Описание методов:
@@ -60,6 +62,18 @@ is_number(object)
 args:
   object (any) - проверяемый объект
 retval: (boolean) - true, если объект - число, иначе false
+
+--// Проверить тип boolean; true и false одинаково допустимы.
+is_boolean(object)
+args:
+  object (any)(required) - проверяемое значение.
+retval: (boolean) - true только для значений true и false; иначе false.
+
+--// Проверить, является ли значение конечным числом Lua.
+is_finite_number(object)
+args:
+  object (any)(required) - проверяемое значение.
+retval: (boolean) - true для конечного числа, включая ноль и отрицательные значения; false для NaN, бесконечностей и других типов. Строки в числа не преобразуются.
 
 --// Проверить, соответствует ли строка шаблону с wildcard ('*' по умолчанию).
 --// Wildcard заменяет любую последовательность символов (включая пустую).

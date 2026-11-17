@@ -16,6 +16,12 @@
 		timer_play(name)
 		timer_stop(name)
 		timer_delete(name)
+
+		high_load_timer_create(caller_script_name, name, loop, auto_start, milliseconds, callable_fn, ...)
+		high_load_timer_exists(caller_script_name, name)
+		high_load_timer_start(caller_script_name, name)
+		high_load_timer_stop(caller_script_name, name)
+		high_load_timer_delete(caller_script_name, name)
 ]]
 
 local SCRIPT_ENABLED = true
@@ -40,6 +46,7 @@ local ixr_timers = {
 		timer = 0,
 		timer_increment = MIN_TIMERS_DELAY,
 		storage = {},
+		highload_timers = {},
 	}
 }
 
@@ -129,11 +136,167 @@ function timer_delete(name)
 	return ixr_timers.timer_delete(name)
 end
 
+function get_free_timer_name(name)
+	return tostring(name) .. "_" .. (ixr_timers.get_count_timers() + 1)
+end
+
+function get_count_timers()
+	return ixr_timers.get_count_timers()
+end
+
+-- ################################
+-- #     HIGH LOAD TIMERS          #
+-- ################################
+
+function high_load_timer_create(caller_script_name, name, loop, auto_start, milliseconds, callable_fn, ...)
+	return ixr_timers.high_load_timer_create(caller_script_name, name, loop, auto_start, milliseconds, callable_fn, ...)
+end
+
+function high_load_timer_exists(caller_script_name, name)
+	return ixr_timers.high_load_timer_exists(caller_script_name, name)
+end
+
+function high_load_timer_start(caller_script_name, name)
+	return ixr_timers.high_load_timer_start(caller_script_name, name)
+end
+
+function high_load_timer_stop(caller_script_name, name)
+	return ixr_timers.high_load_timer_stop(caller_script_name, name)
+end
+
+function high_load_timer_delete(caller_script_name, name)
+	return ixr_timers.high_load_timer_delete(caller_script_name, name)
+end
+
 --#####################################################
 --#				SYSTEM LOGIC						  #
 --#####################################################
 
+-- Transient timers: scoped by caller script, never serialized.
+function ixr_timers.high_load_timer_create(caller_script_name, name, loop, auto_start, milliseconds, callable_fn, ...)
+	if ffx_compare_utils.is_empty_or_not_string(caller_script_name) then return false end
+	if ffx_compare_utils.is_empty_or_not_string(name) then return false end
+	if ixr_timers.high_load_timer_exists(caller_script_name, name) then
+		return ixr_timers.build_high_load_timer_methods(caller_script_name, name)
+	end
+	if not ffx_compare_utils.is_function(callable_fn) then return false end
+
+	if not ffx_compare_utils.is_boolean(loop) then loop = false end
+	if not ffx_compare_utils.is_boolean(auto_start) then auto_start = true end
+	if not ffx_compare_utils.is_finite_number(milliseconds) or milliseconds <= 0 then
+		milliseconds = MIN_TIMERS_DELAY
+	end
+
+	local timers = ixr_timers.dynamic_vars.highload_timers
+	table.insert(timers, {
+		index = #timers + 1,
+		caller_script_name = caller_script_name,
+		name = name,
+		interval = milliseconds,
+		remaining = milliseconds,
+		loop = loop,
+		running = false,
+		callback = callable_fn,
+		args = {...},
+		arg_count = select("#", ...),
+	})
+	IXRLog("HighLoad timer create:" .. caller_script_name .. "/" .. name)
+	if auto_start then ixr_timers.high_load_timer_start(caller_script_name, name) end
+	return ixr_timers.build_high_load_timer_methods(caller_script_name, name)
+end
+
+function ixr_timers.build_high_load_timer_methods(caller_script_name, name)
+	return {
+		name = function() return name end,
+		exists = function() return ixr_timers.high_load_timer_exists(caller_script_name, name) end,
+		play = function() return ixr_timers.high_load_timer_start(caller_script_name, name) end,
+		stop = function() return ixr_timers.high_load_timer_stop(caller_script_name, name) end,
+		delete = function() return ixr_timers.high_load_timer_delete(caller_script_name, name) end,
+	}
+end
+
+function ixr_timers.find_high_load_timer(caller_script_name, name)
+	for _, timer in ipairs(ixr_timers.dynamic_vars.highload_timers) do
+		if timer.caller_script_name == caller_script_name and timer.name == name then return timer end
+	end
+	return nil
+end
+
+function ixr_timers.high_load_timer_exists(caller_script_name, name)
+	return ixr_timers.find_high_load_timer(caller_script_name, name) ~= nil
+end
+
+function ixr_timers.high_load_timer_start(caller_script_name, name)
+	local timer = ixr_timers.find_high_load_timer(caller_script_name, name)
+	if not timer or timer.running then return false end
+	timer.time = device().dwtime_continual
+	timer.running = true
+	IXRLog("HighLoad timer start:" .. caller_script_name .. "/" .. name)
+	return true
+end
+
+function ixr_timers.high_load_timer_stop(caller_script_name, name)
+	local timer = ixr_timers.find_high_load_timer(caller_script_name, name)
+	if not timer or not timer.running then return false end
+	timer.remaining = math.max(0, timer.remaining - (device().dwtime_continual - timer.time) % 4294967296)
+	timer.running = false
+	IXRLog("HighLoad timer stop:" .. caller_script_name .. "/" .. name)
+	return true
+end
+
+function ixr_timers.high_load_timer_delete(caller_script_name, name)
+	local timer = ixr_timers.find_high_load_timer(caller_script_name, name)
+	if not timer then return false end
+	ixr_timers.remove_high_load_timer(timer)
+	IXRLog("HighLoad timer delete:" .. caller_script_name .. "/" .. name)
+	return true
+end
+
+function ixr_timers.remove_high_load_timer(timer)
+	local timers = ixr_timers.dynamic_vars.highload_timers
+	local last = timers[#timers]
+
+	timers[timer.index] = last
+	last.index = timer.index
+	timers[#timers] = nil
+	timer.index = nil
+end
+
+function ixr_timers.update_high_load_timers()
+	if not SCRIPT_ENABLED then return end
+	if #ixr_timers.dynamic_vars.highload_timers == 0 then return end
+
+	local now = device().dwtime_continual
+	local due
+	for _, timer in ipairs(ixr_timers.dynamic_vars.highload_timers) do
+		if timer.running then
+			local delta = (now - timer.time) % 4294967296
+			timer.time = now
+			timer.remaining = timer.remaining - delta
+			if timer.remaining <= 0 then
+				due = due or {}
+				table.insert(due, timer)
+			end
+		end
+	end
+
+	if not due then return end
+	for _, timer in ipairs(due) do ixr_timers.run_high_load_timer(timer) end
+end
+
+function ixr_timers.run_high_load_timer(timer)
+	if not timer.index or not timer.running then return end
+	if timer.loop then
+		timer.remaining = timer.interval
+	else
+		ixr_timers.remove_high_load_timer(timer)
+	end
+
+	timer.callback(unpack(timer.args, 1, timer.arg_count))
+end
+
 function ixr_timers.init()
+	if is_initialized() then return true end
 	IXRLogUseFileLog(ixr_timers.use_file_log)
 	IXRLogUseConsoleLog(ixr_timers.use_console_log)
 	IXRLogUseTimeInLog(ixr_timers.use_time_log)
@@ -153,6 +316,7 @@ function ixr_timers.register_callbacks()
 	RegisterScriptCallback("on_load_screen_await_any_key_pressed", function () ixr_timers.dynamic_vars.is_actor_input_recieved = true end)
 	RegisterScriptCallback("actor_on_update", ixr_timers.actor_on_update)
 	RegisterScriptCallback("actor_on_save", ixr_timers.actor_on_save)
+	RegisterScriptCallback("on_frame", ixr_timers.update_high_load_timers)
 	
 	IXRLog("REGISTER CALLBACKS :: [COMPLETED]")
 end
@@ -206,14 +370,6 @@ function ixr_timers.actor_on_update()
 		ixr_timers.on_tick(time_global() - ixr_timers.dynamic_vars.upd_last_time)
 		ixr_timers.dynamic_vars.upd_last_time = time_global()
 	end
-end
-
-function get_free_timer_name(name)
-	return tostring(name) .. "_" .. (ixr_timers.get_count_timers() + 1)
-end
-
-function get_count_timers()
-	return ixr_timers.get_count_timers()
 end
 
 function ixr_timers.get_count_timers()

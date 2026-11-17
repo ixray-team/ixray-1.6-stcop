@@ -106,6 +106,16 @@ function is_number(object)
 	return tostring(type(object)) == "number"
 end
 
+-- Check the boolean type, accepting both true and false.
+function is_boolean(object)
+	return type(object) == "boolean"
+end
+
+-- Check a finite Lua number, excluding NaN and both infinities.
+function is_finite_number(object)
+	return ffx_compare_utils.is_number(object) and object > -math.huge and object < math.huge
+end
+
 --[[
 Description:
   Checks if the given string matches the pattern where the wildcard character can appear multiple times.
