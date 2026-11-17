@@ -634,6 +634,132 @@ namespace EditorSceneCommands
 			-1, ' ', false, nlohmann::json::error_handler_t::replace).c_str());
 	}
 
+	CCommandVar CommandFindSceneModelUsage(CCommandVar First, CCommandVar)
+	{
+		if (!First.IsString())
+		{
+			return 0u;
+		}
+
+		const xr_string Reference = First;
+		LUI->LoaderEvent.Wait();
+		if (Reference.empty() || Scene->locked())
+		{
+			return 0u;
+		}
+
+		ObjectList Objects;
+		Scene->GetQueryObjects(Objects, OBJCLASS_SCENEOBJECT, -1, -1, -1);
+		auto Matches = nlohmann::json::array();
+		for (auto* Object : Objects)
+		{
+			const auto* Model = static_cast<CSceneObject*>(Object)->RefName();
+			if (Model && xr_stricmp(Model, Reference.c_str()) == 0)
+			{
+				const auto& Position = Object->GetPosition();
+				const auto& Rotation = Object->GetRotation();
+				const auto& Scale = Object->GetScale();
+				Matches.push_back({{"name", Object->GetName()}, {"model", Model},
+					{"position", {Position.x, Position.y, Position.z}},
+					{"rotation_radians", {Rotation.x, Rotation.y, Rotation.z}},
+					{"scale", {Scale.x, Scale.y, Scale.z}}});
+			}
+		}
+
+		return xr_string(nlohmann::json{{"matches", std::move(Matches)}}.dump(
+			-1, ' ', false, nlohmann::json::error_handler_t::replace).c_str());
+	}
+
+	CCommandVar CommandReplaceSceneModels(CCommandVar First, CCommandVar Second)
+	{
+		if (!First.IsString() || !Second.IsString())
+		{
+			return 0u;
+		}
+
+		const xr_string Reference = First;
+		const xr_string Text = Second;
+		const auto Request = nlohmann::json::parse(Text.c_str(), nullptr, false);
+		if (Reference.empty() || !Request.is_object() || !Request.contains("replacement") ||
+			!Request["replacement"].is_string() || !Request.contains("objects") ||
+			!Request["objects"].is_array() || Request["objects"].empty())
+		{
+			Msg("! Replace scene models expects a model reference and a JSON object with replacement and object names");
+			return 0u;
+		}
+
+		const auto& Replacement = Request["replacement"].get_ref<const nlohmann::json::string_t&>();
+		if (Replacement.empty() || Replacement.size() >= 240 || Replacement.find('\0') != Replacement.npos ||
+			xr_stricmp(Reference.c_str(), Replacement.c_str()) == 0)
+		{
+			Msg("! Replace scene models expects a different library model reference");
+			return 0u;
+		}
+
+		LUI->LoaderEvent.Wait();
+		auto* Tool = Scene->GetOTool(OBJCLASS_SCENEOBJECT);
+		if (Scene->locked() || Tool == nullptr || !Tool->IsEditable())
+		{
+			return 0u;
+		}
+
+		xr_vector<CSceneObject*> Objects;
+		xr_hash_set<CSceneObject*> Seen;
+		for (const auto& Entry : Request["objects"])
+		{
+			if (!Entry.is_string())
+			{
+				return 0u;
+			}
+			const auto& Name = Entry.get_ref<const nlohmann::json::string_t&>();
+			if (Name.empty() || Name.find('\0') != Name.npos)
+			{
+				return 0u;
+			}
+
+			auto* Object = static_cast<CSceneObject*>(Scene->FindObjectByName(Name.c_str(), OBJCLASS_SCENEOBJECT));
+			const char* Model = Object ? Object->RefName() : nullptr;
+			if (!Model || xr_stricmp(Model, Reference.c_str()) != 0 || Object->Locked() ||
+				Object->m_CO_Flags.test(CCustomObject::flObjectInGroup) || !Seen.insert(Object).second)
+			{
+				Msg("! Cannot replace model on [%s]: expected a unique, editable object referencing [%s]",
+					Name.c_str(), Reference.c_str());
+				return 0u;
+			}
+			Objects.push_back(Object);
+		}
+
+		auto* Asset = Lib.CreateEditObject(Replacement.c_str());
+		if (!Asset)
+		{
+			Msg("! Cannot load replacement model [%s]", Replacement.c_str());
+			return 0u;
+		}
+		const xr_scope_exit ReleaseAsset([&Asset] { Lib.RemoveEditObject(Asset); });
+		for (auto* Object : Objects)
+		{
+			if (!Object->StreamIn() || !Object->GetReference())
+			{
+				Msg("! Cannot load original model on [%s]", Object->GetName());
+				return 0u;
+			}
+		}
+
+		auto Replaced = nlohmann::json::array();
+		const shared_str NewReference = Asset->m_LibName.c_str();
+		for (auto* Object : Objects)
+		{
+			Object->ReplaceReference(NewReference);
+			Replaced.push_back(Object->GetName());
+		}
+		GWorldPartition.MarkDirty();
+		Scene->UndoSave();
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		EContext.UI->RedrawScene();
+		return xr_string(nlohmann::json{{"model", NewReference.c_str()}, {"replaced", std::move(Replaced)}}.dump(
+			-1, ' ', false, nlohmann::json::error_handler_t::replace).c_str());
+	}
+
 	enum class SceneTransform
 	{
 		Position,
@@ -1091,6 +1217,8 @@ void CLevelMain::RegisterMacroCommands()
 	REGISTER_CMD_S(COMMAND_ADD_LIBRARY_OBJECT, EditorSceneCommands::CommandAddLibraryObject);
 	REGISTER_CMD_S(COMMAND_SAVE_NEW_LEVEL, EditorSceneCommands::CommandSaveNewLevel);
 	REGISTER_CMD_S(COMMAND_SEARCH_LIBRARY_MODELS, EditorSceneCommands::CommandSearchLibraryModels);
+	REGISTER_CMD_S(COMMAND_FIND_SCENE_MODEL_USAGE, EditorSceneCommands::CommandFindSceneModelUsage);
+	REGISTER_CMD_S(COMMAND_REPLACE_SCENE_MODELS, EditorSceneCommands::CommandReplaceSceneModels);
 	REGISTER_CMD_S(COMMAND_MOVE_SCENE_OBJECT, EditorSceneCommands::CommandMoveSceneObject);
 	REGISTER_CMD_S(COMMAND_ROTATE_SCENE_OBJECT, EditorSceneCommands::CommandRotateSceneObject);
 	REGISTER_CMD_S(COMMAND_LIST_SCENE_OBJECTS, EditorSceneCommands::CommandListSceneObjects);

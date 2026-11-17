@@ -91,6 +91,7 @@ public:
 	IC bool 		RefCompare				(const char* ref){return ref&&m_pReference?(strcmp(ref,m_pReference->m_LibName.c_str())==0):false; }
 	IC CEditableObject*	GetReference		()	{return m_pReference; }
 	CEditableObject*SetReference			(const char* ref_name);
+	void			ReplaceReference		(shared_str Reference);
 	CEditableObject*UpdateReference			();
 	IC EditMeshVec* Meshes					() {return m_pReference?&m_pReference->m_Meshes:0;}
     virtual const char*	RefName					() {return m_pReference?m_pReference->m_LibName.c_str():(ReferencePending?m_ReferenceName.c_str():0);}

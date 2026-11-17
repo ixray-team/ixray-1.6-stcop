@@ -357,6 +357,11 @@ void CSceneObject::OnFrame()
 
 void CSceneObject::ReferenceChange(PropValue* sender)
 {
+	ReplaceReference(m_ReferenceName);
+}
+
+void CSceneObject::ReplaceReference(shared_str Reference)
+{
 	CSector* OldSector = nullptr;
 	for (auto MeshObJ : m_pReference->m_Meshes)
 	{
@@ -367,9 +372,9 @@ void CSceneObject::ReferenceChange(PropValue* sender)
 	}
 
 	Scene->BeforeObjectChange(this);
-	UpdateReference	();
+	m_ReferenceName = Reference;
 
-	if (OldSector)
+	if (UpdateReference() && OldSector)
 	{
 		for (auto MeshObJ : m_pReference->m_Meshes)
 		{

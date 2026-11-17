@@ -44,7 +44,7 @@ static std::array<size_t, 13> CommandsOneArgsInt =
 	COMMAND_SHOWCONTEXTMENU   // u32
 };
 
-static std::array<size_t, 15> CommandsOneArgsString =
+static std::array<size_t, 16> CommandsOneArgsString =
 {
 	COMMAND_ADD_AI_NODE,
 	COMMAND_SET_LEVEL_MODE,
@@ -52,6 +52,7 @@ static std::array<size_t, 15> CommandsOneArgsString =
 	COMMAND_INSPECT_SCENE_OBJECT,
 	COMMAND_SAVE_NEW_LEVEL,
 	COMMAND_SEARCH_LIBRARY_MODELS,
+	COMMAND_FIND_SCENE_MODEL_USAGE,
 	COMMAND_DELETE_SCENE_OBJECT,
 	COMMAND_ICON_REMOVE,      // string
 	COMMAND_LOAD,             // string
@@ -63,9 +64,10 @@ static std::array<size_t, 15> CommandsOneArgsString =
 	COMMAND_SHOW_PROPERTIES   // string ?
 };
 
-static std::array<size_t, 24> CommandsTwoArgs =
+static std::array<size_t, 25> CommandsTwoArgs =
 {
 	COMMAND_ADD_LIBRARY_OBJECT,
+	COMMAND_REPLACE_SCENE_MODELS,
 	COMMAND_MOVE_SCENE_OBJECT,
 	COMMAND_ROTATE_SCENE_OBJECT,
 	COMMAND_DUPLICATE_SCENE_OBJECT,
@@ -675,7 +677,8 @@ bool CUIMacroView::ExecNode(const SNode& Node, xr_set<int>& Visited, nlohmann::j
 				Entry["result"] = u32(Result);
 			}
 			else if (Command->Command == COMMAND_SEARCH_LIBRARY_MODELS || Command->Command == COMMAND_LIST_SCENE_OBJECTS ||
-				Command->Command == COMMAND_INSPECT_SCENE_OBJECT)
+				Command->Command == COMMAND_INSPECT_SCENE_OBJECT || Command->Command == COMMAND_FIND_SCENE_MODEL_USAGE ||
+				Command->Command == COMMAND_REPLACE_SCENE_MODELS)
 			{
 				Entry["result"] = nlohmann::json::parse(xr_string(Result).c_str());
 			}

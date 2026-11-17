@@ -61,6 +61,10 @@ To create an editable scene, link `Start` → `Clear` → `Add library object` �
 
 Use `Search library models` to find SDK model references by a case-insensitive substring. It returns `models`, `total`, and `truncated`, with up to 100 matches. `Move scene object` and `Rotate scene object` take the exact scene instance name and an absolute `X Y Z` vector separated by spaces. Rotation uses degrees around the editor axes. Both commands return the instance name. To save edits as a separate copy, finish the graph with `Save new level`.
 
+`Find scene model usage` takes an exact model reference without the `.object` suffix. Its read-only result lists matching instance names, models, positions, rotations in radians, and scales.
+
+`Replace scene models` takes the expected model reference as its first argument. Its second argument is a JSON object such as `{"replacement":"props/fence_new","objects":["checkpoint_fence_0","checkpoint_fence_1"]}`. Use SDK library references as returned by the editor. The node checks that every listed instance can be edited and still uses the expected model before replacing any references. It keeps instance names, positions, rotations, and scales, and uses the new model's surfaces. Run `Save new level` after replacement to save a separate scene copy.
+
 `List scene objects` returns the loaded scene objects as an array with `name` and `position` (`[X, Y, Z]`). `Delete scene object` takes the instance name and returns the removed name. Missing, locked, grouped, and read-only objects cause the node to fail. Finish with `Save new level` to write a separate copy.
 
 `Duplicate scene object` takes the source instance name and a unique new name made of letters, digits or underscores. It copies the static object's model, transform and serialized properties and returns the new name. `Scale scene object` takes the instance name and an absolute positive scale vector `X Y Z`. For an object at unit scale, `2 2 2` doubles its size.
