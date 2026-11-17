@@ -1042,21 +1042,25 @@ struct CCC_ReloadSystemLtx : public IConsole_Command
 
 	virtual void Execute(const char* args) 
 	{
-		string_path fname;
-		FS.update_path(fname, _game_config_, "system.ltx");
-		CInifile::Destroy(pSettings);
-		pSettings = new CInifile(fname, true);
-		CHECK_OR_EXIT(
-			0 != pSettings->section_count(),
-			make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",
-				fname));
+		if (!ReloadSystemSettings())
+		{
+			return;
+		}
 
 #ifdef DEBUG_DRAW
 		DestroySpawnManagerWindow();
 		InitSections();
 #endif
+	}
+};
 
-		Msg("system.ltx was reloaded.");
+struct CCC_ReloadEngineExternal : public IConsole_Command
+{
+	CCC_ReloadEngineExternal(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(const char* args)
+	{
+		EngineExternal().Reload();
 	}
 };
 
@@ -2711,6 +2715,7 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
 	CMD1(CCC_ReloadSystemLtx, "reload_system_ltx");
+	CMD1(CCC_ReloadEngineExternal, "reload_engine_external");
 	CMD3(CCC_Mask32, "g_autopickup", &psActorFlags, AF_AUTO_PICKUP);
 	CMD3(CCC_Mask32, "g_dynamic_music", &psActorFlags, AF_DYNAMIC_MUSIC);
 	CMD3(CCC_Mask32, "g_important_save", &psActorFlags, AF_IMPORTANT_SAVE);

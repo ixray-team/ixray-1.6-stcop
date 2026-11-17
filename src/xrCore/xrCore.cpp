@@ -118,6 +118,7 @@ void xrCore::_destroy()
 	if (0 == init_counter)
 	{
 		ClearCachedIniFiles();
+		CInifile::DestroyRetired();
 		xr_delete(cached_ini_map);
 		FS._destroy();
 		EFS._destroy();

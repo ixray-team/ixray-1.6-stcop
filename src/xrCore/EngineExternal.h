@@ -123,24 +123,31 @@ using ShaderExternalMap = xr_string_map<xr_string, xr_string>;
 class XRCORE_API CEngineExternal final
 {
 	template<XRay::Concepts::Enum Enum>
-	bool CachedGetSettings(CInifile* File, xr_string_view Type, Enum ID) const
+	using FlagCache = xr_array<bool, (size_t)Enum::None>;
+
+	template<XRay::Concepts::Enum Enum>
+	static FlagCache<Enum> ReadFlags(CInifile* File, const char* Type)
 	{
 		using ntype = std::underlying_type_t<Enum>;
-		static xr_array<bool, (size_t)Enum::None> Cache = [File, &Type]()
+		FlagCache<Enum> Cache = {};
+		for (ntype i = 0; i < (ntype)Enum::None; i++)
 		{
-			xr_array<bool, (size_t)Enum::None> Cache = {};
-			for (ntype i = 0; i < (ntype)Enum::None; i++)
-			{
-				Cache[i] = READ_IF_EXISTS(File, r_bool, Type.data(), magic_enum::enum_name((Enum)i).data(), false);
-			}
-			return Cache;
-		}();
-		return Cache[(ntype)ID];
+			Cache[i] = READ_IF_EXISTS(File, r_bool, Type, magic_enum::enum_name((Enum)i).data(), false);
+		}
+		return Cache;
 	}
-	
+
+	template<XRay::Concepts::Enum Enum>
+	static bool GetFlag(const FlagCache<Enum>& Cache, Enum ID)
+	{
+		return Cache[(std::underlying_type_t<Enum>)ID];
+	}
+
 public:
 	CEngineExternal();
 	~CEngineExternal();
+
+	bool Reload();
 
 	xr_string GetTitle() const;
 	const char* GetPlayerHudOmfAdditional() const;
@@ -166,43 +173,37 @@ public:
 
 	ICF bool operator[](const EEngineExternalUI& ID) const
 	{
-		static xr_stack_string16 Type = "ui";
-		return CachedGetSettings<EEngineExternalUI>(pOptions, Type, ID);
+		return GetFlag(UIFlags, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalPhysical& ID) const
 	{
-		static xr_stack_string16 Type = "physics";
-		return CachedGetSettings<EEngineExternalPhysical>(pOptions, Type, ID);
+		return GetFlag(PhysicalFlags, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalGame& ID) const
 	{
-		static xr_stack_string16 Type = "gameplay";
-		return CachedGetSettings<EEngineExternalGame>(pOptions, Type, ID);
+		return GetFlag(GameFlags, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalSpawnSupplies& ID) const
 	{
-		static xr_stack_string16 Type = "spawn_supplies";
-		return CachedGetSettings<EEngineExternalSpawnSupplies>(pOptions, Type, ID);
+		return GetFlag(SpawnSuppliesFlags, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalRender& ID) const
 	{
-		static xr_stack_string16 Type = "render";
-		return CachedGetSettings<EEngineExternalRender>(pOptions, Type, ID);
+		return GetFlag(RenderFlags, ID);
 	}
 
-	ICF bool operator[](const EEngineExternalEnvironment& ID) const {
-		static xr_stack_string16 Type = "environment";
-		return CachedGetSettings<EEngineExternalEnvironment>(pOptions, Type, ID);
+	ICF bool operator[](const EEngineExternalEnvironment& ID) const
+	{
+		return GetFlag(EnvironmentFlags, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalSound& ID) const
 	{
-		static xr_stack_string16 Type = "sound";
-		return CachedGetSettings<EEngineExternalSound>(pOptions, Type, ID);
+		return GetFlag(SoundFlags, ID);
 	}
 
 	ICF bool operator[](const EEngineExternalPlatform& ID) const
@@ -215,8 +216,7 @@ public:
 	
 	ICF bool operator[](const EEngineExternalSystem& ID) const
 	{
-		static xr_stack_string16 Type = "system";
-		return CachedGetSettings<EEngineExternalSystem>(pOptions, Type, ID);
+		return GetFlag(SystemFlags, ID);
 	}
 
 	ShaderExternalMap ShadersOptions;
@@ -225,11 +225,21 @@ public:
 	CInifile* GetIniFile();
 private:
 	void InitPlatform(const char* pPlatformName);
+	void LoadSettings();
 
 private:
 	EEngineExternalPlatform m_platform_type;
 	EEngineExternalBalance BalanceMode = EEngineExternalBalance::Auto;
 	CInifile* pOptions;
+
+	FlagCache<EEngineExternalUI> UIFlags = {};
+	FlagCache<EEngineExternalPhysical> PhysicalFlags = {};
+	FlagCache<EEngineExternalGame> GameFlags = {};
+	FlagCache<EEngineExternalSpawnSupplies> SpawnSuppliesFlags = {};
+	FlagCache<EEngineExternalRender> RenderFlags = {};
+	FlagCache<EEngineExternalEnvironment> EnvironmentFlags = {};
+	FlagCache<EEngineExternalSound> SoundFlags = {};
+	FlagCache<EEngineExternalSystem> SystemFlags = {};
 };
 
 const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform);

@@ -45,6 +45,20 @@ CEngineExternal::CEngineExternal() :
 		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
 
+	LoadSettings();
+}
+
+void CEngineExternal::LoadSettings()
+{
+	UIFlags = ReadFlags<EEngineExternalUI>(pOptions, "ui");
+	PhysicalFlags = ReadFlags<EEngineExternalPhysical>(pOptions, "physics");
+	GameFlags = ReadFlags<EEngineExternalGame>(pOptions, "gameplay");
+	SpawnSuppliesFlags = ReadFlags<EEngineExternalSpawnSupplies>(pOptions, "spawn_supplies");
+	RenderFlags = ReadFlags<EEngineExternalRender>(pOptions, "render");
+	EnvironmentFlags = ReadFlags<EEngineExternalEnvironment>(pOptions, "environment");
+	SoundFlags = ReadFlags<EEngineExternalSound>(pOptions, "sound");
+	SystemFlags = ReadFlags<EEngineExternalSystem>(pOptions, "system");
+
 	const char* BalanceName = READ_IF_EXISTS(pOptions, r_string, "gameplay", "BalanceMode", "auto");
 	BalanceMode = EngineBalance::Parse(BalanceName);
 	if (BalanceMode == EEngineExternalBalance::Unknown)
@@ -59,6 +73,33 @@ CEngineExternal::CEngineExternal() :
 CEngineExternal::~CEngineExternal() 
 {
 	xr_delete(pOptions);
+}
+
+bool CEngineExternal::Reload()
+{
+	string_path FileName;
+	FS.update_path(FileName, _game_config_, "engine_external.ltx");
+
+	CInifile* NewOptions = new CInifile(FileName);
+	if (!NewOptions->section_exist("general"))
+	{
+		Msg("! Cannot reload %s: section [general] is missing", FileName);
+		xr_delete(NewOptions);
+		return false;
+	}
+
+	const char* NewPlatform = READ_IF_EXISTS(NewOptions, r_string, "general", "Platform", "cop");
+	if (xr_strcmp(NewPlatform, GetCurrentPlatformName()) != 0)
+	{
+		Msg("! engine_external.ltx: Platform change to '%s' requires a restart", NewPlatform);
+	}
+
+	CInifile::Retire(pOptions);
+	pOptions = NewOptions;
+	LoadSettings();
+
+	Msg("engine_external.ltx was reloaded. Shader options, platform and values cached at load time need a restart.");
+	return true;
 }
 
 xr_string CEngineExternal::GetTitle() const

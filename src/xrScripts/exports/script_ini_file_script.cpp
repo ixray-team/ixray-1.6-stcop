@@ -58,11 +58,14 @@ bool is_soc()
 
 CScriptIniFile* reload_system_ini()
 {
-	pSettings->Destroy(const_cast<CInifile*>(pSettings));
-	string_path fname;
-	FS.update_path(fname, _game_config_, "system.ltx");
-	pSettings = new CInifile(fname);
+	ReloadSystemSettings();
 	return get_system_ini();
+}
+
+CScriptIniFile* reload_external_ini()
+{
+	EngineExternal().Reload();
+	return get_external_ini();
 }
 
 #ifdef XRGAME_EXPORTS
@@ -180,6 +183,7 @@ void CScriptIniFile::script_register(lua_State *L)
 		def("system_ini",			&get_system_ini),
 		def("external_ini",			&get_external_ini),
 		def("reload_system_ini",	&reload_system_ini),
+		def("reload_external_ini",	&reload_external_ini),
 		def("create_ini",			&create_ini),
 		def("read_ini",				&read_ini),
 #ifdef XRGAME_EXPORTS

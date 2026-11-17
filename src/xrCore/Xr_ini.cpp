@@ -32,6 +32,57 @@ CInifile* CInifile::Create(const char* szFileName, bool ReadOnly)
 void CInifile::Destroy(CInifile* ini)
 {	xr_delete(ini); }
 
+namespace
+{
+	xrCriticalSection RetiredIniLock;
+	xr_vector<CInifile*> RetiredIniFiles;
+}
+
+void CInifile::Retire(CInifile* Ini)
+{
+	if (Ini == nullptr)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(RetiredIniLock);
+	RetiredIniFiles.push_back(Ini);
+}
+
+void CInifile::DestroyRetired()
+{
+	xr_vector<CInifile*> Retired;
+	{
+		xrCriticalSectionGuard Guard(RetiredIniLock);
+		Retired.swap(RetiredIniFiles);
+	}
+
+	for (CInifile*& Ini : Retired)
+	{
+		xr_delete(Ini);
+	}
+}
+
+bool ReloadSystemSettings()
+{
+	string_path FileName;
+	FS.update_path(FileName, _game_config_, "system.ltx");
+
+	CInifile* NewSettings = new CInifile(FileName, true);
+	if (NewSettings->section_count() == 0)
+	{
+		Msg("! Cannot reload %s: file is missing or empty", FileName);
+		xr_delete(NewSettings);
+		return false;
+	}
+
+	CInifile::Retire(pSettings);
+	pSettings = NewSettings;
+
+	Msg("system.ltx was reloaded.");
+	return true;
+}
+
 ICF bool sect_pred(const CInifile::Sect &x, const char* val)
 {
 	return xr_strcmp(*x.Name,val)<0;
