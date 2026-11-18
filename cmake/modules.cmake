@@ -50,6 +50,7 @@ include("${CMAKE_MODULE_PATHEX}/stb.cmake")
 
 if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/dirent.cmake")
+    include("${CMAKE_MODULE_PATHEX}/D3DCompiler.cmake")
     include("${CMAKE_MODULE_PATHEX}/amd_antilag.cmake")
 endif()
 
