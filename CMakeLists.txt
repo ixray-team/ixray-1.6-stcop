@@ -92,6 +92,11 @@ else()
 	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 endif()
 
+# Keep the legacy SAL annotations from redefining __null.
+if (LINUX)
+    add_compile_definitions(PAL_STDCPP_COMPAT)
+endif()
+
 # Modules (Nuget or Src)
 set(EXTERNAL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/_deps_header_only/)
 file(MAKE_DIRECTORY "${EXTERNAL_INCLUDE_DIR}")
