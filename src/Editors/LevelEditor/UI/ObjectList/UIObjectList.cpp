@@ -25,6 +25,7 @@ static const char* ClassIcon(ObjClassID ClassID)
 	case OBJCLASS_FOG_VOL:		return ICON_FA_CLOUD;
 	case OBJCLASS_PUDDLES:		return ICON_FA_DROPLET;
 	case OBJCLASS_TERRAIN:		return ICON_FA_MOUNTAIN;
+	case OBJCLASS_ROAD:			return ICON_FA_ROAD;
 	default:					return ICON_FA_CUBE;
 	}
 }

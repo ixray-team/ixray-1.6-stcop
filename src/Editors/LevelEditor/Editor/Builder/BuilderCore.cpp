@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../Tools/Terrain/ESceneTerrainTools.h"
+#include "../Tools/Road/ESceneRoadTools.h"
 
 bool SceneBuilder::PreparePath()
 {
@@ -27,6 +28,7 @@ bool SceneBuilder::EvictResource()
 
 	int objcount = Scene->ObjCount(OBJCLASS_SCENEOBJECT);
 	objcount += Scene->ObjCount(OBJCLASS_TERRAIN);
+	objcount += Scene->ObjCount(OBJCLASS_ROAD);
 	if (objcount <= 0) return true;
 
 	SPBItem* pb = EContext.UI->ProgressStart(objcount, "Evict objects...");
@@ -56,6 +58,18 @@ bool SceneBuilder::EvictResource()
 		pb->Inc();
 	}
 
+	_F = Scene->FirstObj(OBJCLASS_ROAD);
+	_E = Scene->LastObj(OBJCLASS_ROAD);
+	for (; _F != _E; _F++)
+	{
+		CRoad* O = (CRoad*)(*_F);
+		if (EContext.UI->NeedAbort())
+			break; // break building
+
+		O->GetReference()->EvictObject();
+		pb->Inc();
+	}
+
 	EContext.UI->ProgressEnd(pb);
 
 	return true;
@@ -68,9 +82,12 @@ bool SceneBuilder::GetBounding()
 	bool r0 = Scene->GetBox(m_LevelBox, OBJCLASS_SCENEOBJECT);
 	bool r1 = Scene->GetBox(b0, OBJCLASS_GROUP);
 	bool r2 = Scene->GetBox(b1, OBJCLASS_TERRAIN);
+	Fbox b2;
+	bool r3 = Scene->GetBox(b2, OBJCLASS_ROAD);
 	if (r1) m_LevelBox.merge(b0);
 	if (r2) m_LevelBox.merge(b1);
-	return (r0 || r1 || r2);
+	if (r3) m_LevelBox.merge(b2);
+	return (r0 || r1 || r2 || r3);
 }
 
 bool SceneBuilder::RenumerateSectors()

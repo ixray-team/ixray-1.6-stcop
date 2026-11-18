@@ -8,6 +8,7 @@
 #include "../../Scene/scene.h"
 #include "../../UI_LevelTools.h"
 #include "../../Entry/CustomObject.h"
+#include "../../Entry/Road/Road.h"
 
 IM_Manipulator imManipulator;
 
@@ -366,6 +367,10 @@ void IM_Manipulator::CommandMove(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix
 			if (CWayObject* WayPtr = smart_cast<CWayObject*>(lst.front()))
 			{
 				ObjectMatrix = WayPtr->GetTransform();
+			}
+			else if (CRoad* RoadPtr = smart_cast<CRoad*>(lst.front()))
+			{
+				ObjectMatrix = RoadPtr->GetPointsTransform();
 			}
 		}
 

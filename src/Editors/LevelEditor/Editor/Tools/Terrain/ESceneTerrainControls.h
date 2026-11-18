@@ -10,5 +10,6 @@ public:
 	virtual bool End(TShiftState Shift) override;
 	virtual bool Wheel(int direction, TShiftState Shift) override;
 private:
+	bool IsInvert(TShiftState Shift) const;
 	bool m_Painting;
 };

@@ -7,6 +7,7 @@
 #include "../xrServerEntities/clsid_game.h"
 #include "../xrECore/Editor/UILogForm.h"
 #include "Editor/Tools/Terrain/ESceneTerrainTools.h"
+#include "Editor/Tools/Road/ESceneRoadTools.h"
 
 EScene* Scene;
 
@@ -581,6 +582,23 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 			CTerrain* S = (CTerrain*)(*it);
 			static_obj++;
 			CEditableObject* O = ((CTerrain*)(*it))->GetReference(); R_ASSERT(O);
+			if (objects.find(O) == objects.end())
+			{
+				if (!O->CheckShaderCompatible()) res = false;
+				objects.insert(O);
+			}
+		}
+
+		ObjectList& lstRoads = ListObj(OBJCLASS_ROAD);
+		for (ObjectIt it = lstRoads.begin(); it != lstRoads.end(); it++)
+		{
+			CRoad* R = (CRoad*)(*it);
+			if (!R->HasMesh())
+			{
+				continue;
+			}
+			static_obj++;
+			CEditableObject* O = R->GetReference();
 			if (objects.find(O) == objects.end())
 			{
 				if (!O->CheckShaderCompatible()) res = false;

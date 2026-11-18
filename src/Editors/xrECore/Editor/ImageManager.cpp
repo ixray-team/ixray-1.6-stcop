@@ -32,10 +32,26 @@ ECORE_API bool LoadRawImage(const char* full_name, U32Vec& data, u32& w, u32& h,
 		return false;
 	}
 
-	//file->wrap
-	DXTUtils::ImageInfo Img = DXTUtils::GitPixels(file->wrap ? file->wrap : full_name);
+	DXTUtils::ImageInfo Img = {0, 0, {}, {}};
+	const char* DiskName = file->wrap ? file->wrap : full_name;
+	if (std::filesystem::exists(DiskName))
+	{
+		Img = DXTUtils::GitPixels(DiskName);
+	}
+	else if (IReader* R = FS.r_open(full_name))
+	{
+		// The file lives in a game archive (.db): decode it from memory
+		Img = DXTUtils::GitPixelsFromMemory(R->pointer(), size_t(R->length()));
+		FS.r_close(R);
+	}
+
 	w = Img.W;
 	h = Img.H;
+	if (w == 0 || h == 0 || Img.P.size() < size_t(w) * h * 4)
+	{
+		ELog.Msg(mtError, "Can't decode image: '%s'", full_name);
+		return false;
+	}
 
 	a = true;
 

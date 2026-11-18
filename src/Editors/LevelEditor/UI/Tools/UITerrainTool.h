@@ -11,4 +11,8 @@ public:
 private:
 	int		m_CreateRes;
 	float	m_CreateHeight;
+	float	m_FillHeight;
+	int		m_SmoothPasses;
+	int		m_ResizeRes;
+	int		m_BakeSize;
 };

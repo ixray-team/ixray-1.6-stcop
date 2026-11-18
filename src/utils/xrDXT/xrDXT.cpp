@@ -173,6 +173,28 @@ DXTUtils::ImageInfo DXT_API DXTUtils::GitPixels(const char* FileName)
 	return { (u32)Img.GetWidth(), (u32)Img.GetHeight(), Pixels, FormatText };
 }
 
+DXTUtils::ImageInfo DXT_API DXTUtils::GitPixelsFromMemory(const void* Data, size_t Size)
+{
+	RedImageTool::RedImage Img;
+	if (!Data || !Size || !Img.LoadFromMemory(const_cast<void*>(Data), Size))
+	{
+		return { 0, 0, {}, "" };
+	}
+
+	RedImageTool::RedTexturePixelFormat OldFormat = Img.GetFormat();
+	Img.ClearMipLevels();
+	Img.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+	Img.SwapRB();
+
+	U8Vec Pixels;
+	const size_t PixelCount = Img.GetWidth() * Img.GetHeight() * 4;
+	Pixels.resize(PixelCount);
+	memcpy(Pixels.data(), *Img, PixelCount);
+
+	shared_str FormatText = magic_enum::enum_name(OldFormat).data();
+	return { (u32)Img.GetWidth(), (u32)Img.GetHeight(), Pixels, FormatText };
+}
+
 void DXTUtils::Filter::Resize(u32* dst, u32 dstW, u32 dstH, u32* out, u32 outW, u32 outH)
 {
 	RedImageTool::RedImage Surface;

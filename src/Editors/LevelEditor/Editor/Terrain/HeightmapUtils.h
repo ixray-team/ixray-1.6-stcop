@@ -13,4 +13,4 @@ namespace XRay::Editor::HeightmapUtils
 
 	void GenerateMeshByHeightmap(const SHeightMap& heightmap, CEditableObject* OutMesh, int ScaleY, const STerrainSurfaceTemplate& Surface);
 	void GenerateHeightmapByMesh(CEditableObject* Mesh, const xr_string& OutputFile);
-};
+};

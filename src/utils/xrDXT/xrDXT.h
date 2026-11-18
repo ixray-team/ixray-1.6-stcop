@@ -47,4 +47,6 @@ namespace DXTUtils
 	int DXT_API Compress(const char* out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 	U8Vec DXT_API GitPixels(const char* FileName, u32 NewW, u32 NewH);
 	ImageInfo DXT_API GitPixels(const char* FileName);
+	// Same as GitPixels(FileName) for an image already in memory (e.g. a file read from a game archive)
+	ImageInfo DXT_API GitPixelsFromMemory(const void* Data, size_t Size);
 }

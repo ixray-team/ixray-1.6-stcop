@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Editor/Tools/Terrain/ESceneTerrainTools.h"
+#include "Editor/Tools/Road/ESceneRoadTools.h"
 
 int EScene::FrustumPick( const CFrustum& frustum, ObjClassID classfilter, ObjectList& ol )
 {
@@ -197,6 +198,10 @@ int EScene::BoxPickObjects(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* l
 			else if (CTerrain* _S = smart_cast<CTerrain*>(*_F))
 			{
 				_S->BoxPick(box, pinf);
+			}
+			else if (CRoad* _R = smart_cast<CRoad*>(*_F))
+			{
+				_R->BoxPick(box, pinf);
 			}
 		}
 	}

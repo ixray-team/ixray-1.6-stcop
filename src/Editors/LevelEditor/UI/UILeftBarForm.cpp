@@ -82,16 +82,18 @@ void UILeftBarForm::Draw()
 
 	if (ImGui::Begin("Edit Mode", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		static ESceneItemsGuids Tools[OBJCLASS_COUNT + 1] = {
+		// Object editing modes
+		static const ESceneItemsGuids EditTools[] =
+		{
 			OBJCLASS_SCENEOBJECT,
 			OBJCLASS_LIGHT,
 			OBJCLASS_SOUND_SRC,
-			OBJCLASS_SOUND_ENV, OBJCLASS_GLOW,
+			OBJCLASS_SOUND_ENV,
+			OBJCLASS_GLOW,
 			OBJCLASS_SHAPE,
 			OBJCLASS_SPAWNPOINT,
 			OBJCLASS_WAY,
-			OBJCLASS_TERRAIN,
-			OBJCLASS_PLANARS, // End left
+			OBJCLASS_PLANARS,
 			OBJCLASS_SECTOR,
 			OBJCLASS_PORTAL,
 			OBJCLASS_GROUP,
@@ -100,98 +102,135 @@ void UILeftBarForm::Draw()
 			OBJCLASS_AIMAP,
 			OBJCLASS_WM,
 			OBJCLASS_FOG_VOL,
-			OBJCLASS_PUDDLES, // End right
-			OBJCLASS_force_dword
+			OBJCLASS_PUDDLES,
 		};
-		
-		if (ImGui::BeginTable("EditModeTable", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody ))
+
+		// Landscape shaping modes
+		static const ESceneItemsGuids SculptTools[] =
 		{
+			OBJCLASS_TERRAIN,
+			OBJCLASS_ROAD,
+		};
+
+		auto DrawToolButton = [&](ESceneItemsGuids ToolID)
+		{
+			ESceneToolBase* tool = Scene->GetTool(ToolID);
+			if (!tool)
+			{
+				return;
+			}
+
+			float FlagSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IndicatorWidth);
+			float ButtonH = ImGui::GetFontSize() + FlagSize / 2.f;
+			float ShowH = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::CheckboxSize);
+
+
+			ImGui::PushID(tool->ClassName());
+			ImGui::BeginDisabled(!tool->IsEnabled());
+
+			auto cur = ImGui::GetCursorPos();
+			bool IsVisible = tool->IsVisible();
+			bool IsActive = (LTools->GetTarget() == ToolID);
+
+			// --- background button ---
+			ImGui::SetNextItemAllowOverlap();
+			if (XRay::ImGui::ButtonBackground(tool->ClassDesc(), &IsActive, { -0.01f, ButtonH }))
+			{
+				ExecCommand(COMMAND_CHANGE_TARGET, IsActive ? OBJCLASS_DUMMY : ToolID);
+			}
+
+			// --- Inactive Flag Stripe ---
+			if (!IsActive)
+			{
+				const	float	StripeWidth	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IndicatorWidth);
+				const	float	Rounding	= ::ImGui::GetStyle().FrameRounding;
+						ImVec2	Min			= ::ImGui::GetItemRectMin();
+						ImVec2	Max			= ::ImGui::GetItemRectMax();
+				ImDrawList* dl = ImGui::GetWindowDrawList();
+				dl->AddRectFilled(
+					Min, { Min.x + StripeWidth, Min.y + ButtonH },
+					XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent),
+					Rounding, ImDrawFlags_RoundCornersLeft);
+			}
+
+			// --- Show/hide button ---
+			const	xr_string	Icon		= IsVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
+			const	xr_string	IconText	= Icon;
+			const	ImColor		IconColor	= IsVisible
+				? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent)
+				: XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint)
+				;
+			const	ImVec2		ShowPos		= { cur.x + FlagSize * 1.5f, cur.y + (ButtonH - ShowH) / 2.f };
+			ImGui::SetCursorPos(ShowPos);
+			ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableHover).Value);
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableActive).Value);
+			ImGui::PushStyleColor(ImGuiCol_Text, IconColor.Value);
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+			ImGui::SetWindowFontScale(0.7f);
+			if (ImGui::Button(IconText.c_str(), { ShowH, ShowH }))
+			{
+				tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
+				EContext.UI->RedrawScene();
+			}
+			ImGui::SetWindowFontScale(1.0f);
+			ImGui::PopStyleColor(4);
+			ImGui::PopStyleVar();
+
+			// --- Text ---
+			ImGui::SameLine();
+			ImVec2	TextSize = ImGui::CalcTextSize(tool->ClassDesc());
+			ImGui::SetCursorPos({ ShowPos.x + ShowH + 4.f, cur.y + (ButtonH - TextSize.y) * 0.5f });
+			ImGui::Text(tool->ClassDesc());
+
+			ImGui::EndDisabled();
+			ImGui::PopID();
+		};
+
+		// Two columns, filled top-down: left column first, then the right one
+		auto DrawGroup = [&](const char* TableID, const ESceneItemsGuids* Items, u32 Count)
+		{
+			if (!ImGui::BeginTable(TableID, 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoBordersInBody))
+			{
+				return;
+			}
+
 			ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthStretch);
 			ImGui::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthStretch);
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.f, 0.f });
 
-			for (u32 i = 0; Tools[i] != OBJCLASS_force_dword; i++)
+			const u32 Rows = (Count + 1) / 2;
+			for (u32 Row = 0; Row < Rows; ++Row)
 			{
-				const u32 id = (i % 2) ? ((OBJCLASS_COUNT + 1) / 2 + (i / 2)) : (i / 2);
-				ESceneToolBase* tool = Scene->GetTool(Tools[id]);
-
-				if (i % 2 == 0)
-					ImGui::TableNextRow(ImGuiTableRowFlags_None, 0.0f);
-
-				ImGui::TableSetColumnIndex(i % 2);
-				// --- Edit Mode Button
+				ImGui::TableNextRow(ImGuiTableRowFlags_None, 0.0f);
+				for (u32 Col = 0; Col < 2; ++Col)
 				{
-					float FlagSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IndicatorWidth);
-					float ButtonH = ImGui::GetFontSize() + FlagSize / 2.f;
-					float ShowH = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::CheckboxSize);
-
-
-					ImGui::PushID(tool->ClassName());
-					ImGui::BeginDisabled(!tool->IsEnabled());
-
-					auto cur = ImGui::GetCursorPos();
-					bool IsVisible = tool->IsVisible();
-					bool IsActive = (LTools->GetTarget() == Tools[id]);
-
-					// --- background button ---
-					ImGui::SetNextItemAllowOverlap();
-					if (XRay::ImGui::ButtonBackground(tool->ClassDesc(), &IsActive, { -0.01f, ButtonH }))
+					const u32 Index = Col * Rows + Row;
+					if (Index >= Count)
 					{
-						ExecCommand(COMMAND_CHANGE_TARGET, IsActive ? OBJCLASS_DUMMY : Tools[id]);
+						continue;
 					}
-
-					// --- Inactive Flag Stripe ---
-					if (!IsActive)
-					{
-						const	float	StripeWidth	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IndicatorWidth);
-						const	float	Rounding	= ::ImGui::GetStyle().FrameRounding;
-								ImVec2	Min			= ::ImGui::GetItemRectMin();
-								ImVec2	Max			= ::ImGui::GetItemRectMax();
-						ImDrawList* dl = ImGui::GetWindowDrawList();
-						dl->AddRectFilled(
-							Min, { Min.x + StripeWidth, Min.y + ButtonH },
-							XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent),
-							Rounding, ImDrawFlags_RoundCornersLeft);
-					}
-
-					// --- Show/hide button ---
-					const	xr_string	Icon		= IsVisible ? ICON_FA_EYE : ICON_FA_EYE_SLASH;
-					const	xr_string	IconText	= Icon;
-					const	ImColor		IconColor	= IsVisible
-						? XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent)
-						: XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ContentIconTint)
-						;
-					const	ImVec2		ShowPos		= { cur.x + FlagSize * 1.5f, cur.y + (ButtonH - ShowH) / 2.f };
-					ImGui::SetCursorPos(ShowPos);
-					ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value);
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableHover).Value);
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableActive).Value);
-					ImGui::PushStyleColor(ImGuiCol_Text, IconColor.Value);
-					ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
-					ImGui::SetWindowFontScale(0.7f);
-					if (ImGui::Button(IconText.c_str(), { ShowH, ShowH }))
-					{
-						tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
-						EContext.UI->RedrawScene();
-					}
-					ImGui::SetWindowFontScale(1.0f);
-					ImGui::PopStyleColor(4);
-					ImGui::PopStyleVar();
-
-					// --- Text ---
-					ImGui::SameLine();
-					ImVec2	TextSize = ImGui::CalcTextSize(tool->ClassDesc());
-					ImGui::SetCursorPos({ ShowPos.x + ShowH + 4.f, cur.y + (ButtonH - TextSize.y) * 0.5f });
-					ImGui::Text(tool->ClassDesc());
-
-					ImGui::EndDisabled();
-					ImGui::PopID();
+					ImGui::TableSetColumnIndex(Col);
+					DrawToolButton(Items[Index]);
 				}
 			}
+
 			ImGui::PopStyleVar();
-
-
 			ImGui::EndTable();
+		};
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Edit"))
+		{
+			DrawGroup("EditModeTable", EditTools, u32(std::size(EditTools)));
+			XRay::ImGui::EndExpand();
+		}
+
+		ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		if (XRay::ImGui::BeginExpand("Sculpting"))
+		{
+			DrawGroup("SculptModeTable", SculptTools, u32(std::size(SculptTools)));
+			XRay::ImGui::EndExpand();
 		}
 
 	}

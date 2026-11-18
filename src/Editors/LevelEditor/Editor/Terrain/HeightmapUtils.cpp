@@ -4,7 +4,7 @@
 
 void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY, const STerrainSurfaceTemplate& Template)
 {
-	if (!Heightmap.Data || Heightmap.Width < 2 || Heightmap.Height < 2 || !OutMesh)
+	if (!Heightmap.IsValid() || !OutMesh)
 	{
 		Msg("! Invalid heightmap data or output mesh");
 		return;

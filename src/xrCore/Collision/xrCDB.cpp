@@ -127,6 +127,11 @@ void MODEL::build_simple()
 			rtcReleaseGeometry(InstanceOnLevel);
 		}
 	
+		// Embree reads 16 bytes for every element of a shared buffer (checkPadding16),
+		// so the last 12-byte element needs readable memory behind it
+		verts.reserve(verts.size() + 2);
+		tris.reserve(tris.size() + 2);
+
 		auto BatchedGeometry = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
 	
 		rtcSetSharedGeometryBuffer(BatchedGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, verts.data(), 0, sizeof(Fvector), verts.size());

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../Tools/Terrain/ESceneTerrainTools.h"
+#include "../Tools/Road/ESceneRoadTools.h"
 #include <algorithm>
 // !!! использовать prefix если нужно имя !!! (Связано с группами)
 
@@ -1686,6 +1687,16 @@ bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool 
 			CTerrain* obj = (CTerrain*)_F;
 			obj->RebuildMesh();
 			bResult = BuildEditableObject(obj->GetReference(), obj->_Transform(), nullptr);
+			break;
+		}
+		case OBJCLASS_ROAD:
+		{
+			CRoad* obj = (CRoad*)_F;
+			obj->RebuildMesh();
+			if (obj->HasMesh())
+			{
+				bResult = BuildEditableObject(obj->GetReference(), obj->_Transform(), nullptr);
+			}
 			break;
 		}
 		case OBJCLASS_SCENEOBJECT:

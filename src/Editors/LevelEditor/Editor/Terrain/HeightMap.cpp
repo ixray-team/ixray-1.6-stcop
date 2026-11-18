@@ -2,7 +2,9 @@
 #include "HeightMap.h"
 
 using XRay::Editor::HeightmapUtils::SHeightMap;
+using XRay::Editor::HeightmapUtils::SHeightMapChunk;
 using XRay::Editor::HeightmapUtils::SHeightMapRenderData;
+using XRay::Editor::HeightmapUtils::SHeightMapVertex;
 
 namespace XRay::Editor::HeightmapUtils
 {
@@ -10,62 +12,138 @@ namespace XRay::Editor::HeightmapUtils
 	{
 		ref_geom Geom;
 	};
+
+	namespace
+	{
+		void ReleaseGpu(SGpuCache*& Gpu)
+		{
+			if (!Gpu)
+			{
+				return;
+			}
+
+			if (Gpu->Geom)
+			{
+				_RELEASE(Gpu->Geom->vb);
+				_RELEASE(Gpu->Geom->ib);
+				Gpu->Geom.destroy();
+			}
+			xr_delete(Gpu);
+		}
+
+		u32 LerpColor(const Fvector& A, const Fvector& B, float T, float Shade)
+		{
+			Fvector C;
+			C.lerp(A, B, clampr(T, 0.f, 1.f));
+			C.mul(clampr(Shade, 0.f, 1.f));
+			return color_rgba(u8(C.x), u8(C.y), u8(C.z), 255);
+		}
+	}
 }
 
 void SHeightMapRenderData::InvalidateGpu()
 {
-	if (Gpu)
+	for (SHeightMapChunk& Chunk : Chunks)
 	{
-		_RELEASE(Gpu->Geom->vb);
-		_RELEASE(Gpu->Geom->ib);
-		Gpu->Geom.destroy();
-		delete Gpu;
+		XRay::Editor::HeightmapUtils::ReleaseGpu(Chunk.Gpu);
+		Chunk.IsDirty = true;
 	}
 }
 
-void SHeightMap::BuildGpu()
+void SHeightMapRenderData::Clear()
 {
-	RenderData.InvalidateGpu();
+	InvalidateGpu();
+	Chunks.clear();
+	ChunksX = ChunksZ = 0;
+	IsLayoutDirty = true;
+}
 
-	u32 total = 0;
-	for (const auto& c : RenderData.Chunks)
-		total += u32(c.Gpu.size());
-	if (total == 0)
-		return;
+Fvector SHeightMap::GridToLocal(float gx, float gz, float scaleY) const
+{
+	Fvector P;
+	P.x = -(gx * StepX() - HalfX());
+	P.z = gz * StepZ() - HalfZ();
+	P.y = ToLocalY(Sample(gx, gz), scaleY);
+	return P;
+}
 
-	xr_vector<SHeightMapVertex> all;
-	all.reserve(total);
+void SHeightMap::LocalToGrid(const Fvector& local, float& gx, float& gz) const
+{
+	gx = (HalfX() - local.x) / StepX();
+	gz = (local.z + HalfZ()) / StepZ();
+}
 
-	u32 base = 0;
-	RenderData.ChunkBase.resize(RenderData.Chunks.size());
-	RenderData.ChunkCount.resize(RenderData.Chunks.size());
-	for (size_t ci = 0; ci < RenderData.Chunks.size(); ++ci)
+float SHeightMap::Sample(float gx, float gz) const
+{
+	if (!IsValid())
 	{
-		const auto& c = RenderData.Chunks[ci];
-		RenderData.ChunkBase[ci] = base;
-		RenderData.ChunkCount[ci] = u32(c.Gpu.size());
-		all.insert(all.end(), c.Gpu.begin(), c.Gpu.end());
-		base += u32(c.Gpu.size());
+		return 0.f;
 	}
 
-	IRHIBuffer* pVB = nullptr;
-	if (!RHIUtils::CreateVertexBuffer(&pVB, all.data(), total * sizeof(SHeightMapVertex), false))
-		return;
+	gx = clampr(gx, 0.f, float(Width - 1));
+	gz = clampr(gz, 0.f, float(Height - 1));
 
-	RenderData.Gpu = new SGpuCache();
-	RenderData.Gpu->Geom.create(FVF::F_L, pVB, nullptr);
+	const int X0 = std::min(iFloor(gx), int(Width) - 2);
+	const int Z0 = std::min(iFloor(gz), int(Height) - 2);
+	const float Fx = gx - X0;
+	const float Fz = gz - Z0;
+
+	const float H00 = GetHeight(X0, Z0);
+	const float H10 = GetHeight(X0 + 1, Z0);
+	const float H01 = GetHeight(X0, Z0 + 1);
+	const float H11 = GetHeight(X0 + 1, Z0 + 1);
+
+	const float A = H00 + (H10 - H00) * Fx;
+	const float B = H01 + (H11 - H01) * Fx;
+	return A + (B - A) * Fz;
 }
 
 void SHeightMap::Create(u32 w, u32 h, float fill)
 {
-	if (Data) xr_free(Data);
 	Width = w;
 	Height = h;
-	Data = (float*)xr_malloc(u32(w * h) * sizeof(float));
-	for (u32 i = 0; i < w * h; ++i)
-		Data[i] = fill;
+	Data.assign(size_t(w) * h, fill);
 	MinH = MaxH = fill;
-	PrecacheRenderData(50.f, 1.f, 0xffffff, true);
+	RenderData.Clear();
+}
+
+void SHeightMap::Resample(u32 w, u32 h)
+{
+	if (!IsValid() || w < 2 || h < 2 || (w == Width && h == Height))
+	{
+		return;
+	}
+
+	xr_vector<float> NewData(size_t(w) * h);
+	const float Sx = float(Width - 1) / float(w - 1);
+	const float Sz = float(Height - 1) / float(h - 1);
+
+	for (u32 z = 0; z < h; ++z)
+	{
+		for (u32 x = 0; x < w; ++x)
+		{
+			NewData[size_t(z) * w + x] = Sample(x * Sx, z * Sz);
+		}
+	}
+
+	Width = w;
+	Height = h;
+	Data.swap(NewData);
+	UpdateMinMax();
+	RenderData.Clear();
+}
+
+void SHeightMap::UpdateMinMax()
+{
+	if (Data.empty())
+	{
+		MinH = MaxH = 0.f;
+		return;
+	}
+
+	auto [Min, Max] = std::minmax_element(Data.begin(), Data.end());
+	MinH = *Min;
+	MaxH = *Max;
 }
 
 bool SHeightMap::LoadRAW(const char* filename)
@@ -76,442 +154,398 @@ bool SHeightMap::LoadRAW(const char* filename)
 	}
 
 	IReader* F = FS.r_open(filename);
-	LoadSteam(F);
+	const bool Result = LoadSteam(F);
 	FS.r_close(F);
-	return true;
+	return Result;
 }
 
-bool SHeightMap::SaveSteam(IWriter* Writer)
+bool SHeightMap::SaveSteam(IWriter* Writer) const
 {
-	if (!Writer || !Data || Width == 0 || Height == 0)
-		return false;
-
-	u16* raw_data = (u16*)xr_malloc(Width * Height * sizeof(u16));
-
-	for (u32 i = 0; i < Width * Height; ++i)
+	if (!Writer || !IsValid())
 	{
-		raw_data[i] = (u16)(Data[i] * 65535.f);
+		return false;
 	}
 
-	Writer->w(raw_data, Width * Height * sizeof(u16));
-	xr_free(raw_data);
+	xr_vector<u16> Raw(Data.size());
+	for (size_t i = 0; i < Data.size(); ++i)
+	{
+		Raw[i] = u16(iFloor(clampr(Data[i], 0.f, 1.f) * 65535.f + 0.5f));
+	}
 
+	Writer->w(Raw.data(), u32(Raw.size() * sizeof(u16)));
 	return true;
 }
 
 bool SHeightMap::LoadSteam(IReader* Reader)
 {
 	if (!Reader)
-		return false;
-
-	Width = Height = (u32)sqrt(Reader->length() / sizeof(u16));
-	const size_t Offset = Width * Height * sizeof(u16);
-	if (Offset > Reader->length())
 	{
 		return false;
 	}
 
-	Data = (float*)xr_malloc(Width * Height * sizeof(float));
-
-	u16* raw_data = (u16*)Reader->pointer();
-	for (u32 i = 0; i < Width * Height; ++i)
+	const size_t Samples = Reader->length() / sizeof(u16);
+	const u32 Side = u32(sqrt(double(Samples)) + 0.5);
+	if (Side < 2 || size_t(Side) * Side != Samples)
 	{
-		Data[i] = float(raw_data[i]) / 65535.f;
+		Msg("! Heightmap: invalid R16 stream size [%u bytes], expected square map", Reader->length());
+		return false;
 	}
 
-	MinH = Data[0];
-	MaxH = Data[0];
+	Width = Height = Side;
+	Data.resize(Samples);
 
-	for (u32 i = 1; i < Width * Height; ++i)
+	const u16* Raw = (const u16*)Reader->pointer();
+	for (size_t i = 0; i < Samples; ++i)
 	{
-		if (Data[i] < MinH) MinH = Data[i];
-		if (Data[i] > MaxH) MaxH = Data[i];
+		Data[i] = float(Raw[i]) / 65535.f;
 	}
 
-	PrecacheRenderData(50, 1.f, 0xffffff, true);
-
+	UpdateMinMax();
+	RenderData.Clear();
 	return true;
 }
 
-void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor, bool geometryOnly)
+void SHeightMap::SetPreviewTexture(xr_vector<u32>&& Pixels, u32 W, u32 H)
 {
-	if (!RenderData.IsDirty)
-		return;
-
-	auto Height2Color = [&](float h, float minH, float maxH) -> u32
+	if (Pixels.size() != size_t(W) * H)
 	{
-		float t = std::clamp((h - minH) / std::max(maxH - minH, EPS_S), 0.0f, 0.9f);
-		t = pow(t, 0.7f);
-		float brightness = 0.2f + 0.8f * t;
-
-		return color_rgba(
-			u8(((baseColor >> 16) & 0xFF) * brightness),
-			u8(((baseColor >> 8) & 0xFF) * brightness),
-			u8((baseColor & 0xFF) * brightness),
-			255
-		);
-	};
-
-	const u32 ChunkSize = SHeightMapRenderData::CHUNK_SIZE;
-	const float FlatThreshold = SHeightMapRenderData::FLAT_THRESHOLD;
-
-	float centerX = (Width * cellSize * Size.x) * 0.5f;
-	float centerZ = (Height * cellSize * Size.z) * 0.5f;
-
-	u32 scaledWidth = u32(Width * Size.x);
-	u32 scaledHeight = u32(Height * Size.z);
-
-	if (geometryOnly)
-	{
-		RenderData.Clear();
-		u32 chunkCountX = (scaledWidth - 1) / ChunkSize + 1;
-		u32 chunkCountZ = (scaledHeight - 1) / ChunkSize + 1;
-
-		struct ChunkInfo
-		{
-			float minH = FLT_MAX, maxH = -FLT_MAX;
-			bool isFlat = false, hasHoles = false;
-		};
-
-		xr_vector<ChunkInfo> chunkInfos(chunkCountX * chunkCountZ);
-		RenderData.Chunks.reserve(chunkCountX * chunkCountZ);
-
-		float globalMinH = FLT_MAX;
-		float globalMaxH = -FLT_MAX;
-
-		// Сканируем чанк-сетку и собираем базовую информацию
-		for (u32 cz = 0; cz < chunkCountZ; ++cz)
-		{
-			for (u32 cx = 0; cx < chunkCountX; ++cx)
-			{
-				auto& info = chunkInfos[cz * chunkCountX + cx];
-				for (u32 z = cz * ChunkSize; z <= std::min((cz + 1) * ChunkSize, scaledHeight - 1); ++z)
-				{
-					for (u32 x = cx * ChunkSize; x <= std::min((cx + 1) * ChunkSize, scaledWidth - 1); ++x)
-					{
-						u32 ix = u32((Width - 1 - (x - Pos.x)) / Size.x);
-						u32 iz = u32((z - Pos.z) / Size.z);
-
-						if (ix >= Width || iz >= Height)
-						{
-							info.hasHoles = true;
-							continue;
-						}
-
-						float h = (GetHeight(ix, iz) + Pos.y) * scaleY * Size.y;
-						if (h == 0.0f)
-							info.hasHoles = true;
-
-						info.minH = std::min(info.minH, h);
-						info.maxH = std::max(info.maxH, h);
-						globalMinH = std::min(globalMinH, h);
-						globalMaxH = std::max(globalMaxH, h);
-					}
-				}
-				info.isFlat = (info.maxH - info.minH < FlatThreshold) && !info.hasHoles;
-			}
-		}
-
-		// Стабильный вертикальный центр — середина номинального диапазона высот [0,1],
-		// а не текущий min/max, иначе при подъёме горки вся карта "опускается".
-		float CenterY = 0.5f * scaleY * Size.y;
-
-		// Генерация чанков
-		for (u32 cz = 0; cz < chunkCountZ; ++cz)
-		{
-			for (u32 cx = 0; cx < chunkCountX; ++cx)
-			{
-				const ChunkInfo& info = chunkInfos[cz * chunkCountX + cx];
-				bool useFlat = info.isFlat;
-
-				// Проверка соседей
-				for (int dz = -1; dz <= 1 && useFlat; ++dz)
-				{
-					for (int dx = -1; dx <= 1 && useFlat; ++dx)
-					{
-						if (!dx && !dz) continue;
-						int nx = int(cx) + dx, nz = int(cz) + dz;
-						if (nx >= 0 && nz >= 0 && nx < int(chunkCountX) && nz < int(chunkCountZ))
-							useFlat &= chunkInfos[nz * chunkCountX + nx].isFlat;
-					}
-				}
-
-				SHeightMapChunk chunk;
-				chunk.BBox.invalidate();
-				chunk.IsFlat = useFlat;
-				chunk.Vertices.reserve(ChunkSize * ChunkSize * 6);
-				chunk.Colors.reserve(ChunkSize * ChunkSize * 6);
-
-				for (u32 z = cz * ChunkSize; z < std::min((cz + 1) * ChunkSize, scaledHeight - 1); ++z)
-				{
-					for (u32 x = cx * ChunkSize; x < std::min((cx + 1) * ChunkSize, scaledWidth - 1); ++x)
-					{
-						u32 ix0 = u32((Width - 1 - (x - Pos.x)) / Size.x);
-						u32 iz0 = u32((z - Pos.z) / Size.z);
-						u32 ix1 = u32((Width - 1 - ((x + 1) - Pos.x)) / Size.x);
-						u32 iz1 = u32(((z + 1) - Pos.z) / Size.z);
-
-						if (ix0 >= Width || iz0 >= Height || ix1 >= Width || iz1 >= Height)
-							continue;
-
-						float h0 = GetHeight(ix0, iz0) * scaleY * Size.y;
-						float h1 = GetHeight(ix1, iz0) * scaleY * Size.y;
-						float h2 = GetHeight(ix1, iz1) * scaleY * Size.y;
-						float h3 = GetHeight(ix0, iz1) * scaleY * Size.y;
-
-						if (h0 == 0.0f || h1 == 0.0f || h2 == 0.0f || h3 == 0.0f)
-							continue;
-
-						Fvector v0 = { x * cellSize - centerX, h0 - CenterY + Pos.y, z * cellSize - centerZ };
-						Fvector v1 = { (x + 1) * cellSize - centerX, h1 - CenterY, z * cellSize - centerZ };
-						Fvector v2 = { (x + 1) * cellSize - centerX, h2 - CenterY, (z + 1) * cellSize - centerZ };
-						Fvector v3 = { x * cellSize - centerX, h3 - CenterY, (z + 1) * cellSize - centerZ };
-
-					chunk.Vertices.insert(chunk.Vertices.end(), { v0, v1, v2, v0, v2, v3 });
-					chunk.BBox.modify(v0);
-					chunk.BBox.modify(v2);
-
-					float hAvg = (h0 + h1 + h2 + h3) * 0.25f;
-					u32 col = Height2Color(hAvg, globalMinH, globalMaxH);
-					chunk.Colors.insert(chunk.Colors.end(), 6, col);
-					chunk.Gpu.insert(chunk.Gpu.end(), { {v0,col},{v1,col},{v2,col},{v0,col},{v2,col},{v3,col} });
-					}
-				}
-
-				chunk.IsValid = !chunk.Vertices.empty();
-				if (chunk.IsValid)
-					RenderData.Chunks.push_back(std::move(chunk));
-			}
-		}
-	}
-	else
-	{
-		// Обновление существующих данных
-		float globalMinH = FLT_MAX;
-		float globalMaxH = -FLT_MAX;
-		for (u32 z = 0; z < Height; ++z)
-		{
-			for (u32 x = 0; x < Width; ++x)
-			{
-				float h = GetHeight(x, z);
-				if (h == 0.0f)
-					continue;
-
-				h *= scaleY * Size.y;
-				globalMinH = std::min(globalMinH, h);
-				globalMaxH = std::max(globalMaxH, h);
-			}
-		}
-
-		// Стабильный вертикальный центр (середина диапазона [0,1]), без рецентровки по текущему min/max
-		float CenterY = 0.5f * scaleY * Size.y;
-
-		for (auto& chunk : RenderData.Chunks)
-		{
-			chunk.BBox.invalidate();
-			for (size_t i = 0; i < chunk.Vertices.size(); ++i)
-			{
-				Fvector& v = chunk.Vertices[i];
-				float ox = (v.x + centerX) / cellSize;
-				float oz = (v.z + centerZ) / cellSize;
-
-				u32 ix = u32((Width - 1 - (ox - Pos.x)) / Size.x);
-				u32 iz = u32((oz - Pos.z) / Size.z);
-
-				float h = GetHeight(ix, iz) * scaleY * Size.y;
-				v.y = h - CenterY + Pos.y;
-				chunk.BBox.modify(v);
-				chunk.Colors[i] = Height2Color(h, globalMinH, globalMaxH);
-				chunk.Gpu[i] = { v, chunk.Colors[i] };
-			}
-		}
+		Pixels.clear();
+		W = H = 0;
 	}
 
-	BuildGpu();
-	RenderData.IsDirty = false;
+	PreviewTex = std::move(Pixels);
+	PreviewTexW = W;
+	PreviewTexH = H;
+	MarkDirty();
 }
 
-void SHeightMap::Draw(float scaleY, float cellSize)
+u32 SHeightMap::SamplePreviewTexture(float u, float v) const
 {
-	PrecacheRenderData(scaleY, cellSize, 0xffffff, false);
-
-	if (RenderData.Chunks.empty() || !RenderData.Gpu || !RenderData.Gpu->Geom)
-		return;
-
-	EDevice->SetShader(GEditorDraw.WireShader);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-
-	CFrustum& frustum = ::Render->ViewBase;
-
-	// Геометрия хранится в персистентном GPU-буфере (строится в PrecacheRenderData
-	// только при IsDirty). Здесь — только отсечение по фрустуму и один DP на чанк,
-	// без пересборки/заливки вершин каждый кадр.
-	for (size_t ci = 0; ci < RenderData.Chunks.size(); ++ci)
+	if (PreviewTex.empty())
 	{
-		const auto& chunk = RenderData.Chunks[ci];
-		if (RenderData.ChunkCount[ci] == 0)
-			continue;
-
-		float aabb[6] =
-		{
-			chunk.BBox.min.x, chunk.BBox.min.y, chunk.BBox.min.z,
-			chunk.BBox.max.x, chunk.BBox.max.y, chunk.BBox.max.z
-		};
-
-		u32 mask = 0xFF;
-		if (frustum.testAABB(aabb, mask) == fcvNone)
-			continue;
-
-		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
-			RenderData.Gpu->Geom,
-			RenderData.ChunkBase[ci],
-			RenderData.ChunkCount[ci] / 3);
+		return 0xFFFFFFFF;
 	}
+
+	const float Fx = clampr(u, 0.f, 1.f) * float(PreviewTexW - 1);
+	const float Fy = clampr(v, 0.f, 1.f) * float(PreviewTexH - 1);
+	const int X0 = iFloor(Fx);
+	const int Y0 = iFloor(Fy);
+	const int X1 = std::min(X0 + 1, int(PreviewTexW) - 1);
+	const int Y1 = std::min(Y0 + 1, int(PreviewTexH) - 1);
+	const float Tx = Fx - X0;
+	const float Ty = Fy - Y0;
+
+	auto At = [&](int X, int Y) { return PreviewTex[size_t(Y) * PreviewTexW + X]; };
+	const u32 C00 = At(X0, Y0), C10 = At(X1, Y0), C01 = At(X0, Y1), C11 = At(X1, Y1);
+
+	auto Mix = [&](u32 (*Get)(u32)) -> u8
+	{
+		const float A = Get(C00) + (float(Get(C10)) - Get(C00)) * Tx;
+		const float B = Get(C01) + (float(Get(C11)) - Get(C01)) * Tx;
+		return u8(clampr(A + (B - A) * Ty, 0.f, 255.f));
+	};
+
+	return color_rgba(Mix(color_get_R), Mix(color_get_G), Mix(color_get_B), 255);
 }
 
 void SHeightMap::MarkDirty()
 {
-	RenderData.IsDirty = true;
+	RenderData.IsLayoutDirty = true;
 }
 
-void SHeightMapRenderData::BuildFromHeightmap(const float* Heightmap, int width, int Height)
+void SHeightMap::MarkDirtyRect(int x0, int z0, int x1, int z1)
 {
-	Chunks.clear();
-
-	for (int z = 0; z < Height; z += SHeightMapRenderData::CHUNK_SIZE)
+	SHeightMapRenderData& RD = RenderData;
+	if (RD.IsLayoutDirty || RD.Chunks.empty())
 	{
-		for (int x = 0; x < width; x += SHeightMapRenderData::CHUNK_SIZE)
+		return;
+	}
+
+	// Normals use neighbours, so expand by one sample
+	const int CS = int(SHeightMapRenderData::CHUNK_SIZE);
+	const int Cx0 = clampr((x0 - 1) / CS, 0, int(RD.ChunksX) - 1);
+	const int Cx1 = clampr((x1 + 1) / CS, 0, int(RD.ChunksX) - 1);
+	const int Cz0 = clampr((z0 - 1) / CS, 0, int(RD.ChunksZ) - 1);
+	const int Cz1 = clampr((z1 + 1) / CS, 0, int(RD.ChunksZ) - 1);
+
+	for (int cz = Cz0; cz <= Cz1; ++cz)
+	{
+		for (int cx = Cx0; cx <= Cx1; ++cx)
 		{
-			SHeightMapChunk chunk;
-			chunk.BBox.invalidate();
-
-			// Проверяем, можно ли чанк упростить (все высоты почти одинаковы)
-			float min_h = FLT_MAX, max_h = -FLT_MAX;
-			for (int dz = 0; dz < SHeightMapRenderData::CHUNK_SIZE && (z + dz) < Height; ++dz)
-			{
-				for (int dx = 0; dx < SHeightMapRenderData::CHUNK_SIZE && (x + dx) < width; ++dx)
-				{
-					float h = Heightmap[(z + dz) * width + (x + dx)];
-					min_h = std::min(min_h, h);
-					max_h = std::max(max_h, h);
-					chunk.BBox.modify(Fvector(x + dx, h, z + dz));
-				}
-			}
-
-			// Если разница высот маленькая — чанк "плоский", можно упростить
-			chunk.IsFlat = (max_h - min_h < SHeightMapRenderData::FLAT_THRESHOLD);
-
-			// Генерация вершин для чанка
-			if (chunk.IsFlat)
-			{
-				// Упрощённый вариант (4 вершины = 1 quad)
-				float avg_h = (min_h + max_h) * 0.5f;
-				chunk.Vertices.push_back(Fvector(x, avg_h, z));
-				chunk.Vertices.push_back(Fvector(x + SHeightMapRenderData::CHUNK_SIZE, avg_h, z));
-				chunk.Vertices.push_back(Fvector(x, avg_h, z + SHeightMapRenderData::CHUNK_SIZE));
-				chunk.Vertices.push_back(Fvector(x + SHeightMapRenderData::CHUNK_SIZE, avg_h, z + SHeightMapRenderData::CHUNK_SIZE));
-			}
-			else
-			{
-				// Полная детализация (все вершины чанка)
-				for (int dz = 0; dz <= SHeightMapRenderData::CHUNK_SIZE && (z + dz) < Height; ++dz)
-				{
-					for (int dx = 0; dx <= SHeightMapRenderData::CHUNK_SIZE && (x + dx) < width; ++dx)
-					{
-						float h = Heightmap[(z + dz) * width + (x + dx)];
-						chunk.Vertices.push_back(Fvector(x + dx, h, z + dz));
-					}
-				}
-			}
-
-			Chunks.push_back(chunk);
+			RD.Chunks[cz * RD.ChunksX + cx].IsDirty = true;
 		}
 	}
 }
 
-bool SHeightMap::RayPick(float& Distance, const Fvector& Start, const Fvector& Direction, const Fmatrix& InvParent, SRayPickInfo* PInf) const
+void SHeightMap::RebuildLayout(float scaleY)
 {
-	if (!Data || Width == 0 || Height == 0) return false;
+	SHeightMapRenderData& RD = RenderData;
+	RD.Clear();
 
-	// Преобразование в локальные координаты
-	Fvector LocalStart, LocalDir;
-	InvParent.transform_tiny(LocalStart, Start);
-	InvParent.transform_dir(LocalDir, Direction);
-	LocalDir.normalize();
+	const u32 CS = SHeightMapRenderData::CHUNK_SIZE;
+	RD.ChunksX = (Width - 2) / CS + 1;
+	RD.ChunksZ = (Height - 2) / CS + 1;
+	RD.Chunks.resize(RD.ChunksX * RD.ChunksZ);
 
-	// Bounding box карты высот
-	Fbox HeightMapBox;
-
-	Fvector BBoxMin = Fvector().set(
-		Pos.x - Size.x * (Width - 1) * 0.5f, 
-		Pos.y,                               
-		Pos.z - Size.z * (Height - 1) * 0.5f 
-	);
-
-	Fvector BBoxMax = Fvector().set(
-		Pos.x + Size.x * (Width - 1) * 0.5f, 
-		Pos.y + Size.y * (MaxH - MinH),      
-		Pos.z + Size.z * (Height - 1) * 0.5f 
-	);
-
-	HeightMapBox.min = BBoxMin;
-	HeightMapBox.max = BBoxMax;
-
-	// Быстрая проверка пересечения с AABB
-	Fvector EntryPoint;
-	if (HeightMapBox.Pick2(LocalStart, LocalDir, EntryPoint) == Fbox::rpNone)
-		return false;
-
-	// Параметры DDA-алгоритма
-	const float CellSizeX = Size.x;
-	const float CellSizeZ = Size.z;
-
-	float X = (EntryPoint.x - BBoxMin.x) / Size.x;
-	float Z = (EntryPoint.z - BBoxMin.z) / Size.z;
-
-	const int StepX = (LocalDir.x > 0) ? 1 : -1;
-	const int StepZ = (LocalDir.z > 0) ? 1 : -1;
-
-	const float DeltaDistX = (LocalDir.x != 0) ? abs(1.0f / LocalDir.x) : FLT_MAX;
-	const float DeltaDistZ = (LocalDir.z != 0) ? abs(1.0f / LocalDir.z) : FLT_MAX;
-
-	float SideDistX = ((LocalDir.x > 0) ? (ceilf(X) - X) : (X - floorf(X))) * DeltaDistX;
-	float SideDistZ = ((LocalDir.z > 0) ? (ceilf(Z) - Z) : (Z - floorf(Z))) * DeltaDistZ;
-
-	// Основной цикл DDA
-	while (X >= 0 && Z >= 0 && X < Width && Z < Height)
+	for (u32 cz = 0; cz < RD.ChunksZ; ++cz)
 	{
-		const float Height = GetHeight((u32)X, (u32)Z) * Size.y + Pos.y;
-
-		const float T = (LocalDir.x != 0)
-			? (X * CellSizeX + BBoxMin.x - LocalStart.x) / LocalDir.x
-			: (Z * CellSizeZ + BBoxMin.z - LocalStart.z) / LocalDir.z;
-
-		const float RayY = LocalStart.y + T * LocalDir.y;
-
-		// Проверка пересечения с поверхностью
-		if (Height > 0 && RayY <= Height + EPS && T < Distance)
+		for (u32 cx = 0; cx < RD.ChunksX; ++cx)
 		{
-			Distance = T;
-			if (PInf)
-			{
-				PInf->inf.range = T;
-				PInf->pt.mad(LocalStart, LocalDir, T);
-			}
-			return true;
+			SHeightMapChunk& Chunk = RD.Chunks[cz * RD.ChunksX + cx];
+			Chunk.X0 = cx * CS;
+			Chunk.Z0 = cz * CS;
+			Chunk.X1 = std::min(Chunk.X0 + CS, Width - 1);
+			Chunk.Z1 = std::min(Chunk.Z0 + CS, Height - 1);
+			Chunk.IsDirty = true;
 		}
+	}
 
-		// Выбор следующей ячейки
-		if (SideDistX < SideDistZ)
+	RD.LayoutScaleY = scaleY;
+	RD.LayoutSize = Size;
+	RD.IsLayoutDirty = false;
+}
+
+void SHeightMap::BuildChunk(SHeightMapChunk& Chunk, float scaleY)
+{
+	XRay::Editor::HeightmapUtils::ReleaseGpu(Chunk.Gpu);
+	Chunk.IsDirty = false;
+	Chunk.VertexCount = 0;
+	Chunk.BBox.invalidate();
+
+	static const Fvector LowColor = {72.f, 92.f, 58.f};
+	static const Fvector HighColor = {228.f, 222.f, 206.f};
+	Fvector LightDir = {0.45f, 1.f, 0.3f};
+	LightDir.normalize();
+
+	const float Sx = StepX();
+	const float Sz = StepZ();
+
+	auto LocalAt = [&](int x, int z) -> Fvector
+	{
+		Fvector P;
+		P.x = -(x * Sx - HalfX());
+		P.z = z * Sz - HalfZ();
+		P.y = ToLocalY(GetHeightClamped(x, z), scaleY);
+		return P;
+	};
+
+	auto MakeVertex = [&](int x, int z) -> SHeightMapVertex
+	{
+		const Fvector P = LocalAt(x, z);
+
+		// Central-difference normal in local space
+		Fvector Tx, Tz, N;
+		Tx.sub(LocalAt(x + 1, z), LocalAt(x - 1, z));
+		Tz.sub(LocalAt(x, z + 1), LocalAt(x, z - 1));
+		N.crossproduct(Tz, Tx);
+		if (N.y < 0.f)
 		{
-			SideDistX += DeltaDistX;
-			X += StepX;
+			N.invert();
+		}
+		N.normalize_safe();
+
+		const float Shade = 0.3f + 0.7f * std::max(0.f, N.dotproduct(LightDir));
+		u32 Color;
+		if (PreviewMode == pmColors && VertexColors.size() == size_t(Width) * Height)
+		{
+			const u32 T = VertexColors[size_t(z) * Width + x];
+			const float S = clampr(0.45f + 0.55f * Shade, 0.f, 1.f);
+			Color = color_rgba(u8(color_get_R(T) * S), u8(color_get_G(T) * S), u8(color_get_B(T) * S), 255);
+		}
+		else if (PreviewMode == pmTexture && (!PreviewTex.empty() || OverlayCoverage))
+		{
+			// Same UV as the generated terrain mesh
+			const float U = 1.f - float(x) / float(Width - 1);
+			const float V = 1.f - float(z) / float(Height - 1);
+			u32 T = SamplePreviewTexture(U, V);
+			const size_t Idx = size_t(z) * Width + x;
+			if (OverlayColor && OverlayCoverage && Idx < OverlayCoverage->size() && (*OverlayCoverage)[Idx])
+			{
+				const float C = (*OverlayCoverage)[Idx] / 255.f;
+				const u32 O = (*OverlayColor)[Idx];
+				auto L = [&](u32 A, u32 B) { return u8(A + (float(B) - float(A)) * C); };
+				T = color_rgba(L(color_get_R(T), color_get_R(O)), L(color_get_G(T), color_get_G(O)), L(color_get_B(T), color_get_B(O)), 255);
+			}
+			const float S = clampr(0.45f + 0.55f * Shade, 0.f, 1.f);
+			Color = color_rgba(u8(color_get_R(T) * S), u8(color_get_G(T) * S), u8(color_get_B(T) * S), 255);
 		}
 		else
 		{
-			SideDistZ += DeltaDistZ;
-			Z += StepZ;
+			Color = LerpColor(LowColor, HighColor, GetHeight(x, z), Shade);
 		}
+		return {P, Color};
+	};
+
+	xr_vector<SHeightMapVertex> Vertices;
+	Vertices.reserve(size_t(Chunk.X1 - Chunk.X0) * (Chunk.Z1 - Chunk.Z0) * 6);
+
+	for (u32 z = Chunk.Z0; z < Chunk.Z1; ++z)
+	{
+		for (u32 x = Chunk.X0; x < Chunk.X1; ++x)
+		{
+			if (GetHeight(x, z) <= 0.f || GetHeight(x + 1, z) <= 0.f || GetHeight(x, z + 1) <= 0.f || GetHeight(x + 1, z + 1) <= 0.f)
+			{
+				continue;
+			}
+
+			const SHeightMapVertex V0 = MakeVertex(x, z);
+			const SHeightMapVertex V1 = MakeVertex(x + 1, z);
+			const SHeightMapVertex V2 = MakeVertex(x, z + 1);
+			const SHeightMapVertex V3 = MakeVertex(x + 1, z + 1);
+
+			// Same triangulation as the generated mesh
+			Vertices.insert(Vertices.end(), {V0, V1, V2, V1, V3, V2});
+			Chunk.BBox.modify(V0.P);
+			Chunk.BBox.modify(V1.P);
+			Chunk.BBox.modify(V2.P);
+			Chunk.BBox.modify(V3.P);
+		}
+	}
+
+	if (Vertices.empty())
+	{
+		return;
+	}
+
+	IRHIBuffer* pVB = nullptr;
+	if (!RHIUtils::CreateVertexBuffer(&pVB, Vertices.data(), u32(Vertices.size() * sizeof(SHeightMapVertex)), false))
+	{
+		return;
+	}
+
+	Chunk.Gpu = new SGpuCache();
+	Chunk.Gpu->Geom.create(FVF::F_L, pVB, nullptr);
+	Chunk.VertexCount = u32(Vertices.size());
+}
+
+void SHeightMap::Draw(const Fmatrix& xform, float scaleY)
+{
+	if (!IsValid())
+	{
+		return;
+	}
+
+	SHeightMapRenderData& RD = RenderData;
+	if (RD.IsLayoutDirty || !fsimilar(RD.LayoutScaleY, scaleY) || !RD.LayoutSize.similar(Size))
+	{
+		RebuildLayout(scaleY);
+	}
+
+	EDevice->SetShader(GEditorDraw.WireShader);
+	RCache.set_xform_world(xform);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+
+	CFrustum& Frustum = ::Render->ViewBase;
+
+	for (SHeightMapChunk& Chunk : RD.Chunks)
+	{
+		if (Chunk.IsDirty)
+		{
+			BuildChunk(Chunk, scaleY);
+		}
+
+		if (!Chunk.Gpu || Chunk.VertexCount == 0)
+		{
+			continue;
+		}
+
+		Fbox WorldBox = Chunk.BBox;
+		WorldBox.xform(xform);
+		float AABB[6] = {WorldBox.min.x, WorldBox.min.y, WorldBox.min.z, WorldBox.max.x, WorldBox.max.y, WorldBox.max.z};
+
+		u32 Mask = 0xFF;
+		if (Frustum.testAABB(AABB, Mask) == fcvNone)
+		{
+			continue;
+		}
+
+		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Chunk.Gpu->Geom, 0, Chunk.VertexCount / 3);
+	}
+
+	RCache.set_xform_world(Fidentity);
+}
+
+bool SHeightMap::RayPickLocal(float& distance, const Fvector& start, const Fvector& direction, float scaleY, Fvector* outPoint) const
+{
+	if (!IsValid())
+	{
+		return false;
+	}
+
+	Fvector Dir = direction;
+	Dir.normalize_safe();
+
+	Fbox Box;
+	Box.min.set(-HalfX(), ToLocalY(MinH, scaleY) - 0.01f, -HalfZ());
+	Box.max.set(HalfX(), ToLocalY(MaxH, scaleY) + 0.01f, HalfZ());
+
+	float TStart = 0.f;
+	if (!Box.contains(start))
+	{
+		Fvector Entry;
+		if (Box.Pick2(start, Dir, Entry) == Fbox::rpNone)
+		{
+			return false;
+		}
+		TStart = start.distance_to(Entry);
+	}
+
+	Fvector BoxSize;
+	Box.getsize(BoxSize);
+	const float TEnd = std::min(distance, TStart + BoxSize.magnitude() + 0.1f);
+	const float Step = 0.5f * std::min(StepX(), StepZ());
+
+	auto IsHole = [&](float gx, float gz)
+	{
+		const int X = clampr(iFloor(gx), 0, int(Width) - 2);
+		const int Z = clampr(iFloor(gz), 0, int(Height) - 2);
+		return GetHeight(X, Z) <= 0.f || GetHeight(X + 1, Z) <= 0.f || GetHeight(X, Z + 1) <= 0.f || GetHeight(X + 1, Z + 1) <= 0.f;
+	};
+
+	// Returns ray height above surface (positive = above), or FLT_MAX outside/in a hole
+	auto Above = [&](float t) -> float
+	{
+		Fvector P;
+		P.mad(start, Dir, t);
+		float Gx, Gz;
+		LocalToGrid(P, Gx, Gz);
+		if (Gx < 0.f || Gz < 0.f || Gx > float(Width - 1) || Gz > float(Height - 1) || IsHole(Gx, Gz))
+		{
+			return FLT_MAX;
+		}
+		return P.y - ToLocalY(Sample(Gx, Gz), scaleY);
+	};
+
+	float PrevT = TStart;
+	for (float T = TStart; T <= TEnd; T += Step)
+	{
+		const float A = Above(T);
+		if (A != FLT_MAX && A <= 0.f)
+		{
+			float Lo = PrevT;
+			float Hi = T;
+			for (int i = 0; i < 12; ++i)
+			{
+				const float Mid = (Lo + Hi) * 0.5f;
+				const float M = Above(Mid);
+				if (M != FLT_MAX && M <= 0.f)
+				{
+					Hi = Mid;
+				}
+				else
+				{
+					Lo = Mid;
+				}
+			}
+
+			distance = Hi;
+			if (outPoint)
+			{
+				outPoint->mad(start, Dir, Hi);
+			}
+			return true;
+		}
+		PrevT = T;
 	}
 
 	return false;

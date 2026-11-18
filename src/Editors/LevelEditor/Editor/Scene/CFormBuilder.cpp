@@ -44,6 +44,7 @@ bool CFormBuilder::build()
 	// Build level CForm
 	Scene->GetTool(OBJCLASS_SCENEOBJECT)->GetStaticCformData(build_data, false);
 	Scene->GetTool(OBJCLASS_TERRAIN)->GetStaticCformData(build_data, false);
+	Scene->GetTool(OBJCLASS_ROAD)->GetStaticCformData(build_data, false);
 
 	if (build_data.l_face_it == 0)
 	{

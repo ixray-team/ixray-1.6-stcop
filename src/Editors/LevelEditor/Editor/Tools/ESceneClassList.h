@@ -28,6 +28,7 @@ enum ESceneItemsGuids
     OBJCLASS_PUDDLES	= 16,
     OBJCLASS_TERRAIN	= 17,
     OBJCLASS_PLANARS	= 18,
+    OBJCLASS_ROAD		= 19,
     OBJCLASS_COUNT		,
     OBJCLASS_force_dword = u32(-1)
 };

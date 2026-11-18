@@ -2,6 +2,7 @@
 #include "../Tools/Puddles/EScenePuddlesTools.h"
 #include "../Tools/Planars/EScenePlanarsTools.h"
 #include "../Tools/Terrain/ESceneTerrainTools.h"
+#include "../Tools/Road/ESceneRoadTools.h"
 
 void EScene::RegisterSceneTools(ESceneToolBase* mt)
 {
@@ -27,6 +28,7 @@ void EScene::CreateSceneTools()
     RegisterSceneTools(new EScenePuddlesTool());
     RegisterSceneTools(new EScenePlanarsTool());
     RegisterSceneTools(new ESceneTerrainTool());
+    RegisterSceneTools(new ESceneRoadTool());
     RegisterSceneTools(new EScenePSTool());
     RegisterSceneTools(new EDetailManager());
     RegisterSceneTools(new ESceneAIMapTool());

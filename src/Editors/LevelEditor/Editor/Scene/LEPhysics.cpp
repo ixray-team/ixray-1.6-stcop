@@ -4,6 +4,7 @@
 #include "../../xrPhysics/iphworld.h"
 #include "../../xrCore/Collision/xr_area.h"
 #include "../Entry/Terrain/Terrain.h"
+#include "../Entry/Road/Road.h"
 
 CScenePhysics g_scene_physics;
 
@@ -60,6 +61,15 @@ bool GetStaticCformData(ObjectList& lst, mesh_build_data& data, bool b_selected_
 		{
 			CTerrain* obj = (CTerrain*)(*_F);
 			bResult = GetStaticCformData(obj, data, b_selected_only);
+			break;
+		}
+		case OBJCLASS_ROAD:
+		{
+			CRoad* obj = (CRoad*)(*_F);
+			if (obj->HasMesh())
+			{
+				bResult = GetStaticCformData(obj, data, b_selected_only);
+			}
 			break;
 		}
 		}
