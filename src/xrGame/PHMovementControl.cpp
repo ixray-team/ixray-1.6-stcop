@@ -20,7 +20,6 @@
 #include "Actor.h"
 #ifdef DEBUG
 #include "PHDebug.h"
-#include "level_debug.h"
 #endif
 
 #include "../Include/xrRender/Kinematics.h"
@@ -42,8 +41,6 @@ const u64 after_creation_collision_hit_block_steps_number=100;
 // contact. If only a wheel touches for longer, the wheel's face becomes the
 // slide source instead of keeping a stale body face forever.
 constexpr u32 CarBodyContactAuthorityMs = 150;
-
-bool g_car_contact_debug = false;
 
 void CPHMovementControl::ResetCarSlideDirection()
 {
@@ -176,11 +173,6 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 
 	const bool was_active = m_car_contact_active;
 	const bool was_active_fresh = was_active && Device.dwTimeGlobal < m_car_contact_end;
-
-#ifdef DEBUG
-	if (g_car_contact_debug && pObject && !was_active_fresh)
-		DBG().object_info(pObject, &m_car_contact).clear();
-#endif
 
 	// A body contact is the authoritative slide source. Wheel contacts keep
 	// the physical push alive, but must not replace the body normal/axis with
@@ -341,18 +333,6 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 		m_car_slide_tangent_valid = false;
 	}
 
-	if (g_car_contact_debug && !was_active_fresh)
-	{
-		Msg("[car-slide] set obj=%s normal=(%.2f %.2f %.2f) slide=(%.2f %.2f %.2f) outward=(%.2f %.2f %.2f) car_vel=(%.2f %.2f %.2f) min=%.2f start=%.2f scale=%.2f slide_speed=%.2f body=%d duration=%u",
-			(pObject && pObject->cName()) ? *pObject->cName() : "?",
-			normal.x, normal.y, normal.z,
-			slide_axis.x, slide_axis.y, slide_axis.z,
-			outward_axis.x, outward_axis.y, outward_axis.z,
-			car_velocity.x, car_velocity.y, car_velocity.z,
-			min_car_speed, start_push_speed, slide_scale, slide_speed,
-			body_contact ? 1 : 0, duration_ms);
-	}
-
 	m_character->SetExternalPush(true);
 }
 
@@ -364,18 +344,6 @@ void CPHMovementControl::UpdateCarContact()
 	if (!m_character || !m_character->Exists() || Device.dwTimeGlobal >= m_car_contact_end)
 	{
 		const bool character_gone = !m_character || !m_character->Exists();
-
-		if (g_car_contact_debug)
-		{
-			Msg("[car-slide] expire obj=%s frame=%u",
-				(pObject && pObject->cName()) ? *pObject->cName() : "?",
-				Device.dwFrame);
-		}
-
-#ifdef DEBUG
-		if (pObject)
-			DBG().object_info(pObject, &m_car_contact).clear();
-#endif
 
 		m_car_contact_active = false;
 		m_car_contact_end = 0;
@@ -489,79 +457,8 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 
 	const float path_speed = path_velocity.magnitude();
 
-	static u32 debug_next_log = 0;
-	const bool debug_log = g_car_contact_debug && Device.dwTimeGlobal >= debug_next_log;
-	if (debug_log)
-		debug_next_log = Device.dwTimeGlobal + 100;
-
-	float facing = 0.f;
-	float intent = 0.f;
-
-	auto debug_contact = [&](const char* reason, bool applied, const Fvector& out,
-		float slide_speed_value, float path_tangent_value, float current_tangent_value,
-		float target_tangent_value)
-	{
-		const float path_tangent_norm = path_speed > EPS_L ? path_tangent_value / path_speed : 0.f;
-		const float current_tangent_norm = current_speed > EPS_L ? current_tangent_value / current_speed : 0.f;
-
-		if (g_car_contact_debug)
-		{
-#ifdef DEBUG
-			if (pObject)
-			{
-				auto& info = DBG().object_info(pObject, &m_car_contact);
-				info.clear();
-
-				string256 text;
-				xr_sprintf(text, "CAR SLIDE: %s", reason);
-				info.add_item(text, applied ? color_xrgb(0, 255, 0) : color_xrgb(255, 255, 0), 0);
-
-				xr_sprintf(text, "pn=%.2f cn=%.2f push=%d ext=%.2f",
-					path_normal, car_normal, car_pushes ? 1 : 0, external_normal);
-				info.add_item(text, color_xrgb(255, 255, 255), 1);
-
-				xr_sprintf(text, "scale=%.2f sspd=%.2f st=%.2f",
-					contact.slide_scale, slide_speed_value, m_car_slide_tangent);
-				info.add_item(text, color_xrgb(255, 255, 255), 2);
-
-				xr_sprintf(text, "pt=%.2f ct=%.2f tt=%.2f",
-					path_tangent_value, current_tangent_value, target_tangent_value);
-				info.add_item(text, color_xrgb(255, 255, 255), 3);
-
-				xr_sprintf(text, "ptn=%.2f ctn=%.2f face=%.2f bias=%.2f intent=%.2f",
-					path_tangent_norm, current_tangent_norm, facing, contact.side_bias, intent);
-				info.add_item(text, color_xrgb(255, 255, 255), 4);
-
-				xr_sprintf(text, "dir=(%.2f %.2f %.2f) out=%.2f",
-					m_car_slide_direction.x, m_car_slide_direction.y, m_car_slide_direction.z,
-					out.magnitude());
-				info.add_item(text, color_xrgb(255, 255, 255), 5);
-			}
-#endif
-		}
-
-		if (!debug_log)
-			return;
-
-		Msg("[car-slide] apply obj=%s reason=%s path=(%.2f %.2f %.2f) speed=%.2f desired=%.2f pn=%.2f cn=%.2f push=%d ext=%.2f scale=%.2f axis=(%.2f %.2f %.2f) sspd=%.2f pt=%.2f ct=%.2f tt=%.2f st=%.2f dir=(%.2f %.2f %.2f) valid=%d out=(%.2f %.2f %.2f) out_spd=%.2f face=%.2f bias=%.2f intent=%.2f ptn=%.2f ctn=%.2f",
-			(pObject && pObject->cName()) ? *pObject->cName() : "?",
-			reason,
-			path_velocity.x, path_velocity.y, path_velocity.z,
-			path_speed, desired_speed, path_normal, car_normal,
-			car_pushes ? 1 : 0, external_normal,
-			contact.slide_scale,
-			contact.slide_axis.x, contact.slide_axis.y, contact.slide_axis.z,
-			slide_speed_value, path_tangent_value, current_tangent_value, target_tangent_value,
-			m_car_slide_tangent,
-			m_car_slide_direction.x, m_car_slide_direction.y, m_car_slide_direction.z,
-			m_car_slide_direction_valid ? 1 : 0,
-			out.x, out.y, out.z, out.magnitude(),
-			facing, contact.side_bias, intent, path_tangent_norm, current_tangent_norm);
-	};
-
 	if (contact.slide_scale <= 0.f || contact.slide_axis.magnitude() <= EPS_L)
 	{
-		debug_contact("no_axis", false, result, 0.f, 0.f, 0.f, 0.f);
 		m_car_slide_tangent = 0.f;
 		m_car_slide_tangent_valid = false;
 		return result;
@@ -578,7 +475,6 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	}
 	if (slide.magnitude() <= EPS_L)
 	{
-		debug_contact("degenerate_axis", false, result, 0.f, 0.f, 0.f, 0.f);
 		m_car_slide_tangent = 0.f;
 		m_car_slide_tangent_valid = false;
 		return result;
@@ -593,6 +489,21 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	// fast movement always overrides the facing.
 	float path_tangent = path_speed > EPS_L ? path_tangent_speed / path_speed : 0.f;
 	float current_tangent = current_speed > EPS_L ? current_tangent_speed / current_speed : 0.f;
+
+	// A forced tangent is only useful when either the mutant wants to move,
+	// is already sliding, or the car is actually pushing. A standing mutant
+	// touching a parked car must not receive an artificial slide speed.
+	const bool has_intent =
+		desired_speed > 0.05f ||
+		path_normal < -0.01f ||
+		car_pushes ||
+		std::fabs(current_tangent_speed) > 0.05f;
+	if (!has_intent)
+	{
+		m_car_slide_tangent = 0.f;
+		m_car_slide_tangent_valid = false;
+		return result;
+	}
 
 	// Keep a slide speed from the approach/path even after the path has
 	// completed; otherwise the movement manager's no-path branch would stop
@@ -609,43 +520,15 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	// Prefer the body facing: the mutant should slide where it is looking.
 	// If it looks straight into the car, fall back to path/current velocity.
 	// All three values are normalized so the thresholds are comparable.
-	facing = facing_dir.dotproduct(slide);
+	const float facing = facing_dir.dotproduct(slide);
 
-	intent = 0.f;
+	float intent = 0.f;
 	if (std::fabs(facing) > 0.35f)
 		intent = facing;
 	else if (std::fabs(path_tangent) > 0.25f)
 		intent = path_tangent;
 	else if (std::fabs(current_tangent) > 0.25f)
 		intent = current_tangent;
-
-	// A standing/attacking mutant must not be pushed along a parked car just
-	// because the contact carries the run speed. Require an actual movement
-	// intent before forcing a slide.
-	const bool has_intent =
-		desired_speed > 0.05f ||
-		path_normal < -0.01f ||
-		car_pushes ||
-		std::fabs(current_tangent_speed) > 0.05f;
-
-	if (!has_intent)
-	{
-		debug_contact("no_intent", false, result, slide_speed, path_tangent_speed, current_tangent_speed, 0.f);
-		m_car_slide_tangent = 0.f;
-		m_car_slide_tangent_valid = false;
-		return result;
-	}
-
-	// Only start a forced slide when there is speed or the mutant is actually
-	// pressing into the car. A standing/attacking mutant should not drift.
-	if (slide_speed <= 0.05f && path_normal >= -0.01f &&
-		std::fabs(current_tangent_speed) <= 0.05f)
-	{
-		debug_contact("no_speed", false, result, slide_speed, path_tangent_speed, current_tangent_speed, 0.f);
-		m_car_slide_tangent = 0.f;
-		m_car_slide_tangent_valid = false;
-		return result;
-	}
 
 	const float flip_threshold = std::max(0.f,
 		std::min(1.f, contact.slide_flip));
@@ -754,7 +637,6 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	m_car_slide_direction = slide;
 	m_car_slide_direction_valid = true;
 
-	debug_contact("applied", true, result, slide_speed, path_tangent, current_tangent, target_tangent);
 	return result;
 }
 

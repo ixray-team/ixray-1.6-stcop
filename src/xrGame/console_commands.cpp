@@ -80,7 +80,6 @@ ENGINE_API extern  bool  ui_3d_cursor;
 ENGINE_API extern  bool  g_3d_scopes;
 extern	float	psSqueezeVelocity;
 extern	int		psLUA_GCSTEP;
-extern	bool	g_car_contact_debug;
 
 extern	int		x_m_x;
 extern	int		x_m_z;
@@ -3459,7 +3458,6 @@ void CCC_RegisterCommands()
 #endif
 	CMD4(CCC_Float, "con_sensitive", &g_console_sensitive, 0.01f, 1.0f);
 	CMD2(CCC_Boolean, "wpn_aim_toggle", &b_toggle_weapon_aim);
-	CMD2(CCC_Boolean, "ph_car_contact_debug", &g_car_contact_debug);
 
 	CMD2(CCC_Boolean, "g_fight_fast_respawn", &g_fight_fast_respawn);
 

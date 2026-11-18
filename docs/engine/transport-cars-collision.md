@@ -50,7 +50,7 @@
   кадрами и плавно ведётся к `target_tangent`; физика/трение больше не
   сбрасывают её каждый кадр, поэтому slide может раскачаться и при лобовом
   ударе. При смене стороны, контакта или истечении памяти сбрасывается;
-- forced slide включается только при `has_intent`: `desired_speed > 0.05`,
+- принудительный slide включается только при `has_intent`: `desired_speed > 0.05`,
   `path_normal < -0.01`, `car_pushes` или уже есть касательная скорость.
   Стоящий/атакующий мутант у припаркованной машины slide не получает;
 - направление slide выбирается по направлению взгляда мутанта, затем по
@@ -222,10 +222,10 @@ desired_speed > 0.05 || path_normal < -0.01 || car_pushes ||
 |current_tangent_speed| > 0.05
 ```
 
-Если намерения нет, `ApplyCarContact()` возвращает path-скорость с причиной
-`no_intent`, а `m_car_slide_tangent` сбрасывается. Slide у стоящего мутанта
-остаётся только если path реально давит в машину (`path_normal < -0.01`)
-или машина сама толкает мутанта (`car_pushes`).
+Если намерения нет, `ApplyCarContact()` возвращает path-скорость без slide,
+а `m_car_slide_tangent` сбрасывается. Slide у стоящего мутанта остаётся
+только если path реально давит в машину (`path_normal < -0.01`) или машина
+сама толкает мутанта (`car_pushes`).
 
 ### 4.12. Память направления и смена машины
 
@@ -244,26 +244,11 @@ desired_speed > 0.05 || path_normal < -0.01 || car_pushes ||
   удар, бок, колесо, старт машины с места в стоящего мутанта, таран сзади,
   стоящий/атакующий мутант, уход от машины, повторный контакт.
 
-### 5.1. Диагностика
-
-`ph_car_contact_debug 1` включает лог `[car-slide]` и в Debug-сборке
-дополнительно рисует текст над мутантом. Команда выключается
-`ph_car_contact_debug 0`. В логе:
-
-- `set` — создан контакт (нормаль, оси, скорость машины, параметры);
-- `apply` — кадр `ApplyCarContact()` с `reason`;
-- `expire` — контакт истёк.
-
-В тексте над мутантом выводятся `reason`, `pn/cn`, `scale/sspd/st`,
-`pt/ct/tt`, `dir/out`, `face/bias/intent` и нормированные `ptn/ctn`.
-`st` — сохранённая желаемая касательная скорость.
-
 ## 6. Связанные файлы
 
 - `src/xrGame/Car.cpp`, `src/xrGame/Car.h`
 - `src/xrGame/PHMovementControl.cpp`, `src/xrGame/PHMovementControl.h`
 - `src/xrGame/Creature.cpp`
-- `src/xrGame/console_commands.cpp` — debug-cvar `ph_car_contact_debug`
 - `src/xrGame/movement_manager_physic.cpp`
 - `src/xrPhysics/IPHCharacter.h`
 - `src/xrPhysics/ODE/PHSimpleCharacter.*`

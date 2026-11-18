@@ -1139,12 +1139,17 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - `has_intent` и подавление касательной для AI path не добавлялись в этом этапе; `has_intent` добавлен в этапе 115.
 - Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
 
-### Этап 115: persistent tangent, has_intent и диагностика
+### Этап 115: persistent tangent и has_intent
 
 - `ApplyCarContact()` больше не стартует касательную от измеренной `current_tangent` каждый кадр. Добавлен `m_car_slide_tangent`, который сохраняется между кадрами и плавно ведётся к `target_tangent`; при смене стороны, контакта или истечении контакта сбрасывается. Если измеренная касательная больше накопленной, она подтягивает `m_car_slide_tangent` вверх, но не выше `target_tangent`.
 - Это убирает эффект «упёрся в машину»: при лобовом ударе касательная теперь накапливается, а не гасится физикой каждый кадр. Раньше при `current_tangent ≈ 0` и `Device.fTimeDelta * 12 ≈ 0.037` за кадр добавлялось около `0.2 м/с`, и трение снова обнуляло скорость.
-- Перед forced slide добавлен `has_intent`: `desired_speed > 0.05`, `path_normal < -0.01`, `car_pushes` или `|current_tangent_speed| > 0.05`. Стоящий/атакующий мутант у припаркованной машины получает `no_intent` и не скользит.
-- Добавлен `ph_car_contact_debug`: лог `[car-slide]` и в Debug-сборке текст над мутантом. В лог/оверлей добавлены `st`, `face`, `bias`, `intent`, `ptn/ctn`.
+- Перед принудительным slide добавлен `has_intent`: `desired_speed > 0.05`, `path_normal < -0.01`, `car_pushes` или `|current_tangent_speed| > 0.05`. Стоящий/атакующий мутант у припаркованной машины не скользит.
+- Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
+
+### Этап 116: has_intent из откатанного коммита и удаление debug
+
+- `has_intent` перенесён в начало `ApplyCarContact()` — до обновления `m_car_slide_speed` и fallback на `contact.slide_speed`, как в откатанном `b36f7101a9`. Старая отдельная проверка `no_speed` удалена как избыточная.
+- Временный `ph_car_contact_debug`, лог `[car-slide]` и Debug-оверлей удалены после тестов. На поведение slide это не влияет.
 - Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
 
 ### Дальнейшие улучшения slide: план
