@@ -22,6 +22,10 @@
 #include "../../xrEngine/xr_object.h"
 #include "ph_valid_ode.h"
 
+#include "../PhysicsCommon.h"
+
+XRPHYSICS_API bool ph_mutant_car_friction = false;
+
 IC bool PhOutOfBoundaries(const Fvector& v)
 {
 	return v.y < phBoundaries.y1;
@@ -1525,7 +1529,12 @@ void CPHSimpleCharacter::InitContact(dContact* c, bool& do_collide, u16 material
 	}
 
 	float soft_param = dumping_rate + normal[1] * (1.f - dumping_rate);
-	if (is_control)
+	// A car contact under the external-push constraint must not grip the
+	// mutant sideways, otherwise the lateral slide is erased by friction.
+	// Static contacts (the ground) keep their normal friction.
+	const bool car_slide_contact =
+		m_external_push && object && !ph_mutant_car_friction;
+	if (is_control || car_slide_contact)
 	{
 		c->surface.mu = 0.f;
 		MulSprDmp(c->surface.soft_cfm, c->surface.soft_erp, spring_rate, soft_param);

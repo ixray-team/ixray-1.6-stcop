@@ -28,6 +28,7 @@
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
 #include "../xrPhysics/IPHWorld.h"
+#include "../xrPhysics/PhysicsCommon.h"
 #include "../xrEngine/string_table.h"
 #include "autosave_manager.h"
 #include "ai_space.h"
@@ -3259,6 +3260,15 @@ void CCC_RegisterCommands()
 	CMD1(CCC_NoClip, "g_no_clip");
 	CMD1(CCC_PHGravity, "ph_gravity");
 	CMD4(CCC_FloatBlock, "ph_timefactor", &phTimefactor, 0.000001f, 1000.f);
+	CMD2(CCC_Boolean, "ph_mutant_car_friction", &ph_mutant_car_friction);
+	extern float ph_mutant_car_slide_lock_ms;
+	extern float ph_mutant_car_slide_flip_threshold;
+	extern float ph_mutant_car_slide_confirm_ms;
+	extern float ph_mutant_car_slide_memory_ms;
+	CMD4(CCC_FloatBlock, "ph_mutant_car_slide_lock", &ph_mutant_car_slide_lock_ms, 0.f, 5000.f);
+	CMD4(CCC_FloatBlock, "ph_mutant_car_slide_flip", &ph_mutant_car_slide_flip_threshold, 0.f, 1.f);
+	CMD4(CCC_FloatBlock, "ph_mutant_car_slide_confirm", &ph_mutant_car_slide_confirm_ms, 0.f, 2000.f);
+	CMD4(CCC_FloatBlock, "ph_mutant_car_slide_memory", &ph_mutant_car_slide_memory_ms, 0.f, 5000.f);
 	CMD4(CCC_FloatBlock, "ph_break_common_factor", &ph_console::phBreakCommonFactor, 0.f, 1000000000.f);
 	CMD4(CCC_FloatBlock, "ph_rigid_break_weapon_factor", &ph_console::phRigidBreakWeaponFactor, 0.f, 1000000000.f);
 	CMD4(CCC_Integer, "ph_tri_clear_disable_count", &ph_console::ph_tri_clear_disable_count, 0, 255);

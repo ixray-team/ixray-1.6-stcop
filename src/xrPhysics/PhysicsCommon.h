@@ -24,6 +24,10 @@ extern					const u16	max_joint_allowed_for_exeact_integration		;
 extern	XRPHYSICS_API	const float	default_world_gravity		;
 extern	XRPHYSICS_API	float		phTimefactor						;
 extern	XRPHYSICS_API	int			phIterations						;
+// Test/behaviour switch: 1 = legacy friction for a mutant touching a car,
+// 0 = let the mutant slide along the car surface while the contact constraint
+// limits only the push-in component.
+extern	XRPHYSICS_API	bool		ph_mutant_car_friction				;
 
 struct SGameMtl;
 
