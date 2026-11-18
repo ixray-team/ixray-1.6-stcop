@@ -353,7 +353,11 @@ CLevel::~CLevel()
 
 	xr_delete(GCondlistGC);
 	xr_delete(m_game_graph);
-	m_chunk->close();
+	if (m_chunk)
+	{
+		m_chunk->close();
+		m_chunk = nullptr;
+	}
 	FS.r_close(spawn);
 
 	xr_delete(WorldSpaceUIManager);
