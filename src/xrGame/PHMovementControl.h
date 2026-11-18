@@ -173,6 +173,8 @@ private:
 	bool				m_car_contact_active;
 	u32					m_car_body_contact_time;
 	float				m_car_slide_speed;
+	float				m_car_slide_tangent;
+	bool				m_car_slide_tangent_valid;
 	Fvector				m_car_slide_direction;
 	bool				m_car_slide_direction_valid;
 	u32					m_car_slide_direction_time;
