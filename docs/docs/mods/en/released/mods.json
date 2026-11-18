@@ -8,6 +8,22 @@
   },
   "mods": [
     {
+      "id": "demencia",
+      "title": "DEMENCIA",
+      "description": "A psychological horror story about a stalker whose dementia is progressing. Time starts 'lying': it shows strangers' faces, steals time, calls the hero by another name and asks questions with no right answer. The dementia counter rises from psi-emission, radiation, wounds and nights in the Zone, unlocking 4 stages with events, a VHS overlay, pills and a final choice.",
+      "author": "Joziesi, ScR1pt",
+      "link": "https://ap-pro.ru/forums/topic/15855-demencia-mod-na-demenciyu/",
+      "image": "https://i.postimg.cc/R05PPRvq/photo-2026-11-18-05-50-22.jpg"
+    },
+    {
+      "id": "lost-village",
+      "title": "S.T.A.L.K.E.R.: Lost Village",
+      "description": "Young stalker Emil heads for the heart of the Zone but ends up in an abandoned village cut off by an anomaly. There he talks to the locals, learns about strange phenomena and the 'Predel' laboratory, and must uncover the secret of the 'Kontur' installation to get out. A story-driven project; the main storyline takes about 30 minutes.",
+      "author": "Emilien220",
+      "link": "https://ap-pro.ru/forums/topic/15848-stalker-lost-village/",
+      "image": "https://i.ibb.co/HpMRtZCQ/Lost-Village-Ruins-in-the-Fog.png"
+    },
+    {
       "id": "deathsgame",
       "title": "Death Games",
       "description": "A group of stalkers has been tasked with eliminating a stalker nicknamed the Mathematician. He is known to be in the vicinity of the Agroprom Research Institute right now, so the group heads there.",
