@@ -130,6 +130,8 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_R2_SHADOW		2	// shadow generation
 #define		SE_R2_REFLECTIONS	3	// reflections generation
 #define		SE_R2_UI			4	// ui static generation
+// Element 5 is unused by BmmD terrain; the landscape flag distinguishes this pass from HUD elements.
+constexpr u32 SE_R2_TERRAIN_TINT = 5;
 
 #define		SE_R2_DETAIL_SHADOW_HQ 2	 // shadow generation (Wind)
 #define		SE_R2_DETAIL_SHADOW_LQ 3	 // shadow generation (Stil)

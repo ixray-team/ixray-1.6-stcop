@@ -1,4 +1,7 @@
 #include "common.hlsli"
+#ifdef USE_DETAIL_TERRAIN_TINT
+#include "grass_terrain_tint.hlsli"
+#endif
 
 #define dir2D wind
 #define dir2D_old wind_old
@@ -275,6 +278,9 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 #ifndef DETAIL_SHADOW_PASS
     float3 Pe = mul(m_WV, pos);
     
+#ifdef USE_DETAIL_TERRAIN_TINT
+    O.terrain_tint = GrassTerrainTintSample(det.pos, I.pos.y);
+#endif
     O.tcdh = float4(I.tc.xy, hemi, sun);
     O.position = float4(Pe, 1.0f);
     

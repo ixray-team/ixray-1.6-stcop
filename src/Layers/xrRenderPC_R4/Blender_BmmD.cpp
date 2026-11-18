@@ -71,6 +71,27 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	string256 mask;
 	xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
+	if (!C.bEditor && LightingModeIsDynamicRender() && C.iElement == SE_R2_TERRAIN_TINT)
+	{
+		RImplementation.clearAllShaderOptions();
+		RImplementation.addShaderOption("USE_LM_HEMI", "1");
+		DEV->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+		C.SH->flags.bLandscape = true;
+		C.r_Pass("grass_terrain_tint_capture", "grass_terrain_tint_capture", false, true, true);
+		C.r_CullMode(D3DCULL_NONE);
+		C.r_Stencil(false);
+		C.r_dx10Texture("s_base", C.L_textures[0]);
+		C.r_dx10Texture("s_mask", mask);
+		C.r_dx10Texture("s_dt_r", oR_Name);
+		C.r_dx10Texture("s_dt_g", oG_Name);
+		C.r_dx10Texture("s_dt_b", oB_Name);
+		C.r_dx10Texture("s_dt_a", oA_Name);
+		C.r_dx10Sampler("smp_base");
+		C.r_End();
+		RImplementation.clearAllShaderOptions();
+		return;
+	}
+
 	if (LightingModeIsStaticRender())
 	{
 
