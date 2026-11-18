@@ -99,6 +99,10 @@ private:
 	void OnChangePreview(PropValue* sender);
 	void OnChangeTexturePreview(PropValue* sender);
 	void OnChangeMaskProp(PropValue* sender);
+	void OnAddMaterialClick(ButtonValue* sender, bool& bModif, bool& bSafe);
+	void OnRemoveMaterialClick(ButtonValue* sender, bool& bModif, bool& bSafe);
+	void OnMaterialButtonsClick(ButtonValue* sender, bool& bModif, bool& bSafe);
+	void BuildMesh(CEditableObject* Obj);
 	void RebuildRoadMask();
 	void UpdateMaskPreview(int x0, int z0, int x1, int z1);
 	Fvector CellWorld(int x, int z);

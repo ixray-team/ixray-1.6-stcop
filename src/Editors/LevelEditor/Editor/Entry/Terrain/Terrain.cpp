@@ -5,7 +5,7 @@
 
 using XRay::Editor::HeightmapUtils::SHeightMap;
 using XRay::Editor::TerrainMask::SCellWeights;
-using XRay::Editor::TerrainMask::LAYER_COUNT;
+namespace TM = XRay::Editor::TerrainMask;
 
 enum class ETerrainChunkIDs
 {
@@ -30,12 +30,25 @@ void CTerrain::Construct(LPVOID data)
 	SurfaceShaderXRLC = "default";
 	SurfaceGameMtl = "materials\\earth";
 	SurfaceTexture = "terrain\\terrain_mp_atp";
+}
 
-	// Same defaults as the BmmD (terrain) blender details: R grass, G asphalt, B earth, A yantar
-	Mask.Layers[0].Texture = "detail\\detail_grnd_grass";
-	Mask.Layers[1].Texture = "detail\\detail_grnd_asphalt";
-	Mask.Layers[2].Texture = "detail\\detail_grnd_earth";
-	Mask.Layers[3].Texture = "detail\\detail_grnd_yantar";
+void CTerrain::BuildMesh(CEditableObject* Obj)
+{
+	// Faces get the material of their grid quad: one surface (shader + game material) per terrain material
+	Mask.EnsureDefaultMaterial(*SurfaceShader, *SurfaceGameMtl);
+	EnsureMask();
+
+	xr_vector<XRay::Editor::HeightmapUtils::STerrainSurfaceTemplate> Templates;
+	for (const TM::SMaterial& M : Mask.Materials)
+	{
+		XRay::Editor::HeightmapUtils::STerrainSurfaceTemplate T = {M.Shader.size() ? *M.Shader : *SurfaceShader, *SurfaceShaderXRLC, M.GameMtl.size() ? *M.GameMtl : *SurfaceGameMtl, *SurfaceTexture};
+		T.Name = M.Name.size() ? *M.Name : nullptr;
+		Templates.push_back(T);
+	}
+
+	xr_vector<u8> QuadMaterial;
+	Mask.BuildQuadMaterials(QuadMaterial);
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, Obj, ScaleY, Templates, QuadMaterial);
 }
 
 CTerrain::~CTerrain()
@@ -67,7 +80,7 @@ void CTerrain::OnUpdateTransform()
 void CTerrain::InitializeHeightmap(u32 w, u32 h, float fill)
 {
 	HMap.Create(w, h, fill);
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
+	BuildMesh(TerrainObject);
 	HMap.MarkDirty();
 	OnUpdateTransform();
 }
@@ -76,7 +89,7 @@ void CTerrain::RebuildMesh()
 {
 	CEditableObject* Old = TerrainObject;
 	TerrainObject = new CEditableObject(GetName());
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
+	BuildMesh(TerrainObject);
 
 	EContext.UI->CommandList[TUI::ECommandListID::NextFrame].push_back
 	(
@@ -131,7 +144,7 @@ void CTerrain::OnHeightmapChanged(int x0, int z0, int x1, int z1)
 	// Height / slope rules depend on the relief: refresh the touched area of the mask
 	if (HMap.PreviewMode == SHeightMap::pmColors && !Mask.Dirty && Mask.Width == HMap.Width && Mask.Height == HMap.Height)
 	{
-		Mask.RebuildFinal(HMap, _Transform(), float(ScaleY), x0 - 1, z0 - 1, x1 + 1, z1 + 1);
+		Mask.Rebuild(HMap, _Transform(), float(ScaleY), x0 - 1, z0 - 1, x1 + 1, z1 + 1);
 		UpdateMaskPreview(x0 - 1, z0 - 1, x1 + 1, z1 + 1);
 	}
 	else
@@ -196,11 +209,57 @@ void CTerrain::OnRoadsChanged()
 
 void CTerrain::OnChangeMaskProp(PropValue* sender)
 {
-	for (auto& L : Mask.Layers)
-	{
-		L.EnsureLoaded();
-	}
+	Mask.EnsureDetails();
 	Mask.Dirty = true;
+	if (IsPreview)
+	{
+		RebuildMesh();
+	}
+}
+
+void CTerrain::OnAddMaterialClick(ButtonValue* sender, bool& bModif, bool& bSafe)
+{
+	if (Mask.Materials.size() >= TM::MAX_MATERIALS)
+	{
+		return;
+	}
+
+	TM::SMaterial M;
+	M.Name = (xr_string("material_") + xr_string::ToString(u32(Mask.Materials.size()))).c_str();
+	M.Shader = SurfaceShader;
+	M.GameMtl = SurfaceGameMtl;
+	M.Channel = u32(Mask.Materials.size()) % TM::CHANNEL_COUNT;
+	Mask.Materials.push_back(M);
+	Mask.Dirty = true;
+	bModif = true;
+	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+}
+
+void CTerrain::OnRemoveMaterialClick(ButtonValue* sender, bool& bModif, bool& bSafe)
+{
+	if (Mask.Materials.size() <= 1)
+	{
+		return;
+	}
+
+	// Cells painted with the removed material fall back to the rules
+	const u8 Removed = u8(Mask.Materials.size() - 1);
+	for (u8& Id : Mask.PaintId)
+	{
+		if (Id == Removed)
+		{
+			Id = TM::NO_MATERIAL;
+		}
+	}
+	Mask.Materials.pop_back();
+	Mask.Dirty = true;
+	Mask.RoadsDirty = true;
+	bModif = true;
+	if (IsPreview)
+	{
+		RebuildMesh();
+	}
+	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 
 void CTerrain::EnsureMask()
@@ -211,10 +270,8 @@ void CTerrain::EnsureMask()
 	}
 
 	Mask.Resize(HMap.Width, HMap.Height);
-	for (auto& L : Mask.Layers)
-	{
-		L.EnsureLoaded();
-	}
+	Mask.EnsureDefaultMaterial(*SurfaceShader, *SurfaceGameMtl);
+	Mask.EnsureDetails();
 
 	HMap.OverlayColor = &Mask.SurfaceColor;
 	HMap.OverlayCoverage = &Mask.SurfaceCoverage;
@@ -228,15 +285,16 @@ void CTerrain::EnsureMask()
 
 	if (Mask.Dirty)
 	{
-		Mask.RebuildFinal(HMap, _Transform(), float(ScaleY));
+		Mask.Rebuild(HMap, _Transform(), float(ScaleY));
 		UpdateMaskPreview(0, 0, int(HMap.Width) - 1, int(HMap.Height) - 1);
 	}
 }
 
 void CTerrain::OnMaskPainted(int x0, int z0, int x1, int z1)
 {
-	Mask.RebuildFinal(HMap, _Transform(), float(ScaleY), x0, z0, x1, z1);
-	UpdateMaskPreview(x0, z0, x1, z1);
+	Mask.Rebuild(HMap, _Transform(), float(ScaleY), x0, z0, x1, z1);
+	const int R = int(Mask.BlendRadius) + 1;
+	UpdateMaskPreview(x0 - R, z0 - R, x1 + R, z1 + R);
 
 	// The surface texture preview shows the surface painting as an overlay
 	if (HMap.PreviewMode == SHeightMap::pmTexture)
@@ -287,21 +345,26 @@ void CTerrain::UpdateMaskPreview(int x0, int z0, int x1, int z1)
 
 void CTerrain::RebuildRoadMask()
 {
-	std::fill(Mask.RoadLayer.begin(), Mask.RoadLayer.end(), u8(255));
-	std::fill(Mask.RoadWeight.begin(), Mask.RoadWeight.end(), u8(0));
-	std::fill(Mask.ShoulderLayer.begin(), Mask.ShoulderLayer.end(), u8(255));
-	std::fill(Mask.ShoulderWeight.begin(), Mask.ShoulderWeight.end(), u8(0));
+	std::fill(Mask.RoadId.begin(), Mask.RoadId.end(), TM::NO_MATERIAL);
 
+	// Road surface beats shoulders when roads overlap
+	xr_vector<u8> Kind(Mask.RoadId.size(), 0); // 0 none, 1 shoulder, 2 road
 	const Fmatrix& IM = _ITransform();
 
-	auto Smooth = [](float E0, float E1, float X)
+	auto FindMaterial = [&](const shared_str& Name) -> u8
 	{
-		if (E1 <= E0)
+		if (!Name.size())
 		{
-			return X >= E1 ? 1.f : 0.f;
+			return TM::NO_MATERIAL;
 		}
-		const float T = clampr((X - E0) / (E1 - E0), 0.f, 1.f);
-		return T * T * (3.f - 2.f * T);
+		for (size_t i = 0; i < Mask.Materials.size(); ++i)
+		{
+			if (Mask.Materials[i].Name.size() && !xr_stricmp(*Mask.Materials[i].Name, *Name))
+			{
+				return u8(i);
+			}
+		}
+		return TM::NO_MATERIAL;
 	};
 
 	auto GridRect = [&](const Fvector& A, const Fvector& B, float Expand, int& X0, int& Z0, int& X1, int& Z1)
@@ -338,10 +401,14 @@ void CTerrain::RebuildRoadMask()
 			continue;
 		}
 
-		const bool HasRoad = Road->MaskRoadLayer < LAYER_COUNT;
-		const bool HasShoulder = Road->MaskShoulderLayer < LAYER_COUNT && Road->ShoulderWidth > 0.01f;
-		if (!HasRoad && !HasShoulder)
+		const u8 RoadMat = FindMaterial(Road->MaskRoadMaterial);
+		const u8 ShoulderMat = (Road->ShoulderWidth > 0.01f) ? FindMaterial(Road->MaskShoulderMaterial) : TM::NO_MATERIAL;
+		if (RoadMat == TM::NO_MATERIAL && ShoulderMat == TM::NO_MATERIAL)
 		{
+			if (Road->MaskRoadMaterial.size() || Road->MaskShoulderMaterial.size())
+			{
+				Msg("! Road [%s]: terrain [%s] has no material [%s] / [%s]", Road->GetName(), GetName(), Road->MaskRoadMaterial.size() ? *Road->MaskRoadMaterial : "", Road->MaskShoulderMaterial.size() ? *Road->MaskShoulderMaterial : "");
+			}
 			continue;
 		}
 
@@ -355,8 +422,7 @@ void CTerrain::RebuildRoadMask()
 			RM.transform_tiny(Pos[i], Samples[i].Pos);
 		}
 
-		const float HalfBlend = std::max(Road->MaskBlend, 0.f) * 0.5f;
-		const float Shoulder = HasShoulder ? Road->ShoulderWidth : 0.f;
+		const float Shoulder = (ShoulderMat != TM::NO_MATERIAL) ? Road->ShoulderWidth : 0.f;
 
 		for (size_t s = 0; s + 1 < Samples.size(); ++s)
 		{
@@ -366,7 +432,7 @@ void CTerrain::RebuildRoadMask()
 			const float HwB = Samples[s + 1].Width * 0.5f;
 
 			int X0, Z0, X1, Z1;
-			GridRect(A, B, std::max(HwA, HwB) + Shoulder + HalfBlend + 1.f, X0, Z0, X1, Z1);
+			GridRect(A, B, std::max(HwA, HwB) + Shoulder + 1.f, X0, Z0, X1, Z1);
 
 			const float Dx = B.x - A.x;
 			const float Dz = B.z - A.z;
@@ -388,26 +454,15 @@ void CTerrain::RebuildRoadMask()
 					const float Hw = HwA + (HwB - HwA) * T;
 					const size_t Idx = size_t(z) * HMap.Width + x;
 
-					if (HasRoad)
+					if (RoadMat != TM::NO_MATERIAL && D <= Hw && Kind[Idx] < 2)
 					{
-						const float Wr = 1.f - Smooth(Hw - HalfBlend, Hw + HalfBlend, D);
-						const u8 V = u8(iFloor(Wr * 255.f + 0.5f));
-						if (V > Mask.RoadWeight[Idx])
-						{
-							Mask.RoadWeight[Idx] = V;
-							Mask.RoadLayer[Idx] = u8(Road->MaskRoadLayer);
-						}
+						Kind[Idx] = 2;
+						Mask.RoadId[Idx] = RoadMat;
 					}
-
-					if (HasShoulder)
+					else if (ShoulderMat != TM::NO_MATERIAL && D <= Hw + Shoulder && Kind[Idx] < 1)
 					{
-						const float Ws = 1.f - Smooth(Hw + Shoulder - HalfBlend, Hw + Shoulder + HalfBlend, D);
-						const u8 V = u8(iFloor(Ws * 255.f + 0.5f));
-						if (V > Mask.ShoulderWeight[Idx])
-						{
-							Mask.ShoulderWeight[Idx] = V;
-							Mask.ShoulderLayer[Idx] = u8(Road->MaskShoulderLayer);
-						}
+						Kind[Idx] = 1;
+						Mask.RoadId[Idx] = ShoulderMat;
 					}
 				}
 			}
@@ -463,23 +518,15 @@ bool CTerrain::BakeMask(u32 Size, xr_string& OutColor, xr_string& OutMask)
 			XRay::Editor::TerrainMask::PackWeights(C, Packed);
 			MaskImg.SetPixel(RedImageTool::RedColor(Packed[0] / 255.f, Packed[1] / 255.f, Packed[2] / 255.f, Packed[3] / 255.f), px, py);
 
-			// Color map: layer average colors (the details add the high frequencies in game)
-			float R = 0, G = 0, B = 0;
-			for (u32 i = 0; i < LAYER_COUNT; ++i)
-			{
-				const u32 Avg = Mask.Layers[i].AvgColor;
-				R += color_get_R(Avg) * C.W[i];
-				G += color_get_G(Avg) * C.W[i];
-				B += color_get_B(Avg) * C.W[i];
-			}
-			const u32 LayerColor = color_rgba(u32(clampr(R, 0.f, 255.f)), u32(clampr(G, 0.f, 255.f)), u32(clampr(B, 0.f, 255.f)), 255);
+			// Color map: average colors of the cell's shader details (the details add the high frequencies in game)
+			const u32 LayerColor = Mask.BaseColor(u32(iFloor(Gx + 0.5f)), u32(iFloor(Gz + 0.5f)));
 			float SurfaceCov;
 			const u32 Final = Mask.SampleSurface(Gx, Gz, LayerColor, SurfaceCov);
 			ColorImg.SetPixel(RedImageTool::RedColor(color_get_R(Final) / 255.f, color_get_G(Final) / 255.f, color_get_B(Final) / 255.f, 1.f), px, py);
 		}
 	}
 
-	// Write the sources straight into the texture library (rawdata	extures)
+	// Write the sources straight into the texture library (rawdata\textures)
 	const xr_string ColorName = MaskBaseName();
 	const xr_string MaskName = ColorName + "_mask";
 	string_path ColorPath, MaskPath;
@@ -526,9 +573,8 @@ bool CTerrain::BakeMask(u32 Size, xr_string& OutColor, xr_string& OutMask)
 	MakeTexture(ColorName, ColorPath, false);
 	MakeTexture(MaskName, MaskPath, true);
 
-	// Use the baked color map as the terrain surface: the mesh shader picks <texture>_mask by itself
+	// Use the baked color map as the terrain surface: the mesh shaders pick <texture>_mask by themselves
 	SurfaceTexture = ColorName.c_str();
-	ApplySurfaceTemplate();
 	RebuildMesh();
 	ReloadPreviewTexture();
 
@@ -658,7 +704,7 @@ bool CTerrain::LoadStream(IReader& F)
 	}
 	else
 	{
-		XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY, SurfaceTemplate());
+		BuildMesh(TerrainObject);
 		OnUpdateTransform();
 	}
 
@@ -801,39 +847,82 @@ void CTerrain::FillProp(const char* pref, PropItemVec& items)
 	PropValue* TexPreviewVal = PHelper().CreateToken(items, "Height Map\\Preview Mode", (u8*)&HMap.PreviewMode, PreviewModeTokens);
 	TexPreviewVal->OnChangeEvent.bind(this, &CTerrain::OnChangeTexturePreview);
 
-	// Material mask layers (R, G, B, A of <texture>_mask)
-	static const char* LayerNames[LAYER_COUNT] = {"Layer R (base)", "Layer G", "Layer B", "Layer A"};
-	for (u32 i = 0; i < LAYER_COUNT; ++i)
+	// Terrain materials: every grid quad gets one; the mask selects the rendered channel of its shader
 	{
-		auto& L = Mask.Layers[i];
-		const xr_string Key = xr_string("Material Mask\\") + LayerNames[i];
 		PropValue* V;
-		V = PHelper().CreateChoose(items, PrepareKey(Key.c_str(), "Texture"), &L.Texture, smTexture);
+		V = PHelper().CreateNumeric(items, "Material Mask\\Blend Radius (cells)", &Mask.BlendRadius, 0u, 16u);
 		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Tile Size"), &L.TileSize, 0.1f, 200.f, 0.5f, 2);
+		V = PHelper().CreateBool(items, "Material Mask\\Show Seams", &Mask.ShowSeams);
 		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		if (i == 0)
+
+		ButtonValue* B = PHelper().CreateButton(items, "Material Mask\\Materials\\Edit", "Add,Remove Last", 0);
+		B->OnBtnClickEvent.bind(this, &CTerrain::OnMaterialButtonsClick);
+
+		static xr_token ChannelTokens[] =
 		{
-			continue; // The base layer fills what the other layers leave
+			{"R", 0},
+			{"G", 1},
+			{"B", 2},
+			{"A", 3},
+			{nullptr, 0},
+		};
+		static const char* ChannelNames[TM::CHANNEL_COUNT] = {"R2-R", "R2-G", "R2-B", "R2-A"};
+
+		for (size_t i = 0; i < Mask.Materials.size(); ++i)
+		{
+			TM::SMaterial& M = Mask.Materials[i];
+			M.EnsureDetails();
+
+			string16 Index;
+			xr_sprintf(Index, "%02u", u32(i));
+			const xr_string Key = xr_string("Material Mask\\Materials\\") + Index + (i == 0 ? " (base)" : "");
+
+			V = PHelper().CreateRText(items, PrepareKey(Key.c_str(), "Name"), &M.Name);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateChoose(items, PrepareKey(Key.c_str(), "Shader"), &M.Shader, smEShader);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateChoose(items, PrepareKey(Key.c_str(), "Game Mtl"), &M.GameMtl, smGameMaterial);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateToken(items, PrepareKey(Key.c_str(), "Render Channel"), &M.Channel, ChannelTokens);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Preview Tile Size"), &M.TileSize, 0.1f, 200.f, 0.5f, 2);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+
+			// Details read from the shader (Shader Editor owns them)
+			for (u32 c = 0; c < TM::CHANNEL_COUNT; ++c)
+			{
+				const char* Tex = M.DetailsValid ? (M.Details[c].Texture.size() ? *M.Details[c].Texture : "-") : "(not a BmmD shader)";
+				xr_string Text = Tex;
+				if (c == M.Channel)
+				{
+					Text += "  <- rendered";
+				}
+				PHelper().CreateCaption(items, PrepareKey(Key.c_str(), "Shader Details", ChannelNames[c]), Text.c_str());
+			}
+
+			if (i == 0)
+			{
+				continue; // The base material fills what the others leave
+			}
+			V = PHelper().CreateBool(items, PrepareKey(Key.c_str(), "Auto\\Enabled"), &M.AutoEnabled);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Height Min"), &M.HeightMin, -10000.f, 10000.f, 0.5f, 2);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Height Max"), &M.HeightMax, -10000.f, 10000.f, 0.5f, 2);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Height Blend"), &M.HeightBlend, 0.f, 100.f, 0.1f, 2);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Slope Min (deg)"), &M.SlopeMin, 0.f, 90.f, 0.5f, 1);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Slope Max (deg)"), &M.SlopeMax, 0.f, 90.f, 0.5f, 1);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Slope Blend (deg)"), &M.SlopeBlend, 0.f, 45.f, 0.5f, 1);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Noise"), &M.Noise, 0.f, 1.f, 0.01f, 2);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
+			V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Noise Size"), &M.NoiseScale, 0.5f, 500.f, 0.5f, 1);
+			V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
 		}
-		V = PHelper().CreateBool(items, PrepareKey(Key.c_str(), "Auto\\Enabled"), &L.AutoEnabled);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Height Min"), &L.HeightMin, -10000.f, 10000.f, 0.5f, 2);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Height Max"), &L.HeightMax, -10000.f, 10000.f, 0.5f, 2);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Height Blend"), &L.HeightBlend, 0.f, 100.f, 0.1f, 2);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Slope Min (deg)"), &L.SlopeMin, 0.f, 90.f, 0.5f, 1);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Slope Max (deg)"), &L.SlopeMax, 0.f, 90.f, 0.5f, 1);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Slope Blend (deg)"), &L.SlopeBlend, 0.f, 45.f, 0.5f, 1);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Noise"), &L.Noise, 0.f, 1.f, 0.01f, 2);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
-		V = PHelper().CreateFloat(items, PrepareKey(Key.c_str(), "Auto\\Noise Size"), &L.NoiseScale, 0.5f, 500.f, 0.5f, 1);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeMaskProp);
 	}
 
 	PropValue* PreviewVal = PHelper().CreateBool(items, "Height Map\\Preview", &IsPreview);
@@ -848,18 +937,27 @@ void CTerrain::FillProp(const char* pref, PropItemVec& items)
 		PropValue* V;
 		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &SurfaceTexture, smTexture);
 		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
-		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &SurfaceShader, smEShader);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
 		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &SurfaceShaderXRLC, smCShader);
-		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
-		V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &SurfaceGameMtl, smGameMaterial);
 		V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurfaceProp);
 	}
 }
 
 void CTerrain::OnChangeSurfaceProp(PropValue* sender)
 {
-	ApplySurfaceTemplate();
+	// Texture / compile shader are shared by all material surfaces
+	RebuildMesh();
+}
+
+void CTerrain::OnMaterialButtonsClick(ButtonValue* sender, bool& bModif, bool& bSafe)
+{
+	if (sender->btn_num == 0)
+	{
+		OnAddMaterialClick(sender, bModif, bSafe);
+	}
+	else
+	{
+		OnRemoveMaterialClick(sender, bModif, bSafe);
+	}
 }
 
 void CTerrain::ApplySurfaceTemplate()

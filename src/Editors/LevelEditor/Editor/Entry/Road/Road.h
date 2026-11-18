@@ -32,10 +32,9 @@ public:
 	float ConformFalloff = 6.f;    // Terrain blend distance beyond the shoulders
 	bool FollowTerrain = true;     // Drape vertices over the terrain instead of the spline height
 
-	// Terrain mask: channel the road / shoulders write into (0..3 = R, G, B, A; 4 = none)
-	u32 MaskRoadLayer = 1;
-	u32 MaskShoulderLayer = 2;
-	float MaskBlend = 1.f;         // Soft edge width (m)
+	// Terrain materials (by name) the road surface / shoulders assign to the terrain under them; empty = none
+	shared_str MaskRoadMaterial = "road";
+	shared_str MaskShoulderMaterial = "shoulder";
 
 	SSurface RoadSurface;
 	SSurface ShoulderSurface;

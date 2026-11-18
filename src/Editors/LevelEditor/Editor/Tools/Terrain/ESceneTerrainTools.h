@@ -39,7 +39,7 @@ public:
 	bool				m_BrushInvert;		// Invert the brush (same as holding Ctrl)
 	bool				m_FlattenPickOnStroke; // Take flatten target from the stroke start point
 	float				m_FlattenTarget;	// Normalized target height for Flatten / hole restore
-	u32					m_PaintLayer;		// Material mask channel painted by bmPaint (0..3 = R, G, B, A)
+	u32					m_PaintLayer;		// Terrain material painted by bmPaint (index in the terrain material list)
 	bool				m_PaintMask;		// bmPaint writes the mask channel
 	bool				m_PaintSurface;		// bmPaint writes the surface (color map)
 	int					m_SurfaceSource;	// 0 = paint layer texture (tiled), 1 = solid color

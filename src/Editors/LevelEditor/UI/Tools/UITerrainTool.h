@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Editor/Terrain/TerrainMask.h"
 class ESceneTerrainTool;
 class UITerrainTool : public UIToolCustom
 {
@@ -15,4 +16,6 @@ private:
 	int		m_SmoothPasses;
 	int		m_ResizeRes;
 	int		m_BakeSize;
+	bool	m_SeamsChecked = false;
+	xr_vector<XRay::Editor::TerrainMask::SSeam> m_Seams;
 };

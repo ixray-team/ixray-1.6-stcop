@@ -797,9 +797,12 @@ void CRoad::SaveStream(IWriter& F)
 	F.w_float(RoadTileWidth);
 	F.w_float(ShoulderUVLength);
 	F.w_float(ShoulderTileWidth);
-	F.w_u32(MaskRoadLayer);
-	F.w_u32(MaskShoulderLayer);
-	F.w_float(MaskBlend);
+	// Old channel fields are kept as a marker, the material names follow
+	F.w_u32(0xFFFFFFFF);
+	F.w_u32(0);
+	F.w_float(0.f);
+	F.w_stringZ(MaskRoadMaterial.size() ? *MaskRoadMaterial : "");
+	F.w_stringZ(MaskShoulderMaterial.size() ? *MaskShoulderMaterial : "");
 	F.close_chunk();
 
 	F.open_chunk(u32(ERoadChunkIDs::Surfaces));
@@ -846,9 +849,17 @@ bool CRoad::LoadStream(IReader& F)
 		}
 		if (!Chunk->eof())
 		{
-			MaskRoadLayer = Chunk->r_u32();
-			MaskShoulderLayer = Chunk->r_u32();
-			MaskBlend = Chunk->r_float();
+			const u32 Marker = Chunk->r_u32();
+			Chunk->r_u32();
+			Chunk->r_float();
+			if (Marker == 0xFFFFFFFF && !Chunk->eof())
+			{
+				shared_str Str;
+				Chunk->r_stringZ(Str);
+				MaskRoadMaterial = Str;
+				Chunk->r_stringZ(Str);
+				MaskShoulderMaterial = Str;
+			}
 		}
 		Chunk->close();
 	}
@@ -1013,20 +1024,10 @@ void CRoad::FillProp(const char* pref, PropItemVec& items)
 	V = PHelper().CreateFloat(items, PrepareKey(pref, "Road\\Tiling\\Shoulder Tile Width (0 = stretch)"), &ShoulderTileWidth, 0.f, 200.f, 0.5f, 2);
 	V->OnChangeEvent.bind(this, &CRoad::OnChangeMeshProp);
 
-	static xr_token MaskLayerTokens[] =
-	{
-		{"R", 0},
-		{"G", 1},
-		{"B", 2},
-		{"A", 3},
-		{"None", 4},
-		{nullptr, 0},
-	};
-	V = PHelper().CreateToken(items, PrepareKey(pref, "Road\\Terrain Mask\\Road Layer"), &MaskRoadLayer, MaskLayerTokens);
+	// Names of terrain materials (Terrain Properties > Material Mask > Materials)
+	V = PHelper().CreateRText(items, PrepareKey(pref, "Road\\Terrain Mask\\Road Material"), &MaskRoadMaterial);
 	V->OnChangeEvent.bind(this, &CRoad::OnChangeMeshProp);
-	V = PHelper().CreateToken(items, PrepareKey(pref, "Road\\Terrain Mask\\Shoulder Layer"), &MaskShoulderLayer, MaskLayerTokens);
-	V->OnChangeEvent.bind(this, &CRoad::OnChangeMeshProp);
-	V = PHelper().CreateFloat(items, PrepareKey(pref, "Road\\Terrain Mask\\Edge Blend"), &MaskBlend, 0.f, 20.f, 0.1f, 2);
+	V = PHelper().CreateRText(items, PrepareKey(pref, "Road\\Terrain Mask\\Shoulder Material"), &MaskShoulderMaterial);
 	V->OnChangeEvent.bind(this, &CRoad::OnChangeMeshProp);
 
 	auto AddSurface = [&](const char* Key, SSurface& S)

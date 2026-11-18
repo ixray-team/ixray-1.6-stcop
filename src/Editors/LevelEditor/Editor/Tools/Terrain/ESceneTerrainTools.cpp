@@ -108,7 +108,7 @@ ESceneTerrainTool::ESceneTerrainTool() :
 	m_BrushInvert = false;
 	m_FlattenPickOnStroke = true;
 	m_FlattenTarget = 0.5f;
-	m_PaintLayer = 1;
+	m_PaintLayer = 0;
 	m_PaintMask = true;
 	m_PaintSurface = true;
 	m_SurfaceSource = 0;
@@ -446,8 +446,16 @@ void ESceneTerrainTool::SculptTerrain(CTerrain* obj, const Fvector& worldPoint, 
 			obj->EnsureMask();
 		}
 
+		if (Mask.Materials.empty())
+		{
+			return;
+		}
+
 		const float PaintBlend = clampr(m_BrushStrength * 10.f, 0.f, 1.f);
-		const auto& Layer = Mask.Layers[std::min(m_PaintLayer, XRay::Editor::TerrainMask::LAYER_COUNT - 1)];
+		const u32 MatIndex = std::min(m_PaintLayer, u32(Mask.Materials.size() - 1));
+		auto& Material = Mask.Materials[MatIndex];
+		Material.EnsureDetails();
+		const auto& Detail = Material.Details[std::min(Material.Channel, XRay::Editor::TerrainMask::CHANNEL_COUNT - 1)];
 		const u32 SolidColor = m_SurfaceColor.get();
 		for (int z = MinZ; z <= MaxZ; ++z)
 		{
@@ -461,9 +469,10 @@ void ESceneTerrainTool::SculptTerrain(CTerrain* obj, const Fvector& worldPoint, 
 					continue;
 				}
 
-				if (m_PaintMask)
+				// Materials are discrete per cell: the brush core assigns them, the mask blur makes the transition
+				if (m_PaintMask && Falloff >= 0.5f)
 				{
-					Mask.PaintCell(u32(x), u32(z), m_PaintLayer, PaintBlend * Falloff, invert);
+					Mask.PaintCell(u32(x), u32(z), u8(MatIndex), invert);
 				}
 
 				if (m_PaintSurface)
@@ -471,9 +480,9 @@ void ESceneTerrainTool::SculptTerrain(CTerrain* obj, const Fvector& worldPoint, 
 					u32 Color = SolidColor;
 					if (m_SurfaceSource == 0)
 					{
-						// The layer texture, tiled in world space like in game
+						// The material's rendered detail, tiled in world space like in game
 						const Fvector W = obj->CellWorld(x, z);
-						Color = Layer.SampleTiled(W.x, W.z);
+						Color = Detail.SampleTiled(W.x, W.z, Material.TileSize);
 					}
 					Mask.PaintSurfaceCell(u32(x), u32(z), Color, PaintBlend * Falloff, invert);
 				}

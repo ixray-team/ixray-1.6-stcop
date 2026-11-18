@@ -133,56 +133,56 @@ void UITerrainTool::Draw()
 			if (tool->m_BrushMode == ESceneTerrainTool::bmPaint)
 			{
 				ImGui::Spacing();
-				ImGui::TextDisabled("Paint layer:");
-				const float LayerW = (ImGui::GetContentRegionAvail().x - ItemSpacingX * 3) / 4;
-				for (u32 i = 0; i < XRay::Editor::TerrainMask::LAYER_COUNT; ++i)
+				ImGui::TextDisabled("Paint material:");
+				if (!Active)
 				{
-					const char* TexName = "-";
-					u32 Avg = 0xFF808080;
-					if (Active)
+					ImGui::TextDisabled("Select a terrain object");
+				}
+				else
+				{
+					auto& Mats = Active->GetMask().Materials;
+					if (Mats.empty())
 					{
-						auto& L = Active->GetMask().Layers[i];
-						L.EnsureLoaded();
-						Avg = L.AvgColor;
-						if (L.Texture.size())
+						Active->EnsureMask();
+					}
+					const float MatW = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
+					for (u32 i = 0; i < u32(Mats.size()); ++i)
+					{
+						auto& M = Mats[i];
+						M.EnsureDetails();
+						const u32 Ch = std::min(M.Channel, XRay::Editor::TerrainMask::CHANNEL_COUNT - 1);
+						const u32 Avg = M.Details[Ch].AvgColor;
+
+						xr_string Label = xr_string(g_LayerChannel[Ch]) + ": " + (M.Name.size() ? *M.Name : "?");
+						ImGui::PushID(int(i));
+						bool Sel = (tool->m_PaintLayer == i);
+						ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(color_get_R(Avg) / 255.f, color_get_G(Avg) / 255.f, color_get_B(Avg) / 255.f, 1.f));
+						ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
+						if (XRay::ImGui::ToggleButton(Label.c_str(), &Sel, {MatW, 0}))
 						{
-							const char* Slash = strrchr(*L.Texture, '\\');
-							TexName = Slash ? Slash + 1 : *L.Texture;
+							tool->m_PaintLayer = i;
+						}
+						ImGui::PopStyleVar();
+						ImGui::PopStyleColor();
+						xr_string Tip = xr_string("Shader: ") + (M.Shader.size() ? *M.Shader : "-") + "\nGame Mtl: " + (M.GameMtl.size() ? *M.GameMtl : "-") + "\nRendered detail: " + (M.Details[Ch].Texture.size() ? *M.Details[Ch].Texture : "?");
+						Hint(Tip.c_str());
+						ImGui::PopID();
+						if (i % 2 == 0 && i + 1 < u32(Mats.size()))
+						{
+							ImGui::SameLine(0, ItemSpacingX);
 						}
 					}
-
-					ImGui::PushID(int(i));
-					bool Sel = (tool->m_PaintLayer == i);
-					ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(color_get_R(Avg) / 255.f, color_get_G(Avg) / 255.f, color_get_B(Avg) / 255.f, 1.f));
-					ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
-					if (XRay::ImGui::ToggleButton(g_LayerChannel[i], &Sel, {LayerW, 0}))
-					{
-						tool->m_PaintLayer = i;
-					}
-					ImGui::PopStyleVar();
-					ImGui::PopStyleColor();
-					Hint(TexName);
-					ImGui::PopID();
-					if (i + 1 < XRay::Editor::TerrainMask::LAYER_COUNT)
-					{
-						ImGui::SameLine(0, ItemSpacingX);
-					}
 				}
-
-				if (Active)
-				{
-					const auto& L = Active->GetMask().Layers[tool->m_PaintLayer];
-					ImGui::TextDisabled("%s", L.Texture.size() ? *L.Texture : "(no texture)");
-				}
+				ImGui::TextDisabled("Materials: Properties > Material Mask > Materials");
 				ImGui::Checkbox("Mask", &tool->m_PaintMask);
-				Hint("Write the layer into the mask channel (in-game detail texture)");
+				Hint("Assign the material to the terrain (shader + game material + mask channel)");
 				ImGui::SameLine();
 				ImGui::Checkbox("Surface", &tool->m_PaintSurface);
 				Hint("Paint the surface (color map) as well");
 
 				if (tool->m_PaintSurface)
 				{
-					static const char* SourceNames[] = {"Layer texture", "Solid color"};
+					static const char* SourceNames[] = {"Material detail", "Solid color"};
 					ImGui::SetNextItemWidth(-0.01f);
 					ImGui::Combo("##SurfaceSource", &tool->m_SurfaceSource, SourceNames, 2);
 					Hint("What goes into the surface:\nLayer texture - the paint layer texture tiled in world space\nSolid color - the color below");
@@ -275,9 +275,9 @@ void UITerrainTool::Draw()
 				if (XRay::ImGui::Button("Reload Textures", {-0.01f, 0}))
 				{
 					Active->ReloadPreviewTexture();
-					for (auto& L : Active->GetMask().Layers)
+					for (auto& M : Active->GetMask().Materials)
 					{
-						L.Reload();
+						M.ReloadDetails();
 					}
 					Active->MarkMaskDirty();
 				}
@@ -398,8 +398,33 @@ void UITerrainTool::Draw()
 
 				const xr_string Base = Active->MaskBaseName();
 				ImGui::TextDisabled("%s + %s_mask", Base.c_str(), Base.c_str());
-				ImGui::TextDisabled("Rules and layer textures: Properties > Material Mask");
-				ImGui::TextDisabled("Road layers: road Properties > Terrain Mask");
+				XRay::ImGui::Separator();
+				if (XRay::ImGui::Button("Check Seams", {-0.01f, 0}))
+				{
+					Active->EnsureMask();
+					Active->GetMask().CollectSeams(m_Seams);
+					m_SeamsChecked = true;
+				}
+				Hint("Touching materials must share transition details:\nA.shader[B.channel] == B.shader[B.channel] and vice versa.\nIncompatible borders are red in the Material Mask preview.");
+				if (m_SeamsChecked)
+				{
+					auto& Mats = Active->GetMask().Materials;
+					if (m_Seams.empty())
+					{
+						ImGui::TextDisabled("No seams");
+					}
+					for (const auto& Seam : m_Seams)
+					{
+						if (Seam.A >= Mats.size() || Seam.B >= Mats.size())
+						{
+							continue;
+						}
+						ImGui::TextColored(ImVec4(1.f, 0.45f, 0.4f, 1.f), "%s - %s: %u edges", *Mats[Seam.A].Name, *Mats[Seam.B].Name, Seam.Count);
+						ImGui::TextWrapped("  %s", Seam.Why.c_str());
+					}
+				}
+				ImGui::TextDisabled("Rules and materials: Properties > Material Mask");
+				ImGui::TextDisabled("Road materials: road Properties > Terrain Mask");
 			}
 
 			XRay::ImGui::EndExpand();

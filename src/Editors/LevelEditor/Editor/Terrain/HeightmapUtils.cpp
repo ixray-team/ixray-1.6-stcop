@@ -4,6 +4,18 @@
 
 void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY, const STerrainSurfaceTemplate& Template)
 {
+	GenerateMeshByHeightmap(Heightmap, OutMesh, ScaleY, xr_vector<STerrainSurfaceTemplate>{Template}, xr_vector<u8>{});
+}
+
+void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY,
+	const xr_vector<STerrainSurfaceTemplate>& Materials, const xr_vector<u8>& QuadMaterial)
+{
+	if (Materials.empty())
+	{
+		Msg("! Terrain mesh: no materials");
+		return;
+	}
+	const STerrainSurfaceTemplate& Template = Materials.front();
 	if (!Heightmap.IsValid() || !OutMesh)
 	{
 		Msg("! Invalid heightmap data or output mesh");
@@ -52,6 +64,8 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	const u32 QuadsX = Width - 1;
 	const u32 QuadsZ = Height - 1;
 	Faces.resize(QuadsX * QuadsZ * 2); // Резервируем с запасом
+	xr_vector<u8> FaceMaterial(Faces.size(), 0);
+	const bool HasQuadMaterial = QuadMaterial.size() == size_t(QuadsX) * QuadsZ;
 
 	// Тот же вертикальный центр, что и в отрисовке высотной карты:
 	// середина номинального диапазона [0,1], а не текущий min/max,
@@ -92,6 +106,13 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 			Face2.pv[1].pindex = V3;
 			Face2.pv[2].pindex = V2;
 			Faces[faceIndex + 1] = Face2;
+
+			u8 Mat = HasQuadMaterial ? QuadMaterial[size_t(z) * QuadsX + x] : 0;
+			if (Mat >= Materials.size())
+			{
+				Mat = 0;
+			}
+			FaceMaterial[faceIndex] = FaceMaterial[faceIndex + 1] = Mat;
 		} });
 
 	Faces.resize(faceCounter);
@@ -142,39 +163,69 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 		}
 	}
 
-	CSurface* Surface = Mesh->GetSurfaceByFaceID(0);
+	// Surface properties are owned by the CTerrain object and supplied via the templates, never hardcoded here.
+	auto Apply = [](CSurface* Surface, const char* Name, const STerrainSurfaceTemplate& T)
+	{
+		Surface->SetName(Name);
+		if (T.Shader && T.Shader[0])
+		{
+			Surface->SetShader(T.Shader);
+		}
+		if (T.ShaderXRLC && T.ShaderXRLC[0])
+		{
+			Surface->SetShaderXRLC(T.ShaderXRLC);
+		}
+		if (T.GameMtl && T.GameMtl[0])
+		{
+			Surface->SetGameMtl(T.GameMtl);
+		}
+		if (T.Texture && T.Texture[0])
+		{
+			Surface->SetTexture(T.Texture);
+		}
+		Surface->m_VMap = ("Texture");
+		Surface->m_dwFVF = (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
+		Surface->OnDeviceCreate();
+	};
 
-	// Surface properties are owned by the CTerrain object and supplied via
-	// the template — never hardcoded here.
-	Surface->SetName("terrain");
-	if (Template.Shader && Template.Shader[0])
-	{
-		Surface->SetShader(Template.Shader);
-	}
-	if (Template.ShaderXRLC && Template.ShaderXRLC[0])
-	{
-		Surface->SetShaderXRLC(Template.ShaderXRLC);
-	}
-	if (Template.GameMtl && Template.GameMtl[0])
-	{
-		Surface->SetGameMtl(Template.GameMtl);
-	}
-	if (Template.Texture && Template.Texture[0])
-	{
-		Surface->SetTexture(Template.Texture);
-	}
-	Surface->m_VMap = ("Texture");
-
-	Surface->m_dwFVF = (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
-	Surface->OnDeviceCreate();
-
-	IntVec FaceIndices(Faces.size());
+	// Faces grouped by material (lists sorted ascending, as GetSurfaceByFaceID expects)
+	xr_vector<IntVec> Groups(Materials.size());
 	for (u32 i = 0; i < Faces.size(); ++i)
 	{
-		FaceIndices[i] = i;
+		Groups[FaceMaterial[i]].push_back(int(i));
 	}
 
-	Mesh->m_SurfFaces[Surface] = FaceIndices;
+	// Create() made a default surface for all faces: reuse it for the first used material
+	CSurface* DefaultSurface = Mesh->m_SurfFaces.begin()->first;
+	Mesh->m_SurfFaces.clear();
+	bool DefaultUsed = false;
+
+	for (size_t m = 0; m < Materials.size(); ++m)
+	{
+		if (Groups[m].empty())
+		{
+			continue;
+		}
+
+		CSurface* Surface = DefaultSurface;
+		if (DefaultUsed)
+		{
+			Surface = new CSurface();
+			Surface->SetSharedData(nullptr);
+			OutMesh->m_Surfaces.push_back(Surface);
+		}
+		DefaultUsed = true;
+
+		const xr_string Name = (Materials[m].Name && Materials[m].Name[0]) ? xr_string(Materials[m].Name) : (xr_string("terrain_") + xr_string::ToString(u32(m)));
+		Apply(Surface, Name.c_str(), Materials[m]);
+		Mesh->m_SurfFaces[Surface] = std::move(Groups[m]);
+	}
+
+	if (!DefaultUsed)
+	{
+		Apply(DefaultSurface, "terrain", Template);
+		Mesh->m_SurfFaces[DefaultSurface] = IntVec();
+	}
 
 	Mesh->GenerateFNormals();
 	Mesh->GenerateVNormals(nullptr, true);
