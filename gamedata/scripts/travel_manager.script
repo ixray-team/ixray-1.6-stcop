@@ -128,7 +128,7 @@ function uni_traveler_precond(actor, npc)
 	
 	local squad = get_object_squad(npc)
 
-	if squad ~= nil and squad:commander_id() ~= npc:id() then
+	if squad == nil or squad:commander_id() ~= npc:id() then
 		return false
 	end
 
