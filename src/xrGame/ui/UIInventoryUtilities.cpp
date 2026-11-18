@@ -274,15 +274,15 @@ const shared_str InventoryUtilities::GetGameTimeAsString(ETimePrecision timePrec
 const shared_str InventoryUtilities::GetTimeAndDateAsString(ALife::_TIME_ID time, bool legacyMode)
 {
 	string256 buf;
-	const char* time_str = GetTimeAsString( time, etpTimeToMinutes ).c_str();
-	const char* date_str = legacyMode ? GetDateAsStringLegacy( time, edpDateToDay ).c_str() : GetDateAsString( time, edpDateToDay ).c_str();
-	xr_strconcat(buf, time_str, ", ", date_str );
+	const shared_str TimeText = GetTimeAsString(time, etpTimeToMinutes);
+	const shared_str DateText = legacyMode ? GetDateAsStringLegacy(time, edpDateToDay) : GetDateAsString(time, edpDateToDay);
+	xr_strconcat(buf, TimeText.c_str(), ", ", DateText.c_str());
 	return buf;
 }
 
 const shared_str InventoryUtilities::Get_GameTimeAndDate_AsString()
 {
-	return GetTimeAndDateAsString( Level().GetGameTime() );
+	return GetTimeAndDateAsString(Level().GetPdaTime());
 }
 
 //////////////////////////////////////////////////////////////////////////

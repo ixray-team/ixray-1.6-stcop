@@ -12,6 +12,8 @@
 #include "game_cl_base.h"
 #include "entity_alive.h"
 #include "ai_space.h"
+#include "alife_simulator.h"
+#include "alife_time_manager.h"
 #include "ai_debug.h"
 //#include "PHdynamicdata.h"
 //#include "Physics.h"
@@ -1174,6 +1176,15 @@ ALife::_TIME_ID CLevel::GetStartGameTime()
 ALife::_TIME_ID CLevel::GetGameTime()
 {
 	return			(game->GetGameTime());
+}
+
+ALife::_TIME_ID CLevel::GetPdaTime()
+{
+	if (const auto* Alife = ai().get_alife(); Alife && Alife->initialized())
+	{
+		return Alife->time_manager().GetPdaTime();
+	}
+	return GetGameTime();
 }
 
 ALife::_TIME_ID CLevel::GetEnvironmentGameTime() const

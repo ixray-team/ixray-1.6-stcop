@@ -10,6 +10,7 @@
 
 #include "object_interfaces.h"
 #include "alife_space.h"
+#include <atomic>
 
 class CALifeTimeManager {
 private:
@@ -20,12 +21,15 @@ private:
 
 private:
 	ALife::_TIME_ID					m_start_game_time;
+	std::atomic<s64> PdaTimeOffset{0};
 
 public:
 									CALifeTimeManager		(const char*		section);
 	virtual							~CALifeTimeManager		();
 	virtual void					save					(IWriter	&memory_stream);
 	virtual void					load					(IReader	&file_stream);
+	ALife::_TIME_ID GetPdaTime() const;
+	void SetPdaTime(ALife::_TIME_ID Time);
 			void					init					(const char*		section);
 	IC		void					set_time_factor			(float		time_factor);
 	IC		ALife::_TIME_ID			start_game_time			() const;

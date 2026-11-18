@@ -159,10 +159,11 @@ bool TryGetPdaUpdateSection(const shared_str& sectionId, pda_section::part& upda
 // Same time + legacy date format as PDA timer_frame_line (InventoryUtilities).
 shared_str BuildPdaGameDateTimeString()
 {
-    xr_string gameDateTime = *InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes);
-    gameDateTime += " ";
-    gameDateTime += *InventoryUtilities::GetDateAsStringLegacy(Level().GetGameTime(), InventoryUtilities::edpDateToDay);
-    return shared_str(gameDateTime.c_str());
+	const auto PdaTime = Level().GetPdaTime();
+	xr_string GameDateTime = *InventoryUtilities::GetTimeAsString(PdaTime, InventoryUtilities::etpTimeToMinutes);
+	GameDateTime += " ";
+	GameDateTime += *InventoryUtilities::GetDateAsStringLegacy(PdaTime, InventoryUtilities::edpDateToDay);
+	return shared_str(GameDateTime.c_str());
 }
 
 shared_str BuildPdaLocationNameString()
@@ -588,7 +589,7 @@ void CUIPdaWnd::Update()
 		m_pActiveDialog->Update();
 
 	if (m_clock)
-		m_clock->SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
+		m_clock->SetText(InventoryUtilities::GetTimeAsString(Level().GetPdaTime(), InventoryUtilities::etpTimeToMinutes).c_str());
 	UpdateDateTime();
 
 	if (pUILogsWnd && IsShown())

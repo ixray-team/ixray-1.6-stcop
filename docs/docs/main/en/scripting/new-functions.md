@@ -518,6 +518,21 @@ retval: iterator
 -- end
 ```
 
+## PDA date and time
+
+`game.set_pda_time(year, month, day, hour, minute, second)` sets the date and time displayed in the PDA in single-player. You can move the clock forward or backward. Afterwards, the PDA clock continues to run at the current game time factor.
+
+Pass six integers. The year must be 1 through 9999, the month 1 through 12, and the day must exist in the specified month and year. Hours range from 0 to 23, and minutes and seconds from 0 to 59. The function returns `true` on success and `false` for invalid dates or times or outside a single-player session.
+
+The PDA clock offset is stored in the save file. Loading a save without an offset shows the usual game time on the PDA. `game.get_game_time()`, timers, and network packets use the underlying game clock.
+
+```lua
+-- Set the PDA date and time, then move the clock back to the previous day.
+if game.set_pda_time(2012, 5, 15, 8, 30, 0) then
+    game.set_pda_time(2012, 5, 14, 8, 30, 0)
+end
+```
+
 ## CTime
 ```lua
 --// Save time in compressed form (4 bytes)

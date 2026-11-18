@@ -384,6 +384,7 @@ public:
 	//возвращает время в милисекундах относительно начала игры
 	ALife::_TIME_ID GetStartGameTime();
 	virtual ALife::_TIME_ID GetGameTime();
+	ALife::_TIME_ID GetPdaTime();
 	//возвращает время для энвайронмента в милисекундах относительно начала игры
     ALife::_TIME_ID GetEnvironmentGameTime() const override;
     static_assert(std::is_same_v<ALife::_TIME_ID, u64>, "Please, change return type of GetEnvironmentGameTime in IGame_Level and CGameLevel accordingly");

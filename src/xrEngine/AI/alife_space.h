@@ -18,6 +18,7 @@
 #define GAME_TIME_CHUNK_DATA		0x0005
 #define REGISTRY_CHUNK_DATA			0x0009
 #define MARSHAL_CHUNK_DATA			0x000A
+#define PDA_TIME_CHUNK_DATA			0x000B
 #define SECTION_HEADER				"location_"
 
 #define IXRAY_DEF_SAVE_EXTENSION ".scop"

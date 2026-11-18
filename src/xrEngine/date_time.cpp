@@ -49,7 +49,7 @@ void split_time(u64 time, u32& years, u32& months, u32& days, u32& hours, u32& m
 
 	u64 const p0 = time / (400 * 365 + 100 - 4 + 1);
 	time -= p0 * (400 * 365 + 100 - 4 + 1);
-	u64 const p1 = time / (100 * 365 + 25 - 1);
+	u64 const p1 = std::min(time / (100 * 365 + 25 - 1), 3ui64);
 	time -= p1 * (100 * 365 + 25 - 1);
 	u64 const p2 = time / (4 * 365 + 1);
 	time -= p2 * (4 * 365 + 1);
@@ -61,15 +61,11 @@ void split_time(u64 time, u32& years, u32& months, u32& days, u32& hours, u32& m
 	months = 1;
 	for (u32 it = 0; it < months; it++)
 	{
-		if ((it == 1) && days_in_month[it] + extra_day_count(years) < time)
+		const u32 MonthDays = days_in_month[it] + (it == 1 ? extra_day_count(years) : 0);
+		if (MonthDays < time)
 		{
 			++months;
-			time -= days_in_month[it] + extra_day_count(years);
-		}
-		else if (days_in_month[it] < time)
-		{
-			++months;
-			time -= days_in_month[it];
+			time -= MonthDays;
 		}
 	}
 	days = u32(time);

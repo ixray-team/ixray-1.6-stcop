@@ -19,6 +19,7 @@
 #include "UIGameCustom.h"
 #include "../xrUI/Widgets/UIDialogWnd.h"
 #include "../xrEngine/date_time.h"
+#include <chrono>
 #include "ai_space.h"
 #include "level_graph.h"
 #include "PHCommander.h"
@@ -373,6 +374,26 @@ u32 get_time_minutes()
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			mins;
+}
+
+static bool SetPdaTime(int Year, int Month, int Day, int Hour, int Minute, int Second)
+{
+	if (Year < 1 || Year > 9999 || Month < 1 || Month > 12 || Day < 1 || Day > 31 ||
+		Hour < 0 || Hour > 23 || Minute < 0 || Minute > 59 || Second < 0 || Second > 59)
+	{
+		return false;
+	}
+
+	const std::chrono::year_month_day Date{
+		std::chrono::year(Year), std::chrono::month(Month), std::chrono::day(Day)};
+	auto* Alife = g_ai_space ? g_ai_space->get_alife() : nullptr;
+	if (!Alife || !Date.ok())
+	{
+		return false;
+	}
+
+	Alife->time_manager().SetPdaTime(generate_time(Year, Month, Day, Hour, Minute, Second));
+	return true;
 }
 
 void change_game_time(u32 days, u32 hours, u32 mins)
@@ -2238,6 +2259,7 @@ void CLevel::script_register(lua_State *L)
 			// declarations
 			def("time",					get_time),
 			def("get_game_time",		get_time_struct),
+			def("set_pda_time",			&SetPdaTime),
 //			def("get_surge_time",	Game::get_surge_time),
 //			def("get_object_by_name",Game::get_object_by_name),
 		
