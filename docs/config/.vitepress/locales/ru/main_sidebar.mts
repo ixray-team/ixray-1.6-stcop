@@ -177,6 +177,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     collapsed: true,
     items: [
       { text: "Общие данные", link: "/weapon-system/weapon-classes" },
+      { text: "Переименование алиасов анимаций и звуков", link: "/weapon-system/porting-hud-animations" },
       { text: "Оружие и обвесы в Lua", link: "/weapon-system/lua-weapon-api" },
       { text: "Темп стрельбы, эффекты камеры и вибрация", link: "/weapon-system/weapon-config-options" },
       { text: "Взрывчатка", link: "/weapon-system/explosive-classes" },
