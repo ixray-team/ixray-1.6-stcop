@@ -6,7 +6,7 @@ Fvector3 ps_ssfx_volumetric = { .0f, 1.0f, 3.0f }; // Force Volumetric, Vol Inte
 
 Fmatrix CRenderTarget::GetSpotShadowTexelAdjust(const light& Light)
 {
-	const RHIViewport Viewport = GetSpotShadowViewport(Light);
+	const RHIViewport Viewport = GetSpotShadowSamplingViewport(Light);
 	const float InvAtlasSize = 1.0f / float(RImplementation.o.smapsize);
 	const float HalfExtent = Viewport.Width * 0.5f;
 	const float Scale = HalfExtent * InvAtlasSize;

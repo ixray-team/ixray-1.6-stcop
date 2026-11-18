@@ -100,6 +100,7 @@ public:
 			u32							posX;
 			u32							posY;
 			bool						transluent;
+			float						CachedQuality;
 		}	S;
 
 	};
