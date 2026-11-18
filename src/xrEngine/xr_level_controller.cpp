@@ -5,6 +5,10 @@
 #include "string_table.h"
 #include "UIGamepadButtons.h"
 
+#ifdef IXR_WINDOWS
+#include "Platform/Windows/KeyboardNames.h"
+#endif
+
 ENGINE_API _binding	g_key_bindings[bindings_count]; 
 ENGINE_API _key_group g_current_keygroup = _sp;
 
@@ -524,8 +528,71 @@ void initialize_bindings()
 	
 }
 
+void RefreshKeyDisplayNames()
+{
+	for (_keyboard& Key : keyboards)
+	{
+		if (!Key.key_name || Key.dik >= SDL_SCANCODE_COUNT)
+		{
+			break;
+		}
+
+		const auto Scancode = static_cast<SDL_Scancode>(Key.dik);
+		if (const u32 RussianCharacter = CInput::GetRussianKeyCharacter(Scancode))
+		{
+			char RussianName[5];
+			*SDL_UCS4ToUTF8(RussianCharacter, RussianName) = '\0';
+			Key.DisplayName = SDL_GetScancodeName(Scancode);
+			Key.DisplayName += " (";
+			Key.DisplayName += RussianName;
+			Key.DisplayName += ")";
+			continue;
+		}
+#ifdef IXR_WINDOWS
+		string128 NativeName;
+		if (Platform::GetKeyboardDisplayName(Scancode, NativeName, sizeof(NativeName)))
+		{
+			Key.DisplayName = NativeName;
+			continue;
+		}
+#endif
+		const SDL_Keycode Keycode = SDL_GetKeyFromScancode(Scancode, SDL_KMOD_NONE, false);
+		Key.DisplayName = SDL_GetKeyName(Keycode);
+		if (Key.DisplayName.empty())
+		{
+			Key.DisplayName = SDL_GetScancodeName(Scancode);
+		}
+	}
+}
+
+const char* _keyboard::GetDisplayName() const
+{
+	if (dik >= MOUSE_1 && dik <= MOUSE_5)
+	{
+		static constexpr const char* StringIds[] = {
+			"kb_mouse_left", "kb_mouse_right", "kb_mouse_middle", "kb_mouse_4", "kb_mouse_5"
+		};
+		static constexpr const char* FallbackNames[] = {
+			"LMB", "RMB", "MMB", "Mouse 4", "Mouse 5"
+		};
+		const int Index = dik - MOUSE_1;
+		if (g_pStringTable)
+		{
+			const shared_str Name = g_pStringTable->translate(StringIds[Index]);
+			if (Name.size() && xr_strcmp(*Name, StringIds[Index]) != 0)
+			{
+				return *Name;
+			}
+		}
+		return FallbackNames[Index];
+	}
+
+	return DisplayName.empty() ? key_local_name.c_str() : DisplayName.c_str();
+}
+
 void remap_keys()
 {
+	RefreshKeyDisplayNames();
 	int idx = 0;
 	string128 buff;
 	while (keyboards[idx].key_name)
@@ -596,7 +663,7 @@ ENGINE_API const char*	dik_to_keyname			(int _dik)
 {
 	_keyboard* kb = dik_to_ptr(_dik, true);
 	if(kb)
-		return kb->key_local_name.data();
+		return kb->GetDisplayName();
 	else
 		return nullptr;
 }
@@ -1030,10 +1097,10 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 	string128 gp_prim = {};
 
 	if (pbinding->m_keyboard[0])
-		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
+		xr_strcpy(prim, pbinding->m_keyboard[0]->GetDisplayName());
 
 	if (pbinding->m_keyboard[1])
-		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
+		xr_strcpy(sec, pbinding->m_keyboard[1]->GetDisplayName());
 
 	if (pbinding->m_gamepad[0])
 	{

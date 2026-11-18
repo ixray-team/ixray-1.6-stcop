@@ -32,15 +32,21 @@ UI_API u32 cut_string_by_length(CGameFont* pFont, const char* src, LPSTR dst, u3
 		VERIFY								(xr_strlen(src)<=dst_size);
 		xr_strcpy							(dst, dst_size, src);
 
-		while(text_len > length)
+		const bool Utf8 = IsUTF8(dst);
+		u32 Size = xr_strlen(dst);
+		while (Size > 0 && text_len > length)
 		{
-			dst[xr_strlen(dst)-1]			= 0;
-			VERIFY							(xr_strlen(dst));
-			text_len						= pFont->SizeOf_(dst);
-			UI().ClientToScreenScaledWidth	(text_len);
+			--Size;
+			while (Utf8 && Size > 0 && (static_cast<u8>(dst[Size]) & 0xC0) == 0x80)
+			{
+				--Size;
+			}
+			dst[Size] = '\0';
+			text_len = pFont->SizeOf_(dst);
+			UI().ClientToScreenScaledWidth(text_len);
 		}
 
-		return xr_strlen(dst);
+		return Size;
 	}
 }
 
@@ -113,8 +119,8 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 	}
 	else if (mouse_btn == MOUSE_2 && m_bCursorOverWindow)
 	{
-		SetText(nullptr);
 		m_keyboard = nullptr;
+		SetValue();
 	}
 
 	return CUIStatic::OnMouseDown(mouse_btn);
@@ -149,6 +155,7 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 void CUIEditKeyBind::Update()
 {
+	SetValue();
 	CUIStatic::Update();
 }
 
@@ -175,10 +182,12 @@ void CUIEditKeyBind::AssignProps(const shared_str& entry, const shared_str& grou
 
 void CUIEditKeyBind::SetValue()
 {
-	if(m_keyboard)
-		SetText				(m_keyboard->key_local_name.c_str());
-	else
-		SetText				(nullptr);
+	const char* Name = m_keyboard ? m_keyboard->GetDisplayName() : "---";
+	if (DisplayedName != Name)
+	{
+		DisplayedName = Name;
+		SetText(Name);
+	}
 }
 
 void CUIEditKeyBind::SetCurrentOptValue()
@@ -259,6 +268,6 @@ void CUIEditKeyBind::OnMessage(const char* message)
 	if( is_group_not_conflicted(m_action->key_group,other_action->key_group) )	
 		return;
 
-	SetText				("---");
-	m_keyboard			= nullptr;
+	m_keyboard = nullptr;
+	SetValue();
 }

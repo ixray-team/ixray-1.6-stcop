@@ -225,4 +225,19 @@
 	<string id="kb_quick_use_4">
 		<text>Emplacement d'accès rapide 4</text>
 	</string>
+	<string id="kb_mouse_left">
+		<text>Clic gauche</text>
+	</string>
+	<string id="kb_mouse_right">
+		<text>Clic droit</text>
+	</string>
+	<string id="kb_mouse_middle">
+		<text>Clic milieu</text>
+	</string>
+	<string id="kb_mouse_4">
+		<text>Souris 4</text>
+	</string>
+	<string id="kb_mouse_5">
+		<text>Souris 5</text>
+	</string>
 </string_table>

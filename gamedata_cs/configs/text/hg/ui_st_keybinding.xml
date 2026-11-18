@@ -213,4 +213,19 @@
 	<string id="kb_detector">
 		<text>Érzékelõ</text>
 	</string>
+	<string id="kb_mouse_left">
+		<text>Bal egérgomb</text>
+	</string>
+	<string id="kb_mouse_right">
+		<text>Jobb egérgomb</text>
+	</string>
+	<string id="kb_mouse_middle">
+		<text>Középsõ gomb</text>
+	</string>
+	<string id="kb_mouse_4">
+		<text>Egér 4</text>
+	</string>
+	<string id="kb_mouse_5">
+		<text>Egér 5</text>
+	</string>
 </string_table>

@@ -213,4 +213,19 @@
 	<string id="kb_detector">
 		<text>Detektor</text>
 	</string>
+	<string id="kb_mouse_left">
+		<text>Levé tl.</text>
+	</string>
+	<string id="kb_mouse_right">
+		<text>Pravé tl.</text>
+	</string>
+	<string id="kb_mouse_middle">
+		<text>Støední tl.</text>
+	</string>
+	<string id="kb_mouse_4">
+		<text>Myš 4</text>
+	</string>
+	<string id="kb_mouse_5">
+		<text>Myš 5</text>
+	</string>
 </string_table>

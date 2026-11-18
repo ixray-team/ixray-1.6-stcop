@@ -225,4 +225,19 @@
 	<string id="kb_quick_use_4">
 		<text>Ranura de acceso rápido 4</text>
 	</string>
+	<string id="kb_mouse_left">
+		<text>Clic izq.</text>
+	</string>
+	<string id="kb_mouse_right">
+		<text>Clic der.</text>
+	</string>
+	<string id="kb_mouse_middle">
+		<text>Clic central</text>
+	</string>
+	<string id="kb_mouse_4">
+		<text>Ratón 4</text>
+	</string>
+	<string id="kb_mouse_5">
+		<text>Ratón 5</text>
+	</string>
 </string_table>

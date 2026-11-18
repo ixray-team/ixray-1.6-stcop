@@ -324,6 +324,27 @@ const xr_map<int, char> russian_lookup_key_table = {
 	{ SDL_SCANCODE_Z, 0xFF }, 
 };
 
+u32 CInput::GetRussianKeyCharacter(SDL_Scancode Scancode)
+{
+	if (Scancode == SDL_SCANCODE_GRAVE)
+	{
+		return U'\u0451';
+	}
+	if (Scancode == SDL_SCANCODE_SLASH)
+	{
+		return U'.';
+	}
+
+	const auto Character = russian_lookup_key_table.find(Scancode);
+	if (Character == russian_lookup_key_table.end())
+	{
+		return 0;
+	}
+
+	// The legacy console lookup stores the contiguous CP1251 range for Cyrillic lowercase letters.
+	return U'\u0430' + (static_cast<u8>(Character->second) - 0xE0);
+}
+
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
 #ifdef IXR_WINDOWS

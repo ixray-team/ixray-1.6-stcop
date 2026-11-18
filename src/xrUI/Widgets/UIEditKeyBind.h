@@ -15,6 +15,7 @@ class UI_API CUIEditKeyBind :
 	_action*		m_action;
 	_keyboard*		m_keyboard;
 	_keyboard*		m_opt_backup_value;
+	xr_string DisplayedName;
 
 public:
 					CUIEditKeyBind			(bool bPrim);

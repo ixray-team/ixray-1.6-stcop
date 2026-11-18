@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "xr_input.h"
+#include "xr_level_controller.h"
 #include "GamepadService.h"
 #include "imgui_impl_sdl3.h"
 #include "XR_IOConsole.h"
@@ -20,6 +21,12 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	// this is needed because default event handler that goes after if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID) is not reachable
 	switch (Event.type)
 	{
+		case SDL_EVENT_KEYMAP_CHANGED:
+		{
+			RefreshKeyDisplayNames();
+			CStringTable::ReparseKeyBindings();
+			break;
+		}
 		case SDL_EVENT_GAMEPAD_REMOVED:
 		{
 			GGamepadService->ResetHID();

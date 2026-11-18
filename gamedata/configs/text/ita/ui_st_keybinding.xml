@@ -225,4 +225,19 @@
 	<string id="kb_quick_use_4">
 		<text>Slot rapido 4</text>
 	</string>
+	<string id="kb_mouse_left">
+		<text>Mouse SX</text>
+	</string>
+	<string id="kb_mouse_right">
+		<text>Mouse DX</text>
+	</string>
+	<string id="kb_mouse_middle">
+		<text>Mouse centrale</text>
+	</string>
+	<string id="kb_mouse_4">
+		<text>Mouse 4</text>
+	</string>
+	<string id="kb_mouse_5">
+		<text>Mouse 5</text>
+	</string>
 </string_table>

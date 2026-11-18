@@ -225,4 +225,19 @@
 	<string id="kb_quick_use_4">
 		<text>Schnellzugriffsfeld 4</text>
 	</string>
+	<string id="kb_mouse_left">
+		<text>Linke MT</text>
+	</string>
+	<string id="kb_mouse_right">
+		<text>Rechte MT</text>
+	</string>
+	<string id="kb_mouse_middle">
+		<text>Mittlere MT</text>
+	</string>
+	<string id="kb_mouse_4">
+		<text>Maus 4</text>
+	</string>
+	<string id="kb_mouse_5">
+		<text>Maus 5</text>
+	</string>
 </string_table>

@@ -190,6 +190,9 @@ struct _keyboard
 	const char*		key_name;
 	int			dik;
 	xr_string	key_local_name;
+	xr_string DisplayName;
+
+	ENGINE_API const char* GetDisplayName() const;
 };
 enum _key_group
 {
@@ -221,6 +224,8 @@ struct _action
 	_key_group		key_group;
 	_action_group	action_group;
 };
+
+void RefreshKeyDisplayNames();
 
 ENGINE_API const char*			dik_to_keyname			(int _dik);
 ENGINE_API int				keyname_to_dik			(const char* _name);

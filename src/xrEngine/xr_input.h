@@ -165,6 +165,7 @@ public:
 	void						unacquire();
 	void						acquire();
 	bool						get_dik_name(int dik, LPSTR dest, int dest_sz);
+	static u32 GetRussianKeyCharacter(SDL_Scancode Scancode);
 
 	void						feedback(u16 s1, u16 s2, float time);
 
