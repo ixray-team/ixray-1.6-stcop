@@ -218,8 +218,13 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 
 - Урон от машины считается legacy-путём `CPHMovementControl::UpdateCollisionDamage()` и порогами персонажа `ph_crash_speed_min`/`ph_crash_speed_max`; `ram_damage_min_speed` (км/ч) задаёт дополнительный порог скорости машины для урона.
 - Коммит `08e201a72d` добавил отдельное физическое толкание живых мутантов через `CCar::CarRamCallback()` и `CPHMovementControl::SetCarContact()`. Оно не наносит урон и не заменяет collision damage.
+- Коммиты `833126684d` и `85ba872427` добавили боковое скольжение: ось slide и наружная ось строятся по ближайшей грани `BoundingBox()` машины, контакт корпуса приоритетен 150 мс, направление удерживается `ram_mutant_slide_lock`/`flip`/`confirm`. `CMovementManager::move_along_path()` передаёт `desired_speed`. Отдельного `StartCarLeave` больше нет: `m_external_push` включён до конца контакта, уход обеспечивается path-скоростью.
+- Начальный толчок с места: если включён двигатель, выбрана передача `drive` и нажата тяга (`fwp`/`bkp`), `CarRamCallback()` передаёт `ram_start_push_speed`, когда направление передачи (`XFORM().k`, для `CurrentTransmission() == 0` инвертируется) совпадает с нормалью контакта. `ApplyCarContact()` использует его как нижнюю границу наружной скорости, пока нормальная скорость машины не превысила `ram_min_speed`; толчок масштабируется `ram_push_scale` и ограничивается `ram_max_push_speed`.
+- Параметры slide и начального толчка в секции машины: `ram_mutant_slide_scale`, `ram_mutant_slide_lock`, `ram_mutant_slide_flip`, `ram_mutant_slide_confirm`, `ram_mutant_slide_memory`, `ram_start_push_speed` (по умолчанию `0.5` м/с, диапазон `0..5`).
+- `CPHMovementControl::ValidateCarContact()` вызывается из `CCreature::UpdateCL()` и сбрасывает `m_external_push`, если контакт истёк, а movement update был пропущен.
+- Обнуление трения car-контакта и временные console-переменные `ph_mutant_car_*` удалены в `85ba872427`: трение обычное, но по результатам тестов оно не считается проблемой для текущего slide-слоя; slide держится на `ApplyCarContact()`.
 - Порог толкания `ram_min_speed` задаётся в м/с и не связан с `ram_damage_min_speed`; при низкой скорости машина может толкать мутанта, даже если урон отключён.
-- Новый слой работает на ODE (`CPHSimpleCharacter`); `CB3Character` не реализует `SetExternalPush()`, поэтому на Box3D поведение отличается.
+- Новый слой работает на ODE (`CPHSimpleCharacter`); `CB3Character` не реализует `SetExternalPush()`, поэтому на Box3D поведение отличается. `CarRamCallback()` по-прежнему только на основном shell, не на scraper.
 - Полная таблица параметров, поведение по типам целей и известные риски: `docs/engine/transport-cars-collision.md`.
 
 ## 3. Ограничения и краевые случаи

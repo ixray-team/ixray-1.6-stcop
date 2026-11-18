@@ -361,6 +361,15 @@ void CCreature::UpdateCL	()
 	m_client_update_delta		= (u32)std::min(Device.dwTimeGlobal - m_last_client_update_time, u32(100) );
 	m_last_client_update_time	= Device.dwTimeGlobal;
 
+	// Watchdog: do not let a skipped movement update leave the character in
+	// external-push mode after the car contact has expired.
+	if (character_physics_support())
+	{
+		CPHMovementControl* movement_control = character_physics_support()->movement();
+		if (movement_control)
+			movement_control->ValidateCarContact();
+	}
+
 #ifdef DEBUG
 	if( animation_movement() )
 				animation_movement()->DBG_verify_position_not_chaged();

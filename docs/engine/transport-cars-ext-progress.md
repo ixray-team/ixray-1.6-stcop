@@ -1,7 +1,7 @@
 # Прогресс переноса транспорта Cars-Ext
 
 - Дата: 2026-11-01
-- Обновлено: 2026-11-17
+- Обновлено: 2026-11-18
 - Ветка: `feature/transport-cars-ext`
 - Спецификация: `docs/engine/transport-cars-ext-spec.md`
 - План: `docs/engine/transport-cars-ext-plan.md`
@@ -1095,3 +1095,62 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - Найденные замечания: `ApplyGigantKick()` не применяет импульс к неактивному shell; для не-машин в `pseudo_gigant.cpp` сохранено прежнее обращение к `obj->m_pPhysicsShell` без проверки на `nullptr`; проверка `IsInCar()` продублирована в двух заголовках bloodsucker, что безвредно, но избыточно.
 - Подробная таблица параметров, поведение по типам целей и полный список рисков: `docs/engine/transport-cars-collision.md`.
 - Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` и спавна машины с собакой/кровососом — `RESULT: PASS`.
+
+### Этап 111: скольжение мутантов при толкании машины, часть 1
+
+- Коммит `833126684d`: `CCar::CarRamCallback()` получил определение колёсного контакта (`WheellCollisionCallback`), выбор ближайшей локальной грани `BoundingBox()` машины, `slide_axis`, `outward_axis` и `side_bias`. Ось slide идёт вдоль грани, наружная ось — от той же грани; для колёсного контакта позиция берётся из `cphc.GetPosition()`.
+- `SlideSpeed` берётся из `MonsterMovement::eVelocityParameterRunNormal`; в `SetCarContact()` добавлены `slide_scale`, `slide_speed`, `side_bias`, `body_contact` и параметры устойчивости направления.
+- Контакт корпуса считается приоритетным 150 мс: колёсные контакты обновляют `outward_axis`, но не заменяют ось slide корпуса, пока приоритет не истечёт. Для смены грани используется 250-мс hysteresis.
+- `ApplyCarContact()` получил второй параметр `desired_speed`; `CMovementManager::move_along_path()` передаёт его в обоих ветках. Внутри добавлены:
+  - определение ухода от машины по взгляду/path/текущей скорости и `StartCarLeave()`, который отключает `m_external_push` на 300 мс;
+  - выбор стороны slide по взгляду, path-скорости или текущей скорости;
+  - удержание стороны через `slide_lock`, `slide_flip` и `slide_confirm`;
+  - память направления после потери контакта (`slide_memory`);
+  - сглаживание касательной скорости (`Device.fTimeDelta * 12`).
+- На этом этапе временно появились глобальные console-переменные `ph_mutant_car_slide_*`, `ph_mutant_car_friction` и обнуление трения car-контакта в `CPHSimpleCharacter::InitContact()`.
+- Новые ключи машины: `ram_mutant_slide_scale`, `ram_mutant_slide_lock`, `ram_mutant_slide_flip`, `ram_mutant_slide_confirm`, `ram_mutant_slide_memory`. Значения по умолчанию: `1.0`, `400`, `0.5`, `150`, `600`.
+- Риски этапа: `SlideSpeed` из скорости бега может двигать стоящего мутанта; ось строится по визуальному AABB, а не по collision shell; состояние body/wheel и памяти направления глобально для movement controller, а не привязано к машине.
+
+### Этап 112: стабилизация slide и watchdog external push
+
+- Коммит `85ba872427` объединяет `d8d3d9839a` (fix 1) и `7ee969d444` (fix 2); в ветке оставлен один коммит.
+- `CPHMovementControl::ValidateCarContact()` вызывается из `CCreature::UpdateCL()` каждый клиентский апдейт. Если контакт истёк, а `move_along_path()`/`UpdateCarContact()` были пропущены, watchdog сбрасывает `m_external_push`.
+- Уход от машины подтверждается мягче: `CarLeaveStrongDot = 0.35`, `CarLeaveConfirmMs = 150` и `m_car_leave_facing_time`. Явный взгляд наружу отпускает сразу, слабый — только после подтверждения или реального отделения; это убирает мигание между slide и leave.
+- Параметры `slide_lock`, `slide_flip`, `slide_confirm`, `slide_memory` перенесены из глобальных console-переменных в секцию машины. Временные команды `ph_mutant_car_slide_*` и `ph_mutant_car_friction` удалены.
+- Удалены `ph_mutant_car_friction` из `PhysicsCommon.h`, специальное обнуление трения car-контакта в `CPHSimpleCharacter::InitContact()` и `cphc.SetFriction(0.f)` из `CarRamCallback()`. Сейчас при `m_external_push` трение car-контакта обычное; slide держится на `ApplyCarContact()` и `StartCarLeave()`.
+- Риски: стоящий/атакующий мутант может получить форсированный slide из-за `contact.slide_speed`; ось slide может расходиться с collision shell; `CarRamCallback()` по-прежнему только на основном shell, не на scraper; Box3D не реализует `SetExternalPush()`. Трение car-контакта и перенос состояния на другую машину по результатам обсуждения проблемой не считаются.
+- Подробная таблица параметров, разбор поведения и полный список рисков: `docs/engine/transport-cars-collision.md`.
+- Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`. Отдельного автотеста на slide, `StartCarLeave`, `ValidateCarContact`, Box3D и смену машины в пределах `ram_mutant_slide_memory` нет.
+
+### Этап 113: удалён StartCarLeave
+
+- Полностью удалена leave-система: `StartCarLeave()`, `m_car_leave_until`, `m_car_leave_facing_time`, `CarLeaveGraceMs`, `CarLeaveOutwardDot`, `CarLeaveStrongDot`, `CarLeaveConfirmMs`, `CarLeaveSeparationDot`, блок `wants_to_leave` и условное отключение `m_external_push` по leave.
+- `m_external_push` теперь включён на всё время car contact. Снимается только при истечении контакта в `UpdateCarContact()` или watchdog’ом `ValidateCarContact()`.
+- Уход от машины обеспечивается path-скоростью, которую `ApplyCarContact()` возвращает в movement manager. Отдельное отключение контакта для ухода не используется.
+- Таран со спины мутанта больше не выключает external push, поэтому AI не получает обратно обычное ускорение и не может остановить машину.
+- Следствие: AI path вдоль борта снова может давать движение вдоль машины, пока контакт активен. Если это нежелательно, подавлять нужно касательную составляющую path, а не отключать car contact.
+- Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
+
+### Этап 114: толкание с места
+
+- Текущий коммит: `CarRamCallback()` определяет намерение машины двигаться при нулевой скорости. Условие: `b_engine_on`, `e_state_drive == CCar::drive`, нажата тяга (`fwp || bkp`), а направление передачи (`XFORM().k`, для `CurrentTransmission() == 0` — назад) совпадает с направлением на мутанта (`dot > 0.1`).
+- В контакт добавлен `start_push_speed`; новый ключ машины `ram_start_push_speed` (по умолчанию `0.5 м/с`, диапазон `0..5`). При старте с места он даёт начальный наружный толчок, пока `car_normal` не превысил `ram_min_speed`.
+- Толчок масштабируется `ram_push_scale` и ограничивается `ram_max_push_speed`; `ram_min_speed` остаётся порогом уже движущейся машины.
+- `has_intent` и подавление касательной для AI path не добавлялись — это остаётся пунктом 1 плана ниже.
+- Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
+
+### Дальнейшие улучшения slide: план
+
+Приоритеты с учётом того, что машин в игре мало, а трение не является проблемой:
+
+1. **Форсированный slide без движения.** Добавить в `ApplyCarContact()` проверку `has_intent` (`desired_speed`, `path_normal`, `car_pushes`, текущая касательная скорость) до fallback на `contact.slide_speed`. Это убирает slide у стоящего/атакующего мутанта.
+2. **Точка контакта для выбора грани.** Для корпуса использовать `cphc.GetPosition()` вместо `Other->Position()`, чтобы у крупных мутантов не выбиралась неверная грань/`side_bias`. Нормаль от центра машины оставить только для случая, когда контактная нормаль реально направлена внутрь кузова.
+3. **Производительность.** Кэшировать локальный box и обратную матрицу машины на кадр в `CCar`; проецировать `slide_axis` на плоскость контакта один раз в `SetCarContact()`; по возможности брать `vVelocity` вместо `m_character->GetVelocity()`; добавить early-out в `ValidateCarContact()`.
+4. **Поддержка.** Передавать параметры контакта структурой вместо 19 аргументов `SetCarContact()`. Вынести `CarBodyContactAuthorityMs` и пороги slide в конфиг машины.
+5. **Диагностика.** Добавить read-only debug-лог/отрисовку `normal`, `slide_axis`, `intent` и `m_car_slide_direction` по cvar, чтобы не добавлять временные `Msg`.
+
+Вне плана:
+
+- обнуление трения car-контакта — трение не является проблемой;
+- привязка состояния slide к `car_id` — машин мало, перенос между машинами практически невозможен;
+- оптимизация под много машин — не требуется.
