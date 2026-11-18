@@ -85,4 +85,5 @@ protected:
 	}
 
 	static void InitXmlIdToIndex();
+	static shared_str ReadFallbackXmlId(CUIXml& Xml, XML_NODE* Node);
 };

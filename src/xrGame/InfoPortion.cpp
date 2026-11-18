@@ -111,6 +111,20 @@ void CInfoPortion::load_shared	(const char*)
 	}
 }
 
+shared_str CInfoPortion::ReadFallbackXmlId(CUIXml& Xml, XML_NODE* Node)
+{
+	const xr_string_view Text = Xml.Read(Node, "");
+	constexpr xr_string_view Whitespace = " \t\r\n";
+	const auto Start = Text.find_first_not_of(Whitespace);
+	if (Start == xr_string_view::npos)
+	{
+		return nullptr;
+	}
+
+	const auto End = Text.find_last_not_of(Whitespace);
+	return xr_string(Text.data() + Start, End - Start + 1).c_str();
+}
+
 void   CInfoPortion::InitXmlIdToIndex()
 {
 	if (!tag_name)

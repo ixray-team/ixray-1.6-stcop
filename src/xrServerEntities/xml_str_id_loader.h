@@ -171,25 +171,37 @@ void CSXML_IdToIndex::InitInternal ()
 
 		for(int i=0; i<items_num; ++i)
 		{
-			const char* item_name	= uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
+			XML_NODE* Node = uiXml->NavigateToNode(uiXml->GetRoot(), tag_name, i);
+			shared_str ItemName = uiXml->ReadAttrib(Node, "id", nullptr);
 
-			string256			buf;
-			xr_sprintf				(buf, "id for item don't set, number %d in %s", i, xml_file);
-			R_ASSERT2			(item_name, buf);
+			string256 buf;
+			xr_sprintf(buf, "id for item don't set, number %d in %s", i, xml_file);
+			if constexpr (requires { T_INIT::ReadFallbackXmlId(*uiXml, Node); })
+			{
+				if (ItemName.size() == 0)
+				{
+					ItemName = T_INIT::ReadFallbackXmlId(*uiXml, Node);
+				}
+				CHECK_OR_EXIT(*ItemName, buf);
+			}
+			else
+			{
+				R_ASSERT2(*ItemName, buf);
+			}
 
 
 			//проверетить ID на уникальность
 			T_VECTOR::iterator t_it = m_pItemDataVector->begin();
 			for(;m_pItemDataVector->end() != t_it; t_it++)
 			{
-				if(shared_str((*t_it).id) == shared_str(item_name))
+				if(t_it->id == ItemName)
 					break;
 			}
 
-			R_ASSERT3(m_pItemDataVector->end() == t_it, "duplicate item id", item_name);
+			R_ASSERT3(m_pItemDataVector->end() == t_it, "duplicate item id", *ItemName);
 
 			ITEM_DATA			data;
-			data.id				= item_name;
+			data.id				= ItemName;
 			data.index			= index;
 			data.pos_in_file	= i;
 //.				data.file_name		= xml_file;

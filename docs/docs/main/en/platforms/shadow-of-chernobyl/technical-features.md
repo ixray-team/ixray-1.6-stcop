@@ -58,3 +58,9 @@ Example:
         <disable>test_info_1</disable> <!-- disable a previously granted info portion -->
     </info_portion>
 ```
+
+If the `id` attribute is empty or missing, the engine reads the identifier from the text of the `info_portion` element and trims surrounding whitespace.
+
+```xml
+<info_portion id="">mar_intro_scene_2_end</info_portion>
+```
