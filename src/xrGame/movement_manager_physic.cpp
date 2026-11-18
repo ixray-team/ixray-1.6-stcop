@@ -222,7 +222,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 		Fvector contact_velocity;
 		if (car_contact) {
 			contact_velocity.set(0.f, 0.f, 0.f);
-			contact_velocity = movement_control->ApplyCarContact(contact_velocity);
+			contact_velocity = movement_control->ApplyCarContact(contact_velocity, old_desirable_speed());
 			movement_control->EnableCharacter();
 			movement_control->SetVelocity(contact_velocity);
 			m_speed = contact_velocity.magnitude();
@@ -286,7 +286,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 		path_velocity.normalize_safe();
 		path_velocity.mul(desirable_speed);
 
-		Fvector contact_velocity = movement_control->ApplyCarContact(path_velocity);
+		Fvector contact_velocity = movement_control->ApplyCarContact(path_velocity, desirable_speed);
 		m_speed = contact_velocity.magnitude();
 
 		movement_control->EnableCharacter();

@@ -35,6 +35,10 @@
 #include "../xrPhysics/PHCollideValidator.h"
 #include "CharacterPhysicsSupport.h"
 #include "PHMovementControl.h"
+#include "../xrPhysics/PhysicsCommon.h"
+#include "ai/monsters/basemonster/base_monster.h"
+#include "ai/monsters/control_movement_base.h"
+#include "ai/monsters/monster_velocity_space.h"
 #include "car_memory.h"
 
 #include "UIGameSP.h"
@@ -399,6 +403,7 @@ CCar::CCar()
 	m_ram_min_speed = 1.f;
 	m_ram_separation_bias = 3.f;
 	m_ram_mutant_push_speed = 0.5f;
+	m_ram_mutant_slide_scale = 1.f;
 	m_gigant_kick_impulse = -1.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
@@ -1608,6 +1613,9 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	if (Other->cast_actor() != nullptr || Other->cast_car() != nullptr || Other->cast_inventory_item() != nullptr)
 		return;
 
+	const bool car_is_first = (A != nullptr && A->cast_car() != nullptr);
+	const bool wheel_contact = cphc.HasObjectCallback(car_is_first, &CCar::SWheel::WheellCollisionCallback);
+
 	// Only living mutants use the additive ram push. Stalkers keep their
 	// existing movement behaviour, and ragdolls are handled by physics.
 	if (Other->cast_base_monster() == nullptr)
@@ -1666,9 +1674,118 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 			Normal = CenterDirection;
 	}
 
+	// The car collision is a box. Pick the nearest local side and use the
+	// other horizontal local axis as the slide direction. This is more stable
+	// than deriving a tangent from a noisy corner/edge contact normal.
+	Fvector SlideAxis;
+	SlideAxis.set(0.f, 0.f, 0.f);
+	Fvector OutwardAxis;
+	OutwardAxis.set(0.f, 0.f, 0.f);
+	float SlideSpeed = 0.f;
+	float SideBias = 0.f;
+
+	if (CBaseMonster* Monster = Other->cast_base_monster())
+	{
+		const SVelocityParam& Run = Monster->move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
+		SlideSpeed = Run.velocity.linear;
+	}
+
+	Fbox Box = Car->BoundingBox();
+	if (Box.is_valid())
+	{
+		Fvector BoxCenter;
+		Fvector BoxHalf;
+		Box.get_CD(BoxCenter, BoxHalf);
+		BoxHalf.x = std::max(BoxHalf.x, 0.25f);
+		BoxHalf.z = std::max(BoxHalf.z, 0.25f);
+
+		Fmatrix Inv;
+		Inv.invert(Car->XFORM());
+		Fvector Local;
+		const Fvector FacePosition = wheel_contact ? cphc.GetPosition() : Other->Position();
+		Inv.transform_tiny(Local, FacePosition);
+
+		const float DX = (Local.x - BoxCenter.x) / BoxHalf.x;
+		const float DZ = (Local.z - BoxCenter.z) / BoxHalf.z;
+
+		bool XFace;
+		if (std::fabs(DX) >= std::fabs(DZ) * 1.1f)
+			XFace = true;
+		else if (std::fabs(DZ) >= std::fabs(DX) * 1.1f)
+			XFace = false;
+		else
+		{
+			// Near a corner prefer the face the contact normal belongs to.
+			Fvector CarX;
+			Fvector CarZ;
+			Car->XFORM().transform_dir(CarX, Fvector().set(1.f, 0.f, 0.f));
+			Car->XFORM().transform_dir(CarZ, Fvector().set(0.f, 0.f, 1.f));
+			CarX.y = 0.f;
+			CarZ.y = 0.f;
+			CarX.normalize_safe();
+			CarZ.normalize_safe();
+			XFace = std::fabs(Normal.dotproduct(CarX)) >= std::fabs(Normal.dotproduct(CarZ));
+		}
+
+		Fvector LocalSlide;
+		if (XFace)
+			LocalSlide.set(0.f, 0.f, 1.f); // side face -> slide along car forward/back
+		else
+			LocalSlide.set(1.f, 0.f, 0.f); // front/rear face -> slide sideways
+
+		// The contact offset along the face picks which end of the bumper the
+		// mutant should use when it hits exactly head-on and all velocity
+		// sources point into the car.
+		Fvector LocalOffset;
+		LocalOffset.sub(Local, BoxCenter);
+		SideBias = LocalOffset.dotproduct(LocalSlide);
+
+		// The escape reference must belong to the same face as the slide
+		// axis. A separate nearest-face test could point at the rear while
+		// the slide still follows the side, which made the mutant stop at
+		// body/bumper seams while it was still sliding along the side.
+		Fvector LocalOutward;
+		if (XFace)
+			LocalOutward.set((Local.x >= BoxCenter.x) ? 1.f : -1.f, 0.f, 0.f);
+		else
+			LocalOutward.set(0.f, 0.f, (Local.z >= BoxCenter.z) ? 1.f : -1.f);
+
+		Car->XFORM().transform_dir(OutwardAxis, LocalOutward);
+		OutwardAxis.y = 0.f;
+		if (OutwardAxis.magnitude() > EPS_L)
+			OutwardAxis.normalize_safe();
+		else
+			OutwardAxis.set(0.f, 0.f, 0.f);
+
+		Car->XFORM().transform_dir(SlideAxis, LocalSlide);
+		SlideAxis.y = 0.f;
+		if (SlideAxis.magnitude() > EPS_L)
+			SlideAxis.normalize_safe();
+		else
+			SlideAxis.set(0.f, 0.f, 0.f);
+	}
+
+	// If the box face is unusable (a wheel protruding from the box, a damaged
+	// car, etc.), derive a tangent from the contact normal instead.
+	if (SlideAxis.magnitude() <= EPS_L)
+	{
+		SlideAxis.crossproduct(Normal, Fvector().set(0.f, 1.f, 0.f));
+		SlideAxis.y = 0.f;
+		if (SlideAxis.magnitude() > EPS_L)
+			SlideAxis.normalize_safe();
+		else
+			SlideAxis.set(0.f, 0.f, 0.f);
+	}
+
+	if (OutwardAxis.magnitude() <= EPS_L)
+		OutwardAxis = Normal;
+
 	// No impulse is applied to the car. The car's own collision reaction is
 	// left to ODE. The movement manager combines this contact with the
 	// mutant's path velocity every frame while the contact is fresh.
+	if (!ph_mutant_car_friction)
+		cphc.SetFriction(0.f);
+
 	Movement->SetCarContact(
 		Normal,
 		CarVelocity,
@@ -1677,6 +1794,12 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		Car->m_ram_mutant_push_speed,
 		Car->m_ram_min_speed,
 		Car->m_ram_max_push_speed,
+		SlideAxis,
+		OutwardAxis,
+		Car->m_ram_mutant_slide_scale,
+		SlideSpeed,
+		SideBias,
+		!wheel_contact,
 		static_cast<u32>(Car->m_ram_contact_memory));
 }
 
@@ -4337,6 +4460,8 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	clamp(m_ram_separation_bias, 0.f, 15.f);
 	m_ram_mutant_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_push_speed", m_ram_mutant_push_speed);
 	clamp(m_ram_mutant_push_speed, 0.f, 5.f);
+	m_ram_mutant_slide_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_scale", m_ram_mutant_slide_scale);
+	clamp(m_ram_mutant_slide_scale, 0.f, 1.f);
 
 	// Fixed momentum of the pseudogiant ground kick for this car, kg*m/s.
 	// -1 keeps the legacy 20 * car_mass impulse, 0 disables the car push.

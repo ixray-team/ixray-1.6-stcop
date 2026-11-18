@@ -36,6 +36,49 @@
 
 const u64 after_creation_collision_hit_block_steps_number=100;
 
+// Car slide direction stability. The mutant chooses a side once and keeps it
+// through normal contact noise; an opposite intent must be strong and
+// sustained before the side can flip. Exposed as console commands.
+float ph_mutant_car_slide_lock_ms = 400.f;
+float ph_mutant_car_slide_flip_threshold = 0.5f;
+float ph_mutant_car_slide_confirm_ms = 150.f;
+float ph_mutant_car_slide_memory_ms = 600.f;
+
+// A short window during which a mutant that is leaving keeps normal movement
+// control. Without it the next physics contact re-enables external push and
+// the mutant cannot build up separation speed.
+constexpr u32 CarLeaveGraceMs = 300;
+constexpr float CarLeaveOutwardDot = 0.05f;
+constexpr float CarLeaveSeparationDot = 0.1f;
+// How long the body normal/axis stays authoritative after the last body
+// contact. If only a wheel touches for longer, the wheel's face becomes the
+// slide source instead of keeping a stale body face forever.
+constexpr u32 CarBodyContactAuthorityMs = 150;
+
+void CPHMovementControl::ResetCarSlideDirection()
+{
+	m_car_slide_direction.set(0.f, 0.f, 0.f);
+	m_car_slide_direction_valid = false;
+	m_car_slide_direction_time = 0;
+	m_car_slide_direction_expire = 0;
+	m_car_slide_opposite_time = 0;
+	m_car_face_switch_time = 0;
+}
+
+void CPHMovementControl::StartCarLeave()
+{
+	// Keep the contact data alive so that turning back into the car resumes
+	// sliding immediately, but stop constraining the mutant's velocity:
+	// external push disables normal acceleration, which otherwise keeps it
+	// glued to the car while it is trying to leave.
+	m_car_leave_until = Device.dwTimeGlobal + CarLeaveGraceMs;
+	m_car_slide_speed = 0.f;
+	m_car_slide_opposite_time = 0;
+
+	if (m_character)
+		m_character->SetExternalPush(false);
+}
+
 CPHMovementControl::CPHMovementControl(CObject* parent)
 {
 	pObject = parent;
@@ -64,13 +107,23 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	bExernalImpulse = false;
 	m_car_contact.normal.set(0.f, 0.f, 1.f);
 	m_car_contact.car_velocity.set(0.f, 0.f, 0.f);
+	m_car_contact.slide_axis.set(0.f, 0.f, 0.f);
+	m_car_contact.outward_axis.set(0.f, 0.f, 0.f);
 	m_car_contact.separation_bias = 0.f;
 	m_car_contact.ram_scale = 1.f;
 	m_car_contact.mutant_push_speed = 0.f;
 	m_car_contact.min_car_speed = 0.f;
 	m_car_contact.max_push_speed = 0.f;
+	m_car_contact.slide_scale = 0.f;
+	m_car_contact.slide_speed = 0.f;
+	m_car_contact.side_bias = 0.f;
+	m_car_contact.body_contact = false;
 	m_car_contact_end = 0;
 	m_car_contact_active = false;
+	m_car_leave_until = 0;
+	m_car_body_contact_time = 0;
+	m_car_slide_speed = 0.f;
+	ResetCarSlideDirection();
 
 	fLastMotionMag = 1.f;
 	SetPathDir(Fvector().set(0, 0, 1));
@@ -130,10 +183,48 @@ void CPHMovementControl::ApplyImpulse(const Fvector& dir,const float P)
 
 void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car_velocity,
 	float separation_bias, float ram_scale, float mutant_push_speed,
-	float min_car_speed, float max_push_speed, u32 duration_ms)
+	float min_car_speed, float max_push_speed, const Fvector& slide_axis,
+	const Fvector& outward_axis, float slide_scale, float slide_speed,
+	float side_bias, bool body_contact, u32 duration_ms)
 {
 	if (!m_character || !m_character->Exists() || m_character->IsActorCharacter() || duration_ms == 0)
 		return;
+
+	const bool was_active = m_car_contact_active;
+
+	// A body contact is the authoritative slide source. Wheel contacts keep
+	// the physical push alive, but must not replace the body normal/axis with
+	// a rotating wheel normal. This priority expires: if only a wheel touches
+	// for a while, its face becomes the source instead of a stale body face.
+	const bool body_authoritative =
+		was_active && m_car_contact.body_contact && !body_contact &&
+		Device.dwTimeGlobal < m_car_body_contact_time + CarBodyContactAuthorityMs;
+
+	if (body_authoritative)
+	{
+		Fvector wheel_outward = outward_axis;
+		wheel_outward.y = 0.f;
+		if (wheel_outward.magnitude() > EPS_L)
+		{
+			wheel_outward.normalize_safe();
+			m_car_contact.outward_axis = wheel_outward;
+		}
+
+		m_car_contact_end = Device.dwTimeGlobal + duration_ms;
+		if (Device.dwTimeGlobal >= m_car_leave_until)
+			m_character->SetExternalPush(true);
+		else
+			m_character->SetExternalPush(false);
+		return;
+	}
+
+	// The body has not been touched for a while. Let the current wheel contact
+	// replace the stale body face instead of keeping its expired lock.
+	if (was_active && m_car_contact.body_contact && !body_contact)
+		m_car_face_switch_time = 0;
+
+	if (!was_active)
+		m_car_slide_speed = 0.f;
 
 	Fvector contact_normal = normal;
 	contact_normal.y = 0.f;
@@ -141,18 +232,116 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 		return;
 	contact_normal.normalize_safe();
 
+	Fvector contact_slide = slide_axis;
+	contact_slide.y = 0.f;
+	if (contact_slide.magnitude() > EPS_L)
+		contact_slide.normalize_safe();
+	else
+		contact_slide.set(0.f, 0.f, 0.f);
+
+	Fvector contact_outward = outward_axis;
+	contact_outward.y = 0.f;
+	if (contact_outward.magnitude() > EPS_L)
+		contact_outward.normalize_safe();
+	else
+		contact_outward = contact_normal;
+
+	// Keep the previous face while the contact is near a corner. Switch only
+	// after a short lock and when the contact normal clearly belongs to the
+	// new face, otherwise alternating contact points make the mutant jitter.
+	// The outward axis is kept together with the slide axis so that escape
+	// never judges the mutant against a different face than the one it slides
+	// along (body/bumper seams are the main case).
+	bool keep_previous_face = false;
+	if (was_active && m_car_contact.slide_axis.magnitude() > EPS_L &&
+		contact_slide.magnitude() > EPS_L)
+	{
+		const float alignment = std::fabs(m_car_contact.slide_axis.dotproduct(contact_slide));
+		if (alignment < 0.5f)
+		{
+			keep_previous_face = Device.dwTimeGlobal < m_car_face_switch_time;
+			if (!keep_previous_face)
+			{
+				Fvector candidate_face;
+				candidate_face.crossproduct(contact_slide, Fvector().set(0.f, 1.f, 0.f));
+				if (candidate_face.magnitude() > EPS_L)
+					candidate_face.normalize_safe();
+
+				if (std::fabs(contact_normal.dotproduct(candidate_face)) < 0.6f)
+					keep_previous_face = true;
+			}
+
+			if (!keep_previous_face)
+				m_car_face_switch_time = Device.dwTimeGlobal + 250;
+		}
+	}
+
+	if (keep_previous_face)
+	{
+		contact_slide = m_car_contact.slide_axis;
+		if (m_car_contact.outward_axis.magnitude() > EPS_L)
+			contact_outward = m_car_contact.outward_axis;
+	}
+
+	// Keep the chosen slide side across short contact losses and body/wheel
+	// transitions. It is dropped only when the slide axis changed (another
+	// car face) or the direction memory expired.
+	if (m_car_slide_direction_valid)
+	{
+		Fvector stored_direction = m_car_slide_direction;
+		stored_direction.y = 0.f;
+
+		const bool aligned = stored_direction.magnitude() > EPS_L &&
+			contact_slide.magnitude() > EPS_L &&
+			std::fabs(stored_direction.dotproduct(contact_slide)) >= 0.5f;
+		const bool expired = !was_active &&
+			Device.dwTimeGlobal >= m_car_slide_direction_expire;
+
+		if (!aligned || expired)
+			ResetCarSlideDirection();
+	}
+
+	if (m_car_slide_direction_valid)
+		m_car_slide_direction_expire = 0;
+
+	if (!was_active)
+	{
+		m_car_slide_opposite_time = 0;
+		m_car_face_switch_time = Device.dwTimeGlobal + 250;
+	}
+
 	m_car_contact.normal = contact_normal;
 	m_car_contact.car_velocity = car_velocity;
 	m_car_contact.car_velocity.y = 0.f;
+	m_car_contact.slide_axis = contact_slide;
+	m_car_contact.outward_axis = contact_outward;
 	m_car_contact.separation_bias = separation_bias;
 	m_car_contact.ram_scale = ram_scale;
 	m_car_contact.mutant_push_speed = mutant_push_speed;
 	m_car_contact.min_car_speed = min_car_speed;
 	m_car_contact.max_push_speed = max_push_speed;
+	m_car_contact.slide_scale = slide_scale;
+	if (m_car_contact.slide_scale < 0.f)
+		m_car_contact.slide_scale = 0.f;
+	else if (m_car_contact.slide_scale > 1.f)
+		m_car_contact.slide_scale = 1.f;
+	m_car_contact.slide_speed = slide_speed;
+	if (m_car_contact.slide_speed < 0.f)
+		m_car_contact.slide_speed = 0.f;
+	else if (m_car_contact.slide_speed > 50.f)
+		m_car_contact.slide_speed = 50.f;
+	m_car_contact.side_bias = side_bias;
+	m_car_contact.body_contact = body_contact;
 	m_car_contact_end = Device.dwTimeGlobal + duration_ms;
 	m_car_contact_active = true;
 
-	m_character->SetExternalPush(true);
+	if (body_contact)
+		m_car_body_contact_time = Device.dwTimeGlobal;
+
+	if (Device.dwTimeGlobal >= m_car_leave_until)
+		m_character->SetExternalPush(true);
+	else
+		m_character->SetExternalPush(false);
 }
 
 void CPHMovementControl::UpdateCarContact()
@@ -162,8 +351,23 @@ void CPHMovementControl::UpdateCarContact()
 
 	if (!m_character || !m_character->Exists() || Device.dwTimeGlobal >= m_car_contact_end)
 	{
+		const bool character_gone = !m_character || !m_character->Exists();
+
 		m_car_contact_active = false;
 		m_car_contact_end = 0;
+		m_car_leave_until = 0;
+		m_car_body_contact_time = 0;
+		m_car_slide_speed = 0.f;
+		m_car_contact.body_contact = false;
+		m_car_face_switch_time = 0;
+		m_car_slide_opposite_time = 0;
+
+		if (character_gone)
+			ResetCarSlideDirection();
+		else
+			m_car_slide_direction_expire = Device.dwTimeGlobal +
+				static_cast<u32>(std::max(0.f, ph_mutant_car_slide_memory_ms));
+
 		if (m_character)
 			m_character->SetExternalPush(false);
 	}
@@ -177,7 +381,7 @@ bool CPHMovementControl::IsCarContactActive() const
 		&& Device.dwTimeGlobal < m_car_contact_end;
 }
 
-Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity) const
+Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float desired_speed)
 {
 	if (!IsCarContactActive())
 		return path_velocity;
@@ -216,6 +420,209 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity) const
 
 	Fvector result = path_velocity;
 	result.mad(contact.normal, external_normal);
+
+	Fvector current_velocity;
+	if (m_character)
+		m_character->GetVelocity(current_velocity);
+	else
+		current_velocity.set(0.f, 0.f, 0.f);
+	const float current_speed = current_velocity.magnitude();
+
+	Fvector facing_dir;
+	facing_dir.set(0.f, 0.f, 0.f);
+	if (pObject != nullptr)
+	{
+		facing_dir = pObject->Direction();
+		facing_dir.y = 0.f;
+		facing_dir.normalize_safe();
+	}
+
+	const float path_speed = path_velocity.magnitude();
+
+	Fvector outward = contact.outward_axis;
+	outward.y = 0.f;
+	if (outward.magnitude() > EPS_L)
+		outward.normalize_safe();
+	else
+		outward = contact.normal;
+
+	const float facing_outward = facing_dir.dotproduct(outward);
+	const float path_outward = path_speed > EPS_L ?
+		path_velocity.dotproduct(outward) / path_speed : 0.f;
+	const float current_outward = current_speed > EPS_L ?
+		current_velocity.dotproduct(outward) / current_speed : 0.f;
+
+	// Facing away alone is ambiguous at body/bumper seams: a mutant sliding
+	// along the side can look "away" from the rear face. Require an actual
+	// outward movement component as well, otherwise keep sliding.
+	const bool separating =
+		path_outward > CarLeaveSeparationDot ||
+		current_outward > CarLeaveSeparationDot;
+	const bool wants_to_leave =
+		(facing_outward > CarLeaveOutwardDot && separating) ||
+		path_outward > 0.5f;
+
+	if (wants_to_leave)
+	{
+		StartCarLeave();
+		return result;
+	}
+
+	// The mutant turned back into the car: resume the contact constraint.
+	if (m_car_leave_until != 0)
+	{
+		m_car_leave_until = 0;
+		if (m_character)
+			m_character->SetExternalPush(true);
+	}
+
+	if (contact.slide_scale <= 0.f || contact.slide_axis.magnitude() <= EPS_L)
+		return result;
+
+	Fvector slide = contact.slide_axis;
+	slide.mad(contact.normal, -slide.dotproduct(contact.normal));
+	if (slide.magnitude() <= EPS_L)
+	{
+		// The face axis can be parallel to a wheel/edge contact normal. Fall
+		// back to a horizontal tangent of the contact normal.
+		slide.crossproduct(contact.normal, Fvector().set(0.f, 1.f, 0.f));
+		slide.y = 0.f;
+	}
+	if (slide.magnitude() <= EPS_L)
+		return result;
+	slide.normalize();
+
+	float path_tangent_speed = path_velocity.dotproduct(slide);
+	float current_tangent_speed = current_velocity.dotproduct(slide);
+
+	// Direction sources must be comparable: normalize the tangential velocity
+	// components, otherwise the thresholds below are speed-dependent and any
+	// fast movement always overrides the facing.
+	float path_tangent = path_speed > EPS_L ? path_tangent_speed / path_speed : 0.f;
+	float current_tangent = current_speed > EPS_L ? current_tangent_speed / current_speed : 0.f;
+
+	// Keep a slide speed from the approach/path even after the path has
+	// completed; otherwise the movement manager's no-path branch would stop
+	// the mutant dead against the car.
+	if (desired_speed > 0.05f)
+		m_car_slide_speed = desired_speed;
+
+	float slide_speed = (desired_speed > 0.05f) ? desired_speed : m_car_slide_speed;
+	if (slide_speed <= 0.05f)
+		slide_speed = contact.slide_speed;
+	if (slide_speed <= 0.05f)
+		slide_speed = std::fabs(current_tangent_speed);
+
+	// Only start a forced slide when there is speed or the mutant is actually
+	// pressing into the car. A standing/attacking mutant should not drift.
+	if (slide_speed <= 0.05f && path_normal >= -0.01f &&
+		std::fabs(current_tangent_speed) <= 0.05f)
+		return result;
+
+	// Prefer the body facing: the mutant should slide where it is looking.
+	// If it looks straight into the car, fall back to path/current velocity.
+	// All three values are normalized so the thresholds are comparable.
+	const float facing = facing_dir.dotproduct(slide);
+
+	float intent = 0.f;
+	if (std::fabs(facing) > 0.35f)
+		intent = facing;
+	else if (std::fabs(path_tangent) > 0.25f)
+		intent = path_tangent;
+	else if (std::fabs(current_tangent) > 0.25f)
+		intent = current_tangent;
+
+	const float flip_threshold = std::max(0.f,
+		std::min(1.f, ph_mutant_car_slide_flip_threshold));
+	const u32 lock_ms = static_cast<u32>(std::max(0.f, ph_mutant_car_slide_lock_ms));
+	const u32 confirm_ms = static_cast<u32>(std::max(0.f, ph_mutant_car_slide_confirm_ms));
+
+	Fvector previous_direction = m_car_slide_direction;
+	previous_direction.y = 0.f;
+	const bool has_previous = m_car_slide_direction_valid &&
+		previous_direction.magnitude() > EPS_L &&
+		std::fabs(previous_direction.dotproduct(slide)) >= 0.5f;
+	const float previous = has_previous ? previous_direction.dotproduct(slide) : 0.f;
+
+	float direction = 0.f;
+	if (!has_previous)
+	{
+		// Choose the side once. On an exactly head-on hit the contact point
+		// offset along the face picks the nearer end deterministically.
+		float chosen = 0.f;
+		if (intent != 0.f)
+			chosen = intent;
+		else if (std::fabs(contact.side_bias) > 0.05f)
+			chosen = contact.side_bias;
+		else
+			chosen = 1.f;
+
+		direction = (chosen < 0.f) ? -1.f : 1.f;
+		m_car_slide_direction_time = Device.dwTimeGlobal;
+		m_car_slide_opposite_time = 0;
+	}
+	else
+	{
+		direction = previous;
+
+		const bool opposite = intent != 0.f && intent * previous < 0.f;
+		if (!opposite)
+		{
+			m_car_slide_opposite_time = 0;
+			if (intent != 0.f)
+				direction = (intent < 0.f) ? -1.f : 1.f;
+		}
+		else if (std::fabs(intent) >= flip_threshold)
+		{
+			// Opposite intent must survive the initial lock and then stay
+			// stable for the confirmation time before the side can flip.
+			if (m_car_slide_opposite_time == 0)
+				m_car_slide_opposite_time = Device.dwTimeGlobal;
+
+			const bool lock_elapsed =
+				Device.dwTimeGlobal >= m_car_slide_direction_time + lock_ms;
+			const bool confirm_elapsed =
+				Device.dwTimeGlobal >= m_car_slide_opposite_time + confirm_ms;
+
+			if (lock_elapsed && confirm_elapsed)
+			{
+				direction = (intent < 0.f) ? -1.f : 1.f;
+				m_car_slide_direction_time = Device.dwTimeGlobal;
+				m_car_slide_opposite_time = 0;
+			}
+		}
+		else
+		{
+			m_car_slide_opposite_time = 0;
+		}
+	}
+
+	if (direction < 0.f)
+		slide.invert();
+
+	m_car_slide_direction = slide;
+	m_car_slide_direction_valid = true;
+	m_car_slide_direction_expire = 0;
+
+	path_tangent = path_velocity.dotproduct(slide);
+	current_tangent = current_velocity.dotproduct(slide);
+
+	const float target_tangent = std::max(std::fabs(path_tangent),
+		std::max(0.f, slide_speed) * contact.slide_scale);
+
+	// Do not snap from a head-on push to full sideways speed in one frame;
+	// the character has no path acceleration in external push.
+	float blend = Device.fTimeDelta * 12.f;
+	if (blend < 0.f)
+		blend = 0.f;
+	else if (blend > 1.f)
+		blend = 1.f;
+	const float smooth_tangent = current_tangent + (target_tangent - current_tangent) * blend;
+	result.mad(slide, smooth_tangent - path_tangent);
+
+	m_car_slide_direction = slide;
+	m_car_slide_direction_valid = true;
+
 	return result;
 }
 

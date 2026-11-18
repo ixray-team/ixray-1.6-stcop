@@ -375,6 +375,7 @@ public:
 	float	m_ram_min_speed;
 	float	m_ram_separation_bias;
 	float	m_ram_mutant_push_speed;
+	float	m_ram_mutant_slide_scale;
 	float	m_gigant_kick_impulse;
 
 	struct SHeadlightHideaway

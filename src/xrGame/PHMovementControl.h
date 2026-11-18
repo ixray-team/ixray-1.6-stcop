@@ -65,10 +65,13 @@ bool					ForcedPhysicsControl( );
 	void					SetCarContact( const Fvector& normal, const Fvector& car_velocity,
 											   float separation_bias, float ram_scale,
 											   float mutant_push_speed, float min_car_speed,
-											   float max_push_speed, u32 duration_ms );
+											   float max_push_speed, const Fvector& slide_axis,
+											   const Fvector& outward_axis, float slide_scale,
+											   float slide_speed, float side_bias, bool body_contact,
+											   u32 duration_ms );
 	void					UpdateCarContact();
 	bool					IsCarContactActive() const;
-	Fvector					ApplyCarContact( const Fvector& path_velocity ) const;
+	Fvector					ApplyCarContact( const Fvector& path_velocity, float desired_speed );
 void					UpdateObjectBox( IPHCharacter *ach );
 void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
 void					BlockDamageSet		( u64 steps_num );
@@ -108,6 +111,8 @@ public:
 	bool				isOutBorder			( ){ return in_dead_area_count>0; }
 	void				setOutBorder		( ){ in_dead_area_count=1; }
 private:
+	void				ResetCarSlideDirection	( );
+	void				StartCarLeave			( );
 	void				TraceBorder			( const Fvector &previous_position );
 	void				CheckEnvironment	( const Fvector& V );
 
@@ -142,16 +147,31 @@ private:
 	{
 		Fvector			normal;
 		Fvector			car_velocity;
+		Fvector			slide_axis;
+		Fvector			outward_axis;
 		float			separation_bias;
 		float			ram_scale;
 		float			mutant_push_speed;
 		float			min_car_speed;
 		float			max_push_speed;
+		float			slide_scale;
+		float			slide_speed;
+		float			side_bias;
+		bool			body_contact;
 	};
 
 	SCarContact			m_car_contact;
 	u32					m_car_contact_end;
 	bool				m_car_contact_active;
+	u32					m_car_leave_until;
+	u32					m_car_body_contact_time;
+	float				m_car_slide_speed;
+	Fvector				m_car_slide_direction;
+	bool				m_car_slide_direction_valid;
+	u32					m_car_slide_direction_time;
+	u32					m_car_slide_direction_expire;
+	u32					m_car_slide_opposite_time;
+	u32					m_car_face_switch_time;
 
 	Fvector				vPathPoint;
 	Fvector				_vPathDir;
