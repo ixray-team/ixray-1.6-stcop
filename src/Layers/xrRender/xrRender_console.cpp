@@ -167,7 +167,8 @@ Flags32 ps_r2_ls_flags_ext =
 {
 	RFLAG_CLOUD_SHADOWS |
 	R4FLAG_SCREEN_SPACE_HUD_SHADOWS |
-	R4FLAG_HASHED_ALPHA_TEST
+	R4FLAG_HASHED_ALPHA_TEST |
+	R2FLAG_FAST_DETAILS_UPDATE
 #if RENDER == R_R2 || RENDER == R_R4
 	| RFLAG_SUN_HOM
 #endif
@@ -733,7 +734,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_ls_bloom_threshold",&ps_r2_ls_bloom_threshold,	0.f,	1.f		);
 	CMD4(CCC_Float,		"r2_ls_bloom_speed",	&ps_r2_ls_bloom_speed,		0.f,	100.f	);
 	CMD3(CCC_Mask32,		"r2_ls_bloom_fast",		&ps_r2_ls_flags,			R2FLAG_FASTBLOOM);
-	CMD4(CCC_Float,		"r2_ls_squality",		&ps_r2_ls_squality,			.5f,	10.f		);
+	CMD4(CCC_Float,		"r2_ls_squality",		&ps_r2_ls_squality,			.5f,	5.f		);
 
 	CMD3(CCC_Mask32,		"r2_zfill",				&ps_r2_ls_flags,			R2FLAG_ZFILL	);
 	CMD4(CCC_Float,		"r2_zfill_depth",		&ps_r2_zfill,				.001f,	.5f		);

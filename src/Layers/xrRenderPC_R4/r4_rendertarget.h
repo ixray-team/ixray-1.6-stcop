@@ -25,6 +25,9 @@ private:
 	IRHIBuffer* SunHOMVertices = nullptr;
 	u32 SunHOMTriangleCount = 0;
 	bool SunHOMPrepared = false;
+
+	static RHIViewport GetSpotShadowViewport(const light& Light);
+	static Fmatrix GetSpotShadowTexelAdjust(const light& Light);
 public:
 	enum	eStencilOptimizeMode
 	{
