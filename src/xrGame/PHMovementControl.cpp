@@ -36,20 +36,7 @@
 
 const u64 after_creation_collision_hit_block_steps_number=100;
 
-// Car slide direction stability. The mutant chooses a side once and keeps it
-// through normal contact noise; an opposite intent must be strong and
-// sustained before the side can flip. Exposed as console commands.
-float ph_mutant_car_slide_lock_ms = 400.f;
-float ph_mutant_car_slide_flip_threshold = 0.5f;
-float ph_mutant_car_slide_confirm_ms = 150.f;
-float ph_mutant_car_slide_memory_ms = 600.f;
-
-// A short window during which a mutant that is leaving keeps normal movement
-// control. Without it the next physics contact re-enables external push and
-// the mutant cannot build up separation speed.
-constexpr u32 CarLeaveGraceMs = 300;
-constexpr float CarLeaveOutwardDot = 0.05f;
-constexpr float CarLeaveSeparationDot = 0.1f;
+// Car slide direction stability is configured per car in vehicles.ltx.
 // How long the body normal/axis stays authoritative after the last body
 // contact. If only a wheel touches for longer, the wheel's face becomes the
 // slide source instead of keeping a stale body face forever.
@@ -63,20 +50,6 @@ void CPHMovementControl::ResetCarSlideDirection()
 	m_car_slide_direction_expire = 0;
 	m_car_slide_opposite_time = 0;
 	m_car_face_switch_time = 0;
-}
-
-void CPHMovementControl::StartCarLeave()
-{
-	// Keep the contact data alive so that turning back into the car resumes
-	// sliding immediately, but stop constraining the mutant's velocity:
-	// external push disables normal acceleration, which otherwise keeps it
-	// glued to the car while it is trying to leave.
-	m_car_leave_until = Device.dwTimeGlobal + CarLeaveGraceMs;
-	m_car_slide_speed = 0.f;
-	m_car_slide_opposite_time = 0;
-
-	if (m_character)
-		m_character->SetExternalPush(false);
 }
 
 CPHMovementControl::CPHMovementControl(CObject* parent)
@@ -116,11 +89,15 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_contact.max_push_speed = 0.f;
 	m_car_contact.slide_scale = 0.f;
 	m_car_contact.slide_speed = 0.f;
+	m_car_contact.slide_lock_ms = 400.f;
+	m_car_contact.slide_flip = 0.5f;
+	m_car_contact.slide_confirm_ms = 150.f;
+	m_car_contact.slide_memory_ms = 600.f;
 	m_car_contact.side_bias = 0.f;
+	m_car_contact.start_push_speed = 0.f;
 	m_car_contact.body_contact = false;
 	m_car_contact_end = 0;
 	m_car_contact_active = false;
-	m_car_leave_until = 0;
 	m_car_body_contact_time = 0;
 	m_car_slide_speed = 0.f;
 	ResetCarSlideDirection();
@@ -185,7 +162,9 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	float separation_bias, float ram_scale, float mutant_push_speed,
 	float min_car_speed, float max_push_speed, const Fvector& slide_axis,
 	const Fvector& outward_axis, float slide_scale, float slide_speed,
-	float side_bias, bool body_contact, u32 duration_ms)
+	float side_bias, float start_push_speed, float slide_lock_ms, float slide_flip,
+	float slide_confirm_ms, float slide_memory_ms,
+	bool body_contact, u32 duration_ms)
 {
 	if (!m_character || !m_character->Exists() || m_character->IsActorCharacter() || duration_ms == 0)
 		return;
@@ -211,10 +190,7 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 		}
 
 		m_car_contact_end = Device.dwTimeGlobal + duration_ms;
-		if (Device.dwTimeGlobal >= m_car_leave_until)
-			m_character->SetExternalPush(true);
-		else
-			m_character->SetExternalPush(false);
+		m_character->SetExternalPush(true);
 		return;
 	}
 
@@ -330,7 +306,17 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 		m_car_contact.slide_speed = 0.f;
 	else if (m_car_contact.slide_speed > 50.f)
 		m_car_contact.slide_speed = 50.f;
+	m_car_contact.slide_lock_ms = slide_lock_ms;
+	clamp(m_car_contact.slide_lock_ms, 0.f, 5000.f);
+	m_car_contact.slide_flip = slide_flip;
+	clamp(m_car_contact.slide_flip, 0.f, 1.f);
+	m_car_contact.slide_confirm_ms = slide_confirm_ms;
+	clamp(m_car_contact.slide_confirm_ms, 0.f, 2000.f);
+	m_car_contact.slide_memory_ms = slide_memory_ms;
+	clamp(m_car_contact.slide_memory_ms, 0.f, 5000.f);
 	m_car_contact.side_bias = side_bias;
+	m_car_contact.start_push_speed = start_push_speed;
+	clamp(m_car_contact.start_push_speed, 0.f, 5.f);
 	m_car_contact.body_contact = body_contact;
 	m_car_contact_end = Device.dwTimeGlobal + duration_ms;
 	m_car_contact_active = true;
@@ -338,10 +324,7 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	if (body_contact)
 		m_car_body_contact_time = Device.dwTimeGlobal;
 
-	if (Device.dwTimeGlobal >= m_car_leave_until)
-		m_character->SetExternalPush(true);
-	else
-		m_character->SetExternalPush(false);
+	m_character->SetExternalPush(true);
 }
 
 void CPHMovementControl::UpdateCarContact()
@@ -355,7 +338,6 @@ void CPHMovementControl::UpdateCarContact()
 
 		m_car_contact_active = false;
 		m_car_contact_end = 0;
-		m_car_leave_until = 0;
 		m_car_body_contact_time = 0;
 		m_car_slide_speed = 0.f;
 		m_car_contact.body_contact = false;
@@ -366,11 +348,30 @@ void CPHMovementControl::UpdateCarContact()
 			ResetCarSlideDirection();
 		else
 			m_car_slide_direction_expire = Device.dwTimeGlobal +
-				static_cast<u32>(std::max(0.f, ph_mutant_car_slide_memory_ms));
+				static_cast<u32>(std::max(0.f, m_car_contact.slide_memory_ms));
 
 		if (m_character)
 			m_character->SetExternalPush(false);
 	}
+}
+
+void CPHMovementControl::ValidateCarContact()
+{
+	if (!m_character)
+		return;
+
+	// The normal movement update clears the contact through UpdateCarContact().
+	// A stuck AI/animation state can skip that update, leaving external push
+	// enabled forever. This watchdog runs from the creature's client update and
+	// guarantees that an expired contact can never keep external push alive.
+	if (m_car_contact_active && m_character->Exists() &&
+		Device.dwTimeGlobal < m_car_contact_end)
+		return;
+
+	if (m_car_contact_active)
+		UpdateCarContact();
+
+	m_character->SetExternalPush(false);
 }
 
 bool CPHMovementControl::IsCarContactActive() const
@@ -398,6 +399,12 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 		if (car_target > target_normal)
 			target_normal = car_target;
 	}
+	else if (contact.start_push_speed > 0.f && target_normal < contact.start_push_speed)
+	{
+		// The car is still at zero speed but the engine and transmission are
+		// already applying force toward the mutant.
+		target_normal = contact.start_push_speed;
+	}
 
 	// A mutant may still push a car, but only slowly. This prevents it from
 	// being a kinematic bulldozer while keeping it from getting stuck.
@@ -412,7 +419,7 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	if (external_normal < 0.f)
 		external_normal = 0.f;
 
-	if (car_pushes && external_normal > 0.f)
+	if ((car_pushes || contact.start_push_speed > 0.f) && external_normal > 0.f)
 		external_normal *= contact.ram_scale;
 
 	if (external_normal > contact.max_push_speed)
@@ -438,43 +445,6 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	}
 
 	const float path_speed = path_velocity.magnitude();
-
-	Fvector outward = contact.outward_axis;
-	outward.y = 0.f;
-	if (outward.magnitude() > EPS_L)
-		outward.normalize_safe();
-	else
-		outward = contact.normal;
-
-	const float facing_outward = facing_dir.dotproduct(outward);
-	const float path_outward = path_speed > EPS_L ?
-		path_velocity.dotproduct(outward) / path_speed : 0.f;
-	const float current_outward = current_speed > EPS_L ?
-		current_velocity.dotproduct(outward) / current_speed : 0.f;
-
-	// Facing away alone is ambiguous at body/bumper seams: a mutant sliding
-	// along the side can look "away" from the rear face. Require an actual
-	// outward movement component as well, otherwise keep sliding.
-	const bool separating =
-		path_outward > CarLeaveSeparationDot ||
-		current_outward > CarLeaveSeparationDot;
-	const bool wants_to_leave =
-		(facing_outward > CarLeaveOutwardDot && separating) ||
-		path_outward > 0.5f;
-
-	if (wants_to_leave)
-	{
-		StartCarLeave();
-		return result;
-	}
-
-	// The mutant turned back into the car: resume the contact constraint.
-	if (m_car_leave_until != 0)
-	{
-		m_car_leave_until = 0;
-		if (m_character)
-			m_character->SetExternalPush(true);
-	}
 
 	if (contact.slide_scale <= 0.f || contact.slide_axis.magnitude() <= EPS_L)
 		return result;
@@ -533,9 +503,9 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 		intent = current_tangent;
 
 	const float flip_threshold = std::max(0.f,
-		std::min(1.f, ph_mutant_car_slide_flip_threshold));
-	const u32 lock_ms = static_cast<u32>(std::max(0.f, ph_mutant_car_slide_lock_ms));
-	const u32 confirm_ms = static_cast<u32>(std::max(0.f, ph_mutant_car_slide_confirm_ms));
+		std::min(1.f, contact.slide_flip));
+	const u32 lock_ms = static_cast<u32>(std::max(0.f, contact.slide_lock_ms));
+	const u32 confirm_ms = static_cast<u32>(std::max(0.f, contact.slide_confirm_ms));
 
 	Fvector previous_direction = m_car_slide_direction;
 	previous_direction.y = 0.f;

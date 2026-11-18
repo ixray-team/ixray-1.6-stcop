@@ -67,9 +67,13 @@ bool					ForcedPhysicsControl( );
 											   float mutant_push_speed, float min_car_speed,
 											   float max_push_speed, const Fvector& slide_axis,
 											   const Fvector& outward_axis, float slide_scale,
-											   float slide_speed, float side_bias, bool body_contact,
-											   u32 duration_ms );
+											   float slide_speed, float side_bias,
+											   float start_push_speed,
+											   float slide_lock_ms, float slide_flip,
+											   float slide_confirm_ms, float slide_memory_ms,
+											   bool body_contact, u32 duration_ms );
 	void					UpdateCarContact();
+	void					ValidateCarContact();
 	bool					IsCarContactActive() const;
 	Fvector					ApplyCarContact( const Fvector& path_velocity, float desired_speed );
 void					UpdateObjectBox( IPHCharacter *ach );
@@ -112,7 +116,6 @@ public:
 	void				setOutBorder		( ){ in_dead_area_count=1; }
 private:
 	void				ResetCarSlideDirection	( );
-	void				StartCarLeave			( );
 	void				TraceBorder			( const Fvector &previous_position );
 	void				CheckEnvironment	( const Fvector& V );
 
@@ -156,14 +159,18 @@ private:
 		float			max_push_speed;
 		float			slide_scale;
 		float			slide_speed;
+		float			slide_lock_ms;
+		float			slide_flip;
+		float			slide_confirm_ms;
+		float			slide_memory_ms;
 		float			side_bias;
+		float			start_push_speed;
 		bool			body_contact;
 	};
 
 	SCarContact			m_car_contact;
 	u32					m_car_contact_end;
 	bool				m_car_contact_active;
-	u32					m_car_leave_until;
 	u32					m_car_body_contact_time;
 	float				m_car_slide_speed;
 	Fvector				m_car_slide_direction;

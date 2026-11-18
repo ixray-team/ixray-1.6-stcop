@@ -404,6 +404,11 @@ CCar::CCar()
 	m_ram_separation_bias = 3.f;
 	m_ram_mutant_push_speed = 0.5f;
 	m_ram_mutant_slide_scale = 1.f;
+	m_ram_mutant_slide_lock = 400.f;
+	m_ram_mutant_slide_flip = 0.5f;
+	m_ram_mutant_slide_confirm = 150.f;
+	m_ram_mutant_slide_memory = 600.f;
+	m_ram_start_push_speed = 0.5f;
 	m_gigant_kick_impulse = -1.f;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
@@ -1780,12 +1785,24 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	if (OutwardAxis.magnitude() <= EPS_L)
 		OutwardAxis = Normal;
 
+	// A stationary car with the engine, transmission and throttle engaged is
+	// already applying force toward the mutant even while its measured
+	// velocity is still zero. Give the contact a small initial push.
+	float StartPushSpeed = 0.f;
+	if (Car->b_engine_on && Car->e_state_drive == CCar::drive && (Car->fwp || Car->bkp))
+	{
+		Fvector DriveDirection = Car->XFORM().k;
+		DriveDirection.y = 0.f;
+		DriveDirection.normalize_safe();
+		if (Car->CurrentTransmission() == 0)
+			DriveDirection.invert(); // Transmission 0 is reverse.
+		if (DriveDirection.dotproduct(Normal) > 0.1f)
+			StartPushSpeed = Car->m_ram_start_push_speed;
+	}
+
 	// No impulse is applied to the car. The car's own collision reaction is
 	// left to ODE. The movement manager combines this contact with the
 	// mutant's path velocity every frame while the contact is fresh.
-	if (!ph_mutant_car_friction)
-		cphc.SetFriction(0.f);
-
 	Movement->SetCarContact(
 		Normal,
 		CarVelocity,
@@ -1799,6 +1816,11 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		Car->m_ram_mutant_slide_scale,
 		SlideSpeed,
 		SideBias,
+		StartPushSpeed,
+		Car->m_ram_mutant_slide_lock,
+		Car->m_ram_mutant_slide_flip,
+		Car->m_ram_mutant_slide_confirm,
+		Car->m_ram_mutant_slide_memory,
 		!wheel_contact,
 		static_cast<u32>(Car->m_ram_contact_memory));
 }
@@ -4462,6 +4484,18 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	clamp(m_ram_mutant_push_speed, 0.f, 5.f);
 	m_ram_mutant_slide_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_scale", m_ram_mutant_slide_scale);
 	clamp(m_ram_mutant_slide_scale, 0.f, 1.f);
+
+	m_ram_mutant_slide_lock = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_lock", m_ram_mutant_slide_lock);
+	clamp(m_ram_mutant_slide_lock, 0.f, 5000.f);
+	m_ram_mutant_slide_flip = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_flip", m_ram_mutant_slide_flip);
+	clamp(m_ram_mutant_slide_flip, 0.f, 1.f);
+	m_ram_mutant_slide_confirm = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_confirm", m_ram_mutant_slide_confirm);
+	clamp(m_ram_mutant_slide_confirm, 0.f, 2000.f);
+	m_ram_mutant_slide_memory = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_memory", m_ram_mutant_slide_memory);
+	clamp(m_ram_mutant_slide_memory, 0.f, 5000.f);
+
+	m_ram_start_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_start_push_speed", m_ram_start_push_speed);
+	clamp(m_ram_start_push_speed, 0.f, 5.f);
 
 	// Fixed momentum of the pseudogiant ground kick for this car, kg*m/s.
 	// -1 keeps the legacy 20 * car_mass impulse, 0 disables the car push.
