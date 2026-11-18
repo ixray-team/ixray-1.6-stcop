@@ -1003,10 +1003,10 @@ function sim_squad_scripted:show()
             return
         end
         local spot = ""
-    
+
         local spots = {
             ["dev_debug"] = {
-                ["friends"] = "alife_presentation_squad_friend_debug",
+                ["friend"] = "alife_presentation_squad_friend_debug",
                 ["neutral"] = "alife_presentation_squad_neutral_debug",
                 ["monster"] = "alife_presentation_squad_monster_debug",
                 ["enemy"] = "alife_presentation_squad_enemy_debug",
@@ -1014,25 +1014,23 @@ function sim_squad_scripted:show()
             ["friends"] = "alife_presentation_squad_friend",
             ["neutral"] = "alife_presentation_squad_neutral",
         }
-        
-        
-        local is_not_monster_squad = (not is_squad_monster[self.player_id])
-        
-        if dev_debug then -- IX-Ray: Fixed PDA squad rendering in Lua devmode
-            if is_not_monster_squad then
-                local squad_goodwill_to_actor = game_relations.get_squad_goodwill_to_actor_by_id(self.id) or "undefined"
-                spot = spots["dev_debug"][squad_goodwill_to_actor] or spots["dev_debug"]["enemy"]
+
+        if dev_debug then
+            if is_squad_monster[self.player_id] then
+                spot = spots.dev_debug.monster
             else
-                spot = spots["dev_debug"]["monster"]
+                -- The debug spot is attached to the commander and replaces their relation marker.
+                local commander = db.storage[cmd_id] and db.storage[cmd_id].object
+                local relation = game_relations.get_npcs_relation(commander, db.actor)
+                local goodwill = game_relations.game_relations_by_num[relation]
+                    or game_relations.get_squad_goodwill_to_actor_by_id(self.id)
+                spot = spots.dev_debug[goodwill] or spots.dev_debug.enemy
             end
-        else
-            if is_not_monster_squad then
-                local squad_relation_to_actor = game_relations.get_squad_relation_to_actor_by_id(self.id) or "undefined"
-                spot = spots[squad_relation_to_actor] or ""
-            end
+        elseif not is_squad_monster[self.player_id] then
+            local relation = game_relations.get_squad_relation_to_actor_by_id(self.id)
+            spot = spots[relation] or ""
         end
-		
-		
+
 		if(spot ~= "") then
             if spot == self.spot_section then
                 level.map_change_spot_hint(self.current_spot_id, self.spot_section, self:get_squad_props())
