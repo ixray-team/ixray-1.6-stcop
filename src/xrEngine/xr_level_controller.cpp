@@ -1092,15 +1092,19 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 		return;
 	}
 
-	string128 prim = {};
-	string128 sec = {};
+	const auto GetUtf8Label = [](const char* Label) -> xr_string
+	{
+		return IsUTF8(Label) ? xr_string(Label) : Platform::ANSI_TO_UTF8(Label);
+	};
+	xr_string prim;
+	xr_string sec;
 	string128 gp_prim = {};
 
 	if (pbinding->m_keyboard[0])
-		xr_strcpy(prim, pbinding->m_keyboard[0]->GetDisplayName());
+		prim = GetUtf8Label(pbinding->m_keyboard[0]->GetDisplayName());
 
 	if (pbinding->m_keyboard[1])
-		xr_strcpy(sec, pbinding->m_keyboard[1]->GetDisplayName());
+		sec = GetUtf8Label(pbinding->m_keyboard[1]->GetDisplayName());
 
 	if (pbinding->m_gamepad[0])
 	{
@@ -1111,7 +1115,8 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] &&
 		!pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
 	{
-		xr_strcpy(dst_buff, dst_buff_sz, g_pStringTable->translate("st_key_notbinded").c_str());
+		const shared_str Label = g_pStringTable->translate("st_key_notbinded");
+		xr_strcpy(dst_buff, dst_buff_sz, GetUtf8Label(Label.c_str()).c_str());
 		return;
 	}
 
@@ -1125,24 +1130,12 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 		return;
 	}
 
-	if (prim[0] && sec[0])
+	if (!prim.empty() && !sec.empty())
 	{
-		xr_strcpy(dst_buff, dst_buff_sz, prim);
-		xr_strcat(dst_buff, dst_buff_sz, " , ");
-		xr_strcat(dst_buff, dst_buff_sz, sec);
+		prim += " , ";
+		prim += sec;
 	}
-	else if (prim[0])
-	{
-		xr_strcpy(dst_buff, dst_buff_sz, prim);
-	}
-	else if (sec[0])
-	{
-		xr_strcpy(dst_buff, dst_buff_sz, sec);
-	}
-	else
-	{
-		dst_buff[0] = 0;
-	}
+	xr_strcpy(dst_buff, dst_buff_sz, prim.empty() ? sec.c_str() : prim.c_str());
 }
 
 ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
