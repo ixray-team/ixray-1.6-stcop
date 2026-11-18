@@ -40,6 +40,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, const char* path_ui)
 	CUIXml			xml_doc;
 	xml_doc.Load							(CONFIG_PATH, UI_PATH, "ui_keybinding.xml");
 
+	const float ColumnPadding = xml_doc_ui.ReadAttribFlt(path_ui, 0, "column_padding", 0.0f);
 	int groupsCount = xml_doc.GetNodesNum	("",0,"group");
 
 	for (int i = 0; i<groupsCount; ++i)
@@ -78,15 +79,15 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, const char* path_ui)
 			}
 #endif
 			
-			float item_width				= m_header[1].GetWidth()-3.0f;
-			float item_pos					= m_header[1].GetWndPos().x;
+			float item_width				= m_header[1].GetWidth() - 3.0f - 2.0f * ColumnPadding;
+			float item_pos					= m_header[1].GetWndPos().x + ColumnPadding;
 			CUIEditKeyBind* pEditKB1		= new CUIEditKeyBind(true);pEditKB1->SetAutoDelete(true);
 			pEditKB1->InitKeyBind			(Fvector2().set(item_pos, 0.0f), Fvector2().set(item_width, pItem->GetWndSize().y) );
 			pEditKB1->AssignProps			(exe,"key_binding");
 			pItem->AttachChild				(pEditKB1);
 
-			item_width						= m_header[2].GetWidth()-3.0f;
-			item_pos						= m_header[2].GetWndPos().x;
+			item_width						= m_header[2].GetWidth() - 3.0f - 2.0f * ColumnPadding;
+			item_pos						= m_header[2].GetWndPos().x + ColumnPadding;
 			CUIEditKeyBind* pEditKB2		= new CUIEditKeyBind(false);pEditKB2->SetAutoDelete(true);
 			pEditKB2->InitKeyBind			(Fvector2().set(item_pos, 0.0f), Fvector2().set(item_width, pItem->GetWndSize().y) );
 			pEditKB2->AssignProps			(exe,"key_binding");
