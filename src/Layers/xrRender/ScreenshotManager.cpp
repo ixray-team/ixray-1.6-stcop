@@ -8,8 +8,6 @@
 #endif
 
 #ifdef IXR_LINUX
-#	define STB_IMAGE_WRITE_IMPLEMENTATION
-#	define NULL 0
 #	include <stb/stb_image_write.h>
 #endif
 

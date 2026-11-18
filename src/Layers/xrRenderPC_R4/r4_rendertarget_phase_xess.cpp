@@ -4,69 +4,54 @@
 
 void CRenderTarget::init_xess()
 {
-#if 0
-    g_XESSWrapper.Destroy();
+	g_XESSWrapper.Destroy();
 
-    XeSSWrapper::ContextParameters initParams = {};
+	if (ps_proxy_r_scale_mode != 4)
+	{
+		return;
+	}
 
-    // Устанавливаем выходное разрешение (целевое разрешение экрана)
-    initParams.outputWidth = (u32)RCache.get_target_width();
-    initParams.outputHeight = (u32)RCache.get_target_height();
+	XeSSWrapper::ContextParameters InitParams;
+	InitParams.D3DDevice = RDevice;
 
-    // Устанавливаем качество (можно изменить на XESS_QUALITY_SETTING_BALANCED и т.д.)
-    initParams.qualitySetting = XESS_QUALITY_SETTING_QUALITY;
+	InitParams.DisplaySize = {
+		(int)RCache.get_target_width(),
+		(int)RCache.get_target_height()
+	};
 
-    // Флаги инициализации (можно добавить XESS_INIT_FLAG_HIGH_RES_MV и другие при необходимости)
-    initParams.initFlags = XESS_INIT_FLAG_NONE;
+	InitParams.RenderSize = {
+		(int)RCache.get_width(),
+		(int)RCache.get_height()
+	};
 
-    initParams.device = RDevice;
-
-    g_XESSWrapper.Create(initParams);
-#endif
+	g_XESSWrapper.Create(InitParams);
 }
 
 bool CRenderTarget::phase_xess()
 {
-    GPU_EVENT(XESS);
-#if 0
+	if (!g_XESSWrapper.IsCreated())
+	{
+		return false;
+	}
 
-    XeSSWrapper::DrawParameters xessParams = {};
-    xessParams.deviceContext = RContext;
+	GPU_EVENT(XESS);
 
-    // Устанавливаем входные ресурсы
-    xessParams.pColorTexture = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
-    xessParams.pVelocityTexture = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
-    xessParams.pDepthTexture = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
+	XeSSWrapper::DrawParameters XessParams;
+	XessParams.DeviceContext = RContext;
 
-    // Опциональные ресурсы (можно оставить nullptr)
-    xessParams.pExposureScaleTexture = nullptr;
-    xessParams.pResponsivePixelMaskTexture = nullptr;
+	XessParams.ColorResource = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
+	XessParams.VelocityResource = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
+	XessParams.DepthResource = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
 
-    // Выходной ресурс
-    xessParams.pOutputTexture = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
+	XessParams.OutputResource = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
 
-    // Разрешение исходного рендера
-    xessParams.inputWidth = (u32)RCache.get_width();
-    xessParams.inputHeight = (u32)RCache.get_height();
+	XessParams.RenderWidth = (u32)RCache.get_width();
+	XessParams.RenderHeight = (u32)RCache.get_height();
 
-    // Jitter камеры
-    xessParams.jitterOffsetX = ps_r_taa_jitter_full.x;
-    xessParams.jitterOffsetY = ps_r_taa_jitter_full.y;
+	XessParams.JitterX = ps_r_taa_jitter_full.x;
+	XessParams.JitterY = ps_r_taa_jitter_full.y;
 
-    // Параметры камеры
-    xessParams.nearPlane = Device.fViewportNear;
-    xessParams.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
-    xessParams.fovH = deg2rad(Device.fFOV); // XeSS использует горизонтальный FOV в радианах
+	XessParams.CameraReset = false;
 
-    // Сброс истории (при необходимости)
-    xessParams.resetHistory = 0;
-
-    // Масштаб экспозиции (по умолчанию 1.0)
-    xessParams.exposureScale = 1.0f;
-
-    return g_XESSWrapper.Draw(xessParams);
-#else
-    return false;
-#endif
+	return g_XESSWrapper.Draw(XessParams);
 }
-

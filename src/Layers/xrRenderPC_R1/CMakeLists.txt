@@ -71,6 +71,7 @@ list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__types.h")
 # xrRender_R1 project
 add_library(xrRender_R1 SHARED ${XRR1_SRC_FILES})
 target_precompile_headers(xrRender_R1 PRIVATE "stdafx.h")
+set_source_files_properties("../xrRender/StbImageWrite.cpp" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 # Include directories
 target_include_directories(xrRender_R1 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")

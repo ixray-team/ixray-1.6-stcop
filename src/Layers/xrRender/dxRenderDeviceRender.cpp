@@ -23,6 +23,7 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 #ifdef USE_DX11
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
 #include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
+#include "..\xrRenderPC_R4\OverlayAPI\XESSWrapper.h"
 #endif
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
@@ -38,6 +39,11 @@ void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 		case 3:
 		{
 			g_Fsr3Wrapper.GetRenderScale(RenderScale);
+		}
+		break;
+		case 4:
+		{
+			g_XESSWrapper.GetRenderScale(RenderScale);
 		}
 		break;
 	}

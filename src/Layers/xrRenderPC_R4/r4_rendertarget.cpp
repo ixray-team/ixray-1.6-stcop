@@ -1150,9 +1150,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_sslr);
 
 	g_Fsr3Wrapper.Destroy();
-#if 0
 	g_XESSWrapper.Destroy();
-#endif
 
 	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
 

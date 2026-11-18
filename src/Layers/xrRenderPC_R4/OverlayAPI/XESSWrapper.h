@@ -1,68 +1,67 @@
 #pragma once
 
-#if 0
 #include <xess/xess.h>
 #include <xess/xess_d3d11.h>
 
+// Intel XeSS Super Resolution (D3D11). The D3D11 path is implemented by the Intel graphics
+// driver, so context creation fails with XESS_RESULT_ERROR_UNSUPPORTED_DEVICE on other vendors.
 class XeSSWrapper
 {
 public:
-    struct ContextParameters
-    {
-        ID3D11Device* device = nullptr;
-        uint32_t outputWidth = 0;
-        uint32_t outputHeight = 0;
-        xess_quality_settings_t qualitySetting = XESS_QUALITY_SETTING_QUALITY;
-        uint32_t initFlags = XESS_INIT_FLAG_NONE;
-        void (*fpMessage)(const char* message) = nullptr;
-    };
+	struct ContextParameters
+	{
+		ID3D11Device* D3DDevice = nullptr;
+		Ivector2 RenderSize = { 0, 0 };
+		Ivector2 DisplaySize = { 0, 0 };
+	};
 
-    struct DrawParameters
-    {
-        ID3D11DeviceContext* deviceContext = nullptr;
+	struct DrawParameters
+	{
+		ID3D11DeviceContext* DeviceContext = nullptr;
 
-        // Input resources
-        ID3D11Resource* pColorTexture = nullptr;
-        ID3D11Resource* pVelocityTexture = nullptr;
-        ID3D11Resource* pDepthTexture = nullptr;
-        ID3D11Resource* pExposureScaleTexture = nullptr;
-        ID3D11Resource* pResponsivePixelMaskTexture = nullptr;
+		// Inputs (render resolution)
+		ID3D11Resource* ColorResource = nullptr;
+		ID3D11Resource* VelocityResource = nullptr;
+		ID3D11Resource* DepthResource = nullptr;
 
-        // Output resource
-        ID3D11Resource* pOutputTexture = nullptr;
+		// Output (display resolution)
+		ID3D11Resource* OutputResource = nullptr;
 
-        // Camera parameters
-        float jitterOffsetX = 0.0f;
-        float jitterOffsetY = 0.0f;
-        float exposureScale = 1.0f;
-        uint32_t resetHistory = 0;
+		u32 RenderWidth = 0;
+		u32 RenderHeight = 0;
 
-        // Resolution info
-        uint32_t inputWidth = 0;
-        uint32_t inputHeight = 0;
+		// Sub-pixel jitter applied to the projection, in render-resolution pixels
+		float JitterX = 0.0f;
+		float JitterY = 0.0f;
 
-        // Camera settings
-        float nearPlane = 0.1f;
-        float farPlane = 1000.0f;
-        float fovH = 60.0f; // Horizontal FOV in degrees
-    };
+		bool CameraReset = false;
+	};
 
 public:
-    XeSSWrapper() = default;
-    ~XeSSWrapper();
+	~XeSSWrapper();
 
-    bool Create(const ContextParameters& params);
-    void Destroy();
-    bool Draw(const DrawParameters& params);
+	bool Create(const ContextParameters& Parameters);
+	void Destroy();
+	bool Draw(const DrawParameters& Parameters);
 
-    bool IsCreated() const { return m_context != nullptr; }
+	bool GetRenderScale(float& RenderScale);
+
+	bool IsCreated() const { return Context != nullptr; }
 
 private:
-    shared_str XeSSResultToString(xess_result_t result);
+	static const char* ResultToString(xess_result_t Result);
+	static xess_quality_settings_t GetQualityForPreset(u32 PresetID);
+	static float GetUpscaleRatioForPreset(u32 PresetID);
+	u32 GetOptimalPresetForScale(float Scale);
 
-    xess_context_handle_t m_context = nullptr;
-    ContextParameters m_params;
+	xess_context_handle_t Context = nullptr;
+	xess_2d_t MinInput = { 0, 0 };
+	xess_2d_t MaxInput = { 0, 0 };
+	Ivector2 RenderSize = { 0, 0 };
+
+	bool Unsupported = false;
+	bool HistoryValid = false;
+	u32 LastDrawFrame = 0;
 };
 
 extern XeSSWrapper g_XESSWrapper;
-#endif
