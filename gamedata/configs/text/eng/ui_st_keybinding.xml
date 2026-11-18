@@ -178,22 +178,22 @@
 		<text>Vote "Yes”</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>Weapon 1</text>
+		<text>Melee weapon</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>Weapon 2</text>
+		<text>Secondary weapon</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>Weapon 3</text>
+		<text>Primary weapon</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>Weapon 4</text>
+		<text>Grenades</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>Weapon 5</text>
+		<text>Binoculars</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>Weapon 6</text>
+		<text>Bolts</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Change ammo type</text>

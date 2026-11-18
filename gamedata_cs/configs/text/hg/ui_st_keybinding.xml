@@ -175,22 +175,25 @@
 		<text>"Nem" szavazat</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>1-es fegyver</text>
+		<text>Közelharci fegyver</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>2-es fegyver</text>
+		<text>Másodlagos fegyver</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>3-as fegyver</text>
+		<text>Elsõdleges fegyver</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>4-es fegyver</text>
+		<text>Gránátok</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>5-ös fegyver</text>
+		<text>Távcsõ</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>6-os fegyver</text>
+		<text>Csavarok</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Pisztoly</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Lõszerváltás</text>

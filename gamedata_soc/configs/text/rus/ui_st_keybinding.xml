@@ -172,22 +172,22 @@
 		<text>Проголосовать "Да"</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>Оружие 1</text>
+		<text>Холодное оружие</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>Оружие 2</text>
+		<text>Дополнительное оружие</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>Оружие 3</text>
+		<text>Основное оружие</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>Оружие 4</text>
+		<text>Гранаты</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>Оружие 5</text>
+		<text>Бинокль</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>Оружие 6</text>
+		<text>Болты</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Сменить тип патронов</text>

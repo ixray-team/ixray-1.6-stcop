@@ -178,22 +178,25 @@
 		<text>Hlasovat „Ne“</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>Zbraò 1</text>
+		<text>Zbraò na blízko</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>Zbraò 2</text>
+		<text>Vedlejší zbraò</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>Zbraò 3</text>
+		<text>Hlavní zbraò</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>Zbraò 4</text>
+		<text>Granáty</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>Zbraò 5</text>
+		<text>Dalekohled</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>Zbraò 6</text>
+		<text>Šrouby</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Pistole</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Zmìnit typ munice</text>

@@ -178,22 +178,25 @@
 		<text>G³osuj za</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>Broñ 1</text>
+		<text>Broñ bia³a</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>Broñ 2</text>
+		<text>Broñ dodatkowa</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>Broñ 3</text>
+		<text>Broñ g³ówna</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>Broñ 4</text>
+		<text>Granaty</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>Broñ 5</text>
+		<text>Lornetka</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>Broñ 6</text>
+		<text>Œruby</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Pistolet</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Zmieñ typ amunicji</text>

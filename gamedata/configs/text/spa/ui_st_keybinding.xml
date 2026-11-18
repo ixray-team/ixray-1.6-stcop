@@ -178,22 +178,25 @@
 		<text>Votar "Sí"</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>Arma 1</text>
+		<text>Arma cuerpo a cuerpo</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>Arma 2</text>
+		<text>Arma secundaria</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>Arma 3</text>
+		<text>Arma principal</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>Arma 4</text>
+		<text>Granadas</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>Arma 5</text>
+		<text>Prismáticos</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>Arma 6</text>
+		<text>Tornillos</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Pistola</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Cambiar munición</text>

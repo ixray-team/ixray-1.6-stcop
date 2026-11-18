@@ -178,22 +178,25 @@
 		<text>Mit "Ja" abstimmen</text>
 	</string>
 	<string id="kb_weapon1">
-		<text>Waffe 1</text>
+		<text>Nahkampfwaffe</text>
 	</string>
 	<string id="kb_weapon2">
-		<text>Waffe 2</text>
+		<text>Sekundärwaffe</text>
 	</string>
 	<string id="kb_weapon3">
-		<text>Waffe 3</text>
+		<text>Primärwaffe</text>
 	</string>
 	<string id="kb_weapon4">
-		<text>Waffe 4</text>
+		<text>Granaten</text>
 	</string>
 	<string id="kb_weapon5">
-		<text>Waffe 5</text>
+		<text>Fernglas</text>
 	</string>
 	<string id="kb_weapon6">
-		<text>Waffe 6</text>
+		<text>Schrauben</text>
+	</string>
+	<string id="kb_weapon7">
+		<text>Pistole</text>
 	</string>
 	<string id="kb_wpn_next">
 		<text>Munitionsart wechseln</text>
