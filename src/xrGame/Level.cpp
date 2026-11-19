@@ -919,6 +919,14 @@ void CLevel::OnRender()
 	if (!game)
 		return;
 
+#ifdef DEBUG_DRAW
+	// The debug overlay changes the global stat font height. Save it here so
+	// pFontStat users such as rs_car_info keep their normal size when debug
+	// is toggled off.
+	float SavedFontStatHeight = 0.f;
+	bool RestoreFontStatHeight = false;
+#endif
+
 	Game().OnRender();
 	//  
 	//Device.Statistic->TEST1.Begin();
@@ -1059,6 +1067,9 @@ void CLevel::OnRender()
 #endif
 
 		//---------------------------------------------------------------------
+		SavedFontStatHeight = UI().Font().pFontStat->GetHeight();
+		RestoreFontStatHeight = true;
+
 		UI().Font().pFontStat->OutSet		(170,630);
 		UI().Font().pFontStat->SetHeight	(16.0f);
 		UI().Font().pFontStat->SetColor	(0xffff0000);
@@ -1118,6 +1129,11 @@ void CLevel::OnRender()
 	}
 #elif defined(DEBUG_DRAW)
 	debug_renderer().render();
+#endif
+
+#ifdef DEBUG_DRAW
+	if (RestoreFontStatHeight)
+		UI().Font().pFontStat->SetHeight(SavedFontStatHeight);
 #endif
 }
 
