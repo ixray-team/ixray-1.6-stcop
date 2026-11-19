@@ -22,13 +22,13 @@ namespace
 		bool Hit;
 	};
 
-	bool NoFoliageRayCallback(collide::rq_result& Result, LPVOID Params)
+	bool NoFoliageRayCallback(const collide::rq_result& Result, LPVOID Params)
 	{
 		SNoFoliageQuery* Query = static_cast<SNoFoliageQuery*>(Params);
 
-		if (Query->IgnoreFoliage && Result.O == nullptr && Result.element >= 0)
+		if (Query->IgnoreFoliage && Result.IsStatic() && Result.element >= 0)
 		{
-			const CDB::TRI& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
+			const CDB::TRI& Triangle = Result.GetStatic()->tris[Result.element];
 			const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
 			if (Material != nullptr && (Material->Flags.test(SGameMtl::flPassable) || Material->Flags.test(SGameMtl::flActorObstacle)))
 			{
