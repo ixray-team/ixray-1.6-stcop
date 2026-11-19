@@ -607,6 +607,18 @@ float stalker_movement_manager_base::speed					(const EMovementDirection &moveme
 	);
 }
 
+float stalker_movement_manager_base::free_run_speed() const
+{
+	if (!m_velocities)
+		return 0.f;
+
+	return m_velocities->velocity(
+		MonsterSpace::eMentalStateFree,
+		MonsterSpace::eBodyStateStand,
+		MonsterSpace::eMovementTypeRun,
+		MonsterSpace::eMovementDirectionForward);
+}
+
 void stalker_movement_manager_base::setup_speed_from_animation(const float &speed)
 {
 	set_desirable_speed					(object().m_fCurSpeed = speed);

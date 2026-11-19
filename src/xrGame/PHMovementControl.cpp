@@ -43,6 +43,7 @@ const u64 after_creation_collision_hit_block_steps_number=100;
 // contact. If only a wheel touches for longer, the wheel's face becomes the
 // slide source instead of keeping a stale body face forever.
 constexpr u32 CarBodyContactAuthorityMs = 150;
+constexpr float CarSlideSpeedFactor = 0.5f;
 
 void CPHMovementControl::ResetCarSlideDirection()
 {
@@ -93,7 +94,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_contact.min_car_speed = 0.f;
 	m_car_contact.max_push_speed = 0.f;
 	m_car_contact.slide_scale = 0.f;
-	m_car_contact.slide_speed = 0.f;
+	m_car_contact.min_slide_speed = 0.f;
 	m_car_contact.slide_lock_ms = 400.f;
 	m_car_contact.slide_flip = 0.5f;
 	m_car_contact.slide_confirm_ms = 150.f;
@@ -170,7 +171,7 @@ void CPHMovementControl::ApplyImpulse(const Fvector& dir,const float P)
 void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car_velocity,
 	float separation_bias, float ram_scale, float mutant_push_speed,
 	float min_car_speed, float max_push_speed, const Fvector& slide_axis,
-	float slide_scale, float slide_speed, float side_bias, float start_push_speed,
+	float slide_scale, float min_slide_speed, float side_bias, float start_push_speed,
 	float slide_lock_ms, float slide_flip, float slide_confirm_ms, float slide_memory_ms,
 	bool body_contact, u32 duration_ms)
 {
@@ -287,11 +288,11 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 		m_car_contact.slide_scale = 0.f;
 	else if (m_car_contact.slide_scale > 1.f)
 		m_car_contact.slide_scale = 1.f;
-	m_car_contact.slide_speed = slide_speed;
-	if (m_car_contact.slide_speed < 0.f)
-		m_car_contact.slide_speed = 0.f;
-	else if (m_car_contact.slide_speed > 50.f)
-		m_car_contact.slide_speed = 50.f;
+	m_car_contact.min_slide_speed = min_slide_speed;
+	if (m_car_contact.min_slide_speed < 0.f)
+		m_car_contact.min_slide_speed = 0.f;
+	else if (m_car_contact.min_slide_speed > 50.f)
+		m_car_contact.min_slide_speed = 50.f;
 	m_car_contact.slide_lock_ms = slide_lock_ms;
 	clamp(m_car_contact.slide_lock_ms, 0.f, 5000.f);
 	m_car_contact.slide_flip = slide_flip;
@@ -505,9 +506,14 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	if (desired_speed > 0.05f)
 		m_car_slide_speed = desired_speed;
 
+	// A slow car only lowers the forced minimum. It must not brake a target
+	// that is already moving faster than car_speed / 2.
+	const float car_slide_limit = contact.car_velocity.magnitude() * CarSlideSpeedFactor;
+	const float effective_min_slide_speed = std::min(contact.min_slide_speed, car_slide_limit);
+
 	float slide_speed = (desired_speed > 0.05f) ? desired_speed : m_car_slide_speed;
-	if (slide_speed <= 0.05f)
-		slide_speed = contact.slide_speed;
+	slide_speed = std::max(slide_speed, effective_min_slide_speed);
+
 	if (slide_speed <= 0.05f)
 		slide_speed = std::fabs(current_tangent_speed);
 

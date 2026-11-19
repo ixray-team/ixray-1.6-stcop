@@ -68,6 +68,7 @@ public:
 			void	set_nearest_accessible_position	();
 			void	set_nearest_accessible_position	(Fvector desired_position, u32 level_vertex_id);
 			float	speed							(const EMovementDirection &movement_direction);
+			float	free_run_speed					() const;
 			void	setup_speed_from_animation		(const float &speed);
 
 public:

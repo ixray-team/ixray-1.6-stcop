@@ -42,9 +42,12 @@
 - контакт корпуса считается приоритетным на `150 мс`; контакты колёс
   не заменяют ось slide корпуса, пока этот приоритет не истечёт;
 - `ApplyCarContact()` ограничивает только нормальную скорость толкания, а
-  касательную ведёт к выбранному краю: минимальная скорость берётся из
-  `desired_speed`/скорости бега мутанта и масштабируется
-  `ram_mutant_slide_scale`;
+  касательную ведёт к выбранному краю: базовая скорость slide — это
+  `desired_speed`, но не ниже `RunNormal` для мутанта или
+  `free_stand_run_forward` для NPC. Скорость машины ограничивает только
+  эту нижнюю границу, а не `desired_speed`: `effective_min =
+  min(min_slide_speed, |car_velocity| * 0.5)`. После этого скорость
+  масштабируется `ram_mutant_slide_scale`;
 - желаемая касательная скорость `m_car_slide_tangent` сохраняется между
   кадрами и плавно ведётся к `target_tangent`; физика/трение больше не
   сбрасывают её каждый кадр, поэтому slide может раскачаться и при лобовом
@@ -73,9 +76,10 @@
 
 Этот слой **не наносит урон**. Он только меняет скорость персонажа. Актёр,
 ragdoll’ы и объекты без `CCharacterPhysicsSupport` в нём не участвуют.
-НПС участвуют как живые `CEntityAlive`: для них `SlideSpeed` остаётся
-нулевым, поэтому slide берётся из `desired_speed`/path или текущей
-касательной скорости.
+НПС участвуют как живые `CEntityAlive`: для мутанта нижняя граница slide —
+`RunNormal`, для NPC — `free_stand_run_forward` из его `movement_speeds`.
+Скорость машины ограничивает только эту нижнюю границу; `desired_speed`
+не ограничивается. Затем применяется `ram_mutant_slide_scale`.
 
 ## 2. Параметры
 
@@ -94,7 +98,7 @@ ragdoll’ы и объекты без `CCharacterPhysicsSupport` в нём не 
 | `ram_separation_bias` | м/с | `3` | `0..15` | Добавка к целевой нормальной скорости, чтобы вытолкнуть мутанта из машины |
 | `ram_mutant_push_speed` | м/с | `0.5` | `0..5` | Максимальная скорость, с которой мутант может «толкать» машину |
 | `ram_start_push_speed` | м/с | `0.5` | `0..5` | Начальный наружный толчок, когда машина стоит, но двигатель/передача/газ уже направлены в мутанта |
-| `ram_mutant_slide_scale` | множитель | `1.0` | `0..1` | Масштаб принудительной касательной скорости slide; `0` отключает форсированный slide |
+| `ram_mutant_slide_scale` | множитель | `1.0` | `0..1` | Общий масштаб принудительной касательной скорости slide для мутантов и NPC; применяется после ограничения нижнего порога; `0` отключает форсированный slide |
 | `ram_mutant_slide_lock` | мс | `400` | `0..5000` | Минимальное время удержания выбранной стороны slide |
 | `ram_mutant_slide_flip` | доля | `0.5` | `0..1` | Порог противоположного намерения для разворота стороны |
 | `ram_mutant_slide_confirm` | мс | `150` | `0..2000` | Сколько противоположное намерение должно держаться до разворота |
@@ -165,10 +169,10 @@ AI/анимации. Пока контакт ещё считается свеж�
 
 `CarRamCallback()` принимает живых `CEntityAlive` с
 `CCharacterPhysicsSupport` и существующим character. Актёр, мёртвые
-ragdoll’ы и объекты без character-физики отбрасываются. Для НПС legacy
-`SlideSpeed` не задаётся (`0`), поэтому их slide работает только от
-`desired_speed`/path/текущей касательной скорости. Скорость через
-`eVelocityParameterRunNormal` по-прежнему берётся только у `CBaseMonster`.
+ragdoll’ы и объекты без character-физики отбрасываются. Для мутанта
+`MinSlideSpeed` берётся из `eVelocityParameterRunNormal`, для NPC — из
+`free_stand_run_forward` его `movement_speeds`. Это нижняя граница до
+применения `ram_mutant_slide_scale`.
 
 ### 4.5. Скорость берётся у корневого элемента
 
@@ -229,25 +233,41 @@ box, а не collision shell. Для машин с выступающими ко
 колёсных контактов позиция берётся из `cphc.GetPosition()`;
 если box непригоден, используется касательная от нормали контакта.
 
-### 4.11. Slide у стоящего персонажа
+### 4.11. Скорость slide и нижняя граница
 
-`CarRamCallback()` передаёт `SlideSpeed` из
-`eVelocityParameterRunNormal` только для `CBaseMonster` (скорость бега
-мутанта). Для НПС `SlideSpeed` остаётся нулевым. Раньше
-`ApplyCarContact()` при `desired_speed <= 0.05` использовал
-`contact.slide_speed`, поэтому стоящий или атакующий мутант, касающийся
-машины, мог получить принудительную касательную скорость. Теперь перед
-slide проверяется `has_intent`:
+`CarRamCallback()` передаёт `min_slide_speed`:
+
+- для `CBaseMonster` — `Velocity_RunFwdNormal.velocity.linear`;
+- для `CAI_Stalker` — `free_stand_run_forward` из его `movement_speeds`
+  (`3.0` у обычного сталкера, `0.8` у зомбированного).
+
+В `ApplyCarContact()`:
 
 ```text
-desired_speed > 0.05 || path_normal < -0.01 || car_pushes ||
-|current_tangent_speed| > 0.05
+slide_speed = desired_speed (> 0.05) ?: m_car_slide_speed
+effective_min_slide_speed = min(min_slide_speed, |car_velocity| * 0.5)
+slide_speed = max(slide_speed, effective_min_slide_speed)
+slide_speed = |current_tangent_speed|, если slide_speed <= 0.05
+
+target_tangent = max(|path_tangent|, slide_speed * slide_scale)
 ```
 
-Если намерения нет, `ApplyCarContact()` возвращает path-скорость без slide,
-а `m_car_slide_tangent` сбрасывается. Slide у стоящего мутанта остаётся
-только если path реально давит в машину (`path_normal < -0.01`) или машина
-сама толкает мутанта (`car_pushes`).
+Порядок важен:
+
+- floor применяется всегда, а не только к стоящей цели. Идущий мутант тоже
+  получит минимум `RunNormal`, NPC — `free_stand_run_forward`;
+- скорость машины ограничивает только floor: `effective_min =
+  min(min_slide_speed, |car_velocity| * 0.5)`. `desired_speed` не режется,
+  поэтому уже бегущая цель не тормозится медленной машиной;
+- `path_tangent` не режется этим cap: собственная path-скорость цели
+  сохраняется через `max`;
+- `has_intent` по-прежнему не даёт slide стоящей цели у машины, которая
+  не толкает.
+
+`ram_min_speed` остаётся порогом нормального push. Его не нужно ставить в
+`0`: при `car_pushes == true` к нормальной скорости сразу добавляется
+`ram_separation_bias`, и машина на почти нулевой скорости получит резкий
+нормальный толчок. Рабочее значение — `0.1` м/с.
 
 ### 4.12. Память направления и смена машины
 
