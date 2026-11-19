@@ -37,6 +37,23 @@
 #include "PHMovementControl.h"
 #include "../xrPhysics/PhysicsCommon.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "ai/monsters/bloodsucker/bloodsucker.h"
+#include "ai/monsters/boar/boar.h"
+#include "ai/monsters/burer/burer.h"
+#include "ai/monsters/cat/cat.h"
+#include "ai/monsters/chimera/chimera.h"
+#include "ai/monsters/controller/controller.h"
+#include "ai/monsters/dog/dog.h"
+#include "ai/monsters/flesh/flesh.h"
+#include "ai/monsters/fracture/fracture.h"
+#include "ai/monsters/poltergeist/poltergeist.h"
+#include "ai/monsters/pseudodog/pseudodog.h"
+#include "ai/monsters/pseudogigant/pseudo_gigant.h"
+#include "ai/monsters/snork/snork.h"
+#include "ai/monsters/tushkano/tushkano.h"
+#include "ai/monsters/zombie/zombie.h"
+#include "ai/monsters/rats/ai_rat.h"
+#include "ai/stalker/ai_stalker.h"
 #include "ai/monsters/control_movement_base.h"
 #include "ai/monsters/monster_velocity_space.h"
 #include "car_memory.h"
@@ -1591,6 +1608,46 @@ void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, S
 	}
 }
 
+static const char* GetRamPushType(CObject* object)
+{
+	if (smart_cast<CAI_Bloodsucker*>(object))
+		return "bloodsucker";
+	if (smart_cast<CAI_Boar*>(object))
+		return "boar";
+	if (smart_cast<CBurer*>(object))
+		return "burer";
+	if (smart_cast<CCat*>(object))
+		return "cat";
+	if (smart_cast<CChimera*>(object))
+		return "chimera";
+	if (smart_cast<CController*>(object))
+		return "controller";
+	if (smart_cast<CAI_Dog*>(object))
+		return "dog";
+	if (smart_cast<CAI_Flesh*>(object))
+		return "flesh";
+	if (smart_cast<CFracture*>(object))
+		return "fracture";
+	if (smart_cast<CPoltergeist*>(object))
+		return "poltergeist";
+	if (smart_cast<CAI_PseudoDog*>(object))
+		return "pseudodog";
+	if (smart_cast<CPseudoGigant*>(object))
+		return "pseudogiant";
+	if (smart_cast<CSnork*>(object))
+		return "snork";
+	if (smart_cast<CTushkano*>(object))
+		return "tushkano";
+	if (smart_cast<CZombie*>(object))
+		return "zombie";
+	if (smart_cast<CAI_Rat*>(object))
+		return "rat";
+	if (smart_cast<CAI_Stalker*>(object))
+		return "npc";
+
+	return nullptr;
+}
+
 void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl* material_1, SGameMtl* material_2)
 {
 	if (!do_colide)
@@ -1618,14 +1675,8 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	if (Other->cast_actor() != nullptr || Other->cast_car() != nullptr || Other->cast_inventory_item() != nullptr)
 		return;
 
-	const bool car_is_first = (A != nullptr && A->cast_car() != nullptr);
-	const bool wheel_contact = cphc.HasObjectCallback(car_is_first, &CCar::SWheel::WheellCollisionCallback);
-
-	// Only living mutants use the additive ram push. Stalkers keep their
-	// existing movement behaviour, and ragdolls are handled by physics.
-	if (Other->cast_base_monster() == nullptr)
-		return;
-
+	// Living characters (mutants and NPCs) use the additive ram push.
+	// Dead ragdolls and non-character objects are left to physics.
 	CEntityAlive* Alive = Other->cast_entity_alive();
 	if (Alive == nullptr || !Alive->g_Alive() || Other->getDestroy())
 		return;
@@ -1637,6 +1688,9 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	CPHMovementControl* Movement = Support->movement();
 	if (!Movement->CharacterExist())
 		return;
+
+	const bool car_is_first = (A != nullptr && A->cast_car() != nullptr);
+	const bool wheel_contact = cphc.HasObjectCallback(car_is_first, &CCar::SWheel::WheellCollisionCallback);
 
 	// The car's velocity at the actual contact point includes its angular
 	// motion, so a sideways or spinning hit is calculated correctly.
@@ -1684,11 +1738,12 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	// than deriving a tangent from a noisy corner/edge contact normal.
 	Fvector SlideAxis;
 	SlideAxis.set(0.f, 0.f, 0.f);
-	Fvector OutwardAxis;
-	OutwardAxis.set(0.f, 0.f, 0.f);
 	float SlideSpeed = 0.f;
 	float SideBias = 0.f;
 
+	// Keep the legacy run-speed fallback for mutants. NPCs intentionally keep
+	// zero here: their slide comes from desired_speed/path or the current
+	// tangent, not from a monster run parameter.
 	if (CBaseMonster* Monster = Other->cast_base_monster())
 	{
 		const SVelocityParam& Run = Monster->move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
@@ -1745,23 +1800,6 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		LocalOffset.sub(Local, BoxCenter);
 		SideBias = LocalOffset.dotproduct(LocalSlide);
 
-		// The escape reference must belong to the same face as the slide
-		// axis. A separate nearest-face test could point at the rear while
-		// the slide still follows the side, which made the mutant stop at
-		// body/bumper seams while it was still sliding along the side.
-		Fvector LocalOutward;
-		if (XFace)
-			LocalOutward.set((Local.x >= BoxCenter.x) ? 1.f : -1.f, 0.f, 0.f);
-		else
-			LocalOutward.set(0.f, 0.f, (Local.z >= BoxCenter.z) ? 1.f : -1.f);
-
-		Car->XFORM().transform_dir(OutwardAxis, LocalOutward);
-		OutwardAxis.y = 0.f;
-		if (OutwardAxis.magnitude() > EPS_L)
-			OutwardAxis.normalize_safe();
-		else
-			OutwardAxis.set(0.f, 0.f, 0.f);
-
 		Car->XFORM().transform_dir(SlideAxis, LocalSlide);
 		SlideAxis.y = 0.f;
 		if (SlideAxis.magnitude() > EPS_L)
@@ -1782,9 +1820,6 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 			SlideAxis.set(0.f, 0.f, 0.f);
 	}
 
-	if (OutwardAxis.magnitude() <= EPS_L)
-		OutwardAxis = Normal;
-
 	// A stationary car with the engine, transmission and throttle engaged is
 	// already applying force toward the mutant even while its measured
 	// velocity is still zero. Give the contact a small initial push.
@@ -1803,16 +1838,26 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	// No impulse is applied to the car. The car's own collision reaction is
 	// left to ODE. The movement manager combines this contact with the
 	// mutant's path velocity every frame while the contact is fresh.
+	// Per-creature override: resolve the engine class once and use the
+	// central ram_push_scale table from vehicles.ltx. Unlisted classes keep
+	// the car's base value.
+	if (!Movement->RamPushScaleResolved())
+		Movement->ResolveRamPushScale(GetRamPushType(Other));
+
+	float RamPushScale = Car->m_ram_push_scale;
+	const float CharacterRamPushScale = Movement->RamPushScaleOverride();
+	if (CharacterRamPushScale >= 0.f)
+		RamPushScale = CharacterRamPushScale;
+
 	Movement->SetCarContact(
 		Normal,
 		CarVelocity,
 		Car->m_ram_separation_bias,
-		Car->m_ram_push_scale,
+		RamPushScale,
 		Car->m_ram_mutant_push_speed,
 		Car->m_ram_min_speed,
 		Car->m_ram_max_push_speed,
 		SlideAxis,
-		OutwardAxis,
 		Car->m_ram_mutant_slide_scale,
 		SlideSpeed,
 		SideBias,

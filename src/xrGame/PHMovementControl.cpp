@@ -83,7 +83,6 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_contact.normal.set(0.f, 0.f, 1.f);
 	m_car_contact.car_velocity.set(0.f, 0.f, 0.f);
 	m_car_contact.slide_axis.set(0.f, 0.f, 0.f);
-	m_car_contact.outward_axis.set(0.f, 0.f, 0.f);
 	m_car_contact.separation_bias = 0.f;
 	m_car_contact.ram_scale = 1.f;
 	m_car_contact.mutant_push_speed = 0.f;
@@ -100,6 +99,8 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_contact.body_contact = false;
 	m_car_contact_end = 0;
 	m_car_contact_active = false;
+	m_ram_push_scale_override = -1.f;
+	m_ram_push_scale_resolved = false;
 	m_car_body_contact_time = 0;
 	m_car_slide_speed = 0.f;
 	ResetCarSlideDirection();
@@ -163,9 +164,8 @@ void CPHMovementControl::ApplyImpulse(const Fvector& dir,const float P)
 void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car_velocity,
 	float separation_bias, float ram_scale, float mutant_push_speed,
 	float min_car_speed, float max_push_speed, const Fvector& slide_axis,
-	const Fvector& outward_axis, float slide_scale, float slide_speed,
-	float side_bias, float start_push_speed, float slide_lock_ms, float slide_flip,
-	float slide_confirm_ms, float slide_memory_ms,
+	float slide_scale, float slide_speed, float side_bias, float start_push_speed,
+	float slide_lock_ms, float slide_flip, float slide_confirm_ms, float slide_memory_ms,
 	bool body_contact, u32 duration_ms)
 {
 	if (!m_character || !m_character->Exists() || m_character->IsActorCharacter() || duration_ms == 0)
@@ -184,14 +184,6 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 
 	if (body_authoritative)
 	{
-		Fvector wheel_outward = outward_axis;
-		wheel_outward.y = 0.f;
-		if (wheel_outward.magnitude() > EPS_L)
-		{
-			wheel_outward.normalize_safe();
-			m_car_contact.outward_axis = wheel_outward;
-		}
-
 		m_car_contact_end = Device.dwTimeGlobal + duration_ms;
 		m_character->SetExternalPush(true);
 		return;
@@ -218,19 +210,9 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	else
 		contact_slide.set(0.f, 0.f, 0.f);
 
-	Fvector contact_outward = outward_axis;
-	contact_outward.y = 0.f;
-	if (contact_outward.magnitude() > EPS_L)
-		contact_outward.normalize_safe();
-	else
-		contact_outward = contact_normal;
-
 	// Keep the previous face while the contact is near a corner. Switch only
 	// after a short lock and when the contact normal clearly belongs to the
 	// new face, otherwise alternating contact points make the mutant jitter.
-	// The outward axis is kept together with the slide axis so that escape
-	// never judges the mutant against a different face than the one it slides
-	// along (body/bumper seams are the main case).
 	bool keep_previous_face = false;
 	if (was_active && m_car_contact.slide_axis.magnitude() > EPS_L &&
 		contact_slide.magnitude() > EPS_L)
@@ -256,11 +238,7 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	}
 
 	if (keep_previous_face)
-	{
 		contact_slide = m_car_contact.slide_axis;
-		if (m_car_contact.outward_axis.magnitude() > EPS_L)
-			contact_outward = m_car_contact.outward_axis;
-	}
 
 	// Keep the chosen slide side across short contact losses and body/wheel
 	// transitions. It is dropped only when the slide axis changed (another
@@ -293,7 +271,6 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	m_car_contact.car_velocity = car_velocity;
 	m_car_contact.car_velocity.y = 0.f;
 	m_car_contact.slide_axis = contact_slide;
-	m_car_contact.outward_axis = contact_outward;
 	m_car_contact.separation_bias = separation_bias;
 	m_car_contact.ram_scale = ram_scale;
 	m_car_contact.mutant_push_speed = mutant_push_speed;
@@ -334,6 +311,26 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	}
 
 	m_character->SetExternalPush(true);
+}
+
+void CPHMovementControl::ResolveRamPushScale(const char* type)
+{
+	if (m_ram_push_scale_resolved)
+		return;
+
+	m_ram_push_scale_resolved = true;
+	m_ram_push_scale_override = -1.f;
+
+	if (type == nullptr || type[0] == '\0')
+		return;
+
+	m_ram_push_scale_override =
+		pSettings->read_if_exists<float>("ram_push_scale", type, -1.f);
+
+	if (m_ram_push_scale_override >= 0.f)
+		clamp(m_ram_push_scale_override, 0.f, 10.f);
+	else
+		m_ram_push_scale_override = -1.f;
 }
 
 void CPHMovementControl::UpdateCarContact()
@@ -446,15 +443,6 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 		current_velocity.set(0.f, 0.f, 0.f);
 	const float current_speed = current_velocity.magnitude();
 
-	Fvector facing_dir;
-	facing_dir.set(0.f, 0.f, 0.f);
-	if (pObject != nullptr)
-	{
-		facing_dir = pObject->Direction();
-		facing_dir.y = 0.f;
-		facing_dir.normalize_safe();
-	}
-
 	const float path_speed = path_velocity.magnitude();
 
 	if (contact.slide_scale <= 0.f || contact.slide_axis.magnitude() <= EPS_L)
@@ -520,6 +508,15 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	// Prefer the body facing: the mutant should slide where it is looking.
 	// If it looks straight into the car, fall back to path/current velocity.
 	// All three values are normalized so the thresholds are comparable.
+	Fvector facing_dir;
+	facing_dir.set(0.f, 0.f, 0.f);
+	if (pObject != nullptr)
+	{
+		facing_dir = pObject->Direction();
+		facing_dir.y = 0.f;
+		facing_dir.normalize_safe();
+	}
+
 	const float facing = facing_dir.dotproduct(slide);
 
 	float intent = 0.f;
@@ -633,9 +630,6 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	m_car_slide_tangent += (target_tangent - m_car_slide_tangent) * blend;
 	const float smooth_tangent = m_car_slide_tangent;
 	result.mad(slide, smooth_tangent - path_tangent);
-
-	m_car_slide_direction = slide;
-	m_car_slide_direction_valid = true;
 
 	return result;
 }
@@ -1443,6 +1437,7 @@ void CPHMovementControl::Load(const char* section)
 
 	fCollisionDamageFactor = pSettings->read_if_exists<float>(section, "ph_collision_damage_factor", fCollisionDamageFactor);
 	R_ASSERT3(fCollisionDamageFactor <= 1.f, "ph_collision_damage_factor >1.", section);
+
 	SetCrashSpeeds(cs_min, cs_max);
 	SetMass(mass);
 }
