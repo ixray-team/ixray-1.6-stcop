@@ -109,20 +109,20 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, CPHContac
 		return;
 	}
 
-	auto tele = static_cast<STelekineticObject*>(c.GetCallbackData(bo1));
-
-	if (tele == nullptr)
-	{
-		return;
-	}
-
 	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self);
 	if (ph_self_object == nullptr || ph_self_object->m_pPhysicsShell == nullptr)
 	{
 		return;
 	}
 
+	STelekineticObject* tele = ph_self_object->get_telekinetic_object();
+	if (tele == nullptr)
+	{
+		return;
+	}
+
 	ph_self_object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
+	ph_self_object->set_telekinetic_object(nullptr);
 
 	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver) : nullptr;
 	if (ph_damage_receiver == nullptr)
@@ -386,6 +386,9 @@ void STelekineticObject::release()
 		params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), random_dir, params.object->m_pPhysicsShell->getMass() * 2.f);
 	}
 
+	params.object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
+	params.object->set_telekinetic_object(nullptr);
+
 	stop_object_particles();
 	switch_state(ETelekineticState::TS_NONE);
 }
@@ -409,7 +412,7 @@ void STelekineticObject::throw_object_time(const Fvector& target, float time)
 	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения, 
 	// а все рассчёт проходили в кастомном collide_callback.
 	params.object->set_collision_hit_callback(new SCollisionHitCallback(params.object));
-	params.object->m_pPhysicsShell->set_CallbackData(this);
+	params.object->set_telekinetic_object(this);
 	params.object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
 
 	params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), transference, params.object->m_pPhysicsShell->getMass());

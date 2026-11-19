@@ -15,6 +15,7 @@ class CPHSkeleton;
 class CCharacterPhysicsSupport;
 class ICollisionDamageInfo;
 class TIKLimbsController;
+struct STelekineticObject;
 
 XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPhysicsShellHolder:
@@ -42,6 +43,7 @@ public:
 private:
 	Fvector					m_overriden_activation_speed;
 	bool					m_activation_speed_is_overriden;
+	STelekineticObject*		m_telekinetic_object;
 
 public:
 	virtual bool ActivationSpeedOverriden(Fvector& dest, bool clear_override);
@@ -76,6 +78,12 @@ public:
 	virtual float GetRamDamageMinSpeed() const { return 0.f; }
 	virtual float GetRamCrashSpeedMin() const { return -1.f; }
 	virtual float GetRamCrashSpeedMax() const { return -1.f; }
+
+	// Transient link used by telekinesis while an object is held or thrown.
+	// Kept separate from physics callback data, which the car wheels use for
+	// their own SWheelCollisionParams.
+	void set_telekinetic_object(STelekineticObject* object) { m_telekinetic_object = object; }
+	STelekineticObject* get_telekinetic_object() const { return m_telekinetic_object; }
 
 	virtual void set_collision_hit_callback(ICollisionHitCallback* cc) {}
 	virtual void _BCL enable_notificate() override {}

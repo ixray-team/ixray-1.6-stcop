@@ -150,6 +150,7 @@ void CPhysicsShellHolder::init			()
 	m_pPhysicsShell				=	nullptr		;
 	b_sheduled					=	false		;
 	m_activation_speed_is_overriden = false;
+	m_telekinetic_object		=	nullptr		;
 }
 
 bool  CPhysicsShellHolder::has_shell_collision_place(const CPhysicsShellHolder* obj) const
