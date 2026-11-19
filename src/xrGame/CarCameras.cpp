@@ -118,12 +118,12 @@ namespace
 
 		bool Found = false;
 		float BestRange = Range;
-		for (auto It = Results.r_begin(); It != Results.r_end(); ++It)
+		for (auto It = Results.results.begin(); It != Results.results.end(); ++It)
 		{
-			if (It->O || It->element < 0)
+			if (!It->IsStatic() || It->element < 0)
 				continue;
 
-			const CDB::TRI& Tri = Level().ObjectSpace.GetStaticTris()[It->element];
+			const CDB::TRI& Tri = It->GetStatic()->tris[It->element];
 			SGameMtl* Material = GMLib.GetMaterialByIdx(Tri.material);
 			if (!Material || !Material->Flags.test(SGameMtl::flLiquid))
 				continue;

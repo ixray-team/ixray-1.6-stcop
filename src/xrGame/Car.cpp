@@ -5919,7 +5919,7 @@ u16 CCar::GetNearestBone(Fvector look_pos, Fvector look_dir, float &range, bool 
 		collide::ray_defs	Q(look_pos, look_dir, Radius()*2, CDB::OPT_CULL,collide::rqtObject);  // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
 		if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 		{
-			for (auto I = RQR.r_begin(); I != RQR.r_end(); ++I)
+			for (auto I = RQR.results.begin(); I != RQR.results.end(); ++I)
 			{
 				Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(I->range));
 
@@ -5968,7 +5968,7 @@ CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool speci
 		{
 			collide::rq_result RQ;
 			bool HasPick = Level().ObjectSpace.RayPick(look_pos, look_dir, 1.5f, collide::rqtObject, RQ, Level().CurrentControlEntity());
-			if(HasPick && RQ.O == this)
+			if(HasPick && !RQ.IsStatic() && RQ.GetDynamic() == this)
 			{
 				if (!Owner() && m_pPhysicsShell && g_actor)
 				{
@@ -6103,11 +6103,11 @@ bool CCar::TryUsableBones()
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
 		collide::rq_results& R = RQR;
-		const int Count = R.r_count();
+		const int Count = (int)R.results.size();
 
 		for (int k = 0; k < Count; ++k)
 		{
-			collide::rq_result* I = R.r_begin() + k;
+			collide::rq_result* I = R.results.data() + k;
 			if (IsGameTypeSingle() && UsableBones.contains(I->element))
 			{
 				UsableBonesActive = I->element;
@@ -6167,7 +6167,7 @@ bool CCar::Use(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 			collide::ray_defs	Q(pos, dir, Radius(), CDB::OPT_ONLYNEAREST, collide::rqtObject);  // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
 			if (g_pGameLevel->ObjectSpace.RayQuery(RQR,collidable.model,Q))
 			{
-				for (auto I = RQR.r_begin(); I != RQR.r_end(); ++I)
+				for (auto I = RQR.results.begin(); I != RQR.results.end(); ++I)
 				{
 					if(I->range <= 1.5f)
 						return true;
@@ -7781,12 +7781,12 @@ void CCar::UpdateWaterDrag(float step)
 		SGameMtl* WaterMaterial = nullptr;
 		u16 WaterMaterialIdx = u16(-1);
 		float WheelWaterY = -flt_max;
-		for (auto It = Results.r_begin(); It != Results.r_end(); ++It)
+		for (auto It = Results.results.begin(); It != Results.results.end(); ++It)
 		{
-			if (It->O || It->element < 0)
+			if (!It->IsStatic() || It->element < 0)
 				continue;
 
-			const CDB::TRI& Tri = Level().ObjectSpace.GetStaticTris()[It->element];
+			const CDB::TRI& Tri = It->GetStatic()->tris[It->element];
 			SGameMtl* Material = GMLib.GetMaterialByIdx(Tri.material);
 			if (!Material || !Material->Flags.test(SGameMtl::flLiquid))
 				continue;

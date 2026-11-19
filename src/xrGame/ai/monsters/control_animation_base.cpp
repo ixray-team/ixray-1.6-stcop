@@ -669,7 +669,7 @@ ICF static bool check_hit_trace_callback(const collide::rq_result& result, LPVOI
 		{
 			return true;
 		}
-		else if (param->m_car && result.O == param->m_car)
+		else if (param->m_car && result.GetDynamic() == param->m_car)
 		{
 			param->m_can_hit_enemy = true;
 		}

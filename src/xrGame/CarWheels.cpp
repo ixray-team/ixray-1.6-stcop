@@ -472,10 +472,15 @@ void CCar::SWheel::Play(Fvector c_pos, u16 m1_id, u16 m2_id, bool tire_fulleffec
 				// Tire tracks belong to the static ground. Do not create
 				// skeleton wallmarks on another car or dynamic object: the
 				// queued call may outlive that object's visual.
-				if (reach_ground && !result.O && marks && !marks->empty())
+				if (reach_ground && result.IsStatic() && result.element >= 0 && marks && !marks->empty())
 				{
-					CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris().data() + result.element;
-					Level().ph_commander().add_call(new CPHOnesCondition(),new CPHWallMarksCallStatic(marks, end_point, tire_trail_wallmark_size, pTri, tire_trail_simulars_factor, Fvector(Wheel_Mtx.k).invert()));
+					const CDB::MODEL* Model = result.GetStatic();
+					const CDB::TRI& Tri = Model->tris[result.element];
+					Fvector Verts[3];
+					result.xform.transform_tiny(Verts[0], Model->verts[Tri.verts[0]]);
+					result.xform.transform_tiny(Verts[1], Model->verts[Tri.verts[1]]);
+					result.xform.transform_tiny(Verts[2], Model->verts[Tri.verts[2]]);
+					Level().ph_commander().add_call(new CPHOnesCondition(),new CPHWallMarksCallStatic(marks, end_point, tire_trail_wallmark_size, Tri, Verts, tire_trail_simulars_factor, Fvector(Wheel_Mtx.k).invert()));
 				}
 			}
 		}

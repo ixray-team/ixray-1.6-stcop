@@ -285,9 +285,9 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 				// VISIBLEFORAI object on the ray blocks vision even when the
 				// main trace already treated it as see-through (vehicles).
 				bool opaque = false;
-				for (collide::rq_result* hit = RQR.r_begin(); hit != RQR.r_end(); ++hit)
+				for (const collide::rq_result& hit : RQR.results)
 				{
-					if (hit->element < 0 || feel_vision_mtl_transp(hit->O ? hit->O : const_cast<CObject*>(object), hit->element) < 1.f)
+					if (hit.element < 0 || !hit.valid() || feel_vision_mtl_transp(hit) < 1.f)
 					{
 						opaque = true;
 						break;

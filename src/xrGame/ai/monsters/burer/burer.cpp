@@ -505,7 +505,7 @@ void CBurer::UpdateGraviObject()
 	collide::rq_result l_rq;
 	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, nullptr))
 	{
-		if (EnemyCar != nullptr && l_rq.O == EnemyCar && l_rq.range < trace_dist)
+		if (EnemyCar != nullptr && !l_rq.IsStatic() && l_rq.GetDynamic() == EnemyCar && l_rq.range < trace_dist)
 		{
 			if (CCar* Car = EnemyCar->cast_car())
 			{

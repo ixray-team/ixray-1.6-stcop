@@ -600,6 +600,7 @@ bool CVisualMemoryManager::visible(u32 _level_vertex_id, float yaw, float eye_fo
 float CVisualMemoryManager::feel_vision_mtl_transp(const collide::rq_result& result)
 {
 	// The car should not hide its own driver from AI vision.
+	const CObject* O = result.IsStatic() ? nullptr : result.GetDynamic();
 	if (O)
 	{
 		if (CActor* actor = Actor())

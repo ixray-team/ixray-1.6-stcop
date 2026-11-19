@@ -102,25 +102,29 @@ public:
 class CPHWallMarksCallStatic :
 	public CPHAction
 {
-	CDB::TRI* pTri;
+	CDB::TRI Tri;
+	Fvector Verts[3];
 	IWallMarkArray* marks;
 	Fvector pos;
 	Fvector dir;
 	float wsize;
 	float simil;
 public:
-	CPHWallMarksCallStatic(IWallMarkArray* marks_, Fvector pos_, float wsize_, CDB::TRI* pTri_, float simil_, Fvector dir_)
+	CPHWallMarksCallStatic(IWallMarkArray* marks_, Fvector pos_, float wsize_, const CDB::TRI& Tri_, const Fvector* Verts_, float simil_, Fvector dir_)
 	{
 		marks = marks_;
 		pos = pos_;
 		dir = dir_;
 		wsize = wsize_;
-		pTri = pTri_;
+		Tri = Tri_;
+		Verts[0] = Verts_[0];
+		Verts[1] = Verts_[1];
+		Verts[2] = Verts_[2];
 		simil = simil_;
 	}
 	virtual void run()
 	{
-		::Render->add_StaticWallmark(marks, pos, wsize, pTri, Level().ObjectSpace.GetStaticVerts().data());
+		::Render->add_StaticWallmark(marks, pos, wsize, Tri, Verts);
 	};
 	virtual bool obsolete()const{return false;}
 };
