@@ -41,9 +41,11 @@
 #define READ_IF_EXISTS_IMPL_r_fcolor(ini, section, key, def) (ini)->read_if_exists<Fcolor>(section, key, def)
 #define READ_IF_EXISTS_IMPL_r_string(ini, section, key, def) ((ini)->line_exist(section, key) ? (ini)->r_string(section, key) : (def))
 
-#ifndef _abs
-#define _abs(x) ((x) < 0 ? -(x) : (x))
-#endif
+template <typename T>
+IC T _abs(T x)
+{
+	return x < 0 ? -x : x;
+}
 
 // Cars-Ext normalizes several direction vectors that can legitimately be zero
 // (stationary car, coincident bones, closed doors), which asserts in Debug.
