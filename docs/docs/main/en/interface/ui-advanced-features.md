@@ -22,6 +22,7 @@ This page serves as an overview of new UI features. Each page below is provided 
 10. [Sleep dialog](sleep-dialog.md)
 11. [3D inventory icons](3d-icons.md)
 12. [PDA map legend, spot filters and hotkeys](pda-map-legend-hotkeys.md)
+13. [Scrollbar profiles](scrollbar-profiles.md)
 
 ## Quick toggles
 

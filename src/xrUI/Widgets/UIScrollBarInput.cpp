@@ -92,6 +92,10 @@ bool CUIScrollBar::applyHitZone(ScrollHitZone zone)
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
 {
+	if (IsStyled())
+	{
+		return ScrollBarBase::OnKeyboardHold(dik);
+	}
 	if (dik == MOUSE_1 && (_lastHoldTimeMs + _holdDelay) < Device.dwTimeContinual)
 	{
 		if (OnMouseDownEx())
@@ -150,6 +154,11 @@ bool CUIScrollBar::handleFixedLayoutMouseAction(CUIWindow* thumb, EUIMessages mo
 
 bool CUIScrollBar::OnMouseAction(float x, float y, EUIMessages mouseAction)
 {
+	if (IsStyled())
+	{
+		return StyledMouseAction(x, y, mouseAction);
+	}
+
 	switch (mouseAction)
 	{
 	case WINDOW_MOUSE_WHEEL_DOWN:

@@ -12,6 +12,59 @@ enum class ScrollLayoutMode : u8
 {
 	Stretch,
 	Fixed,
+	Styled,
+};
+
+enum class ScrollTrackClick : u8
+{
+	Page,
+	Jump,
+};
+
+enum class ScrollCrossAlign : u8
+{
+	Near,
+	Center,
+	Far,
+};
+
+struct ScrollBarStateColors
+{
+	u32 Normal = 0xffffffff;
+	u32 Hover = 0xffffffff;
+	u32 Pressed = 0xffffffff;
+	u32 Disabled = 0xffffffff;
+};
+
+struct ScrollBarStyle
+{
+	float Thickness = 6.0f;
+	float HoverThickness = 0.0f;
+	float TrackCross = 0.0f;
+	float ThumbCross = 0.0f;
+	float ThumbMargin = 0.0f;
+	float TrackInset = 0.0f;
+	float MinThumb = 16.0f;
+	float WheelLines = 4.0f;
+	float IdleAlpha = 1.0f;
+	float FadeSpeed = 6.0f;
+	float ResizeSpeed = 12.0f;
+	u32 IdleDelay = 1200;
+	u32 RepeatDelay = 300;
+	ScrollTrackClick TrackClick = ScrollTrackClick::Page;
+	ScrollCrossAlign CrossAlign = ScrollCrossAlign::Far;
+	ScrollBarStateColors TrackColors;
+	ScrollBarStateColors ThumbColors;
+};
+
+struct ScrollBarSkinPart
+{
+	CUIStatic* Static = nullptr;
+	CUIFrameLineWnd* Frame = nullptr;
+
+	CUIWindow* Window() const;
+	void SetColor(u32 Color) const;
+	void Destroy(CUIWindow* Owner);
 };
 
 enum class ScrollBarPart : u8
@@ -84,6 +137,22 @@ private:
 	ScrollBarProfileConfig _profileConfig{};
 	ScrollBarPartFlags _partFlags{};
 
+	ScrollBarStyle _style{};
+	ScrollBarSkinPart _styledTrack{};
+	ScrollBarSkinPart _styledThumb{};
+	float _styledCross = 0.0f;
+	float _styledAlpha = 1.0f;
+	float _dragGrab = 0.0f;
+	u32 _styledActivityTime = 0;
+	u32 _holdStartTime = 0;
+	u32 _holdLastTime = 0;
+	int _holdButtonDir = 0;
+	int _holdTrackDir = 0;
+	int _styledLastPos = 0;
+	bool _styledDragging = false;
+	bool _styledHover = false;
+	bool _thumbHover = false;
+
 	bool ScrollInc(bool byScrollbox = false);
 	bool ScrollDec(bool byScrollbox = false);
 	void UpdateScrollBar();
@@ -94,7 +163,27 @@ private:
 	void SetScrollPosClamped(int pos);
 	bool IsRelevant() const;
 
-	bool LoadScrollBarXml(CUIXml& xmlDoc, const char* profile);
+	CUIXml* LoadScrollBarXml(const char* profile);
+	bool InitStyledLayout(CUIXml& xmlDoc, const char* profile, Fvector2 pos, float length, bool isHorizontal);
+	bool InitStyledPart(CUIXml& xmlDoc, const char* path, ScrollBarSkinPart& part);
+	void ParseStyle(CUIXml& xmlDoc, const char* profile, const char* axisPath);
+	bool ResolveStyledPath(CUIXml& xmlDoc, const char* profile, const char* axisNode, const char* part, string_path& outPath) const;
+	bool IsStyled() const { return _layoutMode == ScrollLayoutMode::Styled; }
+	float StyledTrackStart() const;
+	float StyledTrackLength() const;
+	float StyledThumbLength() const;
+	float StyledThumbStart() const;
+	float StyledCrossOffset(float size) const;
+	float CursorAlong() const;
+	int StyledScrollSpan() const;
+	void SetStyledThumbStart(float start);
+	void LayoutStyled();
+	void UpdateStyled();
+	void ApplyStyledColors();
+	bool StyledMouseAction(float x, float y, EUIMessages mouseAction);
+	void StopStyledDrag();
+	bool ScrollByAmount(int delta);
+	void PageTowardCursor();
 	static bool ParseProfile(CUIXml& xmlDoc, const char* profile, bool isHorizontal, ScrollBarProfileConfig& out);
 	bool ResolvePartPath(CUIXml& xmlDoc, const char* profile, ScrollBarPart part, bool isHorizontal, string_path& outPath) const;
 	bool TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPart part, const ScrollBarProfileConfig& config);
@@ -150,6 +239,7 @@ public:
 	bool OnKeyboardHold(int dik) override;
 
 	void Draw() override;
+	void Update() override;
 
 	void SetWidth(float width) override;
 	void SetHeight(float height) override;

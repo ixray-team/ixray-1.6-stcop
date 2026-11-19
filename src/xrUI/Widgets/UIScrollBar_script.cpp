@@ -26,7 +26,15 @@ int QueryScrollBarProfileLayout_script(const char* profile, bool isHorizontal)
 	{
 		return -1;
 	}
-	return layoutMode == ScrollLayoutMode::Fixed ? 1 : 0;
+	switch (layoutMode)
+	{
+	case ScrollLayoutMode::Fixed:
+		return 1;
+	case ScrollLayoutMode::Styled:
+		return 2;
+	default:
+		return 0;
+	}
 }
 
 #pragma optimize("s", on)
@@ -57,7 +65,8 @@ void CUIScrollBar::script_register(lua_State* L)
 			.enum_("layout_mode")
 			[
 				value("stretch", 0),
-				value("fixed", 1)
+				value("fixed", 1),
+				value("styled", 2)
 			]
 	];
 }

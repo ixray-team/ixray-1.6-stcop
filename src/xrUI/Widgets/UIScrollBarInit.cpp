@@ -6,6 +6,7 @@
 #include "UIStatic.h"
 #include "UIFrameLineWnd.h"
 #include "UITextureMaster.h"
+#include "UIScrollBarProfiles.h"
 
 namespace
 {
@@ -23,6 +24,11 @@ bool LayoutFromAttrib(const char* layoutStr, ScrollLayoutMode& outMode)
 	if (0 == _stricmp(layoutStr, "fixed"))
 	{
 		outMode = ScrollLayoutMode::Fixed;
+		return true;
+	}
+	if (0 == _stricmp(layoutStr, "styled"))
+	{
+		outMode = ScrollLayoutMode::Styled;
 		return true;
 	}
 	return false;
@@ -92,14 +98,14 @@ bool NodeHasButtonTextures(CUIXml& xmlDoc, const char* nodePath)
 
 bool CUIScrollBar::QueryProfileLayout(const char* profile, bool isHorizontal, ScrollLayoutMode& outMode)
 {
-	CUIXml xmlDoc;
-	if (!xmlDoc.Load(CONFIG_PATH, UI_PATH, "scroll_bar.xml"))
+	CUIXml* xmlDoc = CUIScrollBarProfiles::Get().Find(profile);
+	if (!xmlDoc)
 	{
 		return false;
 	}
 
 	ScrollBarProfileConfig config{};
-	if (!ParseProfile(xmlDoc, profile, isHorizontal, config))
+	if (!ParseProfile(*xmlDoc, profile, isHorizontal, config))
 	{
 		return false;
 	}
@@ -205,9 +211,9 @@ bool CUIScrollBar::ResolvePartPath(CUIXml& xmlDoc, const char* profile, ScrollBa
 	return false;
 }
 
-bool CUIScrollBar::LoadScrollBarXml(CUIXml& xmlDoc, const char* profile)
+CUIXml* CUIScrollBar::LoadScrollBarXml(const char* profile)
 {
-	return xmlDoc.Load(CONFIG_PATH, UI_PATH, "scroll_bar.xml") && xmlDoc.NavigateToNode(profile, 0);
+	return CUIScrollBarProfiles::Get().Find(profile);
 }
 
 void CUIScrollBar::ResetPartFlags()
@@ -599,6 +605,11 @@ bool CUIScrollBar::InitStretchLayout(CUIXml& xmlDoc, const char* profile, Fvecto
 		return false;
 	}
 
+	if (_profileConfig.layoutMode == ScrollLayoutMode::Styled)
+	{
+		return InitStyledLayout(xmlDoc, profile, pos, length, isHorizontal);
+	}
+
 	_profileConfig.layoutMode = ScrollLayoutMode::Stretch;
 
 	const char* thumbStr = xmlDoc.ReadAttrib(profile, 0, "thumb", "auto");
@@ -641,6 +652,11 @@ bool CUIScrollBar::InitFixedLayout(CUIXml& xmlDoc, const char* profile, Fvector2
 		return false;
 	}
 
+	if (_profileConfig.layoutMode == ScrollLayoutMode::Styled)
+	{
+		return InitStyledLayout(xmlDoc, profile, pos, xmlDoc.ReadAttribFlt(profile, 0, "length", 100.0f), isHorizontal);
+	}
+
 	_profileConfig.layoutMode = ScrollLayoutMode::Fixed;
 
 	_holdDelay = _profileConfig.holdDelay;
@@ -676,28 +692,28 @@ bool CUIScrollBar::InitFixedLayout(CUIXml& xmlDoc, const char* profile, Fvector2
 
 bool CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool isHorizontal, const char* profile)
 {
-	CUIXml xmlDoc;
-	if (!LoadScrollBarXml(xmlDoc, profile))
+	CUIXml* xmlDoc = LoadScrollBarXml(profile);
+	if (!xmlDoc)
 	{
 		_initialized = false;
 		return false;
 	}
 
-	const bool result = InitStretchLayout(xmlDoc, profile, pos, length, isHorizontal);
+	const bool result = InitStretchLayout(*xmlDoc, profile, pos, length, isHorizontal);
 	_initialized = result;
 	return result;
 }
 
 bool CUIScrollBar::InitScrollBar(Fvector2 pos, bool isHorizontal, const char* profile)
 {
-	CUIXml xmlDoc;
-	if (!LoadScrollBarXml(xmlDoc, profile))
+	CUIXml* xmlDoc = LoadScrollBarXml(profile);
+	if (!xmlDoc)
 	{
 		_initialized = false;
 		return false;
 	}
 
-	const bool result = InitFixedLayout(xmlDoc, profile, pos, isHorizontal);
+	const bool result = InitFixedLayout(*xmlDoc, profile, pos, isHorizontal);
 	_initialized = result;
 	return result;
 }

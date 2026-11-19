@@ -21,6 +21,7 @@
 9. [Прогресс бар веса](weight-progress-bar.md)
 10. [Окно сна](sleep-dialog.md)
 11. [Легенда карты, фильтры спотов и хоткеи ПДА](pda-map-legend-hotkeys.md)
+12. [Профили полос прокрутки](scrollbar-profiles.md)
 
 ## Быстрые переключатели
 
