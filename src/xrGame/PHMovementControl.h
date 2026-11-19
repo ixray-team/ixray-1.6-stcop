@@ -66,8 +66,7 @@ bool					ForcedPhysicsControl( );
 											   float separation_bias, float ram_scale,
 											   float mutant_push_speed, float min_car_speed,
 											   float max_push_speed, const Fvector& slide_axis,
-											   const Fvector& outward_axis, float slide_scale,
-											   float slide_speed, float side_bias,
+											   float slide_scale, float slide_speed, float side_bias,
 											   float start_push_speed,
 											   float slide_lock_ms, float slide_flip,
 											   float slide_confirm_ms, float slide_memory_ms,
@@ -75,6 +74,9 @@ bool					ForcedPhysicsControl( );
 	void					UpdateCarContact();
 	void					ValidateCarContact();
 	bool					IsCarContactActive() const;
+	bool					RamPushScaleResolved() const { return m_ram_push_scale_resolved; }
+	void					ResolveRamPushScale(const char* type);
+	float					RamPushScaleOverride() const { return m_ram_push_scale_override; }
 	Fvector					ApplyCarContact( const Fvector& path_velocity, float desired_speed );
 void					UpdateObjectBox( IPHCharacter *ach );
 void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
@@ -151,7 +153,6 @@ private:
 		Fvector			normal;
 		Fvector			car_velocity;
 		Fvector			slide_axis;
-		Fvector			outward_axis;
 		float			separation_bias;
 		float			ram_scale;
 		float			mutant_push_speed;
@@ -171,6 +172,8 @@ private:
 	SCarContact			m_car_contact;
 	u32					m_car_contact_end;
 	bool				m_car_contact_active;
+	float				m_ram_push_scale_override;
+	bool				m_ram_push_scale_resolved;
 	u32					m_car_body_contact_time;
 	float				m_car_slide_speed;
 	float				m_car_slide_tangent;
