@@ -23,9 +23,14 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 #endif
 
     float3 Lightmap = GetLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w, 2.0f);
-    Point.xyz = O.Normal * 0.025f + Point.xyz;
-
     float4 PS = mul(m_shadow, Point);
+    float2 ShadowUV = PS.xy / PS.w;
+    float3 ShadowGradX = (m_shadow[0].xyz - ShadowUV.x * m_shadow[3].xyz) / PS.w;
+    float3 ShadowGradY = (m_shadow[1].xyz - ShadowUV.y * m_shadow[3].xyz) / PS.w;
+    float ShadowTexelWorld = 1.0f / (SMAP_size * max(min(length(ShadowGradX), length(ShadowGradY)), 1e-6f));
+    Point.xyz = O.Normal * max(0.025f, 2.0f * ShadowTexelWorld) + Point.xyz;
+
+    PS = mul(m_shadow, Point);
 
 #ifdef USE_SHADOW
     Lightmap *= max(Ldynamic_hud, shadow_local(PS.xyz / PS.w));
