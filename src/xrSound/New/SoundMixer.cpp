@@ -98,6 +98,8 @@ struct sound_mixer_state
 	xr_hash_set<ref_sound*> sounds;
 
 	float IndoorFactor = 0.0f;
+	std::atomic<float> LowPassLayers[(u32)Mixer::LowPassLayer::Count] = {}; // 0 = inactive
+	float LowPassCutoff = LowPass::MaxCutoffHz; // resolved once per render block
 
 	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * 10];
 };
@@ -602,10 +604,12 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	}
 
 	float VolumeFinal = OCCVolume * std::min(Gain, 1.0f) * Volume.z * Slot.fade_volume;
-	if (IsSpatial && (Slot.flags & (u16)Mixer::Flags::NoCarFactor) == 0)
+	const bool UseCarFactor = IsSpatial && (Slot.flags & (u16)Mixer::Flags::NoCarFactor) == 0;
+	if (UseCarFactor)
 	{
 		VolumeFinal *= psSoundCarFactor;
 	}
+	Slot.LowPass.Process(process_buffer, SND_BLOCKSIZE, UseCarFactor ? GMixer.LowPassCutoff : LowPass::MaxCutoffHz);
 	BeginFactor *= VolumeFinal;
 	EndFactor *= VolumeFinal;
 
@@ -637,6 +641,7 @@ void Snd_MixerRenderCallback(float* buffer)
 	xrSRWLockGuard Guard(GMixer.render_lock, true);
 
 	g_SoundStats.render_cache_miss = 0;
+	GMixer.LowPassCutoff = psSoundFlags.is(ss_LowPass) ? Mixer::GetEffectiveLowPass() : LowPass::MaxCutoffHz;
 
 	static u64 TimeStamp = Snd_GetTimestamp();
 	float dt = (float)((double)(Snd_GetTimestamp() - TimeStamp) / 1000000000.0);
@@ -955,6 +960,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				ActualSlot.SendGain = 0.0f;
 				ActualSlot.fade_volume = 0.0f;
 				ActualSlot.ReverbDryGain = -1.0f;
+				ActualSlot.LowPass.Reset();
 				ActualSlot.IndoorFactor = GMixer.IndoorFactor;
 				ActualSlot.IndoorFactorValid = false;
 				ActualSlot.zone_idx = 0;
@@ -1518,6 +1524,43 @@ void Mixer::GetLoadedSources(xr_vector<shared_str>& Names)
 const xr_vector<sound_zone_params>& Mixer::GetZones()
 {
 	return Snd_GetZones();
+}
+
+void Mixer::SetLowPass(LowPassLayer layer, float cutoff_hz)
+{
+	if ((u32)layer >= (u32)LowPassLayer::Count)
+	{
+		return;
+	}
+
+	const float Value = cutoff_hz >= LowPass::MaxCutoffHz ? 0.0f : std::max(cutoff_hz, LowPass::MinCutoffHz);
+	GMixer.LowPassLayers[(u32)layer].store(Value, std::memory_order_relaxed);
+}
+
+void Mixer::ClearLowPass(LowPassLayer layer)
+{
+	SetLowPass(layer, LowPass::MaxCutoffHz);
+}
+
+float Mixer::GetLowPass(LowPassLayer layer)
+{
+	if ((u32)layer >= (u32)LowPassLayer::Count)
+	{
+		return LowPass::MaxCutoffHz;
+	}
+
+	const float Value = GMixer.LowPassLayers[(u32)layer].load(std::memory_order_relaxed);
+	return Value > 0.0f ? Value : LowPass::MaxCutoffHz;
+}
+
+float Mixer::GetEffectiveLowPass()
+{
+	float Cutoff = LowPass::MaxCutoffHz;
+	for (u32 Layer = 0; Layer < (u32)LowPassLayer::Count; Layer++)
+	{
+		Cutoff = std::min(Cutoff, GetLowPass((LowPassLayer)Layer));
+	}
+	return Cutoff;
 }
 
 sound_stats* Mixer::GetStats()

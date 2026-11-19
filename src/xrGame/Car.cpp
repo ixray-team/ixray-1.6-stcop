@@ -2397,7 +2397,10 @@ void	CCar::net_Destroy()
 	const bool WasOwned = Owner() != nullptr;
 	CHolderCustom::detach_Actor();
 	if (WasOwned)
+	{
 		psSoundCarFactor = 1.f;
+		XRay::Sound::Mixer::ClearLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle);
+	}
 	ClearExhausts();
 	for (auto& i_w : m_wheels_map)
 	{
@@ -3095,9 +3098,21 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 	// An open normal door connects the cabin with the outside, so the
 	// interior volume moves halfway towards the exterior volume.
 	if (FirstPersonView && HasOpenNormalDoor())
+	{
 		InteriorVolume = 0.5f * (InteriorVolume + 1.f);
+	}
 
 	psSoundCarFactor = FirstPersonView ? InteriorVolume : 1.f;
+
+	constexpr float InteriorMinCutoffHz = 500.f;
+	if (FirstPersonView && psSoundCarFactor < 0.999f)
+	{
+		XRay::Sound::Mixer::SetLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle, XRay::Sound::LowPass::CutoffFromFactor(psSoundCarFactor * psSoundCarFactor, InteriorMinCutoffHz));
+	}
+	else
+	{
+		XRay::Sound::Mixer::ClearLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle);
+	}
 }
 
  void CCar::VisualUpdate(float fov)
@@ -4012,6 +4027,7 @@ void CCar::detach_Actor()
 
 	Owner()->setVisible(1);
 	psSoundCarFactor = 1.f;
+	XRay::Sound::Mixer::ClearLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle);
 	if (OwnerActor())
 	{
 		OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);

@@ -14,7 +14,7 @@
 using namespace XRay::Sound;
 
 int		psSoundTargets			= 1024 - 32;
-Flags32	psSoundFlags = { };
+Flags32	psSoundFlags = { ss_LowPass };
 float	psSoundOcclusionScale = 0.5f;
 float	psSoundDoppler = 0.1f;
 float	psSoundCull = 0.01f;

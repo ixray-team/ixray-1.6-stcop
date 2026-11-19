@@ -40,6 +40,7 @@ XRSOUND_API extern u32				snd_device_id			;
 enum {
     ss_EFX				= (1ul<<1ul),	//!< Use eax
     ss_HRTF				= (1ul<<2ul),	//!< Use eax
+    ss_LowPass			= (1ul<<3ul),	//!< World low-pass layers (vehicle cabin, underwater, ...)
 	ss_forcedword		= u32(-1)
 };
 

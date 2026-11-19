@@ -903,6 +903,7 @@ void CCC_Register()
 	CMD1(CCC_SND_ExportConfig,"snd_export_config"	);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
 	CMD3(CCC_Mask32,		"snd_hrtf",				&psSoundFlags,		ss_HRTF		);
+	CMD3(CCC_Mask32,		"snd_lowpass",			&psSoundFlags,		ss_LowPass	);
 
 #ifdef DEBUG
 	CMD3(CCC_Mask32,		"snd_stats",			&g_stats_flags,		st_sound	);

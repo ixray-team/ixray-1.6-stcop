@@ -28,6 +28,7 @@
 * copies or substantial portions of the Software.
 **************************************************************************************/
 #pragma once
+#include "SoundLowPass.h"
 #include "SoundMeta.h"
 
 #define SND_RESAMPLING_QUALITY 3
@@ -67,6 +68,7 @@ struct sound_slot_state
 	bool IndoorFactorValid = false;
 	u32 SendBus = 0;
 	f32 SendGain = 0.0f;
+	SoundLowPassFilter<> LowPass;
 	u8 VoiceEffects[SND_VOICE_EFFECT_COUNT] = {};
 	alignas(16) u8 VoiceEffectState[SND_VOICE_EFFECT_COUNT][SND_VOICE_EFFECT_STATE_SIZE] = {};
 };

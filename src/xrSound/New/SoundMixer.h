@@ -29,9 +29,19 @@
 **************************************************************************************/
 #pragma once
 #include "SoundMeta.h"
+#include "SoundLowPass.h"
 
 namespace XRay::Sound::Mixer
 {
+    enum class LowPassLayer : u8
+    {
+        Vehicle,
+        Underwater,
+        Concussion,
+        Script,
+        Count
+    };
+
     XRSOUND_API void Initialize();
     XRSOUND_API void Shutdown();
     XRSOUND_API void Update(void* event_handler, float time_factor, float mute_volume, float compression, Fvector P, Fvector D, Fvector N);
@@ -40,6 +50,10 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void ResumeAll();
     XRSOUND_API void DereferenceObjects(CObject** object, int count);
     XRSOUND_API sound_stats* GetStats();
+    XRSOUND_API void SetLowPass(LowPassLayer layer, float cutoff_hz);
+    XRSOUND_API void ClearLowPass(LowPassLayer layer);
+    XRSOUND_API float GetLowPass(LowPassLayer layer);
+    XRSOUND_API float GetEffectiveLowPass();
 
     // General volume (snd_volume_eff) and bus faders. Pointers stay valid for the whole process
     XRSOUND_API float* GetMasterVolume();
