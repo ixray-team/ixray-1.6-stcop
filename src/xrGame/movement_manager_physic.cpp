@@ -12,6 +12,7 @@
 #include "detail_path_manager.h"
 #include "Level.h"
 #include "Creature.h"
+#include "Actor.h"
 #include "../xrPhysics/IColisiondamageInfo.h"
 
 // Lain: added 
@@ -26,6 +27,8 @@
 #endif // DEBUG
 
 #define DISTANCE_PHISICS_ENABLE_CHARACTERS 2.f
+
+bool g_car_damage_debug = false;
 
 float CMovementManager::speed				(CPHMovementControl *movement_control) const
 {
@@ -73,6 +76,41 @@ void CMovementManager::apply_collision_hit	(CPHMovementControl *movement_control
 		Fvector dir;
 		di->HitDir(dir);
 
+		CEntityAlive* entity = nullptr;
+		CPhysicsShellHolder* Car = nullptr;
+		float health_before = 0.f;
+		float health_max = 0.f;
+		float car_speed = 0.f;
+
+		if (g_car_damage_debug)
+		{
+			entity = object().cast_entity_alive();
+			health_before = entity ? entity->GetfHealth() : 0.f;
+			health_max = entity ? entity->conditions().GetMaxHealth() : 0.f;
+
+			if (CObject* initiator = di->DamageInitiator())
+			{
+				if (CActor* initiator_actor = initiator->cast_actor())
+				{
+					if (CObject* car_object = initiator_actor->GetCarObject())
+						if (car_object->cast_car() != nullptr)
+							Car = car_object->cast_physics_shell_holder();
+				}
+				else if (initiator->cast_car() != nullptr)
+				{
+					Car = initiator->cast_physics_shell_holder();
+				}
+			}
+
+			if (Car != nullptr && Car->PPhysicsShell() != nullptr &&
+				Car->PPhysicsShell()->isActive() && Car->PPhysicsShell()->isEnabled())
+			{
+				Fvector velocity;
+				Car->PPhysicsShell()->get_LinearVel(velocity);
+				car_speed = velocity.magnitude();
+			}
+		}
+
 		SHit	HDS = SHit(	movement_control->gcontact_HealthLost,
 							dir,
 							di->DamageInitiator(),
@@ -83,6 +121,30 @@ void CMovementManager::apply_collision_hit	(CPHMovementControl *movement_control
 							0.0f,
 							false);
 		object().Hit(&HDS);
+
+		if (g_car_damage_debug && Car != nullptr)
+		{
+			const float health_after = entity ? entity->GetfHealth() : 0.f;
+			const float damage = health_before > health_after ? health_before - health_after : 0.f;
+
+			Msg("[car-damage] obj=%s contact=%.3f m/s car=%.3f m/s (%.2f km/h) ram_min=%.2f crash_min=%.3f (native %.3f) crash_max=%.3f (native %.3f) factor=%.2f power=%.3f raw=%.3f damage=%.3f health=%.2f->%.2f/%.2f",
+				object().cName().c_str(),
+				movement_control->GetContactSpeed(),
+				car_speed,
+				car_speed * 3.6f,
+				Car->GetRamDamageMinSpeed(),
+				movement_control->GetEffectiveCrashMin(),
+				movement_control->GetMinCrashSpeed(),
+				movement_control->GetEffectiveCrashMax(),
+				movement_control->GetMaxCrashSpeed(),
+				movement_control->GetCollisionDamageFactor(),
+				movement_control->gcontact_Power,
+				movement_control->gcontact_HealthLost,
+				damage,
+				health_before,
+				health_after,
+				health_max);
+		}
 	}
 }
 

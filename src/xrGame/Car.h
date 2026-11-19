@@ -369,6 +369,8 @@ public:
 	float	m_burer_gravi_impulse_factor;
 	float	m_push_impulse_factor;
 	float	m_ram_damage_min_speed;
+	float	m_ram_crash_speed_min;
+	float	m_ram_crash_speed_max;
 	float	m_ram_push_scale;
 	float	m_ram_max_push_speed;
 	float	m_ram_contact_memory;
@@ -1501,6 +1503,8 @@ public:
 	void					PushByActor					(const Fvector& dir, const Fvector& world_point);
 	bool					CollisionHitStartsCooldown	(u16 bone_id, float power) override;
 	virtual float			GetRamDamageMinSpeed		() const override { return m_ram_damage_min_speed; }
+	virtual float			GetRamCrashSpeedMin		() const override { return m_ram_crash_speed_min; }
+	virtual float			GetRamCrashSpeedMax		() const override { return m_ram_crash_speed_max; }
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
 	float					GetRepairAmount			() const		{ return RepairAmount; }
