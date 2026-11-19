@@ -3101,7 +3101,7 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 	UpdateInteriorSoundFactor(active_camera != nullptr && active_camera->tag == EctFirstCam);
 	if (rs_car_info)
 		DrawCarInfo();
-	if (e_state_drive == drive && ((!IsTransmissionSwitching() || b_transmission_switch_drive) || brp))
+	if ((m_transmission_stage == ETransmissionStage::SwitchDown && GetSpeedKmH() > 20.f) || e_state_drive == drive && ((!IsTransmissionSwitching() || b_transmission_switch_drive) || brp))
 	{
 		if (m_engine_valve == 0 && Device.fTimeGlobal - m_engine_idle_time < 3.f * Device.fTimeDelta && m_transmission_switch_time + m_transmission_switch_delay + 3.f * Device.fTimeDelta < Device.fTimeGlobal) // anti-spam disables valve sound
 			m_car_sound->snd_valve.set_volume(0.f);
@@ -5406,7 +5406,7 @@ void CCar::UpdatePower()
 			m_current_rpm = EngineDriveSpeed();
 			if (!b_cvt_transmission)
 			{
-				if (rs_car_auto_transmission && !b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty())
+				if (rs_car_auto_transmission && !b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty() && !IsTransmissionSwitching())
 				{
 					if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) TransmissionDown();
 					if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2] && GetSpeedKmH() > m_gear_ratious[CurrentTransmission()][3]) TransmissionUp();
