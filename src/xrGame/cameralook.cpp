@@ -88,6 +88,8 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 {
 	collide::rq_result RQ;
 	RQ.reset();
+	// reset() keeps range, so set it explicitly: no hit must leave the full distance.
+	RQ.range = range;
 	static collide::rq_results RQR;
 	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
 	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);

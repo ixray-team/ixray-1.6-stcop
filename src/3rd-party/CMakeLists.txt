@@ -26,7 +26,19 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 		set(EMBREE_ISA_SSE2 ON CACHE BOOL "" FORCE)
 	endif()
 
+    # Embree is a heavy ray-query library: build it optimized in Debug too.
+    # Root options force /Od /Ob1 /ZI, which override embree's own /Ox, so swap them for this subdirectory only.
+    get_directory_property(IxrDirCompileOptions COMPILE_OPTIONS)
+    if(MSVC)
+        set(IxrEmbreeCompileOptions ${IxrDirCompileOptions})
+        list(REMOVE_ITEM IxrEmbreeCompileOptions "$<$<CONFIG:DEBUG>:/Od>" "/Ob1" "$<$<CONFIG:DEBUG>:/ZI>")
+        list(APPEND IxrEmbreeCompileOptions "$<$<CONFIG:DEBUG>:/O2>" "$<$<CONFIG:DEBUG>:/Ob2>" "$<$<CONFIG:DEBUG>:/Oi>" "$<$<CONFIG:DEBUG>:/Zi>")
+        set_directory_properties(PROPERTIES COMPILE_OPTIONS "${IxrEmbreeCompileOptions}")
+    endif()
+
     add_subdirectory("embree")
+
+    set_directory_properties(PROPERTIES COMPILE_OPTIONS "${IxrDirCompileOptions}")
     foreach(EmbreeTarget embree lexers math simd sys tasking)
         if(TARGET ${EmbreeTarget})
             set_target_properties(${EmbreeTarget} PROPERTIES FOLDER "3rd Party/Embree Lib")
