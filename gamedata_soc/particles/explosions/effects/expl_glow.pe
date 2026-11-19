@@ -108,7 +108,7 @@
  
 [sprite]
         shader                           = particles\add
-        texture                          = pfx\pfx_sparks
+        texture                          = pfx\pfx_sparks2
  
 [timelimit]
         value                            = 0.100000
