@@ -54,6 +54,7 @@
 #include "ai/monsters/zombie/zombie.h"
 #include "ai/monsters/rats/ai_rat.h"
 #include "ai/stalker/ai_stalker.h"
+#include "stalker_movement_manager_smart_cover.h"
 #include "ai/monsters/control_movement_base.h"
 #include "ai/monsters/monster_velocity_space.h"
 #include "car_memory.h"
@@ -1740,16 +1741,20 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	// than deriving a tangent from a noisy corner/edge contact normal.
 	Fvector SlideAxis;
 	SlideAxis.set(0.f, 0.f, 0.f);
-	float SlideSpeed = 0.f;
+	float MinSlideSpeed = 0.f;
 	float SideBias = 0.f;
 
-	// Keep the legacy run-speed fallback for mutants. NPCs intentionally keep
-	// zero here: their slide comes from desired_speed/path or the current
-	// tangent, not from a monster run parameter.
+	// Minimum desired speed for the forced slide. Mutants use their normal
+	// run speed; NPCs use the free/stand/run forward value from their
+	// movement_speeds section. slide_scale is applied later.
 	if (CBaseMonster* Monster = Other->cast_base_monster())
 	{
 		const SVelocityParam& Run = Monster->move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
-		SlideSpeed = Run.velocity.linear;
+		MinSlideSpeed = Run.velocity.linear;
+	}
+	else if (CAI_Stalker* Stalker = smart_cast<CAI_Stalker*>(Other))
+	{
+		MinSlideSpeed = Stalker->movement().free_run_speed();
 	}
 
 	Fbox Box = Car->BoundingBox();
@@ -1861,7 +1866,7 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		Car->m_ram_max_push_speed,
 		SlideAxis,
 		Car->m_ram_mutant_slide_scale,
-		SlideSpeed,
+		MinSlideSpeed,
 		SideBias,
 		StartPushSpeed,
 		Car->m_ram_mutant_slide_lock,

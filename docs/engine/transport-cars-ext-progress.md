@@ -1152,6 +1152,16 @@ Autotest stage 1: общий прогон и спавн `veh_zaz968` через 
 - Временный `ph_car_contact_debug`, лог `[car-slide]` и Debug-оверлей удалены после тестов. На поведение slide это не влияет.
 - Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
 
+### Этап 117: min slide speed и ограничение от скорости машины
+
+- `SCarContact::slide_speed` заменён на `min_slide_speed` — нижнюю границу базовой скорости slide до применения `ram_mutant_slide_scale`.
+- `CarRamCallback()` заполняет её:
+  - `CBaseMonster` — `Velocity_RunFwdNormal.velocity.linear`;
+  - `CAI_Stalker` — `free_stand_run_forward` из его `movement_speeds` через `stalker_movement_manager_base::free_run_speed()`.
+- `ApplyCarContact()`: `effective_min_slide_speed = min(min_slide_speed, car_velocity.magnitude() * 0.5)`, затем `slide_speed = max(desired_speed/m_car_slide_speed, effective_min_slide_speed)`, и только после этого `target_tangent = max(|path_tangent|, slide_speed * slide_scale)`. `desired_speed` и `path_tangent` не ограничиваются скоростью машины.
+- `ram_mutant_slide_scale` остаётся общим для мутантов и NPC; `ram_min_speed` не меняется (`0.1`), потому что он также управляет `ram_separation_bias` для нормального push.
+- Проверка: Debug/Release собираются; autotest загрузки `car_load_test2` — `RESULT: PASS`, `errors=0`.
+
 ### Дальнейшие улучшения slide: план
 
 Приоритеты с учётом того, что машин в игре мало, а трение не является проблемой:

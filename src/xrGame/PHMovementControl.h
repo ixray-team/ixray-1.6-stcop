@@ -66,7 +66,7 @@ bool					ForcedPhysicsControl( );
 											   float separation_bias, float ram_scale,
 											   float mutant_push_speed, float min_car_speed,
 											   float max_push_speed, const Fvector& slide_axis,
-											   float slide_scale, float slide_speed, float side_bias,
+											   float slide_scale, float min_slide_speed, float side_bias,
 											   float start_push_speed,
 											   float slide_lock_ms, float slide_flip,
 											   float slide_confirm_ms, float slide_memory_ms,
@@ -161,7 +161,7 @@ private:
 		float			min_car_speed;
 		float			max_push_speed;
 		float			slide_scale;
-		float			slide_speed;
+		float			min_slide_speed;
 		float			slide_lock_ms;
 		float			slide_flip;
 		float			slide_confirm_ms;
