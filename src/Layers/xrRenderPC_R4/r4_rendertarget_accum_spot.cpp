@@ -4,6 +4,24 @@
 
 Fvector3 ps_ssfx_volumetric = { .0f, 1.0f, 3.0f }; // Force Volumetric, Vol Intensity, Vol Quality
 
+Fmatrix CRenderTarget::GetSpotShadowTexelAdjust(const light& Light)
+{
+	const RHIViewport Viewport = GetSpotShadowSamplingViewport(Light);
+	const float InvAtlasSize = 1.0f / float(RImplementation.o.smapsize);
+	const float HalfExtent = Viewport.Width * 0.5f;
+	const float Scale = HalfExtent * InvAtlasSize;
+	const float OffsetX = (Viewport.TopLeftX + HalfExtent) * InvAtlasSize;
+	const float OffsetY = (Viewport.TopLeftY + HalfExtent) * InvAtlasSize;
+
+	// D3D11 maps NDC to viewport edges. Pixel centers already lie at half-integers.
+	return {
+		Scale,		0.0f,		0.0f,					0.0f,
+		0.0f,		-Scale,		0.0f,					0.0f,
+		0.0f,		0.0f,		ps_r2_ls_depth_scale,	0.0f,
+		OffsetX,	OffsetY,	ps_r2_ls_depth_bias,	1.0f
+	};
+}
+
 void CRenderTarget::accum_spot(light* L)
 {
 	if (L == nullptr)
@@ -82,40 +100,26 @@ void CRenderTarget::accum_spot(light* L)
 	// Shadow xform (+texture adjustment matrix)
 	Fmatrix			m_Shadow, m_Lmap;
 	{
-		float			smapsize = float(RImplementation.o.smapsize);
-		float			fTexelOffs = (.5f / smapsize);
-		float			view_dim = float(L->X.S.size - 2) / smapsize;
-		float			view_sx = float(L->X.S.posX + 1) / smapsize;
-		float			view_sy = float(L->X.S.posY + 1) / smapsize;
-		float			fRange = float(1.f) * ps_r2_ls_depth_scale;
-		float			fBias = ps_r2_ls_depth_bias;
-		Fmatrix			m_TexelAdjust = {
-			view_dim / 2.f,							0.0f,									0.0f,		0.0f,
-			0.0f,									-view_dim / 2.f,							0.0f,		0.0f,
-			0.0f,									0.0f,									fRange,		0.0f,
-			view_dim / 2.f + view_sx + fTexelOffs,	view_dim / 2.f + view_sy + fTexelOffs,	fBias,		1.0f
-		};
+		const Fmatrix ShadowTexelAdjust = GetSpotShadowTexelAdjust(*L);
 
 		// compute xforms
 		Fmatrix			xf_world;		xf_world.invert(Device.mView);
 		Fmatrix			xf_view = L->X.S.view;
-		Fmatrix			xf_project;		xf_project.mul(m_TexelAdjust, L->X.S.project);
+		Fmatrix			xf_project;		xf_project.mul(ShadowTexelAdjust, L->X.S.project);
 		m_Shadow.mul(xf_view, xf_world);
 		m_Shadow.mulA_44(xf_project);
 
-		// lmap
-		view_dim = 1.f;
-		view_sx = 0.f;
-		view_sy = 0.f;
-		Fmatrix			m_TexelAdjust2 = {
-			view_dim / 2.f,							0.0f,									0.0f,		0.0f,
-			0.0f,									-view_dim / 2.f,							0.0f,		0.0f,
-			0.0f,									0.0f,									fRange,		0.0f,
-			view_dim / 2.f + view_sx + fTexelOffs,	view_dim / 2.f + view_sy + fTexelOffs,	fBias,		1.0f
+		// Keep the light cookie in its own texture space.
+		const float LightmapOffset = 0.5f + 0.5f / float(RImplementation.o.smapsize);
+		const Fmatrix LightmapTexelAdjust = {
+			0.5f,			0.0f,			0.0f,					0.0f,
+			0.0f,			-0.5f,			0.0f,					0.0f,
+			0.0f,			0.0f,			ps_r2_ls_depth_scale,	0.0f,
+			LightmapOffset,	LightmapOffset,	ps_r2_ls_depth_bias,	1.0f
 		};
 
 		// compute xforms
-		xf_project.mul(m_TexelAdjust2, L->X.S.project);
+		xf_project.mul(LightmapTexelAdjust, L->X.S.project);
 		m_Lmap.mul(xf_view, xf_world);
 		m_Lmap.mulA_44(xf_project);
 	}
@@ -219,40 +223,26 @@ void CRenderTarget::accum_volumetric(light* L)
 	Fmatrix			mFrustumSrc;
 	CFrustum		ClipFrustum;
 	{
-		float			smapsize = float(RImplementation.o.smapsize);
-		float			fTexelOffs = (.5f / smapsize);
-		float			view_dim = float(L->X.S.size - 2) / smapsize;
-		float			view_sx = float(L->X.S.posX + 1) / smapsize;
-		float			view_sy = float(L->X.S.posY + 1) / smapsize;
-		float			fRange = float(1.f) * ps_r2_ls_depth_scale;
-		float			fBias = ps_r2_ls_depth_bias;
-		Fmatrix			m_TexelAdjust = {
-			view_dim / 2.f,							0.0f,									0.0f,		0.0f,
-			0.0f,									-view_dim / 2.f,							0.0f,		0.0f,
-			0.0f,									0.0f,									fRange,		0.0f,
-			view_dim / 2.f + view_sx + fTexelOffs,	view_dim / 2.f + view_sy + fTexelOffs,	fBias,		1.0f
-		};
+		const Fmatrix ShadowTexelAdjust = GetSpotShadowTexelAdjust(*L);
 
 		// compute xforms
 		Fmatrix			xf_world;		xf_world.invert(Device.mView);
 		Fmatrix			xf_view = L->X.S.view;
-		Fmatrix			xf_project;		xf_project.mul(m_TexelAdjust, L->X.S.project);
+		Fmatrix			xf_project;		xf_project.mul(ShadowTexelAdjust, L->X.S.project);
 		m_Shadow.mul(xf_view, xf_world);
 		m_Shadow.mulA_44(xf_project);
 
-		// lmap
-		view_dim = 1.f;
-		view_sx = 0.f;
-		view_sy = 0.f;
-		Fmatrix			m_TexelAdjust2 = {
-			view_dim / 2.f,							0.0f,									0.0f,		0.0f,
-			0.0f,									-view_dim / 2.f,							0.0f,		0.0f,
-			0.0f,									0.0f,									fRange,		0.0f,
-			view_dim / 2.f + view_sx + fTexelOffs,	view_dim / 2.f + view_sy + fTexelOffs,	fBias,		1.0f
+		// Keep the light cookie in its own texture space.
+		const float LightmapOffset = 0.5f + 0.5f / float(RImplementation.o.smapsize);
+		const Fmatrix LightmapTexelAdjust = {
+			0.5f,			0.0f,			0.0f,					0.0f,
+			0.0f,			-0.5f,			0.0f,					0.0f,
+			0.0f,			0.0f,			ps_r2_ls_depth_scale,	0.0f,
+			LightmapOffset,	LightmapOffset,	ps_r2_ls_depth_bias,	1.0f
 		};
 
 		// compute xforms
-		xf_project.mul(m_TexelAdjust2, L->X.S.project);
+		xf_project.mul(LightmapTexelAdjust, L->X.S.project);
 		m_Lmap.mul(xf_view, xf_world);
 		m_Lmap.mulA_44(xf_project);
 
@@ -368,27 +358,14 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	//Shadow xform (+texture adjustment matrix)
 	Fmatrix m_Shadow, m_Lmap;
 	{
-		float smapsize = float(RImplementation.o.smapsize);
-		float fTexelOffs = (.5f / smapsize);
-		float view_dim = float(L->X.S.size - 2) / smapsize;
-		float view_sx = float(L->X.S.posX + 1) / smapsize;
-		float view_sy = float(L->X.S.posY + 1) / smapsize;
-		float fRange = float(1.f) * ps_r2_ls_depth_scale;
-		float fBias = ps_r2_ls_depth_bias;
-
-		Fmatrix m_TexelAdjust = {
-			view_dim / 2.f, 0.0f, 0.0f, 0.0f,
-			0.0f, -view_dim / 2.f, 0.0f, 0.0f,
-			0.0f, 0.0f, fRange, 0.0f,
-			view_dim / 2.f + view_sx + fTexelOffs, view_dim / 2.f + view_sy + fTexelOffs, fBias, 1.0f
-		};
+		const Fmatrix ShadowTexelAdjust = GetSpotShadowTexelAdjust(*L);
 
 		//Compute xforms
 		Fmatrix xf_world;
 		xf_world.invert(Device.mView);
 		Fmatrix xf_view = L->X.S.view;
 		Fmatrix xf_project;
-		xf_project.mul(m_TexelAdjust, L->X.S.project);
+		xf_project.mul(ShadowTexelAdjust, L->X.S.project);
 
 		m_Shadow.set(xf_view);
 		m_Shadow.mulA_44(xf_project);

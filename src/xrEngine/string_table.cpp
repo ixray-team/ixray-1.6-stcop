@@ -355,45 +355,42 @@ xr_string CStringTable::LangName()
 
 STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFirst, bool isGamepad)
 {
-//	const char* str = "1 $$action_left$$ 2 $$action_right$$ 3 $$action_left$$ 4";
-	xr_string			res;
-	int k = 0;
-	const char*			b;
-	#define ACTION_STR "$$ACTION_"
-
-//.	int LEN				= (int)xr_strlen(ACTION_STR);
-	#define LEN			9
-
-	string256				buff;
-	string256				srcbuff;
-	bool	b_hit			= false;
-
-	while( (b = strstr( str+k,ACTION_STR)) !=0 )
+	constexpr char ActionPrefix[] = "$$ACTION_";
+	if (!strstr(str, ActionPrefix))
 	{
-		buff[0]				= 0;
-		srcbuff[0]			= 0;
-		res.append			(str+k, b-str-k);
-		const char* e		= strstr( b+LEN,"$$" );
-
-		int len				= (int)(e-b-LEN);
-
-		strncpy_s				(srcbuff,b+LEN, len);
-		srcbuff[len]		= 0;
-		GetActionAllBinding	(srcbuff, buff, sizeof(buff) );
-		res.append			(buff, xr_strlen(buff) );
-
-		k					= (int)(b-str);
-		k					+= len;
-		k					+= LEN;
-		k					+= 2;
-		b_hit				= true;
-	};
-
-	if(k<(int)xr_strlen(str)){
-		res.append(str+k);
+		return str;
 	}
 
-	if (b_hit && bFirst)
+	// The template and the key labels can come from different encodings.
+	xr_string ConvertedTemplate;
+	const char* Text = str;
+	if (!IsUTF8(Text))
+	{
+		ConvertedTemplate = Platform::ANSI_TO_UTF8(Text);
+		Text = ConvertedTemplate.c_str();
+	}
+
+	xr_string Result;
+	const char* Cursor = Text;
+	while (const char* Token = strstr(Cursor, ActionPrefix))
+	{
+		const char* Action = Token + sizeof(ActionPrefix) - 1;
+		const char* End = strstr(Action, "$$");
+		if (!End)
+		{
+			break;
+		}
+
+		Result.append(Cursor, Token);
+		const xr_string ActionName(Action, static_cast<u32>(End - Action));
+		string256 Binding;
+		GetActionAllBinding(ActionName.c_str(), Binding, sizeof(Binding));
+		Result += Binding;
+		Cursor = End + 2;
+	}
+	Result += Cursor;
+
+	if (Cursor != Text && bFirst)
 	{
 		if (isGamepad)
 		{
@@ -405,7 +402,7 @@ STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFi
 		}
 	}
 
-	return STRING_VALUE(res.c_str());
+	return Result.c_str();
 }
 
 STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const

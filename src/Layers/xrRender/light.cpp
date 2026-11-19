@@ -46,6 +46,7 @@ light::light()
 	X.S.posX	= 0;
 	X.S.posY	= 0;
 	X.S.size	= SMAP_adapt_max;
+	X.S.CachedQuality = 0.0f;
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 }
 
@@ -425,7 +426,10 @@ static u32 quantize_smap_size_nearest(u32 raw, u32 atlas_size, u32 min_size)
 
 void light::optimize_smap_size()
 {
-	const u32 cached_size = X.S.size;
+	const float Quality = ps_r2_ls_squality;
+	// Hysteresis filters camera movement. A new quality setting starts in its own bucket.
+	const u32 cached_size = X.S.CachedQuality == Quality ? X.S.size : 0;
+	X.S.CachedQuality = Quality;
 
 	X.S.posX = 0;
 	X.S.posY = 0;
@@ -460,7 +464,7 @@ void light::optimize_smap_size()
 		factor0 *= powf(duel_dot, 1.f / 4.f);
 	}
 
-	float factor = ps_r2_ls_squality * factor0 * factor1 * factor2;
+	float factor = Quality * factor0 * factor1 * factor2;
 
 	u32 raw_size = iFloor(factor * SMAP_adapt_optimal);
 	raw_size = clampr(raw_size, (u32)SMAP_adapt_min, (u32)SMAP_adapt_max);

@@ -110,6 +110,11 @@ void	CRender::render_lights	(light_Package& LP)
 				phase = PHASE_SMAP;
 				r_pmask(true, /*!!RImplementation.o.Tshadows*/ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
 
+#ifdef USE_DX11
+				const Fmatrix ShadowProjection = Target->GetSpotShadowRasterProjection(*L);
+#else
+				const Fmatrix& ShadowProjection = L->X.S.project;
+#endif
 				PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
 				bool decorative_light = false;
 				if (L->flags.bHudMode)
@@ -138,7 +143,13 @@ void	CRender::render_lights	(light_Package& LP)
 				else
 				{
 					PROF_EVENT("r_dsgraph_render_subspace");
-					r_dsgraph_render_subspace(L->SpatialComponent->sector, L->X.S.combine, L->position, true, false, L->ignore_object);
+#ifdef USE_DX11
+					Fmatrix ShadowFrustum;
+					ShadowFrustum.mul(ShadowProjection, L->X.S.view);
+#else
+					Fmatrix& ShadowFrustum = L->X.S.combine;
+#endif
+					r_dsgraph_render_subspace(L->SpatialComponent->sector, ShadowFrustum, L->position, true, false, L->ignore_object);
 				}
 
 				if (L->flags.bOccq && !L->flags.bHudMode)
@@ -153,7 +164,7 @@ void	CRender::render_lights	(light_Package& LP)
 					Target->phase_smap_spot(L);
 					RCache.set_xform_world(Fidentity);
 					RCache.set_xform_view(L->X.S.view);
-					RCache.set_xform_project(L->X.S.project);
+					RCache.set_xform_project(ShadowProjection);
 					r_dsgraph_render_graph(0);
 
 					if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
