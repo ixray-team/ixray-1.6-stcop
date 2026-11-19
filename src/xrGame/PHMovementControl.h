@@ -142,6 +142,8 @@ private:
 	float				fMass;
 	float				fMinCrashSpeed;
 	float				fMaxCrashSpeed;
+	float				m_effective_crash_min;
+	float				m_effective_crash_max;
 	float				fCollisionDamageFactor;
 	float				fAirControlParam;
 
@@ -174,6 +176,8 @@ private:
 	bool				m_car_contact_active;
 	float				m_ram_push_scale_override;
 	bool				m_ram_push_scale_resolved;
+	const char*			m_car_damage_debug_last_reason;
+	u32					m_car_damage_debug_last_time;
 	u32					m_car_body_contact_time;
 	float				m_car_slide_speed;
 	float				m_car_slide_tangent;
@@ -239,6 +243,11 @@ public:
 														}
 	void				GetSmoothedVelocity			(Fvector& v);
 	float				GetContactSpeed				()		{ return fContactSpeed; }
+	float				GetMinCrashSpeed			() const { return fMinCrashSpeed; }
+	float				GetMaxCrashSpeed			() const { return fMaxCrashSpeed; }
+	float				GetEffectiveCrashMin		() const { return m_effective_crash_min; }
+	float				GetEffectiveCrashMax		() const { return m_effective_crash_max; }
+	float				GetCollisionDamageFactor	() const { return fCollisionDamageFactor; }
 	void				GroundNormal				(Fvector &norm)					;
 	CPHSynchronize*		GetSyncItem					()								;
 	void				Freeze						()								;

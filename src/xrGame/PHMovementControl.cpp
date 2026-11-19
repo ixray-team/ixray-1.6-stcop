@@ -25,6 +25,8 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrScripts/script_callback_ex.h"
 
+extern bool g_car_damage_debug;
+
 #define GROUND_FRICTION	10.0f
 #define AIR_FRICTION	0.01f
 #define WALL_FRICTION	3.0f
@@ -76,6 +78,8 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	fMass = 100;
 	fMinCrashSpeed = 12.0f;
 	fMaxCrashSpeed = 25.0f;
+	m_effective_crash_min = fMinCrashSpeed;
+	m_effective_crash_max = fMaxCrashSpeed;
 	vVelocity.set(0, 0, 0);
 	vPosition.set(0, 0, 0);
 	vExternalImpulse.set(0, 0, 0);
@@ -101,6 +105,8 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_contact_active = false;
 	m_ram_push_scale_override = -1.f;
 	m_ram_push_scale_resolved = false;
+	m_car_damage_debug_last_reason = nullptr;
+	m_car_damage_debug_last_time = 0;
 	m_car_body_contact_time = 0;
 	m_car_slide_speed = 0.f;
 	ResetCarSlideDirection();
@@ -690,7 +696,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float
 	ICollisionDamageInfo* cdi = CollisionDamageInfo();
 	if (cdi->HitCallback())
 	{
-		cdi->HitCallback()->call((m_character->PhysicsRefObject()), fMinCrashSpeed, fMaxCrashSpeed, fContactSpeed, gcontact_HealthLost, CollisionDamageInfo());
+		cdi->HitCallback()->call((m_character->PhysicsRefObject()), m_effective_crash_min, m_effective_crash_max, fContactSpeed, gcontact_HealthLost, CollisionDamageInfo());
 	}
 
 	TraceBorder(previous_position);
@@ -708,18 +714,22 @@ void CPHMovementControl::UpdateCollisionDamage( )
 	const ICollisionDamageInfo* di=m_character->CollisionDamageInfo();
  	fContactSpeed=di->ContactVelocity();
 
+	CPhysicsShellHolder* Car = nullptr;
+	float CarSpeed = 0.f;
+	float MinSpeed = 0.f;
+
 	if (fContactSpeed > 0.f)
 	{
 		CObject* InitiatorObject = di->DamageInitiator();
-		CPhysicsShellHolder* Car = nullptr;
 		if (InitiatorObject != nullptr)
 		{
 			if (CActor* InitiatorActor = InitiatorObject->cast_actor())
 			{
 				if (CObject* CarObject = InitiatorActor->GetCarObject())
-					Car = CarObject->cast_physics_shell_holder();
+					if (CarObject->cast_car() != nullptr)
+						Car = CarObject->cast_physics_shell_holder();
 			}
-			else
+			else if (InitiatorObject->cast_car() != nullptr)
 			{
 				Car = InitiatorObject->cast_physics_shell_holder();
 			}
@@ -727,29 +737,72 @@ void CPHMovementControl::UpdateCollisionDamage( )
 
 		if (Car != nullptr)
 		{
-			const float MinSpeed = Car->GetRamDamageMinSpeed();
-			if (MinSpeed > 0.f)
+			MinSpeed = Car->GetRamDamageMinSpeed();
+			if (Car->PPhysicsShell() != nullptr && Car->PPhysicsShell()->isActive() && Car->PPhysicsShell()->isEnabled())
 			{
-				float CarSpeed = 0.f;
-				if (Car->PPhysicsShell() != nullptr && Car->PPhysicsShell()->isActive() && Car->PPhysicsShell()->isEnabled())
-				{
-					Fvector Velocity;
-					Car->PPhysicsShell()->get_LinearVel(Velocity);
-					CarSpeed = Velocity.magnitude() * 3.6f;
-				}
-				if (CarSpeed < MinSpeed)
-				{
-					fContactSpeed = 0.f;
-					return;
-				}
+				Fvector Velocity;
+				Car->PPhysicsShell()->get_LinearVel(Velocity);
+				CarSpeed = Velocity.magnitude() * 3.6f;
 			}
 		}
+	}
+
+	m_effective_crash_min = fMinCrashSpeed;
+	m_effective_crash_max = fMaxCrashSpeed;
+
+	if (Car != nullptr)
+	{
+		const float CarCrashMin = Car->GetRamCrashSpeedMin();
+		if (CarCrashMin >= 0.f && CarCrashMin < m_effective_crash_min)
+			m_effective_crash_min = CarCrashMin;
+
+		const float CarCrashMax = Car->GetRamCrashSpeedMax();
+		if (CarCrashMax >= 0.f && CarCrashMax < m_effective_crash_max &&
+			CarCrashMax > m_effective_crash_min)
+			m_effective_crash_max = CarCrashMax;
+	}
+
+	if (m_effective_crash_max <= m_effective_crash_min)
+		m_effective_crash_max = m_effective_crash_min + 1.f;
+
+	auto log_car_damage_skip = [&](const char* reason)
+	{
+		if (!g_car_damage_debug || Car == nullptr)
+			return;
+
+		const u32 now = Device.dwTimeGlobal;
+		if (reason == m_car_damage_debug_last_reason &&
+			now - m_car_damage_debug_last_time < 500)
+			return;
+
+		m_car_damage_debug_last_reason = reason;
+		m_car_damage_debug_last_time = now;
+
+		Msg("[car-damage] skip obj=%s reason=%s contact=%.3f m/s car=%.3f km/h ram_min=%.2f crash_min=%.3f (native %.3f) crash_max=%.3f (native %.3f) factor=%.2f",
+			(pObject && pObject->cName()) ? pObject->cName().c_str() : "?",
+			reason,
+			fContactSpeed,
+			CarSpeed,
+			MinSpeed,
+			m_effective_crash_min,
+			fMinCrashSpeed,
+			m_effective_crash_max,
+			fMaxCrashSpeed,
+			fCollisionDamageFactor);
+	};
+
+	if (Car != nullptr && MinSpeed > 0.f && CarSpeed < MinSpeed)
+	{
+		log_car_damage_skip("ram_damage_min_speed");
+		fContactSpeed = 0.f;
+		return;
 	}
 
 	if(block_damage_step_end!=u64(-1))
 	{
 		if( physics_world()->StepsNum() < block_damage_step_end )
 		{
+			log_car_damage_skip("block_damage_step");
 			fContactSpeed = 0.f;
 			return;
 		} else 
@@ -757,8 +810,8 @@ void CPHMovementControl::UpdateCollisionDamage( )
 	}
 
 // calc new
-	gcontact_Power				= fContactSpeed/fMaxCrashSpeed;
-	if (fContactSpeed > fMinCrashSpeed) 
+	gcontact_Power				= fContactSpeed/m_effective_crash_max;
+	if (fContactSpeed > m_effective_crash_min) 
 	{
 			bool applyHighSpeedProtection = false;
 			bool isFallSequence = true;
@@ -780,6 +833,7 @@ void CPHMovementControl::UpdateCollisionDamage( )
 				const bool isStrongDownwardVelocity = currentVelocity.y < -2.0f;
 				if (!isFallSequence && !isStrongDownwardVelocity)
 				{
+					log_car_damage_skip("high_speed_protection");
 					gcontact_HealthLost = 0.0f;
 					gcontact_Power = 0.0f;
 					return;
@@ -787,6 +841,7 @@ void CPHMovementControl::UpdateCollisionDamage( )
 
 				if (Device.dwTimeGlobal < (m_lastSpeedCrashDamageTime + 250))
 				{
+					log_car_damage_skip("high_speed_cooldown");
 					gcontact_HealthLost = 0.0f;
 					gcontact_Power = 0.0f;
 					return;
@@ -795,7 +850,7 @@ void CPHMovementControl::UpdateCollisionDamage( )
 				m_lastSpeedCrashDamageTime = Device.dwTimeGlobal;
 			}
 
-			gcontact_HealthLost = ((fContactSpeed - fMinCrashSpeed)) / (fMaxCrashSpeed - fMinCrashSpeed);
+			gcontact_HealthLost = ((fContactSpeed - m_effective_crash_min)) / (m_effective_crash_max - m_effective_crash_min);
 
 			VERIFY( m_character );
 			m_character->SetHitType( DefineCollisionHitType( m_character->LastMaterialIDX() ) );
@@ -807,6 +862,10 @@ void CPHMovementControl::UpdateCollisionDamage( )
 					gcontact_Power
 				);
 			}
+	}
+	else
+	{
+		log_car_damage_skip("ph_crash_speed_min");
 	}
 }
 

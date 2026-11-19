@@ -3045,6 +3045,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_NoClip, "g_no_clip");
 	CMD1(CCC_PHGravity, "ph_gravity");
 	CMD4(CCC_FloatBlock, "ph_timefactor", &phTimefactor, 0.000001f, 1000.f);
+	extern bool g_car_damage_debug;
+	CMD2(CCC_Boolean, "ph_car_damage_debug", &g_car_damage_debug);
 	CMD4(CCC_FloatBlock, "ph_break_common_factor", &ph_console::phBreakCommonFactor, 0.f, 1000000000.f);
 	CMD4(CCC_FloatBlock, "ph_rigid_break_weapon_factor", &ph_console::phRigidBreakWeaponFactor, 0.f, 1000000000.f);
 	CMD4(CCC_Integer, "ph_tri_clear_disable_count", &ph_console::ph_tri_clear_disable_count, 0, 255);

@@ -414,6 +414,8 @@ CCar::CCar()
 	m_burer_gravi_impulse_factor = 1.f;
 	m_push_impulse_factor = 1.f;
 	m_ram_damage_min_speed = 0.f;
+	m_ram_crash_speed_min = -1.f;
+	m_ram_crash_speed_max = -1.f;
 	m_ram_push_scale = 1.5f;
 	m_ram_max_push_speed = 25.f;
 	m_ram_contact_memory = 150.f;
@@ -4514,6 +4516,17 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_ram_damage_min_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_damage_min_speed", m_ram_damage_min_speed);
 	if (m_ram_damage_min_speed < 0.f)
 		m_ram_damage_min_speed = 0.f;
+
+	m_ram_crash_speed_min = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_crash_speed_min", m_ram_crash_speed_min);
+	if (m_ram_crash_speed_min >= 0.f)
+		clamp(m_ram_crash_speed_min, 0.f, 1000.f);
+	else
+		m_ram_crash_speed_min = -1.f;
+	m_ram_crash_speed_max = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_crash_speed_max", m_ram_crash_speed_max);
+	if (m_ram_crash_speed_max >= 0.f)
+		clamp(m_ram_crash_speed_max, 0.f, 1000.f);
+	else
+		m_ram_crash_speed_max = -1.f;
 
 	m_ram_push_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_push_scale", m_ram_push_scale);
 	clamp(m_ram_push_scale, 0.f, 10.f);
