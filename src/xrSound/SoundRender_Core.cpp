@@ -14,15 +14,15 @@
 using namespace XRay::Sound;
 
 int		psSoundTargets			= 1024 - 32;
-Flags32	psSoundFlags = { ss_Hardware };
+Flags32	psSoundFlags = { };
 float	psSoundOcclusionScale = 0.5f;
-float	psSoundDoppler = 1.0f;
+float	psSoundDoppler = 0.1f;
 float	psSoundCull = 0.01f;
 float	psSoundRolloff = 0.75f;
 u32		psSoundModel = 0;
 float	psSoundVFactor = 1.0f;
 float	psSoundCarFactor = 1.0f;
-float	psSoundShootingReverb = 0.6f;
+float	psSoundShootingReverb = 0.1f;
 float	psSoundCompression = 0.5f;
 
 int		psSoundCacheSizeMB = 256;

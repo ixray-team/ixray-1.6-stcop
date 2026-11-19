@@ -901,7 +901,6 @@ void CCC_Register()
 	CMD4(CCC_Float,		"snd_shooting_reverb",	&psSoundShootingReverb, 0.0f, 1.0f);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD1(CCC_SND_ExportConfig,"snd_export_config"	);
-	CMD3(CCC_Mask32,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
 	CMD3(CCC_Mask32,		"snd_hrtf",				&psSoundFlags,		ss_HRTF		);
 
