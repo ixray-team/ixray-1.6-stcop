@@ -82,8 +82,9 @@ namespace XReflectTool
 		std::string Policies;
 		// Property: C++ name of the setter member; empty for a read-only property.
 		std::string Setter;
-		// Enum: qualified enumerator prefix and the enumerator names.
+		// Enum: qualified enumerator prefix, the enum type, and the enumerator names.
 		std::string EnumScope;
+		std::string EnumType;
 		std::vector<std::pair<std::string, std::string>> Enumerators; // Lua name, C++ name
 		// Extension: free function bound as a method, its qualified name.
 		std::string QualifiedName;
@@ -138,6 +139,8 @@ namespace XReflectTool
 		std::string File;
 		int Line = 0;
 		std::string SelfClass;
+		// Lua class that owns the enum, set for standalone enum exports.
+		std::string LuaClass;
 		MemberInfo Member;
 	};
 

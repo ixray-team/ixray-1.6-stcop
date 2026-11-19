@@ -1,6 +1,7 @@
 #pragma once
 #include "WeaponMagazined.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponPistol : public CWeaponMagazined
 {
 	using inherited = CWeaponMagazined;

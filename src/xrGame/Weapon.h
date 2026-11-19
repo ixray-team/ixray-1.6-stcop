@@ -1079,6 +1079,4 @@ public:
 	float GetDamageMP() const;
 	float GetHandling() const;
 	float GetAccuracy() const;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

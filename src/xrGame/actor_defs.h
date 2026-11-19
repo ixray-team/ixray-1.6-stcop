@@ -44,6 +44,7 @@ enum EActorKeyflags
 	kfCHAMBERCHECK = (1ul << 17ul),
 };
 
+XREFLECT(LuaEnum, Class="EMovementStates", Name="emovementstates")
 enum EMovementStates
 {
 	eOld = 0,
@@ -51,6 +52,7 @@ enum EMovementStates
 	eReal,
 };
 
+XREFLECT(LuaEnum, Class="EMoveCommand", Name="emovecommand", Exclude="mcNoMove")
 enum EMoveCommand
 {
 	mcNoMove	= 0,

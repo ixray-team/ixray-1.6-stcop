@@ -19,6 +19,7 @@ class CLAItem;
 class CHelicopterMovManager;
 class CHelicopter;
 
+XREFLECT(LuaEnum, Self="CHelicopter", Name="hunt_state")
 enum EHeliHuntState{eEnemyNone,eEnemyPoint,eEnemyEntity};
 struct SHeliEnemy{
 	EHeliHuntState					type;
@@ -36,6 +37,7 @@ struct SHeliEnemy{
 	void Serialize(ISaveObject& Object);
 };
 
+XREFLECT(LuaEnum, Self="CHelicopter", Name="body_state")
 enum EHeliBodyState{eBodyByPath,eBodyToPoint};
 struct SHeliBodyState{
 	CHelicopter*					parent;
@@ -61,6 +63,7 @@ struct SHeliBodyState{
 
 };
 
+XREFLECT(LuaEnum, Self="CHelicopter", Name="movement_state")
 enum EHeilMovementState{eMovNone,eMovToPoint,eMovPatrolPath,eMovRoundPath,eMovLanding,eMovTakeOff};
 struct SHeliMovementState{
 	struct STmpPt{
@@ -131,6 +134,7 @@ public:
 	void	net_Destroy					();
 };
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CHelicopter final : public CEntity,
 						public CShootingObject,
 						public CRocketLauncher,
@@ -143,8 +147,10 @@ class CHelicopter final : public CEntity,
 					#endif
 
 {
+	XGENERATED_BODY()
 	using inherited = CEntity;
 public:
+	XPROPERTY(LuaEnum, Name="state", Exclude="eForce")
 	enum EHeliState {
 		eAlive							= u32(0),
 		eDead,
@@ -153,11 +159,21 @@ public:
 
 
 // heli weapons
+	XPROPERTY(LuaReadWrite)
 	bool							m_use_rocket_on_attack;
+	XPROPERTY(LuaReadWrite)
 	bool							m_use_mgun_on_attack;
-	float							m_min_rocket_dist,m_max_rocket_dist;
-	float							m_min_mgun_dist, m_max_mgun_dist;
+	XPROPERTY(LuaReadWrite)
+	float							m_min_rocket_dist;
+	XPROPERTY(LuaReadWrite)
+	float							m_max_rocket_dist;
+	XPROPERTY(LuaReadWrite)
+	float							m_min_mgun_dist;
+	XPROPERTY(LuaReadWrite)
+	float							m_max_mgun_dist;
+	XPROPERTY(LuaReadWrite)
 	u32								m_time_between_rocket_attack;
+	XPROPERTY(LuaReadWrite)
 	bool							m_syncronize_rocket;
 	float							m_barrel_dir_tolerance;
     HUD_SOUND_COLLECTION_LAYERED	m_sounds_layered;
@@ -201,10 +217,14 @@ public:
 	void							UpdateMGunDir		();
 	void							UpdateWeapons		();
 
+	XPROPERTY(LuaReadOnly)
 	bool							m_flame_started;
+	XPROPERTY(LuaReadOnly)
 	bool							m_light_started;
 	bool							m_ready_explode;
+	XPROPERTY(LuaReadOnly)
 	bool							m_exploded;
+	XPROPERTY(LuaReadOnly)
 	bool							m_dead;
 
 protected:
@@ -234,10 +254,14 @@ protected:
 	CParticlesObject*				m_pParticle;
 	Fmatrix							m_particleXFORM;
 
+	XPROPERTY(LuaCallable)
 	void							StartFlame					();
 	void							UpdateHeliParticles			();
+	XPROPERTY(LuaCallable, Name="Die")
 	void							DieHelicopter				();
+	XPROPERTY(LuaCallable)
 	void							TurnLighting				(bool bOn);
+	XPROPERTY(LuaCallable)
 	void							TurnEngineSound				(bool bOn);
 	//explosive
 	virtual void					OnAfterExplosion			() override {};
@@ -252,6 +276,7 @@ protected:
 
 	void	UpdateState					();
 public:
+	XPROPERTY(LuaCallable, Name="Explode")
 	void							ExplodeHelicopter			();
 
 
@@ -260,6 +285,7 @@ public:
 	virtual ~CHelicopter() override;
 	
 	CHelicopter::EHeliState			state		()		{return m_curState;};
+	XPROPERTY(LuaCallable, Name="GetState")
 	int								state_script()		{return m_curState;};
 
 	void							setState	(CHelicopter::EHeliState s);
@@ -316,52 +342,79 @@ public:
 
 public:
 	//for scripting
+	XPROPERTY(LuaCallable)
 	bool					isVisible						(CScriptGameObject* O);
 	bool					isObjectVisible					(CObject* O);
 	bool			 		isOnAttack						()				{return m_enemy.type!=eEnemyNone;}
 
+	XPROPERTY(LuaCallable, Name="GoPatrolByPatrolPath")
 	void					goPatrolByPatrolPath			(const char* path_name,int start_idx);
+	XPROPERTY(LuaCallable, Name="GoPatrolByRoundPath")
 	void					goByRoundPath					(Fvector center, float radius, bool clockwise);
+	XPROPERTY(LuaCallable)
 	void					LookAtPoint						(Fvector point, bool do_it);
+	XPROPERTY(LuaCallable)
 	void					SetDestPosition					(Fvector* pos);
+	XPROPERTY(LuaCallable)
 	float					GetDistanceToDestPosition		();
 	
+	XPROPERTY(LuaCallable)
 	void					SetSpeedInDestPoint				(float sp);
+	XPROPERTY(LuaCallable)
 	float					GetSpeedInDestPoint				(float sp);
 	
+	XPROPERTY(LuaCallable)
 	void					SetOnPointRangeDist				(float d);
+	XPROPERTY(LuaCallable)
 	float					GetOnPointRangeDist				();
 
+	XPROPERTY(LuaCallable)
 	float					GetCurrVelocity					();
+	XPROPERTY(LuaCallable)
 	float					GetMaxVelocity					();
+	XPROPERTY(LuaCallable)
 	void					SetMaxVelocity					(float v);
 	//////////////////////Start By JoHnY///////////////////////
+	XPROPERTY(LuaCallable)
 	void					SetLinearAcc					(float LAcc_fw, float LAcc_bw);
 	//////////////////////End By JoHnY/////////////////////////
+	XPROPERTY(LuaCallable)
 	Fvector					GetCurrVelocityVec				();
+	XPROPERTY(LuaCallable)
 	void					SetBarrelDirTolerance			(float val){m_barrel_dir_tolerance = val;};
+	XPROPERTY(LuaCallable)
 	void					SetEnemy						(CScriptGameObject* e);
+	XPROPERTY(LuaCallable)
 	void					SetEnemy						(Fvector* pos);
+	XPROPERTY(LuaCallable, Name="ClearEnemy")
 	void					UnSetEnemy						();
+	XPROPERTY(LuaCallable)
 	void					SetFireTrailLength				(float val);
+	XPROPERTY(LuaCallable)
 	bool					UseFireTrail					();
+	XPROPERTY(LuaCallable)
 	void					UseFireTrail					(bool val);
 
+	XPROPERTY(LuaCallable)
 	float					GetRealAltitude					();
 
+	XPROPERTY(LuaCallable)
 	int						GetMovementState				();
+	XPROPERTY(LuaCallable)
 	int						GetHuntState					();
+	XPROPERTY(LuaCallable)
 	int						GetBodyState					();
 
 	virtual DLL_Pure		*_construct						() override;
+	XPROPERTY(LuaCallable)
 	float					GetSafeAltitude					()				{return m_movement.GetSafeAltitude();};
+	XPROPERTY(LuaCallable, Name="GetfHealth")
 	float					GetHeliHealth					() const		{return inherited::GetfHealth();}
+	XPROPERTY(LuaCallable, Name="SetfHealth")
 	float					SetHeliHealth					(float value)	{return inherited::SetfHealth(value);}
 
 #ifdef DEBUG_DRAW
 public:
 	virtual void			OnRender						() override;
 #endif
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -11,6 +11,7 @@
 class SArtefactActivation;
 struct SArtefactDetectorsSupport;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CArtefact : public CHudItemObject, 
 	public CPHUpdateObject, public IRestoresOwner
 {
@@ -48,9 +49,13 @@ public:
 	float	GetSleepinessPower() { return m_fSleepinessRestoreSpeed; }
 	float	GetPowerPower() { return m_fPowerRestoreSpeed; }
 	float	GetBleedingPower() { return m_fBleedingRestoreSpeed; }
+	XPROPERTY(LuaCallable)
 	float	GetEquipmentDurabilityModifier() const { return m_fEquipmentDurabilityModifier; }
+	XPROPERTY(LuaCallable)
 	float	GetInventoryWeightModifier() const { return m_fInventoryWeightModifier; }
+	XPROPERTY(LuaCallable)
 	float	GetJumpHeightModifier() const { return m_fJumpHeightModifier; }
+	XPROPERTY(LuaCallable)
 	float	GetMovementSpeedModifier() const { return m_fMovementSpeedModifier; }
 
 	void	SetHealthPower(float value) { m_fHealthRestoreSpeed = value; }
@@ -60,9 +65,13 @@ public:
 	void	SetSleepinessPower(float value) { m_fSleepinessRestoreSpeed = value; }
 	void	SetPowerPower(float value) { m_fPowerRestoreSpeed = value; }
 	void	SetBleedingPower(float value) { m_fBleedingRestoreSpeed = value; }
+	XPROPERTY(LuaCallable)
 	void	SetEquipmentDurabilityModifier(float value) { m_fEquipmentDurabilityModifier = value; }
+	XPROPERTY(LuaCallable)
 	void	SetInventoryWeightModifier(float value) { m_fInventoryWeightModifier = value; }
+	XPROPERTY(LuaCallable)
 	void	SetJumpHeightModifier(float value) { m_fJumpHeightModifier = value; }
+	XPROPERTY(LuaCallable)
 	void	SetMovementSpeedModifier(float value) { m_fMovementSpeedModifier = value; }
 
 	float m_fJumpSpeed;
@@ -87,12 +96,15 @@ protected:
 	virtual void					UpdateLights					();
 public:
 	const SArtefactDesc&			ArtefactDesc					() const		{ VERIFY(CurrentArtefactDesc); return *CurrentArtefactDesc; }
+	XPROPERTY(LuaCallable)
 	IC u8							GetAfRank						() const		{return ArtefactDesc().m_af_rank;}
 	IC bool							CanBeActivated					()				{return ArtefactDesc().m_bCanSpawnZone;};
 	void							ActivateArtefact				();
+	XPROPERTY(LuaCallable)
 	void							FollowByPath					(const char* path_name, int start_idx, Fvector magic_force);
 	bool							CanBeInvisible					();
-	void							SwitchVisibility				(bool);
+	XPROPERTY(LuaCallable)
+	void							SwitchVisibility					(bool);
 
 	void							SwitchAfParticles				(bool bOn);
 	virtual void					StartLights();
@@ -146,8 +158,6 @@ public:
 	}
 
 	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); };
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 struct SArtefactDetectorsSupport

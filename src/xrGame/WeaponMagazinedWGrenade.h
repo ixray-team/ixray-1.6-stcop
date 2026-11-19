@@ -6,6 +6,7 @@
 class CWeaponFakeGrenade;
 
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponMagazinedWGrenade : public CWeaponMagazined,
 								 public CRocketLauncher
 {

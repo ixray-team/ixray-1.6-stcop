@@ -81,6 +81,7 @@ struct net_updateInvData
 };
 
 
+XREFLECT(LuaExport)
 class CInventoryItem : 
 	public CAttachableItem,
 	public CHitImmunity, 
@@ -89,10 +90,12 @@ class CInventoryItem :
 	, public pureRender
 #endif
 {
+	XGENERATED_BODY()
 private:
 	using inherited = CAttachableItem;
 	friend class CScriptGameObject;
 protected:
+	XPROPERTY(LuaEnum, Name="EIIFlags")
 	enum EIIFlags {
 		FdropManual = (1 << 0),
 		FCanTake = (1 << 1),
@@ -110,6 +113,7 @@ protected:
 		FCanStack = (1 << 13),
 	};
 
+	XPROPERTY(LuaReadWrite)
 	Flags16	m_flags;
 public:
 	CInventoryItem();
@@ -149,16 +153,22 @@ public:
 	shared_str GetExtendedUnionDescription() const { return m_ExtendedUnionDescription; }
 
 
+	XPROPERTY(LuaCallable)
 	const char* NameItem() const { return m_name.c_str(); }
+	XPROPERTY(LuaCallable)
 	const char* NameShort() const { return m_nameShort.c_str(); }
+	XPROPERTY(LuaCallable)
 	shared_str ItemDescription() const { return m_Description; }
 	shared_str ItemDescriptionAdditional() const { return m_AdditionalDescription; }
 	virtual bool GetBriefInfo(II_BriefInfo& info) { info.clear(); return false; }
 
 	virtual void OnEvent(NET_Packet& P, u16 type);
 
+	XPROPERTY(LuaCallable)
 	virtual bool Useful() const { return CanTake(); }
+	XPROPERTY(LuaCallable)
 	virtual bool IsUsingCondition() const { return m_flags.test(FUsingCondition); }
+	XPROPERTY(LuaCallable)
 	virtual bool CanStack() const { return (m_flags.test(FCanStack)); };
 
 	virtual bool Attach(PIItem pIItem);
@@ -170,9 +180,12 @@ public:
 	}
 	virtual bool CanDetach(PIItem pIItem) { return GetChildByID(pIItem->object().ID()); }
 
+	XPROPERTY(LuaCallable)
 	virtual EHandDependence HandDependence()	const { return hd1Hand; };
 	virtual bool IsSingleHanded()	const { return true; };
+	XPROPERTY(LuaCallable)
 	virtual bool ActivateItem() { return false; }
+	XPROPERTY(LuaCallable)
 	virtual void DeactivateItem() {}
 	virtual bool Action(u16 cmd, u32 flags) { return false; }	// true если известная команда, иначе false
 	virtual void DiscardState() {};
@@ -194,16 +207,22 @@ public:
 
 	virtual	void Hit(SHit* pHDS);
 
+	XPROPERTY(LuaCallable)
 	bool GetDropManual() const { return m_flags.test(FdropManual); }
+	XPROPERTY(LuaCallable)
 	void SetDropManual(bool val);
 
 	bool IsInvalid() const;
 
+	XPROPERTY(LuaCallable)
 	bool IsQuestItem() const { return m_flags.test(FIsQuestItem); }
+	XPROPERTY(LuaCallable)
 	virtual	u32 Cost() const { return m_cost; }
 	void setCost(u32 nValue);
 
+	XPROPERTY(LuaCallable)
 	virtual float Weight() const { return m_weight; }
+	XPROPERTY(LuaCallable, Name="SetWeight")
 	void setWeight(float value);
 
 	Fvector Get3DStaticRotate() const
@@ -284,11 +303,14 @@ public:
 	void SetInvGridRect(const Irect& rect);
 	void SetInvGridRect(u32 x, u32 y, u32 w, u32 h);
 	Irect GetUpgrIconRect() const;
+	XPROPERTY(LuaCallable)
 	const shared_str& GetIconName() const { return ItemDesc().m_icon_name; };
 	Frect GetKillMsgRect() const;
 	//---------------------------------------------------------------------
+	XPROPERTY(LuaCallable)
 	IC float GetCondition() const { return m_fCondition; }
 	virtual	float GetConditionToShow() const { return GetCondition(); }
+	XPROPERTY(LuaCallable)
 	IC void	SetCondition(float val) { m_fCondition = val; }
 	void	ChangeCondition(float fDeltaCondition);
 
@@ -307,6 +329,7 @@ public:
 	void Ruck(bool on_ruck) { m_flags.set(Fruck, on_ruck); }
 	bool RuckDefault() { return !!m_flags.test(FRuckDefault); }
 
+	XPROPERTY(LuaCallable)
 	virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
 	virtual void SetCanTake(bool state) { m_flags.set(FCanTake, state); }
 	bool CanTrade() const;
@@ -455,6 +478,7 @@ protected:
 	Upgrades_type m_upgrades = {};
 
 public:
+	XPROPERTY(LuaCallable)
 	IC bool	has_any_upgrades() { return (m_upgrades.size() != 0); }
 	bool has_upgrade(const shared_str& upgrade_id);
 	bool has_upgrade_group(const shared_str& upgrade_group_id);
@@ -464,8 +488,11 @@ public:
 
 	bool equal_upgrades(Upgrades_type const& other_upgrades) const;
 
+	XPROPERTY(LuaCallable)
 	bool verify_upgrade(const char* section);
+	XPROPERTY(LuaCallable)
 	bool install_upgrade(const char* section);
+	XPROPERTY(LuaCallable)
 	void pre_install_upgrade();
 
 #ifdef DEBUG	
@@ -502,7 +529,6 @@ protected:
 public:
 	IC bool	is_helper_item() { return !!m_flags.test(FIsHelperItem); }
 	IC void	set_is_helper(bool is_helper) { m_flags.set(FIsHelperItem, is_helper); }
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CInventoryItem
 
 #include "inventory_item_inline.h"

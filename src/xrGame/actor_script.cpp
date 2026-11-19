@@ -12,96 +12,18 @@
 #include "level_changer.h"
 #include "ActorCondition.h"
 
-using namespace luabind;
-
+XREFLECT(LuaExport, Name="is_first_person")
 bool isFirstPerson() { return Actor()->active_cam() == eacFirstEye; }
+XREFLECT(LuaExport, Name="set_first_person")
 void setFirstPerson() { Actor()->cam_Set(eacFirstEye); }
+XREFLECT(LuaExport, Name="set_third_person")
 void setThirdPerson() { Actor()->cam_Set(eacLookAt); }
 
+XREFLECT(LuaExport, Name="is_god_mode")
 bool isGodMode() { return psActorFlags.test(AF_GOD_MODE); }
+XREFLECT(LuaExport, Name="is_actor_shadow")
 bool isActorShadow() { return psGameFlags.test(rsActorShadow); }
+XREFLECT(LuaExport, Name="set_actor_shadow")
 void setActorShadow(bool state) { psGameFlags.set(rsActorShadow, state); }
 
-#pragma optimize("s",on)
-void CActor::script_register(lua_State* L)
-{
-	module(L)
-		[
-			class_<CameraFocusParams>("camera_focus_params")
-				.def(constructor<>())
-				.def_readwrite("fov", &CameraFocusParams::Fov)
-				.def_readwrite("blend_in", &CameraFocusParams::BlendIn)
-				.def_readwrite("hold_time", &CameraFocusParams::HoldTime)
-				.def_readwrite("blend_out", &CameraFocusParams::BlendOut)
-				.def_readwrite("tracking_speed", &CameraFocusParams::TrackingSpeed)
-				.def_readwrite("lock_input", &CameraFocusParams::LockInput)
-				.def_readwrite("track", &CameraFocusParams::Track)
-				.def_readwrite("restore_direction", &CameraFocusParams::RestoreDirection),
-			class_<CActor, CGameObject>("CActor")
-				.def(constructor<>())
-			 .def("conditions", &CActor::conditions)
-			 .def("inventory_disabled", &CActor::inventory_disabled)
-			 .def("set_inventory_disabled", &CActor::set_inventory_disabled),
-				class_<CLevelChanger, CGameObject>("CLevelChanger")
-				.def(constructor<>()),
-				def("is_first_person", isFirstPerson),
-				def("set_first_person", setFirstPerson),
-				def("set_third_person", setThirdPerson),
-				def("is_god_mode", isGodMode),
-				def("is_actor_shadow", isActorShadow),
-				def("set_actor_shadow", setActorShadow),
-
-				class_<enum_exporter<EBoostParams>>("EBoostParams").enum_("eboostparams")[
-					value("eBoostHpRestore", eBoostHpRestore),
-					value("eBoostPowerRestore", eBoostPowerRestore),
-					value("eBoostRadiationRestore", eBoostRadiationRestore),
-					value("eBoostBleedingRestore", eBoostBleedingRestore),
-					value("eBoostMaxWeight", eBoostMaxWeight),
-					value("eBoostRadiationProtection", eBoostRadiationProtection),
-					value("eBoostTelepaticProtection", eBoostTelepaticProtection),
-					value("eBoostChemicalBurnProtection", eBoostChemicalBurnProtection),
-					value("eBoostBurnImmunity", eBoostBurnImmunity),
-					value("eBoostShockImmunity", eBoostShockImmunity),
-					value("eBoostRadiationImmunity", eBoostRadiationImmunity),
-					value("eBoostTelepaticImmunity", eBoostTelepaticImmunity),
-					value("eBoostChemicalBurnImmunity", eBoostChemicalBurnImmunity),
-					value("eBoostExplImmunity", eBoostExplImmunity),
-					value("eBoostStrikeImmunity", eBoostStrikeImmunity),
-					value("eBoostFireWoundImmunity", eBoostFireWoundImmunity),
-					value("eBoostWoundImmunity", eBoostWoundImmunity),
-					value("eBoostMaxCount", eBoostMaxCount)
-			],
-
-			class_<enum_exporter<EMovementStates>>("EMovementStates").enum_("emovementstates")
-			[
-				value("eOld", eOld),
-				value("eWishful", eWishful),
-				value("eReal", eReal)
-			],
-
-			class_<enum_exporter<EMoveCommand>>("EMoveCommand").enum_("emovecommand")
-			[
-				value("mcFwd", mcFwd),
-				value("mcBack", mcBack),
-				value("mcLStrafe", mcLStrafe),
-				value("mcRStrafe", mcRStrafe),
-				value("mcCrouch", mcCrouch),
-				value("mcAccel", mcAccel),
-				value("mcTurn", mcTurn),
-				value("mcJump", mcJump),
-				value("mcFall", mcFall),
-				value("mcLanding", mcLanding),
-				value("mcLanding2", mcLanding2),
-				value("mcClimb", mcClimb),
-				value("mcSprint", mcSprint),
-				value("mcLLookout", mcLLookout),
-				value("mcRLookout", mcRLookout),
-				value("mcAnyMove", mcAnyMove),
-				value("mcAnyAction", mcAnyAction),
-				value("mcAnyState", mcAnyState),
-				value("mcLookout", mcLookout),
-				value("mcJumpSeq", mcJumpSeq)
-
-			]
-		];
-}
+#include "actor_script.reflect.inl"

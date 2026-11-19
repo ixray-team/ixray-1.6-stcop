@@ -15,6 +15,7 @@ class CLAItem;
 class CPhysicsElement;
 class CSE_ALifeObjectHangingLamp;
 class CPHElement;
+XREFLECT(LuaExport, Bases="CGameObject", Name="hanging_lamp", Constructible)
 class CHangingLamp final : 
 	public CPhysicsShellHolder,
 	public CPHSkeleton
@@ -46,8 +47,11 @@ private:
 public:
 					CHangingLamp	();
 	virtual ~CHangingLamp	() override;
+	XPROPERTY(LuaCallable, Name="turn_on")
 	void			TurnOn			();
+	XPROPERTY(LuaCallable, Name="turn_off")
 	void			TurnOff			();
+	XPROPERTY(LuaCallable, Name="is_on")
 	bool			IsActive();
 	virtual void	Load			( const char* section) override;
 	virtual bool	net_Spawn		( CSE_Abstract* DC) override;
@@ -77,6 +81,5 @@ public:
 
 	virtual void	Center			(Fvector& C)	const override;
 	virtual float	Radius			()				const override;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 #endif //HangingLampH

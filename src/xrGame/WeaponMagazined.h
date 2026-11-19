@@ -15,6 +15,7 @@ class CWeaponBM16;
 class CWeaponRPG7;
 class CWeaponRG6;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponMagazined : public CWeapon
 {
 	using inherited = CWeapon;

@@ -18,7 +18,7 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CAI_Stalker::script_register(lua_State *L)
+void RegisterStalkerPlanner(lua_State *L)
 {
 	module(L)
 	[
@@ -173,12 +173,6 @@ void CAI_Stalker::script_register(lua_State *L)
 				luabind::value("sound_enemy_killed_or_wounded",				StalkerSpace::eStalkerSoundMaskEnemyKilledOrWounded),
 
 				luabind::value("sound_script",								StalkerSpace::eStalkerSoundScript)
-			],
-		
-		class_<CAI_Stalker,CGameObject>("CAI_Stalker")
-			.def(constructor<>())
-			.def("inside_anomaly", &CAI_Stalker::inside_anomaly)
-			.def("GetWeaponAccuracy", &CAI_Stalker::GetWeaponAccuracy)
-			.def("conditions", &CAI_Stalker::conditions)
+			]
 	];
 }

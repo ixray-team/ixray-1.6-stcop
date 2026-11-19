@@ -4,6 +4,7 @@
 #include "PHDestroyable.h"
 #include "PHCollisionDamageReceiver.h"
 
+XREFLECT(LuaExport, Bases="CPhysicObject", Constructible)
 class CDestroyablePhysicsObject :
 	public CPhysicObject,
 	public CPHDestroyable,

@@ -5,29 +5,8 @@
 #include "../../WeaponMagazinedWGrenade.h"
 #include "../../WeaponPistol.h"
 
-using namespace luabind;
-
-#pragma optimize("s",on)
-void CWeapon::script_register(lua_State* L)
+void RegisterWeaponAliases(lua_State* L)
 {
-	module(L)
-	[
-		class_<CWeaponMagazined, CGameObject>("CWeaponMagazined")
-			.def(constructor<>())
-	];
-
-	module(L)
-	[
-		class_<CWeaponMagazinedWGrenade, CGameObject>("CWeaponMagazinedWGrenade")
-			.def(constructor<>())
-	];
-
-	module(L)
-	[
-		class_<CWeaponPistol, CGameObject>("CWeaponPistol")
-			.def(constructor<>())
-	];
-
 	luabind::object weapon_class = luabind::get_globals(L)["CWeaponMagazined"];
 
 	auto MakeAliasLambda = [&weapon_class, L](const char* TypeID)

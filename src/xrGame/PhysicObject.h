@@ -46,10 +46,12 @@ struct net_updatePhData{
 };
 
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPhysicObject : 
 	public CPhysicsShellHolder,
 	public CPHSkeleton
 {
+	XGENERATED_BODY()
 	typedef CPhysicsShellHolder inherited;
 	EPOType					m_type					;
 	float					m_mass					;
@@ -63,15 +65,24 @@ private:
 			void	CreateSkeleton		(CSE_ALifeObjectPhysic	*po)													;
 			void	AddElement			(CPhysicsElement* root_e, int id)												;
 private:
+	XPROPERTY(LuaCallable)
 			void						run_anim_forward				();
+	XPROPERTY(LuaCallable)
 			void						run_anim_back					();
+	XPROPERTY(LuaCallable)
 			void						stop_anim						();
+	XPROPERTY(LuaCallable)
 			void						play_bones_sound				();
+	XPROPERTY(LuaCallable)
 			void						stop_bones_sound				();
+	XPROPERTY(LuaCallable)
 			float						anim_time_get					();
+	XPROPERTY(LuaCallable)
 			void						anim_time_set					( float time );
 			void						create_collision_model			( );
+	XPROPERTY(LuaCallable)
 			void						set_door_ignore_dynamics		( );
+	XPROPERTY(LuaCallable)
 			void						unset_door_ignore_dynamics		( );
 public:
 			bool						get_door_vectors				( Fvector& closed, Fvector& open ) const;
@@ -135,6 +146,4 @@ protected:
 	Flags16								m_flags;
 	bool								m_just_after_spawn;
 	bool								m_activated;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

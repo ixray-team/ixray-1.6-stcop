@@ -96,6 +96,7 @@ struct SBoneProtections;
 class CDangerLocation;
 class CRestrictedObject;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Stalker final : 
 	public CCreature, 
 	public CObjectHandler,
@@ -197,6 +198,8 @@ public:
 public:
 										CAI_Stalker					();
 	virtual ~CAI_Stalker				() override;
+	XPROPERTY(LuaCallable, Name="conditions")
+	IC CEntityCondition&				script_conditions			() { return conditions(); }
 
 public:
 	virtual CCharacterPhysicsSupport*	character_physics_support	() override {return m_pPhysics_support;}
@@ -326,6 +329,7 @@ public:
 			void						update_best_item_info	();
 			void						update_best_item_info_impl();
 			void						ResetBoneProtections	(const char* imm_sect, const char* bone_sect);
+	XPROPERTY(LuaCallable)
 	virtual float						GetWeaponAccuracy		() const override;
 	virtual bool						unlimited_ammo			() override;
 	virtual bool						infinite_fire() override;
@@ -338,6 +342,7 @@ public:
 	}
 	
 			bool						undetected_anomaly		();
+	XPROPERTY(LuaCallable)
 			bool						inside_anomaly			();
 
 public:
@@ -918,7 +923,6 @@ private:
 	ignored_touched_objects_type		m_ignored_touched_objects;
 
 public:
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #include "ai_stalker_inline.h"

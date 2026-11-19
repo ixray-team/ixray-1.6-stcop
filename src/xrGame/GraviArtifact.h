@@ -7,6 +7,7 @@
 #pragma once
 #include "Artefact.h"
 
+XREFLECT(LuaExport, Bases="CArtefact", Constructible)
 class CGraviArtefact : public CArtefact 
 {
 private:

@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CInventoryBox : public CGameObject
 {
 	using inherited = CGameObject;
@@ -29,9 +30,12 @@ public:
 	IC void	set_in_use(bool status) { m_in_use = status; }
 	IC bool	in_use() const { return m_in_use; }
 
+	XPROPERTY(LuaCallable)
 	void set_can_take(bool status);
+	XPROPERTY(LuaCallable)
 	IC bool can_take() const { return m_can_take; }
 
+	XPROPERTY(LuaCallable)
 	void set_closed(bool status, const char* reason);
 	IC bool closed() const { return m_closed; }
 
@@ -40,10 +44,9 @@ public:
 
 protected:
 	void SE_update_status();
-	DECLARE_SCRIPT_REGISTER_FUNCTION
-
 };
 
+XREFLECT(LuaExport, Bases="CGameObject", Name="CInventoryBox", Constructible)
 class CTradeStorageBox final : public CInventoryBox
 {
 	using inherited = CInventoryBox;
@@ -55,6 +58,11 @@ public:
 	virtual void Load(LPCSTR section) override;
 	IC u32 GetFilterSize() { return m_ItemFilter.size(); }
 	IC bool CanStoreItem(shared_str item) { return !m_ItemFilter.contains(item); }
-	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
+	XPROPERTY(LuaCallable, Name="can_take")
+	IC bool script_can_take() const { return can_take(); }
+	XPROPERTY(LuaCallable, Name="set_can_take")
+	IC void script_set_can_take(bool status) { set_can_take(status); }
+	XPROPERTY(LuaCallable, Name="set_closed")
+	IC void script_set_closed(bool status, const char* reason) { set_closed(status, reason); }
 };

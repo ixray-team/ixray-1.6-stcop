@@ -15,6 +15,7 @@ class	CPHContact;
 using ALIVE_LIST = xr_vector<CEntityAlive*>;
 using ALIVE_LIST_it = ALIVE_LIST::iterator;
 
+XREFLECT(LuaExport, Bases="CArtefact", Constructible)
 class CBastArtefact final : public CArtefact,
 					  public Feel::Touch
 {

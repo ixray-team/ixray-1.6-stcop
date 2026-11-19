@@ -12,6 +12,7 @@
 #include "../xrEngine/Feel_Touch.h"
 #include "game_graph_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CLevelChanger : public CGameObject, public Feel::Touch {
 private:
 	typedef	CGameObject	inherited;

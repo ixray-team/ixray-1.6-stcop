@@ -2,15 +2,24 @@
 
 #include <cmath>
 
+XREFLECT(LuaExport, Name="camera_focus_params", Constructible)
 struct CameraFocusParams
 {
+	XPROPERTY(LuaReadWrite, Name="fov")
 	float Fov = 35.f;
+	XPROPERTY(LuaReadWrite, Name="blend_in")
 	float BlendIn = 1.f;
+	XPROPERTY(LuaReadWrite, Name="hold_time")
 	float HoldTime = -1.f;
+	XPROPERTY(LuaReadWrite, Name="blend_out")
 	float BlendOut = 0.5f;
+	XPROPERTY(LuaReadWrite, Name="tracking_speed")
 	float TrackingSpeed = 8.f;
+	XPROPERTY(LuaReadWrite, Name="lock_input")
 	bool LockInput = true;
+	XPROPERTY(LuaReadWrite, Name="track")
 	bool Track = true;
+	XPROPERTY(LuaReadWrite, Name="restore_direction")
 	bool RestoreDirection = false;
 
 	bool IsValid() const

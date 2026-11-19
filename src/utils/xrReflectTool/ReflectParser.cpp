@@ -369,7 +369,7 @@ namespace XReflectTool
 		};
 
 		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Owner", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
-		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Name", "Prefix", "Exclude", "Names", "Scope" };
+		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Class", "Name", "Prefix", "Exclude", "Names", "Scope" };
 		const std::set<std::string> FunctionSpecifiers = { "LuaExport", "Name", "Condition", "Self", "Policies" };
 		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaProperty", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Setter", "Policies", "Prefix", "Exclude", "Names", "IniRead", "IniReadExist", "If" };
 
@@ -1130,6 +1130,7 @@ namespace XReflectTool
 				Out.Condition = Specs.Condition;
 				Out.LuaName = Specs.Get("Name", Text(Pos));
 				Out.EnumScope = Scope + (IsScoped ? Text(Pos) + "::" : std::string());
+				Out.EnumType = Scope + Text(Pos);
 
 				std::string Prefix = Specs.Get("Prefix");
 				std::vector<std::string> Exclude = SplitList(Specs.Get("Exclude"), ',');
@@ -1231,16 +1232,24 @@ namespace XReflectTool
 				{
 					return Next;
 				}
-				if (!Specs.Has("LuaEnum") || Specs.Get("Self").empty())
+				const std::string Self = Specs.Get("Self");
+				const std::string LuaClass = Specs.Get("Class");
+				if (!Specs.Has("LuaEnum") || (Self.empty() && LuaClass.empty()))
 				{
-					Error(Specs.Line, "XREFLECT on an enum requires LuaEnum and Self");
+					Error(Specs.Line, "XREFLECT on an enum requires LuaEnum and Self or Class");
+					return Next;
+				}
+				if (!Self.empty() && !LuaClass.empty())
+				{
+					Error(Specs.Line, "use either Self or Class on an enum");
 					return Next;
 				}
 
 				FreeEnumInfo Info;
 				Info.File = File.Path;
 				Info.Line = Specs.Line;
-				Info.SelfClass = Specs.Get("Self");
+				Info.SelfClass = Self;
+				Info.LuaClass = LuaClass;
 				std::string Scope = Specs.Get("Scope");
 				if (!Scope.empty() && !Scope.ends_with("::"))
 				{
@@ -1488,6 +1497,49 @@ namespace XReflectTool
 				Class->PublicBases = std::move(Bases);
 			}
 
+			// luabind rejects a base that is already reachable through another base.
+			// The sorted order is base-first, so the ancestor sets are complete here.
+			std::map<std::string, std::set<std::string>> Ancestors;
+			for (const ClassInfo* Class : Sorted)
+			{
+				std::set<std::string> Set;
+				for (const std::string& Base : Class->PublicBases)
+				{
+					Set.insert(Base);
+					if (auto It = Ancestors.find(Base); It != Ancestors.end())
+					{
+						Set.insert(It->second.begin(), It->second.end());
+					}
+				}
+				Ancestors[Class->QualifiedName] = std::move(Set);
+			}
+			for (ClassInfo* Class : Sorted)
+			{
+				std::vector<std::string> Bases;
+				for (const std::string& Base : Class->PublicBases)
+				{
+					bool Redundant = false;
+					for (const std::string& Other : Class->PublicBases)
+					{
+						if (Other == Base)
+						{
+							continue;
+						}
+						auto It = Ancestors.find(Other);
+						if (It != Ancestors.end() && It->second.contains(Base))
+						{
+							Redundant = true;
+							break;
+						}
+					}
+					if (!Redundant)
+					{
+						Bases.push_back(Base);
+					}
+				}
+				Class->PublicBases = std::move(Bases);
+			}
+
 			Classes = std::move(Sorted);
 		}
 	}
@@ -1519,25 +1571,46 @@ namespace XReflectTool
 		};
 
 		// Enums with Self become enums of that class. The class registration must see the declaration.
+		// Enums with Class stay standalone and are registered as their own Lua class.
 		for (FileInfo& File : Files)
 		{
-			for (FreeEnumInfo& Enum : File.Enums)
+			std::erase_if(File.Enums, [&](FreeEnumInfo& Enum)
 			{
+				if (Enum.SelfClass.empty())
+				{
+					return false;
+				}
+
 				ClassInfo* Class = FindClass(Enum.SelfClass);
 				if (!Class)
 				{
 					Errors.push_back({ Enum.File, Enum.Line, "Self class '" + Enum.SelfClass + "' is not reflected" });
+					return true;
 				}
-				else if (File.IsSource && Class->File != File.Path)
+				if (File.IsSource && Class->File != File.Path)
 				{
 					Errors.push_back({ Enum.File, Enum.Line, "declare a Self enum in a header or in the file of its class" });
+					return true;
 				}
-				else
+
+				Class->Members.push_back(std::move(Enum.Member));
+				return true;
+			});
+		}
+
+		// Standalone enum exports need a unique Lua class name.
+		{
+			std::map<std::string, std::string> Seen;
+			for (const FileInfo& File : Files)
+			{
+				for (const FreeEnumInfo& Enum : File.Enums)
 				{
-					Class->Members.push_back(std::move(Enum.Member));
+					if (auto [It, Inserted] = Seen.emplace(Enum.LuaClass, Enum.File); !Inserted)
+					{
+						Errors.push_back({ Enum.File, Enum.Line, "standalone enum class '" + Enum.LuaClass + "' clashes with " + It->second });
+					}
 				}
 			}
-			File.Enums.clear();
 		}
 
 		// Free functions with Self become methods of that class.

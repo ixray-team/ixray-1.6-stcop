@@ -23,6 +23,7 @@
 #include "HudAnimatorManager.h"
 #include "nvg.h"
 #include "CameraFocus.h"
+#include "ActorCondition.h"
 #include "ActorLightPerception.h"
 
 using namespace ACTOR_DEFS;
@@ -76,6 +77,7 @@ class CHudAnimatorManager;
 class CAnimatorCamLerpEffectorConst;
 class THudVertexAssignedPatricles;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CActor: 
 	public IGame_Actor, 
 	public CEntityAlive, 
@@ -898,6 +900,7 @@ protected:
 	CEntityConditionSimple	*create_entity_condition	(CEntityConditionSimple* ec) override;
 
 public:
+	XPROPERTY(LuaCallable)
 	IC		CActorCondition		&conditions					() const;
 	DLL_Pure			*_construct					() override;
 	bool				natural_weapon				() const override {return false;}
@@ -1001,7 +1004,9 @@ public:
 			void			DisableHitMarks(bool disable)		{m_disabled_hitmarks = disable;};
 			bool			DisableHitMarks() const {return m_disabled_hitmarks;};
 
+			XPROPERTY(LuaCallable)
 			void			set_inventory_disabled (bool is_disabled) { m_inventory_disabled = is_disabled; }
+			XPROPERTY(LuaCallable)
 			bool			inventory_disabled () const { return m_inventory_disabled; }
 			void			set_pda_disabled(bool is_disabled) { m_pda_disabled = is_disabled; }
 			bool			pda_disabled() const { return m_pda_disabled; }
@@ -1015,8 +1020,6 @@ private:
 	bool					m_pda_disabled;
 	bool					m_use_disabled;
 //static CPhysicsShell		*actor_camera_shell;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 
 private:
 	CScriptGameObject* m_pBestEnemy = nullptr;

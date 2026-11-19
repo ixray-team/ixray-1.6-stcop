@@ -6,8 +6,10 @@
 class CPhysicItem;
 class CEntityAlive;
 
+XREFLECT(LuaExport)
 class CEatableItem : public CInventoryItem
 {
+	XGENERATED_BODY()
 private:
 	using inherited = CInventoryItem;
 
@@ -17,8 +19,11 @@ protected:
 	const SEatableItemDesc* CurrentEatableDesc = nullptr;
 
 	u8 m_iRemainingUses = 1;
+	XPROPERTY(LuaReadWrite, Name="m_bRemoveAfterUse")
 	bool m_bRemoveAfterUse = true;
+	XPROPERTY(LuaReadWrite, Name="m_fWeightFull")
 	float m_fWeightFull = 0.0f;
+	XPROPERTY(LuaReadWrite, Name="m_fWeightEmpty")
 	float m_fWeightEmpty = 0.0f;
 
 public:
@@ -40,17 +45,25 @@ public:
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
 	virtual void OnH_A_Independent() override;
 	virtual	bool UseBy(CEntityAlive* npc);
+	XPROPERTY(LuaCallable)
 	virtual float Weight() const override;
+	XPROPERTY(LuaCallable, Name="Cost")
+	IC u32 script_Cost() const { return Cost(); }
 
 	virtual void Hit(SHit* pHDS) override;
 	void EatableEffects();
 
+	XPROPERTY(LuaCallable)
 	bool Empty() const { return m_iRemainingUses == 0; };
+	XPROPERTY(LuaCallable)
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
 	IC bool CanConsumeCharge() const { return EatableDesc().m_bConsumeChargeOnUse; };
+	XPROPERTY(LuaCallable)
 	u8 GetMaxUses() const { return EatableDesc().m_iMaxUses; };
 	const SEatableItemDesc& EatableDesc() const { VERIFY(CurrentEatableDesc); return *CurrentEatableDesc; }
+	XPROPERTY(LuaCallable)
 	u8 GetRemainingUses() const { return m_iRemainingUses; };
+	XPROPERTY(LuaCallable)
 	void SetRemainingUses(u8 value)
 	{
 		if (value <= GetMaxUses())
@@ -71,5 +84,4 @@ public:
 		}
 	}
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

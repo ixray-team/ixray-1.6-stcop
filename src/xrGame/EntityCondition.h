@@ -9,6 +9,7 @@ class CLevel;
 #include "hit_immunity.h"
 #include "Hit.h"
 #include "Level.h"
+XREFLECT(LuaEnum, Class="EBoostParams", Name="eboostparams")
 enum EBoostParams{
 	eBoostHpRestore = 0,
 	eBoostPowerRestore,
