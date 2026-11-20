@@ -8124,8 +8124,30 @@ float	CCar::RefWheelMaxSpeedByLastGear()
 	return 1.0f;
 }
 
+float	CCar::EngineBrakeTorque()
+{
+	if (m_power_rpm <= EPS || m_max_rpm <= EPS)
+		return 0.f;
+
+	const float Rpm = std::max(m_current_rpm, m_min_rpm);
+	const float BrakeRpm = std::min(Rpm, m_max_rpm);
+	const float BaseRpm = std::min(BrakeRpm, m_power_rpm);
+	if (BaseRpm <= EPS)
+		return 0.f;
+
+	// Engine braking must not follow the drive-power falloff above
+	// max_power_rpm. Grow linearly up to max_engine_rpm, then hold the torque
+	// reached there.
+	const float BaseTorque = Parabola(BaseRpm) / BaseRpm;
+	const float RpmFactor = std::max(1.f, BrakeRpm / m_power_rpm);
+	return BaseTorque * RpmFactor;
+}
+
 float	CCar:: EngineCurTorque()
 {
+	if (e_state_drive == neutral && b_engine_on)
+		return EngineBrakeTorque();
+
 	return m_current_rpm > EPS ? m_current_engine_power / m_current_rpm : 0.f;
 }
 float	CCar:: RefWheelCurTorque()

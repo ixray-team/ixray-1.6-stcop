@@ -1330,6 +1330,7 @@ private:
 	float				RefWheelMaxSpeed					()	;
 	float				RefWheelMaxSpeedByLastGear			()	;
 	float				EngineCurTorque						()	;
+	float				EngineBrakeTorque					()	;
 	float				RefWheelCurTorque					()	;
 	float	 			EnginePower							()	;
 	float	 			EngineDriveSpeed					()	;
