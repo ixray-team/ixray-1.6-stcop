@@ -220,6 +220,22 @@ void  CCar::SWheel::WheellCollisionCallback(bool& do_colide,bool bo1,CPHContact&
 		return;
 	}
 
+	// HACK: living mutants/NPCs currently ignore the real rolling wheel because
+	// a character can otherwise grab it and drag the whole car through its
+	// joint. A static character-only wheel blocker in CreateCharacterScraper()
+	// was tried but did not cover the wheel reliably. TODO: replace this with a
+	// proper character wheel blocker later. Actor is kept unchanged.
+	CPhysicsShellHolder* Other = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(!bo1));
+	if (Other != nullptr && Other->cast_actor() == nullptr)
+	{
+		CEntityAlive* Alive = Other->cast_entity_alive();
+		if (Alive != nullptr && Alive->g_Alive())
+		{
+			do_colide = false;
+			return;
+		}
+	}
+
 	dContact& c = cphc.Native();
 	dxGeomUserData					*ud1			=			retrieveGeomUserData(c.geom.g1)	;
 	dxGeomUserData					*ud2			=			retrieveGeomUserData(c.geom.g2)	;
