@@ -370,6 +370,7 @@ public:
 	bool	m_allow_mutant_bite_in_car;
 	float	m_interior_volume;
 	float	m_hit_stall_threshold;
+	float	m_start_probability;
 	float	m_hit_anomaly_scale;
 	float	m_mutant_hit_impulse_factor;
 	float	m_burer_gravi_impulse_factor;

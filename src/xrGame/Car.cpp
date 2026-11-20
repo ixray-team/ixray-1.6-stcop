@@ -410,6 +410,7 @@ CCar::CCar()
 	m_allow_mutant_bite_in_car = false;
 	m_interior_volume = 0.7f;
 	m_hit_stall_threshold = 1.f;
+	m_start_probability = 1.f;
 	m_hit_anomaly_scale = 1.f;
 	m_mutant_hit_impulse_factor = 1.f;
 	m_burer_gravi_impulse_factor = 1.f;
@@ -4613,6 +4614,9 @@ void CCar::LoadEngineDefinitions(CInifile* ini)
 		m_min_rpm *= (1.f / 60.f * 2.f * M_PI);
 	}
 
+	m_start_probability = READ_IF_EXISTS(ini, r_float, "car_definition", "start_probability", m_start_probability);
+	clamp(m_start_probability, 0.f, 1.f);
+
 	if (ini->line_exist("car_definition", "max_power_rpm"))
 	{
 		m_power_rpm = ini->r_float("car_definition", "max_power_rpm");
@@ -5308,8 +5312,11 @@ void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
 
 float CCar::EngineStartSuccessChance() const
 {
+	float StartChance = m_start_probability;
+	clamp(StartChance, 0.f, 1.f);
+
 	if (m_levels_num == 0 || m_max_health <= EPS)
-		return 1.f;
+		return StartChance;
 
 	const auto LevelChance = [this](u16 Level)
 	{
@@ -5317,21 +5324,22 @@ float CCar::EngineStartSuccessChance() const
 	};
 
 	// The big smoke starts at the lower health threshold, so it must take
-	// priority when both damage particle stages are active.
+	// priority when both damage particle stages are active. The configured
+	// start probability is multiplied by the damage-based chance.
 	if (m_damage_particles.IsPlaying2())
 	{
 		float Chance = LevelChance(2);
 		clamp(Chance, 0.f, 1.f);
-		return Chance;
+		return StartChance * Chance;
 	}
 	if (m_damage_particles.IsPlaying1())
 	{
 		float Chance = LevelChance(1);
 		clamp(Chance, 0.f, 1.f);
-		return Chance;
+		return StartChance * Chance;
 	}
 
-	return 1.f;
+	return StartChance;
 }
 void CCar::StopEngine()
 {
