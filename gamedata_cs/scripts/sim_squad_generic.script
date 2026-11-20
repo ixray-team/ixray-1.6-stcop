@@ -491,28 +491,14 @@ function sim_squad_generic:get_next_action()
 
 
 	local target_smart = nil
-	if self.assigned_target_smart_id ~= nil then
-		target_smart = self.board.smarts[self.assigned_target_smart_id].smrt
+	local target_smart_id = self:get_attack_target_id()
+	if target_smart_id ~= nil then
+		target_smart = self.board.smarts[target_smart_id].smrt
 	end
 
 	local attack_threshold = self.squad_power + self.squad_attack_power
 
-	--' Условие что мы атакуем по квесту.
-	local tm = task_manager.get_task_manager()
 	local player = self.board.players[self.player_id]
-	--' Если мы выдали игроку задание - то идем атаковать в любом случае
-	for k,task in pairs(tm.inited_tasks) do
-		--printf("Squad [%s] check task %s(%s) [%s]", self.squad_id, task.type, task.name, task.status)
-		if task.status == "selected" then
-			if task.src_obj == self.squad_id  then
-				-- Этот таск выдали мы
-				local target_obj = self.board.smarts[task.target].smrt
-				--printf("Squad [%s] Found player task. [%s]->[%s]", self.squad_id, task.type, target_obj:name())
-				target_smart = target_obj
-				break
-			end
-		end
-	end
 
 	if target_smart == nil then
 		--printf("[%s] target_smart nil", self.squad_id)
@@ -529,6 +515,15 @@ function sim_squad_generic:get_next_action()
 	--' Устанавливаем действие согласно выбранной стратегии.
 	local clear_path = self.board:find_path(smart.id, target_smart.id, self)
 	local next_point = clear_path[1]
+	--' Через заполненную транзитную точку отряд проходит, не останавливаясь (см. sim_attack_point:update).
+	--' Решение об атаке принимаем по первой точке, где отряд действительно остановится.
+	local decision_point = next_point
+	for k,v in ipairs(clear_path) do
+		decision_point = v
+		if not self:is_transit_point(self.board.smarts[v.id].smrt, target_smart.id, false) then
+			break
+		end
+	end
 
 	-- Если у игрока есть квест на эту точку - повышаем желание атаковать.
 	self.attacking_by_quest = nil
@@ -555,7 +550,7 @@ function sim_squad_generic:get_next_action()
 	if next_point.value == 0 then
 		--' Мы уже пришли в точку
 		self.current_action = sim_stay_point(self)
-	elseif next_point.value < attack_threshold then
+	elseif decision_point.value < attack_threshold then
 		-- Проверяем, если на точку выдана отсроченная атака - мы остаемся и ждем ее завершения.
 		local exist_task_type = nil
 		local exist_task_community = nil
@@ -611,6 +606,29 @@ function sim_squad_generic:get_next_action()
 	--self.current_action:print("")
 	self.current_action:make()
 	--self:refresh()
+end
+--' Конечная цель атаки: назначенная группировкой или точка задания, которое отряд выдал игроку.
+function sim_squad_generic:get_attack_target_id()
+	local target_smart_id = self.assigned_target_smart_id
+	--' Если мы выдали игроку задание - то идем атаковать в любом случае
+	for k,task in pairs(task_manager.get_task_manager().inited_tasks) do
+		if task.status == "selected" and task.src_obj == self.squad_id then
+			target_smart_id = task.target
+			break
+		end
+	end
+	return target_smart_id
+end
+--' Точка пути, где отряд не может остановиться: своя или ничья, не цель и без места для отряда.
+--' Если зайти в нее, НПС займут ее работы сверх лимита.
+function sim_squad_generic:is_transit_point(smart, target_smart_id, attacking)
+	if smart.id == target_smart_id then
+		return false
+	end
+	if smart.player_name ~= "none" and smart.player_name ~= self.player_id then
+		return false
+	end
+	return self.board:is_point_full(smart, self.player_id, attacking)
 end
 --' Взял ли игрок у отряда задание bring_item или recover_item, которое еще не сдал.
 function sim_squad_generic:has_active_item_task()
@@ -1340,6 +1358,26 @@ function sim_attack_point:update()
 	end
 
 	dest_smart.combat_manager:unregister_squad(squad)
+
+	--' Заполненную транзитную точку проходим насквозь: НПС регистрируются в ней только для работ атаки
+	--' следующей точки (работы атаки есть лишь для соседних смартов), а сам отряд в точку не заходит.
+	local target_smart_id = squad:get_attack_target_id()
+	if target_smart_id ~= nil and squad:is_transit_point(dest_smart, target_smart_id, true) then
+		local next_point = self.board:find_path(self.dest_smrt_id, target_smart_id, squad)[1]
+		printf("Squad [%s] passes full point [%s] to [%s]", squad.squad_id, dest_smart:name(), self.board.smarts[next_point.id].smrt:name())
+		self:finalize()
+		local next_action = sim_attack_point(squad, next_point.id, self.major)
+		next_action.target_power_value = next_point.value
+		--' Действие меняем до регистрации НПС, чтобы они сразу выбрали работы атаки.
+		squad.current_action = next_action
+		self.board:assign_squad_to_smart(squad, self.dest_smrt_id)
+		self.board.smarts[self.dest_smrt_id].squads[squad.squad_id] = nil
+		next_action.src_smrt_id = self.dest_smrt_id
+		next_action:make()
+		--' Действие не завершено: squad:update не должен финализировать новое.
+		return false
+	end
+
 	self.board:assign_squad_to_smart(squad, self.dest_smrt_id)
 	self.board:enter_smart(squad, self.dest_smrt_id)
 

@@ -133,17 +133,19 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
     elseif (sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level]) and
 	    is_point_avail(point, squad.player_id) then
 -- Если точка доступна и она в одном кластере с нами
-	    if point.player_name == "none" then
+	    -- Заполненная своя или ничья точка блокирует только как цель. Через транзитную отряд проходит,
+	    -- не заходя в нее (см. sim_squad_generic:get_next_action), поэтому ее работы не переполняются.
+	    if (point.player_name == "none" or point.player_name == squad.player_id) and point.id ~= tgt_smart_id then
+            point_value = point_value + 1
+	    elseif point.player_name == "none" then
             -- точка ничья
             point_value = point_value + 1
-            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
-            if friendly_squad_quan >= point.squad_capacity then
+            if board:is_point_full(point, squad.player_id) then
                 point_value = point_value + 1000
             end
         elseif point.player_name == squad.player_id then
             -- точка наша
-            local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id]) + board:get_smart_population(point)
-            if friendly_squad_quan < point.squad_capacity then
+            if not board:is_point_full(point, squad.player_id) then
                 -- Если точка наша и есть пустые места - вес 1
                 point_value = point_value + 1
             else
@@ -772,6 +774,18 @@ function sim_board:get_smart_departed_squad_quantity(smart)
                 end
         end
         return quan
+end
+--' Нет места для еще одного отряда группировки: в ничьей считаются атакующие, в своей еще и стоящие отряды.
+-- own_attack = true: отряд сам еще числится атакующим этой точки и себя не считает.
+function sim_board:is_point_full(smart, player_id, own_attack)
+        local quan = self:get_smart_squad_quantity(smart, self.players[player_id])
+        if own_attack == true then
+                quan = quan - 1
+        end
+        if smart.player_name == player_id then
+                quan = quan + self:get_smart_population(smart)
+        end
+        return quan >= smart.squad_capacity
 end
 --' СТатистика отрядов по смарту. Возвращает количество отрядов, которые атакуют точку
 function sim_board:get_smart_squad_quantity(smart, player)
