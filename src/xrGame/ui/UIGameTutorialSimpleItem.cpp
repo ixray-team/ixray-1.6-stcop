@@ -427,6 +427,10 @@ void CUISequenceSimpleItem::Start()
 				if (pActor->HudAnimator()->PdaAnimator() != nullptr)
 				{
 					pActor->HudAnimator()->PdaAnimator()->SwitchAnimator();
+					if (!pActor->HudAnimator()->PdaAnimator()->IsZoomed())
+					{
+						pActor->HudAnimator()->PdaAnimator()->SwitchZoom();
+					}
 				}
 				else
 				{

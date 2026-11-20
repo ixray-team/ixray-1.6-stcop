@@ -289,13 +289,25 @@ void CUISequencer::Stop()
 		Device.Pause(true, true, false, "tutorial_stop");
 	}
 
-	if (Need3DRender())
+	if (PdaOpenedByTutorial && g_pGameLevel && CurrentGameUI())
 	{
-		CObject* current_entity = Level().CurrentEntity();
+		PdaOpenedByTutorial = false;
 
-		CActor* pActor = current_entity ? current_entity->cast_actor() : nullptr;
-
-		if (pActor && pActor->HudAnimator()->PdaAnimator() && pActor->HudAnimator()->PdaAnimator()->IsActive())
+		CObject* CurrentEntity = Level().CurrentEntity();
+		CActor* ActorObject = CurrentEntity ? CurrentEntity->cast_actor() : nullptr;
+		CHudPdaAnimator* PdaAnimator = ActorObject ? ActorObject->HudAnimator()->PdaAnimator() : nullptr;
+		if (PdaAnimator != nullptr)
+		{
+			if (PdaAnimator->GetState() == CHudStateAnimator::EAnimatorStates::eIdle)
+			{
+				PdaAnimator->SwitchAnimator();
+			}
+			else if (PdaAnimator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden && PdaAnimator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+			{
+				PdaAnimator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+			}
+		}
+		else if (CurrentGameUI()->PdaMenu()->IsShown())
 		{
 			CurrentGameUI()->PdaMenu()->HideDialog();
 		}
