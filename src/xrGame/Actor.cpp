@@ -1050,8 +1050,7 @@ float CActor::CalcHitDamage(SHit* pHDS)
 	const bool IsLegacyBalance = Balance != EEngineExternalBalance::CallOfPripyat;
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;
-	bool& AddWound = IsLegacyBalance ? bAddWound : pHDS->add_wound;
-	hit_power = actorCondition.HitOutfitEffect(hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, AddWound, !IsLegacyBalance);
+	hit_power = actorCondition.HitOutfitEffect(hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, bAddWound, false);
 	float m_fHealthLost = 0.f;
 
 	switch (pHDS->hit_type)
@@ -3536,7 +3535,7 @@ float CActor::HitArtefactsOnBeltLegacy(float hit_power, ALife::EHitType hit_type
 
 	res_hit_power_k -= _af_count;
 
-	return res_hit_power_k * hit_power;
+	return std::max(0.0f, res_hit_power_k) * hit_power;
 }
 
 float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
