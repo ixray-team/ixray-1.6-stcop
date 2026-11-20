@@ -13,6 +13,7 @@
 #include "../xrEngine/CameraBase.h"
 
 constexpr float CarDeferredStopFade = 0.1f;
+constexpr float MaxEngineStartDelayMs = 10000.f;
 
 CCar::SCarSound::SCarSound(CCar* car)
 {
@@ -47,17 +48,24 @@ void CCar::SCarSound::Init()
 		if (!snd_engine_stop._p && ini->line_exist("car_sound", "engine_stop"))
 			snd_engine_stop.create(ini->r_string("car_sound", "engine_stop"), st_Effect, sg_SourceType);
 
-		float fengine_start_delay = ini->read_if_exists<float>("car_sound", "engine_sound_start_dellay", 0.25f);
+		const float fengine_start_delay = ini->read_if_exists<float>("car_sound", "engine_sound_start_dellay", 0.25f);
 		float engine_start_length = 0.f;
 		if (snd_engine_start._p)
 		{
 			engine_start_length = snd_engine_start.get_length_sec();
-			if (engine_start_length <= 0.f && snd_engine_start._p->fn_attached[0].size())
+			if (!(engine_start_length > 0.f) && snd_engine_start._p->fn_attached[0].size())
 			{
 				engine_start_length = XRay::Sound::Mixer::GetDuration(snd_engine_start._p->fn_attached[0].c_str());
 			}
 		}
-		engine_start_delay = iFloor((snd_engine_start._p ? engine_start_length * 1000.f : 1.f) * fengine_start_delay);
+
+		float StartDelay = (snd_engine_start._p ? engine_start_length * 1000.f : 1.f) * fengine_start_delay;
+		if (!std::isfinite(StartDelay) || StartDelay < 0.f)
+			StartDelay = 0.f;
+
+		// A stale or corrupted sound duration must not keep the engine in the
+		// starter state forever.
+		engine_start_delay = iFloor(std::min(StartDelay, MaxEngineStartDelayMs));
 
 		if (ini->line_exist("car_sound", "relative_pos"))
 			relative_pos.set(ini->r_fvector3("car_sound", "relative_pos"));

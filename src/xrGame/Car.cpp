@@ -74,6 +74,7 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 namespace
 {
 	constexpr const char* DefaultExhaustParticles = "vehiclefx\\exhaust_1";
+	constexpr u32 StarterWatchdogMargin = 250;
 	constexpr u32 WaterParticleInterval = 100;
 	constexpr u32 WaterParticleIntervalJitter = 50;
 	constexpr float WaterParticleMinSpeed = 0.2f;
@@ -169,6 +170,7 @@ CCar::CCar()
 	/////////////////////////////
 	b_wheels_limited=false;
 	b_engine_on=false;
+	b_starting=false;
 	e_state_steer=idle;
 	e_state_drive=neutral;
 	m_current_gear_ratio=dInfinity;
@@ -2730,6 +2732,17 @@ void CCar::UpdateCL				( )
 		RestoreExplosionState();
 	}
 
+	// A starter sequence must not outlive its sound state. A deferred stop
+	// request from a previous engine state can move eCarSound away from
+	// sndStarting and leave b_starting set forever after a failed start.
+	// RestoreEngineAndLights() clears the flag for a saved engine state, so
+	// this watchdog only affects live start attempts.
+	if (b_starting &&
+		Device.dwTimeGlobal - m_dwStartTime > m_car_sound->engine_start_delay + StarterWatchdogMargin)
+	{
+		b_starting = false;
+	}
+
 	// Clear a boost value left by input from a previous frame. Input normally
 	// sets m_steer_boost_frame to the current frame before UpdateCL runs; if
 	// no steering key was held, the stale value must not be displayed.
@@ -5237,7 +5250,19 @@ void CCar::StartEngine()
 		return;
 	}
 
-	if(b_engine_on || b_starting) return;
+	if (b_engine_on)
+		return;
+
+	if (b_starting)
+	{
+		// A retry is allowed only after the current starter sequence has
+		// finished. Otherwise a stale b_starting left by a failed start would
+		// block every further attempt.
+		if (Device.dwTimeGlobal - m_dwStartTime <= m_car_sound->engine_start_delay + StarterWatchdogMargin)
+			return;
+
+		b_starting = false;
+	}
 
 	const bool HasFuel = m_fuel >= EPS;
 	bool StartSuccessful = HasFuel;
@@ -5261,6 +5286,9 @@ void CCar::StartEngine()
 
 void CCar::RestoreEngineAndLights(bool EngineOn, bool LightsOn)
 {
+	// A restored runtime state supersedes any live start attempt.
+	b_starting = false;
+
 	if (EngineOn && GetfHealth() > 0.f)
 	{
 		// Resume a running engine without replaying the starter sequence.
@@ -8128,8 +8156,11 @@ void CCar::ASCUpdate(EAsyncCalls c)
 	case ascSndTransmission:m_car_sound->TransmissionSwitch();break;
 	case ascSndStall:
 		// Same race as the exhaust stop: an immediate restart must not be
-		// muted by the stop request from the previous engine state.
-		if (!b_engine_on)
+		// muted by the stop request from the previous engine state. A start
+		// attempt that is still running owns the sound state now; stopping it
+		// here would move the state out of sndStarting and leave b_starting
+		// set forever when the attempt failed.
+		if (!b_engine_on && !b_starting)
 			m_car_sound->Stop();
 		break;
 	case ascExhoustStop:

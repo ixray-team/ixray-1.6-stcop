@@ -314,8 +314,8 @@ public:
 extern XRSOUND_API CSound_manager_interface*		Sound;
 
 /// ********* Sound ********* (utils, accessors, helpers)
-IC ref_sound_data::ref_sound_data				()																{	slot=0;g_type=0;g_object=0;s_type=st_Effect;			}
-IC ref_sound_data::ref_sound_data				( const char* fName, esound_type sound_type, int	game_type )			{	::Sound->_create_data			(*this,fName, sound_type, game_type);							}
+IC ref_sound_data::ref_sound_data				()																{	slot=0;g_type=0;g_object=0;s_type=st_Effect;fTimeTotal=0.f;			}
+IC ref_sound_data::ref_sound_data				( const char* fName, esound_type sound_type, int	game_type )			{	fTimeTotal=0.f;::Sound->_create_data			(*this,fName, sound_type, game_type);							}
 IC ref_sound_data::~ref_sound_data				()																{	if (::Sound) ::Sound->_destroy_data(*this);																}
 
 IC void	ref_sound::create						( const char* name, esound_type sound_type, int	game_type)	{	 		::Sound->create		(*this,name,sound_type,game_type);							}
