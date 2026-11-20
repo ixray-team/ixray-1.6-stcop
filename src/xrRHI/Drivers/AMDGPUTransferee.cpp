@@ -311,7 +311,7 @@ AGSContext* CAMDReader::GetContext() const
 	return Context;
 }
 
-u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** pSwapChain)
+u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** pSwapChain, const DXGI_SWAP_CHAIN_DESC& SwapChainDesc)
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -320,25 +320,6 @@ u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** p
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0
 	};
-
-	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
-
-	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferDesc.Width = psCurrentVidMode[0];
-	sd.BufferDesc.Height = psCurrentVidMode[1];
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferCount = 1;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.OutputWindow = hwnd;
-	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
-
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
-
-	//	Additional set up
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	AGSDX11DeviceCreationParams creationParams
 	{
@@ -349,7 +330,7 @@ u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** p
 		featureLevels,
 		u32(std::size(featureLevels)),
 		D3D11_SDK_VERSION,
-		&sd
+		&SwapChainDesc
 	};
 
 	AGSDX11ExtensionParams extensionParams = {};

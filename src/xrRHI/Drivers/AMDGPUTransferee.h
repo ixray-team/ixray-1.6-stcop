@@ -105,7 +105,7 @@ public:
 
 	AGSContext* GetContext() const;
 
-	u32 GetDX11Device(void** pDevice, void** pImmediateContext, void** pSwapChain);
+	u32 GetDX11Device(void** pDevice, void** pImmediateContext, void** pSwapChain, const DXGI_SWAP_CHAIN_DESC& SwapChainDesc);
 	virtual CAMDReader* GetAMD() override { return this; }
 	virtual bool SetDepthBounds(bool, float zMin, float zMax) override;
 

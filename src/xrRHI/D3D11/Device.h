@@ -64,6 +64,9 @@ private:
 	bool CreateD3D11();
 	void DestroyD3D11();
 	bool UpdateBuffersD3D11();
-	
+
 	DX11TextureFactory* TextureFactory = nullptr;
+
+	UINT SwapChainFlags = 0;
+	bool TearingSupported = false;
 };

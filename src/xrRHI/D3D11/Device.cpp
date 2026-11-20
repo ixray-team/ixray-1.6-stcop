@@ -11,6 +11,56 @@
 
 #define DX11Device ((ID3D11Device*)RawDevice)
 
+namespace SwapChainSetup
+{
+	bool QueryTearingSupport()
+	{
+#ifdef IXR_WINDOWS
+		IDXGIFactory1* Factory = nullptr;
+		if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&Factory))))
+		{
+			return false;
+		}
+
+		BOOL Supported = FALSE;
+		IDXGIFactory5* Factory5 = nullptr;
+		if (SUCCEEDED(Factory->QueryInterface(IID_PPV_ARGS(&Factory5))))
+		{
+			if (FAILED(Factory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &Supported, sizeof(Supported))))
+			{
+				Supported = FALSE;
+			}
+			Factory5->Release();
+		}
+
+		Factory->Release();
+		return Supported == TRUE;
+#else
+		return false;
+#endif
+	}
+
+	DXGI_SWAP_CHAIN_DESC MakeDesc(HWND Window, bool FlipModel, UINT Flags)
+	{
+		DXGI_SWAP_CHAIN_DESC Desc = {};
+		Desc.BufferDesc.Width = psCurrentVidMode[0];
+		Desc.BufferDesc.Height = psCurrentVidMode[1];
+		Desc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		Desc.BufferDesc.RefreshRate.Numerator = 0;
+		Desc.BufferDesc.RefreshRate.Denominator = 0;
+		Desc.SampleDesc.Count = 1;
+		Desc.SampleDesc.Quality = 0;
+		Desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		Desc.OutputWindow = Window;
+		Desc.Windowed = !psDeviceFlags.is(rsFullscreen);
+		Desc.Flags = Flags;
+
+		Desc.BufferCount = FlipModel ? 2 : 1;
+		Desc.SwapEffect = FlipModel ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD;
+		return Desc;
+	}
+}
+
 class DX11Readback final : public IRHIReadback
 {
 public:
@@ -319,24 +369,11 @@ bool InternalDevice11::CreateD3D11()
 #endif
 
 	// Set up the presentation parameters
-	DXGI_SWAP_CHAIN_DESC sd = {};
-
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-	sd.BufferDesc.Width = psCurrentVidMode[0];
-	sd.BufferDesc.Height = psCurrentVidMode[1];
-	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	sd.BufferCount = 1;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.OutputWindow = hwnd;
-	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
 
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
-
-	//	Additional set up
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	TearingSupported = SwapChainSetup::QueryTearingSupport();
+	SwapChainFlags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | (TearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+	DXGI_SWAP_CHAIN_DESC sd = SwapChainSetup::MakeDesc(hwnd, true, SwapChainFlags);
 
 	UINT createDeviceFlags = 0;
 	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
@@ -344,7 +381,7 @@ bool InternalDevice11::CreateD3D11()
 #ifdef IXR_WINDOWS
 	if (CAMDReader* AMDReader = GRHI->DriverExt->GetAMD(); AMDReader != nullptr && !bHasDebugRender)
 	{
-		u32 NewFeatureLevel = AMDReader->GetDX11Device((void**)&RawDevice, (void**)&HWRenderContext, (void**)&HWSwapchain);
+		u32 NewFeatureLevel = AMDReader->GetDX11Device((void**)&RawDevice, (void**)&HWRenderContext, (void**)&HWSwapchain, sd);
 		if (RawDevice != nullptr)
 		{
 			FeatureLevel = NewFeatureLevel;
@@ -374,6 +411,23 @@ bool InternalDevice11::CreateD3D11()
 			std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, &HWSwapchain,
 			(ID3D11Device**)&RawDevice, &CurLevel, &HWRenderContext
 		);
+
+		if (FAILED(R))
+		{
+			// Flip discard needs Windows 10. Fall back to the legacy blt model.
+			Msg("! Flip model swap chain failed (hr = 0x%08X), using the legacy swap chain", u32(R));
+
+			TearingSupported = false;
+			SwapChainFlags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+			sd = SwapChainSetup::MakeDesc(hwnd, false, SwapChainFlags);
+
+			R = D3D11CreateDeviceAndSwapChain
+			(
+				0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
+				std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, &HWSwapchain,
+				(ID3D11Device**)&RawDevice, &CurLevel, &HWRenderContext
+			);
+		}
 		FeatureLevel = CurLevel;
 
 		// main anotation
@@ -482,7 +536,7 @@ void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
 	HRESULT R = ((IDXGISwapChain*)HWSwapchain)->ResizeTarget(&Desc);
 	R_CHK(R);
 
-	R = ((IDXGISwapChain*)HWSwapchain)->ResizeBuffers(0, Width, Height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+	R = ((IDXGISwapChain*)HWSwapchain)->ResizeBuffers(0, Width, Height, DXGI_FORMAT_UNKNOWN, SwapChainFlags);
 	R_CHK(R);
 
 	UpdateBuffersD3D11();
@@ -599,7 +653,19 @@ void InternalDevice11::DestroyD3D11()
 
 void InternalDevice11::Present()
 {
-	HWSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+	const bool VSync = psDeviceFlags.test(rsVSync);
+
+	UINT PresentFlags = 0;
+	if (!VSync && TearingSupported)
+	{
+		BOOL Fullscreen = FALSE;
+		if (SUCCEEDED(HWSwapchain->GetFullscreenState(&Fullscreen, nullptr)) && !Fullscreen)
+		{
+			PresentFlags |= DXGI_PRESENT_ALLOW_TEARING;
+		}
+	}
+
+	HWSwapchain->Present(VSync ? 1 : 0, PresentFlags);
 }
 
 void InternalDevice11::CopySurface(IRHISurface* Dest, IRHISurface* Source)
