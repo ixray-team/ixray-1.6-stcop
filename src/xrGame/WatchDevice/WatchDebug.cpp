@@ -71,9 +71,10 @@ void CWatchDevice::DrawImGui()
 	ImGui::Checkbox("Enabled", &Config.Root.Enabled);
 	ImGui::Text("Bones OK: %s | Visible: %s", BonesOk() ? "yes" : "no", Hidden ? "no" : "yes");
 	ImGui::Text(
-		"Bones: compass=%d light=%d ui=%d rad=%d anom=%d",
+		"Bones: compass=%d light=%d tail=%d ui=%d rad=%d anom=%d",
 		Rig.Bones().Compass != BI_NONE ? 1 : 0,
 		Rig.Bones().CompassLight != BI_NONE ? 1 : 0,
+		Rig.Bones().CompassTail != BI_NONE ? 1 : 0,
 		Rig.Bones().Display != BI_NONE ? 1 : 0,
 		Rig.Bones().RadIndicator != BI_NONE ? 1 : 0,
 		Rig.Bones().AnomIndicator != BI_NONE ? 1 : 0
@@ -89,6 +90,7 @@ void CWatchDevice::DrawImGui()
 	DrawCompassImGui();
 	DrawDisplayImGui();
 	DrawBarometerImGui();
+	DrawNavigationImGui();
 	DrawLagImGui("surge_lag", "Display Lag (Surge)", Config.SurgeLag, Surge.Lag);
 	DrawLagImGui("anomaly_lag", "Display Lag (Anomaly)", Config.AnomalyLag, Surge.AnomalyLag);
 	DrawLightImGui();
@@ -184,6 +186,55 @@ void CWatchDevice::DrawDisplayImGui()
 	ImGui::DragFloat4("Barometer Unit Rect", &DisplayConfig.UiBarometerUnit.x, 0.0001f, -0.1f, 0.1f, "%.4f");
 }
 
+void CWatchDevice::DrawNavigationImGui()
+{
+	if (!ImGui::CollapsingHeader("Navigation", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return;
+	}
+
+	ImGui::Text(
+		"Target: %s | Distance: %.1f m | Arrow: %s %.1f deg",
+		Navigation.Valid ? "valid" : "none",
+		Navigation.Distance,
+		Navigation.ArrowValid ? "on" : "off",
+		rad2deg(Navigation.Angle)
+	);
+
+	SWatchNavigation& NavConfig = Config.Navigation;
+	ImGui::Checkbox("Navigation Enabled", &NavConfig.Enabled);
+	string32 Target = {};
+	string32 UnitMeters = {};
+	string32 UnitKilometers = {};
+	DrawWatchStringInput("Target (quest|nav)", NavConfig.Target, Target, sizeof(Target));
+	ImGui::DragFloat("Km Threshold (m)", &NavConfig.KmThreshold, 10.0f, 0.0f, 100000.0f, "%.0f");
+	ImGui::DragFloat("Km Decimals", &NavConfig.KmDecimals, 0.05f, 0.0f, 3.0f, "%.0f");
+	ImGui::DragFloat("Near Radius (m)", &NavConfig.NearRadius, 0.1f, 0.0f, 100.0f, "%.1f");
+	DrawWatchStringInput("Meters Unit", NavConfig.UnitMeters, UnitMeters, sizeof(UnitMeters));
+	DrawWatchStringInput("Kilometers Unit", NavConfig.UnitKilometers, UnitKilometers, sizeof(UnitKilometers));
+	ImGui::DragFloat4("Arrow Color RGBA", &NavConfig.ArrowColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
+
+	SWatchFonts& Fonts = Config.Fonts;
+	string64 FontDistance = {};
+	string64 FontDistanceUnit = {};
+	bool FontsChanged = false;
+	DrawWatchStringInput("Distance Font", Fonts.Distance, FontDistance, sizeof(FontDistance));
+	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
+	DrawWatchStringInput("Distance Unit Font", Fonts.DistanceUnit, FontDistanceUnit, sizeof(FontDistanceUnit));
+	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
+	if (FontsChanged)
+	{
+		CreateUI();
+	}
+
+	SWatchDisplay& DisplayConfig = Config.Display;
+	ImGui::TextDisabled("Line: center x, center y, digit height, gap");
+	ImGui::DragFloat4("Nav Line", &DisplayConfig.UiNav.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::TextDisabled("Unit: height, y offset | Arrow: size, y offset");
+	ImGui::DragFloat2("Nav Unit", &DisplayConfig.UiNavUnit.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::DragFloat2("Nav Arrow", &DisplayConfig.UiNavArrow.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+}
+
 void CWatchDevice::DrawBarometerImGui()
 {
 	if (!ImGui::CollapsingHeader("Barometer", ImGuiTreeNodeFlags_DefaultOpen))
@@ -269,6 +320,7 @@ void CWatchDevice::DrawLightImGui()
 	ImGui::TextDisabled("hour:day|dusk|night|dark, ascending, linear blend between keys");
 
 	ImGui::DragFloat3("Glow Position", &LightConfig.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
+	ImGui::DragFloat3("Tail Glow Position", &LightConfig.TailUiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
 	ImGui::DragFloat3("Glow Rotation", &LightConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
 	ImGui::DragFloat2("Glow Size", &LightConfig.UiSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
 }

@@ -129,6 +129,17 @@ void CUIWatchText::SetText(const char* Text)
 	}
 }
 
+float CUIWatchText::GetTextWidth(float Height) const
+{
+	if (!Font || Quads.empty())
+	{
+		return 0.0f;
+	}
+
+	const float Cell = Font->GetHeight();
+	return Cell > EPS ? TextWidth * Height / Cell : 0.0f;
+}
+
 void CUIWatchText::SetIntensity(float Intensity)
 {
 	Intensity = clampr(Intensity, 0.0f, 1.0f);
@@ -210,7 +221,16 @@ bool CUIWatchWnd::Init(const SWatchConfig& Config)
 		BarometerUnit->Show(false);
 	}
 
+	Distance = CreateText(Xml, "watch:distance", Fonts.Distance);
+	DistanceUnit = CreateText(Xml, "watch:distance_unit", Fonts.DistanceUnit);
+	if (DistanceUnit)
+	{
+		DistanceUnit->Show(false);
+	}
+	HasNavArrow = CreateGlow(Xml, "watch:nav_arrow", NavArrow);
+
 	const bool HasCompassGlow = CreateGlow(Xml, "watch:compass_light", CompassGlow);
+	HasCompassTailGlow = CreateGlow(Xml, "watch:compass_tail_light", CompassTailGlow);
 
 	Leds.resize(Config.Leds.size());
 	bool HasLedGlow = false;
@@ -227,7 +247,7 @@ bool CUIWatchWnd::Init(const SWatchConfig& Config)
 	}
 
 	SetLayout(Display);
-	return Time || Date || Barometer || HasCompassGlow || HasLedGlow;
+	return Time || Date || Barometer || Distance || HasNavArrow || HasCompassGlow || HasCompassTailGlow || HasLedGlow;
 }
 
 bool CUIWatchWnd::CreateGlow(CUIXml& Xml, const char* Path, SGlow& Glow)
@@ -255,9 +275,11 @@ void CUIWatchWnd::CreateLed(CUIXml& Xml, const shared_str& Name, SLed& Led)
 		Led.Glow.Shader->create(WatchGlowShader, nullptr);
 	}
 
+	Led.GlowColor = Led.Glow.Color;
 	xr_sprintf(Path, "watch:%s_glass", Name.c_str());
 	if (Xml.NavigateToNode(Path, 0))
 	{
+		Led.GlowColor = CUIXmlInit::GetColor(Xml, Path, 0, Led.Glow.Color);
 		Led.LitAlpha = u32(clampr(Xml.ReadAttribInt(Path, 0, "lit", int(WatchGlassDefaultLitAlpha)), 0, 255));
 		Led.Glass->create(Xml.ReadAttrib(Path, 0, "shader", WatchGlassShader));
 		Led.Core->create(Xml.ReadAttrib(Path, 0, "core_shader", WatchLedShader));
@@ -304,6 +326,11 @@ void CUIWatchWnd::SetLayout(const SWatchDisplay& Display)
 	ApplyLambda(Date, Display.UiDate);
 	ApplyLambda(Barometer, Display.UiBarometer);
 	ApplyLambda(BarometerUnit, Display.UiBarometerUnit);
+
+	NavLayout = Display.UiNav;
+	NavUnitLayout = Display.UiNavUnit;
+	NavArrowLayout = Display.UiNavArrow;
+	LayoutNavigation();
 }
 
 CUIWatchText* CUIWatchWnd::CreateText(CUIXml& Xml, const char* Path, const shared_str& FontName)
@@ -353,9 +380,73 @@ void CUIWatchWnd::SetBarometer(const char* Text)
 	}
 }
 
+void CUIWatchWnd::SetDistance(const char* Text, const char* Unit)
+{
+	if (Distance)
+	{
+		Distance->SetText(Text);
+	}
+	if (DistanceUnit)
+	{
+		const bool HasUnit = Unit && Unit[0];
+		DistanceUnit->SetText(HasUnit && g_pStringTable ? g_pStringTable->translate(Unit).c_str() : (HasUnit ? Unit : ""));
+		DistanceUnit->Show(Text && Text[0]);
+	}
+	LayoutNavigation();
+}
+
+void CUIWatchWnd::LayoutNavigation()
+{
+	const float Height = NavLayout.z;
+	const float Gap = NavLayout.w;
+	const float UnitHeight = NavUnitLayout.x;
+	const float ArrowSize = HasNavArrow ? NavArrowLayout.x : 0.0f;
+	const float DigitsWidth = Distance ? Distance->GetTextWidth(Height) : 0.0f;
+	const float UnitWidth = DistanceUnit ? DistanceUnit->GetTextWidth(UnitHeight) : 0.0f;
+
+	float Total = DigitsWidth;
+	if (ArrowSize > 0.0f)
+	{
+		Total += ArrowSize + Gap;
+	}
+	if (UnitWidth > 0.0f)
+	{
+		Total += Gap + UnitWidth;
+	}
+
+	float X = NavLayout.x - Total * 0.5f;
+	NavArrowCenter.set(X + ArrowSize * 0.5f, NavLayout.y + NavArrowLayout.y);
+	if (ArrowSize > 0.0f)
+	{
+		X += ArrowSize + Gap;
+	}
+
+	const float Top = NavLayout.y - Height * 0.5f;
+	if (Distance)
+	{
+		Distance->SetWndPos(Fvector2().set(X, Top));
+		Distance->SetWndSize(Fvector2().set(DigitsWidth, Height));
+	}
+
+	X += DigitsWidth + Gap;
+	if (DistanceUnit)
+	{
+		DistanceUnit->SetWndPos(Fvector2().set(X, Top + Height - UnitHeight + NavUnitLayout.y));
+		DistanceUnit->SetWndSize(Fvector2().set(UnitWidth, UnitHeight));
+	}
+}
+
+void CUIWatchWnd::RenderNavArrow(const Fmatrix& Xform, float Size, float Intensity, u32 Color)
+{
+	if (HasNavArrow)
+	{
+		RenderGlowShader(NavArrow, Xform, Fvector2().set(Size, Size), Intensity, 0.0f, 1.0f, Color);
+	}
+}
+
 void CUIWatchWnd::SetIntensity(float Intensity)
 {
-	for (CUIWatchText* Text : {Time, Date, Barometer, BarometerUnit})
+	for (CUIWatchText* Text : {Time, Date, Barometer, BarometerUnit, Distance, DistanceUnit})
 	{
 		if (Text)
 		{
@@ -409,6 +500,14 @@ void CUIWatchWnd::RenderCompassGlow(const Fmatrix& Xform, const Fvector2& Size, 
 	RenderGlowShader(CompassGlow, Xform, Size, Intensity, 0.0f, 1.0f, Color);
 }
 
+void CUIWatchWnd::RenderCompassTailGlow(const Fmatrix& Xform, const Fvector2& Size, float Intensity)
+{
+	if (HasCompassTailGlow)
+	{
+		RenderGlowShader(CompassTailGlow, Xform, Size, Intensity, 0.0f, 1.0f, CompassTailGlow.Color);
+	}
+}
+
 u32 CUIWatchWnd::GetCompassColor() const
 {
 	return CompassGlow.Color;
@@ -424,7 +523,7 @@ void CUIWatchWnd::RenderLedGlow(u32 Led, const Fmatrix& Xform, const Fvector2& S
 
 u32 CUIWatchWnd::GetLedColor(u32 Led) const
 {
-	return Led < Leds.size() ? Leds[Led].Glow.Color : WatchDetail::DefaultLedRgba;
+	return Led < Leds.size() ? Leds[Led].GlowColor : WatchDetail::DefaultLedRgba;
 }
 
 void CUIWatchWnd::RenderGaugeIcon(u32 Gauge, const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color)
@@ -531,7 +630,7 @@ void CUIWatchWnd::RenderLed(u32 Led, const Fmatrix& Xform, const Fvector2& Glass
 	InvXform.transform_tiny(Eye, Device.vCameraPosition);
 
 	const float Lit = clampr(Intensity, 0.0f, 1.0f);
-	const u32 GlassColor = subst_alpha(Visual.Glow.Color, u32(iFloor(float(Visual.LitAlpha) * Lit + 0.5f)));
+	const u32 GlassColor = subst_alpha(Visual.GlowColor,u32(iFloor(float(Visual.LitAlpha) * Lit + 0.5f)));
 	const float HalfLength = GlassSize.x * 0.5f;
 	const float Radius = GlassSize.y;
 

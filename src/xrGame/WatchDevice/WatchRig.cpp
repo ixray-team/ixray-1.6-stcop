@@ -40,6 +40,7 @@ void CWatchRig::Bind(IKinematics* NewModel, const SWatchBones& Names, const xr_v
 
 	Ids.Compass = ResolveLambda(Names.Compass);
 	Ids.CompassLight = ResolveLambda(Names.CompassLight);
+	Ids.CompassTail = ResolveLambda(Names.CompassTail);
 	Ids.Display = ResolveLambda(Names.Display);
 	Ids.RadIndicator = ResolveLambda(Names.RadIndicator);
 	Ids.AnomIndicator = ResolveLambda(Names.AnomIndicator);

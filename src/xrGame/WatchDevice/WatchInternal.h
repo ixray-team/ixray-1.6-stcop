@@ -192,6 +192,7 @@ void VisitSections(SWatchConfig& A, SWatchConfig& B, F&& Func)
 	Func("lag.anomaly", A.AnomalyLag, B.AnomalyLag, true);
 	Func("light", A.Light, B.Light, true);
 	Func("anomaly", A.Anomaly, B.Anomaly, true);
+	Func("navigation", A.Navigation, B.Navigation, true);
 
 	if (A.Leds.size() == B.Leds.size())
 	{

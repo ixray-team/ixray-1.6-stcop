@@ -13,6 +13,7 @@ public:
 	bool Init(CUIXml& Xml, const char* Path, const shared_str& FontName);
 	void SetText(const char* Text);
 	void SetIntensity(float Intensity);
+	float GetTextWidth(float Height) const;
 	void Draw() override;
 
 private:
@@ -46,10 +47,15 @@ public:
 	void SetTime(const char* Text);
 	void SetDate(const char* Text);
 	void SetBarometer(const char* Text);
+	void SetDistance(const char* Text, const char* Unit);
+	bool HasNavigation() const { return Distance || HasNavArrow; }
+	void RenderNavArrow(const Fmatrix& Xform, float Size, float Intensity, u32 Color);
+	const Fvector2& GetNavArrowCenter() const { return NavArrowCenter; }
 	void SetIntensity(float Intensity);
 	void Render(const Fmatrix& Xform);
 
 	void RenderCompassGlow(const Fmatrix& Xform, const Fvector2& Size, float Intensity, u32 Color);
+	void RenderCompassTailGlow(const Fmatrix& Xform, const Fvector2& Size, float Intensity);
 	u32 GetCompassColor() const;
 
 	void RenderLedGlow(u32 Led, const Fmatrix& Xform, const Fvector2& Size, float Intensity);
@@ -86,6 +92,7 @@ private:
 		SGlow Glow;
 		ui_shader Glass;
 		ui_shader Core;
+		u32 GlowColor = 0xFFFFFFFF;
 		u32 LitAlpha = 90;
 		Fvector2 GeometrySize = {-1.0f, -1.0f};
 		xr_vector<SLedSegment> Segments;
@@ -112,8 +119,17 @@ private:
 	void CreateGauge(CUIXml& Xml, const shared_str& Name, SGauge& Gauge);
 	void BuildLedGeometry(SLed& Led, const Fvector2& GlassSize);
 	void RenderGlowShader(SGlow& Glow, const Fmatrix& Xform, const Fvector2& Size, float Intensity, float U0, float U1, u32 Color);
+	void LayoutNavigation();
 
 	SGlow CompassGlow;
+	SGlow CompassTailGlow;
+	bool HasCompassTailGlow = false;
+	SGlow NavArrow;
+	bool HasNavArrow = false;
+	Fvector4 NavLayout = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector2 NavUnitLayout = {0.0f, 0.0f};
+	Fvector2 NavArrowLayout = {0.0f, 0.0f};
+	Fvector2 NavArrowCenter = {0.0f, 0.0f};
 	xr_vector<SLed> Leds;
 	xr_vector<SGauge> Gauges;
 
@@ -121,4 +137,6 @@ private:
 	CUIWatchText* Date = nullptr;
 	CUIWatchText* Barometer = nullptr;
 	CUIWatchText* BarometerUnit = nullptr;
+	CUIWatchText* Distance = nullptr;
+	CUIWatchText* DistanceUnit = nullptr;
 };

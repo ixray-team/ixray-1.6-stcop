@@ -81,6 +81,7 @@ void CWatchDevice::CompileConfig(bool Report)
 	}
 
 	RefreshCompassSettings(Report);
+	RefreshNavigationSettings(Report);
 	UpdateDisplayFormats();
 	UpdateLightSchedule(Report);
 	UpdateAnomalyExclude();
@@ -195,6 +196,11 @@ void CWatchDevice::ResetRuntime()
 	Zones.AnomalyTarget = 0.0f;
 	Anchors = SWatchAnchors{};
 	Hidden = true;
+	Navigation.Valid = false;
+	Navigation.ArrowValid = false;
+	Navigation.SpringActive = false;
+	Navigation.Velocity = 0.0f;
+	Navigation.TextDirty = true;
 
 	for (SWatchLedRuntime& Led : Leds)
 	{
@@ -551,6 +557,7 @@ void CWatchDevice::UpdateCompassSpring(float Dt)
 
 void CWatchDevice::UpdateCompass(float Dt)
 {
+	Compass.HasSample = false;
 	if (!Rig.HasCompass())
 	{
 		State.TargetValid = false;
@@ -573,6 +580,8 @@ void CWatchDevice::UpdateCompass(float Dt)
 		const bool HadTarget = State.TargetValid;
 		SWatchCompassSample Sample;
 		Env->SampleCompassTarget(CompassSettings.Mode, Sample);
+		Compass.LastSample = Sample;
+		Compass.HasSample = true;
 		AllowChaos = CompassSettings.IsChaosEnabled();
 		ApplyCompassSample(Sample, HadTarget);
 	}
@@ -610,6 +619,7 @@ void CWatchDevice::Update(float Dt)
 	const float SafeDt = (Dt > 0.0f) ? Dt : 0.0f;
 	SampleZones(SafeDt);
 	UpdateCompass(SafeDt);
+	UpdateNavigation(SafeDt);
 	UpdateSurge(SafeDt);
 	UpdateLeds(SafeDt);
 	UpdateGauges(SafeDt);
@@ -624,6 +634,7 @@ void CWatchDevice::CreateUI()
 	State.TimeText.clear();
 	State.DateText.clear();
 	State.BarometerText.clear();
+	Navigation.TextDirty = true;
 	Display.Timer = 0.0f;
 	Surge.Timer = 0.0f;
 
@@ -653,6 +664,10 @@ void CWatchDevice::UpdateUILayout()
 	UiOffset.translate_over(DisplayConfig.UiPosition);
 
 	WatchLogic::MakeOffsetXform(Config.Light.UiPosition, Config.Light.UiRotation, Light.Offset);
+	WatchLogic::MakeOffsetXform(Config.Light.TailUiPosition, Config.Light.UiRotation, Light.TailOffset);
+	Fmatrix TailFlip;
+	TailFlip.rotateZ(PI);
+	Light.TailOffset.mulB_43(TailFlip);
 	for (size_t Index = 0; Index < Leds.size(); ++Index)
 	{
 		const SWatchChannelPresent& Present = Config.Leds[Index].Present;
@@ -724,6 +739,118 @@ void CWatchDevice::UpdateDisplay(float Dt)
 		State.DateText = Text;
 		Ui->SetDate(Text);
 	}
+
+	UpdateDistanceText();
+}
+
+void CWatchDevice::RefreshNavigationSettings(bool Report)
+{
+	const SWatchNavigation& Source = Config.Navigation;
+	if (Report && !Source.Target.equal("quest") && !Source.Target.equal("nav"))
+	{
+		Msg("! [watch] navigation target [%s] is unknown, expected quest|nav, using quest", Source.Target.size() ? Source.Target.c_str() : "");
+	}
+
+	Navigation.Mode = Source.Target.equal("nav") ? EWatchCompassMode::Nav : EWatchCompassMode::Quest;
+	Navigation.ArrowColor = WatchDetail::ConditionColorFromRgba(Source.ArrowColor);
+	Navigation.TextDirty = true;
+}
+
+void CWatchDevice::UpdateNavigation(float Dt)
+{
+	Navigation.Valid = false;
+	Navigation.ArrowValid = false;
+	if (!Config.Navigation.Enabled || !Ui || !Ui->HasNavigation())
+	{
+		Navigation.SpringActive = false;
+		return;
+	}
+
+	SWatchCompassSample Sample;
+	if (Compass.HasSample && CompassSettings.Mode == Navigation.Mode)
+	{
+		Sample = Compass.LastSample;
+	}
+	else
+	{
+		Env->SampleCompassTarget(Navigation.Mode, Sample);
+	}
+
+	if (!Sample.Valid || !WatchLogic::IsPointerKind(Sample.Kind))
+	{
+		Navigation.SpringActive = false;
+		return;
+	}
+
+	Navigation.Valid = true;
+	Navigation.Distance = Sample.WorldDir.magnitude();
+
+	float Angle = 0.0f;
+	if (Navigation.Distance < Config.Navigation.NearRadius || !WatchLogic::WorldDirToCompassAngle(Sample.WorldDir, Env->ViewMatrix(), 0.0f, Angle))
+	{
+		Navigation.SpringActive = false;
+		return;
+	}
+
+	if (Navigation.SpringActive)
+	{
+		WatchLogic::StepCompassSpring(Navigation.Angle, Navigation.Velocity, Angle, Config.Compass.Stiffness, Config.Compass.Damping, Dt);
+	}
+	else
+	{
+		Navigation.Angle = Angle;
+		Navigation.Velocity = 0.0f;
+		Navigation.SpringActive = true;
+	}
+	Navigation.ArrowValid = true;
+}
+
+void CWatchDevice::UpdateDistanceText()
+{
+	const SWatchNavigation& NavConfig = Config.Navigation;
+	string32 Text = {};
+	const shared_str* Unit = nullptr;
+	if (Navigation.Valid)
+	{
+		if (NavConfig.KmThreshold > 0.0f && Navigation.Distance >= NavConfig.KmThreshold)
+		{
+			xr_sprintf(Text, "%.*f", iFloor(NavConfig.KmDecimals + 0.5f), Navigation.Distance / 1000.0f);
+			Unit = &NavConfig.UnitKilometers;
+		}
+		else
+		{
+			xr_sprintf(Text, "%.0f", Navigation.Distance);
+			Unit = &NavConfig.UnitMeters;
+		}
+	}
+
+	const char* UnitText = (Unit && Unit->size()) ? Unit->c_str() : "";
+	if (!Navigation.TextDirty && Navigation.Text == Text && Navigation.Unit == UnitText)
+	{
+		return;
+	}
+
+	Navigation.TextDirty = false;
+	Navigation.Text = Text;
+	Navigation.Unit = UnitText;
+	Ui->SetDistance(Text, UnitText);
+}
+
+void CWatchDevice::RenderNavArrow()
+{
+	if (!Navigation.ArrowValid)
+	{
+		return;
+	}
+
+	const Fvector2& Center = Ui->GetNavArrowCenter();
+	Fmatrix Local;
+	Local.rotateZ(Navigation.Angle);
+	Local.translate_over(Fvector().set(Center.x, Center.y, 0.0f));
+
+	Fmatrix Xform;
+	Xform.mul(Anchors.Display, Local);
+	Ui->RenderNavArrow(Xform, Config.Display.UiNavArrow.x, Display.Intensity, Navigation.ArrowColor);
 }
 
 void CWatchDevice::UpdateSurge(float Dt)
@@ -978,6 +1105,12 @@ void CWatchDevice::PrepareAnchors(const Fmatrix& WatchesXform)
 		Anchors.Compass.mulB_43(Light.Offset);
 	}
 
+	Anchors.TailValid = Rig.HasCompassTail() && Rig.BoneXform(Rig.Bones().CompassTail, WatchesXform, Anchors.Tail);
+	if (Anchors.TailValid)
+	{
+		Anchors.Tail.mulB_43(Light.TailOffset);
+	}
+
 	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
 		SWatchLedRuntime& Led = Leds[Index];
@@ -1149,6 +1282,7 @@ void CWatchDevice::RenderUI(const Fmatrix& WatchesXform)
 
 	LastVisibleFrame = Env->FrameId();
 	Ui->Render(Anchors.Display);
+	RenderNavArrow();
 
 	const float CompassIntensity = State.TargetValid
 		? Config.Compass.TargetGlow * State.DisplayQuality
@@ -1156,6 +1290,10 @@ void CWatchDevice::RenderUI(const Fmatrix& WatchesXform)
 	if (Anchors.CompassValid && CompassIntensity > 0.0f)
 	{
 		Ui->RenderCompassGlow(Anchors.Compass, Config.Light.UiSize, CompassIntensity, CompassColorForKind(State.CompassSourceKind));
+	}
+	if (Anchors.TailValid && CompassIntensity > 0.0f)
+	{
+		Ui->RenderCompassTailGlow(Anchors.Tail, Config.Light.UiSize, CompassIntensity);
 	}
 
 	for (u32 Index = 0; Index < Leds.size(); ++Index)

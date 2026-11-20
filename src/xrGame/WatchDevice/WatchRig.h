@@ -21,6 +21,7 @@ public:
 	bool BonesOk() const;
 	bool HasCompass() const { return Model && Ids.Compass != BI_NONE; }
 	bool HasCompassLight() const { return Model && Ids.CompassLight != BI_NONE; }
+	bool HasCompassTail() const { return Model && Ids.CompassTail != BI_NONE; }
 	bool HasDisplay() const { return Model && Ids.Display != BI_NONE; }
 	bool HasLedBone(u32 Led) const { return Model && Led < LedBones.size() && LedBones[Led] != BI_NONE; }
 	u16 LedBone(u32 Led) const { return Led < LedBones.size() ? LedBones[Led] : u16(BI_NONE); }

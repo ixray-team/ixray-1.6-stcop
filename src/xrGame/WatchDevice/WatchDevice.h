@@ -72,6 +72,23 @@ struct SWatchCompassRuntime
 	float Velocity = 0.0f;
 	float ChaosTime = 0.0f;
 	bool SpringActive = false;
+	bool HasSample = false;
+	SWatchCompassSample LastSample;
+};
+
+struct SWatchNavigationRuntime
+{
+	EWatchCompassMode Mode = EWatchCompassMode::Quest;
+	u32 ArrowColor = 0;
+	float Angle = 0.0f;
+	float Velocity = 0.0f;
+	float Distance = 0.0f;
+	bool Valid = false;
+	bool ArrowValid = false;
+	bool SpringActive = false;
+	bool TextDirty = true;
+	xr_string Text;
+	xr_string Unit;
 };
 
 struct SWatchZoneRuntime
@@ -86,6 +103,7 @@ struct SWatchLightRuntime
 {
 	float Timer = 0.0f;
 	Fmatrix Offset = Fidentity;
+	Fmatrix TailOffset = Fidentity;
 	xr_vector<SWatchLightKey> Keys;
 };
 
@@ -94,8 +112,10 @@ struct SWatchAnchors
 	u32 Frame = u32(-1);
 	bool DisplayValid = false;
 	bool CompassValid = false;
+	bool TailValid = false;
 	Fmatrix Display = Fidentity;
 	Fmatrix Compass = Fidentity;
+	Fmatrix Tail = Fidentity;
 };
 
 class CWatchDevice
@@ -143,6 +163,7 @@ private:
 	void DrawCompassImGui();
 	void DrawDisplayImGui();
 	void DrawBarometerImGui();
+	void DrawNavigationImGui();
 	void DrawLagImGui(const char* Id, const char* Title, SWatchLag& Lag, float LagValue);
 	void DrawLightImGui();
 	void DrawLedImGui(u32 Index);
@@ -159,6 +180,10 @@ private:
 	void UpdateSurge(float Dt);
 	void UpdateBarometer();
 	void SetBarometerText(const char* Text);
+	void RefreshNavigationSettings(bool Report);
+	void UpdateNavigation(float Dt);
+	void UpdateDistanceText();
+	void RenderNavArrow();
 	void UpdateLightSchedule(bool Report);
 	void UpdateLight(float Dt);
 
@@ -209,6 +234,7 @@ private:
 	SWatchSurgeRuntime Surge;
 	SWatchCompassRuntime Compass;
 	SWatchCompassSettings CompassSettings;
+	SWatchNavigationRuntime Navigation;
 	SWatchZoneRuntime Zones;
 	SWatchLightRuntime Light;
 	SWatchAnchors Anchors;

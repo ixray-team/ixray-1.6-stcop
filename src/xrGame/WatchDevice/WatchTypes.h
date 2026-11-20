@@ -107,6 +107,7 @@ struct SWatchBones
 {
 	shared_str Compass = "j_compas";
 	shared_str CompassLight = "j_compas_light";
+	shared_str CompassTail = "j_compas_light_1";
 	shared_str Display = "j_watch_ui";
 	shared_str RadIndicator = "j_rad_indicator";
 	shared_str AnomIndicator = "j_anom_indicator";
@@ -116,6 +117,7 @@ struct SWatchBones
 	{
 		Visitor.Field(Compass, "compass");
 		Visitor.Field(CompassLight, "compass_light");
+		Visitor.Field(CompassTail, "compass_tail");
 		Visitor.Field(Display, "display");
 		Visitor.Field(RadIndicator, "rad_indicator");
 		Visitor.Field(AnomIndicator, "anom_indicator");
@@ -140,6 +142,9 @@ struct SWatchDisplay
 	Fvector4 UiDate = {-0.01f, 0.0015f, 0.02f, 0.0035f};
 	Fvector4 UiBarometer = {-0.01f, -0.0095f, 0.0135f, 0.003f};
 	Fvector4 UiBarometerUnit = {0.0045f, -0.009f, 0.0055f, 0.0025f};
+	Fvector4 UiNav = {0.0f, 0.0f, 0.007f, 0.001f};
+	Fvector2 UiNavUnit = {0.0035f, 0.0009f};
+	Fvector2 UiNavArrow = {0.005f, 0.0f};
 
 	template <class V>
 	void ForEach(V& Visitor)
@@ -154,6 +159,9 @@ struct SWatchDisplay
 		Visitor.Field(UiDate, "ui_date");
 		Visitor.Field(UiBarometer, "ui_barometer");
 		Visitor.Field(UiBarometerUnit, "ui_barometer_unit");
+		Visitor.Field(UiNav, "ui_nav");
+		Visitor.Field(UiNavUnit, "ui_nav_unit");
+		Visitor.Field(UiNavArrow, "ui_nav_arrow");
 		Visitor.Field(BarometerUnit, "barometer_unit");
 		Visitor.Field(BarometerEnabled, "barometer_enabled");
 		Visitor.Field(BarometerLookaheadFar, "barometer_lookahead_far", 0.0f);
@@ -169,6 +177,8 @@ struct SWatchFonts
 	shared_str Date;
 	shared_str Barometer;
 	shared_str BarometerUnit;
+	shared_str Distance;
+	shared_str DistanceUnit;
 
 	template <class V>
 	void ForEach(V& Visitor)
@@ -177,6 +187,8 @@ struct SWatchFonts
 		Visitor.Field(Date, "date");
 		Visitor.Field(Barometer, "barometer");
 		Visitor.Field(BarometerUnit, "barometer_unit");
+		Visitor.Field(Distance, "distance");
+		Visitor.Field(DistanceUnit, "distance_unit");
 	}
 };
 
@@ -319,6 +331,31 @@ struct SWatchAnomalySensor
 	}
 };
 
+struct SWatchNavigation
+{
+	bool Enabled = true;
+	shared_str Target = "quest";
+	float KmThreshold = 1000.0f;
+	float KmDecimals = 1.0f;
+	float NearRadius = 4.0f;
+	shared_str UnitMeters = "m";
+	shared_str UnitKilometers = "km";
+	Fvector4 ArrowColor = {255.0f, 170.0f, 40.0f, 255.0f};
+
+	template <class V>
+	void ForEach(V& Visitor)
+	{
+		Visitor.Field(Enabled, "enabled");
+		Visitor.Field(Target, "target");
+		Visitor.Field(KmThreshold, "km_threshold", 0.0f);
+		Visitor.Field(KmDecimals, "km_decimals", 0.0f, 3.0f);
+		Visitor.Field(NearRadius, "near_radius", 0.0f);
+		Visitor.Field(UnitMeters, "unit_m");
+		Visitor.Field(UnitKilometers, "unit_km");
+		Visitor.Field(ArrowColor, "arrow_color");
+	}
+};
+
 struct SWatchConditionPresent
 {
 	bool Enabled = true;
@@ -440,6 +477,7 @@ struct SWatchLight
 	float DarkEmission = 1.0f;
 	shared_str Schedule = "3:dark, 5:night, 6:dusk, 7:day, 19:day, 20:dusk, 21:night, 23:dark";
 	Fvector UiPosition = {0.0f, 0.0003f, 0.0f};
+	Fvector TailUiPosition = {0.0f, 0.0003f, 0.0f};
 	Fvector UiRotation = {0.0f, 90.0f, 0.0f};
 	Fvector2 UiSize = {0.004f, 0.004f};
 
@@ -452,6 +490,7 @@ struct SWatchLight
 		Visitor.Field(DarkEmission, "dark_emission");
 		Visitor.Field(Schedule, "schedule");
 		Visitor.Field(UiPosition, "ui_p");
+		Visitor.Field(TailUiPosition, "tail_ui_p");
 		Visitor.Field(UiRotation, "ui_r");
 		Visitor.Field(UiSize, "ui_size");
 	}
@@ -468,6 +507,7 @@ struct SWatchConfig
 	SWatchLag AnomalyLag;
 	SWatchLight Light;
 	SWatchAnomalySensor Anomaly;
+	SWatchNavigation Navigation;
 	xr_vector<SWatchLedElement> Leds;
 	xr_vector<SWatchGaugeElement> Gauges;
 };
@@ -476,6 +516,7 @@ struct SWatchBoneIds
 {
 	u16 Compass = u16(-1);
 	u16 CompassLight = u16(-1);
+	u16 CompassTail = u16(-1);
 	u16 Display = u16(-1);
 	u16 RadIndicator = u16(-1);
 	u16 AnomIndicator = u16(-1);
