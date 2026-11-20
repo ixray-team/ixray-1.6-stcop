@@ -3176,7 +3176,7 @@
   
     <!-- military novice -->
   <specific_character id="sim_default_military_0_default" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_private</name>
     <icon>ui_npc_u_soldier_1</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3206,7 +3206,7 @@
 
     <!-- military expirienced -->
   <specific_character id="sim_default_military_1_default" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_private</name>
     <icon>ui_npc_u_soldier_1</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3238,7 +3238,7 @@
 
   <!-- military expirienced 2 -->
   <specific_character id="sim_default_military_2_default_0" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_sergeant</name>
     <icon>ui_npc_u_soldier_2</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3268,7 +3268,7 @@
   </specific_character>
 
   <specific_character id="sim_default_military_2_default_1" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_sergeant</name>
     <icon>ui_npc_u_soldier_2</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3299,7 +3299,7 @@
 
     <!-- military veteran -->
   <specific_character id="sim_default_military_3_default_0" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_lieutenant</name>
     <icon>ui_npc_u_soldier_3</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3330,7 +3330,7 @@
 
     <!-- military master -->
   <specific_character id="sim_default_military_4_default_0" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_captain</name>
     <icon>ui_npc_u_soldier_4</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3360,7 +3360,7 @@
   </specific_character>
   
   <specific_character id="sim_default_military_4_default_1" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_captain</name>
     <icon>ui_npc_u_soldier_4</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3390,7 +3390,7 @@
   </specific_character>
 
   <specific_character id="sim_default_military_4_default_2" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_captain</name>
     <icon>ui_npc_u_soldier_4</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
@@ -3421,7 +3421,7 @@
   
     <!-- military sniper -->
   <specific_character id="sim_default_military_3_default_sniper" team_default = "1">
-    <name>GENERATE_NAME_stalker</name>
+    <name>GENERATE_NAME_lieutenant</name>
     <icon>ui_npc_u_soldier_3</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio>Опытный сталкер. Детальная информация отсутствует.</bio>
