@@ -143,6 +143,8 @@ void CAI_Crow::Load(const char* section)
 	fMinHeight = pSettings->r_float(section, "min_height");
 	vVarGoal = pSettings->r_fvector3(section, "goal_variability");
 	fIdleSoundDelta = pSettings->r_float(section, "idle_sound_delta");
+	CorpseAttraction = READ_IF_EXISTS(pSettings, r_bool, section, "corpse_attraction", true);
+	CorpseAttractionRadius = READ_IF_EXISTS(pSettings, r_float, section, "corpse_attraction_radius", 300.0f);
 	fIdleSoundTime = fIdleSoundDelta + fIdleSoundDelta * Random.randF(-.5f, .5f);
 	VERIFY2(valid_pos(Position()), dbg_valide_pos_string(Position(), this, "CAI_Crow::Load( const char* section )").c_str());
 }
@@ -365,7 +367,18 @@ void CAI_Crow::shedule_Update		(u32 DT)
 		if(fGoalChangeTime<=0)	{
 			fGoalChangeTime += fGoalChangeDelta+fGoalChangeDelta*Random.randF(-0.5f,0.5f);
 
-			g_SpatialSpace->q_sphere(nearbyObjects, 0, ESPATIAL_TYPE::ACTOR_DEAD | ESPATIAL_TYPE::AI_DEAD, Position(), 300.0f);
+			nearbyObjects.clear();
+			if (CorpseAttraction && CorpseAttractionRadius > 0.0f)
+			{
+				g_SpatialSpace->q_sphere(nearbyObjects, 0, ESPATIAL_TYPE::ACTOR_DEAD | ESPATIAL_TYPE::AI_DEAD, Position(), CorpseAttractionRadius);
+				// Dead crows are not corpses to fly to.
+				std::erase_if(nearbyObjects, [](ISpatialShared& Spatial)
+				{
+					CObject* Object = Spatial->dcast_CObject();
+					return Object == nullptr || smart_cast<CAI_Crow*>(Object) != nullptr;
+				});
+			}
+
 			Fvector vP;
 			if (!nearbyObjects.empty())
 			{

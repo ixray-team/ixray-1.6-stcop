@@ -102,6 +102,9 @@ protected:
 	void			UpdateWorkload				(float DT);
 
 	xr_vector<ISpatialShared> nearbyObjects;
+	// Fly to nearby corpses instead of circling the actor.
+	bool CorpseAttraction = true;
+	float CorpseAttractionRadius = 300.0f;
 
 public:						
 	u32				o_workload_frame	;
