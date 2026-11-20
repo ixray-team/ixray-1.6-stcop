@@ -17,8 +17,12 @@ void CRenderTarget::DoAsyncScreenshot()
 		HRESULT hr;
 		ID3DTexture2D* pBuffer = nullptr;
 		hr = RSwapchain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-		RContext->CopyResource( t_ss_async, pBuffer );
-		
+		if (SUCCEEDED(hr))
+		{
+			RContext->CopyResource(t_ss_async, pBuffer);
+			pBuffer->Release();
+		}
+
 
 		RImplementation.m_bMakeAsyncSS = false;
 	}
