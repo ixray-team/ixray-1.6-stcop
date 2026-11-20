@@ -60,6 +60,28 @@ cbuffer SkinConstants
 #endif
 }
 
+#define HIDDEN_BONE_MARK 1.0e-6f
+#define HIDDEN_BONE_COLLAPSE_WEIGHT 0.5f
+
+float is_hidden_bone(int id)
+{
+    float4 r0 = sbones_array[id + 0];
+    float4 r1 = sbones_array[id + 1];
+    float4 r2 = sbones_array[id + 2];
+    return (r0.x == HIDDEN_BONE_MARK && !any(r0.yz) && !any(r1.xyz) && !any(r2.xyz)) ? 1.0f : 0.0f;
+}
+
+float4 collapse_hidden_weights(float4 w, float4 hidden)
+{
+    float4 hidden_w = w * hidden;
+    float hidden_sum = dot(hidden_w, 1.0f);
+    if (hidden_sum > 0.0f && hidden_sum < 1.0f)
+    {
+        w = hidden_sum >= HIDDEN_BONE_COLLAPSE_WEIGHT ? hidden_w / hidden_sum : (w - hidden_w) / (1.0f - hidden_sum);
+    }
+    return w;
+}
+
 float3 skinning_dir(float3 dir, float3 m0, float3 m1, float3 m2)
 {
     float3 U = unpack_normal(dir);
@@ -144,6 +166,7 @@ v_model skinning_2(v_model_skinned_2 v)
     float4 m2_1 = sbones_array[id_1 + 2];
 	
     float w = v.N.w;
+    w = collapse_hidden_weights(float4(1.0f - w, w, 0.0f, 0.0f), float4(is_hidden_bone(id_0), is_hidden_bone(id_1), 0.0f, 0.0f)).y;
 	
     float4 m0 = lerp(m0_0, m0_1, w);
     float4 m1 = lerp(m1_0, m1_1, w);
@@ -201,6 +224,11 @@ v_model skinning_3(v_model_skinned_3 v)
     float w0 = v.N.w;
     float w1 = v.T.w;
     float w2 = 1.0f - w0 - w1;
+
+    float4 w3 = collapse_hidden_weights(float4(w0, w1, w2, 0.0f), float4(is_hidden_bone(id_0), is_hidden_bone(id_1), is_hidden_bone(id_2), 0.0f));
+    w0 = w3.x;
+    w1 = w3.y;
+    w2 = w3.z;
 
     float4 m0 = m0_0 * w0;
     float4 m1 = m1_0 * w0;
@@ -286,6 +314,12 @@ v_model skinning_4(v_model_skinned_4 v)
     w[1] = v.T.w;
     w[2] = v.B.w;
     w[3] = 1.0f - w[0] - w[1] - w[2];
+
+    float4 w4 = collapse_hidden_weights(float4(w[0], w[1], w[2], w[3]), float4(is_hidden_bone((int)id[0]), is_hidden_bone((int)id[1]), is_hidden_bone((int)id[2]), is_hidden_bone((int)id[3])));
+    w[0] = w4.x;
+    w[1] = w4.y;
+    w[2] = w4.z;
+    w[3] = w4.w;
 
     float4 m0 = m[0][0] * w[0];
     float4 m1 = m[0][1] * w[0];
