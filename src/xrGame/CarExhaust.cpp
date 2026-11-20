@@ -91,8 +91,11 @@ void CCar::SExhaust::Play()
 	VERIFY(!physics_world()->Processing());
 
 	if(!p_pgobject) return;
-	if(p_pgobject->IsPlaying())
-		p_pgobject->Stop();
+
+	// Stop(false) is required here: the default Stop(true) keeps m_bPlaying
+	// set while the deferred stop is fading, and Play() would silently return
+	// instead of restarting the exhaust after a quick engine restart.
+	p_pgobject->Stop(false);
 
 	Update();
 	p_pgobject->Play(false);
@@ -106,7 +109,7 @@ void CCar::SExhaust::Stop()
 	if(!p_pgobject->IsPlaying())
 		return;
 
-	p_pgobject->Stop();
+	p_pgobject->Stop(true);
 }
 
 void CCar::SExhaust::PlayNitro()
@@ -114,8 +117,9 @@ void CCar::SExhaust::PlayNitro()
 	VERIFY(!physics_world()->Processing());
 
 	if(!p_pgobject_nitro) return;
-	if(p_pgobject_nitro->IsPlaying())
-		p_pgobject_nitro->Stop();
+
+	// Same deferred-stop issue as the main exhaust.
+	p_pgobject_nitro->Stop(false);
 
 	Update();
 	p_pgobject_nitro->Play(false);
@@ -129,7 +133,7 @@ void CCar::SExhaust::StopNitro()
 	if(!p_pgobject_nitro->IsPlaying())
 		return;
 
-	p_pgobject_nitro->Stop();
+	p_pgobject_nitro->Stop(true);
 }
 
 void CCar::SExhaust::PlayPop()

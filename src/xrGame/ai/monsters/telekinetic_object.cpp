@@ -27,6 +27,22 @@ STelekineticObject::STelekineticObject(const STelekineticObjectParams& tele_para
 	this->params.target_height = params.object->Position().y + this->params.target_height;
 }
 
+STelekineticObject::~STelekineticObject()
+{
+	clear_physics_link();
+}
+
+void STelekineticObject::clear_physics_link()
+{
+	if (!params.object || params.object->get_telekinetic_object() != this)
+		return;
+
+	if (CPhysicsShell* shell = params.object->PPhysicsShell())
+		shell->remove_ObjectContactCallback(collision_callback);
+
+	params.object->set_telekinetic_object(nullptr);
+}
+
 void STelekineticObject::set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw)
 {
 	sound_hold.clone(snd_hold, st_Effect, sg_SourceType);
@@ -121,8 +137,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, CPHContac
 		return;
 	}
 
-	ph_self_object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
-	ph_self_object->set_telekinetic_object(nullptr);
+	tele->clear_physics_link();
 
 	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver) : nullptr;
 	if (ph_damage_receiver == nullptr)
@@ -386,8 +401,7 @@ void STelekineticObject::release()
 		params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), random_dir, params.object->m_pPhysicsShell->getMass() * 2.f);
 	}
 
-	params.object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
-	params.object->set_telekinetic_object(nullptr);
+	clear_physics_link();
 
 	stop_object_particles();
 	switch_state(ETelekineticState::TS_NONE);

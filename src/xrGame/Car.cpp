@@ -408,6 +408,7 @@ CCar::CCar()
 	m_firsteye_panel = false;
 	m_allow_inventory_control = false;
 	m_allow_mutant_bite_in_car = false;
+	m_poltergeist_can_lift = false;
 	m_interior_volume = 0.7f;
 	m_hit_stall_threshold = 1.f;
 	m_start_probability = 1.f;
@@ -4526,6 +4527,7 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_firsteye_panel = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "firsteye_panel", m_firsteye_panel);
 	m_allow_inventory_control = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
 	m_allow_mutant_bite_in_car = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_mutant_bite_in_car", m_allow_mutant_bite_in_car);
+	m_poltergeist_can_lift = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "poltergeist_can_lift", m_poltergeist_can_lift);
 	m_interior_volume = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "interior_volume", m_interior_volume);
 	m_hit_stall_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
 	m_hit_anomaly_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_anomaly_scale", m_hit_anomaly_scale);
@@ -5241,7 +5243,8 @@ void CCar::StartEngine()
 	bool StartSuccessful = HasFuel;
 	if (StartSuccessful && OwnerActor())
 	{
-		StartSuccessful = Random.randF(0.f, 1.f) <= EngineStartSuccessChance();
+		const float StartChance = EngineStartSuccessChance();
+		StartSuccessful = StartChance > 0.f && Random.randF(0.f, 1.f) < StartChance;
 	}
 
 	PlayExhausts();
@@ -8123,8 +8126,18 @@ void CCar::ASCUpdate(EAsyncCalls c)
 	async_calls.set(u16(c),FALSE);
 	switch(c) {
 	case ascSndTransmission:m_car_sound->TransmissionSwitch();break;
-	case ascSndStall:m_car_sound->Stop();break;
-	case ascExhoustStop:StopExhausts();break;
+	case ascSndStall:
+		// Same race as the exhaust stop: an immediate restart must not be
+		// muted by the stop request from the previous engine state.
+		if (!b_engine_on)
+			m_car_sound->Stop();
+		break;
+	case ascExhoustStop:
+		// A restart can happen before the deferred stop is processed. Do not
+		// kill the exhausts that the new start has already launched.
+		if (!b_engine_on)
+			StopExhausts();
+		break;
 	default: NODEFAULT;
 	}
 }

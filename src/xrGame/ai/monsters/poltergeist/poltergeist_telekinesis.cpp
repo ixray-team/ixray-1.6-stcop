@@ -247,15 +247,20 @@ void CTelekineticPoltergeist::tele_find_objects(xr_vector<CObject*>& objects, co
 		CPhysicsShellHolder* obj = pObject->cast_physics_shell_holder();
 		CMonsterEnemyManager& enemy = this->poltergeist->EnemyMan;
 
+		// A car that explicitly allows poltergeist lifting bypasses the
+		// regular object mass cap; other objects keep their normal filtering.
+		const bool CarLiftOverride =
+			obj != nullptr && obj->cast_car() != nullptr && obj->CanPoltergeistLift();
+
 		if (!obj ||
 			!obj->PPhysicsShell() ||
 			!obj->PPhysicsShell()->isActive() ||
 			obj->cast_creature() ||
-			// Poltergeists must not lift cars with telekinesis.
-			obj->cast_car() ||
+			// Cars opt in through vehicles.ltx (poltergeist_can_lift).
+			!obj->CanPoltergeistLift() ||
 			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
 			obj->m_pPhysicsShell->getMass() < object_min_mass ||
-			obj->m_pPhysicsShell->getMass() > object_max_mass ||
+			(!CarLiftOverride && obj->m_pPhysicsShell->getMass() > object_max_mass) ||
 			obj == poltergeist ||
 			poltergeist->is_active_object(obj) ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity() || !enemy.get_enemy())
@@ -309,7 +314,7 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 	}
 
 	CPhysicsShellHolder* physics_object = tele_objects[0] != nullptr ? tele_objects[0]->cast_physics_shell_holder() : nullptr;
-	if (!physics_object || physics_object->cast_car())
+	if (!physics_object || !physics_object->CanPoltergeistLift())
 	{
 		return false;
 	}

@@ -247,14 +247,21 @@ void CTelekinesis::PhDataUpdate(float step)
 
 void CTelekinesis::clear_notrelevant()
 {
-	telekinetic_objects.erase(
-		std::remove_if(
-			telekinetic_objects.begin(),
-			telekinetic_objects.end(),
-			&RemovePred
-		),
-		telekinetic_objects.end()
-	);
+	for (TELE_OBJECTS_IT it = telekinetic_objects.begin(); it != telekinetic_objects.end();)
+	{
+		STelekineticObject* object = *it;
+		if (!RemovePred(object))
+		{
+			++it;
+			continue;
+		}
+
+		// The object is no longer controlled by this telekinesis instance.
+		// Clear the physics link first, then free the telekinetic object.
+		object->clear_physics_link();
+		xr_delete(object);
+		it = telekinetic_objects.erase(it);
+	}
 }
 
 void CTelekinesis::PhTune(float step)

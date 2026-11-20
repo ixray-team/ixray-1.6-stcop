@@ -116,9 +116,11 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 Два независимых источника параметров:
 
 1. **`pSettings` (item-секция `vehicles.ltx`)** — параметры экземпляра:
-   `fuel_tank`, `fuel_consumption`, `fuel_speed_factor`, `fuel_speed_optimal`, `fuel_rpm_factor`, `fuel_gas_factor`, `trunk_capacity`, `trunk_distance`, `hit_stall_threshold`, `handbrake_rpm_threshold`, `slip_sliding_threshold`, `vel_sliding_threshold`, `friction_*`, `steer_*`, `drift_*`, `brake_boost`, `switch_shake_boost`, `engine_shake_boost`, `wheels_spin_factor_*`, `wheels_sound_delay`, `tire_*`, `icon`, `damage`, `immunities`, `collide`, `physics_common`.
+   `fuel_tank`, `fuel_consumption`, `fuel_speed_factor`, `fuel_speed_optimal`, `fuel_rpm_factor`, `fuel_gas_factor`, `trunk_capacity`, `trunk_distance`, `hit_stall_threshold`, `handbrake_rpm_threshold`, `slip_sliding_threshold`, `vel_sliding_threshold`, `friction_*`, `steer_*`, `drift_*`, `brake_boost`, `switch_shake_boost`, `engine_shake_boost`, `wheels_spin_factor_*`, `wheels_sound_delay`, `tire_*`, `poltergeist_can_lift`, `icon`, `damage`, `immunities`, `collide`, `physics_common`.
 2. **`LL_UserData` (модельный ltx)** — параметры машины:
    `[car_definition]`, `[transmission_gear_ratio]`, `[lights]` + секции ламп, `[car_sound]`, `[doors]` + секции дверей, `[wheels_params]` + секции колёс, `[damage_particles]`, `[damage_items]`, `[air_resistance]`, `[explosion]`, `[destroyed]`, `[mounted_weapon_definition]`, `[animations]`, секции приборов (`[speedometer]`, `[tachometer]`, `[fuel]`, `[temp]`, `[gear]`, `[fan]`, `[clock_*]`), `[car_firsteye_cam]`, `[car_look_cam]`, `[car_free_cam]`, `[disable]`.
+
+`poltergeist_can_lift` (bool, default `false`) разрешает полтергейсту поднимать и бросать эту машину. Для разрешённой машины обходится ограничение `Tele_Object_Max_Mass`.
 
 Правила:
 

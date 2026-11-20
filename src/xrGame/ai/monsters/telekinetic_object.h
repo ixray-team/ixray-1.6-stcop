@@ -95,7 +95,11 @@ struct STelekineticObject
 	ETelekineticState state;
 	
 	STelekineticObject(const STelekineticObjectParams& tele_params);
-	virtual ~STelekineticObject() = default;
+	virtual ~STelekineticObject();
+
+	// Removes the contact callback and the transient link from the physics
+	// object. Safe to call more than once.
+	void clear_physics_link();
 
 	virtual void set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw);
 	virtual void set_particle(shared_str& particles_sect);

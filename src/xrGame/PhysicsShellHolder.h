@@ -78,6 +78,8 @@ public:
 	virtual float GetRamDamageMinSpeed() const { return 0.f; }
 	virtual float GetRamCrashSpeedMin() const { return -1.f; }
 	virtual float GetRamCrashSpeedMax() const { return -1.f; }
+	// Cars opt out through vehicles.ltx; other physics objects stay liftable.
+	virtual bool CanPoltergeistLift() const { return true; }
 
 	// Transient link used by telekinesis while an object is held or thrown.
 	// Kept separate from physics callback data, which the car wheels use for

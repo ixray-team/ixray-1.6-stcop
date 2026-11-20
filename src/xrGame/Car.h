@@ -368,6 +368,7 @@ public:
 	bool	m_firsteye_panel;
 	bool	m_allow_inventory_control;
 	bool	m_allow_mutant_bite_in_car;
+	bool	m_poltergeist_can_lift;
 	float	m_interior_volume;
 	float	m_hit_stall_threshold;
 	float	m_start_probability;
@@ -1512,6 +1513,7 @@ public:
 	virtual float			GetRamDamageMinSpeed		() const override { return m_ram_damage_min_speed; }
 	virtual float			GetRamCrashSpeedMin		() const override { return m_ram_crash_speed_min; }
 	virtual float			GetRamCrashSpeedMax		() const override { return m_ram_crash_speed_max; }
+	virtual bool			CanPoltergeistLift		() const override { return m_poltergeist_can_lift; }
 	void					ConsoleRepair				()				{ SetfHealth(GetMaxHealth()); RepairDamageItems(); }
 	void					ConsoleRefuel				()				{ Refuel(); }
 	float					GetRepairAmount			() const		{ return RepairAmount; }
