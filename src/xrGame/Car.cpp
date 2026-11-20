@@ -5466,7 +5466,12 @@ void CCar::UpdatePower()
 			m_current_rpm = EngineDriveSpeed();
 			if (!b_cvt_transmission)
 			{
-				if (rs_car_auto_transmission && !b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty() && !IsTransmissionSwitching())
+				// A car rolling backwards in a forward gear must not drive the
+				// automatic transmission as if it were moving forward.
+				const float SignedSpeed = GetVelocity().dotproduct(XFORM().k);
+				const bool RollingBackward = SignedSpeed < -0.1f;
+
+				if (rs_car_auto_transmission && !b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty() && !IsTransmissionSwitching() && !RollingBackward)
 				{
 					if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) TransmissionDown();
 					if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2] && GetSpeedKmH() > m_gear_ratious[CurrentTransmission()][3]) TransmissionUp();

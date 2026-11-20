@@ -1334,7 +1334,7 @@ private:
 	float	 			EnginePower							()	;
 	float	 			EngineDriveSpeed					()	;
 	float	 			DriveWheelsMeanAngleRate			()	;
-IC	float	 			EngineRpmFromWheels					(){return dFabs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
+IC	float	 			EngineRpmFromWheels					(){return DriveWheelsMeanAngleRate()*m_current_gear_ratio;}
 	/////////////////////////////////////////////////////////////////////////	
 	void				SteerRight							();
 	void				SteerLeft							();
