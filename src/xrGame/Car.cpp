@@ -434,6 +434,8 @@ CCar::CCar()
 	m_ram_mutant_slide_memory = 600.f;
 	m_ram_start_push_speed = 0.5f;
 	m_gigant_kick_impulse = -1.f;
+	m_slide_geometry_step = u64(-1);
+	m_slide_geometry_valid = false;
 	m_brakes_pressure_factor = 0.f;
 	m_brakes_pressure_max_angle = 0.f;
 	m_brakes_pressure_current = 0.f;
@@ -1655,6 +1657,84 @@ static const char* GetRamPushType(CObject* object)
 	return nullptr;
 }
 
+void CCar::PrepareSlideGeometry()
+{
+	const u64 Step = physics_world()->StepsNum();
+	if (m_slide_geometry_valid && m_slide_geometry_step == Step)
+		return;
+
+	m_slide_geometry_step = Step;
+	m_slide_geometry_valid = false;
+
+	Fbox Box = BoundingBox();
+	if (!Box.is_valid())
+		return;
+
+	Box.get_CD(m_slide_box_center, m_slide_box_half);
+	m_slide_box_half.x = std::max(m_slide_box_half.x, 0.25f);
+	m_slide_box_half.z = std::max(m_slide_box_half.z, 0.25f);
+
+	m_slide_inv_xform.invert(XFORM());
+	XFORM().transform_dir(m_slide_axis_x, Fvector().set(1.f, 0.f, 0.f));
+	XFORM().transform_dir(m_slide_axis_z, Fvector().set(0.f, 0.f, 1.f));
+	m_slide_axis_x.y = 0.f;
+	m_slide_axis_z.y = 0.f;
+	m_slide_axis_x.normalize_safe();
+	m_slide_axis_z.normalize_safe();
+	m_slide_geometry_valid = true;
+}
+
+bool CCar::PrepareSlideGeomBox(const CODEGeom* Geom, const Fmatrix& Form, const Fvector& Size,
+	Fmatrix& OutInv, Fvector& OutHalf, Fvector& OutAxisX, Fvector& OutAxisZ)
+{
+	if (Geom == nullptr)
+		return false;
+
+	const u64 Step = physics_world()->StepsNum();
+	SSlideGeomBox* Entry = nullptr;
+	for (SSlideGeomBox& Candidate : m_slide_geom_cache)
+	{
+		if (Candidate.Geom == Geom)
+		{
+			Entry = &Candidate;
+			break;
+		}
+	}
+
+	if (Entry == nullptr)
+	{
+		m_slide_geom_cache.push_back(SSlideGeomBox());
+		Entry = &m_slide_geom_cache.back();
+		Entry->Geom = Geom;
+	}
+
+	if (Entry->Step != Step || !Entry->Valid)
+	{
+		Entry->Step = Step;
+		Entry->Valid = false;
+		Entry->Form = Form;
+		Entry->Inv.invert(Form);
+		Entry->Half.set(Size.x * 0.5f, Size.y * 0.5f, Size.z * 0.5f);
+		Entry->Half.x = std::max(Entry->Half.x, 0.05f);
+		Entry->Half.y = std::max(Entry->Half.y, 0.05f);
+		Entry->Half.z = std::max(Entry->Half.z, 0.05f);
+		Entry->Valid = true;
+	}
+
+	if (!Entry->Valid)
+		return false;
+
+	OutInv = Entry->Inv;
+	OutHalf = Entry->Half;
+	OutAxisX = Entry->Form.i;
+	OutAxisZ = Entry->Form.k;
+	OutAxisX.y = 0.f;
+	OutAxisZ.y = 0.f;
+	OutAxisX.normalize_safe();
+	OutAxisZ.normalize_safe();
+	return true;
+}
+
 void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl* material_1, SGameMtl* material_2)
 {
 	if (!do_colide)
@@ -1761,23 +1841,46 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		MinSlideSpeed = Stalker->movement().free_run_speed();
 	}
 
-	Fbox Box = Car->BoundingBox();
-	if (Box.is_valid())
+	Fmatrix GeomForm;
+	Fvector GeomSize;
+	u16 GeomBone = u16(-1);
+	const CODEGeom* Geom = nullptr;
+	Fmatrix SlideInv;
+	Fvector SlideCenter;
+	Fvector SlideHalf;
+	Fvector SlideAxisX;
+	Fvector SlideAxisZ;
+	bool SlideBoxValid = false;
+	bool NearEnd = false;
+
+	const bool HasGeomBox = !wheel_contact && cphc.GetGeometryBox(car_is_first, GeomForm, GeomSize, &GeomBone, &Geom);
+	if (HasGeomBox && Car->PrepareSlideGeomBox(Geom, GeomForm, GeomSize, SlideInv, SlideHalf, SlideAxisX, SlideAxisZ))
 	{
-		Fvector BoxCenter;
-		Fvector BoxHalf;
-		Box.get_CD(BoxCenter, BoxHalf);
-		BoxHalf.x = std::max(BoxHalf.x, 0.25f);
-		BoxHalf.z = std::max(BoxHalf.z, 0.25f);
+		SlideCenter.set(0.f, 0.f, 0.f);
+		SlideBoxValid = true;
+	}
+	else
+	{
+		Car->PrepareSlideGeometry();
+		if (Car->m_slide_geometry_valid)
+		{
+			SlideInv = Car->m_slide_inv_xform;
+			SlideCenter = Car->m_slide_box_center;
+			SlideHalf = Car->m_slide_box_half;
+			SlideAxisX = Car->m_slide_axis_x;
+			SlideAxisZ = Car->m_slide_axis_z;
+			SlideBoxValid = true;
+		}
+	}
 
-		Fmatrix Inv;
-		Inv.invert(Car->XFORM());
+	if (SlideBoxValid)
+	{
 		Fvector Local;
-		const Fvector FacePosition = wheel_contact ? cphc.GetPosition() : Other->Position();
-		Inv.transform_tiny(Local, FacePosition);
+		SlideInv.transform_tiny(Local, cphc.GetPosition());
+		Local.sub(SlideCenter);
 
-		const float DX = (Local.x - BoxCenter.x) / BoxHalf.x;
-		const float DZ = (Local.z - BoxCenter.z) / BoxHalf.z;
+		const float DX = Local.x / SlideHalf.x;
+		const float DZ = Local.z / SlideHalf.z;
 
 		bool XFace;
 		if (std::fabs(DX) >= std::fabs(DZ) * 1.1f)
@@ -1787,16 +1890,13 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		else
 		{
 			// Near a corner prefer the face the contact normal belongs to.
-			Fvector CarX;
-			Fvector CarZ;
-			Car->XFORM().transform_dir(CarX, Fvector().set(1.f, 0.f, 0.f));
-			Car->XFORM().transform_dir(CarZ, Fvector().set(0.f, 0.f, 1.f));
-			CarX.y = 0.f;
-			CarZ.y = 0.f;
-			CarX.normalize_safe();
-			CarZ.normalize_safe();
-			XFace = std::fabs(Normal.dotproduct(CarX)) >= std::fabs(Normal.dotproduct(CarZ));
+			XFace = std::fabs(Normal.dotproduct(SlideAxisX)) >=
+				std::fabs(Normal.dotproduct(SlideAxisZ));
 		}
+
+		// Only the coordinate along the slide axis marks the end of the face.
+		// The other coordinate is always at the face boundary for a box contact.
+		NearEnd = std::fabs(XFace ? DZ : DX) > 0.85f;
 
 		Fvector LocalSlide;
 		if (XFace)
@@ -1807,16 +1907,33 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		// The contact offset along the face picks which end of the bumper the
 		// mutant should use when it hits exactly head-on and all velocity
 		// sources point into the car.
-		Fvector LocalOffset;
-		LocalOffset.sub(Local, BoxCenter);
-		SideBias = LocalOffset.dotproduct(LocalSlide);
+		SideBias = Local.dotproduct(LocalSlide);
 
-		Car->XFORM().transform_dir(SlideAxis, LocalSlide);
-		SlideAxis.y = 0.f;
+		SlideAxis = XFace ? SlideAxisZ : SlideAxisX;
 		if (SlideAxis.magnitude() > EPS_L)
 			SlideAxis.normalize_safe();
 		else
 			SlideAxis.set(0.f, 0.f, 0.f);
+	}
+
+	bool HasParentCollision = false;
+	if (GeomBone != u16(-1))
+	{
+		IKinematics* Kinematics = PKinematics(Car->Visual());
+		if (Kinematics != nullptr && GeomBone < Kinematics->LL_BoneCount())
+		{
+			u16 ParentBone = Kinematics->LL_GetData(GeomBone).GetParentID();
+			while (ParentBone != BI_NONE)
+			{
+				CPhysicsElement* ParentElement = Car->PPhysicsShell()->get_Element(ParentBone);
+				if (ParentElement != nullptr && ParentElement->has_geoms())
+				{
+					HasParentCollision = true;
+					break;
+				}
+				ParentBone = Kinematics->LL_GetData(ParentBone).GetParentID();
+			}
+		}
 	}
 
 	// If the box face is unusable (a wheel protruding from the box, a damaged
@@ -1860,25 +1977,32 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	if (CharacterRamPushScale >= 0.f)
 		RamPushScale = CharacterRamPushScale;
 
-	Movement->SetCarContact(
-		Normal,
-		CarVelocity,
-		Car->m_ram_separation_bias,
-		RamPushScale,
-		Car->m_ram_mutant_push_speed,
-		Car->m_ram_min_speed,
-		Car->m_ram_max_push_speed,
-		SlideAxis,
-		Car->m_ram_mutant_slide_scale,
-		MinSlideSpeed,
-		SideBias,
-		StartPushSpeed,
-		Car->m_ram_mutant_slide_lock,
-		Car->m_ram_mutant_slide_flip,
-		Car->m_ram_mutant_slide_confirm,
-		Car->m_ram_mutant_slide_memory,
-		!wheel_contact,
-		static_cast<u32>(Car->m_ram_contact_memory));
+	CPHMovementControl::SCarContactParams Contact{};
+	Contact.normal = Normal;
+	Contact.car_velocity = CarVelocity;
+	Contact.slide_axis = SlideAxis;
+	Contact.separation_bias = Car->m_ram_separation_bias;
+	Contact.ram_scale = RamPushScale;
+	Contact.mutant_push_speed = Car->m_ram_mutant_push_speed;
+	Contact.min_car_speed = Car->m_ram_min_speed;
+	Contact.max_push_speed = Car->m_ram_max_push_speed;
+	Contact.slide_scale = Car->m_ram_mutant_slide_scale;
+	Contact.min_slide_speed = MinSlideSpeed;
+	Contact.side_bias = SideBias;
+	Contact.start_push_speed = StartPushSpeed;
+	Contact.slide_lock_ms = Car->m_ram_mutant_slide_lock;
+	Contact.slide_flip = Car->m_ram_mutant_slide_flip;
+	Contact.slide_confirm_ms = Car->m_ram_mutant_slide_confirm;
+	Contact.slide_memory_ms = Car->m_ram_mutant_slide_memory;
+	Contact.body_contact = !wheel_contact;
+	Contact.depth = cphc.GetDepth();
+	Contact.geom_bone = GeomBone;
+	Contact.near_end = NearEnd;
+	Contact.has_parent_collision = HasParentCollision;
+	Contact.duration_ms = static_cast<u32>(Car->m_ram_contact_memory);
+	Contact.car_name = Car->cName();
+	Contact.car_owned_by_actor = Car->OwnerActor() != nullptr;
+	Movement->SetCarContact(Contact);
 }
 
 void CCar::SpawnInitPhysics	(CSE_Abstract	*D)

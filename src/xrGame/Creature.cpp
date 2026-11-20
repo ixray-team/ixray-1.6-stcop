@@ -367,7 +367,10 @@ void CCreature::UpdateCL	()
 	{
 		CPHMovementControl* movement_control = character_physics_support()->movement();
 		if (movement_control)
+		{
 			movement_control->ValidateCarContact();
+			movement_control->DumpCarContact();
+		}
 	}
 
 #ifdef DEBUG

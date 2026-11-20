@@ -4,6 +4,9 @@
 #include "PHCharacter.h"
 #include "CalculateTriangle.h"
 #include "Physics.h"
+#include "Geometry.h"
+#include "../PhysicsShell.h"
+#include "../IPhysicsShellHolder.h"
 
 static dxGeomUserData* GetUserData(const dContact& Contact, bool First)
 {
@@ -75,6 +78,62 @@ bool CPHContact::GetPushingNegTriangle(bool First, Fvector& Normal, float& Dist)
 	Normal.set(cast_fv(NegTri.norm));
 	Dist = NegTri.dist;
 	return true;
+}
+
+bool CPHContact::GetGeometryBox(bool First, Fmatrix& Form, Fvector& Size, u16* BoneId, const CODEGeom** OutGeom) const
+{
+	const dGeomID ContactGeom = First ? Contact.geom.g1 : Contact.geom.g2;
+	dxGeomUserData* Data = retrieveGeomUserData(ContactGeom);
+	if (Data == nullptr || Data->ph_ref_object == nullptr)
+	{
+		return false;
+	}
+
+	CPhysicsShell* Shell = Data->ph_ref_object->ObjectPPhysicsShell();
+	if (Shell == nullptr)
+	{
+		return false;
+	}
+
+	// ODE geom user data stores the geom index inside its element, but the
+	// bone id can be assigned after CODEGeom::init(), so it is not reliable
+	// here. Match the actual contact geom against the shell geoms instead.
+	const dGeomID Target = retrieveGeom(ContactGeom);
+	for (u16 ElementIndex = 0; ElementIndex < Shell->get_ElementsNumber(); ++ElementIndex)
+	{
+		CPhysicsElement* Element = Shell->get_ElementByStoreOrder(ElementIndex);
+		if (Element == nullptr)
+		{
+			continue;
+		}
+
+		for (u16 GeomIndex = 0; GeomIndex < Element->numberOfGeoms(); ++GeomIndex)
+		{
+			CODEGeom* Geom = Element->geometry(GeomIndex);
+			if (Geom == nullptr)
+			{
+				continue;
+			}
+
+			if (Geom->geometry() != Target && Geom->geometry_transform() != ContactGeom)
+			{
+				continue;
+			}
+
+			Geom->get_Box(Form, Size);
+			if (BoneId)
+			{
+				*BoneId = Geom->bone_id();
+			}
+			if (OutGeom)
+			{
+				*OutGeom = Geom;
+			}
+			return true;
+		}
+	}
+
+	return false;
 }
 
 const Fvector& CPHContact::GetPosition() const

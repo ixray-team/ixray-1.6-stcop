@@ -62,15 +62,59 @@ bool					ForcedPhysicsControl( );
 	// car and lets the movement manager decide every frame whether the car
 	// pushes the character away or the character is allowed to push the car
 	// only slowly.
-	void					SetCarContact( const Fvector& normal, const Fvector& car_velocity,
-											   float separation_bias, float ram_scale,
-											   float mutant_push_speed, float min_car_speed,
-											   float max_push_speed, const Fvector& slide_axis,
-											   float slide_scale, float min_slide_speed, float side_bias,
-											   float start_push_speed,
-											   float slide_lock_ms, float slide_flip,
-											   float slide_confirm_ms, float slide_memory_ms,
-											   bool body_contact, u32 duration_ms );
+	struct SCarContactParams
+	{
+		Fvector			normal;
+		Fvector			car_velocity;
+		Fvector			slide_axis;
+		float			separation_bias;
+		float			ram_scale;
+		float			mutant_push_speed;
+		float			min_car_speed;
+		float			max_push_speed;
+		float			slide_scale;
+		float			min_slide_speed;
+		float			side_bias;
+		float			start_push_speed;
+		float			slide_lock_ms;
+		float			slide_flip;
+		float			slide_confirm_ms;
+		float			slide_memory_ms;
+		bool			body_contact;
+		u32				duration_ms;
+		shared_str		car_name;
+		bool			car_owned_by_actor;
+		float			depth;
+		u16				geom_bone;
+		bool			near_end;
+		bool			has_parent_collision;
+	};
+
+	struct SCarContactTelemetry
+	{
+		bool			body_contact;
+		Fvector			normal;
+		Fvector			slide_axis;
+		Fvector			car_velocity;
+		Fvector			slide_direction;
+		float			slide_tangent;
+		float			min_slide_speed;
+		float			side_bias;
+		float			canonical_side;
+		u32				remaining_ms;
+		shared_str		car_name;
+		bool			car_owned_by_actor;
+		float			depth;
+		u16				geom_bone;
+		bool			near_end;
+		bool			has_parent_collision;
+		bool			escaping;
+		float			stall_time;
+	};
+
+	void					SetCarContact(const SCarContactParams& params);
+	void					DumpCarContact();
+	bool					GetCarContactTelemetry(SCarContactTelemetry& telemetry) const;
 	void					UpdateCarContact();
 	void					ValidateCarContact();
 	bool					IsCarContactActive() const;
@@ -169,10 +213,17 @@ private:
 		float			side_bias;
 		float			start_push_speed;
 		bool			body_contact;
+		shared_str		car_name;
+		bool			car_owned_by_actor;
+		float			depth;
+		u16				geom_bone;
+		bool			near_end;
+		bool			has_parent_collision;
 	};
 
 	SCarContact			m_car_contact;
 	u32					m_car_contact_end;
+	u64					m_car_contact_step;
 	bool				m_car_contact_active;
 	float				m_ram_push_scale_override;
 	bool				m_ram_push_scale_resolved;
@@ -188,6 +239,12 @@ private:
 	u32					m_car_slide_direction_expire;
 	u32					m_car_slide_opposite_time;
 	u32					m_car_face_switch_time;
+	u32					m_car_slide_debug_time;
+	float				m_car_slide_progress_side;
+	u32					m_car_slide_progress_time;
+	bool				m_car_slide_progress_valid;
+	float				m_car_slide_stall_time;
+	u32					m_car_slide_escape_until;
 
 	Fvector				vPathPoint;
 	Fvector				_vPathDir;

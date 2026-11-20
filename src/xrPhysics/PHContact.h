@@ -4,6 +4,7 @@
 
 class IPhysicsShellHolder;
 class IPHCharacter;
+class CODEGeom;
 struct dContact;
 
 // Backend-neutral view of one contact, valid only inside a contact callback.
@@ -20,6 +21,7 @@ public:
 	bool HasObjectCallback(bool First, ObjectContactCallbackFun* Callback) const;
 	bool GetLastPosition(bool First, Fvector& Position) const;
 	bool GetPushingNegTriangle(bool First, Fvector& Normal, float& Dist) const;
+	bool GetGeometryBox(bool First, Fmatrix& Form, Fvector& Size, u16* BoneId = nullptr, const CODEGeom** Geom = nullptr) const;
 
 	const Fvector& GetPosition() const;
 	const Fvector& GetNormal() const;

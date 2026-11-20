@@ -3485,6 +3485,9 @@ void CCC_RegisterCommands()
 	extern bool rs_car_info;
 	CMD2(CCC_Boolean, "rs_car_info", &rs_car_info);
 
+	extern bool rs_car_slide_info;
+	CMD2(CCC_Boolean, "rs_car_slide_info", &rs_car_slide_info);
+
 	extern bool rs_car_auto_transmission;
 	CMD2(CCC_Boolean, "rs_car_auto_transmission", &rs_car_auto_transmission);
 

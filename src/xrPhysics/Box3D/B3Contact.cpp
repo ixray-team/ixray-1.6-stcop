@@ -72,6 +72,26 @@ bool CPHContact::GetPushingNegTriangle(bool First, Fvector& Normal, float& Dist)
 	return false;
 }
 
+bool CPHContact::GetGeometryBox(bool First, Fmatrix& Form, Fvector& Size, u16* BoneId, const CODEGeom** OutGeom) const
+{
+	CODEGeom* Geom = Contact.Geom[First ? 0 : 1];
+	if (Geom == nullptr)
+	{
+		return false;
+	}
+
+	Geom->get_Box(Form, Size);
+	if (BoneId)
+	{
+		*BoneId = Geom->BoneId;
+	}
+	if (OutGeom)
+	{
+		*OutGeom = Geom;
+	}
+	return true;
+}
+
 const Fvector& CPHContact::GetPosition() const
 {
 	return Contact.Position;

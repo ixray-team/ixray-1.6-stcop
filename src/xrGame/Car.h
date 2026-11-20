@@ -382,6 +382,32 @@ public:
 	float	m_ram_start_push_speed;
 	float	m_gigant_kick_impulse;
 
+	// Car body geometry used by the mutant/NPC slide contact. The box is
+	// local to the car and the inverse transform is refreshed once per physics
+	// step, so contact callbacks do not invert the matrix for every contact.
+	Fvector	m_slide_box_center;
+	Fvector	m_slide_box_half;
+	Fmatrix	m_slide_inv_xform;
+	Fvector	m_slide_axis_x;
+	Fvector	m_slide_axis_z;
+	u64		m_slide_geometry_step;
+	bool	m_slide_geometry_valid;
+	void	PrepareSlideGeometry();
+
+	struct SSlideGeomBox
+	{
+		const CODEGeom* Geom = nullptr;
+		Fmatrix	Form;
+		Fmatrix	Inv;
+		Fvector	Half;
+		u64		Step = u64(-1);
+		bool	Valid = false;
+	};
+
+	xr_vector<SSlideGeomBox> m_slide_geom_cache;
+	bool	PrepareSlideGeomBox(const CODEGeom* Geom, const Fmatrix& Form, const Fvector& Size,
+		Fmatrix& OutInv, Fvector& OutHalf, Fvector& OutAxisX, Fvector& OutAxisZ);
+
 	struct SHeadlightHideaway
 	{
 		CPhysicsJoint* joint;

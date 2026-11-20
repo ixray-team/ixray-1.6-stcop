@@ -42,8 +42,17 @@ const u64 after_creation_collision_hit_block_steps_number=100;
 // How long the body normal/axis stays authoritative after the last body
 // contact. If only a wheel touches for longer, the wheel's face becomes the
 // slide source instead of keeping a stale body face forever.
-constexpr u32 CarBodyContactAuthorityMs = 150;
+constexpr u32 CarBodyContactAuthorityMs = 500;
 constexpr float CarSlideSpeedFactor = 0.5f;
+constexpr float CarFaceAlignThreshold = 0.85f;
+constexpr u32 CarFaceSwitchLockMs = 500;
+constexpr float CarSlideStallMinTangent = 0.2f;
+constexpr float CarSlideStallDeadband = 0.08f;
+constexpr float CarSlideStallTime = 0.6f;
+constexpr float CarSlideEscapeTime = 0.2f;
+constexpr float CarSlideEscapeSpeed = 1.5f;
+
+bool rs_car_slide_info = false;
 
 void CPHMovementControl::ResetCarSlideDirection()
 {
@@ -55,7 +64,14 @@ void CPHMovementControl::ResetCarSlideDirection()
 	m_car_slide_direction_expire = 0;
 	m_car_slide_opposite_time = 0;
 	m_car_face_switch_time = 0;
+	m_car_slide_progress_valid = false;
+	m_car_slide_stall_time = 0.f;
+	m_car_slide_escape_until = 0;
 }
+
+// The telemetry is intentionally small and only logs while the console flag is
+// enabled.
+static constexpr u32 CarSlideTelemetryIntervalMs = 250;
 
 CPHMovementControl::CPHMovementControl(CObject* parent)
 {
@@ -102,7 +118,13 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_contact.side_bias = 0.f;
 	m_car_contact.start_push_speed = 0.f;
 	m_car_contact.body_contact = false;
+	m_car_contact.car_owned_by_actor = false;
+	m_car_contact.depth = 0.f;
+	m_car_contact.geom_bone = u16(-1);
+	m_car_contact.near_end = false;
+	m_car_contact.has_parent_collision = false;
 	m_car_contact_end = 0;
+	m_car_contact_step = 0;
 	m_car_contact_active = false;
 	m_ram_push_scale_override = -1.f;
 	m_ram_push_scale_resolved = false;
@@ -110,6 +132,9 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	m_car_damage_debug_last_time = 0;
 	m_car_body_contact_time = 0;
 	m_car_slide_speed = 0.f;
+	m_car_slide_debug_time = 0;
+	m_car_slide_progress_side = 0.f;
+	m_car_slide_progress_time = 0;
 	ResetCarSlideDirection();
 
 	fLastMotionMag = 1.f;
@@ -168,16 +193,12 @@ void CPHMovementControl::ApplyImpulse(const Fvector& dir,const float P)
  	m_character->ApplyImpulse(dir,P);
 }
 
-void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car_velocity,
-	float separation_bias, float ram_scale, float mutant_push_speed,
-	float min_car_speed, float max_push_speed, const Fvector& slide_axis,
-	float slide_scale, float min_slide_speed, float side_bias, float start_push_speed,
-	float slide_lock_ms, float slide_flip, float slide_confirm_ms, float slide_memory_ms,
-	bool body_contact, u32 duration_ms)
+void CPHMovementControl::SetCarContact(const SCarContactParams& params)
 {
-	if (!m_character || !m_character->Exists() || m_character->IsActorCharacter() || duration_ms == 0)
+	if (!m_character || !m_character->Exists() || m_character->IsActorCharacter() || params.duration_ms == 0)
 		return;
 
+	const u64 Step = physics_world()->StepsNum();
 	const bool was_active = m_car_contact_active;
 	const bool was_active_fresh = was_active && Device.dwTimeGlobal < m_car_contact_end;
 
@@ -186,31 +207,63 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	// a rotating wheel normal. This priority expires: if only a wheel touches
 	// for a while, its face becomes the source instead of a stale body face.
 	const bool body_authoritative =
-		was_active && m_car_contact.body_contact && !body_contact &&
+		was_active && m_car_contact.body_contact && !params.body_contact &&
 		Device.dwTimeGlobal < m_car_body_contact_time + CarBodyContactAuthorityMs;
 
 	if (body_authoritative)
 	{
-		m_car_contact_end = Device.dwTimeGlobal + duration_ms;
+		m_car_contact_end = Device.dwTimeGlobal + params.duration_ms;
+		m_car_contact_step = Step;
 		m_character->SetExternalPush(true);
 		return;
 	}
 
+	// Several collision geoms can touch the character during one physics step.
+	// Keep one face instead of letting the last callback overwrite the normal.
+	// A deeper body contact wins; on a near tie prefer the contact that has a
+	// parent collision, and otherwise keep the current face.
+	if (m_car_contact_active && m_car_contact_step == Step &&
+		m_car_contact.car_name == params.car_name)
+	{
+		bool Replace = false;
+		if (params.body_contact != m_car_contact.body_contact)
+		{
+			Replace = params.body_contact;
+		}
+		else if (std::fabs(params.depth - m_car_contact.depth) > 0.01f)
+		{
+			Replace = params.depth > m_car_contact.depth;
+		}
+		else if (params.has_parent_collision != m_car_contact.has_parent_collision)
+		{
+			Replace = params.has_parent_collision;
+		}
+
+		if (!Replace)
+		{
+			m_car_contact_end = Device.dwTimeGlobal + params.duration_ms;
+			if (params.body_contact)
+				m_car_body_contact_time = Device.dwTimeGlobal;
+			m_character->SetExternalPush(true);
+			return;
+		}
+	}
+
 	// The body has not been touched for a while. Let the current wheel contact
 	// replace the stale body face instead of keeping its expired lock.
-	if (was_active && m_car_contact.body_contact && !body_contact)
+	if (was_active && m_car_contact.body_contact && !params.body_contact)
 		m_car_face_switch_time = 0;
 
 	if (!was_active)
 		m_car_slide_speed = 0.f;
 
-	Fvector contact_normal = normal;
+	Fvector contact_normal = params.normal;
 	contact_normal.y = 0.f;
 	if (contact_normal.magnitude() < EPS_L)
 		return;
 	contact_normal.normalize_safe();
 
-	Fvector contact_slide = slide_axis;
+	Fvector contact_slide = params.slide_axis;
 	contact_slide.y = 0.f;
 	if (contact_slide.magnitude() > EPS_L)
 		contact_slide.normalize_safe();
@@ -225,7 +278,7 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 		contact_slide.magnitude() > EPS_L)
 	{
 		const float alignment = std::fabs(m_car_contact.slide_axis.dotproduct(contact_slide));
-		if (alignment < 0.5f)
+		if (alignment < CarFaceAlignThreshold)
 		{
 			keep_previous_face = Device.dwTimeGlobal < m_car_face_switch_time;
 			if (!keep_previous_face)
@@ -240,12 +293,29 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 			}
 
 			if (!keep_previous_face)
-				m_car_face_switch_time = Device.dwTimeGlobal + 250;
+				m_car_face_switch_time = Device.dwTimeGlobal + CarFaceSwitchLockMs;
 		}
 	}
 
 	if (keep_previous_face)
 		contact_slide = m_car_contact.slide_axis;
+
+	// Project the face axis onto the contact plane once, when the contact is
+	// written. ApplyCarContact() is called every frame and must not repeat this
+	// work. The fallback keeps a usable tangent for wheel/edge contacts whose
+	// face axis is parallel to the normal.
+	contact_slide.mad(contact_normal, -contact_slide.dotproduct(contact_normal));
+	if (contact_slide.magnitude() > EPS_L)
+		contact_slide.normalize_safe();
+	else
+	{
+		contact_slide.crossproduct(contact_normal, Fvector().set(0.f, 1.f, 0.f));
+		contact_slide.y = 0.f;
+		if (contact_slide.magnitude() > EPS_L)
+			contact_slide.normalize_safe();
+		else
+			contact_slide.set(0.f, 0.f, 0.f);
+	}
 
 	// Keep the chosen slide side across short contact losses and body/wheel
 	// transitions. It is dropped only when the slide axis changed (another
@@ -271,50 +341,60 @@ void CPHMovementControl::SetCarContact(const Fvector& normal, const Fvector& car
 	if (!was_active)
 	{
 		m_car_slide_opposite_time = 0;
-		m_car_face_switch_time = Device.dwTimeGlobal + 250;
+		m_car_face_switch_time = Device.dwTimeGlobal + CarFaceSwitchLockMs;
 	}
 
 	m_car_contact.normal = contact_normal;
-	m_car_contact.car_velocity = car_velocity;
+	m_car_contact.car_velocity = params.car_velocity;
 	m_car_contact.car_velocity.y = 0.f;
 	m_car_contact.slide_axis = contact_slide;
-	m_car_contact.separation_bias = separation_bias;
-	m_car_contact.ram_scale = ram_scale;
-	m_car_contact.mutant_push_speed = mutant_push_speed;
-	m_car_contact.min_car_speed = min_car_speed;
-	m_car_contact.max_push_speed = max_push_speed;
-	m_car_contact.slide_scale = slide_scale;
+	m_car_contact.separation_bias = params.separation_bias;
+	m_car_contact.ram_scale = params.ram_scale;
+	m_car_contact.mutant_push_speed = params.mutant_push_speed;
+	m_car_contact.min_car_speed = params.min_car_speed;
+	m_car_contact.max_push_speed = params.max_push_speed;
+	m_car_contact.slide_scale = params.slide_scale;
 	if (m_car_contact.slide_scale < 0.f)
 		m_car_contact.slide_scale = 0.f;
 	else if (m_car_contact.slide_scale > 1.f)
 		m_car_contact.slide_scale = 1.f;
-	m_car_contact.min_slide_speed = min_slide_speed;
+	m_car_contact.min_slide_speed = params.min_slide_speed;
 	if (m_car_contact.min_slide_speed < 0.f)
 		m_car_contact.min_slide_speed = 0.f;
 	else if (m_car_contact.min_slide_speed > 50.f)
 		m_car_contact.min_slide_speed = 50.f;
-	m_car_contact.slide_lock_ms = slide_lock_ms;
+	m_car_contact.slide_lock_ms = params.slide_lock_ms;
 	clamp(m_car_contact.slide_lock_ms, 0.f, 5000.f);
-	m_car_contact.slide_flip = slide_flip;
+	m_car_contact.slide_flip = params.slide_flip;
 	clamp(m_car_contact.slide_flip, 0.f, 1.f);
-	m_car_contact.slide_confirm_ms = slide_confirm_ms;
+	m_car_contact.slide_confirm_ms = params.slide_confirm_ms;
 	clamp(m_car_contact.slide_confirm_ms, 0.f, 2000.f);
-	m_car_contact.slide_memory_ms = slide_memory_ms;
+	m_car_contact.slide_memory_ms = params.slide_memory_ms;
 	clamp(m_car_contact.slide_memory_ms, 0.f, 5000.f);
-	m_car_contact.side_bias = side_bias;
-	m_car_contact.start_push_speed = start_push_speed;
+	m_car_contact.side_bias = params.side_bias;
+	m_car_contact.start_push_speed = params.start_push_speed;
 	clamp(m_car_contact.start_push_speed, 0.f, 5.f);
-	m_car_contact.body_contact = body_contact;
-	m_car_contact_end = Device.dwTimeGlobal + duration_ms;
+	m_car_contact.body_contact = params.body_contact;
+	m_car_contact.car_name = params.car_name;
+	m_car_contact.car_owned_by_actor = params.car_owned_by_actor;
+	m_car_contact.depth = params.depth;
+	m_car_contact.geom_bone = params.geom_bone;
+	m_car_contact.near_end = params.near_end;
+	m_car_contact.has_parent_collision = params.has_parent_collision;
+	m_car_contact_end = Device.dwTimeGlobal + params.duration_ms;
+	m_car_contact_step = Step;
 	m_car_contact_active = true;
 
-	if (body_contact)
+	if (params.body_contact)
 		m_car_body_contact_time = Device.dwTimeGlobal;
 
 	if (!was_active_fresh)
 	{
 		m_car_slide_tangent = 0.f;
 		m_car_slide_tangent_valid = false;
+		m_car_slide_progress_valid = false;
+		m_car_slide_stall_time = 0.f;
+		m_car_slide_escape_until = 0;
 	}
 
 	m_character->SetExternalPush(true);
@@ -351,10 +431,14 @@ void CPHMovementControl::UpdateCarContact()
 
 		m_car_contact_active = false;
 		m_car_contact_end = 0;
+		m_car_contact_step = 0;
 		m_car_body_contact_time = 0;
 		m_car_slide_speed = 0.f;
 		m_car_slide_tangent = 0.f;
 		m_car_slide_tangent_valid = false;
+		m_car_slide_progress_valid = false;
+		m_car_slide_stall_time = 0.f;
+		m_car_slide_escape_until = 0;
 		m_car_contact.body_contact = false;
 		m_car_face_switch_time = 0;
 		m_car_slide_opposite_time = 0;
@@ -395,6 +479,78 @@ bool CPHMovementControl::IsCarContactActive() const
 		&& m_character
 		&& m_character->Exists()
 		&& Device.dwTimeGlobal < m_car_contact_end;
+}
+
+bool CPHMovementControl::GetCarContactTelemetry(SCarContactTelemetry& telemetry) const
+{
+	if (!IsCarContactActive())
+		return false;
+
+	telemetry.body_contact = m_car_contact.body_contact;
+	telemetry.normal = m_car_contact.normal;
+	telemetry.slide_axis = m_car_contact.slide_axis;
+	telemetry.car_velocity = m_car_contact.car_velocity;
+	telemetry.slide_direction = m_car_slide_direction;
+	telemetry.slide_tangent = m_car_slide_tangent;
+	telemetry.min_slide_speed = m_car_contact.min_slide_speed;
+	telemetry.side_bias = m_car_contact.side_bias;
+	telemetry.canonical_side = m_car_contact.side_bias;
+	if (m_car_slide_direction_valid &&
+		m_car_contact.slide_axis.magnitude() > EPS_L &&
+		m_car_slide_direction.dotproduct(m_car_contact.slide_axis) < 0.f)
+	{
+		telemetry.canonical_side = -telemetry.canonical_side;
+	}
+	telemetry.car_name = m_car_contact.car_name;
+	telemetry.car_owned_by_actor = m_car_contact.car_owned_by_actor;
+	telemetry.depth = m_car_contact.depth;
+	telemetry.geom_bone = m_car_contact.geom_bone;
+	telemetry.near_end = m_car_contact.near_end;
+	telemetry.has_parent_collision = m_car_contact.has_parent_collision;
+	telemetry.escaping = Device.dwTimeGlobal < m_car_slide_escape_until;
+	telemetry.stall_time = m_car_slide_stall_time;
+	telemetry.remaining_ms = Device.dwTimeGlobal < m_car_contact_end
+		? m_car_contact_end - Device.dwTimeGlobal
+		: 0;
+	return true;
+}
+
+void CPHMovementControl::DumpCarContact()
+{
+	if (!rs_car_slide_info || !IsCarContactActive())
+		return;
+
+	const u32 Now = Device.dwTimeGlobal;
+	if (Now < m_car_slide_debug_time + CarSlideTelemetryIntervalMs)
+		return;
+	m_car_slide_debug_time = Now;
+
+	SCarContactTelemetry Telemetry;
+	if (!GetCarContactTelemetry(Telemetry))
+		return;
+
+	const char* Name = pObject ? pObject->cName().c_str() : "?";
+	const char* CarName = Telemetry.car_name.size() ? Telemetry.car_name.c_str() : "?";
+	Msg("[car-slide] %s veh=%s player=%d body=%d geom=%u edge=%d depth=%.3f parent=%d esc=%d stall=%.2f n=(%.2f,%.2f,%.2f) axis=(%.2f,%.2f,%.2f) car=(%.2f,%.2f,%.2f) min=%.2f side=%.2f cside=%.2f tangent=%.2f dir=(%.2f,%.2f,%.2f) rem=%u",
+		Name,
+		CarName,
+		Telemetry.car_owned_by_actor ? 1 : 0,
+		Telemetry.body_contact ? 1 : 0,
+		static_cast<u32>(Telemetry.geom_bone),
+		Telemetry.near_end ? 1 : 0,
+		Telemetry.depth,
+		Telemetry.has_parent_collision ? 1 : 0,
+		Telemetry.escaping ? 1 : 0,
+		Telemetry.stall_time,
+		Telemetry.normal.x, Telemetry.normal.y, Telemetry.normal.z,
+		Telemetry.slide_axis.x, Telemetry.slide_axis.y, Telemetry.slide_axis.z,
+		Telemetry.car_velocity.x, Telemetry.car_velocity.y, Telemetry.car_velocity.z,
+		Telemetry.min_slide_speed,
+		Telemetry.side_bias,
+		Telemetry.canonical_side,
+		Telemetry.slide_tangent,
+		Telemetry.slide_direction.x, Telemetry.slide_direction.y, Telemetry.slide_direction.z,
+		Telemetry.remaining_ms);
 }
 
 Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float desired_speed)
@@ -459,15 +615,9 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 		return result;
 	}
 
+	// SetCarContact() stores the face axis already projected onto the contact
+	// plane and normalized. Only a defensive check remains here.
 	Fvector slide = contact.slide_axis;
-	slide.mad(contact.normal, -slide.dotproduct(contact.normal));
-	if (slide.magnitude() <= EPS_L)
-	{
-		// The face axis can be parallel to a wheel/edge contact normal. Fall
-		// back to a horizontal tangent of the contact normal.
-		slide.crossproduct(contact.normal, Fvector().set(0.f, 1.f, 0.f));
-		slide.y = 0.f;
-	}
 	if (slide.magnitude() <= EPS_L)
 	{
 		m_car_slide_tangent = 0.f;
@@ -633,6 +783,9 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	{
 		m_car_slide_tangent = current_tangent;
 		m_car_slide_tangent_valid = true;
+		m_car_slide_progress_valid = false;
+		m_car_slide_stall_time = 0.f;
+		m_car_slide_escape_until = 0;
 	}
 	else if (current_tangent > m_car_slide_tangent)
 	{
@@ -642,6 +795,46 @@ Fvector CPHMovementControl::ApplyCarContact(const Fvector& path_velocity, float 
 	m_car_slide_tangent += (target_tangent - m_car_slide_tangent) * blend;
 	const float smooth_tangent = m_car_slide_tangent;
 	result.mad(slide, smooth_tangent - path_tangent);
+
+	// The same physical corner can be reported by body and wheel contacts with
+	// opposite face axes. Canonicalize the side coordinate against the chosen
+	// slide direction, then ignore small jumps: only a real displacement along
+	// the face resets the stall timer.
+	float progress_side = contact.side_bias;
+	if (contact.slide_axis.magnitude() > EPS_L &&
+		slide.dotproduct(contact.slide_axis) < 0.f)
+	{
+		progress_side = -progress_side;
+	}
+
+	const u32 Now = Device.dwTimeGlobal;
+	if (!m_car_slide_progress_valid)
+	{
+		m_car_slide_progress_side = progress_side;
+		m_car_slide_progress_time = Now;
+		m_car_slide_progress_valid = true;
+		m_car_slide_stall_time = 0.f;
+	}
+	else if (std::fabs(progress_side - m_car_slide_progress_side) > CarSlideStallDeadband)
+	{
+		m_car_slide_progress_side = progress_side;
+		m_car_slide_progress_time = Now;
+		m_car_slide_stall_time = 0.f;
+	}
+	else
+	{
+		m_car_slide_stall_time = (Now - m_car_slide_progress_time) * 0.001f;
+		if (m_car_slide_stall_time >= CarSlideStallTime &&
+			std::fabs(smooth_tangent) > CarSlideStallMinTangent)
+		{
+			m_car_slide_stall_time = 0.f;
+			m_car_slide_progress_time = Now;
+			m_car_slide_escape_until = Now + static_cast<u32>(CarSlideEscapeTime * 1000.f);
+		}
+	}
+
+	if (Now < m_car_slide_escape_until)
+		result.mad(contact.normal, CarSlideEscapeSpeed);
 
 	return result;
 }
