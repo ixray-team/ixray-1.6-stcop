@@ -30,17 +30,6 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/CameraBase.h"
 
-// Cars-Ext compatibility: IXRAY exposes CInifile::read_if_exists<T> instead of the LA READ_IF_EXISTS macro.
-#define READ_IF_EXISTS(ini, getter, section, key, def) READ_IF_EXISTS_IMPL_##getter(ini, section, key, def)
-#define READ_IF_EXISTS_IMPL_r_float(ini, section, key, def) (ini)->read_if_exists<float>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_bool(ini, section, key, def) (ini)->read_if_exists<bool>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_u8(ini, section, key, def) (ini)->read_if_exists<u8>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_u16(ini, section, key, def) (ini)->read_if_exists<u16>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_u32(ini, section, key, def) (ini)->read_if_exists<u32>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_fvector3(ini, section, key, def) (ini)->read_if_exists<Fvector3>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_fcolor(ini, section, key, def) (ini)->read_if_exists<Fcolor>(section, key, def)
-#define READ_IF_EXISTS_IMPL_r_string(ini, section, key, def) ((ini)->line_exist(section, key) ? (ini)->r_string(section, key) : (def))
-
 template <typename T>
 IC T _abs(T x)
 {

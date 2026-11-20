@@ -509,19 +509,19 @@ void CCar::reload		(LPCSTR section)
 	if(m_memory)
 		m_memory->reload	(section);
 	// fuel load
-	m_fuel_tank = READ_IF_EXISTS(pSettings, r_float, section, "fuel_tank", 10.f);
-	RepairAmount = READ_IF_EXISTS(pSettings, r_float, section, "repair_amount", 0.2f);
+	m_fuel_tank = pSettings->read_if_exists<float>(section, "fuel_tank", 10.f);
+	RepairAmount = pSettings->read_if_exists<float>(section, "repair_amount", 0.2f);
 	clamp(RepairAmount, 0.f, 1.f);
-	RepairItem = READ_IF_EXISTS(pSettings, r_string, section, "repair_item", "");
-	RefuelItem = READ_IF_EXISTS(pSettings, r_string, section, "refuel_item", "");
-	RefuelAmount = READ_IF_EXISTS(pSettings, r_float, section, "refuel_amount", -1.f);
-	m_fuel_consumption = READ_IF_EXISTS(pSettings, r_float, section, "fuel_consumption", 0.0005f);
-	m_fuel_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_speed_factor", 2.f);
-	m_fuel_speed_optimal = READ_IF_EXISTS(pSettings, r_float, section, "fuel_speed_optimal", 50.f);
+	RepairItem = pSettings->read_if_exists<str_c>(section, "repair_item", "");
+	RefuelItem = pSettings->read_if_exists<str_c>(section, "refuel_item", "");
+	RefuelAmount = pSettings->read_if_exists<float>(section, "refuel_amount", -1.f);
+	m_fuel_consumption = pSettings->read_if_exists<float>(section, "fuel_consumption", 0.0005f);
+	m_fuel_speed_factor = pSettings->read_if_exists<float>(section, "fuel_speed_factor", 2.f);
+	m_fuel_speed_optimal = pSettings->read_if_exists<float>(section, "fuel_speed_optimal", 50.f);
 	clamp(m_fuel_speed_optimal, 1.f, m_fuel_speed_optimal);
-	m_fuel_rpm_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_rpm_factor", 1.f);
-	m_fuel_gas_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_gas_factor", 1.f);
-	inventory().SetMaxWeight(READ_IF_EXISTS(pSettings, r_float, section, "trunk_capacity", 1000.f));
+	m_fuel_rpm_factor = pSettings->read_if_exists<float>(section, "fuel_rpm_factor", 1.f);
+	m_fuel_gas_factor = pSettings->read_if_exists<float>(section, "fuel_gas_factor", 1.f);
+	inventory().SetMaxWeight(pSettings->read_if_exists<float>(section, "trunk_capacity", 1000.f));
 }
 
 bool CCar::IsMyCar() const
@@ -2099,7 +2099,7 @@ void CCar::ApplyBonePhysicsParams(IKinematics* K, CInifile* ini)
 						if (ReturnForce > 0.f)
 						{
 							const float DefaultDamping = 2.f * sqrtf(ReturnForce * ReturnBoneNominalInertia);
-							const float ReturnDamping = READ_IF_EXISTS(ini, r_float, b_name, "return_damping", DefaultDamping);
+							const float ReturnDamping = ini->read_if_exists<float>(b_name, "return_damping", DefaultDamping);
 							return_bones.push_back(SReturnBone(Bone.second.joint, Bone.second.element, ReturnForce, ReturnDamping));
 						}
 					}
@@ -2331,12 +2331,12 @@ void CCar::BindClockHoursGauge(const char* Section, u16 BoneId, IKinematics* K, 
 
 void CCar::BindSuspension(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
 {
-	LPCSTR first_bone_name = READ_IF_EXISTS(ini, r_string, Section, "first_wheel", "BI_NONE");
-	LPCSTR second_bone_name = READ_IF_EXISTS(ini, r_string, Section, "second_wheel", "BI_NONE");
-	bool steer = READ_IF_EXISTS(ini, r_bool, Section, "steer", true);
-	bool move = READ_IF_EXISTS(ini, r_bool, Section, "move", true);
-	float suspension_offset = READ_IF_EXISTS(ini, r_float, Section, "suspension_offset", 0.f);
-	float steer_factor = READ_IF_EXISTS(ini, r_float, Section, "steer_factor", 1.f);
+	LPCSTR first_bone_name = ini->read_if_exists<str_c>(Section, "first_wheel", "BI_NONE");
+	LPCSTR second_bone_name = ini->read_if_exists<str_c>(Section, "second_wheel", "BI_NONE");
+	bool steer = ini->read_if_exists<bool>(Section, "steer", true);
+	bool move = ini->read_if_exists<bool>(Section, "move", true);
+	float suspension_offset = ini->read_if_exists<float>(Section, "suspension_offset", 0.f);
+	float steer_factor = ini->read_if_exists<float>(Section, "steer_factor", 1.f);
 	m_suspension_params.push_back(xr_make_unique<Suspension_struct>(this, K->LL_BoneID(first_bone_name), K->LL_BoneID(second_bone_name), suspension_offset, steer, move, steer_factor));
 	m_suspension_bones.push_back(BoneId);
 	K->LL_GetBoneInstance(BoneId).set_callback(bctCustom, cb_Suspension, m_suspension_params.back().get());
@@ -4472,122 +4472,122 @@ void CCar::LoadExplosionAndDriverDefinitions(CInifile* ini, IKinematics* pKinema
 	if (ini->section_exist("explosion"))
 		CExplosive::Load(ini, "explosion");
 
-	m_sits_transforms.set(pKinematics->LL_GetTransform(pKinematics->LL_BoneID(READ_IF_EXISTS(ini, r_string, "car_definition", "driver_place", pKinematics->LL_BoneName_dbg(pKinematics->LL_GetBoneRoot())))));
+	m_sits_transforms.set(pKinematics->LL_GetTransform(pKinematics->LL_BoneID(ini->read_if_exists<str_c>("car_definition", "driver_place", pKinematics->LL_BoneName_dbg(pKinematics->LL_GetBoneRoot())))));
 
 	Fmatrix	driver_xform_tune;
-	Fvector driver_direction = (READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_direction", Fvector().set(0.0f, 0.0f, 0.0f)));
+	Fvector driver_direction = (ini->read_if_exists<Fvector3>("car_definition", "driver_direction", Fvector().set(0.0f, 0.0f, 0.0f)));
 	driver_xform_tune.setXYZ(deg2rad(driver_direction.x), deg2rad(driver_direction.y), deg2rad(driver_direction.z));
-	driver_xform_tune.c.set(READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_position", Fvector().set(0.0f, 0.0f, 0.0f)));
+	driver_xform_tune.c.set(ini->read_if_exists<Fvector3>("car_definition", "driver_position", Fvector().set(0.0f, 0.0f, 0.0f)));
 	m_sits_transforms.mulB_43(driver_xform_tune);
 
 	// Original vehicles use the single camera_pos key. Cars-Ext splits it
 	// into first/lookat/free positions; keep the original key as fallback.
-	const Fvector DefaultCameraPos = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos", Fvector().set(0.0f, 0.0f, 0.0f));
-	m_camera_position[EctFirstCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_firsteye", DefaultCameraPos);
-	m_camera_position[EctSecondCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_lookat", m_camera_position[EctFirstCam]);
-	m_camera_position[EctThridCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free", m_camera_position[EctSecondCam]);
-	m_camera_position[EctFourthCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free2", m_camera_position[EctThridCam]);
+	const Fvector DefaultCameraPos = ini->read_if_exists<Fvector3>("car_definition", "camera_pos", Fvector().set(0.0f, 0.0f, 0.0f));
+	m_camera_position[EctFirstCam] = ini->read_if_exists<Fvector3>("car_definition", "camera_pos_firsteye", DefaultCameraPos);
+	m_camera_position[EctSecondCam] = ini->read_if_exists<Fvector3>("car_definition", "camera_pos_lookat", m_camera_position[EctFirstCam]);
+	m_camera_position[EctThridCam] = ini->read_if_exists<Fvector3>("car_definition", "camera_pos_free", m_camera_position[EctSecondCam]);
+	m_camera_position[EctFourthCam] = ini->read_if_exists<Fvector3>("car_definition", "camera_pos_free2", m_camera_position[EctThridCam]);
 
-	m_camera_inertion_n = READ_IF_EXISTS(ini, r_float, "car_definition", "camera_inertion_n", m_camera_inertion_n);
-	m_camera_inertion_k = READ_IF_EXISTS(ini, r_float, "car_definition", "camera_inertion_k", m_camera_inertion_k);
-	m_camera_angle_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "camera_angle_factor", m_camera_angle_factor);
+	m_camera_inertion_n = ini->read_if_exists<float>("car_definition", "camera_inertion_n", m_camera_inertion_n);
+	m_camera_inertion_k = ini->read_if_exists<float>("car_definition", "camera_inertion_k", m_camera_inertion_k);
+	m_camera_angle_factor = ini->read_if_exists<float>("car_definition", "camera_angle_factor", m_camera_angle_factor);
 	clamp(m_camera_angle_factor, 0.1f, 2.f);
 }
 
 void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 {
-	m_current_rpm_brp_n_max = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "handbrake_rpm_threshold", m_current_rpm_brp_n_max);
-	m_current_rpm_brp_decrease = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "handbrake_rpm_decrease", m_current_rpm_brp_decrease);
-	m_slip_sliding_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "slip_sliding_threshold", m_slip_sliding_threshold);
-	m_vel_sliding_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "vel_sliding_threshold", m_vel_sliding_threshold);
-	m_friction_slip_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction_slip_factor", m_friction_slip_factor);
-	m_friction2_slip_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_slip_factor", m_friction2_slip_factor);
-	m_friction_spin_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction_spin_factor", m_friction_spin_factor);
-	m_friction2_spin_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_spin_factor", m_friction2_spin_factor);
-	m_friction_slip_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction_slip_speed", m_friction_slip_speed);
-	m_friction2_steering_wheels = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_steering_wheels", m_friction2_steering_wheels);
-	m_friction2_nonsteering_wheels = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_nonsteering_wheels", m_friction2_nonsteering_wheels);
-	m_friction2_slip_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_slip_factor", m_friction2_slip_factor);
-	m_friction2_brp_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_brp_boost", m_friction2_brp_boost);
-	m_drift_start_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "drift_start_boost", m_drift_start_boost);
-	m_drift_boost_time = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "drift_boost_time", m_drift_boost_time);
-	m_steer_spin_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_spin_boost", m_steer_spin_boost);
-	m_steer_speed_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_speed_boost", m_steer_speed_boost);
-	m_steer_turn_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_factor", m_steer_turn_factor);
-	m_steer_counter_turn_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_counter_turn_factor", m_steer_counter_turn_factor);
-	m_steer_turn_compensation = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_compensation", m_steer_turn_compensation);
-	m_steer_turn_compensation_max = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_compensation_max", m_steer_turn_compensation_max);
-	m_steer_turn_delta = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_delta", m_steer_turn_delta);
-	m_brake_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "brake_boost", m_brake_boost);
-	m_switch_shake_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "switch_shake_boost", m_switch_shake_boost);
-	m_engine_shake_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "engine_shake_boost", m_engine_shake_boost);
-	m_wheels_spin_factor_start = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_spin_factor_start", m_wheels_spin_factor_start);
-	m_wheels_spin_factor_stop = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_spin_factor_stop", m_wheels_spin_factor_stop);
-	m_wheels_sound_delay = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_sound_delay", m_wheels_sound_delay);
-	m_firsteye_panel = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "firsteye_panel", m_firsteye_panel);
-	m_allow_inventory_control = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
-	m_allow_mutant_bite_in_car = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_mutant_bite_in_car", m_allow_mutant_bite_in_car);
-	m_poltergeist_can_lift = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "poltergeist_can_lift", m_poltergeist_can_lift);
-	m_interior_volume = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "interior_volume", m_interior_volume);
-	m_hit_stall_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
-	m_hit_anomaly_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_anomaly_scale", m_hit_anomaly_scale);
-	m_mutant_hit_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "mutant_hit_impulse_factor", m_mutant_hit_impulse_factor);
+	m_current_rpm_brp_n_max = pSettings->read_if_exists<float>(cNameSect_str(), "handbrake_rpm_threshold", m_current_rpm_brp_n_max);
+	m_current_rpm_brp_decrease = pSettings->read_if_exists<float>(cNameSect_str(), "handbrake_rpm_decrease", m_current_rpm_brp_decrease);
+	m_slip_sliding_threshold = pSettings->read_if_exists<float>(cNameSect_str(), "slip_sliding_threshold", m_slip_sliding_threshold);
+	m_vel_sliding_threshold = pSettings->read_if_exists<float>(cNameSect_str(), "vel_sliding_threshold", m_vel_sliding_threshold);
+	m_friction_slip_factor = pSettings->read_if_exists<float>(cNameSect_str(), "friction_slip_factor", m_friction_slip_factor);
+	m_friction2_slip_factor = pSettings->read_if_exists<float>(cNameSect_str(), "friction2_slip_factor", m_friction2_slip_factor);
+	m_friction_spin_factor = pSettings->read_if_exists<float>(cNameSect_str(), "friction_spin_factor", m_friction_spin_factor);
+	m_friction2_spin_factor = pSettings->read_if_exists<float>(cNameSect_str(), "friction2_spin_factor", m_friction2_spin_factor);
+	m_friction_slip_speed = pSettings->read_if_exists<float>(cNameSect_str(), "friction_slip_speed", m_friction_slip_speed);
+	m_friction2_steering_wheels = pSettings->read_if_exists<float>(cNameSect_str(), "friction2_steering_wheels", m_friction2_steering_wheels);
+	m_friction2_nonsteering_wheels = pSettings->read_if_exists<float>(cNameSect_str(), "friction2_nonsteering_wheels", m_friction2_nonsteering_wheels);
+	m_friction2_slip_factor = pSettings->read_if_exists<float>(cNameSect_str(), "friction2_slip_factor", m_friction2_slip_factor);
+	m_friction2_brp_boost = pSettings->read_if_exists<float>(cNameSect_str(), "friction2_brp_boost", m_friction2_brp_boost);
+	m_drift_start_boost = pSettings->read_if_exists<float>(cNameSect_str(), "drift_start_boost", m_drift_start_boost);
+	m_drift_boost_time = pSettings->read_if_exists<float>(cNameSect_str(), "drift_boost_time", m_drift_boost_time);
+	m_steer_spin_boost = pSettings->read_if_exists<float>(cNameSect_str(), "steer_spin_boost", m_steer_spin_boost);
+	m_steer_speed_boost = pSettings->read_if_exists<float>(cNameSect_str(), "steer_speed_boost", m_steer_speed_boost);
+	m_steer_turn_factor = pSettings->read_if_exists<float>(cNameSect_str(), "steer_turn_factor", m_steer_turn_factor);
+	m_steer_counter_turn_factor = pSettings->read_if_exists<float>(cNameSect_str(), "steer_counter_turn_factor", m_steer_counter_turn_factor);
+	m_steer_turn_compensation = pSettings->read_if_exists<float>(cNameSect_str(), "steer_turn_compensation", m_steer_turn_compensation);
+	m_steer_turn_compensation_max = pSettings->read_if_exists<float>(cNameSect_str(), "steer_turn_compensation_max", m_steer_turn_compensation_max);
+	m_steer_turn_delta = pSettings->read_if_exists<float>(cNameSect_str(), "steer_turn_delta", m_steer_turn_delta);
+	m_brake_boost = pSettings->read_if_exists<float>(cNameSect_str(), "brake_boost", m_brake_boost);
+	m_switch_shake_boost = pSettings->read_if_exists<float>(cNameSect_str(), "switch_shake_boost", m_switch_shake_boost);
+	m_engine_shake_boost = pSettings->read_if_exists<float>(cNameSect_str(), "engine_shake_boost", m_engine_shake_boost);
+	m_wheels_spin_factor_start = pSettings->read_if_exists<float>(cNameSect_str(), "wheels_spin_factor_start", m_wheels_spin_factor_start);
+	m_wheels_spin_factor_stop = pSettings->read_if_exists<float>(cNameSect_str(), "wheels_spin_factor_stop", m_wheels_spin_factor_stop);
+	m_wheels_sound_delay = pSettings->read_if_exists<float>(cNameSect_str(), "wheels_sound_delay", m_wheels_sound_delay);
+	m_firsteye_panel = pSettings->read_if_exists<bool>(cNameSect_str(), "firsteye_panel", m_firsteye_panel);
+	m_allow_inventory_control = pSettings->read_if_exists<bool>(cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
+	m_allow_mutant_bite_in_car = pSettings->read_if_exists<bool>(cNameSect_str(), "allow_mutant_bite_in_car", m_allow_mutant_bite_in_car);
+	m_poltergeist_can_lift = pSettings->read_if_exists<bool>(cNameSect_str(), "poltergeist_can_lift", m_poltergeist_can_lift);
+	m_interior_volume = pSettings->read_if_exists<float>(cNameSect_str(), "interior_volume", m_interior_volume);
+	m_hit_stall_threshold = pSettings->read_if_exists<float>(cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
+	m_hit_anomaly_scale = pSettings->read_if_exists<float>(cNameSect_str(), "hit_anomaly_scale", m_hit_anomaly_scale);
+	m_mutant_hit_impulse_factor = pSettings->read_if_exists<float>(cNameSect_str(), "mutant_hit_impulse_factor", m_mutant_hit_impulse_factor);
 	clamp(m_mutant_hit_impulse_factor, 0.f, 5.f);
-	m_burer_gravi_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "burer_gravi_impulse_factor", m_burer_gravi_impulse_factor);
+	m_burer_gravi_impulse_factor = pSettings->read_if_exists<float>(cNameSect_str(), "burer_gravi_impulse_factor", m_burer_gravi_impulse_factor);
 	clamp(m_burer_gravi_impulse_factor, 0.f, 5.f);
-	m_push_impulse_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "push_impulse_factor", m_push_impulse_factor);
+	m_push_impulse_factor = pSettings->read_if_exists<float>(cNameSect_str(), "push_impulse_factor", m_push_impulse_factor);
 	clamp(m_push_impulse_factor, 0.f, 10.f);
-	m_ram_damage_min_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_damage_min_speed", m_ram_damage_min_speed);
+	m_ram_damage_min_speed = pSettings->read_if_exists<float>(cNameSect_str(), "ram_damage_min_speed", m_ram_damage_min_speed);
 	if (m_ram_damage_min_speed < 0.f)
 		m_ram_damage_min_speed = 0.f;
 
-	m_ram_crash_speed_min = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_crash_speed_min", m_ram_crash_speed_min);
+	m_ram_crash_speed_min = pSettings->read_if_exists<float>(cNameSect_str(), "ram_crash_speed_min", m_ram_crash_speed_min);
 	if (m_ram_crash_speed_min >= 0.f)
 		clamp(m_ram_crash_speed_min, 0.f, 1000.f);
 	else
 		m_ram_crash_speed_min = -1.f;
-	m_ram_crash_speed_max = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_crash_speed_max", m_ram_crash_speed_max);
+	m_ram_crash_speed_max = pSettings->read_if_exists<float>(cNameSect_str(), "ram_crash_speed_max", m_ram_crash_speed_max);
 	if (m_ram_crash_speed_max >= 0.f)
 		clamp(m_ram_crash_speed_max, 0.f, 1000.f);
 	else
 		m_ram_crash_speed_max = -1.f;
 
-	m_ram_push_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_push_scale", m_ram_push_scale);
+	m_ram_push_scale = pSettings->read_if_exists<float>(cNameSect_str(), "ram_push_scale", m_ram_push_scale);
 	clamp(m_ram_push_scale, 0.f, 10.f);
-	m_ram_max_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_max_push_speed", m_ram_max_push_speed);
+	m_ram_max_push_speed = pSettings->read_if_exists<float>(cNameSect_str(), "ram_max_push_speed", m_ram_max_push_speed);
 	clamp(m_ram_max_push_speed, 0.f, 100.f);
-	m_ram_contact_memory = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_contact_memory", m_ram_contact_memory);
+	m_ram_contact_memory = pSettings->read_if_exists<float>(cNameSect_str(), "ram_contact_memory", m_ram_contact_memory);
 	clamp(m_ram_contact_memory, 0.f, 2000.f);
-	m_ram_min_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_min_speed", m_ram_min_speed);
+	m_ram_min_speed = pSettings->read_if_exists<float>(cNameSect_str(), "ram_min_speed", m_ram_min_speed);
 	clamp(m_ram_min_speed, 0.f, 50.f);
-	m_ram_separation_bias = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_separation_bias", m_ram_separation_bias);
+	m_ram_separation_bias = pSettings->read_if_exists<float>(cNameSect_str(), "ram_separation_bias", m_ram_separation_bias);
 	clamp(m_ram_separation_bias, 0.f, 15.f);
-	m_ram_mutant_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_push_speed", m_ram_mutant_push_speed);
+	m_ram_mutant_push_speed = pSettings->read_if_exists<float>(cNameSect_str(), "ram_mutant_push_speed", m_ram_mutant_push_speed);
 	clamp(m_ram_mutant_push_speed, 0.f, 5.f);
-	m_ram_mutant_slide_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_scale", m_ram_mutant_slide_scale);
+	m_ram_mutant_slide_scale = pSettings->read_if_exists<float>(cNameSect_str(), "ram_mutant_slide_scale", m_ram_mutant_slide_scale);
 	clamp(m_ram_mutant_slide_scale, 0.f, 1.f);
 
-	m_ram_mutant_slide_lock = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_lock", m_ram_mutant_slide_lock);
+	m_ram_mutant_slide_lock = pSettings->read_if_exists<float>(cNameSect_str(), "ram_mutant_slide_lock", m_ram_mutant_slide_lock);
 	clamp(m_ram_mutant_slide_lock, 0.f, 5000.f);
-	m_ram_mutant_slide_flip = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_flip", m_ram_mutant_slide_flip);
+	m_ram_mutant_slide_flip = pSettings->read_if_exists<float>(cNameSect_str(), "ram_mutant_slide_flip", m_ram_mutant_slide_flip);
 	clamp(m_ram_mutant_slide_flip, 0.f, 1.f);
-	m_ram_mutant_slide_confirm = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_confirm", m_ram_mutant_slide_confirm);
+	m_ram_mutant_slide_confirm = pSettings->read_if_exists<float>(cNameSect_str(), "ram_mutant_slide_confirm", m_ram_mutant_slide_confirm);
 	clamp(m_ram_mutant_slide_confirm, 0.f, 2000.f);
-	m_ram_mutant_slide_memory = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_mutant_slide_memory", m_ram_mutant_slide_memory);
+	m_ram_mutant_slide_memory = pSettings->read_if_exists<float>(cNameSect_str(), "ram_mutant_slide_memory", m_ram_mutant_slide_memory);
 	clamp(m_ram_mutant_slide_memory, 0.f, 5000.f);
 
-	m_ram_start_push_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "ram_start_push_speed", m_ram_start_push_speed);
+	m_ram_start_push_speed = pSettings->read_if_exists<float>(cNameSect_str(), "ram_start_push_speed", m_ram_start_push_speed);
 	clamp(m_ram_start_push_speed, 0.f, 5.f);
 
 	// Fixed momentum of the pseudogiant ground kick for this car, kg*m/s.
 	// -1 keeps the legacy 20 * car_mass impulse, 0 disables the car push.
-	m_gigant_kick_impulse = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "gigant_kick_impulse", m_gigant_kick_impulse);
+	m_gigant_kick_impulse = pSettings->read_if_exists<float>(cNameSect_str(), "gigant_kick_impulse", m_gigant_kick_impulse);
 	if (m_gigant_kick_impulse >= 0.f)
 		clamp(m_gigant_kick_impulse, 0.f, 200000.f);
 
 	loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
 	loadcamera("car_look_cam", ini, camera[EctSecondCam]);
-	m_roll_lock_second = READ_IF_EXISTS(ini, r_bool, "car_look_cam", "roll_lock", false);
+	m_roll_lock_second = ini->read_if_exists<bool>("car_look_cam", "roll_lock", false);
 	loadcamera("car_free_cam", ini, camera[EctThridCam]);
 	loadcamera("car_free_cam", ini, camera[EctFourthCam]);
 }
@@ -4616,7 +4616,7 @@ void CCar::LoadEngineDefinitions(CInifile* ini)
 		m_min_rpm *= (1.f / 60.f * 2.f * M_PI);
 	}
 
-	m_start_probability = READ_IF_EXISTS(ini, r_float, "car_definition", "start_probability", m_start_probability);
+	m_start_probability = ini->read_if_exists<float>("car_definition", "start_probability", m_start_probability);
 	clamp(m_start_probability, 0.f, 1.f);
 
 	if (ini->line_exist("car_definition", "max_power_rpm"))
@@ -4637,65 +4637,65 @@ void CCar::LoadEngineDefinitions(CInifile* ini)
 		m_sound_rpm *= (1.f / 60.f * 2.f * M_PI);
 	}
 
-	m_power_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_increment_factor", m_power_increment_factor);
-	m_power_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_decrement_factor", m_power_decrement_factor);
-	m_rpm_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_increment_factor", m_rpm_increment_factor);
-	m_rpm_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_decrement_factor", m_rpm_decrement_factor);
-	m_rpm_brp_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_brp_increment_factor", m_rpm_brp_increment_factor);
-	m_rpm_brp_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_brp_decrement_factor", m_rpm_brp_decrement_factor);
+	m_power_increment_factor = ini->read_if_exists<float>("car_definition", "power_increment_factor", m_power_increment_factor);
+	m_power_decrement_factor = ini->read_if_exists<float>("car_definition", "power_decrement_factor", m_power_decrement_factor);
+	m_rpm_increment_factor = ini->read_if_exists<float>("car_definition", "rpm_increment_factor", m_rpm_increment_factor);
+	m_rpm_decrement_factor = ini->read_if_exists<float>("car_definition", "rpm_decrement_factor", m_rpm_decrement_factor);
+	m_rpm_brp_increment_factor = ini->read_if_exists<float>("car_definition", "rpm_brp_increment_factor", m_rpm_brp_increment_factor);
+	m_rpm_brp_decrement_factor = ini->read_if_exists<float>("car_definition", "rpm_brp_decrement_factor", m_rpm_brp_decrement_factor);
 
-	m_power_neutral_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_neutral_factor", m_power_neutral_factor);
+	m_power_neutral_factor = ini->read_if_exists<float>("car_definition", "power_neutral_factor", m_power_neutral_factor);
 	clamp(m_power_neutral_factor, 0.0f, 1.0f);
 
-	m_nitro = READ_IF_EXISTS(ini, r_bool, "car_definition", "nitro", m_nitro);
-	m_nitro_power_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_power_factor", m_nitro_power_factor);
-	m_nitro_fuel_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_fuel_factor", m_nitro_fuel_factor);
-	m_nitro_friction_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_friction_factor", m_nitro_friction_factor);
-	m_nitro_wheelie_boost = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_wheelie_boost", m_nitro_wheelie_boost);
-	m_wheelie_boost = READ_IF_EXISTS(ini, r_float, "car_definition", "wheelie_boost", m_wheelie_boost);
-	m_nitro_wheelie_friction_brp_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_wheelie_friction_brp_factor", m_nitro_wheelie_friction_brp_factor);
-	m_nitro_particle_scale = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_particle_scale", m_nitro_particle_scale);
-	b_nitro_particles_enabled = READ_IF_EXISTS(ini, r_bool, "car_definition", "nitro_particles_enabled", b_nitro_particles_enabled);
+	m_nitro = ini->read_if_exists<bool>("car_definition", "nitro", m_nitro);
+	m_nitro_power_factor = ini->read_if_exists<float>("car_definition", "nitro_power_factor", m_nitro_power_factor);
+	m_nitro_fuel_factor = ini->read_if_exists<float>("car_definition", "nitro_fuel_factor", m_nitro_fuel_factor);
+	m_nitro_friction_factor = ini->read_if_exists<float>("car_definition", "nitro_friction_factor", m_nitro_friction_factor);
+	m_nitro_wheelie_boost = ini->read_if_exists<float>("car_definition", "nitro_wheelie_boost", m_nitro_wheelie_boost);
+	m_wheelie_boost = ini->read_if_exists<float>("car_definition", "wheelie_boost", m_wheelie_boost);
+	m_nitro_wheelie_friction_brp_factor = ini->read_if_exists<float>("car_definition", "nitro_wheelie_friction_brp_factor", m_nitro_wheelie_friction_brp_factor);
+	m_nitro_particle_scale = ini->read_if_exists<float>("car_definition", "nitro_particle_scale", m_nitro_particle_scale);
+	b_nitro_particles_enabled = ini->read_if_exists<bool>("car_definition", "nitro_particles_enabled", b_nitro_particles_enabled);
 }
 
 void CCar::LoadSoundDefinitions(CInifile* ini)
 {
-	m_engine_sound_scale_max = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_scale_max", m_engine_sound_scale_max);
-	m_engine_sound_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_scale_min", m_engine_sound_scale_min);
-	m_engine_sound_scale_factor = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_scale_factor", m_engine_sound_scale_factor);
-	m_engine_idle_volume = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_idle_volume", m_engine_idle_volume);
-	m_sound_state_change_up = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_change_up", m_sound_state_change_up);
-	m_sound_state_change_down = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_change_down", m_sound_state_change_down);
-	m_sound_idle_change_up = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_idle_change_up", m_sound_idle_change_up);
-	m_sound_idle_change_down = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_idle_change_down", m_sound_idle_change_down);
-	m_sound_state_switch_factor = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_switch_factor", m_sound_state_switch_factor);
-	m_sound_state_after_switch = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_after_switch", m_sound_state_after_switch);
-	m_sound_switch_effect_type = READ_IF_EXISTS(ini, r_u32, "car_sound", "sound_switch_effect_type", m_sound_switch_effect_type);
-	m_sound_switch_effect_power = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_switch_effect_power", m_sound_switch_effect_power);
-	m_sound_switch_effect_speed = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_switch_effect_speed", m_sound_switch_effect_speed);
-	m_sound_switch_effect_duration = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_switch_effect_duration", m_sound_switch_effect_duration);
-	m_turbo_scale_max = READ_IF_EXISTS(ini, r_float, "car_sound", "turbo_scale_max", m_turbo_scale_max);
-	m_turbo_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "turbo_scale_min", m_turbo_scale_min);
-	m_turbo_scale_speed = READ_IF_EXISTS(ini, r_float, "car_sound", "turbo_scale_speed", m_turbo_scale_speed);
-	m_valve_switch_volume = READ_IF_EXISTS(ini, r_float, "car_sound", "valve_switch_volume", m_valve_switch_volume);
-	m_blower_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_scale_min", m_blower_scale_min);
-	m_blower_rpm_scale = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_rpm_scale", m_blower_rpm_scale);
-	m_blower_volume_min = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_volume_min", m_blower_volume_min);
-	m_blower_inertia = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_inertia", m_blower_inertia);
-	m_blower_sound_forward = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_sound_forward", m_blower_sound_forward);
-	m_engine_state_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_state_scale_min", m_engine_state_scale_min);
-	m_engine_heavy_constant = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_heavy_constant", m_engine_heavy_constant);
-	m_engine_heavy_rpm = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_heavy_rpm", m_engine_heavy_rpm);
-	m_engine_heavy_switch = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_heavy_switch", m_engine_heavy_switch);
-	m_whine_speed = READ_IF_EXISTS(ini, r_float, "car_sound", "whine_speed", m_whine_speed);
-	m_whine_exterior_volume = READ_IF_EXISTS(ini, r_float, "car_sound", "whine_exterior_volume", m_whine_exterior_volume);
-	m_whine_reverse = READ_IF_EXISTS(ini, r_bool, "car_sound", "whine_reverse", m_whine_reverse);
-	m_enhanced_sound = READ_IF_EXISTS(ini, r_bool, "car_sound", "enhanced_sound", m_enhanced_sound);
+	m_engine_sound_scale_max = ini->read_if_exists<float>("car_sound", "engine_sound_scale_max", m_engine_sound_scale_max);
+	m_engine_sound_scale_min = ini->read_if_exists<float>("car_sound", "engine_sound_scale_min", m_engine_sound_scale_min);
+	m_engine_sound_scale_factor = ini->read_if_exists<float>("car_sound", "engine_sound_scale_factor", m_engine_sound_scale_factor);
+	m_engine_idle_volume = ini->read_if_exists<float>("car_sound", "engine_idle_volume", m_engine_idle_volume);
+	m_sound_state_change_up = ini->read_if_exists<float>("car_sound", "sound_state_change_up", m_sound_state_change_up);
+	m_sound_state_change_down = ini->read_if_exists<float>("car_sound", "sound_state_change_down", m_sound_state_change_down);
+	m_sound_idle_change_up = ini->read_if_exists<float>("car_sound", "sound_idle_change_up", m_sound_idle_change_up);
+	m_sound_idle_change_down = ini->read_if_exists<float>("car_sound", "sound_idle_change_down", m_sound_idle_change_down);
+	m_sound_state_switch_factor = ini->read_if_exists<float>("car_sound", "sound_state_switch_factor", m_sound_state_switch_factor);
+	m_sound_state_after_switch = ini->read_if_exists<float>("car_sound", "sound_state_after_switch", m_sound_state_after_switch);
+	m_sound_switch_effect_type = ini->read_if_exists<u32>("car_sound", "sound_switch_effect_type", m_sound_switch_effect_type);
+	m_sound_switch_effect_power = ini->read_if_exists<float>("car_sound", "sound_switch_effect_power", m_sound_switch_effect_power);
+	m_sound_switch_effect_speed = ini->read_if_exists<float>("car_sound", "sound_switch_effect_speed", m_sound_switch_effect_speed);
+	m_sound_switch_effect_duration = ini->read_if_exists<float>("car_sound", "sound_switch_effect_duration", m_sound_switch_effect_duration);
+	m_turbo_scale_max = ini->read_if_exists<float>("car_sound", "turbo_scale_max", m_turbo_scale_max);
+	m_turbo_scale_min = ini->read_if_exists<float>("car_sound", "turbo_scale_min", m_turbo_scale_min);
+	m_turbo_scale_speed = ini->read_if_exists<float>("car_sound", "turbo_scale_speed", m_turbo_scale_speed);
+	m_valve_switch_volume = ini->read_if_exists<float>("car_sound", "valve_switch_volume", m_valve_switch_volume);
+	m_blower_scale_min = ini->read_if_exists<float>("car_sound", "blower_scale_min", m_blower_scale_min);
+	m_blower_rpm_scale = ini->read_if_exists<float>("car_sound", "blower_rpm_scale", m_blower_rpm_scale);
+	m_blower_volume_min = ini->read_if_exists<float>("car_sound", "blower_volume_min", m_blower_volume_min);
+	m_blower_inertia = ini->read_if_exists<float>("car_sound", "blower_inertia", m_blower_inertia);
+	m_blower_sound_forward = ini->read_if_exists<float>("car_sound", "blower_sound_forward", m_blower_sound_forward);
+	m_engine_state_scale_min = ini->read_if_exists<float>("car_sound", "engine_state_scale_min", m_engine_state_scale_min);
+	m_engine_heavy_constant = ini->read_if_exists<float>("car_sound", "engine_heavy_constant", m_engine_heavy_constant);
+	m_engine_heavy_rpm = ini->read_if_exists<float>("car_sound", "engine_heavy_rpm", m_engine_heavy_rpm);
+	m_engine_heavy_switch = ini->read_if_exists<float>("car_sound", "engine_heavy_switch", m_engine_heavy_switch);
+	m_whine_speed = ini->read_if_exists<float>("car_sound", "whine_speed", m_whine_speed);
+	m_whine_exterior_volume = ini->read_if_exists<float>("car_sound", "whine_exterior_volume", m_whine_exterior_volume);
+	m_whine_reverse = ini->read_if_exists<bool>("car_sound", "whine_reverse", m_whine_reverse);
+	m_enhanced_sound = ini->read_if_exists<bool>("car_sound", "enhanced_sound", m_enhanced_sound);
 
-	// An empty exhaust_particles value returns nullptr, and a missing effect
-	// name would assert inside the renderer. Keep the stock effect in both
-	// cases so a bad car config cannot crash the level load.
-	const char* ExhaustParticles = READ_IF_EXISTS(ini, r_string, "car_definition", "exhaust_particles", DefaultExhaustParticles);
+	// read_if_exists returns the stock effect for a missing or empty
+	// exhaust_particles value. A name that is not a loaded effect would assert
+	// inside the renderer, so keep the fallback for a bad car config.
+	const char* ExhaustParticles = ini->read_if_exists<str_c>("car_definition", "exhaust_particles", DefaultExhaustParticles);
 	if (ExhaustParticles != nullptr && ExhaustParticles[0] != '\0' && ParticleEffectExists(ExhaustParticles))
 	{
 		m_exhaust_particles = ExhaustParticles;
@@ -4726,36 +4726,36 @@ void CCar::LoadSoundDefinitions(CInifile* ini)
 		m_pop = true;
 		m_pop_particles = ini->r_string("car_definition", "pop_particles");
 	}
-	m_pop_probability = READ_IF_EXISTS(ini, r_float, "car_definition", "pop_probability", m_pop_probability);
-	m_pop_single = READ_IF_EXISTS(ini, r_bool, "car_definition", "pop_single", m_pop_single);
+	m_pop_probability = ini->read_if_exists<float>("car_definition", "pop_probability", m_pop_probability);
+	m_pop_single = ini->read_if_exists<bool>("car_definition", "pop_single", m_pop_single);
 }
 
 void CCar::LoadTransmissionDefinitions(CInifile* ini)
 {
-	b_cvt_transmission = READ_IF_EXISTS(ini, r_bool, "car_definition", "cvt_transmission", b_cvt_transmission);
-	m_transmission_switch_delay = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_delay", m_transmission_switch_delay);
-	m_transmission_switch_power_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_power_factor", m_transmission_switch_power_factor);
+	b_cvt_transmission = ini->read_if_exists<bool>("car_definition", "cvt_transmission", b_cvt_transmission);
+	m_transmission_switch_delay = ini->read_if_exists<float>("car_definition", "transmission_switch_delay", m_transmission_switch_delay);
+	m_transmission_switch_power_factor = ini->read_if_exists<float>("car_definition", "transmission_switch_power_factor", m_transmission_switch_power_factor);
 	clamp(m_transmission_switch_power_factor, 0.f, 1.f);
-	m_transmission_switch_volume = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_volume", m_transmission_switch_volume);
-	b_transmission_switch_drive = READ_IF_EXISTS(ini, r_bool, "car_definition", "transmission_switch_drive", b_transmission_switch_drive);
+	m_transmission_switch_volume = ini->read_if_exists<float>("car_definition", "transmission_switch_volume", m_transmission_switch_volume);
+	b_transmission_switch_drive = ini->read_if_exists<bool>("car_definition", "transmission_switch_drive", b_transmission_switch_drive);
 
 	InitParabola();
 
-	m_axle_friction = READ_IF_EXISTS(ini, r_float, "car_definition", "axle_friction", 1.0f);
-	m_steering_speed = READ_IF_EXISTS(ini, r_float, "car_definition", "steering_speed", 1.0f);
+	m_axle_friction = ini->read_if_exists<float>("car_definition", "axle_friction", 1.0f);
+	m_steering_speed = ini->read_if_exists<float>("car_definition", "steering_speed", 1.0f);
 
 	if (ini->line_exist("car_definition", "break_time"))
 		m_break_time = ini->r_float("car_definition", "break_time");
 
-	m_break_abs = READ_IF_EXISTS(ini, r_bool, "car_definition", "break_abs", m_break_abs);
-	m_break_abs_power = READ_IF_EXISTS(ini, r_float, "car_definition", "break_abs_power", m_break_abs_power);
+	m_break_abs = ini->read_if_exists<bool>("car_definition", "break_abs", m_break_abs);
+	m_break_abs_power = ini->read_if_exists<float>("car_definition", "break_abs_power", m_break_abs_power);
 	clamp(m_break_abs_power, 0.f, 1.f);
-	m_break_abs_individual = READ_IF_EXISTS(ini, r_bool, "car_definition", "break_abs_individual", m_break_abs_individual);
-	m_break_abs_threshold = READ_IF_EXISTS(ini, r_float, "car_definition", "break_abs_threshold", m_break_abs_threshold);
-	m_steer_nonlinear = READ_IF_EXISTS(ini, r_bool, "car_definition", "steer_nonlinear", m_steer_nonlinear);
-	m_steer_invert = READ_IF_EXISTS(ini, r_bool, "car_definition", "steer_invert", m_steer_invert);
-	b_diff_lock = READ_IF_EXISTS(ini, r_bool, "car_definition", "diff_lock", b_diff_lock);
-	m_diff_lock_power = READ_IF_EXISTS(ini, r_float, "car_definition", "diff_lock_power", m_diff_lock_power);
+	m_break_abs_individual = ini->read_if_exists<bool>("car_definition", "break_abs_individual", m_break_abs_individual);
+	m_break_abs_threshold = ini->read_if_exists<float>("car_definition", "break_abs_threshold", m_break_abs_threshold);
+	m_steer_nonlinear = ini->read_if_exists<bool>("car_definition", "steer_nonlinear", m_steer_nonlinear);
+	m_steer_invert = ini->read_if_exists<bool>("car_definition", "steer_invert", m_steer_invert);
+	b_diff_lock = ini->read_if_exists<bool>("car_definition", "diff_lock", b_diff_lock);
+	m_diff_lock_power = ini->read_if_exists<float>("car_definition", "diff_lock_power", m_diff_lock_power);
 
 	if (ini->section_exist("transmission_gear_ratio"))
 	{
@@ -4780,7 +4780,7 @@ void CCar::LoadTransmissionDefinitions(CInifile* ini)
 
 void CCar::LoadVisualDefinitions(CInifile* ini)
 {
-	m_torch_usage = READ_IF_EXISTS(ini, r_bool, "lights", "torchlight", m_torch_usage);
+	m_torch_usage = ini->read_if_exists<bool>("lights", "torchlight", m_torch_usage);
 
 	m_lights.Init(this);
 	m_lights.ParseDefinitions("headlights", CCarLights::flHeadLights);
@@ -4816,10 +4816,10 @@ void CCar::LoadVisualDefinitions(CInifile* ini)
 
 	if (ini->section_exist("doors"))
 	{
-		m_doors_torque_factor = READ_IF_EXISTS(ini, r_float, "doors", "open_torque_factor", m_doors_torque_factor);
-		m_doors_hold_factor = READ_IF_EXISTS(ini, r_float, "doors", "hold_torque_factor", m_doors_hold_factor);
-		m_doors_hold_at_speed = READ_IF_EXISTS(ini, r_bool, "doors", "hold_at_speed", m_doors_hold_at_speed);
-		m_doors_vel_factor = READ_IF_EXISTS(ini, r_float, "doors", "open_vel_factor", m_doors_vel_factor);
+		m_doors_torque_factor = ini->read_if_exists<float>("doors", "open_torque_factor", m_doors_torque_factor);
+		m_doors_hold_factor = ini->read_if_exists<float>("doors", "hold_torque_factor", m_doors_hold_factor);
+		m_doors_hold_at_speed = ini->read_if_exists<bool>("doors", "hold_at_speed", m_doors_hold_at_speed);
+		m_doors_vel_factor = ini->read_if_exists<float>("doors", "open_vel_factor", m_doors_vel_factor);
 	}
 
 	m_damage_particles.Init(this);
@@ -4827,24 +4827,24 @@ void CCar::LoadVisualDefinitions(CInifile* ini)
 	// The stock IXRAY material pairs have no collide marks for
 	// objects\car_wheel, so the Cars-Ext tire trails use their own
 	// surface-specific wallmark arrays instead of relying on gamemtl.xr.
-	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "tire_trails", true)
+	if (pSettings->read_if_exists<bool>(cNameSect_str(), "tire_trails", true)
 		&& m_tire_wallmarks_ground->empty())
 	{
-		m_tire_wallmarks_ground->AppendMark(READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), "tire_trail_wallmark_name", "wm\\wm_tire_trail_1"));
-		m_tire_wallmarks_dirt->AppendMark(READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), "tire_trail_wallmark_name_dirt", "wm\\wm_tire_trail_dirt_1"));
-		m_tire_wallmarks_grass->AppendMark(READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), "tire_trail_wallmark_name_grass", "wm\\wm_tire_trail_grass_1"));
+		m_tire_wallmarks_ground->AppendMark(pSettings->read_if_exists<str_c>(cNameSect_str(), "tire_trail_wallmark_name", "wm\\wm_tire_trail_1"));
+		m_tire_wallmarks_dirt->AppendMark(pSettings->read_if_exists<str_c>(cNameSect_str(), "tire_trail_wallmark_name_dirt", "wm\\wm_tire_trail_dirt_1"));
+		m_tire_wallmarks_grass->AppendMark(pSettings->read_if_exists<str_c>(cNameSect_str(), "tire_trail_wallmark_name_grass", "wm\\wm_tire_trail_grass_1"));
 	}
 
 	// Wheel sounds are configured in vehicles.ltx. Stock gamemtl.xr uses
 	// human footsteps for objects\car_wheel, so the Cars-Ext defaults use
 	// the dedicated LA wheel loops and skid sounds instead.
-	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "tire_sounds", true))
+	if (pSettings->read_if_exists<bool>(cNameSect_str(), "tire_sounds", true))
 	{
 		auto load_sound = [&](ref_sound& sound, LPCSTR key, LPCSTR default_name)
 		{
 			if (sound._p)
 				return;
-			LPCSTR name = READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), key, default_name);
+			LPCSTR name = pSettings->read_if_exists<str_c>(cNameSect_str(), key, default_name);
 			if (name && *name)
 				sound.create(name, st_Effect, sg_SourceType);
 		};
@@ -5005,10 +5005,10 @@ void CCar::Init()
 
 	// Cars-Ext uses a much lower default than vanilla's 5.0. Keep the same
 	// default for models that do not override collision_hit_threshold.
-	SetCollisionHitThreshold(READ_IF_EXISTS(ini, r_float, "car_definition", "collision_hit_threshold", 1.f));
+	SetCollisionHitThreshold(ini->read_if_exists<float>("car_definition", "collision_hit_threshold", 1.f));
 	// A single impact can touch several collision geoms at once. Only the first
 	// damaging hit is applied within this window.
-	SetCollisionHitCooldown(READ_IF_EXISTS(ini, r_float, "car_definition", "collision_hit_cooldown", 0.1f));
+	SetCollisionHitCooldown(ini->read_if_exists<float>("car_definition", "collision_hit_cooldown", 0.1f));
 
 	pKinematics->LL_GetBindTransform(bones_bind_forms);
 	xr_vector<Fvector> m_bind_poses;
@@ -5022,7 +5022,7 @@ void CCar::Init()
 	if(ini->section_exist("air_resistance"))
 	{
 		PPhysicsShell()->SetAirResistance(default_k_l*ini->r_float("air_resistance","linear_factor"),default_k_w*ini->r_float("air_resistance","angular_factor"));
-		m_downforce = READ_IF_EXISTS(ini, r_float, "air_resistance", "downforce", m_downforce);
+		m_downforce = ini->read_if_exists<float>("air_resistance", "downforce", m_downforce);
 	}
 	PPhysicsShell()->set_DynamicScales(1.f, 1.f);
 	SAllDDOParams disable_params;
@@ -5063,7 +5063,7 @@ void CCar::Init()
 		}
 	}
 	m_steer_angle=0.f;
-	m_ref_radius = READ_IF_EXISTS(ini, r_float, "car_definition", "reference_radius", 1.f);
+	m_ref_radius = ini->read_if_exists<float>("car_definition", "reference_radius", 1.f);
 	b_exploded						=false;
 	b_engine_on						=false;
 	b_clutch						=false;
@@ -5077,11 +5077,11 @@ void CCar::Init()
 
 	m_current_transmission_num=0;
 	CDamagableItem::Init(GetfHealth(),3);
-	m_zero_health_explosion_timer = READ_IF_EXISTS(ini, r_bool, "car_definition", "zero_health_explosion_timer", false);
+	m_zero_health_explosion_timer = ini->read_if_exists<bool>("car_definition", "zero_health_explosion_timer", false);
 	// Legacy configs never had an explicit default; keep the original 120 s
 	// fuse length when time_to_explosion is missing. New-mode configs use an
 	// immediate explosion in that case.
-	m_explosion_delay = READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion",
+	m_explosion_delay = ini->read_if_exists<float>("car_definition", "time_to_explosion",
 		m_zero_health_explosion_timer ? 0.f : 120.f);
 	CDelayedActionFuse::Initialize(m_explosion_delay,
 		m_zero_health_explosion_timer ? 0.f : CDamagableItem::DamageLevelToHealth(2));

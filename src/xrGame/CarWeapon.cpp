@@ -110,7 +110,7 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 		m_cam_dir_rel = pSettings->r_fvector3(CarSection, "cam_dir_rel");
 	}
 
-	const u16 GunSlots = READ_IF_EXISTS(pUserData, r_u16, definition, "guns_size", 100);
+	const u16 GunSlots = pUserData->read_if_exists<u16>(definition, "guns_size", 100);
 	for (u16 i = 0; i < GunSlots; ++i)
 	{
 		string128 LineName;
@@ -133,7 +133,7 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 			xr_delete(Gun);
 	}
 	SetGun(m_icur_gun_idx);
-	m_combine_input			= READ_IF_EXISTS(pUserData, r_bool, definition, "combine_input", TRUE);
+	m_combine_input			= pUserData->read_if_exists<bool>(definition, "combine_input", TRUE);
 	m_rotate_x_bone			= pUserData->line_exist(definition,"rotate_x_bone") ? K->LL_BoneID(pUserData->r_string(definition,"rotate_x_bone")) : BI_NONE;
 	m_rotate_y_bone			= pUserData->line_exist(definition,"rotate_y_bone") ? K->LL_BoneID(pUserData->r_string(definition,"rotate_y_bone")) : BI_NONE;
 
@@ -144,17 +144,17 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 		m_cam_bone = m_rotate_y_bone != BI_NONE ? m_rotate_y_bone : m_rotate_x_bone;
 	}
 
-	m_bRelative_link_x		= READ_IF_EXISTS(pUserData, r_bool, definition, "rotate_x_relative", FALSE);
-	m_bRelative_link_y		= READ_IF_EXISTS(pUserData, r_bool, definition, "rotate_y_relative", FALSE);
+	m_bRelative_link_x		= pUserData->read_if_exists<bool>(definition, "rotate_x_relative", FALSE);
+	m_bRelative_link_y		= pUserData->read_if_exists<bool>(definition, "rotate_y_relative", FALSE);
 
-	m_min_gun_speed			= READ_IF_EXISTS(pUserData, r_float, definition, "min_gun_speed", 0.0f);
-	m_max_gun_speed			= READ_IF_EXISTS(pUserData, r_float, definition, "max_gun_speed", 0.0f);
+	m_min_gun_speed			= pUserData->read_if_exists<float>(definition, "min_gun_speed", 0.0f);
+	m_max_gun_speed			= pUserData->read_if_exists<float>(definition, "max_gun_speed", 0.0f);
 
-	m_fGunVelMult_x			= READ_IF_EXISTS(pUserData, r_float, definition, "gun_vel_mult_x", 1.0f);
-	m_fGunVelMult_y			= READ_IF_EXISTS(pUserData, r_float, definition, "gun_vel_mult_y", 1.0f);
+	m_fGunVelMult_x			= pUserData->read_if_exists<float>(definition, "gun_vel_mult_x", 1.0f);
+	m_fGunVelMult_y			= pUserData->read_if_exists<float>(definition, "gun_vel_mult_y", 1.0f);
 
-	m_fGunForcMult_x		= READ_IF_EXISTS(pUserData, r_float, definition, "gun_forc_mult_x", 1.0f);
-	m_fGunForcMult_y		= READ_IF_EXISTS(pUserData, r_float, definition, "gun_forc_mult_y", 1.0f);
+	m_fGunForcMult_x		= pUserData->read_if_exists<float>(definition, "gun_forc_mult_x", 1.0f);
+	m_fGunForcMult_y		= pUserData->read_if_exists<float>(definition, "gun_forc_mult_y", 1.0f);
 
 	if(m_rotate_x_bone != BI_NONE)
 	{
@@ -947,16 +947,16 @@ CCarWeapon::CCarWeapon(CCar* pcar, LPCSTR definition, int idx)
 	xr_sprintf(line_prefix, "fire_bone_%d", idx);
 	m_fire_bone				= pUserData->line_exist(definition, idx ? line_prefix : "fire_bone") ? K->LL_BoneID(pUserData->r_string(definition, idx ? line_prefix : "fire_bone")) : K->LL_GetBoneRoot();
 	xr_sprintf(line_prefix, "fire_pos_rel_%d", idx);
-	m_fire_pos_rel			= READ_IF_EXISTS(pUserData, r_fvector3, definition, idx ? line_prefix : "fire_pos_rel", Fvector().set(0.0f, 0.0f, 0.0f));
+	m_fire_pos_rel			= pUserData->read_if_exists<Fvector3>(definition, idx ? line_prefix : "fire_pos_rel", Fvector().set(0.0f, 0.0f, 0.0f));
 	xr_sprintf(line_prefix, "fire_dir_rel_%d", idx);
-	m_fire_dir_rel			= READ_IF_EXISTS(pUserData, r_fvector3, definition, idx ? line_prefix : "fire_dir_rel", Fvector().set(0.0f, 0.0f, 0.0f));
+	m_fire_dir_rel			= pUserData->read_if_exists<Fvector3>(definition, idx ? line_prefix : "fire_dir_rel", Fvector().set(0.0f, 0.0f, 0.0f));
 
-	m_fire_dir_by_cam		= READ_IF_EXISTS(pUserData, r_bool, definition, "fire_dir_by_cam", true);
+	m_fire_dir_by_cam		= pUserData->read_if_exists<bool>(definition, "fire_dir_by_cam", true);
 
 	xr_sprintf(line_prefix, "aftershot_delay_%d", idx);
-	m_aftershot_delay	= READ_IF_EXISTS(pUserData, r_bool, definition, idx ? line_prefix : "aftershot_delay", false);
+	m_aftershot_delay	= pUserData->read_if_exists<bool>(definition, idx ? line_prefix : "aftershot_delay", false);
 	xr_sprintf(line_prefix, "unlimited_ammo_%d", idx);
-	m_unlimited_ammo = READ_IF_EXISTS(pUserData, r_bool, definition, idx ? line_prefix : "unlimited_ammo", true);
+	m_unlimited_ammo = pUserData->read_if_exists<bool>(definition, idx ? line_prefix : "unlimited_ammo", true);
 	//mgun
 	xr_sprintf(line_prefix, "wpn_section_%d", idx);
 	if(pUserData->line_exist(definition, idx ? line_prefix : "wpn_section"))

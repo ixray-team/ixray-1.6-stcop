@@ -291,34 +291,34 @@ void CCar::SWheel::Load(LPCSTR section)
 
 	if (ini->section_exist("wheels_params"))
 	{
-		collision_params.damping_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "damping_factor", collision_params.damping_factor);
-		collision_params.spring_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "spring_factor", collision_params.spring_factor);
-		collision_params.mu_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "friction_factor", collision_params.mu_factor);
-		suspension_distance = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_distance", suspension_distance);
-		suspension_force_inc = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_force_inc", suspension_force_inc);
-		suspension_inertia = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_inertia", suspension_inertia);
-		suspension_spring_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_spring_factor", suspension_spring_factor);
-		suspension_damping_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_damping_factor", suspension_damping_factor);
-		radius_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "radius_factor", radius_factor);
-		wheel_vel_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "velocity_factor", wheel_vel_factor);
-		wheel_trq_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "torque_factor", wheel_trq_factor);
-		gyroscopic_mode = READ_IF_EXISTS(ini, r_bool, "wheels_params", "gyroscopic_mode", gyroscopic_mode);
+		collision_params.damping_factor = ini->read_if_exists<float>("wheels_params", "damping_factor", collision_params.damping_factor);
+		collision_params.spring_factor = ini->read_if_exists<float>("wheels_params", "spring_factor", collision_params.spring_factor);
+		collision_params.mu_factor = ini->read_if_exists<float>("wheels_params", "friction_factor", collision_params.mu_factor);
+		suspension_distance = ini->read_if_exists<float>("wheels_params", "suspension_distance", suspension_distance);
+		suspension_force_inc = ini->read_if_exists<float>("wheels_params", "suspension_force_inc", suspension_force_inc);
+		suspension_inertia = ini->read_if_exists<float>("wheels_params", "suspension_inertia", suspension_inertia);
+		suspension_spring_factor = ini->read_if_exists<float>("wheels_params", "suspension_spring_factor", suspension_spring_factor);
+		suspension_damping_factor = ini->read_if_exists<float>("wheels_params", "suspension_damping_factor", suspension_damping_factor);
+		radius_factor = ini->read_if_exists<float>("wheels_params", "radius_factor", radius_factor);
+		wheel_vel_factor = ini->read_if_exists<float>("wheels_params", "velocity_factor", wheel_vel_factor);
+		wheel_trq_factor = ini->read_if_exists<float>("wheels_params", "torque_factor", wheel_trq_factor);
+		gyroscopic_mode = ini->read_if_exists<bool>("wheels_params", "gyroscopic_mode", gyroscopic_mode);
 	}
 	if(ini->section_exist(section))
 	{
-		collision_params.damping_factor	=READ_IF_EXISTS(ini,r_float,section,"damping_factor",collision_params.damping_factor);
-		collision_params.spring_factor	=READ_IF_EXISTS(ini,r_float,section,"spring_factor",collision_params.spring_factor);
-		collision_params.mu_factor		=READ_IF_EXISTS(ini,r_float,section,"friction_factor",collision_params.mu_factor);
-		radius_factor = READ_IF_EXISTS(ini, r_float, section, "radius_factor", radius_factor);
-		wheel_vel_factor = READ_IF_EXISTS(ini, r_float, section, "velocity_factor", wheel_vel_factor);
-		wheel_trq_factor = READ_IF_EXISTS(ini, r_float, section, "torque_factor", wheel_trq_factor);
-		gyroscopic_mode = READ_IF_EXISTS(ini, r_bool, section, "gyroscopic_mode", gyroscopic_mode);
+		collision_params.damping_factor	=ini->read_if_exists<float>(section,"damping_factor",collision_params.damping_factor);
+		collision_params.spring_factor	=ini->read_if_exists<float>(section,"spring_factor",collision_params.spring_factor);
+		collision_params.mu_factor		=ini->read_if_exists<float>(section,"friction_factor",collision_params.mu_factor);
+		radius_factor = ini->read_if_exists<float>(section, "radius_factor", radius_factor);
+		wheel_vel_factor = ini->read_if_exists<float>(section, "velocity_factor", wheel_vel_factor);
+		wheel_trq_factor = ini->read_if_exists<float>(section, "torque_factor", wheel_trq_factor);
+		gyroscopic_mode = ini->read_if_exists<bool>(section, "gyroscopic_mode", gyroscopic_mode);
 		wheel_diff_power = 1.f;
-		suspension_distance = READ_IF_EXISTS(ini, r_float, section, "suspension_distance", suspension_distance);
-		suspension_force_inc = READ_IF_EXISTS(ini, r_float, section, "suspension_force_inc", suspension_force_inc);
-		suspension_inertia = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_inertia", suspension_inertia);
-		suspension_spring_factor = READ_IF_EXISTS(ini, r_float, section, "suspension_spring_factor", suspension_spring_factor);
-		suspension_damping_factor = READ_IF_EXISTS(ini, r_float, section, "suspension_damping_factor", suspension_damping_factor);
+		suspension_distance = ini->read_if_exists<float>(section, "suspension_distance", suspension_distance);
+		suspension_force_inc = ini->read_if_exists<float>(section, "suspension_force_inc", suspension_force_inc);
+		suspension_inertia = ini->read_if_exists<float>("wheels_params", "suspension_inertia", suspension_inertia);
+		suspension_spring_factor = ini->read_if_exists<float>(section, "suspension_spring_factor", suspension_spring_factor);
+		suspension_damping_factor = ini->read_if_exists<float>(section, "suspension_damping_factor", suspension_damping_factor);
 	} 
 	if (!ini->line_exist(section, "bind_position_add") && ini->line_exist("wheels_params", "bind_position_add"))
 	{
@@ -329,12 +329,12 @@ void CCar::SWheel::Load(LPCSTR section)
 	if (!ini->line_exist(section, "bind_direction_add") && ini->line_exist("wheels_params", "bind_direction_add"))
 		car->ApplyBindDirectionAdd(K, bone_id, ini->r_fvector3("wheels_params", "bind_direction_add"));
 	clamp(suspension_inertia, 0.f, 1.f);
-	tire_trail_wallmark_size = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_trail_wallmark_size", 0.15f);
-	tire_trail_simulars_factor = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_trail_similars",  0.005f);
-	tire_trail_wallmark_avlbl = READ_IF_EXISTS(pSettings, r_bool, car->cNameSect_str(), "tire_trails", true);
-	tire_particle_scale_min = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_particle_scale_min", 1.f);
-	tire_particle_scale_max = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_particle_scale_max", 3.f);
-	tire_sounds = READ_IF_EXISTS(pSettings, r_bool, car->cNameSect_str(), "tire_sounds", true);
+	tire_trail_wallmark_size = pSettings->read_if_exists<float>(car->cNameSect_str(), "tire_trail_wallmark_size", 0.15f);
+	tire_trail_simulars_factor = pSettings->read_if_exists<float>(car->cNameSect_str(), "tire_trail_similars",  0.005f);
+	tire_trail_wallmark_avlbl = pSettings->read_if_exists<bool>(car->cNameSect_str(), "tire_trails", true);
+	tire_particle_scale_min = pSettings->read_if_exists<float>(car->cNameSect_str(), "tire_particle_scale_min", 1.f);
+	tire_particle_scale_max = pSettings->read_if_exists<float>(car->cNameSect_str(), "tire_particle_scale_max", 3.f);
+	tire_sounds = pSettings->read_if_exists<bool>(car->cNameSect_str(), "tire_sounds", true);
 }
 
 void CCar::SWheel::UpdateSounds()
@@ -723,7 +723,7 @@ void CCar::SWheelSteer::Init()
 	}
 	pwheel->wheel_state = wheel_idle;
 	pos_right=pos_right>0.f ? -1.f : 1.f;
-	float steering_torque = READ_IF_EXISTS(pKinematics->LL_UserData(), r_float, "car_definition", "steering_torque", 1.0f);
+	float steering_torque = pKinematics->LL_UserData()->read_if_exists<float>("car_definition", "steering_torque", 1.0f);
 	pwheel->ApplySteerAxisTorque(steering_torque);
 	dJointSetHinge2Param(pwheel->joint->GetDJoint(), dParamFudgeFactor, (1.f/steering_torque) * 70.f);
 	pwheel->ApplySteerAxisVel(0.f);
@@ -927,12 +927,12 @@ void CCar::SWheelBreak::Load(LPCSTR section)
 	IKinematics		*K			=PKinematics(pwheel->car->Visual())												;
 	CInifile		*ini		=K->LL_UserData()																;
 	VERIFY						(ini)																			;
-	break_torque		=		READ_IF_EXISTS(ini, r_float, "car_definition", "break_torque", break_torque)	;
-	hand_break_torque	=		READ_IF_EXISTS(ini,r_float,"car_definition","hand_break_torque",break_torque)	;
+	break_torque		=		ini->read_if_exists<float>("car_definition", "break_torque", break_torque)	;
+	hand_break_torque	=		ini->read_if_exists<float>("car_definition","hand_break_torque",break_torque)	;
 	if(ini->section_exist(section))
 	{	
-		break_torque					=READ_IF_EXISTS(ini,r_float,section,"break_torque",break_torque);
-		hand_break_torque				=READ_IF_EXISTS(ini,r_float,section,"hand_break_torque",hand_break_torque);
+		break_torque					=ini->read_if_exists<float>(section,"break_torque",break_torque);
+		hand_break_torque				=ini->read_if_exists<float>(section,"hand_break_torque",hand_break_torque);
 	}
 }
 void CCar::SWheelBreak::Break(float k)

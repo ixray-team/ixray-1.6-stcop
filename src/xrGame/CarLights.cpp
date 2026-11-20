@@ -55,35 +55,35 @@ void SCarLight::ParseDefinitions(LPCSTR section)
 	IKinematics*			pKinematics=smart_cast<IKinematics*>(m_holder->PCar()->Visual());
 	CInifile* ini			= pKinematics->LL_UserData();
 	Fcolor					clr;
-	clr.set					(READ_IF_EXISTS(ini,r_fcolor,section,"color",Fcolor().set(1.f,1.f,1.f,1.f)));
-	BOOL default_visible = READ_IF_EXISTS(ini,r_bool,section,"default_visible",FALSE);
+	clr.set					(ini->read_if_exists<Fcolor>(section,"color",Fcolor().set(1.f,1.f,1.f,1.f)));
+	BOOL default_visible = ini->read_if_exists<bool>(section,"default_visible",FALSE);
 	/*shared_str light_name = "";
 	light_name.printf("car light %s %s", m_holder->PCar()->cName().c_str(), (bone_id != BI_NONE && bone_id < pKinematics->LL_BoneCount()) ? pKinematics->LL_BoneName_dbg(bone_id) : "");*/
-	light_type				= READ_IF_EXISTS(ini,r_u8,section,"type",2);
+	light_type				= ini->read_if_exists<u8>(section,"type",2);
 	light_render			= ::Render->light_create();
 	light_render->set_type(IRender_Light::LT(light_type));
-	light_render->set_shadow(READ_IF_EXISTS(ini,r_bool,section,"shadow",TRUE));
-	light_render->set_range	(READ_IF_EXISTS(ini,r_float,section,"range",40.f));
-    light_render->set_volumetric_distance(READ_IF_EXISTS(ini,r_float,section,"volumetric_distance",1.0f));
-    light_render->set_volumetric_intensity(READ_IF_EXISTS(ini,r_float,section,"volumetric_intensity",1.0f));
-    light_render->set_volumetric_quality(READ_IF_EXISTS(ini,r_float,section,"volumetric_quality",1.0f));
-    light_render->set_volumetric(READ_IF_EXISTS(ini,r_bool,section,"volumetric",FALSE));
+	light_render->set_shadow(ini->read_if_exists<bool>(section,"shadow",TRUE));
+	light_render->set_range	(ini->read_if_exists<float>(section,"range",40.f));
+    light_render->set_volumetric_distance(ini->read_if_exists<float>(section,"volumetric_distance",1.0f));
+    light_render->set_volumetric_intensity(ini->read_if_exists<float>(section,"volumetric_intensity",1.0f));
+    light_render->set_volumetric_quality(ini->read_if_exists<float>(section,"volumetric_quality",1.0f));
+    light_render->set_volumetric(ini->read_if_exists<bool>(section,"volumetric",FALSE));
 	light_render->set_color	(clr);
-	light_render->set_cone	(deg2rad(READ_IF_EXISTS(ini,r_float,section,"cone_angle",50.f)));
-	light_render->set_texture(READ_IF_EXISTS(ini,r_string,section,"spot_texture",""));
+	light_render->set_cone	(deg2rad(ini->read_if_exists<float>(section,"cone_angle",50.f)));
+	light_render->set_texture(ini->read_if_exists<str_c>(section,"spot_texture",""));
 	light_render->set_active(default_visible);
 
 	if(!(m_holder->l_type == CCarLights::ELightsType::flHeadLights && light_type == 2))
 		light_render->set_decor_object(m_holder->PCar()->dcast_CObject(), 0);
 	
 	glow_render				= ::Render->glow_create();
-	glow_render->set_texture(READ_IF_EXISTS(ini,r_string,section,"glow_texture",""));
+	glow_render->set_texture(ini->read_if_exists<str_c>(section,"glow_texture",""));
 	glow_render->set_color	(clr);
-	glow_render->set_radius	(READ_IF_EXISTS(ini,r_float,section,"glow_radius",1.0f));
+	glow_render->set_radius	(ini->read_if_exists<float>(section,"glow_radius",1.0f));
 	glow_render->set_active(default_visible);
-	l_direction = READ_IF_EXISTS(ini,r_fvector3,section,"direction", l_direction);
-	l_position = READ_IF_EXISTS(ini,r_fvector3,section,"position", l_position);
-	LPCSTR bone_name = READ_IF_EXISTS(ini,r_string,section,"bone",pKinematics->LL_BoneName_dbg(pKinematics->LL_GetBoneRoot()));
+	l_direction = ini->read_if_exists<Fvector3>(section,"direction", l_direction);
+	l_position = ini->read_if_exists<Fvector3>(section,"position", l_position);
+	LPCSTR bone_name = ini->read_if_exists<str_c>(section,"bone",pKinematics->LL_BoneName_dbg(pKinematics->LL_GetBoneRoot()));
 	bone_id	= pKinematics->LL_BoneID(bone_name);
 	if(bone_id != BI_NONE && bone_id < pKinematics->LL_BoneCount())
 		pKinematics->LL_SetBoneVisible(bone_id,default_visible,TRUE);	

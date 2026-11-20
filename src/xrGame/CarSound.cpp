@@ -47,7 +47,7 @@ void CCar::SCarSound::Init()
 		if (!snd_engine_stop._p && ini->line_exist("car_sound", "engine_stop"))
 			snd_engine_stop.create(ini->r_string("car_sound", "engine_stop"), st_Effect, sg_SourceType);
 
-		float fengine_start_delay = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_start_dellay", 0.25f);
+		float fengine_start_delay = ini->read_if_exists<float>("car_sound", "engine_sound_start_dellay", 0.25f);
 		float engine_start_length = 0.f;
 		if (snd_engine_start._p)
 		{

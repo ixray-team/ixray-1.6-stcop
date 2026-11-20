@@ -87,9 +87,9 @@ void CCar::SDoor::Init()
 			{
 				if (ini->line_exist(bone_name, "use_distance"))
 					dist_to_door_avlbl = ini->r_float(bone_name, "use_distance");
-				OpenTorqueFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_torque_factor", OpenTorqueFactor);
-				HoldTorqueFactor = READ_IF_EXISTS(ini, r_float, bone_name, "hold_torque_factor", HoldTorqueFactor);
-				OpenVelFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_vel_factor", OpenVelFactor);
+				OpenTorqueFactor = ini->read_if_exists<float>(bone_name, "open_torque_factor", OpenTorqueFactor);
+				HoldTorqueFactor = ini->read_if_exists<float>(bone_name, "hold_torque_factor", HoldTorqueFactor);
+				OpenVelFactor = ini->read_if_exists<float>(bone_name, "open_vel_factor", OpenVelFactor);
 
 				if (ini->line_exist(bone_name, "non_enterable"))
 					non_enterable = !!ini->r_bool(bone_name, "non_enterable");
