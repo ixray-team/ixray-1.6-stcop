@@ -316,53 +316,36 @@ void CEntityCondition::UpdateConditionTime()
 //вычисление параметров с ходом игрового времени
 void CEntityCondition::UpdateCondition()
 {
-	if(GetHealth()<=0)			return;
-	//-----------------------------------------
-	bool CriticalHealth			= false;
-
-	if (m_fDeltaHealth+GetHealth() <= 0)
+	const float PreviousHealth = GetHealth();
+	if (PreviousHealth <= 0.0f)
 	{
-		CriticalHealth			= true;
-		m_object->OnCriticalHitHealthLoss();
+		return;
 	}
-	else
-	{
-		if (m_fDeltaHealth<0) m_object->OnHitHealthLoss(GetHealth()+m_fDeltaHealth);
-	}
-	//-----------------------------------------
-	UpdateHealth				();
-	//-----------------------------------------
-	if (!CriticalHealth && m_fDeltaHealth+GetHealth() <= 0)
-	{
-		CriticalHealth			= true;
-		m_object->OnCriticalWoundHealthLoss();
-	};
-	//-----------------------------------------
-	UpdatePower					();
-	UpdateRadiation				();
-	//-----------------------------------------
-	if (!CriticalHealth && m_fDeltaHealth+GetHealth() <= 0)
-	{
-		CriticalHealth = true;
-		m_object->OnCriticalRadiationHealthLoss();
-	};
-	//-----------------------------------------
-	UpdatePsyHealth				();
 
-	UpdateEntityMorale			();
+	const float HealthAfterHit = PreviousHealth + m_fDeltaHealth;
+	UpdateHealth();
+	const float HealthAfterBleeding = PreviousHealth + m_fDeltaHealth;
 
-	if(Device.fTimeGlobal>m_fInvulnerableTime)
+	UpdatePower();
+	UpdateRadiation();
+	UpdatePsyHealth();
+	UpdateEntityMorale();
+
+	if (Device.fTimeGlobal > m_fInvulnerableTime)
 	{
-		float curr_health			= GetHealth();
-		if(curr_health>m_fKillHitTreshold && curr_health+m_fDeltaHealth<0)
+		const float NewHealth = PreviousHealth + m_fDeltaHealth;
+		if (PreviousHealth > m_fKillHitTreshold && NewHealth < 0.0f)
 		{
-			SetHealth(m_fLastChanceHealth);
+			SetHealth(std::min(PreviousHealth, m_fLastChanceHealth));
 			m_fInvulnerableTime = Device.fTimeGlobal + m_fInvulnerableTimeDelta;
 		}
 		else
-			SetHealth				( curr_health + m_fDeltaHealth );
+		{
+			SetHealth(NewHealth);
+		}
 	}
 
+	const float AppliedHealth = GetHealth();
 	m_fPower					+= m_fDeltaPower;
 	m_fPsyHealth				+= m_fDeltaPsyHealth;
 	m_fEntityMorale				+= m_fDeltaEntityMorale;
@@ -381,6 +364,25 @@ void CEntityCondition::UpdateCondition()
 	clamp						(m_fRadiation,		0.0f,		m_fRadiationMax);
 	clamp						(m_fEntityMorale,	0.0f,		m_fEntityMoraleMax);
 	clamp						(m_fPsyHealth,		0.0f,		m_fPsyHealthMax);
+	if (AppliedHealth <= 0.0f)
+	{
+		if (HealthAfterHit <= 0.0f)
+		{
+			m_object->OnCriticalHitHealthLoss();
+		}
+		else if (HealthAfterBleeding <= 0.0f)
+		{
+			m_object->OnCriticalWoundHealthLoss();
+		}
+		else
+		{
+			m_object->OnCriticalRadiationHealthLoss();
+		}
+	}
+	else if (HealthAfterHit < PreviousHealth && AppliedHealth < PreviousHealth)
+	{
+		m_object->OnHitHealthLoss(std::max(HealthAfterHit, AppliedHealth));
+	}
 }
 
 float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_type, u16 element, float ap, bool& add_wound, bool ApplyCondition)
@@ -599,7 +601,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		hit_power -= m_fBoostTelepaticProtection;
 		if(hit_power < 0.f)
 			hit_power = 0.f;
-		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostTelepaticImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostTelepaticImmunity);
 		ChangePsyHealth(-hit_power);
 		m_fHealthLost = hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
@@ -608,7 +610,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		break;
 	case ALife::eHitTypeLightBurn:
 	case ALife::eHitTypeBurn:
-		hit_power *= GetHitImmunity(ALife::eHitTypeBurn)-m_fBoostBurnImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(ALife::eHitTypeBurn)-m_fBoostBurnImmunity);
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
@@ -624,7 +626,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		hit_power -= m_fBoostChemicalBurnProtection;
 		if(hit_power < 0.f)
 			hit_power = 0.f;
-		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostChemicalBurnImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostChemicalBurnImmunity);
 		m_fHealthLost = hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
@@ -634,7 +636,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		}
 		break;
 	case ALife::eHitTypeShock:
-		hit_power		*= GetHitImmunity(pHDS->hit_type)-m_fBoostShockImmunity;
+		hit_power		*= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostShockImmunity);
 		m_fHealthLost	=  hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower	-= hit_power*m_fPowerHitPart;
@@ -650,20 +652,20 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		hit_power			-= m_fBoostRadiationProtection;
 		if(hit_power < 0.f)
 			hit_power = 0.f;
-		hit_power			*= GetHitImmunity(pHDS->hit_type)-m_fBoostRadiationImmunity;
+		hit_power			*= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostRadiationImmunity);
 		m_fDeltaRadiation	+= hit_power;
 		bAddWound			=  false;
 		return nullptr;
 		break;
 	case ALife::eHitTypeExplosion:
-		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostExplImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostExplImmunity);
 		m_fHealthLost = hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		break;
 	case ALife::eHitTypeStrike:
 	case ALife::eHitTypePhysicStrike:
-		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostStrikeImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostStrikeImmunity);
 		m_fHealthLost = hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
@@ -673,13 +675,13 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		}
 		break;
 	case ALife::eHitTypeFireWound:
-		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostFireWoundImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostFireWoundImmunity);
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		break;
 	case ALife::eHitTypeWound:
-		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostWoundImmunity;
+		hit_power *= std::max(0.0f, GetHitImmunity(pHDS->hit_type)-m_fBoostWoundImmunity);
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;

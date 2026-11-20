@@ -1065,12 +1065,12 @@ float CActor::CalcHitDamage(SHit* pHDS)
 			{
 				hit_power = 0.f;
 			}
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostTelepaticImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostTelepaticImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
 			break;
 		case ALife::eHitTypeLightBurn:
 		case ALife::eHitTypeBurn:
-			hit_power *= actorCondition.GetHitImmunity(ALife::eHitTypeBurn) - actorCondition.m_fBoostBurnImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(ALife::eHitTypeBurn) - actorCondition.m_fBoostBurnImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
 			break;
 		case ALife::eHitTypeChemicalBurn:
@@ -1083,11 +1083,11 @@ float CActor::CalcHitDamage(SHit* pHDS)
 			{
 				hit_power = 0.f;
 			}
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostChemicalBurnImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostChemicalBurnImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
 			break;
 		case ALife::eHitTypeShock:
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostShockImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostShockImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
 			break;
 		case ALife::eHitTypeRadiation:
@@ -1101,24 +1101,24 @@ float CActor::CalcHitDamage(SHit* pHDS)
 			{
 				hit_power = 0.f;
 			}
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostRadiationImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostRadiationImmunity);
 			m_fHealthLost = hit_power;
 			break;
 		case ALife::eHitTypeExplosion:
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostExplImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostExplImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
 			break;
 		case ALife::eHitTypeStrike:
 		case ALife::eHitTypePhysicStrike:
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostStrikeImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostStrikeImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
 			break;
 		case ALife::eHitTypeFireWound:
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostFireWoundImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostFireWoundImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
 			break;
 		case ALife::eHitTypeWound:
-			hit_power *= actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostWoundImmunity;
+			hit_power *= std::max(0.0f, actorCondition.GetHitImmunity(pHDS->hit_type) - actorCondition.m_fBoostWoundImmunity);
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
 			break;
 		default:
