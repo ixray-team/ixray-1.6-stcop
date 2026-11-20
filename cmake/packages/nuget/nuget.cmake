@@ -15,27 +15,53 @@ endif()
 
 # Download packages
 if (WIN32 AND IXRAY_CROSS_COMPILATION)
-    execute_process(
-            COMMAND winepath -w
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config"
-            OUTPUT_VARIABLE NUGET_CONFIG_WIN
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    execute_process(
-            COMMAND winepath -w
-            "${CMAKE_BINARY_DIR}"
-            OUTPUT_VARIABLE CMAKE_BINARY_DIR_WIN
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
+    set(PACKAGES_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config")
+    file(READ "${PACKAGES_CONFIG}" PACKAGES_CONTENT)
+    string(REGEX MATCHALL "<package id=\"[^\"]+\" version=\"[^\"]+\"" PACKAGE_ENTRIES "${PACKAGES_CONTENT}")
 
-    execute_process(
-            COMMAND wine
-            "${NUGET_COMMAND}"
-            restore
-            "${NUGET_CONFIG_WIN}"
-            -SolutionDirectory
-            "${CMAKE_BINARY_DIR_WIN}"
-    )
+    set(NUGET_CACHE_DIR "${CMAKE_BINARY_DIR}/dep/nuget/cache")
+    file(MAKE_DIRECTORY "${NUGET_CACHE_DIR}")
+
+    foreach(ENTRY IN LISTS PACKAGE_ENTRIES)
+        string(REGEX REPLACE "<package id=\"([^\"]+)\" version=\"([^\"]+)\"" "\\1" PKG_ID "${ENTRY}")
+        string(REGEX REPLACE "<package id=\"([^\"]+)\" version=\"([^\"]+)\"" "\\2" PKG_VER "${ENTRY}")
+
+        set(PKG_TARGET_DIR "${CMAKE_BINARY_DIR}/packages/${PKG_ID}.${PKG_VER}")
+
+        if (EXISTS "${PKG_TARGET_DIR}")
+            message(STATUS "[OK] ${PKG_ID} ${PKG_VER}")
+            continue()
+        endif()
+
+        message(STATUS "Downloading ${PKG_ID} ${PKG_VER}")
+
+        # Приводим ID к нижнему регистру — именно так NuGet.org формирует URL.
+        string(TOLOWER "${PKG_ID}" PKG_ID_LOWER)
+        set(NUPKG_URL "https://api.nuget.org/v3-flatcontainer/${PKG_ID_LOWER}/${PKG_VER}/${PKG_ID_LOWER}.${PKG_VER}.nupkg")
+        set(NUPKG_FILE "${NUGET_CACHE_DIR}/${PKG_ID}.${PKG_VER}.nupkg")
+
+        file(DOWNLOAD "${NUPKG_URL}" "${NUPKG_FILE}"
+                STATUS DOWNLOAD_STATUS
+                TLS_VERIFY ON
+        )
+        list(GET DOWNLOAD_STATUS 0 DOWNLOAD_RESULT)
+        if (NOT DOWNLOAD_RESULT EQUAL 0)
+            list(GET DOWNLOAD_STATUS 1 DOWNLOAD_ERROR)
+            message(FATAL_ERROR "Failed to download ${PKG_ID} ${PKG_VER}: ${DOWNLOAD_ERROR}")
+        endif()
+
+        file(MAKE_DIRECTORY "${PKG_TARGET_DIR}")
+        execute_process(
+                COMMAND ${CMAKE_COMMAND} -E tar xf "${NUPKG_FILE}"
+                WORKING_DIRECTORY "${PKG_TARGET_DIR}"
+                RESULT_VARIABLE EXTRACT_RESULT
+        )
+        if (NOT EXTRACT_RESULT EQUAL 0)
+            message(FATAL_ERROR "Failed to extract ${PKG_ID} ${PKG_VER}")
+        endif()
+
+        message(STATUS "[OK] ${PKG_ID} ${PKG_VER}")
+    endforeach()
 else ()
     execute_process(
             COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
