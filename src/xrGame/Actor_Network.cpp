@@ -2007,7 +2007,7 @@ void CActor::OnCriticalHitHealthLoss()
 	}	
 	//-------------------------------------------------------------------
 	SPECIAL_KILL_TYPE SpecialHit = SKT_NONE;
-	if (pLastHittingWeapon->cast_weapon_knife() != nullptr)
+	if (pLastHittingWeapon && pLastHittingWeapon->cast_weapon_knife() != nullptr)
 	{
 		SpecialHit = SKT_KNIFEKILL;
 	}
@@ -2016,7 +2016,7 @@ void CActor::OnCriticalHitHealthLoss()
 	{
 		if (m_s16LastHittedElement == m_head)
 		{
-			if (CWeaponMagazined* pWeaponMagazined = pLastHittingWeapon->cast_weapon_magazined())
+			if (CWeaponMagazined* pWeaponMagazined = pLastHittingWeapon ? pLastHittingWeapon->cast_weapon_magazined() : nullptr)
 			{
 				SpecialHit = SKT_HEADSHOT;
 				//-------------------------------
