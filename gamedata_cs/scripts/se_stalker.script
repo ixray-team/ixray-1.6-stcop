@@ -51,6 +51,14 @@ function se_stalker:can_switch_offline()
 		return false
 	end
 
+	--' Ключевой НПС со спавнером (например, Йога при атаке на базу) должен уйти в оффлайн, когда условие
+	--' спавнера запрещает ему быть в онлайне. Флаг движка "можно в оффлайн" у таких НПС в спавне снят.
+	if self.online and db.actor ~= nil and self.spawner ~= nil and
+		 xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) == nil
+	then
+		return true
+	end
+
 	if self.job_online_condlist ~= nil then
 		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) ~= true
 	end

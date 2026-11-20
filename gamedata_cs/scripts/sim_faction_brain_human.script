@@ -135,16 +135,24 @@ function faction_brain_human:get_sim_targets_power(need_power_targets)
 end
 -- Проверяем, все ли у нас захвачено из важных точек. Автоматом добавляет их в список задач (НО НЕ КВЕСТОВ)
 function faction_brain_human:check_sim_targets_advance(expansion)
+	--' Точку, которую держит невраждебная группировка, отбить нельзя, и без этого этап экспансии не
+	--' выполнялся бы никогда (Долг и сталкеры на Свалке). Считаем ее своей, как это уже сделано для
+	--' precondition_target_eliminate: мешают только враги.
+	local function is_held(smart_obj)
+		return smart_obj.player_name == self.faction.player_name or
+			   sim_board.is_neutral_owner(self.faction.player_name, smart_obj.player_name)
+	end
+
 	for k,v in pairs(expansion.precondition_target) do
 		local smart_obj = self.faction.board.smarts_by_names[v]
-		if smart_obj.player_name ~= self.faction.player_name then
+		if not is_held(smart_obj) then
 			return false
 		end
 	end
 
 	for k,v in pairs(expansion.precondition_target_optional) do
 		local smart_obj = self.faction.board.smarts_by_names[v]
-		if smart_obj.player_name ~= self.faction.player_name then
+		if not is_held(smart_obj) then
 			return false
 		end
 	end
@@ -191,6 +199,12 @@ end
 
 -- Регистрит таргет смарт. При этом может изменить его капасити
 function faction_brain_human:register_target_point(smart_obj, advance_point, eliminate, no_task)
+	--' Точку невраждебной группировки атаковать нельзя: отряды с такой целью встают перед ней навсегда,
+	--' а задание игроку на ее захват невыполнимо. Когда точка опустеет, она снова станет целью.
+	if sim_board.is_neutral_owner(self.faction.player_name, smart_obj.player_name) then
+		return
+	end
+
 	local point_capacity = smart_obj.squad_capacity
 	--printf("faction [%s] register_target_point [%s]", self.faction.player_name, smart_obj:name())
 	--printf("  name %s == %s", smart_obj.player_name, self.faction.player_name)

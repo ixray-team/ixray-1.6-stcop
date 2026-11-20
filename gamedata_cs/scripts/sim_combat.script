@@ -260,6 +260,11 @@ end
 --' Запрос на установку состояния боя.
 function CCombat_manager:request_squad_stage(squad, stage)
 	if stage == "prepare" then
+		--' Отряд, идущий насквозь через точку невраждебной группировки, в ее бою не регистрируется,
+		--' но его НПС на работах атаки все равно сообщают о приходе.
+		if self.squads[squad.squad_id] == nil then
+			return
+		end
 		if self.squads[squad.squad_id]._stage == "move" then
 			local player = self.board.players[squad.player_id]
 			if self.smart.player_name == "none" or self.smart.player_name == player.player_name then
@@ -279,8 +284,30 @@ function CCombat_manager:request_squad_stage(squad, stage)
 		end
 	end
 end
+--' Отряд в принудительном онлайне сам в оффлайн уйти не может. Без этого бой, к которому актор однажды
+--' подошел, навсегда остается в онлайне: его отряды не уходят в оффлайн и не продолжают войну в симуляции.
+local FORCE_ONLINE_RELEASE_DIST = 300*300
+function CCombat_manager:release_force_online()
+	if self.force_online ~= true or db.actor == nil then
+		return
+	end
+	if self.smart.smart_level == level.name() and
+		 db.actor:position():distance_to_sqr(self.smart.position) < FORCE_ONLINE_RELEASE_DIST
+	then
+		return
+	end
+	self.force_online = false
+	self.force_online_squads = {}
+	for k,v in pairs(self.squads) do
+		local squad = self.board.squads[k]
+		if squad ~= nil then
+			squad:force_online(false)
+		end
+	end
+end
 --' Апдейт
 function CCombat_manager:update()
+	self:release_force_online()
 	self:update_actor()
 
 	-- Итерируемся по всем отрядам.

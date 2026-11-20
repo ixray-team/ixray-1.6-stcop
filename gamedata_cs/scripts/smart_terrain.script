@@ -1,6 +1,8 @@
 local SMART_SECTION_NAME = "smart_terrains"
 local JOB_POSITION_THRESHOLD = 200
 local DEATH_IDLE_TIME = 10*60 -- секунд
+--' Приоритет работ атаки соседнего смарта у сталкеров (gulag_general). У монстров он ниже.
+local ATTACK_JOB_PRIOR = 60
 
 local smart_terrains_by_name = {}
 
@@ -51,6 +53,17 @@ local function job_avail_to_npc(npc_info, job_info, smart)
 			if job_info._squad_attack_point ~= attack_point then
 				return false
 			end
+		end
+	end
+
+	--' Особая работа смарта с приоритетом выше работ атаки (например, проводник ЧН в mar_smart_terrain_11_11,
+	--' prior = 130) не должна удерживать НПС атакующего отряда. Иначе командир остается на ней, а приход
+	--' отряда в точку проверяется по командиру, и отряд не доходит до цели никогда.
+	if job_info._current_squad_action == nil and (job_info._prior or 0) > ATTACK_JOB_PRIOR then
+		local squad_id = npc_info.se_obj.squad_id
+		local squad = squad_id ~= nil and smart.board.squads[squad_id] or nil
+		if squad ~= nil and squad.current_action ~= nil and squad.current_action.name == "attack_point" then
+			return false
 		end
 	end
 
@@ -243,6 +256,34 @@ function se_smart_terrain:fill_npc_info(obj)
 	end
 
 	return npc_info
+end
+
+--' Найдутся ли работы всем НПС отряда, если зарегистрировать их сейчас (при текущем действии отряда).
+--' Ничего не меняет: занятые на время проверки работы освобождаются.
+function se_smart_terrain:can_accept_squad(squad)
+	if self.b_registred == false or self.jobs == nil then
+		return true
+	end
+	local taken = {}
+	local result = true
+	for npc_id in pairs(squad.squad_npc) do
+		local obj = alife():object(npc_id)
+		if obj ~= nil and self.npc_info[npc_id] == nil then
+			local selected_job_id, selected_job_prior, selected_job_link = job_iterator(self.jobs, self:fill_npc_info(obj), 0, self)
+			if selected_job_id == nil or selected_job_link == nil then
+				result = false
+				break
+			end
+			if selected_job_link.npc_id == nil then
+				selected_job_link.npc_id = npc_id
+				table.insert(taken, selected_job_link)
+			end
+		end
+	end
+	for k,link in pairs(taken) do
+		link.npc_id = nil
+	end
+	return result
 end
 
 -- добавить npc в smart terrain.

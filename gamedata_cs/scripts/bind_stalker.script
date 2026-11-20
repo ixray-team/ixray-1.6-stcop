@@ -540,6 +540,7 @@ function actor_binder:update(delta)
 
 	if self.first_update then
 		self.first_update = false
+		sim_board.get_sim_board():refresh_squad_spots()
 		SendScriptCallback("actor_on_first_update", self, delta) -- IX-Ray
 	end
 	

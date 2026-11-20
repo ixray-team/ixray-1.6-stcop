@@ -3,5 +3,7 @@ active = sr_idle
 
 [sr_idle]
 on_actor_inside = {+mar_intro_talk_with_commander_3_done} sr_idle@end_section %=start_sim%
+; The guide at the base teleports the actor past this restrictor. Start the simulation once the actor is outside the base.
+on_info = {+mar_intro_talk_with_commander_3_done !actor_in_zone(mar_space_restrictor_csky_base_noweapon)} sr_idle@end_section %=start_sim%
 
 [sr_idle@end_section]

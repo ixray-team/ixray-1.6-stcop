@@ -1,0 +1,480 @@
+--[[
+	Squad capture debug: why a squad does not go to capture a point.
+	Read-only snapshot of the faction war on the actor's level, written with SemiLog.
+	Prefix: [SQC]. Set ENABLED = true to turn it off.
+]]
+
+ENABLED = false
+
+local PERIOD_MS = 10000
+local next_report_time = 0
+
+local function out(fmt, ...)
+	SemiLog(string.format("[SQC] " .. fmt, ...))
+end
+
+local function board()
+	return sim_board.get_sim_board()
+end
+
+local function smart_name(smart_id)
+	if smart_id == nil then
+		return "nil"
+	end
+	local descr = board().smarts[smart_id]
+	if descr == nil then
+		return "?" .. tostring(smart_id)
+	end
+	return (string.gsub(descr.smrt:name(), "_smart_terrain", ""))
+end
+
+local function on_actor_level(smart_id)
+	local descr = smart_id and board().smarts[smart_id]
+	return descr ~= nil and descr.smrt.smart_level == level.name()
+end
+
+local function squad_on_actor_level(squad)
+	if on_actor_level(squad.smart_id) then
+		return true
+	end
+	local action = squad.current_action
+	return action ~= nil and action.dest_smrt_id ~= nil and on_actor_level(action.dest_smrt_id)
+end
+
+local function action_text(squad)
+	local action = squad.current_action
+	if action == nil then
+		return "nil"
+	end
+	if action.name == "attack_point" then
+		return string.format("attack(%s->%s major=%s)", smart_name(action.src_smrt_id), smart_name(action.dest_smrt_id), tostring(action.major))
+	end
+	local age = action.begin_time ~= nil and game.get_game_time():diffSec(action.begin_time) or -1
+	return string.format("stay(%s defended=%s next=%s delay=%s age=%d)", smart_name(action.src_smrt_id), tostring(action.stay_defended), smart_name(action.next_point_id), smart_name(action.delay_attack_id), age)
+end
+
+local function stage_text(squad)
+	local action = squad.current_action
+	local smart_id = squad.smart_id
+	if action ~= nil and action.name == "attack_point" then
+		smart_id = action.dest_smrt_id
+	end
+	local descr = smart_id and board().smarts[smart_id]
+	if descr == nil or descr.smrt.combat_manager == nil then
+		return "no_cm"
+	end
+	local manager = descr.smrt.combat_manager
+	return string.format("%s under_attack=%s", tostring(manager:get_squad_stage(squad)), tostring(manager:point_under_attack()))
+end
+
+--' The path decision get_next_action would make now, without changing anything.
+local function path_text(squad)
+	local target_id = squad.assigned_target_smart_id
+	local tm = task_manager.get_task_manager()
+	for k, task in pairs(tm.inited_tasks) do
+		if task.status == "selected" and task.src_obj == squad.squad_id then
+			target_id = task.target
+			break
+		end
+	end
+	if target_id == nil or squad.smart_id == nil then
+		return "no_target"
+	end
+	local ok, path = pcall(board().find_path, board(), squad.smart_id, target_id, squad)
+	if not ok then
+		return "path_error:" .. tostring(path)
+	end
+	local parts = {}
+	for k, v in ipairs(path) do
+		local smart = board().smarts[v.id].smrt
+		table.insert(parts, string.format("%s(%s,%s)", smart_name(v.id), tostring(v.value), smart.player_name))
+	end
+	local next_point = path[1]
+	local threshold = squad.squad_power + squad.squad_attack_power
+	local task = tm:get_tasks_by_smart(next_point.id)
+	local task_text = task ~= nil and string.format("%s/%s/%s", task.type, tostring(task.community), tostring(task.status)) or "none"
+	return string.format("path=%s threshold=%.1f next_task=%s", table.concat(parts, ">"), threshold, task_text)
+end
+
+local function commander_text(squad)
+	local commander = squad.commander_id and alife():object(squad.commander_id)
+	if commander == nil then
+		return "commander=nil"
+	end
+	local action = squad.current_action
+	local smart_id = action ~= nil and action.dest_smrt_id or squad.smart_id
+	local descr = smart_id and board().smarts[smart_id]
+	local dist = -1
+	if descr ~= nil and gg_vertex_level_id(commander.m_game_vertex_id) == gg_vertex_level_id(descr.smrt.m_game_vertex_id) then
+		dist = commander.position:distance_to(descr.smrt.position)
+	end
+	return string.format("online=%s dist=%.0f", tostring(squad.squad_online), dist)
+end
+
+--' Per-NPC state of an attacking squad: the smart and job the NPC belongs to, its scheme and how far it moved since the last snapshot.
+local last_positions = {}
+local function report_npcs(squad)
+	local action = squad.current_action
+	if action == nil or action.name ~= "attack_point" then
+		return
+	end
+	local dest = board().smarts[action.dest_smrt_id].smrt
+	for npc_id, v in pairs(squad.squad_npc) do
+		local se_obj = alife():object(npc_id)
+		if se_obj ~= nil then
+			local smart_id = se_obj.m_smart_terrain_id
+			local job_text = "none"
+			local smart = smart_id ~= nil and smart_id ~= 65535 and alife():object(smart_id) or nil
+			if smart ~= nil and smart.npc_info ~= nil and smart.npc_info[npc_id] ~= nil then
+				local info = smart.npc_info[npc_id]
+				local job = smart.job_data ~= nil and smart.job_data[info.job_id] or nil
+				job_text = string.format("%s(%s:%s)", tostring(info.job_id), tostring(job and job.alife_path), tostring(job and job.alife_point))
+			end
+			local storage = db.storage[npc_id]
+			local online_obj = storage ~= nil and storage.object or nil
+			local pos = online_obj ~= nil and online_obj:position() or se_obj.position
+			local moved = -1
+			if last_positions[npc_id] ~= nil then
+				moved = pos:distance_to(last_positions[npc_id])
+			end
+			last_positions[npc_id] = vector():set(pos)
+			local move_text = "offline"
+			if online_obj ~= nil then
+				move_text = online_obj:movement_type() == move.run and "run" or (online_obj:movement_type() == move.walk and "walk" or "stand")
+			end
+			out("    npc %d smart=%s job=%s online=%s section=%s dest_dist=%.0f moved=%.1f attack_pos=%s move=%s",
+				npc_id, smart ~= nil and smart:name() or "nil", job_text, tostring(online_obj ~= nil),
+				tostring(storage and storage.active_section), pos:distance_to(dest.position), moved, tostring(se_obj.attack_position ~= nil), move_text)
+		end
+	end
+end
+
+local function report_tasks()
+	local tm = task_manager.get_task_manager()
+	for k, task in pairs(tm.inited_tasks) do
+		if task.status == "selected" then
+			out("task %s type=%s target=%s owner=%s community=%s src_squad=%s state=%s last_check=%s", tostring(task.entity_id), tostring(task.type), smart_name(task.target),
+				task.target and board().smarts[task.target] and board().smarts[task.target].smrt.player_name or "?",
+				tostring(task.community), tostring(task.src_obj), tostring(task.state), tostring(task.last_check_task))
+		end
+	end
+end
+
+local function report_faction(faction)
+	local squads = {}
+	for k, squad in pairs(faction.squads) do
+		if squad_on_actor_level(squad) then
+			table.insert(squads, squad)
+		end
+	end
+	local targets = {}
+	for smart_id, value in pairs(faction.target_smart_value or {}) do
+		if on_actor_level(smart_id) then
+			table.insert(targets, value)
+		end
+	end
+	if #squads == 0 and #targets == 0 then
+		return
+	end
+
+	out("== %s squads=%d level_squads=%d stage=%s", faction.player_name, #faction.squads, #squads, tostring(faction.current_expansion_level))
+	for k, value in pairs(targets) do
+		out("  target %s owner=%s num=%d/%d attackers=%s", smart_name(value.smart.id), value.smart.player_name, value.num, value.cap, tostring(faction.current_attack_quantity[value.smart.id]))
+	end
+	for k, squad in pairs(squads) do
+		out("  squad %s smart=%s npc=%d power=%.1f+%.1f action=%s target=%s cache=%s script_target=%s item_busy=%s delayed=%s stage=%s %s %s",
+			tostring(squad.squad_id), smart_name(squad.smart_id), squad.npc_count or -1, squad.squad_power or -1, squad.squad_attack_power or -1,
+			action_text(squad), smart_name(squad.assigned_target_smart_id), smart_name(faction.squad_target_cache[squad.squad_id]),
+			smart_name(squad:get_script_target()), tostring(squad:has_active_item_task()), tostring(squad.delayed_attack_task),
+			stage_text(squad), commander_text(squad), path_text(squad))
+		report_npcs(squad)
+	end
+end
+
+--' Squads on any level that wait in front of a point their path cannot cross (weight >= 1000).
+--' Shows who owns each point of the path and how that owner relates to the squad.
+local function report_blocked()
+	for squad_id, squad in pairs(board().squads) do
+		local action = squad.current_action
+		if squad.player_id ~= "monster" and action ~= nil and action.name == "stay_point" and action.next_point_id ~= nil then
+			local target_id = squad:get_attack_target_id()
+			local ok, path = pcall(board().find_path, board(), squad.smart_id, target_id, squad)
+			if ok and path[1] ~= nil and path[1].value >= 1000 then
+				local parts = {}
+				for k, v in ipairs(path) do
+					local smart = board().smarts[v.id].smrt
+					local owner = smart.player_name
+					local relation = "none"
+					if owner == squad.player_id then
+						relation = "own"
+					elseif owner ~= "none" then
+						relation = game_relations.is_factions_enemies(squad.player_id, owner) and "enemy" or "neutral"
+					end
+					table.insert(parts, string.format("%s[%s:%s:%s:w=%s:avail=%s:forbid=%s]", smart_name(v.id), smart.smart_level, owner, relation, tostring(v.value),
+						tostring(sim_board.is_point_avail(smart, squad.player_id)), tostring(smart.forbidden_point)))
+				end
+				out("blocked squad %s faction=%s smart=%s target=%s age=%d path=%s", tostring(squad_id), squad.player_id, smart_name(squad.smart_id), smart_name(target_id),
+					action.begin_time ~= nil and game.get_game_time():diffSec(action.begin_time) or -1, table.concat(parts, ">"))
+			end
+		end
+	end
+end
+
+--' Test mode: find a squad whose path to an enemy point goes through a point held by a non-hostile faction
+--' and force that target on it. Off by default: it changes the simulation.
+force_neutral_transit_test = false
+
+local forced = nil
+local function owner_relation(squad, smart)
+	local owner = smart.player_name
+	if owner == squad.player_id then
+		return "own"
+	elseif owner == "none" then
+		return "none"
+	end
+	return game_relations.is_factions_enemies(squad.player_id, owner) and "enemy" or "neutral"
+end
+
+local function find_neutral_transit_case()
+	local best = nil
+	--' Only the actor's level cluster: find_path aborts (and logs a fatal error) when no path exists.
+	local actor_cluster = sim_board.sim_level_cluster[level.name()]
+	for squad_id, squad in pairs(board().squads) do
+		local action = squad.current_action
+		if squad.player_id ~= "monster" and squad.smart_id ~= nil and squad:get_script_target() == nil and
+			 sim_board.sim_level_cluster[board().smarts[squad.smart_id].smrt.smart_level] == actor_cluster and
+			 action ~= nil and action.name == "stay_point"
+		then
+			for smart_id, descr in pairs(board().smarts) do
+				local smart = descr.smrt
+				if owner_relation(squad, smart) == "enemy" and sim_board.is_point_avail(smart, squad.player_id) and sim_board.sim_level_cluster[smart.smart_level] == sim_board.sim_level_cluster[board().smarts[squad.smart_id].smrt.smart_level] then
+					local ok, path = pcall(board().find_path, board(), squad.smart_id, smart_id, squad)
+					--' Weight under 2000: the path has no closed points, only the non-hostile one (+1000).
+					if ok and #path >= 2 and path[#path].value < 2000 and (best == nil or #path < best.len) then
+						for k, v in ipairs(path) do
+							if v.id ~= smart_id and owner_relation(squad, board().smarts[v.id].smrt) == "neutral" then
+								best = {squad = squad, target = smart_id, len = #path}
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	return best
+end
+
+local function start_neutral_transit_test()
+	if forced ~= nil then
+		return
+	end
+	local case = find_neutral_transit_case()
+	if case == nil then
+		out("test: no squad with a non-hostile point on its path")
+		local factions = {"stalker", "bandit", "dolg", "freedom", "csky"}
+		for _, a in ipairs(factions) do
+			local parts = {}
+			for _, b in ipairs(factions) do
+				table.insert(parts, string.format("%s=%d", b, relation_registry.community_relation(a, b)))
+			end
+			out("test: relation %s: %s", a, table.concat(parts, " "))
+		end
+		for smart_id, descr in pairs(board().smarts) do
+			local smart = descr.smrt
+			if smart.smart_level == "garbage" or smart.smart_level == "darkvalley" or smart.smart_level == "agroprom" then
+				out("test: smart %s level=%s owner=%s avail=%s", smart_name(smart_id), smart.smart_level, smart.player_name, tostring(sim_board.is_point_avail(smart, "freedom")))
+			end
+		end
+		forced = false
+		return
+	end
+	forced = case
+	local faction = board().players[case.squad.player_id]
+	local original = faction.find_target
+	faction.find_target = function(self, squad)
+		if squad.squad_id == case.squad.squad_id then
+			return case.target
+		end
+		return original(self, squad)
+	end
+	--' Make the stay action re-check its target now.
+	case.squad.assigned_target_smart_id = -1
+	out("test: forced squad %s (%s) at %s to %s", tostring(case.squad.squad_id), case.squad.player_id, smart_name(case.squad.smart_id), smart_name(case.target))
+end
+
+local function report_forced()
+	if not forced then
+		return
+	end
+	local squad = board().squads[forced.squad.squad_id]
+	if squad == nil then
+		out("test: squad %s is gone", tostring(forced.squad.squad_id))
+		return
+	end
+	out("test: squad %s smart=%s action=%s target=%s stage=%s %s %s", tostring(squad.squad_id), smart_name(squad.smart_id), action_text(squad),
+		smart_name(squad.assigned_target_smart_id), stage_text(squad), commander_text(squad), path_text(squad))
+	report_npcs(squad)
+end
+
+--' Key NPCs with a [spawner] section on the actor's level: why they stay online or go offline.
+local function report_key_npcs()
+	local level_id = gg_vertex_level_id(alife():actor().m_game_vertex_id)
+	for id, storage in pairs(db.storage) do
+		local se_obj = alife():object(id)
+		if se_obj ~= nil and se_obj.spawner ~= nil and IsStalker(se_obj) and gg_vertex_level_id(se_obj.m_game_vertex_id) == level_id then
+			local cond = xr_logic.pick_section_from_condlist(db.actor, se_obj, se_obj.spawner)
+			local smart_id = se_obj.m_smart_terrain_id
+			local smart = smart_id ~= nil and smart_id ~= 65535 and alife():object(smart_id) or nil
+			out("key npc %s online=%s spawner=%s can_on=%s can_off=%s engine_off=%s single=%s forced=%s squad=%s smart=%s owner=%s actor_dist=%.0f",
+				se_obj:name(), tostring(se_obj.online), tostring(cond), tostring(se_obj:can_switch_online()), tostring(se_obj:can_switch_offline()),
+				tostring(cse_alife_human_stalker.can_switch_offline(se_obj)), tostring(IsGameTypeSingle and IsGameTypeSingle()),
+				tostring(se_obj.sim_forced_online), tostring(se_obj.squad_id), smart ~= nil and smart:name() or "nil",
+				smart ~= nil and tostring(smart.player_name) or "nil", se_obj.position:distance_to(db.actor:position()))
+		end
+	end
+end
+
+--' How many online stalkers the engine allows to go offline (the spawn flag), and how far they are.
+local function report_switch_flags()
+	local allowed, denied, far_denied = 0, 0, 0
+	for id, storage in pairs(db.storage) do
+		local se_obj = alife():object(id)
+		if se_obj ~= nil and IsStalker(se_obj) and se_obj.online and se_obj.id ~= 0 then
+			if cse_alife_human_stalker.can_switch_offline(se_obj) then
+				allowed = allowed + 1
+				if se_obj.position:distance_to(db.actor:position()) > 250 then
+					out("switch flags: far online %s dist=%.0f can_off=%s can_on=%s", se_obj:name(), se_obj.position:distance_to(db.actor:position()), tostring(se_obj:can_switch_offline()), tostring(se_obj:can_switch_online()))
+				end
+			else
+				denied = denied + 1
+				if se_obj.position:distance_to(db.actor:position()) > 150 then
+					far_denied = far_denied + 1
+				end
+			end
+		end
+	end
+	out("switch flags: online stalkers engine_off=true %d, false %d (farther than 150 m: %d)", allowed, denied, far_denied)
+end
+
+--' Squads of the factions that give the actor tasks, across the actor's level cluster: where they are and what they hold.
+local function report_faction_squads(faction_name)
+	local faction = board().players[faction_name]
+	if faction == nil then
+		return
+	end
+	local cluster = sim_board.sim_level_cluster[level.name()]
+	local by_level = {}
+	for k, squad in pairs(faction.squads) do
+		local descr = squad.smart_id and board().smarts[squad.smart_id]
+		if descr ~= nil and sim_board.sim_level_cluster[descr.smrt.smart_level] == cluster then
+			local lvl = descr.smrt.smart_level
+			by_level[lvl] = by_level[lvl] or {}
+			local cache = faction.squad_target_cache[squad.squad_id]
+			local state = cache == nil and "free" or (cache == squad.smart_id and "hold" or ("go:" .. smart_name(cache)))
+			if squad.current_action ~= nil and squad.current_action.name == "attack_point" then
+				state = state .. ">" .. smart_name(squad.current_action.dest_smrt_id)
+			end
+			if squad:get_script_target() ~= nil then
+				state = "script"
+			end
+			table.insert(by_level[lvl], string.format("%s@%s=%s", tostring(squad.squad_id), smart_name(squad.smart_id), state))
+		end
+	end
+	for lvl, list in pairs(by_level) do
+		out("faction %s %s: %s", faction_name, lvl, table.concat(list, " "))
+	end
+end
+
+local reported_factions = false
+--' Squads on the actor's level with and without a map spot. Saves don't keep the spot.
+local function report_spots()
+	local with_spot, without = 0, {}
+	for squad_id, squad in pairs(board().squads) do
+		if squad_on_actor_level(squad) and squad.commander_id ~= nil then
+			if squad.spot_section ~= nil and level.map_has_object_spot(squad.current_spot_id, squad.spot_section) ~= 0 then
+				with_spot = with_spot + 1
+			elseif not squad.show_disabled then
+				table.insert(without, tostring(squad_id))
+			end
+		end
+	end
+	out("spots: with=%d without=%d %s", with_spot, #without, table.concat(without, " "))
+end
+
+local timing_done = false
+local function measure_task_calc()
+	if timing_done or os == nil or os.clock == nil then
+		return
+	end
+	timing_done = true
+	local total = 0
+	local parts = {}
+	for name, faction in pairs(board().players) do
+		local start = os.clock()
+		faction:calculate_squad_tasks()
+		local spent = (os.clock() - start) * 1000
+		total = total + spent
+		table.insert(parts, string.format("%s=%.1f", name, spent))
+	end
+	out("task calc ms: total=%.1f %s", total, table.concat(parts, " "))
+end
+
+local function report()
+	measure_task_calc()
+	report_spots()
+	report_faction_squads("stalker")
+	report_faction_squads("csky")
+	report_switch_flags()
+	report_key_npcs()
+	if force_neutral_transit_test then
+		start_neutral_transit_test()
+		report_forced()
+	end
+	out("--- snapshot %02d:%02d level=%s sim_started=%s", level.get_time_hours(), level.get_time_minutes(), level.name(), tostring(board().simulation_started))
+	if not board().simulation_started and level.name() == "marsh" then
+		--' On the Marsh the simulation starts only from this restrictor, after the third talk with the commander.
+		local zone = db.zone_by_name["mar_space_restrictor_start_sim"]
+		local storage = zone ~= nil and db.storage[zone:id()] or nil
+		local names = {}
+		for name, z in pairs(db.zone_by_name) do
+			if string.find(name, "base") or string.find(name, "start_sim") or string.find(name, "no_weapon") then
+				table.insert(names, string.format("%s(%s)", name, tostring(z:inside(db.actor:position()))))
+			end
+		end
+		out("sim start: zones %s", table.concat(names, " "))
+		local base = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
+		local start_zone = db.zone_by_name["mar_space_restrictor_start_sim"]
+		local base_smart = sim_board.get_sim_board():get_smart_by_name("mar_smart_terrain_csky_base")
+		out("sim start: base_zone=%s actor_in_base=%s dist_to_start_zone=%.0f dist_to_base_smart=%.0f", tostring(base ~= nil), tostring(base ~= nil and base:inside(db.actor:position())),
+			start_zone ~= nil and db.actor:position():distance_to(start_zone:position()) or -1, base_smart ~= nil and db.actor:position():distance_to(base_smart.position) or -1)
+		out("sim start: info_commander_3=%s restrictor=%s section=%s actor_inside=%s",
+			tostring(has_alife_info("mar_intro_talk_with_commander_3_done")), tostring(zone ~= nil),
+			tostring(storage and storage.active_section), tostring(zone ~= nil and zone:inside(db.actor:position())))
+	end
+	report_blocked()
+	report_tasks()
+	for name, faction in pairs(board().players) do
+		if name ~= "monster" then
+			report_faction(faction)
+		end
+	end
+end
+
+local function on_update()
+	local now = time_global()
+	if now < next_report_time or db.actor == nil or board() == nil then
+		return
+	end
+	next_report_time = now + PERIOD_MS
+	local ok, err = pcall(report)
+	if not ok then
+		out("report error: %s", tostring(err))
+	end
+end
+
+function on_game_start()
+	if ENABLED then
+		RegisterScriptCallback("actor_on_update", on_update)
+	end
+end

@@ -550,6 +550,10 @@ function sim_squad_generic:get_next_action()
 	if next_point.value == 0 then
 		--' Мы уже пришли в точку
 		self.current_action = sim_stay_point(self)
+	elseif decision_point.value < attack_threshold and self:is_transit_point(self.board.smarts[next_point.id].smrt, target_smart.id, false) then
+		--' Транзитную точку проходим сразу: отложенная атака и чужие задания на нее нас не касаются.
+		self.current_action = sim_attack_point(self, next_point.id, self.attacking_by_quest~=nil)
+		self.current_action.target_power_value = next_point.value
 	elseif decision_point.value < attack_threshold then
 		-- Проверяем, если на точку выдана отсроченная атака - мы остаемся и ждем ее завершения.
 		local exist_task_type = nil
@@ -619,11 +623,15 @@ function sim_squad_generic:get_attack_target_id()
 	end
 	return target_smart_id
 end
---' Точка пути, где отряд не может остановиться: своя или ничья, не цель и без места для отряда.
+--' Точка пути, где отряд не может остановиться: точка невраждебной группировки или своя/ничья без места для отряда.
 --' Если зайти в нее, НПС займут ее работы сверх лимита.
 function sim_squad_generic:is_transit_point(smart, target_smart_id, attacking)
 	if smart.id == target_smart_id then
 		return false
+	end
+	--' Остановиться в точке невраждебной группировки отряд не может никогда.
+	if sim_board.is_neutral_owner(self.player_id, smart.player_name) then
+		return true
 	end
 	if smart.player_name ~= "none" and smart.player_name ~= self.player_id then
 		return false
@@ -1092,7 +1100,9 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 				end
 				local obj = db.storage[npc_id].object
 				if obj and db.actor then
-					local relation = obj:general_goodwill(db.actor)
+					--' Клиентский объект уже уничтожается и может остаться без группировки: general_goodwill на нем
+					--' прерывает игру. Берем отношение группировки отряда к актору.
+					local relation = db.actor:community_goodwill(self.player_id) + (game_relations.get_factions_community(self.player_id, alife():actor():community()) or 0)
 					if relation <= -1000 then
 						db.goodwill.relations[npc_id] = "enemy"
 					elseif relation >= 1000 then
@@ -1301,6 +1311,18 @@ function sim_attack_point:load(packet)
 	end
 	set_save_marker(packet, "load", true, "sim_attack_point")
 end
+--' Командир отряда в точке атаки: внутри ее зоны обороны или ближе 30 м к центру.
+function sim_attack_point:commander_at_dest(squad, dest_smart)
+	local commander = squad.commander_id and alife():object(squad.commander_id)
+	if commander == nil or gg_vertex_level_id(commander.m_game_vertex_id) ~= gg_vertex_level_id(dest_smart.m_game_vertex_id) then
+		return false
+	end
+	local zone = dest_smart.def_restr ~= nil and db.zone_by_name[dest_smart.def_restr] or nil
+	if zone ~= nil then
+		return zone:inside(commander.position)
+	end
+	return commander.position:distance_to_sqr(dest_smart.position) <= 900
+end
 --' Апдейт действия
 function sim_attack_point:update()
 	local is_finished = true
@@ -1314,9 +1336,22 @@ function sim_attack_point:update()
 --	end
 
 	local dest_smart = self.board.smarts[self.dest_smrt_id].smrt
+	local passing_neutral = sim_board.is_neutral_owner(squad.player_id, dest_smart.player_name)
 	--' Проверяем нужно ли сражаться текущему отряду:
 	local squad_stage = dest_smart.combat_manager:get_squad_stage(squad)
-	if squad_stage ~= "idle" and squad_stage ~= "defence" then
+	if squad_stage == nil and not passing_neutral then
+		--' Шли через невраждебную точку без боя, а она сменила хозяина: дальше это обычная атака.
+		dest_smart.combat_manager:register_squad(squad)
+		return false
+	end
+	--' В онлайне стадию move снимает только сигнал arrive_to_wait с точки пути атаки. Если он пришел,
+	--' когда отряд не был зарегистрирован в бою (шел насквозь через нейтральную точку, сменился хозяин)
+	--' или потерялся при загрузке, НПС стоят в конце пути, а отряд ждет вечно. Сообщаем о приходе сами.
+	if squad_stage == "move" and squad.squad_online and self:commander_at_dest(squad, dest_smart) then
+		dest_smart.combat_manager:request_squad_stage(squad, "prepare")
+		squad_stage = dest_smart.combat_manager:get_squad_stage(squad)
+	end
+	if squad_stage ~= nil and squad_stage ~= "idle" and squad_stage ~= "defence" then
 		--printf("    false combat")
 		return false
 	end
@@ -1357,19 +1392,32 @@ function sim_attack_point:update()
 		--end
 	end
 
-	dest_smart.combat_manager:unregister_squad(squad)
-
 	--' Заполненную транзитную точку проходим насквозь: НПС регистрируются в ней только для работ атаки
 	--' следующей точки (работы атаки есть лишь для соседних смартов), а сам отряд в точку не заходит.
+	--' Точку, где не хватает работ на весь отряд (их держат НПС ушедших или проходящих отрядов), тоже проходим.
 	local target_smart_id = squad:get_attack_target_id()
-	if target_smart_id ~= nil and squad:is_transit_point(dest_smart, target_smart_id, true) then
+	if passing_neutral and (target_smart_id == nil or target_smart_id == self.dest_smrt_id) then
+		--' Цели больше нет, а зайти в чужую точку нельзя: остаемся при старом смарте и выбираем действие заново.
+		dest_smart.combat_manager:unregister_squad(squad)
+		return true
+	end
+	local can_enter = dest_smart:can_accept_squad(squad)
+	if target_smart_id ~= nil and target_smart_id ~= self.dest_smrt_id and
+		 (squad:is_transit_point(dest_smart, target_smart_id, true) or not can_enter)
+	then
 		local next_point = self.board:find_path(self.dest_smrt_id, target_smart_id, squad)[1]
-		printf("Squad [%s] passes full point [%s] to [%s]", squad.squad_id, dest_smart:name(), self.board.smarts[next_point.id].smrt:name())
-		self:finalize()
 		local next_action = sim_attack_point(squad, next_point.id, self.major)
 		next_action.target_power_value = next_point.value
 		--' Действие меняем до регистрации НПС, чтобы они сразу выбрали работы атаки.
 		squad.current_action = next_action
+		if not dest_smart:can_accept_squad(squad) then
+			--' Работ атаки на всех тоже нет: ждем на подходе, пока они освободятся.
+			squad.current_action = self
+			return false
+		end
+		printf("Squad [%s] passes point [%s] to [%s]", squad.squad_id, dest_smart:name(), self.board.smarts[next_point.id].smrt:name())
+		dest_smart.combat_manager:unregister_squad(squad)
+		self:finalize()
 		self.board:assign_squad_to_smart(squad, self.dest_smrt_id)
 		self.board.smarts[self.dest_smrt_id].squads[squad.squad_id] = nil
 		next_action.src_smrt_id = self.dest_smrt_id
@@ -1378,6 +1426,12 @@ function sim_attack_point:update()
 		return false
 	end
 
+	if not can_enter then
+		--' Это цель, но работ на весь отряд нет: ждем на подходе, иначе update_jobs прервет игру.
+		return false
+	end
+
+	dest_smart.combat_manager:unregister_squad(squad)
 	self.board:assign_squad_to_smart(squad, self.dest_smrt_id)
 	self.board:enter_smart(squad, self.dest_smrt_id)
 
@@ -1411,9 +1465,13 @@ function sim_attack_point:make()
 
 	self.attack_smart_owner = dest_smart.player_name
 
+	--' Через точку невраждебной группировки идем без боя: для ее хозяев она не под атакой.
+	local passing_neutral = sim_board.is_neutral_owner(squad.player_id, dest_smart.player_name)
+
 	--' Начинаем разыгрывать историю "Сбор в атаку"
 	if self.attack_smart_owner ~= "none" and
-		 self.attack_smart_owner ~= squad.player_id
+		 self.attack_smart_owner ~= squad.player_id and
+		 not passing_neutral
 	then
 		squad.sound_manager:set_storyteller(squad.commander_id)
 		squad.sound_manager:set_story("squad_begin_attack")
@@ -1425,7 +1483,9 @@ function sim_attack_point:make()
 		src_smart.combat_manager:unregister_squad(squad)
 	end
 	--' Регистрируем отряд в сражение за смарт
-	dest_smart.combat_manager:register_squad(squad)
+	if not passing_neutral then
+		dest_smart.combat_manager:register_squad(squad)
+	end
 
 	self.board:exit_smart(squad, src_smart)
 

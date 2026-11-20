@@ -212,6 +212,14 @@ function se_sim_faction:update()
 
 	self:calculate_absolute_power()
 
+	--' После загрузки цели считаются до того, как отряды зарегистрированы и точки получили хозяев, и не
+	--' меняются, пока у группировки не случится вход или выход из точки. Один раз пересчитываем цели,
+	--' задания игроку и распределение отрядов, когда все уже загружено.
+	if self.squad_tasks_initialized ~= true and db.actor ~= nil then
+		self.squad_tasks_initialized = true
+		self.brain:calculate_current_expansion()
+	end
+
 	-- Пытаемся доспаунить персонажей
 	-- Проверяем не пришли ли время спауна
 	-- Проверяем, находимся ли мы в разрешенном промежутке.
@@ -464,6 +472,55 @@ function se_sim_faction:calculate_squad_tasks()
 		--printf("    %s", v.squad_id)
 	--end
 
+	--' Длина маршрута по точкам от каждого смарта до цели (Дейкстра от цели). Через закрытые для симуляции
+	--' точки (вес пути 2000 и выше никогда не пробивается порогом атаки) путь не продолжается, поэтому
+	--' отряд, застрявший за такой точкой, цель не получит и не займет ее слот.
+	--' Ребро внутри уровня - расстояние между смартами, переход между уровнями - фиксированная цена:
+	--' координаты разных уровней не сравнимы.
+	local CROSS_LEVEL_EDGE = 100
+	local route_cache = {}
+	local function routes_to(target)
+		if route_cache[target.id] ~= nil then
+			return route_cache[target.id]
+		end
+		local cluster = sim_board.sim_level_cluster[target.smart_level]
+		local dist = {[target.id] = 0}
+		local done = {}
+		local open = {[target.id] = target}
+		while true do
+			local point, point_dist = nil, nil
+			for id, smart in pairs(open) do
+				if point_dist == nil or dist[id] < point_dist then
+					point, point_dist = smart, dist[id]
+				end
+			end
+			if point == nil then
+				break
+			end
+			open[point.id] = nil
+			done[point.id] = true
+			--' Отряд может стоять в закрытой точке, но путь через нее дальше не идет.
+			if point.id == target.id or
+				 (sim_board.is_point_avail(point, self.player_name) and point.forbidden_point ~= self.player_name)
+			then
+				for id, near in pairs(self.board:get_nearest_smarts(point)) do
+					if done[id] == nil and sim_board.sim_level_cluster[near.smart_level] == cluster then
+						local edge = CROSS_LEVEL_EDGE
+						if near.smart_level == point.smart_level then
+							edge = near.position:distance_to(point.position)
+						end
+						if dist[id] == nil or point_dist + edge < dist[id] then
+							dist[id] = point_dist + edge
+							open[id] = near
+						end
+					end
+				end
+			end
+		end
+		route_cache[target.id] = dist
+		return dist
+	end
+
 	-- строим кросс таблицу
 	for k,smart_value in pairs(self.target_smart_value) do
 		local t = {}
@@ -488,11 +545,13 @@ function se_sim_faction:calculate_squad_tasks()
 			--printf("      squad %s smart %s", squad.squad_id, smart:name())
 			--printf("      smart %s", smart_value.smart:name())
 
+			local route_dist = nil
 			if sim_board.sim_level_cluster[smart.smart_level] == sim_board.sim_level_cluster[smart_value.smart.smart_level] then
-				local vid1 = smart.m_game_vertex_id
-				local vid2 = smart_value.smart.m_game_vertex_id
-
-				local gr_dist = utils.graph_distance(vid1, vid2)
+				route_dist = routes_to(smart_value.smart)[smart.id]
+			end
+			if route_dist ~= nil then
+				--' Ближайший отряд - по длине маршрута через точки, а не по прямой между вершинами графа.
+				local gr_dist = route_dist
 				if is_stay == false then
 					gr_dist = gr_dist + 1
 				end

@@ -168,6 +168,9 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
 	            if friendly_squad_quan >= point.squad_capacity then
 	                point_value = point_value + 1000
 	            end
+	        elseif point.id ~= tgt_smart_id and is_neutral_owner(squad.player_id, point.player_name) then
+	        	-- Точка невраждебной группировки. Через нее отряд проходит, не вступая в бой и не заходя в нее.
+	        	point_value = point_value + 1
 	        else
 	        	point_value = point_value + 1000
 	        end
@@ -896,6 +899,17 @@ end
 
 
 --' Отрисовка игрового поля на карте.
+--' Сейв не хранит мапспоты отрядов, а отряд возвращает свой только при смене действия или перехода
+--' в онлайн, то есть в разное время после загрузки. Восстанавливаем все сразу на первом апдейте актора.
+function sim_board:refresh_squad_spots()
+        for k,squad in pairs(self.squads) do
+                if squad.show_spot ~= nil and not xr_surge_hide.surge_activated then
+                        squad.show_disabled = xr_logic.pick_section_from_condlist(db.actor, squad, squad.show_spot) == "true"
+                end
+                squad:refresh()
+        end
+end
+
 function sim_board:show()
 --[[        if self.show_flag == true then
                 return
@@ -942,6 +956,14 @@ end
 --' Обнуление списка на создании игры.
 function clear()
         board = nil
+end
+
+--' Точка занята группировкой, которая не враг отряду. Монстров не считаем: их логова не рассчитаны на работы людей.
+function is_neutral_owner(player_id, owner)
+        if owner == "none" or owner == player_id or owner == "monster" or player_id == "monster" then
+                return false
+        end
+        return not game_relations.is_factions_enemies(player_id, owner)
 end
 
 -- Проверяет доступность смарттеррейна для симуляции

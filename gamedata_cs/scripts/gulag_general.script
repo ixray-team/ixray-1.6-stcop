@@ -671,7 +671,8 @@ function load_job(smart)
                                     "[patrol@"..sect_name.."]\n"..
 --                                  "meet = no_meet\n".. -- commented for dialog
                                     "formation = around\n"..
-                                    "def_state_moving = {=attacking_smart_captured} raid, patrol\n"..
+                                    -- Как у групповой атаки: отряд не должен идти шагом только потому, что для этой пары точек нет ручного пути.
+                                    "def_state_moving = {=attacking_smart_captured} raid, rush\n"..
                                     "on_info = {!current_squad_stage(move:prepare:wait)} cover@"..sect_name.."_attack, {=npc_to_smart_dist("..target_smart..":30)} %=request_current_squad_stage(prepare)%\n"..
                                     "path_walk = kamp_"..it.."_task\n"..danger_ltx
 
