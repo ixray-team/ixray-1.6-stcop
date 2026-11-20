@@ -347,14 +347,6 @@ void CActorCondition::UpdateCondition()
 		if(pSettings->section_exist("actor_death_effector"))
 			m_death_effector = new CActorDeathEffector(this, "actor_death_effector");
 	}
-	if(m_death_effector && m_death_effector->IsActual())
-	{
-		m_death_effector->UpdateCL	();
-
-		if(!m_death_effector->IsActual())
-			m_death_effector->Stop();
-	}
-
 	AffectDamage_InjuriousMaterialAndMonstersInfluence();
 }
 
@@ -1300,28 +1292,14 @@ CActorDeathEffector::CActorDeathEffector	(CActorCondition* parent, const char* s
 
 	SBaseEffector* pe		= Actor()->Cameras().GetPPEffector((EEffectorPPType)effActorDeath);
 	pe->m_on_b_remove_callback = SBaseEffector::CB_ON_B_REMOVE(this, &CActorDeathEffector::OnPPEffectorReleased);
-	m_b_actual				= true;	
-	m_start_health			= m_pParent->health();
 }
 
 CActorDeathEffector::~CActorDeathEffector() = default;
 
-void CActorDeathEffector::UpdateCL()
-{
-	m_pParent->SetHealth( m_start_health );
-}
-
 void CActorDeathEffector::OnPPEffectorReleased()
 {
-	m_b_actual				= false;	
-	//m_pParent->health()		= -1.0f;
-	m_pParent->SetHealth		(-1.0f);
-}
-
-void CActorDeathEffector::Stop()
-{
-	RemoveEffector			(Actor(),effActorDeath);
-	m_death_sound.destroy	();
+	m_pParent->SetHealth(0.0f);
+	m_death_sound.destroy();
 	enable_input			();
 	show_indicators			();
 }

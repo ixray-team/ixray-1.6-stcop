@@ -173,13 +173,8 @@ class CActorDeathEffector
 {
 	CActorCondition*		m_pParent;
 	ref_sound				m_death_sound;
-	bool					m_b_actual;
-	float					m_start_health;
 	void 			OnPPEffectorReleased		();
 public:
 			CActorDeathEffector	(CActorCondition* parent, const char* sect);	// -((
 			~CActorDeathEffector();
-	void	UpdateCL			();
-	IC bool	IsActual			() {return m_b_actual;}
-	void	Stop				();
 };
