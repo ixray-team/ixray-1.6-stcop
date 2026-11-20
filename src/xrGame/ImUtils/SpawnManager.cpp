@@ -14,6 +14,7 @@
 #include "script_sound.h"
 #include "../../xrCore/xr_ini.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
+#include "../../xrUI/UITextureMaster.h"
 #include "../Weapons/WeaponBoneVisibility.h"
 
 class SpawnManagerIconViews final
@@ -1294,6 +1295,72 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 	std::sort(sections.begin(), sections.end());
 }
 
+namespace SpawnManagerMarks
+{
+	bool HasInstalledUpgrades(const char* SectionName)
+	{
+		if (!pSettings->line_exist(SectionName, "upgrades") || !pSettings->line_exist(SectionName, "installed_upgrades"))
+		{
+			return false;
+		}
+
+		const char* Upgrades = pSettings->r_string(SectionName, "installed_upgrades");
+		return Upgrades && _GetItemCount(Upgrades) > 0;
+	}
+
+	void DrawTexture(const char* TextureName, const ImVec2& Min, const ImVec2& Size, u32 Color)
+	{
+		if (!TextureName || !TextureName[0])
+		{
+			return;
+		}
+
+		const TEX_INFO Info = CUITextureMaster::FindItem(TextureName);
+		const char* FileName = Info.get_file_name();
+		if (!FileName || !FileName[0])
+		{
+			return;
+		}
+
+		const auto Surface = ::Render->getSurface(FileName);
+		if (Surface.Surface == nullptr || Surface.w <= 0.0f || Surface.h <= 0.0f)
+		{
+			return;
+		}
+
+		const Frect Rect = Info.get_rect();
+		const ImU32 Tint = Color ? IM_COL32(color_get_R(Color), color_get_G(Color), color_get_B(Color), color_get_A(Color)) : IM_COL32_WHITE;
+		ImGui::GetWindowDrawList()->AddImage(Surface.Surface, Min, ImVec2(Min.x + Size.x, Min.y + Size.y),
+			ImVec2(Rect.x1 / Surface.w, Rect.y1 / Surface.h), ImVec2(Rect.x2 / Surface.w, Rect.y2 / Surface.h), Tint);
+	}
+
+	// Draws the inventory cell marks (upgrade arrow, custom mark) over the last item button.
+	void DrawItemMarks(const char* SectionName)
+	{
+		const ImVec2 Min = ImGui::GetItemRectMin();
+		const ImVec2 Max = ImGui::GetItemRectMax();
+		const ImVec2 Padding = ImGui::GetStyle().FramePadding;
+		constexpr float MarkSize = 16.0f;
+
+		if (HasInstalledUpgrades(SectionName))
+		{
+			DrawTexture("ui_upgrade_arrow2", ImVec2(Min.x + Padding.x, Min.y + Padding.y), ImVec2(MarkSize, MarkSize), color_rgba(255, 255, 255, 180));
+		}
+
+		if (READ_IF_EXISTS(pSettings, r_bool, SectionName, "item_custom_mark", false))
+		{
+			const char* Texture = READ_IF_EXISTS(pSettings, r_string, SectionName, "item_custom_mark_texture", nullptr);
+			Fvector2 Size = READ_IF_EXISTS(pSettings, r_fvector2, SectionName, "item_custom_mark_size", Fvector2().set(MarkSize, MarkSize));
+			if (Size.x <= 0.0f || Size.y <= 0.0f)
+			{
+				Size.set(MarkSize, MarkSize);
+			}
+			const u32 Color = READ_IF_EXISTS(pSettings, r_color, SectionName, "item_custom_mark_clr", 0);
+			DrawTexture(Texture, ImVec2(Max.x - Padding.x - Size.x, Max.y - Padding.y - Size.y), ImVec2(Size.x, Size.y), Color);
+		}
+	}
+}
+
 bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname)
 {
 	auto name = section->Name.c_str();
@@ -1330,6 +1397,10 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 					DrawList->AddCallback(SpawnManagerDrawIcon, &Data, sizeof(Data));
 					DrawList->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
 				}
+				if (ImGui::IsItemVisible())
+				{
+					SpawnManagerMarks::DrawItemMarks(name);
+				}
 				return IsPressed;
 			}
 		}
@@ -1352,10 +1423,11 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	}
 	bool isScaleIcon = scaleIcon > 1.0f;
 
-	return ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isScaleIcon), h / (1 + isScaleIcon)},
+	const bool IsPressed = ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isScaleIcon), h / (1 + isScaleIcon)},
 		{ x / surfaceParams.w, y / surfaceParams.h },
 		{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h });
-
+	SpawnManagerMarks::DrawItemMarks(name);
+	return IsPressed;
 }
 
 void SpawnManager_HandleButtonPress(CInifile::Sect* section)
