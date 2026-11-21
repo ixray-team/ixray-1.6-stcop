@@ -636,6 +636,23 @@ bool CTerrain::BakeMask(u32 Size, xr_string& OutColor, xr_string& OutMask)
 			THM->_Format().fmt = STextureParams::tfDXT1;
 			// xrLC bakes the static lighting into levels\<level>\<texture>.dds only for implicit lighted textures
 			THM->_Format().flags.set(STextureParams::flImplicitLighted, true);
+
+			if (!Mask.Materials.empty())
+			{
+				TM::SMaterial& First = Mask.Materials[0];
+				First.EnsureDetails();
+				for (const TM::SPreviewTexture& Detail : First.Details)
+				{
+					if (Detail.Texture.size())
+					{
+						THM->_Format().detail_name = Detail.Texture;
+						break;
+					}
+				}
+				const float WorldSize = std::max(float(HMap.Width - 1) * HMap.StepX(), float(HMap.Height - 1) * HMap.StepZ());
+				THM->_Format().detail_scale = std::max(1.f, WorldSize / std::max(First.TileSize, 0.1f));
+			}
+			THM->_Format().flags.set(STextureParams::flDiffuseDetail, THM->_Format().detail_name.size() != 0);
 		}
 		THM->_Format().flags.set(STextureParams::flGenerateMipMaps, true);
 		THM->Save(int(Age));
