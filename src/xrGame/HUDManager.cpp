@@ -61,6 +61,8 @@ void CHUDManager::OnFrameMT()
 		return;
 	PROF_EVENT("CHUDManager::OnFrameMT");
 
+	CCutsceneManager::GetInstance().Update();
+
 	if (Device.dwPrecacheFrame == 0)
 		Level().GameTaskManager()->UpdateTasks();
 
