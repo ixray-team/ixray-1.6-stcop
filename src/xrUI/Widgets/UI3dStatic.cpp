@@ -230,6 +230,10 @@ void CUI3dStatic::Draw()
 
 		::Render->set_Transform(matrix);
 		::Render->add_Visual(pCurrentVisual, true);
+		if (OnDrawVisual)
+		{
+			OnDrawVisual(matrix);
+		}
 
 		Fcolor static_color { };
 		static_color.set(GetTextureColor());

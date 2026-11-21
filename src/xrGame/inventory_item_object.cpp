@@ -12,6 +12,7 @@
 #include "inventory_item_object.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
+#include "../xrPhysics/PhysicsShell.h"
 
 DLL_Pure* CInventoryItemObject::_construct()
 {
@@ -56,6 +57,27 @@ void CInventoryItemObject::OnH_A_Chield()
 {
 	CPhysicItem::OnH_A_Chield();
 	CInventoryItem::OnH_A_Chield();
+}
+
+void CInventoryItemObject::CreatePhysicsShell()
+{
+	const bool had_shell = PPhysicsShell() != nullptr;
+	CPhysicItem::CreatePhysicsShell();
+
+	if (had_shell || !PPhysicsShell() || !PPhysicsShell()->get_ElementsNumber())
+	{
+		return;
+	}
+
+	IKinematics* kin = PKinematics(Visual());
+	const u16 root = kin->LL_GetBoneRoot();
+	CPhysicsElement* element = PPhysicsShell()->get_Element(root);
+	kin->CalculateBones_Invalidate();
+	kin->CalculateBones(true);
+
+	Fmatrix xform;
+	xform.invert(kin->LL_GetTransform(root));
+	AddAttachmentShapes(element ? element : PPhysicsShell()->get_ElementByStoreOrder(0), xform);
 }
 
 void CInventoryItemObject::UpdateCL()

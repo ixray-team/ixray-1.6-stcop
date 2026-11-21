@@ -460,11 +460,7 @@ void CHudStateAnimator::OnMotionMark(const motion_marks& mark, u8 state)
 			{
 				if (CActor* pActor = m_manager->Parent())
 				{
-					PIItem torch_item = pActor->inventory().ItemFromSlot(TORCH_SLOT);
-					if (CTorch* pTorch = torch_item != nullptr ? torch_item->cast_torch() : nullptr)
-					{
-						pTorch->Switch();
-					}
+					pActor->ToggleHeadLights();
 				}
 			}
 			else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
@@ -747,11 +743,7 @@ void CHudStateAnimator::PlayAnimDeviceSwitch()
 		{
 			if (CActor* pActor = m_manager->Parent())
 			{
-				PIItem torch_item = pActor->inventory().ItemFromSlot(TORCH_SLOT);
-				if (CTorch* pTorch = torch_item != nullptr ? torch_item->cast_torch() : nullptr)
-				{
-					sound_name = pTorch->IsSwitched() ? "sndHeadlampOff" : "sndHeadlampOn";
-				}
+				sound_name = pActor->HeadLightsActive() ? "sndHeadlampOff" : "sndHeadlampOn";
 			}
 		}
 		else

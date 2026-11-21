@@ -230,17 +230,17 @@ void CInventoryItem::pre_install_upgrade()
 
 		if (CWeapon* weapon = cast_weapon())
 		{
-			if (CScope* pScope = weapon->GetScopeAttached())
+			if (weapon->IsScopeAttachable() && weapon->IsScopeAttached())
 			{
-				weapon->Detach(pScope);
+				weapon->Detach(weapon->GetScopeName().c_str(), true);
 			}
-			if (CSilencer* pSilencer = weapon->GetSilencerAttached())
+			if (weapon->IsSilencerAttachable() && weapon->IsSilencerAttached())
 			{
-				weapon->Detach(pSilencer);
+				weapon->Detach(weapon->GetSilencerName().c_str(), true);
 			}
-			if (CGrenadeLauncher* pGrenadeLauncher = weapon->GetGrenadeLauncherAttached())
+			if (weapon->IsGrenadeLauncherAttachable() && weapon->IsGrenadeLauncherAttached())
 			{
-				weapon->Detach(pGrenadeLauncher);
+				weapon->Detach(weapon->GetGrenadeLauncherName().c_str(), true);
 			}
 		}
 	}
@@ -260,22 +260,22 @@ void CInventoryItem::pre_install_upgrade()
 			P.w_u8(1); // full unload
 			CGameObject::u_EventSend(P);
 
-			if (CScope* pScope = weapon->GetScopeAttached())
+			if (weapon->IsScopeAttachable() && weapon->IsScopeAttached())
 			{
 				CGameObject::u_EventGen(P, GE_ADDON_DETACH, weapon->ID());
-				P.w_u32(pScope->ID());
+				P.w_stringZ(weapon->GetScopeName().c_str());
 				CGameObject::u_EventSend(P);
 			}
-			if (CSilencer* pSilencer = weapon->GetSilencerAttached())
+			if (weapon->IsSilencerAttachable() && weapon->IsSilencerAttached())
 			{
 				CGameObject::u_EventGen(P, GE_ADDON_DETACH, weapon->ID());
-				P.w_u32(pSilencer->ID());
+				P.w_stringZ(weapon->GetSilencerName().c_str());
 				CGameObject::u_EventSend(P);
 			}
-			if (CGrenadeLauncher* pGrenadeLauncher = weapon->GetGrenadeLauncherAttached())
+			if (weapon->IsGrenadeLauncherAttachable() && weapon->IsGrenadeLauncherAttached())
 			{
 				CGameObject::u_EventGen(P, GE_ADDON_DETACH, weapon->ID());
-				P.w_u32(pGrenadeLauncher->ID());
+				P.w_stringZ(weapon->GetGrenadeLauncherName().c_str());
 				CGameObject::u_EventSend(P);
 			}
 		}

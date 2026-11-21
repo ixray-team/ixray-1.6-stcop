@@ -22,6 +22,10 @@
 #include "Artefact.h"
 #include "object_broker.h"
 #include "SaveObjectHelpers.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "HudItem.h"
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
@@ -39,8 +43,7 @@ net_updateInvData* CInventoryItem::NetSync()
 	return m_net_updateData;
 }
 
-CInventoryItem::CInventoryItem() :
-	item_attachments_manager(this)
+CInventoryItem::CInventoryItem()
 {
 	CurrentItemDesc = &SInventoryItemDesc::Registry::Get(shared_str());
 
@@ -72,6 +75,14 @@ CInventoryItem::CInventoryItem() :
 CInventoryItem::~CInventoryItem()
 {
 	delete_data(m_net_updateData);
+
+	if (m_hud_model)
+	{
+		IRenderVisual* visual = m_hud_model->dcast_RenderVisual();
+		::Render->model_Delete(visual);
+		m_hud_model = nullptr;
+	}
+	ReleaseHudMirrors();
 
 #ifndef MASTER_GOLD
 	bool B_GOOD = (!m_pInventory || (std::find(m_pInventory->m_all.begin(), m_pInventory->m_all.end(), this) == m_pInventory->m_all.end()));
@@ -160,7 +171,6 @@ void CInventoryItem::Load(const char* section)
 	ReadCustomTextAndMarks(section);
 	Read3dStaticsData(section);
 
-	item_attachments_manager::load_attachments(nullptr);
 }
 
 void CInventoryItem::SetAdditionalName(const char* text)
@@ -403,6 +413,21 @@ void CInventoryItem::OnH_A_Chield()
 extern	Flags32	dbg_net_Draw_Flags;
 #endif
 
+static void UpdateHudModel(IKinematics* model)
+{
+	if (!model)
+	{
+		return;
+	}
+
+	if (IKinematicsAnimated* ka = model->dcast_PKinematicsAnimated())
+	{
+		ka->UpdateTracks();
+	}
+	model->CalculateBones_Invalidate();
+	model->CalculateBones(true);
+}
+
 void CInventoryItem::UpdateCL()
 {
 #ifdef DEBUG
@@ -424,6 +449,12 @@ void CInventoryItem::UpdateCL()
 	{
 		Interpolate();
 	}
+
+	UpdateHudModel(m_hud_model);
+	for (SHudMirror& mirror : m_hud_mirrors)
+	{
+		UpdateHudModel(mirror.model);
+	}
 }
 
 void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
@@ -432,7 +463,9 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 	{
 	case GE_ADDON_ATTACH:
 	{
-		CObject* finded_addon = Level().Objects.net_Find(P.r_u32());
+		ALife::_OBJECT_ID ItemID;
+		P >> ItemID;
+		CObject* finded_addon = Level().Objects.net_Find(ItemID);
 		PIItem ItemToAttach = finded_addon != nullptr ? finded_addon->cast_inventory_item() : nullptr;
 		if (ItemToAttach == nullptr)
 		{
@@ -442,13 +475,9 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 	}break;
 	case GE_ADDON_DETACH:
 	{
-		CObject* finded_addon = Level().Objects.net_Find(P.r_u32());
-		PIItem ItemToDetach = finded_addon != nullptr ? finded_addon->cast_inventory_item() : nullptr;
-		if (ItemToDetach == nullptr)
-		{
-			break;
-		}
-		Detach(ItemToDetach);
+		string64 i_name = {};
+		P.r_stringZ(i_name);
+		Detach(i_name, true);
 	}break;
 
 	case GE_REPAIR_ITEM:
@@ -476,136 +505,505 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 
 	case GE_OWNERSHIP_TAKE:
 	{
-		u32 id = P.r_u32();
+		ALife::_OBJECT_ID id;
+		P >> id;
 		CObject* O = Level().Objects.net_Find(id);
-
 		O->H_SetParent(m_object);
-		append_child(id, O->cast_game_object());
-		O->processing_deactivate();
-	}
-	break;
+		m_children[id] = O->cast_inventory_item();
+		m_children[id]->m_attach_parent = this;
+		AttachChild(m_children[id]);
+		AttachRoot()->NotifyAttachment(m_children[id], true);
+	}break;
 	case GE_OWNERSHIP_REJECT:
 	{
-		u32 id = P.r_u32();
+		ALife::_OBJECT_ID id;
+		P >> id;
 		CObject* O = Level().Objects.net_Find(id);
-
-		bool just_before_destroy = !P.r_eof() && P.r_u8();
-
+		const bool just_before_destroy = !P.r_eof() && P.r_u8();
 		O->SetTmpPreDestroy(just_before_destroy);
-		erase_child(id);
-		O->processing_activate();
-		O->H_SetParent(0, true);
-	}
-	break;
+		AttachRoot()->NotifyAttachment(m_children[id], false);
+		m_children[id]->m_attach_parent = nullptr;
+		m_children[id]->m_attach_bone = nullptr;
+		m_children[id]->m_attach_bone_id = BI_NONE;
+		m_children[id]->ReleaseHudMirrors();
+		m_children.erase(id);
+		O->H_SetParent(nullptr, just_before_destroy);
+	}break;
 	}
 }
 
-bool CInventoryItem::Attach(PIItem pIItem)
+CInventoryItem* CInventoryItem::GetChild(ALife::_OBJECT_ID id) const
 {
-	if (OnClient())
-	{
-		return true;
-	}
-
-	NET_Packet P;
-	if (pIItem->object().H_Parent())
-	{ // заставим текущего владельца аддона выбросить предмет
-		CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->parent_id());
-		P.w_u32(pIItem->object_id());
-		CGameObject::u_EventSend(P);
-	}
-	// заставим итем поднять предмет
-	CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, object_id());
-	P.w_u32(pIItem->object_id());
-	CGameObject::u_EventSend(P);
-
-	return true;
-}
-
-bool CInventoryItem::Detach(PIItem pIItem)
-{
-	if (!pIItem) return false;
-	if (OnClient())
-	{
-		return true;
-	}
-
-	NET_Packet P;
-	// выбросим из инвентаря предмета
-	CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, object_id());
-	P.w_u32(pIItem->object_id());
-	CGameObject::u_EventSend(P);
-
-	// подбираем его в инвентаре парента если он есть или выбросим на землю
-	CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, parent_id());
-	P.w_u32(pIItem->object_id());
-	CGameObject::u_EventSend(P);
-
-	return true;
-}
-
-CGameObject* CInventoryItem::GetChildBySectName(shared_str child_sect_name) const
-{
-	for (auto& pair : m_children_storage)
-	{
-		if (!pair.second)
-		{
-			continue;
-		}
-		if (pair.second->getDestroy())
-		{
-			continue;
-		}
-		if (child_sect_name == pair.second->cNameSect())
-		{
-			return pair.second;
-		}
-	}
-	return nullptr;
-}
-
-CGameObject* CInventoryItem::GetChildByName(shared_str child_name) const
-{
-	for (auto& pair : m_children_storage)
-	{
-		if (!pair.second)
-		{
-			continue;
-		}
-		if (pair.second->getDestroy())
-		{
-			continue;
-		}
-		if (child_name == pair.second->Name())
-		{
-			return pair.second;
-		}
-	}
-	return nullptr;
-}
-
-CGameObject* CInventoryItem::GetChildByID(u32 child_id) const
-{
-	auto it = m_children_storage.find(child_id);
-	if (it != m_children_storage.end())
+	const auto it = m_children.find(id);
+	if (it != m_children.end())
 	{
 		return it->second;
 	}
 
-	return nullptr;
-}
-
-const item_attachment* CInventoryItem::GetRealattachment(shared_str child_sect_name, EattachmentType type) const
-{
-	for (auto& pair : m_children_storage)
+	for (const auto& [child_id, child] : m_children)
 	{
-		if (child_sect_name == pair.second->cNameSect())
+		if (CInventoryItem* nested = child->GetChild(id))
 		{
-			if (const item_attachment* attachment = get_attachment(child_sect_name, type))
-				return attachment;
+			return nested;
 		}
 	}
 	return nullptr;
+}
+
+bool CInventoryItem::CanAttachChild(PIItem child, const shared_str& bone) const
+{
+	for (const auto& [id, other] : m_children)
+	{
+		if (other != child && other->m_attach_bone == bone)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void CInventoryItem::CollectConflicts(PIItem item, xr_vector<PIItem>& conflicts) const
+{
+	const RStringVec& item_conflicts = item->ItemDesc().m_conflicts;
+	for (const auto& [id, child] : m_children)
+	{
+		if (child == item || !child->m_attach_bone.size())
+		{
+			continue;
+		}
+
+		const RStringVec& child_conflicts = child->ItemDesc().m_conflicts;
+		if (std::find(child_conflicts.begin(), child_conflicts.end(), item->object().cNameSect()) != child_conflicts.end() ||
+			std::find(item_conflicts.begin(), item_conflicts.end(), child->object().cNameSect()) != item_conflicts.end())
+		{
+			if (std::find(conflicts.begin(), conflicts.end(), child) == conflicts.end())
+			{
+				conflicts.push_back(child);
+			}
+			continue;
+		}
+
+		child->CollectConflicts(item, conflicts);
+	}
+
+	for (const auto& [id, child] : item->m_children)
+	{
+		if (child->m_attach_bone.size())
+		{
+			CollectConflicts(child, conflicts);
+		}
+	}
+}
+
+void CInventoryItem::DetachConflicts(PIItem item)
+{
+	xr_vector<PIItem> conflicts = {};
+	CollectConflicts(item, conflicts);
+
+	for (PIItem conflict : conflicts)
+	{
+		bool ancestor = false;
+		for (PIItem parent = item->m_attach_parent; parent; parent = parent->m_attach_parent)
+		{
+			ancestor |= parent == conflict;
+		}
+
+		if (ancestor)
+		{
+			continue;
+		}
+
+		NotifyAttachment(conflict, false);
+		conflict->m_attach_bone = nullptr;
+
+		if (!OnServer())
+		{
+			continue;
+		}
+
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, conflict->parent_id());
+		P << conflict->object_id();
+		CGameObject::u_EventSend(P);
+
+		if (CObject* owner = object().H_Parent())
+		{
+			CGameObject::u_EventGen(P, GE_OWNERSHIP_TAKE, owner->ID());
+			P << conflict->object_id();
+			CGameObject::u_EventSend(P);
+		}
+	}
+}
+
+void CInventoryItem::AttachChild(PIItem child)
+{
+	const shared_str& section = child->object().cNameSect();
+
+	child->m_attach_bone = nullptr;
+	child->m_attach_bone_id = BI_NONE;
+	child->m_attach_hud_bone_id = BI_NONE;
+	child->ReleaseHudMirrors();
+
+	CInventoryItem* root = this;
+	while (root->m_attach_parent)
+	{
+		root = root->m_attach_parent;
+	}
+
+	root->DetachConflicts(child);
+
+	const auto& bones = ItemDesc().m_customize_bones;
+	const auto request = child->m_attach_request.size() ? bones.find(child->m_attach_request) : bones.end();
+	const bool use_request = request != bones.end() && std::find(request->second.begin(), request->second.end(), section) != request->second.end() && CanAttachChild(child, request->first);
+	child->m_attach_request = nullptr;
+
+	for (const auto& [bone, sections] : bones)
+	{
+		if (std::find(sections.begin(), sections.end(), section) == sections.end())
+		{
+			continue;
+		}
+
+		if (!CanAttachChild(child, bone) || (use_request && bone != request->first))
+		{
+			continue;
+		}
+
+		child->m_attach_bone = bone;
+		child->m_attach_bone_id = PKinematics(object().Visual())->LL_BoneID(bone);
+
+		const auto placement = ItemDesc().m_attach_placements.find(section);
+		child->m_attach_offset = placement != ItemDesc().m_attach_placements.end() ? placement->second.m_world : Fidentity;
+		child->m_attach_hud_offset = placement != ItemDesc().m_attach_placements.end() ? placement->second.m_hud : Fidentity;
+		break;
+	}
+
+	if (!child->m_attach_bone.size())
+	{
+		Msg("! [%s]: no free slot for [%s]", object().cNameSect_str(), section.c_str());
+	}
+}
+
+void CInventoryItem::ReleaseHudMirrors()
+{
+	for (SHudMirror& mirror : m_hud_mirrors)
+	{
+		if (mirror.model)
+		{
+			IRenderVisual* visual = mirror.model->dcast_RenderVisual();
+			::Render->model_Delete(visual);
+		}
+	}
+	m_hud_mirrors.clear();
+}
+
+IKinematics* CInventoryItem::HudModel()
+{
+	if (!m_hud_model && ItemDesc().m_attach_hud_visual.size())
+	{
+		m_hud_model = PKinematics(::Render->model_Create(ItemDesc().m_attach_hud_visual.c_str()));
+	}
+
+	return m_hud_model;
+}
+
+void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
+{
+	if (m_children.empty())
+	{
+		return;
+	}
+
+	for (const auto& [id, child] : m_children)
+	{
+		if (!child->m_attach_bone.size())
+		{
+			continue;
+		}
+
+		if (child->m_attach_hud_bone_id == BI_NONE)
+		{
+			child->m_attach_hud_bone_id = model->LL_BoneID(child->m_attach_bone);
+			R_ASSERT3(child->m_attach_hud_bone_id != BI_NONE, "attachment bone not found in hud model", child->m_attach_bone.c_str());
+		}
+
+		IKinematics* child_model = child->HudModel();
+
+		child->m_attach_hud_transform.mul_43(xform, model->LL_GetTransform(child->m_attach_hud_bone_id));
+		child->m_attach_hud_transform.mulB_43(child->m_attach_hud_offset);
+		::Render->set_Transform(child->m_attach_hud_transform);
+		::Render->add_Visual(child_model->dcast_RenderVisual(), true);
+
+		child->RenderHud(child->m_attach_hud_transform, child_model);
+
+		const auto mirrors = ItemDesc().m_attach_hud_mirrors.find(child->m_attach_bone);
+		if (mirrors == ItemDesc().m_attach_hud_mirrors.end())
+		{
+			continue;
+		}
+
+		if (child->m_hud_mirrors.size() < mirrors->second.size())
+		{
+			child->m_hud_mirrors.resize(mirrors->second.size());
+		}
+
+		for (u32 i = 0; i < mirrors->second.size(); ++i)
+		{
+			SHudMirror& mirror = child->m_hud_mirrors[i];
+			if (mirror.bone == BI_NONE)
+			{
+				mirror.bone = model->LL_BoneID(mirrors->second[i]);
+				R_ASSERT3(mirror.bone != BI_NONE, "mirror bone not found in hud model", mirrors->second[i].c_str());
+			}
+
+			if (!model->LL_GetBoneVisible(mirror.bone))
+			{
+				continue;
+			}
+
+			if (!mirror.model)
+			{
+				mirror.model = PKinematics(::Render->model_Create(child->ItemDesc().m_attach_hud_visual.c_str()));
+			}
+
+			mirror.transform.mul_43(xform, model->LL_GetTransform(mirror.bone));
+			mirror.transform.mulB_43(child->m_attach_hud_offset);
+			::Render->set_Transform(mirror.transform);
+			::Render->add_Visual(mirror.model->dcast_RenderVisual(), true);
+		}
+	}
+}
+
+void CInventoryItem::RenderIcon(const Fmatrix& xform, IKinematics* model, xr_deque<Fmatrix>& xforms)
+{
+	for (const auto& [id, child] : m_children)
+	{
+		const u16 bone = child->m_attach_bone.size() ? model->LL_BoneID(child->m_attach_bone) : BI_NONE;
+		if (bone == BI_NONE)
+		{
+			continue;
+		}
+
+		IKinematics* child_model = PKinematics(child->object().Visual());
+		child_model->CalculateBones(true);
+
+		Fmatrix& child_xform = xforms.emplace_back();
+		child_xform.mul_43(xform, model->LL_GetTransform(bone));
+		child_xform.mulB_43(child->m_attach_offset);
+		child_model->dcast_RenderVisual()->getVisData().marker = u32(-1);
+		::Render->set_Transform(child_xform);
+		::Render->add_Visual(child_model->dcast_RenderVisual(), true);
+
+		child->RenderIcon(child_xform, child_model, xforms);
+	}
+}
+
+void CInventoryItem::AddAttachmentShapes(CPhysicsElement* element, const Fmatrix& xform)
+{
+	IKinematics* model = PKinematics(object().Visual());
+	for (const auto& [id, child] : m_children)
+	{
+		if (child->m_attach_bone_id == BI_NONE)
+		{
+			continue;
+		}
+
+		IKinematics* child_model = PKinematics(child->object().Visual());
+		child_model->CalculateBones_Invalidate();
+		child_model->CalculateBones(true);
+
+		Fmatrix child_xform;
+		child_xform.mul_43(xform, model->LL_GetTransform(child->m_attach_bone_id));
+		child_xform.mulB_43(child->m_attach_offset);
+
+		for (u16 bone = 0, count = child_model->LL_BoneCount(); bone < count; ++bone)
+		{
+			SBoneShape& shape = child_model->LL_GetData(bone).shape;
+			if (shape.type == SBoneShape::stNone || !shape.Valid())
+			{
+				continue;
+			}
+
+			Fmatrix offset = Fidentity;
+			offset.mul_43(child_xform, child_model->LL_GetTransform(bone));
+			element->add_Shape(shape, offset);
+		}
+
+		child->AddAttachmentShapes(element, child_xform);
+	}
+}
+
+static void PlayHudModelMotion(IKinematics* model, const shared_str& name, bool mix, float speed)
+{
+	IKinematicsAnimated* ka = model ? model->dcast_PKinematicsAnimated() : nullptr;
+	if (!ka)
+	{
+		return;
+	}
+
+	MotionID motion = ka->ID_Cycle_Safe(name);
+	if (!motion.valid())
+	{
+		motion = ka->ID_Cycle_Safe("idle");
+	}
+
+	if (!motion.valid())
+	{
+		return;
+	}
+
+	for (u16 pid = 0, count = ka->partitions().count(); pid < count; ++pid)
+	{
+		if (CBlend* blend = ka->PlayCycle(pid, motion, mix))
+		{
+			blend->speed *= speed;
+		}
+	}
+}
+
+void CInventoryItem::PlayHudMotion(const shared_str& name, bool mix, float speed)
+{
+	for (const auto& [id, child] : m_children)
+	{
+		if (!child->m_attach_bone.size())
+		{
+			continue;
+		}
+
+		PlayHudModelMotion(child->HudModel(), name, mix, speed);
+		for (SHudMirror& mirror : child->m_hud_mirrors)
+		{
+			PlayHudModelMotion(mirror.model, name, mix, speed);
+		}
+
+		child->PlayHudMotion(name, mix, speed);
+	}
+}
+
+bool CInventoryItem::AttachTransform(bool hud, IKinematics*& kin, Fmatrix& xform)
+{
+	if (!m_attach_parent)
+	{
+		if (hud)
+		{
+			kin = cast_hud_item()->HudItemData()->m_model;
+			xform = cast_hud_item()->HudItemData()->m_item_transform;
+		}
+		else
+		{
+			kin = PKinematics(object().Visual());
+			xform = object().XFORM();
+		}
+		return true;
+	}
+
+	if (!m_attach_parent->AttachTransform(hud, kin, xform))
+	{
+		return false;
+	}
+
+	const u16 bone = kin->LL_BoneID(m_attach_bone);
+	if (bone == BI_NONE)
+	{
+		return false;
+	}
+
+	xform.mulB_43(kin->LL_GetTransform(bone));
+	xform.mulB_43(hud ? m_attach_hud_offset : m_attach_offset);
+	kin = hud ? HudModel() : PKinematics(object().Visual());
+	return true;
+}
+
+CInventoryItem* CInventoryItem::AttachRoot()
+{
+	CInventoryItem* root = this;
+	while (root->m_attach_parent)
+	{
+		root = root->m_attach_parent;
+	}
+	return root;
+}
+
+void CInventoryItem::NotifyAttachment(PIItem item, bool attached)
+{
+	if (!item->m_attach_bone.size())
+	{
+		return;
+	}
+
+	if (attached)
+	{
+		OnAttachmentInc(item);
+	}
+	else
+	{
+		OnAttachmentDec(item);
+	}
+
+	for (const auto& [id, child] : item->m_children)
+	{
+		NotifyAttachment(child, attached);
+	}
+}
+
+void CInventoryItem::FindAttachPose(shared_str& pose, shared_str& ik_mark, shared_str& fingers_mark) const
+{
+	for (const auto& [id, child] : m_children)
+	{
+		if (!child->m_attach_bone.size())
+		{
+			continue;
+		}
+
+		const SInventoryItemDesc& desc = child->ItemDesc();
+		if (desc.m_anim_pose.size())
+		{
+			pose = desc.m_anim_pose;
+			ik_mark = desc.m_ik_mark.size() ? desc.m_ik_mark : ik_mark;
+			fingers_mark = desc.m_fingers_mark.size() ? desc.m_fingers_mark : fingers_mark;
+		}
+
+		child->FindAttachPose(pose, ik_mark, fingers_mark);
+	}
+}
+
+void CInventoryItem::renderable_Render()
+{
+	inherited::renderable_Render();
+
+	if (m_children.empty())
+	{
+		return;
+	}
+
+	IKinematics* model = PKinematics(object().Visual());
+	model->CalculateBones(true);
+
+	for (const auto& [id, child] : m_children)
+	{
+		if (child->m_attach_bone_id == BI_NONE)
+		{
+			continue;
+		}
+
+		child->object().XFORM().mul_43(object().XFORM(), model->LL_GetTransform(child->m_attach_bone_id));
+		child->object().XFORM().mulB_43(child->m_attach_offset);
+		child->object().renderable_Render();
+	}
+}
+
+bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
+{
+	if (OnClient())
+	{
+		return true;
+	}
+
+	if (b_spawn_item)
+	{
+		Level().spawn_item(item_section_name, object().Position(), object().ai_location().level_vertex_id(), object().H_Parent() ? object().H_Parent()->ID() : ALife::INVALID_OBJECT_ID);
+	}
+	return true;
 }
 
 /////////// network ///////////////////////////////
@@ -653,8 +1051,6 @@ bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 
 void CInventoryItem::net_Destroy()
 {
-	item_attachments_manager::unload_attachments();
-
 	if (m_pInventory)
 	{
 		VERIFY(std::find(m_pInventory->m_all.begin(), m_pInventory->m_all.end(), this) == m_pInventory->m_all.end());
@@ -1208,13 +1604,6 @@ void CInventoryItem::OnRender()
 }
 #endif
 
-void CInventoryItem::renderable_Render()
-{
-	CAttachableItem::renderable_Render();
-
-	item_attachments_manager::render_attachments(object().XFORM(), PKinematics(object().Visual()), false);
-}
-
 DLL_Pure* CInventoryItem::_construct()
 {
 	m_object = smart_cast<CPhysicsShellHolder*>(this);
@@ -1374,4 +1763,28 @@ void CInventoryItem::SetDropManual(bool val)
 bool CInventoryItem::has_network_synchronization() const
 {
 	return false;
+}
+
+u32 CInventoryItem::Cost() const
+{
+	u32 AllCosts = m_cost;
+
+	for (const auto& [id, item] : m_children)
+	{
+		AllCosts += item->Cost();
+	}
+
+	return AllCosts;
+}
+
+float CInventoryItem::Weight() const
+{
+	float AllWeight = m_weight;
+
+	for (const auto& [id, item] : m_children)
+	{
+		AllWeight += item->Weight();
+	}
+
+	return AllWeight;
 }

@@ -18,6 +18,7 @@
 #include "../Actor.h"
 
 void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
+void OpenWeaponCustomize(u32 id);
 
 namespace
 {
@@ -484,16 +485,28 @@ void CUIActorMenuBase::PropertiesBoxForAddon(PIItem item, bool& b_show)
 void CUIActorMenuBase::PropertiesBoxForWeapon(CUICellItem* cell_item, PIItem item, bool& b_show)
 {
 	// отсоединение аддонов от вещи
-	xr_string st_detach = g_pStringTable->translate("st_detach").c_str();
-	st_detach += " ";
-	for (auto& child : item->m_children_storage)
+	CWeapon* pWeapon = item->cast_weapon();
+	if (!item->ItemDesc().m_customize_bones.empty())
 	{
-		xr_string translate_str = st_detach + xr_string(g_pStringTable->translate(child.second->cast_inventory_item()->NameItem()).c_str());
-		m_UIPropertiesBox->AddItem(translate_str.c_str(), (void*)child.second->cast_inventory_item(), INVENTORY_DETACH_ADDON);
+		m_UIPropertiesBox->AddItem("Customize", nullptr, INVENTORY_CUSTOMIZE);
+		b_show = true;
+	}
+	if (pWeapon && pWeapon->IsGrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
+	{
+		m_UIPropertiesBox->AddItem("st_detach_gl", nullptr, INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON);
+		b_show = true;
+	}
+	if (pWeapon && pWeapon->IsScopeAttachable() && pWeapon->IsScopeAttached())
+	{
+		m_UIPropertiesBox->AddItem("st_detach_scope", nullptr, INVENTORY_DETACH_SCOPE_ADDON);
+		b_show = true;
+	}
+	if (pWeapon && pWeapon->IsSilencerAttachable() && pWeapon->IsSilencerAttached())
+	{
+		m_UIPropertiesBox->AddItem("st_detach_silencer", nullptr, INVENTORY_DETACH_SILENCER_ADDON);
 		b_show = true;
 	}
 
-	CWeapon* pWeapon = item->cast_weapon();
 	if (pWeapon && pWeapon->cast_weapon_magazined() != nullptr && IsGameTypeSingleCompatible())
 	{
 		bool b = (pWeapon->GetAmmoElapsed() || pWeapon->IsChamber() && pWeapon->GetAmmoChamberElapsed());
@@ -939,18 +952,22 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			
 			break;
 		}
-	case INVENTORY_DETACH_ADDON:
+	case INVENTORY_DETACH_SCOPE_ADDON:
+	case INVENTORY_DETACH_SILENCER_ADDON:
+	case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
 		if (weapon)
 		{
-			DetachAddon((PIItem)m_UIPropertiesBox->GetClickedItem()->GetData());
+			const auto addon_name = [action = m_UIPropertiesBox->GetClickedItem()->GetTAG()](CWeapon* wpn)
+			{
+				return action == INVENTORY_DETACH_SCOPE_ADDON ? wpn->GetScopeName() : action == INVENTORY_DETACH_SILENCER_ADDON ? wpn->GetSilencerName() : wpn->GetGrenadeLauncherName();
+			};
+			DetachAddon(addon_name(weapon).c_str(), weapon);
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
-				CUICellItem* child_itm = cell_item->Child(i);
-				PIItem child_iitm = (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = child_iitm ? child_iitm->cast_weapon() : nullptr;
-				if (child_iitm && wpn)
+				PIItem child_iitm = (PIItem)(cell_item->Child(i)->m_pData);
+				if (CWeapon* wpn = child_iitm ? child_iitm->cast_weapon() : nullptr)
 				{
-					DetachAddon((PIItem)m_UIPropertiesBox->GetClickedItem()->GetData(), child_iitm);
+					DetachAddon(addon_name(wpn).c_str(), child_iitm);
 				}
 			}
 		}
@@ -1009,6 +1026,11 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			return;
 		break;
 	}
+	case INVENTORY_CUSTOMIZE:
+		{
+			OpenWeaponCustomize(item->object_id());
+			break;
+		}
 	case INVENTORY_PLAY_ACTION:
 		{
 			if (CPda* pPda = item->cast_pda())

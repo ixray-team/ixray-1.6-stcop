@@ -100,6 +100,7 @@ void RegisterImGuiInGame()
 		GImGUIManager->Windows().Subscribe("Cinema Film Maker Editor", ImGuiPriority::Medium, RenderCinemaFilmMakerEditor);
 		GImGUIManager->Windows().Subscribe("Demo Record", ImGuiPriority::Medium, RenderDemoRecordEditorWindow);
 		GImGUIManager->Windows().Subscribe("Camera Rig", ImGuiPriority::Medium, RenderCameraRigEditor);
+		GImGUIManager->Windows().Subscribe("Weapon Customize", ImGuiPriority::Medium, RenderWeaponCustomizeWindow);
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();

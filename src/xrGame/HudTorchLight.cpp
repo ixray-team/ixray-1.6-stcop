@@ -7,10 +7,16 @@
 #include "Inventory.h"
 #include "../debug_renderer.h"
 #include "ElectronicsProblemsManager.h"
+#include "../xrEngine/CameraBase.h"
+
+static constexpr float LIGHT_INERTION_SPEED_MAX = 7.5f;
+static constexpr float LIGHT_INERTION_SPEED_MIN = 0.5f;
 
 void THudLightTorch::BeginComponent(IECSOwner* O)
 {
 	SetInstalled(true);
+
+	Owner = smart_cast<PIItem>(O);
 }
 
 void THudLightTorch::EndComponent()
@@ -110,7 +116,7 @@ void THudLightTorch::NewTorchlight(const char* section)
 
 	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
 
-	tmp_vector = pSettings->read_if_exists<Fvector3>(section, "torch_breaking_params", tmp_vector);
+	tmp_vector = pSettings->read_if_exists<Fvector>(section, "torch_breaking_params", tmp_vector);
 	BreakingParams.start_condition = tmp_vector.x;
 	BreakingParams.end_condition = tmp_vector.y;
 	BreakingParams.start_probability = tmp_vector.z;
@@ -128,53 +134,96 @@ void THudLightTorch::SwitchTorchlight(bool isActive)
 	}
 }
 
-bool forceTPDraw = false;
-void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
+static bool IsLightRootActive(PIItem Root)
 {
-	if (RenderLight == nullptr || OmniLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
+	if (CHudItem* HudItem = Root->cast_hud_item())
+	{
+		return HudItem->GetState() != CHUDState::eHidden && Root->CurrPlace() != eItemPlace::eItemPlaceRuck;
+	}
+
+	CInventoryOwner* Owner = Root->object().H_Parent()->cast_inventory_owner();
+	return Owner && Owner->attached(Root);
+}
+
+static CActor* WornInFirstPerson(PIItem Root)
+{
+	if (Root->cast_hud_item() || !Root->object().H_Parent())
+	{
+		return nullptr;
+	}
+
+	CActor* pActor = Root->object().H_Parent()->cast_actor();
+	return pActor && pActor == Level().CurrentViewEntity() && pActor->HUDview() ? pActor : nullptr;
+}
+
+bool THudLightTorch::GetOwnerTransform(IKinematics*& kin, Fmatrix& xform) const
+{
+	PIItem Root = Owner->AttachRoot();
+	CHudItem* HudItem = Root->cast_hud_item();
+	const bool hud = HudItem && HudItem->GetHUDmode() && HudItem->HudItemData();
+
+	if (!hud)
+	{
+		if (CObject* Parent = Root->object().H_Parent())
+		{
+			PKinematics(Parent->Visual())->CalculateBones(true);
+		}
+	}
+
+	if (!Owner->AttachTransform(hud, kin, xform))
+	{
+		kin = nullptr;
+	}
+
+	return hud;
+}
+
+bool forceTPDraw = false;
+void THudLightTorch::UpdateTorchFromObject()
+{
+	IKinematics* kin = nullptr;
+	Fmatrix xform;
+	const bool isHudMode = GetOwnerTransform(kin, xform);
+
+	if (RenderLight == nullptr || OmniLight == nullptr || kin == nullptr)
 	{
 		return;
 	}
 
-	if (item->object().H_Parent())
+	PIItem Root = Owner->AttachRoot();
+	if (Root->object().H_Parent())
 	{
-		if (item->GetState() == item->eHidden || item->cast_inventory_item()->CurrPlace() == eItemPlace::eItemPlaceRuck)
+		if (!IsLightRootActive(Root))
 		{
 			RenderLight->set_active(false);
 			OmniLight->set_active(false);
-
 			return;
 		}
 	}
 
-	bool isHudMode = item->GetHUDmode() && item->HudItemData();
 	if (IsRenderLight)
 	{
-		IKinematics* kin = nullptr;
-		Fmatrix xform;
-		Fvector lightPos = { 0, 0, 0 };
-		Fvector lightDir = { 0, 0, 1 };
-		Fvector omniPos = { 0, 0, 0 };
+		Fvector lightPos = zero_vel;
+		Fvector lightDir = { 0.0f, 0.0f, 1.0f };
+		Fvector omniPos = zero_vel;
 		u16 lightBoneId = BI_NONE;
 		u16 lightDirBoneId = BI_NONE;
-		Fvector up, right;
+		Fvector up = zero_vel, right = zero_vel;
 
 		if (isHudMode)
 		{
-			xform = item->HudItemData()->m_item_transform;
-			kin = item->HudItemData()->m_model;
 			lightBoneId = kin->LL_BoneID(LightBone);
 
-			Fvector3 curr_light_offset = LightOffset;
-			Fvector3 curr_omni_offset = OmniOffset;
+			Fvector curr_light_offset = LightOffset;
+			Fvector curr_omni_offset = OmniOffset;
 
-			if (item->cast_custom_device() != nullptr)
+			if (Owner->cast_custom_device() != nullptr)
 			{
 				PIItem active_item = Actor()->inventory().ActiveItem();
 				CWeapon* wpn = active_item != nullptr ? active_item->cast_weapon() : nullptr;
 				if (wpn != nullptr && wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
 				{
-					Fvector3 aim_offset = AimOffset;
+					Fvector aim_offset = AimOffset;
 					aim_offset.mul(wpn->GetAimFactor());
 					curr_light_offset.add(aim_offset);
 					curr_omni_offset.add(aim_offset);
@@ -193,8 +242,6 @@ void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 		}
 		else
 		{
-			xform = item->object().XFORM();
-			kin = item->object().Visual()->dcast_PKinematics();
 			lightBoneId = kin->LL_BoneID(LightBone);
 			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightWorldOffset);
 			kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, OmniWorldOffset);
@@ -219,6 +266,20 @@ void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 			Device.transform_hud2world(omniPos);
 		}
 
+		if (CActor* pActor = WornInFirstPerson(Root))
+		{
+			if (!RenderLight->get_active())
+			{
+				PrevHP.set(-pActor->cam_Active()->yaw, -pActor->cam_Active()->pitch);
+			}
+			PrevHP.x = angle_inertion_var(PrevHP.x, -pActor->cam_Active()->yaw, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			PrevHP.y = angle_inertion_var(PrevHP.y, -pActor->cam_Active()->pitch, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+
+			lightPos.set(Device.vCameraPosition);
+			omniPos.set(Device.vCameraPosition);
+			lightDir.setHP(PrevHP.x, PrevHP.y);
+		}
+
 		Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);
 
 		OmniLight->set_hud_mode(false);
@@ -228,11 +289,12 @@ void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 		RenderLight->set_position(lightPos);
 		RenderLight->set_rotation(lightDir, right);
 
-		RenderLight->set_ignore_object(item->object().H_Root());
+		RenderLight->set_ignore_object(Owner->object().H_Root());
+
 		if (isHudMode)
 		{
 			Fobb obb;
-			Fmatrix trans = item->HudItemData()->m_item_transform;
+			Fmatrix trans = xform;
 			obb.m_rotate.i.set(trans.i);
 			obb.m_rotate.j.set(trans.j);
 			obb.m_rotate.k.set(trans.k);
@@ -266,7 +328,7 @@ void THudLightTorch::SwitchTorch(bool& saved_status, bool status, bool forced)
 	SwitchTorchlight(status);
 }
 
-void THudLightTorch::UpdateTorch(CHudItemObject* item, bool& saved_status)
+void THudLightTorch::UpdateTorch(PIItem item, bool& saved_status)
 {
 	SwitchTorch(saved_status, saved_status, true);
 
@@ -304,9 +366,10 @@ void THudLightTorch::UpdateTorch(CHudItemObject* item, bool& saved_status)
 		}
 	};
 
-	attachable_hud_item* HID = item->HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = item->Visual() != nullptr ? PKinematics(item->Visual()) : nullptr;
+	CHudItem* HudItem = item->cast_hud_item();
+	attachable_hud_item* HID = HudItem != nullptr ? HudItem->HudItemData() : nullptr;
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : item->m_attach_parent != nullptr ? item->HudModel() : nullptr;
+	IKinematics* world_kin = item->object().Visual() != nullptr ? PKinematics(item->object().Visual()) : nullptr;
 
 	for (const shared_str& bone : ConeBones)
 	{
@@ -345,10 +408,10 @@ void THudLightLaser::NewTorchlight(const char* section)
 
 	LaserLightDist = pSettings->read_if_exists<float>(section, "laser_light_distance", 15.0f);
 
-	LaserWorkDist = pSettings->read_if_exists<float>(section, "laser_wrok_distance", LaserLightDist * 0.5f);
+	LaserWorkDist = pSettings->read_if_exists<float>(section, "laser_work_distance", LaserLightDist * 0.5f);
 	LaserMaxDist = pSettings->read_if_exists<float>(section, "laser_max_distance", LaserWorkDist);
 
-	LightColor = pSettings->read_if_exists<Fcolor>(section, "laser_light_color", LightColor.set(1, 0, 0, 0));
+	LightColor = pSettings->read_if_exists<Fcolor>(section, "laser_light_color", LightColor.set(1.0f, 0.0f, 0.0f, 0.0f));
 
 	RenderLight = ::Render->light_create();
 
@@ -372,8 +435,8 @@ void THudLightLaser::NewTorchlight(const char* section)
 	LightWorldOffset.y = pSettings->read_if_exists<float>(section, "laserdot_world_attach_offset_y", 0.0f);
 	LightWorldOffset.z = pSettings->read_if_exists<float>(section, "laserdot_world_attach_offset_z", 0.0f);
 
-	LightWorldOffset = pSettings->read_if_exists<Fvector3>(section, "laserdot_world_attach_offset", LightWorldOffset);
-	LightOffset = pSettings->read_if_exists<Fvector3>(section, "laserdot_attach_offset", LightOffset);
+	LightWorldOffset = pSettings->read_if_exists<Fvector>(section, "laserdot_world_attach_offset", LightWorldOffset);
+	LightOffset = pSettings->read_if_exists<Fvector>(section, "laserdot_attach_offset", LightOffset);
 
 	if (pSettings->line_exist(section, "laser_ray_bones"))
 	{
@@ -389,7 +452,7 @@ void THudLightLaser::NewTorchlight(const char* section)
 
 	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
 
-	tmp_vector = pSettings->read_if_exists<Fvector3>(section, "laser_breaking_params", tmp_vector);
+	tmp_vector = pSettings->read_if_exists<Fvector>(section, "laser_breaking_params", tmp_vector);
 	BreakingParams.start_condition = tmp_vector.x;
 	BreakingParams.end_condition = tmp_vector.y;
 	BreakingParams.start_probability = tmp_vector.z;
@@ -397,16 +460,21 @@ void THudLightLaser::NewTorchlight(const char* section)
 }
 
 bool forceLPDraw = false;
-void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
+void THudLightLaser::UpdateTorchFromObject()
 {
-	if (RenderLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
+	IKinematics* kin = nullptr;
+	Fmatrix xform;
+	const bool isHudMode = GetOwnerTransform(kin, xform);
+
+	if (RenderLight == nullptr || kin == nullptr)
 	{
 		return;
 	}
 
-	if (item->object().H_Parent())
+	PIItem Root = Owner->AttachRoot();
+	if (Root->object().H_Parent())
 	{
-		if (item->GetState() == item->eHidden || item->cast_inventory_item()->CurrPlace() == eItemPlace::eItemPlaceRuck)
+		if (!IsLightRootActive(Root))
 		{
 			RenderLight->set_active(false);
 			return;
@@ -415,26 +483,16 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 
 	if (IsRenderLight)
 	{
-		IKinematics* kin = nullptr;
-		Fmatrix xform;
-
 		Fvector lightPos = { 0, 0, 0 };
 		Fvector lightDir = { 0, 0, 1 };
-
-		u16 lightBoneId = BI_NONE;
-		u16 lightDirBoneId = BI_NONE;
-
 		Fvector up, right;
-		bool isHudMode = item->GetHUDmode() && item->HudItemData() != nullptr;
+		const u16 lightBoneId = kin->LL_BoneID(LightBone);
 
 		if (isHudMode)
 		{
-			xform = item->HudItemData()->m_item_transform;
-			kin = item->HudItemData()->m_model;
-
 			Fvector curr_light_offset = LightOffset;
 
-			if (CWeapon* wpn = item->cast_weapon())
+			if (CWeapon* wpn = Root->cast_weapon())
 			{
 				if (wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
 				{
@@ -443,15 +501,10 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 				}
 			}
 
-			lightBoneId = kin->LL_BoneID(LightBone);
 			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, curr_light_offset);
 		}
 		else
 		{
-			xform = item->object().XFORM();
-			kin = item->object().Visual()->dcast_PKinematics();
-
-			lightBoneId = kin->LL_BoneID(LightBone);
 			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightWorldOffset);
 		}
 
@@ -464,16 +517,29 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 			Device.transform_hud2world(lightPos, lightDir);
 		}
 
-		Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);;
+		if (CActor* pActor = WornInFirstPerson(Root))
+		{
+			if (!RenderLight->get_active())
+			{
+				PrevHP.set(-pActor->cam_Active()->yaw, -pActor->cam_Active()->pitch);
+			}
+			PrevHP.x = angle_inertion_var(PrevHP.x, -pActor->cam_Active()->yaw, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			PrevHP.y = angle_inertion_var(PrevHP.y, -pActor->cam_Active()->pitch, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+
+			lightPos.set(Device.vCameraPosition);
+			lightDir.setHP(PrevHP.x, PrevHP.y);
+		}
+
+		Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);
 
 		collide::rq_result	RQ; RQ.range = LaserMaxDist;
 		collide::rq_target	RT = collide::rqtBoth;
 
-		if (!g_pGameLevel->ObjectSpace.RayPick(lightPos, lightDir, RQ.range, RT, RQ, item->object().H_Root()))
+		if (!g_pGameLevel->ObjectSpace.RayPick(lightPos, lightDir, RQ.range, RT, RQ, Owner->object().H_Root()))
 		{
 			RQ.range = LaserMaxDist;
 		}
-		
+
 		float CurrentLightSpotAngle = LightSpotAngle.x;
 
 		if (RQ.range > LaserWorkDist)
@@ -491,26 +557,22 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 		RenderLight->set_rotation(lightDir, right);
 		RenderLight->set_cone(CurrentLightSpotAngle);
 
-		RenderLight->set_ignore_object(item->object().H_Root());
-		if (isHudMode)
+		RenderLight->set_ignore_object(Owner->object().H_Root());
+
+#ifdef DEBUG_DRAW
+		if (isHudMode && forceLPDraw)
 		{
 			Fobb obb;
-			Fmatrix trans = item->HudItemData()->m_item_transform;
+			Fmatrix trans = xform;
 			obb.m_rotate.i.set(trans.i);
 			obb.m_rotate.j.set(trans.j);
 			obb.m_rotate.k.set(trans.k);
 			obb.m_halfsize.set(0.005f, 0.005f, 0.005f);
-
-#ifdef DEBUG_DRAW
-			if (forceLPDraw)
-			{
-				Fvector posDebug = lightPos;
-				obb.m_translate.set(posDebug);
-				obb.xform_full(trans);
-				Level().debug_renderer().draw_obb(trans, color_xrgb(255, 0, 0));
-			}
-#endif
+			obb.m_translate.set(lightPos);
+			obb.xform_full(trans);
+			Level().debug_renderer().draw_obb(trans, color_xrgb(255, 0, 0));
 		}
+#endif
 	}
 
 	RenderLight->set_active(IsRenderLight);
@@ -528,7 +590,7 @@ void THudLightLaser::SwitchLaser(bool& saved_status, bool status, bool forced)
 	SwitchTorchlight(status);
 }
 
-void THudLightLaser::UpdateLaser(CHudItemObject* item, bool& saved_status)
+void THudLightLaser::UpdateLaser(PIItem item, bool& saved_status)
 {
 	SwitchLaser(saved_status, saved_status, true);
 
@@ -580,15 +642,14 @@ void THudLightLaser::UpdateLaser(CHudItemObject* item, bool& saved_status)
 		}
 	};
 
-	attachable_hud_item* HID = item->HudItemData();
-	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
-	IKinematics* world_kin = item->Visual() != nullptr ? PKinematics(item->Visual()) : nullptr;
+	CHudItem* HudItem = item->cast_hud_item();
+	attachable_hud_item* HID = HudItem != nullptr ? HudItem->HudItemData() : nullptr;
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : item->m_attach_parent != nullptr ? item->HudModel() : nullptr;
+	IKinematics* world_kin = item->object().Visual() != nullptr ? PKinematics(item->object().Visual()) : nullptr;
 
 	for (const shared_str& bone : ConeBones)
 	{
 		SetVisible(hud_kin, bone, GetTorchActive());
 		SetVisible(world_kin, bone, GetTorchActive());
 	}
-
-	UpdateTorchFromObject(item);
 }

@@ -77,6 +77,8 @@ public:
 	virtual void OnH_B_Chield() override;
 	virtual void OnH_A_Chield() override;
 	virtual void UpdateCL() override;
+	virtual void CreatePhysicsShell() override;
+	virtual bool AlwaysTheCrow() override { return m_attach_parent != nullptr || CPhysicItem::AlwaysTheCrow(); }
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;

@@ -932,6 +932,9 @@ public:
 			void				StartNVPPE						();
 			void				SwitchTorch						();
 			void				UseTorch						();
+			class CTorch*		HeadTorch						();
+			bool				HeadLightsActive				();
+			void				ToggleHeadLights				();
 			void				ClearMask						();
 			void				ClearMaskCB						();
 			void				MakeKick						();

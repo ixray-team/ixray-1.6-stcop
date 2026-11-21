@@ -48,7 +48,8 @@ public:
 	CCartridge();
 	void Load(const char* section, u8 LocalAmmoType);
 	XPROPERTY(LuaCallable)
-	float Weight() const;
+	float Weight() const { return m_weight; }
+	u32 Cost() const { return m_cost; }
 
 	shared_str	m_ammoSect;
 	XPROPERTY(LuaEnum, Name="cartridge_flags")
@@ -73,6 +74,9 @@ public:
 	Flags8	m_flags;
 
 	shared_str	m_InvShortName;
+
+	u32 m_cost = 0;
+	float m_weight = 0.0f;
 
 	XPROPERTY(LuaCallable)
 	const char* GetInventoryName() { return m_InvShortName.c_str(); };

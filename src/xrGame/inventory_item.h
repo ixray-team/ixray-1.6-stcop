@@ -15,8 +15,6 @@
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "../xrScripts/script_export_space.h"
-#include "item_attachment.h"
-
 
 enum EHandDependence {
 	hdNone = 0,
@@ -38,6 +36,8 @@ class CPhysicsShellHolder;
 class NET_Packet;
 class CEatableItem;
 class CArtefact;
+class CPhysicsElement;
+class IKinematics;
 class CCustomOutfit;
 class CHelmet;
 class CCustomDetector;
@@ -84,8 +84,7 @@ struct net_updateInvData
 XREFLECT(LuaExport)
 class CInventoryItem : 
 	public CAttachableItem,
-	public CHitImmunity, 
-	public item_attachments_manager
+	public CHitImmunity
 #ifdef DEBUG_DRAW
 	, public pureRender
 #endif
@@ -171,14 +170,11 @@ public:
 	XPROPERTY(LuaCallable)
 	virtual bool CanStack() const { return (m_flags.test(FCanStack)); };
 
-	virtual bool Attach(PIItem pIItem);
-	virtual bool Detach(PIItem pIItem);
-	virtual bool CanAttach(PIItem pIItem)
-	{
-		auto attachment = get_attachment(pIItem->m_section_id);
-		return attachment && !attachment->state.test(eAStatePermanent);
-	}
-	virtual bool CanDetach(PIItem pIItem) { return GetChildByID(pIItem->object().ID()); }
+	virtual bool Attach(PIItem pIItem) { return false; }
+	virtual bool CanAttach(PIItem pIItem) { return false; }
+	//при детаче спаунится новая вещь при заданно названии секции
+	virtual bool Detach(const char* item_section_name, bool b_spawn_item);
+	virtual bool CanDetach(const char* item_section_name) { return false; }
 
 	XPROPERTY(LuaCallable)
 	virtual EHandDependence HandDependence()	const { return hd1Hand; };
@@ -204,6 +200,7 @@ public:
 	virtual bool render_item_ui_query() { return false; }; //when in slot
 
 	virtual void UpdateCL();
+	virtual void renderable_Render() override;
 
 	virtual	void Hit(SHit* pHDS);
 
@@ -217,11 +214,11 @@ public:
 	XPROPERTY(LuaCallable)
 	bool IsQuestItem() const { return m_flags.test(FIsQuestItem); }
 	XPROPERTY(LuaCallable)
-	virtual	u32 Cost() const { return m_cost; }
+	virtual u32 Cost() const;
 	void setCost(u32 nValue);
 
 	XPROPERTY(LuaCallable)
-	virtual float Weight() const { return m_weight; }
+	virtual float Weight() const;
 	XPROPERTY(LuaCallable, Name="SetWeight")
 	void setWeight(float value);
 
@@ -230,30 +227,46 @@ public:
 		return m_3d_static_rotate;
 	}
 
-	xr_hash_map<u32, CGameObject*> m_children_storage;
+	xr_hash_map<u32, PIItem> m_children = {};
 
-	ICF void append_child(u32 id, CGameObject* O)
+	CInventoryItem* GetChild(ALife::_OBJECT_ID id) const;
+
+	PIItem m_attach_parent = nullptr;
+	u16 m_attach_bone_id = BI_NONE;
+	shared_str m_attach_bone;
+	shared_str m_attach_request;
+	Fmatrix m_attach_offset = Fidentity;
+	Fmatrix m_attach_hud_offset = Fidentity;
+	u16 m_attach_hud_bone_id = BI_NONE;
+	Fmatrix m_attach_hud_transform = Fidentity;
+	IKinematics* m_hud_model = nullptr;
+
+	struct SHudMirror
 	{
-		m_children_storage.insert({id, O});
-		item_attachments_manager::enable_attachment(O->cNameSect());
-	}
+		IKinematics* model = nullptr;
+		u16 bone = BI_NONE;
+		Fmatrix transform = Fidentity;
+	};
+	xr_vector<SHudMirror> m_hud_mirrors;
+	void ReleaseHudMirrors();
 
-	ICF void erase_child(u32 id)
-	{
-		if (m_children_storage.find(id) != m_children_storage.end())
-		{
-			item_attachments_manager::disable_attachment(m_children_storage[id]->cNameSect());
-			m_children_storage.erase(id);
-		}
-	}
+	IKinematics* HudModel();
+	bool AttachTransform(bool hud, IKinematics*& kin, Fmatrix& xform);
+	void RenderHud(const Fmatrix& xform, IKinematics* model);
+	void RenderIcon(const Fmatrix& xform, IKinematics* model, xr_deque<Fmatrix>& xforms);
+	void AddAttachmentShapes(CPhysicsElement* element, const Fmatrix& xform);
+	void PlayHudMotion(const shared_str& name, bool mix, float speed);
+	void FindAttachPose(shared_str& pose, shared_str& ik_mark, shared_str& fingers_mark) const;
 
-	CGameObject* GetChildBySectName(shared_str child_sect_name) const;
+	CInventoryItem* AttachRoot();
+	void NotifyAttachment(PIItem item, bool attached);
+	virtual void OnAttachmentInc(PIItem item) {}
+	virtual void OnAttachmentDec(PIItem item) {}
 
-	CGameObject* GetChildByName(shared_str child_name) const;
-
-	CGameObject* GetChildByID(u32 child_id) const;
-
-	const item_attachment* GetRealattachment(shared_str child_sect_name, EattachmentType type = eTypeNone) const;
+	bool CanAttachChild(PIItem child, const shared_str& bone) const;
+	void AttachChild(PIItem child);
+	void CollectConflicts(PIItem item, xr_vector<PIItem>& conflicts) const;
+	void DetachConflicts(PIItem item);
 
 public:
 	bool m_draw_cost = true;
@@ -410,8 +423,6 @@ public:
 #ifdef DEBUG_DRAW
 	virtual void OnRender() override;
 #endif
-
-	virtual void renderable_Render() override;
 
 public:
 	virtual DLL_Pure* _construct() override;

@@ -36,6 +36,7 @@
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 #include "player_hud.h"
+#include "HudItem.h"
 #include "ImUtils/ImUtils.h"
 #include "script_game_object.h"
 #include "../xrEngine/GameMtlLib.h"
@@ -2472,6 +2473,34 @@ void LevelInspector::DrawLevelGraph()
 	}
 }
 #include "../xrEngine/EnnumerateVertices.h"
+void LevelInspector::DrawAttachmentSkeletons(CInventoryItem* item, bool hud)
+{
+	for (const auto& [id, child] : item->m_children)
+	{
+		if (hud)
+		{
+			if (child->m_attach_hud_bone_id == BI_NONE)
+			{
+				continue;
+			}
+			DrawSkeleton(child->HudModel(), child->m_attach_hud_transform);
+		}
+		else
+		{
+			if (child->m_attach_bone_id == BI_NONE)
+			{
+				continue;
+			}
+			DrawSkeleton(PKinematics(child->object().Visual()), child->object().XFORM(), &child->object());
+		}
+
+		if (hud)
+		{
+			DrawAttachmentSkeletons(child, true);
+		}
+	}
+}
+
 void LevelInspector::DrawSkeleton(IKinematics* pKinematics, const Fmatrix& xform, CGameObject* GO)
 {
 	if (m_skeleton_flags.test(ESKELETON_INFO::ESI_NONE))
@@ -2655,6 +2684,11 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, const Fmatrix& xform
 
 	if (GO)
 	{
+		if (CInventoryItem* item = GO->cast_inventory_item())
+		{
+			DrawAttachmentSkeletons(item, false);
+		}
+
 		if(m_skeleton_flags.test(ESKELETON_INFO::ESI_HIT_SHAPES))
 		{
 			if (CCF_Skeleton* Skeleton = GO->CFORM() ? GO->CFORM()->cast_cff_skeleton() : nullptr)
@@ -2779,49 +2813,14 @@ void LevelInspector::DrawHud()
 		if (b_r0)
 		{
 			DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
-			Fmatrix attachment_offset, attachment_final_transform;
-			for (auto& child : g_player_hud->attached_item(0)->m_parent_hud_item->item().m_children_storage)
-			{
-				if (auto attachment = g_player_hud->attached_item(0)->m_parent_hud_item->item().get_attachment(child.second->cNameSect_str()))
-				{
-					const item_attachment::placement& place = attachment->hud_place;
-
-					attachment_offset.setXYZ(deg2rad(place.direction.x), deg2rad(place.direction.y), deg2rad(place.direction.z));
-					attachment_offset.translate_over(place.position);
-					attachment_offset.i.mul(place.scale.x);
-					attachment_offset.j.mul(place.scale.y);
-					attachment_offset.k.mul(place.scale.z);
-					attachment_final_transform.mul(g_player_hud->attached_item(0)->m_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
-					attachment_final_transform.mulA_43(g_player_hud->attached_item(0)->m_item_transform);
-
-					DrawSkeleton(attachment->hud_place.m_model, attachment_final_transform);
-				}
-			}
+			DrawAttachmentSkeletons(&g_player_hud->attached_item(0)->m_parent_hud_item->item(), true);
 			if(m_skeleton_flags.test(ESKELETON_INFO::ESI_FIRE_POINTS))
 				draw_fdeps(g_player_hud->attached_item(0), *this);
 		}
 		if (b_r1)
 		{
 			DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
-			Fmatrix attachment_offset, attachment_final_transform;
-			for (auto& child : g_player_hud->attached_item(1)->m_parent_hud_item->item().m_children_storage)
-			{
-				if (auto attachment = g_player_hud->attached_item(1)->m_parent_hud_item->item().get_attachment(child.second->cNameSect_str()))
-				{
-					const item_attachment::placement& place = attachment->hud_place;
-
-					attachment_offset.setXYZ(deg2rad(place.direction.x), deg2rad(place.direction.y), deg2rad(place.direction.z));
-					attachment_offset.translate_over(place.position);
-					attachment_offset.i.mul(place.scale.x);
-					attachment_offset.j.mul(place.scale.y);
-					attachment_offset.k.mul(place.scale.z);
-					attachment_final_transform.mul(g_player_hud->attached_item(1)->m_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
-					attachment_final_transform.mulA_43(g_player_hud->attached_item(1)->m_item_transform);
-
-					DrawSkeleton(attachment->hud_place.m_model, attachment_final_transform);
-				}
-			}
-
+			DrawAttachmentSkeletons(&g_player_hud->attached_item(1)->m_parent_hud_item->item(), true);
 			if (m_skeleton_flags.test(ESKELETON_INFO::ESI_FIRE_POINTS))
 				draw_fdeps(g_player_hud->attached_item(1), *this);
 		}

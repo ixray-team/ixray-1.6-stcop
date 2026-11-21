@@ -1,9 +1,6 @@
 #pragma once
 
-//#include "HudItem.h"
-
-class CHudItem;
-class CHudItemObject;
+#include "inventory_space.h"
 
 struct THudLightTorch
 {
@@ -15,15 +12,17 @@ public:
 	const char* LightBone = {};
 	const char* LightDirBoneName = {};
 	bool IsLightDirByBone = false;
-	Fvector3 LightOffset;
-	Fvector3 AimOffset;
-	Fvector3 LightWorldOffset;
-	Fvector3 OmniOffset;
-	Fvector3 OmniWorldOffset;
+	Fvector LightOffset;
+	Fvector AimOffset;
+	Fvector LightWorldOffset;
+	Fvector OmniOffset;
+	Fvector OmniWorldOffset;
 	Fcolor LightColor;
 	Fcolor OmniColor;
 	bool IsTorchInstalled = false;
 	RStringVec ConeBones{};
+	PIItem Owner = nullptr;
+	Fvector2 PrevHP = { 0.0f, 0.0f };
 
 	struct breaking_params
 	{
@@ -39,7 +38,8 @@ public:
 	void EndComponent();
 
 	virtual void NewTorchlight(const char* section);
-	virtual void UpdateTorchFromObject(CHudItem* item) const;
+	virtual void UpdateTorchFromObject();
+	bool GetOwnerTransform(IKinematics*& kin, Fmatrix& xform) const;
 
 	void SwitchTorchlight(bool isActive);
 	IC void SetInstalled(bool install) { IsTorchInstalled = install; }
@@ -47,7 +47,7 @@ public:
 	IC bool GetTorchActive() const { return IsRenderLight; }
 	IC bool GetTorchInstalled() const { return IsTorchInstalled; }
 
-	void UpdateTorch(CHudItemObject* item, bool& saved_status);
+	void UpdateTorch(PIItem item, bool& saved_status);
 	void SwitchTorch(bool& saved_status, bool status, bool forced = false);
 
 private:
@@ -100,9 +100,9 @@ public:
 	virtual void BeginComponent(IECSOwner* O) override;
 
 	virtual void NewTorchlight(const char* section) override;
-	virtual void UpdateTorchFromObject(CHudItem* item) const override;
+	virtual void UpdateTorchFromObject() override;
 
-	void UpdateLaser(CHudItemObject* item, bool& saved_status);
+	void UpdateLaser(PIItem item, bool& saved_status);
 	void SwitchLaser(bool& saved_status, bool status, bool forced = false);
 
 private:

@@ -333,65 +333,49 @@ void CWeaponRPG7::ReactiveHit()
   }
 }
 
-void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
+void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 {
-	ALife::_OBJECT_ID id;
-	switch (type)
+	if (type != GE_OWNERSHIP_TAKE && type != GE_OWNERSHIP_REJECT && type != GE_LAUNCH_ROCKET)
 	{
-		case GE_OWNERSHIP_TAKE:
-		{
-			P >> id;
-			CObject* O = Level().Objects.net_Find(id);
-			if (O->cast_custom_rocket())
-			{
-				CRocketLauncher::AttachRocket(id, this);
-			}
-			else
-			{
-				O->H_SetParent(this);
-				append_child(id, O->cast_game_object());
-				O->processing_deactivate();
-			}
-		}
-		break;
-		case GE_OWNERSHIP_REJECT:
-		case GE_LAUNCH_ROCKET:
-		{
-			P >> id;
-			CObject* O = Level().Objects.net_Find(id);
-			if (!O)
-			{
-				break;
-			}
-			if (CCustomRocket* Rocket = O->cast_custom_rocket())
-			{
-				const bool bLaunch = (type == GE_LAUNCH_ROCKET);
-				if (bLaunch)
-				{
-					ApplyNetworkLaunchParams(P, *Rocket, H_Parent() ? H_Parent()->ID() : ID());
-				}
-				CRocketLauncher::DetachRocket(id, bLaunch);
-				if (bLaunch)
-				{
-					UpdateMissileVisibility();
-				}
-			}
-			else
-			{
-				bool just_before_destroy = !P.r_eof() && P.r_u8();
+		inherited::OnEvent(P, type);
+		return;
+	}
 
-				O->SetTmpPreDestroy(just_before_destroy);
-				erase_child(id);
-				O->processing_activate();
-				O->H_SetParent(0, true);
-			}
-		}
-		break;
-		default:
+	const u32 Position = P.r_tell();
+	ALife::_OBJECT_ID Id;
+	P >> Id;
+	CObject* Object = Level().Objects.net_Find(Id);
+	if (!Object)
+	{
+		return;
+	}
+
+	CCustomRocket* Rocket = Object->cast_custom_rocket();
+	if (!Rocket)
+	{
+		if (type != GE_LAUNCH_ROCKET)
 		{
+			P.r_seek(Position);
 			inherited::OnEvent(P, type);
 		}
-		break;
+		return;
+	}
+
+	if (type == GE_OWNERSHIP_TAKE)
+	{
+		CRocketLauncher::AttachRocket(Id, this);
+		return;
+	}
+
+	const bool Launch = type == GE_LAUNCH_ROCKET;
+	if (Launch)
+	{
+		ApplyNetworkLaunchParams(P, *Rocket, H_Parent() ? H_Parent()->ID() : ID());
+	}
+	CRocketLauncher::DetachRocket(Id, Launch);
+	if (Launch)
+	{
+		UpdateMissileVisibility();
 	}
 }
 

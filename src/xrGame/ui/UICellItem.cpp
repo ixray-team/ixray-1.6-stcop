@@ -69,6 +69,16 @@ CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 CUICellItem::CUICellItem()
 {	Icon3dAdjust_RegisterCell(this);
 
+	OnDrawVisual = [this](const Fmatrix& Xform)
+	{
+		static xr_deque<Fmatrix> xforms;
+		xforms.clear();
+		if (PIItem item = static_cast<PIItem>(m_pData))
+		{
+			item->RenderIcon(Xform, pCurrentVisual->dcast_PKinematics(), xforms);
+		}
+	};
+
 	m_pParentList		= nullptr;
 	m_ownerContentGeneration = 0;
 	m_pData				= nullptr;
@@ -730,6 +740,20 @@ CUIDragItem* CUICellItem::CreateDragItem()
 		tmp->wnd()->SetScaleFactor(GetScaleFactor());
 		tmp->wnd()->SetIconOffset(GetIconOffset());
 		tmp->wnd()->SetBonesVisible(GetVisual()->dcast_PKinematics());
+		if (PIItem item = static_cast<PIItem>(m_pData))
+		{
+			CUI3dStatic* wnd = tmp->wnd();
+			const u32 id = item->object().ID();
+			wnd->OnDrawVisual = [id, wnd](const Fmatrix& Xform)
+			{
+				static xr_deque<Fmatrix> xforms;
+				xforms.clear();
+				if (PIItem drag_item = smart_cast<PIItem>(Level().Objects.net_Find(id)))
+				{
+					drag_item->RenderIcon(Xform, wnd->GetVisual()->dcast_PKinematics(), xforms);
+				}
+			};
+		}
 	}
 	else
 	{

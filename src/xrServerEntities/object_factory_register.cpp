@@ -88,6 +88,8 @@
 #	include "Scope.h"
 #	include "Silencer.h"
 #	include "GrenadeLauncher.h"
+#include "Magazine.h"
+#include "TacticalFlashLaser.h"
 
 #	include "Bolt.h"
 #	include "medkit.h"
@@ -343,6 +345,8 @@ void CObjectFactory::register_classes	()
 	ADD(CScope					,CSE_ALifeItem					,CLSID_OBJECT_W_SCOPE			,"wpn_scope");
 	ADD(CSilencer				,CSE_ALifeItem					,CLSID_OBJECT_W_SILENCER		,"wpn_silencer");
 	ADD(CGrenadeLauncher		,CSE_ALifeItem					,CLSID_OBJECT_W_GLAUNCHER		,"wpn_grenade_launcher");
+	ADD(CMagazine				,CSE_ALifeItemMagazine			,TEXT2CLSID("W_MAGAZ")			,"wpn_magazine");
+	ADD(CTacticalFlashLaser		,CSE_ALifeItem					,TEXT2CLSID("W_FL_LS")			,"wpn_flash_laser");
 
 	// Inventory
 #ifndef NO_SINGLE

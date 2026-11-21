@@ -243,7 +243,6 @@ void CHelicopter::net_Destroy()
 {
 	inherited::net_Destroy				();
 	CExplosive::net_Destroy				();
-	CShootingObject::DestroyEffects		();
 	CPHSkeleton::RespawnInit			();
 	CPHDestroyable::RespawnInit			();
 	m_engineSound.stop					();

@@ -1088,16 +1088,7 @@ void attachable_hud_item::UpdateAttachPose()
 	FingersMark = HudAttachMarks::Fingers;
 	if (m_parent_hud_item != nullptr)
 	{
-		for (const auto& [sect, attachment] : m_parent_hud_item->item().m_attachments)
-		{
-			if ((attachment.state.test(eAStateVisible) || attachment.state.test(eAStatePermanent)) && pSettings->line_exist(sect.c_str(), "anim_pose"))
-			{
-				pose = pSettings->r_string(sect.c_str(), "anim_pose");
-				IkMark = pSettings->read_if_exists<str_c>(sect.c_str(), "ik_mark", HudAttachMarks::Ik);
-				FingersMark = pSettings->read_if_exists<str_c>(sect.c_str(), "ik_fingers_mark", HudAttachMarks::Fingers);
-				break;
-			}
-		}
+		m_parent_hud_item->item().FindAttachPose(pose, IkMark, FingersMark);
 	}
 
 	if (pose == AttachPose)

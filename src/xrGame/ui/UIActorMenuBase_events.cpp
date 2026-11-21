@@ -555,27 +555,18 @@ void CUIActorMenuBase::AttachAddon(PIItem item_to_upgrade)
 	SetCurrentItem								(nullptr);
 }
 
-void CUIActorMenuBase::DetachAddon(PIItem addon, PIItem item_to_upgrade)
+void CUIActorMenuBase::DetachAddon(const char* addon_name, PIItem itm)
 {
 	PlaySnd										(eDetachAddon);
 	if (OnClient())
 	{
 		NET_Packet								P;
-		if(item_to_upgrade==nullptr)
-			CGameObject::u_EventGen				(P, GE_ADDON_DETACH, CurrentIItem()->object().ID());
-		else
-			CGameObject::u_EventGen				(P, GE_ADDON_DETACH, item_to_upgrade->object().ID());
-
-		P.w_u32(addon->object().ID());
+		CGameObject::u_EventGen					(P, GE_ADDON_DETACH, itm->object().ID());
+		P.w_stringZ								(addon_name);
 		CGameObject::u_EventSend				(P);
 		return;
 	}
-	if(item_to_upgrade==nullptr)
-		CurrentIItem()->Detach					(addon);
-	else
-	{
-		item_to_upgrade->Detach(addon);
-	}
+	itm->Detach									(addon_name, true);
 }
 
 bool CUIActorMenuBase::TryActiveSlot(CUICellItem* itm)

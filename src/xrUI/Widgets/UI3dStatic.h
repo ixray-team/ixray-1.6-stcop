@@ -58,4 +58,7 @@ protected:
 	Fmatrix mView, mInvView, mProject, mRotate;
 	float fScaleFactor;
 	Fvector2 IconOffset{};
+
+public:
+	std::function<void(const Fmatrix&)> OnDrawVisual;
 };

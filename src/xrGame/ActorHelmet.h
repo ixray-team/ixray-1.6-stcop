@@ -2,6 +2,7 @@
 #include "ArmorBase.h"
 
 struct SBoneProtections;
+class CTacticalFlashLaser;
 
 XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CHelmet :
@@ -36,10 +37,13 @@ public:
 	virtual void		OnMoveToRuck			(const SInvItemPlace& previous_place) override;
 
 	virtual bool can_be_attached() const override;
+	virtual void OnAttachmentInc(PIItem item) override;
+	virtual void OnAttachmentDec(PIItem item) override;
 
 	virtual CHelmet*	cast_helmet				() override { return this; }
 
 	float m_fShowNearestEnemiesDistance = 0.0f;
+	xr_vector<CTacticalFlashLaser*> m_lights;
 
 protected:
 	virtual bool install_upgrade_impl			(const char* section, bool test) override;

@@ -433,7 +433,6 @@ struct attachable_hud_item final
 	shared_str						m_sect_name;
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
-	int								m_aim_bone_id = BI_NONE;
 	u16								LeftIkBone = BI_NONE;
 	Fmatrix							LeftIkOffset = Fidentity;
 	bool							LeftIkFixed = false;

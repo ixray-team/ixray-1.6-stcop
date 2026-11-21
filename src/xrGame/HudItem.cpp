@@ -176,17 +176,6 @@ void CHudItem::renderable_Render()
 				on_renderable_Render();
 		}
 	}
-	if (!_hud_render)
-	{
-		if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
-		{
-			LightTorch->UpdateTorchFromObject(this);
-		}
-		if (THudLightLaser* LightLaser = m_object->GetComponent<THudLightLaser>())
-		{
-			LightLaser->UpdateTorchFromObject(this);
-		}
-	}
 }
 
 void CHudItem::SwitchState(u8 S)
@@ -431,7 +420,7 @@ void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 
 	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
 	{
-		LightTorch->UpdateTorchFromObject(this);
+		LightTorch->UpdateTorchFromObject();
 	}
 
 	if (HudItemData() != nullptr && object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentEntity())
@@ -691,17 +680,14 @@ void CHudItem::UpdateCL()
 		}
 	}
 
-	if (GetHUDmode())
+	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
 	{
-		if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
-		{
-			LightTorch->UpdateTorchFromObject(this);
-		}
+		LightTorch->UpdateTorchFromObject();
+	}
 
-		if (THudLightLaser* LightLaser = m_object->GetComponent<THudLightLaser>())
-		{
-			LightLaser->UpdateTorchFromObject(this);
-		}
+	if (THudLightLaser* LightLaser = m_object->GetComponent<THudLightLaser>())
+	{
+		LightLaser->UpdateTorchFromObject();
 	}
 
 	if (ScriptWindow)
@@ -725,7 +711,7 @@ void CHudItem::OnH_B_Independent	(bool just_before_destroy)
 
 	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
 	{
-		LightTorch->UpdateTorchFromObject(this);
+		LightTorch->UpdateTorchFromObject();
 	}
 
 	if (HudItemData() != nullptr && object().H_Parent() != nullptr && object().H_Parent() == Level().CurrentEntity())
@@ -1147,10 +1133,7 @@ void CHudItem::PlayAnimDeviceSwitch()
 		{
 			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 			{
-				if (CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT)))
-				{
-					sound_name = pTorch->IsSwitched() ? "sndHeadlampOff" : "sndHeadlampOn";
-				}
+				sound_name = pActor->HeadLightsActive() ? "sndHeadlampOff" : "sndHeadlampOn";
 			}
 		}
 		else
@@ -1346,11 +1329,7 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 			{
 				if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 				{
-					PIItem item_from_slot = pActor->inventory().ItemFromSlot(TORCH_SLOT);
-					if (CTorch* pTorch = item_from_slot != nullptr ? item_from_slot->cast_torch() : nullptr)
-					{
-						pTorch->Switch();
-					}
+					pActor->ToggleHeadLights();
 				}
 			}
 			else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))

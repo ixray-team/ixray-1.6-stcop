@@ -5,6 +5,23 @@
 #include "BoneProtections.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "Torch.h"
+#include "TacticalFlashLaser.h"
+
+void CHelmet::OnAttachmentInc(PIItem item)
+{
+	inherited::OnAttachmentInc(item);
+
+	if (CTacticalFlashLaser* light = smart_cast<CTacticalFlashLaser*>(item))
+	{
+		m_lights.push_back(light);
+	}
+}
+
+void CHelmet::OnAttachmentDec(PIItem item)
+{
+	inherited::OnAttachmentDec(item);
+	std::erase(m_lights, smart_cast<CTacticalFlashLaser*>(item));
+}
 
 void CHelmet::Load(const char* section)
 {
@@ -16,6 +33,12 @@ void CHelmet::Load(const char* section)
 void CHelmet::OnMoveToSlot(const SInvItemPlace& previous_place)
 {
 	inherited::OnMoveToSlot(previous_place);
+
+	CInventoryOwner* owner = H_Parent() ? H_Parent()->cast_inventory_owner() : nullptr;
+	if (owner && !owner->attached(this))
+	{
+		owner->attach(this);
+	}
 }
 
 void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)

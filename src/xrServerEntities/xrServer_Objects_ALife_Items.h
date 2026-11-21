@@ -338,6 +338,13 @@ virtual ~CSE_ALifeItemHelmet	() override;
 virtual bool					Net_Relevant			() override;
 SERVER_ENTITY_DECLARE_END
 
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemMagazine, CSE_ALifeItem)
+U8Vec m_AmmoIDs = {};
+CSE_ALifeItemMagazine(const char* caSection);
+virtual ~CSE_ALifeItemMagazine() override;
+virtual bool Net_Relevant() override;
+SERVER_ENTITY_DECLARE_END
+
 #pragma warning(pop)
 
 #endif

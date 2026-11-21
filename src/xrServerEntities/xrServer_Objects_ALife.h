@@ -175,6 +175,7 @@ public:
 #ifdef XRGAME_EXPORTS
 	virtual void					spawn_supplies		(const char*);
 	virtual void					spawn_supplies		();
+			void					spawn_build			();
 			CALifeSimulator			&alife				() const;
 	virtual Fvector					draw_level_position	() const;
 	virtual	bool					keep_saved_data_anyway	() const;

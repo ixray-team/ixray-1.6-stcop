@@ -746,6 +746,8 @@ void RenderCinemaFilmMakerEditor();
 void CinemaFilmMaker_Render();
 void CinemaFilmMaker_Shutdown();
 void RenderCameraRigEditor();
+void RenderWeaponCustomizeWindow();
+void OpenWeaponCustomize(u32 id);
 void RenderHudMotionPlayer();
 void HudMotionPlayerClose();
 void HudMotionPlayerRefresh();
