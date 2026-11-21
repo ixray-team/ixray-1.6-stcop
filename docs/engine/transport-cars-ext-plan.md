@@ -63,7 +63,7 @@
 
 ### B2. Колёса и подвеска
 - `src/xrGame/CarWheels.cpp` — заменить реализацией Cars-Ext.
-- Адаптировать отсутствующие ODE-вызовы: `dBodySetGyroscopicMode` → игнор `gyroscopic_mode` + однократное предупреждение.
+- Гироскопический режим и множитель инерции колёс проверены и удалены: на руление они не влияют.
 - Проверить `BuildWheelJoint`/`P_build_Shell` в текущем `xrPhysics`.
 
 **Проверка:** `clang -fsyntax-only` для `CarWheels.cpp`.
@@ -137,7 +137,6 @@
 - Заглушки отсутствующих API:
   - `HUD().Add_LensFlare` → нет flare, только glow;
   - `m_detcollslots` → нет;
-  - `dBodySetGyroscopicMode` → нет;
   - `psSoundCarFactor` → локально.
 
 **Проверка:** `clang -fsyntax-only` для `Car.cpp`; поиск оставшихся LA-специфичных символов.
@@ -358,7 +357,6 @@
 | --- | --- | --- |
 | Нет FMOD-радио | В проекте OpenAL; FMOD — новая зависимость | Радио отсутствует |
 | Нет lens flare | Нет `HUD().Add_LensFlare`; xrGame-only | Только light/glow |
-| `gyroscopic_mode` игнорируется | Нет `dBodySetGyroscopicMode` | Поведение колёс чуть проще |
 | Глобальный `psSoundCarFactor` заменён локальным | Нет глобального фактора; xrGame-only | Интерьерная громкость приблизительная |
 | Нет grass collision | `Device.m_detcollslots` вне xrGame | Трава не деформируется |
 | Нет 3D text/video | Не используется в трёх конфигах | Только 3D-приборы |

@@ -1591,8 +1591,14 @@ static void hinge2GetInfo2 (dxJointHinge2 *joint, dxJoint::Info2 *info)
   // where c = cos(theta), s = sin(theta)
   //       c0 = cos(theta0), s0 = sin(theta0)
 
-  dReal k = info->fps * info->erp;
+  // The hinge row keeps the two axes perpendicular. Car wheel joints set
+  // their limit stop ERP/CFM to 1/0, which makes this row rigid. The global
+  // ERP/CFM is too soft for a fast-spinning wheel at low physics rates: the
+  // axle tilts under gyroscopic/contact torque and the steering angle gets
+  // contaminated by the spin component.
+  dReal k = info->fps * joint->limot1.stop_erp;
   info->c[3] = k * (joint->c0 * s - joint->s0 * c);
+  info->cfm[3] = joint->limot1.stop_cfm;
 
   // if the axis1 hinge is powered, or has joint limits, add in more stuff
   int row = 4 + joint->limot1.addLimot (joint,info,4,ax1,1);

@@ -15,7 +15,7 @@ extern const float 		base_erp									;
 extern const float 		base_cfm									;
 
 extern XRPHYSICS_API	float	fixed_step							;
-extern 					float	world_cfm							;
+extern XRPHYSICS_API	float	world_cfm							;
 extern 					float	world_erp							;
 extern 					float	world_spring						;
 extern 					float	world_damping						;

@@ -3192,6 +3192,11 @@ void CCar::DrawCarInfo()
 			Font->OutNext("steering_velocity:        %f", dJointGetHinge2Angle1Rate(Joint));
 			Font->OutNext("steering_velocity_max:    %f", dJointGetHinge2Param(Joint, dParamVel));
 			Font->OutNext("steering_torque:          %f", dJointGetHinge2Param(Joint, dParamFMax));
+			dVector3 SteerAxis, SpinAxis;
+			dJointGetHinge2Axis1(Joint, SteerAxis);
+			dJointGetHinge2Axis2(Joint, SpinAxis);
+			Font->OutNext("steering_axis_dot:        %f",
+				SteerAxis[0] * SpinAxis[0] + SteerAxis[1] * SpinAxis[1] + SteerAxis[2] * SpinAxis[2]);
 			Font->OutNext("breaking_torque:          %f", Wheel.BrakeTorque);
 
 			if (m_break_abs)
@@ -6933,6 +6938,7 @@ void CCar::PhDataUpdate(float step)
 	UpdateDriftBoost();
 	UpdateEngineShake();
 	UpdateSteeringWheels();
+	StabilizeWheelAxes();
 
 	const bool Slip = UpdateWheelPhysics();
 	UpdateTractionAndSuspension(Slip);
@@ -7092,7 +7098,7 @@ void CCar::UpdateEngineAndBrakes(float step)
 		HandBreak();
 
 	if (brp || (fwp && bkp) || b_breaks)
-		break_start_dt += Device.fTimeDelta;
+		break_start_dt += step;
 	else
 		break_start_dt = 0.f;
 	clamp(break_start_dt, 0.0f, 1.0f);
@@ -7331,6 +7337,11 @@ void CCar::UpdateReturnBones(float step)
 
 void CCar::UpdateSteeringWheels()
 {
+	for (auto& Wheel : m_steering_wheels)
+	{
+		Wheel.SyncJointParams();
+	}
+
 	if (e_state_steer == left)
 	{
 		for (auto& i : m_steering_wheels)
@@ -7368,6 +7379,48 @@ void CCar::UpdateSteeringWheels()
 	//	if (Device.dwTimeGlobal - i_b->second.collision_params.last_contact_time > 50)
 	//if (steer_size > 0)
 	//if (nonsteer_size > 0)
+}
+
+void CCar::StabilizeWheelAxes()
+{
+	for (auto& WheelEntry : m_wheels_map)
+	{
+		SWheel& Wheel = WheelEntry.second;
+		if (!Wheel.inited || !Wheel.joint) continue;
+
+		dBodyID Body = Wheel.joint->PSecond_element()->get_body();
+		if (!Body) continue;
+
+		dJointID Joint = Wheel.joint->GetDJoint();
+		if (!Joint || dJointGetType(Joint) != dJointTypeHinge2) continue;
+
+		dVector3 Axis1, Axis2;
+		dJointGetHinge2Axis1(Joint, Axis1);
+		dJointGetHinge2Axis2(Joint, Axis2);
+
+		const dReal Dot = Axis1[0] * Axis2[0] + Axis1[1] * Axis2[1] + Axis1[2] * Axis2[2];
+		if (dFabs(Dot) < 1e-4f) continue;
+
+		dVector3 Axis;
+		dCROSS(Axis, =, Axis1, Axis2);
+		if (dDOT(Axis, Axis) < 1e-12f) continue;
+		dNormalize3(Axis);
+
+		dReal DotClamped = Dot;
+		clamp(DotClamped, -1.f, 1.f);
+		dReal Angle = asinf(DotClamped);
+		clamp(Angle, -0.2f, 0.2f);
+
+		// The hinge row works at velocity level, so a fast-spinning wheel at
+		// 50 Hz still ends the step with a small axle tilt. Project the spin
+		// axis back onto the plane perpendicular to the steering axis before
+		// the next step and before the HUD reads the joint. The correction is
+		// around Axis1 x Axis2 and does not change the steering angle.
+		dQuaternion Correction, Result;
+		dQFromAxisAndAngle(Correction, Axis[0], Axis[1], Axis[2], Angle);
+		dQMultiply0(Result, Correction, dBodyGetQuaternion(Body));
+		dBodySetQuaternion(Body, Result);
+	}
 }
 
 void CCar::UpdateSteerAnimation()
@@ -7686,7 +7739,7 @@ void CCar::UpdateWheelSuspension(SWheel& Wheel)
 			if (Wheel.spring_last < spring_req)
 			{
 				spring_ = Wheel.suspension_inertia * Wheel.spring_last + (1.f - Wheel.suspension_inertia) * spring_req;
-				damping_ = Wheel.suspension_inertia * Wheel.damping_last + (1.f - Wheel.suspension_inertia) * spring_req;
+				damping_ = Wheel.suspension_inertia * Wheel.damping_last + (1.f - Wheel.suspension_inertia) * damping_req;
 			}
 			else
 			{

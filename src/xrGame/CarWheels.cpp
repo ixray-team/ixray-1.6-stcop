@@ -277,15 +277,14 @@ void CCar::SWheel::Init()
 	e->set_ApplyByGravity(FALSE);
 	tire_particle_scale = 1.f;
 
-
 	// The driving loop is cloned from the surface-specific sound in Play().
 	inited=true;
 	collision_params.pwheel = this;
-	// gyroscopic_mode is parsed in Load() for config compatibility, but has no
-	// effect: IXRAY's ODE fork does not expose dBodySetGyroscopicMode.
 	WheelFlags.set(eWheelType::wheel, TRUE);
 
 	joint->GetJointSDfactors(spring_factor_default, damping_factor_default);
+	spring_last = spring_factor_default;
+	damping_last = damping_factor_default;
 	spring_damping_scale = 1.f;
 	dJointGetHinge2Axis2(joint->GetDJoint(), (float*)&default_axis2);
 }
@@ -304,7 +303,6 @@ void CCar::SWheel::Load(LPCSTR section)
 	radius_factor = 1.f;
 	wheel_vel_factor = 1.f;
 	wheel_trq_factor = 1.f;
-	gyroscopic_mode = false;
 
 	if (ini->section_exist("wheels_params"))
 	{
@@ -319,7 +317,6 @@ void CCar::SWheel::Load(LPCSTR section)
 		radius_factor = ini->read_if_exists<float>("wheels_params", "radius_factor", radius_factor);
 		wheel_vel_factor = ini->read_if_exists<float>("wheels_params", "velocity_factor", wheel_vel_factor);
 		wheel_trq_factor = ini->read_if_exists<float>("wheels_params", "torque_factor", wheel_trq_factor);
-		gyroscopic_mode = ini->read_if_exists<bool>("wheels_params", "gyroscopic_mode", gyroscopic_mode);
 	}
 	if(ini->section_exist(section))
 	{
@@ -329,7 +326,6 @@ void CCar::SWheel::Load(LPCSTR section)
 		radius_factor = ini->read_if_exists<float>(section, "radius_factor", radius_factor);
 		wheel_vel_factor = ini->read_if_exists<float>(section, "velocity_factor", wheel_vel_factor);
 		wheel_trq_factor = ini->read_if_exists<float>(section, "torque_factor", wheel_trq_factor);
-		gyroscopic_mode = ini->read_if_exists<bool>(section, "gyroscopic_mode", gyroscopic_mode);
 		wheel_diff_power = 1.f;
 		suspension_distance = ini->read_if_exists<float>(section, "suspension_distance", suspension_distance);
 		suspension_force_inc = ini->read_if_exists<float>(section, "suspension_force_inc", suspension_force_inc);
@@ -765,6 +761,16 @@ void CCar::SWheelSteer::Init()
 	limited=false;
 	pwheel->steer_wheel = true;
 	pwheel->WheelFlags.set(SWheel::eWheelType::wheel_steering, TRUE);
+}
+
+void CCar::SWheelSteer::SyncJointParams()
+{
+	if (!pwheel->joint) return;
+	dJointID Joint = pwheel->joint->GetDJoint();
+	// The hinge motor caches the global ODE CFM at joint creation. Refresh it
+	// so a runtime ph_frequency change also affects the steering motor. The
+	// limit stops stay hard (ERP 1, CFM 0) and are deliberately not touched.
+	dJointSetHinge2Param(Joint, dParamCFM, world_cfm);
 }
 
 void CCar::SWheelSteer::SteerRight()

@@ -131,6 +131,13 @@ void CPHWorld::SetStep(float s)
 	world_spring	= 1.0f* Spring(world_cfm,world_erp);
 	world_damping	= 1.0f* Damping(world_cfm,world_erp);
 
+	// ODE stores these in dxWorld statics shared by every island, so the
+	// values set in Create() stay at the startup step until they are refreshed
+	// here. Without this a ph_frequency change keeps the old ERP/CFM and makes
+	// every constraint (including the wheel hinge) too soft for the new step.
+	dWorldSetERP(0, Erp(world_spring, world_damping));
+	dWorldSetCFM(0, Cfm(world_spring, world_damping));
+
 	if(ph_world&&ph_world->Exist())
 	{
 		float	frame_time					=	Device.fTimeDelta;

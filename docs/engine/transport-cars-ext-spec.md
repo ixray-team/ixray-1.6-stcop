@@ -128,7 +128,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 - Отсутствующая кость/колесо/дверь → подсистема отключается, машина спавнится.
 - Отсутствующий `visual` → фатальная ошибка спавна.
 - `[grass_coll_spheres]` читается, но игнорируется (grass collision — out of scope).
-- `gyroscopic_mode` принимается, но игнорируется (нет `dBodySetGyroscopicMode`).
+- Гироскопический режим и множитель инерции колёс удалены после тестов: на руление они не влияют. Параметр `gyroscopic_mode` из конфигов машин больше не читается.
 - `flare*` принимается, но lens flare не создаётся; остаётся light/glow.
 
 ### 2.5. Lua-контракт
@@ -190,7 +190,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 - Используются `CPHSkeleton`, `CPHUpdateObject`, `CPhysicsShell`, `CPhysicsElement`, `CPhysicsJoint`; изменения в `xrPhysics` не требуются.
 - `SetPrefereExactIntegration`, `SetAirResistance`, `set_DynamicLimits`, `ApplySpawnIniToPhysicShell` для `[physics_common]`, `[collide]`, `[animated_object]`.
 - `EffectiveGravity`/`PhTune` сохраняют поведение Cars-Ext; двойная гравитация не допускается.
-- `dBodySetGyroscopicMode` отсутствует — `gyroscopic_mode` игнорируется с однократным предупреждением.
+- Гироскопический момент колёс не отключается: эксперимент с `dBodySetGyroscopicMode` удалён, ODE работает по умолчанию.
 - `character_scraper` — best-effort: если реализуется на существующих xrPhysics API, включается; иначе пропускается с предупреждением.
 
 ### 2.9. Сохранение и загрузка
@@ -268,7 +268,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 - Иконки `ui_veh_*`, атласы `ui_trunk_vehicles*`, `string_table_enc_vehicles.xml`.
 - `CarConfig`/`CarEditor` как рабочий инструмент; остаются компилируемыми, но нерабочими.
 - Правки `xrEngine`, `xrPhysics`, `xrRender`, `xrSound`.
-- Lens flare, `gyroscopic_mode`, глобальный `psSoundCarFactor`.
+- Lens flare, глобальный `psSoundCarFactor`.
 - `DBG_Car.cpp` и отладочные команды — опционально, не критерий приёмки.
 
 ### 3.3. Краевые случаи и поведение
@@ -345,7 +345,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 
 ### 4.4. Документация и отклонения
 
-- [ ] Заполнен реестр отклонений от Cars-Ext: FMOD-радио, lens flare, gyroscopic mode, глобальный sound factor, grass collision, 3D text/video, AI/purchase/repair UI, passenger seats, старые сейвы, иконки/локализация.
+- [ ] Заполнен реестр отклонений от Cars-Ext: FMOD-радио, lens flare, глобальный sound factor, grass collision, 3D text/video, AI/purchase/repair UI, passenger seats, старые сейвы, иконки/локализация.
 - [ ] В логе нет ошибок missing texture, кроме принятых иконок.
 - [ ] Известные ограничения MP и контента описаны в отчёте.
 
@@ -353,7 +353,7 @@ spawn-секция (class=SCRPTCAR, visual=...ogf)
 
 1. **MP-фаза** — owner-authoritative + server validation ещё не спроектирована детально; текущий гибридный Sync остаётся техническим долгом.
 2. **Слияние `XREFLECT` и Cars-Ext** — возможны конфликты имён/перегрузок `Action`/`SetParam`; требует аккуратного маппинга.
-3. **Отсутствующие LA API** — `psSoundCarFactor`, `dBodySetGyroscopicMode`, `HUD().Add_LensFlare`, `roll_lock`, `Draw_3D_UI`; часть реализуется в xrGame, часть упрощается.
+3. **Отсутствующие LA API** — `psSoundCarFactor`, `HUD().Add_LensFlare`, `roll_lock`, `Draw_3D_UI`; часть реализуется в xrGame, часть упрощается.
 4. **Физика** — ODE IXRAY может дать отличные от LA ощущения; отклонения фиксируются, а не маскируются.
 5. **Контент** — `veh_niva_green` без `inv_name`/`icon`; `veh_zaz968_2` использует тот же ltx, что и `veh_zaz968`; `kamaz`/`super_niva` не подключены.
 6. **Сеть** — `SyncWrite` ограничен 255 байтами; новые поля нельзя добавлять без пересмотра протокола.
