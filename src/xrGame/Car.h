@@ -255,7 +255,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						UpdateWheelTractionTimeout	(SWheel& Wheel);
 	void						UpdateWheelAirborneFriction	(SWheel& Wheel);
 	float						CalculateRainFrictionFactor	();
-	void						UpdateTractionAndSuspension	(bool slip);
+	void						UpdateTraction				(bool slip);
 	void						UpdateWaterDrag				(float step);
 	virtual void						PhTune						(float step)			;
 /////////////////////////////////////////////////////////////////////////
@@ -462,25 +462,6 @@ public:
 	};
 	xr_vector<SEngineDoor> engine_door;
 
-	struct SSuspension
-	{
-		CPhysicsJoint* joint;
-		float velocity;
-		float force;
-		int axis_num;
-		bool b_independent;
-		SSuspension(CPhysicsJoint* joint_ = NULL, float vel = 0.0f, float force_ = 0.0f, int axis = -1, bool indpnd = false)
-		{
-			joint = joint_;
-			velocity = vel;
-			force = force_;
-			axis_num = axis;
-			b_independent = indpnd;
-		}
-		void Update();
-	};
-	xr_vector<SSuspension> suspension_joints;
-
 	// A bone that is pulled back to its bind pose by a torque proportional to
 	// its joint angles. One force value is shared by all joint axes.
 	struct SReturnBone
@@ -597,6 +578,10 @@ public:
 			bool							breaking			;
 			bool							breaking_abs		;
 			bool							traction			;
+			// Low-pass filtered wheel surface speed. The contact solver can
+			// alternate between grip and full wheelspin in adjacent steps at
+			// low physics rates; the slip state must not follow that jitter.
+			float							wheel_speed_filtered;
 			u32								last_contact_time	;
 			float							friction_slip_factor;
 			float							friction2_slip_factor;

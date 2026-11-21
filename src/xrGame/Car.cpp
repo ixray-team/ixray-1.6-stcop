@@ -82,6 +82,10 @@ namespace
 	constexpr float WaterParticleMaxDistance = 70.f;
 	// Do not wake a return bone for sub-milliradian joint noise.
 	constexpr float ReturnBoneAngleEpsilon = 0.001f;
+	// Time constant for the wheel slip speed filter. At low physics rates the
+	// contact solver can alternate between grip and full wheelspin in adjacent
+	// steps; filtering keeps the slip state from following that alternation.
+	constexpr float WheelSlipFilterTime = 0.1f;
 	// The physics interface does not expose an element's inertia, so the
 	// default damping is derived from a nominal vehicle cabin inertia. This
 	// keeps the return critically damped instead of oscillating, which an
@@ -2165,8 +2169,6 @@ void CCar::ApplyBonePhysicsParams(IKinematics* K, CInifile* ini)
 					float angular_scale = 1.01f * ini->r_float(b_name, "angular_scale");
 					Bone.second.element->set_DynamicScales(linear_scale, angular_scale);
 				}
-				if (ini->line_exist(b_name, "apply_by_gravity"))
-					Bone.second.element->set_ApplyByGravity(ini->r_bool(b_name, "apply_by_gravity"));
 
 				if (Bone.second.joint)
 				{
@@ -2216,8 +2218,6 @@ void CCar::ApplyBonePhysicsParams(IKinematics* K, CInifile* ini)
 							}
 							engine_door.push_back(Door);
 						}
-						else if (ini->line_exist(b_name, "suspension_joint"))
-							suspension_joints.push_back(SSuspension(Bone.second.joint, velocity_, force_, axis_, ini->line_exist(b_name, "suspension_indpnd") ? ini->r_bool(b_name, "suspension_indpnd") : false));
 						else
 							Bone.second.joint->SetForceAndVelocity(force_, velocity_, axis_);
 					}
@@ -2547,7 +2547,6 @@ void	CCar::net_Destroy()
 	m_breaking_wheels.clear();
 	engine_door.clear();
 	headlight_hideaways.clear();
-	suspension_joints.clear();
 	pribor_arrows.clear();
 	RemoveGrassSpheres();
 	for (auto& i_d : m_doors)
@@ -5257,7 +5256,8 @@ void CCar::Init()
 		for (auto& i : m_wheels_map)
 		{
 			i.second.Init();
-			i.second.CDamagableHealthItem::Init(100.f,2);
+			// Indestructible by default; [damage_items] opts a wheel into damage.
+			i.second.CDamagableHealthItem::Init(0.f,2);
 		}
 	}
 
@@ -5299,7 +5299,8 @@ void CCar::Init()
 		for (auto& i : m_doors)
 		{
 			i.second.Init();
-			i.second.CDamagableHealthItem::Init(100,1);
+			// Indestructible by default; [damage_items] opts a door into damage.
+			i.second.CDamagableHealthItem::Init(0.f,1);
 		}
 			
 	}
@@ -6941,7 +6942,7 @@ void CCar::PhDataUpdate(float step)
 	StabilizeWheelAxes();
 
 	const bool Slip = UpdateWheelPhysics();
-	UpdateTractionAndSuspension(Slip);
+	UpdateTraction(Slip);
 	UpdateWaterDrag(step);
 	UpdateReturnBones(step);
 
@@ -7722,6 +7723,7 @@ void CCar::UpdateWheelSuspension(SWheel& Wheel)
 {
 	float spring_ = Wheel.spring_factor_default;
 	float damping_ = Wheel.damping_factor_default;
+	const bool AutoDamping = Wheel.suspension_damping_factor < 0.f;
 
 	if (Wheel.suspension_force_inc > 0.f)
 	{
@@ -7734,17 +7736,28 @@ void CCar::UpdateWheelSuspension(SWheel& Wheel)
 		if (Distance > Wheel.suspension_distance)
 		{
 			float spring_req = spring_ + (Distance - Wheel.suspension_distance) * (spring_ / median) * Wheel.suspension_spring_factor * Wheel.suspension_force_inc;
-			float damping_req = damping_ + (Distance - Wheel.suspension_distance) * (damping_ / median) * Wheel.suspension_damping_factor * Wheel.suspension_force_inc;
+			float damping_req = damping_;
+			if (!AutoDamping)
+				damping_req = damping_ + (Distance - Wheel.suspension_distance) * (damping_ / median) * Wheel.suspension_damping_factor * Wheel.suspension_force_inc;
 
 			if (Wheel.spring_last < spring_req)
 			{
 				spring_ = Wheel.suspension_inertia * Wheel.spring_last + (1.f - Wheel.suspension_inertia) * spring_req;
-				damping_ = Wheel.suspension_inertia * Wheel.damping_last + (1.f - Wheel.suspension_inertia) * damping_req;
+				if (!AutoDamping)
+					damping_ = Wheel.suspension_inertia * Wheel.damping_last + (1.f - Wheel.suspension_inertia) * damping_req;
 			}
 			else
 			{
 				spring_ = spring_req;
-				damping_ = damping_req;
+				if (!AutoDamping)
+					damping_ = damping_req;
+			}
+
+			if (AutoDamping && Wheel.spring_factor_default > EPS_L && spring_ > EPS_L)
+			{
+				// Keep the base damping ratio: zeta ~ k_d / sqrt(k_p), so
+				// damping follows sqrt(spring), not spring.
+				damping_ = Wheel.damping_factor_default * sqrtf(spring_ / Wheel.spring_factor_default);
 			}
 		}
 		Wheel.spring_last = spring_;
@@ -7853,7 +7866,17 @@ bool CCar::UpdateWheelTraction(SWheel& Wheel)
 			if (e_state_drive == drive && Wheel.WheelFlags.test(SWheel::eWheelType::wheel_drive) && Wheel.WheelFlags.test(SWheel::eWheelType::wheel_steering))
 				wheels_spin_factor *= 0.95f;
 
-			if (wheel_speed > threshold && wheel_lin_speed < wheel_speed * wheels_spin_factor && e_state_drive == drive && Wheel.WheelFlags.test(SWheel::eWheelType::wheel_drive)) //_abs(Wheel.GetDriveAngleRate()) * Wheel.radius < GetVelocityM() * 0.6f
+			const float filter_alpha = 1.f - expf(-fixed_step / WheelSlipFilterTime);
+			Wheel.collision_params.wheel_speed_filtered += (wheel_speed - Wheel.collision_params.wheel_speed_filtered) * filter_alpha;
+			const float filtered_wheel_speed = Wheel.collision_params.wheel_speed_filtered;
+
+			const bool DriveWheel = Wheel.WheelFlags.test(SWheel::eWheelType::wheel_drive);
+			const bool SpeedOverThreshold = filtered_wheel_speed > threshold;
+			const bool LinearUnderSpin = wheel_lin_speed < filtered_wheel_speed * wheels_spin_factor;
+			const bool DriveStateOk = e_state_drive == drive && DriveWheel;
+			const bool SlipCondition = SpeedOverThreshold && LinearUnderSpin && DriveStateOk;
+
+			if (SlipCondition) //_abs(Wheel.GetDriveAngleRate()) * Wheel.radius < GetVelocityM() * 0.6f
 			{
 				Wheel.collision_params.buxe = true;
 				Wheel.collision_params.slide = false;
@@ -7881,9 +7904,10 @@ bool CCar::UpdateWheelTraction(SWheel& Wheel)
 		}
 		else
 		{
-		Wheel.collision_params.buxe = false;
-		Wheel.collision_params.slide = false;
-		Wheel.collision_params.breaking = false;
+			Wheel.collision_params.wheel_speed_filtered = 0.f;
+			Wheel.collision_params.buxe = false;
+			Wheel.collision_params.slide = false;
+			Wheel.collision_params.breaking = false;
 		}
 
 		if ((Wheel.collision_params.buxe || (Wheel.collision_params.slide && e_state_drive == drive && Wheel.WheelFlags.test(SWheel::eWheelType::wheel_drive))) && (!m_nitro_engage || (m_nitro_engage && !m_nitro_wheelie_boost)))
@@ -7944,6 +7968,7 @@ void CCar::UpdateWheelTractionTimeout(SWheel& Wheel)
 	if (Device.dwTimeGlobal - Wheel.collision_params.last_contact_time > 50)
 	{
 		Wheel.collision_params.traction = false;
+		Wheel.collision_params.wheel_speed_filtered = 0.f;
 		// Do not keep stale slip state after the wheel leaves the ground: it
 		// would retrigger skid sounds on landing.
 		Wheel.collision_params.buxe = false;
@@ -8014,17 +8039,12 @@ float CCar::CalculateRainFrictionFactor()
 	return 1.f - rain_friction;
 }
 
-void CCar::UpdateTractionAndSuspension(bool slip)
+void CCar::UpdateTraction(bool slip)
 {
 	if (mb_traction && Device.dwTimeGlobal - m_last_contact_time > 50)
 		mb_traction = false;
 	if (!slip)
 		m_slip_start_time = Device.fTimeGlobal;
-
-	for (auto& Suspension : suspension_joints)
-	{
-		Suspension.Update();
-	}
 
 	m_last_velocity = GetVelocityM();
 }
@@ -8785,18 +8805,6 @@ void CCar::SEngineDoor::Switch(bool doors_up, bool ForceMotion)
 	const float OpenDirection = opened_angle >= closed_angle ? 1.f : -1.f;
 	joint->SetVelocity(doors_up ? OpenDirection * Speed : -OpenDirection * Speed, axis_num);
 }
-void CCar::SSuspension::Update()
-{
-	if (b_independent)
-		joint->SetForceAndVelocity(force, velocity, axis_num);
-	else
-	{
-		float cur_angle = dJointGetHingeAngle(joint->GetDJoint());
-		if (_abs(cur_angle) > EPS_L)
-			joint->SetForceAndVelocity(_abs((1000.0f * force) * cur_angle), -cur_angle * velocity, axis_num);
-	}
-}
-
 
 Fvector CCar::GetAvelAxes(u16 elem_id)
 {

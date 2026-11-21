@@ -35,8 +35,11 @@ CCar::SWheel::SWheelCollisionParams::SWheelCollisionParams()
 		friction_rain_factor						=1.0f	;
 		break_start									=0.f	;
 		last_contact_time							=0		;
+		wheel_speed_filtered						=0.f	;
 		slide = false;
+		was_slide = false;
 		buxe = false;
+		was_buxe = false;
 		breaking = false;
 		breaking_abs = false;
 		traction = false;
@@ -923,12 +926,15 @@ void CCar::SWheelSteer::SteerIdle()
 
 	if (pwheel->GetSteerAngle() < 0.f)
 	{
-		pwheel->SetSteerLimits(0.f, lo_limit + 0.01f);
+		// Keep the outer stop beyond the current angle. If it is inside, the
+		// motor is powered away from an active limit and ODE cuts its force by
+		// dParamFudgeFactor, leaving the wheel stuck at full lock.
+		pwheel->SetSteerLimits(0.f, lo_limit - 0.01f);
 		pwheel->ApplySteerAxisVel(wheel_steer_speed);
 	}
 	else
 	{
-		pwheel->SetSteerLimits(hi_limit - 0.01f, 0.f);
+		pwheel->SetSteerLimits(hi_limit + 0.01f, 0.f);
 		pwheel->ApplySteerAxisVel(-wheel_steer_speed);
 	}
 
