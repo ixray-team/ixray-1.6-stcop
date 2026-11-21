@@ -223,6 +223,7 @@ float		ps_r2_ls_bloom_kernel_g		= 5.f;				// r2-only
 float		ps_r2_ls_bloom_kernel_b		= .7f;				// r2-only
 float		ps_r2_ls_bloom_speed		= 100.f;				// r2-only
 float		ps_r2_ls_bloom_kernel_scale	= .7f;				// r2-only	// gauss
+float		ps_r2_volumetric_lights_intensity = 7.0f;
 float		ps_r2_ls_bloom_threshold	= 0.1f;				// r2-only
 float		ps_r2_ls_depth_scale = 0.9999f; // 1.00001f
 float		ps_r2_ls_depth_bias = 0.00001f; // -0.0001f
@@ -783,6 +784,9 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask32,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 
 	CMD3(CCC_Mask32,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
+#ifndef MASTER_GOLD
+	CMD4(CCC_Float,		"r4_volumetric_lights_intensity",	&ps_r2_volumetric_lights_intensity,	0.f,	10.f);
+#endif // #ifndef MASTER_GOLD
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD3(CCC_Mask32, "r2_sun_hom", &ps_r2_ls_flags_ext, RFLAG_SUN_HOM);
 

@@ -278,7 +278,7 @@ void CRenderTarget::accum_volumetric(light* L)
 	fQuality = ((float)iNumSlises) / VOLUMETRIC_SLICES;
 	Fvector		L_dir, L_clr, L_pos;	float L_spec;
 	L_clr.set(L->color.r, L->color.g, L->color.b);
-	L_clr.mul(L->m_volumetric_intensity);
+	L_clr.mul(L->m_volumetric_intensity * ps_r2_volumetric_lights_intensity);
 	L_clr.mul(L->m_volumetric_distance);
 	L_clr.mul(1 / fQuality);
 	L_clr.mul(L->get_LOD());
@@ -374,7 +374,7 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	//Light direction (spot), color, and position. All in world space
 	Fvector L_dir, L_clr, L_pos;
 	L_clr.set(L->color.r, L->color.g, L->color.b);
-	L_clr.mul(std::max(ps_ssfx_volumetric.y, L->m_volumetric_intensity));
+	L_clr.mul(std::max(ps_ssfx_volumetric.y, L->m_volumetric_intensity) * ps_r2_volumetric_lights_intensity);
 	L_clr.mul(L->m_volumetric_distance);
 	L_clr.mul(L->get_LOD());
 

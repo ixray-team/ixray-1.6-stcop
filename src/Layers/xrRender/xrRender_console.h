@@ -83,6 +83,7 @@ extern ECORE_API float			ps_r2_df_parallax_range;	// r2-only
 extern ECORE_API float			ps_r2_gmaterial;			// r2-only
 extern ECORE_API float			ps_r2_tonemap_middlegray;	// r2-only
 extern ECORE_API float			ps_r2_tonemap_adaptation;	// r2-only
+extern ECORE_API float			ps_r2_volumetric_lights_intensity;
 extern ECORE_API float			ps_r2_tonemap_low_lum;		// r2-only
 extern ECORE_API float			ps_r2_tonemap_amount;		// r2-only
 extern ECORE_API float			ps_r2_ls_bloom_kernel_scale;// r2-only	// gauss
