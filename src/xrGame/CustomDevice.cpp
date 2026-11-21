@@ -690,7 +690,12 @@ void CCustomDevice::UpdateVisibility()
 	attachable_hud_item* i0 = g_player_hud->attached_item(0);
 	CHudItem* parent_hud_item = i0 != nullptr ? i0->m_parent_hud_item : nullptr;
 
-	if (parent_hud_item != nullptr && HudItemData() != nullptr)
+	if (parent_hud_item == nullptr && HudItemData() != nullptr && Actor()->IsTalking())
+	{
+		HideDetector(true, true);
+		m_bNeedActivation = true;
+	}
+	else if (parent_hud_item != nullptr && HudItemData() != nullptr)
 	{
 		bool bClimborTalking = ((Actor()->GetMovementState(eReal) & mcClimb) != 0 || Actor()->IsTalking());
 		if (bClimborTalking)
