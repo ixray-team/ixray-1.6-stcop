@@ -320,18 +320,46 @@ void XRay::Editor::TerrainMask::PackWeights(const SCellWeights& C, u8* Out)
 
 void CTerrainMask::EnsureDefaultMaterial(const char* Shader, const char* GameMtl)
 {
-	if (!Materials.empty())
+	// Classic X-Ray terrain: one level shader, the mask picks one of its four details.
+	// So the default is one material per channel on the same shader: painting "G" renders the shader's R2-G,
+	// and the materials can never seam with each other.
+	static const char* Names[CHANNEL_COUNT] = {"layer R", "layer G", "layer B", "layer A"};
+
+	if (Materials.empty())
 	{
+		for (u32 c = 0; c < CHANNEL_COUNT; ++c)
+		{
+			SMaterial M;
+			M.Name = Names[c];
+			M.Shader = Shader;
+			M.GameMtl = GameMtl;
+			M.Channel = c;
+			Materials.push_back(M);
+		}
+		Dirty = true;
 		return;
 	}
 
-	SMaterial M;
-	M.Name = "base";
-	M.Shader = Shader;
-	M.GameMtl = GameMtl;
-	M.Channel = 0;
-	Materials.push_back(M);
-	Dirty = true;
+	// Terrains made with the single "base" material: add the missing channels on the same shader
+	if (Materials.size() == 1 && Materials[0].Name == shared_str("base"))
+	{
+		const SMaterial Base = Materials[0];
+		Materials[0].Name = Names[std::min(Base.Channel, CHANNEL_COUNT - 1)];
+		for (u32 c = 0; c < CHANNEL_COUNT; ++c)
+		{
+			if (c == Base.Channel)
+			{
+				continue;
+			}
+			SMaterial M;
+			M.Name = Names[c];
+			M.Shader = Base.Shader;
+			M.GameMtl = Base.GameMtl;
+			M.Channel = c;
+			Materials.push_back(M);
+		}
+		Dirty = true;
+	}
 }
 
 void CTerrainMask::Resize(u32 W, u32 H)

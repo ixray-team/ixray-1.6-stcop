@@ -78,6 +78,9 @@ list(FILTER ECORE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # xrECore project
 add_library(xrECore SHARED ${ECORE_SRC_FILES})
 target_include_directories(xrECore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# cgltf implementation lives in this translation unit
+set_source_files_properties("Importer/MeshGLTF.cpp" PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Public")
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Props")

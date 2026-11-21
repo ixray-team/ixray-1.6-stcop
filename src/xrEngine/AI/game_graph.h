@@ -34,8 +34,9 @@ public:
 
 protected:
 	CHeader							m_header;
-	CVertex							*m_nodes;
-	BYTE							*m_edges;
+	CVertex							*m_nodes = nullptr;
+	// Separate edge storage; nullptr: edge offsets are relative to m_nodes (xrLevelBuilder graphs)
+	BYTE							*m_edges = nullptr;
 	mutable ENABLED					m_enabled;
 	_GRAPH_ID						m_current_level_some_vertex_id;
 

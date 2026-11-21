@@ -372,6 +372,14 @@ bool EScene::GetBox(Fbox& box, ObjectList& lst)
 		if (!Obj->GetBox(bb))
 			continue;
 
+		// Bit test: /fp:fast folds NaN comparisons away
+		const auto IsFinite = [](float Value) { return (std::bit_cast<u32>(Value) & 0x7f800000u) != 0x7f800000u; };
+		if (!IsFinite(bb.min.x) || !IsFinite(bb.min.y) || !IsFinite(bb.min.z) || !IsFinite(bb.max.x) || !IsFinite(bb.max.y) || !IsFinite(bb.max.z))
+		{
+			ELog.Msg(mtError, "ERROR: Bounding box is not finite (NaN transform?) [%s]", Obj->GetName());
+			continue;
+		}
+
 		if (bb.max.x > 100000.0f || bb.max.y > 100000.0f || bb.max.z > 100000.0f) 
 		{
 			ELog.Msg(mtError, "ERROR: Bounding box [%s]", Obj->GetName());

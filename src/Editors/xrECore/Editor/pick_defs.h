@@ -171,7 +171,9 @@ class CCustomObject;
 		IC void SetRESULT(CDB::MODEL* M, const CDB::RESULT& R)
 		{
 			inf = R;
-			//inf.tris_id = M->get_tris()[inf.tris_id].dummy;
+			// Callers index CEditableMesh::m_Faces: the CDB triangle order differs (faces grouped by surface,
+			// two-sided faces added twice), its dummy holds the mesh face id
+			inf.tris_id = M->get_tris()[R.tris_id].dummy;
 		}
 	};
     using BPInfVec = xr_vector<CDB::RESULT>;

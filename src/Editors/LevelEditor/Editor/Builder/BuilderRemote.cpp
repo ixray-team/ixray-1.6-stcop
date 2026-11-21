@@ -661,12 +661,16 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 	{
 		CSurface* surf = nullptr;
 
-		for (CSurface* SceneSurf : obj->m_Surfaces)
+		// Terrain and road meshes have no owner scene object
+		if (obj)
 		{
-			if (SceneSurf->_Name() == MeshSurf->_Name() && SceneSurf->m_id == MeshSurf->m_id)
+			for (CSurface* SceneSurf : obj->m_Surfaces)
 			{
-				surf = SceneSurf;
-				break;
+				if (SceneSurf->_Name() == MeshSurf->_Name() && SceneSurf->m_id == MeshSurf->m_id)
+				{
+					surf = SceneSurf;
+					break;
+				}
 			}
 		}
 

@@ -60,6 +60,8 @@ public:
 
 	// Ray pick against the heightmap itself (not the generated mesh, which may be stale while sculpting)
 	bool PickHeightmap(const Fvector& Start, const Fvector& Dir, float& Dist, Fvector& WorldPoint);
+	// World-space surface normal of the heightmap at a world point
+	Fvector HeightmapNormal(const Fvector& WorldPoint);
 	// Called after the heightmap data was modified in the grid rect [x0, x1] x [z0, z1]
 	void OnHeightmapChanged(int x0, int z0, int x1, int z1);
 	void OnHeightmapChanged();

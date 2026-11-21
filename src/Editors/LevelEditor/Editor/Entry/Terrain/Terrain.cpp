@@ -17,6 +17,7 @@ enum class ETerrainChunkIDs
 CTerrain::CTerrain(LPVOID data, const char* name)
 	: inherited(data, name ? name : "terrain"), TerrainObject(new CEditableObject(name ? name : "terrain"))
 {
+	m_TBBox.invalidate();
 	Construct(data);
 	FScale.set(1, 1, 1);
 	m_RT_Flags.set(flRT_Visible, true);
@@ -67,13 +68,41 @@ CTerrain::~CTerrain()
 
 void CTerrain::OnUpdateTransform()
 {
+	// Repair a broken transform (e.g. NaN rotation from an old drop bug): it poisons picking,
+	// bounding boxes and the level build. Bit test: /fp:fast folds NaN comparisons away.
+	const auto IsFinite = [](const Fvector& V)
+	{
+		const auto Ok = [](float Value) { return (std::bit_cast<u32>(Value) & 0x7f800000u) != 0x7f800000u; };
+		return Ok(V.x) && Ok(V.y) && Ok(V.z);
+	};
+	if (!IsFinite(FPosition))
+	{
+		Msg("! Terrain [%s]: non-finite position reset", GetName());
+		FPosition.set(0.f, 0.f, 0.f);
+	}
+	if (!IsFinite(FRotation))
+	{
+		Msg("! Terrain [%s]: non-finite rotation reset", GetName());
+		FRotation.set(0.f, 0.f, 0.f);
+	}
+	if (!IsFinite(FScale))
+	{
+		Msg("! Terrain [%s]: non-finite scale reset", GetName());
+		FScale.set(1.f, 1.f, 1.f);
+	}
+
 	inherited::OnUpdateTransform();
 
-	// update bounding volume
-	if (TerrainObject)
+	// update bounding volume (an empty object box would turn into NaN after xform)
+	m_TBBox.invalidate();
+	if (TerrainObject && !TerrainObject->m_Meshes.empty())
 	{
-		m_TBBox.set(TerrainObject->GetBox());
-		m_TBBox.xform(_Transform());
+		Fbox ObjectBox = TerrainObject->GetBox();
+		if (ObjectBox.is_valid())
+		{
+			m_TBBox.set(ObjectBox);
+			m_TBBox.xform(_Transform());
+		}
 	}
 }
 
@@ -135,6 +164,48 @@ bool CTerrain::PickHeightmap(const Fvector& Start, const Fvector& Dir, float& Di
 
 	Dist = WorldDist;
 	return true;
+}
+
+Fvector CTerrain::HeightmapNormal(const Fvector& WorldPoint)
+{
+	Fvector Up = {0.f, 1.f, 0.f};
+	if (!HMap.IsValid())
+	{
+		return Up;
+	}
+
+	Fvector Local;
+	_ITransform().transform_tiny(Local, WorldPoint);
+	float Gx, Gz;
+	HMap.LocalToGrid(Local, Gx, Gz);
+
+	const float Y = float(ScaleY);
+	const Fvector Px0 = HMap.GridToLocal(Gx - 1.f, Gz, Y);
+	const Fvector Px1 = HMap.GridToLocal(Gx + 1.f, Gz, Y);
+	const Fvector Pz0 = HMap.GridToLocal(Gx, Gz - 1.f, Y);
+	const Fvector Pz1 = HMap.GridToLocal(Gx, Gz + 1.f, Y);
+
+	Fvector Wx0, Wx1, Wz0, Wz1;
+	_Transform().transform_tiny(Wx0, Px0);
+	_Transform().transform_tiny(Wx1, Px1);
+	_Transform().transform_tiny(Wz0, Pz0);
+	_Transform().transform_tiny(Wz1, Pz1);
+
+	Fvector Tx, Tz, N;
+	Tx.sub(Wx1, Wx0);
+	Tz.sub(Wz1, Wz0);
+	N.crossproduct(Tz, Tx);
+	const float Len = N.magnitude();
+	if (!(Len > EPS_S))
+	{
+		return Up;
+	}
+	N.div(Len);
+	if (N.y < 0.f)
+	{
+		N.invert();
+	}
+	return N;
 }
 
 void CTerrain::OnHeightmapChanged(int x0, int z0, int x1, int z1)
@@ -563,6 +634,8 @@ bool CTerrain::BakeMask(u32 Size, xr_string& OutColor, xr_string& OutMask)
 		{
 			THM->_Format().type = STextureParams::ttTerrain;
 			THM->_Format().fmt = STextureParams::tfDXT1;
+			// xrLC bakes the static lighting into levels\<level>\<texture>.dds only for implicit lighted textures
+			THM->_Format().flags.set(STextureParams::flImplicitLighted, true);
 		}
 		THM->_Format().flags.set(STextureParams::flGenerateMipMaps, true);
 		THM->Save(int(Age));
@@ -751,7 +824,9 @@ bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPick
 		return false;
 	}
 
-	if (LTools->GetTarget() == OBJCLASS_TERRAIN)
+	// The mesh is generated from the heightmap: pick the heightmap directly in every mode.
+	// The mesh collision model is only used for terrains without heightmap data.
+	if (HMap.IsValid())
 	{
 		Fvector Point;
 		if (PickHeightmap(S, D, dist, Point))
@@ -759,13 +834,15 @@ bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPick
 			if (pinf)
 			{
 				pinf->s_obj = this;
+				pinf->e_obj = nullptr;
+				pinf->e_mesh = nullptr;
 				pinf->pt = Point;
 				pinf->inf.range = dist;
 			}
 			return true;
 		}
 	}
-	else
+	else if (TerrainObject)
 	{
 		if (TerrainObject->RayPick(dist, S, D, _ITransform(), pinf))
 		{
@@ -1033,7 +1110,7 @@ void CTerrain::RayQuery(SPickQuery& pinf)
 
 bool CTerrain::GetBox(Fbox& box)
 {
-	if (!TerrainObject)
+	if (!TerrainObject || !m_TBBox.is_valid())
 	{
 		return false;
 	}

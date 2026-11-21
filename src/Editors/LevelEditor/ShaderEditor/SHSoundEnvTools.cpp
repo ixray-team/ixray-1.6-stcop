@@ -257,8 +257,8 @@ void CSHSoundEnvTools::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 
 void CSHSoundEnvTools::OnActivate()
 {
-	if (!psSoundFlags.is(ss_Hardware)){
-		Log("#!HARDWARE or FX flags are not set. Preview is disabled.");
+	if (!psSoundFlags.is(ss_EFX)){
+		Log("#!EFX flag is not set. Preview is disabled.");
 	}else{
 		m_PreviewSnd.play			(0,sm_Looped);
 		PropItemVec items;

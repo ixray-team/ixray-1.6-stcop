@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
+#include "Editor/Entry/Terrain/Terrain.h"
 #include "../xrengine\GameFont.h"
 #include "Editor/Utils/ContentView.h"
 #include "Editor/Utils/EFDEditor.h"
@@ -1442,9 +1443,20 @@ void RetrieveSceneObjPointAndNormal(Fvector& hitpoint, Fvector* hitnormal, const
 	if (pinf.e_mesh == 0)
 	{
 		hitpoint = pinf.pt;
-		if (hitnormal && pinf.visual_inf.K)
+		if (hitnormal)
 		{
-			*hitnormal = pinf.visual_inf.normal;
+			if (pinf.visual_inf.K)
+			{
+				*hitnormal = pinf.visual_inf.normal;
+			}
+			else if (CTerrain* Terrain = smart_cast<CTerrain*>(pinf.s_obj))
+			{
+				*hitnormal = Terrain->HeightmapNormal(pinf.pt);
+			}
+			else
+			{
+				hitnormal->set(0.f, 1.f, 0.f);
+			}
 		}
 
 		return;

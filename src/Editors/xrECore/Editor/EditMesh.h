@@ -320,6 +320,8 @@ public:
 	void			Clear					();
 	void			Create					(st_Face* faces, u32 face_count, Fvector* vertices, u32 vertex_count, Fvector* normals, u32 normal_count);
 
+	// Per-face smoothing groups; per-corner normals (face * 3 + corner), may be empty
+	void			SetSmoothing			(xr_vector<u32>&& SmoothGroups, xr_vector<Fvector>&& Normals){m_SmoothGroups = std::move(SmoothGroups); m_Normals = std::move(Normals);}
 	void            GetBox					(Fbox& box){box.set(m_Box);}
 	CSurface*		GetSurfaceByFaceID		(u32 fid);
 	void			GetFaceTC				(u32 fid, const Fvector2* tc[3]);

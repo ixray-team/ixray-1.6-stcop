@@ -12,17 +12,29 @@
 
 #include "ExportSkeleton.h"
 #include "ExportObjectOGF.h"
+#include "../Importer/MeshGLTF.h"
 
 #include "../Layers/xrRenderPC_R4/Shader.h"
 
 bool CEditableObject::Load(const char* fname)
 {
+	if (XRay::Importer::Mesh::IsGLTF(fname))
+	{
+		// Source mesh, not an object file: m_LoadName stays empty so it is never resaved over the glTF
+		return FS.exist(fname) && XRay::Importer::Mesh::ImportGLTF(fname, this);
+	}
+
 	if (FS.exist(fname))
 	{
         time_t age		= FS.get_file_age	(fname);		VERIFY3(age>0,"Invalid file age:",fname);
         IReader* F 		= FS.r_open			(fname); 		R_ASSERT(F);
         IReader* OBJ 	= F->open_chunk		(EEditableObjectChunks::OBJECT_BODY);
-        R_ASSERT2		(OBJ,"Corrupted file.");
+        if (!OBJ)
+        {
+            Msg(			"! Object file '%s' has no body chunk", fname);
+            FS.r_close(F);
+            return false;
+        }
         bNeedResave		= false;
         bool bRes 		= Load(*OBJ);
         OBJ->close();
