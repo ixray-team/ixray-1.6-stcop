@@ -106,14 +106,16 @@ void CPoltergeist::Load(const char* section)
 	m_height_min = READ_IF_EXISTS(pSettings, r_float, section, "Height_Min", 0.4f);
 	m_height_max = READ_IF_EXISTS(pSettings, r_float, section, "Height_Max", 2.f);
 
-	m_fly_around_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_level", 5.f);
-	m_fly_around_distance = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", 15.f);
-
-	m_fly_around_change_direction_time = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_change_direction_time", 7);
-
 	const char* polter_type = pSettings->r_string(section, "type");
+	const bool IsFlamer = xr_strcmp(polter_type, "flamer") == 0;
 
-	if (xr_strcmp(polter_type, "flamer") == 0)
+	// Defaults match the Call of Pripyat configs, so Shadow of Chernobyl and Clear Sky configs without detection_* lines still detect the actor
+	m_fly_around_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_level", 5.f);
+	m_fly_around_distance = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_distance", IsFlamer ? 8.f : 30.f);
+
+	m_fly_around_change_direction_time = READ_IF_EXISTS(pSettings, r_float, section, "detection_fly_around_change_direction_time", 5.f);
+
+	if (IsFlamer)
 	{
 		m_poltergeist = new CFlamePoltergeist(this);
 		m_poltergeist->load(section);
@@ -127,11 +129,11 @@ void CPoltergeist::Load(const char* section)
 	m_detection_pp_effector_name = READ_IF_EXISTS(pSettings, r_string, section, "detection_pp_effector_name", "");
 	m_detection_near_range_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_near_range_factor", 2.f);
 	m_detection_far_range_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_far_range_factor", 1.f);
-	m_detection_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_speed_factor", 1.f);
-	m_detection_loose_speed = READ_IF_EXISTS(pSettings, r_float, section, "detection_loose_speed", 5.f);
-	m_detection_far_range = READ_IF_EXISTS(pSettings, r_float, section, "detection_far_range", 20.f);
-	m_detection_success_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_success_level", 4.f);
-	m_detection_max_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_max_level", 100.f);
+	m_detection_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_speed_factor", 4.f);
+	m_detection_loose_speed = READ_IF_EXISTS(pSettings, r_float, section, "detection_loose_speed", 2.f);
+	m_detection_far_range = READ_IF_EXISTS(pSettings, r_float, section, "detection_far_range", 50.f);
+	m_detection_success_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_success_level", 10.f);
+	m_detection_max_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_max_level", 15.f);
 
 	m_current_detection_level = 0;
 	m_last_detection_time = 0;
