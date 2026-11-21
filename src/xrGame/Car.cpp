@@ -404,7 +404,6 @@ CCar::CCar()
 	m_steer_invert = false;
 	m_steer_threshold = 0.0002f;
 	m_last_velocity = 0.f;
-	m_last_avelocity_j = 0.f;
 	m_last_avelocity = 0.f;
 	m_acceleration = 0.f;
 	m_camera_acceleration = 1.f;
@@ -2963,12 +2962,6 @@ void CCar::UpdateCL				( )
 		}
 	}
 
-	//Test particles assert
-	//for (int i = 0; i < 255; ++i)
-	//	if (auto ps = CParticlesObject::Create("phy_fx\\generic_body_dust_01", TRUE))
-	//Test Doors
-	//for (; i != e; ++i)
-	//if (Owner() && m_pPhysicsShell)
 	if(!Owner())
 	{
 		for (CCarTurret* CWPB : m_car_weapons)
@@ -3040,8 +3033,6 @@ void CCar::UpdateCL				( )
 			ProcessScripts();
 }
 bool rs_car_info = false;
-bool rs_car_transmission = false;
-bool rs_car_hud_draw = true;
 bool rs_car_unlimitedfuel = false;
 bool rs_car_auto_transmission = true;
 #if defined(DEBUG) || defined(DEBUG_DRAW)
@@ -3372,29 +3363,24 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 
 		if(CurrentGameUI())//car panel ui
 		{	
-			if (rs_car_hud_draw)
-			{
-				if (active_camera->tag == EctFirstCam && m_firsteye_panel == false)
-					CurrentGameUI()->UIMainIngameWnd->CarPanel().ShowPanel(false);
-				else
-					CurrentGameUI()->UIMainIngameWnd->CarPanel().ShowPanel(true);
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(true);
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f*/);
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetSpeed(GetVelocityM() * 3.6f / 115.f);
-				if (b_engine_on)
-					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(m_current_rpm / m_max_rpm / 1.5f - m_min_rpm / m_max_rpm / 3.0f);
-				else
-					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(0.f);
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetFuel(100.0f * (m_fuel / m_fuel_tank));
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetEngineLamp(b_engine_on);
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetLightLamp(m_lights.IsOn());
-				if (CurrentTransmission() == 0)
-					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear("R");
-				else
-					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear(std::to_string(CurrentTransmission()).c_str());
-			}
+			if (active_camera->tag == EctFirstCam && m_firsteye_panel == false)
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().ShowPanel(false);
 			else
-				CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().ShowPanel(true);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(true);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f*/);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetSpeed(GetVelocityM() * 3.6f / 115.f);
+			if (b_engine_on)
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(m_current_rpm / m_max_rpm / 1.5f - m_min_rpm / m_max_rpm / 3.0f);
+			else
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(0.f);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetFuel(100.0f * (m_fuel / m_fuel_tank));
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetEngineLamp(b_engine_on);
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().SetLightLamp(m_lights.IsOn());
+			if (CurrentTransmission() == 0)
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear("R");
+			else
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear(std::to_string(CurrentTransmission()).c_str());
 		}
 	}
 
@@ -5635,7 +5621,7 @@ void CCar::UpdatePower()
 				const float SignedSpeed = GetVelocity().dotproduct(XFORM().k);
 				const bool RollingBackward = SignedSpeed < -0.1f;
 
-				if (rs_car_auto_transmission && !b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty() && !IsTransmissionSwitching() && !RollingBackward)
+				if (rs_car_auto_transmission && !b_auto_transmission_stop && mb_traction && !m_gear_ratious.empty() && !IsTransmissionSwitching() && !RollingBackward)
 				{
 					if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) TransmissionDown();
 					if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2] && GetSpeedKmH() > m_gear_ratious[CurrentTransmission()][3]) TransmissionUp();
@@ -6817,9 +6803,6 @@ void CCar::Burnout()
 	b_burnout = burn;
 }
 
-collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
-
-
 bool CCar::AreRecursiveDoorsOpened() const
 {
 	if (m_doors_recurs.empty())
@@ -7991,7 +7974,6 @@ void CCar::UpdateTractionAndSuspension(bool slip)
 	}
 
 	m_last_velocity = GetVelocityM();
-	m_last_avelocity_j = GetAVelocity().dotproduct(XFORM().j);
 }
 
 void CCar::UpdateWaterDrag(float step)
@@ -8227,23 +8209,6 @@ void CCar::CarExplode()
 	
 	RemoveGrassSpheres();
 }
-
-//void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
-//
-//
-//
-//	if(capturer)
-//		if(capture)
-//			if(capture->m_taget_element->PhysicsRefObject()==l_pUD2->ph_ref_object)
-//
-//
-//
-//
-//	if(capturer)
-//		if(capture)
-//			if(capture->m_taget_element->PhysicsRefObject()==l_pUD1->ph_ref_object)
-//
-//
 
 template <class T> IC void CCar::fill_wheel_vector(LPCSTR S,xr_vector<T>& type_wheels)
 {

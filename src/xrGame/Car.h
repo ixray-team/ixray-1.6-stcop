@@ -785,19 +785,6 @@ virtual void ApplyDamage			(u16 level);
 		u32				real_close_time;
 // 		u32				switch_time;
 		bool			no_deactivate;
-		// UNUSED: legacy doorway helper
-#if 0
-		struct SDoorway
-		{
-		Fvector2		door_plane_ext;
-		_vector2<int>	door_plane_axes;
-			SDoor			*door;
-				 SDoorway	();
-			void SPass		();
-			void Init		(SDoor	*adoor);
-			void Trace		(const Fvector &point,const Fvector &dir);
-		};
-#endif
 		Fvector2		door_plane_ext;
 		_vector2<int>	door_plane_axes;
 		Fvector			door_dir_in_door;
@@ -826,7 +813,6 @@ virtual void ApplyDamage(u16 level);
 		bool TestPass(const Fvector& pos,const Fvector& dir);
 		bool IsExitThroughDoor(const Fvector& pos,const Fvector& dir);
 		void BuildExitArea();
-		//bool TestPass1(const Fvector& pos,const Fvector& dir);
 		void GetExitPosition(Fvector& pos);
 		Fvector GetWorldPosition();
 		bool IsDistOfSight(const Fvector& pos);
@@ -1240,7 +1226,6 @@ private:
 	float					m_steer_threshold;
 	float					m_last_velocity;
 	float					m_last_avelocity;
-	float					m_last_avelocity_j;
 	float					m_acceleration;
 	float					m_camera_acceleration;
 	bool					b_diff_lock;
@@ -1320,10 +1305,6 @@ private:
 	bool					mb_traction;
 	xr_vector<Fmatrix>		bones_bind_forms;
 	Fvector					bind_center;
-
-// 	CGameFont*				pFontTest;
-// 	ui_shader				hVideoShader;
-
 
 	float					m_steering_speed;
 	float					m_ref_radius;
