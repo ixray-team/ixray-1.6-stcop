@@ -192,6 +192,7 @@ class CCar final :
 	XGENERATED_BODY()
 private:
 	collide::rq_results		RQR;
+	collide::rq_results		m_water_ray_results;
 
 #ifdef DEBUG
 // 	CFunctionGraph 					m_dbg_power_rpm			;
@@ -561,6 +562,10 @@ public:
 		float								tire_particle_scale_min;
 		float								tire_particle_scale_max;
 		u32									WaterParticleTime;
+		// Cached down-ray for Play(). It depends only on the wheel centre, so
+		// multiple contacts of the same wheel in one physics step reuse it.
+		collide::rq_result					GroundProbe;
+		u64									GroundProbeStep = u64(-1);
 		// True when the wheel touches the water surface or is fully submerged.
 		// Rain friction must not reduce grip in that case.
 		bool								InWater;

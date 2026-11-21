@@ -53,13 +53,14 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 		//if(cp.pwheel->drive_wheel)
 			sp.mode |= dContactFDir1 | dContactMu2;
 		//else
-		Fmatrix wheel_bind_xform = cp.pwheel->car->bones_bind_forms[cp.pwheel->bone_id];
-		wheel_bind_xform.mulA_43(cp.pwheel->car->XFORM());
-
 		Fvector fdir;
 		if (rs_car_wheel_friction_direction || (cp.pwheel->car->b_awd && cp.pwheel->car->e_state_drive == drive))
 		{
-			fdir.crossproduct(cp.pwheel->joint->PSecond_element()->XFORM().k, wheel_bind_xform.i);
+			// Only the wheel bind X axis is needed here. Transform it directly
+			// instead of building a full bind-world matrix for every contact.
+			Fvector wheel_bind_i;
+			cp.pwheel->car->XFORM().transform_dir(wheel_bind_i, cp.pwheel->car->bones_bind_forms[cp.pwheel->bone_id].i);
+			fdir.crossproduct(cp.pwheel->joint->PSecond_element()->XFORM().k, wheel_bind_i);
 		}
 		else
 		{
@@ -384,9 +385,27 @@ void CCar::SWheel::Play(Fvector c_pos, u16 m1_id, u16 m2_id, bool tire_fulleffec
 		SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(GMLib.GetMaterialIdx(m2_id), GMLib.GetMaterialIdx(m1_id));
 		if (mtl_pair)
 		{
-			collide::rq_result	result = GetPickResult(wheel_center, Fvector(car->XFORM().j).invert(), radius + 0.1f, car);
-			BOOL reach_ground = !!(result.element >= 0);
-			Fvector end_point = Fvector().mad(wheel_center, Fvector(car->XFORM().j).invert(), result.range);
+			collide::rq_result	result;
+			bool reach_ground = false;
+			Fvector end_point = zero_vel;
+
+			// The ground probe is only used by the particle and wallmark
+			// blocks. It depends on the wheel centre, not on the individual
+			// contact point, so one probe per wheel per physics step is enough.
+			const bool NeedGroundProbe = tire_fulleffects && (tire_sounds || tire_trail_wallmark_avlbl);
+			if (NeedGroundProbe)
+			{
+				const u64 Step = physics_world()->StepsNum();
+				if (GroundProbeStep != Step)
+				{
+					GroundProbe = GetPickResult(wheel_center, Fvector(car->XFORM().j).invert(), radius + 0.1f, car);
+					GroundProbeStep = Step;
+				}
+
+				result = GroundProbe;
+				reach_ground = result.element >= 0;
+				end_point = Fvector().mad(wheel_center, Fvector(car->XFORM().j).invert(), result.range);
+			}
 
 			if (tire_fulleffects && tire_sounds)
 			{

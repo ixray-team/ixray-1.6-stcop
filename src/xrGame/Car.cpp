@@ -2983,16 +2983,18 @@ void CCar::UpdateCL				( )
 	if(m_pPhysicsShell)
 	{
 		int odcnt = 0;
-		for (auto& i : m_doors)
+		if (!m_indoor_l_available_doors.empty())
 		{
-			if (i.second.state != SDoor::closed)
+			for (auto& i : m_doors)
 			{
-				for (u16 IndoorDoorBone : m_indoor_l_available_doors)
+				if (i.second.state != SDoor::closed)
 				{
-					if (IndoorDoorBone == i.second.bone_id)
-						odcnt++;
+					for (u16 IndoorDoorBone : m_indoor_l_available_doors)
+					{
+						if (IndoorDoorBone == i.second.bone_id)
+							odcnt++;
+					}
 				}
-				
 			}
 		}
 		if(odcnt)
@@ -7025,7 +7027,8 @@ void CCar::UpdatePhDataObjects()
 
 			float lo_limit, hi_limit;
 			it.joint->GetLimits(lo_limit, hi_limit, 0);
-			if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+			const float Angle = it.joint->GetAxisAngle(0);
+			if (Angle > lo_limit && Angle < hi_limit)
 			{
 				CPhysicsElement* element = it.joint->PSecond_element();
 				if (element && element->isActive() && !dBodyIsEnabled(element->get_body()))
@@ -7039,7 +7042,8 @@ void CCar::UpdatePhDataObjects()
 
 			float lo_limit, hi_limit;
 			it.joint->GetLimits(lo_limit, hi_limit, 0);
-			if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+			const float Angle = it.joint->GetAxisAngle(0);
+			if (Angle > lo_limit && Angle < hi_limit)
 			{
 				CPhysicsElement* element = it.joint->PSecond_element();
 				if (element && element->isActive() && !dBodyIsEnabled(element->get_body()))
@@ -7260,6 +7264,9 @@ void CCar::UpdateReturnBones(float step)
 	if (!m_pPhysicsShell || !m_pPhysicsShell->isActive() || step <= 0.f)
 		return;
 
+	if (return_bones.empty())
+		return;
+
 	// setTorque() overwrites the body torque and ODE keeps it until the next
 	// setTorque() call. Always apply a value for every return element, even
 	// zero, so torque from the previous step is not left running.
@@ -7365,8 +7372,9 @@ void CCar::UpdateSteeringWheels()
 
 	if (!m_steering_wheels.empty())
 	{
-		m_steer_angle = m_steer_angle + (m_steering_wheels.begin()->GetSteerAngle() - m_steer_angle) * 15.f * fixed_step;
-		m_wheel_angle = m_steering_wheels.begin()->GetSteerAngle();
+		const float SteerAngle = m_steering_wheels.begin()->GetSteerAngle();
+		m_steer_angle = m_steer_angle + (SteerAngle - m_steer_angle) * 15.f * fixed_step;
+		m_wheel_angle = SteerAngle;
 		VERIFY(_valid(m_steer_angle));
 		VERIFY(_valid(m_wheel_angle));
 	}
@@ -7681,15 +7689,16 @@ void CCar::UpdateWheelSuspension(SWheel& Wheel)
 
 	if (Wheel.suspension_force_inc > 0.f)
 	{
-		Fmatrix bone_bxform = bones_bind_forms[Wheel.bone_id];
-		Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform(Wheel.bone_id);
+		const Fmatrix& BoneBindForm = bones_bind_forms[Wheel.bone_id];
+		const Fmatrix& BoneForm = PKinematics(Visual())->LL_GetTransform(Wheel.bone_id);
+		const float Distance = BoneBindForm.c.distance_to(BoneForm.c);
 
 		float median = (spring_ + damping_) * 0.5f;
 
-		if (bone_bxform.c.distance_to(bone_xform.c) > Wheel.suspension_distance)
+		if (Distance > Wheel.suspension_distance)
 		{
-			float spring_req = spring_ + (bone_bxform.c.distance_to(bone_xform.c) - Wheel.suspension_distance) * (spring_ / median) * Wheel.suspension_spring_factor * Wheel.suspension_force_inc;
-			float damping_req = damping_ + (bone_bxform.c.distance_to(bone_xform.c) - Wheel.suspension_distance) * (damping_ / median) * Wheel.suspension_damping_factor * Wheel.suspension_force_inc;
+			float spring_req = spring_ + (Distance - Wheel.suspension_distance) * (spring_ / median) * Wheel.suspension_spring_factor * Wheel.suspension_force_inc;
+			float damping_req = damping_ + (Distance - Wheel.suspension_distance) * (damping_ / median) * Wheel.suspension_damping_factor * Wheel.suspension_force_inc;
 
 			if (Wheel.spring_last < spring_req)
 			{
@@ -8023,7 +8032,7 @@ void CCar::UpdateWaterDrag(float step)
 			return;
 	}
 
-	collide::rq_results Results;
+	collide::rq_results& Results = m_water_ray_results;
 	const Fvector Down = { 0.f, -1.f, 0.f };
 	float DragFactorSum = 0.f;
 	float Flotation = 1.f;
