@@ -191,6 +191,12 @@ ENGINE_API _action  actions[]		= {
 	{ "personal_spot_quick",			kPERSONAL_SPOT_QUICK,				_sp,   agDefault},
 	{ "pda_tasks_personal_spots_list",	kPDA_TASKS_PERSONAL_SPOTS_LIST,		_both, agUITaskMenu},
 	{ "pda_tasks_map_show_target",		kPDA_TASKS_MAP_SHOW_TARGET,			_both, agUITaskMenu},
+	{ "pda_task_journal_filter_prev",	kPDA_TASK_JOURNAL_FILTER_PREV,		_both, agUITaskJournal},
+	{ "pda_task_journal_filter_next",	kPDA_TASK_JOURNAL_FILTER_NEXT,		_both, agUITaskJournal},
+	{ "pda_task_journal_prev",			kPDA_TASK_JOURNAL_PREV,				_both, agUITaskJournal},
+	{ "pda_task_journal_next",			kPDA_TASK_JOURNAL_NEXT,				_both, agUITaskJournal},
+	{ "pda_task_journal_show_on_map",	kPDA_TASK_JOURNAL_SHOW_ON_MAP,		_both, agUITaskJournal},
+	{ "pda_task_journal_track",			kPDA_TASK_JOURNAL_TRACK,			_both, agUITaskJournal},
 
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															

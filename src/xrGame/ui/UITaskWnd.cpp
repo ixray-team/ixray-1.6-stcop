@@ -174,26 +174,29 @@ void CUITaskWnd::Init()
 	if (xml.NavigateToNode("second_task_index"))
 		m_second_task_index = UIHelper::CreateStatic(xml, "second_task_index", this);
 
-	m_task_wnd					= new UITaskListWnd(); 
-	m_task_wnd->SetAutoDelete	(true);
-	m_task_wnd->hint_wnd		= hint_wnd;
-	m_task_wnd->init_from_xml	(xml, "second_task_wnd");
-	m_task_wnd->SetUiSounds		(m_pUiSounds);
-
-	m_pMapWnd->AttachChild		(m_task_wnd);
-	m_task_wnd->SetMessageTarget(this);
-	m_task_wnd->Show			(false);
 	m_task_wnd_show				= false;
+	if (xml.NavigateToNode("second_task_wnd"))
+	{
+		m_task_wnd					= new UITaskListWnd();
+		m_task_wnd->SetAutoDelete	(true);
+		m_task_wnd->hint_wnd		= hint_wnd;
+		m_task_wnd->init_from_xml	(xml, "second_task_wnd");
+		m_task_wnd->SetUiSounds		(m_pUiSounds);
 
-	if (!m_features.filterTabs)
-	{
-		m_task_wnd->SetFilterMode(
-			m_pSecondaryTaskItem ? ETaskListFilter::Side : ETaskListFilter::All
-		);
-	}
-	else
-	{
-		OnTaskListFilterChanged(m_task_wnd->GetFilterMode());
+		m_pMapWnd->AttachChild		(m_task_wnd);
+		m_task_wnd->SetMessageTarget(this);
+		m_task_wnd->Show			(false);
+
+		if (!m_features.filterTabs)
+		{
+			m_task_wnd->SetFilterMode(
+				m_pSecondaryTaskItem ? ETaskListFilter::Side : ETaskListFilter::All
+			);
+		}
+		else
+		{
+			OnTaskListFilterChanged(m_task_wnd->GetFilterMode());
+		}
 	}
 
 	if (g_pGameLevel)
@@ -357,7 +360,7 @@ void CUITaskWnd::ReloadTaskInfo()
 	{
 		m_pSecondaryTaskItem->InitTask(secondaryTask);
 	}
-	if (m_features.panelStoryline)
+	if (m_features.panelStoryline && m_task_wnd)
 	{
 		m_task_wnd->UpdateStorylineTask(primaryTask);
 	}
@@ -392,7 +395,7 @@ void CUITaskWnd::ReloadTaskInfo()
 	if (primaryTask || secondaryTask)
 	{
 		m_actual_frame = Level().GameTaskManager()->ActualFrame();
-		if (m_task_wnd->IsShown())
+		if (IsTaskListShown())
 			m_task_wnd->UpdateList();
 	}
 
@@ -468,12 +471,18 @@ void CUITaskWnd::Show(bool status)
 			ActiveTaskCard->Refresh();
 		}
 		ReloadTaskInfo();
-		m_task_wnd->Show( m_task_wnd_show );
+		if (m_task_wnd)
+		{
+			m_task_wnd->Show( m_task_wnd_show );
+		}
 	}
 	else
 	{
 //		m_task_wnd_show = false;
-		m_task_wnd->Show(false);
+		if (m_task_wnd)
+		{
+			m_task_wnd->Show(false);
+		}
 	}
 }
 
@@ -490,8 +499,45 @@ void CUITaskWnd::OnPrevTaskClicked()
 {
 }
 
+void CUITaskWnd::SetTaskListRedirect(const xr_delegate<void()>& Redirect)
+{
+	TaskListRedirect = Redirect;
+	if (TaskListRedirect.empty())
+	{
+		return;
+	}
+	if (m_BtnTaskListWnd)
+	{
+		m_BtnTaskListWnd->Show(false);
+	}
+	m_task_wnd_show = false;
+	if (m_task_wnd)
+	{
+		m_task_wnd->Show(false);
+	}
+}
+
+bool CUITaskWnd::RedirectTaskList()
+{
+	if (TaskListRedirect.empty())
+	{
+		return false;
+	}
+	m_task_wnd_show = false;
+	if (m_task_wnd)
+	{
+		m_task_wnd->Show(false);
+	}
+	TaskListRedirect();
+	return true;
+}
+
 void CUITaskWnd::OnShowTaskListWnd( CUIWindow* w, void* d )
 {
+	if (RedirectTaskList() || !m_task_wnd)
+	{
+		return;
+	}
 	m_task_wnd_show = !m_task_wnd_show;
 	const bool showList = !m_task_wnd->IsShown();
 	if (m_pUiSounds)
@@ -507,12 +553,12 @@ void CUITaskWnd::OnShowTaskListWnd( CUIWindow* w, void* d )
 
 bool CUITaskWnd::SwitchTaskListTab(bool Next)
 {
-	if (!m_task_wnd || !m_task_wnd->HasFilterTabs())
+	if (IsTaskListReplaced() || !m_task_wnd || !m_task_wnd->HasFilterTabs())
 	{
 		return false;
 	}
 
-	if (!m_task_wnd->IsShown())
+	if (!IsTaskListShown())
 	{
 		if (m_pUiSounds)
 		{
@@ -525,6 +571,15 @@ bool CUITaskWnd::SwitchTaskListTab(bool Next)
 
 void CUITaskWnd::Show_TaskListWnd(bool status)
 {
+	if (status && RedirectTaskList())
+	{
+		return;
+	}
+	if (!m_task_wnd)
+	{
+		m_task_wnd_show = false;
+		return;
+	}
 	if (status)
 	{
 		HideSidePanels(m_task_wnd);
@@ -551,6 +606,11 @@ bool CUITaskWnd::CanUseTaskMapSpot(CGameTask* task, bool forShow) const
 	}
 
 	return m_bSecondaryTasksEnabled;
+}
+
+void CUITaskWnd::ShowTaskOnMap(CGameTask* task)
+{
+	TaskSetTargetMap(task);
 }
 
 void CUITaskWnd::TaskSetTargetMap( CGameTask* task )
@@ -727,6 +787,11 @@ void CUITaskWnd::ShowPersonalSpotsLimit()
 		PersonalSpotsWnd->Show(true);
 	}
 	PersonalSpotsWnd->ShowLimitMessage();
+}
+
+bool CUITaskWnd::IsTaskListShown() const
+{
+	return m_task_wnd && m_task_wnd->IsShown();
 }
 
 void CUITaskWnd::HideSidePanels(CUIWindow* Keep)
@@ -1019,7 +1084,7 @@ bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 		{
 			case kPDA_TASKS_MAP_SHOW_ME:
 			{
-				if (!m_task_wnd->IsShown())
+				if (!IsTaskListShown())
 				{
 					m_pMapWnd->ViewActor();
 					return true;
@@ -1042,7 +1107,7 @@ bool CUITaskWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			}
 			case kPDA_TASKS_FILTER_TOGGLE:
 			{
-				if (!m_task_wnd->IsShown())
+				if (!IsTaskListShown())
 				{
 					if (m_cbFilters[m_currentFilterIndex])
 					{
@@ -1200,7 +1265,7 @@ void CUITaskWnd::UpdateGamepadLegend()
 						break;
 					}
 				}
-				actionAcceptS->SetTextST(m_task_wnd->IsShown() ? "ui_tasks_show_on_map" : hasAnyFilter ? "ui_tasks_filter_toggle" : "ui_tasks_show_on_map_main");
+				actionAcceptS->SetTextST(IsTaskListShown() ? "ui_tasks_show_on_map" : hasAnyFilter ? "ui_tasks_filter_toggle" : "ui_tasks_show_on_map_main");
 			}
 		}
 	}
@@ -1210,7 +1275,7 @@ void CUITaskWnd::UpdateGamepadLegend()
 	{
 		if (CUIStatic* showMissionsS = showMissions->ui_cast_static())
 		{
-			showMissionsS->SetTextST(m_task_wnd->IsShown() ? "ui_pda_hide_mission" : "ui_pda_show_mission");
+			showMissionsS->SetTextST(IsTaskListShown() ? "ui_pda_hide_mission" : "ui_pda_show_mission");
 		}
 	}
 

@@ -28,6 +28,8 @@ class CUIEncyclopediaWnd;
 class CUIActorInfoWnd;
 class CUIDiaryWnd;
 class CUIMapWnd;
+class CUITaskJournalWnd;
+class CGameTask;
 class CUIPdaSpot;
 class CUIHotkeysHint;
 
@@ -75,6 +77,10 @@ protected:
 	void					SetCaptionWithOptionalLocation	(const char* baseText);
 	void					DrawUpdatedSections				();
 	void					RefreshHotkeysHints				(bool Force);
+	void					ApplyPendingTaskOnMap			();
+
+	shared_str				PendingTaskOnMap;
+	bool					PendingOpenTaskJournal = false;
 	void					BuildUpdateBadgeSections		();
 	void					InitTabBackgrounds				(CUIXml& xml);
 	void					SetActiveTabBackground			(const shared_str& sectionId);
@@ -96,6 +102,7 @@ public:
 	CUIActorInfoWnd*		pUIActorInfoWnd;
 	CUIDiaryWnd*			pUIDiaryWnd;
 	CUIMapWnd*				pUIMapWnd;
+	CUITaskJournalWnd*		pUITaskJournalWnd = nullptr;
 
 	CMapSpot*				pSelectedMapSpot;
 	Fvector2				last_cursor_pos;
@@ -139,6 +146,8 @@ public:
 	virtual void HideDialog() override;
 
 			void			SetActiveSubdialog	(const shared_str& section);
+			void			ShowTaskOnMap		(CGameTask* task);
+			void			OpenTaskJournal		();
 			void			SetActiveSubdialog_script(const char* section)				{ SetActiveSubdialog((const shared_str&)section); };
 	virtual bool			StopAnyMove			() override;
 			void			PdaContentsChanged	(pda_section::part type);

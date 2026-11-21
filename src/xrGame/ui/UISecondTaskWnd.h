@@ -81,14 +81,15 @@ protected:
 public:
 	UIHint*				hint_wnd;
 
-private:
-	CGameTask*			StorylineTask		() const;
-	void				UpdateStorylineTaskFocus();
-
 	static ETaskListFilter	FilterFromTabId		(const shared_str& TabId);
 	static const char*		TabIdFromFilter		(ETaskListFilter Filter);
 	static bool				IsFinishedFilter	(ETaskListFilter Filter);
 	static bool				TaskMatchesFilter	(const CGameTask* Task, ETaskListFilter Filter);
+
+private:
+	CGameTask*			StorylineTask		() const;
+	void				UpdateStorylineTaskFocus();
+
 	u32						CountTasks			(ETaskListFilter Filter) const;
 	void					UpdateFilterTabCounters();
 	void					UpdateEmptyText		(bool Empty);

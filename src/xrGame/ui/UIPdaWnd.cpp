@@ -8,6 +8,8 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/xr_input.h"
 #include "../Level.h"
+#include "../GameTask.h"
+#include "../GametaskManager.h"
 #include "UIGameCustom.h"
 #include "UIStalkersRankingWnd.h"
 #include "../../xrUI/Widgets/UIStatic.h"
@@ -34,6 +36,7 @@
 #include "UIEncyclopediaWnd.h"
 #include "UIActorInfo.h"
 #include "UIDiaryWnd.h"
+#include "UITaskJournalWnd.h"
 #include "UIHotkeysHint.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
@@ -69,6 +72,7 @@ constexpr LegacyTabIdEntry g_legacyTabIds[] = {
 constexpr const char* g_knownPdaSectionIds[] = {
     PdaSectionId::Tasks,
     PdaSectionId::TaskList,
+    PdaSectionId::TaskJournal,
     PdaSectionId::Quests,
     PdaSectionId::FractionWar,
     PdaSectionId::Contacts,
@@ -106,6 +110,11 @@ bool TryGetPdaUpdateSection(const shared_str& sectionId, pda_section::part& upda
         return true;
     }
     if (PdaSectionId::Equals(sectionId, PdaSectionId::TaskList))
+    {
+        updateSection = pda_section::quests;
+        return true;
+    }
+    if (PdaSectionId::Equals(sectionId, PdaSectionId::TaskJournal))
     {
         updateSection = pda_section::quests;
         return true;
@@ -249,6 +258,7 @@ CUIPdaWnd::~CUIPdaWnd()
 	delete_data( pUIActorInfoWnd );
 	delete_data( pUIDiaryWnd );
 	delete_data( pUIMapWnd );
+	delete_data( pUITaskJournalWnd );
 	delete_data( m_hint_wnd );
 	delete_data( UINoice );
 	delete_data( m_updatedSectionImage );
@@ -410,6 +420,17 @@ void CUIPdaWnd::Init()
 		pUIMapWnd = new CUIMapWnd();
 		pUIMapWnd->SetUiSounds(&m_uiSounds);
 		pUIMapWnd->Init(PdaXml::Map, PdaConfig::MapSubdialogWindowName);
+	}
+	if (tabPresentLambda(PdaSectionId::TaskJournal) && !pUITaskJournalWnd)
+	{
+		pUITaskJournalWnd = new CUITaskJournalWnd();
+		pUITaskJournalWnd->SetUiSounds(&m_uiSounds);
+		pUITaskJournalWnd->SetShowOnMapCallback(xr_delegate<void(CGameTask*)>(this, &CUIPdaWnd::ShowTaskOnMap));
+		pUITaskJournalWnd->Init();
+		if (pUITaskWnd && pUITaskJournalWnd->ReplacesTaskList())
+		{
+			pUITaskWnd->SetTaskListRedirect(xr_delegate<void()>(this, &CUIPdaWnd::OpenTaskJournal));
+		}
 	}
 
 	if (uiXml.NavigateToNode("noice_static"))
@@ -629,6 +650,61 @@ void CUIPdaWnd::Update()
 	{
 		Device.seqParallel.push_back(xr_make_delegate(pUILogsWnd, &CUILogsWnd::PerformWork));
 	}
+
+	ApplyPendingTaskOnMap();
+}
+
+void CUIPdaWnd::OpenTaskJournal()
+{
+	PendingOpenTaskJournal = true;
+}
+
+void CUIPdaWnd::ShowTaskOnMap(CGameTask* task)
+{
+	PendingTaskOnMap = task ? task->m_ID : shared_str();
+}
+
+void CUIPdaWnd::ApplyPendingTaskOnMap()
+{
+	if (PendingOpenTaskJournal)
+	{
+		PendingOpenTaskJournal = false;
+		if (pUITaskJournalWnd && UITabControl->GetButtonById(ResolveTabId(PdaSectionId::TaskJournal)))
+		{
+			SetActiveSubdialog(ResolveTabId(PdaSectionId::TaskJournal));
+		}
+	}
+
+	if (!PendingTaskOnMap.size())
+	{
+		return;
+	}
+
+	const shared_str taskId = PendingTaskOnMap;
+	PendingTaskOnMap = shared_str();
+
+	CGameTask* task = Level().GameTaskManager()->HasGameTask(taskId, true);
+	if (!task || !pUITaskWnd)
+	{
+		return;
+	}
+
+	const char* mapSection = nullptr;
+	if (UITabControl->GetButtonById(ResolveTabId(PdaSectionId::Tasks)))
+	{
+		mapSection = PdaSectionId::Tasks;
+	}
+	else if (UITabControl->GetButtonById(ResolveTabId(PdaSectionId::TaskList)))
+	{
+		mapSection = PdaSectionId::TaskList;
+	}
+	if (!mapSection)
+	{
+		return;
+	}
+
+	SetActiveSubdialog(ResolveTabId(mapSection));
+	pUITaskWnd->ShowTaskOnMap(task);
 }
 
 CUIWindow* CUIPdaWnd::ResolveNativeSubdialog(const shared_str& resolvedSection)
@@ -637,6 +713,10 @@ CUIWindow* CUIPdaWnd::ResolveNativeSubdialog(const shared_str& resolvedSection)
 		|| PdaSectionId::Equals(resolvedSection, PdaSectionId::TaskList))
 	{
 		return pUITaskWnd;
+	}
+	if (PdaSectionId::Equals(resolvedSection, PdaSectionId::TaskJournal))
+	{
+		return pUITaskJournalWnd;
 	}
 	if (PdaSectionId::Equals(resolvedSection, PdaSectionId::Quests))
 	{
@@ -895,6 +975,11 @@ bool CUIPdaWnd::SwitchSecondaryTab(bool Next)
 	if (pUITaskWnd && m_pActiveDialog == pUITaskWnd)
 	{
 		return pUITaskWnd->SwitchTaskListTab(Next);
+	}
+
+	if (pUITaskJournalWnd && m_pActiveDialog == pUITaskJournalWnd)
+	{
+		return pUITaskJournalWnd->SwitchFilter(Next);
 	}
 	return false;
 }

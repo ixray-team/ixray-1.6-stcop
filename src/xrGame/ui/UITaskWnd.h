@@ -81,6 +81,9 @@ private:
 
 	UITaskListWnd*			m_task_wnd;
 	bool					m_task_wnd_show;
+	xr_delegate<void()>		TaskListRedirect;
+
+	bool					RedirectTaskList		();
 	UIMapLegend*			m_map_legend_wnd;
 	UIPersonalSpotsWnd*		PersonalSpotsWnd = nullptr;
 	UIActiveTaskCard*		ActiveTaskCard = nullptr;
@@ -109,6 +112,7 @@ public:
 
 			void				ReloadTaskInfo			();
 			void				ShowMapLegend			(bool status);
+			void				ShowTaskOnMap			(CGameTask* task);
 			void				Switch_ShowMapLegend	();
 			void				SyncLegacySpotFilters	();
 			bool				SwitchTaskListTab		(bool Next);
@@ -145,6 +149,9 @@ public:
 			void				FocusPrimaryTaskOnMap	();
 			void				FocusActiveTarget		();
 			void				ToggleTaskList			();
+			void				SetTaskListRedirect		(const xr_delegate<void()>& Redirect);
+			bool				IsTaskListReplaced		() const { return !TaskListRedirect.empty(); }
+			bool				IsTaskListShown			() const;
 
 	virtual CUIWindow* ui_cast_window() override { return this; }
 

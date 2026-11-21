@@ -28,6 +28,7 @@ namespace PdaSectionId
 constexpr const char* Tasks = "eptTasks";
 // Tab variant that auto-opens UITaskListWnd side panel when activated.
 constexpr const char* TaskList = "eptTaskList";
+constexpr const char* TaskJournal = "eptTaskJournal";
 constexpr const char* Quests = "eptQuests";
 constexpr const char* FractionWar = "eptFractionWar";
 constexpr const char* Contacts = "eptContacts";
