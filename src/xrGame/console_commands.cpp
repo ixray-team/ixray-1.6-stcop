@@ -1962,113 +1962,62 @@ public:
 	}
 };
 
-#include "alife_smart_terrain_registry.h"
-class CCC_SpawnSquad : public IConsole_Command {
+#include "SquadSpawn.h"
+class CCC_SpawnSquad : public IConsole_Command
+{
 public:
-	CInifile* l_tpIniFile = NULL;
-	vecTips m_tips;
-	CCC_SpawnSquad(const char* N) : IConsole_Command(N){	bEmptyArgsHandled = false;};
-	~CCC_SpawnSquad() { IConsole_Command ::~IConsole_Command(); xr_delete(l_tpIniFile); }
-	const char* GetNearestSmartName()
+	CCC_SpawnSquad(const char* N) : IConsole_Command(N)
 	{
-		const auto& objects = ai().alife().smart_terrains().objects();
-
-		const auto I = std::min_element(objects.begin(), objects.end(), [](const auto& left, const auto& right)
-			{
-				if (!left.second->m_bOnline)
-					return false;
-
-				const float d1 = left.second->Position().distance_to_sqr(Device.vCameraPosition);
-				const float d2 = right.second->Position().distance_to_sqr(Device.vCameraPosition);
-				return d1 < d2;
-			});
-
-		if (I != objects.end() && I->second->m_bOnline)
-			return I->second->name_replace();
-
-		return "no_smarts";
+		bEmptyArgsHandled = false;
 	}
 
-	const char* GetNearestSmartName_compact()
-	{
-		xr_map<float, const char*> smart_names;
-		for (const auto& I : ai().alife().smart_terrains().objects())
-		{
-			if (I.second->m_bOnline)
-				smart_names.insert(std::make_pair(I.second->Position().distance_to_sqr(Device.vCameraPosition), I.second->name_replace()));
-		}
-		return std::min_element(smart_names.begin(), smart_names.end())->second;
-	}
-
-	virtual void	Execute(const char* args)
+	void Execute(const char* args) override
 	{
 		if (!IsGameTypeSingleCompatible())
 		{
 			Msg("! This command can be executed only in single player or FreeMP mode");
 			return;
 		}
-		int count = 1;
-		char nameSection[128] = {};
-		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
-		if (sc > 2)
+
+		int Count = 0;
+		string128 Section = {};
+		if (sscanf_s(args, "%s %d", Section, (unsigned)sizeof(Section), &Count) < 1)
 		{
-			Msg("! Failed to parse input");
+			Msg("! Format: \"g_spawn_squad <section> [count]\"");
 			return;
 		}
-		for (size_t i = 0; i < count; i++)
+
+		SquadSpawn::Spawn(Section, Count);
+	}
+
+	void Info(TInfo& I) override
+	{
+		if (EngineExternal().ShadowOfChernobylMode())
 		{
-			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
-			{
-				string256 script_command;
-				if(l_tpIniFile)
-				{
-					auto& section = l_tpIniFile->r_section(nameSection);
-					if (section.line_exist("faction"))
-					{
-						xr_sprintf(script_command, "sim_board.get_sim_board():create_squad(\"%s\", sim_squad_scripted.sim_squad_scripted, sim_board.get_sim_board().smarts_by_names[\"%s\"], nil, \"%s\")", l_tpIniFile->r_string(nameSection, "faction"), GetNearestSmartName(), nameSection);
-					}
-					else
-					{
-						xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
-					}
-				}
-				else
-				{
-					xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
-				}
-				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(script_command, true, true);
-			}
+			xr_sprintf(I, "<npc or monster section> [members = %d]", SquadSpawn::SocDefaultGroupSize);
+		}
+		else
+		{
+			xr_strcpy(I, "<squad section> [squads = 1]");
 		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	void fill_tips(vecTips& tips, u32 mode) override
 	{
-		if (m_tips.empty())
+		if (Tips.empty())
 		{
-			
-			bool has_CS = true;
-			for (CInifile::Sect& sect : pSettings->sections())
+			xr_vector<CInifile::Sect*> Sections;
+			SquadSpawn::CollectSections(Sections);
+			for (CInifile::Sect* Section : Sections)
 			{
-				if (sect.line_exist("faction") && (sect.line_exist("npc") || sect.line_exist("npc_in_squad")))
-				{
-					has_CS = false;
-					m_tips.push_back(sect.Name);
-				}
-			}
-			if (has_CS && !l_tpIniFile)
-			{
-				string_path S;
-				FS.update_path(S, "$game_config$", "misc\\squad_descr.ltx");
-				l_tpIniFile = new CInifile(S);
-				for (CInifile::Sect& sect : l_tpIniFile->sections())
-				{
-					if (sect.line_exist("faction") && (sect.line_exist("npc") || sect.line_exist("npc_in_squad")))
-						m_tips.push_back(sect.Name);
-				}
+				Tips.push_back(Section->Name);
 			}
 		}
-		tips = m_tips;
+		tips = Tips;
 	}
+
+private:
+	vecTips Tips;
 };
 
 class CCC_SetCharComm : public IConsole_Command

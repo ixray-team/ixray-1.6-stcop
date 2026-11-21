@@ -16,6 +16,7 @@
 #include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../Weapons/WeaponBoneVisibility.h"
+#include "../SquadSpawn.h"
 
 class SpawnManagerIconViews final
 {
@@ -165,6 +166,7 @@ struct
 	CScriptSound* sound_tip;
 	string_path sound_tip_path{};
 	bool legacyNewsMode{false};
+	bool SpawnAsSquad{false};
 } imgui_spawn_manager;
 
 
@@ -409,11 +411,7 @@ void InitSections()
 		}
 		else if (g_pClsidManager->is_squad(classId))
 		{
-			if (sect.line_exist("faction") && (sect.line_exist("npc") || sect.line_exist("npc_in_squad")))
-			{
-				imgui_spawn_manager.Squads.Sorted.push_back({ name, &sect });
-			}
-			else
+			if (!SquadSpawn::IsSquadSection(sect.Name.c_str()))
 			{
 				imgui_spawn_manager.Squads.Unsorted.push_back({ name, &sect });
 			}
@@ -444,6 +442,13 @@ void InitSections()
 
 			imgui_spawn_manager.Others.push_back({ name, &sect });
 		}
+	}
+
+	xr_vector<CInifile::Sect*> SquadSections;
+	SquadSpawn::CollectSections(SquadSections);
+	for (CInifile::Sect* Squad : SquadSections)
+	{
+		imgui_spawn_manager.Squads.Sorted.push_back({ Squad->Name.c_str(), Squad });
 	}
 }
 
@@ -1112,6 +1117,15 @@ void RenderSpawnManagerWindow() {
 			if (ImGui::BeginTabItem("Squads"))
 			{
 				size_t number_imgui{};
+				imgui_spawn_manager.SpawnAsSquad = true;
+				if (EngineExternal().ShadowOfChernobylMode())
+				{
+					ImGui::TextWrapped("Shadow of Chernobyl has no squads: count is the group size (empty = %d). Smart terrains pick the group up.", SquadSpawn::SocDefaultGroupSize);
+				}
+				else if (EngineExternal().ClearSkyMode())
+				{
+					ImGui::TextWrapped("Squads from misc\\squad_descr.ltx spawn in the nearest free smart or smart of their faction.");
+				}
 				SectionStatistics(imgui_spawn_manager.Squads);
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Squads", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -1125,6 +1139,7 @@ void RenderSpawnManagerWindow() {
 					SpawnManager_ProcessSections(imgui_spawn_manager.Squads.Unsorted, number_imgui);
 				}
 
+				imgui_spawn_manager.SpawnAsSquad = false;
 				ImGui::EndTabItem();
 			}
 
@@ -1486,14 +1501,19 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 		cmd = "g_spawn ";
 	}
 
-	if (g_pClsidManager->is_squad(pSettings->r_clsid(section->Name.c_str(), "class")))
+	const bool IsSquad = imgui_spawn_manager.SpawnAsSquad
+		|| (section->line_exist("class") && g_pClsidManager->is_squad(pSettings->r_clsid(section->Name.c_str(), "class")));
+	if (IsSquad)
 	{
 		cmd = "g_spawn_squad ";
 	}
 
 	cmd += section->Name.c_str();
-	cmd += " ";
-	cmd += xr_string::ToString(count);
+	if (!IsSquad || atoi(imgui_spawn_manager.spawn_count) > 0)
+	{
+		cmd += " ";
+		cmd += xr_string::ToString(count);
+	}
 
 	execute_console_command_deferred(Console, cmd.c_str());
 }
