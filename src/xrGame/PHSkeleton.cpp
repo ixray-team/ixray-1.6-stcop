@@ -202,8 +202,13 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	/////////////////////////////////////
 
 	u16 bones_number=obj->PHGetSyncItemsNumber();
+	bool has_active_element = false;
 	for(u16 i=0;i<bones_number;i++)
 	{
+		CPhysicsElement* Element = pPhysicsShell != nullptr ? pPhysicsShell->get_ElementByStoreOrder(i) : nullptr;
+		if (Element == nullptr || !Element->isActive())
+			continue;
+
 		SPHNetState state;
 		obj->PHGetSyncItem(i)->get_State(state);
 		Fvector& p=state.position;
@@ -214,10 +219,27 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 		if(p.x>max.x)max.x=p.x;
 		if(p.y>max.y)max.y=p.y;
 		if(p.z>max.z)max.z=p.z;
+		has_active_element = true;
 	}
 
-	min.sub(2.f*EPS_L);
-	max.add(2.f*EPS_L);
+	if (has_active_element)
+	{
+		// The save packet is written in two passes. Leave room for elements
+		// that move slightly between the range pass and the state pass, and
+		// keep every quantized value inside min/max.
+		constexpr float SavedStateRangeMargin = 1.f;
+		min.sub(SavedStateRangeMargin);
+		max.add(SavedStateRangeMargin);
+	}
+	else
+	{
+		// All elements are deactivated (for example, a fully destroyed
+		// object). Inactive elements do not expose a position, so use the
+		// object position to keep the q8 range finite.
+		const Fvector ObjectPosition = obj->Position();
+		min.set(ObjectPosition.x - 1.f, ObjectPosition.y - 1.f, ObjectPosition.z - 1.f);
+		max.set(ObjectPosition.x + 1.f, ObjectPosition.y + 1.f, ObjectPosition.z + 1.f);
+	}
 
 	P.w_vec3(min);
 	P.w_vec3(max);
@@ -232,6 +254,19 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	{
 		SPHNetState state;
 		obj->PHGetSyncItem(i)->get_State(state);
+
+		CPhysicsElement* Element = pPhysicsShell != nullptr ? pPhysicsShell->get_ElementByStoreOrder(i) : nullptr;
+		if (Element == nullptr || !Element->isActive())
+		{
+			// get_State() leaves inactive elements at zero, which is outside
+			// the range of a car away from the world origin. Clamp the
+			// meaningless value: set_State() ignores it for inactive elements.
+			clamp(state.position.x, min.x, max.x);
+			clamp(state.position.y, min.y, max.y);
+			clamp(state.position.z, min.z, max.z);
+			state.enabled = false;
+		}
+
 		state.net_Save(P,min,max);
 	}
 }

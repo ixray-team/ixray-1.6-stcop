@@ -245,7 +245,7 @@ static	const u16				cAsCallsnum						= 3;
 	struct SWheel;
 	void						UpdateWheelSuspension		(SWheel& Wheel);
 	void						StoreAllElementSpawnLocalTransforms	();
-	void						RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm);
+	bool						RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm, bool TrustSavedWheels);
 	void						ResolveLoadPenetration				();
 	void						UpdateWheelDownforce		(SWheel& Wheel);
 	void						UpdateWheelTireSound		(SWheel& Wheel);
@@ -455,7 +455,7 @@ public:
 		}
 		Fmatrix BuildLocalTarget(bool engine_on, int depth);
 		void ApplyEngineDoorState(bool engine_on);
-		void Switch(bool doors_up = false);
+		void Switch(bool doors_up = false, bool ForceMotion = false);
 		void Hold();
 	};
 	xr_vector<SEngineDoor> engine_door;

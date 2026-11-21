@@ -88,6 +88,10 @@ namespace
 	// explicit torque proportional to the spring stiffness would do at large
 	// return_force values.
 	constexpr float ReturnBoneNominalInertia = 56.f;
+	// Saved wheel bodies can sit below their spawn pose by the suspension
+	// travel. A larger offset means a damaged save, so the wheel falls back to
+	// the spawn pose before the shell is enabled.
+	constexpr float WheelLoadMaxSpawnDrift = 0.75f;
 	// Prefix for the client-side car runtime state; an old save starts with
 	// the fuel float instead, which cannot collide with this value.
 	constexpr u32 CarRuntimeStateMagic = 0x43415253; // "CARS"
@@ -2628,6 +2632,31 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	// Read it before RestoreNetState() clears flSavedData.
 	const bool SavedEnabled = po->_flags.test(CSE_PHSkeleton::flActive);
 
+	// CPHSkeleton::RestoreNetState() applies the saved element states only when
+	// their count matches the current shell. A complete saved state already
+	// contains the suspension compression, so remember whether it was applied.
+	const bool SavedShellApplied =
+		po->saved_bones.bones.size() == size_t(PHGetSyncItemsNumber());
+
+	// Older saves quantize all element positions to the range of the whole
+	// saved state. Inactive elements (closed doors) contribute (0,0,0), so for
+	// a car away from the world origin the q8 step becomes metres. Detect such
+	// a degraded range and do not trust the saved wheel transforms from it.
+	const Fvector SavedMin = po->saved_bones.get_min();
+	const Fvector SavedMax = po->saved_bones.get_max();
+	Fvector SavedRange;
+	SavedRange.sub(SavedMax, SavedMin);
+	constexpr float MaxSaneSavedRange = 25.f;
+	const bool SavedRangeSane =
+		SavedRange.x <= MaxSaneSavedRange &&
+		SavedRange.y <= MaxSaneSavedRange &&
+		SavedRange.z <= MaxSaneSavedRange;
+	if (!SavedRangeSane)
+	{
+		Msg("! [car-load] %s: degraded saved element range (%.1f, %.1f, %.1f); wheels reset, re-save the game",
+			cName().c_str(), SavedRange.x, SavedRange.y, SavedRange.z);
+	}
+
 	CPHSkeleton::RestoreNetState(po);
 	
 	CSE_ALifeCar* co=smart_cast<CSE_ALifeCar*>(po);
@@ -2668,11 +2697,20 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	// or a body that was already displaced when the save was made). Put every
 	// active element back on its spawn-local position relative to the saved car
 	// root. This keeps the joints satisfied and prevents them from snapping and
-	// launching the car on the first touch.
-	RestoreAllElementSpawnLocalTransforms(RestoredForm);
+	// launching the car on the first touch. Wheel elements are special: their
+	// saved transform is the suspension compression and must be kept when it is
+	// plausible.
+	const bool SavedWheelsTrusted =
+		RestoreAllElementSpawnLocalTransforms(RestoredForm, SavedRangeSane);
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
-	ResolveLoadPenetration();
+
+	// A complete saved pose already contains the wheel contact height. The
+	// activation box is built from the whole car AABB and lifts the shell on
+	// uneven terrain even when the saved pose is valid, so use it only when
+	// the saved state could not be restored.
+	if (!SavedShellApplied || !SavedWheelsTrusted)
+		ResolveLoadPenetration();
 
 	// A closed door is deactivated and has no bone callback, so
 	// CPHSkeleton::RestoreNetState() cannot apply its saved transform. The door
@@ -7430,10 +7468,10 @@ void CCar::StoreAllElementSpawnLocalTransforms()
 	}
 }
 
-void CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm)
+bool CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm, bool TrustSavedWheels)
 {
 	if (m_pPhysicsShell == nullptr)
-		return;
+		return false;
 
 	const u16 Count = m_pPhysicsShell->get_ElementsNumber();
 	const u16 SavedCount = (u16)m_element_spawn_local.size();
@@ -7456,18 +7494,72 @@ void CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm)
 		return false;
 	};
 
+	// Wheels are sprung bodies: the saved element transform contains the
+	// suspension compression and the steering angle. Resetting them to the
+	// spawn pose would raise the chassis when the saved car is restored.
+	auto IsWheelElement = [this](const CPhysicsElement* Element)
+	{
+		for (const auto& Wheel : m_wheels_map)
+		{
+			const auto Bone = bone_map.find(Wheel.second.bone_id);
+			if (Bone != bone_map.end() && Bone->second.element == Element)
+				return true;
+		}
+		return false;
+	};
+
+	Fmatrix InvRestoredForm;
+	InvRestoredForm.invert(RestoredForm);
+
+	bool HasActiveWheel = false;
+	bool AllWheelsTrusted = true;
+
 	for (u16 i = 0; i < Count && i < SavedCount; ++i)
 	{
-		const SElementSpawnLocalForm& Saved = m_element_spawn_local[i];
-		if (!Saved.valid)
-			continue;
-
 		CPhysicsElement* Element = m_pPhysicsShell->get_ElementByStoreOrder(i);
 		if (Element == nullptr || !Element->isActive())
 			continue;
 
+		const bool WheelElement = IsWheelElement(Element);
+		if (WheelElement)
+			HasActiveWheel = true;
+
+		const SElementSpawnLocalForm& Saved = m_element_spawn_local[i];
+		if (!Saved.valid)
+		{
+			if (WheelElement)
+				AllWheelsTrusted = false;
+			continue;
+		}
+
 		if (IsDoorElement(Element))
 			continue;
+
+		if (WheelElement)
+		{
+			if (TrustSavedWheels)
+			{
+				Fmatrix BodyForm;
+				Element->GetGlobalTransformDynamic(&BodyForm);
+
+				Fmatrix Local;
+				Local.mul_43(InvRestoredForm, BodyForm);
+
+				const bool Valid =
+					_valid(Local.c) && _valid(Local.i) && _valid(Local.j) && _valid(Local.k) &&
+					Local.c.distance_to(Saved.form.c) <= WheelLoadMaxSpawnDrift;
+
+				if (Valid)
+				{
+					Element->ResetInterpolation();
+					Element->set_LinearVel(zero_vel);
+					Element->set_AngularVel(zero_vel);
+					continue;
+				}
+			}
+
+			AllWheelsTrusted = false;
+		}
 
 		Fmatrix Target;
 		Target.mul_43(RestoredForm, Saved.form);
@@ -7477,6 +7569,8 @@ void CCar::RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm)
 		Element->set_LinearVel(zero_vel);
 		Element->set_AngularVel(zero_vel);
 	}
+
+	return HasActiveWheel && AllWheelsTrusted;
 }
 
 void CCar::ResolveLoadPenetration()
@@ -8615,10 +8709,9 @@ void CCar::SEngineDoor::ApplyEngineDoorState(bool engine_on)
 	Element->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
 
 	// Apply the same motor command as the first engine toggle, but do it at
-	// load. This makes the hinge hold the leaf immediately instead of leaving
-	// it free until StartEngine()/StopEngine() runs.
-	Switch(!engine_on);
-	joint->SetForce(force * 5.f, axis_num);
+	// load. The motor must keep a non-zero target velocity: otherwise the leaf
+	// is only held at the saved angle and stops returning after an impact.
+	Switch(!engine_on, true);
 }
 
 void CCar::SEngineDoor::Hold()
@@ -8635,7 +8728,7 @@ void CCar::SEngineDoor::Hold()
 	joint->SetVelocity(0.f, axis_num);
 }
 
-void CCar::SEngineDoor::Switch(bool doors_up)
+void CCar::SEngineDoor::Switch(bool doors_up, bool ForceMotion)
 {
 	if (joint == nullptr)
 		return;
@@ -8647,10 +8740,23 @@ void CCar::SEngineDoor::Switch(bool doors_up)
 	const float Speed = _abs(velocity);
 
 	joint->SetForce(force, axis_num);
-	if (_abs(Delta) < 0.001f)
-		joint->SetVelocity(0.f, axis_num);
-	else
+	if (_abs(Delta) >= 0.001f)
+	{
 		joint->SetVelocity(Delta > 0.f ? Speed : -Speed, axis_num);
+		return;
+	}
+
+	if (!ForceMotion)
+	{
+		joint->SetVelocity(0.f, axis_num);
+		return;
+	}
+
+	// The leaf is already at the target limit, so Delta is zero. Keep the
+	// motor pushing into that limit: after an impact the hinge then returns
+	// the leaf instead of only holding it with force.
+	const float OpenDirection = opened_angle >= closed_angle ? 1.f : -1.f;
+	joint->SetVelocity(doors_up ? OpenDirection * Speed : -OpenDirection * Speed, axis_num);
 }
 void CCar::SSuspension::Update()
 {
