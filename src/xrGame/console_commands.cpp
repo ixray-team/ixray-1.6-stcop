@@ -2308,9 +2308,14 @@ public:
 
 		u32 new_hours = 0, new_mins = 0;
 		char Extra = 0;
-		const int Count = sscanf_s(args, "%u %u %c", &new_hours, &new_mins, &Extra, 1u);
+		int Count = sscanf_s(args, "%u:%u %c", &new_hours, &new_mins, &Extra, 1u);
+		if (Count == 1)
+		{
+			new_mins = 0;
+			Count = sscanf_s(args, "%u %u %c", &new_hours, &new_mins, &Extra, 1u);
+		}
 
-		if (Count != 2 || new_hours >= 24 || new_mins >= 60)
+		if (Count < 1 || Count > 2 || new_hours >= 24 || new_mins >= 60)
 		{
 			Msg("! Time entered incorrectly");
 			return;
@@ -2329,7 +2334,7 @@ public:
 
 	virtual void Info(TInfo& I)
 	{
-		xr_strcpy(I, "Set new time");
+		xr_strcpy(I, "Set new time: <hours> [minutes] or <hours>:<minutes>");
 	}
 };
 #ifndef MASTER_GOLD
