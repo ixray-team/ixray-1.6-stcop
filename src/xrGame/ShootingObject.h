@@ -23,7 +23,7 @@ class CShootingObject :
 	public IDamageSource
 {
 protected:
-	CShootingObject();
+	CShootingObject() = default;
 	virtual ~CShootingObject() override;
 
 	void	reload(const char* section) {};
@@ -31,7 +31,7 @@ protected:
 	void LoadEffects(const char* Section);
 
 private:
-	float		m_air_resistance_factor;
+	float		m_air_resistance_factor = 1.0f;
 //////////////////////////////////////////////////////////////////////////
 // Fire Params
 //////////////////////////////////////////////////////////////////////////
@@ -85,16 +85,16 @@ public:
 
 protected:
 	// Weapon fires now
-	bool					bWorking;
+	bool					bWorking = false;
 
 	float					fOneShotTime = 0.0f;
 	float					fOneShotTimeSaved = 0.0f;
-	Fvector4				fvHitPower;
-	Fvector4				fvHitPowerCritical;
+	Fvector4 fvHitPower = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 fvHitPowerCritical = {0.0f, 0.0f, 0.0f, 0.0f};
 	float					fHitImpulse;
 
 	//скорость вылета пули из ствола
-	float					m_fStartBulletSpeed;
+	float					m_fStartBulletSpeed = 1000.0f;
 	//максимальное расстояние стрельбы
 	float					fireDistance;
 
@@ -102,7 +102,7 @@ protected:
 	float					fireDispersionBase;
 
 	//счетчик времени, затрачиваемого на выстрел
-	float					fShotTimeCounter;
+	float					fShotTimeCounter = 0.0f;
 
 	struct SilencerKoeffs // value *= koef;
 	{
@@ -136,7 +136,7 @@ protected:
 	float					light_base_range;
 	Fcolor					light_build_color;
 	float					light_build_range;
-	ref_light				light_render;
+	ref_light				light_render = nullptr;
 	float					light_var_color;
 	float					light_var_range;
 	float					light_lifetime;
@@ -150,7 +150,6 @@ protected:
 			void			LoadLights			(const char* section, const char* prefix);
 			void			RenderLight			();
 			void			UpdateEffects		();
-			void			DestroyEffects		();
 			void			StopLight			();
 	virtual bool			IsHudModeNow		() { return false; };
 public:
@@ -163,10 +162,10 @@ public:
 			void			StartSmokeParticle(const Fvector& parent_vel);
 			void			StartShellParticle(const Fvector& parent_vel);
 			void			StartShellEjection(const Fvector& parent_vel, const shared_str& section);
-	Fvector					vLoadedShellPoint;
-	float					m_fPredBulletTime;
-	float					m_fTimeToAim;
-	bool					m_bUseAimBullet;
+	Fvector					vLoadedShellPoint = zero_vel;
+	float					m_fPredBulletTime = 0.0f;
+	float					m_fTimeToAim = 0.0f;
+	bool					m_bUseAimBullet = false;
 protected:
 	float VfxSmokeScale = 1.0f;
 	float VfxShootScale = 1.0f;

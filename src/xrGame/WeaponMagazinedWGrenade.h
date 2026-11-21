@@ -31,10 +31,13 @@ public:
 
 
 	virtual bool	Attach					(PIItem pIItem) override;
-	virtual bool	Detach					(PIItem pIItem) override;
+	virtual bool	Detach					(const char* item_section_name, bool b_spawn_item) override;
 	virtual bool	CanAttach				(PIItem pIItem) override;
-	virtual bool	CanDetach				(PIItem pIItem) override;
+	virtual bool	CanDetach				(const char* item_section_name) override;
 	virtual void	InitAddons				() override;
+	virtual void	OnAttachmentInc			(PIItem item) override;
+	virtual void	OnAttachmentDec			(PIItem item) override;
+			void	LoadGrenadeLauncherParams();
 	virtual bool	UseScopeTexture			() override;
 	virtual float	CurrentZoomFactor		() override;
 	virtual void	FireStart				() override;

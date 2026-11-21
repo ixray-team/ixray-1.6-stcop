@@ -333,55 +333,38 @@ void CWeaponRPG7::ReactiveHit()
 
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
 {
-	ALife::_OBJECT_ID id;
-	switch (type)
+	if (type == GE_OWNERSHIP_TAKE || type == GE_OWNERSHIP_REJECT)
 	{
-		case GE_OWNERSHIP_TAKE:
-		{
-			P >> id;
-			CObject* O = Level().Objects.net_Find(id);
-			if (O->cast_custom_rocket())
-			{
-				CRocketLauncher::AttachRocket(id, this);
-			}
-			else
-			{
-				O->H_SetParent(this);
-				append_child(id, O->cast_game_object());
-				O->processing_deactivate();
-			}
-		}
-		break;
-		case GE_OWNERSHIP_REJECT:
-		case GE_LAUNCH_ROCKET:
-		{
-			P >> id;
-			CObject* O = Level().Objects.net_Find(id);
-			if (O->cast_custom_rocket())
-			{
-				bool bLaunch = (type == GE_LAUNCH_ROCKET);
-				CRocketLauncher::DetachRocket(id, bLaunch);
-				if (bLaunch)
-				{
-					UpdateMissileVisibility();
-				}
-			}
-			else
-			{
-				bool just_before_destroy = !P.r_eof() && P.r_u8();
-
-				O->SetTmpPreDestroy(just_before_destroy);
-				erase_child(id);
-				O->processing_activate();
-				O->H_SetParent(0, true);
-			}
-		}
-		break;
-		default:
+		const u32 pos = P.r_tell();
+		ALife::_OBJECT_ID id;
+		P >> id;
+		const bool rocket = Level().Objects.net_Find(id)->cast_custom_rocket();
+		P.r_seek(pos);
+		if (!rocket)
 		{
 			inherited::OnEvent(P, type);
+			return;
 		}
-		break;
+	}
+	else
+	{
+		inherited::OnEvent(P, type);
+	}
+	ALife::_OBJECT_ID id;
+	switch (type) {
+		case GE_OWNERSHIP_TAKE : {
+			P >> id;
+			CRocketLauncher::AttachRocket(id, this);
+		} break;
+		case GE_OWNERSHIP_REJECT:
+		case GE_LAUNCH_ROCKET	: 
+			{
+			bool bLaunch = (type==GE_LAUNCH_ROCKET);
+			P >> id;
+			CRocketLauncher::DetachRocket(id, bLaunch);
+			if(bLaunch)
+				UpdateMissileVisibility();
+		} break;
 	}
 }
 

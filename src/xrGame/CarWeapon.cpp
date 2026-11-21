@@ -72,8 +72,6 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 CCarWeapon::~CCarWeapon()
 {
 	delete_data(m_Ammo);
-//.	m_object->processing_deactivate		();
-	CShootingObject::DestroyEffects();
 }
 
 void CCarWeapon::Load(const char* section)

@@ -2036,3 +2036,76 @@ bool CSE_ALifeItemHelmet::Net_Relevant		()
 {
 	return							(true);
 }
+
+////////////////////////////////////////////////////////////////////////////
+// CSE_ALifeItemMagazine
+////////////////////////////////////////////////////////////////////////////
+CSE_ALifeItemMagazine::CSE_ALifeItemMagazine(const char* caSection)
+	: CSE_ALifeItem(caSection)
+{
+}
+
+CSE_ALifeItemMagazine::~CSE_ALifeItemMagazine()
+{
+}
+
+void CSE_ALifeItemMagazine::STATE_Read(NET_Packet& tNetPacket, u16 size)
+{
+	inherited::STATE_Read(tNetPacket, size);
+}
+
+void CSE_ALifeItemMagazine::STATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::STATE_Write(tNetPacket);
+}
+
+void CSE_ALifeItemMagazine::UPDATE_Read(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Read(tNetPacket);
+
+	m_AmmoIDs.clear();
+	u8 AmmoCount = tNetPacket.r_u8();
+	for (u8 i = 0; i < AmmoCount; i++)
+	{
+		m_AmmoIDs.push_back(tNetPacket.r_u8());
+	}
+}
+
+void CSE_ALifeItemMagazine::UPDATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Write(tNetPacket);
+
+	tNetPacket.w_u8(u8(m_AmmoIDs.size()));
+	for (u32 i = 0; i < m_AmmoIDs.size(); i++)
+	{
+		tNetPacket.w_u8(u8(m_AmmoIDs[i]));
+	}
+}
+
+void CSE_ALifeItemMagazine::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CSE_ALifeItemMagazine::STATE")
+	{
+		inherited::STATE_Serialize(Object);
+	}
+}
+
+void CSE_ALifeItemMagazine::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CSE_ALifeItemMagazine::UPDATE")
+	{
+		inherited::UPDATE_Serialize(Object);
+	}
+}
+
+#ifndef XRGAME_EXPORTS
+void CSE_ALifeItemMagazine::FillProps(const char* pref, PropItemVec& items)
+{
+	inherited::FillProps(pref, items);
+}
+#endif // #ifndef XRGAME_EXPORTS
+
+bool CSE_ALifeItemMagazine::Net_Relevant()
+{
+	return true;
+}

@@ -228,6 +228,10 @@ void CUI3dStatic::Draw()
 		Graph->set_UI(true);
 
 		Graph->add_Dynamic(pCurrentVisual, &matrix, true);
+		if (OnDrawVisual)
+		{
+			OnDrawVisual(Graph, matrix);
+		}
 
 		Fcolor static_color { };
 		static_color.set(GetTextureColor());

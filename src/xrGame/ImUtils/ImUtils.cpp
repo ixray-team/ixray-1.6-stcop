@@ -103,6 +103,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().HiddenCallback = CinemaEditor_DrawHidden;
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
 		CImGuiManager::Instance().Subscribe("Camera Rig", CImGuiManager::ERenderPriority::eMedium, RenderCameraRigEditor);
+		CImGuiManager::Instance().Subscribe("Weapon Customize", CImGuiManager::ERenderPriority::eMedium, RenderWeaponCustomizeWindow);
 #ifdef DEBUG_DRAW
 		CImGuiManager::Instance().Subscribe("DOF setup", CImGuiManager::ERenderPriority::eMedium, RenderDofSetup);
 #endif

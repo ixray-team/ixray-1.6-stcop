@@ -10,12 +10,57 @@
 #include "../xrServerEntities/xrServer_Objects_ALife.h"
 #include "alife_simulator.h"
 #include "../xrServerEntities/xrServer_Objects_ALife_Items.h"
+#include "alife_object_registry.h"
+#include "ai_space.h"
+
+extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
 
 void CSE_ALifeObject::spawn_supplies()
 {
     spawn_supplies(*m_ini_string);
+
+    if (ai().get_alife()->objects().object(ID, true))
+    {
+        spawn_build();
+    }
 }
 
+void CSE_ALifeObject::spawn_build()
+{
+    const char* build = pSettings->read_if_exists<str_c>(s_name, "default_build", nullptr);
+    if (!build)
+    {
+        return;
+    }
+
+    if (ID_Parent != ALife::_OBJECT_ID(-1) && smart_cast<CSE_ALifeInventoryItem*>(ai().get_alife()->objects().object(ID_Parent, true)))
+    {
+        return;
+    }
+
+    xr_hash_map<shared_str, ALife::_OBJECT_ID> spawned;
+    for (const CInifile::Item& item : pSettings->r_section(build).Data)
+    {
+        const shared_str& path = item.first;
+        const char* slash = strrchr(path.c_str(), '/');
+        ALife::_OBJECT_ID parent = ID;
+        if (slash)
+        {
+            const auto it = spawned.find(shared_str(xr_string(path.c_str(), slash - path.c_str()).c_str()));
+            if (it == spawned.end())
+            {
+                Msg("! [%s] build [%s]: parent of [%s] not spawned", s_name.c_str(), build, path.c_str());
+                continue;
+            }
+            parent = it->second;
+        }
+
+        if (CSE_Abstract* spawned_item = CALifeSimulator__spawn_item2(ai().get_alife(), item.second.c_str(), o_Position, m_tNodeID, m_tGraphID, parent))
+        {
+            spawned[path] = spawned_item->ID;
+        }
+    }
+}
 
 float CSE_ALifeObject::parseFloatParameterValue(const char* spawnArgs, const char* parameterName, float defaultValue)
 {

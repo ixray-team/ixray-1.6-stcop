@@ -919,6 +919,9 @@ public:
 			void				SwitchNightVision				();
 			void				StartNVPPE						();
 			void				SwitchTorch						();
+			class CTorch*		HeadTorch						();
+			bool				HeadLightsActive				();
+			void				ToggleHeadLights				();
 			void				ClearMask						();
 			void				ClearMaskCB						();
 			void				MakeKick						();

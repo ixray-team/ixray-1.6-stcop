@@ -31,6 +31,12 @@ void CBackpack::OnMoveToSlot(const SInvItemPlace& previous_place)
 {
     inherited::OnMoveToSlot(previous_place);
 
+    CInventoryOwner* owner = H_Parent() ? H_Parent()->cast_inventory_owner() : nullptr;
+    if (owner && !owner->attached(this))
+    {
+        owner->attach(this);
+    }
+
     if (previous_place.type == eItemPlaceRuck)
     {
         //m_dress_snd[0].destroy();

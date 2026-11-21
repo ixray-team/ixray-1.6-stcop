@@ -57,7 +57,6 @@ public:
 	virtual void			net_Export			(NET_Packet& P) override;
 	virtual void			net_Import			(NET_Packet& P) override;
 	virtual void			net_Relcase			(CObject* object) override;
-	virtual void			net_AfterSpawn		(CSE_Abstract* DC) override;
 
 	virtual bool			AlwaysTheCrow       () override;
 	virtual CWeapon			*cast_weapon			() override {return this;}
@@ -83,6 +82,21 @@ public:
 	virtual void			shedule_Update		(u32 dt) override;
 	virtual bool			register_schedule() const override {return false;};
 	virtual void			renderable_Render(IDSGraphManager* DM) override;
+	virtual void			OnAttachmentInc(PIItem item) override;
+	virtual void			OnAttachmentDec(PIItem item) override;
+
+	PIItem					m_muzzle = nullptr;
+	PIItem					m_grenade_launcher = nullptr;
+	bool					RemovesGrenadeLauncher(PIItem item) const;
+	xr_vector<PIItem>		m_sights;
+	u32						m_sight_idx = 0;
+	void					UpdateSight();
+	void					UpdateBoneAiming();
+	Fmatrix					m_hud_trans_last = Fidentity;
+	Fquaternion				m_hud_aim_align;
+	Fvector					m_hud_aim_align_pos = zero_vel;
+	float					m_fHudAimAlign = 0.0f;
+
 	virtual void			render_hud_mode		() override;
 	virtual bool			need_renderable		() override;
 
@@ -200,21 +214,21 @@ protected:
 public:
 	ICF bool IsGrenadeLauncherAttached() const
 	{
-		return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
+		return m_grenade_launcher || (ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
 				0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)) ||
 			   ALife::eAddonPermanent == m_eGrenadeLauncherStatus;
 	}
 
 	ICF bool IsScopeAttached() const
 	{
-		return (ALife::eAddonAttachable == m_eScopeStatus &&
+		return !m_sights.empty() || (ALife::eAddonAttachable == m_eScopeStatus &&
 				0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope)) ||
 			   ALife::eAddonPermanent == m_eScopeStatus;
 	}
 			
 	ICF bool IsSilencerAttached() const
 	{
-		return (ALife::eAddonAttachable == m_eSilencerStatus &&
+		return m_muzzle && m_muzzle->ItemDesc().m_silencer || (ALife::eAddonAttachable == m_eSilencerStatus &&
 				0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer)) ||
 			   ALife::eAddonPermanent == m_eSilencerStatus;
 	}
@@ -245,7 +259,6 @@ public:
 		return (ALife::eAddonPermanent == m_eSilencerStatus);
 	}
 
-	virtual void on_load_attachment(shared_str sect_name, item_attachment& attachment) override;
 			
 	ICF ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
 	ICF ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
@@ -333,8 +346,6 @@ public:
 	virtual void UpdateBonePartAnimations() {}
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
-	// Spawn addon items for the weapon addon flags so they are stored in children and saved.
-	void EnsureAddonItems(CSE_ALifeItemWeapon* Ent = nullptr);
 
 	//для отоброажения иконок апгрейдов в интерфейсе
 	void LoadScopeXY();
@@ -355,9 +366,6 @@ public:
 	ICF void SetGrenadeLauncherY(int value) { m_iGrenadeLauncherY = value; }
 
 
-	CScope* GetScopeAttached() const;
-	CSilencer* GetSilencerAttached() const;
-	CGrenadeLauncher* GetGrenadeLauncherAttached() const;
 
 	const shared_str GetGrenadeLauncherName() const;
 	const shared_str GetScopeName() const;
@@ -460,14 +468,6 @@ public:
 	void MakeWeaponKick(Fvector& pos, Fvector& dir);
 	float GetNightPPEFactor();
 
-	bool LerpBoneAiming(Fmatrix& trans, Fmatrix& hud_rotation);
-	void UpdateBoneAiming();
-	ICF void ResetBoneAiming()
-	{
-		m_fHudAimAlign = 0.f;
-		m_hud_aim_align.identity();
-		m_hud_aim_align_pos = zero_vel;
-	}
 
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 	float m_fRechargeTime = 0.0f;
@@ -482,10 +482,6 @@ public:
 	bool SafemodeTogglePending = false;
 	float AimReloadFovOut = 0.f;
 
-	Fmatrix m_hud_trans_last = Fidentity;
-	Fquaternion m_hud_aim_align;
-	Fvector m_hud_aim_align_pos = zero_vel;
-	float m_fHudAimAlign = 0.0f;
 
 
 	bool bUpdateHUDBonesVisibility = false;
@@ -1006,8 +1002,6 @@ public:
 		bool				unlimited_ammo				();
 		bool				infinite_fire();
 	IC	bool				can_be_strapped				() const {return m_can_be_strapped;};
-
-	float GetMagazineWeight(const decltype(m_magazine)& mag) const;
 
 protected:
 	u32						m_ef_main_weapon_type = u32(-1);

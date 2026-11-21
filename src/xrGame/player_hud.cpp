@@ -721,9 +721,9 @@ bool attachable_hud_item::need_renderable()
 void attachable_hud_item::render(IDSGraphManager* DM)
 {
 	DM->add_Dynamic(m_model->dcast_RenderVisual(), &m_item_transform, true);
+	m_parent_hud_item->item().RenderHud(m_item_transform, m_model, DM);
 	debug_draw_firedeps			();
 
-	m_parent_hud_item->item().render_attachments(m_item_transform, m_model, true, DM);
 	m_parent_hud_item->render_hud_mode();
 }
 
@@ -934,9 +934,6 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 	m_attach_place_idx = pSettings->read_if_exists<u16>(sect_name, "attach_place_idx", 0);
 
-	if (pSettings->line_exist(sect_name, "aim_bone_name"))
-		m_aim_bone_id = m_model->LL_BoneID(pSettings->r_string(sect_name, "aim_bone_name"));
-
 	HudMass = std::max(pSettings->read_if_exists<float>(sect_name, "hud_mass", 1.f), 0.1f);
 	IkEnabled = pSettings->read_if_exists<bool>(sect_name, "hud_ik", true);
 
@@ -1095,9 +1092,9 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 		}
 
 		m_model->CalculateBones_Invalidate();
-
-		m_parent_hud_item->item().anim_play_attachment(item_anm_name, speed, bMixIn > EHudMixType::eMixHands);
 	}
+
+	m_parent_hud_item->item().PlayHudMotion(item_anm_name, bMixIn > EHudMixType::eMixHands, speed);
 }
 
 void attachable_hud_item::anim_play_bonepart(const shared_str& anim, bool bMixIn)
@@ -2833,7 +2830,6 @@ void player_hud::attach_item(CHudItem* item)
 		{
 			m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
 		}
-		item->item().load_attachments(pi->m_model);
 		item->on_a_hud_attach();
 		UpdateMovementLayers(true);
 	}

@@ -30,7 +30,8 @@ class CCartridge final :
 public:
 	CCartridge();
 	void Load(const char* section, u8 LocalAmmoType);
-	float Weight() const;
+	float Weight() const { return m_weight; }
+	u32 Cost() const { return m_cost; }
 
 	shared_str	m_ammoSect;
 	enum{
@@ -49,6 +50,9 @@ public:
 	Flags8	m_flags;
 
 	shared_str	m_InvShortName;
+
+	u32 m_cost = 0;
+	float m_weight = 0.0f;
 
 	const char* GetInventoryName() { return m_InvShortName.c_str(); };
 	virtual void				DumpActiveParams		(shared_str const & section_name, CInifile & dst_ini) const override;

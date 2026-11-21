@@ -152,7 +152,6 @@ void CWeaponStatMgun::net_Destroy()
 	}
 	inheritedPH::net_Destroy	();
 	processing_deactivate		();
-	CShootingObject::DestroyEffects();
 }
 
 void CWeaponStatMgun::net_Export(NET_Packet& P)	// export to server

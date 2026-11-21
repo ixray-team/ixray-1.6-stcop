@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "PickupManager.h"
 #include "Torch.h"
+#include "TacticalFlashLaser.h"
 #include "trade.h"
 #include "../xrEngine/CameraBase.h"
 
@@ -2073,19 +2074,57 @@ void CActor::SwitchNightVision()
 	}
 }
 
-void CActor::SwitchTorch()
+CTorch* CActor::HeadTorch()
 {
 	static const bool TorchOnlyInOutfit = EngineExternal()[EEngineExternalGame::EnableTorchOnlyInOutfit];
-	bool has_torch = TorchOnlyInOutfit && (GetOutfit() && GetOutfit()->IsTorchAvailable() || GetHelmet() && GetHelmet()->IsTorchAvailable()) || !TorchOnlyInOutfit;
+	const bool has_torch = !TorchOnlyInOutfit || GetOutfit() && GetOutfit()->IsTorchAvailable() || GetHelmet() && GetHelmet()->IsTorchAvailable();
 
-	if (!has_torch)
+	PIItem torch_item = inventory().ItemFromSlot(TORCH_SLOT);
+	return has_torch && torch_item ? torch_item->cast_torch() : nullptr;
+}
+
+bool CActor::HeadLightsActive()
+{
+	CTorch* torch = HeadTorch();
+	bool active = torch && torch->IsSwitched();
+
+	if (CHelmet* helmet = GetHelmet())
+	{
+		for (CTacticalFlashLaser* light : helmet->m_lights)
+		{
+			active |= light->TorchStatus || light->LaserStatus;
+		}
+	}
+
+	return active;
+}
+
+void CActor::ToggleHeadLights()
+{
+	const bool target = !HeadLightsActive();
+
+	if (CHelmet* helmet = GetHelmet())
+	{
+		for (CTacticalFlashLaser* light : helmet->m_lights)
+		{
+			light->SwitchTorch(target);
+			light->SwitchLaser(target);
+		}
+	}
+
+	if (CTorch* torch = HeadTorch(); torch && torch->IsSwitched() != target)
+	{
+		torch->Switch();
+	}
+}
+
+void CActor::SwitchTorch()
+{
+	if (!HeadTorch() && (!GetHelmet() || GetHelmet()->m_lights.empty()))
 	{
 		return;
 	}
 
-	PIItem item_from_slot = inventory().ItemFromSlot(TORCH_SLOT);
-
-	if (CTorch* torch = item_from_slot ? item_from_slot->cast_torch() : nullptr)
 	{
 		if (CHudStateAnimator* state_animator = HudAnimator()->CurrentAnimator() != nullptr ? HudAnimator()->CurrentAnimator()->cast_hud_state_animator() : nullptr)
 		{
@@ -2184,12 +2223,12 @@ void CActor::SwitchTorch()
 			if (HudAnimator() && !HudAnimator()->ItemAnimator()->IsActive())
 			{
 				StartAnimator(m_sHeadlampAnimator);
-				HudAnimator()->ItemAnimator()->SetLeftCallback({ torch, &CTorch::Switch });
+				HudAnimator()->ItemAnimator()->SetLeftCallback({ this, &CActor::ToggleHeadLights });
 			}
 		}
 		else
 		{
-			torch->Switch();
+			ToggleHeadLights();
 		}
 	}
 }

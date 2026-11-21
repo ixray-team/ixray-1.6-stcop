@@ -81,19 +81,13 @@ void CCartridge::Load(const char* section, u8 LocalAmmoType)
 	VERIFY	(param_s.fWallmarkSize>0);
 
 	m_InvShortName			= g_pStringTable->translate( pSettings->r_string(section, "inv_name_short"));
-}
 
-float CCartridge::Weight() const {
-	auto s = m_ammoSect.c_str();
-	float res = 0;
-	if (s) {
-		float box = pSettings->r_float(s, "box_size");
-		if (box > 0) {
-			float w = pSettings->r_float(s, "inv_weight");
-			res = w / box;
-		}
+	u32 box = pSettings->r_u32(section, "box_size");
+	if (box > 0)
+	{
+		m_cost = pSettings->r_u32(section, "cost") / box;
+		m_weight = pSettings->r_float(section, "inv_weight") / box;
 	}
-	return res;
 }
 
 void CWeaponAmmo::Load(const char* section) 

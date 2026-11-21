@@ -98,7 +98,7 @@ void CFlashlight::OnH_B_Independent(bool just_before_destroy)
 	}
 
 	LightTorch->SwitchTorchlight(false);
-	LightTorch->UpdateTorchFromObject(this);
+	LightTorch->UpdateTorchFromObject();
 }
 
 void CFlashlight::OnHiddenItem()
@@ -115,7 +115,7 @@ void CFlashlight::OnHiddenItem()
 	}
 
 	LightTorch->SwitchTorchlight(false);
-	LightTorch->UpdateTorchFromObject(this);
+	LightTorch->UpdateTorchFromObject();
 }
 
 void CFlashlight::OnMoveToRuck(const SInvItemPlace& prev)
@@ -132,5 +132,5 @@ void CFlashlight::OnMoveToRuck(const SInvItemPlace& prev)
 	}
 
 	LightTorch->SwitchTorchlight(false);
-	LightTorch->UpdateTorchFromObject(this);
+	LightTorch->UpdateTorchFromObject();
 }

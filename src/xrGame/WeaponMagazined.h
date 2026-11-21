@@ -94,11 +94,11 @@ protected:
 	bool			TryReloadChamber		();
 
 protected:
-	virtual void	ReloadMagazine();
-	bool			HaveCartridgeInInventory(u8 cnt);
-	virtual u8		AddCartridge(u8 cnt);
-			void	ApplySilencerKoeffs();
-			void	ResetSilencerKoeffs();
+	virtual void ReloadMagazine();
+	bool HaveCartridgeInInventory(u8 cnt);
+	virtual u8 AddCartridge(u8 cnt);
+	void ApplySilencerKoeffs() { cur_silencer_koef = m_silencer_koef; }
+	void ResetSilencerKoeffs() { cur_silencer_koef.Reset(); }
 
 	virtual void	state_Fire		(float dt);
 	virtual void	state_FireChamber(float dt);
@@ -108,8 +108,10 @@ public:
 
 	virtual void	Load(const char* section) override;
 	virtual void	LoadSounds(const char* section) override;
-	virtual void	LoadSoundsSilencer(const char* section);
-	void LoadSilencerKoeffs();
+	void LoadSilencerKoeffs(const char* sect = nullptr);
+	void InitMuzzleParams();
+	virtual void OnAttachmentInc(PIItem item) override;
+	virtual void OnAttachmentDec(PIItem item) override;
 	void ReloadConfig() override;
 	void LoadMagazineShootingParams(const char* section);
 
@@ -134,8 +136,9 @@ public:
 	virtual void	OnH_A_Chield		() override;
 
 	virtual bool	Attach			(PIItem pIItem) override;
-	virtual bool	Detach			(PIItem pIItem) override;
+	virtual bool	Detach			(const char* item_section_name, bool b_spawn_item) override;
 	virtual bool	CanAttach		(PIItem pIItem) override;
+	virtual bool	CanDetach		(const char* item_section_name) override;
 
 	virtual void	InitAddons		() override;
 	virtual void	HudSelector		();

@@ -91,6 +91,7 @@ enum class EditorUI : u8
 	Game_CameraRig,
 	Game_CinemaEditor,
 	Game_DofSetup,
+	Game_WeaponCustomize,
 	Count
 };
 

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "game_sv_single.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "alife_graph_registry.h"
@@ -70,7 +71,7 @@ void	game_sv_Single::OnCreate		(ALife::_OBJECT_ID id_who)
 				alife().create			(alife_object);
 			else {
 				CSE_ALifeInventoryBox* const	box = smart_cast<CSE_ALifeInventoryBox*>(parent);
-				if (box)
+				if (box || smart_cast<CSE_ALifeInventoryItem*>(parent))
 					alife().create		(alife_object);
 				else
 					alife_object->m_bALifeControl	= false;

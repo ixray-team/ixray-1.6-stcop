@@ -1,5 +1,7 @@
 #pragma once
 #include "../../xrUI/ui_defs.h"
+class CInventoryItem;
+
 struct LevelInspector final
 {
 	enum ESCENE_FLAGS
@@ -562,4 +564,5 @@ struct LevelInspector final
 	void DrawHud();
 
 	void DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGameObject* GO = nullptr);
+	void DrawAttachmentSkeletons(CInventoryItem* item, bool hud);
 };

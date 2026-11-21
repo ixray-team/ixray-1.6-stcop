@@ -235,7 +235,12 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 	u16									dummy;
 	packet.r_begin						(dummy);
 	VERIFY								(dummy == M_SPAWN || dummy == M_SPAWN_LOCAL);
-	return								(self_->server().Process_spawn(packet,clientID));
+	CSE_Abstract* result				= self_->server().Process_spawn(packet,clientID);
+	if (CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(result))
+	{
+		alife_object->spawn_build();
+	}
+	return								(result);
 }
 
 // Allows to call alife():register(se_obj) manually afterward so that packet editing can be done safely when spawning object with a parent

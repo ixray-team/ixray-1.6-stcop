@@ -181,12 +181,6 @@ void CWeaponMagazined::LoadSounds(const char* section)
 		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last_actor", "sndSilencerShotLastActor", false, m_eSoundShot, st_Shooting);
 	}
 
-
-
-	LoadSoundsSilencer(section);
-
-
-
 	if (SoundExist(section, "snd_shoot_indoor"))
 	{
 		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor, true);
@@ -209,6 +203,29 @@ void CWeaponMagazined::LoadSounds(const char* section)
 	{
 		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_actor_last, true);
 		m_layered_sounds.LoadSound(section, "snd_shot_last_actor_indoor", "sndShotLastActorIndoor", false, m_eSoundShot, st_Shooting);
+	}
+
+	if (SoundExist(section, "snd_silncer_shot"))
+	{
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot, st_Shooting);
+	}
+
+	if (SoundExist(section, "snd_silncer_shot_actor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_actor_sil, true);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot, st_Shooting);
+	}
+
+	if (SoundExist(section, "snd_silncer_shot_indoor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_sil, true);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_indoor", "sndSilencerShotIndoor", false, m_eSoundShot, st_Shooting);
+	}
+
+	if (SoundExist(section, "snd_silncer_shot_actor_indoor"))
+	{
+		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_actor_sil, true);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor_indoor", "sndSilencerShotActorIndoor", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_silencer_shot_last_indoor"))
@@ -567,27 +584,6 @@ void CWeaponMagazined::LoadSounds(const char* section)
 		m_eSoundsFlags2.set(ESoundsFlags2::sf_safemode_in_out, true);
 		m_sounds.LoadSound(section, "snd_safemode_in", "sndSafemodeIn", false, m_eSoundHide);
 		m_sounds.LoadSound(section, "snd_safemode_out", "sndSafemodeOut", false, m_eSoundShow);
-	}
-}
-
-void CWeaponMagazined::LoadSoundsSilencer(const char* section)
-{
-	m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot, st_Shooting);
-	if (SoundExist(section, "snd_silncer_shot_actor"))
-	{
-		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_actor_sil, true);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot, st_Shooting);
-	}
-
-	if (SoundExist(section, "snd_silncer_shot_indoor"))
-	{
-		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_sil, true);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_indoor", "sndSilencerShotIndoor", false, m_eSoundShot, st_Shooting);
-	}
-	if (SoundExist(section, "snd_silncer_shot_actor_indoor"))
-	{
-		m_eSoundsShotFlags.set(ESoundsShotFlags::ssf_shoot_indoor_actor_sil, true);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor_indoor", "sndSilencerShotActorIndoor", false, m_eSoundShot, st_Shooting);
 	}
 }
 
@@ -1685,7 +1681,7 @@ void CWeaponMagazined::SelectShotSound()
 
 	if ((parent_actor && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_actor) || m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor)) && Sound->object_in_audiozone(get_LastFP()))
 	{
-		if (GetSilencerAttached())
+		if (IsSilencerAttached())
 		{
 			if (get_elapsed == 1 && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_indoor_last_sil))
 			{
@@ -2812,15 +2808,24 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 
 bool CWeaponMagazined::CanAttach(PIItem pIItem)
 {
-	if (ScopeFit(pIItem->cast_addon_scope()) && IsScopeAttachable())
+	CScope* pScope = pIItem->cast_addon_scope();
+	CSilencer* pSilencer = pIItem->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
+
+	if (pScope && IsScopeAttachable())
+	{
+		if (IsScopeAttached() && pIItem->object().cNameSect() == GetScopeName())
+		{
+			return false;
+		}
+
+		return ScopeFit(pScope);
+	}
+	else if (pSilencer && IsSilencerAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect()))
 	{
 		return true;
 	}
-	else if (pIItem->cast_addon_silencer() && IsSilencerAttachable() && (m_sSilencerName == pIItem->object().cNameSect()))
-	{
-		return true;
-	}
-	else if (pIItem->cast_addon_grenade_launcher() && IsGrenadeLauncherAttachable() && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
+	else if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
 	{
 		return true;
 	}
@@ -2828,135 +2833,164 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 	return inherited::CanAttach(pIItem);
 }
 
+bool CWeaponMagazined::CanDetach(const char* item_section_name)
+{
+	if (IsScopeAttachable() && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope))
+	{
+		return GetScopeName() == item_section_name;
+	}
+	else if (IsSilencerAttachable() && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) && (m_sSilencerName == item_section_name))
+	{
+		return true;
+	}
+	else if (IsGrenadeLauncherAttachable() && 0 != (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && (m_sGrenadeLauncherName == item_section_name))
+	{
+		return true;
+	}
+
+	return inherited::CanDetach(item_section_name);
+}
+
 bool CWeaponMagazined::Attach(PIItem pIItem)
 {
+	bool result = false;
+
 	CScope* pScope = pIItem->cast_addon_scope();
 	CSilencer* pSilencer = pIItem->cast_addon_silencer();
 	CGrenadeLauncher* pGrenadeLauncher = pIItem->cast_addon_grenade_launcher();
 
-	if (pScope)
-		Detach(GetScopeAttached());
-
-	if (pSilencer)
-		Detach(GetSilencerAttached());
-
-	if (pGrenadeLauncher)
-		Detach(GetGrenadeLauncherAttached());
-
 	if (pScope && IsScopeAttachable())
 	{
-		auto scope_attachment = get_attachment(pIItem->object().cNameSect(), eTypeScope);
+		if (IsScopeAttached())
+		{
+			Detach(GetScopeName().c_str(), true);
+		}
+
 		for (SCOPES_VECTOR_IT it = m_scopes.begin(); it != m_scopes.end(); it++)
 		{
-			if (bUseAltScope || scope_attachment)
+			if (bUseAltScope ? *it == pIItem->object().cNameSect() : pSettings->line_exist(*it, "scope_name") && pSettings->r_string(*it, "scope_name") == pIItem->object().cNameSect())
 			{
-				if (*it == pIItem->object().cNameSect())
-					m_cur_scope = u8(it - m_scopes.begin());
-			}
-			else
-			{
-				if (pSettings->line_exist((*it), "scope_name") && pSettings->r_string((*it), "scope_name") == pIItem->object().cNameSect())
-				{
-					m_cur_scope = u8(it - m_scopes.begin());
-				}
+				m_cur_scope = u8(it - m_scopes.begin());
 			}
 		}
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonScope;
+		result = true;
 	}
-	else if (pSilencer && IsSilencerAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect() || get_attachment(pIItem->object().cNameSect(), eTypeMuzzle)))
+	else if (pSilencer && IsSilencerAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) == 0 && (m_sSilencerName == pIItem->object().cNameSect()))
 	{
 		if (m_bRestGlSil && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
 		{
-			Detach(GetGrenadeLauncherAttached());
+			Detach(GetGrenadeLauncherName().c_str(), true);
 		}
 
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonSilencer;
+		result = true;
 	}
-	else if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect() || get_attachment(pIItem->object().cNameSect(), eTypeGLauncher)))
+	else if (pGrenadeLauncher && IsGrenadeLauncherAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) == 0 && (m_sGrenadeLauncherName == pIItem->object().cNameSect()))
 	{
 		if (m_bRestGlSil && IsSilencerAttachable() && IsSilencerAttached())
 		{
-			Detach(GetSilencerAttached());
+			Detach(GetSilencerName().c_str(), true);
 		}
 
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
-	}
-	else if (CGameObject* GO = GetChildBySectName(pIItem->object().cNameSect()))
-	{
-		Detach(GO->cast_inventory_item());
+		result = true;
 	}
 
-	return inherited::Attach(pIItem);
+	if (!result)
+	{
+		return inherited::Attach(pIItem);
+	}
+
+	if (OnServer())
+	{
+		pIItem->object().DestroyObject();
+	}
+
+	UpdateAltScope();
+	UpdateAddonsVisibility();
+	UpdateHUDAddonsVisibility();
+	ProcessScope();
+	InitAddons();
+
+	return true;
 }
 
-bool CWeaponMagazined::Detach(PIItem pIItem)
+bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 {
-	if (!pIItem) return false;
-	if (pIItem->cast_addon_scope())
+	if (IsScopeAttachable() && IsScopeAttached() && GetScopeName() == item_section_name)
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		m_cur_scope = 0;
+		UpdateAltScope();
 	}
-	else if (pIItem->cast_addon_silencer())
+	else if (IsSilencerAttachable() && IsSilencerAttached() && m_sSilencerName == item_section_name)
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 	}
-	else if (pIItem->cast_addon_grenade_launcher())
+	else if (IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached() && m_sGrenadeLauncherName == item_section_name)
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 	}
+	else
+	{
+		return inherited::Detach(item_section_name, b_spawn_item);
+	}
 
-	return inherited::Detach(pIItem);
-}
-/*
-void CWeaponMagazined::LoadAddons()
-{
-	m_zoom_params.m_fIronSightZoomFactor = pSettings->read_if_exists<float>(cNameSect(), "ironsight_zoom_factor", 50.0f );
+	UpdateAddonsVisibility();
+	UpdateHUDAddonsVisibility();
+	ProcessScope();
+	InitAddons();
 
+	return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 }
-*/
+
 void CWeaponMagazined::InitAddons()
 {
-	shared_str get_scope_section = GetScopeName();
+	shared_str get_scope_section = cNameSect();
 
 	m_zoom_params.m_fIronSightZoomFactor = pSettings->read_if_exists<float>(cNameSect(), "ironsight_zoom_factor", 50.0f);
 
-	if (GetScopeAttached() || IsScopePermanent())
+	if (IsScopeAttached())
 	{
-		LoadCurrentScopeParams(*get_scope_section);
-
-		m_scope_recoil.m_fScopeAttachedRecoil = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_factor", 1.0f);
-
-		m_scope_recoil.m_fScopeAttachedRecoilReduction = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_reduction", 1.0f);
-		
-
-		m_lens_zoom_params.factor_min = pSettings->read_if_exists<float>(get_scope_section, "min_lens_factor", 1.0f);
-		m_lens_zoom_params.factor_max = pSettings->read_if_exists<float>(get_scope_section, "max_lens_factor", 1.0f);
-		m_lens_zoom_params.need_lens_frame = pSettings->read_if_exists<bool>(get_scope_section, "need_lens_frame", false);
-
-		m_lens_zoom_params.speed = pSettings->read_if_exists<float>(get_scope_section, "lens_speed", 0.0f);
-		m_lens_zoom_params.gyro_period = pSettings->read_if_exists<float>(get_scope_section, "lens_gyro_sound_period", 0.0f);
-
-		m_lens_zoom_params.lens_factor_levels_count = pSettings->read_if_exists<float>(get_scope_section, "lens_factor_levels_count", 5.0f);
-		m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
-
-		m_lens_zoom_params.force_zoom_sound = pSettings->read_if_exists<bool>(get_scope_section, "force_zoom_sound", false);
-
-		LoadNightBrightnessParamsFromSection(get_scope_section);
-
-		get_scope_section = GetNameWithAttachmentScope();
-
-		if (SoundExist(get_scope_section.c_str(), "snd_reload"))
+		if (IsScopeAttachable())
 		{
-			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload", "sndReload", true, m_eSoundReload);
-		}
+			get_scope_section = GetScopeName();
 
-		if (SoundExist(get_scope_section.c_str(), "snd_reload_empty"))
-		{
-			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
-		}
+			LoadCurrentScopeParams(*get_scope_section);
 
-		LoadScopeXY();
+			m_scope_recoil.m_fScopeAttachedRecoil = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_factor", 1.0f);
+
+			m_scope_recoil.m_fScopeAttachedRecoilReduction = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_reduction", 1.0f);
+
+			m_lens_zoom_params.factor_min = pSettings->read_if_exists<float>(get_scope_section, "min_lens_factor", 1.0f);
+			m_lens_zoom_params.factor_max = pSettings->read_if_exists<float>(get_scope_section, "max_lens_factor", 1.0f);
+			m_lens_zoom_params.need_lens_frame = pSettings->read_if_exists<bool>(get_scope_section, "need_lens_frame", false);
+
+			m_lens_zoom_params.speed = pSettings->read_if_exists<float>(get_scope_section, "lens_speed", 0.0f);
+			m_lens_zoom_params.gyro_period = pSettings->read_if_exists<float>(get_scope_section, "lens_gyro_sound_period", 0.0f);
+
+			m_lens_zoom_params.lens_factor_levels_count = pSettings->read_if_exists<float>(get_scope_section, "lens_factor_levels_count", 5.0f);
+			m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
+
+			m_lens_zoom_params.force_zoom_sound = pSettings->read_if_exists<bool>(get_scope_section, "force_zoom_sound", false);
+
+			LoadNightBrightnessParamsFromSection(get_scope_section);
+
+			get_scope_section = GetNameWithAttachmentScope();
+
+			if (SoundExist(get_scope_section.c_str(), "snd_reload"))
+			{
+				m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload", "sndReload", true, m_eSoundReload);
+			}
+
+			if (SoundExist(get_scope_section.c_str(), "snd_reload_empty"))
+			{
+				m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
+			}
+
+			LoadScopeXY();
+		}
 	}
 	else
 	{
@@ -3002,80 +3036,109 @@ void CWeaponMagazined::InitAddons()
 			m_sounds.LoadSound(get_scope_section.c_str(), "snd_reload_empty", "sndReloadEmpty", true, m_eSoundReload);
 		}
 	}
-	CSilencer* pSilencer = GetSilencerAttached();
-	if (pSilencer || IsSilencerPermanent())
-	{
-		CShootingObject::fire_mode = eSilencerFire;
-		if (pSilencer)
-		{
-			CShootingObject::LoadEffects(*pSilencer->cNameSect());
-			LoadSoundsSilencer(*pSilencer->cNameSect());
-		}
-		else
-		{
-			CShootingObject::LoadEffects(*cNameSect());
-			LoadSoundsSilencer(*cNameSect());
-		}
-		ApplySilencerKoeffs();
-		LoadSilencerXY();
-	}
-	else
-	{
-		CShootingObject::fire_mode = eDefaultFire;
 
-		CShootingObject::LoadEffects(*cNameSect());
-		ResetSilencerKoeffs();
-	}
+	InitMuzzleParams();
 
 	HudSelector();
 	inherited::InitAddons();
 }
 
+void CWeaponMagazined::InitMuzzleParams()
+{
+	fire_mode = IsSilencerAttached() ? eSilencerFire : eDefaultFire;
+
+	if (m_muzzle)
+	{
+		const char* sect = m_muzzle->object().cNameSect().c_str();
+		LoadEffects(*cNameSect());
+		LoadEffects(sect);
+		LoadSilencerKoeffs(sect);
+		ApplySilencerKoeffs();
+		return;
+	}
+
+	LoadSilencerKoeffs();
+	if (IsSilencerAttached())
+	{
+		const char* sect = IsSilencerAttachable() && m_sSilencerName.size() ? m_sSilencerName.c_str() : cNameSect().c_str();
+		LoadEffects(sect);
+		ApplySilencerKoeffs();
+		LoadSilencerXY();
+	}
+	else
+	{
+		LoadEffects(*cNameSect());
+		ResetSilencerKoeffs();
+	}
+}
+
+void CWeaponMagazined::OnAttachmentInc(PIItem item)
+{
+	inherited::OnAttachmentInc(item);
+
+	if (CShootingObject::fire_mode != eGlauncherFire)
+	{
+		InitMuzzleParams();
+	}
+}
+
+void CWeaponMagazined::OnAttachmentDec(PIItem item)
+{
+	inherited::OnAttachmentDec(item);
+
+	if (CShootingObject::fire_mode != eGlauncherFire)
+	{
+		InitMuzzleParams();
+	}
+}
+
 void CWeaponMagazined::HudSelector()
 {
 	if (m_bUseSilHud && IsSilencerAttachable() && IsSilencerAttached())
+	{
 		SetHudSection(hud_silencer);
+	}
 	else if (m_bUseScopeHud && IsScopeAttachable() && IsScopeAttached())
+	{
 		SetHudSection(hud_scope);
+	}
 	else if (m_bUseGLHud && IsGrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+	{
 		SetHudSection(hud_gl);
+	}
 	else
+	{
 		SetHudSection(hud_sect_cache);
+	}
 
 	bUpdateHUDBonesVisibility = false;
 }
 
-void CWeaponMagazined::LoadSilencerKoeffs()
+void CWeaponMagazined::LoadSilencerKoeffs(const char* sect)
 {
-	if (IsSilencerAttachable())
+	if (!sect && IsSilencerAttachable())
 	{
-		const char* sect = m_sSilencerName.c_str();
-		m_silencer_koef.hit_power		= pSettings->read_if_exists<float>(sect, "bullet_hit_power_k", 1.0f );
-		m_silencer_koef.hit_impulse		= pSettings->read_if_exists<float>(sect, "bullet_hit_impulse_k", 1.0f );
-		m_silencer_koef.bullet_speed	= pSettings->read_if_exists<float>(sect, "bullet_speed_k", 1.0f );
-		m_silencer_koef.fire_dispersion	= pSettings->read_if_exists<float>(sect, "fire_dispersion_base_k", 1.0f );
-		m_silencer_koef.cam_dispersion	= pSettings->read_if_exists<float>(sect, "cam_dispersion_k", 1.0f );
-		m_silencer_koef.cam_disper_inc	= pSettings->read_if_exists<float>(sect, "cam_dispersion_inc_k", 1.0f );
+		sect = m_sSilencerName.c_str();
+	}
+
+	if (sect)
+	{
+		m_silencer_koef.hit_power = pSettings->read_if_exists<float>(sect, "bullet_hit_power_k", 1.0f);
+		m_silencer_koef.hit_impulse = pSettings->read_if_exists<float>(sect, "bullet_hit_impulse_k", 1.0f);
+		m_silencer_koef.bullet_speed = pSettings->read_if_exists<float>(sect, "bullet_speed_k", 1.0f);
+		m_silencer_koef.fire_dispersion = pSettings->read_if_exists<float>(sect, "fire_dispersion_base_k", 1.0f);
+		m_silencer_koef.cam_dispersion = pSettings->read_if_exists<float>(sect, "cam_dispersion_k", 1.0f);
+		m_silencer_koef.cam_disper_inc = pSettings->read_if_exists<float>(sect, "cam_dispersion_inc_k", 1.0f);
 		m_silencer_koef.attached_recoil = pSettings->read_if_exists<float>(sect, "attached_recoil_f", 1.0f);
 	}
 
-	clamp( m_silencer_koef.hit_power,		0.0f, 1.0f );
-	clamp( m_silencer_koef.hit_impulse,		0.0f, 1.0f );
-	clamp( m_silencer_koef.bullet_speed,	0.0f, 1.0f );
-	clamp( m_silencer_koef.fire_dispersion,	0.0f, 3.0f );
-	clamp( m_silencer_koef.cam_dispersion,	0.0f, 1.0f );
-	clamp( m_silencer_koef.cam_disper_inc,	0.0f, 1.0f );
-	clamp (m_silencer_koef.attached_recoil,  0.01f, 3.0f );
-}
-
-void CWeaponMagazined::ApplySilencerKoeffs()
-{
-	cur_silencer_koef = m_silencer_koef;
-}
-
-void CWeaponMagazined::ResetSilencerKoeffs()
-{
-	cur_silencer_koef.Reset();
+	clamp(m_silencer_koef.hit_power, 0.0f, 1.0f);
+	clamp(m_silencer_koef.hit_impulse, 0.0f, 1.0f);
+	clamp(m_silencer_koef.bullet_speed, 0.0f, 1.0f);
+	clamp(m_silencer_koef.fire_dispersion, 0.0f, 3.0f);
+	clamp(m_silencer_koef.cam_dispersion, 0.0f, 1.0f);
+	clamp(m_silencer_koef.cam_disper_inc, 0.0f, 1.0f);
+	clamp(m_silencer_koef.attached_recoil, 0.01f, 3.0f);
 }
 
 void CWeaponMagazined::PlayAnimShow()
