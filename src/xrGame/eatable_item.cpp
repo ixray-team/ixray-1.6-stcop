@@ -42,7 +42,7 @@ void CEatableItem::Load(const char* section)
 	{
 		if (GetMaxUses() > 0)
 		{
-			SetCondition((float)(m_iRemainingUses / GetMaxUses()));
+			SetCondition(float(m_iRemainingUses) / GetMaxUses());
 		}
 		else
 		{
@@ -83,7 +83,7 @@ bool CEatableItem::net_Spawn(CSE_Abstract* DC)
 	{
 		if (GetMaxUses() > 0)
 		{
-			SetCondition((float)(m_iRemainingUses / GetMaxUses()));
+			SetCondition(float(m_iRemainingUses) / GetMaxUses());
 		}
 		else
 		{
@@ -205,7 +205,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 		{
 			if (GetMaxUses() > 0)
 			{
-				SetCondition((float)(m_iRemainingUses / GetMaxUses()));
+				SetCondition(float(m_iRemainingUses) / GetMaxUses());
 			}
 			else
 			{
@@ -240,7 +240,7 @@ void CEatableItem::EatableEffects()
 		actor->conditions().ApplyBooster(Booster, m_section_id, false);
 	}
 
-	if (m_iRemainingUses != (-1))
+	if (m_iRemainingUses != u8(-1))
 	{
 		if (m_iRemainingUses > 0)
 		{
@@ -256,7 +256,7 @@ void CEatableItem::EatableEffects()
 	{
 		if (GetMaxUses() > 0)
 		{
-			SetCondition((float)(m_iRemainingUses / GetMaxUses()));
+			SetCondition(float(m_iRemainingUses) / GetMaxUses());
 		}
 		else
 		{
