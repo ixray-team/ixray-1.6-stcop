@@ -56,14 +56,12 @@ void CPhysicItem::OnH_B_Independent	(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	if (m_ready_to_destroy)
+	if (m_ready_to_destroy || just_before_destroy)
 		return;
 
 	setVisible					(true);
 	setEnabled					(true);
-
-	if (!just_before_destroy)
-		activate_physic_shell	();
+	activate_physic_shell		();
 }
 
 void CPhysicItem::OnH_B_Chield		()
