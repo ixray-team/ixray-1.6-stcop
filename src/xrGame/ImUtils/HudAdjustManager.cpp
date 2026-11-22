@@ -512,8 +512,6 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		return;
 	}
 
-	ImGui::PushID(item);
-
 	THudLightLaser* ll = nullptr;
 	THudLightTorch* lt = nullptr;
 
