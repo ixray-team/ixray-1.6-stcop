@@ -10,6 +10,12 @@ function id()
 	sounds_base = sounds_base + 1
 	return sounds_base - 1
 end
+--' Сообщает о теме без звуковых файлов, чтобы логика не обрывалась молча
+local function report_empty_theme(theme_obj, obj_id)
+	local st = db.storage[obj_id]
+	abort("sound_theme: theme [%s] has no sound files (path [%s]), object [%s], section [%s]",
+		tostring(theme_obj.section), tostring(theme_obj.path), tostring(obj_id), tostring(st and st.active_section))
+end
 --function printf()
 --end
 --'--------------------------------------------------------------------------------------------------------------------
@@ -212,6 +218,10 @@ function npc_sound:play(npc_id, faction, point, msg)
 	end
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
+	if snd == nil then
+		report_empty_theme(self, npc_id)
+		return false
+	end
 	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	local f = getFS()
 	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
@@ -430,6 +440,10 @@ function actor_sound:play(npc, faction, point, msg)
 	end
 
 	self.played_time = nil
+	if #self.sound == 0 then
+		report_empty_theme(self, npc)
+		return false
+	end
 	--' Выбор звука, который играть.
 	self.played_id = self:select_next_sound()
 	if self.played_id == -1 then
@@ -614,6 +628,10 @@ function object_sound:play(obj_id, faction, point, msg)
 		return false
 	end
 	self.played_time = nil
+	if #self.sound == 0 then
+		report_empty_theme(self, obj_id)
+		return false
+	end
 	  --' Выбор звука, который играть.
 	self.played_id = self:select_next_sound()
 	if self.played_id == -1 then
@@ -759,6 +777,10 @@ function looped_sound:play(obj_id)
 		return
 	end
 
+	if self.sound == nil then
+		report_empty_theme(self, obj_id)
+		return
+	end
 	self.snd_obj = sound_object(self.sound)
 	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
 	return true
