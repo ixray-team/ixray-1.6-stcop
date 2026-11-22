@@ -982,6 +982,10 @@ private:
 	// UpdateWaterDrag() owns the water drag and the body liquid contact
 	// flotation is suppressed to avoid two drag sources at the surface.
 	bool						WheelsInWater				= false;
+	// Water material and surface height under the wheels, used by the actor
+	// condition while the character movement is disabled in the car.
+	u16							m_water_material_idx		= GAMEMTL_NONE_IDX;
+	float						m_water_y					= -flt_max;
 
 	xr_map   <u16,SWheel>	m_wheels_map;
 	xr_vector <SWheelDrive> m_driving_wheels;
@@ -1511,6 +1515,8 @@ public:
 	bool					RepairFromItem				();
 	float					GetFuelAmount			() const		{ return m_fuel; }
 	float					AddFuelAmount			(float amount)	{ return AddFuel(amount); }
+	u16						GetWaterMaterialIdx		() const		{ return m_water_material_idx; }
+	float					GetWaterY				() const		{ return m_water_y; }
 	virtual bool			allowWeapon					() const		{return true;};
 	virtual bool			HUDView						() const;
 	virtual Fvector			ExitPosition				(){return m_exit_position;}

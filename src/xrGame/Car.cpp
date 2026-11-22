@@ -8052,6 +8052,8 @@ void CCar::UpdateTraction(bool slip)
 void CCar::UpdateWaterDrag(float step)
 {
 	WheelsInWater = false;
+	m_water_material_idx = GAMEMTL_NONE_IDX;
+	m_water_y = -flt_max;
 
 	if (!m_pPhysicsShell || step <= 0.f || m_wheels_map.empty())
 		return;
@@ -8083,7 +8085,9 @@ void CCar::UpdateWaterDrag(float step)
 			}
 		}
 
-		if (!WheelsSpinning)
+		// A car standing still in water still has to update the water material:
+		// the actor condition reads it for injurious water while in the car.
+		if (!WheelsSpinning && !OwnerActor())
 			return;
 	}
 
@@ -8150,6 +8154,12 @@ void CCar::UpdateWaterDrag(float step)
 			Immersion = 1.f;
 
 		Wheel.InWater = true;
+
+		if (m_water_material_idx == GAMEMTL_NONE_IDX)
+		{
+			m_water_material_idx = WaterMaterialIdx;
+			m_water_y = WheelWaterY;
+		}
 
 		if (Speed > EPS_L)
 			WheelsInWater = true;

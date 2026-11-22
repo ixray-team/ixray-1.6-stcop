@@ -25,6 +25,7 @@
 #include "../xrEngine/GameMtlLib.h"
 #include "CharacterPhysicsSupport.h"
 #include "RadioactiveZone.h"
+#include "Car.h"
 
 #define MAX_SATIETY					1.0f
 #define START_SATIETY				0.5f
@@ -457,7 +458,24 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
 
 float CActorCondition::GetInjuriousMaterialDamage()
 {
-	u16 mat_injurios = m_object->character_physics_support()->movement()->injurious_material_idx();
+	// The character movement is disabled while the actor is in a car, so its
+	// material contact is not updated there. Use the water material detected
+	// by the car instead.
+	u16 mat_injurios = GAMEMTL_NONE_IDX;
+	if (CCar* Car = m_object->GetCar())
+	{
+		mat_injurios = Car->GetWaterMaterialIdx();
+
+		// Radiation starts only when the water reaches the driver's seat.
+		if (mat_injurios != GAMEMTL_NONE_IDX && m_object->Position().y > Car->GetWaterY() + EPS_L)
+		{
+			mat_injurios = GAMEMTL_NONE_IDX;
+		}
+	}
+	else
+	{
+		mat_injurios = m_object->character_physics_support()->movement()->injurious_material_idx();
+	}
 
 	if(mat_injurios!=GAMEMTL_NONE_IDX)
 	{
