@@ -1,31 +1,23 @@
 #include "StdAfx.h"
 #include "Missile.h"
-//.#include "WeaponHUD.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "Actor.h"
-#include "../xrEngine/CameraBase.h"
 #include "xrServer_Objects_ALife.h"
-#include "ActorEffector.h"
 #include "Level.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
-#include "../xrPhysics/MathUtils.h"
 #include "CharacterPhysicsSupport.h"
 #include "Inventory.h"
-#include "InventoryWeaponSlotLayout.h"
-#include "../xrEngine/IGame_Persistent.h"
 #include "../xrSound/ai_sounds.h"
 #include "Grenade.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "SaveObjectHelpers.h"
 #ifdef DEBUG
 #	include "PHDebug.h"
 #endif
 
 #define PLAYING_ANIM_TIME 10000
-
-#include "../../xrUI/Widgets/UIProgressShape.h"
-#include "../../xrUI/UIXmlInit.h"
-#include "PhysicsShellHolder.h"
-#include "SaveObjectHelpers.h"
 
 CUIProgressShape* g_MissileForceShape = nullptr;
 
@@ -586,55 +578,66 @@ void CMissile::UpdatePosition(const Fmatrix& trans)
 	XFORM().mul		(trans,offset());
 }
 
-void CMissile::UpdateXForm	()
+void CMissile::UpdateXForm()
 {
-	if (Device.dwFrame!=dwXF_Frame)
+	if (Device.dwFrame == dwXF_Frame)
 	{
-		dwXF_Frame			= Device.dwFrame;
-
-		if (!H_Parent())	return;
-
-		// Get access to entity and its visual
-		CGameObject* GO = H_Parent()->cast_game_object(); if (!GO || GO->cast_trader()) return;
-		CEntityAlive* E = GO->cast_entity_alive(); if(!E) return;
-		CInventoryOwner	*IO = GO->cast_inventory_owner();
-
-		if (IO->attached(this))
-			return;
-
-		IKinematics* V = PKinematics(E->Visual());
-
-		// Get matrices
-		u16					boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
-		E->g_WeaponBones	(boneL,boneR,boneR2);
-		if (boneR == BI_NONE)	return;
-
-
-		boneL = boneR2;
-
-		Fmatrix mL, mR;
-		if (GO->cast_actor())
-		{
-			V->Bone_GetAnimPos(mL, boneL, u8(-1), false);
-			V->Bone_GetAnimPos(mR, boneR, u8(-1), false);
-		}
-		else
-		{
-			// V->CalculateBones();
-			mL = V->LL_GetTransform(boneL);
-			mR = V->LL_GetTransform(boneR);
-		}
-
-		// Calculate
-		Fmatrix				mRes;
-		Fvector				R,D,N;
-		D.sub				(mL.c,mR.c);	D.normalize_safe();
-		R.crossproduct		(mR.j,D);		R.normalize_safe();
-		N.crossproduct		(D,R);			N.normalize_safe();
-		mRes.set			(R,N,D,mR.c);
-		mRes.mulA_43		(E->XFORM());
-		UpdatePosition		(mRes);
+		return;
 	}
+
+	dwXF_Frame = Device.dwFrame;
+
+	if (!H_Parent())
+	{
+		return;
+	}
+
+	CGameObject* GO = H_Parent()->cast_game_object();
+	if (!GO || GO->cast_trader())
+	{
+		return;
+	}
+
+	CEntityAlive* E = GO->cast_entity_alive();
+	if (!E)
+	{
+		return;
+	}
+
+	CInventoryOwner* IO = GO->cast_inventory_owner();
+
+	if (IO->attached(this))
+	{
+		return;
+	}
+
+	IKinematics* V = PKinematics(E->Visual());
+
+	u16 boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
+	E->g_WeaponBones(boneL, boneR, boneR2);
+	if (boneR == BI_NONE)
+	{
+		return;
+	}
+
+	boneL = boneR2;
+
+	Fmatrix mL = Fidentity, mR = Fidentity;
+	if (GO->cast_actor())
+	{
+		V->Bone_GetAnimPos(mL, boneL, u8(-1), false);
+		V->Bone_GetAnimPos(mR, boneR, u8(-1), false);
+	}
+	else
+	{
+		mL = V->LL_GetTransform(boneL);
+		mR = V->LL_GetTransform(boneR);
+	}
+
+	Fmatrix mRes = Fidentity;
+	GetHandsBasis(mL, mR, mRes);
+	mRes.mulA_43(E->XFORM());
+	UpdatePosition(mRes);
 }
 
 void CMissile::setup_throw_params(bool bForce = false)
@@ -1063,7 +1066,6 @@ void CMissile::ExitContactCallback(bool& do_colide,bool bo1,CPHContact& c,SGameM
 	}
 }
 
-#include "Grenade.h"
 
 void CMissile::ExitContactCallback_Patch(IPhysicsShellHolder* object)
 {
