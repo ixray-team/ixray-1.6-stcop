@@ -55,7 +55,7 @@ protected:
 	CUIDragDropListEx*			m_pTradePartnerList;
 	CUIDragDropListEx*			m_pDeadBodyBagList;
 
-	CUIStatic*					m_HelmetOver;
+	CUIStatic*					m_HelmetOver = nullptr;
 	
 	CUIStatic*					m_LeftBackground = nullptr;
 

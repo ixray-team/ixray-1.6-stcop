@@ -146,6 +146,20 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	m_ind_radiation = nullptr;
 	m_ind_starvation = nullptr;
 
+	m_ind_boost_psy = nullptr;
+	m_ind_boost_radia = nullptr;
+	m_ind_boost_chem = nullptr;
+	m_ind_boost_wound = nullptr;
+	m_ind_boost_weight = nullptr;
+	m_ind_boost_health = nullptr;
+	m_ind_boost_power = nullptr;
+	m_ind_boost_rad = nullptr;
+
+	m_QuickSlotText1 = nullptr;
+	m_QuickSlotText2 = nullptr;
+	m_QuickSlotText3 = nullptr;
+	m_QuickSlotText4 = nullptr;
+
 	m_ind_boost_psy_svg_inited = false;
 	m_ind_boost_radia_svg_inited = false;
 	m_ind_boost_chem_svg_inited = false;

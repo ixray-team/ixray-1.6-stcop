@@ -74,7 +74,7 @@ private:
 	};
 	CUI3tButton*				m_btn_nav[max_btn_nav];
 	CUI3tButton*				m_btn_nav_task_focus = nullptr;
-	CUIStatic*					m_btn_nav_parent;
+	CUIStatic*					m_btn_nav_parent = nullptr;
 	CUIStatic*					m_controller_cursor = nullptr;
 	// Optional XML: map_pattern_overlay (drawn above map; non-interactive).
 	CUIStatic*					m_mapPatternOverlay = nullptr;
