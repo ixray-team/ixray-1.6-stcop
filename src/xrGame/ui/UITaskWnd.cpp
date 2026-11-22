@@ -724,12 +724,70 @@ void CUITaskWnd::OnTask2DbClicked(CUIWindow*, void*)
 
 void CUITaskWnd::SyncLegacySpotFilters()
 {
-	CMapManager& mapManager = Level().MapManager();
-	mapManager.SetSpotCategoryHidden(PdaSpotCategory::Treasures, !m_bTreasuresEnabled);
-	mapManager.SetSpotCategoryHidden(PdaSpotCategory::PrimaryObjects, !m_bPrimaryObjectsEnabled);
-	mapManager.SetSpotCategoryHidden(PdaSpotCategory::SecondaryTasks, !m_bSecondaryTasksEnabled);
-	mapManager.SetSpotCategoryHidden(PdaSpotCategory::QuestNpcs, !m_bQuestNpcsEnabled);
-	mapManager.SetSpotCategoryHidden(PdaSpotCategory::PersonalSpots, m_cbFilters[MAP_MARKS_FILTER_PERSONAL_SPOTS] && !m_bPersonalSpotsEnabled);
+	const CMapManager& mapManager = Level().MapManager();
+	m_bTreasuresEnabled = !mapManager.IsSpotCategoryHidden(PdaSpotCategory::Treasures);
+	m_bPrimaryObjectsEnabled = !mapManager.IsSpotCategoryHidden(PdaSpotCategory::PrimaryObjects);
+	m_bSecondaryTasksEnabled = !mapManager.IsSpotCategoryHidden(PdaSpotCategory::SecondaryTasks);
+	m_bQuestNpcsEnabled = !mapManager.IsSpotCategoryHidden(PdaSpotCategory::QuestNpcs);
+	m_bPersonalSpotsEnabled = !mapManager.IsSpotCategoryHidden(PdaSpotCategory::PersonalSpots);
+
+	const struct
+	{
+		u32 Filter;
+		bool Enabled;
+	} Checks[] = {
+		{MAP_MARKS_FILTER_TREASURES, m_bTreasuresEnabled},
+		{MAP_MARKS_FILTER_PRIMARY_OBJECTS, m_bPrimaryObjectsEnabled},
+		{MAP_MARKS_FILTER_SECONDARY_TASKS, m_bSecondaryTasksEnabled},
+		{MAP_MARKS_FILTER_NPCS, m_bQuestNpcsEnabled},
+		{MAP_MARKS_FILTER_PERSONAL_SPOTS, m_bPersonalSpotsEnabled},
+	};
+	for (const auto& Check : Checks)
+	{
+		if (m_cbFilters[Check.Filter])
+		{
+			m_cbFilters[Check.Filter]->SetCheck(Check.Enabled);
+		}
+	}
+}
+
+void CUITaskWnd::SetFilterCategory(u32 Filter, const char* Category, bool Enabled)
+{
+	if (!m_cbFilters[Filter] || !g_pGameLevel)
+	{
+		return;
+	}
+	Level().MapManager().SetSpotCategoryHidden(Category, !Enabled);
+}
+
+void CUITaskWnd::TreasuresEnabled(bool enable)
+{
+	SetFilterCategory(MAP_MARKS_FILTER_TREASURES, PdaSpotCategory::Treasures, enable);
+	if (m_cbFilters[MAP_MARKS_FILTER_TREASURES])
+	{
+		m_bTreasuresEnabled = enable;
+		m_cbFilters[MAP_MARKS_FILTER_TREASURES]->SetCheck(enable);
+	}
+}
+
+void CUITaskWnd::QuestNpcsEnabled(bool enable)
+{
+	SetFilterCategory(MAP_MARKS_FILTER_NPCS, PdaSpotCategory::QuestNpcs, enable);
+	if (m_cbFilters[MAP_MARKS_FILTER_NPCS])
+	{
+		m_bQuestNpcsEnabled = enable;
+		m_cbFilters[MAP_MARKS_FILTER_NPCS]->SetCheck(enable);
+	}
+}
+
+void CUITaskWnd::PrimaryObjectsEnabled(bool enable)
+{
+	SetFilterCategory(MAP_MARKS_FILTER_PRIMARY_OBJECTS, PdaSpotCategory::PrimaryObjects, enable);
+	if (m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS])
+	{
+		m_bPrimaryObjectsEnabled = enable;
+		m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS]->SetCheck(enable);
+	}
 }
 
 void CUITaskWnd::ShowMapLegend( bool status )
@@ -834,7 +892,7 @@ void CUITaskWnd::OnShowTreasures(CUIWindow* ui, void* d)
 	{
 		m_pUiSounds->PlayFilterToggle();
 	}
-	m_bTreasuresEnabled = !m_bTreasuresEnabled;
+	SetFilterCategory(MAP_MARKS_FILTER_TREASURES, PdaSpotCategory::Treasures, !m_bTreasuresEnabled);
 	ReloadTaskInfo();
 }
 void CUITaskWnd::OnShowPrimaryObjects(CUIWindow* ui, void* d)
@@ -843,7 +901,7 @@ void CUITaskWnd::OnShowPrimaryObjects(CUIWindow* ui, void* d)
 	{
 		m_pUiSounds->PlayFilterToggle();
 	}
-	m_bPrimaryObjectsEnabled = !m_bPrimaryObjectsEnabled;
+	SetFilterCategory(MAP_MARKS_FILTER_PRIMARY_OBJECTS, PdaSpotCategory::PrimaryObjects, !m_bPrimaryObjectsEnabled);
 	ReloadTaskInfo();
 }
 void CUITaskWnd::OnShowSecondaryTasks(CUIWindow* ui, void* d)
@@ -860,7 +918,7 @@ void CUITaskWnd::OnShowQuestNpcs(CUIWindow* ui, void* d)
 	{
 		m_pUiSounds->PlayFilterToggle();
 	}
-	m_bQuestNpcsEnabled = !m_bQuestNpcsEnabled;
+	SetFilterCategory(MAP_MARKS_FILTER_NPCS, PdaSpotCategory::QuestNpcs, !m_bQuestNpcsEnabled);
 	ReloadTaskInfo();
 }
 
@@ -870,7 +928,7 @@ void CUITaskWnd::OnShowPersonalSpots(CUIWindow*, void*)
 	{
 		m_pUiSounds->PlayFilterToggle();
 	}
-	m_bPersonalSpotsEnabled = !m_bPersonalSpotsEnabled;
+	SetFilterCategory(MAP_MARKS_FILTER_PERSONAL_SPOTS, PdaSpotCategory::PersonalSpots, !m_bPersonalSpotsEnabled);
 	ReloadTaskInfo();
 }
 
@@ -941,17 +999,21 @@ void CUITaskWnd::ResolveTaskRows(CGameTask*& outPrimary, CGameTask*& outSecondar
 
 void CUITaskWnd::SecondaryTasksEnabled(bool enable)
 {
-	if (m_features.filterTabs)
+	if (m_features.filterTabs || !m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS])
 	{
 		return;
 	}
 
-	ApplySecondaryTasksMapFilter(enable || !m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS]);
+	ApplySecondaryTasksMapFilter(enable);
 }
 
 void CUITaskWnd::ApplySecondaryTasksMapFilter(bool enable)
 {
 	m_bSecondaryTasksEnabled = enable;
+	if (g_pGameLevel)
+	{
+		Level().MapManager().SetSpotCategoryHidden(PdaSpotCategory::SecondaryTasks, !enable);
+	}
 	if (m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS])
 	{
 		m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS]->SetCheck(enable);

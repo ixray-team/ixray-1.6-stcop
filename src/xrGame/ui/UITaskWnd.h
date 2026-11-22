@@ -118,6 +118,7 @@ public:
 			void				ShowPositionOnMap		(const shared_str& level, const Fvector2& position);
 			void				Switch_ShowMapLegend	();
 			void				SyncLegacySpotFilters	();
+			void				SetFilterCategory		(u32 Filter, const char* Category, bool Enabled);
 			bool				SwitchTaskListTab		(bool Next);
 			void				SwitchPersonalSpotsWnd	();
 			void				ShowPersonalSpotsLimit	();
@@ -126,26 +127,11 @@ public:
 			bool IsQuestNpcsEnabled() const { return m_bQuestNpcsEnabled; };
 			bool IsSecondaryTasksEnabled() const { return m_bSecondaryTasksEnabled; };
 			bool IsPrimaryObjectsEnabled() const { return m_bPrimaryObjectsEnabled; };
-			void TreasuresEnabled(bool enable)
-			{
-				m_bTreasuresEnabled = enable || !m_cbFilters[MAP_MARKS_FILTER_TREASURES];
-				if (m_cbFilters[MAP_MARKS_FILTER_TREASURES])
-					m_cbFilters[MAP_MARKS_FILTER_TREASURES]->SetCheck(enable);
-			};
-			void QuestNpcsEnabled(bool enable)
-			{
-				m_bQuestNpcsEnabled = enable || !m_cbFilters[MAP_MARKS_FILTER_NPCS];
-				if (m_cbFilters[MAP_MARKS_FILTER_NPCS])
-					m_cbFilters[MAP_MARKS_FILTER_NPCS]->SetCheck(enable);
-			};
+			void TreasuresEnabled(bool enable);
+			void QuestNpcsEnabled(bool enable);
 			void SecondaryTasksEnabled(bool enable);
 			void ApplySecondaryTasksMapFilter(bool enable);
-			void PrimaryObjectsEnabled(bool enable)
-			{
-				m_bPrimaryObjectsEnabled = enable || !m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS];
-				if (m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS])
-					m_cbFilters[MAP_MARKS_FILTER_PRIMARY_OBJECTS]->SetCheck(enable);
-			};
+			void PrimaryObjectsEnabled(bool enable);
 
 			void				Show_TaskListWnd		(bool status);
 			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }

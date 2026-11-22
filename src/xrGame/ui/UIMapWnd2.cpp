@@ -171,6 +171,10 @@ void CUIMapWnd::init_xml_nav(CUIXml& xml, const char* start_from)
 	{
 		string512 pth;
 		xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line:tool_bar");
+		if (!xml.NavigateToNode(pth))
+		{
+			return;
+		}
 
 		string512 temp;
 		auto registerToolbarButtonLambda = [this, &xml, &pth, &temp](u8 navIndex, const char* buttonName)

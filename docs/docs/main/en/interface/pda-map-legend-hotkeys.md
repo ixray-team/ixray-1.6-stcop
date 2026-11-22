@@ -28,7 +28,12 @@ traders        = ui_pda2_trader_location
 
 A spot is hidden if at least one of its categories is hidden.
 
-The filter buttons at the bottom of the map (`filter_treasures`, `filter_quest_npcs` and others) also use categories, named `pda_filter_*`. If a button is missing from the XML, its category is always shown.
+The filter buttons at the bottom of the map (`filter_treasures`, `filter_primary_objects`, `filter_quest_npcs`, `filter_personal_spots`, `filter_secondary_tasks`) toggle the `pda_filter_treasures`, `pda_filter_primary_objects`, `pda_filter_quest_npcs`, `pda_filter_personal_spots`, `pda_filter_secondary_tasks` categories. The state lives in the category itself, so a button, a legend item with the same `category` and Lua always agree.
+
+The filter buttons and the `btn_nav_parent` panel (legend, personal mark, center, zoom reset and task buttons) are optional and can be removed from `pda_tasks*.xml` completely:
+
+1. Without a filter button its category stays as it is: shown until the legend or Lua hides it, and saved with the game.
+2. Without `btn_nav_parent` the same actions are available from the keyboard: `pda_tasks_toggle_legend`, `pda_tasks_personal_spot_cursor`, `pda_tasks_map_show_me`, `pda_tasks_map_show_target`, the mouse wheel for zoom.
 
 ## Map legend
 

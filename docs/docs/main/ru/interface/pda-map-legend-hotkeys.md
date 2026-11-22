@@ -28,7 +28,12 @@ traders        = ui_pda2_trader_location
 
 Спот скрыт, если скрыта хотя бы одна категория, в которую он попадает.
 
-Кнопки фильтров внизу карты (`filter_treasures`, `filter_quest_npcs` и другие) тоже работают через категории `pda_filter_*`. Если кнопки нет в XML, её категория всегда включена.
+Кнопки фильтров внизу карты (`filter_treasures`, `filter_primary_objects`, `filter_quest_npcs`, `filter_personal_spots`, `filter_secondary_tasks`) переключают категории `pda_filter_treasures`, `pda_filter_primary_objects`, `pda_filter_quest_npcs`, `pda_filter_personal_spots`, `pda_filter_secondary_tasks`. Состояние хранится в самой категории, поэтому кнопка, пункт легенды с той же `category` и Lua всегда показывают одно и то же.
+
+Кнопки фильтров и панель `btn_nav_parent` (кнопки легенды, личной метки, центрирования, сброса масштаба и задания) необязательны, их можно удалить из `pda_tasks*.xml` целиком:
+
+1. Без кнопки фильтра её категория остаётся как есть: видна, пока её не скроет легенда или Lua, и сохраняется в сейв.
+2. Без `btn_nav_parent` те же действия доступны с клавиатуры: `pda_tasks_toggle_legend`, `pda_tasks_personal_spot_cursor`, `pda_tasks_map_show_me`, `pda_tasks_map_show_target`, колесо мыши для масштаба.
 
 ## Легенда карты
 
