@@ -208,7 +208,21 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	m_pUIOthersIcon->Show							(true);
 	
 	CBaseMonster *monster = nullptr;
-	if(m_pOthersObject) {
+	if (m_pCar)
+	{
+		// A car is an inventory owner, but not a character: its CCharacterInfo
+		// has no specific character, rank or community. Do not pass it to
+		// InitCharacter(CInventoryOwner*).
+		m_pUICharacterInfoRight->ClearInfo();
+
+		const char* Section = m_pCar->cNameSect_str();
+		if (pSettings->line_exist(Section, "icon"))
+		{
+			const char* Name = pSettings->line_exist(Section, "name") ? pSettings->r_string(Section, "name") : "";
+			m_pUICharacterInfoRight->InitCharacter(Name, pSettings->r_string(Section, "icon"));
+		}
+	}
+	else if(m_pOthersObject) {
 		monster										= m_pOthersObject->cast_base_monster();
 		if (monster ) 
 		{
@@ -225,7 +239,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	EnableAll										();
 	UpdateLists										();
 
-	if(!monster){
+	if(!monster && !m_pCar && m_pOthersObject){
 		CInfoPortionWrapper	*known_info_registry = new CInfoPortionWrapper();
 		known_info_registry->registry().init(m_pOthersObject->object_id());
 		auto& known_info = known_info_registry->registry().objects();
@@ -299,9 +313,13 @@ void CUICarBodyWnd::Update()
 			m_pUIOthersBagWnd->SetText(m_othersBagWndPrefix.c_str());
 	}
 	
-	if(m_pOthersObject && m_pOurObject->cast_game_object()->Position().distance_to(m_pOthersObject->cast_game_object()->Position()) > 3.0f)
+	if (m_pOthersObject)
 	{
-		HideDialog();
+		CGameObject* Partner = m_pOthersObject->cast_game_object();
+		if (Partner == nullptr || Partner->getDestroy())
+		{
+			HideDialog();
+		}
 	}
 
 	m_pUITakeAll->SetVisible(!pInput->GetControllerMode());

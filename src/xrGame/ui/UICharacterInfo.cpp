@@ -150,6 +150,15 @@ void CUICharacterInfo::InitCharacterInfo(CUIXml* xml_doc, const char* node_str)
 void CUICharacterInfo::InitCharacter(CInventoryOwner* invOwner)
 {
 	m_ownerID = invOwner->object_id();
+
+	// Cars do not have a specific character profile. Accessing rank,
+	// community or IconName for them reads uninitialized character data.
+	if (invOwner->cast_car())
+	{
+		ClearInfo();
+		return;
+	}
+
 	CCharacterInfo& chInfo = invOwner->CharacterInfo();
 
 	if (m_icons[eName])
