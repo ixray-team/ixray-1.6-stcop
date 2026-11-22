@@ -62,7 +62,7 @@ public:
 		{
 			if (GetMaxUses() > 0)
 			{
-				SetCondition((float)(m_iRemainingUses / GetMaxUses()));
+				SetCondition(float(m_iRemainingUses) / GetMaxUses());
 			}
 			else
 			{
