@@ -29,6 +29,7 @@ class CUIActorInfoWnd;
 class CUIDiaryWnd;
 class CUIMapWnd;
 class CUITaskJournalWnd;
+class CUIPdaRecordsWnd;
 class CGameTask;
 class CUIPdaSpot;
 class CUIHotkeysHint;
@@ -81,6 +82,14 @@ protected:
 
 	shared_str				PendingTaskOnMap;
 	bool					PendingOpenTaskJournal = false;
+	bool					PendingRecordMap = false;
+	bool					PendingRecordTrack = false;
+	shared_str				PendingRecordLevel;
+	Fvector					PendingRecordPosition = {};
+	xr_string				PendingRecordHint;
+
+	void					ApplyPendingRecordActions		();
+	const char*				MapSectionId					();
 	void					BuildUpdateBadgeSections		();
 	void					InitTabBackgrounds				(CUIXml& xml);
 	void					SetActiveTabBackground			(const shared_str& sectionId);
@@ -103,6 +112,8 @@ public:
 	CUIDiaryWnd*			pUIDiaryWnd;
 	CUIMapWnd*				pUIMapWnd;
 	CUITaskJournalWnd*		pUITaskJournalWnd = nullptr;
+	CUIPdaRecordsWnd*		pUIPdaRecordsWnd = nullptr;
+	CUIPdaRecordsWnd*		pUIPdaReferenceWnd = nullptr;
 
 	CMapSpot*				pSelectedMapSpot;
 	Fvector2				last_cursor_pos;
@@ -148,6 +159,8 @@ public:
 			void			SetActiveSubdialog	(const shared_str& section);
 			void			ShowTaskOnMap		(CGameTask* task);
 			void			OpenTaskJournal		();
+			void			ShowRecordOnMap		(const shared_str& level, const Fvector& position);
+			void			TrackRecord			(const shared_str& level, const Fvector& position, const char* hint);
 			void			SetActiveSubdialog_script(const char* section)				{ SetActiveSubdialog((const shared_str&)section); };
 	virtual bool			StopAnyMove			() override;
 			void			PdaContentsChanged	(pda_section::part type);

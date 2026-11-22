@@ -197,6 +197,13 @@ enum EGameActions
 	kPDA_TASK_JOURNAL_NEXT,
 	kPDA_TASK_JOURNAL_SHOW_ON_MAP,
 	kPDA_TASK_JOURNAL_TRACK,
+	kPDA_RECORDS_CATEGORY_PREV,
+	kPDA_RECORDS_CATEGORY_NEXT,
+	kPDA_RECORDS_PREV,
+	kPDA_RECORDS_NEXT,
+	kPDA_RECORDS_SHOW_ON_MAP,
+	kPDA_RECORDS_TRACK,
+	kPDA_RECORDS_ACTION,
 
 	kLASTACTION,
 	kNOTBINDED,
@@ -225,6 +232,7 @@ enum _action_group : u32
 	agUITaskMenu	=	(1<<6),
 	agAiming	=	(1<<7),
 	agUITaskJournal	=	(1<<8),
+	agUIRecords	=	(1<<9),
 	agAny		= u32(-1)
 };
 

@@ -10,6 +10,8 @@
 #include "../Level.h"
 #include "../GameTask.h"
 #include "../GametaskManager.h"
+#include "../map_manager.h"
+#include "../map_location.h"
 #include "UIGameCustom.h"
 #include "UIStalkersRankingWnd.h"
 #include "../../xrUI/Widgets/UIStatic.h"
@@ -37,6 +39,7 @@
 #include "UIActorInfo.h"
 #include "UIDiaryWnd.h"
 #include "UITaskJournalWnd.h"
+#include "UIPdaRecordsWnd.h"
 #include "UIHotkeysHint.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
@@ -73,6 +76,8 @@ constexpr const char* g_knownPdaSectionIds[] = {
     PdaSectionId::Tasks,
     PdaSectionId::TaskList,
     PdaSectionId::TaskJournal,
+    PdaSectionId::Records,
+    PdaSectionId::Reference,
     PdaSectionId::Quests,
     PdaSectionId::FractionWar,
     PdaSectionId::Contacts,
@@ -259,6 +264,8 @@ CUIPdaWnd::~CUIPdaWnd()
 	delete_data( pUIDiaryWnd );
 	delete_data( pUIMapWnd );
 	delete_data( pUITaskJournalWnd );
+	delete_data( pUIPdaRecordsWnd );
+	delete_data( pUIPdaReferenceWnd );
 	delete_data( m_hint_wnd );
 	delete_data( UINoice );
 	delete_data( m_updatedSectionImage );
@@ -431,6 +438,20 @@ void CUIPdaWnd::Init()
 		{
 			pUITaskWnd->SetTaskListRedirect(xr_delegate<void()>(this, &CUIPdaWnd::OpenTaskJournal));
 		}
+	}
+	if (tabPresentLambda(PdaSectionId::Records) && !pUIPdaRecordsWnd)
+	{
+		pUIPdaRecordsWnd = new CUIPdaRecordsWnd();
+		pUIPdaRecordsWnd->SetUiSounds(&m_uiSounds);
+		pUIPdaRecordsWnd->SetShowOnMapCallback(xr_delegate<void(const shared_str&, const Fvector&)>(this, &CUIPdaWnd::ShowRecordOnMap));
+		pUIPdaRecordsWnd->SetTrackCallback(xr_delegate<void(const shared_str&, const Fvector&, const char*)>(this, &CUIPdaWnd::TrackRecord));
+		pUIPdaRecordsWnd->Init();
+	}
+	if (tabPresentLambda(PdaSectionId::Reference) && !pUIPdaReferenceWnd)
+	{
+		pUIPdaReferenceWnd = new CUIPdaRecordsWnd();
+		pUIPdaReferenceWnd->SetUiSounds(&m_uiSounds);
+		pUIPdaReferenceWnd->Init(PdaXml::Reference);
 	}
 
 	if (uiXml.NavigateToNode("noice_static"))
@@ -659,6 +680,74 @@ void CUIPdaWnd::OpenTaskJournal()
 	PendingOpenTaskJournal = true;
 }
 
+void CUIPdaWnd::ShowRecordOnMap(const shared_str& level, const Fvector& position)
+{
+	PendingRecordMap = true;
+	PendingRecordLevel = level;
+	PendingRecordPosition = position;
+}
+
+void CUIPdaWnd::TrackRecord(const shared_str& level, const Fvector& position, const char* hint)
+{
+	PendingRecordTrack = true;
+	PendingRecordLevel = level;
+	PendingRecordPosition = position;
+	PendingRecordHint = hint ? hint : "";
+}
+
+const char* CUIPdaWnd::MapSectionId()
+{
+	if (UITabControl->GetButtonById(ResolveTabId(PdaSectionId::Tasks)))
+	{
+		return PdaSectionId::Tasks;
+	}
+	if (UITabControl->GetButtonById(ResolveTabId(PdaSectionId::TaskList)))
+	{
+		return PdaSectionId::TaskList;
+	}
+	return nullptr;
+}
+
+void CUIPdaWnd::ApplyPendingRecordActions()
+{
+	if (PendingRecordTrack)
+	{
+		PendingRecordTrack = false;
+		CMapManager& MapManager = Level().MapManager();
+
+		xr_vector<CMapLocation*> UserLocations;
+		MapManager.GetUserLocations(UserLocations);
+		CMapLocation* Target = nullptr;
+		for (CMapLocation* Location : UserLocations)
+		{
+			if (Location->GetLevelName() == PendingRecordLevel && Location->GetLastPosition().distance_to(PendingRecordPosition) < 2.0f)
+			{
+				Target = Location;
+				break;
+			}
+		}
+		if (!Target)
+		{
+			Target = MapManager.AddPersonalSpot(PendingRecordLevel, PendingRecordPosition, PendingRecordHint.c_str());
+		}
+		if (Target && !MapManager.IsUserNavigationLocation(Target))
+		{
+			MapManager.TogglePersonalSpotNavigation(Target);
+		}
+	}
+
+	if (PendingRecordMap)
+	{
+		PendingRecordMap = false;
+		const char* mapSection = MapSectionId();
+		if (pUITaskWnd && mapSection && PendingRecordLevel.size())
+		{
+			SetActiveSubdialog(ResolveTabId(mapSection));
+			pUITaskWnd->ShowPositionOnMap(PendingRecordLevel, Fvector2().set(PendingRecordPosition.x, PendingRecordPosition.z));
+		}
+	}
+}
+
 void CUIPdaWnd::ShowTaskOnMap(CGameTask* task)
 {
 	PendingTaskOnMap = task ? task->m_ID : shared_str();
@@ -666,6 +755,8 @@ void CUIPdaWnd::ShowTaskOnMap(CGameTask* task)
 
 void CUIPdaWnd::ApplyPendingTaskOnMap()
 {
+	ApplyPendingRecordActions();
+
 	if (PendingOpenTaskJournal)
 	{
 		PendingOpenTaskJournal = false;
@@ -717,6 +808,14 @@ CUIWindow* CUIPdaWnd::ResolveNativeSubdialog(const shared_str& resolvedSection)
 	if (PdaSectionId::Equals(resolvedSection, PdaSectionId::TaskJournal))
 	{
 		return pUITaskJournalWnd;
+	}
+	if (PdaSectionId::Equals(resolvedSection, PdaSectionId::Records))
+	{
+		return pUIPdaRecordsWnd;
+	}
+	if (PdaSectionId::Equals(resolvedSection, PdaSectionId::Reference))
+	{
+		return pUIPdaReferenceWnd;
 	}
 	if (PdaSectionId::Equals(resolvedSection, PdaSectionId::Quests))
 	{
@@ -980,6 +1079,11 @@ bool CUIPdaWnd::SwitchSecondaryTab(bool Next)
 	if (pUITaskJournalWnd && m_pActiveDialog == pUITaskJournalWnd)
 	{
 		return pUITaskJournalWnd->SwitchFilter(Next);
+	}
+
+	if (pUIPdaRecordsWnd && m_pActiveDialog == pUIPdaRecordsWnd)
+	{
+		return pUIPdaRecordsWnd->SwitchCategory(Next);
 	}
 	return false;
 }

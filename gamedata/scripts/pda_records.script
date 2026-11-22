@@ -1,0 +1,267 @@
+this.KEY_INDEX = "prec_ids"
+this.KEY_RECORD = "prec_r_"
+this.FIELD_SEPARATOR = "\31"
+this.VALUE_SEPARATOR = "\30"
+this.LINE_SEPARATOR = "\29"
+
+this.providers = {}
+
+function actor_ready()
+	return db.actor ~= nil and db.storage[db.actor:id()] ~= nil
+end
+
+function pget(key, default)
+	if not actor_ready() then
+		return default
+	end
+	return xr_logic.pstor_retrieve(db.actor, key, default)
+end
+
+function pset(key, value)
+	if actor_ready() then
+		xr_logic.pstor_store(db.actor, key, value)
+	end
+end
+
+function game_minutes()
+	return math.floor(game.get_game_time():diffSec(level.get_start_time()) / 60)
+end
+
+function call_function(name, ...)
+	if type(name) == "function" then
+		return name(...)
+	end
+	if type(name) ~= "string" or name == "" then
+		return nil
+	end
+	local module_name, function_name = string.match(name, "^([%w_]+)%.([%w_]+)$")
+	local module = module_name and _G[module_name]
+	local fn = module and module[function_name]
+	if type(fn) == "function" then
+		return fn(...)
+	end
+	return nil
+end
+
+function register_provider(category, definition)
+	this.providers[category] = definition
+end
+
+function unregister_provider(category)
+	this.providers[category] = nil
+end
+
+function encode(record)
+	local parts = {}
+	for key, value in pairs(record) do
+		if key == "lines" then
+			for _, line in ipairs(value) do
+				table.insert(parts, "line" .. this.VALUE_SEPARATOR .. tostring(line[1]) .. this.LINE_SEPARATOR .. tostring(line[2]))
+			end
+		elseif type(value) == "boolean" then
+			table.insert(parts, key .. this.VALUE_SEPARATOR .. (value and "1" or "0"))
+		elseif value ~= nil then
+			table.insert(parts, key .. this.VALUE_SEPARATOR .. tostring(value))
+		end
+	end
+	return table.concat(parts, this.FIELD_SEPARATOR)
+end
+
+function decode(text)
+	local record = {lines = {}}
+	for part in string.gmatch(text, "[^" .. this.FIELD_SEPARATOR .. "]+") do
+		local key, value = string.match(part, "^([^" .. this.VALUE_SEPARATOR .. "]*)" .. this.VALUE_SEPARATOR .. "(.*)$")
+		if key == "line" then
+			local style, line = string.match(value, "^([^" .. this.LINE_SEPARATOR .. "]*)" .. this.LINE_SEPARATOR .. "(.*)$")
+			table.insert(record.lines, {style or "text", line or ""})
+		elseif key then
+			record[key] = value
+		end
+	end
+	return record
+end
+
+function index_list()
+	local list = {}
+	local raw = pget(this.KEY_INDEX, "")
+	for id in string.gmatch(raw, "[^\n]+") do
+		table.insert(list, id)
+	end
+	return list
+end
+
+function save_index(list)
+	pset(this.KEY_INDEX, table.concat(list, "\n"))
+end
+
+function exists(id)
+	return pget(this.KEY_RECORD .. id, nil) ~= nil
+end
+
+function get(id)
+	local raw = pget(this.KEY_RECORD .. id, nil)
+	if type(raw) ~= "string" then
+		return nil
+	end
+	return decode(raw)
+end
+
+function store(id, record)
+	pset(this.KEY_RECORD .. id, encode(record))
+end
+
+function normalize(fields)
+	local record = {}
+	for key, value in pairs(fields or {}) do
+		if key == "position" and value then
+			record.x = value.x
+			record.y = value.y
+			record.z = value.z
+		elseif key == "lines" then
+			record.lines = {}
+			for _, line in ipairs(value) do
+				table.insert(record.lines, {line[1] or "text", line[2] or ""})
+			end
+		elseif key == "new" or key == "trackable" then
+			record[key] = value and "1" or "0"
+		else
+			record[key] = value
+		end
+	end
+	return record
+end
+
+function add(id, fields)
+	local record = normalize(fields)
+	record.category = record.category or "notes"
+	record.time = record.time or game_minutes()
+	if record.new == nil then
+		record.new = "1"
+	end
+	if not exists(id) then
+		local list = index_list()
+		table.insert(list, id)
+		save_index(list)
+	end
+	store(id, record)
+end
+
+function update(id, fields)
+	local record = get(id)
+	if not record then
+		return false
+	end
+	for key, value in pairs(normalize(fields)) do
+		record[key] = value
+	end
+	store(id, record)
+	return true
+end
+
+function remove(id)
+	if not exists(id) then
+		return false
+	end
+	pset(this.KEY_RECORD .. id, nil)
+	local list = index_list()
+	for i = #list, 1, -1 do
+		if list[i] == id then
+			table.remove(list, i)
+		end
+	end
+	save_index(list)
+	return true
+end
+
+function set_state(id, state)
+	return update(id, {state = state})
+end
+
+function set_new(id, value)
+	return update(id, {new = value})
+end
+
+function fill_entry(entry, record)
+	entry:set_title(record.title or "")
+	entry:set_subtitle(record.subtitle or "")
+	if record.icon then
+		entry:set_icon(record.icon)
+	end
+	if record.image then
+		entry:set_image(record.image)
+	end
+	if record.state then
+		entry:set_state(record.state)
+	end
+	if record.level then
+		entry:set_level(record.level)
+	end
+	if record.group then
+		entry:set_group(record.group, record.group_caption or record.group)
+	end
+	entry:set_new(record.new == "1")
+	if record.map_level and record.x and record.z then
+		entry:set_map(record.map_level, vector():set(tonumber(record.x) or 0, tonumber(record.y) or 0, tonumber(record.z) or 0))
+		entry:set_trackable(record.trackable == "1")
+	end
+	for _, line in ipairs(record.lines or {}) do
+		entry:add_line(line[1], line[2])
+	end
+	if record.action then
+		entry:set_action(record.action, record.action_caption or "")
+	end
+end
+
+function collect_stored(category, list)
+	local ids = index_list()
+	local records = {}
+	for _, id in ipairs(ids) do
+		local record = get(id)
+		if record and record.category == category then
+			record.id = id
+			table.insert(records, record)
+		end
+	end
+	table.sort(records, function (a, b)
+		local ga, gb = a.group or "", b.group or ""
+		if ga ~= gb then
+			return ga < gb
+		end
+		return (tonumber(a.time) or 0) > (tonumber(b.time) or 0)
+	end)
+	for _, record in ipairs(records) do
+		fill_entry(list:add(record.id), record)
+	end
+end
+
+function collect(category, list)
+	if not actor_ready() then
+		return
+	end
+	local provider = this.providers[category]
+	if provider and provider.collect then
+		call_function(provider.collect, list)
+	end
+	collect_stored(category, list)
+end
+
+function on_select(category, id)
+	local provider = this.providers[category]
+	if provider and provider.on_select then
+		call_function(provider.on_select, id)
+	end
+	if exists(id) then
+		set_new(id, false)
+	end
+end
+
+function on_action(category, id, action)
+	local provider = this.providers[category]
+	if provider and provider.on_action then
+		call_function(provider.on_action, id, action)
+	end
+	local record = get(id)
+	if record and record.callback then
+		call_function(record.callback, id, action)
+	end
+end

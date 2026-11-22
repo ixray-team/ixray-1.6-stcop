@@ -26,6 +26,7 @@
 #	include "../../xrUI/Widgets/UIListBox.h"
 #	include "ai/crow/ai_crow.h"
 #	include "ui/UIActorMenu.h"
+#	include "ui/PdaRecords.h"
 #	include	"ActorCondition.h"
 #	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 #	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
@@ -201,6 +202,7 @@ void export_classes	(lua_State *L)
 	CALifeHumanBrain::script_register(L);
 	CGameGraph::script_register(L);
 	CUIActorMenu::script_register(L);
+	pda_records_registrator::script_register(L);
 	CActorCondition::script_register(L);
 	CInventoryOwner::script_register(L);
 	CGameTaskManager::script_register(L);

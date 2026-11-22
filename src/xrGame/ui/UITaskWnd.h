@@ -113,6 +113,7 @@ public:
 			void				ReloadTaskInfo			();
 			void				ShowMapLegend			(bool status);
 			void				ShowTaskOnMap			(CGameTask* task);
+			void				ShowPositionOnMap		(const shared_str& level, const Fvector2& position);
 			void				Switch_ShowMapLegend	();
 			void				SyncLegacySpotFilters	();
 			bool				SwitchTaskListTab		(bool Next);

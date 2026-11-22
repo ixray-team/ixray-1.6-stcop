@@ -62,8 +62,11 @@ void CUIEncyclopediaWnd::Init()
 		}
 		else
 		{
-			m_background2 = UIHelper::CreateFrameLine(uiXml, "background", this);
-			frameParent = m_background2;
+			m_background2 = UIHelper::CreateFrameLine(uiXml, "background", this, false);
+			if (m_background2)
+			{
+				frameParent = m_background2;
+			}
 		}
 	}
 

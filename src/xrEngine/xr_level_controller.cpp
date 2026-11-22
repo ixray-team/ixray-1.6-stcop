@@ -197,6 +197,13 @@ ENGINE_API _action  actions[]		= {
 	{ "pda_task_journal_next",			kPDA_TASK_JOURNAL_NEXT,				_both, agUITaskJournal},
 	{ "pda_task_journal_show_on_map",	kPDA_TASK_JOURNAL_SHOW_ON_MAP,		_both, agUITaskJournal},
 	{ "pda_task_journal_track",			kPDA_TASK_JOURNAL_TRACK,			_both, agUITaskJournal},
+	{ "pda_records_category_prev",		kPDA_RECORDS_CATEGORY_PREV,			_both, agUIRecords},
+	{ "pda_records_category_next",		kPDA_RECORDS_CATEGORY_NEXT,			_both, agUIRecords},
+	{ "pda_records_prev",				kPDA_RECORDS_PREV,					_both, agUIRecords},
+	{ "pda_records_next",				kPDA_RECORDS_NEXT,					_both, agUIRecords},
+	{ "pda_records_show_on_map",			kPDA_RECORDS_SHOW_ON_MAP,			_both, agUIRecords},
+	{ "pda_records_track",				kPDA_RECORDS_TRACK,					_both, agUIRecords},
+	{ "pda_records_action",				kPDA_RECORDS_ACTION,				_both, agUIRecords},
 
 	{ nullptr, 				kLASTACTION				,_both,			agDefault}
 };															

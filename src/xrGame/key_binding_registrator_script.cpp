@@ -234,6 +234,7 @@ void key_binding_registrator::script_register(lua_State *L)
 				value("agUITaskMenu",			    int(agUITaskMenu)),
 				value("agAiming",			        int(agAiming)),
 				value("agUITaskJournal",			int(agUITaskJournal)),
+				value("agUIRecords",				int(agUIRecords)),
 				value("agAny",			            int(agAny))
 			],
 		class_<key_binding_registrator >("DIK_keys")

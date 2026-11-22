@@ -15,6 +15,7 @@ constexpr const char* Map = "pda_map.xml";
 constexpr const char* Ranking = "pda_ranking.xml";
 constexpr const char* FactionWar = "pda_fraction_war.xml";
 constexpr const char* ContactsNew = "pda_contacts_new.xml";
+constexpr const char* Reference = "pda_reference.xml";
 constexpr const char* ContactsBackground = "background";
 constexpr const char* ContactsLeftFrame = "left_frame_window";
 constexpr const char* ContactsRightFrame = "right_frame_window";
@@ -29,6 +30,8 @@ constexpr const char* Tasks = "eptTasks";
 // Tab variant that auto-opens UITaskListWnd side panel when activated.
 constexpr const char* TaskList = "eptTaskList";
 constexpr const char* TaskJournal = "eptTaskJournal";
+constexpr const char* Records = "eptRecords";
+constexpr const char* Reference = "eptReference";
 constexpr const char* Quests = "eptQuests";
 constexpr const char* FractionWar = "eptFractionWar";
 constexpr const char* Contacts = "eptContacts";

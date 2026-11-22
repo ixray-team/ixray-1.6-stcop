@@ -24,6 +24,8 @@ This page serves as an overview of new UI features. Each page below is provided 
 12. [PDA map legend, spot filters and hotkeys](pda-map-legend-hotkeys.md)
 13. [Scrollbar profiles](scrollbar-profiles.md)
 14. [PDA task tab](pda-task-journal.md)
+15. [PDA "Records" tab](pda-records.md)
+16. [PDA "Reference" tab](pda-reference.md)
 
 ## Quick toggles
 

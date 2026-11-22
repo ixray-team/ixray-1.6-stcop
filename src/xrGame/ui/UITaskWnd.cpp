@@ -608,6 +608,14 @@ bool CUITaskWnd::CanUseTaskMapSpot(CGameTask* task, bool forShow) const
 	return m_bSecondaryTasksEnabled;
 }
 
+void CUITaskWnd::ShowPositionOnMap(const shared_str& level, const Fvector2& position)
+{
+	if (m_pMapWnd && level.size())
+	{
+		m_pMapWnd->SetTargetMap(level, position, true);
+	}
+}
+
 void CUITaskWnd::ShowTaskOnMap(CGameTask* task)
 {
 	TaskSetTargetMap(task);
