@@ -20,6 +20,12 @@
 // hinge motor instead of being driven by the moving-car door logic.
 constexpr float CarDoorHoldSpeed = 0.5f;
 
+// Return spring for spring-loaded doors. The door is held at the open limit
+// and driven back with a damped force if it is pushed away.
+constexpr float CarDoorSpringDamping = 0.5f;
+constexpr float CarDoorSpringSettleAngle = 0.035f;
+constexpr float CarDoorSpringSettleRate = 0.2f;
+
 bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 {
 	if(hit_type==ALife::eHitTypeStrike && P > 20.f)
@@ -450,11 +456,32 @@ void CCar::SDoor::Update()
 				{
 					if (Device.dwTimeGlobal - open_time > 1000)
 					{
-						// Preserve the original spring hold: a weak continuous
-						// opening torque, then stop updating the door. The motor
-						// stays set and the car can still go to disable.
-						ApplyTorque(torque / 5.f, a_vel);
-						RemoveFromUpdate();
+						const float Range = fabsf(opened_angle - closed_angle);
+						if (Range > EPS)
+						{
+							const float Error = pos_open * (opened_angle - door_angle);
+							const float Rate = pos_open * GetAngleRate();
+
+							if (fabsf(Error) < CarDoorSpringSettleAngle &&
+								fabsf(Rate) < CarDoorSpringSettleRate)
+							{
+								if (!hold_applied)
+									NeutralTorque(hold_torque);
+							}
+							else
+							{
+								// Pull the door back to the open limit. The velocity
+								// target is damped to avoid overshoot and jitter.
+								// A full opening torque is required to overcome friction
+								// and the door weight; the target velocity limits the motion.
+								const float SpringTorque = torque;
+
+								float TargetVel = Error * (a_vel / Range) - Rate * CarDoorSpringDamping;
+								clamp(TargetVel, -a_vel, a_vel);
+
+								ApplyTorque(SpringTorque, TargetVel);
+							}
+						}
 					}
 					break;
 				}
@@ -480,7 +507,9 @@ void CCar::SDoor::Update()
 				break;
 			}
 		}
-		if (Device.dwTimeGlobal - real_open_time > 1000 && _abs(GetAngleRate()) > 2.0f)
+		if (!spring_loaded_door &&
+			Device.dwTimeGlobal - real_open_time > 1000 &&
+			_abs(GetAngleRate()) > 2.0f)
 		{
 			if (pos_open * closed_angle > pos_open * door_angle)
 				ClosingToClosed();
