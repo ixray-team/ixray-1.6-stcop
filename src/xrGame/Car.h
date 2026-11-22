@@ -249,6 +249,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						StoreAllElementSpawnLocalTransforms	();
 	bool						RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm, bool TrustSavedWheels);
 	void						ResolveLoadPenetration				();
+	void						RestoreServerPose					(CSE_ALifeCar* Car);
 	void						UpdateWheelDownforce		(SWheel& Wheel);
 	void						UpdateWheelTireSound		(SWheel& Wheel);
 	bool						UpdateWheelTraction		(SWheel& Wheel);

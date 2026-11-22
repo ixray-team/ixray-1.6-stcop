@@ -258,6 +258,10 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 
 void CActor::on_requested_spawn(CObject* object)
 {
+	// The client spawn manager drops the callback after invoking it, so the
+	// actor must not try to remove it again during level unload.
+	m_holder_id = ALife::INVALID_OBJECT_ID;
+
 	CCar* car = object != nullptr ? object->cast_car() : nullptr;
 	if (car == nullptr)
 	{

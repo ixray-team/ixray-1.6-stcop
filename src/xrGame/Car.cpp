@@ -2710,14 +2710,17 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	if (!SavedShellApplied || !SavedWheelsTrusted)
 		ResolveLoadPenetration();
 
-	// A closed door is deactivated and has no bone callback, so
-	// CPHSkeleton::RestoreNetState() cannot apply its saved transform. The door
-	// now pins its visual bone in SDoor::Deactivate(); nothing else to do here.
-
 	if (SavedEnabled)
 		PPhysicsShell()->Enable();
 	else
 		PPhysicsShell()->Disable();
+
+	if (co != nullptr)
+		RestoreServerPose(co);
+
+	// A closed door is deactivated and has no bone callback, so
+	// CPHSkeleton::RestoreNetState() cannot apply its saved transform. The door
+	// now pins its visual bone in SDoor::Deactivate(); nothing else to do here.
 
 	// Door state is restored from the save. Do not drive the engine-door
 	// motors here: a disabled car keeps its leaves at the saved pose until the
@@ -7715,6 +7718,114 @@ void CCar::ResolveLoadPenetration()
 	m_pPhysicsShell->TransformPosition(Shift, mh_clear);
 
 	Fmatrix RestoredForm;
+	m_pPhysicsShell->GetGlobalTransformDynamic(&RestoredForm);
+	XFORM().set(RestoredForm);
+}
+
+void CCar::RestoreServerPose(CSE_ALifeCar* Car)
+{
+	if (Car == nullptr || m_pPhysicsShell == nullptr)
+		return;
+
+	Fmatrix RestoredForm;
+	m_pPhysicsShell->GetGlobalTransformDynamic(&RestoredForm);
+
+	Fmatrix ServerForm;
+	ServerForm.setXYZ(Car->o_Angle.x, Car->o_Angle.y, Car->o_Angle.z);
+	ServerForm.c.set(Car->o_Position);
+
+	// Normal loads keep the saved physics pose: the server position can lag
+	// one frame behind. A level transition moves the holder server object to
+	// the destination, which is far away from the old-level pose.
+	constexpr float MaxPoseDistance = 3.f;
+	constexpr float MinPoseDirection = 0.95f;
+	if (RestoredForm.c.distance_to(ServerForm.c) <= MaxPoseDistance &&
+		RestoredForm.k.dotproduct(ServerForm.k) >= MinPoseDirection)
+	{
+		return;
+	}
+
+	Fmatrix InvRestored;
+	InvRestored.invert(RestoredForm);
+
+	// get_box() walks every shell element, including deactivated doors whose
+	// geometry may already be gone. Build the box from active elements only.
+	Fbox ActiveBounds;
+	ActiveBounds.invalidate();
+	const u16 ElementCount = m_pPhysicsShell->get_ElementsNumber();
+	for (u16 i = 0; i < ElementCount; ++i)
+	{
+		CPhysicsElement* Element = m_pPhysicsShell->get_ElementByStoreOrder(i);
+		if (Element == nullptr || !Element->isActive() || Element->get_body() == nullptr)
+			continue;
+
+		Fvector ElementSize;
+		Fvector ElementCenter;
+		Element->get_Box(ElementSize, ElementCenter);
+
+		Fobb ElementBox;
+		ElementBox.m_rotate.set(Element->mXFORM);
+		ElementBox.m_translate.set(ElementCenter);
+		ElementBox.m_halfsize.mul(ElementSize, 0.5f);
+
+		for (int ix = 0; ix < 2; ++ix)
+		{
+			for (int iy = 0; iy < 2; ++iy)
+			{
+				for (int iz = 0; iz < 2; ++iz)
+				{
+					Fvector Corner = ElementBox.m_translate;
+					Corner.mad(ElementBox.m_rotate.i, ix ? ElementBox.m_halfsize.x : -ElementBox.m_halfsize.x);
+					Corner.mad(ElementBox.m_rotate.j, iy ? ElementBox.m_halfsize.y : -ElementBox.m_halfsize.y);
+					Corner.mad(ElementBox.m_rotate.k, iz ? ElementBox.m_halfsize.z : -ElementBox.m_halfsize.z);
+					InvRestored.transform_tiny(Corner);
+					ActiveBounds.modify(Corner);
+				}
+			}
+		}
+	}
+
+	if (!ActiveBounds.is_valid())
+		return;
+
+	Fvector LocalCenter;
+	Fvector LocalHalf;
+	ActiveBounds.get_CD(LocalCenter, LocalHalf);
+
+	Fvector Size;
+	Size.mul(LocalHalf, 2.f);
+
+	Fvector Center;
+	RestoredForm.transform_tiny(Center, LocalCenter);
+
+	Fmatrix ToServer;
+	ToServer.mul(ServerForm, InvRestored);
+	ToServer.transform_tiny(Center);
+
+	const bool MainCollision = !m_pPhysicsShell->IsCollisionDisabled();
+	m_pPhysicsShell->DisableCollision();
+
+	bool ScraperCollision = false;
+	if (characters_scraper_shell != nullptr)
+	{
+		ScraperCollision = !characters_scraper_shell->IsCollisionDisabled();
+		characters_scraper_shell->DisableCollision();
+	}
+
+	Fvector ResolvedCenter;
+	ActivateShapePhysShellHolder(this, ServerForm, Size, Center, ResolvedCenter);
+
+	if (MainCollision)
+		m_pPhysicsShell->EnableCollision();
+	if (ScraperCollision && characters_scraper_shell != nullptr)
+		characters_scraper_shell->EnableCollision();
+
+	Fvector Delta;
+	Delta.sub(ResolvedCenter, Center);
+	ServerForm.c.add(Delta);
+
+	ToServer.mul(ServerForm, InvRestored);
+	m_pPhysicsShell->TransformPosition(ToServer, mh_clear);
 	m_pPhysicsShell->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
 }
