@@ -66,12 +66,13 @@ CWeapon::~CWeapon()
 	delete_data(m_scopes);
 }
 
-void CWeapon::UpdateXForm	()
+void CWeapon::UpdateXForm()
 {
 	if (!H_Parent())
+	{
 		return;
+	}
 
-	// Get access to entity and its visual
 	CGameObject* go = H_Parent()->cast_game_object();
 	if (go == nullptr)
 	{
@@ -83,93 +84,103 @@ void CWeapon::UpdateXForm	()
 		return;
 	}
 
-	if (!go->cast_entity_alive()) {
-		if (!IsGameTypeSingle()) {
+	if (!go->cast_entity_alive())
+	{
+		if (!IsGameTypeSingle())
+		{
 			UpdatePosition(H_Parent()->XFORM());
 			UpdatePosition_alt(H_Parent()->XFORM());
 		}
 		return;
 	} 
 
-	const CInventoryOwner* parent = go->cast_inventory_owner(); //smart_cast<const CInventoryOwner*>(go);
+	const CInventoryOwner* parent = go->cast_inventory_owner();
 	if (!parent)
+	{
 		return;
-
-	if (!m_can_be_strapped_rifle) {
-		if (parent->attached(this))
-			return;
 	}
 
-	IKinematics*			V = PKinematics(go->Visual());
-	VERIFY					(V);
+	if (!m_can_be_strapped_rifle)
+	{
+		if (parent->attached(this))
+		{
+			return;
+		}
+	}
 
-	// Get matrices
-	u16						boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
+	IKinematics* V = PKinematics(go->Visual());
+	VERIFY(V);
 
-	// this ugly case is possible in case of a CustomMonster, not a Stalker, nor an Actor
-	if ((m_strap_bone0_id == BI_NONE || m_strap_bone1_id == BI_NONE) && m_can_be_strapped_rifle) {
+	u16 boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
+
+	if ((m_strap_bone0_id == BI_NONE || m_strap_bone1_id == BI_NONE) && m_can_be_strapped_rifle)
+	{
 		m_strap_bone0_id = V->LL_BoneID(m_strap_bone0);
 		m_strap_bone1_id = V->LL_BoneID(m_strap_bone1);
 	}
 
-	if (parent->inventory().GetActiveSlot() != CurrSlot() && m_can_be_strapped_rifle /* &&
-		parent->inventory().InSlot(this)*/) { // TODO: What is this condition needed for?
+	if (parent->inventory().GetActiveSlot() != CurrSlot() && m_can_be_strapped_rifle)
+	{
 		boneR = m_strap_bone0_id;
 		boneR2 = m_strap_bone1_id;
 		boneL = boneR;
 
 		if (!m_strapped_mode_rifle)
+		{
 			m_strapped_mode_rifle = true;
+		}
 	}
-	else {
+	else
+	{
 		go->cast_entity_alive()->g_WeaponBones(boneL, boneR, boneR2);
 
 		if (m_strapped_mode_rifle)
+		{
 			m_strapped_mode_rifle = false;
+		}
 	}
 
-	if (boneR == BI_NONE)		return;
+	if (boneR == BI_NONE)
+	{
+		return;
+	}
 
 	if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!go->cast_entity_alive()->g_Alive()))
-		boneL				= boneR2;
+	{
+		boneL = boneR2;
+	}
 
-	Fmatrix mL, mR;
-	if (go->cast_actor()) {
+	Fmatrix mL = Fidentity, mR = Fidentity;
+	if (go->cast_actor())
+	{
 		V->Bone_GetAnimPos(mL, boneL, u8(-1), false);
 		V->Bone_GetAnimPos(mR, boneR, u8(-1), false);
 	}
-	else {
-		// V->CalculateBones();
+	else
+	{
 		mL = V->LL_GetTransform(boneL);
 		mR = V->LL_GetTransform(boneR);
 	}
 
-	// Calculate
-	Fmatrix					mRes;
-	Fvector					R,D,N;
-	D.sub					(mL.c,mR.c);	
-
-	if(fis_zero(D.magnitude())) {
-		mRes.set			(go->XFORM());
-		mRes.c.set			(mR.c);
+	Fmatrix mRes = Fidentity;
+	if (GetHandsBasis(mL, mR, mRes))
+	{
+		mRes.mulA_43(go->XFORM());
 	}
-	else {		
-		D.normalize			();
-
-		R.crossproduct		(mR.j,D);
-		R.normalize			();
-
-		N.crossproduct		(D,R);			
-		N.normalize			();
-
-		mRes.set			(R,N,D,mR.c);
-		mRes.mulA_43		(go->XFORM());
+	else
+	{
+		mRes.set(go->XFORM());
+		go->XFORM().transform_tiny(mRes.c, mR.c);
 	}
 
 	if (IsSidearmPhysicalSlot(CurrSlot()))
+	{
 		UpdatePosition_alt(mRes);
+	}
 	else
+	{
 		UpdatePosition(mRes);
+	}
 }
 
 static void AttachFirePoint(PIItem item, bool hud, Fvector& point)
@@ -299,12 +310,6 @@ void CWeapon::Load		(const char* section)
 
 	// hands
 	eHandDependence		= EHandDependence(pSettings->r_s32(section,"hand_dependence"));
-	m_bIsSingleHanded	= true;
-
-	if (pSettings->line_exist(section, "single_handed"))
-	{
-		m_bIsSingleHanded = !!pSettings->r_bool(section, "single_handed");
-	}
 
 	// информация о возможных апгрейдах и их визуализации в инвентаре
 	m_eScopeStatus			 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"scope_status");

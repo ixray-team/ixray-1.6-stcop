@@ -12,6 +12,7 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "aimers_weapon.h"
 #include "aimers_bone.h"
+#include "animation_movement_controller.h"
 #include "stalker_animation_manager.h"
 #include "Weapon.h"
 

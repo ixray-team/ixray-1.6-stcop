@@ -1513,6 +1513,30 @@ void CInventoryItem::setControlInertionFactor(float value)
 	m_fControlInertionFactor = value;
 }
 
+bool CInventoryItem::GetHandsBasis(const Fmatrix& left, const Fmatrix& right, Fmatrix& result)
+{
+	Fvector D = Fvector().sub(left.c, right.c);
+	const float magnitude = D.magnitude();
+	const bool valid = !fis_zero(magnitude);
+
+	if (valid)
+	{
+		D.div(magnitude);
+	}
+	else
+	{
+		D.set(0.0f, 0.0f, 1.0f);
+	}
+
+	Fvector R = Fvector().crossproduct(right.j, D);
+	R.normalize();
+	Fvector N = Fvector().crossproduct(D, R);
+	N.normalize();
+
+	result.set(R, N, D, right.c);
+	return valid;
+}
+
 void CInventoryItem::UpdateXForm()
 {
 	CObject* obj_parent = object().H_Parent();
@@ -1521,7 +1545,6 @@ void CInventoryItem::UpdateXForm()
 		return;
 	}
 
-	// Get access to entity and its visual
 	CEntityAlive* E = obj_parent->cast_entity_alive();
 	if (E == nullptr)
 	{
@@ -1549,40 +1572,15 @@ void CInventoryItem::UpdateXForm()
 	IKinematics* V = PKinematics(E->Visual());
 	VERIFY(V);
 
-	// Get matrices
-	u16	boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
+	u16 boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
 	E->g_WeaponBones(boneL, boneR, boneR2);
-	if (boneR == BI_NONE)	return;
-	//	if ((HandDependence() == hd1Hand) || (STATE == eReload) || (!E->g_Alive()))
-	//		boneL = boneR2;
-#pragma todo("TO ALL: serious performance problem")
+	if (boneR == BI_NONE)
+	{
+		return;
+	}
+
 	V->CalculateBones();
-	Fmatrix& mL = V->LL_GetTransform(boneL);
-	Fmatrix& mR = V->LL_GetTransform(boneR);
-	// Calculate
-	Fmatrix			mRes;
-	Fvector			R, D, N;
-	D.sub(mL.c, mR.c);	D.normalize_safe();
-
-	if (fis_zero(D.magnitude()))
-	{
-		mRes.set(E->XFORM());
-		mRes.c.set(mR.c);
-	}
-	else
-	{
-		D.normalize();
-		R.crossproduct(mR.j, D);
-
-		N.crossproduct(D, R);
-		N.normalize();
-
-		mRes.set(R, N, D, mR.c);
-		mRes.mulA_43(E->XFORM());
-	}
-
-	//	UpdatePosition	(mRes);
-	object().Position().set(mRes.c);
+	E->XFORM().transform_tiny(object().Position(), V->LL_GetTransform(boneR).c);
 }
 
 #ifdef DEBUG_DRAW

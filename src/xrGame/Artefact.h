@@ -1,9 +1,7 @@
 #pragma once
 
 #include "hud_item_object.h"
-#include "hit_immunity.h"
 #include "../xrPhysics/PHUpdateObject.h"
-#include "../xrScripts/script_export_space.h"
 #include "patrol_path.h"
 #include "IRestoresOwner.h"
 #include "Descs/ArtefactDesc.h"

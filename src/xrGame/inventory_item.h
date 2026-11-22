@@ -252,6 +252,7 @@ public:
 
 	IKinematics* HudModel();
 	bool AttachTransform(bool hud, IKinematics*& kin, Fmatrix& xform);
+	static bool GetHandsBasis(const Fmatrix& left, const Fmatrix& right, Fmatrix& result);
 	void RenderHud(const Fmatrix& xform, IKinematics* model);
 	void RenderIcon(const Fmatrix& xform, IKinematics* model, xr_deque<Fmatrix>& xforms);
 	void AddAttachmentShapes(CPhysicsElement* element, const Fmatrix& xform);

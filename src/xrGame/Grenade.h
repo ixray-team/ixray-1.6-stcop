@@ -76,7 +76,6 @@ private:
 	bool					m_thrown;
 
 protected:
-	virtual void			UpdateXForm							() override { CMissile::UpdateXForm(); };
 public:
 	virtual bool			UsedAI_Locations					() override;
 	virtual CGrenade		*cast_grenade						() override {return this;}

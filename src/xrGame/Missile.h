@@ -1,6 +1,5 @@
 #pragma once
 #include "hud_item_object.h"
-#include "HudSound.h"
 #include "../xrPhysics/PHContact.h"
 
 struct SGameMtl;

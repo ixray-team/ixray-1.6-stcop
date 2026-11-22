@@ -1,25 +1,18 @@
 #include "StdAfx.h"
 #include "Artefact.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "PhysicsShellHolder.h"
-#include "game_cl_base.h"
 
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 
-#include "Inventory.h"
 #include "Level.h"
-#include "ai_object_location.h"
-#include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrPhysics/IPHWorld.h"
-#include "restriction_space.h"
-#include "../xrEngine/IGame_Persistent.h"
 
 #include "artefact_activation.h"
 
 #include "ai_space.h"
-#include "patrol_path.h"
 #include "patrol_path_storage.h"
+#include "entity_alive.h"
 
 #define	FASTMODE_DISTANCE (50.f)//distance to camera from sphere, when zone switches to fast update sequence
 
@@ -410,58 +403,50 @@ void CArtefact::MoveTo(Fvector const &  position)
 	//m_bInInterpolation = false;
 }
 
-
-#include "InventoryOwner.h"
-#include "entity_alive.h"
 void CArtefact::UpdateXForm()
 {
-	if (Device.dwFrame != dwXF_Frame)
+	if (Device.dwFrame == dwXF_Frame)
 	{
-		dwXF_Frame			= Device.dwFrame;
-
-		if (0 == H_Parent())return;
-
-		// Get access to entity and its visual
-		CEntityAlive*		E		= H_Parent()->cast_entity_alive();
-		
-		if (!E)			return	;
-
-		const CInventoryOwner	*parent = E->cast_inventory_owner();
-
-		VERIFY				(E);
-		IKinematics*		V		= PKinematics(E->Visual());
-		VERIFY				(V);
-		if (CAttachableItem::enabled())
-			return;
-
-		// Get matrices
-		u16					boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
-		E->g_WeaponBones	(boneL,boneR,boneR2);
-		if (boneR == BI_NONE)
-			return;
-
-		boneL = boneR2;
-
-		V->CalculateBones	();
-		Fmatrix& mL			= V->LL_GetTransform(boneL);
-		Fmatrix& mR			= V->LL_GetTransform(boneR);
-
-		// Calculate
-		Fmatrix				mRes;
-		Fvector				R,D,N;
-		D.sub				(mL.c, mR.c);
-		D.normalize_safe	();
-		R.crossproduct		(mR.j, D);
-		R.normalize_safe	();
-		N.crossproduct		(D, R);
-		N.normalize_safe	();
-		mRes.set			(R, N, D, mR.c);
-		mRes.mulA_43		(E->XFORM());
-//		UpdatePosition		(mRes);
-		XFORM().mul			(mRes,offset());
+		return;
 	}
+
+	dwXF_Frame = Device.dwFrame;
+
+	if (!H_Parent())
+	{
+		return;
+	}
+
+	CEntityAlive* E = H_Parent()->cast_entity_alive();
+	if (!E)
+	{
+		return;
+	}
+
+	if (CAttachableItem::enabled())
+	{
+		return;
+	}
+
+	IKinematics* V = PKinematics(E->Visual());
+	VERIFY(V);
+
+	u16 boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
+	E->g_WeaponBones(boneL, boneR, boneR2);
+	if (boneR == BI_NONE)
+	{
+		return;
+	}
+
+	boneL = boneR2;
+
+	V->CalculateBones();
+	Fmatrix mRes = Fidentity;
+	GetHandsBasis(V->LL_GetTransform(boneL), V->LL_GetTransform(boneR), mRes);
+	mRes.mulA_43(E->XFORM());
+	XFORM().mul(mRes, offset());
 }
-#include "../xrEngine/xr_level_controller.h"
+
 bool CArtefact::Action(u16 cmd, u32 flags) 
 {
 	switch (cmd)

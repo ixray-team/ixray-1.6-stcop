@@ -6,56 +6,44 @@
 //	Description : weapon aimer class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef AIMERS_WEAPON_H_INCLUDED
-#define AIMERS_WEAPON_H_INCLUDED
-
+#pragma once
 #include "aimers_base.h"
 
 class CWeapon;
 
-namespace aimers {
-
-class weapon : public base
+namespace aimers
 {
-public:
-							weapon	(
-								CGameObject* object,
-								const char* animation_id,
-								bool animation_start,
-								Fvector const& target,
-								const char* bone0,
-								const char* bone1,
-								const char* weapon_bone0,
-								const char* weapon_bone1,
-								CWeapon const& weapon
-							);
-	inline	Fmatrix const&	get_bone			(u32 const& bone_id) const;
 
-private:
-	typedef base			inherited;
+class weapon final : public base
+{
+	using inherited = base;
 
-private:
-			void			compute_bone		(u32 const bone_id);
-
-private:
-	enum {
-		bone_id0			= u32(0),
+	enum
+	{
+		bone_id0 = u32(0),
 		bone_id1,
 		weapon_bone_id0,
 		weapon_bone_id1,
 		parent_weapon_bone_id0,
-	}; // enum
+	};
 
-private:
-	Fmatrix					m_result[2];
-	Fmatrix					m_bones[5];
-	Fmatrix					m_local_bones[5];
-	CWeapon const&			m_weapon;
-	u16						m_bones_ids[5];
-}; // class weapon
+	Fmatrix m_result[2] = {};
+	Fmatrix m_bones[5] = {};
+	Fmatrix m_local_bones[5] = {};
+	const CWeapon& m_weapon;
+	u16 m_bones_ids[5] = {};
 
-} // namespace aimers
+	void compute_bone(u32 const bone_id);
 
-#include "aimers_weapon_inline.h"
+public:
+	weapon(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, const char* bone0,
+	const char* bone1, const char* weapon_bone0, const char* weapon_bone1, CWeapon const& weapon);
 
-#endif // #ifndef AIMERS_WEAPON_H_INCLUDED
+	inline Fmatrix const& get_bone(const u32& bone_id) const
+	{
+		VERIFY(bone_id < 2);
+		return (m_result[bone_id]);
+	}
+};
+
+}

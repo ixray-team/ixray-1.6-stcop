@@ -667,7 +667,6 @@ public:
 	virtual u32					Cost			() const override;
 
 	virtual EHandDependence		HandDependence		()	const override {	return eHandDependence;}
-	virtual bool				IsSingleHanded		()	const override {	return m_bIsSingleHanded; }
 			void				SetMisfireStatus	(bool b)		{ bMisfire = b; }
 			THudLightLaser*		GetLightLaser		();
 
@@ -686,21 +685,19 @@ protected:
 
 	// 0-используется без участия рук, 1-одна рука, 2-две руки
 	EHandDependence eHandDependence = EHandDependence::hdNone;
-	bool m_bIsSingleHanded = false;
 
 public:
 	struct SStrapParams
 	{
-		Fmatrix StrapMatrix = Fidentity;
 		Fvector StrapPosition = zero_vel;
 		Fvector StrapRotation = zero_vel;
 
-		const Fmatrix& GetXFORM()
+		Fmatrix GetXFORM() const
 		{
-			StrapMatrix.setHPB(VPUSH(Fvector(StrapRotation).mul(PI / 180.0f)));
-			StrapMatrix.translate_over(StrapPosition);
-
-			return StrapMatrix;
+			Fmatrix Result;
+			Result.setHPB(VPUSH(Fvector(StrapRotation).mul(PI / 180.0f)));
+			Result.translate_over(StrapPosition);
+			return Result;
 		}
 
 	} m_StrapOffset, m_StrapOffsetAlt, m_ActiveOffset;
