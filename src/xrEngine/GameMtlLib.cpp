@@ -133,6 +133,17 @@ void CGameMtlLibrary::Load()
     }
     m_version = detected_version;
 
+    // CS and SoC do not mark water materials with flLiquid, while the engine
+    // water handling relies on this flag. Normalize name-based water materials
+    // so every game behaves like CoP.
+    for (SGameMtl* Material : materials)
+    {
+        if (strstr(*Material->m_Name, "water") != nullptr)
+        {
+            Material->Flags.set(SGameMtl::flLiquid, true);
+        }
+    }
+
     OBJ 				= fs.open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR);
     if (OBJ){
         u32				count;
