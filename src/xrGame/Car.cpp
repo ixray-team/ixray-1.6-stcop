@@ -4492,7 +4492,11 @@ void CCar::LoadSurfaceParams()
 		auto MaterialIt = GMLib.GetMaterialIt(Item.first.c_str());
 		if (MaterialIt == GMLib.LastMaterial())
 		{
-			Msg("! [%s] unknown surface material '%s' in section '%s'", cNameSect_str(), Item.first.c_str(), SectionName);
+			// The car pack is shared by several games, so a surface entry may
+			// legitimately be absent from this game's gamemtl.xr.
+#ifdef DEBUG
+			Msg("~ [%s] skipping surface material '%s' from '%s' (not present in this game)", cNameSect_str(), Item.first.c_str(), SectionName);
+#endif
 			continue;
 		}
 
@@ -4573,7 +4577,9 @@ void CCar::LoadCollisionSounds()
 		auto It1 = GMLib.GetMaterialIt(Material1);
 		if (It0 == GMLib.LastMaterial() || It1 == GMLib.LastMaterial())
 		{
-			Msg("! [%s] collision_sounds: unknown material in pair '%s'", cNameSect_str(), Key);
+#ifdef DEBUG
+			Msg("~ [%s] collision_sounds: skipping pair '%s' (material not present in this game)", cNameSect_str(), Key);
+#endif
 			continue;
 		}
 
@@ -4582,7 +4588,9 @@ void CCar::LoadCollisionSounds()
 		SGameMtlPair* Pair = GMLib.GetMaterialPair(Index0, Index1);
 		if (Pair == nullptr)
 		{
-			Msg("! [%s] collision_sounds: material pair '%s' is missing in gamemtl.xr", cNameSect_str(), Key);
+#ifdef DEBUG
+			Msg("~ [%s] collision_sounds: skipping pair '%s' (missing in gamemtl.xr)", cNameSect_str(), Key);
+#endif
 			continue;
 		}
 
