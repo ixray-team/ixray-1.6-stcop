@@ -2,6 +2,7 @@
 #include "FDemoRecord.h"
 
 #include "Actor.h"
+#include "Car.h"
 #include "HUDManager.h"
 #include "player_hud.h"
 #include "../xrEngine/CameraBase.h"
@@ -1076,9 +1077,23 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 					FixGrabElements(false, false);
 				}
 			}
-			else if (g_pGameLevel->CurrentEntity())
+			else if (CObject* Entity = g_pGameLevel->CurrentEntity())
 			{
-				g_pGameLevel->CurrentEntity()->ForceTransform(camera);
+				if (CActor* Actor = Entity->cast_actor())
+				{
+					if (CCar* Car = Actor->GetCar())
+					{
+						Car->TeleportCarAndDriver(camera.c);
+					}
+					else
+					{
+						Actor->ForceTransform(camera);
+					}
+				}
+				else
+				{
+					Entity->ForceTransform(camera);
+				}
 				fLifeTime = -1;
 			}
 			break;

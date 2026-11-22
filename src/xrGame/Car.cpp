@@ -4250,46 +4250,52 @@ bool CCar::attach_Actor(CGameObject* actor)
 	return true;
 }
 
-/*
-void CCar::TeleportCarAndDriver(Fvector3 pos)
+void CCar::TeleportCarAndDriver(const Fvector& position)
 {
+	if (m_pPhysicsShell == nullptr || OwnerActor() == nullptr)
+	{
+		return;
+	}
 
 	StopEngine();
 	HandBreak();
 
-	renderable.xform.c = pos;
+	// Keep the car orientation and move it so the driver's seat lands at the
+	// requested camera position. Moving the actor alone does not work: the car
+	// copies Owner()->XFORM() from its seat transform every frame.
+	Fvector SeatPosition;
+	XFORM().transform_tiny(SeatPosition, m_sits_transforms.c);
 
-	m_pPhysicsShell->Activate(false);
-	m_pPhysicsShell->mXFORM.set(XFORM());
-	m_pPhysicsShell->Activate(true);
+	Fvector Delta;
+	Delta.sub(position, SeatPosition);
 
-	IKinematics* K = smart_cast<IKinematics*>(Visual());
-	CInifile* ini = K->LL_UserData();
-	int id;
-	Fmatrix	driver_xform;
-	if (ini->line_exist("car_definition", "driver_position") && ini->line_exist("car_definition", "driver_direction"))
+	Fmatrix CarForm = XFORM();
+	CarForm.c.add(Delta);
+
+	if (!m_pPhysicsShell->isActive())
 	{
-		driver_xform.c.set(ini->r_fvector3("car_definition", "driver_position"));
-		driver_xform.k.set(ini->r_fvector3("car_definition", "driver_direction"));
-	}
-	else if (ini->line_exist("car_definition", "driver_place")) {
-
-		id = K->LL_BoneID(ini->r_string("car_definition", "driver_place"));
-		CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
-		driver_xform.set(instance.mTransform);
-	}
-	else {
-		id = K->LL_GetBoneRoot();
-		CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
-		driver_xform.set(instance.mTransform);
+		m_pPhysicsShell->Activate(XFORM(), 0, XFORM());
 	}
 
-	Owner()->setVisible(0);
-	m_sits_transforms.set(driver_xform);
-	Actor()->XFORM().mul_43(XFORM(), m_sits_transforms);
-	
+	m_pPhysicsShell->Enable();
+	m_pPhysicsShell->SetGlTransformDynamic(CarForm);
+	m_pPhysicsShell->set_LinearVel(zero_vel);
+	m_pPhysicsShell->set_AngularVel(zero_vel);
+
+	Fmatrix CarWorld;
+	m_pPhysicsShell->GetGlobalTransformDynamic(&CarWorld);
+	XFORM().set(CarWorld);
+	spatial_move();
+
+	OwnerActor()->XFORM().mul_43(XFORM(), m_sits_transforms);
+
+	if (characters_scraper_shell != nullptr)
+	{
+		characters_scraper_shell->SetTransform(XFORM(), mh_clear);
+		characters_scraper_shell->set_LinearVel(zero_vel);
+		characters_scraper_shell->set_AngularVel(zero_vel);
+	}
 }
-*/
 u16 CCar::GetDoorBone(u16 id)
 {
 	IKinematics* K = PKinematics(Visual());

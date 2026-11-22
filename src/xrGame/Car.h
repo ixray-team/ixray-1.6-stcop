@@ -1533,6 +1533,7 @@ public:
 	void					detach_Actor				();
 	void					RecalculateExitPosition		();
 	bool					attach_Actor				(CGameObject* actor);
+	void					TeleportCarAndDriver		(const Fvector& position);
 	bool					is_Door						(u16 id,xr_map<u16,SDoor>::iterator& i);
 	bool					is_Door						(u16 id);
 	bool					DoorOpen					(u16 id);
