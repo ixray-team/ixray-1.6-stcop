@@ -274,6 +274,8 @@ CUIPdaWnd::~CUIPdaWnd()
 
 void CUIPdaWnd::Init()
 {
+	HotkeyContext.SetContext("pda");
+	HotkeyContext.SetHandler({shared_str("pda"), shared_str("ui")}, Hotkeys::LayerHandler(this, &CUIPdaWnd::HandleLayerAction));
 	CUIXml					uiXml;
 	uiXml.Load				(CONFIG_PATH, UI_PATH, PdaXml::Main);
 
@@ -350,14 +352,7 @@ void CUIPdaWnd::Init()
 	}
 	InitTabBackgrounds(uiXml);
 
-	for (int HintIndex = 0; uiXml.NavigateToNode("hotkeys_hint", HintIndex); ++HintIndex)
-	{
-		CUIHotkeysHint* Hint = new CUIHotkeysHint();
-		Hint->SetAutoDelete(true);
-		AttachChild(Hint);
-		Hint->InitFromXml(uiXml, "hotkeys_hint", HintIndex);
-		HotkeysHints.push_back(Hint);
-	}
+	CUIHotkeysHint::CreateAll(uiXml, this, HotkeysHints);
 	HotkeysHintsControllerMode = pInput && pInput->GetControllerMode();
 
 	const auto tabPresentLambda = [this](const char* sectionId)
@@ -520,6 +515,7 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIPdaWnd::Show(bool status)
 {
+	HotkeyContext.SetActive(status);
 	inherited::Show						(status);
 	if(status)
 	{
@@ -1353,6 +1349,47 @@ void RearrangeTabButtons(CUITabControl* pTab)
 	pos.x = pTab->GetWndPos().x - pos.x;
 	pos.y = pTab->GetWndPos().y;
 	pTab->SetWndPos( pos );
+}
+
+bool CUIPdaWnd::HandleLayerAction(EGameActions Action, int Dik)
+{
+	if (!IsShown() || pInput->GetControllerMode())
+	{
+		return false;
+	}
+
+	const bool AltPressed = pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT) || pInput->iGetAsyncKeyState(SDL_SCANCODE_RALT);
+	switch (Action)
+	{
+	case kUI_TAB_SECONDARY_LEFT:
+		SwitchSecondaryTab(false);
+		return true;
+	case kUI_TAB_SECONDARY_RIGHT:
+		SwitchSecondaryTab(true);
+		return true;
+	case kUI_TAB_LEFT:
+		if (AltPressed)
+		{
+			SwitchSecondaryTab(false);
+		}
+		else if (!any_binded_key_for_action_pressed_c(kUI_TAB_RIGHT))
+		{
+			UITabControl->PrevTab(true);
+		}
+		return true;
+	case kUI_TAB_RIGHT:
+		if (AltPressed)
+		{
+			SwitchSecondaryTab(true);
+		}
+		else if (!any_binded_key_for_action_pressed_c(kUI_TAB_LEFT))
+		{
+			UITabControl->NextTab(true);
+		}
+		return true;
+	default:
+		return false;
+	}
 }
 
 bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)

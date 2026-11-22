@@ -26,6 +26,7 @@ This page serves as an overview of new UI features. Each page below is provided 
 14. [PDA task tab](pda-task-journal.md)
 15. [PDA "Records" tab](pda-records.md)
 16. [PDA "Reference" tab](pda-reference.md)
+17. [Hotkeys: actions, contexts and hints](hotkeys.md)
 
 ## Quick toggles
 

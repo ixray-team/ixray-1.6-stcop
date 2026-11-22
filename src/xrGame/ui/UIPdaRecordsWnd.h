@@ -100,6 +100,7 @@ private:
 	CUIHotkeysHint* CreateHint(const char* Path, CUIWindow* Parent, int Index = 0);
 	void RefreshHints();
 	bool HandleAction(EGameActions Action);
+	bool HandleLayerAction(EGameActions Action, int Dik);
 	void RefreshAll();
 	void CollectCategory(SCategory& Category);
 	void UpdateTabCounters();
@@ -137,6 +138,7 @@ private:
 	xr_vector<SCategory> Categories;
 	u32 ActiveCategoryIndex = 0;
 	xr_vector<CUIHotkeysHint*> Hints;
+	CHotkeyContextScope HotkeyContext;
 	bool HintsControllerMode = false;
 
 	CUIScrollView* List = nullptr;

@@ -1,21 +1,24 @@
 #pragma once
 #include "../../xrUI/Widgets/UIStatic.h"
-
-class CUIXml;
+#include "../../xrUI/xrUIXmlParser.h"
 
 class CUIHotkeysHint final : public CUIStatic
 {
 	using inherited = CUIStatic;
 
 public:
+	static void CreateAll(CUIXml& Xml, CUIWindow* Parent, xr_vector<CUIHotkeysHint*>& Result);
+
 	void InitFromXml(CUIXml& Xml, const char* Path, int Index = 0);
 	void Refresh();
 	void SetActiveContexts(const xr_vector<shared_str>& Contexts);
+	void Update() override;
 
 	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private:
 	static constexpr u32 MaxKeysPerItem = 4;
+	static constexpr u32 MaxAutoItems = 16;
 
 	struct SHotkeyItem
 	{
@@ -40,13 +43,16 @@ private:
 		CUIStatic* Label = nullptr;
 	};
 
+	void ReadLayout(CUIXml& Xml, XML_NODE* Root);
+	void ReadItems(CUIXml& Xml, XML_NODE* Root);
+	void RebuildAutoItems();
 	bool IsContextActive(const shared_str& Context) const;
 	void ResolveItems(xr_vector<SResolvedItem>& Result) const;
 
 	xr_string BuildText(const xr_vector<SResolvedItem>& Items, size_t ItemCount) const;
 	bool FitsWidth(const xr_string& Text) const;
 
-	void InitChips(CUIXml& Xml, const char* Path, int Index);
+	void InitChips(CUIXml& Xml, XML_NODE* TemplateRoot, u32 Count);
 	void RefreshChips(const xr_vector<SResolvedItem>& Items);
 	void HideChips();
 	float ChipKeyWidth(CUIStatic& Key, const xr_string& Text) const;
@@ -54,6 +60,10 @@ private:
 	float MeasureItem(const SResolvedItem& Item) const;
 
 	xr_vector<SHotkeyItem> HotkeyItems;
+	xr_vector<SHotkeyItem> FixedItems;
+	shared_str AutoContexts;
+	u32 SeenRevision = u32(-1);
+	bool SeenControllerMode = false;
 	xr_vector<shared_str> ActiveContexts;
 	xr_string Separator = " \xB7 ";
 	xr_string LabelSeparator = " ";

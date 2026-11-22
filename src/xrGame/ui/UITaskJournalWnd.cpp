@@ -279,6 +279,8 @@ void UITaskJournalItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUITaskJournalWnd::Init()
 {
+	HotkeyContext.SetContext("pda.journal");
+	HotkeyContext.SetHandler({shared_str("pda.journal")}, Hotkeys::LayerHandler(this, &CUITaskJournalWnd::HandleLayerAction));
 	Xml.Load(CONFIG_PATH, UI_PATH, TaskJournalHelpers::TaskJournalXml);
 	CUIXmlInit::InitWindow(Xml, "main_wnd", 0, this);
 	ReplaceTaskList = Xml.ReadAttribInt("main_wnd", 0, "replace_task_list", 0) != 0;
@@ -303,11 +305,7 @@ void CUITaskJournalWnd::Init()
 
 	CreateHint("filter_hint_prev", this);
 	CreateHint("filter_hint_next", this);
-	const int HintCount = Xml.GetNodesNum(Xml.GetRoot(), "hotkeys_hint");
-	for (int Index = 0; Index < HintCount; ++Index)
-	{
-		CreateHint("hotkeys_hint", this, Index);
-	}
+	CUIHotkeysHint::CreateAll(Xml, this, Hints);
 
 	List = new CUIScrollView();
 	List->SetAutoDelete(true);
@@ -480,6 +478,7 @@ void CUITaskJournalWnd::InitDetails()
 
 void CUITaskJournalWnd::Show(bool status)
 {
+	HotkeyContext.SetActive(status);
 	inherited::Show(status);
 	if (status)
 	{
@@ -577,6 +576,11 @@ bool CUITaskJournalWnd::HandleAction(EGameActions Action)
 	default:
 		return false;
 	}
+}
+
+bool CUITaskJournalWnd::HandleLayerAction(EGameActions Action, int Dik)
+{
+	return IsShown() && HandleAction(Action);
 }
 
 bool CUITaskJournalWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)

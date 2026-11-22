@@ -104,6 +104,8 @@ CLevel::CLevel() :
 	IPureClient(Device.GetTimerGlobal())
 {
 	PROF_EVENT("CLevel::CLevel");
+	GameHotkeyLayer.SetContext("game");
+	GameHotkeyLayer.SetActive(true);
 	
 	LoadCallbackGlobals(m_isStartAttack, m_onStartAttack, "OnStartAttack");
 	LoadCallbackGlobals(m_isKeyPress, m_onKeyPress, "OnKeyPress");

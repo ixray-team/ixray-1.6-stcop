@@ -6,6 +6,7 @@
 #include "../../xrUI/Widgets/UICheckButton.h"
 #include "PdaConstants.h"
 #include "UISecondTaskWnd.h"
+#include "../../xrEngine/xr_level_controller.h"
 class CPdaUiSounds;
 class CUIMapWnd;
 class CUIStatic;
@@ -88,6 +89,7 @@ private:
 	UIPersonalSpotsWnd*		PersonalSpotsWnd = nullptr;
 	UIActiveTaskCard*		ActiveTaskCard = nullptr;
 	xr_vector<CUIHotkeysHint*> HotkeysHints;
+	CHotkeyContextScope HotkeyContext;
 	bool					HotkeysHintControllerMode = false;
 
 public:
@@ -165,6 +167,7 @@ protected:
 	void						UpdateGamepadLegend		();
 	void						UpdateHotkeysHint		();
 	bool						HandleMapAction			(EGameActions Action, bool Execute);
+	bool						HandleLayerAction		(EGameActions Action, int Dik);
 	void						HideSidePanels			(CUIWindow* Keep);
 	bool						IsCursorOverSidePanel	();
 private:

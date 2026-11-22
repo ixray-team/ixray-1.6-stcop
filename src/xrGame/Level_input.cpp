@@ -24,6 +24,7 @@
 #include "../Include/xrRender/DebugRender.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ui/UIPdaWnd.h"
+#include "HotkeysScript.h"
 #include "HudPdaAnimator.h"
 
 //Alundaio
@@ -271,6 +272,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			Render->Screenshot();
 			return;
 		}
+	}
+
+	if (Hotkeys::LayersEnabled() ? Hotkeys::DispatchLayers(key) : HotkeysScript::Dispatch(key))
+	{
+		return;
 	}
 
 	if (g_actor)
@@ -833,6 +839,11 @@ void CLevel::IR_GamepadKeyPress(int id)
 		{
 			Console->Execute("main_menu");
 		}
+		return;
+	}
+
+	if (Hotkeys::LayersEnabled() && Hotkeys::DispatchLayers(id))
+	{
 		return;
 	}
 

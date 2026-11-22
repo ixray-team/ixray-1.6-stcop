@@ -17,6 +17,30 @@ constexpr const char* KeyNode = "key";
 constexpr const char* KeyBackNode = "key_back";
 constexpr const char* LabelNode = "label";
 constexpr const char* BindingSeparator = ",";
+constexpr const char* StylesFile = "hotkey_styles.xml";
+
+CUIXml& StyleXml()
+{
+	static CUIXml Xml;
+	static bool Loaded = false;
+	if (!Loaded)
+	{
+		Loaded = true;
+		Xml.Load(CONFIG_PATH, UI_PATH, StylesFile);
+	}
+	return Xml;
+}
+
+XML_NODE* FindStyle(const char* Id)
+{
+	CUIXml& Xml = StyleXml();
+	if (!Id || !Id[0] || !Xml.GetRoot())
+	{
+		return nullptr;
+	}
+	Xml.SetLocalRoot(Xml.GetRoot());
+	return Xml.NavigateToNodeWithAttribute("style", "id", Id);
+}
 
 xr_string Trim(const xr_string& Text)
 {
@@ -63,6 +87,25 @@ float TextWidth(CUIStatic& Static, const char* Text)
 }
 }
 
+void CUIHotkeysHint::CreateAll(CUIXml& Xml, CUIWindow* Parent, xr_vector<CUIHotkeysHint*>& Result)
+{
+	if (!Parent)
+	{
+		return;
+	}
+	for (const char* Path : {"hotkeys_hint", "hotkey_bar", "hotkey"})
+	{
+		for (int Index = 0; Xml.NavigateToNode(Path, Index); ++Index)
+		{
+			CUIHotkeysHint* Hint = new CUIHotkeysHint();
+			Hint->SetAutoDelete(true);
+			Parent->AttachChild(Hint);
+			Hint->InitFromXml(Xml, Path, Index);
+			Result.push_back(Hint);
+		}
+	}
+}
+
 void CUIHotkeysHint::InitFromXml(CUIXml& Xml, const char* Path, int Index)
 {
 	CUIXmlInit::InitStatic(Xml, Path, Index, this);
@@ -73,11 +116,54 @@ void CUIHotkeysHint::InitFromXml(CUIXml& Xml, const char* Path, int Index)
 		return;
 	}
 
-	ChipMode = Xml.NavigateToNode(Root, HotkeysHintChips::KeyNode, 0) != nullptr;
+	CUIXml* TemplateXml = &Xml;
+	XML_NODE* TemplateRoot = Root;
+	XML_NODE* StyleRoot = nullptr;
+	const char* StyleId = Xml.ReadAttrib(Root, "style", "");
+	if (StyleId && StyleId[0])
+	{
+		StyleRoot = HotkeysHintChips::FindStyle(StyleId);
+		if (!StyleRoot)
+		{
+			Msg("! [hotkeys] style [%s] not found in %s", StyleId, HotkeysHintChips::StylesFile);
+		}
+		else if (!Xml.NavigateToNode(Root, HotkeysHintChips::KeyNode, 0))
+		{
+			TemplateXml = &HotkeysHintChips::StyleXml();
+			TemplateRoot = StyleRoot;
+		}
+	}
 
+	ChipMode = TemplateXml->NavigateToNode(TemplateRoot, HotkeysHintChips::KeyNode, 0) != nullptr;
+	if (ChipMode)
+	{
+		KeyFormat = "%s";
+	}
+	if (StyleRoot)
+	{
+		ReadLayout(HotkeysHintChips::StyleXml(), StyleRoot);
+	}
+	ReadLayout(Xml, Root);
+
+	ReadItems(Xml, Root);
+	AutoContexts = Xml.ReadAttrib(Root, "context", "");
+	RebuildAutoItems();
+
+	if (ChipMode)
+	{
+		InitChips(*TemplateXml, TemplateRoot, u32(FixedItems.size()) + (AutoContexts.size() ? MaxAutoItems : 0));
+	}
+
+	SeenRevision = Hotkeys::Revision();
+	SeenControllerMode = pInput && pInput->GetControllerMode();
+	Refresh();
+}
+
+void CUIHotkeysHint::ReadLayout(CUIXml& Xml, XML_NODE* Root)
+{
 	Separator = Xml.ReadAttrib(Root, "separator", Separator.c_str());
 	LabelSeparator = Xml.ReadAttrib(Root, "label_separator", LabelSeparator.c_str());
-	KeyFormat = Xml.ReadAttrib(Root, "key_format", ChipMode ? "%s" : KeyFormat.c_str());
+	KeyFormat = Xml.ReadAttrib(Root, "key_format", KeyFormat.c_str());
 	if (KeyFormat.find("%s") == xr_string::npos)
 	{
 		KeyFormat = ChipMode ? "%s" : "[%s]";
@@ -88,6 +174,21 @@ void CUIHotkeysHint::InitFromXml(CUIXml& Xml, const char* Path, int Index)
 		GamepadKeyFormat = "%s";
 	}
 
+	KeyPadding = Xml.ReadAttribFlt(Root, "key_padding", KeyPadding);
+	KeyMinWidth = Xml.ReadAttribFlt(Root, "key_min_width", KeyMinWidth);
+	KeySpacing = Xml.ReadAttribFlt(Root, "key_spacing", KeySpacing);
+	LabelSpacing = Xml.ReadAttribFlt(Root, "label_spacing", LabelSpacing);
+	ItemSpacing = Xml.ReadAttribFlt(Root, "item_spacing", ItemSpacing);
+	const char* Align = Xml.ReadAttrib(Root, "chips_align", "");
+	if (Align && Align[0])
+	{
+		ChipsAlign = Align[0];
+	}
+}
+
+void CUIHotkeysHint::ReadItems(CUIXml& Xml, XML_NODE* Root)
+{
+	FixedItems.clear();
 	const int Count = Xml.GetNodesNum(Root, "item");
 	for (int i = 0; i < Count; ++i)
 	{
@@ -96,34 +197,82 @@ void CUIHotkeysHint::InitFromXml(CUIXml& Xml, const char* Path, int Index)
 		Item.GamepadAction = Xml.ReadAttrib(Root, "item", i, "gamepad_action", "");
 		Item.FixedKey = Xml.ReadAttrib(Root, "item", i, "key", "");
 		Item.Label = Xml.Read(Root, "item", i, "");
+		if (!Item.Label.size())
+		{
+			Item.Label = Xml.ReadAttrib(Root, "item", i, "label", "");
+		}
 		Item.Context = Xml.ReadAttrib(Root, "item", i, "context", "");
 		if (Item.Action.size() || Item.FixedKey.size())
 		{
-			HotkeyItems.push_back(Item);
+			FixedItems.push_back(Item);
 		}
 	}
 
-	if (ChipMode)
+	const char* Action = Xml.ReadAttrib(Root, "action", "");
+	if (FixedItems.empty() && Action && Action[0])
 	{
-		InitChips(Xml, Path, Index);
+		SHotkeyItem Item;
+		Item.Action = Action;
+		Item.GamepadAction = Xml.ReadAttrib(Root, "gamepad_action", "");
+		Item.Label = Xml.ReadAttrib(Root, "label", "");
+		FixedItems.push_back(Item);
+	}
+}
+
+void CUIHotkeysHint::RebuildAutoItems()
+{
+	HotkeyItems = FixedItems;
+	if (!AutoContexts.size())
+	{
+		return;
 	}
 
+	u32 Added = 0;
+	xr_vector<EGameActions> Actions;
+	const int ContextCount = _GetItemCount(AutoContexts.c_str());
+	for (int ContextIndex = 0; ContextIndex < ContextCount && Added < MaxAutoItems; ++ContextIndex)
+	{
+		string128 ContextName;
+		_GetItem(AutoContexts.c_str(), ContextIndex, ContextName);
+		Hotkeys::ContextActions(ContextName, Actions);
+		for (EGameActions Id : Actions)
+		{
+			if (Added >= MaxAutoItems)
+			{
+				break;
+			}
+			SHotkeyItem Item;
+			Item.Action = id_to_action_name(Id);
+			if (const SHotkeyInfo* Info = Hotkeys::Info(Id))
+			{
+				Item.Label = Info->Label;
+			}
+			HotkeyItems.push_back(Item);
+			++Added;
+		}
+	}
+}
+
+void CUIHotkeysHint::Update()
+{
+	inherited::Update();
+
+	const u32 Revision = Hotkeys::Revision();
+	const bool ControllerMode = pInput && pInput->GetControllerMode();
+	if (Revision == SeenRevision && ControllerMode == SeenControllerMode)
+	{
+		return;
+	}
+	SeenRevision = Revision;
+	SeenControllerMode = ControllerMode;
+	RebuildAutoItems();
 	Refresh();
 }
 
-void CUIHotkeysHint::InitChips(CUIXml& Xml, const char* Path, int Index)
+void CUIHotkeysHint::InitChips(CUIXml& Xml, XML_NODE* TemplateRoot, u32 Count)
 {
 	XML_NODE* StoredRoot = Xml.GetLocalRoot();
-	XML_NODE* Root = Xml.NavigateToNode(Path, Index);
-	Xml.SetLocalRoot(Root);
-
-	KeyPadding = Xml.ReadAttribFlt(Root, "key_padding", KeyPadding);
-	KeyMinWidth = Xml.ReadAttribFlt(Root, "key_min_width", KeyMinWidth);
-	KeySpacing = Xml.ReadAttribFlt(Root, "key_spacing", KeySpacing);
-	LabelSpacing = Xml.ReadAttribFlt(Root, "label_spacing", LabelSpacing);
-	ItemSpacing = Xml.ReadAttribFlt(Root, "item_spacing", ItemSpacing);
-	const char* Align = Xml.ReadAttrib(Root, "chips_align", "l");
-	ChipsAlign = Align && Align[0] ? Align[0] : 'l';
+	Xml.SetLocalRoot(TemplateRoot);
 
 	const bool HasBack = Xml.NavigateToNode(HotkeysHintChips::KeyBackNode, 0) != nullptr;
 	const char* BackType = HasBack ? Xml.ReadAttrib(HotkeysHintChips::KeyBackNode, 0, "type", "static") : "";
@@ -134,7 +283,7 @@ void CUIHotkeysHint::InitChips(CUIXml& Xml, const char* Path, int Index)
 	ChipsLayer->SetWndSize(GetWndSize());
 	AttachChild(ChipsLayer);
 
-	Chips.resize(HotkeyItems.size());
+	Chips.resize(Count);
 	for (SChip& Chip : Chips)
 	{
 		for (u32 KeyIndex = 0; KeyIndex < MaxKeysPerItem; ++KeyIndex)
@@ -170,6 +319,14 @@ void CUIHotkeysHint::Refresh()
 {
 	if (HotkeyItems.empty())
 	{
+		if (ChipMode)
+		{
+			HideChips();
+		}
+		else
+		{
+			TextItemControl()->SetText("");
+		}
 		return;
 	}
 
@@ -358,6 +515,10 @@ float CUIHotkeysHint::ChipLabelWidth(CUIStatic& Label, const char* Text) const
 
 float CUIHotkeysHint::MeasureItem(const SResolvedItem& Item) const
 {
+	if (Item.Index >= Chips.size())
+	{
+		return 0.0f;
+	}
 	const SChip& Chip = Chips[Item.Index];
 	const bool ControllerMode = pInput && pInput->GetControllerMode();
 	const xr_string& Format = ControllerMode ? GamepadKeyFormat : KeyFormat;
@@ -432,6 +593,10 @@ void CUIHotkeysHint::RefreshChips(const xr_vector<SResolvedItem>& Items)
 	for (size_t ItemIndex = 0; ItemIndex < ItemCount; ++ItemIndex)
 	{
 		const SResolvedItem& Item = Items[ItemIndex];
+		if (Item.Index >= Chips.size())
+		{
+			break;
+		}
 		SChip& Chip = Chips[Item.Index];
 		if (ItemIndex)
 		{

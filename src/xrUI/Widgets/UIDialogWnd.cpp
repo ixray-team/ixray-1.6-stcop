@@ -8,6 +8,8 @@ CUIDialogWnd:: CUIDialogWnd()
 	m_pParentHolder		= nullptr;
 	m_bWorkInPause		= false;
 	m_bShowMe			= false;
+	HotkeyLayer.SetContext("ui");
+	HotkeyLayer.SetRoot(true);
 }
 
 CUIDialogWnd::~CUIDialogWnd()

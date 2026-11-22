@@ -163,14 +163,7 @@ void UIPersonalSpotsWnd::InitFromXml(CUIXml& Xml, const char* Path)
 	{
 		TipText = UIHelper::CreateStatic(Xml, "t_tip", this);
 	}
-	for (int HintIndex = 0; Xml.NavigateToNode("hotkeys_hint", HintIndex); ++HintIndex)
-	{
-		CUIHotkeysHint* Hint = new CUIHotkeysHint();
-		Hint->SetAutoDelete(true);
-		AttachChild(Hint);
-		Hint->InitFromXml(Xml, "hotkeys_hint", HintIndex);
-		HotkeysHints.push_back(Hint);
-	}
+	CUIHotkeysHint::CreateAll(Xml, this, HotkeysHints);
 
 	Xml.SetLocalRoot(StoredRoot);
 	ItemPath = xr_string(Path) + ":spot_item";

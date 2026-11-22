@@ -4,6 +4,7 @@
 #include "../encyclopedia_article_defs.h"
 #include "UIPdaAux.h"
 #include "PdaUiSound.h"
+#include "../../xrEngine/xr_level_controller.h"
 
 class CInventoryOwner;
 class CUIFrameLineWnd;
@@ -114,6 +115,7 @@ public:
 	CUITaskJournalWnd*		pUITaskJournalWnd = nullptr;
 	CUIPdaRecordsWnd*		pUIPdaRecordsWnd = nullptr;
 	CUIPdaRecordsWnd*		pUIPdaReferenceWnd = nullptr;
+	CHotkeyContextScope		HotkeyContext;
 
 	CMapSpot*				pSelectedMapSpot;
 	Fvector2				last_cursor_pos;
@@ -148,6 +150,7 @@ public:
 			void			Show_SecondTaskWnd	(bool status);
 			void			Show_MapLegendWnd	(bool status);
 			bool			SwitchSecondaryTab	(bool Next);
+			bool			HandleLayerAction	(EGameActions Action, int Dik);
 
 			void 			SetActiveDialog		(CUIWindow* pUI) 	{ m_pActiveDialog = pUI; };
 			CUIWindow*		GetActiveDialog		() 					{return m_pActiveDialog;};

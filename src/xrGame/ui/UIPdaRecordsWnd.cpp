@@ -261,6 +261,9 @@ void CUIPdaRecordsWnd::Init(const char* XmlName)
 	Xml.Load(CONFIG_PATH, UI_PATH, XmlName && XmlName[0] ? XmlName : PdaRecordsWndHelpers::RecordsXml);
 	CUIXmlInit::InitWindow(Xml, "main_wnd", 0, this);
 
+	const shared_str LayerContext = Xml.ReadAttrib("main_wnd", 0, "hotkey_context", "pda.records");
+	HotkeyContext.SetContext(LayerContext.c_str());
+	HotkeyContext.SetHandler({LayerContext, shared_str("pda.records")}, Hotkeys::LayerHandler(this, &CUIPdaRecordsWnd::HandleLayerAction));
 	ProviderFunction = Xml.ReadAttrib("main_wnd", 0, "provider", "pda_records.collect");
 	SelectFunction = Xml.ReadAttrib("main_wnd", 0, "on_select", "pda_records.on_select");
 	ActionFunction = Xml.ReadAttrib("main_wnd", 0, "on_action", "pda_records.on_action");
@@ -293,11 +296,7 @@ void CUIPdaRecordsWnd::Init(const char* XmlName)
 
 	CreateHint("category_hint_prev", this);
 	CreateHint("category_hint_next", this);
-	const int HintCount = Xml.GetNodesNum(Xml.GetRoot(), "hotkeys_hint");
-	for (int Index = 0; Index < HintCount; ++Index)
-	{
-		CreateHint("hotkeys_hint", this, Index);
-	}
+	CUIHotkeysHint::CreateAll(Xml, this, Hints);
 
 	List = new CUIScrollView();
 	List->SetAutoDelete(true);
@@ -467,6 +466,7 @@ void CUIPdaRecordsWnd::InitDetails()
 
 void CUIPdaRecordsWnd::Show(bool status)
 {
+	HotkeyContext.SetActive(status);
 	inherited::Show(status);
 	if (status)
 	{
@@ -575,6 +575,11 @@ bool CUIPdaRecordsWnd::HandleAction(EGameActions Action)
 	default:
 		return false;
 	}
+}
+
+bool CUIPdaRecordsWnd::HandleLayerAction(EGameActions Action, int Dik)
+{
+	return IsShown() && HandleAction(Action);
 }
 
 bool CUIPdaRecordsWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)

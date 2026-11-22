@@ -1,0 +1,104 @@
+this.handlers = {}
+
+this.DEFAULT_COMMANDS = {
+	{field = "key", command = "bind"},
+	{field = "key2", command = "bind_sec"},
+	{field = "gamepad", command = "bind_gamepad"},
+	{field = "gamepad2", command = "bind_gamepad_sec"},
+}
+
+function register(name, def)
+	def = def or {}
+	if not name or name == "" or not hotkey_register(name, def.context or "game") then
+		return false
+	end
+	hotkey_set_info(name, def.label or "", def.options or "", def.hint or 0)
+	if not hotkey_is_bound(name) then
+		local console = get_console()
+		for _, item in ipairs(this.DEFAULT_COMMANDS) do
+			if def[item.field] then
+				console:execute(item.command .. " " .. name .. " " .. def[item.field])
+			end
+		end
+	end
+	return true
+end
+
+function register_context(name, parent)
+	hotkey_register_context(name, parent or "")
+end
+
+function register_layer(name, def)
+	def = def or {}
+	hotkey_register_layer(name, def.parent or "", def.priority or 0, def.block == "all")
+end
+
+function layers_enabled()
+	return hotkey_layers_enabled()
+end
+
+function on(name, fn)
+	if type(fn) ~= "function" then
+		return nil
+	end
+	this.handlers[name] = this.handlers[name] or {}
+	table.insert(this.handlers[name], fn)
+	return fn
+end
+
+function off(name, fn)
+	local list = this.handlers[name]
+	if not list then
+		return
+	end
+	for i = #list, 1, -1 do
+		if fn == nil or list[i] == fn then
+			table.remove(list, i)
+		end
+	end
+end
+
+function dispatch(name)
+	local list = this.handlers[name]
+	if not list or #list == 0 then
+		return false
+	end
+	local consumed = false
+	for _, fn in ipairs({unpack(list)}) do
+		local ok, result = pcall(fn, name)
+		if not ok then
+			printf("! hotkeys: handler for [%s] failed: %s", name, tostring(result))
+		elseif result ~= false then
+			consumed = true
+		end
+	end
+	return consumed
+end
+
+function push_context(name)
+	hotkey_push_context(name)
+end
+
+function pop_context(name)
+	hotkey_pop_context(name)
+end
+
+function active_context()
+	return hotkey_active_context()
+end
+
+function context_of(name)
+	return hotkey_context(name)
+end
+
+function key_name(name)
+	return hotkey_key_name(name)
+end
+
+function is_bound(name)
+	return hotkey_is_bound(name)
+end
+
+function action_at(dik, context)
+	return hotkey_action_at(dik, context or "")
+end

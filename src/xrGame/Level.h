@@ -95,6 +95,7 @@ private:
 	const char* m_onStartAttack = {};
 
 	bool m_isKeyPress = false;
+	CHotkeyContextScope GameHotkeyLayer;
 	const char* m_onKeyPress = {};
 
 	CElectronicsProblemsManager* m_electronics_problems_manager = nullptr;
@@ -494,7 +495,7 @@ public:
 	void			deinit_compression			();
 
 private:
-	int blocked_bings[bindings_count]{ 0 };
+	int blocked_bings[ActionSlotsCount]{ 0 };
 public:
 	void block_action(int cmd);
 	void unblock_action(int cmd);

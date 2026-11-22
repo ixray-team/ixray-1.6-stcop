@@ -49,4 +49,6 @@ protected:
 	void			BindAction2Key			();
 
 	bool			m_bIsEditMode;
+	int				m_confirmDik = 0;
+	u32				m_seenRevision = 0;
 };

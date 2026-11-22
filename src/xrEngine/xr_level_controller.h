@@ -206,7 +206,8 @@ enum EGameActions
 	kPDA_RECORDS_ACTION,
 
 	kLASTACTION,
-	kNOTBINDED,
+	kFIRST_CUSTOM_ACTION = kLASTACTION,
+	kNOTBINDED = kLASTACTION + 256,
 	kFORCEDWORD		= u32(-1)
 };
 
@@ -233,6 +234,7 @@ enum _action_group : u32
 	agAiming	=	(1<<7),
 	agUITaskJournal	=	(1<<8),
 	agUIRecords	=	(1<<9),
+	agCustom	=	(1<<10),
 	agAny		= u32(-1)
 };
 
@@ -247,6 +249,7 @@ struct _action
 	EGameActions	id;
 	_key_group		key_group;
 	_action_group	action_group;
+	const char*		context;
 };
 
 ENGINE_API const char*			dik_to_keyname			(int _dik);
@@ -263,6 +266,7 @@ extern ENGINE_API _action		actions		[];
 //extern xr_vector< _keyboard >	keyboards;
 
 #define bindings_count kLASTACTION
+constexpr int ActionSlotsCount = kNOTBINDED;
 struct _binding
 {
 	_action*		m_action;
@@ -297,6 +301,109 @@ public:
 };
 
 ENGINE_API void GetActionAllBinding	(const char* action, char* dst_buff, int dst_buff_sz);
+
+struct SHotkeyInfo
+{
+	shared_str Label;
+	shared_str OptionsGroup;
+	int Hint = 0;
+};
+
+namespace Hotkeys
+{
+using LayerHandler = xr_delegate<bool(EGameActions, int)>;
+using CustomHandler = xr_delegate<bool(EGameActions)>;
+
+ENGINE_API void SetCustomHandler(const CustomHandler& Handler);
+
+ENGINE_API void RegisterContext(const char* Context, const char* Parent);
+ENGINE_API void SetLayerProperties(const char* Context, int Priority, bool BlockAll);
+ENGINE_API bool LayersEnabled();
+ENGINE_API u32 PushLayer(const char* Context, const xr_vector<shared_str>& Handles, const LayerHandler& Handler, bool Root = false);
+ENGINE_API void PopLayer(u32 Id);
+ENGINE_API bool DispatchLayers(int Dik);
+ENGINE_API EGameActions ActionInContext(int Dik, const char* Context);
+ENGINE_API const char* ContextLabel(const char* Context);
+ENGINE_API bool IsContextRelated(const char* Left, const char* Right);
+ENGINE_API EGameActions FindKeyboardConflict(EGameActions Id, int Dik);
+ENGINE_API EGameActions FindKeyboardOverlap(EGameActions Id, int Dik);
+ENGINE_API const char* ContextParent(const char* Context);
+ENGINE_API EGameActions Register(const char* Name, const char* Context);
+ENGINE_API EGameActions Find(const char* Name);
+ENGINE_API bool IsCustom(EGameActions Id);
+ENGINE_API const char* Context(EGameActions Id);
+ENGINE_API void SetInfo(EGameActions Id, const char* Label, const char* OptionsGroup, int Hint);
+ENGINE_API const SHotkeyInfo* Info(EGameActions Id);
+ENGINE_API EGameActions ActionAt(int Dik, const char* Context);
+ENGINE_API void ContextActions(const char* Context, xr_vector<EGameActions>& Result);
+ENGINE_API void OptionsActions(xr_vector<EGameActions>& Result);
+ENGINE_API void PushContext(const char* Context);
+ENGINE_API void PopContext(const char* Context);
+ENGINE_API const char* ActiveContext();
+ENGINE_API void KeyText(EGameActions Id, char* Buffer, int BufferSize);
+ENGINE_API u32 Revision();
+ENGINE_API void NotifyBindingsChanged();
+ENGINE_API void AddPendingBind(const char* Command, const char* Action, const char* Key);
+ENGINE_API void LoadConfig();
+ENGINE_API void ApplyConfigDefaults();
+}
+
+class CHotkeyContextScope
+{
+public:
+	~CHotkeyContextScope()
+	{
+		SetActive(false);
+	}
+
+	void SetRoot(bool Value)
+	{
+		Root = Value;
+	}
+
+	void SetHandler(const xr_vector<shared_str>& HandledContexts, const Hotkeys::LayerHandler& LayerHandler)
+	{
+		const bool WasActive = Active;
+		SetActive(false);
+		Handles = HandledContexts;
+		Handler = LayerHandler;
+		SetActive(WasActive);
+	}
+
+	void SetContext(const char* Name)
+	{
+		const bool WasActive = Active;
+		SetActive(false);
+		Context = Name;
+		SetActive(WasActive);
+	}
+
+	void SetActive(bool Value)
+	{
+		if (!Context.size() || (!Value && !Active))
+		{
+			return;
+		}
+		if (Active)
+		{
+			Hotkeys::PopLayer(LayerId);
+			LayerId = 0;
+		}
+		Active = Value;
+		if (Active)
+		{
+			LayerId = Hotkeys::PushLayer(Context.c_str(), Handles, Handler, Root);
+		}
+	}
+
+private:
+	shared_str Context;
+	xr_vector<shared_str> Handles;
+	Hotkeys::LayerHandler Handler;
+	u32 LayerId = 0;
+	bool Root = false;
+	bool Active = false;
+};
 
 extern ENGINE_API ConsoleBindCmds bindConsoleCmds;
 

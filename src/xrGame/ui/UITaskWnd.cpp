@@ -62,6 +62,8 @@ CUITaskWnd::~CUITaskWnd()
 
 void CUITaskWnd::Init()
 {
+	HotkeyContext.SetContext("pda.map");
+	HotkeyContext.SetHandler({shared_str("pda.map")}, Hotkeys::LayerHandler(this, &CUITaskWnd::HandleLayerAction));
 	CUIXml							xml;
 	xml.Load						(CONFIG_PATH, UI_PATH, PDA_TASK_XML);
 	VERIFY							(hint_wnd);
@@ -241,14 +243,7 @@ void CUITaskWnd::Init()
 
 	m_gamepad_legend			= UIHelper::CreateGamepadLegend(xml, "gamepad_legend", this, false);
 
-	for (int HintIndex = 0; xml.NavigateToNode("hotkeys_hint", HintIndex); ++HintIndex)
-	{
-		CUIHotkeysHint* Hint = new CUIHotkeysHint();
-		Hint->SetAutoDelete(true);
-		AttachChild(Hint);
-		Hint->InitFromXml(xml, "hotkeys_hint", HintIndex);
-		HotkeysHints.push_back(Hint);
-	}
+	CUIHotkeysHint::CreateAll(xml, this, HotkeysHints);
 	HotkeysHintControllerMode = pInput->GetControllerMode();
 
 	if (m_pUiSounds)
@@ -451,6 +446,7 @@ void CUITaskWnd::ReloadTaskInfo()
 }
 void CUITaskWnd::Show(bool status)
 {
+	HotkeyContext.SetActive(status);
 	inherited::Show			(status);
 	m_pMapWnd->Show			(status);
 	m_pMapWnd->HideCurHint	();
@@ -1069,6 +1065,19 @@ bool CUITaskWnd::HandleMapAction(EGameActions Action, bool Execute)
 		}
 	}
 	return false;
+}
+
+bool CUITaskWnd::HandleLayerAction(EGameActions Action, int Dik)
+{
+	if (!IsShown())
+	{
+		return false;
+	}
+	if (pInput->GetControllerMode())
+	{
+		return OnGamepadKeyAction(Dik, WINDOW_KEY_PRESSED);
+	}
+	return HandleMapAction(Action, true);
 }
 
 bool CUITaskWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)

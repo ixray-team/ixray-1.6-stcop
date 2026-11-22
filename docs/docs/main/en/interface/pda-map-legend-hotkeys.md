@@ -59,6 +59,8 @@ An item without `category` and `spots` is not clickable, as in the original game
 
 ## Hint bar
 
+> The shared hotkey system, chip styles and the `hotkey` / `hotkey_bar` nodes are described in a [separate page](hotkeys.md). Below is the bar format itself.
+
 The `hotkeys_hint` node in `pda_tasks*.xml`. The engine builds the line from the current bindings, skips actions without a key and drops items from the end if the line does not fit. In gamepad mode the bar is hidden when `gamepad_legend` exists.
 
 ```xml
@@ -99,7 +101,7 @@ When `hotkeys_hint` contains a `key` node, the bar is drawn as a row of caps ins
 | Node or attribute | Effect |
 | --- | --- |
 | `key` | Key text template. Its height sets the cap height; the width fits the text. It can have its own texture with `stretch="1"`. |
-| `key_back` | Optional frame under the key. `type`: `static` (stretched texture), `line` (three-part texture `_b`, `_back`, `_e`), `frame` (nine-part frame). |
+| `key_back` | Optional frame under the key. `type`: `static` (stretched texture), `line` (three-part texture `_b`, `_back`, `_e`), `frame` (nine-part frame). A `static` can take `<svg>file.svg</svg>` instead of a texture (with `<texture>` as the fallback) and `stretch="1"`: HD HUD draws the PDA chips from `hotkey_frame.svg` this way. On a wide key the SVG is stretched as a whole, corners included. |
 | `label` | Label template. The width fits the text. |
 | `key_padding` | Text padding inside the cap. Default 8. |
 | `key_min_width` | Minimum cap width. Defaults to the cap height. |

@@ -2,6 +2,7 @@
 
 #include "UIWindow.h"
 #include "UIDialogHolder.h"
+#include "../../xrEngine/xr_level_controller.h"
 
 UI_API CDialogHolder* CurrentDialogHolder();
 
@@ -39,6 +40,13 @@ public:
 	virtual void HideDialog						();
 
 	virtual bool IR_process						();
+
+			void SetHotkeyContext				(const char* Name)				{HotkeyLayer.SetContext(Name);}
+			CHotkeyContextScope& GetHotkeyLayer	()								{return HotkeyLayer;}
+
+private:
+	CHotkeyContextScope							HotkeyLayer;
+public:
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };

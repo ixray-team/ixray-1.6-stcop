@@ -154,6 +154,7 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		}
 	}
 	pDialog->SetHolder				(this);
+	pDialog->GetHotkeyLayer().SetActive(true);
 	AddDialogToRender(pDialog);
 
 	// Show callbacks may reject or close the dialog during initialization.
@@ -162,6 +163,10 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		if (pDialog->GetHolder() == this)
 		{
 			StopMenu(pDialog);
+		}
+		else
+		{
+			pDialog->GetHotkeyLayer().SetActive(false);
 		}
 		return;
 	}
@@ -220,6 +225,7 @@ void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 		SetMainInputReceiver	(pDialog, true);
 
 	RemoveDialogToRender	(pDialog);
+	pDialog->GetHotkeyLayer().SetActive(false);
 	pDialog->SetHolder		(nullptr);
 
 	GetUICursor().m_static_text->SetText("");

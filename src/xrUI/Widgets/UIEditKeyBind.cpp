@@ -6,6 +6,21 @@
 #include "../../xrEngine/xr_level_controller.h"
 #include "../UIFontDefines.h"
 #include "../UITextureMaster.h"
+#include "../../xrEngine/string_table.h"
+
+namespace EditKeyBindLayers
+{
+xr_string ActionCaption(EGameActions Id)
+{
+	const SHotkeyInfo* Info = Hotkeys::Info(Id);
+	if (Info && Info->Label.size())
+	{
+		return g_pStringTable->translate(Info->Label).c_str();
+	}
+	const char* Name = id_to_action_name(Id);
+	return Name ? Name : "";
+}
+}
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {
@@ -84,6 +99,7 @@ void CUIEditKeyBind::InitKeyBind(Fvector2 pos, Fvector2 size)
 void CUIEditKeyBind::OnFocusLost()
 {
 	CUIStatic::OnFocusLost		();
+	m_confirmDik				= 0;
 	SetEditMode					(false);
 	TextItemControl()->SetTextColor	((subst_alpha(TextItemControl()->GetTextColor(), color_get_A(0xffffffff))));
 }
@@ -135,6 +151,20 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		m_keyboard			= dik_to_ptr(dik, true);
 		if(!m_keyboard)		return true;
 
+		if (Hotkeys::LayersEnabled() && m_action)
+		{
+			const EGameActions Conflict = Hotkeys::FindKeyboardConflict(m_action->id, m_keyboard->dik);
+			if (Conflict != kNOTBINDED && m_confirmDik != m_keyboard->dik)
+			{
+				m_confirmDik = m_keyboard->dik;
+				string256 Text;
+				xr_sprintf(Text, "%s? - %s", m_keyboard->key_local_name.c_str(), EditKeyBindLayers::ActionCaption(Conflict).c_str());
+				SetText(Text);
+				return true;
+			}
+		}
+		m_confirmDik		= 0;
+
 		SetValue			();
 
 		xr_strcpy			(message, m_action->action_name);
@@ -150,6 +180,16 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 void CUIEditKeyBind::Update()
 {
 	CUIStatic::Update();
+	if (!Hotkeys::LayersEnabled() || m_bIsEditMode)
+	{
+		return;
+	}
+	const u32 Revision = Hotkeys::Revision();
+	if (Revision != m_seenRevision)
+	{
+		m_seenRevision = Revision;
+		SetValue();
+	}
 }
 
 void CUIEditKeyBind::SetEditMode(bool b)
@@ -175,10 +215,19 @@ void CUIEditKeyBind::AssignProps(const shared_str& entry, const shared_str& grou
 
 void CUIEditKeyBind::SetValue()
 {
-	if(m_keyboard)
-		SetText				(m_keyboard->key_local_name.c_str());
-	else
+	if (!m_keyboard)
+	{
 		SetText				(nullptr);
+		return;
+	}
+	if (Hotkeys::LayersEnabled() && m_action && Hotkeys::FindKeyboardOverlap(m_action->id, m_keyboard->dik) != kNOTBINDED)
+	{
+		xr_string Text		= m_keyboard->key_local_name.c_str();
+		Text				+= " *";
+		SetText				(Text.c_str());
+		return;
+	}
+	SetText					(m_keyboard->key_local_name.c_str());
 }
 
 void CUIEditKeyBind::SetCurrentOptValue()
@@ -261,7 +310,7 @@ void CUIEditKeyBind::OnMessage(const char* message)
 	if(!is_action_group_matching(m_action->action_group,other_action->action_group))
 		return;
 
-	if (!is_action_group_matching(m_action->action_group, other_action->action_group))
+	if (xr_strcmp(Hotkeys::Context(m_action->id), Hotkeys::Context(other_action->id)) != 0)
 		return;
 
 	SetText				("---");

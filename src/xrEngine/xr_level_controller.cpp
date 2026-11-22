@@ -5,10 +5,10 @@
 #include "string_table.h"
 #include "UIGamepadButtons.h"
 
-ENGINE_API _binding	g_key_bindings[bindings_count]; 
+ENGINE_API _binding	g_key_bindings[ActionSlotsCount];
 ENGINE_API _key_group g_current_keygroup = _sp;
 
-ENGINE_API _action  actions[]		= {
+ENGINE_API _action  actions[ActionSlotsCount + 1]		= {
 	{ "left",				kLEFT					,_both,			agDefault},
 	{ "right",				kRIGHT					,_both,			agDefault},
 	{ "up",					kUP						,_both,			agDefault},
@@ -1105,10 +1105,10 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 
 ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
 {
-	int bindingsCnt = kLASTACTION;
+	int bindingsCnt = ActionSlotsCount;
 	for (int i = 0; i < bindingsCnt; ++i)
 	{
-		if (g_key_bindings[i].m_action->id == actionId)
+		if (g_key_bindings[i].m_action && g_key_bindings[i].m_action->action_name && g_key_bindings[i].m_action->id == actionId)
 		{
 			for (int k = 0; k < 2; ++k)
 			{
@@ -1128,6 +1128,770 @@ ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
 
 ENGINE_API ConsoleBindCmds bindConsoleCmds;
 bool bRemapped = false;
+
+namespace HotkeyStorage
+{
+struct SContext
+{
+	shared_str Name;
+	shared_str Parent;
+	int Priority = 0;
+	bool BlockAll = false;
+	shared_str Label;
+};
+
+struct SLayer
+{
+	shared_str Context;
+	xr_vector<shared_str> Handles;
+	Hotkeys::LayerHandler Handler;
+	u32 Order = 0;
+	bool Root = false;
+};
+
+struct SPendingBind
+{
+	xr_string Command;
+	xr_string Key;
+};
+
+struct SConfigDefault
+{
+	xr_string Command;
+	xr_string Action;
+	xr_string Key;
+};
+
+xr_vector<SContext>& Contexts()
+{
+	static xr_vector<SContext> Items;
+	return Items;
+}
+
+xr_deque<shared_str>& Strings()
+{
+	static xr_deque<shared_str> Items;
+	return Items;
+}
+
+xr_map<int, SHotkeyInfo>& Infos()
+{
+	static xr_map<int, SHotkeyInfo> Items;
+	return Items;
+}
+
+xr_vector<SLayer>& Stack()
+{
+	static xr_vector<SLayer> Items;
+	return Items;
+}
+
+u32 LayerOrder = 0;
+bool LayersOn = false;
+Hotkeys::CustomHandler CustomActionHandler;
+
+xr_map<shared_str, xr_vector<SPendingBind>>& Pending()
+{
+	static xr_map<shared_str, xr_vector<SPendingBind>> Items;
+	return Items;
+}
+
+xr_vector<SConfigDefault>& ConfigDefaults()
+{
+	static xr_vector<SConfigDefault> Items;
+	return Items;
+}
+
+u32 RevisionCounter = 0;
+int CustomCount = 0;
+
+const char* Store(const char* Text)
+{
+	Strings().push_back(shared_str(Text ? Text : ""));
+	return Strings().back().c_str();
+}
+
+void EnsureDefaultContexts()
+{
+	if (!Contexts().empty())
+	{
+		return;
+	}
+	struct SDefault
+	{
+		const char* Name;
+		const char* Parent;
+		int Priority;
+		bool BlockAll = false;
+	};
+	const SDefault Defaults[] = {
+		{"game", "", 0}, {"game.vehicle", "game", 10}, {"game.aiming", "game", 10},
+		{"ui", "", 50, true}, {"ui.radial", "ui", 60},
+		{"pda", "ui", 100}, {"pda.map", "pda", 110}, {"pda.journal", "pda", 110}, {"pda.records", "pda", 110},
+		{"pda.reference", "pda", 110}, {"pda.contacts", "pda", 110}, {"pda.logs", "pda", 110},
+	};
+	for (const SDefault& Item : Defaults)
+	{
+		SContext Context;
+		Context.Name = Item.Name;
+		Context.Parent = Item.Parent;
+		Context.Priority = Item.Priority;
+		Context.BlockAll = Item.BlockAll;
+		Contexts().push_back(Context);
+	}
+}
+
+const char* GroupContext(_action_group Group)
+{
+	switch (Group)
+	{
+	case agTransport: return "game.vehicle";
+	case agAiming: return "game.aiming";
+	case agUIGeneral: return "ui";
+	case agUIRadialWeapon: return "ui.radial";
+	case agUILogMenu: return "pda.logs";
+	case agUITaskMenu: return "pda.map";
+	case agUITaskJournal: return "pda.journal";
+	case agUIRecords: return "pda.records";
+	default: return "game";
+	}
+}
+
+_action* FindAction(const char* Name)
+{
+	if (!Name || !Name[0])
+	{
+		return nullptr;
+	}
+	for (int Index = 0; actions[Index].action_name; ++Index)
+	{
+		if (!_stricmp(Name, actions[Index].action_name))
+		{
+			return &actions[Index];
+		}
+	}
+	return nullptr;
+}
+
+bool BindingHasKey(const _binding& Binding, int Dik)
+{
+	_keyboard* const* Keys = pInput && pInput->GetControllerMode() ? Binding.m_gamepad : Binding.m_keyboard;
+	return (Keys[0] && Keys[0]->dik == Dik) || (Keys[1] && Keys[1]->dik == Dik);
+}
+}
+
+namespace Hotkeys
+{
+void RegisterContext(const char* Context, const char* Parent)
+{
+	HotkeyStorage::EnsureDefaultContexts();
+	if (!Context || !Context[0])
+	{
+		return;
+	}
+	for (HotkeyStorage::SContext& Item : HotkeyStorage::Contexts())
+	{
+		if (Item.Name == Context)
+		{
+			Item.Parent = Parent ? Parent : "";
+			return;
+		}
+	}
+	HotkeyStorage::SContext Item;
+	Item.Name = Context;
+	Item.Parent = Parent ? Parent : "";
+	HotkeyStorage::Contexts().push_back(Item);
+}
+
+void SetLayerProperties(const char* Context, int Priority, bool BlockAll)
+{
+	RegisterContext(Context, ContextParent(Context));
+	for (HotkeyStorage::SContext& Item : HotkeyStorage::Contexts())
+	{
+		if (Item.Name == Context)
+		{
+			Item.Priority = Priority;
+			Item.BlockAll = BlockAll;
+			return;
+		}
+	}
+}
+
+bool LayersEnabled()
+{
+	return HotkeyStorage::LayersOn;
+}
+
+const char* ContextLabel(const char* ContextName)
+{
+	for (const HotkeyStorage::SContext& Item : HotkeyStorage::Contexts())
+	{
+		if (Item.Name == ContextName)
+		{
+			return Item.Label.size() ? Item.Label.c_str() : "";
+		}
+	}
+	return "";
+}
+
+bool IsAncestorContext(const char* Ancestor, const char* ContextName)
+{
+	for (const char* Current = ContextParent(ContextName); Current && Current[0]; Current = ContextParent(Current))
+	{
+		if (!xr_strcmp(Current, Ancestor))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool IsContextRelated(const char* Left, const char* Right)
+{
+	return IsAncestorContext(Left, Right) || IsAncestorContext(Right, Left);
+}
+
+bool KeyboardHasKey(const _binding& Binding, int Dik)
+{
+	return (Binding.m_keyboard[0] && Binding.m_keyboard[0]->dik == Dik) || (Binding.m_keyboard[1] && Binding.m_keyboard[1]->dik == Dik);
+}
+
+EGameActions FindKeyboardMatch(EGameActions Id, int Dik, bool SameContext)
+{
+	if (u32(Id) >= u32(kNOTBINDED) || !actions[Id].action_name)
+	{
+		return kNOTBINDED;
+	}
+	const char* Own = Context(Id);
+	for (int Index = 0; Index < ActionSlotsCount; ++Index)
+	{
+		const _binding& Binding = g_key_bindings[Index];
+		if (!Binding.m_action || !Binding.m_action->action_name || Binding.m_action->id == Id)
+		{
+			continue;
+		}
+		if (!KeyboardHasKey(Binding, Dik))
+		{
+			continue;
+		}
+		const char* Other = Context(Binding.m_action->id);
+		const bool Same = !xr_strcmp(Own, Other);
+		if (SameContext ? Same : (!Same && IsContextRelated(Own, Other)))
+		{
+			return Binding.m_action->id;
+		}
+	}
+	return kNOTBINDED;
+}
+
+EGameActions FindKeyboardConflict(EGameActions Id, int Dik)
+{
+	return FindKeyboardMatch(Id, Dik, true);
+}
+
+EGameActions FindKeyboardOverlap(EGameActions Id, int Dik)
+{
+	return FindKeyboardMatch(Id, Dik, false);
+}
+
+void SetCustomHandler(const CustomHandler& Handler)
+{
+	HotkeyStorage::CustomActionHandler = Handler;
+}
+
+const HotkeyStorage::SContext* FindContext(const char* Context)
+{
+	for (const HotkeyStorage::SContext& Item : HotkeyStorage::Contexts())
+	{
+		if (Item.Name == Context)
+		{
+			return &Item;
+		}
+	}
+	return nullptr;
+}
+
+EGameActions ActionInContext(int Dik, const char* ContextName)
+{
+	if (!ContextName || !ContextName[0])
+	{
+		return kNOTBINDED;
+	}
+	for (int Index = 0; Index < ActionSlotsCount; ++Index)
+	{
+		const _binding& Binding = g_key_bindings[Index];
+		if (!Binding.m_action || !Binding.m_action->action_name)
+		{
+			continue;
+		}
+		if (!is_group_matching(Binding.m_action->key_group, g_current_keygroup))
+		{
+			continue;
+		}
+		if (xr_strcmp(Context(Binding.m_action->id), ContextName) != 0)
+		{
+			continue;
+		}
+		if (HotkeyStorage::BindingHasKey(Binding, Dik))
+		{
+			return Binding.m_action->id;
+		}
+	}
+	return kNOTBINDED;
+}
+
+void SortedLayers(xr_vector<const HotkeyStorage::SLayer*>& Result)
+{
+	Result.clear();
+	u32 RootOrder = 0;
+	for (const HotkeyStorage::SLayer& Layer : HotkeyStorage::Stack())
+	{
+		if (Layer.Root)
+		{
+			RootOrder = std::max(RootOrder, Layer.Order);
+		}
+	}
+	for (const HotkeyStorage::SLayer& Layer : HotkeyStorage::Stack())
+	{
+		if (Layer.Order >= RootOrder || (!Layer.Root && RootOrder == 0))
+		{
+			Result.push_back(&Layer);
+		}
+		else if (!Layer.Root && Layer.Context == "game")
+		{
+			Result.push_back(&Layer);
+		}
+	}
+	std::stable_sort(Result.begin(), Result.end(), [](const HotkeyStorage::SLayer* Left, const HotkeyStorage::SLayer* Right)
+	{
+		const HotkeyStorage::SContext* A = FindContext(Left->Context.c_str());
+		const HotkeyStorage::SContext* B = FindContext(Right->Context.c_str());
+		const int PriorityA = A ? A->Priority : 0;
+		const int PriorityB = B ? B->Priority : 0;
+		return PriorityA != PriorityB ? PriorityA > PriorityB : Left->Order > Right->Order;
+	});
+}
+
+bool DispatchLayers(int Dik)
+{
+	if (!HotkeyStorage::LayersOn)
+	{
+		return false;
+	}
+
+	xr_vector<const HotkeyStorage::SLayer*> Sorted;
+	SortedLayers(Sorted);
+	xr_vector<HotkeyStorage::SLayer> Layers;
+	Layers.reserve(Sorted.size());
+	for (const HotkeyStorage::SLayer* Layer : Sorted)
+	{
+		Layers.push_back(*Layer);
+	}
+
+	for (const HotkeyStorage::SLayer& Layer : Layers)
+	{
+		xr_vector<shared_str> Handles = Layer.Handles;
+		if (Handles.empty())
+		{
+			Handles.push_back(Layer.Context);
+		}
+
+		for (const shared_str& Handled : Handles)
+		{
+			const EGameActions Id = ActionInContext(Dik, Handled.c_str());
+			if (Id == kNOTBINDED)
+			{
+				continue;
+			}
+			if (!Layer.Handler.empty() && Layer.Handler(Id, Dik))
+			{
+				return true;
+			}
+			if (IsCustom(Id) && !HotkeyStorage::CustomActionHandler.empty() && HotkeyStorage::CustomActionHandler(Id))
+			{
+				return true;
+			}
+		}
+
+		const HotkeyStorage::SContext* LayerContext = FindContext(Layer.Context.c_str());
+		if (LayerContext && LayerContext->BlockAll)
+		{
+			break;
+		}
+	}
+	return false;
+}
+
+const char* ContextParent(const char* Context)
+{
+	HotkeyStorage::EnsureDefaultContexts();
+	if (!Context || !Context[0])
+	{
+		return nullptr;
+	}
+	for (const HotkeyStorage::SContext& Item : HotkeyStorage::Contexts())
+	{
+		if (Item.Name == Context)
+		{
+			return Item.Parent.size() ? Item.Parent.c_str() : nullptr;
+		}
+	}
+	return nullptr;
+}
+
+EGameActions Find(const char* Name)
+{
+	_action* Action = HotkeyStorage::FindAction(Name);
+	return Action ? Action->id : kNOTBINDED;
+}
+
+bool IsCustom(EGameActions Id)
+{
+	return Id >= kFIRST_CUSTOM_ACTION && Id < kNOTBINDED;
+}
+
+EGameActions Register(const char* Name, const char* ContextName)
+{
+	if (_action* Existing = HotkeyStorage::FindAction(Name))
+	{
+		return Existing->id;
+	}
+	if (!Name || !Name[0])
+	{
+		return kNOTBINDED;
+	}
+	if (HotkeyStorage::CustomCount >= kNOTBINDED - kFIRST_CUSTOM_ACTION)
+	{
+		Msg("! [hotkeys] too many custom actions, [%s] skipped", Name);
+		return kNOTBINDED;
+	}
+
+	const int Index = kFIRST_CUSTOM_ACTION + HotkeyStorage::CustomCount++;
+	_action& Action = actions[Index];
+	Action.action_name = HotkeyStorage::Store(Name);
+	Action.id = EGameActions(Index);
+	Action.key_group = _both;
+	Action.action_group = agCustom;
+	Action.context = HotkeyStorage::Store(ContextName && ContextName[0] ? ContextName : "game");
+	g_key_bindings[Index].m_action = &Action;
+
+	const auto Found = HotkeyStorage::Pending().find(shared_str(Name));
+	if (Found != HotkeyStorage::Pending().end())
+	{
+		const xr_vector<HotkeyStorage::SPendingBind> Binds = Found->second;
+		HotkeyStorage::Pending().erase(Found);
+		for (const HotkeyStorage::SPendingBind& Bind : Binds)
+		{
+			string512 Command;
+			xr_sprintf(Command, "%s %s %s", Bind.Command.c_str(), Name, Bind.Key.c_str());
+			Console->Execute(Command);
+		}
+	}
+
+	NotifyBindingsChanged();
+	return Action.id;
+}
+
+const char* Context(EGameActions Id)
+{
+	if (u32(Id) >= u32(kNOTBINDED) || !actions[Id].action_name)
+	{
+		return "";
+	}
+	return actions[Id].context ? actions[Id].context : HotkeyStorage::GroupContext(actions[Id].action_group);
+}
+
+void SetInfo(EGameActions Id, const char* Label, const char* OptionsGroup, int Hint)
+{
+	if (u32(Id) >= u32(kNOTBINDED))
+	{
+		return;
+	}
+	SHotkeyInfo& Info = HotkeyStorage::Infos()[int(Id)];
+	if (Label && Label[0])
+	{
+		Info.Label = Label;
+	}
+	if (OptionsGroup && OptionsGroup[0])
+	{
+		Info.OptionsGroup = OptionsGroup;
+	}
+	Info.Hint = Hint;
+	NotifyBindingsChanged();
+}
+
+const SHotkeyInfo* Info(EGameActions Id)
+{
+	const auto Found = HotkeyStorage::Infos().find(int(Id));
+	return Found != HotkeyStorage::Infos().end() ? &Found->second : nullptr;
+}
+
+EGameActions ActionAt(int Dik, const char* ContextName)
+{
+	for (const char* Current = ContextName; Current && Current[0]; Current = ContextParent(Current))
+	{
+		for (int Index = 0; Index < ActionSlotsCount; ++Index)
+		{
+			const _binding& Binding = g_key_bindings[Index];
+			if (!Binding.m_action || !Binding.m_action->action_name)
+			{
+				continue;
+			}
+			if (!is_group_matching(Binding.m_action->key_group, g_current_keygroup))
+			{
+				continue;
+			}
+			if (xr_strcmp(Context(Binding.m_action->id), Current) != 0)
+			{
+				continue;
+			}
+			if (HotkeyStorage::BindingHasKey(Binding, Dik))
+			{
+				return Binding.m_action->id;
+			}
+		}
+	}
+	return kNOTBINDED;
+}
+
+void ContextActions(const char* ContextName, xr_vector<EGameActions>& Result)
+{
+	Result.clear();
+	for (const auto& [Id, Item] : HotkeyStorage::Infos())
+	{
+		if (Item.Hint > 0 && !xr_strcmp(Context(EGameActions(Id)), ContextName))
+		{
+			Result.push_back(EGameActions(Id));
+		}
+	}
+	std::stable_sort(Result.begin(), Result.end(), [](EGameActions Left, EGameActions Right)
+	{
+		return Info(Left)->Hint < Info(Right)->Hint;
+	});
+}
+
+void OptionsActions(xr_vector<EGameActions>& Result)
+{
+	Result.clear();
+	for (const auto& [Id, Item] : HotkeyStorage::Infos())
+	{
+		if (Item.OptionsGroup.size())
+		{
+			Result.push_back(EGameActions(Id));
+		}
+	}
+	std::stable_sort(Result.begin(), Result.end(), [](EGameActions Left, EGameActions Right)
+	{
+		const SHotkeyInfo* A = Info(Left);
+		const SHotkeyInfo* B = Info(Right);
+		const int Group = xr_strcmp(A->OptionsGroup, B->OptionsGroup);
+		return Group != 0 ? Group < 0 : A->Hint < B->Hint;
+	});
+}
+
+u32 PushLayer(const char* ContextName, const xr_vector<shared_str>& Handles, const LayerHandler& Handler, bool Root)
+{
+	if (!ContextName || !ContextName[0])
+	{
+		return 0;
+	}
+	HotkeyStorage::SLayer Layer;
+	Layer.Context = ContextName;
+	Layer.Handles = Handles;
+	Layer.Handler = Handler;
+	Layer.Order = ++HotkeyStorage::LayerOrder;
+	Layer.Root = Root;
+	HotkeyStorage::Stack().push_back(Layer);
+	NotifyBindingsChanged();
+	return Layer.Order;
+}
+
+void PopLayer(u32 Id)
+{
+	xr_vector<HotkeyStorage::SLayer>& Stack = HotkeyStorage::Stack();
+	for (size_t Index = 0; Index < Stack.size(); ++Index)
+	{
+		if (Stack[Index].Order == Id)
+		{
+			Stack.erase(Stack.begin() + Index);
+			NotifyBindingsChanged();
+			return;
+		}
+	}
+}
+
+void PushContext(const char* ContextName)
+{
+	PushLayer(ContextName, {}, LayerHandler());
+}
+
+void PopContext(const char* ContextName)
+{
+	xr_vector<HotkeyStorage::SLayer>& Stack = HotkeyStorage::Stack();
+	for (size_t Index = Stack.size(); Index > 0; --Index)
+	{
+		if (Stack[Index - 1].Context == ContextName)
+		{
+			Stack.erase(Stack.begin() + (Index - 1));
+			NotifyBindingsChanged();
+			return;
+		}
+	}
+}
+
+const char* ActiveContext()
+{
+	xr_vector<const HotkeyStorage::SLayer*> Layers;
+	SortedLayers(Layers);
+	return Layers.empty() ? nullptr : Layers.front()->Context.c_str();
+}
+
+void KeyText(EGameActions Id, char* Buffer, int BufferSize)
+{
+	Buffer[0] = 0;
+	if (u32(Id) >= u32(kNOTBINDED) || !actions[Id].action_name)
+	{
+		return;
+	}
+	const _binding& Binding = g_key_bindings[Id];
+	if (pInput && pInput->GetControllerMode())
+	{
+		for (_keyboard* Key : Binding.m_gamepad)
+		{
+			if (Key)
+			{
+				xr_strcpy(Buffer, BufferSize, GetGamepadSymbol(Key->dik));
+				return;
+			}
+		}
+		return;
+	}
+	for (_keyboard* Key : Binding.m_keyboard)
+	{
+		if (Key)
+		{
+			xr_strcpy(Buffer, BufferSize, Key->key_local_name.c_str());
+			return;
+		}
+	}
+}
+
+u32 Revision()
+{
+	return HotkeyStorage::RevisionCounter;
+}
+
+void NotifyBindingsChanged()
+{
+	++HotkeyStorage::RevisionCounter;
+}
+
+void AddPendingBind(const char* Command, const char* Action, const char* Key)
+{
+	if (Command && Action && Key && Action[0] && Key[0])
+	{
+		HotkeyStorage::Pending()[shared_str(Action)].push_back({Command, Key});
+	}
+}
+
+void LoadConfig()
+{
+	HotkeyStorage::EnsureDefaultContexts();
+	HotkeyStorage::ConfigDefaults().clear();
+	if (!pSettings)
+	{
+		return;
+	}
+
+	if (pSettings->section_exist("hotkey_contexts"))
+	{
+		for (const CInifile::Item& Item : pSettings->r_section("hotkey_contexts").Data)
+		{
+			RegisterContext(Item.first.c_str(), Item.second.c_str());
+		}
+	}
+
+	HotkeyStorage::LayersOn = pSettings->read_if_exists<bool>("hotkey_layers", "enabled", false);
+
+	constexpr const char* LayerPrefix = "hotkey_layer.";
+	const size_t LayerPrefixLength = xr_strlen(LayerPrefix);
+	for (const CInifile::Sect& Section : pSettings->sections())
+	{
+		const char* SectionName = Section.Name.c_str();
+		if (!SectionName || strncmp(SectionName, LayerPrefix, LayerPrefixLength) != 0 || !SectionName[LayerPrefixLength])
+		{
+			continue;
+		}
+		const char* LayerName = SectionName + LayerPrefixLength;
+		const char* Parent = pSettings->read_if_exists<str_c>(SectionName, "parent", "");
+		if (Parent && Parent[0])
+		{
+			RegisterContext(LayerName, Parent);
+		}
+		const HotkeyStorage::SContext* Existing = FindContext(LayerName);
+		const int Priority = pSettings->read_if_exists<int>(SectionName, "priority", Existing ? Existing->Priority : 0);
+		const char* Block = pSettings->read_if_exists<str_c>(SectionName, "block", "");
+		const bool BlockAll = Block && Block[0] ? !xr_strcmp(Block, "all") : (Existing && Existing->BlockAll);
+		SetLayerProperties(LayerName, Priority, BlockAll);
+		const char* Label = pSettings->read_if_exists<str_c>(SectionName, "label", "");
+		if (Label && Label[0])
+		{
+			for (HotkeyStorage::SContext& Item : HotkeyStorage::Contexts())
+			{
+				if (Item.Name == LayerName)
+				{
+					Item.Label = Label;
+				}
+			}
+		}
+	}
+
+	constexpr const char* Prefix = "hotkey.";
+	const size_t PrefixLength = xr_strlen(Prefix);
+	for (const CInifile::Sect& Section : pSettings->sections())
+	{
+		const char* SectionName = Section.Name.c_str();
+		if (!SectionName || strncmp(SectionName, Prefix, PrefixLength) != 0 || !SectionName[PrefixLength])
+		{
+			continue;
+		}
+
+		const char* ActionName = SectionName + PrefixLength;
+		const char* ContextName = pSettings->read_if_exists<str_c>(SectionName, "context", "game");
+		const EGameActions Id = Register(ActionName, ContextName);
+		if (Id == kNOTBINDED)
+		{
+			continue;
+		}
+
+		SetInfo(Id,
+			pSettings->read_if_exists<str_c>(SectionName, "label", ""),
+			pSettings->read_if_exists<str_c>(SectionName, "options", ""),
+			pSettings->read_if_exists<int>(SectionName, "hint", 0));
+
+		const char* Keys[][2] = {{"key", "bind"}, {"key2", "bind_sec"}, {"gamepad", "bind_gamepad"}, {"gamepad2", "bind_gamepad_sec"}};
+		for (const auto& Key : Keys)
+		{
+			const char* Value = pSettings->read_if_exists<str_c>(SectionName, Key[0], "");
+			if (Value && Value[0])
+			{
+				HotkeyStorage::ConfigDefaults().push_back({Key[1], ActionName, Value});
+			}
+		}
+	}
+}
+
+void ApplyConfigDefaults()
+{
+	for (const HotkeyStorage::SConfigDefault& Item : HotkeyStorage::ConfigDefaults())
+	{
+		string512 Command;
+		xr_sprintf(Command, "%s %s %s", Item.Command.c_str(), Item.Action.c_str(), Item.Key.c_str());
+		Console->Execute(Command);
+	}
+	NotifyBindingsChanged();
+}
+}
 
 class CCC_Bind : public IConsole_Command
 {
@@ -1154,8 +1918,11 @@ public:
 			bRemapped	= true;
 		}
 
-		if (!action_name_to_ptr(action))
+		if (Hotkeys::Find(action) == kNOTBINDED)
+		{
+			Hotkeys::AddPendingBind(cName, action, key);
 			return;
+		}
 
 		int action_id						= action_name_to_id			(action);
 		if (action_id==kNOTBINDED)
@@ -1170,13 +1937,13 @@ public:
 		curr_pbinding->m_keyboard[m_work_idx]= pkeyboard;
 			
 		{
-			for(int idx=0; idx<bindings_count; ++idx)
+			for(int idx=0; idx<ActionSlotsCount; ++idx)
 			{
 				_binding*	binding			= &g_key_bindings[idx];
-				if(binding==curr_pbinding)	continue;
+				if(binding==curr_pbinding || !binding->m_action || !binding->m_action->action_name)	continue;
 
 				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
-				bool b_action_match = is_action_group_matching(binding->m_action->action_group, curr_pbinding->m_action->action_group);
+				bool b_action_match = !xr_strcmp(Hotkeys::Context(binding->m_action->id), Hotkeys::Context(curr_pbinding->m_action->id)) && binding->m_action->action_name;
 
 				if(binding->m_keyboard[0]==pkeyboard && b_conflict && b_action_match)
 					binding->m_keyboard[0]=nullptr;
@@ -1188,13 +1955,14 @@ public:
 
 
 		CStringTable::ReparseKeyBindings();
+		Hotkeys::NotifyBindingsChanged();
 	}
 
 	virtual void Save(IWriter* F) override
 	{
 		// Don't write "default_controls" section header - it causes conflicts when loading user.ltx
 		// The default_controls command would reload default_controls.ltx and overwrite user bindings
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<ActionSlotsCount;++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			if( pbinding->m_keyboard[m_work_idx] )
@@ -1209,8 +1977,8 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
-        for (int idx = 0; idx < bindings_count; ++idx) {
-            if (idx > bindings_count)
+        for (int idx = 0; idx < ActionSlotsCount; ++idx) {
+            if (idx > ActionSlotsCount)
                 continue;
             _binding* pbinding = &g_key_bindings[idx];
             if (!pbinding)
@@ -1250,8 +2018,11 @@ public:
 			bRemapped	= true;
 		}
 
-		if (!action_name_to_ptr(action))
+		if (Hotkeys::Find(action) == kNOTBINDED)
+		{
+			Hotkeys::AddPendingBind(cName, action, key);
 			return;
+		}
 
 		int action_id						= action_name_to_id			(action);
 		if (action_id==kNOTBINDED)
@@ -1266,28 +2037,29 @@ public:
 		curr_pbinding->m_gamepad[m_work_idx] = pkeyboard;
 			
 		{
-			for(int idx=0; idx<bindings_count; ++idx)
+			for(int idx=0; idx<ActionSlotsCount; ++idx)
 			{
 				_binding*	binding			= &g_key_bindings[idx];
-				if(binding==curr_pbinding)	continue;
+				if(binding==curr_pbinding || !binding->m_action || !binding->m_action->action_name)	continue;
 
 				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
 
-				if(binding->m_gamepad[0] == pkeyboard && b_conflict && is_action_group_matching(binding->m_action->action_group, curr_pbinding->m_action->action_group))
+				if(binding->m_gamepad[0] == pkeyboard && b_conflict && binding->m_action->action_name && !xr_strcmp(Hotkeys::Context(binding->m_action->id), Hotkeys::Context(curr_pbinding->m_action->id)))
 					binding->m_gamepad[0] = nullptr;
 
-				if (binding->m_gamepad[1] == pkeyboard && b_conflict && is_action_group_matching(binding->m_action->action_group, curr_pbinding->m_action->action_group))
+				if (binding->m_gamepad[1] == pkeyboard && b_conflict && binding->m_action->action_name && !xr_strcmp(Hotkeys::Context(binding->m_action->id), Hotkeys::Context(curr_pbinding->m_action->id)))
 					binding->m_gamepad[1] = nullptr;
 			}
 		}
 
 
 		CStringTable::ReparseKeyBindings();
+		Hotkeys::NotifyBindingsChanged();
 	}
 
 	virtual void Save(IWriter* F) override
 	{
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<ActionSlotsCount;++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			if( pbinding->m_gamepad[m_work_idx])
@@ -1302,8 +2074,8 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
-        for (int idx = 0; idx < bindings_count; ++idx) {
-            if (idx > bindings_count)
+        for (int idx = 0; idx < ActionSlotsCount; ++idx) {
+            if (idx > ActionSlotsCount)
                 continue;
             _binding* pbinding = &g_key_bindings[idx];
             if (!pbinding)
@@ -1332,12 +2104,13 @@ public:
 		pbinding->m_keyboard[m_work_idx]	= nullptr;
 
 		CStringTable::ReparseKeyBindings();
+		Hotkeys::NotifyBindingsChanged();
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
-        for (int idx = 0; idx < bindings_count; ++idx) {
-            if (idx > bindings_count)
+        for (int idx = 0; idx < ActionSlotsCount; ++idx) {
+            if (idx > ActionSlotsCount)
                 continue;
             _binding* pbinding = &g_key_bindings[idx];
             if (!pbinding)
@@ -1366,12 +2139,13 @@ public:
 		pbinding->m_gamepad[m_work_idx] = nullptr;
 
 		CStringTable::ReparseKeyBindings();
+		Hotkeys::NotifyBindingsChanged();
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
-        for (int idx = 0; idx < bindings_count; ++idx) {
-            if (idx > bindings_count)
+        for (int idx = 0; idx < ActionSlotsCount; ++idx) {
+            if (idx > ActionSlotsCount)
                 continue;
             _binding* pbinding = &g_key_bindings[idx];
             if (!pbinding)
@@ -1412,7 +2186,7 @@ public:
 
 	virtual void Execute(const char* args) override
 	{
-		for(int idx=0; idx<bindings_count;++idx)
+		for(int idx=0; idx<ActionSlotsCount;++idx)
 		{
 			_binding* pbinding		= &g_key_bindings[idx];
 			pbinding->m_keyboard[0]	= nullptr;
@@ -1421,6 +2195,7 @@ public:
 			pbinding->m_gamepad[1] = nullptr;
 		}
 		bindConsoleCmds.clear();
+		Hotkeys::NotifyBindingsChanged();
 	}
 };
 
@@ -1431,6 +2206,7 @@ public:
 
 	virtual void Execute(const char* args) override
 	{
+		Hotkeys::LoadConfig();
 		CCC_UnBindAll::Execute(args);
 		string_path				_cfg;
 		string_path				cmd;
@@ -1461,6 +2237,7 @@ public:
 			xr_strconcat(cmd, "cfg_load ", ModDir, ModFile.name.c_str());
 			Console->Execute(cmd);
 		}
+		Hotkeys::ApplyConfigDefaults();
 	}
 };
 

@@ -89,6 +89,7 @@ private:
 	CUIHotkeysHint* CreateHint(const char* Path, CUIWindow* Parent, int Index = 0);
 	void RefreshHints();
 	bool HandleAction(EGameActions Action);
+	bool HandleLayerAction(EGameActions Action, int Dik);
 	void RebuildList();
 	void SortTasks(xr_vector<CGameTask*>& Tasks) const;
 	void AddGroupHeader(bool Story);
@@ -117,6 +118,7 @@ private:
 	xr_vector<STabText> TabTexts;
 	ETaskListFilter Filter = ETaskListFilter::Active;
 	xr_vector<CUIHotkeysHint*> Hints;
+	CHotkeyContextScope HotkeyContext;
 	bool HintsControllerMode = false;
 
 	CUIScrollView* List = nullptr;
