@@ -20,6 +20,7 @@ class CUIListWnd;
 class CUIScrollView;
 class CUITreeViewItem;
 class CUIGamepadLegend;
+class CUIEncyclopediaCatalogWnd;
 
 class CUIEncyclopediaWnd final: public CUIWindow
 {
@@ -47,6 +48,7 @@ public:
 	virtual void		Reset						() override;
 protected:
 	u32					prevArticlesCount;
+	CUIEncyclopediaCatalogWnd*	Catalog = nullptr;
 	// Элементы графического оформления
 	CUIFrameWindow*		m_background;
 	CUIFrameLineWnd*	m_background2;

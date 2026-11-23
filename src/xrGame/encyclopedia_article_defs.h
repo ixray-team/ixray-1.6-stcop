@@ -6,7 +6,7 @@
 
 struct ARTICLE_DATA : public IPureSerializeObject<IReader,IWriter>
 {
-	enum EArticleType {eEncyclopediaArticle, eJournalArticle, eTaskArticle, eInfoArticle};
+	enum EArticleType {eEncyclopediaArticle, eJournalArticle, eTaskArticle, eInfoArticle, eKnowledgeArticle};
 
 	ARTICLE_DATA			()
 		:	article_id		(NULL),

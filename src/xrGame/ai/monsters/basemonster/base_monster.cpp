@@ -25,6 +25,8 @@
 #include "../../../EntityCondition.h"
 #include "../../../sound_player.h"
 #include "../../../Level.h"
+#include "../../../Actor.h"
+#include "../../../EncyclopediaCatalog.h"
 #include "../state_manager.h"
 #include "../controlled_entity.h"
 #include "../control_animation_base.h"
@@ -470,6 +472,11 @@ void CBaseMonster::Die(CObject* who)
 	}
 
 	inherited::Die(who);
+
+	if (who && Actor() && who->ID() == Actor()->ID())
+	{
+		EncyclopediaCatalog::OnClassEncountered(cNameSect().c_str());
+	}
 
 	if (is_special_killer(who))
 		sound().play			(MonsterSound::eMonsterSoundDieInAnomaly);

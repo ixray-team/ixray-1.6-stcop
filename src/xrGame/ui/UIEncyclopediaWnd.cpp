@@ -21,6 +21,7 @@
 #include "../Actor.h"
 #include "object_broker.h"
 #include "../../xrUI/UIHelper.h"
+#include "UIEncyclopediaCatalogWnd.h"
 
 #define				ENCYCLOPEDIA_DIALOG_XML		"encyclopedia.xml"
 
@@ -51,6 +52,15 @@ void CUIEncyclopediaWnd::Init()
 	CUIXmlInit	xml_init;
 
 	xml_init.InitWindow		(uiXml, "main_wnd", 0, this);
+
+	if (uiXml.NavigateToNode("catalog", 0))
+	{
+		Catalog = new CUIEncyclopediaCatalogWnd();
+		Catalog->SetAutoDelete(true);
+		AttachChild(Catalog);
+		Catalog->Init(ENCYCLOPEDIA_DIALOG_XML);
+		return;
+	}
 	
 	CUIWindow* frameParent = this;
 	if (uiXml.NavigateToNode("background"))
@@ -135,7 +145,7 @@ void CUIEncyclopediaWnd::Init()
 #include "../../xrEngine/string_table.h"
 void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 {
-	if (UIIdxList == pWnd && LIST_ITEM_CLICKED == msg)
+	if (!Catalog && UIIdxList == pWnd && LIST_ITEM_CLICKED == msg)
 	{
 		CUITreeViewItem *pTVItem = static_cast<CUITreeViewItem*>(pData);
 		OnTreeViewItemClicked(pTVItem);
@@ -177,6 +187,11 @@ void CUIEncyclopediaWnd::OnTreeViewItemClicked(CUITreeViewItem* pTVItem)
 
 void CUIEncyclopediaWnd::Draw()
 {
+	if (Catalog)
+	{
+		inherited::Draw();
+		return;
+	}
 	if(	m_flags.test(eNeedReload ))
 	{
 		if(Actor()->encyclopedia_registry->registry().objects_ptr() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
@@ -206,6 +221,12 @@ void CUIEncyclopediaWnd::ReloadArticles()
 
 void CUIEncyclopediaWnd::Show(bool status)
 {
+	if (Catalog)
+	{
+		inherited::Show(status);
+		Catalog->Show(status);
+		return;
+	}
 	if (status)
 		ReloadArticles();
 
@@ -215,6 +236,10 @@ void CUIEncyclopediaWnd::Show(bool status)
 
 bool CUIEncyclopediaWnd::HasArticle(shared_str id)
 {
+	if (Catalog)
+	{
+		return false;
+	}
 	ReloadArticles();
 	for(std::size_t i = 0; i<m_ArticlesDB.size(); ++i)
 	{
@@ -226,6 +251,10 @@ bool CUIEncyclopediaWnd::HasArticle(shared_str id)
 
 void CUIEncyclopediaWnd::DeleteArticles()
 {
+	if (Catalog)
+	{
+		return;
+	}
 	UIIdxList->RemoveAll();
 	delete_data			(m_ArticlesDB);
 }
@@ -294,6 +323,10 @@ void CUIEncyclopediaWnd::Reset()
 
 bool CUIEncyclopediaWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 {
+	if (Catalog)
+	{
+		return inherited::OnGamepadKeyAction(id, gamepad_action);
+	}
 	if (gamepad_action == WINDOW_KEY_PRESSED)
 	{
 		if (UIIdxList->GetItemsCount())
@@ -397,6 +430,10 @@ bool CUIEncyclopediaWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 
 bool CUIEncyclopediaWnd::OnGamepadKeyHold(int id)
 {
+	if (Catalog)
+	{
+		return inherited::OnGamepadKeyHold(id);
+	}
 	if (is_binded(kUI_DOWN, id))
 	{
 		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP))

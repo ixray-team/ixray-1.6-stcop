@@ -4,6 +4,7 @@
 #include "Torch.h"
 #include "EffectorNightVision.h"
 #include "ControllerAutoaim.h"
+#include "EncyclopediaCatalog.h"
 #include "HUDManager.h"
 #include "Car.h"
 #include "cameralook.h"
@@ -3349,6 +3350,7 @@ void CActor::OnItemTake(CInventoryItem *inventory_item)
 		OnItemTakeFromGround(inventory_item);
 	}
 	CInventoryOwner::OnItemTake(inventory_item);
+	EncyclopediaCatalog::OnItemTake(inventory_item->object().cNameSect().c_str());
 	if (OnClient()) return;
 }
 

@@ -5,6 +5,7 @@
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Actor.h"
+#include "EncyclopediaCatalog.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../xrEngine/EngineAPI.h"
@@ -1910,6 +1911,10 @@ void CAnomalyZone::net_Relcase(CObject* O)
 
 void CAnomalyZone::enter_Zone(SZoneObjectInfo& io)
 {
+	if (io.object && Actor() && io.object->ID() == Actor()->ID())
+	{
+		EncyclopediaCatalog::OnClassEncountered(cNameSect().c_str());
+	}
 	if(m_zone_flags.test(eAffectPickDOF) && Level().CurrentEntity())
 	{
 		if(io.object->ID()==Level().CurrentEntity()->ID())
