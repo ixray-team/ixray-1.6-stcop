@@ -22,6 +22,7 @@
 #include "../InventoryWeaponSlotLayout.h"
 #include "../Car.h"
 #include "../Actor.h"
+#include "../WeaponCustomizeScript.h"
 
 void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
 void OpenWeaponCustomize(u32 id);
@@ -494,7 +495,8 @@ void CUIActorMenuBase::PropertiesBoxForWeapon(CUICellItem* cell_item, PIItem ite
 	CWeapon* pWeapon = item->cast_weapon();
 	if (!item->ItemDesc().m_customize_bones.empty())
 	{
-		m_UIPropertiesBox->AddItem("Customize", nullptr, INVENTORY_CUSTOMIZE);
+		const shared_str Label = g_pStringTable->translate("st_weapon_customize");
+		m_UIPropertiesBox->AddItem(xr_strcmp(Label.c_str(), "st_weapon_customize") ? Label.c_str() : "Customize", nullptr, INVENTORY_CUSTOMIZE);
 		b_show = true;
 	}
 	if (pWeapon && pWeapon->IsGrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
@@ -1034,7 +1036,10 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	}
 	case INVENTORY_CUSTOMIZE:
 		{
-			OpenWeaponCustomize(item->object_id());
+			if (!WeaponCustomizeScript::TryOpen(item))
+			{
+				OpenWeaponCustomize(item->object_id());
+			}
 			break;
 		}
 	case INVENTORY_PLAY_ACTION:

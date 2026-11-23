@@ -32,6 +32,7 @@ class CUIListWnd;
 class CUIStackPanel;
 class CUIArrow;
 class CUIGamepadLegend;
+class CUIWeaponViewport;
 
 class CScriptXmlInit 
 {
@@ -80,6 +81,8 @@ public:
 	CUIListBox*			InitListBox(const char* path, CUIWindow* parent);
 	CUIProgressBar*		InitProgressBar(const char* path, CUIWindow* parent);
 	CUIArrow*			InitArrow(const char* path, CUIWindow* parent);
+	CUIWeaponViewport*	InitWeaponViewport(const char* path, CUIWindow* parent);
+	CUIStatic*			InitHotkeyBar(const char* path, CUIWindow* parent);
 protected:
 	CUIXml	m_xml;
 public:

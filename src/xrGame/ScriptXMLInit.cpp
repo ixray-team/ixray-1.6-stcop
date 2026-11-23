@@ -25,6 +25,8 @@
 #include "../../xrUI/Widgets/UIStackPanel.h"
 #include "../../xrUI/Widgets/UIArrow.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
+#include "ui/UIHotkeysHint.h"
+#include "ui/UIWeaponViewport.h"
 
 using namespace luabind;
 
@@ -270,6 +272,25 @@ CUI3tButton* CScriptXmlInit::Init3tButton(const char* path, CUIWindow* parent)
 	return pWnd;	
 }
 
+CUIWeaponViewport* CScriptXmlInit::InitWeaponViewport(const char* path, CUIWindow* parent)
+{
+	CUIWeaponViewport* pWnd = new CUIWeaponViewport();
+	CUIXmlInit::InitWindow(m_xml, path, 0, pWnd);
+	pWnd->SetFov(m_xml.ReadAttribFlt(path, 0, "fov", 20.0f));
+	pWnd->SetZoomLimits(m_xml.ReadAttribFlt(path, 0, "zoom_min", 0.6f), m_xml.ReadAttribFlt(path, 0, "zoom_max", 4.0f));
+	pWnd->SetAutoRotate(m_xml.ReadAttribInt(path, 0, "auto_rotate", 0) != 0);
+	_attach_child(pWnd, parent);
+	return pWnd;
+}
+
+CUIStatic* CScriptXmlInit::InitHotkeyBar(const char* path, CUIWindow* parent)
+{
+	CUIHotkeysHint* pWnd = new CUIHotkeysHint();
+	pWnd->InitFromXml(m_xml, path);
+	_attach_child(pWnd, parent);
+	return pWnd;
+}
+
 CUITabControl* CScriptXmlInit::InitTab(const char* path, CUIWindow* parent)
 {
 	CUITabControl* pWnd = new CUITabControl();
@@ -420,6 +441,8 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitList",				&CScriptXmlInit::InitListWnd)
 		.def("InitProgressBar",			&CScriptXmlInit::InitProgressBar)
 		.def("InitArrow",				&CScriptXmlInit::InitArrow)
+		.def("InitWeaponViewport",		&CScriptXmlInit::InitWeaponViewport)
+		.def("InitHotkeyBar",			&CScriptXmlInit::InitHotkeyBar)
 	];
 
 }

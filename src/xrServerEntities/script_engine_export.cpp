@@ -28,6 +28,7 @@
 #	include "ui/UIActorMenu.h"
 #	include "ui/PdaRecords.h"
 #	include "HotkeysScript.h"
+#	include "WeaponCustomizeScript.h"
 #	include	"ActorCondition.h"
 #	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 #	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
@@ -205,6 +206,7 @@ void export_classes	(lua_State *L)
 	CUIActorMenu::script_register(L);
 	pda_records_registrator::script_register(L);
 	hotkeys_registrator::script_register(L);
+	weapon_customize_registrator::script_register(L);
 	CActorCondition::script_register(L);
 	CInventoryOwner::script_register(L);
 	CGameTaskManager::script_register(L);

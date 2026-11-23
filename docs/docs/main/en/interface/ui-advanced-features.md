@@ -27,6 +27,7 @@ This page serves as an overview of new UI features. Each page below is provided 
 15. [PDA "Records" tab](pda-records.md)
 16. [PDA "Reference" tab](pda-reference.md)
 17. [Hotkeys: actions, contexts and hints](hotkeys.md)
+18. [Weapon customization window](weapon-customize.md)
 
 ## Quick toggles
 
