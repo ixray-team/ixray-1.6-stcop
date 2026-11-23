@@ -270,6 +270,12 @@ void					CRender::set_Object				(IRenderable*		O )
 }
 void					CRender::apply_object			(IRenderable*		O )
 {
+	if (val_bUI)
+	{
+		// UI icons are not in the world: lighting left from the last world object makes them dark.
+		RCache.set_c(c_ldynamic_props, 0.5f, 0.5f, 0.5f, 0.5f);
+		return;
+	}
 	if (0==O)			return	;
 	if (PHASE_NORMAL==phase	&& O->renderable_ROS())		{
 		CROS_impl& LT		= *((CROS_impl*)O->renderable.pROS);

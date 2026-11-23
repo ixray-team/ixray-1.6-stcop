@@ -235,6 +235,8 @@ void CUI3dStatic::Draw()
 
 		pCurrentVisual->getVisData().marker = u32(-1);
 
+		// The last world object may already be destroyed; icons use fixed UI lighting.
+		::Render->set_Object(nullptr);
 		::Render->set_Transform(&matrix);
 		::Render->add_Visual(pCurrentVisual, true);
 

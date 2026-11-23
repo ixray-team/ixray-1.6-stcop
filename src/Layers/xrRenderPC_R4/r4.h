@@ -171,6 +171,18 @@ public:
 
 	ICF void						apply_object				(IRenderable*	O)
 	{
+		if (val_bUI)
+		{
+			// UI icons are not in the world: lighting left from the last world object makes them dark.
+			o_hemi = 0.75f;
+			o_sun = 0.75f;
+			for (float& Face : o_hemi_cube)
+			{
+				Face = 1.0f;
+			}
+			avg_lit_color = avg_lit_dir = { 0,0,0 };
+			return;
+		}
 		if (0==O)					return;
 		if (0==O->renderable_ROS())	return;
 		CROS_impl& LT				= *((CROS_impl*)O->renderable_ROS());
