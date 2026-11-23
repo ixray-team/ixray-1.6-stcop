@@ -268,11 +268,8 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 
 	}else
 	{
-		Msg("~ Found archive without ini header: %s", A.path.c_str());
-
 		if (!strstr(A.path.c_str(), ".xdb"))
 		{
-			Msg("Assuming that [%s] is encrypted SoC archive", A.path.c_str());
 			shouldDecrypt = true;
 		}
 
