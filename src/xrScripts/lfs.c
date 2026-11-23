@@ -79,7 +79,7 @@
 typedef struct dir_data {
 	int  closed;
 #ifdef _WIN32
-	long hFile;
+	intptr_t hFile;
 	char pattern[MAX_DIR_LENGTH + 1];
 #else
 	DIR* dir;
@@ -422,7 +422,7 @@ static int dir_iter(lua_State* L) {
 	luaL_argcheck(L, !d->closed, 1, "closed directory");
 #ifdef _WIN32
 	if (d->hFile == 0L) { /* first entry */
-		if ((d->hFile = (long)_findfirst(d->pattern, &c_file)) == -1L) {
+		if ((d->hFile = _findfirst(d->pattern, &c_file)) == -1L) {
 			lua_pushnil(L);
 			lua_pushstring(L, strerror(errno));
 			return 2;
@@ -492,7 +492,7 @@ static int dir_iter_factory(lua_State* L) {
 	d->hFile = 0L;
 	luaL_getmetatable(L, DIR_METATABLE);
 	lua_setmetatable(L, -2);
-	if (strlen(path) > MAX_DIR_LENGTH)
+	if (strlen(path) > MAX_DIR_LENGTH - 2)
 		luaL_error(L, "path too long: %s", path);
 	else
 		sprintf(d->pattern, "%s/*", path);
