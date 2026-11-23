@@ -4261,12 +4261,12 @@ void CCar::TeleportCarAndDriver(const Fvector& position)
 		return;
 	}
 
-	StopEngine();
-	HandBreak();
-
-	// Keep the car orientation and move it so the driver's seat lands at the
-	// requested camera position. Moving the actor alone does not work: the car
-	// copies Owner()->XFORM() from its seat transform every frame.
+	// Teleporting is a camera operation, not an engine stop. Preserve the
+	// current engine and drive state; zeroing the shell velocities below keeps
+	// the car stationary at the destination. Keep the car orientation and move
+	// it so the driver's seat lands at the requested camera position. Moving
+	// the actor alone does not work: the car copies Owner()->XFORM() from its
+	// seat transform every frame.
 	Fvector SeatPosition;
 	XFORM().transform_tiny(SeatPosition, m_sits_transforms.c);
 
