@@ -10,7 +10,7 @@
 
 namespace EncyclopediaCatalogConfig
 {
-constexpr const char* Root = "encyclopedia";
+constexpr const char* Root = "encyclopedia_catalog";
 constexpr const char* SectionPrefix = "encyclopedia_section.";
 constexpr const char* SchemePrefix = "encyclopedia_scheme.";
 constexpr const char* OverridePrefix = "encyclopedia.";
@@ -169,7 +169,7 @@ xr_string FormatNumber(float Value, const xr_string& Format)
 	{
 		xr_sprintf(Buffer, "%.2f", Value);
 	}
-	else if (_abs(Value) >= 10.f)
+	else if (std::fabs(Value) >= 10.f)
 	{
 		xr_sprintf(Buffer, "%d", iFloor(Value + (Value >= 0.f ? 0.5f : -0.5f)));
 	}
