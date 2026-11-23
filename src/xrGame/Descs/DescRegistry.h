@@ -8,6 +8,12 @@ class TDescRegistry final
 public:
 	static const TDesc& Get(const shared_str& Section)
 	{
+		if (!Section.size())
+		{
+			static const TDesc Default;
+			return Default;
+		}
+
 		{
 			xrSRWLockGuard Guard(Lock, true);
 
@@ -29,6 +35,14 @@ public:
 		xr_unique_ptr<TDesc> Desc = xr_make_unique<TDesc>();
 		Desc->Load(Section);
 		return *Storage.emplace(Section, std::move(Desc)).first->second;
+	}
+
+	static TDesc& GetMutable(const shared_str& Section)
+	{
+		Get(Section);
+
+		xrSRWLockGuard Guard(Lock, true);
+		return *Storage.at(Section);
 	}
 
 	static void Clear()

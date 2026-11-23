@@ -31,10 +31,6 @@ static Fmatrix ReadAttachPlacement(const nlohmann::json& Json)
 
 void SInventoryItemDesc::Load(const shared_str& Section)
 {
-	if (!Section.size())
-	{
-		return;
-	}
 	if (pSettings->line_exist(Section, "parse_spawn_items") && pSettings->line_exist(Section, "parse_spawn_chances"))
 	{
 		shared_str SpawnList = pSettings->r_string(Section, "parse_spawn_items");
@@ -63,17 +59,6 @@ void SInventoryItemDesc::Load(const shared_str& Section)
 
 	m_custom_text_anchor = CInventoryItem::ParseInvCellAnchor(pSettings->read_if_exists<str_c>(Section, "item_custom_text_anchor", "bottom_right"));
 	m_custom_mark_anchor = CInventoryItem::ParseInvCellAnchor(pSettings->read_if_exists<str_c>(Section, "item_custom_mark_anchor", "bottom_right"));
-
-	m_attach_hud_visual = pSettings->read_if_exists<str_c>(Section, "hud_visual", "");
-	m_anim_pose = pSettings->read_if_exists<str_c>(Section, "anim_pose", "");
-	m_ik_mark = pSettings->read_if_exists<str_c>(Section, "ik_mark", "");
-	m_fingers_mark = pSettings->read_if_exists<str_c>(Section, "ik_fingers_mark", "");
-	m_aim_bone = pSettings->read_if_exists<str_c>(Section, "aim_bone", "");
-	m_fire_bone = pSettings->read_if_exists<str_c>(Section, "fire_bone", "");
-	m_fire_point = pSettings->read_if_exists<Fvector3>(Section, "fire_point", m_fire_point);
-	m_hud_fire_point = pSettings->read_if_exists<Fvector3>(Section, "hud_fire_point", m_fire_point);
-	m_silencer = pSettings->read_if_exists<bool>(Section, "is_silencer", false);
-	m_grenade_launcher = pSettings->read_if_exists<bool>(Section, "is_grenade_launcher", false);
 
 	if (pSettings->line_exist(Section, "attach_hud_mirror"))
 	{

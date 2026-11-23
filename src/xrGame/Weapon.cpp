@@ -183,24 +183,42 @@ void CWeapon::UpdateXForm()
 	}
 }
 
+void CWeapon::FirePoint(const Fmatrix& xform, const shared_str& bone_name, const Fvector& point, Fvector& result) const
+{
+	if (!bone_name.size())
+	{
+		xform.transform_tiny(result, point);
+		return;
+	}
+
+	IKinematics* kin = PKinematics(Visual());
+	const u16 bone = kin->LL_BoneID(bone_name);
+	R_ASSERT3(bone != BI_NONE, "fire bone not found in weapon model", bone_name.c_str());
+
+	kin->CalculateBones(true);
+	Fmatrix bone_xform;
+	bone_xform.mul_43(xform, kin->LL_GetTransform(bone));
+	bone_xform.transform_tiny(result, point);
+}
+
 static void AttachFirePoint(PIItem item, bool hud, Fvector& point)
 {
 	const SInventoryItemDesc& desc = item->ItemDesc();
 	IKinematics* kin = nullptr;
 	Fmatrix xform;
-	if (!desc.m_fire_bone.size() || !item->AttachTransform(hud, kin, xform))
+	if (!desc.FireBone.size() || !item->AttachTransform(hud, kin, xform))
 	{
 		return;
 	}
 
-	const u16 bone = kin->LL_BoneID(desc.m_fire_bone);
+	const u16 bone = kin->LL_BoneID(desc.FireBone);
 	if (bone == BI_NONE)
 	{
 		return;
 	}
 
 	xform.mulB_43(kin->LL_GetTransform(bone));
-	xform.transform_tiny(point, hud ? desc.m_hud_fire_point : desc.m_fire_point);
+	xform.transform_tiny(point, hud ? desc.HudFirePoint : desc.FirePoint);
 	if (hud)
 	{
 		point = g_player_hud->ToWorld(point);
@@ -237,12 +255,12 @@ void CWeapon::UpdateFireDependencies_internal(bool need_invalidate)
 			parent.i.invert();
 		}
 
-		Fvector& fp = vLoadedFirePoint;
-		Fvector& fp2 = vLoadedFirePoint2;
+		const SWeaponDesc& WPDesc = WeaponDesc();
+		const SInventoryItemDesc& IIDesc = ItemDesc();
 		Fvector& sp = vLoadedShellPoint;
 
-		parent.transform_tiny(m_current_firedeps.vLastFP, fp);
-		parent.transform_tiny(m_current_firedeps.vLastFP2, fp2);
+		FirePoint(parent, IIDesc.FireBone, IIDesc.FirePoint, m_current_firedeps.vLastFP);
+		FirePoint(parent, WPDesc.FireBoneGL, WPDesc.FirePointGL, m_current_firedeps.vLastFP2);
 		parent.transform_tiny(m_current_firedeps.vLastSP, sp);
 
 		m_current_firedeps.vLastFD.set(0.f, 0.f, 1.f);
@@ -265,6 +283,8 @@ void CWeapon::UpdateFireDependencies_internal(bool need_invalidate)
 
 void CWeapon::Load		(const char* section)
 {
+	CurrentWeaponDesc = &SWeaponDesc::Registry::Get(section);
+
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
 	LoadVfxScales(section);
@@ -879,20 +899,9 @@ void CWeapon::LoadShootingParams(const char* section)
 		misfireStartProbability = misfireProbability;
 		misfireEndProbability = (misfireProbability + misfireConditionK) * 0.25f;
 	}
+
 	conditionDecreasePerShot = pSettings->r_float(section, "condition_shot_dec");
 	conditionDecreasePerQueueShot = pSettings->read_if_exists<float>(section, "condition_queue_shot_dec", conditionDecreasePerShot);
-
-
-	vLoadedFirePoint = pSettings->r_fvector3(section, "fire_point");
-
-	if (pSettings->line_exist(section, "fire_point2"))
-	{
-		vLoadedFirePoint2 = pSettings->r_fvector3(section, "fire_point2");
-	}
-	else
-	{
-		vLoadedFirePoint2 = vLoadedFirePoint;
-	}
 }
 
 void CWeapon::LoadVfxScales(const char* section)
@@ -1823,7 +1832,7 @@ void CWeapon::renderable_Render		()
 
 static bool IsMuzzle(PIItem item)
 {
-	return !item->ItemDesc().m_grenade_launcher && (item->ItemDesc().m_fire_bone.size() || item->ItemDesc().m_silencer);
+	return !item->ItemDesc().m_grenade_launcher && (item->ItemDesc().FireBone.size() || item->ItemDesc().m_silencer);
 }
 
 void CWeapon::OnAttachmentInc(PIItem item)

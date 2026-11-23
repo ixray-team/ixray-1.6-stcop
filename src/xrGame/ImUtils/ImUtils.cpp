@@ -2,11 +2,90 @@
 
 #include "ImUtils.h"
 #include "../xrEngine/xr_input.h"
+#include "../Weapon.h"
 
 clsid_manager* g_pClsidManager;
 CImGuiGameSearchManager imgui_search_manager;
 CHudAdjustManager imgui_hud_adjust_manager;
 CActorAnimationManager imgui_actor_animation_manager;
+
+bool ImGuiBoneCombo(const char* label, IKinematics* model, shared_str& bone, bool allow_none)
+{
+	if (!ImGui::BeginCombo(label, bone.size() ? bone.c_str() : "<none>"))
+	{
+		return false;
+	}
+
+	bool changed = false;
+
+	if (allow_none && ImGui::Selectable("<none>", !bone.size()))
+	{
+		bone = nullptr;
+		changed = true;
+	}
+
+	for (const auto& [name, id] : *model->LL_Bones())
+	{
+		if (ImGui::Selectable(name.c_str(), name == bone))
+		{
+			bone = name;
+			changed = true;
+		}
+	}
+
+	ImGui::EndCombo();
+	return changed;
+}
+
+CInventoryItem* WeaponFirePointAttach(CWeapon* wpn, bool gl)
+{
+	PIItem item = gl ? wpn->m_grenade_launcher : wpn->m_muzzle;
+	return item && item->ItemDesc().FireBone.size() ? item : nullptr;
+}
+
+void ImGuiAttachFirePoint(CInventoryItem* item, bool hud, float step)
+{
+	const shared_str& section = item->m_section_id;
+	SInventoryItemDesc& desc = SInventoryItemDesc::Registry::GetMutable(section);
+	IKinematics* model = hud ? item->HudModel() : PKinematics(item->object().Visual());
+	Fvector& point = hud ? desc.HudFirePoint : desc.FirePoint;
+
+	ImGui::PushID(item->object_id());
+	ImGui::SeparatorText(section.c_str());
+
+	if (ImGui::Button("Reset"))
+	{
+		const Fvector fire_point = pSettings->read_if_exists<Fvector3>(section, "fire_point", zero_vel);
+		point = hud ? pSettings->read_if_exists<Fvector3>(section, "hud_fire_point", fire_point) : fire_point;
+		desc.FireBone = pSettings->read_if_exists<str_c>(section, "fire_bone", "");
+	}
+
+	if (model)
+	{
+		ImGuiBoneCombo("Bone", model, desc.FireBone, false);
+	}
+
+	ImGui::DragFloat("X", &point.x, step, -100.0f, 100.0f, "%.6f");
+	ImGui::DragFloat("Y", &point.y, step, -100.0f, 100.0f, "%.6f");
+	ImGui::DragFloat("Z", &point.z, step, -100.0f, 100.0f, "%.6f");
+
+	ImGui::PopID();
+}
+
+void SaveWeaponAttachFirePoints(CInifile& file, CWeapon* wpn, bool hud)
+{
+	for (bool gl : { false, true })
+	{
+		if (CInventoryItem* item = WeaponFirePointAttach(wpn, gl))
+		{
+			const SInventoryItemDesc& desc = item->ItemDesc();
+			const char* section = item->m_section_id.c_str();
+
+			file.w_string(section, "fire_bone", desc.FireBone.c_str());
+			file.w_fvector3(section, hud ? "hud_fire_point" : "fire_point", hud ? desc.HudFirePoint : desc.FirePoint);
+		}
+	}
+}
 
 int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
 {

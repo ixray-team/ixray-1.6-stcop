@@ -15,6 +15,7 @@
 #include "Actor.h"
 #include "script_game_object.h"
 #include "Scope.h"
+#include "Descs/WeaponDesc.h"
 
 #include "../xrScripts/script_export_space.h"
 
@@ -708,9 +709,13 @@ public:
 	IC bool strapped_mode() const { return m_strapped_mode; }
 	IC bool strapped_mode_rifle() const { return m_strapped_mode_rifle; }
 
-	//загружаемые параметры
-	Fvector					vLoadedFirePoint;
-	Fvector					vLoadedFirePoint2;
+	void FirePoint(const Fmatrix& xform, const shared_str& bone_name, const Fvector& point, Fvector& result) const;
+
+	const SWeaponDesc& WeaponDesc() const
+	{
+		VERIFY(CurrentWeaponDesc);
+		return *CurrentWeaponDesc;
+	}
 
 private:
 	firedeps				m_current_firedeps;
@@ -729,6 +734,8 @@ protected:
 	}
 
 	virtual void LoadFireParams(const char* section) override;
+
+	const SWeaponDesc* CurrentWeaponDesc = nullptr;
 
 public:
 	ICF const Fvector& get_LastFP(bool need_invalidate = false)

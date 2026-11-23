@@ -30,16 +30,26 @@ struct SInventoryItemDesc final
 	shared_str m_icon_name;
 	SInventoryParseItem m_parse_params;
 	xr_hash_map<shared_str, RStringVec> m_customize_bones;
+	XPROPERTY(IniReadExist, Name="hud_visual")
 	shared_str m_attach_hud_visual;
 	xr_hash_map<shared_str, RStringVec> m_attach_hud_mirrors;
+	XPROPERTY(IniReadExist, Name="anim_pose")
 	shared_str m_anim_pose;
+	XPROPERTY(IniReadExist, Name="ik_mark")
 	shared_str m_ik_mark;
+	XPROPERTY(IniReadExist, Name="ik_fingers_mark")
 	shared_str m_fingers_mark;
+	XPROPERTY(IniReadExist, Name="aim_bone")
 	shared_str m_aim_bone;
-	shared_str m_fire_bone;
-	Fvector m_fire_point = { 0.0f, 0.0f, 0.0f };
-	Fvector m_hud_fire_point = { 0.0f, 0.0f, 0.0f };
+	XPROPERTY(IniReadExist, Name="fire_bone")
+	shared_str FireBone;
+	XPROPERTY(IniReadExist, Name = "fire_point")
+	Fvector FirePoint = zero_vel;
+	XPROPERTY(IniReadExist, Name = "hud_fire_point")
+	Fvector HudFirePoint = zero_vel;
+	XPROPERTY(IniReadExist, Name="is_silencer")
 	bool m_silencer = false;
+	XPROPERTY(IniReadExist, Name="is_grenade_launcher")
 	bool m_grenade_launcher = false;
 	RStringVec m_conflicts;
 	xr_hash_map<shared_str, SAttachPlacement> m_attach_placements;

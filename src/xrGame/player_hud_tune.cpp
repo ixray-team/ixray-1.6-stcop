@@ -5,6 +5,7 @@
 #include "../xrEngine/xr_input.h"
 #include "HUDManager.h"
 #include "HudItem.h"
+#include "Weapon.h"
 #include "../xrEngine/Effector.h"
 #include "../xrEngine/CameraManager.h"
 #include "../FDemoRecord.h"
@@ -197,6 +198,12 @@ void attachable_hud_item::debug_draw_firedeps()
 
 		firedeps			fd;
 		setup_firedeps		(fd);
+
+		if (CWeapon* wpn = m_parent_hud_item ? m_parent_hud_item->cast_weapon() : nullptr)
+		{
+			fd.vLastFP = wpn->get_LastFP();
+			fd.vLastFP2 = wpn->get_LastFP2();
+		}
 		
 		Fobb obb;
 		Fmatrix trans = m_parent->ToWorld(m_item_transform);

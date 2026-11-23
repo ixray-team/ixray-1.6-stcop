@@ -14,6 +14,7 @@ class CUICellItem;
 struct attachable_hud_item;
 struct player_hud_motion;
 struct motion_descr;
+class CWeapon;
 
 constexpr ImVec4 kAuthorTextColor = ImVec4(0.063f, 0.788f, 0.196f, 1.0f);
 constexpr ImVec4 kContributorsTextColor = ImVec4(0.306f, 0.745f, 0.878f, 1.0f);
@@ -713,6 +714,12 @@ inline void ImGuiEditorUI_HelpSection(const char* name, const char* description)
 }
 
 /* INIT */
+bool ImGuiBoneCombo(const char* label, IKinematics* model, shared_str& bone, bool allow_none);
+class CInventoryItem;
+CInventoryItem* WeaponFirePointAttach(CWeapon* wpn, bool gl);
+void ImGuiAttachFirePoint(CInventoryItem* item, bool hud, float step);
+void SaveWeaponAttachFirePoints(CInifile& file, CWeapon* wpn, bool hud);
+
 void InitSections();
 void CollectCars();
 void InitImGuiCLSIDInGame();
