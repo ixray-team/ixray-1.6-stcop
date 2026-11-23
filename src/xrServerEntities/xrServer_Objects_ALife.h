@@ -132,6 +132,7 @@ public:
 
 #ifdef XRGAME_EXPORTS
 	CALifeSimulator					*m_alife_simulator;
+	shared_str						m_spawn_build;
 #endif
 
 									CSE_ALifeObject		(const char* caSection);
@@ -161,6 +162,7 @@ private:
 	virtual float					parseFloatParameterValue(const char* spawnArgs, const char* parameterName, float defaultValue = 0.0f);
 	virtual int						parseIntParameterValue(const char* spawnArgs, const char* parameterName, int defaultValue = 0);
 	virtual bool					parseBoolParameterValue(const char* spawnArgs, const char* parameterName);
+			shared_str				parseStringParameterValue(const char* spawnArgs, const char* parameterName);
 	virtual CSE_Abstract*			setAddonFlagsIsWeapon(CSE_Abstract* E, const char* spawnArgs);
 	virtual void					spawnAmmoForWeapon(const char* wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn);
 	virtual void					setItemCondition(CSE_Abstract* E, float condition);
@@ -175,7 +177,7 @@ public:
 #ifdef XRGAME_EXPORTS
 	virtual void					spawn_supplies		(const char*);
 	virtual void					spawn_supplies		();
-			void					spawn_build			();
+			void					spawn_build			(const char* build = nullptr);
 			CALifeSimulator			&alife				() const;
 	virtual Fvector					draw_level_position	() const;
 	virtual	bool					keep_saved_data_anyway	() const;

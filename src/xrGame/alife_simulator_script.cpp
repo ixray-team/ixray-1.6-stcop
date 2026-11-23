@@ -191,7 +191,7 @@ CSE_Abstract *CALifeSimulator__spawn_item		(CALifeSimulator *self_, const char* 
 	return								(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,ALife::INVALID_OBJECT_ID));
 }
 
-CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent)
+CSE_Abstract *CALifeSimulator__spawn_item_build(CALifeSimulator *self_, const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, const char* build)
 {
 	if (!pSettings->section_exist(section))
 	{
@@ -201,7 +201,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 
 	if (id_parent == ALife::INVALID_OBJECT_ID)
 	{
-		return self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent);
+		return self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,true,build);
 	}
 
 	CSE_ALifeDynamicObject* object = ai().alife().objects().object(id_parent,true);
@@ -212,7 +212,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 
 	if (!object->m_bOnline)
 	{
-		return self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent);
+		return self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,true,build);
 	}
 
 	CSE_Abstract* item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,false);
@@ -238,9 +238,14 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 	CSE_Abstract* result				= self_->server().Process_spawn(packet,clientID);
 	if (CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(result))
 	{
-		alife_object->spawn_build();
+		alife_object->spawn_build(build);
 	}
 	return								(result);
+}
+
+CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent)
+{
+	return CALifeSimulator__spawn_item_build(self_, section, position, level_vertex_id, game_vertex_id, id_parent, nullptr);
 }
 
 // Allows to call alife():register(se_obj) manually afterward so that packet editing can be done safely when spawning object with a parent

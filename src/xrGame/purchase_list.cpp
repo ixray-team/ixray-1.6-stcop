@@ -14,8 +14,19 @@
 #include "Level.h"
 #include "Inventory.h"
 #include "InventoryBox.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
+
+extern CSE_Abstract* CALifeSimulator__spawn_item_build(CALifeSimulator* self_, const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, const char* build);
 
 static float min_deficit_factor = .3f;
+
+struct SPurchaseItem
+{
+	u32 count = 0;
+	float prob = 1.0f;
+	shared_str build;
+};
 
 void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryOwner& owner)
 {
@@ -25,11 +36,11 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 
 	const CGameObject& game_object = *owner.cast_game_object();
 
-	xr_map<shared_str, xr_pair<u32, float>> FinalSupplises = {};
+	xr_map<shared_str, SPurchaseItem> FinalSupplises = {};
 	
-	auto ProcessSingleTradeItemSettingFunc = [&](shared_str loc_section, u32 count, float prob)
+	auto ProcessSingleTradeItemSettingFunc = [&](shared_str loc_section, u32 count, float prob, shared_str build)
 	{
-		FinalSupplises[loc_section] = {count,prob};
+		FinalSupplises[loc_section] = {count, prob, build};
 	};
 
 	auto ProcessMultipleTradeItemsSettingsFunc = [&](this auto self, shared_str loc_section, u32 count, float prob)
@@ -52,7 +63,7 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 				Msg("! Section [%s] (parsing trade list [%s]) doesn't exist!", Item.first.c_str(), loc_section.c_str());
 				continue;
 			}
-			ProcessSingleTradeItemSettingFunc(Item.first, count, prob);
+			ProcessSingleTradeItemSettingFunc(Item.first, count, prob, nullptr);
 		}
 	};
 	
@@ -71,6 +82,8 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 		u32 count = atoi(_GetItem(*sect.second, 0, temp0));
 		float prob = _GetItemCount(*sect.second) >= 2 ? atof(_GetItem(*sect.second, 1, temp1)) : 1.0f;
 
+		shared_str build = _GetItemCount(*sect.second) >= 3 ? _GetItem(*sect.second, 2, temp1) : nullptr;
+
 		if (!pSettings->section_exist(sect.first))
 		{
 			if(sect.first.c_str()[0] == '$')
@@ -83,7 +96,7 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 			continue;
 		}
 
-		ProcessSingleTradeItemSettingFunc(sect.first, count, prob);
+		ProcessSingleTradeItemSettingFunc(sect.first, count, prob, build);
 	}
 
 	auto& Inventory = owner.inventory();
@@ -96,39 +109,44 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 			{
 				continue;
 			}
-			process(*Storage, elem.first, elem.second.first, elem.second.second);
-		} else {
-			process(game_object, elem.first, elem.second.first, elem.second.second);
+			process(*Storage, elem.first, elem.second.count, elem.second.prob, elem.second.build);
+		}
+		else
+		{
+			process(game_object, elem.first, elem.second.count, elem.second.prob, elem.second.build);
 		}
 	}
 }
 
-void CPurchaseList::process	(const CGameObject &owner, const shared_str &name, const u32 &count, const float &probability)
+void CPurchaseList::process(const CGameObject& owner, const shared_str& name, const u32& count, const float& probability, const shared_str& build)
 {
-	VERIFY3					(count,"Invalid count for section in the purchase list",*name);
-	VERIFY3					(!fis_zero(probability,EPS_S),"Invalid probability for section in the purchase list",*name);
+	VERIFY3(count, "Invalid count for section in the purchase list", *name);
+	VERIFY3(!fis_zero(probability, EPS_S), "Invalid probability for section in the purchase list", *name);
 
-	const Fvector			&position = owner.Position();
-	const u32				&level_vertex_id = owner.ai_location().level_vertex_id();
-	const ALife::_OBJECT_ID	&id = owner.ID();
-	CRandom					random((u32)(CPU::QPC() & u32(-1)));
+	const Fvector& position = owner.Position();
+	const u32& level_vertex_id = owner.ai_location().level_vertex_id();
+	const GameGraph::_GRAPH_ID game_vertex_id = owner.ai_location().game_vertex_id();
+	const ALife::_OBJECT_ID& id = owner.ID();
+	CRandom random((u32)(CPU::QPC() & u32(-1)));
 	u32 i = 0, j = 0;
-	for (; i<count; ++i) {
+	for (; i < count; ++i)
+	{
 		if (random.randF() > probability)
+		{
 			continue;
+		}
 
 		++j;
-		Level().spawn_item		(*name,position,level_vertex_id,id,false);
+		CALifeSimulator__spawn_item_build(ai().get_alife(), *name, position, level_vertex_id, game_vertex_id, id, *build);
 	}
 
-	DEFICITS::const_iterator	I = m_deficits.find(name);
-	VERIFY3						(I == m_deficits.end(),"Duplicate section in the purchase list",*name);
-	m_deficits.insert			(
+	DEFICITS::const_iterator I = m_deficits.find(name);
+	VERIFY3(I == m_deficits.end(), "Duplicate section in the purchase list", *name);
+	m_deficits.insert(
 		std::make_pair(
 			name,
-			(float)count*probability
-			/
-			std::max((float)j,min_deficit_factor)
+			(float)count * probability /
+				std::max((float)j, min_deficit_factor)
 		)
 	);
 }

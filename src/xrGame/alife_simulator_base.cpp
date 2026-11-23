@@ -89,7 +89,7 @@ void CALifeSimulatorBase::reload			(const char* section)
 	m_initialized				= true;
 }
 
-CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration)
+CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration, const char* build)
 {
 	PROF_EVENT("ALife spawn_item");
 	CSE_Abstract				*abstract = nullptr;
@@ -150,6 +150,7 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 		}
 	}
 	dynamic_object->m_tSpawnID	= (ALife::_SPAWN_ID)ALife::INVALID_OBJECT_ID;
+	dynamic_object->m_spawn_build	= build;
 
 	{
 		PROF_EVENT("ALife spawn_item: register and supplies");
