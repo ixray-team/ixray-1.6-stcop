@@ -151,7 +151,7 @@
 		<text>Flashlight</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Activate</text>
+		<text>Engine</text>
 	</string>
 	<string id="kb_up">
 		<text>Up</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Quick Access Slot 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Transport</text>
+	</string>
+	<string id="kb_brake">
+		<text>Handbrake</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Shift up</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Shift down</text>
+	</string>
+	<string id="kb_boost">
+		<text>Boost</text>
+	</string>
+	<string id="kb_signal">
+		<text>Horn</text>
 	</string>
 </string_table>

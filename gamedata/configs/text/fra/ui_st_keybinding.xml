@@ -151,7 +151,7 @@
 		<text>Lampe de poche</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Activer</text>
+		<text>Moteur</text>
 	</string>
 	<string id="kb_up">
 		<text>Haut</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Emplacement d'accès rapide 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Transport</text>
+	</string>
+	<string id="kb_brake">
+		<text>Frein a main</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Rapport superieur</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Rapport inferieur</text>
+	</string>
+	<string id="kb_boost">
+		<text>Acceleration</text>
+	</string>
+	<string id="kb_signal">
+		<text>Klaxon</text>
 	</string>
 </string_table>

@@ -18,15 +18,15 @@
 #include "level.h"
 #include "CarWeapon.h"
 
-// The generic binding lookup only searches the default action group, so
-// weapon actions from agUIRadialWeapon (for example wpn_func) never reach the
-// car. Resolve the car-relevant actions explicitly first.
+// Transport actions form their own group and take precedence over pedestrian
+// actions, so a key bound in agTransport cannot trigger an action from the
+// default group inside a car (and the other way around).
 static int CarInputAction(int cmd)
 {
-	if (is_binded(kDROP, cmd))
-		return kDROP;
-	if (is_binded(kDETECTOR, cmd))
-		return kDETECTOR;
+	const EGameActions TransportAction = get_binded_action(cmd, agTransport);
+	if (TransportAction != kNOTBINDED)
+		return TransportAction;
+
 	if (is_binded(kWPN_FUNC, cmd))
 		return kWPN_FUNC;
 	if (is_binded(kWPN_NEXT, cmd))
@@ -265,18 +265,23 @@ void CCar::OnKeyboardPress(int cmd)
 
 	switch (CarInputAction(cmd))	
 	{
-		// Cars-Ext uses the sprint/crouch keys for gear shifting, so changing
-		// accel/crouch in the controls menu must move the shift keys as well.
-		case kACCEL:	TransmissionUp();			break;
-		case kCROUCH:	TransmissionDown();			break;
-		case kFWD:		PressForward();				break;
-		case kBACK:		PressBack();				break;
-		case kR_STRAFE:	PressRight();				UpdateSteerAnimation();	break;
-		case kL_STRAFE:	PressLeft();				UpdateSteerAnimation();	break;
-		case kJUMP:		PressBreaks();				break;
-		case kDROP:			m_car_sound->Horn(true);	break;
-		case kDETECTOR:	SwitchEngine();	break;
-		case kSPRINT_TOGGLE: b_nitro_engage = true; break;
+		case kENGINE:			SwitchEngine();							break;
+		case kBRAKE:			PressBreaks();							break;
+		case kTRANSMISSION_UP:
+			b_auto_transmission_stop = true;
+			TransmissionUp();
+			break;
+		case kTRANSMISSION_DOWN:
+			b_auto_transmission_stop = true;
+			TransmissionDown();
+			break;
+		case kBOOST:			b_nitro_engage = true;					break;
+		case kSIGNAL:			m_car_sound->Horn(true);				break;
+		case kFWD:				PressForward();							break;
+		case kBACK:				PressBack();							break;
+		case kR_STRAFE:			PressRight(); UpdateSteerAnimation();	break;
+		case kL_STRAFE:			PressLeft(); UpdateSteerAnimation();	break;
+		case kDROP:				m_car_sound->Horn(true);				break;
 		case kTORCH:
 		{
 			m_lights.SwitchLights();
@@ -286,23 +291,6 @@ void CCar::OnKeyboardPress(int cmd)
 		}break;
 		case kNIGHT_VISION: Actor()->SwitchNightVision();break;
 		case kUSE:		            				 break;
-	};
-
-	switch (get_binded_action(cmd, agTransport))
-	{
-		case kENGINE:			SwitchEngine();						break;
-		case kBRAKE:			PressBreaks();						break;
-		// Explicit transmission bindings are only an alias. If the same key is
-		// already used by accel/crouch/sprint_toggle (or any other action),
-		// that action owns the key; otherwise sprint_toggle would shift gears.
-		case kTRANSMISSION_UP:
-			if (CarInputAction(cmd) == kTRANSMISSION_UP)
-				TransmissionUp();
-			break;
-		case kTRANSMISSION_DOWN:
-			if (CarInputAction(cmd) == kTRANSMISSION_DOWN)
-				TransmissionDown();
-			break;
 	};
 
 	if (OnClient() && Owner())
@@ -322,15 +310,16 @@ void	CCar::OnKeyboardRelease(int cmd)
 	if (!IsMyCar() && !g_dedicated_server)								return;
 	switch (CarInputAction(cmd))	
 	{
-		case kACCEL:	b_auto_transmission_stop = false; break;
-		case kCROUCH:	b_auto_transmission_stop = false; break;
-		case kSPRINT_TOGGLE: b_nitro_engage = false; break;
+		case kTRANSMISSION_UP:
+		case kTRANSMISSION_DOWN:	b_auto_transmission_stop = false; break;
+		case kBOOST:	b_nitro_engage = false; break;
+		case kSIGNAL:	m_car_sound->Horn(false); break;
+		case kBRAKE:	ReleaseBreaks();			break;
 		case kFWD:		ReleaseForward();			break;
 		case kBACK:		ReleaseBack();				break;
 		case kL_STRAFE:	ReleaseLeft();				UpdateSteerAnimation();	break;
 		case kR_STRAFE:	ReleaseRight();				UpdateSteerAnimation();	break;
 		case kDROP: m_car_sound->Horn(false); break;
-		case kJUMP:		ReleaseBreaks();			break;
 		case kWPN_FIRE:
 		{
 			auto CWPB = m_car_weapons.begin();
@@ -338,11 +327,6 @@ void	CCar::OnKeyboardRelease(int cmd)
 				if((*CWPB)->IsActive())
 					(*CWPB)->Action(CCarTurret::eWpnFire, 0);
 		}break;
-	};
-
-	switch (get_binded_action(cmd, agTransport))
-	{
-		case kBRAKE:	ReleaseBreaks();	break;
 	};
 
 	if (OnClient() && Owner())
@@ -438,9 +422,8 @@ void	CCar::OnKeyboardHold(int cmd)
 	float free_camera_speed = 7.f;
 	switch (CarInputAction(cmd))
 	{
-		case kACCEL:	b_auto_transmission_stop = true; break;
-		case kCROUCH:	b_auto_transmission_stop = true; break;
-		case kSPRINT_TOGGLE: b_nitro_engage = true; break;
+		case kBOOST: b_nitro_engage = true; break;
+		case kSIGNAL: m_car_sound->Horn(true); break;
 		case kBACK: if (OwnerActor() && b_engine_on) brake = boost_brake * (m_brake_boost * Device.fTimeDelta);	break;
 		case kR_STRAFE:	if (!SteerInputConflict && OwnerActor() && b_engine_on && (m_steer_speed_boost || m_steer_spin_boost)) { steer_boost = boost_speed * boost_right * Device.fTimeDelta; m_steer_boost = steer_boost; } break;
 		case kL_STRAFE:	if (!SteerInputConflict && OwnerActor() && b_engine_on && (m_steer_speed_boost || m_steer_spin_boost)) { steer_boost = boost_speed * boost_left * -(Device.fTimeDelta); m_steer_boost = steer_boost; } break;
@@ -806,10 +789,20 @@ void CCar::OnGamepadKeyPress(int id)
 	if (!IsMyCar() && !g_dedicated_server)
 		return;
 
-	switch (get_binded_action(id))
+	switch (CarInputAction(id))
 	{
-	case kACCEL:	TransmissionUp();	break;
-	case kCROUCH:	TransmissionDown();	break;
+	case kENGINE:			SwitchEngine();		break;
+	case kBRAKE:			PressBreaks();		break;
+	case kTRANSMISSION_UP:
+		b_auto_transmission_stop = true;
+		TransmissionUp();
+		break;
+	case kTRANSMISSION_DOWN:
+		b_auto_transmission_stop = true;
+		TransmissionDown();
+		break;
+	case kBOOST:			b_nitro_engage = true;	break;
+	case kSIGNAL:			m_car_sound->Horn(true);	break;
 	case kCAM_2:
 		if (active_camera->tag != EctSecondCam)
 			OnCameraChange(EctSecondCam);
@@ -818,20 +811,6 @@ void CCar::OnGamepadKeyPress(int id)
 		break;
 	case kTORCH:	m_lights.SwitchLights();	break;
 	case kUSE:		break;
-	};
-
-	switch (get_binded_action(id, agTransport))
-	{
-	case kENGINE:			SwitchEngine();		break;
-	case kBRAKE:			PressBreaks();		break;
-	case kTRANSMISSION_UP:
-		if (get_binded_action(id) == kTRANSMISSION_UP)
-			TransmissionUp();
-		break;
-	case kTRANSMISSION_DOWN:
-		if (get_binded_action(id) == kTRANSMISSION_DOWN)
-			TransmissionDown();
-		break;
 	};
 
 	if (OnClient() && Owner())
@@ -851,8 +830,12 @@ void CCar::OnGamepadKeyRelease(int id)
 	if (!IsMyCar() && !g_dedicated_server)
 		return;
 
-	switch (get_binded_action(id, agTransport))
+	switch (CarInputAction(id))
 	{
+	case kTRANSMISSION_UP:
+	case kTRANSMISSION_DOWN:	b_auto_transmission_stop = false; break;
+	case kBOOST:	b_nitro_engage = false;	break;
+	case kSIGNAL:	m_car_sound->Horn(false);	break;
 	case kBRAKE:	ReleaseBreaks();	break;
 	};
 

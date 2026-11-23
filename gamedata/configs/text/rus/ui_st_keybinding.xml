@@ -151,7 +151,7 @@
 		<text>Фонарик</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Включить</text>
+		<text>Двигатель</text>
 	</string>
 	<string id="kb_up">
 		<text>Вверх</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Ячейка быстрого доступа 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Транспорт</text>
+	</string>
+	<string id="kb_brake">
+		<text>Ручной тормоз</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Передача вверх</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Передача вниз</text>
+	</string>
+	<string id="kb_boost">
+		<text>Ускорение</text>
+	</string>
+	<string id="kb_signal">
+		<text>Сигнал</text>
 	</string>
 </string_table>

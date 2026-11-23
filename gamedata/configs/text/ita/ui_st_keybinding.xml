@@ -151,7 +151,7 @@
 		<text>Torcia</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Attiva</text>
+		<text>Motore</text>
 	</string>
 	<string id="kb_up">
 		<text>Su</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Slot rapido 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Trasporto</text>
+	</string>
+	<string id="kb_brake">
+		<text>Freno a mano</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Marcia superiore</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Marcia inferiore</text>
+	</string>
+	<string id="kb_boost">
+		<text>Accelerazione</text>
+	</string>
+	<string id="kb_signal">
+		<text>Clacson</text>
 	</string>
 </string_table>

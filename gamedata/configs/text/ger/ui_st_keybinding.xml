@@ -151,7 +151,7 @@
 		<text>Taschenlampe</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Aktivieren</text>
+		<text>Motor</text>
 	</string>
 	<string id="kb_up">
 		<text>Nach oben</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Schnellzugriffsfeld 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Transport</text>
+	</string>
+	<string id="kb_brake">
+		<text>Handbremse</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Hochschalten</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Runterschalten</text>
+	</string>
+	<string id="kb_boost">
+		<text>Beschleunigung</text>
+	</string>
+	<string id="kb_signal">
+		<text>Hupe</text>
 	</string>
 </string_table>

@@ -148,7 +148,7 @@
 		<text>Zseblámpa</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Bekapcsolás</text>
+		<text>Motor</text>
 	</string>
 	<string id="kb_up">
 		<text>Felfelé</text>
@@ -209,5 +209,23 @@
 	</string>
 	<string id="kb_detector">
 		<text>Érzékelõ</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Jarmu</text>
+	</string>
+	<string id="kb_brake">
+		<text>Kezifek</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Felvaltas</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Levaltas</text>
+	</string>
+	<string id="kb_boost">
+		<text>Gyorsitas</text>
+	</string>
+	<string id="kb_signal">
+		<text>Duda</text>
 	</string>
 </string_table>

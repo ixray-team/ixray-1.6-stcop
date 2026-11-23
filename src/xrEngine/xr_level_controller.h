@@ -94,6 +94,8 @@ enum EGameActions
 	kBRAKE,
 	kTRANSMISSION_UP,
 	kTRANSMISSION_DOWN,
+	kBOOST,
+	kSIGNAL,
 
 	// Controller UI actions
 	kUI_TAB_LEFT,

@@ -99,6 +99,8 @@ ENGINE_API _action  actions[]		= {
 	{ "brake",				kBRAKE					,_sp,			agTransport},
 	{ "transmission_up",	kTRANSMISSION_UP		,_sp,			agTransport},
 	{ "transmission_down",	kTRANSMISSION_DOWN		,_sp,			agTransport},
+	{ "boost",				kBOOST					,_sp,			agTransport},
+	{ "signal",				kSIGNAL					,_sp,			agTransport},
 	
 	{ "ui_tab_left",		kUI_TAB_LEFT,			_both,			agUIGeneral},
 	{ "ui_tab_right",		kUI_TAB_RIGHT,			_both,			agUIGeneral},

@@ -151,7 +151,7 @@
 		<text>Linterna</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Activar</text>
+		<text>Motor</text>
 	</string>
 	<string id="kb_up">
 		<text>Arriba</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Ranura de acceso rápido 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Transporte</text>
+	</string>
+	<string id="kb_brake">
+		<text>Freno de mano</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Subir marcha</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Bajar marcha</text>
+	</string>
+	<string id="kb_boost">
+		<text>Aceleracion</text>
+	</string>
+	<string id="kb_signal">
+		<text>Claxon</text>
 	</string>
 </string_table>

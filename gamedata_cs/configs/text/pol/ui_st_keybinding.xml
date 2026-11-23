@@ -148,7 +148,7 @@
 		<text>Latarka</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>W³¹cz</text>
+		<text>Silnik</text>
 	</string>
 	<string id="kb_up">
 		<text>W górê</text>
@@ -209,5 +209,23 @@
 	</string>
 	<string id="kb_detector">
 		<text>Wykrywacz</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Transport</text>
+	</string>
+	<string id="kb_brake">
+		<text>Hamulec reczny</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Bieg w gore</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Bieg w dol</text>
+	</string>
+	<string id="kb_boost">
+		<text>Przyspieszenie</text>
+	</string>
+	<string id="kb_signal">
+		<text>Klakson</text>
 	</string>
 </string_table>

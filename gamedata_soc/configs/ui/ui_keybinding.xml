@@ -69,6 +69,14 @@
 		<command id="ui_mm_save_game"			exe="quick_save"/>
 		<command id="ui_mm_load_game"			exe="quick_load"/>
 	</group>
+	<group name="kb_grp_transport">
+		<command id="kb_turn_engine"			exe="turn_engine"/>
+		<command id="kb_brake"					exe="brake"/>
+		<command id="kb_transmission_up"		exe="transmission_up"/>
+		<command id="kb_transmission_down"		exe="transmission_down"/>
+		<command id="kb_boost"					exe="boost"/>
+		<command id="kb_signal"					exe="signal"/>
+	</group>
 	<group name="kb_grp_multiplayer">
 		<command id="kb_artefact"					exe="artefact"/>
 		<command id="kb_scores"						exe="scores"/>

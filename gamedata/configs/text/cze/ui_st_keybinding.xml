@@ -151,7 +151,7 @@
 		<text>Baterka</text>
 	</string>
 	<string id="kb_turn_engine">
-		<text>Aktivovat</text>
+		<text>Motor</text>
 	</string>
 	<string id="kb_up">
 		<text>Nahoru</text>
@@ -221,5 +221,23 @@
 	</string>
 	<string id="kb_quick_use_4">
 		<text>Rychlá pozice 4</text>
+	</string>
+	<string id="kb_grp_transport">
+		<text>Transport</text>
+	</string>
+	<string id="kb_brake">
+		<text>Rucni brzda</text>
+	</string>
+	<string id="kb_transmission_up">
+		<text>Razeni nahoru</text>
+	</string>
+	<string id="kb_transmission_down">
+		<text>Razeni dolu</text>
+	</string>
+	<string id="kb_boost">
+		<text>Zrychleni</text>
+	</string>
+	<string id="kb_signal">
+		<text>Klakson</text>
 	</string>
 </string_table>
