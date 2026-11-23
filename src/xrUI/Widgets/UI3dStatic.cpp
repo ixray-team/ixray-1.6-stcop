@@ -217,8 +217,15 @@ void CUI3dStatic::Draw()
 
 		Device.vCameraPosition.set(Fidentity.c);
 
+		// The UI depth buffer is D16: fit near and far around the item, or thin parts z-fight.
+		Fvector BoxSize;
+		mBox.getsize(BoxSize);
+		const float Radius = std::max(0.5f * BoxSize.magnitude() * scale * 1.1f, 1e-5f);
+		Fmatrix Project;
+		Project.build_projection(fViewportFOV, fViewportAspect, std::max(fViewportDist - Radius, 1e-5f), fViewportDist + Radius);
+
 		Device.mView = mView;
-		Device.mProject = mProject;
+		Device.mProject = Project;
 
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 
