@@ -56,6 +56,15 @@ extern CUIXml*	pWpnScopeXml;
 ENGINE_API extern float psHUD_FOV_def;
 ENGINE_API extern bool g_3d_scopes;
 
+namespace WeaponSprint
+{
+	bool IsRunning(const CActor& Actor)
+	{
+		const u32 Movement = Actor.GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+		return (Movement & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && (Movement & (ACTOR_DEFS::EMoveCommand::mcJump | ACTOR_DEFS::EMoveCommand::mcFall)) == 0;
+	}
+}
+
 CWeapon::CWeapon()
 {
 	SetDefaults();
@@ -1716,7 +1725,7 @@ void CWeapon::UpdateCL()
 	{
 		s32 autoaim_period = GetAutoAimPeriod();
 		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
-		if (pActor != nullptr && IsWorking() && (pActor->GetMovementState(eReal) & mcSprint) != 0)
+		if (pActor != nullptr && IsWorking() && WeaponSprint::IsRunning(*pActor))
 		{
 			FireEnd();
 		}
@@ -2093,9 +2102,10 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							return false;
 						}
 
-						if ((pActor->GetMovementState(eReal) & mcSprint) != 0)
+						const bool Running = WeaponSprint::IsRunning(*pActor);
+						pActor->SetMovementState(eWishful, mcSprint, false);
+						if (Running)
 						{
-							pActor->SetMovementState(eWishful, mcSprint, false);
 							pActor->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, true);
 							return true;
 						}
