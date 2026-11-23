@@ -873,9 +873,9 @@ public:
 
 	void			SyncSprintBlend			();
 	float			SprintPoseWeight		() const { return Sprint.Pose; }
-	float			AimReloadPose			() const;
-	float			AimReloadPush			() const;
-	float			AimReloadDrop			() const;
+	float			AimReloadPose			() const { return AimReload.Pose(); }
+	float			AimReloadPush			() const { return AimReload.Push(); }
+	float			AimReloadDrop			() const { return AimReload.Drop(); }
 	void			UpdateCarryPose			(CActor* actor);
 	Fmatrix			CarryPoseOffset			() const;
 	void			TriggerScriptLayersInertia(float half_life);
@@ -943,6 +943,7 @@ private:
 
 	SHudSprint							Sprint;
 	SHudHandsIk							Ik;
+	SHudAimReload						AimReload;
 
 	shared_str							m_sect_name;
 
@@ -956,15 +957,6 @@ private:
 	xr_vector<u16>						m_ancors;
 	Fmatrix								MovementLayersOffset = Fidentity;
 	Fvector								TurnOffset = zero_vel;
-	Fmatrix								AimReloadRef = Fidentity;
-	float								AimReloadWeight = 0.f;
-	float								AimReloadRelease = 1.f;
-	float								AimReloadPoseValue = 0.f;
-	float								AimReloadPoseVelocity = 0.f;
-	float								AimReloadPushValue = 0.f;
-	float								AimReloadPushVelocity = 0.f;
-	float								AimReloadDropValue = 0.f;
-	float								AimReloadDropVelocity = 0.f;
 	float								CrouchPoseValue = 0.f;
 	float								CrouchPoseVelocity = 0.f;
 	float								WalkPoseValue = 0.f;

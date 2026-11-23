@@ -234,6 +234,44 @@ struct SHudHandsIk
 	}
 };
 
+struct SHudAimReload
+{
+	Fmatrix Ref = Fidentity;
+	float Weight = 0.f;
+	float Release = 1.f;
+	float PoseValue = 0.f;
+	float PoseVelocity = 0.f;
+	float PushValue = 0.f;
+	float PushVelocity = 0.f;
+	float DropValue = 0.f;
+	float DropVelocity = 0.f;
+
+	float Pose() const { return std::clamp(PoseValue, 0.f, 1.f); }
+	float Push() const { return std::clamp(PushValue, 0.f, 1.f); }
+	float Drop() const { return std::clamp(DropValue, 0.f, 1.f); }
+
+	void ResetPose()
+	{
+		PoseValue = 0.f;
+		PoseVelocity = 0.f;
+		PushValue = 0.f;
+		PushVelocity = 0.f;
+		DropValue = 0.f;
+		DropVelocity = 0.f;
+	}
+
+	void Reset()
+	{
+		Weight = 0.f;
+		Release = 1.f;
+		ResetPose();
+	}
+
+	static bool Wanted(const attachable_hud_item* Item);
+	void Update(const attachable_hud_item* Item, bool Active);
+	void UpdateRelease(float Progress);
+};
+
 enum class EHudSprintStage : u8
 {
 	None,

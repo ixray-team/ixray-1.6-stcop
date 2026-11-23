@@ -2749,14 +2749,7 @@ void player_hud::attach_item(CHudItem* item)
 			Ik.ResetItem();
 			ShotWeight = 0.f;
 			ShotRelease = 1.f;
-			AimReloadWeight = 0.f;
-			AimReloadRelease = 1.f;
-			AimReloadPoseValue = 0.f;
-			AimReloadPoseVelocity = 0.f;
-			AimReloadPushValue = 0.f;
-			AimReloadPushVelocity = 0.f;
-			AimReloadDropValue = 0.f;
-			AimReloadDropVelocity = 0.f;
+			AimReload.Reset();
 			m_model->LL_ResetInertialization();
 		}
 

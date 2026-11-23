@@ -2024,12 +2024,7 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 	{
 		Ik.LeftIkWeight = 0.f;
 		Ik.RetargetWeight = 0.f;
-		AimReloadPoseValue = 0.f;
-		AimReloadPoseVelocity = 0.f;
-		AimReloadPushValue = 0.f;
-		AimReloadPushVelocity = 0.f;
-		AimReloadDropValue = 0.f;
-		AimReloadDropVelocity = 0.f;
+		AimReload.ResetPose();
 		return false;
 	}
 
@@ -2217,26 +2212,13 @@ void player_hud::HandsIkWeaponPose(SHandsIkFrame& F, CActor* actor)
 		}
 	}
 
-	if (state == CHUDState::eIdle && AimReloadWeight <= 0.f && ShotWeight <= 0.f)
+	if (state == CHUDState::eIdle && AimReload.Weight <= 0.f && ShotWeight <= 0.f)
 	{
-		AimReloadRef.mul_43(Fmatrix().invert(sprint_layer_ancor), model->LL_GetTransform(ancor));
+		AimReload.Ref.mul_43(Fmatrix().invert(sprint_layer_ancor), model->LL_GetTransform(ancor));
 	}
 
-	const bool aim_reload = reload_state && weapon->IsZoomed() && (item->AimReloadMotion < 1.f || item->AimReloadZoomOut > 0.f || !fis_zero(item->AimReloadOffsetPos.square_magnitude()) || !fis_zero(item->AimReloadOffsetRot.square_magnitude()) || !fis_zero(item->AimReloadPushPos.square_magnitude()));
-	if (aim_reload && AimReloadWeight <= 0.f)
-	{
-		AimReloadRelease = 1.f;
-	}
-
-	const float aim_reload_blend = CCameraRig::AimReloadBlend();
-	AimReloadWeight = HudBlend::Ramp(AimReloadWeight, aim_reload, aim_reload_blend, Device.fTimeDelta);
-	const float aim_reload_target = AimReloadWeight * hud_smooth(AimReloadRelease);
-	const float aim_reload_half_life = aim_reload_target < AimReloadPoseValue ? item->AimReloadPoseInertiaOut : item->AimReloadPoseInertia;
-	HudSpring::Step(AimReloadPoseValue, AimReloadPoseVelocity, aim_reload_target, aim_reload_half_life, 1.f, Device.fTimeDelta);
-	const float aim_reload_push = aim_reload && AimReloadRelease >= 1.f ? 1.f : 0.f;
-	HudSpring::Step(AimReloadPushValue, AimReloadPushVelocity, aim_reload_push, item->AimReloadPoseInertiaOut, 1.f, Device.fTimeDelta);
-	const float aim_reload_drop = aim_reload && AimReloadRelease >= 1.f ? AimReloadWeight : 0.f;
-	HudSpring::Step(AimReloadDropValue, AimReloadDropVelocity, aim_reload_drop, aim_reload_drop < AimReloadDropValue ? item->AimReloadPoseInertiaOut : item->AimReloadPoseInertia, 1.f, Device.fTimeDelta);
+	const bool aim_reload = reload_state && weapon->IsZoomed() && SHudAimReload::Wanted(item);
+	AimReload.Update(item, aim_reload);
 
 	const bool firing = weapon != nullptr && (state == CWeapon::eFire || state == CWeapon::eFire2) && (item->ShotVariation > 0.f || item->ShotTwist > 0.f || item->AimShotMotion < 1.f);
 	if (F.Overlay || (firing && F.AdditiveBase))
@@ -2254,7 +2236,7 @@ void player_hud::HandsIkWeaponPose(SHandsIkFrame& F, CActor* actor)
 	F.ReloadState = reload_state;
 	F.Firing = firing;
 	F.SprintLayerAncor = sprint_layer_ancor;
-	F.MoveWeapon = F.HasRight && (Ik.LayersIk || AimReloadWeight > 0.f || ShotWeight > 0.f);
+	F.MoveWeapon = F.HasRight && (Ik.LayersIk || AimReload.Weight > 0.f || ShotWeight > 0.f);
 }
 
 void player_hud::HandsIkFingerState(SHandsIkFrame& F)
@@ -2311,29 +2293,20 @@ void player_hud::HandsIkWeaponDelta(SHandsIkFrame& F)
 
 	Fmatrix& delta = F.Delta;
 	delta = move_weapon && Ik.LayersIk ? Ik.LayersIkOffset : Fidentity;
-	if (move_weapon && AimReloadWeight > 0.f)
+	if (move_weapon && AimReload.Weight > 0.f)
 	{
 		const Fmatrix anim = Fmatrix().mul_43(Fmatrix().invert(sprint_layer_ancor), model->LL_GetTransform(ancor));
 
 		if (F.ReloadState)
 		{
-			const float progress = hud_cycle_progress(m_model);
-			const float tail = CCameraRig::AimReloadTail();
-			if (tail <= 0.f)
-			{
-				AimReloadRelease = 1.f;
-			}
-			else if (progress >= 0.f)
-			{
-				AimReloadRelease = std::clamp((1.f - progress) / tail, 0.f, 1.f);
-			}
+			AimReload.UpdateRelease(hud_cycle_progress(m_model));
 		}
 
-		const float release = AimReloadRelease;
-		const float blend = AimReloadWeight * hud_smooth(release);
+		const float release = AimReload.Release;
+		const float blend = AimReload.Weight * hud_smooth(release);
 		const float weight = hud_smooth(blend);
-		const Fmatrix motion = Fmatrix().mul_43(Fmatrix().invert(AimReloadRef), anim);
-		const Fmatrix damped = Fmatrix().mul_43(AimReloadRef, scale_layer_offset(motion, lerp(1.f, item->AimReloadMotion, weight)));
+		const Fmatrix motion = Fmatrix().mul_43(Fmatrix().invert(AimReload.Ref), anim);
+		const Fmatrix damped = Fmatrix().mul_43(AimReload.Ref, scale_layer_offset(motion, lerp(1.f, item->AimReloadMotion, weight)));
 		const Fmatrix correction = Fmatrix().mul_43(damped, Fmatrix().invert(anim));
 		delta.mulB_43(Fmatrix().mul_43(Fmatrix().mul_43(sprint_layer_ancor, correction), Fmatrix().invert(sprint_layer_ancor)));
 	}
@@ -3721,21 +3694,6 @@ void player_hud::SyncSprintBlend()
 	Sprint.Update(m_model, m_attached_items[0], sprint);
 }
 
-float player_hud::AimReloadPose() const
-{
-	return std::clamp(AimReloadPoseValue, 0.f, 1.f);
-}
-
-float player_hud::AimReloadPush() const
-{
-	return std::clamp(AimReloadPushValue, 0.f, 1.f);
-}
-
-float player_hud::AimReloadDrop() const
-{
-	return std::clamp(AimReloadDropValue, 0.f, 1.f);
-}
-
 void player_hud::UpdateCarryPose(CActor* actor)
 {
 	attachable_hud_item* item = m_attached_items[0];
@@ -4403,6 +4361,41 @@ void SHudSprint::SmoothBase(IKinematicsAnimated* Model, SHandsIkFrame& F)
 
 		BasePrev[i].mul_43(BaseResidual[i], Relative);
 		Targets[i]->mul_43(AncorFull, BasePrev[i]);
+	}
+}
+
+bool SHudAimReload::Wanted(const attachable_hud_item* Item)
+{
+	return Item->AimReloadMotion < 1.f || Item->AimReloadZoomOut > 0.f || !fis_zero(Item->AimReloadOffsetPos.square_magnitude()) || !fis_zero(Item->AimReloadOffsetRot.square_magnitude()) || !fis_zero(Item->AimReloadPushPos.square_magnitude());
+}
+
+void SHudAimReload::Update(const attachable_hud_item* Item, bool Active)
+{
+	if (Active && Weight <= 0.f)
+	{
+		Release = 1.f;
+	}
+
+	Weight = HudBlend::Ramp(Weight, Active, CCameraRig::AimReloadBlend(), Device.fTimeDelta);
+	const float Target = Weight * hud_smooth(Release);
+	const float HalfLife = Target < PoseValue ? Item->AimReloadPoseInertiaOut : Item->AimReloadPoseInertia;
+	HudSpring::Step(PoseValue, PoseVelocity, Target, HalfLife, 1.f, Device.fTimeDelta);
+	const float PushTarget = Active && Release >= 1.f ? 1.f : 0.f;
+	HudSpring::Step(PushValue, PushVelocity, PushTarget, Item->AimReloadPoseInertiaOut, 1.f, Device.fTimeDelta);
+	const float DropTarget = Active && Release >= 1.f ? Weight : 0.f;
+	HudSpring::Step(DropValue, DropVelocity, DropTarget, DropTarget < DropValue ? Item->AimReloadPoseInertiaOut : Item->AimReloadPoseInertia, 1.f, Device.fTimeDelta);
+}
+
+void SHudAimReload::UpdateRelease(float Progress)
+{
+	const float Tail = CCameraRig::AimReloadTail();
+	if (Tail <= 0.f)
+	{
+		Release = 1.f;
+	}
+	else if (Progress >= 0.f)
+	{
+		Release = std::clamp((1.f - Progress) / Tail, 0.f, 1.f);
 	}
 }
 
