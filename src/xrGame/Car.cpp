@@ -3298,13 +3298,17 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 	UpdateInteriorSoundFactor(active_camera != nullptr && active_camera->tag == EctFirstCam);
 	if (rs_car_info)
 		DrawCarInfo();
-	if ((m_transmission_stage == ETransmissionStage::SwitchDown && GetSpeedKmH() > 20.f) || e_state_drive == drive && ((!IsTransmissionSwitching() || b_transmission_switch_drive) || brp))
+	if ((m_transmission_stage == ETransmissionStage::SwitchDown && GetSpeedKmH() > 15.f) || e_state_drive == drive && ((!IsTransmissionSwitching() || b_transmission_switch_drive) || brp))
 	{
-		if (m_engine_valve == 0 && Device.fTimeGlobal - m_engine_idle_time < 3.f * Device.fTimeDelta && m_transmission_switch_time + m_transmission_switch_delay + 3.f * Device.fTimeDelta < Device.fTimeGlobal) // anti-spam disables valve sound
-			m_car_sound->snd_valve.set_volume(0.f);
+		if (e_state_drive == drive)
+		{
+			if (m_engine_valve == 0 && Device.fTimeGlobal - m_engine_idle_time < 3.f * Device.fTimeDelta && m_transmission_switch_time + m_transmission_switch_delay + 3.f * Device.fTimeDelta < Device.fTimeGlobal) // anti-spam disables valve sound
+				m_car_sound->snd_valve.set_volume(0.f);
 
-		// valve resets to 1 so it can be triggered again
-		m_engine_valve = 1;
+			// valve resets to 1 so it can be triggered again
+			m_engine_valve = 1;
+		}
+
 		m_engine_drive = 1.f;
 		m_engine_idle_time = Device.fTimeGlobal;
 	}
