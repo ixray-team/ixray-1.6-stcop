@@ -49,6 +49,9 @@ public:
 	void SetBarometer(const char* Text);
 	void SetDistance(const char* Text, const char* Unit);
 	bool HasNavigation() const { return Distance || HasNavArrow; }
+	bool HasTime() const { return Time != nullptr; }
+	bool HasDate() const { return Date != nullptr; }
+	bool HasBarometer() const { return Barometer != nullptr; }
 	void RenderNavArrow(const Fmatrix& Xform, float Size, float Intensity, u32 Color);
 	const Fvector2& GetNavArrowCenter() const { return NavArrowCenter; }
 	void SetIntensity(float Intensity);

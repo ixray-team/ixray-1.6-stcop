@@ -5,32 +5,145 @@
 
 namespace
 {
-void DrawWatchLagFields(SWatchLag& Lag)
-{
-	ImGui::DragFloat("Max Delay (game s)", &Lag.MaxDelay, 1.0f, 0.0f, 7200.0f, "%.0f");
-	ImGui::DragFloat("Min Update Hz", &Lag.MinUpdateHz, 0.01f, 0.0f, WatchDetail::DisplayMaxHz, "%.2f");
-	ImGui::SliderFloat("Freeze Chance", &Lag.FreezeChance, 0.0f, 1.0f, "%.2f");
-	ImGui::SliderFloat("Flicker", &Lag.Flicker, 0.0f, 1.0f, "%.2f");
-}
+constexpr float WatchDragPosition = 0.0001f;
+const ImVec4 WatchWarningColor(1.0f, 0.65f, 0.25f, 1.0f);
+const ImVec4 WatchDirtyColor(1.0f, 0.85f, 0.35f, 1.0f);
 
-void DrawWatchBlinkFields(SWatchLedBlink& Blink)
-{
-	ImGui::DragFloat("Threshold", &Blink.Threshold, 0.005f, 0.0f, 1.0f, "%.3f");
-	ImGui::DragFloat("Solid Threshold", &Blink.SolidThreshold, 0.005f, 0.0f, 1.0f, "%.3f");
-	ImGui::DragFloat("Blink Min Hz", &Blink.BlinkMinHz, 0.05f, 0.0f, 30.0f, "%.2f");
-	ImGui::DragFloat("Blink Max Hz", &Blink.BlinkMaxHz, 0.05f, 0.0f, 30.0f, "%.2f");
-	ImGui::DragFloat("Blink Duty", &Blink.BlinkDuty, 0.01f, 0.0f, 1.0f, "%.2f");
-}
+const char* const WatchSourceItems[] =
+	{
+		"anomaly",
+		"motion",
+		"noise",
+		"health",
+		"power",
+		"radiation",
+		"satiety",
+		"thirst",
+		"sleepiness",
+		"intoxication",
+		"bleeding",
+		"script:"
+};
 
-bool DrawWatchStringInput(const char* Label, shared_str& Value, char* Buffer, size_t BufferSize)
+const char* const WatchCompassModes[] = {"north", "quest", "nav"};
+const char* const WatchCompassNoTargets[] = {"hide", "north"};
+const char* const WatchNavigationTargets[] = {"quest", "nav"};
+
+bool DrawWatchText(const char* Label, shared_str& Value)
 {
-	xr_strcpy(Buffer, BufferSize, Value.size() ? Value.c_str() : "");
-	if (ImGui::InputText(Label, Buffer, BufferSize))
+	string512 Buffer = {};
+	xr_strcpy(Buffer, Value.size() ? Value.c_str() : "");
+	if (ImGui::InputText(Label, Buffer, sizeof(Buffer)))
 	{
 		Value = Buffer;
 		return true;
 	}
 	return false;
+}
+
+template <size_t TCount>
+bool DrawWatchChoice(const char* Label, shared_str& Value, const char* const (&Items)[TCount])
+{
+	bool Changed = false;
+	if (ImGui::BeginCombo(Label, Value.size() ? Value.c_str() : ""))
+	{
+		for (const char* Item : Items)
+		{
+			const bool Selected = Value.equal(Item);
+			if (ImGui::Selectable(Item, Selected))
+			{
+				Value = Item;
+				Changed = true;
+			}
+		}
+		ImGui::EndCombo();
+	}
+	return Changed;
+}
+
+bool IsWatchScriptSource(const shared_str& Value)
+{
+	const size_t Length = xr_strlen(WatchDetail::ScriptSourcePrefix);
+	return Value.size() && !strncmp(Value.c_str(), WatchDetail::ScriptSourcePrefix, Length);
+}
+
+void DrawWatchSource(shared_str& Value, const shared_str& Fallback)
+{
+	const shared_str& Current = Value.size() ? Value : Fallback;
+	if (ImGui::BeginCombo("Source", Current.size() ? Current.c_str() : ""))
+	{
+		for (const char* Item : WatchSourceItems)
+		{
+			const bool Selected = Current.equal(Item) || (IsWatchScriptSource(Current) && !xr_strcmp(Item, WatchDetail::ScriptSourcePrefix));
+			if (ImGui::Selectable(Item, Selected))
+			{
+				Value = Item;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	if (IsWatchScriptSource(Value))
+	{
+		DrawWatchText("Function", Value);
+		ImGui::SetItemTooltip("script:<module>.<function>, the function returns 0..1");
+	}
+}
+
+bool DrawWatchColor(const char* Label, Fvector4& Rgba)
+{
+	float Color[4] = {Rgba.x / 255.0f, Rgba.y / 255.0f, Rgba.z / 255.0f, Rgba.w / 255.0f};
+	if (!ImGui::ColorEdit4(Label, Color, ImGuiColorEditFlags_AlphaBar))
+	{
+		return false;
+	}
+	Rgba.set(Color[0] * 255.0f, Color[1] * 255.0f, Color[2] * 255.0f, Color[3] * 255.0f);
+	return true;
+}
+
+void DrawWatchPreview(const char* Label, bool& Enabled, float& Value, float Min = 0.0f, float Max = 1.0f)
+{
+	ImGui::PushID(Label);
+	ImGui::Checkbox("##Enabled", &Enabled);
+	ImGui::SetItemTooltip("Override the live value");
+	ImGui::SameLine();
+	ImGui::BeginDisabled(!Enabled);
+	ImGui::SliderFloat(Label, &Value, Min, Max, "%.2f");
+	ImGui::EndDisabled();
+	ImGui::PopID();
+}
+
+void DrawWatchOffset(Fvector& Position, Fvector* Rotation, Fvector2* Size)
+{
+	ImGui::DragFloat3("Position", &Position.x, WatchDragPosition, -0.1f, 0.1f, "%.4f");
+	if (Rotation)
+	{
+		ImGui::DragFloat3("Rotation", &Rotation->x, 0.5f, -360.0f, 360.0f, "%.1f");
+	}
+	if (Size)
+	{
+		ImGui::DragFloat2("Size", &Size->x, WatchDragPosition, 0.0f, 0.1f, "%.4f");
+	}
+}
+
+bool DrawWatchTextLayout(const char* Id, shared_str& Font, Fvector4& Rect)
+{
+	ImGui::PushID(Id);
+	DrawWatchText("Font", Font);
+	const bool FontChanged = ImGui::IsItemDeactivatedAfterEdit();
+	ImGui::DragFloat4("Rect x y w h", &Rect.x, WatchDragPosition, -0.1f, 0.1f, "%.4f");
+	ImGui::PopID();
+	return FontChanged;
+}
+
+void DrawWatchWarning(const char* Text)
+{
+	ImGui::TextColored(WatchWarningColor, "%s", Text);
+}
+
+bool IsWatchLagActive(const SWatchLag& Lag)
+{
+	return Lag.MaxDelay > 0.0f || Lag.FreezeChance > 0.0f || Lag.Flicker > 0.0f;
 }
 
 const char* WatchSourceName(const SWatchSource& Source)
@@ -42,7 +155,7 @@ const char* WatchSourceName(const SWatchSource& Source)
 		case EWatchSourceKind::Noise: return "noise";
 		case EWatchSourceKind::Condition: return WatchDetail::ConditionNames[u32(Source.Condition)];
 		case EWatchSourceKind::Script: return "script";
-		default: return "none";
+		default: return "unknown";
 	}
 }
 
@@ -51,9 +164,9 @@ const char* WatchCompassKindName(EWatchCompassSourceKind Kind)
 	switch (Kind)
 	{
 		case EWatchCompassSourceKind::North: return "north";
-		case EWatchCompassSourceKind::Story: return "story";
-		case EWatchCompassSourceKind::Additional: return "additional";
-		case EWatchCompassSourceKind::UserNav: return "nav";
+		case EWatchCompassSourceKind::Story: return "story task";
+		case EWatchCompassSourceKind::Additional: return "side task";
+		case EWatchCompassSourceKind::UserNav: return "map mark";
 		default: return "none";
 	}
 }
@@ -67,43 +180,71 @@ void CWatchDevice::DrawImGui()
 		return;
 	}
 
-	ImGui::Text("Section: %s | Profile: %s", Section.c_str(), Profile.size() ? Profile.c_str() : "base");
-	ImGui::Checkbox("Enabled", &Config.Root.Enabled);
-	ImGui::Text("Bones OK: %s | Visible: %s", BonesOk() ? "yes" : "no", Hidden ? "no" : "yes");
-	ImGui::Text(
-		"Bones: compass=%d light=%d tail=%d ui=%d rad=%d anom=%d",
-		Rig.Bones().Compass != BI_NONE ? 1 : 0,
-		Rig.Bones().CompassLight != BI_NONE ? 1 : 0,
-		Rig.Bones().CompassTail != BI_NONE ? 1 : 0,
-		Rig.Bones().Display != BI_NONE ? 1 : 0,
-		Rig.Bones().RadIndicator != BI_NONE ? 1 : 0,
-		Rig.Bones().AnomIndicator != BI_NONE ? 1 : 0
-	);
-	ImGui::Text(
-		"Angle: %.1f deg | Error: %.1f deg | Target: %s | Kind: %s",
-		rad2deg(State.CompassAngle),
-		rad2deg(State.CompassError),
-		State.TargetValid ? "valid" : "none",
-		WatchCompassKindName(State.CompassSourceKind)
-	);
+	ImGui::PushItemWidth(ImGui::GetFontSize() * -11.0f);
+	DrawToolbarImGui();
+	ImGui::Separator();
 
-	DrawCompassImGui();
-	DrawDisplayImGui();
-	DrawBarometerImGui();
-	DrawNavigationImGui();
-	DrawLagImGui("surge_lag", "Display Lag (Surge)", Config.SurgeLag, Surge.Lag);
-	DrawLagImGui("anomaly_lag", "Display Lag (Anomaly)", Config.AnomalyLag, Surge.AnomalyLag);
-	DrawLightImGui();
+	auto LedVisibleLambda = [this](u32 Index)
+	{
+		return ShowInactive || Leds[Index].Enabled;
+	};
+	auto GaugeVisibleLambda = [this](u32 Index)
+	{
+		return ShowInactive || (Gauges[Index].Enabled && Config.Gauges[Index].Present.PresentUi);
+	};
+
+	bool HasLeds = false;
 	for (u32 Index = 0; Index < Leds.size(); ++Index)
 	{
-		DrawLedImGui(Index);
+		HasLeds |= LedVisibleLambda(Index);
 	}
+	bool HasGauges = false;
 	for (u32 Index = 0; Index < Gauges.size(); ++Index)
 	{
-		DrawGaugeImGui(Index);
+		HasGauges |= GaugeVisibleLambda(Index);
 	}
-	DrawPreviewImGui();
-	DrawHotSaveImGui();
+
+	if (!Config.Root.Enabled && !ShowInactive)
+	{
+		ImGui::TextDisabled("Watch is disabled");
+	}
+	else if (ImGui::BeginTabBar("WatchTabs"))
+	{
+		if ((Rig.HasCompass() || ShowInactive) && ImGui::BeginTabItem("Compass"))
+		{
+			DrawCompassImGui();
+			ImGui::EndTabItem();
+		}
+		if ((Ui || ShowInactive) && ImGui::BeginTabItem("Display"))
+		{
+			DrawDisplayImGui();
+			ImGui::EndTabItem();
+		}
+		if (HasLeds && ImGui::BeginTabItem("Indicators"))
+		{
+			for (u32 Index = 0; Index < Leds.size(); ++Index)
+			{
+				if (LedVisibleLambda(Index))
+				{
+					DrawLedImGui(Index);
+				}
+			}
+			ImGui::EndTabItem();
+		}
+		if (HasGauges && ImGui::BeginTabItem("Conditions"))
+		{
+			for (u32 Index = 0; Index < Gauges.size(); ++Index)
+			{
+				if (GaugeVisibleLambda(Index))
+				{
+					DrawGaugeImGui(Index);
+				}
+			}
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::PopItemWidth();
 
 	const bool EditingNow = ImGui::IsAnyItemActive();
 	if (EditingNow)
@@ -117,267 +258,454 @@ void CWatchDevice::DrawImGui()
 	Editing = EditingNow;
 }
 
-void CWatchDevice::DrawCompassImGui()
+void CWatchDevice::DrawToolbarImGui()
 {
-	if (!ImGui::CollapsingHeader("Compass", ImGuiTreeNodeFlags_DefaultOpen))
+	ImGui::Text("%s", Profile.size() ? Profile.c_str() : Section.c_str());
+	ImGui::SetItemTooltip("Config profile: %s", Profile.size() ? Profile.c_str() : "base");
+	ImGui::SameLine();
+	ImGui::TextDisabled("| %s", Hidden ? "hidden" : "on screen");
+
+	if (!Rig.Kinematics())
 	{
-		return;
+		DrawWatchWarning("No watch model on the hands");
+	}
+	else if (!BonesOk())
+	{
+		const SWatchBoneIds& Ids = Rig.Bones();
+		string256 Missing = {};
+		auto AppendLambda = [&Missing](u16 Bone, const char* Name)
+		{
+			if (Bone == BI_NONE)
+			{
+				xr_strcat(Missing, Missing[0] ? ", " : "");
+				xr_strcat(Missing, Name);
+			}
+		};
+		AppendLambda(Ids.Compass, "compass");
+		AppendLambda(Ids.CompassLight, "compass_light");
+		AppendLambda(Ids.Display, "display");
+		AppendLambda(Ids.RadIndicator, "rad_indicator");
+		AppendLambda(Ids.AnomIndicator, "anom_indicator");
+		ImGui::TextColored(WatchWarningColor, "Missing bones: %s", Missing);
 	}
 
+	ImGui::Checkbox("Enabled", &Config.Root.Enabled);
+	ImGui::SameLine();
+	ImGui::Checkbox("Show inactive", &ShowInactive);
+	ImGui::SetItemTooltip("Also show disabled parts and parts the model or watch_hud.xml does not have");
+
+	string1024 DirtyText = {};
+	FormatDirtySections(DirtyText);
+	const bool Dirty = xr_strcmp(DirtyText, "none") != 0;
+
+	ImGui::BeginDisabled(!Dirty);
+	if (ImGui::Button("Save Changed"))
+	{
+		HotSaveChanged();
+	}
+	ImGui::EndDisabled();
+	ImGui::SetItemTooltip("Write changed values to %s", OverridePath[0] ? OverridePath : "watch_override.ltx");
+	ImGui::SameLine();
+	if (ImGui::Button("Save All"))
+	{
+		HotSaveAll();
+	}
+	ImGui::SetItemTooltip("Write every value to %s", OverridePath[0] ? OverridePath : "watch_override.ltx");
+	ImGui::SameLine();
+	ImGui::BeginDisabled(!Dirty);
+	if (ImGui::Button("Revert"))
+	{
+		Revert();
+	}
+	ImGui::EndDisabled();
+	ImGui::SameLine();
+	if (ImGui::Button("Reload"))
+	{
+		Reload();
+	}
+	ImGui::SetItemTooltip("Re-read configs from disk");
+
+	if (Dirty)
+	{
+		ImGui::TextColored(WatchDirtyColor, "Unsaved: %s", DirtyText);
+	}
+	else if (LastHotSaveStatus[0])
+	{
+		ImGui::TextDisabled("%s", LastHotSaveStatus);
+	}
+}
+
+void CWatchDevice::DrawCompassImGui()
+{
 	SWatchCompass& CompassConfig = Config.Compass;
-	char ModeBuffer[32] = {};
-	char NoTargetBuffer[32] = {};
-	DrawWatchStringInput("Mode (north|quest|nav)", CompassConfig.Mode, ModeBuffer, sizeof(ModeBuffer));
-	DrawWatchStringInput("No Target (hide|north)", CompassConfig.NoTarget, NoTargetBuffer, sizeof(NoTargetBuffer));
+	ImGui::TextDisabled(
+		"Pointing to: %s | angle %.1f | lag %.1f",
+		WatchCompassKindName(State.CompassSourceKind),
+		rad2deg(State.CompassAngle),
+		rad2deg(State.CompassError)
+	);
+
+	DrawWatchChoice("Mode", CompassConfig.Mode, WatchCompassModes);
+	ImGui::SetItemTooltip("north: always north | quest: active task | nav: map mark, then task");
+	if (CompassSettings.Mode != EWatchCompassMode::North)
+	{
+		DrawWatchChoice("Without target", CompassConfig.NoTarget, WatchCompassNoTargets);
+	}
 	ImGui::DragFloat("Stiffness", &CompassConfig.Stiffness, 0.1f, 0.0f, 100.0f, "%.2f");
 	ImGui::DragFloat("Damping", &CompassConfig.Damping, 0.1f, 0.0f, 100.0f, "%.2f");
-	ImGui::DragFloat("Gravity Strength", &CompassConfig.GravityStrength, 1.0f, 0.0f, 360.0f, "%.1f");
-	ImGui::DragFloat("Angle Offset", &CompassConfig.AngleOffset, 1.0f, -360.0f, 360.0f, "%.1f");
-	ImGui::DragFloat("Target Glow", &CompassConfig.TargetGlow, 0.01f, 0.0f, 2.0f, "%.2f");
-	ImGui::DragFloat4("North Color RGBA", &CompassConfig.NorthColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	ImGui::DragFloat4("Story Color RGBA", &CompassConfig.StoryColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	ImGui::DragFloat4("Additional Color RGBA", &CompassConfig.AdditionalColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-	ImGui::DragFloat4("Nav Color RGBA", &CompassConfig.NavColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	ImGui::DragFloat("Angle offset", &CompassConfig.AngleOffset, 1.0f, -360.0f, 360.0f, "%.1f");
+
+	ImGui::SeparatorText("Glow");
+	ImGui::SliderFloat("Glow with target", &CompassConfig.TargetGlow, 0.0f, 2.0f, "%.2f");
+	const bool ShowNorth = CompassSettings.Mode == EWatchCompassMode::North || CompassSettings.NoTarget == EWatchCompassNoTarget::North;
+	if (ShowNorth || ShowInactive)
+	{
+		DrawWatchColor("North", CompassConfig.NorthColor);
+	}
+	if (CompassSettings.Mode != EWatchCompassMode::North || ShowInactive)
+	{
+		DrawWatchColor("Story task", CompassConfig.StoryColor);
+		DrawWatchColor("Side task", CompassConfig.AdditionalColor);
+	}
+	if (CompassSettings.Mode == EWatchCompassMode::Nav || ShowInactive)
+	{
+		DrawWatchColor("Map mark", CompassConfig.NavColor);
+	}
+
+	if (CompassSettings.IsChaosEnabled() || ShowInactive)
+	{
+		ImGui::SeparatorText("Gravity anomalies");
+		ImGui::TextDisabled("Field: %.2f", Zones.Gravity);
+		ImGui::DragFloat("Spin strength", &CompassConfig.GravityStrength, 1.0f, 0.0f, 360.0f, "%.1f");
+		DrawWatchPreview("Field##Gravity", Preview.PreviewGravity, Preview.PreviewGravityValue);
+	}
+
+	ImGui::SeparatorText("Test");
+	DrawWatchPreview("Needle angle", Preview.ForceAngle, Preview.ForceAngleDeg, -180.0f, 180.0f);
+
+	if (Rig.HasCompassLight() || ShowInactive)
+	{
+		ImGui::SeparatorText("Backlight");
+		DrawLightImGui();
+	}
+}
+
+void CWatchDevice::DrawLightImGui()
+{
+	SWatchLight& LightConfig = Config.Light;
+	ImGui::TextDisabled("Now: %.2f", State.Emission);
+
+	ImGui::SliderFloat("Day", &LightConfig.DayEmission, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Dusk", &LightConfig.DuskEmission, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Night", &LightConfig.NightEmission, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Dark", &LightConfig.DarkEmission, 0.0f, 1.0f, "%.2f");
+
+	DrawWatchText("Schedule", LightConfig.Schedule);
+	if (ImGui::IsItemDeactivatedAfterEdit())
+	{
+		UpdateLightSchedule(true);
+	}
+	ImGui::SetItemTooltip("hour:day|dusk|night|dark, ascending");
+
+	if (ImGui::Checkbox("##EmissionPreview", &Preview.PreviewEmission))
+	{
+		Light.Timer = 0.0f;
+	}
+	ImGui::SetItemTooltip("Override the live value");
+	ImGui::SameLine();
+	ImGui::BeginDisabled(!Preview.PreviewEmission);
+	ImGui::SliderFloat("Test level", &Preview.PreviewEmissionValue, 0.0f, 1.0f, "%.2f");
+	ImGui::EndDisabled();
+
+	if (ImGui::TreeNode("Glow layout"))
+	{
+		DrawWatchOffset(LightConfig.UiPosition, &LightConfig.UiRotation, &LightConfig.UiSize);
+		if (Rig.HasCompassTail() || ShowInactive)
+		{
+			ImGui::DragFloat3("Tail position", &LightConfig.TailUiPosition.x, WatchDragPosition, -0.1f, 0.1f, "%.4f");
+		}
+		ImGui::TreePop();
+	}
 }
 
 void CWatchDevice::DrawDisplayImGui()
 {
-	if (!ImGui::CollapsingHeader("Display UI", ImGuiTreeNodeFlags_DefaultOpen))
+	if (!Ui)
 	{
-		return;
+		DrawWatchWarning("No display: missing display bone, watch_hud.xml or fonts");
+		if (!ShowInactive)
+		{
+			return;
+		}
 	}
 
-	ImGui::Text("UI: %s | Time: %s | Date: %s", Ui ? "yes" : "no", State.TimeText.c_str(), State.DateText.c_str());
-
-	SWatchDisplay& DisplayConfig = Config.Display;
-	string64 TimeFormat = {};
-	string64 DateFormat = {};
-	DrawWatchStringInput("Time Format", DisplayConfig.TimeFormat, TimeFormat, sizeof(TimeFormat));
-	DrawWatchStringInput("Date Format", DisplayConfig.DateFormat, DateFormat, sizeof(DateFormat));
-	ImGui::DragFloat("Update Hz", &DisplayConfig.UpdateHz, 0.05f, 0.0f, 60.0f, "%.2f");
-	ImGui::TextDisabled("Tokens: HH MM SS DD YY YYYY, 0 Hz = every frame");
-
-	SWatchFonts& Fonts = Config.Fonts;
-	string64 FontTime = {};
-	string64 FontDate = {};
-	string64 FontBarometer = {};
-	string64 FontBarometerUnit = {};
-	bool FontsChanged = false;
-	DrawWatchStringInput("Time Font", Fonts.Time, FontTime, sizeof(FontTime));
-	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
-	DrawWatchStringInput("Date Font", Fonts.Date, FontDate, sizeof(FontDate));
-	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
-	DrawWatchStringInput("Barometer Font", Fonts.Barometer, FontBarometer, sizeof(FontBarometer));
-	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
-	DrawWatchStringInput("Barometer Unit Font", Fonts.BarometerUnit, FontBarometerUnit, sizeof(FontBarometerUnit));
-	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
-	if (FontsChanged)
-	{
-		CreateUI();
-	}
-
-	ImGui::DragFloat3("UI Position", &DisplayConfig.UiPosition.x, 0.0001f, -1.0f, 1.0f, "%.4f");
-	ImGui::DragFloat3("UI Rotation", &DisplayConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-	ImGui::DragFloat("UI Scale", &DisplayConfig.UiScale, 0.005f, 0.05f, 10.0f, "%.3f");
-	ImGui::TextDisabled("Rect: x, y, width, height");
-	ImGui::DragFloat4("Time Rect", &DisplayConfig.UiTime.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::DragFloat4("Date Rect", &DisplayConfig.UiDate.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::DragFloat4("Barometer Rect", &DisplayConfig.UiBarometer.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::DragFloat4("Barometer Unit Rect", &DisplayConfig.UiBarometerUnit.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-}
-
-void CWatchDevice::DrawNavigationImGui()
-{
-	if (!ImGui::CollapsingHeader("Navigation", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		return;
-	}
-
-	ImGui::Text(
-		"Target: %s | Distance: %.1f m | Arrow: %s %.1f deg",
-		Navigation.Valid ? "valid" : "none",
-		Navigation.Distance,
-		Navigation.ArrowValid ? "on" : "off",
-		rad2deg(Navigation.Angle)
+	ImGui::TextDisabled(
+		"Quality %.2f | %.1f Hz | brightness %.2f%s",
+		State.DisplayQuality,
+		Display.Hz,
+		Display.Intensity,
+		State.DisplayGlitched ? " | glitching" : ""
 	);
 
-	SWatchNavigation& NavConfig = Config.Navigation;
-	ImGui::Checkbox("Navigation Enabled", &NavConfig.Enabled);
-	string32 Target = {};
-	string32 UnitMeters = {};
-	string32 UnitKilometers = {};
-	DrawWatchStringInput("Target (quest|nav)", NavConfig.Target, Target, sizeof(Target));
-	ImGui::DragFloat("Km Threshold (m)", &NavConfig.KmThreshold, 10.0f, 0.0f, 100000.0f, "%.0f");
-	ImGui::DragFloat("Km Decimals", &NavConfig.KmDecimals, 0.05f, 0.0f, 3.0f, "%.0f");
-	ImGui::DragFloat("Near Radius (m)", &NavConfig.NearRadius, 0.1f, 0.0f, 100.0f, "%.1f");
-	DrawWatchStringInput("Meters Unit", NavConfig.UnitMeters, UnitMeters, sizeof(UnitMeters));
-	DrawWatchStringInput("Kilometers Unit", NavConfig.UnitKilometers, UnitKilometers, sizeof(UnitKilometers));
-	ImGui::DragFloat4("Arrow Color RGBA", &NavConfig.ArrowColor.x, 1.0f, 0.0f, 255.0f, "%.0f");
-
+	SWatchDisplay& DisplayConfig = Config.Display;
 	SWatchFonts& Fonts = Config.Fonts;
-	string64 FontDistance = {};
-	string64 FontDistanceUnit = {};
 	bool FontsChanged = false;
-	DrawWatchStringInput("Distance Font", Fonts.Distance, FontDistance, sizeof(FontDistance));
-	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
-	DrawWatchStringInput("Distance Unit Font", Fonts.DistanceUnit, FontDistanceUnit, sizeof(FontDistanceUnit));
-	FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
+
+	ImGui::DragFloat("Update Hz", &DisplayConfig.UpdateHz, 0.05f, 0.0f, 60.0f, "%.2f");
+	ImGui::SetItemTooltip("0 = every frame");
+
+	if ((Ui && Ui->HasTime()) || ShowInactive)
+	{
+		ImGui::SeparatorText("Time");
+		ImGui::PushID("Time");
+		DrawWatchText("Format", DisplayConfig.TimeFormat);
+		ImGui::SetItemTooltip("HH MM SS");
+		if (ImGui::TreeNode("Layout"))
+		{
+			FontsChanged |= DrawWatchTextLayout("Time", Fonts.Time, DisplayConfig.UiTime);
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+	}
+
+	if ((Ui && Ui->HasDate()) || ShowInactive)
+	{
+		ImGui::SeparatorText("Date");
+		ImGui::PushID("Date");
+		DrawWatchText("Format", DisplayConfig.DateFormat);
+		ImGui::SetItemTooltip("DD MM YY YYYY");
+		if (ImGui::TreeNode("Layout"))
+		{
+			FontsChanged |= DrawWatchTextLayout("Date", Fonts.Date, DisplayConfig.UiDate);
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+	}
+
+	if ((Config.Navigation.Enabled && Ui && Ui->HasNavigation()) || ShowInactive)
+	{
+		ImGui::SeparatorText("Navigation");
+		FontsChanged |= DrawNavigationImGui();
+	}
+
+	if ((DisplayConfig.BarometerEnabled && Ui && Ui->HasBarometer()) || ShowInactive)
+	{
+		ImGui::SeparatorText("Barometer");
+		FontsChanged |= DrawBarometerImGui();
+	}
+
+	if (IsWatchLagActive(Config.SurgeLag) || ShowInactive)
+	{
+		DrawLagImGui("SurgeLag", "Surge interference", Config.SurgeLag, Surge.Lag);
+	}
+	if ((IsWatchLagActive(Config.AnomalyLag) && UsesSource(EWatchSourceKind::Anomaly)) || ShowInactive)
+	{
+		DrawLagImGui("AnomalyLag", "Anomaly interference", Config.AnomalyLag, Surge.AnomalyLag);
+	}
+
+	ImGui::SeparatorText("Screen");
+	if (ImGui::TreeNode("Placement on the model"))
+	{
+		ImGui::DragFloat3("Position", &DisplayConfig.UiPosition.x, WatchDragPosition, -1.0f, 1.0f, "%.4f");
+		ImGui::DragFloat3("Rotation", &DisplayConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
+		ImGui::DragFloat("Scale", &DisplayConfig.UiScale, 0.005f, 0.05f, 10.0f, "%.3f");
+		ImGui::TreePop();
+	}
+
 	if (FontsChanged)
 	{
 		CreateUI();
 	}
-
-	SWatchDisplay& DisplayConfig = Config.Display;
-	ImGui::TextDisabled("Line: center x, center y, digit height, gap");
-	ImGui::DragFloat4("Nav Line", &DisplayConfig.UiNav.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::TextDisabled("Unit: height, y offset | Arrow: size, y offset");
-	ImGui::DragFloat2("Nav Unit", &DisplayConfig.UiNavUnit.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::DragFloat2("Nav Arrow", &DisplayConfig.UiNavArrow.x, 0.0001f, -0.1f, 0.1f, "%.4f");
 }
 
-void CWatchDevice::DrawBarometerImGui()
+bool CWatchDevice::DrawNavigationImGui()
 {
-	if (!ImGui::CollapsingHeader("Barometer", ImGuiTreeNodeFlags_DefaultOpen))
+	ImGui::PushID("Navigation");
+	if (Navigation.Valid)
 	{
-		return;
-	}
-
-	if (Env->IsSurgeBridgeMissing())
-	{
-		ImGui::Text("Bridge: missing | Value: %.2f", State.Barometer);
+		ImGui::TextDisabled("%.0f m | arrow %.0f", Navigation.Distance, rad2deg(Navigation.Angle));
 	}
 	else
 	{
-		ImGui::Text("Surge in: %.1f min | Value: %.2f | Surge: %.2f | Text: %s", Surge.Seconds / 60.0f, State.Barometer, State.SurgeFactor, State.BarometerText.c_str());
+		ImGui::TextDisabled("No target on this level");
 	}
 
+	SWatchNavigation& NavConfig = Config.Navigation;
+	ImGui::Checkbox("Enabled", &NavConfig.Enabled);
+	DrawWatchChoice("Target", NavConfig.Target, WatchNavigationTargets);
+	ImGui::SetItemTooltip("quest: active task | nav: map mark, then task");
+	DrawWatchColor("Arrow color", NavConfig.ArrowColor);
+	ImGui::DragFloat("Hide arrow closer than", &NavConfig.NearRadius, 0.1f, 0.0f, 100.0f, "%.1f m");
+
+	bool FontsChanged = false;
+	if (ImGui::TreeNode("Units"))
+	{
+		ImGui::DragFloat("Kilometers from", &NavConfig.KmThreshold, 10.0f, 0.0f, 100000.0f, "%.0f m");
+		int Decimals = iFloor(NavConfig.KmDecimals + 0.5f);
+		if (ImGui::SliderInt("Kilometer decimals", &Decimals, 0, 3))
+		{
+			NavConfig.KmDecimals = float(Decimals);
+		}
+		DrawWatchText("Meters", NavConfig.UnitMeters);
+		DrawWatchText("Kilometers", NavConfig.UnitKilometers);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Layout"))
+	{
+		SWatchDisplay& DisplayConfig = Config.Display;
+		SWatchFonts& Fonts = Config.Fonts;
+		DrawWatchText("Digits font", Fonts.Distance);
+		FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
+		DrawWatchText("Unit font", Fonts.DistanceUnit);
+		FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
+		ImGui::DragFloat2("Center", &DisplayConfig.UiNav.x, WatchDragPosition, -0.1f, 0.1f, "%.4f");
+		ImGui::DragFloat("Digit height", &DisplayConfig.UiNav.z, WatchDragPosition, 0.0f, 0.1f, "%.4f");
+		ImGui::DragFloat("Gap", &DisplayConfig.UiNav.w, WatchDragPosition, 0.0f, 0.1f, "%.4f");
+		ImGui::DragFloat2("Unit height, shift", &DisplayConfig.UiNavUnit.x, WatchDragPosition, -0.1f, 0.1f, "%.4f");
+		ImGui::DragFloat2("Arrow size, shift", &DisplayConfig.UiNavArrow.x, WatchDragPosition, -0.1f, 0.1f, "%.4f");
+		ImGui::TreePop();
+	}
+	ImGui::PopID();
+	return FontsChanged;
+}
+
+bool CWatchDevice::DrawBarometerImGui()
+{
+	ImGui::PushID("Barometer");
 	SWatchDisplay& DisplayConfig = Config.Display;
-	bool BarometerChanged = ImGui::Checkbox("Barometer Enabled", &DisplayConfig.BarometerEnabled);
-	BarometerChanged |= ImGui::DragFloat("Lookahead Far (min)", &DisplayConfig.BarometerLookaheadFar, 1.0f, 0.0f, 1440.0f, "%.1f");
-	BarometerChanged |= ImGui::DragFloat("Lookahead Near (min)", &DisplayConfig.BarometerLookaheadNear, 1.0f, 0.0f, 1440.0f, "%.1f");
-	BarometerChanged |= ImGui::DragFloat("Normal (hPa)", &DisplayConfig.BarometerNormal, 1.0f, 0.0f, 2000.0f, "%.0f");
-	BarometerChanged |= ImGui::DragFloat("Drop (hPa)", &DisplayConfig.BarometerDrop, 1.0f, 0.0f, 500.0f, "%.0f");
-	if (BarometerChanged)
+	if (Env->IsSurgeBridgeMissing())
+	{
+		DrawWatchWarning("No surge data: watch_surge.script is missing");
+	}
+	else if (Surge.Seconds >= 0.0f)
+	{
+		ImGui::TextDisabled("Surge in %.0f min | %s", Surge.Seconds / 60.0f, State.BarometerText.c_str());
+	}
+	else
+	{
+		ImGui::TextDisabled("Surge: %s | %s", Surge.Progress >= 0.0f ? "now" : "unknown", State.BarometerText.c_str());
+	}
+
+	bool Changed = ImGui::Checkbox("Enabled", &DisplayConfig.BarometerEnabled);
+	Changed |= ImGui::DragFloat("Normal", &DisplayConfig.BarometerNormal, 1.0f, 0.0f, 2000.0f, "%.0f");
+	Changed |= ImGui::DragFloat("Drop before surge", &DisplayConfig.BarometerDrop, 1.0f, 0.0f, 500.0f, "%.0f");
+	Changed |= ImGui::DragFloatRange2("Falls during", &DisplayConfig.BarometerLookaheadNear, &DisplayConfig.BarometerLookaheadFar, 1.0f, 0.0f, 1440.0f, "%.0f min", "%.0f min");
+	ImGui::SetItemTooltip("Starts falling at the right value, fully dropped at the left value (game minutes before the surge)");
+	if (Changed)
 	{
 		Surge.Timer = 0.0f;
 	}
+	DrawWatchPreview("Test surge", Preview.PreviewSurge, Preview.PreviewSurgeValue);
 
-	string64 BarometerUnit = {};
-	DrawWatchStringInput("Unit (text or string id)", DisplayConfig.BarometerUnit, BarometerUnit, sizeof(BarometerUnit));
-	if (ImGui::IsItemDeactivatedAfterEdit())
+	bool FontsChanged = false;
+	if (ImGui::TreeNode("Layout"))
 	{
-		CreateUI();
+		DrawWatchText("Unit", DisplayConfig.BarometerUnit);
+		FontsChanged |= ImGui::IsItemDeactivatedAfterEdit();
+		ImGui::SetItemTooltip("Text or string table id");
+		FontsChanged |= DrawWatchTextLayout("Digits", Config.Fonts.Barometer, DisplayConfig.UiBarometer);
+		ImGui::TextDisabled("Unit");
+		FontsChanged |= DrawWatchTextLayout("UnitText", Config.Fonts.BarometerUnit, DisplayConfig.UiBarometerUnit);
+		ImGui::TreePop();
 	}
+	ImGui::PopID();
+	return FontsChanged;
 }
 
 void CWatchDevice::DrawLagImGui(const char* Id, const char* Title, SWatchLag& Lag, float LagValue)
 {
 	ImGui::PushID(Id);
-	if (ImGui::CollapsingHeader(Title, ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::Text(
-			"Lag: %.2f | Quality: %.2f | Hz: %.2f | Delay: %.0f s | Freeze: %.2f s | Chance: %.2f | Intensity: %.2f | Glitched: %s",
-			LagValue,
-			State.DisplayQuality,
-			Display.Hz,
-			Display.Delay,
-			Display.Freeze,
-			Display.FreezeChance,
-			Display.Intensity,
-			State.DisplayGlitched ? "yes" : "no"
-		);
-		DrawWatchLagFields(Lag);
-	}
+	ImGui::SeparatorText(Title);
+	ImGui::TextDisabled("Level %.2f | delay %.0f s | frozen %.1f s", LagValue, Display.Delay, Display.Freeze);
+	ImGui::DragFloat("Time delay", &Lag.MaxDelay, 1.0f, 0.0f, 7200.0f, "%.0f s");
+	ImGui::DragFloat("Slowest update", &Lag.MinUpdateHz, 0.01f, 0.0f, WatchDetail::DisplayMaxHz, "%.2f Hz");
+	ImGui::SliderFloat("Freeze chance", &Lag.FreezeChance, 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Flicker", &Lag.Flicker, 0.0f, 1.0f, "%.2f");
 	ImGui::PopID();
-}
-
-void CWatchDevice::DrawLightImGui()
-{
-	if (!ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		return;
-	}
-
-	SWatchLight& LightConfig = Config.Light;
-	ImGui::Text(
-		"Emission: %.2f | Keys: %u | Bone: %s",
-		State.Emission,
-		u32(Light.Keys.size()),
-		Rig.HasCompassLight() ? "yes" : "no"
-	);
-
-	ImGui::DragFloat("Day Emission", &LightConfig.DayEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	ImGui::DragFloat("Dusk Emission", &LightConfig.DuskEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	ImGui::DragFloat("Night Emission", &LightConfig.NightEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-	ImGui::DragFloat("Dark Emission", &LightConfig.DarkEmission, 0.01f, 0.0f, 1.0f, "%.2f");
-
-	string256 Schedule = {};
-	DrawWatchStringInput("Schedule", LightConfig.Schedule, Schedule, sizeof(Schedule));
-	if (ImGui::IsItemDeactivatedAfterEdit())
-	{
-		UpdateLightSchedule(true);
-	}
-	ImGui::TextDisabled("hour:day|dusk|night|dark, ascending, linear blend between keys");
-
-	ImGui::DragFloat3("Glow Position", &LightConfig.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::DragFloat3("Tail Glow Position", &LightConfig.TailUiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-	ImGui::DragFloat3("Glow Rotation", &LightConfig.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-	ImGui::DragFloat2("Glow Size", &LightConfig.UiSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
 }
 
 void CWatchDevice::DrawLedImGui(u32 Index)
 {
 	SWatchLedElement& Element = Config.Leds[Index];
 	SWatchChannelPresent& Present = Element.Present;
-	const SWatchLedRuntime& Led = Leds[Index];
-
-	string64 Title = {};
-	xr_sprintf(Title, "Indicator %s", Element.Name.c_str());
+	SWatchLedRuntime& Led = Leds[Index];
 
 	ImGui::PushID(Element.PresentSection.c_str());
-	if (ImGui::CollapsingHeader(Title, ImGuiTreeNodeFlags_DefaultOpen))
+	if (!ImGui::CollapsingHeader(Element.Name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text(
-			"Intensity: %.2f | Source: %s | LED: %s | Bone: %s | Glass: %s | Light: %s",
-			Led.Intensity,
-			WatchSourceName(Led.Source),
-			Led.Value > 0.0f ? "on" : "off",
-			Rig.HasLedBone(Index) ? "yes" : "no",
-			Rig.IsLedMeshHidden(Index) ? "yes" : "no",
-			Led.Light ? (Led.Light->get_active() ? "on" : "idle") : "none"
-		);
+		ImGui::PopID();
+		return;
+	}
 
+	ImGui::TextDisabled("Signal %.2f | %s | source %s", Led.Intensity, Led.Value > 0.0f ? "lit" : "off", WatchSourceName(Led.Source));
+	if (Led.Source.Kind == EWatchSourceKind::None)
+	{
+		DrawWatchWarning("Unknown source");
+	}
+	if (Present.PresentShader && !Rig.HasLedBone(Index))
+	{
+		DrawWatchWarning("Bone not found on the model");
+	}
+
+	ImGui::Checkbox("Enabled", &Present.Enabled);
+	ImGui::SetItemTooltip("Disabled indicators are hidden here unless Show inactive is on");
+	if (ShowInactive || !Element.Master)
+	{
+		ImGui::SameLine();
 		ImGui::Checkbox("Master", &Element.Master);
-		ImGui::Checkbox("Enabled", &Present.Enabled);
-		ImGui::Checkbox("Present Shader", &Present.PresentShader);
-		ImGui::Checkbox("Present UI", &Present.PresentUi);
-		ImGui::Checkbox("Hide Mesh (glass LED)", &Present.HideMesh);
+		ImGui::SetItemTooltip("[watch.indicators] %s", Element.MasterKey.c_str());
+	}
 
-		string128 Source = {};
-		DrawWatchStringInput("Source", Present.Source, Source, sizeof(Source));
-		ImGui::DragFloat("Smoothing", &Present.Smoothing, 0.1f, 0.0f, 60.0f, "%.2f");
+	DrawWatchSource(Present.Source, Element.Name);
+	ImGui::DragFloat("Smoothing", &Present.Smoothing, 0.1f, 0.0f, 60.0f, "%.2f");
+	DrawWatchPreview("Test signal", Led.Preview, Led.PreviewValue);
 
-		ImGui::DragFloat3("LED Position", &Present.UiPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-		ImGui::DragFloat3("LED Rotation", &Present.UiRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-		ImGui::DragFloat2("LED Size", &Present.UiSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
-		ImGui::DragFloat2("Glass Length/Radius", &Present.GlassSize.x, 0.0001f, 0.0f, 0.05f, "%.4f");
-		ImGui::DragFloat("Brightness", &Present.Brightness, 0.05f, 0.0f, WatchLedMaxBrightness, "%.2f");
-		ImGui::Checkbox("Point Light", &Present.LightEnabled);
-		ImGui::DragFloat("Light Range", &Present.LightRange, 0.005f, 0.0f, 2.0f, "%.3f");
-		ImGui::DragFloat("Light Brightness", &Present.LightBrightness, 0.05f, 0.0f, WatchDetail::HudLightMaxStrength, "%.2f");
+	if (Led.Source.Kind == EWatchSourceKind::Anomaly && ImGui::TreeNode("Anomaly sensor"))
+	{
+		SWatchAnomalySensor& Sensor = Config.Anomaly;
+		ImGui::DragFloat("Radius", &Sensor.Radius, 0.1f, 0.0f, 200.0f, "%.1f m");
+		ImGui::Checkbox("Ignore radiation", &Sensor.ExcludeRadiation);
+		DrawWatchText("Ignore sections", Sensor.Exclude);
+		ImGui::SetItemTooltip("Comma separated parts of zone section names");
+		ImGui::TreePop();
+	}
 
-		if (Led.Source.Kind == EWatchSourceKind::Anomaly)
+	if (ImGui::TreeNode("Blink"))
+	{
+		SWatchLedBlink& Blink = Element.Blink;
+		ImGui::DragFloatRange2("Blinks between", &Blink.Threshold, &Blink.SolidThreshold, 0.005f, 0.0f, 1.0f, "%.3f", "solid %.3f");
+		ImGui::DragFloatRange2("Rate", &Blink.BlinkMinHz, &Blink.BlinkMaxHz, 0.05f, 0.0f, 30.0f, "%.2f Hz", "%.2f Hz");
+		ImGui::SliderFloat("On time", &Blink.BlinkDuty, 0.0f, 1.0f, "%.2f");
+		ImGui::TreePop();
+	}
+
+	ImGui::Checkbox("On model", &Present.PresentShader);
+	ImGui::SameLine();
+	ImGui::Checkbox("On display", &Present.PresentUi);
+
+	if (Present.PresentShader && ImGui::TreeNode("Model look"))
+	{
+		ImGui::Checkbox("Glass cap", &Present.HideMesh);
+		ImGui::SetItemTooltip("Hide the model lamp and draw a glass cap instead");
+		if (Present.HideMesh)
 		{
-			SWatchAnomalySensor& Sensor = Config.Anomaly;
-			ImGui::Text("Exclude: %u", u32(Zones.AnomalyExclude.size()));
-			ImGui::DragFloat("Radius (m)", &Sensor.Radius, 0.1f, 0.0f, 200.0f, "%.1f");
-			ImGui::Checkbox("Exclude Radiation", &Sensor.ExcludeRadiation);
-
-			string512 Exclude = {};
-			DrawWatchStringInput("Exclude (section prefixes)", Sensor.Exclude, Exclude, sizeof(Exclude));
+			ImGui::DragFloat2("Glass length, radius", &Present.GlassSize.x, WatchDragPosition, 0.0f, 0.05f, "%.4f");
+			ImGui::SliderFloat("Brightness", &Present.Brightness, 0.0f, WatchLedMaxBrightness, "%.2f");
 		}
+		ImGui::Checkbox("Light on the hand", &Present.LightEnabled);
+		if (Present.LightEnabled)
+		{
+			ImGui::DragFloat("Light range", &Present.LightRange, 0.005f, 0.0f, 2.0f, "%.3f");
+			ImGui::DragFloat("Light brightness", &Present.LightBrightness, 0.05f, 0.0f, WatchDetail::HudLightMaxStrength, "%.2f");
+		}
+		ImGui::TreePop();
+	}
 
-		DrawWatchBlinkFields(Element.Blink);
+	if ((Present.PresentShader || Present.PresentUi) && ImGui::TreeNode("Glow layout"))
+	{
+		DrawWatchOffset(Present.UiPosition, &Present.UiRotation, &Present.UiSize);
+		ImGui::TreePop();
 	}
 	ImGui::PopID();
 }
@@ -386,169 +714,100 @@ void CWatchDevice::DrawGaugeImGui(u32 Index)
 {
 	SWatchGaugeElement& Element = Config.Gauges[Index];
 	SWatchConditionPresent& Present = Element.Present;
-	const SWatchGaugeRuntime& Gauge = Gauges[Index];
-
-	string64 Title = {};
-	xr_sprintf(Title, "Condition %s", Element.Name.c_str());
+	SWatchGaugeRuntime& Gauge = Gauges[Index];
 
 	ImGui::PushID(Element.PresentSection.c_str());
-	if (ImGui::CollapsingHeader(Title))
+	if (!ImGui::CollapsingHeader(Element.Name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text(
-			"Raw: %.2f | Display: %.2f | Badness: %.2f | Severity: %s | Visible: %s | Active: %s | Source: %s | Icon: %s | Bar: %s",
-			Gauge.Value,
-			Gauge.DisplayValue,
-			Gauge.Badness,
-			WatchDetail::ConditionSeverityName(Gauge.Severity),
-			Gauge.Visible ? "yes" : "no",
-			IsGaugeActive(Index) ? "yes" : "no",
-			WatchSourceName(Gauge.Source),
-			Ui && Ui->HasGaugeIcon(Index) ? "yes" : "no",
-			Ui && Ui->HasGaugeBar(Index) ? "yes" : "no"
-		);
+		ImGui::PopID();
+		return;
+	}
 
+	ImGui::TextDisabled(
+		"Value %.2f | %s | %s",
+		Gauge.DisplayValue,
+		WatchDetail::ConditionSeverityName(Gauge.Severity),
+		Gauge.Visible ? "shown" : "hidden"
+	);
+	if (Gauge.Source.Kind == EWatchSourceKind::None)
+	{
+		DrawWatchWarning("Unknown source");
+	}
+	else if (!IsGaugeActive(Index) && Gauge.Enabled)
+	{
+		DrawWatchWarning("This condition is off in the game settings");
+	}
+	if (Ui && !Ui->HasGaugeIcon(Index) && !Ui->HasGaugeBar(Index))
+	{
+		DrawWatchWarning("No icon or bar in watch_hud.xml");
+	}
+
+	ImGui::Checkbox("Enabled", &Present.Enabled);
+	ImGui::SetItemTooltip("Disabled conditions are hidden here unless Show inactive is on");
+	if (ShowInactive || !Element.Master)
+	{
+		ImGui::SameLine();
 		ImGui::Checkbox("Master", &Element.Master);
-		ImGui::Checkbox("Enabled", &Present.Enabled);
-		ImGui::Checkbox("Present UI", &Present.PresentUi);
-		ImGui::Checkbox("Present Icon", &Present.PresentIcon);
-		ImGui::Checkbox("Present Bar", &Present.PresentBar);
-		ImGui::Checkbox("Invert", &Present.Invert);
-		ImGui::Checkbox("Severity Higher", &Present.SeverityHigher);
+		ImGui::SetItemTooltip("[watch.conditions] %s", Element.MasterKey.c_str());
+	}
+	if (ShowInactive || !Present.PresentUi)
+	{
+		ImGui::SameLine();
+		ImGui::Checkbox("Show on display", &Present.PresentUi);
+	}
 
-		string128 Source = {};
-		DrawWatchStringInput("Source", Present.Source, Source, sizeof(Source));
-		ImGui::DragFloat("Smoothing", &Present.Smoothing, 0.1f, 0.0f, 60.0f, "%.2f");
+	DrawWatchSource(Present.Source, Element.Name);
+	ImGui::DragFloat("Smoothing", &Present.Smoothing, 0.1f, 0.0f, 60.0f, "%.2f");
+	if (Gauge.Source.Kind == EWatchSourceKind::Condition && Gauge.Source.Condition == EWatchCondition::Bleeding)
+	{
+		ImGui::DragFloat("Full scale", &Present.Normalize, 0.005f, 0.0f, 10.0f, "%.3f");
+		ImGui::SetItemTooltip("Bleeding speed shown as 100%%");
+	}
+	DrawWatchPreview("Test value", Gauge.Preview, Gauge.PreviewValue);
 
-		ImGui::DragFloat3("Icon Position", &Present.UiIconPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-		ImGui::DragFloat3("Icon Rotation", &Present.UiIconRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-		ImGui::DragFloat2("Icon Size", &Present.UiIconSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
-		ImGui::DragFloat3("Bar Position", &Present.UiBarPosition.x, 0.0001f, -0.1f, 0.1f, "%.4f");
-		ImGui::DragFloat3("Bar Rotation", &Present.UiBarRotation.x, 0.5f, -360.0f, 360.0f, "%.1f");
-		ImGui::DragFloat2("Bar Size", &Present.UiBarSize.x, 0.0001f, 0.0f, 0.1f, "%.4f");
+	if (ImGui::TreeNode("When to show"))
+	{
+		ImGui::Checkbox("Invert value", &Present.Invert);
+		ImGui::Checkbox("Higher is worse", &Present.SeverityHigher);
+		ImGui::DragFloatRange2("Visible range", &Present.VisibleMin, &Present.VisibleMax, 0.005f, 0.0f, 1.0f, "%.3f", "%.3f");
+		ImGui::SliderFloat("Weak from", &Present.TierWeak, 0.0f, 1.0f, "%.3f");
+		ImGui::SliderFloat("Medium from", &Present.TierMedium, 0.0f, 1.0f, "%.3f");
+		ImGui::SliderFloat("Critical from", &Present.TierCritical, 0.0f, 1.0f, "%.3f");
+		ImGui::TreePop();
+	}
 
-		ImGui::DragFloat("Visible Min", &Present.VisibleMin, 0.005f, 0.0f, 1.0f, "%.3f");
-		ImGui::DragFloat("Visible Max", &Present.VisibleMax, 0.005f, 0.0f, 1.0f, "%.3f");
-		ImGui::DragFloat("Normalize", &Present.Normalize, 0.005f, 0.0f, 10.0f, "%.3f");
-		ImGui::DragFloat("Glow", &Present.Glow, 0.05f, 0.0f, 4.0f, "%.2f");
-		ImGui::DragFloat("Tier Weak", &Present.TierWeak, 0.005f, 0.0f, 1.0f, "%.3f");
-		ImGui::DragFloat("Tier Medium", &Present.TierMedium, 0.005f, 0.0f, 1.0f, "%.3f");
-		ImGui::DragFloat("Tier Critical", &Present.TierCritical, 0.005f, 0.0f, 1.0f, "%.3f");
-		ImGui::DragFloat("Glow None", &Present.GlowNone, 0.05f, 0.0f, 4.0f, "%.2f");
-		ImGui::DragFloat("Glow Weak", &Present.GlowWeak, 0.05f, 0.0f, 4.0f, "%.2f");
-		ImGui::DragFloat("Glow Medium", &Present.GlowMedium, 0.05f, 0.0f, 4.0f, "%.2f");
-		ImGui::DragFloat("Glow Critical", &Present.GlowCritical, 0.05f, 0.0f, 4.0f, "%.2f");
-		ImGui::DragFloat4("Color Weak RGBA", &Present.ColorWeak.x, 1.0f, 0.0f, 255.0f, "%.0f");
-		ImGui::DragFloat4("Color Medium RGBA", &Present.ColorMedium.x, 1.0f, 0.0f, 255.0f, "%.0f");
-		ImGui::DragFloat4("Color Critical RGBA", &Present.ColorCritical.x, 1.0f, 0.0f, 255.0f, "%.0f");
+	if (ImGui::TreeNode("Look"))
+	{
+		ImGui::Checkbox("Icon", &Present.PresentIcon);
+		ImGui::SameLine();
+		ImGui::Checkbox("Bar", &Present.PresentBar);
+		ImGui::SliderFloat("Brightness", &Present.Glow, 0.0f, 4.0f, "%.2f");
+		ImGui::SliderFloat("Glow weak", &Present.GlowWeak, 0.0f, 4.0f, "%.2f");
+		ImGui::SliderFloat("Glow medium", &Present.GlowMedium, 0.0f, 4.0f, "%.2f");
+		ImGui::SliderFloat("Glow critical", &Present.GlowCritical, 0.0f, 4.0f, "%.2f");
+		DrawWatchColor("Weak", Present.ColorWeak);
+		DrawWatchColor("Medium", Present.ColorMedium);
+		DrawWatchColor("Critical", Present.ColorCritical);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Layout"))
+	{
+		if (Present.PresentIcon)
+		{
+			ImGui::PushID("Icon");
+			ImGui::TextDisabled("Icon");
+			DrawWatchOffset(Present.UiIconPosition, &Present.UiIconRotation, &Present.UiIconSize);
+			ImGui::PopID();
+		}
+		if (Present.PresentBar)
+		{
+			ImGui::PushID("Bar");
+			ImGui::TextDisabled("Bar");
+			DrawWatchOffset(Present.UiBarPosition, &Present.UiBarRotation, &Present.UiBarSize);
+			ImGui::PopID();
+		}
+		ImGui::TreePop();
 	}
 	ImGui::PopID();
-}
-
-void CWatchDevice::DrawPreviewImGui()
-{
-	if (!ImGui::CollapsingHeader("Preview / Force", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		return;
-	}
-
-	ImGui::Checkbox("Force Angle", &Preview.ForceAngle);
-	ImGui::BeginDisabled(!Preview.ForceAngle);
-	ImGui::DragFloat("Force Angle Deg", &Preview.ForceAngleDeg, 1.0f, -180.0f, 180.0f, "%.1f");
-	ImGui::EndDisabled();
-
-	if (ImGui::Button("Force North"))
-	{
-		Preview.ForceAngle = true;
-		Preview.ForceAngleDeg = 0.0f;
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Clear Force"))
-	{
-		Preview.ForceAngle = false;
-	}
-
-	ImGui::Separator();
-	ImGui::Checkbox("Preview Gravity", &Preview.PreviewGravity);
-	ImGui::BeginDisabled(!Preview.PreviewGravity);
-	ImGui::SliderFloat("Gravity##Preview", &Preview.PreviewGravityValue, 0.0f, 1.0f, "%.2f");
-	ImGui::EndDisabled();
-
-	ImGui::Checkbox("Preview Surge", &Preview.PreviewSurge);
-	ImGui::BeginDisabled(!Preview.PreviewSurge);
-	ImGui::SliderFloat("Surge##Preview", &Preview.PreviewSurgeValue, 0.0f, 1.0f, "%.2f");
-	ImGui::EndDisabled();
-
-	for (u32 Index = 0; Index < Leds.size(); ++Index)
-	{
-		SWatchLedRuntime& Led = Leds[Index];
-		const char* Name = Config.Leds[Index].Name.c_str();
-		string64 Label = {};
-		string64 SliderLabel = {};
-		xr_sprintf(Label, "Preview %s", Name);
-		xr_sprintf(SliderLabel, "%s##PreviewLed", Name);
-		ImGui::Checkbox(Label, &Led.Preview);
-		ImGui::BeginDisabled(!Led.Preview);
-		ImGui::SliderFloat(SliderLabel, &Led.PreviewValue, 0.0f, 1.0f, "%.2f");
-		ImGui::EndDisabled();
-	}
-
-	for (u32 Index = 0; Index < Gauges.size(); ++Index)
-	{
-		SWatchGaugeRuntime& Gauge = Gauges[Index];
-		const char* Name = Config.Gauges[Index].Name.c_str();
-		string64 Label = {};
-		string64 SliderLabel = {};
-		xr_sprintf(Label, "Preview Cond %s", Name);
-		xr_sprintf(SliderLabel, "Cond %s##PreviewGauge", Name);
-		ImGui::Checkbox(Label, &Gauge.Preview);
-		ImGui::BeginDisabled(!Gauge.Preview);
-		ImGui::SliderFloat(SliderLabel, &Gauge.PreviewValue, 0.0f, 1.0f, "%.2f");
-		ImGui::EndDisabled();
-	}
-
-	if (ImGui::Checkbox("Preview Emission", &Preview.PreviewEmission))
-	{
-		Light.Timer = 0.0f;
-	}
-	ImGui::BeginDisabled(!Preview.PreviewEmission);
-	ImGui::SliderFloat("Emission##Preview", &Preview.PreviewEmissionValue, 0.0f, 1.0f, "%.2f");
-	ImGui::EndDisabled();
-}
-
-void CWatchDevice::DrawHotSaveImGui()
-{
-	if (!ImGui::CollapsingHeader("HotSave", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		return;
-	}
-
-	if (ImGui::Button("Save Changed"))
-	{
-		HotSaveChanged();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Save All"))
-	{
-		HotSaveAll();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Revert"))
-	{
-		Revert();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Reload"))
-	{
-		Reload();
-	}
-
-	string1024 DirtyText = {};
-	FormatDirtySections(DirtyText);
-	ImGui::TextWrapped("Dirty: %s", DirtyText);
-
-	ImGui::TextWrapped("Override: %s", OverridePath);
-	if (LastHotSaveStatus[0])
-	{
-		ImGui::TextWrapped("%s", LastHotSaveStatus);
-	}
 }

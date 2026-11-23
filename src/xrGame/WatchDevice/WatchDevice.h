@@ -160,16 +160,15 @@ private:
 	void FormatDirtySections(string1024& Out);
 	void WriteOverride(bool ChangedOnly, const char* Label);
 
+	void DrawToolbarImGui();
 	void DrawCompassImGui();
 	void DrawDisplayImGui();
-	void DrawBarometerImGui();
-	void DrawNavigationImGui();
+	bool DrawBarometerImGui();
+	bool DrawNavigationImGui();
 	void DrawLagImGui(const char* Id, const char* Title, SWatchLag& Lag, float LagValue);
 	void DrawLightImGui();
 	void DrawLedImGui(u32 Index);
 	void DrawGaugeImGui(u32 Index);
-	void DrawPreviewImGui();
-	void DrawHotSaveImGui();
 
 	void ResetRuntime();
 	void CreateUI();
@@ -244,6 +243,7 @@ private:
 	bool Hidden = true;
 	bool Loaded = false;
 	bool Editing = false;
+	bool ShowInactive = false;
 	string_path OverridePath = {};
 	string_path LastHotSaveStatus = {};
 };
