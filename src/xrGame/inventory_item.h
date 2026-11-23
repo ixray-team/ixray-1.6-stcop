@@ -239,6 +239,8 @@ public:
 	Fmatrix m_attach_hud_offset = Fidentity;
 	u16 m_attach_hud_bone_id = BI_NONE;
 	Fmatrix m_attach_hud_transform = Fidentity;
+	Fvector HudBonePrev = {};
+	bool HudBonePrevValid = false;
 	IKinematics* m_hud_model = nullptr;
 
 	struct SHudMirror
@@ -246,6 +248,8 @@ public:
 		IKinematics* model = nullptr;
 		u16 bone = BI_NONE;
 		Fmatrix transform = Fidentity;
+		Fvector BonePrev = {};
+		bool BonePrevValid = false;
 	};
 	xr_vector<SHudMirror> m_hud_mirrors;
 	void ReleaseHudMirrors();

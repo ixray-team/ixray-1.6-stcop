@@ -713,6 +713,22 @@ IKinematics* CInventoryItem::HudModel()
 	return m_hud_model;
 }
 
+namespace HudAttachHistory
+{
+	constexpr float TeleportDistance = 0.25f;
+
+	void Track(IKinematics* Model, const Fvector& Position, Fvector& Prev, bool& Valid)
+	{
+		if (Valid && Model != nullptr && Prev.distance_to_sqr(Position) > TeleportDistance * TeleportDistance)
+		{
+			Model->BonesHistory_Invalidate();
+		}
+
+		Prev = Position;
+		Valid = true;
+	}
+}
+
 void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 {
 	model->CalculateBones(true);
@@ -737,6 +753,7 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 
 		IKinematics* child_model = child->HudModel();
 
+		HudAttachHistory::Track(child_model, model->LL_GetTransform(child->m_attach_hud_bone_id).c, child->HudBonePrev, child->HudBonePrevValid);
 		child->m_attach_hud_transform.mul_43(xform, model->LL_GetTransform(child->m_attach_hud_bone_id));
 		child->m_attach_hud_transform.mulB_43(child->m_attach_hud_offset);
 		::Render->set_Transform(child->m_attach_hud_transform);
@@ -774,6 +791,7 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 				mirror.model = PKinematics(::Render->model_Create(child->ItemDesc().m_attach_hud_visual.c_str()));
 			}
 
+			HudAttachHistory::Track(mirror.model, model->LL_GetTransform(mirror.bone).c, mirror.BonePrev, mirror.BonePrevValid);
 			mirror.transform.mul_43(xform, model->LL_GetTransform(mirror.bone));
 			mirror.transform.mulB_43(child->m_attach_hud_offset);
 			::Render->set_Transform(mirror.transform);
