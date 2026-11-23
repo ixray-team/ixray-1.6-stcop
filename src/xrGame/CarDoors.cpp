@@ -762,6 +762,33 @@ Fvector CCar::SDoor::GetWorldPosition()
 	return BoneMatrix.c;
 }
 
+Fvector CCar::SDoor::GetClosedWorldPosition()
+{
+	if (pcar == nullptr || pcar->bones_bind_forms.empty() || bone_id == BI_NONE)
+		return GetWorldPosition();
+
+	IKinematics* K = PKinematics(pcar->Visual());
+	if (K == nullptr || bone_id >= K->LL_BoneCount())
+		return GetWorldPosition();
+
+	const Fmatrix* DoorForm = nullptr;
+	if (joint != nullptr)
+		DoorForm = &closed_door_form_in_object;
+	else if (pcar->bones_bind_forms.size() > bone_id)
+		DoorForm = &pcar->bones_bind_forms[bone_id];
+
+	if (DoorForm == nullptr)
+		return GetWorldPosition();
+
+	Fmatrix BoneMatrix;
+	Fobb BoneOBB = K->LL_GetBox(bone_id);
+	BoneOBB.xform_get(BoneMatrix);
+	Fmatrix BoneMatrixRes;
+	BoneMatrixRes.mul(*DoorForm, BoneMatrix);
+	BoneMatrix.mul(pcar->XFORM(), BoneMatrixRes);
+	return BoneMatrix.c;
+}
+
 bool CCar::SDoor::IsDistOfSight(const Fvector& pos)
 {
 	if (GetWorldPosition().distance_to(pos) <= dist_to_door_avlbl)

@@ -6286,7 +6286,7 @@ CCar::SDoor* GNearestDoor(CCar* pcar, xr_map<u16,CCar::SDoor> &doors)
 		if(I->second.non_enterable) continue;
 		if(I->second.non_exitable) continue;
 		Fvector center; Actor()->Center(center);
-		m_doors.insert(std::make_pair(I->second.GetWorldPosition().distance_to(center), &I->second));
+		m_doors.insert(std::make_pair(I->second.GetClosedWorldPosition().distance_to(center), &I->second));
 	}
 	if (m_doors.empty())
 		return nullptr;

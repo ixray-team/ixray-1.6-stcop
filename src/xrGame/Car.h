@@ -801,6 +801,7 @@ virtual void ApplyDamage(u16 level);
 		void BuildExitArea();
 		void GetExitPosition(Fvector& pos);
 		Fvector GetWorldPosition();
+		Fvector GetClosedWorldPosition();
 		bool IsDistOfSight(const Fvector& pos);
 		bool IsLineOfSight();
 		void ApplyTorque(float atorque,float aa_vel);
