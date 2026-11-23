@@ -62,7 +62,7 @@ void weapon::compute_bone(u32 const bone_id)
 	transform.mulB_43(m_weapon.m_ActiveOffset.GetXFORM());
 
 	Fvector position = zero_vel;
-	transform.transform_tiny(position, m_weapon.vLoadedFirePoint);
+	m_weapon.FirePoint(transform, m_weapon.ItemDesc().FireBone, m_weapon.ItemDesc().FirePoint, position);
 	const Fvector direction = transform.k;
 
 	VERIFY(_valid(m_bones[bone_id]));

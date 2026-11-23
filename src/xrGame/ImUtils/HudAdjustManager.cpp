@@ -80,19 +80,32 @@ static void HudAdjustDrawSaveButton()
 			file.w_fvector3(sect, "orientation", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot]);
 		}
 
-		if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_shell_point))
+		const hud_item_measures& measures = p_item->m_measures;
+
+		if (measures.m_prop_flags.test(measures.e_shell_point))
 		{
-			file.w_fvector3(sect, "shell_point", p_item->m_measures.m_shell_point_offset);
+			file.w_fvector3(sect, "shell_point", measures.m_shell_point_offset);
+
+			if (measures.m_shell_bone != BI_NONE)
+			{
+				file.w_string(sect, "shell_bone", p_item->m_model->LL_BoneName_dbg(measures.m_shell_bone));
+			}
 		}
 	
-		if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_fire_point))
+		if (measures.m_prop_flags.test(measures.e_fire_point))
 		{
-			file.w_fvector3(sect, "fire_point", p_item->m_measures.m_fire_point_offset);
+			file.w_fvector3(sect, "fire_point", measures.m_fire_point_offset);
+			file.w_string(sect, "fire_bone", p_item->m_model->LL_BoneName_dbg(measures.m_fire_bone));
 		}
 	
-		if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_fire_point2))
+		if (measures.m_prop_flags.test(measures.e_fire_point2))
 		{
-			file.w_fvector3(sect, "fire_point2", p_item->m_measures.m_fire_point2_offset);
+			file.w_fvector3(sect, "fire_point2", measures.m_fire_point2_offset);
+
+			if (measures.m_fire_bone2 != BI_NONE)
+			{
+				file.w_string(sect, "fire_bone2", p_item->m_model->LL_BoneName_dbg(measures.m_fire_bone2));
+			}
 		}
 
 		if (!p_item->m_model_combined)
@@ -140,6 +153,11 @@ static void HudAdjustDrawSaveButton()
 		
 		file.w_float(sect, "collision_stifness", p_item->m_measures.m_collision_params.stifness);
 		file.w_float(sect, "collision_damping", p_item->m_measures.m_collision_params.damping);
+
+		if (CWeapon* wpn = p_item->m_parent_hud_item ? p_item->m_parent_hud_item->cast_weapon() : nullptr)
+		{
+			SaveWeaponAttachFirePoints(file, wpn, true);
+		}
 	};
 	
 	if (p_hud_item_first)
@@ -534,7 +552,29 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 	firedeps fd = {};
 	item->setup_firedeps(fd);
 
-	if (item->m_measures.m_prop_flags.test(item->m_measures.e_fire_point))
+	auto boneCombo = [item](const char* label, u16& bone_id, bool allow_none) -> void
+	{
+		shared_str bone = bone_id != BI_NONE ? item->m_model->LL_BoneName_dbg(bone_id) : nullptr;
+		if (ImGuiBoneCombo(label, item->m_model, bone, allow_none))
+		{
+			bone_id = bone.size() ? item->m_model->LL_BoneID(bone) : BI_NONE;
+		}
+	};
+
+	auto iniBone = [item](const char* line) -> u16
+	{
+		return pSettings->line_exist(item->m_sect_name, line) ? item->m_model->LL_BoneID(pSettings->r_string(item->m_sect_name, line)) : BI_NONE;
+	};
+
+	CWeapon* wpn = item->m_parent_hud_item ? item->m_parent_hud_item->cast_weapon() : nullptr;
+	CInventoryItem* muzzle = wpn ? WeaponFirePointAttach(wpn, false) : nullptr;
+	CInventoryItem* launcher = wpn ? WeaponFirePointAttach(wpn, true) : nullptr;
+
+	if (muzzle && ImGui::CollapsingHeader("Fire point"))
+	{
+		ImGuiAttachFirePoint(muzzle, true, _delta_pos);
+	}
+	else if (!muzzle && item->m_measures.m_prop_flags.test(item->m_measures.e_fire_point))
 	{
 		if (ImGui::CollapsingHeader("Fire point"))
 		{
@@ -543,8 +583,11 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			Fvector& position = item->m_measures.m_fire_point_offset;
 			if (ImGui::Button("Reset##FPOffset"))
 			{
-				position = pSettings->r_fvector3(item->m_sect_name, "fire_point");
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "fire_point", zero_vel);
+				item->m_measures.m_fire_bone = iniBone("fire_bone");
 			}
+
+			boneCombo("Bone##FPB", item->m_measures.m_fire_bone, false);
 	
 			if (ImGui::BeginTable("Data##FPP", 1))
 			{
@@ -561,7 +604,11 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		}
 	}
 	
-	if (item->m_measures.m_prop_flags.test(item->m_measures.e_fire_point2))
+	if (launcher && ImGui::CollapsingHeader("Fire point 2"))
+	{
+		ImGuiAttachFirePoint(launcher, true, _delta_pos);
+	}
+	else if (!launcher && item->m_measures.m_prop_flags.test(item->m_measures.e_fire_point2))
 	{
 		if (ImGui::CollapsingHeader("Fire point 2"))
 		{
@@ -570,8 +617,11 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			Fvector& position = item->m_measures.m_fire_point2_offset;
 			if (ImGui::Button("Reset##FP2Offset"))
 			{
-				position = pSettings->r_fvector3(item->m_sect_name, "fire_point2");
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "fire_point2", zero_vel);
+				item->m_measures.m_fire_bone2 = iniBone("fire_bone2");
 			}
+
+			boneCombo("Bone##FP2B", item->m_measures.m_fire_bone2, true);
 	
 			if (ImGui::BeginTable("Data##FP2P", 1))
 			{
@@ -597,8 +647,11 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 			Fvector& position = item->m_measures.m_shell_point_offset;
 			if (ImGui::Button("Reset##SPOffset"))
 			{
-				position = pSettings->r_fvector3(item->m_sect_name, "shell_point");
+				position = pSettings->read_if_exists<Fvector3>(item->m_sect_name, "shell_point", zero_vel);
+				item->m_measures.m_shell_bone = iniBone("shell_bone");
 			}
+
+			boneCombo("Bone##SPB", item->m_measures.m_shell_bone, true);
 	
 			if (ImGui::BeginTable("Data##SPP", 1))
 			{
@@ -1046,6 +1099,7 @@ void RenderWatchDebugWindow()
 	{
 		g_player_hud->WatchDevice().DrawImGui();
 	}
+
 	ImGui::End();
 	ImGui::PopStyleColor(1);
 }

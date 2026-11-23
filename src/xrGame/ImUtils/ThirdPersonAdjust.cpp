@@ -14,13 +14,6 @@ bool forceTFPDraw = false;
 bool forceTFP2Draw = false;
 bool forceTSPDraw = false;
 
-bool enumBones(void* data, int idx, const char** item)
-{
-	xr_vector<shared_str>* bones = (xr_vector<shared_str>*)data;
-	*item = (*bones)[idx].c_str();
-	return true;
-}
-
 static void ThirdAdjustDrawSaveButton()
 {
 	if (!ImGui::Button("Save"))
@@ -85,8 +78,24 @@ static void ThirdAdjustDrawSaveButton()
 		file.w_fvector3(sect, "position", wpn->m_ActiveOffset.StrapPosition);
 		file.w_fvector3(sect, "orientation", wpn->m_ActiveOffset.StrapRotation);
 
-		file.w_fvector3(sect, "fire_point", wpn->vLoadedFirePoint);
-		file.w_fvector3(sect, "fire_point2", wpn->vLoadedFirePoint2);
+		const SWeaponDesc& WPDesc = wpn->WeaponDesc();
+		const SInventoryItemDesc& IIDesc = wpn->ItemDesc();
+
+		file.w_fvector3(sect, "fire_point", IIDesc.FirePoint);
+		file.w_fvector3(sect, "fire_point2", WPDesc.FirePointGL);
+
+		if (IIDesc.FireBone.size())
+		{
+			file.w_string(sect, "fire_bone", IIDesc.FireBone.c_str());
+		}
+
+		if (WPDesc.FireBoneGL.size())
+		{
+			file.w_string(sect, "fire_bone2", WPDesc.FireBoneGL.c_str());
+		}
+
+		SaveWeaponAttachFirePoints(file, wpn, false);
+
 		file.w_fvector3(sect, "shell_point", wpn->vLoadedShellPoint);
 	}
 
@@ -144,11 +153,11 @@ void Render3rdAdjust()
 
 	ImGui::SeparatorText("Attached Items List");
 
-	const auto& ActorBones = *Actor()->Visual()->dcast_PKinematics()->LL_Bones();
+	IKinematics* ActorModel = Actor()->Visual()->dcast_PKinematics();
 
 	xr_string base_header_name = "";
 
-	auto addItemInfo = [&base_header_name, &ActorBones](CAttachableItem* item) -> void
+	auto addItemInfo = [&base_header_name, ActorModel](CAttachableItem* item) -> void
 	{
 		ImGui::PushID(item->item().object_id());
 
@@ -157,31 +166,18 @@ void Render3rdAdjust()
 
 		if (ImGui::CollapsingHeader(base_header_name.c_str()))
 		{
-			int attached_bone = -1;
-			RStringVec Bones = {};
-
-			for (const auto& [name, id] : ActorBones)
+			shared_str bone = item->bone_name();
+			if (ImGuiBoneCombo("Attach Bone", ActorModel, bone, false))
 			{
-				Bones.push_back(name);
-
-				if (name == item->bone_name())
-				{
-					attached_bone = (int)Bones.size() - 1;
-				}
-			}
-
-			if (ImGui::Combo("Attach Bone", &attached_bone, enumBones, &Bones, (int)ActorBones.size()))
-			{
-				u16 BoneId = Actor()->Visual()->dcast_PKinematics()->LL_BoneID(Bones[attached_bone]);
-				item->set_bone_name(Bones[attached_bone]);
-				item->set_bone_id(BoneId);
+				item->set_bone_name(bone);
+				item->set_bone_id(ActorModel->LL_BoneID(bone));
 			}
 
 			ImGui::SeparatorText("Position");
 
 			if (ImGui::Button("Reset##AP"))
 			{
-				item->m_offset_position = pSettings->read_if_exists<Fvector3>(item->item().m_section_id, "attach_position_offset", zero_vel);
+				item->m_offset_position = pSettings->read_if_exists<Fvector>(item->item().m_section_id, "attach_position_offset", zero_vel);
 			}
 
 			ImGui::DragFloat("X##AP", &item->m_offset_position.x, ATT_ITEM_MOVE_STEP, -100.0f, 100.0f, "%.6f");
@@ -192,7 +188,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##AR"))
 			{
-				item->m_offset_rotation = pSettings->read_if_exists<Fvector3>(item->item().m_section_id, "attach_angle_offset", zero_vel);
+				item->m_offset_rotation = pSettings->read_if_exists<Fvector>(item->item().m_section_id, "attach_angle_offset", zero_vel);
 			}
 
 			ImGui::DragFloat("X##AR", &item->m_offset_rotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
@@ -230,7 +226,7 @@ void Render3rdAdjust()
 					if (ImGui::Button("Reset##SP"))
 					{
 						Fvector _default = Fvector().set(-0.34f, (use_alt_position ? 0.20f : -0.20f), 0.15f);
-						strap_position.StrapPosition = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), use_alt_position ? "strap_position_alt" : "strap_position", _default);
+						strap_position.StrapPosition = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), use_alt_position ? "strap_position_alt" : "strap_position", _default);
 					}
 
 					ImGui::DragFloat("X##SP", &strap_position.StrapPosition.x, ATT_ITEM_MOVE_STEP, -360.0f, 360.0f, "%.6f");
@@ -242,7 +238,7 @@ void Render3rdAdjust()
 					if (ImGui::Button("Reset##SR"))
 					{
 						Fvector _default = Fvector().set(0.0f, 0.0f, (use_alt_position ? 94.0f : 84.0f));
-						strap_position.StrapRotation = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), use_alt_position ? "strap_orientation_alt" : "strap_orientation", _default);
+						strap_position.StrapRotation = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), use_alt_position ? "strap_orientation_alt" : "strap_orientation", _default);
 					}
 
 					ImGui::DragFloat("X##SR", &strap_position.StrapRotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
@@ -277,7 +273,7 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##CP"))
 			{
-				wpn->m_ActiveOffset.StrapPosition = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "position", zero_vel);
+				wpn->m_ActiveOffset.StrapPosition = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), "position", zero_vel);
 			}
 
 			ImGui::DragFloat("X##CP", &wpn->m_ActiveOffset.StrapPosition.x, ATT_ITEM_MOVE_STEP, -100.0f, 100.0f, "%.6f");
@@ -288,40 +284,63 @@ void Render3rdAdjust()
 
 			if (ImGui::Button("Reset##CR"))
 			{
-				wpn->m_ActiveOffset.StrapRotation = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "orientation", zero_vel);
+				wpn->m_ActiveOffset.StrapRotation = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), "orientation", zero_vel);
 			}
 
 			ImGui::DragFloat("X##CR", &wpn->m_ActiveOffset.StrapRotation.x, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 			ImGui::DragFloat("Y##CR", &wpn->m_ActiveOffset.StrapRotation.y, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 			ImGui::DragFloat("Z##CR", &wpn->m_ActiveOffset.StrapRotation.z, ATT_ITEM_ROT_STEP, -360.0f, 360.0f, "%.6f");
 
+			SWeaponDesc& WPDesc = SWeaponDesc::Registry::GetMutable(wpn->cNameSect());
+			SInventoryItemDesc& IIDesc = SInventoryItemDesc::Registry::GetMutable(wpn->cNameSect());
+
+			IKinematics* WeaponModel = PKinematics(wpn->Visual());
+
 			ImGui::SeparatorText("Fire Point");
 
-			if (ImGui::Button("Reset##FP"))
+			if (CInventoryItem* muzzle = WeaponFirePointAttach(wpn, false))
 			{
-				wpn->vLoadedFirePoint = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "fire_point", zero_vel);
+				ImGuiAttachFirePoint(muzzle, false, ATT_ITEM_ROT_STEP);
 			}
+			else
+			{
+				if (ImGui::Button("Reset##FP"))
+				{
+					IIDesc.FirePoint = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), "fire_point", zero_vel);
+					IIDesc.FireBone = pSettings->read_if_exists<str_c>(wpn->cNameSect(), "fire_bone", "");
+				}
 
-			ImGui::DragFloat("X##FP", &wpn->vLoadedFirePoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
-			ImGui::DragFloat("Y##FP", &wpn->vLoadedFirePoint.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
-			ImGui::DragFloat("Z##FP", &wpn->vLoadedFirePoint.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+				ImGuiBoneCombo("Bone##FP", WeaponModel, IIDesc.FireBone, true);
+				ImGui::DragFloat("X##FP", &IIDesc.FirePoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+				ImGui::DragFloat("Y##FP", &IIDesc.FirePoint.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+				ImGui::DragFloat("Z##FP", &IIDesc.FirePoint.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			}
 
 			ImGui::SeparatorText("Fire Point 2");
 
-			if (ImGui::Button("Reset##FP2"))
+			if (CInventoryItem* launcher = WeaponFirePointAttach(wpn, true))
 			{
-				wpn->vLoadedFirePoint2 = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "fire_point2", zero_vel);
+				ImGuiAttachFirePoint(launcher, false, ATT_ITEM_ROT_STEP);
 			}
+			else
+			{
+				if (ImGui::Button("Reset##FP2"))
+				{
+					WPDesc.FirePointGL = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), "fire_point2", zero_vel);
+					WPDesc.FireBoneGL = pSettings->read_if_exists<str_c>(wpn->cNameSect(), "fire_bone2", "");
+				}
 
-			ImGui::DragFloat("X##FP2", &wpn->vLoadedFirePoint2.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
-			ImGui::DragFloat("Y##FP2", &wpn->vLoadedFirePoint2.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
-			ImGui::DragFloat("Z##FP2", &wpn->vLoadedFirePoint2.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+				ImGuiBoneCombo("Bone##FP2", WeaponModel, WPDesc.FireBoneGL, true);
+				ImGui::DragFloat("X##FP2", &WPDesc.FirePointGL.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+				ImGui::DragFloat("Y##FP2", &WPDesc.FirePointGL.y, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+				ImGui::DragFloat("Z##FP2", &WPDesc.FirePointGL.z, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
+			}
 
 			ImGui::SeparatorText("Shell Point ");
 
 			if (ImGui::Button("Reset##SP"))
 			{
-				wpn->vLoadedShellPoint = pSettings->read_if_exists<Fvector3>(wpn->cNameSect(), "shell_point", zero_vel);
+				wpn->vLoadedShellPoint = pSettings->read_if_exists<Fvector>(wpn->cNameSect(), "shell_point", zero_vel);
 			}
 
 			ImGui::DragFloat("X##SP", &wpn->vLoadedShellPoint.x, ATT_ITEM_ROT_STEP, -100.0f, 100.0f, "%.6f");
