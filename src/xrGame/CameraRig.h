@@ -1,11 +1,305 @@
 #pragma once
 #include "../xrEngine/CameraDefs.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 
 class CActor;
 class CWeapon;
 class CObjectAnimator;
 class IKinematics;
 struct attachable_hud_item;
+struct SHandsIkFrame;
+
+namespace HudAttachMarks
+{
+	constexpr const char* Ik = "mm_ik";
+	constexpr const char* Fingers = "mm_ik_fingers";
+}
+
+namespace HudSpring
+{
+	inline void Solve(float& value, float& velocity, float goal, float omega, float damping, float dt)
+	{
+		if (omega <= 0.f || dt <= 0.f)
+		{
+			return;
+		}
+
+		const float offset = value - goal;
+		const float speed = velocity;
+		const float zeta = std::max(damping, 0.f);
+
+		if (std::abs(zeta - 1.f) < 1e-3f)
+		{
+			const float decay = std::exp(-omega * dt);
+			const float slope = speed + omega * offset;
+			value = goal + (offset + slope * dt) * decay;
+			velocity = (speed - omega * slope * dt) * decay;
+		}
+		else if (zeta < 1.f)
+		{
+			const float damped = omega * std::sqrt(1.f - zeta * zeta);
+			const float decay = std::exp(-zeta * omega * dt);
+			const float cosine = std::cos(damped * dt);
+			const float sine = std::sin(damped * dt);
+			const float b = (speed + zeta * omega * offset) / damped;
+			value = goal + decay * (offset * cosine + b * sine);
+			velocity = decay * (speed * cosine - (offset * damped + zeta * omega * b) * sine);
+		}
+		else
+		{
+			const float root = omega * std::sqrt(zeta * zeta - 1.f);
+			const float r1 = -zeta * omega + root;
+			const float r2 = -zeta * omega - root;
+			const float c2 = (speed - r1 * offset) / (r2 - r1);
+			const float c1 = offset - c2;
+			const float e1 = std::exp(r1 * dt);
+			const float e2 = std::exp(r2 * dt);
+			value = goal + c1 * e1 + c2 * e2;
+			velocity = c1 * r1 * e1 + c2 * r2 * e2;
+		}
+	}
+
+	inline void Step(Fvector& value, Fvector& velocity, const Fvector& goal, float omega, float damping, float dt)
+	{
+		Solve(value.x, velocity.x, goal.x, omega, damping, dt);
+		Solve(value.y, velocity.y, goal.y, omega, damping, dt);
+		Solve(value.z, velocity.z, goal.z, omega, damping, dt);
+	}
+
+	inline void Follow(Fvector& value, Fvector& velocity, const Fvector& goal, float half_life, float damping, float dt)
+	{
+		if (half_life <= 0.f)
+		{
+			value = goal;
+			velocity.set(0.f, 0.f, 0.f);
+			return;
+		}
+
+		Step(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
+	}
+
+	inline void Step(float& value, float& velocity, float goal, float half_life, float damping, float dt)
+	{
+		if (half_life <= 0.f)
+		{
+			value = goal;
+			velocity = 0.f;
+			return;
+		}
+
+		Solve(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
+	}
+}
+
+namespace HudBlend
+{
+	inline float Ramp(float weight, bool on, float time_in, float time_out, float dt)
+	{
+		const float time = on ? time_in : time_out;
+		if (time <= 0.f)
+		{
+			return on ? 1.f : 0.f;
+		}
+
+		return std::clamp(weight + (on ? dt : -dt) / time, 0.f, 1.f);
+	}
+
+	inline float Ramp(float weight, bool on, float time, float dt)
+	{
+		return Ramp(weight, on, time, time, dt);
+	}
+
+	inline float Smooth(float time, float dt)
+	{
+		return time > 0.f ? 1.f - expf(-dt / time) : 1.f;
+	}
+}
+
+struct SHudVectorSpring
+{
+	Fvector Value = {};
+	Fvector Velocity = {};
+};
+
+struct SHudLeftFollow
+{
+	Fquaternion Rotation;
+	Fvector Position = {};
+	Fvector PositionVelocity = {};
+	Fvector RotationVelocity = {};
+	u32 Frame = u32(-1);
+};
+
+struct SHudTurnPivot
+{
+	Fvector2 Rate = {};
+	float LiftSpeed = 0.f;
+	SHudVectorSpring Lag;
+	SHudVectorSpring Lift;
+	float Tilt = 0.f;
+	float TiltVelocity = 0.f;
+};
+
+struct SHudShotFingers
+{
+	bool Pending = false;
+	bool Active = false;
+	bool Stopping = false;
+	bool Full = false;
+	float Weight = 0.f;
+	float SinceShot = 0.f;
+	u32 BurstShots = 0;
+	float Time = 0.f;
+	float First = 0.f;
+	float Second = 0.f;
+	float Speed = 1.f;
+	float Fade = 1.f;
+	MotionID Motion;
+	xr_vector<u16> Bones;
+	xr_vector<Fquaternion> Reference;
+	xr_vector<Fvector> ReferencePos;
+};
+
+struct SHudHandJump
+{
+	u32 StatePrev = 0;
+	float FallSpeed = 0.f;
+	float Time = 1000.f;
+	float Power = 0.f;
+	float Weight = 0.f;
+	float Velocity = 0.f;
+};
+
+struct SHudHandsIk
+{
+	u16 LeftIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	u16 RightIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	float LeftIkWeight = 0.f;
+	bool LayersIk = false;
+	Fmatrix LayersIkOffset = Fidentity;
+	SHudVectorSpring LeftSway;
+	SHudVectorSpring RightSway;
+	SHudTurnPivot TurnPivot;
+	SHudShotFingers ShotFingers;
+	SHudHandJump HandJump;
+	SHudLeftFollow LeftFollow;
+
+	float RetargetWeight = 0.f;
+	Fmatrix RetargetLeftTarget = Fidentity;
+	Fmatrix RetargetRightTarget = Fidentity;
+	bool RetargetLeftValid = false;
+	bool RetargetRightValid = false;
+
+	float LeftHandAttachWeight = 0.f;
+	bool LeftHandAttachReaching = false;
+	u32 LeftHandAttachSnapFrame = u32(-1);
+	float LeftHandAttachHold = 0.f;
+	float LeftHandAttachArmWeight = 1.f;
+	bool LeftHandAttachAnimatedArm = false;
+	bool LeftGripActive = false;
+
+	xr_vector<u16> FingerGripBones;
+	xr_vector<Fquaternion> FingerStartPose;
+	xr_vector<Fvector> FingerStartPos;
+	MotionID FingerStartMotion;
+	float FingerStartTime = 0.f;
+	xr_vector<Fquaternion> FingerPrevRot;
+	xr_vector<Fvector> FingerPrevPos;
+	xr_vector<Fquaternion> FingerResidualRot;
+	xr_vector<Fvector> FingerResidualPos;
+	u32 FingerResidualFrame = u32(-1);
+
+	MotionID ArmRetargetMotion;
+	xr_vector<Fquaternion> ArmRetargetPose;
+	Fmatrix ArmRetargetRootRef = Fidentity;
+
+	MotionID AttachOffsetMotion;
+	bool AttachOffsetSampled = false;
+	Fmatrix AttachOffsetRef = Fidentity;
+
+	void ResetModel()
+	{
+		FingerGripBones.clear();
+		ArmRetargetMotion = MotionID();
+	}
+
+	void ResetItem()
+	{
+		RetargetWeight = 0.f;
+		RetargetLeftValid = false;
+		RetargetRightValid = false;
+		ArmRetargetMotion = MotionID();
+		ShotFingers = {};
+	}
+};
+
+enum class EHudSprintStage : u8
+{
+	None,
+	Start,
+	Loop,
+	End
+};
+
+struct SHudSprintLeftCancel
+{
+	bool Active = false;
+	float Weight = 0.f;
+	float Hold = 1.f;
+	float Time = 0.f;
+	Fmatrix Relative = Fidentity;
+};
+
+struct SHudSprint
+{
+	EHudSprintStage				Stage = EHudSprintStage::None;
+	const attachable_hud_item*	Item = nullptr;
+	MotionID					StartMotion;
+	MotionID					LoopMotion;
+	MotionID					EndMotion;
+	MotionID					ReferenceMotion;
+	bool						LayerSeam = false;
+	bool						LeftFree = false;
+	SHudSprintLeftCancel		LeftCancel;
+	Fmatrix						LeftWristLast = Fidentity;
+	u32							LayerFrame = u32(-1);
+	Fmatrix						LayerPrev[2] = { Fidentity, Fidentity };
+	Fmatrix						LayerResidual[2] = { Fidentity, Fidentity };
+	Fmatrix						BasePrev[2] = { Fidentity, Fidentity };
+	Fmatrix						BaseResidual[2] = { Fidentity, Fidentity };
+	MotionID					BaseMotion;
+	u32							BaseState = 0;
+	float						EndPower = 1.f;
+	float						Pose = 0.f;
+	float						PoseShape = 0.f;
+	float						ExitDeviation = -1.f;
+	float						ExitPose = 0.f;
+	float						Target = 0.f;
+	float						PoseVelocity = 0.f;
+	float						Yield = 0.f;
+	float						HandWeight = 0.f;
+
+	static bool		BaseTransform	(IKinematicsAnimated* Model, u16 Bone, Fmatrix& Result);
+	static bool		BoneDelta		(IKinematicsAnimated* Model, u16 Bone, Fmatrix& Result);
+
+	bool			Enabled			(IKinematicsAnimated* Model, const attachable_hud_item* Current) const;
+	void			Attach			(IKinematicsAnimated* Model, const attachable_hud_item* Current);
+	void			Update			(IKinematicsAnimated* Model, const attachable_hud_item* Current, bool Sprinting);
+	void			UpdateChain		(IKinematicsAnimated* Model, const attachable_hud_item* Current);
+	void			UpdatePose		(IKinematicsAnimated* Model, const attachable_hud_item* Current, u16 Ancor);
+	void			CutEnd			(IKinematicsAnimated* Model);
+	void			SmoothLayer		(SHandsIkFrame& F);
+	void			SmoothBase		(IKinematicsAnimated* Model, SHandsIkFrame& F);
+	void			Resolve			(IKinematicsAnimated* Model, const attachable_hud_item* Current);
+	bool			Play			(IKinematicsAnimated* Model, const attachable_hud_item* Current, MotionID Motion, bool Loop, float Phase, float Power = 1.f, bool Inertialize = false);
+	void			Stop			(IKinematicsAnimated* Model, float Blend);
+	float			Progress		(IKinematicsAnimated* Model, MotionID Motion) const;
+	static void		Freeze			(IKinematicsAnimated* Model, MotionID Motion);
+	float			PoseTarget		(IKinematicsAnimated* Model, u16 Ancor);
+	static float	LayerDeviation	(IKinematicsAnimated* Model, u16 Ancor);
+	void			BeginLeftCancel	();
+};
 
 enum ECameraRigChannel
 {
