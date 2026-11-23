@@ -25,11 +25,21 @@ void CSE_ALifeObject::spawn_supplies()
     }
 }
 
-void CSE_ALifeObject::spawn_build()
+void CSE_ALifeObject::spawn_build(const char* build)
 {
-    const char* build = pSettings->read_if_exists<str_c>(s_name, "default_build", nullptr);
     if (!build)
     {
+        build = m_spawn_build.size() ? m_spawn_build.c_str() : pSettings->read_if_exists<str_c>(s_name, "default_build", nullptr);
+    }
+
+    if (!build)
+    {
+        return;
+    }
+
+    if (!pSettings->section_exist(build))
+    {
+        Msg("! [%s] build [%s] not found", s_name.c_str(), build);
         return;
     }
 
@@ -60,6 +70,24 @@ void CSE_ALifeObject::spawn_build()
             spawned[path] = spawned_item->ID;
         }
     }
+}
+
+shared_str CSE_ALifeObject::parseStringParameterValue(const char* spawnArgs, const char* parameterName)
+{
+    if (spawnArgs == nullptr || !xr_strlen(spawnArgs) || !xr_strlen(parameterName)) {
+        return nullptr;
+    }
+
+    for (const xr_string& arg : xr_string(spawnArgs).RemoveWhitespaces().Split(','))
+    {
+        const auto pair = arg.Split('=');
+        if (pair.size() == 2 && pair[0] == parameterName)
+        {
+            return pair[1].c_str();
+        }
+    }
+
+    return nullptr;
 }
 
 float CSE_ALifeObject::parseFloatParameterValue(const char* spawnArgs, const char* parameterName, float defaultValue)
@@ -308,10 +336,8 @@ void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
             }
         }
 
-        CSE_Abstract* CSEItem = setAddonFlagsIsWeapon(
-            alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID),
-            spawnArgs
-        );
+        CSE_Abstract* CSEItem = alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID, true, *parseStringParameterValue(spawnArgs, "build"));
+        setAddonFlagsIsWeapon(CSEItem, spawnArgs);
 
         spawnAmmoForWeapon(
             itemSection,
@@ -346,10 +372,8 @@ void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini
         return;
     }
 
-    CSE_Abstract* CSEItem = setAddonFlagsIsWeapon(
-        alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID),
-        spawnArgs
-    );
+    CSE_Abstract* CSEItem = alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID, true, *parseStringParameterValue(spawnArgs, "build"));
+    setAddonFlagsIsWeapon(CSEItem, spawnArgs);
 
     spawnAmmoForWeapon(
         itemSection,
@@ -390,10 +414,8 @@ void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini
 
         if (pSettings->section_exist(itemSection))
         {
-            CSE_Abstract* CSEItem = setAddonFlagsIsWeapon(
-                alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID),
-                spawnArgs
-            );
+            CSE_Abstract* CSEItem = alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID, true, *parseStringParameterValue(spawnArgs, "build"));
+            setAddonFlagsIsWeapon(CSEItem, spawnArgs);
 
             spawnAmmoForWeapon(
                 itemSection,
@@ -440,7 +462,7 @@ void CSE_ALifeObject::processingVanillaSpawn(CInifile& ini)
                 {
                     if (randF(1.f) < spawnChance)
                     {
-                        CSE_Abstract* CSEItem = alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID);
+                        CSE_Abstract* CSEItem = alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID, true, *parseStringParameterValue(spawnArgs, "build"));
                         setAddonFlagsIsWeapon(CSEItem, spawnArgs);
                         setItemCondition(CSEItem, f_cond);
                     }
