@@ -131,6 +131,13 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 		}
 		bi.mRenderTransform.mul_43(bi.mTransform,bd->m2b_transform);
 	}
+	else
+	{
+		// Collapse a hidden bone into its parent. A zero matrix pulls skinned vertices to the model origin.
+		bi.mTransform.scale(0.f, 0.f, 0.f);
+		bi.mTransform.c = parent->c;
+		bi.mRenderTransform.mul_43(bi.mTransform, bd->m2b_transform);
+	}
 }
 
 void CKinematics::Bone_GetAnimPos(Fmatrix& pos,u16 id,u8 mask_channel, bool ignore_callbacks)

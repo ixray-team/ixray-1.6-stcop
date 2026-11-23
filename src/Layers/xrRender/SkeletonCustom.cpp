@@ -501,7 +501,10 @@ void CKinematics::LL_SetBonesVisible(VisMask mask)
 		{
 	    	Fmatrix& A		= bone_instances[b].mTransform;
 	    	Fmatrix& B		= bone_instances[b].mRenderTransform;
+        	const Fvector Center = A.c;
         	A.scale			(0.f,0.f,0.f);
+        	// Keep the bone in place until CalculateBones moves it to its parent.
+        	A.c				= Center;
 	        B.mul_43		(A,(*bones)[b]->m2b_transform);
         }
 	}
