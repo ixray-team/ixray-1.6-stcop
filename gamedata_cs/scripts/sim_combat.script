@@ -475,11 +475,21 @@ function CCombat_manager:update_squad(id, data)
 
 	if data._stage == "move" then
 		if not squad.squad_online then
-			local comander = alife():object(squad.commander_id)
-			if comander.attack_position ~= nil and is_same_level(self.smart, comander) and
-				 comander.position:distance_to_sqr(comander.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST
-			then
-				data._stage = "prepare"
+			--' В оффлайне НПС останавливается на вершине графа точки атаки, которая бывает дальше 5 м от
+			--' самой точки, а у командира работа без точки атаки может быть вовсе. Тогда отряд стоял в move
+			--' до перезагрузки. Отряд пришел, если пришел любой его боец: по расстоянию или по вершине графа.
+			local function npc_arrived(npc)
+				if npc == nil or npc.attack_position == nil or not is_same_level(self.smart, npc) then
+					return false
+				end
+				return npc.position:distance_to_sqr(npc.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST or
+					   (npc.attack_game_vertex_id ~= nil and npc.m_game_vertex_id == npc.attack_game_vertex_id)
+			end
+			for npc_id in pairs(squad.squad_npc) do
+				if npc_arrived(alife():object(npc_id)) then
+					data._stage = "prepare"
+					break
+				end
 			end
 		end
 	end

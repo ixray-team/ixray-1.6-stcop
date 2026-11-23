@@ -420,7 +420,50 @@ local function measure_task_calc()
 	out("task calc ms: total=%.1f %s", total, table.concat(parts, " "))
 end
 
+--' Offline attacking squads in stage "move": the commander has to come within 5 m of attack_position
+--' to leave it. Logs how far he is, whether he stands on the job's graph vertex and how long he has not moved.
+local offline_positions = {}
+local function report_offline_move()
+	for squad_id, squad in pairs(board().squads) do
+		local action = squad.current_action
+		if action ~= nil and action.name == "attack_point" and not squad.squad_online then
+			local dest = board().smarts[action.dest_smrt_id].smrt
+			local stage = dest.combat_manager:get_squad_stage(squad)
+			local commander = squad.commander_id and alife():object(squad.commander_id)
+			if stage == "move" and commander ~= nil then
+				local key = tostring(squad_id)
+				local last = offline_positions[key]
+				local still = 0
+				if last ~= nil and last.pos:distance_to(commander.position) < 0.5 then
+					still = last.still + 1
+				end
+				offline_positions[key] = {pos = vector():set(commander.position), still = still}
+				if still >= 2 then
+					local smart_id = commander.m_smart_terrain_id
+					local smart = smart_id ~= nil and smart_id ~= 65535 and alife():object(smart_id) or nil
+					local job_text, job_vertex = "none", -1
+					if smart ~= nil and smart.npc_info ~= nil and smart.npc_info[commander.id] ~= nil then
+						local job = smart.job_data[smart.npc_info[commander.id].job_id]
+						if job ~= nil then
+							job_text = string.format("%s:%s", tostring(job.alife_path), tostring(job.alife_point))
+							if job.alife_path ~= nil and level.patrol_path_exists(job.alife_path) then
+								job_vertex = patrol(job.alife_path):game_vertex_id(job.alife_point)
+							end
+						end
+					end
+					out("offline move squad %s %s->%s still=%d job=%s attack_pos=%s dist_attack=%.1f vertex=%d job_vertex=%d dist_dest=%.0f",
+						key, smart_name(action.src_smrt_id), smart_name(action.dest_smrt_id), still, job_text,
+						tostring(commander.attack_position ~= nil),
+						commander.attack_position ~= nil and commander.position:distance_to(commander.attack_position) or -1,
+						commander.m_game_vertex_id, job_vertex, commander.position:distance_to(dest.position))
+				end
+			end
+		end
+	end
+end
+
 local function report()
+	report_offline_move()
 	measure_task_calc()
 	report_spots()
 	report_faction_squads("stalker")

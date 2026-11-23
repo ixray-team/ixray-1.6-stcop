@@ -357,6 +357,7 @@ function se_smart_terrain:task(obj)
 	end
 
 	obj.attack_position = job_data.attack_position
+	obj.attack_game_vertex_id = job_data.attack_game_vertex_id
 
 	--printf("SEETING TASK PATH %s = %s(%s)", obj:name(), job_data.alife_path, job_data.alife_point)
 	return CALifeSmartTerrainTask(job_data.alife_path, job_data.alife_point)
@@ -485,6 +486,9 @@ function se_smart_terrain:load_jobs()
 
 		if v.attack_position == true then
 			v.attack_position = patrol:point(v.alife_point)
+			--' В оффлайне НПС идет по графу и останавливается на вершине графа точки, а она может быть
+			--' дальше 5 м от самой точки. По вершине sim_combat понимает, что отряд пришел.
+			v.attack_game_vertex_id = patrol:game_vertex_id(v.alife_point)
 		end
 
 --[[
