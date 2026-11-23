@@ -40,7 +40,6 @@ EnableEngineArtefactSpawn = true ; Чтение параметров спавн�
 
 [render]
 DisableLoadScreenTips = true ; Отключение использования советов на загрузочном экране
-UseLegacyParticleLoader = true ; Использование ТЧ формата для файла particles.xr
 ```
 
 ## Система инфопоршней

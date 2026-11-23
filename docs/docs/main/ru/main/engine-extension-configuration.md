@@ -108,7 +108,6 @@ BalanceMode = auto
 | --- | --- | --- |
 | `DisableLoadScreenTips` | `false` | Скрывает подсказки на экране загрузки. |
 | `UseDynamicSnowMask` | `false` | Разрешает шейдерный вариант с текстурой `*_snowmask.dds`. |
-| `UseLegacyParticleLoader` | `false` | Выбирает legacy-разбор действий из `particles.xr`, используемый в ТЧ. |
 | `FontAtlasSize` | `4096` | Размер стороны атласа шрифтов в пикселях. |
 
 ### [environment]

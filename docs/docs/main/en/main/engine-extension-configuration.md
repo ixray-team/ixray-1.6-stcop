@@ -108,7 +108,6 @@ BalanceMode = auto
 | --- | --- | --- |
 | `DisableLoadScreenTips` |  | Hides loading-screen tips. |
 | `UseDynamicSnowMask` |  | Enables a shader variant using the `*_snowmask.dds` texture. |
-| `UseLegacyParticleLoader` |  | Selects the legacy action parser for SoC-format `particles.xr`. |
 | `FontAtlasSize` | `4096` | Font atlas side length in pixels. |
 
 ### [environment]

@@ -472,6 +472,8 @@ namespace PAPI{
 		float scale;		// Amount to shift by (1 == all the way)
 		float timeFrom;
 		float timeTo;
+		// SoC particles.xr stores no timeFrom / timeTo; set by the loader after layout detection.
+		bool LegacyLayout = false;
 
         _METHODS;
 	};

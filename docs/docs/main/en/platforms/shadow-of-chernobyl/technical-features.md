@@ -40,7 +40,6 @@ EnableEngineArtefactSpawn = true ; read artifact spawn params from anomaly confi
 
 [render]
 DisableLoadScreenTips = true ; disable tips on the loading screen
-UseLegacyParticleLoader = true ; use SoC particle format for particles.xr
 +```
 
 ## Info portions system

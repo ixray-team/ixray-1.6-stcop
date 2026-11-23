@@ -88,6 +88,8 @@ namespace PS
 		SFrame				m_Frame;
 	// compiled actions
         CMemoryWriter		m_Actions;
+		// Converts a SoC-layout action list to the current layout; fatal on an unknown layout.
+		void				NormalizeActionLayout();
 	// def        
 		float				m_fTimeLimit;			// time limit
 		int					m_MaxParticles;			// max particle count

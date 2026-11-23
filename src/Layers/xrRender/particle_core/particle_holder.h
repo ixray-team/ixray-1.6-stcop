@@ -107,6 +107,61 @@ namespace PAPI
 			return true;
 		}
 
+		static ParticleAction* CreateAction(PActionEnum Id)
+		{
+			switch (Id)
+			{
+				case PAAvoidID:				return new PAAvoid();
+				case PABounceID:    		return new PABounce();
+				case PACopyVertexBID:    	return new PACopyVertexB();
+				case PADampingID:    		return new PADamping();
+				case PAExplosionID:    		return new PAExplosion();
+				case PAFollowID:    		return new PAFollow();
+				case PAGravitateID:    		return new PAGravitate();
+				case PAGravityID:    		return new PAGravity();
+				case PAJetID:    			return new PAJet();
+				case PAKillOldID:    		return new PAKillOld();
+				case PAMatchVelocityID:    	return new PAMatchVelocity();
+				case PAMoveID:    			return new PAMove();
+				case PAOrbitLineID:    		return new PAOrbitLine();
+				case PAOrbitPointID:    	return new PAOrbitPoint();
+				case PARandomAccelID:    	return new PARandomAccel();
+				case PARandomDisplaceID:    return new PARandomDisplace();
+				case PARandomVelocityID:    return new PARandomVelocity();
+				case PARestoreID:    		return new PARestore();
+				case PASinkID:    			return new PASink();
+				case PASinkVelocityID:    	return new PASinkVelocity();
+				case PASourceID:    		return new PASource();
+				case PASpeedLimitID:    	return new PASpeedLimit();
+				case PATargetColorID:    	return new PATargetColor();
+				case PATargetSizeID:    	return new PATargetSize();
+				case PATargetRotateID:    	return new PATargetRotate();
+				case PATargetRotateDID:    	return new PATargetRotate();
+				case PATargetVelocityID:    return new PATargetVelocity();
+				case PATargetVelocityDID:   return new PATargetVelocity();
+				case PAVortexID:    		return new PAVortex();
+				case PATurbulenceID:		return new PATurbulence();
+				case PAScatterID:  			return new PAScatter();
+
+				case PABindVelocityValueID: return new PABindVelocityValue();
+				case PABindRotationValueID: return new PABindRotationValue();
+				case PABindSizeValueID:  	return new PABindSizeValue();
+				case PABindColorValueID:  	return new PABindColorValue();
+				case PABindColorAlphaID:  	return new PABindColorAlpha();
+
+				case PAColorAnimatorID:  	return new PAColorAnimator();
+				case PASizeAnimatorID:  	return new PASizeAnimator();
+				case PAVelocityAnimatorID:  return new PAVelocityAnimator();
+				case PAVelocityRotationAnimatorID: return new PAVelocityRotationAnimator();
+				default: return nullptr;
+			}
+		}
+
+		static bool IsAnimatorAction(PActionEnum Id)
+		{
+			return Id == PAColorAnimatorID || Id == PASizeAnimatorID || Id == PAVelocityAnimatorID || Id == PAVelocityRotationAnimatorID;
+		}
+
 		ICF void LoadActions(IReader& R)
 		{
 			if (R.length())
@@ -118,54 +173,18 @@ namespace PAPI
 
 				for (u32 k = 0; k < cnt; ++k)
 				{
-					ParticleAction* PA = nullptr;
-					switch ((PActionEnum)R.r_u32())
+					const PActionEnum Id = (PActionEnum)R.r_u32();
+					ParticleAction* PA = CreateAction(Id);
+					if (!PA)
 					{
-						case PAAvoidID:				PA = new PAAvoid();				break;
-						case PABounceID:    		PA = new PABounce();			break;
-						case PACopyVertexBID:    	PA = new PACopyVertexB();		break;
-						case PADampingID:    		PA = new PADamping();			break;
-						case PAExplosionID:    		PA = new PAExplosion();			break;
-						case PAFollowID:    		PA = new PAFollow();			break;
-						case PAGravitateID:    		PA = new PAGravitate();			break;
-						case PAGravityID:    		PA = new PAGravity();			break;
-						case PAJetID:    			PA = new PAJet();				break;
-						case PAKillOldID:    		PA = new PAKillOld();			break;
-						case PAMatchVelocityID:    	PA = new PAMatchVelocity();		break;
-						case PAMoveID:    			PA = new PAMove();				break;
-						case PAOrbitLineID:    		PA = new PAOrbitLine();			break;
-						case PAOrbitPointID:    	PA = new PAOrbitPoint();		break;
-						case PARandomAccelID:    	PA = new PARandomAccel();		break;
-						case PARandomDisplaceID:    PA = new PARandomDisplace();	break;
-						case PARandomVelocityID:    PA = new PARandomVelocity();	break;
-						case PARestoreID:    		PA = new PARestore();			break;
-						case PASinkID:    			PA = new PASink();				break;
-						case PASinkVelocityID:    	PA = new PASinkVelocity();		break;
-						case PASourceID:    		PA = new PASource();			break;
-						case PASpeedLimitID:    	PA = new PASpeedLimit();		break;
-						case PATargetColorID:    	PA = new PATargetColor();		break;
-						case PATargetSizeID:    	PA = new PATargetSize();		break;
-						case PATargetRotateID:    	PA = new PATargetRotate();		break;
-						case PATargetRotateDID:    	PA = new PATargetRotate();		break;
-						case PATargetVelocityID:    PA = new PATargetVelocity(); 	break;
-						case PATargetVelocityDID:   PA = new PATargetVelocity();	break;
-						case PAVortexID:    		PA = new PAVortex();			break;
-						case PATurbulenceID:		PA = new PATurbulence();		break;
-						case PAScatterID:  			PA = new PAScatter();			break;
-
-						case PABindVelocityValueID: PA = new PABindVelocityValue();	break;
-						case PABindRotationValueID: PA = new PABindRotationValue();	break;
-						case PABindSizeValueID:  	PA = new PABindSizeValue();		break;
-						case PABindColorValueID:  	PA = new PABindColorValue();	break;
-						case PABindColorAlphaID:  	PA = new PABindColorAlpha();	break;
-
-						case PAColorAnimatorID:  	PA = new PAColorAnimator(); m_animators.push_back(PA);		break;
-						case PASizeAnimatorID:  	PA = new PASizeAnimator(); m_animators.push_back(PA);		break;
-						case PAVelocityAnimatorID:  PA = new PAVelocityAnimator(); m_animators.push_back(PA);	break;
-						case PAVelocityRotationAnimatorID: PA = new PAVelocityRotationAnimator(); m_animators.push_back(PA);	break;
-						default: NODEFAULT;
+						string256 Message;
+						xr_sprintf(Message, "Unknown particle action id %u (action %u of %u)", u32(Id), k, cnt);
+						FATAL(Message);
 					}
-					R_ASSERT(PA);
+					if (IsAnimatorAction(Id))
+					{
+						m_animators.push_back(PA);
+					}
 					PA->Load(R);
 					m_actions.push_back(PA);
 				}

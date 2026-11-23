@@ -135,6 +135,138 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 }
 
 //------------------------------------------------------------------------------
+// Action layout detection
+//------------------------------------------------------------------------------
+namespace ParticleActionLayout
+{
+	// Zero tail so a misparsed list never reads outside the copy (stringZ stops at zero too).
+	constexpr u32 ReadPadding = 4096;
+
+	struct ParseResult
+	{
+		bool Success = false;
+		u32 ActionIndex = 0;
+		u32 ActionId = 0;
+		u32 Offset = 0;
+	};
+
+	void DeleteActions(xr_vector<PAPI::ParticleAction*>& Actions)
+	{
+		for (PAPI::ParticleAction* Action : Actions)
+		{
+			xr_delete(Action);
+		}
+		Actions.clear();
+	}
+
+	ParseResult Parse(const u8* Data, u32 Size, bool Legacy, xr_vector<PAPI::ParticleAction*>& Actions)
+	{
+		ParseResult Result;
+		if (Size < sizeof(u32))
+		{
+			return Result;
+		}
+
+		xr_vector<u8> Buffer(Size + ReadPadding, 0);
+		std::memcpy(Buffer.data(), Data, Size);
+		IReader Reader(Buffer.data(), Size);
+
+		const u32 Count = Reader.r_u32();
+		// Every action holds at least id, flags and type.
+		if (Count > Size / (3 * sizeof(u32)))
+		{
+			return Result;
+		}
+
+		Actions.reserve(Count);
+		for (u32 Index = 0; Index < Count; ++Index)
+		{
+			Result.ActionIndex = Index;
+			Result.Offset = u32(Reader.tell());
+			if (Reader.elapsed() < intptr_t(3 * sizeof(u32)))
+			{
+				DeleteActions(Actions);
+				return Result;
+			}
+
+			const PAPI::PActionEnum Id = (PAPI::PActionEnum)Reader.r_u32();
+			Result.ActionId = u32(Id);
+			PAPI::ParticleAction* Action = PAPI::ParticleHolder::CreateAction(Id);
+			if (!Action)
+			{
+				DeleteActions(Actions);
+				return Result;
+			}
+
+			if (Legacy && Id == PAPI::PATargetColorID)
+			{
+				static_cast<PAPI::PATargetColor*>(Action)->LegacyLayout = true;
+			}
+
+			Action->Load(Reader);
+			Actions.push_back(Action);
+			if (Reader.tell() > intptr_t(Size))
+			{
+				DeleteActions(Actions);
+				return Result;
+			}
+		}
+
+		Result.Offset = u32(Reader.tell());
+		Result.Success = Reader.tell() == intptr_t(Size);
+		if (!Result.Success)
+		{
+			DeleteActions(Actions);
+		}
+		return Result;
+	}
+}
+
+void CPEDef::NormalizeActionLayout()
+{
+	const u8* Data = static_cast<const u8*>(m_Actions.pointer());
+	const u32 Size = u32(m_Actions.size());
+	if (Size == 0)
+	{
+		return;
+	}
+
+	xr_vector<PAPI::ParticleAction*> Actions;
+	const ParticleActionLayout::ParseResult Current = ParticleActionLayout::Parse(Data, Size, false, Actions);
+	if (Current.Success)
+	{
+		ParticleActionLayout::DeleteActions(Actions);
+		return;
+	}
+
+	const ParticleActionLayout::ParseResult Legacy = ParticleActionLayout::Parse(Data, Size, true, Actions);
+	if (Legacy.Success)
+	{
+		// Rewrite in the current layout so runtime loading needs no format switch.
+		m_Actions.clear();
+		m_Actions.w_u32(u32(Actions.size()));
+		for (PAPI::ParticleAction* Action : Actions)
+		{
+			// Same record layout as CPEDef::Compile: action id, then the action body.
+			m_Actions.w_u32(u32(Action->type));
+			Action->Save(m_Actions);
+		}
+		ParticleActionLayout::DeleteActions(Actions);
+		Msg("* Particle effect '%s': SoC action layout converted", m_Name.c_str());
+		return;
+	}
+
+	string1024 Message;
+	xr_sprintf(Message,
+		"Particle effect '%s': action list matches neither CoP nor SoC layout (%u bytes). "
+		"CoP: failed at action %u, id %u, offset %u. SoC: failed at action %u, id %u, offset %u.",
+		m_Name.c_str(), Size,
+		Current.ActionIndex, Current.ActionId, Current.Offset,
+		Legacy.ActionIndex, Legacy.ActionId, Legacy.Offset);
+	FATAL(Message);
+}
+
+//------------------------------------------------------------------------------
 // I/O part
 //------------------------------------------------------------------------------
 bool CPEDef::LoadOriginal(IReader& F)
@@ -163,6 +295,7 @@ bool CPEDef::LoadOriginal(IReader& F)
 		R_ASSERT(action_list);
 		m_Actions.w		(F.pointer(),action_list);
 	}
+	NormalizeActionLayout();
 
 	F.r_chunk(PS::PE::Chunks::FLAGS,&m_Flags);
 

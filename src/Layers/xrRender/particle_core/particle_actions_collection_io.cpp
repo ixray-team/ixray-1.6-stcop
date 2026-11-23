@@ -405,7 +405,7 @@ void PATargetColor::Load	(IReader& F)
 	F.r_fvector3	(color);
     alpha			= F.r_float();
 	scale			= F.r_float();
-	if (!EngineExternal()[EEngineExternalRender::UseLegacyParticleLoader])
+	if (!LegacyLayout || m_Flags.test(EXTENSIONS))
 	{
 		timeFrom		= F.r_float();
 		timeTo			= F.r_float();
@@ -418,11 +418,8 @@ void PATargetColor::Save	(IWriter& F)
 	F.w_fvector3	(color);
 	F.w_float		(alpha);
 	F.w_float		(scale);
-	if (!EngineExternal()[EEngineExternalRender::UseLegacyParticleLoader])
-	{
-		F.w_float		(timeFrom);
-		F.w_float		(timeTo);
-	}
+	F.w_float		(timeFrom);
+	F.w_float		(timeTo);
 }
 
 void PATargetSize::Load		(IReader& F)
