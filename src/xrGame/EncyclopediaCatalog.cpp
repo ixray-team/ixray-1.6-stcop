@@ -522,14 +522,15 @@ bool ItemMatches(const SSectionConfig& Config, const char* Section)
 	{
 		return false;
 	}
+	const char* Class = SectionClass(Section);
 	for (const xr_string& Excluded : Config.Exclude)
 	{
-		if (Excluded == Section)
+		if (Excluded == Section || MatchClass(Class, {Excluded}))
 		{
 			return false;
 		}
 	}
-	return MatchClass(SectionClass(Section), Config.Classes);
+	return MatchClass(Class, Config.Classes);
 }
 
 void CollectItems(SEncyclopediaGroup& Group, const SSectionConfig& Config)
