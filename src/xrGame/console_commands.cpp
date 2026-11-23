@@ -2540,8 +2540,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "hud_crosshair_point", &psHUD_Flags, HUD_CROSSHAIR_POINT);
 	CMD3(CCC_Mask32, "hud_crosshair_dist", &psHUD_Flags, HUD_CROSSHAIR_DIST);
 
-	CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 5.0f, 180.0f);
-	CMD4(CCC_Float, "fov", &g_base_fov, 5.0f, 180.0f);
+	CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 5.0f, 120.0f);
+	CMD4(CCC_Float, "fov", &g_base_fov, 5.0f, 120.0f);
 	CMD2(CCC_Boolean, "g_3d_scopes", &g_3d_scopes);
 
 	// Demo
