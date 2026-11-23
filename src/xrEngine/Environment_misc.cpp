@@ -940,7 +940,6 @@ void CEnvironment::load_weathers		()
     if (pSettings->section_exist("weathers"))
     {
         weatherCount = pSettings->line_count("weathers");
-        Log("~ SoC style weather config detected");
     }
 
     for (int weatherIdx = 0; weatherIdx < weatherCount; ++weatherIdx)
@@ -1022,7 +1021,6 @@ void CEnvironment::load_weather_effects()
     if (pSettings->section_exist("weather_effects"))
     {
         weatherEffectsCount = pSettings->line_count("weather_effects");
-        Log("~ SoC style weather effects config detected");
     }
 
     for (u32 weatherIdx = 0; weatherIdx < weatherEffectsCount; ++weatherIdx)
