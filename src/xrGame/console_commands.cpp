@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "DofManager.h"
+#include "FlashlightBeam.h"
 #include "pch_script.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrCore/CharConv.h"
@@ -3098,6 +3099,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "g_backrun", &psActorFlags, AF_RUN_BACKWARD);
 
 	CMD4(CCC_Integer, "g_cam_fp_zoom", &m_look_cam_fp_zoom, 0, 1);
+	CMD4(CCC_Integer, "g_flashlight_beam", &g_FlashlightBeam, 0, 1);
+	CMD4(CCC_Integer, "g_flashlight_interference", &g_FlashlightInterference, 0, 1);
 
 	// alife
 #ifdef DEBUG

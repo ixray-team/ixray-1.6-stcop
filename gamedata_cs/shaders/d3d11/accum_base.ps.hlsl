@@ -3,6 +3,7 @@
 
 #include "metalic_roughness_light.hlsli"
 #include "ScreenSpaceContactShadows.hlsl"
+#include "light_beam.hlsli"
 
 
 [earlydepthstencil] //LVutner: Force early-z
@@ -21,7 +22,22 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 #endif
 
     float3 Lightmap = GetLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w, 2.0f);
-    Point.xyz = O.Normal * 0.025f + Point.xyz;
+#ifdef USE_LMAP
+    [flatten]
+    if (LightBeamEnabled())
+    {
+        Lightmap = LightBeamAttenuation(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
+    }
+#endif
+    float NormalOffset = 0.025f;
+#ifdef USE_LMAP
+    [flatten]
+    if (LightBeamEnabled())
+    {
+        NormalOffset = LightBeamNormalOffset(Point.xyz - Ldynamic_pos.xyz, O.Normal);
+    }
+#endif
+    Point.xyz = O.Normal * NormalOffset + Point.xyz;
 
     float4 PS = mul(m_shadow, Point);
 
@@ -52,7 +68,15 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 		PS.y = dot(Point, m_lmap[1]);
     #endif
 	
-    Lightmap *= GammaToLinear(s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz);
+    [branch]
+    if (LightBeamEnabled())
+    {
+        Lightmap *= LightBeamProfile(PS.xy / PS.w);
+    }
+    else
+    {
+        Lightmap *= GammaToLinear(s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz);
+    }
 #endif
 	
     return float4(Lightmap * Light, 0.0f);

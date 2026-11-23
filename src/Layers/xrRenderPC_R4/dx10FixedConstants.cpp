@@ -699,6 +699,24 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 			dirty_light = true;
 			break;
 		}
+		case chash("Ldynamic_beam_shape"):
+		{
+			cpu_light.Ldynamic_beam_shape = A;
+			dirty_light = true;
+			break;
+		}
+		case chash("Ldynamic_beam_tone"):
+		{
+			cpu_light.Ldynamic_beam_tone = A;
+			dirty_light = true;
+			break;
+		}
+		case chash("Ldynamic_beam_range"):
+		{
+			cpu_light.Ldynamic_beam_range = A;
+			dirty_light = true;
+			break;
+		}
 		case chash("L_dynamic_props"):
 		{
 			cpu_object.L_dynamic_props.set(A.x, A.y, A.z, A.w);

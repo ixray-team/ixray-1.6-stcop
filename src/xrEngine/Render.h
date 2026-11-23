@@ -45,9 +45,24 @@ extern const float fLightSmoothFactor;
 #else
 const float fLightSmoothFactor = 4.f;
 #endif
+struct LightBeamParams
+{
+	bool Enabled = false;
+	float CoreSize = 0.2f;
+	float BeamSize = 0.6f;
+	float EdgeSoftness = 0.5f;
+	float SpillLevel = 0.1f;
+	float CoreGain = 1.5f;
+	float RingLevel = 0.08f;
+	float Intensity = 3.0f;
+	float EdgeWarmth = 0.3f;
+	float ReferenceDistance = 6.0f;
+	float NearBoostMax = 2.5f;
+};
+
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
-class ENGINE_API IRender_Light: 
+class ENGINE_API IRender_Light:
 	public xr_resource,
 	public ISpatialOwner
 {
@@ -76,6 +91,7 @@ public:
 	virtual void					set_range			(float R)							= 0;
 	virtual void					set_virtual_size	(float R)							= 0;
 	virtual void					set_texture			(const char* name)						= 0;
+	virtual void					SetBeam				(const LightBeamParams& Params)		{}
 	virtual void					set_color			(const Fcolor& C)					= 0;
 	virtual void					set_color			(float r, float g, float b)			= 0;
 	virtual void					set_hud_mode		(bool b)							= 0;

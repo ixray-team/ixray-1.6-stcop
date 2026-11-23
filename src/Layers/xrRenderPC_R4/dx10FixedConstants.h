@@ -115,9 +115,12 @@ struct alignas(16) CBLight
 	Fvector4 SunCaptureDirectionDepth[3];
 	Fvector4 SunReceiverWarpBias[3];
 	Fvector4 SunCacheParams;
+	Fvector4 Ldynamic_beam_shape;
+	Fvector4 Ldynamic_beam_tone;
+	Fvector4 Ldynamic_beam_range;
 };
 
-static_assert(sizeof(CBLight) == 544, "Keep cb_light synchronized with common_decl.hlsli and r1_decl.hlsli");
+static_assert(sizeof(CBLight) == 592, "Keep cb_light synchronized with common_decl.hlsli and r1_decl.hlsli");
 
 namespace FixedConstants
 {

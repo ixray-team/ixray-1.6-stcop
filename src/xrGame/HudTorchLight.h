@@ -1,6 +1,7 @@
 #pragma once
 
 #include "inventory_space.h"
+#include "FlashlightBeam.h"
 
 struct THudLightTorch
 {
@@ -23,6 +24,8 @@ public:
 	RStringVec ConeBones{};
 	PIItem Owner = nullptr;
 	Fvector2 PrevHP = { 0.0f, 0.0f };
+	FlashlightBeam Beam;
+	bool IsRenderShadow = true;
 
 	struct breaking_params
 	{

@@ -160,6 +160,13 @@ void CRenderTarget::accum_spot(light* L)
 		RCache.set_c("m_texgen_J", m_Texgen_J);
 		RCache.set_c("m_shadow", m_Shadow);
 		RCache.set_c("Ldynamic_hud", (int)L->flags.bHudMode);
+		const LightBeamParams& Beam = L->Beam;
+		RCache.set_c("Ldynamic_beam_shape", Beam.CoreSize, Beam.BeamSize, Beam.EdgeSoftness, Beam.SpillLevel);
+		RCache.set_c("Ldynamic_beam_tone", Beam.CoreGain, Beam.RingLevel, Beam.Intensity, Beam.EdgeWarmth);
+		const float BeamHalfCone = L->cone * 0.5f;
+		const float BeamHalfProjection = std::min(L->cone + deg2rad(5.0f), PI * 0.98f) * 0.5f;
+		const float BeamEdgeRadius = std::tan(BeamHalfCone) / std::tan(BeamHalfProjection) * std::cos(PI / 16.0f) * 0.97f;
+		RCache.set_c("Ldynamic_beam_range", Beam.ReferenceDistance, Beam.NearBoostMax, Beam.Enabled && IRender_Light::OMNIPART != L->flags.type ? 1.0f : 0.0f, BeamEdgeRadius);
 		RCache.set_ca("m_lmap", 0, m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
 		RCache.set_ca("m_lmap", 1, m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
 

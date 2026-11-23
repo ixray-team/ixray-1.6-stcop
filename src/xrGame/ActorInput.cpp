@@ -385,6 +385,11 @@ void CActor::IR_OnMouseWheel(int direction)
 		}
 	}
 
+	if (CTorch* Torch = HeadTorch(); Torch != nullptr && FlashlightBeam::IsFocusKeyHeld() && Torch->AdjustFocus(direction))
+	{
+		return;
+	}
+
 	if (inventory().Action(direction > 0 ? (u16)kWPN_ZOOM_DEC : (u16)kWPN_ZOOM_INC, CMD_START))
 		return;
 	

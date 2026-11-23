@@ -51,8 +51,10 @@ void THudLightTorch::NewTorchlight(const char* section)
 
 	RenderLight = ::Render->light_create();
 	RenderLight->set_type((IRender_Light::LT)pSettings->read_if_exists<u32>(section, "torch_render_type", IRender_Light::SPOT));
-	RenderLight->set_range(pSettings->read_if_exists<float>(section, "torch_r2_range", 15.0f));
-	RenderLight->set_shadow(!!pSettings->read_if_exists<bool>(section, "torch_render_shadow", true));
+	const float LegacyRange = pSettings->read_if_exists<float>(section, "torch_r2_range", 15.0f);
+	RenderLight->set_range(LegacyRange);
+	IsRenderShadow = !!pSettings->read_if_exists<bool>(section, "torch_render_shadow", true);
+	RenderLight->set_shadow(IsRenderShadow);
 
 	OmniLight = ::Render->light_create();
 	OmniLight->set_type(IRender_Light::POINT); // (IRender_Light::LT)pSettings->read_if_exists<u32>(section, "torch_omni_type", IRender_Light::POINT));
@@ -93,7 +95,8 @@ void THudLightTorch::NewTorchlight(const char* section)
 	OmniColor.a = pSettings->read_if_exists<float>(section, "torch_r2_omni_color_a", 0.80f);
 	OmniLight->set_color(OmniColor);
 
-	RenderLight->set_cone(deg2rad(pSettings->read_if_exists<float>(section, "torch_spot_angle", 75.0f)));
+	const float LegacyCone = deg2rad(pSettings->read_if_exists<float>(section, "torch_spot_angle", 75.0f));
+	RenderLight->set_cone(LegacyCone);
 	RenderLight->set_texture(pSettings->r_string(section, "torch_spot_texture"));
 
 	IsLightDirByBone = !!pSettings->read_if_exists<bool>(section, "light_directions_by_bones", false);
@@ -120,6 +123,9 @@ void THudLightTorch::NewTorchlight(const char* section)
 	BreakingParams.start_condition = tmp_vector.x;
 	BreakingParams.end_condition = tmp_vector.y;
 	BreakingParams.start_probability = tmp_vector.z;
+
+	Beam.Load(section);
+	Beam.SetLegacy(LightColor, LegacyRange, LegacyCone);
 }
 
 void THudLightTorch::SwitchTorchlight(bool isActive)
@@ -266,16 +272,28 @@ void THudLightTorch::UpdateTorchFromObject()
 			Device.transform_hud2world(omniPos);
 		}
 
+		RenderLight->set_shadow(IsRenderShadow);
+
 		if (CActor* pActor = WornInFirstPerson(Root))
 		{
 			if (!RenderLight->get_active())
 			{
 				PrevHP.set(-pActor->cam_Active()->yaw, -pActor->cam_Active()->pitch);
+				Beam.Reset();
 			}
-			PrevHP.x = angle_inertion_var(PrevHP.x, -pActor->cam_Active()->yaw, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
-			PrevHP.y = angle_inertion_var(PrevHP.y, -pActor->cam_Active()->pitch, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
 
-			lightPos.set(Device.vCameraPosition);
+			if (Beam.IsSwayEnabled())
+			{
+				PrevHP = Beam.UpdateDirection(pActor, Device.fTimeDelta);
+			}
+			else
+			{
+				PrevHP.x = angle_inertion_var(PrevHP.x, -pActor->cam_Active()->yaw, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+				PrevHP.y = angle_inertion_var(PrevHP.y, -pActor->cam_Active()->pitch, LIGHT_INERTION_SPEED_MIN, LIGHT_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			}
+
+			lightPos.set(Beam.IsEyeAnchored() ? Beam.GetEyePosition() : Device.vCameraPosition);
+			RenderLight->set_shadow(Beam.IsEyeAnchored() ? Beam.HasEyeShadow() : IsRenderShadow);
 			omniPos.set(Device.vCameraPosition);
 			lightDir.setHP(PrevHP.x, PrevHP.y);
 		}
@@ -310,6 +328,11 @@ void THudLightTorch::UpdateTorchFromObject()
 			}
 #endif
 		}
+	}
+
+	if (IsRenderLight)
+	{
+		Beam.UpdateLight(RenderLight._get(), Owner->object().H_Root()->Position(), nullptr, Device.fTimeDelta);
 	}
 
 	RenderLight->set_active(IsRenderLight);

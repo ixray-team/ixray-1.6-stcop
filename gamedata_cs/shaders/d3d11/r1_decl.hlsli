@@ -113,6 +113,9 @@ cbuffer cb_light : register(b4)
 	float4 SunCaptureDirectionDepth[3];
 	float4 SunReceiverWarpBias[3];
 	float4 SunCacheParams;
+	float4 Ldynamic_beam_shape;
+	float4 Ldynamic_beam_tone;
+	float4 Ldynamic_beam_range;
 };
 
 #endif

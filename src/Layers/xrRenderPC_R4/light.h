@@ -30,6 +30,7 @@ public:
 	float			virtual_size;
 	float			cone		;
 	Fcolor			color		;
+	LightBeamParams	Beam		;
 	CObject			*ignore_object, *decor_object[6];
 	vis_data		hom			;
 	u32				frame_render;
@@ -130,6 +131,7 @@ public:
 	virtual void	set_color				(const Fcolor& C) override { color.set(C);				}
 	virtual void	set_color				(float r, float g, float b) override { color.set(r,g,b,1);		}
 	virtual void	set_texture				(const char* name) override;
+	virtual void	SetBeam					(const LightBeamParams& Params) override { Beam = Params; }
 	virtual void	set_hud_mode			(bool b) override {flags.bHudMode=b;}
 	virtual bool	get_hud_mode			() override {return flags.bHudMode;};
 

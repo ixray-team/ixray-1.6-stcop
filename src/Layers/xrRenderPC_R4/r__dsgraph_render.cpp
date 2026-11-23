@@ -439,7 +439,19 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 		for (const SubspaceItem& Item : SubspaceDynamic)
 		{
 			set_Frustum(Item.Frustum);
-			if(O && O->dcast_Renderable()==Item.Renderable) continue;
+			if (O != nullptr)
+			{
+				if (O->dcast_Renderable() == Item.Renderable)
+				{
+					continue;
+				}
+
+				CObject* Object = Item.Renderable->dcast_CObject();
+				if (Object != nullptr && Object->H_Root() == O)
+				{
+					continue;
+				}
+			}
 
 			if (phase != CRender::PHASE_SMAP)
 			{

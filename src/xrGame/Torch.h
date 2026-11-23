@@ -4,6 +4,7 @@
 #include "HudSound.h"
 #include "../xrScripts/script_export_space.h"
 #include "IPowerManager.h"
+#include "FlashlightBeam.h"
 
 class CLAItem;
 
@@ -25,6 +26,8 @@ protected:
 	ref_light light_render = {};
 	ref_light light_omni = {};
 	ref_glow glow_render = {};
+	FlashlightBeam Beam;
+	Fcolor OmniColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Fvector	m_focus = zero_vel;
 	ref_sound m_switch_sound = {};
 
@@ -55,6 +58,7 @@ public:
 	void Switch();
 	void Switch(bool light_on);
 	bool torch_active() const;
+	bool AdjustFocus(int Direction);
 
 	virtual bool can_be_attached() const override;
 

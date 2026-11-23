@@ -83,6 +83,7 @@ void CTorch::Load(const char* section)
 {
 	inherited::Load(section);
 	light_trace_bone = pSettings->r_string(section, "light_trace_bone");
+	Beam.Load(section);
 
 	if (pSettings->line_exist(section, "sound_activate"))
 	{
@@ -129,6 +130,11 @@ void CTorch::Switch()
 
 void CTorch::Switch(bool light_on)
 {
+	if (light_on && !m_switched_on)
+	{
+		Beam.Reset();
+	}
+
 	m_switched_on = light_on;
 
 	if (can_use_dynamic_lights())
@@ -199,6 +205,9 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 		glow_render->set_texture(pUserData->r_string("torch_definition", "glow_texture"));
 		glow_render->set_color(clr);
 		glow_render->set_radius(pUserData->r_float("torch_definition", "glow_radius"));
+
+		Beam.SetLegacy(clr, range, deg2rad(pUserData->r_float("torch_definition", "spot_angle")));
+		OmniColor = clr_o;
 
 		//включить/выключить фонарик
 		Switch(torch->m_active);
@@ -325,15 +334,25 @@ void CTorch::UpdateCL()
 				light_omni->set_decor_object(H_Parent());
 			}
 
+			const bool EyeAnchored = Beam.IsEyeAnchored() && actor->HUDview();
 			Fvector	dir = zero_vel, right = zero_vel, up = zero_vel;
-			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
+			if (Beam.IsSwayEnabled() && actor->HUDview())
+			{
+				const Fvector2 Angles = Beam.UpdateDirection(actor, Device.fTimeDelta);
+				dir.setHP(Angles.x + (EyeAnchored ? 0.0f : m_delta_h), Angles.y);
+			}
+			else
+			{
+				dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
+			}
 			Fvector::generate_orthonormal_basis_normalized(dir, up, right);
 
 			Fvector offset = M.c;
 			offset.mad(M.i, TORCH_OFFSET.x);
 			offset.mad(M.j, TORCH_OFFSET.y);
 			offset.mad(M.k, TORCH_OFFSET.z);
-			light_render->set_position(offset);
+			light_render->set_position(EyeAnchored ? Beam.GetEyePosition() : offset);
+			light_render->set_shadow(!EyeAnchored || Beam.HasEyeShadow());
 
 			offset = M.c;
 			offset.mad(M.i, OMNI_OFFSET.x);
@@ -399,26 +418,36 @@ void CTorch::UpdateCL()
 		return;
 	}
 
-	// calc color animator
-	if (lanim == nullptr)
+	Fcolor AnimatedColor;
+	const bool HasAnimatedColor = lanim != nullptr;
+	if (HasAnimatedColor)
 	{
-		return;
+		int frame = 0;
+		// возвращает в формате BGR
+		u32 clr = lanim->CalculateBGR(Device.fTimeGlobal, frame);
+		AnimatedColor.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.0f);
+		AnimatedColor.mul_rgb(fBrightness / 255.0f);
 	}
 
-	int frame = 0;
-	// возвращает в формате BGR
-	u32 clr = lanim->CalculateBGR(Device.fTimeGlobal, frame);
+	const Fvector ProbePosition = H_Parent() != nullptr ? H_Parent()->Position() : Position();
+	Beam.UpdateLight(can_use_dynamic_lights() ? light_render._get() : nullptr, ProbePosition, HasAnimatedColor ? &AnimatedColor : nullptr, Device.fTimeDelta);
 
-	Fcolor fclr;
-	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.0f);
-	fclr.mul_rgb(fBrightness / 255.0f);
+	const float Interference = Beam.GetInterference();
+	Fcolor OmniFinal = HasAnimatedColor ? AnimatedColor : OmniColor;
+	OmniFinal.mul_rgb(Interference);
 	if (can_use_dynamic_lights())
 	{
-		light_render->set_color(fclr);
-		light_omni->set_color(fclr);
+		light_omni->set_color(OmniFinal);
 	}
 
-	glow_render->set_color(fclr);
+	Fcolor GlowFinal = Beam.GetBaseColor(HasAnimatedColor ? &AnimatedColor : nullptr);
+	GlowFinal.mul_rgb(Interference);
+	glow_render->set_color(GlowFinal);
+}
+
+bool CTorch::AdjustFocus(int Direction)
+{
+	return m_switched_on && Beam.AdjustFocus(Direction);
 }
 
 void CTorch::create_physic_shell()
