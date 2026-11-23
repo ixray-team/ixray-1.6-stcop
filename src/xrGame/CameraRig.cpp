@@ -3688,7 +3688,9 @@ void player_hud::SyncSprintBlend()
 		CWeapon* weapon = item->cast_weapon();
 		const bool sprint_action = weapon != nullptr && smart_cast<CWeaponPistol*>(weapon) == nullptr && (state == CWeapon::eReload || state == CWeapon::eSwitchMode || state == CWeapon::eSafemodeSwitch);
 		const bool unpended = !item->IsPending() && state != CHUDState::eHiding && state != CHUDState::eHidden;
-		sprint = (idle || sprint_action || unpended) && (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0;
+		const u32 movement = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+		const bool airborne = (movement & (ACTOR_DEFS::EMoveCommand::mcJump | ACTOR_DEFS::EMoveCommand::mcFall)) != 0;
+		sprint = (idle || sprint_action || unpended) && (movement & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && !airborne;
 	}
 
 	Sprint.Update(m_model, m_attached_items[0], sprint);

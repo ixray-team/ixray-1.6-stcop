@@ -2290,7 +2290,9 @@ void player_hud::update(const Fmatrix& world_cam_trans)
 		actor->Cameras().Rig().ApplyHud(trans, m_attached_items[0] != nullptr ? m_attached_items[0] : m_attached_items[1]);
 
 		CWeapon* weapon = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr ? m_attached_items[0]->m_parent_hud_item->cast_weapon() : nullptr;
-		const u32 key = (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & (ACTOR_DEFS::EMoveCommand::mcAnyMove | ACTOR_DEFS::EMoveCommand::mcSprint | ACTOR_DEFS::EMoveCommand::mcAccel | ACTOR_DEFS::EMoveCommand::mcCrouch)) | (weapon != nullptr && weapon->IsZoomed() ? 0x80000000 : 0);
+		const u32 movement = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+		const bool airborne = (movement & (ACTOR_DEFS::EMoveCommand::mcJump | ACTOR_DEFS::EMoveCommand::mcFall)) != 0;
+		const u32 key = (movement & (ACTOR_DEFS::EMoveCommand::mcAnyMove | ACTOR_DEFS::EMoveCommand::mcSprint | ACTOR_DEFS::EMoveCommand::mcAccel | ACTOR_DEFS::EMoveCommand::mcCrouch)) | (airborne ? 0x40000000 : 0) | (weapon != nullptr && weapon->IsZoomed() ? 0x80000000 : 0);
 		if (key != MovementKey)
 		{
 			MovementKey = key;
