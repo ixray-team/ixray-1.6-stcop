@@ -26,6 +26,9 @@ target_include_directories(xrSound PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrSound PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_precompile_headers(xrSound PRIVATE "stdafx.h")
 
+# SoundShaderType and the sound shader registry are generated from XREFLECT(SoundShader) classes
+ixray_reflect_sound(xrSound xrSound PCH "stdafx.h" SOURCES ${SND_SRC_FILES})
+
 # Project defines
 target_compile_definitions(xrSound PRIVATE XRSOUND_EXPORTS)
 target_compile_definitions(xrSound PRIVATE _USRDLL)

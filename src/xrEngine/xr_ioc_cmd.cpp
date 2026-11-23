@@ -547,6 +547,65 @@ public:
 	}
 };
 
+// snd_bus_shader <bus> <shader>                 adds the shader to the bus
+// snd_bus_shader <bus> <shader> off             removes it
+// snd_bus_shader <bus> <shader> <param> <value> sets a parameter
+// snd_bus_shader <bus> clear                    removes all shaders of the bus
+class CCC_SND_BusShader : public IConsole_Command
+{
+public:
+	CCC_SND_BusShader(const char* N) : IConsole_Command(N) {}
+
+	virtual void Execute(const char* args) override
+	{
+		string128 BusName = {}, ShaderName = {}, Param = {};
+		float Value = 0.0f;
+		const int Count = sscanf(args, "%127s %127s %127s %f", BusName, ShaderName, Param, &Value);
+
+		const u32 Bus = XRay::Sound::Mixer::FindBus(BusName);
+		if (Count < 2 || Bus == 0)
+		{
+			InvalidSyntax();
+			return;
+		}
+
+		if (xr_strcmp(ShaderName, "clear") == 0)
+		{
+			XRay::Sound::Mixer::ClearBusShaders(Bus);
+			return;
+		}
+
+		const SoundShaderType Type = XRay::Sound::Shader::Find(ShaderName);
+		if (Type == SoundShaderType::None)
+		{
+			Msg("! Unknown sound shader '%s'", ShaderName);
+			return;
+		}
+
+		if (Count == 2)
+		{
+			XRay::Sound::Mixer::AddBusShader(Bus, Type);
+		}
+		else if (Count == 3 && xr_strcmp(Param, "off") == 0)
+		{
+			XRay::Sound::Mixer::RemoveBusShader(Bus, Type);
+		}
+		else if (Count == 4)
+		{
+			XRay::Sound::Mixer::SetBusShaderParam(Bus, Type, Param, Value);
+		}
+		else
+		{
+			InvalidSyntax();
+		}
+	}
+
+	virtual void Info(TInfo& I) override
+	{
+		xr_strcpy(I, "<bus> <shader> [off | <param> <value>], <bus> clear");
+	}
+};
+
 float	ps_gamma=1.f,ps_brightness=1.f,ps_contrast=1.f;
 class CCC_Gamma : public CCC_Float
 {
@@ -909,9 +968,9 @@ void CCC_Register()
 	CMD4(CCC_Float,		"snd_shooting_reverb",	&psSoundShootingReverb, 0.0f, 1.0f);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD1(CCC_SND_ExportConfig,"snd_export_config"	);
+	CMD1(CCC_SND_BusShader,	"snd_bus_shader"		);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
 	CMD3(CCC_Mask32,		"snd_hrtf",				&psSoundFlags,		ss_HRTF		);
-	CMD3(CCC_Mask32,		"snd_lowpass",			&psSoundFlags,		ss_LowPass	);
 
 #ifdef DEBUG
 	CMD3(CCC_Mask32,		"snd_stats",			&g_stats_flags,		st_sound	);

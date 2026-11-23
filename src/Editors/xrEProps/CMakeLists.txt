@@ -37,6 +37,10 @@ target_compile_definitions(xrEProps PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrEProps PUBLIC xrCore)
 
+# Engine headers pull in xrSound headers, they include the generated SoundShaderType.gen.h
+target_include_directories(xrEProps PRIVATE "$<TARGET_PROPERTY:xrSound,BINARY_DIR>/Generated")
+add_dependencies(xrEProps xrSound_reflect_sound)
+
 # Move precompiled header
 set_target_properties(xrEProps PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 

@@ -15,7 +15,7 @@
 using namespace XRay::Sound;
 
 int		psSoundTargets			= 1024 - 32;
-Flags32	psSoundFlags = { ss_LowPass };
+Flags32	psSoundFlags = { 0 };
 float	psSoundOcclusionScale = 0.5f;
 float	psSoundDoppler = 0.1f;
 float	psSoundCull = 0.01f;
@@ -501,6 +501,7 @@ void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
 	S._p->fn_attached[1] = from._p->fn_attached[1];
 	S._p->g_type = game_type;// (game_type == sg_SourceType) ? S._p->handle->game_type() : game_type;
 	S._p->s_type = sound_type;
+	S._p->ignore_bus_shaders = from._p->ignore_bus_shaders;
 }
 
 u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
@@ -539,6 +540,11 @@ u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
 	if (S._g_type() == ESoundTypes::SOUND_TYPE_WORLD_AMBIENT)
 	{
 		MixedFlags |= (u32)Mixer::Flags::NoOCC;
+	}
+
+	if (S.ignores_bus_shaders())
+	{
+		MixedFlags |= (u32)Mixer::Flags::NoBusShaders;
 	}
 
 	return MixedFlags;

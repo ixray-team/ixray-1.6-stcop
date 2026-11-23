@@ -286,6 +286,213 @@ static void Audio_DrawSounds()
 	}
 }
 
+// Edit requested by a shader chain widget. Mixer calls take play_lock, so they run only after the widget
+// released GetUpdateMutex: PlayNoFeedback takes play_lock and then update_lock, the reverse order would deadlock
+struct AudioShaderEdit
+{
+	enum class EKind : u8
+	{
+		None,
+		Add,
+		Remove,
+		Clear,
+		SetParam
+	};
+
+	EKind Kind = EKind::None;
+	bool IsBus = false;
+	u32 Target = 0;
+	SoundShaderType Type = SoundShaderType::None;
+	// Points into the static class info of the shader
+	const char* Param = nullptr;
+	float Value = 0.0f;
+	// Remove: which kind of bus owner to drop
+	bool SpatialOnly = false;
+};
+
+static void Audio_ApplyShaderEdit(const AudioShaderEdit& Edit)
+{
+	switch (Edit.Kind)
+	{
+	case AudioShaderEdit::EKind::Add:
+		Edit.IsBus ? Mixer::AddBusShader(Edit.Target, Edit.Type) : Mixer::AddShader(Edit.Target, Edit.Type);
+		break;
+	case AudioShaderEdit::EKind::Remove:
+		Edit.IsBus ? Mixer::RemoveBusShader(Edit.Target, Edit.Type, Edit.SpatialOnly) : Mixer::RemoveShader(Edit.Target, Edit.Type);
+		break;
+	case AudioShaderEdit::EKind::Clear:
+		Edit.IsBus ? Mixer::ClearBusShaders(Edit.Target) : Mixer::ClearShaders(Edit.Target);
+		break;
+	case AudioShaderEdit::EKind::SetParam:
+		Edit.IsBus ? Mixer::SetBusShaderParam(Edit.Target, Edit.Type, Edit.Param, Edit.Value) : Mixer::SetShaderParam(Edit.Target, Edit.Type, Edit.Param, Edit.Value);
+		break;
+	default:
+		break;
+	}
+}
+
+// Shader chain of a voice slot or a bus, drawn under GetUpdateMutex. At most one edit per frame is returned in Edit,
+// the caller applies it with Audio_ApplyShaderEdit after releasing the lock
+static void Audio_RenderShaderChain(const SoundShaderChain* Chain, bool IsBus, u32 Target, AudioShaderEdit& Edit)
+{
+	auto Request = [&](AudioShaderEdit::EKind Kind, SoundShaderType Type, const char* Param = nullptr, float Value = 0.0f)
+	{
+		if (Edit.Kind == AudioShaderEdit::EKind::None)
+		{
+			Edit = {Kind, IsBus, Target, Type, Param, Value};
+		}
+	};
+
+	const u32 Count = Chain != nullptr ? Chain->GetCount() : 0;
+	for (u32 Index = 0; Index < Count; Index++)
+	{
+		const ISoundShader* Shader = Chain->Get(Index);
+		const SoundShaderType Type = Shader->GetType();
+		ImGui::PushID((int)Type);
+		const u32 Owners = Chain->GetOwnerCount(Index);
+		const bool IsSpatialOnly = Chain->IsSpatialOnly(Index);
+		if (ImGui::SmallButton("X") && Edit.Kind == AudioShaderEdit::EKind::None)
+		{
+			Request(AudioShaderEdit::EKind::Remove, Type);
+			Edit.SpatialOnly = IsSpatialOnly;
+		}
+		ImGui::SetItemTooltip(Owners > 1 ? "Drops one owner, the shader stays while others hold it" : "Remove");
+
+		ImGui::SameLine();
+		const bool IsOpen = ImGui::TreeNodeEx("##Shader", ImGuiTreeNodeFlags_DefaultOpen, "%s", Shader::GetName(Type));
+		if (Owners > 1 || IsSpatialOnly)
+		{
+			ImGui::SameLine();
+			ImGui::TextDisabled("%s%s", IsSpatialOnly ? "3D only " : "", Owners > 1 ? "(shared)" : "");
+			if (Owners > 1)
+			{
+				ImGui::SetItemTooltip("%u owners", Owners);
+			}
+		}
+
+		if (IsOpen)
+		{
+			for (u32 ParamIdx = 0; ParamIdx < Shader->GetParamCount(); ParamIdx++)
+			{
+				const SoundEffectParam* Param = Shader->GetParamDesc(ParamIdx);
+				float Value = Shader->GetParam(ParamIdx);
+				if (ImGui::SliderFloat(Param->Name, &Value, Param->Min, Param->Max, "%.4g"))
+				{
+					Request(AudioShaderEdit::EKind::SetParam, Type, Param->Name, Value);
+				}
+
+				if (ImGui::BeginPopupContextItem())
+				{
+					if (ImGui::MenuItem("Reset to default"))
+					{
+						Request(AudioShaderEdit::EKind::SetParam, Type, Param->Name, Param->Default);
+					}
+					ImGui::EndPopup();
+				}
+			}
+
+			ImGui::TreePop();
+		}
+
+		ImGui::PopID();
+	}
+
+	if (Count < SND_SHADER_CHAIN_COUNT && ImGui::BeginCombo("##AddShader", "Add shader...", ImGuiComboFlags_NoArrowButton))
+	{
+		for (u32 Type = 1; Type < (u32)SoundShaderType::Count; Type++)
+		{
+			const bool IsPresent = Chain != nullptr && Chain->Find((SoundShaderType)Type) != nullptr;
+			if (!IsPresent && ImGui::Selectable(Shader::GetName((SoundShaderType)Type)))
+			{
+				Request(AudioShaderEdit::EKind::Add, (SoundShaderType)Type);
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+
+	if (Count > 0)
+	{
+		ImGui::SameLine();
+		if (ImGui::SmallButton("Clear"))
+		{
+			Request(AudioShaderEdit::EKind::Clear, SoundShaderType::None);
+		}
+	}
+}
+
+// Shaders of the sound config; true when the preset changed
+static bool Audio_RenderShaderPreset(SoundShaderPreset& Preset)
+{
+	bool IsChanged = false;
+	int RemoveIdx = -1;
+	for (u32 Index = 0; Index < Preset.Count; Index++)
+	{
+		const SoundShaderType Type = (SoundShaderType)Preset.Types[Index];
+		const Shader::ClassInfo* Info = Shader::GetClass(Type);
+		ImGui::PushID((int)Index);
+		if (ImGui::SmallButton("X"))
+		{
+			RemoveIdx = (int)Index;
+		}
+
+		ImGui::SameLine();
+		if (Info == nullptr)
+		{
+			ImGui::TextDisabled("unknown shader");
+		}
+		else if (ImGui::TreeNodeEx("##PresetShader", ImGuiTreeNodeFlags_DefaultOpen, "%s", Info->Name))
+		{
+			for (u32 ParamIdx = 0; ParamIdx < Info->ParamCount; ParamIdx++)
+			{
+				const SoundEffectParam& Param = Info->Params[ParamIdx];
+				float& Value = Preset.Params[Index][ParamIdx];
+				IsChanged |= ImGui::SliderFloat(Param.Name, &Value, Param.Min, Param.Max, "%.4g");
+				if (ImGui::BeginPopupContextItem())
+				{
+					if (ImGui::MenuItem("Reset to default"))
+					{
+						Value = Param.Default;
+						IsChanged = true;
+					}
+					ImGui::EndPopup();
+				}
+			}
+
+			ImGui::TreePop();
+		}
+
+		ImGui::PopID();
+	}
+
+	if (Preset.Count < SND_SHADER_CHAIN_COUNT && ImGui::BeginCombo("##AddPresetShader", "Add shader...", ImGuiComboFlags_NoArrowButton))
+	{
+		for (u32 Type = 1; Type < (u32)SoundShaderType::Count; Type++)
+		{
+			bool IsPresent = false;
+			for (u32 Index = 0; Index < Preset.Count; Index++)
+			{
+				IsPresent |= Preset.Types[Index] == (u8)Type;
+			}
+
+			if (!IsPresent && ImGui::Selectable(Shader::GetName((SoundShaderType)Type)))
+			{
+				IsChanged |= Shader::PresetAdd(Preset, (SoundShaderType)Type);
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+
+	if (RemoveIdx >= 0)
+	{
+		Shader::PresetRemove(Preset, (u32)RemoveIdx);
+		IsChanged = true;
+	}
+
+	return IsChanged;
+}
+
 static void Audio_RenderDetails()
 {
 	if (GAudioEditor.Selected.size() == 0)
@@ -334,6 +541,10 @@ static void Audio_RenderDetails()
 		ImGui::EndCombo();
 	}
 
+	ImGui::SeparatorText("Shaders");
+	IsChanged |= Audio_RenderShaderPreset(Config.shaders);
+	ImGui::Separator();
+
 	if (IsChanged)
 	{
 		Mixer::SetSoundConfig(GAudioEditor.Selected.c_str(), &Config);
@@ -370,25 +581,38 @@ static void Audio_RenderDetails()
 	ImGui::TextDisabled("%s", GAudioEditor.SaveStatus);
 
 	ImGui::SeparatorText("Instances");
-	xrSRWLockGuard Guard(Mixer::GetUpdateMutex(), true);
-	const xr_vector<sound_slot_state>& Slots = Mixer::GetSlots();
-	for (u32 SlotIdx = 0; SlotIdx < Slots.size(); SlotIdx++)
+	AudioShaderEdit Edit;
 	{
-		const sound_slot_state& Slot = Slots[SlotIdx];
-		if (Slot.sound_name.empty() || Audio_Normalize(Slot.sound_name.c_str()) != GAudioEditor.Selected)
+		xrSRWLockGuard Guard(Mixer::GetUpdateMutex(), true);
+		const xr_vector<sound_slot_state>& Slots = Mixer::GetSlots();
+		for (u32 SlotIdx = 0; SlotIdx < Slots.size(); SlotIdx++)
 		{
-			continue;
-		}
+			const sound_slot_state& Slot = Slots[SlotIdx];
+			if (Slot.sound_name.empty() || Audio_Normalize(Slot.sound_name.c_str()) != GAudioEditor.Selected)
+			{
+				continue;
+			}
 
-		const Fvector& Position = Slot.parameters[(u32)Mixer::ParameterId::Position];
-		const Fvector& Volume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
-		ImGui::Text("#%u %-9s %.2fs  vol %.2f  occ %.2f", SlotIdx + 1, Audio_StateName(Audio_SlotFlag(Slot)), Mixer::GetPlaytime(SlotIdx + 1), Volume.x * Volume.y, Volume.z);
-		if (Slot.flags & (u16)Mixer::Flags::Spatial)
-		{
-			ImGui::SameLine();
-			ImGui::Text(" %.1fm", Device.vCameraPosition.distance_to(Position));
+			const Fvector& Position = Slot.parameters[(u32)Mixer::ParameterId::Position];
+			const Fvector& Volume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
+			ImGui::Text("#%u %-9s %.2fs  vol %.2f  occ %.2f", SlotIdx + 1, Audio_StateName(Audio_SlotFlag(Slot)), Mixer::GetPlaytime(SlotIdx + 1), Volume.x * Volume.y, Volume.z);
+			if (Slot.flags & (u16)Mixer::Flags::Spatial)
+			{
+				ImGui::SameLine();
+				ImGui::Text(" %.1fm", Device.vCameraPosition.distance_to(Position));
+			}
+
+			ImGui::PushID((int)SlotIdx);
+			if (ImGui::TreeNode("##SlotShaders", "Runtime shaders (%u)", Slot.Shaders.GetCount()))
+			{
+				Audio_RenderShaderChain(&Slot.Shaders, false, SlotIdx + 1, Edit);
+				ImGui::TreePop();
+			}
+			ImGui::PopID();
 		}
 	}
+
+	Audio_ApplyShaderEdit(Edit);
 }
 
 static void Audio_RenderInspector()
@@ -875,6 +1099,17 @@ static void Audio_RenderBusDetails()
 
 	Audio_RenderEffectChain(BusIdx, false);
 	Audio_RenderEffectChain(BusIdx, true);
+
+	ImGui::SeparatorText("Shaders");
+	ImGui::TextDisabled("Runtime only (scripts, snd_bus_shader). Add a shader to Bus effects to keep it in the config.");
+	AudioShaderEdit Edit;
+	{
+		xrSRWLockGuard Guard(Mixer::GetUpdateMutex(), true);
+		ImGui::PushID("shaders");
+		Audio_RenderShaderChain(Mixer::GetBusShaders(BusIdx), true, BusIdx, Edit);
+		ImGui::PopID();
+	}
+	Audio_ApplyShaderEdit(Edit);
 }
 
 static void Audio_RenderBuses()

@@ -69,7 +69,64 @@
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/EnnumerateVertices.h"
+#include "../xrSound/New/SoundMixerInternal.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
+
+namespace CarCabinSound
+{
+	// Cutoff of the cabin low_pass, 0 when off. Only the car with the actor sets it
+	float g_CabinCutoffHz = 0.0f;
+
+	// World sounds, their reverb sends and the zone reverbs; not music
+	template <typename TCallback>
+	void ForEachCabinBus(TCallback&& Callback)
+	{
+		for (const char* Name : {"effects", "shooting", "shooting_far", "shooting_indoor"})
+		{
+			if (const u32 Bus = XRay::Sound::Mixer::FindBus(Name))
+			{
+				Callback(Bus);
+			}
+		}
+
+		const SoundBus* Buses = XRay::Sound::Mixer::GetBuses();
+		for (u32 BusIdx = 0; BusIdx < SND_BUS_COUNT; BusIdx++)
+		{
+			if (Buses[BusIdx].IsUsed && Buses[BusIdx].IsGenerated)
+			{
+				Callback(BusIdx + 1);
+			}
+		}
+	}
+
+	// CutoffHz <= 0 removes the muffling
+	void SetCabinMuffling(float CutoffHz)
+	{
+		using namespace XRay::Sound;
+		if (CutoffHz <= 0.0f)
+		{
+			if (g_CabinCutoffHz > 0.0f)
+			{
+				ForEachCabinBus([](u32 Bus) { Mixer::RemoveBusShader(Bus, SoundShaderType::LowPass, true); });
+			}
+			g_CabinCutoffHz = 0.0f;
+			return;
+		}
+
+		if (g_CabinCutoffHz <= 0.0f)
+		{
+			// Spatial only: UI and HUD sounds are not in the world
+			ForEachCabinBus([](u32 Bus) { Mixer::AddBusShader(Bus, SoundShaderType::LowPass, true); });
+		}
+
+		// Every call queues commands, skip changes under 1 Hz
+		if (std::abs(CutoffHz - g_CabinCutoffHz) >= 1.0f)
+		{
+			ForEachCabinBus([CutoffHz](u32 Bus) { Mixer::SetBusShaderParam(Bus, SoundShaderType::LowPass, "cutoff", CutoffHz); });
+			g_CabinCutoffHz = CutoffHz;
+		}
+	}
+}
 
 namespace
 {
@@ -2530,7 +2587,7 @@ void	CCar::net_Destroy()
 	if (WasOwned)
 	{
 		psSoundCarFactor = 1.f;
-		XRay::Sound::Mixer::ClearLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle);
+		CarCabinSound::SetCabinMuffling(0.0f);
 	}
 	ClearExhausts();
 	for (auto& i_w : m_wheels_map)
@@ -3284,11 +3341,11 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 	constexpr float InteriorMinCutoffHz = 500.f;
 	if (FirstPersonView && psSoundCarFactor < 0.999f)
 	{
-		XRay::Sound::Mixer::SetLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle, XRay::Sound::LowPass::CutoffFromFactor(psSoundCarFactor * psSoundCarFactor, InteriorMinCutoffHz));
+		CarCabinSound::SetCabinMuffling(XRay::Sound::LowPass::CutoffFromFactor(psSoundCarFactor * psSoundCarFactor, InteriorMinCutoffHz));
 	}
 	else
 	{
-		XRay::Sound::Mixer::ClearLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle);
+		CarCabinSound::SetCabinMuffling(0.0f);
 	}
 }
 
@@ -4203,7 +4260,7 @@ void CCar::detach_Actor()
 
 	Owner()->setVisible(1);
 	psSoundCarFactor = 1.f;
-	XRay::Sound::Mixer::ClearLowPass(XRay::Sound::Mixer::LowPassLayer::Vehicle);
+	CarCabinSound::SetCabinMuffling(0.0f);
 	if (OwnerActor())
 	{
 		OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);

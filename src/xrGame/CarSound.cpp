@@ -81,7 +81,11 @@ void CCar::SCarSound::Init()
 		//	relative_engine_exhaust_pos.set(ini->r_fvector3("car_sound", "relative_pos"));
 
 		if (!snd_transmission._p && ini->line_exist("car_sound", "transmission_switch"))
+		{
 			snd_transmission.create(ini->r_string("car_sound", "transmission_switch"), st_Effect, sg_SourceType);
+			// Not muffled in the cabin
+			snd_transmission.set_ignore_bus_shaders(true);
+		}
 
 		if (!snd_gas._p && ini->line_exist("car_sound", "gas_sound"))
 		{
@@ -146,7 +150,10 @@ void CCar::SCarSound::Init()
 		}
 
 		if (!snd_whine._p && ini->line_exist("car_sound", "whine_sound"))
+		{
 			snd_whine.create(ini->r_string("car_sound", "whine_sound"), st_Effect, sg_SourceType);
+			snd_whine.set_ignore_bus_shaders(true);
+		}
 
 		if (!snd_horn._p && ini->line_exist("car_sound", "horn_sound"))
 			snd_horn.create(ini->r_string("car_sound", "horn_sound"), st_Effect, sg_SourceType);

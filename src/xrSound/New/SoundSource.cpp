@@ -31,6 +31,7 @@
 #include "ogg_utils.h"
 #include "SoundBus.h"
 #include "SoundConfig.h"
+#include "SoundShaders.h"
 #include "../xrCore/xrAddons.h"
 
 #define SND_CACHE_CHUNK_LINES (32)
@@ -470,6 +471,7 @@ static void Snd_ReadSoundDesc(OggVorbis_File* File, const char* Name, const Soun
 	Desc->max_ai_distance = SND_DEFAULT_MAX_DISTANCE;
 	Desc->game_type = 0;
 	Desc->bus = 0;
+	Snd_ReadShaderPreset(Section, Desc->shaders);
 
 	if (Section != nullptr)
 	{
@@ -995,6 +997,7 @@ static void Snd_CopySoundConfig(const sound_source_desc* Desc, sound_config* Con
 	Config->max_ai_distance = Desc->max_ai_distance;
 	Config->game_type = Desc->game_type;
 	Config->bus = Desc->bus;
+	Config->shaders = Desc->shaders;
 }
 
 bool Snd_GetSoundConfig(const char* Name, sound_config* Config)
@@ -1051,6 +1054,7 @@ SoundSourceState* Snd_SetSoundConfig(const char* Name, sound_config* Config)
 
 	SoundBus* Bus = Snd_GetBus(Config->bus);
 	Snd_SetConfigValue(Section, "bus", Bus != nullptr ? Bus->Name : shared_str());
+	Snd_WriteShaderPreset(Section, Config->shaders);
 	Config->file = Section->File;
 
 	SoundSourceState* Source = Snd_LookupSourceByName(Name);

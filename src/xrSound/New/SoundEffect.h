@@ -31,6 +31,7 @@
 #include "SoundMeta.h"
 
 void Snd_InitEffects();
+void Snd_RegisterShaderEffects();
 u8 Snd_RegisterEffect(const char* Name, SoundEffectProc Proc);
 u8 Snd_FindEffect(const char* Name);
 const SoundEffectEntry* Snd_GetEffect(u8 Id);

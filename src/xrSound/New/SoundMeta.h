@@ -38,6 +38,7 @@
 #define SND_VOICE_EFFECT_STATE_SIZE (64)
 #define SND_EFFECT_COUNT (32)
 #define SND_EFFECT_PARAM_COUNT (16)
+#define SND_SHADER_CHAIN_COUNT (4)
 
 typedef void(*audio_render_callback)(float*);
 typedef void(*audio_precache_callback)();
@@ -56,7 +57,9 @@ namespace XRay::Sound::Mixer
 		NoPosUpdate = (1 << 3),
 		NoFeedback = (1 << 4),
 		NoOCC = (1 << 5),
-		NoCarFactor = (1 << 6)
+		NoCarFactor = (1 << 6),
+		// Mixed into its buses after their runtime shaders
+		NoBusShaders = (1 << 7)
 	};
 
 	enum class State : u8
@@ -202,6 +205,15 @@ struct sound_stats
 #endif
 };
 
+// Sound shaders a sound plays through, read from its config section:
+// shaders = radio, low_pass / radio.drive = 8. Types are SoundShaderType values
+struct SoundShaderPreset
+{
+	u32 Count = 0;
+	u8 Types[SND_SHADER_CHAIN_COUNT] = {};
+	float Params[SND_SHADER_CHAIN_COUNT][SND_EFFECT_PARAM_COUNT] = {};
+};
+
 struct sound_source_desc
 {
 	u8 channels_count;
@@ -216,6 +228,7 @@ struct sound_source_desc
 	float max_distance;
 	float max_ai_distance;
 	u32 bus;
+	SoundShaderPreset shaders;
 
 	shared_str name;
 	shared_str path;
@@ -229,6 +242,7 @@ struct sound_config
 	float max_ai_distance;
 	u32 game_type;
 	u32 bus;
+	SoundShaderPreset shaders;
 	shared_str file;
 };
 

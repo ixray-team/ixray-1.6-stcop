@@ -29,19 +29,24 @@
 **************************************************************************************/
 #pragma once
 #include "SoundMeta.h"
-#include "SoundLowPass.h"
+#include "SoundShader.h"
+
+namespace XRay::Sound::LowPass
+{
+	// Cutoff at or above this value means "no filtering"
+	constexpr float MaxCutoffHz = 20000.0f;
+	constexpr float MinCutoffHz = 20.0f;
+
+	// Maps a 0..1 factor to a cutoff in log space: 0 -> MinHz, 1 -> MaxHz
+	inline float CutoffFromFactor(float Factor, float MinHz, float MaxHz = MaxCutoffHz)
+	{
+		Factor = std::clamp(Factor, 0.0f, 1.0f);
+		return std::exp(std::log(MinHz) + (std::log(MaxHz) - std::log(MinHz)) * Factor);
+	}
+}
 
 namespace XRay::Sound::Mixer
 {
-    enum class LowPassLayer : u8
-    {
-        Vehicle,
-        Underwater,
-        Concussion,
-        Script,
-        Count
-    };
-
     XRSOUND_API void Initialize();
     XRSOUND_API void Shutdown();
     XRSOUND_API void Update(void* event_handler, float time_factor, float mute_volume, float compression, Fvector P, Fvector D, Fvector N);
@@ -50,10 +55,21 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void ResumeAll();
     XRSOUND_API void DereferenceObjects(CObject** object, int count);
     XRSOUND_API sound_stats* GetStats();
-    XRSOUND_API void SetLowPass(LowPassLayer layer, float cutoff_hz);
-    XRSOUND_API void ClearLowPass(LowPassLayer layer);
-    XRSOUND_API float GetLowPass(LowPassLayer layer);
-    XRSOUND_API float GetEffectiveLowPass();
+
+    // Sound shaders (SoundShader.h). Changes are queued until the next Update.
+    // Voice shaders stay on the slot across plays; play_no_feedback copies them
+    XRSOUND_API void AddShader(u32 slot, SoundShaderType type);
+    XRSOUND_API void RemoveShader(u32 slot, SoundShaderType type);
+    XRSOUND_API void ClearShaders(u32 slot);
+    XRSOUND_API void SetShaderParam(u32 slot, SoundShaderType type, const char* param, float value);
+    // Bus shaders run before the bus effects. Add / Remove count owners, the shader stays while one is left.
+    // spatial_only: 2D voices skip the shaders of a bus that has such a shader; remove with the same value
+    XRSOUND_API void AddBusShader(u32 bus, SoundShaderType type, bool spatial_only = false);
+    XRSOUND_API void RemoveBusShader(u32 bus, SoundShaderType type, bool spatial_only = false);
+    XRSOUND_API void ClearBusShaders(u32 bus);
+    XRSOUND_API void SetBusShaderParam(u32 bus, SoundShaderType type, const char* param, float value);
+    // Read under GetUpdateMutex (shared); nullptr for an unused bus
+    XRSOUND_API const SoundShaderChain* GetBusShaders(u32 bus);
 
     // General volume (snd_volume_eff) and bus faders. Pointers stay valid for the whole process
     XRSOUND_API float* GetMasterVolume();

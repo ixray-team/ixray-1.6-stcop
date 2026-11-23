@@ -35,6 +35,7 @@
 #include "SoundBus.h"
 #include "SoundConfig.h"
 #include "SoundEffect.h"
+#include "SoundShaders.h"
 
 #include "../Sound.h"
 #include "../SoundRender.h"
@@ -61,7 +62,19 @@ enum class ESoundMixerCommands : u16
 	resume_all,
 	update_parameter,
 	set_volume,
-	set_panning
+	set_panning,
+	slot_shader,
+	bus_shader
+};
+
+enum class ESoundShaderOp : u8
+{
+	Add,
+	Remove,
+	Clear,
+	SetParam,
+	// Copies the chain of the slot in param3
+	Copy
 };
 
 struct SoundCommand
@@ -98,13 +111,51 @@ struct sound_mixer_state
 	xr_hash_set<ref_sound*> sounds;
 
 	float IndoorFactor = 0.0f;
-	std::atomic<float> LowPassLayers[(u32)Mixer::LowPassLayer::Count] = {}; // 0 = inactive
-	float LowPassCutoff = LowPass::MaxCutoffHz; // resolved once per render block
 
 	float read_buffer[SND_CHANNEL_COUNT][(SND_BLOCKSIZE + 1) * 10];
 };
 
 static sound_mixer_state GMixer = {};
+
+static void Snd_ApplyShaderCommand(SoundShaderChain& Chain, const SoundCommand& Command)
+{
+	const SoundShaderType Type = (SoundShaderType)Command.param0;
+	switch ((ESoundShaderOp)Command.param1)
+	{
+	case ESoundShaderOp::Add:
+		Chain.Add(Type, Command.param3 != 0);
+		break;
+	case ESoundShaderOp::Remove:
+		Chain.Remove(Type, Command.param3 != 0);
+		break;
+	case ESoundShaderOp::Clear:
+		Chain.Clear();
+		break;
+	case ESoundShaderOp::SetParam:
+		Chain.SetParam(Type, Command.string_storage.c_str(), (float)*(double*)&Command.param2);
+		break;
+	case ESoundShaderOp::Copy:
+		if (Command.param3 != 0 && Command.param3 <= GMixer.slots.size())
+		{
+			Chain.CopyFrom(GMixer.slots[Command.param3 - 1].Shaders);
+		}
+		break;
+	}
+}
+
+// Extra: source slot for Copy, SpatialOnly for Add / Remove
+static void Snd_QueueShaderCommand(ESoundMixerCommands Id, u32 Target, SoundShaderType Type, ESoundShaderOp Op, double Value = 0.0, const char* Param = nullptr, u32 Extra = 0)
+{
+	if (Target == 0 || (Op != ESoundShaderOp::Clear && Op != ESoundShaderOp::Copy && (Type == SoundShaderType::None || Type >= SoundShaderType::Count)))
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(SoundCommand{
+		.slot = Target, .id = Id, .param0 = (u16)Type, .param1 = (u64)Op, .param2 = *(u64*)&Value, .param3 = Extra, .string_storage = Param
+	});
+}
 
 static void Snd_GrowSlots(bool IsLockUpdate)
 {
@@ -507,8 +558,8 @@ static void Snd_DirectSend(sound_slot_state& Slot, const SoundBus* Bus, float** 
 
 	float FarGain = Wet * std::sqrt(1.0f - Indoor);
 	float IndoorGain = Wet * std::sqrt(Indoor);
-	Snd_SendToBus(Bus->FarSend, Data, BeginFactor * FarGain, EndFactor * FarGain, Left, Right);
-	Snd_SendToBus(Bus->IndoorSend, Data, BeginFactor * IndoorGain, EndFactor * IndoorGain, Left, Right);
+	Snd_SendToBus(Bus->FarSend, Data, BeginFactor * FarGain, EndFactor * FarGain, Left, Right, Slot.flags);
+	Snd_SendToBus(Bus->IndoorSend, Data, BeginFactor * IndoorGain, EndFactor * IndoorGain, Left, Right, Slot.flags);
 
 	float PrevDry = Slot.ReverbDryGain < 0.0f ? Dry : Slot.ReverbDryGain;
 	Slot.ReverbDryGain = Dry;
@@ -551,6 +602,14 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	}
 
 	Snd_ProcessSlot(SlotIdx, Source, process_buffer);
+
+	if (!Slot.SourceShaders.IsEmpty() || !Slot.Shaders.IsEmpty())
+	{
+		PROF_EVENT("Slot Shaders");
+		SoundShaderContext Context = {false, true};
+		Slot.SourceShaders.Process(process_buffer, SND_BLOCKSIZE, Context);
+		Slot.Shaders.Process(process_buffer, SND_BLOCKSIZE, Context);
+	}
 
 	const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
 	const Fvector& Volume = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
@@ -609,7 +668,6 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	{
 		VolumeFinal *= psSoundCarFactor;
 	}
-	Slot.LowPass.Process(process_buffer, SND_BLOCKSIZE, UseCarFactor ? GMixer.LowPassCutoff : LowPass::MaxCutoffHz);
 	BeginFactor *= VolumeFinal;
 	EndFactor *= VolumeFinal;
 
@@ -623,15 +681,15 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	float ZoneGain = ZoneBus != 0 ? Bus->ZoneSend * std::clamp(Slot.IndoorFactor, 0.0f, 1.0f) * BusGain : 0.0f;
 	if (ZoneBus != Slot.SendBus)
 	{
-		Snd_SendToBus(Slot.SendBus, process_buffer, BeginFactor * Slot.SendGain, 0.0f, LeftPanning, RightPanning);
+		Snd_SendToBus(Slot.SendBus, process_buffer, BeginFactor * Slot.SendGain, 0.0f, LeftPanning, RightPanning, Slot.flags);
 		Slot.SendBus = ZoneBus;
 		Slot.SendGain = 0.0f;
 	}
 
-	Snd_SendToBus(ZoneBus, process_buffer, BeginFactor * Slot.SendGain, EndFactor * ZoneGain, LeftPanning, RightPanning);
+	Snd_SendToBus(ZoneBus, process_buffer, BeginFactor * Slot.SendGain, EndFactor * ZoneGain, LeftPanning, RightPanning, Slot.flags);
 	Slot.SendGain = ZoneGain;
 
-	Snd_SendToBus(Slot.bus, process_buffer, BeginFactor, EndFactor, LeftPanning, RightPanning);
+	Snd_SendToBus(Slot.bus, process_buffer, BeginFactor, EndFactor, LeftPanning, RightPanning, Slot.flags);
 }
 
 void Snd_MixerRenderCallback(float* buffer)
@@ -641,7 +699,6 @@ void Snd_MixerRenderCallback(float* buffer)
 	xrSRWLockGuard Guard(GMixer.render_lock, true);
 
 	g_SoundStats.render_cache_miss = 0;
-	GMixer.LowPassCutoff = psSoundFlags.is(ss_LowPass) ? Mixer::GetEffectiveLowPass() : LowPass::MaxCutoffHz;
 
 	static u64 TimeStamp = Snd_GetTimestamp();
 	float dt = (float)((double)(Snd_GetTimestamp() - TimeStamp) / 1000000000.0);
@@ -731,6 +788,8 @@ void Mixer::Shutdown()
 	for (sound_slot_state& Slot : GMixer.slots)
 	{
 		Snd_ReleaseVoiceEffects(Slot, SoundEffectOp::Destroy);
+		Slot.SourceShaders.Clear();
+		Slot.Shaders.Clear();
 	}
 
 	Snd_ShutdownBuses();
@@ -764,6 +823,8 @@ ICF void DestroyInternal(int slot)
 	GMixer.slots[slot - 1].stopping_end = (u32)-1;
 	GMixer.slots[slot - 1].flags = 0;
 	Snd_ReleaseVoiceEffects(GMixer.slots[slot - 1], SoundEffectOp::Destroy);
+	GMixer.slots[slot - 1].SourceShaders.Clear();
+	GMixer.slots[slot - 1].Shaders.Clear();
 	GMixer.slots[slot - 1].bus = 0;
 	GMixer.slots[slot - 1].SendBus = 0;
 	GMixer.slots[slot - 1].SendGain = 0.0f;
@@ -991,7 +1052,9 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				ActualSlot.SendGain = 0.0f;
 				ActualSlot.fade_volume = 0.0f;
 				ActualSlot.ReverbDryGain = -1.0f;
-				ActualSlot.LowPass.Reset();
+				Snd_SyncShaderChain(ActualSlot.SourceShaders, Source.Desc.shaders);
+				ActualSlot.SourceShaders.Reset();
+				ActualSlot.Shaders.Reset();
 				ActualSlot.IndoorFactor = GMixer.IndoorFactor;
 				ActualSlot.IndoorFactorValid = false;
 				ActualSlot.zone_idx = 0;
@@ -1161,6 +1224,19 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				GMixer.slots[Command.slot - 1].parameters[(u32)ParameterId::Panning].y = *(double*)&Command.param2;
 			}
 			break;
+			case ESoundMixerCommands::slot_shader:
+			{
+				Snd_ApplyShaderCommand(GMixer.slots[Command.slot - 1].Shaders, Command);
+			}
+			break;
+			case ESoundMixerCommands::bus_shader:
+			{
+				if (SoundShaderChain* Chain = Snd_GetBusShaders(Command.slot))
+				{
+					Snd_ApplyShaderCommand(*Chain, Command);
+				}
+			}
+			break;
 		}
 	}
 
@@ -1327,6 +1403,12 @@ void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double 
 	if (Volume)
 	{
 		Mixer::SetVolume(SlotIdx, *Volume);
+	}
+
+	// Overlapping copies sound like the reference they were started from
+	if (SoundRef->slot())
+	{
+		Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, SlotIdx, SoundShaderType::None, ESoundShaderOp::Copy, 0.0, nullptr, SoundRef->slot());
 	}
 }
 
@@ -1550,6 +1632,7 @@ void Mixer::ReloadSources()
 
 		Slot.parameters[(u32)ParameterId::VolumePerChannel].x = Source->Desc.volume;
 		Slot.parameters[(u32)ParameterId::DistanceRange] = Fvector(Source->Desc.min_distance, Source->Desc.max_distance, Source->Desc.max_ai_distance);
+		Snd_SyncShaderChain(Slot.SourceShaders, Source->Desc.shaders);
 	}
 }
 
@@ -1578,6 +1661,7 @@ void Mixer::SetSoundConfig(const char* Name, sound_config* Config)
 
 		Slot.parameters[(u32)ParameterId::VolumePerChannel].x = Source->Desc.volume;
 		Slot.parameters[(u32)ParameterId::DistanceRange] = Fvector(Source->Desc.min_distance, Source->Desc.max_distance, Source->Desc.max_ai_distance);
+		Snd_SyncShaderChain(Slot.SourceShaders, Source->Desc.shaders);
 	}
 }
 
@@ -1596,41 +1680,49 @@ const xr_vector<sound_zone_params>& Mixer::GetZones()
 	return Snd_GetZones();
 }
 
-void Mixer::SetLowPass(LowPassLayer layer, float cutoff_hz)
+void Mixer::AddShader(u32 Slot, SoundShaderType Type)
 {
-	if ((u32)layer >= (u32)LowPassLayer::Count)
-	{
-		return;
-	}
-
-	const float Value = cutoff_hz >= LowPass::MaxCutoffHz ? 0.0f : std::max(cutoff_hz, LowPass::MinCutoffHz);
-	GMixer.LowPassLayers[(u32)layer].store(Value, std::memory_order_relaxed);
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, Type, ESoundShaderOp::Add);
 }
 
-void Mixer::ClearLowPass(LowPassLayer layer)
+void Mixer::RemoveShader(u32 Slot, SoundShaderType Type)
 {
-	SetLowPass(layer, LowPass::MaxCutoffHz);
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, Type, ESoundShaderOp::Remove);
 }
 
-float Mixer::GetLowPass(LowPassLayer layer)
+void Mixer::ClearShaders(u32 Slot)
 {
-	if ((u32)layer >= (u32)LowPassLayer::Count)
-	{
-		return LowPass::MaxCutoffHz;
-	}
-
-	const float Value = GMixer.LowPassLayers[(u32)layer].load(std::memory_order_relaxed);
-	return Value > 0.0f ? Value : LowPass::MaxCutoffHz;
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, SoundShaderType::None, ESoundShaderOp::Clear);
 }
 
-float Mixer::GetEffectiveLowPass()
+void Mixer::SetShaderParam(u32 Slot, SoundShaderType Type, const char* Param, float Value)
 {
-	float Cutoff = LowPass::MaxCutoffHz;
-	for (u32 Layer = 0; Layer < (u32)LowPassLayer::Count; Layer++)
-	{
-		Cutoff = std::min(Cutoff, GetLowPass((LowPassLayer)Layer));
-	}
-	return Cutoff;
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, Type, ESoundShaderOp::SetParam, Value, Param);
+}
+
+void Mixer::AddBusShader(u32 Bus, SoundShaderType Type, bool SpatialOnly)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::Add, 0.0, nullptr, SpatialOnly ? 1 : 0);
+}
+
+void Mixer::RemoveBusShader(u32 Bus, SoundShaderType Type, bool SpatialOnly)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::Remove, 0.0, nullptr, SpatialOnly ? 1 : 0);
+}
+
+void Mixer::ClearBusShaders(u32 Bus)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, SoundShaderType::None, ESoundShaderOp::Clear);
+}
+
+void Mixer::SetBusShaderParam(u32 Bus, SoundShaderType Type, const char* Param, float Value)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::SetParam, Value, Param);
+}
+
+const SoundShaderChain* Mixer::GetBusShaders(u32 Bus)
+{
+	return Snd_GetBusShaders(Bus);
 }
 
 sound_stats* Mixer::GetStats()

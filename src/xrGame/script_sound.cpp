@@ -38,19 +38,47 @@ Fvector CScriptSound::GetPosition() const
 	return			(l_tpSoundParams.position);
 }
 
-void CScriptSound::Play			(CScriptGameObject *object, float delay, int flags)
+void CScriptSound::Play(CScriptGameObject* object, float delay, int flags)
 {
-//	Msg							("%6d : CScriptSound::Play (%s), delay %f, flags %d",Device.dwTimeGlobal,m_sound._handle()->file_name(),delay,flags);
-	m_sound.play				((object) ? &object->object() : nullptr, flags, delay);
+	m_sound.play((object) ? &object->object() : nullptr, flags, delay);
 }
 
-void CScriptSound::PlayAtPos		(CScriptGameObject *object, const Fvector &position, float delay, int flags)
+void CScriptSound::PlayAtPos(CScriptGameObject* object, const Fvector& position, float delay, int flags)
 {
-//	Msg							("%6d : CScriptSound::Play (%s), delay %f, flags %d",m_sound._handle()->file_name(),delay,flags);
-	m_sound.play_at_pos			((object) ? &object->object() : nullptr, position,flags,delay);
+	m_sound.play_at_pos((object) ? &object->object() : nullptr, position, flags, delay);
 }
 
-void CScriptSound::PlayNoFeedback	(CScriptGameObject *object,	u32 flags/*!< Looping */, float delay/*!< Delay */, Fvector pos, float vol)
+void CScriptSound::PlayNoFeedback(CScriptGameObject* object, u32 flags /*!< Looping */, float delay /*!< Delay */, Fvector pos, float vol)
 {
-	m_sound.play_no_feedback	((object) ? &object->object() : nullptr, flags,delay,&pos,&vol);
+	m_sound.play_no_feedback((object) ? &object->object() : nullptr, flags, delay, &pos, &vol);
+}
+
+static SoundShaderType FindScriptShader(const char* Name)
+{
+	const SoundShaderType Type = XRay::Sound::Shader::Find(Name);
+	if (Type == SoundShaderType::None)
+	{
+		Msg("! [Sound] Unknown sound shader '%s'", Name ? Name : "");
+	}
+	return Type;
+}
+
+void CScriptSound::AddShader(const char* Shader)
+{
+	m_sound.add_shader(FindScriptShader(Shader));
+}
+
+void CScriptSound::RemoveShader(const char* Shader)
+{
+	m_sound.remove_shader(FindScriptShader(Shader));
+}
+
+void CScriptSound::ClearShaders()
+{
+	m_sound.clear_shaders();
+}
+
+void CScriptSound::SetShaderParam(const char* Shader, const char* Param, float Value)
+{
+	m_sound.set_shader_param(FindScriptShader(Shader), Param, Value);
 }

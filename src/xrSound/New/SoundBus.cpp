@@ -38,6 +38,11 @@
 struct SoundBusState
 {
 	SoundBus Buses[SND_BUS_COUNT];
+	// Runtime shaders, applied before the bus effects
+	SoundShaderChain Shaders[SND_BUS_COUNT];
+	// Voices that skip the runtime shaders, added after them
+	float DryData[SND_BUS_COUNT][SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
+	bool HasDryInput[SND_BUS_COUNT] = {};
 	u32 Order[SND_BUS_COUNT] = {};
 	u32 OrderCount = 0;
 	u32 Master = 0;
@@ -107,6 +112,11 @@ SoundBus* Snd_GetBus(u32 BusIdx)
 SoundBus* Snd_GetBuses()
 {
 	return GBuses.Buses;
+}
+
+SoundShaderChain* Snd_GetBusShaders(u32 BusIdx)
+{
+	return Snd_GetBus(BusIdx) != nullptr ? &GBuses.Shaders[BusIdx - 1] : nullptr;
 }
 
 static void Snd_ClearBus(SoundBus* Bus)
@@ -378,6 +388,7 @@ void Snd_ShutdownBuses()
 	{
 		SoundBus* Bus = &GBuses.Buses[BusIdx];
 		Snd_ClearBus(Bus);
+		GBuses.Shaders[BusIdx].Clear();
 	}
 
 	GBuses.OrderCount = 0;
@@ -431,6 +442,7 @@ void Snd_DeleteBus(u32 BusIdx)
 	Section->Items.clear();
 	Section->IsDeleted = true;
 	Snd_ClearBus(Bus);
+	GBuses.Shaders[BusIdx - 1].Clear();
 	Snd_RebuildOrder();
 }
 
@@ -542,7 +554,7 @@ static float** Snd_OpenBus(SoundBus* Bus, float** Data)
 	return Data;
 }
 
-bool Snd_SendToBus(u32 BusIdx, float** Data, float BeginFactor, float EndFactor, float Left, float Right)
+bool Snd_SendToBus(u32 BusIdx, float** Data, float BeginFactor, float EndFactor, float Left, float Right, u8 VoiceFlags)
 {
 	SoundBus* Bus = Snd_GetBus(BusIdx);
 	if (Bus == nullptr)
@@ -556,7 +568,27 @@ bool Snd_SendToBus(u32 BusIdx, float** Data, float BeginFactor, float EndFactor,
 	}
 
 	float* BusData[SND_CHANNEL_COUNT];
-	DSP_MixBufferPanning(Snd_OpenBus(Bus, BusData), Data, BeginFactor, EndFactor, Left, Right, SND_BLOCKSIZE);
+	Snd_OpenBus(Bus, BusData);
+
+	// Only a bus with runtime shaders needs the separate dry mix
+	const u32 Index = BusIdx - 1;
+	const SoundShaderChain& Shaders = GBuses.Shaders[Index];
+	const bool IsSpatial = (VoiceFlags & (u8)XRay::Sound::Mixer::Flags::Spatial) != 0;
+	const bool IsDry = (VoiceFlags & (u8)XRay::Sound::Mixer::Flags::NoBusShaders) != 0 || (!IsSpatial && Shaders.HasSpatialOnly());
+	if (IsDry && !Shaders.IsEmpty())
+	{
+		if (!GBuses.HasDryInput[Index])
+		{
+			memset(GBuses.DryData[Index], 0, sizeof(GBuses.DryData[Index]));
+			GBuses.HasDryInput[Index] = true;
+		}
+
+		float* DryData[SND_CHANNEL_COUNT] = {GBuses.DryData[Index][0], GBuses.DryData[Index][1]};
+		DSP_MixBufferPanning(DryData, Data, BeginFactor, EndFactor, Left, Right, SND_BLOCKSIZE);
+		return true;
+	}
+
+	DSP_MixBufferPanning(BusData, Data, BeginFactor, EndFactor, Left, Right, SND_BLOCKSIZE);
 	return true;
 }
 
@@ -575,8 +607,31 @@ void Snd_RenderBuses(float* Output, float MuteVolume)
 		}
 
 		float* Data[SND_CHANNEL_COUNT] = {Bus->Data[0], Bus->Data[1]};
-		SoundEffectProcess Process = {Data, nullptr, nullptr, nullptr, Bus->HasInput};
 		u32 TailFrames = 0;
+
+		// Runtime shaders first, so the voices that skip them (NoBusShaders) still get the bus effects
+		SoundShaderChain& Shaders = GBuses.Shaders[BusIdx - 1];
+		if (!Shaders.IsEmpty())
+		{
+			SoundShaderContext Context = {true, Bus->HasInput};
+			Shaders.Process(Data, SND_BLOCKSIZE, Context);
+			TailFrames = std::max(TailFrames, Shaders.GetTailFrames());
+		}
+
+		if (GBuses.HasDryInput[BusIdx - 1])
+		{
+			GBuses.HasDryInput[BusIdx - 1] = false;
+			for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+			{
+				const float* Dry = GBuses.DryData[BusIdx - 1][Channel];
+				for (u32 Frame = 0; Frame < SND_BLOCKSIZE; Frame++)
+				{
+					Data[Channel][Frame] += Dry[Frame];
+				}
+			}
+		}
+
+		SoundEffectProcess Process = {Data, nullptr, nullptr, nullptr, Bus->HasInput};
 		for (u32 EffectIdx = 0; EffectIdx < Bus->EffectCount; EffectIdx++)
 		{
 			SoundBusEffect* Effect = &Bus->Effects[EffectIdx];
@@ -646,6 +701,7 @@ void Snd_ResetZones()
 		if (Bus->IsGenerated)
 		{
 			Snd_ClearBus(Bus);
+			GBuses.Shaders[BusIdx].Clear();
 			Bus->Name = nullptr;
 		}
 	}

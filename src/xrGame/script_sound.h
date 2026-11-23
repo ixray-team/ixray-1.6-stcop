@@ -48,6 +48,14 @@ public:
 	IC		const float			GetVolume			() const;
 	IC		bool				IsPlaying			() const;
 
+			// Sound shaders by name ("radio", "low_pass", ...)
+			void				AddShader			(const char* shader);
+			void				RemoveShader		(const char* shader);
+			void				ClearShaders		();
+			void				SetShaderParam		(const char* shader, const char* param, float value);
+	IC		bool				GetIgnoreBusShaders	() const						{ return m_sound.ignores_bus_shaders(); }
+	IC		void				SetIgnoreBusShaders	(bool value)					{ m_sound.set_ignore_bus_shaders(value); }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

@@ -19,10 +19,9 @@
 // The macros expand to nothing for the compiler. xrReflectTool scans headers
 // before the build and generates luabind registration code and ini readers for them.
 
-struct lua_State;
+#include "../xrCore/xrReflectMarkers.h"
 
-#define XREFLECT(...)
-#define XPROPERTY(...)
+struct lua_State;
 
 namespace XReflect
 {

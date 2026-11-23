@@ -13,6 +13,57 @@
 
 using namespace luabind;
 
+static u32 FindScriptBus(const char* Bus)
+{
+	const u32 BusIdx = XRay::Sound::Mixer::FindBus(Bus);
+	if (BusIdx == 0)
+	{
+		Msg("! [Sound] Unknown sound bus '%s'", Bus ? Bus : "");
+	}
+	return BusIdx;
+}
+
+static SoundShaderType FindMixerShader(const char* Shader)
+{
+	const SoundShaderType Type = XRay::Sound::Shader::Find(Shader);
+	if (Type == SoundShaderType::None)
+	{
+		Msg("! [Sound] Unknown sound shader '%s'", Shader ? Shader : "");
+	}
+	return Type;
+}
+
+static void AddBusShader(const char* Bus, const char* Shader)
+{
+	XRay::Sound::Mixer::AddBusShader(FindScriptBus(Bus), FindMixerShader(Shader));
+}
+
+// SpatialOnly: 2D sounds (UI, HUD, ...) skip the shaders of this bus
+static void AddBusShaderSpatial(const char* Bus, const char* Shader, bool SpatialOnly)
+{
+	XRay::Sound::Mixer::AddBusShader(FindScriptBus(Bus), FindMixerShader(Shader), SpatialOnly);
+}
+
+static void RemoveBusShaderSpatial(const char* Bus, const char* Shader, bool SpatialOnly)
+{
+	XRay::Sound::Mixer::RemoveBusShader(FindScriptBus(Bus), FindMixerShader(Shader), SpatialOnly);
+}
+
+static void RemoveBusShader(const char* Bus, const char* Shader)
+{
+	XRay::Sound::Mixer::RemoveBusShader(FindScriptBus(Bus), FindMixerShader(Shader));
+}
+
+static void ClearBusShaders(const char* Bus)
+{
+	XRay::Sound::Mixer::ClearBusShaders(FindScriptBus(Bus));
+}
+
+static void SetBusShaderParam(const char* Bus, const char* Shader, const char* Param, float Value)
+{
+	XRay::Sound::Mixer::SetBusShaderParam(FindScriptBus(Bus), FindMixerShader(Shader), Param, Value);
+}
+
 #pragma optimize("s",on)
 void CScriptSound::script_register(lua_State *L)
 {
@@ -36,6 +87,7 @@ void CScriptSound::script_register(lua_State *L)
 			.property("min_distance",			&CScriptSound::GetMinDistance,	&CScriptSound::SetMinDistance)
 			.property("max_distance",			&CScriptSound::GetMaxDistance,	&CScriptSound::SetMaxDistance)
 			.property("volume",					&CScriptSound::GetVolume,		&CScriptSound::SetVolume)
+			.property("ignore_bus_shaders",		&CScriptSound::GetIgnoreBusShaders,	&CScriptSound::SetIgnoreBusShaders)
 			.def(								constructor<const char*>())
 			.def(								constructor<const char*,ESoundTypes>())
 			.def("get_position",				&CScriptSound::GetPosition)
@@ -53,5 +105,19 @@ void CScriptSound::script_register(lua_State *L)
 			.def("playing",						&CScriptSound::IsPlaying)
 			.def("length",						&CScriptSound::Length)
 			.def("attach_tail",					&CScriptSound::AttachTail)
+			.def("add_shader",					&CScriptSound::AddShader)
+			.def("remove_shader",				&CScriptSound::RemoveShader)
+			.def("clear_shaders",				&CScriptSound::ClearShaders)
+			.def("set_shader_param",			&CScriptSound::SetShaderParam)
+	];
+
+	module(L, "sound_mixer")
+	[
+		def("add_bus_shader",					&AddBusShader),
+		def("add_bus_shader",					&AddBusShaderSpatial),
+		def("remove_bus_shader",				&RemoveBusShader),
+		def("remove_bus_shader",				&RemoveBusShaderSpatial),
+		def("clear_bus_shaders",				&ClearBusShaders),
+		def("set_bus_shader_param",				&SetBusShaderParam)
 	];
 }

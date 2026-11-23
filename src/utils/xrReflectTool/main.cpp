@@ -23,11 +23,14 @@
 //   <Module>.reflect.gen.cpp  header reflections and XReflectRegister(lua_State*)
 //   <stem>.reflect.inl        reflections declared in <stem>.cpp; that .cpp includes it at the end
 //   <Module>.ini.gen.cpp      XReflect::IniReader<T> for XREFLECT(IniRead) classes
+//   SoundShaderType.gen.h     SoundShaderType enum of XREFLECT(SoundShader) classes (--targets sound)
+//   <Module>.sound.gen.cpp    sound shader class infos (--targets sound)
 
 #include "ReflectModel.h"
 #include "ReflectParser.h"
 #include "LuaGenerator.h"
 #include "IniGenerator.h"
+#include "SoundGenerator.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -41,7 +44,7 @@ namespace
 {
 	void PrintUsage()
 	{
-		std::fprintf(stderr, "usage: xrReflectTool --module <Name> --sources <list file> --output-dir <dir> [--pch <header>] [--stamp <file>]\n");
+		std::fprintf(stderr, "usage: xrReflectTool --module <Name> --sources <list file> --output-dir <dir> [--pch <header>] [--stamp <file>] [--targets lua,ini,sound]\n");
 	}
 }
 
@@ -52,6 +55,7 @@ int main(int Argc, char** Argv)
 	std::string OutputDir;
 	std::string Pch;
 	std::string StampPath;
+	std::string Targets = "lua,ini";
 
 	for (int Index = 1; Index + 1 < Argc; Index += 2)
 	{
@@ -76,6 +80,10 @@ int main(int Argc, char** Argv)
 		else if (Key == "--stamp")
 		{
 			StampPath = Value;
+		}
+		else if (Key == "--targets")
+		{
+			Targets = Value;
 		}
 		else
 		{
@@ -116,7 +124,7 @@ int main(int Argc, char** Argv)
 		{
 			continue;
 		}
-		if (Path.ends_with("xrScripts/xrReflect.h"))
+		if (Path.ends_with("xrScripts/xrReflect.h") || Path.ends_with("xrCore/xrReflectMarkers.h"))
 		{
 			continue;
 		}
@@ -154,11 +162,34 @@ int main(int Argc, char** Argv)
 
 	std::vector<ClassInfo*> Classes = ResolveModel(Files, Errors);
 
+	std::vector<std::string> TargetList = SplitList(Targets, ',');
+	auto HasTarget = [&](const char* Name) { return std::find(TargetList.begin(), TargetList.end(), Name) != TargetList.end(); };
+	if (!HasTarget("sound"))
+	{
+		for (const ClassInfo* Class : Classes)
+		{
+			if (Class->SoundShader)
+			{
+				Errors.push_back({ Class->File, Class->Line, "XREFLECT(SoundShader) classes belong to xrSound, this module does not generate sound shaders" });
+			}
+		}
+	}
+
 	std::filesystem::create_directories(OutputDir);
 	if (Errors.empty())
 	{
-		GenerateLua(Module, Pch, OutputDir, Files, Classes, Errors);
-		GenerateIni(Module, Pch, OutputDir, Files, Classes, Paths, Errors);
+		if (HasTarget("lua"))
+		{
+			GenerateLua(Module, Pch, OutputDir, Files, Classes, Errors);
+		}
+		if (HasTarget("ini"))
+		{
+			GenerateIni(Module, Pch, OutputDir, Files, Classes, Paths, Errors);
+		}
+		if (HasTarget("sound"))
+		{
+			GenerateSound(Module, Pch, OutputDir, Files, Classes, Errors);
+		}
 	}
 
 	if (!Errors.empty())

@@ -13,6 +13,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [gameplay.md](gameplay.md) | Level, ALife, Lua, class files |
 | [actor-light-perception.md](actor-light-perception.md) | Gunslinger torch detection, AI memory integration, caching |
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
+| [sound-shaders.md](sound-shaders.md) | Voice and bus DSP shaders, reflection registration, Lua API |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
 | [physics-abstraction.md](physics-abstraction.md) | Plan to hide ODE behind xrPhysics interfaces for Box3D |
 | [detail-layers-editor.md](detail-layers-editor.md) | In-game vegetation detail masks, brush and previews |

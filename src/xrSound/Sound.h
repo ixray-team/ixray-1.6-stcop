@@ -40,7 +40,6 @@ XRSOUND_API extern u32				snd_device_id			;
 enum {
     ss_EFX				= (1ul<<1ul),	//!< Use eax
     ss_HRTF				= (1ul<<2ul),	//!< Use eax
-    ss_LowPass			= (1ul<<3ul),	//!< World low-pass layers (vehicle cabin, underwater, ...)
 	ss_forcedword		= u32(-1)
 };
 
@@ -112,6 +111,8 @@ public:
 
 	float							fTimeTotal;
 	bool                            dont_destroy_slot = false;
+	//!< See ref_sound::set_ignore_bus_shaders
+	bool							ignore_bus_shaders = false;
 public:
 
 	IC CSound_params get_params()
@@ -196,6 +197,16 @@ public:
 	IC CSound_params		get_params				( );
     IC void					set_params				( CSound_params* p );
 	IC float				get_length_sec			() const						{return _p?_p->get_length_sec():0.0f;};
+
+	// Runtime shaders of this voice (New/SoundShader.h), kept across plays
+	IC void					add_shader				(SoundShaderType type)								{ XRay::Sound::Mixer::AddShader(slot(), type); }
+	IC void					remove_shader			(SoundShaderType type)								{ XRay::Sound::Mixer::RemoveShader(slot(), type); }
+	IC void					clear_shaders			()													{ XRay::Sound::Mixer::ClearShaders(slot()); }
+	IC void					set_shader_param		(SoundShaderType type, const char* name, float value)	{ XRay::Sound::Mixer::SetShaderParam(slot(), type, name, value); }
+
+	// Skip the runtime shaders of the buses; config bus effects still apply. Takes effect on the next play
+	IC void					set_ignore_bus_shaders	(bool value)										{ if (_p) { _p->ignore_bus_shaders = value; } }
+	IC bool					ignores_bus_shaders		() const											{ return _p ? _p->ignore_bus_shaders : false; }
 };
 
 /// definition (Sound Source)

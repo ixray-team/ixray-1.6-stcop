@@ -382,11 +382,11 @@ void	CCar::cam_Update			(float dt, float fov)
 }
 
 
-void	CCar::OnCameraChange(int type)
+void CCar::OnCameraChange(int type)
 {
 	if (Owner())
 	{
-		if(type == EctFiveCam)
+		if (type == EctFiveCam)
 		{
 			camera[EctFiveCam]->Set(camera[EctFourthCam]->Position(), camera[EctFourthCam]->Direction(), camera[EctFourthCam]->Up());
 			camera[EctFiveCam]->f_fov = camera[EctFourthCam]->f_fov;
@@ -396,25 +396,20 @@ void	CCar::OnCameraChange(int type)
 		}
 
 		m_dwAttachTime = Device.dwTimeGlobal;
-		// Visibility must follow the target camera, not the previous one: entering the
-		// car while the chase camera is already active has to show the actor model.
-		Owner()->setVisible(type != EctFirstCam);
 
-		// First-person view muffles the outside world and the car itself, except
-		// for the gearbox sounds, which opt out of the factor with sm_NoCarFactor.
-		// The factor is recalculated again while driving as doors open and close.
+		Owner()->setVisible(type != EctFirstCam);
 		UpdateInteriorSoundFactor(type == EctFirstCam);
 
-		//IKinematics*	pKinematics = smart_cast<IKinematics*>(Owner()->Visual());
-		//u16 		head_bone = pKinematics->LL_BoneID("bip01_head");
+		// IKinematics*	pKinematics = smart_cast<IKinematics*>(Owner()->Visual());
+		// u16 		head_bone = pKinematics->LL_BoneID("bip01_head");
 		/*
 		if (type==ectFirst)
 			pKinematics->LL_HideBoneVisible(head_bone,FALSE);
 		else if (active_camera->tag==ectFirst)
 			pKinematics->LL_HideBoneVisible(head_bone,TRUE);
 		*/
-		//Level().Cameras().UpdateFromCamera(active_camera);
-		//Level().Cameras().ApplyDevice(Device.fViewportNear);
+		// Level().Cameras().UpdateFromCamera(active_camera);
+		// Level().Cameras().ApplyDevice(Device.fViewportNear);
 	}
 
 	if (active_camera && active_camera->tag == EctFiveCam && type == EctFourthCam)
@@ -428,9 +423,13 @@ void	CCar::OnCameraChange(int type)
 		active_camera = camera[type];
 
 		if (EctFirstCam == type)
+		{
 			return;
+		}
 		if (EctFiveCam == type)
+		{
 			return;
+		}
 		if (EctFirstCam != type && EctFiveCam != type)
 		{
 			Fvector xyz;
@@ -439,4 +438,3 @@ void	CCar::OnCameraChange(int type)
 		}
 	}
 }
-

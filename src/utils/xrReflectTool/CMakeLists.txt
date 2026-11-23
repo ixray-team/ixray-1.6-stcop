@@ -11,6 +11,8 @@ add_executable(xrReflectTool
 	"LuaGenerator.cpp"
 	"IniGenerator.h"
 	"IniGenerator.cpp"
+	"SoundGenerator.h"
+	"SoundGenerator.cpp"
 )
 set_target_properties(xrReflectTool PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 target_compile_features(xrReflectTool PRIVATE cxx_std_23)
@@ -54,4 +56,42 @@ function(ixray_reflect_lua TARGET MODULE)
 	target_sources(${TARGET} PRIVATE "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}")
 	target_include_directories(${TARGET} PRIVATE "${GEN_DIR}")
 	source_group("generated" FILES "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}")
+endfunction()
+
+# Generates the SoundShaderType enum and the class infos of XREFLECT(SoundShader) classes.
+# ixray_reflect_sound(<target> <module> PCH <header> SOURCES <files...>)
+# SoundShaderType.gen.h is a public header of the target, the class infos are compiled into it.
+function(ixray_reflect_sound TARGET MODULE)
+	cmake_parse_arguments(ARG "" "PCH" "SOURCES" ${ARGN})
+	set(GEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/Generated")
+	set(LIST_FILE "${GEN_DIR}/${MODULE}.sound.sources")
+	set(HEADER_FILE "${GEN_DIR}/SoundShaderType.gen.h")
+	set(OUTPUT_FILE "${GEN_DIR}/${MODULE}.sound.gen.cpp")
+	set(STAMP_FILE "${GEN_DIR}/${MODULE}.sound.stamp")
+
+	list(JOIN ARG_SOURCES "\n" SOURCE_LINES)
+	file(GENERATE OUTPUT "${LIST_FILE}" CONTENT "${SOURCE_LINES}\n")
+
+	set(PCH_ARGS)
+	if(ARG_PCH)
+		set(PCH_ARGS --pch "${ARG_PCH}")
+	endif()
+
+	add_custom_command(
+		OUTPUT "${STAMP_FILE}"
+		BYPRODUCTS "${HEADER_FILE}" "${OUTPUT_FILE}"
+		COMMAND xrReflectTool --module "${MODULE}" --sources "${LIST_FILE}" --output-dir "${GEN_DIR}" ${PCH_ARGS} --stamp "${STAMP_FILE}" --targets sound
+		DEPENDS xrReflectTool ${ARG_SOURCES} "${LIST_FILE}"
+		COMMENT "xrReflectTool: ${MODULE} sound shaders"
+		VERBATIM
+	)
+
+	add_custom_target(${TARGET}_reflect_sound DEPENDS "${STAMP_FILE}")
+	set_target_properties(${TARGET}_reflect_sound PROPERTIES FOLDER "Engine/Pre Build")
+	add_dependencies(${TARGET} ${TARGET}_reflect_sound)
+
+	set_source_files_properties("${HEADER_FILE}" "${OUTPUT_FILE}" PROPERTIES GENERATED ON SKIP_UNITY_BUILD_INCLUSION ON)
+	target_sources(${TARGET} PRIVATE "${OUTPUT_FILE}")
+	target_include_directories(${TARGET} PUBLIC "${GEN_DIR}")
+	source_group("generated" FILES "${OUTPUT_FILE}")
 endfunction()

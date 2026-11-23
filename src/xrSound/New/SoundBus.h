@@ -29,6 +29,7 @@
  **************************************************************************************/
 #pragma once
 #include "SoundMeta.h"
+#include "SoundShader.h"
 
 void Snd_InitBuses();
 void Snd_ShutdownBuses();
@@ -38,6 +39,7 @@ u32 Snd_FindBus(const char* Name);
 u32 Snd_GetMasterBus();
 SoundBus* Snd_GetBus(u32 BusIdx);
 SoundBus* Snd_GetBuses();
+SoundShaderChain* Snd_GetBusShaders(u32 BusIdx);
 void Snd_SetBusParam(u32 BusIdx, const char* Effect, const char* Param, float Value);
 
 u32 Snd_CreateBus(const char* Name);
@@ -48,7 +50,8 @@ const char* Snd_GetBusValue(u32 BusIdx, const char* Key);
 bool Snd_SaveBus(u32 BusIdx);
 
 void Snd_BeginBuses();
-bool Snd_SendToBus(u32 BusIdx, float** Data, float BeginFactor, float EndFactor, float Left, float Right);
+// VoiceFlags (Mixer::Flags): NoBusShaders, or a 2D voice on a bus with a spatial-only shader, skips the runtime shaders
+bool Snd_SendToBus(u32 BusIdx, float** Data, float BeginFactor, float EndFactor, float Left, float Right, u8 VoiceFlags);
 void Snd_RenderBuses(float* Output, float MuteVolume);
 
 void Snd_AddZone(sound_zone_params* Params, bool IsEditor);

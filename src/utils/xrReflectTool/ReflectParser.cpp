@@ -368,10 +368,10 @@ namespace XReflectTool
 			"int", "char", "float", "double", "long", "short", "unsigned", "signed", "bool", "void", "const", "volatile", "wchar_t", "auto"
 		};
 
-		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Owner", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
+		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Owner", "Name", "Constructible", "Bases", "LuaToString", "Condition", "SoundShader" };
 		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Class", "Name", "Prefix", "Exclude", "Names", "Scope" };
 		const std::set<std::string> FunctionSpecifiers = { "LuaExport", "Name", "Condition", "Self", "Policies" };
-		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaProperty", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Setter", "Policies", "Prefix", "Exclude", "Names", "IniRead", "IniReadExist", "If" };
+		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaProperty", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Setter", "Policies", "Prefix", "Exclude", "Names", "IniRead", "IniReadExist", "If", "SoundParam", "Min", "Max" };
 
 		// Lua-bindable operators and the luabind expression operator for each.
 		const std::set<std::string> SupportedOperators = { "+", "-", "*", "/", "==", "<", "<=", ">", ">=" };
@@ -493,8 +493,17 @@ namespace XReflectTool
 					std::string Value;
 					if (Text(Pos) == "=")
 					{
-						Value = Unquote(Text(Pos + 1));
-						Pos += 2;
+						// A signed number is two tokens
+						if ((Text(Pos + 1) == "-" || Text(Pos + 1) == "+") && Pos + 2 < End)
+						{
+							Value = Text(Pos + 1) + Text(Pos + 2);
+							Pos += 3;
+						}
+						else
+						{
+							Value = Unquote(Text(Pos + 1));
+							Pos += 2;
+						}
 					}
 					Out.Values[Key] = Value;
 
@@ -813,9 +822,9 @@ namespace XReflectTool
 					PendingClass = false;
 					if (CheckSpecifiers(PendingSpecs, ClassSpecifiers))
 					{
-						if (!PendingSpecs.Has("LuaExport") && !PendingSpecs.Has("IniRead"))
+						if (!PendingSpecs.Has("LuaExport") && !PendingSpecs.Has("IniRead") && !PendingSpecs.Has("SoundShader"))
 						{
-							Error(PendingSpecs.Line, "XREFLECT on a class requires LuaExport or IniRead");
+							Error(PendingSpecs.Line, "XREFLECT on a class requires LuaExport, IniRead or SoundShader");
 						}
 
 						ClassInfo Class;
@@ -834,6 +843,12 @@ namespace XReflectTool
 						Class.RuntimeCondition = PendingSpecs.Get("Condition");
 						Class.Constructible = PendingSpecs.Has("Constructible");
 						Class.ToString = PendingSpecs.Has("LuaToString");
+						Class.SoundShader = PendingSpecs.Has("SoundShader");
+						Class.SoundName = PendingSpecs.Get("Name");
+						if (Class.SoundShader && Class.SoundName.empty())
+						{
+							Error(PendingSpecs.Line, "XREFLECT(SoundShader) requires Name");
+						}
 						Class.ExplicitBases = SplitList(PendingSpecs.Get("Bases"), ',');
 
 						if (Colon != std::string::npos)
@@ -907,6 +922,11 @@ namespace XReflectTool
 				}
 
 				ClassInfo& Class = File.Classes[Owner->ClassIndex];
+
+				if (Specs.Has("SoundParam") || Specs.Has("Min") || Specs.Has("Max"))
+				{
+					return ParseSoundParam(Index, Next, DeclEnd, Specs, Class);
+				}
 
 				if (Specs.Has("IniRead") && Specs.Has("IniReadExist"))
 				{
@@ -1106,6 +1126,55 @@ namespace XReflectTool
 						return Next;
 					}
 				}
+				Class.Members.push_back(std::move(Member));
+				return Next;
+			}
+
+			// XPROPERTY(SoundParam, Name="script_name", Min=..., Max=...) float Field = Default;
+			size_t ParseSoundParam(size_t Index, size_t Next, size_t DeclEnd, const Specifiers& Specs, ClassInfo& Class)
+			{
+				if (!Specs.Has("SoundParam") || !Class.SoundShader)
+				{
+					Error(Specs.Line, "Min and Max apply to XPROPERTY(SoundParam) in an XREFLECT(SoundShader) class");
+					return Next;
+				}
+				for (const auto& [Key, Value] : Specs.Values)
+				{
+					if (Key != "SoundParam" && Key != "Name" && Key != "Min" && Key != "Max")
+					{
+						Error(Specs.Line, "specifier '" + Key + "' can not be combined with SoundParam");
+						return Next;
+					}
+				}
+				if (Specs.Get("Min").empty() || Specs.Get("Max").empty())
+				{
+					Error(Specs.Line, "XPROPERTY(SoundParam) requires Min and Max");
+					return Next;
+				}
+
+				bool IsStatic = false;
+				std::vector<Token> Decl = CleanDeclaration(Index, DeclEnd, IsStatic);
+				size_t OperatorAt = std::string::npos;
+				if (IsStatic || FindFunctionParen(Decl, OperatorAt) != std::string::npos || Decl.size() < 2 || Decl.back().Kind != ETokenKind::Identifier)
+				{
+					Error(Specs.Line, "XPROPERTY(SoundParam) applies to one non-static float field");
+					return Next;
+				}
+				if (Decl[Decl.size() - 2].Text != "float")
+				{
+					Error(Specs.Line, "sound shader parameters must be float");
+					return Next;
+				}
+
+				MemberInfo Member;
+				Member.Kind = EMemberKind::Field;
+				Member.Condition = Specs.Condition;
+				Member.Function.CppName = Decl.back().Text;
+				Member.LuaName = Specs.Get("Name", Member.Function.CppName);
+				Member.LuaExport = false;
+				Member.SoundParam = true;
+				Member.SoundMin = Specs.Get("Min");
+				Member.SoundMax = Specs.Get("Max");
 				Class.Members.push_back(std::move(Member));
 				return Next;
 			}

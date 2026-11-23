@@ -90,10 +90,17 @@ void CCar::SDoor::Init()
 				string128 door_line_open, door_line_close;
 				xr_sprintf(door_line_open, "%s_open", bone_name);
 				xr_sprintf(door_line_close, "%s_close", bone_name);
+				// Not muffled in the cabin
 				if (ini->line_exist("car_sound", door_line_open))
+				{
 					snd_door_open.create(ini->r_string("car_sound", door_line_open), st_Effect, sg_SourceType);
+					snd_door_open.set_ignore_bus_shaders(true);
+				}
 				if (ini->line_exist("car_sound", door_line_close))
+				{
 					snd_door_close.create(ini->r_string("car_sound", door_line_close), st_Effect, sg_SourceType);
+					snd_door_close.set_ignore_bus_shaders(true);
+				}
 			}
 			if (ini->section_exist(bone_name))
 			{

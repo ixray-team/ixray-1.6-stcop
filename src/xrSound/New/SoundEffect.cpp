@@ -85,6 +85,7 @@ void Snd_InitEffects()
 	Snd_RegisterEffect("spatial", Snd_SpatialProc);
 	Snd_RegisterEffect("compressor", Snd_CompressorProc);
 	Snd_RegisterEffect("convolution", Snd_ConvolutionProc);
+	Snd_RegisterShaderEffects();
 	Resonance_RegisterEffects();
 }
 

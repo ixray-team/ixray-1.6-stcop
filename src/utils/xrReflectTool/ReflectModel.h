@@ -99,6 +99,10 @@ namespace XReflectTool
 		std::string IniIf;
 		// C++ type as declared, for the ltx schema of the editor
 		std::string IniType;
+		// XPROPERTY(SoundParam): float parameter of a sound shader, LuaName is its script name
+		bool SoundParam = false;
+		std::string SoundMin;
+		std::string SoundMax;
 	};
 
 	struct ClassInfo
@@ -115,6 +119,9 @@ namespace XReflectTool
 		std::string IniOwner;
 		bool Constructible = false;
 		bool ToString = false;
+		// XREFLECT(SoundShader): sound shader class registered in SoundShaderType
+		bool SoundShader = false;
+		std::string SoundName;
 		std::vector<std::string> PublicBases;
 		std::vector<std::string> ExplicitBases;
 		std::vector<MemberInfo> Members;
