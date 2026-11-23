@@ -23,6 +23,7 @@
 #include "UITaskWnd.h"
 #include "PdaUiSound.h"
 #include "UIMapZoomScale.h"
+#include "UIMapActorCompass.h"
 
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UIListBoxItem.h"
@@ -299,6 +300,16 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 		AttachChild(_zoomScale);
 	}
 
+	xr_strconcat(pth, start_from, ":actor_compass");
+	if (uiXml.NavigateToNode(pth))
+	{
+		ActorCompass = new CUIMapActorCompass();
+		ActorCompass->SetAutoDelete(true);
+		ActorCompass->InitFromXml(uiXml, pth);
+		ActorCompass->SetCustomDraw(true);
+		AttachChild(ActorCompass);
+	}
+
 	m_controller_cursor = new CUIStatic();
 	m_controller_cursor->InitTexture("ui_cur_task");
 	m_controller_cursor->SetWndSize(Fvector2().set(19.f, 19.f));
@@ -498,9 +509,21 @@ void CUIMapWnd::UpdateMapToMapCursor()
 	UpdateScroll();
 }
 
+bool CUIMapWnd::HidesActorSpot() const
+{
+	return ActorCompass && ActorCompass->HidesActorSpot();
+}
+
 void CUIMapWnd::Draw()
 {
 	inherited::Draw();
+
+	if (ActorCompass && ActorCompass->IsShown())
+	{
+		UI().PushScissor(ActiveMapRect());
+		ActorCompass->Draw();
+		UI().PopScissor();
+	}
 	
 	if (pInput->GetControllerMode())
 	{
@@ -938,6 +961,13 @@ void CUIMapWnd::Update()
 	inherited::Update			();
 	UpdateNav					();
 	UpdateControllerCursorStatic();
+	if (ActorCompass)
+	{
+		const auto ActorMap = g_pGameLevel ? m_GameMaps.find(Level().name()) : m_GameMaps.end();
+		Fvector2 OwnerAbsPos;
+		GetAbsolutePos(OwnerAbsPos);
+		ActorCompass->UpdateFromMap(ActorMap != m_GameMaps.end() ? ActorMap->second : nullptr, OwnerAbsPos);
+	}
 }
 
 void CUIMapWnd::UpdateControllerCursorStatic()

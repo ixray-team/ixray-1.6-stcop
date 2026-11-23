@@ -24,6 +24,7 @@ class CUIPdaSpot;
 class CUIPropertiesBox;
 class CUIGamepadLegend;
 class UIMapZoomScale;
+class CUIMapActorCompass;
 
 using GameMaps = xr_map<shared_str, CUICustomMap*>;
 using GameMapsPairIt = GameMaps::iterator;
@@ -79,6 +80,7 @@ private:
 	// Optional XML: map_pattern_overlay (drawn above map; non-interactive).
 	CUIStatic*					m_mapPatternOverlay = nullptr;
 	UIMapZoomScale*				_zoomScale = nullptr;
+	CUIMapActorCompass*			ActorCompass = nullptr;
 	CPdaUiSounds*				m_pUiSounds = nullptr;
 	u32							m_nav_timing;
 
@@ -225,6 +227,7 @@ public:
 	void						MapLocationRelcase				(CMapLocation* ml);
 
 	Frect						ActiveMapRect			()		{Frect r; m_UILevelFrame->GetAbsoluteRect(r); return r;};
+	bool						HidesActorSpot			() const;
 	void						AddMapToRender			(CUICustomMap*);
 	void						RemoveMapToRender		(CUICustomMap*);
 	CUIGlobalMap*				GlobalMap				()		{return m_GlobalMap;};

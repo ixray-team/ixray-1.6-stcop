@@ -510,6 +510,10 @@ void CUILevelMap::UpdateSpots()
 		{
 		if(elem.actual && MapName() == elem.location->GetLevelName() )
 		{
+			if (MapWnd()->HidesActorSpot() && (!xr_strcmp(elem.spot_type, "actor_location") || !xr_strcmp(elem.spot_type, "actor_location_p")))
+			{
+				continue;
+			}
 			elem.location->UpdateLevelMap(this);
 		}
 	}
