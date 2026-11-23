@@ -7,6 +7,7 @@
 #include "IInputReceiver.h"
 #include "string_table.h"
 #include "IGame_Persistent.h"
+#include "line_edit_control.h"
 
 Fvector2 fingerInitialPos;
 #define DEADZONE_SIZE 0.2f
@@ -231,6 +232,17 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			g_pEventManager->Event.Signal("KERNEL:disconnect");
 			g_pEventManager->Event.Signal("KERNEL:quit");
 			return false;
+		}
+		case SDL_EVENT_TEXT_INPUT:
+		{
+#ifdef IXR_WINDOWS
+			if (ImGui::GetCurrentContext() && ImGui::GetIO().WantTextInput)
+			{
+				break;
+			}
+#endif
+			text_editor::line_edit_control::DispatchTextInput(Event.text.text);
+			break;
 		}
 		case SDL_EVENT_KEY_DOWN:
 		{

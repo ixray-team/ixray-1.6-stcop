@@ -144,7 +144,7 @@
 		<texture>ui\ixr_options\controlls\check_box\off</texture>
 	</check_box_off>
 	
-	<text_box x="0" y="0" width="556" height="64" file_name_mode="1">
+	<text_box x="0" y="0" width="556" height="64" utf8="1" max_symb_count="125">
 		<text x="3" width="500" font="font_product_sans_14" vert_align="c"/>
 		<text_color>
 			<e r="255" g="255" b="255" a="200"/>

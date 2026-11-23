@@ -14,7 +14,7 @@ public:
 					CUICustomEdit	();
 	virtual			~CUICustomEdit	();
 
-			void	Init			(u32 max_char_count, bool number_only_mode = false, bool read_mode = false, bool fn_mode = false );
+			void	Init			(u32 max_char_count, bool number_only_mode = false, bool read_mode = false, bool fn_mode = false, bool Utf8 = false );
 		
 	virtual void	InitCustomEdit	(Fvector2 pos, Fvector2 size);
 	virtual void	SendMessage		(CUIWindow* pWnd, s16 msg, void* pData = NULL);
@@ -46,6 +46,7 @@ public:
 protected:
 			void				Register_callbacks();
 
+			void SetInputFocus(bool Focused);
 			void  	nothing();
 			void  	press_escape();
 			void  	press_commit();

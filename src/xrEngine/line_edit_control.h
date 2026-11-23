@@ -40,6 +40,7 @@ enum init_mode
 	im_read_only,
 	im_file_name_mode, // not "/\\:*?\"<>|^()[]%" 
 
+	im_utf8,
 	im_count
 };
 
@@ -62,6 +63,9 @@ public:
 	void assign_callback(u32 scancode, key_state state, Callback const& callback);
 
 	void insert_character(char c);
+	bool UsesUtf8() const { return Utf8; }
+	void SetTextInputFocus(bool Focused);
+	static void DispatchTextInput(const char* Text);
 
 	ICF bool get_key_state(key_state mask) const { return mask ? !!m_key_state.test(mask) : true; }
 	ICF void set_key_state(key_state mask, bool value) { m_key_state.set(mask, value); }
@@ -116,6 +120,9 @@ public:
 	bool empty_inserted();
 
 	void add_inserted_text();
+	void PrepareUtf8Insertion(const char* Text);
+	u32 PreviousPosition(u32 Position) const;
+	u32 NextPosition(u32 Position) const;
 
 	void delete_selected(bool back);
 	void compute_positions();
@@ -151,6 +158,7 @@ public:
 	
 	Flags32 m_key_state;
 
+	bool Utf8 = false;
 	bool m_hold_mode;
 	bool m_insert_mode;
 	bool m_repeat_mode;

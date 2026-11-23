@@ -54,7 +54,7 @@ void CUICustomEdit::Register_callbacks()
 	ec().assign_callback(SDL_SCANCODE_TAB,		   text_editor::ks_free, Callback( this, &CUICustomEdit::press_tab ) );
 }
 
-void  CUICustomEdit::Init( u32 max_char_count, bool number_only_mode, bool read_mode, bool fn_mode )
+void  CUICustomEdit::Init( u32 max_char_count, bool number_only_mode, bool read_mode, bool fn_mode, bool Utf8 )
 {
 	if ( read_mode )
 	{
@@ -68,6 +68,10 @@ void  CUICustomEdit::Init( u32 max_char_count, bool number_only_mode, bool read_
 		{
 			m_editor_control->init( max_char_count, text_editor::im_number_only );
 		}
+		else if (Utf8)
+		{
+			m_editor_control->init(max_char_count, text_editor::im_utf8);
+		}
 		else if ( fn_mode )
 		{
 			m_editor_control->init( max_char_count, text_editor::im_file_name_mode );
@@ -76,7 +80,7 @@ void  CUICustomEdit::Init( u32 max_char_count, bool number_only_mode, bool read_
 		{
 			m_editor_control->init( max_char_count );
 		}
-		m_editor_control->set_selected_mode( false );
+		m_editor_control->set_selected_mode(Utf8 && !number_only_mode);
 		m_read_mode = false;
 	}
 	
@@ -131,7 +135,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	//кто-то другой захватил клавиатуру
 	if ( msg == WINDOW_KEYBOARD_CAPTURE_LOST && m_bInputFocus)
 	{
-		m_bInputFocus = false;
+		SetInputFocus(false);
 		GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 	}
 }
@@ -143,14 +147,14 @@ bool CUICustomEdit::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		if(mouse_action == WINDOW_LBUTTON_DB_CLICK && !m_bInputFocus)
 		{
 			GetParent()->SetKeyboardCapture(this, true);
-			m_bInputFocus = true;
+			SetInputFocus(true);
 		}
 	}
 
 	if(mouse_action == WINDOW_LBUTTON_DOWN && !m_bInputFocus)
 	{
 		GetParent()->SetKeyboardCapture(this, true);
-		m_bInputFocus = true;
+		SetInputFocus(true);
 	}
 	return false;
 }
@@ -213,55 +217,95 @@ void  CUICustomEdit::Draw()
 	{
 		float ui_width   = GetWidth();
 
-		const char* cursor_str   = ec().str_before_cursor();
-		u32 cursor_str_size = xr_strlen( cursor_str );
-
-		const char* istr			= cursor_str;
-		float str_length	= font->SizeOf_( istr );
-		UI().ClientToScreenScaledWidth( str_length );
-
-		u32 ix = 0;
-		while ( (str_length > ui_width) && (ix < cursor_str_size) )
+		if (ec().UsesUtf8())
 		{
-			istr			= cursor_str + ix;
-			str_length		= font->SizeOf_( istr );
-			UI().ClientToScreenScaledWidth( str_length );
-			++ix;
-		}
-		istr				= cursor_str + ix;
-		const char* astr			= ec().str_edit() + ix;
-		u32 str_size		= xr_strlen( ec().str_edit() );
+			const char* VisibleStart = ec().str_before_cursor();
+			float CursorWidth = font->SizeOf_(VisibleStart);
+			UI().ClientToScreenScaledWidth(CursorWidth);
+			while (*VisibleStart && CursorWidth > ui_width)
+			{
+				SDL_StepUTF8(&VisibleStart, nullptr);
+				CursorWidth = font->SizeOf_(VisibleStart);
+				UI().ClientToScreenScaledWidth(CursorWidth);
+			}
+			m_dx_cur = font->SizeOf_(VisibleStart);
 
-		u32 jx = 1;
-		strncpy_s			(m_out_str, sizeof(m_out_str), astr, jx);
-
-		str_length			= font->SizeOf_(m_out_str);
-		UI().ClientToScreenScaledWidth(str_length);
-
-		while((str_length < ui_width) && (jx < str_size-ix))
-		{
-			strncpy_s		(m_out_str, sizeof(m_out_str), astr, jx);
-			str_length		= font->SizeOf_(m_out_str);
-			UI().ClientToScreenScaledWidth(str_length);
-			++jx;
-		}
-		strncpy_s			(m_out_str, sizeof(m_out_str), astr, jx);
-
-		TextItemControl()->SetText(m_out_str);
-
-		if(TextItemControl()->IsPasswordMode())
-		{
-			string256 passText;
-			shared_str str(istr);
-			int sz = (int)str.size();
-			for (int i = 0; i < sz; i++)
-				passText[i] = '*';
-			passText[sz] = 0;
-			m_dx_cur			= font->SizeOf_(passText); // cursor_str
+			const char* Text = ec().str_edit() + (VisibleStart - ec().str_before_cursor());
+			const char* End = Text;
+			size_t Length = 0;
+			while (*End)
+			{
+				SDL_StepUTF8(&End, nullptr);
+				const auto NextLength = static_cast<size_t>(End - Text);
+				if (NextLength >= sizeof(m_out_str))
+				{
+					break;
+				}
+				memcpy(m_out_str + Length, Text + Length, NextLength - Length);
+				m_out_str[NextLength] = 0;
+				float Width = font->SizeOf_(m_out_str);
+				UI().ClientToScreenScaledWidth(Width);
+				if (Width > ui_width)
+				{
+					break;
+				}
+				Length = NextLength;
+			}
+			m_out_str[Length] = 0;
 		}
 		else
-			m_dx_cur			= font->SizeOf_(istr); // cursor_str
+		{
 
+			const char* cursor_str   = ec().str_before_cursor();
+			u32 cursor_str_size = xr_strlen( cursor_str );
+
+			const char* istr			= cursor_str;
+			float str_length	= font->SizeOf_( istr );
+			UI().ClientToScreenScaledWidth( str_length );
+
+			u32 ix = 0;
+			while ( (str_length > ui_width) && (ix < cursor_str_size) )
+			{
+				istr			= cursor_str + ix;
+				str_length		= font->SizeOf_( istr );
+				UI().ClientToScreenScaledWidth( str_length );
+				++ix;
+			}
+			istr				= cursor_str + ix;
+			const char* astr			= ec().str_edit() + ix;
+			u32 str_size		= xr_strlen( ec().str_edit() );
+
+			u32 jx = 1;
+			strncpy_s			(m_out_str, sizeof(m_out_str), astr, jx);
+
+			str_length			= font->SizeOf_(m_out_str);
+			UI().ClientToScreenScaledWidth(str_length);
+
+			while((str_length < ui_width) && (jx < str_size-ix))
+			{
+				strncpy_s		(m_out_str, sizeof(m_out_str), astr, jx);
+				str_length		= font->SizeOf_(m_out_str);
+				UI().ClientToScreenScaledWidth(str_length);
+				++jx;
+			}
+			strncpy_s			(m_out_str, sizeof(m_out_str), astr, jx);
+
+
+			if(TextItemControl()->IsPasswordMode())
+			{
+				string256 passText;
+				shared_str str(istr);
+				int sz = (int)str.size();
+				for (int i = 0; i < sz; i++)
+					passText[i] = '*';
+				passText[sz] = 0;
+				m_dx_cur			= font->SizeOf_(passText); // cursor_str
+			}
+			else
+				m_dx_cur			= font->SizeOf_(istr); // cursor_str
+
+		}
+		TextItemControl()->SetText(m_out_str);
 		m_force_update		= false;
 	}
 
@@ -283,6 +327,10 @@ void  CUICustomEdit::Draw()
 void CUICustomEdit::Show( bool status )
 {
 	m_force_update = true;
+	if (!status && m_bInputFocus && ec().UsesUtf8())
+	{
+		CaptureFocus(false);
+	}
 	if ( m_pPlaceholder )
 		m_pPlaceholder->Show( status && xr_strlen( GetText() ) == 0 );
 	inherited::Show( status );
@@ -327,7 +375,7 @@ void CUICustomEdit::press_escape()
 	}
 	else
 	{
-		m_bInputFocus					= false;
+		SetInputFocus(false);
 		GetParent()->SetKeyboardCapture	( this, false );
 		GetMessageTarget()->SendMessage	( this, EDIT_TEXT_CANCEL, nullptr );
 	}
@@ -335,7 +383,7 @@ void CUICustomEdit::press_escape()
 
 void CUICustomEdit::press_commit()
 {
-	m_bInputFocus						= false;
+	SetInputFocus(false);
 	GetParent()->SetKeyboardCapture		( this, false );
 	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 }
@@ -345,7 +393,7 @@ void CUICustomEdit::press_tab()
 	if (!m_next_focus_capturer)
 		return;
 
-	m_bInputFocus						= false;
+	SetInputFocus(false);
 	GetParent()->SetKeyboardCapture		( this, false );
 	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 	GetParent()->SetKeyboardCapture		( m_next_focus_capturer, true );
@@ -357,5 +405,15 @@ void CUICustomEdit::CaptureFocus(bool bCapture)
 	if(bCapture)
 		GetParent()->SetKeyboardCapture(this, true);
 
-	m_bInputFocus = bCapture; 
+	if (!bCapture && m_bInputFocus && ec().UsesUtf8() && GetParent())
+	{
+		GetParent()->SetKeyboardCapture(this, false);
+	}
+	SetInputFocus(bCapture);
+}
+
+void CUICustomEdit::SetInputFocus(bool Focused)
+{
+	m_bInputFocus = Focused;
+	ec().SetTextInputFocus(Focused);
 }

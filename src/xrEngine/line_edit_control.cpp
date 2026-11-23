@@ -21,6 +21,18 @@ ENGINE_API float g_console_sensitive = 0.15f;
 namespace text_editor
 {
 
+static line_edit_control* g_TextInputEditor = nullptr;
+
+static u32 Utf8PrefixLength(const char* Text, u32 ByteLimit)
+{
+	u32 Length = std::min(xr_strlen(Text), ByteLimit);
+	while (Length > 0 && (static_cast<u8>(Text[Length]) & 0xC0) == 0x80)
+	{
+		--Length;
+	}
+	return Length;
+}
+
 static bool terminate_char( char c, bool check_space = false )
 {
 	switch ( c )
@@ -65,6 +77,7 @@ line_edit_control::line_edit_control(u32 str_buffer_size)
 
 line_edit_control::~line_edit_control()
 {
+	SetTextInputFocus(false);
 	xr_free(m_buf_edit_str);
 	xr_free(m_inserted);
 	xr_free(m_undo_buf);
@@ -130,6 +143,8 @@ void line_edit_control::clear_states()
 
 void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 {
+	SetTextInputFocus(false);
+	Utf8 = mode == im_utf8;
 	m_buffer_size = str_buffer_size;
 	clamp(m_buffer_size, MIN_BUF_SIZE, MAX_BUF_SIZE);
 
@@ -177,7 +192,10 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 	}
 	else
 	{
-		assign_char_pairs(mode);
+		if (!Utf8)
+		{
+			assign_char_pairs(mode);
+		}
 
 		assign_callback(SDL_SCANCODE_INSERT, ks_free, Callback(this, &line_edit_control::flip_insert_mode));
 		assign_callback(SDL_SCANCODE_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
@@ -203,8 +221,11 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 		assign_callback(SDL_SCANCODE_BACKSPACE, ks_Ctrl, Callback(this, &line_edit_control::delete_word_back));
 		assign_callback(SDL_SCANCODE_DELETE, ks_Ctrl, Callback(this, &line_edit_control::delete_word_forward));
 
-		assign_callback(SDL_SCANCODE_LSHIFT, ks_Ctrl, Callback(this, &line_edit_control::SwitchKL));
-		assign_callback(SDL_SCANCODE_LSHIFT, ks_Alt, Callback(this, &line_edit_control::SwitchKL));
+		if (!Utf8)
+		{
+			assign_callback(SDL_SCANCODE_LSHIFT, ks_Ctrl, Callback(this, &line_edit_control::SwitchKL));
+			assign_callback(SDL_SCANCODE_LSHIFT, ks_Alt, Callback(this, &line_edit_control::SwitchKL));
+		}
 	}
 
 	create_key_state(SDL_SCANCODE_LSHIFT, ks_LShift);
@@ -329,16 +350,76 @@ bool line_edit_control::empty_inserted()
 	return m_inserted[0] == 0;
 }
 
+void line_edit_control::SetTextInputFocus(bool Focused)
+{
+	if (Focused && Utf8 && g_AppInfo.Window)
+	{
+		g_TextInputEditor = this;
+		SDL_StartTextInput(g_AppInfo.Window);
+	}
+	else if (g_TextInputEditor == this)
+	{
+		g_TextInputEditor = nullptr;
+		if (g_AppInfo.Window
+#ifdef IXR_WINDOWS
+			&& (!ImGui::GetCurrentContext() || !ImGui::GetIO().WantTextInput)
+#endif
+		)
+		{
+			SDL_StopTextInput(g_AppInfo.Window);
+		}
+	}
+}
+
+void line_edit_control::DispatchTextInput(const char* Text)
+{
+	if (auto* Editor = g_TextInputEditor)
+	{
+		Editor->compute_positions();
+		Editor->PrepareUtf8Insertion(Text);
+		if (!Editor->empty_inserted())
+		{
+			Editor->add_inserted_text();
+			Editor->m_select_start = Editor->m_cur_pos;
+			Editor->compute_positions();
+			Editor->update_bufs();
+		}
+	}
+}
+
+void line_edit_control::PrepareUtf8Insertion(const char* Text)
+{
+	clear_inserted();
+	if (!Text || !IsUTF8(Text))
+	{
+		return;
+	}
+
+	const u32 Length = Utf8PrefixLength(Text, m_buffer_size - 1);
+	for (u32 Index = 0; Index < Length; ++Index)
+	{
+		const auto Byte = static_cast<u8>(Text[Index]);
+		m_inserted[Index] = Byte < 0x20 || Byte == 0x7F ? ' ' : Text[Index];
+	}
+	m_inserted[Length] = 0;
+}
+
 void line_edit_control::set_edit( const char* str )
 {
-	u32 str_size = xr_strlen( str );
-	clamp( str_size, 0u, m_buffer_size - 1);
+	xr_string Converted;
+	if (Utf8 && !IsUTF8(str))
+	{
+		Converted = Platform::ANSI_TO_UTF8(str);
+		str = IsUTF8(Converted.c_str()) ? Converted.c_str() : "";
+	}
+	const u32 str_size = Utf8 ? Utf8PrefixLength(str, m_buffer_size - 1) : std::min(xr_strlen(str), m_buffer_size - 1);
 	strncpy_s( m_buf_edit_str, m_buffer_size, str, str_size );
 	m_buf_edit_str[str_size] = 0;
 
 	m_cur_pos      = str_size;
 	m_select_start = m_cur_pos;
 	m_accel        = 1.0f;
+	compute_positions();
 	update_bufs();
 }
 
@@ -462,7 +543,7 @@ void line_edit_control::update_bufs()
 	m_after_mark[0] = 0;
 
 	u32 edit_size = xr_strlen(m_buf_edit_str);
-	u32 ds = m_cursor_view && m_insert_mode && m_p2 < edit_size ? 1 : 0;
+	u32 ds = m_cursor_view && m_insert_mode && m_p2 < edit_size ? NextPosition(m_p2) - m_p2 : 0;
 
 	strncpy_s(m_buf_before_cursor, m_buffer_size, m_buf_edit_str, m_cur_pos);
 	strncpy_s(m_buf_before_mark, m_buffer_size, m_buf_edit_str, m_p1);
@@ -481,6 +562,22 @@ void line_edit_control::add_inserted_text()
 	}
 
 	u32 old_edit_size = xr_strlen(m_buf_edit_str);
+	if (Utf8)
+	{
+		const u32 Tail = m_insert_mode && m_p1 == m_p2 ? NextPosition(m_p2) : m_p2;
+		const u32 TailLength = old_edit_size - Tail;
+		const u32 Length = Utf8PrefixLength(m_inserted, m_buffer_size - 1 - m_p1 - TailLength);
+		if (Length == 0)
+		{
+			return;
+		}
+
+		strncpy_s(m_undo_buf, m_buffer_size, m_buf_edit_str + m_p1, Tail - m_p1);
+		memmove(m_buf_edit_str + m_p1 + Length, m_buf_edit_str + Tail, TailLength + 1);
+		memcpy(m_buf_edit_str + m_p1, m_inserted, Length);
+		m_cur_pos = m_p1 + Length;
+		return;
+	}
 	
 	for (u32 i = 0; i < old_edit_size; ++i)
 	{
@@ -538,7 +635,15 @@ void line_edit_control::copy_to_clipboard()
 
 void line_edit_control::paste_from_clipboard()
 {
-	os_clipboard::paste_from_clipboard( m_inserted, m_buffer_size-1 );
+	if (Utf8)
+	{
+		const std::unique_ptr<char, decltype(&SDL_free)> Text(SDL_GetClipboardText(), SDL_free);
+		PrepareUtf8Insertion(Text.get());
+	}
+	else
+	{
+		os_clipboard::paste_from_clipboard( m_inserted, m_buffer_size-1 );
+	}
 }
 
 void line_edit_control::cut_to_clipboard()
@@ -585,16 +690,16 @@ void line_edit_control::delete_selected( bool back )
 	{
 		if (back)
 		{
-			u8 dp = m_p1 == m_p2 && m_p1 > 0 ? 1 : 0;
+			const u32 dp = m_p1 == m_p2 ? m_p1 - PreviousPosition(m_p1) : 0;
 			strncpy_s(m_undo_buf, m_buffer_size, m_buf_edit_str + m_p1 - dp, m_p2 - m_p1 + dp);
-			strncpy_s(m_buf_edit_str + m_p1 - dp, m_buffer_size, m_buf_edit_str + m_p2, edit_len - m_p2);
+			memmove(m_buf_edit_str + m_p1 - dp, m_buf_edit_str + m_p2, edit_len - m_p2 + 1);
 			m_cur_pos = m_p1 - dp;
 		}
 		else
 		{
-			u8 dn = m_p1 == m_p2 && m_p2 < edit_len ? 1 : 0;
+			const u32 dn = m_p1 == m_p2 ? NextPosition(m_p2) - m_p2 : 0;
 			strncpy_s(m_undo_buf, m_buffer_size, m_buf_edit_str + m_p1, m_p2 - m_p1 + dn);
-			strncpy_s(m_buf_edit_str + m_p1, m_buffer_size, m_buf_edit_str + m_p2 + dn, edit_len - m_p2 - dn);
+			memmove(m_buf_edit_str + m_p1, m_buf_edit_str + m_p2 + dn, edit_len - m_p2 - dn + 1);
 			m_cur_pos = m_p1;
 		}
 		clamp_cur_pos();
@@ -650,12 +755,44 @@ u32 line_edit_control::get_pos()
 
 void line_edit_control::move_pos_left()
 {
-	clamp(--m_cur_pos, 0u, std::numeric_limits<u32>::max());
+	m_cur_pos = PreviousPosition(m_cur_pos);
 }
 
 void line_edit_control::move_pos_right()
 {
-	clamp(++m_cur_pos, 0u, std::numeric_limits<u32>::max());
+	m_cur_pos = NextPosition(m_cur_pos);
+}
+
+u32 line_edit_control::PreviousPosition(u32 Position) const
+{
+	if (Position == 0)
+	{
+		return 0;
+	}
+	if (!Utf8)
+	{
+		return Position - 1;
+	}
+
+	const char* Previous = m_buf_edit_str + Position;
+	SDL_StepBackUTF8(m_buf_edit_str, &Previous);
+	return static_cast<u32>(Previous - m_buf_edit_str);
+}
+
+u32 line_edit_control::NextPosition(u32 Position) const
+{
+	const char* Next = m_buf_edit_str + Position;
+	if (*Next == 0)
+	{
+		return Position;
+	}
+	if (!Utf8)
+	{
+		return Position + 1;
+	}
+
+	SDL_StepUTF8(&Next, nullptr);
+	return static_cast<u32>(Next - m_buf_edit_str);
 }
 
 void line_edit_control::move_pos_left_word()
@@ -665,7 +802,7 @@ void line_edit_control::move_pos_left_word()
 	{
 		--i;
 	}
-	if (!terminate_char(m_buf_edit_str[i]))
+	if (i >= 0 && !terminate_char(m_buf_edit_str[i]))
 	{
 		while (i >= 0 && !terminate_char(m_buf_edit_str[i], true))
 		{
@@ -673,14 +810,14 @@ void line_edit_control::move_pos_left_word()
 		}
 		++i;
 	}
-	m_cur_pos = i;
+	m_cur_pos = static_cast<u32>(std::max(i, 0));
 }
 
 
 void line_edit_control::move_pos_right_word()
 {
 	int edit_len = (int)xr_strlen(m_buf_edit_str);
-	int i = m_cur_pos + 1;
+	int i = NextPosition(m_cur_pos);
 	while (i < edit_len && !terminate_char(m_buf_edit_str[i], true))
 	{
 		++i;
