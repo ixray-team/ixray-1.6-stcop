@@ -106,4 +106,3 @@ struct resptrcode_texture :
 };
 
 using ref_texture = resptr_core<CTexture, resptrcode_texture>;
-#include "TextureAtlas.h"

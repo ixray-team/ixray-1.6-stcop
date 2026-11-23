@@ -161,7 +161,7 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 	shader_was_created{},
 #endif
 	m_is_storage_dirty{},
-	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, m_p_shader{ other.m_p_shader }, sais_wrapper{
+	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{}, m_p_shader{ other.m_p_shader }, sais_wrapper{
 	&static_atlas_items_storage, sizeof(static_atlas_items_storage)
 	}, saissi_wrapper{ &static_atlas_items_storage_spatial_indexing, sizeof(static_atlas_items_storage_spatial_indexing) }, m_atlas_items{
 		storage_allocator{ &sais_wrapper } }, m_atlas_items_spatial_indexing{ spatial_storage_allocator{&saissi_wrapper} }
@@ -179,7 +179,7 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 	}
 
 	other.m_p_atlas = nullptr;
-	other.m_p_texture = nullptr;
+	m_p_texture.swap(other.m_p_texture);
 	other.m_p_shader = nullptr;
 	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 	other.m_atlas_items.clear();
@@ -206,7 +206,7 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 		m_id = other.m_id;
 		m_p_atlas = other.m_p_atlas;
 
-		m_p_texture = other.m_p_texture;
+		m_p_texture.swap(other.m_p_texture);
 		m_p_shader = other.m_p_shader;
 
 		for (auto& element : other.m_atlas_items)
@@ -220,7 +220,6 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 		}
 
 		other.m_p_atlas = nullptr;
-		other.m_p_texture = nullptr;
 		other.m_p_shader = nullptr;
 		other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 		other.m_atlas_items.clear();
@@ -249,7 +248,7 @@ void CTextureAtlas::init(int width, int height, const char* pName)
 		R_ASSERT(m_p_atlas && "failed to create logical layout atlas!");
 	}
 
-	m_p_texture = DEV->_CreateEmptyTexture(pName, width, height);
+	m_p_texture._set(DEV->_CreateEmptyTexture(pName, width, height));
 
 	R_ASSERT(m_p_texture && "must be created a valid texture from resource manager, failed to create!");
 
@@ -260,18 +259,16 @@ void CTextureAtlas::init(int width, int height, const char* pName)
 
 void CTextureAtlas::uninit()
 {
-	if (m_p_texture)
-	{
-		m_p_texture->can_unload = false;
-		DEV->_DeleteTexture(m_p_texture);
-		m_p_texture->Unload();
-		m_p_texture = nullptr;
-	}
-
 	if (m_p_shader)
 	{
 		delete m_p_shader;
 		m_p_shader = nullptr;
+	}
+
+	if (m_p_texture)
+	{
+		m_p_texture->can_unload = true;
+		m_p_texture.destroy();
 	}
 
 	if (m_p_atlas)
@@ -722,8 +719,8 @@ void CSVGStorage::uninit()
 	m_frameShaderUvCache.clear();
 	m_loggedSvgFailures.clear();
 	m_atlasEntryStats.clear();
-	m_default_atlas.uninit();
 	xr_delete(m_p_default_shader);
+	m_default_atlas.uninit();
 
 	for (CTextureAtlas& atlas : m_storage_atlases)
 	{

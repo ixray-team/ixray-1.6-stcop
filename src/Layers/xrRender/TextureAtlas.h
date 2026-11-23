@@ -1,5 +1,6 @@
 #pragma once
 #include "../../xrCore/xr_rtree.h"
+#include "SH_Texture.h"
 #include <memory_resource>
 
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
@@ -108,8 +109,7 @@ private:
 	// logical layout placement 
 	smol_atlas_t* m_p_atlas;
 
-	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
-	CTexture* m_p_texture;
+	ref_texture m_p_texture;
 
 	FactoryPtr<IUIShader>* m_p_shader;
 
