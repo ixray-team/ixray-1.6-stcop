@@ -201,7 +201,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 					}
 					else
 					{
-						glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo((u8)s[0]));
+						glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetLegacyGlyphInfo(s[0]));
 					}
 				}
 

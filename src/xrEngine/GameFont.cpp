@@ -7,7 +7,6 @@
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
 #include <freetype/freetype.h>
-#include <freetype/ftfntfmt.h>
 
 extern u32 TextureDimension;
 thread_local xr_vector<u32> FontBitmap;
@@ -322,28 +321,11 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			}
 		};
 
-	//const char* Format = FT_Get_Font_Format(OurFont);
+	GlyphData.clear();
 	u32 index = 0;
-	auto LoadGlyph = [&](FT_UInt glyphID)
+	auto LoadGlyph = [&](FT_ULong Codepoint, FT_UInt GlyphIndex)
 	{
-		u32 TrueGlyph = glyphID;
-		if (Data.OpenType)
-		{
-			// Если символ входит в CP1251 (0-255) — конвертируем
-			if (glyphID <= 0xFF)
-			{
-				TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
-			}
-		}
-
-		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
-		if (FreetypeCharacter == 0 && glyphID != 0)
-		{
-			Msg("! Glyph not found: %d, TrueGlyph: %d", glyphID, TrueGlyph);
-			return;
-		}
-
-		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
+		FTError = FT_Load_Glyph(OurFont, GlyphIndex, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
 		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
 		FT_GlyphSlot Glyph = OurFont->glyph;
 		FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
@@ -366,7 +348,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		yOffset += (int)FontSizeInPixels; // Return back to the center pos
 		yOffset -= (int)(FontSizeInPixels / 4);
 
-		GlyphData[glyphID] = { region, widths, yOffset };
+		GlyphData[Codepoint] = { region, widths, yOffset };
 
 		TargetX = TargetX2;
 		TargetX += 4;
@@ -375,7 +357,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	auto glyphID = FT_Get_First_Char(OurFont, &index);
 	while(index != 0)
 	{
-		LoadGlyph(glyphID);
+		LoadGlyph(glyphID, index);
 		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
 	}
 
@@ -553,6 +535,11 @@ float CGameFont::SizeOf_(int cChar)
 		cChar = u8(cChar);
 	}
 
+	if (Data.OpenType && cChar <= 0xFF)
+	{
+		cChar = TranslateSymbolUsingCP1251(static_cast<char>(cChar));
+	}
+
 	return WidthOf(cChar);
 }
 
@@ -572,6 +559,11 @@ void CGameFont::SetHeight(float S)
 	{
 		fCurrentHeight = S;
 	}
+}
+
+const CGameFont::Glyph* CGameFont::GetLegacyGlyphInfo(u8 Byte)
+{
+	return GetGlyphInfo(Data.OpenType ? TranslateSymbolUsingCP1251(static_cast<char>(Byte)) : Byte);
 }
 
 const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
