@@ -4164,9 +4164,35 @@ void SHudSprint::Update(IKinematicsAnimated* Model, const attachable_hud_item* C
 			BeginLeftCancel();
 		}
 	}
+	else if (!Leaving && ToSafemode)
+	{
+		StopInertial(Model, Current->SprintLayerBlend());
+	}
 	else
 	{
 		Stop(Model, Current->SprintLayerBlend());
+	}
+}
+
+void SHudSprint::StopInertial(IKinematicsAnimated* Model, float Blend)
+{
+	if (Model == nullptr || CCameraRig::HudInertialization() <= 0.f)
+	{
+		Stop(Model, Blend);
+		return;
+	}
+
+	Stage = EHudSprintStage::None;
+	CObject* Entity = Level().CurrentControlEntity();
+	if (CActor* Actor = Entity != nullptr ? Entity->cast_actor() : nullptr)
+	{
+		Actor->Cameras().Rig().StopChannel(crcSprint);
+	}
+
+	for (u16 Part = 0, Count = Model->partitions().count(); Part < Count; ++Part)
+	{
+		Model->LL_InertializePart(Part, Blend, LAYER_ADDITIVE_CHANNEL);
+		Model->LL_CloseCycle(Part, 1 << LAYER_ADDITIVE_CHANNEL);
 	}
 }
 

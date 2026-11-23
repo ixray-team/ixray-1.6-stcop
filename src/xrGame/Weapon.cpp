@@ -5693,14 +5693,15 @@ void CWeapon::OnSprintToSafemode()
 		return;
 	}
 
-	hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisPos].set(0.f, 0.f, 0.f);
-	hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisRot].set(0.f, 0.f, 0.f);
-	Safemode.ResetVelocity();
+	if (IsBlendAnmActive(m_sSafemodeBlendParams[0].camera_name) || IsBlendAnmActive(m_sSafemodeBlendParams[1].camera_name))
+	{
+		return;
+	}
 
 	if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
 	{
 		PlayBlendAnm(m_sSafemodeBlendParams[0].camera_name, m_sSafemodeBlendParams[0].speed_power.x, m_sSafemodeBlendParams[0].speed_power.y,
-			m_sSafemodeBlendParams[0].blend_params, false, false, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
+			m_sSafemodeBlendParams[0].blend_params, false, true, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
 	}
 }
 

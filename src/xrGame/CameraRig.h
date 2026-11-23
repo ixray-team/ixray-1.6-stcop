@@ -351,6 +351,7 @@ struct SHudSprint
 	void			Resolve			(IKinematicsAnimated* Model, const attachable_hud_item* Current);
 	bool			Play			(IKinematicsAnimated* Model, const attachable_hud_item* Current, MotionID Motion, bool Loop, float Phase, float Power = 1.f, bool Inertialize = false);
 	void			Stop			(IKinematicsAnimated* Model, float Blend);
+	void			StopInertial	(IKinematicsAnimated* Model, float Blend);
 	float			Progress		(IKinematicsAnimated* Model, MotionID Motion) const;
 	static void		Freeze			(IKinematicsAnimated* Model, MotionID Motion);
 	float			PoseTarget		(IKinematicsAnimated* Model, u16 Ancor);
