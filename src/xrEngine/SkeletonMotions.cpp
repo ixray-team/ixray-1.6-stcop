@@ -332,6 +332,37 @@ motions_value::~motions_value()
 		FS.r_close(SourceFile);
 }
 
+bool motions_value::DetachSource()
+{
+	if (SourceFile == nullptr || KeysChunk == nullptr)
+	{
+		return true;
+	}
+
+	const size_t Length = size_t(KeysChunk->length());
+	const u8* OldBase = static_cast<const u8*>(KeysChunk->pointer()) - KeysChunk->tell();
+	u8* Copy = static_cast<u8*>(xr_malloc(Length));
+	if (Copy == nullptr)
+	{
+		return false;
+	}
+
+	memcpy(Copy, OldBase, Length);
+	for (auto& [Bone, Motions] : m_motions)
+	{
+		for (CMotion& Motion : Motions)
+		{
+			Motion.RebaseKeys(OldBase, Length, Copy);
+		}
+	}
+
+	KeysChunk->close();
+	KeysChunk = new IReader(Copy, Length);
+	KeysCopy = Copy;
+	FS.r_close(SourceFile);
+	return true;
+}
+
 MotionVec* motions_value::bone_motions(shared_str bone_name)
 {
 	BoneMotionMapIt I = m_motions.find(bone_name);

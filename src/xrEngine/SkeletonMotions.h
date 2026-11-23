@@ -79,6 +79,15 @@ public:
 	void Set(const void* Source) { Keys = static_cast<const T*>(Source); }
 	const T& operator[](size_t Index) const { return Keys[Index]; }
 	bool operator!() const { return Keys == nullptr; }
+
+	void Rebase(const u8* OldBase, size_t Length, const u8* NewBase)
+	{
+		const u8* Current = reinterpret_cast<const u8*>(Keys);
+		if (Current != nullptr && Current >= OldBase && Current < OldBase + Length)
+		{
+			Keys = reinterpret_cast<const T*>(NewBase + (Current - OldBase));
+		}
+	}
 };
 
 class 	ENGINE_API	CMotion
@@ -107,6 +116,15 @@ public:
     ICF u32					get_count			() const {return (u32(_count)&0x00FFFFFF);}
 
 	float				GetLength			(){ return float(_count)*SAMPLE_SPF; }
+
+	void				RebaseKeys			(const u8* OldBase, size_t Length, const u8* NewBase)
+	{
+		_keysR.Rebase(OldBase, Length, NewBase);
+		_keysR32.Rebase(OldBase, Length, NewBase);
+		_keysT8.Rebase(OldBase, Length, NewBase);
+		_keysT16.Rebase(OldBase, Length, NewBase);
+		_keysT32.Rebase(OldBase, Length, NewBase);
+	}
 
 	u32					mem_usage			(){ return sizeof(*this); }
 };
@@ -239,6 +257,7 @@ struct 	ENGINE_API	motions_value
 
 	bool				load				(const char* N, IReader *data, vecBones* bones);
 	MotionVec*			bone_motions		(shared_str bone_name);
+	bool				DetachSource		();
 
 	u32					mem_usage			(){
 		u32 sz			=	sizeof(*this)+(u32)m_motion_map.size()*6+m_partition.mem_usage();
@@ -321,6 +340,7 @@ public:
 	}
 
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}
+	bool				DetachSource	()							{	return p_ != nullptr && p_->DetachSource();	}
 
 };
 //---------------------------------------------------------------------------

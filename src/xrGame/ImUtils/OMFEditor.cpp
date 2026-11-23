@@ -578,9 +578,20 @@ static bool OMFEditorRewrite(const SOMFMotion& motion, const xr_vector<u8>* remo
 		return false;
 	}
 
-	IWriter* writer = FS.w_open(target);
-	if (writer == nullptr)
+	if (!motions.DetachSource())
 	{
+		xr_sprintf(status, "Not saved: can't release the loaded [%s]", target);
+		return false;
+	}
+
+	IWriter* writer = FS.w_open(target);
+	if (writer == nullptr || !writer->valid())
+	{
+		if (writer != nullptr)
+		{
+			FS.w_close(writer);
+		}
+
 		xr_sprintf(status, "Not saved: can't write [%s]", target);
 		return false;
 	}
