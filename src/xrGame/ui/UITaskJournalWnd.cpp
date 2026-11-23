@@ -4,6 +4,8 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/Widgets/UITabButton.h"
@@ -108,7 +110,19 @@ void UITaskJournalItem::InitFromXml(CUIXml& Xml, const char* Path, CUITaskJourna
 
 	if (Xml.NavigateToNode("selection", 0))
 	{
-		Selection = UIHelper::CreateStatic(Xml, "selection", this, false);
+		const char* SelectionType = Xml.ReadAttrib("selection", 0, "type", "static");
+		if (!xr_strcmp(SelectionType, "line"))
+		{
+			Selection = UIHelper::CreateFrameLine(Xml, "selection", this, false);
+		}
+		else if (!xr_strcmp(SelectionType, "frame"))
+		{
+			Selection = UIHelper::CreateFrameWindow(Xml, "selection", this, false);
+		}
+		else
+		{
+			Selection = UIHelper::CreateStatic(Xml, "selection", this, false);
+		}
 		if (Selection)
 		{
 			Selection->Show(false);

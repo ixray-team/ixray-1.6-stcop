@@ -33,7 +33,7 @@ private:
 	CUITaskJournalWnd* Owner = nullptr;
 	CGameTask* Task = nullptr;
 
-	CUIStatic* Selection = nullptr;
+	CUIWindow* Selection = nullptr;
 	CUIStatic* Icon = nullptr;
 	CUIStatic* TypeIcon = nullptr;
 	CUIStatic* Title = nullptr;
