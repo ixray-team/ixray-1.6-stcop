@@ -566,7 +566,6 @@ void remap_keys()
 	idx = 0;
 	while (gamepads[idx].key_name)
 	{
-		buff[0] = 0;
 		_keyboard& kb = gamepads[idx];
 
 		if (kb.key_local_name.starts_with('c'))
