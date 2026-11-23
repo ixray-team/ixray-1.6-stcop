@@ -79,6 +79,27 @@ EnableSpawnOnceRandomItemPerEachLoadouts = true | false
 EnableSpawnOnceRandomitemByRandomLoadout = true | false
 ```
 
+## Снаряжение из секции LTX
+
+Строка `<supplies>` вида `@секция` заменяется строками этой секции из `system.ltx` вместе с родителями. Секцию можно править через [DLTX](../../configs/dltx.md), поэтому один лодаут подходит многим профилям и платформам.
+
+```ini
+; configs/misc/my_loadouts.ltx, подключён из system.ltx
+[my_loadout_stalker_1]
+wpn_ak74 = 1, scope_prob=0.3
+ammo_5.45x39_fmj = 2
+```
+
+```xml
+<supplies>
+	[spawn] \n
+	@my_loadout_stalker_1 \n
+	#include "gameplay\character_items.xml"
+</supplies>
+```
+
+Если секции нет, в лог пишется `! Specific character '...': supplies section '...' not found`. Ключи в секции LTX уникальны: два одинаковых предмета пишутся как `medkit = 2`, а не двумя строками.
+
 ## Улучшение схем поведенения 
 
 - Улучшена схема поведения при бое в помещении: NPC больше не будут смотреть в пол или потолок, если враг находится на другом этаже

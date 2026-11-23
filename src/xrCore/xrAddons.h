@@ -26,11 +26,16 @@ public:
 
 	void MountAddons();
 
+	// Files under <addon>\platforms\<platform>\ mount after the addon root,
+	// as if they were in the root; other platforms' subfolders are skipped.
+	static constexpr const char* PlatformsDir = "platforms";
 
 private:
 	void CollectAddons();
 	void ReadMetaInfo(const xr_string& InitFile);
 	void ResolveDependencies();
+
+	bool IsMountingPlatformDir = false;
 
 public:
 	xr_vector<AddonInfo> Addons;

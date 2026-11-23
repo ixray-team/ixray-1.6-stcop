@@ -27,12 +27,32 @@ The addon system is a storage of various `gamedata` and `.db` archives that work
 ```yaml [addon.init]
 name: IX-Ray Anim Items
 script: test_script.script
+platform: [cop, cs]
+depends: ixray-anim-items-base
 ```
 :::
 
-`name:` – name of your addon (optional).  
+`name:` – name of your addon (optional). Other addons refer to it by this name in `depends:`.  
 
 `script:` – entry point of the script systems of your addon (optional). __More details below__!  
+
+`platform:` – platforms the addon mounts on: `cop`, `cs`, `soc`, one value or a list (optional). Without it the addon mounts on every platform.  
+
+`depends:` – addon names, one value or a list, that must mount first (optional). An addon whose dependency is missing is skipped with `! Addon '...' skipped: missing dependencies`. For the same file path, the addon that mounts later wins.  
+
+#### Platform folders
+
+Files in `platforms\<platform>\` inside an addon folder mount after the rest of the addon, as if they were in its root. Only the current platform's folder mounts; the others are skipped. A file there replaces the addon's own file with the same path.
+
+```text
+my_addon\
+  addon.init
+  configs\weapons\w_ak74.ltx                       ; every platform
+  platforms\soc\configs\weapons\mod_w_ak74_soc.ltx ; SoC only
+  platforms\cs\textures\ui\ui_icons.dds            ; CS only, replaces the root file
+```
+
+Use it with [DLTX](../configs/dltx.md) and [XMLOverride](../configs/xml-override.md) to keep one addon with a common base and small platform edits. Archive addons do not support platform folders.
 
 #### script entry
 

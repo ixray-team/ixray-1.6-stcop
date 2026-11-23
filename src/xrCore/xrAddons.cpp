@@ -154,7 +154,7 @@ void CAddonManager::ResolveDependencies()
                 bool Found = false;
                 for (auto& Loaded : Sorted)
                 {
-                    if (!Loaded.AddonName.size() == 0 &&
+                    if (Loaded.AddonName.size() != 0 &&
                         stricmp(*Loaded.AddonName, Dep.c_str()) == 0)
                     {
                         Found = true;
@@ -185,7 +185,7 @@ void CAddonManager::ResolveDependencies()
         {
             for (auto& Addon : Work)
             {
-                if (!Addon.AddonName.size() == 0)
+                if (Addon.AddonName.size() != 0)
                 {
                     Msg("! Addon '%s' skipped: missing dependencies", *Addon.AddonName);
                 }
@@ -211,6 +211,20 @@ void CAddonManager::MountAddons()
             xr_stack_string_path addon_path = Addon.EntryDir.c_str();
             addon_path.append("\\");
             FS.rescan_path(addon_path.c_str(), true, false);
+
+            // Platform files mount after the root, so they replace root files with the same path
+            const std::filesystem::path PlatformDir = AddonPath / PlatformsDir / currentPlatform.c_str();
+            if (std::filesystem::is_directory(PlatformDir))
+            {
+                Msg("Mounting addon platform folder: %s", PlatformDir.string().c_str());
+
+                xr_stack_string_path platform_path = PlatformDir.string().c_str();
+                platform_path.append("\\");
+
+                IsMountingPlatformDir = true;
+                FS.rescan_path(platform_path.c_str(), true, false);
+                IsMountingPlatformDir = false;
+            }
         }
         else if (AddonPath.extension() == ".db" && std::filesystem::is_regular_file(AddonPath))
         {
@@ -245,10 +259,26 @@ bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 
 		if (IsFileInsideAddon)
 		{
+			xr_string FilePath = TempPath.substr(AddonRootLength + 1);
+
+			const xr_string PlatformsPrefix = xr_string(PlatformsDir) + Platform::kPreferredSeparator;
+			if (FilePath.starts_with(PlatformsPrefix))
+			{
+				// Only the current platform's folder is mounted, and only in its own pass
+				xr_string CurrentPlatformPrefix = PlatformsPrefix + currentPlatform.c_str() + Platform::kPreferredSeparator;
+				xr_strlwr(CurrentPlatformPrefix);
+
+				if (!IsMountingPlatformDir || !FilePath.starts_with(CurrentPlatformPrefix))
+				{
+					return false;
+				}
+
+				FilePath = FilePath.substr(CurrentPlatformPrefix.length());
+			}
+
 			Desc.wrap = xr_strdup(TempPath.c_str());
 
 			xr_path TempOutPath = DataPath;
-			xr_string FilePath = TempPath.substr(AddonRootLength + 1);
 
 			TempOutPath.append(FilePath.c_str());
 			TempPath = TempOutPath.xstring();

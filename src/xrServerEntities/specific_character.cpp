@@ -5,6 +5,83 @@
 #include "PhraseDialog.h"
 #include "../xrEngine/string_table.h"
 
+namespace SupplySections
+{
+	xr_string_view Trim(xr_string_view Text)
+	{
+		const size_t Begin = Text.find_first_not_of(" \t\r");
+		if (Begin == xr_string_view::npos)
+		{
+			return {};
+		}
+
+		const size_t End = Text.find_last_not_of(" \t\r");
+		return Text.substr(Begin, End - Begin + 1);
+	}
+
+	// A supplies line "@section" is replaced by the lines of that system.ltx section,
+	// so loadouts can live in LTX and be changed with DLTX
+	void Expand(xr_string& Supplies, const char* CharacterId)
+	{
+		if (Supplies.find('@') == xr_string::npos)
+		{
+			return;
+		}
+
+		xr_string Result;
+		Result.reserve(Supplies.size());
+
+		size_t Pos = 0;
+		while (Pos < Supplies.size())
+		{
+			size_t End = Supplies.find('\n', Pos);
+			if (End == xr_string::npos)
+			{
+				End = Supplies.size();
+			}
+
+			const xr_string_view Line = xr_string_view(Supplies).substr(Pos, End - Pos);
+			const xr_string_view Trimmed = Trim(Line);
+
+			if (!Trimmed.empty() && Trimmed.front() == '@')
+			{
+				const xr_string_view SectionView = Trim(Trimmed.substr(1));
+				const xr_string Section(SectionView.data(), static_cast<u32>(SectionView.size()));
+
+				if (pSettings->section_exist(Section.c_str()))
+				{
+					for (const CInifile::Item& Item : pSettings->r_section(Section.c_str()).Data)
+					{
+						Result += Item.first.c_str();
+						if (Item.second.size())
+						{
+							Result += " = ";
+							Result += Item.second.c_str();
+						}
+						Result += '\n';
+					}
+				}
+				else
+				{
+					Msg("! Specific character '%s': supplies section '%s' not found", CharacterId, Section.c_str());
+				}
+			}
+			else
+			{
+				Result += Line;
+				if (End < Supplies.size())
+				{
+					Result += '\n';
+				}
+			}
+
+			Pos = End + 1;
+		}
+
+		Supplies = Result;
+	}
+}
+
 
 SSpecificCharacterData::SSpecificCharacterData()
 {
@@ -150,6 +227,8 @@ void CSpecificCharacter::load_shared	(const char*)
 			str.replace(pos, 2, "\n");
 			pos = str.find("\\n", pos + 1);
 		}
+
+		SupplySections::Expand(str, *m_OwnId);
 	}
 
 	data()->m_sNpcConfigSect		= pXML->Read("npc_config", 0, "");

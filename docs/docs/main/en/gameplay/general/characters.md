@@ -34,6 +34,27 @@ wpn_pm = 1 \n
 wpn_sig220 = 1 \n
 ```
 
+## Supplies from an LTX section
+
+A `<supplies>` line of the form `@section` is replaced by the lines of that section from `system.ltx`, parents included. The section can be changed with [DLTX](../../configs/dltx.md), so one loadout serves many profiles and platforms.
+
+```ini
+; configs/misc/my_loadouts.ltx, included from system.ltx
+[my_loadout_stalker_1]
+wpn_ak74 = 1, scope_prob=0.3
+ammo_5.45x39_fmj = 2
+```
+
+```xml
+<supplies>
+	[spawn] \n
+	@my_loadout_stalker_1 \n
+	#include "gameplay\character_items.xml"
+</supplies>
+```
+
+A missing section logs `! Specific character '...': supplies section '...' not found`. Keys in an LTX section are unique: write two of the same item as `medkit = 2`, not as two lines.
+
 ## Improved Behavior Schemes 
 
 - Improved indoor combat behavior scheme: NPCs will no longer look at the floor or ceiling if the enemy is on another floor
