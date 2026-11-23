@@ -473,7 +473,7 @@ void CWeapon::Load		(const char* section)
 
 	pSettings->r_bool_nullable(section, "allow_safemode", m_bAllowSafemode);
 	pSettings->r_float_nullable(section, "safemode_rotate_time", m_fSafeModeRotateTime);
-	SafemodeDamping = pSettings->read_if_exists<float>(ReachInAllSections("safemode_damping"), "safemode_damping", -1.f);
+	Safemode.Damping = pSettings->read_if_exists<float>(ReachInAllSections("safemode_damping"), "safemode_damping", -1.f);
 
 	m_AlterZoomAllowed = pSettings->read_if_exists<bool>(ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
 
@@ -2190,7 +2190,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			{
 				if (SafemodeFeedbackDeferred())
 				{
-					SafemodeTogglePending = !SafemodeTogglePending;
+					Safemode.TogglePending = !Safemode.TogglePending;
 					return true;
 				}
 
@@ -3841,24 +3841,11 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	const bool safemode_spring = CCameraRig::Enabled() && (idx == EHudOffsetType::eSafemode || m_fSafeModeRotationFactor > 0.0f);
 	if (safemode_spring)
 	{
-		const float half_life = std::max(m_fSafeModeRotateTime * 0.35f, 0.01f);
-		const float damping = SafemodeDamping >= 0.f ? SafemodeDamping : CCameraRig::Params().safemode_damping;
-		const auto spring = [&](float error, float& velocity)
-		{
-			HudSpring::Step(error, velocity, 0.f, half_life, damping, Device.fTimeDelta);
-			return error;
-		};
-
-		for (int i = 0; i < 3; ++i)
-		{
-			saved_offs[i] = curr_offs[i] + spring(saved_offs[i] - curr_offs[i], SafemodeVelocityPos[i]);
-			saved_rot[i] = angle_normalize_signed(curr_rot[i] + spring(-angle_difference_signed(curr_rot[i], saved_rot[i]), SafemodeVelocityRot[i]));
-		}
+		Safemode.Spring(curr_offs, saved_offs, curr_rot, saved_rot, std::max(m_fSafeModeRotateTime * 0.35f, 0.01f));
 	}
 	else
 	{
-		SafemodeVelocityPos.set(0.f, 0.f, 0.f);
-		SafemodeVelocityRot.set(0.f, 0.f, 0.f);
+		Safemode.ResetVelocity();
 
 		if (curr_offs.similar(saved_offs, EPS))
 		{
@@ -5701,15 +5688,14 @@ void CWeapon::OnSprintToSafemode()
 {
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 	attachable_hud_item* hi = HudItemData();
-	if (pActor == nullptr || hi == nullptr || SafemodeTogglePending || !pActor->IsSafemode())
+	if (pActor == nullptr || hi == nullptr || Safemode.TogglePending || !pActor->IsSafemode())
 	{
 		return;
 	}
 
 	hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisPos].set(0.f, 0.f, 0.f);
 	hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisRot].set(0.f, 0.f, 0.f);
-	SafemodeVelocityPos.set(0.f, 0.f, 0.f);
-	SafemodeVelocityRot.set(0.f, 0.f, 0.f);
+	Safemode.ResetVelocity();
 
 	if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
 	{
@@ -5722,7 +5708,7 @@ bool CWeapon::SprintEndsInSafemode() const
 {
 	CObject* parent = const_cast<CObject*>(H_Parent());
 	const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr;
-	return pActor != nullptr && pActor->IsSafemode() != SafemodeTogglePending;
+	return pActor != nullptr && pActor->IsSafemode() != Safemode.TogglePending;
 }
 
 bool CWeapon::SafemodeFeedbackDeferred()
@@ -5735,16 +5721,16 @@ void CWeapon::PlaySafemodeFeedback(bool entering)
 {
 	if (SafemodeFeedbackDeferred())
 	{
-		if (!SafemodeFeedbackPending)
+		if (!Safemode.FeedbackPending)
 		{
-			SafemodeFeedbackPending = true;
-			SafemodeFeedbackFrom = !entering;
+			Safemode.FeedbackPending = true;
+			Safemode.FeedbackFrom = !entering;
 		}
 
 		return;
 	}
 
-	SafemodeFeedbackPending = false;
+	Safemode.FeedbackPending = false;
 
 	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
 	{
@@ -5761,25 +5747,25 @@ void CWeapon::UpdateSafemodeFeedback(CActor* pActor)
 {
 	if (GetState() == eHiding || GetState() == eHidden)
 	{
-		SafemodeTogglePending = false;
+		Safemode.TogglePending = false;
 	}
 
-	if (SafemodeTogglePending && !SafemodeFeedbackDeferred())
+	if (Safemode.TogglePending && !SafemodeFeedbackDeferred())
 	{
-		SafemodeTogglePending = false;
+		Safemode.TogglePending = false;
 		if (AllowSafemode())
 		{
 			ToggleSafemode(pActor);
 		}
 	}
 
-	if (!SafemodeFeedbackPending || SafemodeFeedbackDeferred())
+	if (!Safemode.FeedbackPending || SafemodeFeedbackDeferred())
 	{
 		return;
 	}
 
-	SafemodeFeedbackPending = false;
-	if (pActor->IsSafemode() != SafemodeFeedbackFrom)
+	Safemode.FeedbackPending = false;
+	if (pActor->IsSafemode() != Safemode.FeedbackFrom)
 	{
 		PlaySafemodeFeedback(pActor->IsSafemode());
 	}

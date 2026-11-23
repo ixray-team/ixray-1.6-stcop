@@ -16,6 +16,7 @@
 #include "script_game_object.h"
 #include "Scope.h"
 #include "Descs/WeaponDesc.h"
+#include "CameraRig.h"
 
 #include "../xrScripts/script_export_space.h"
 
@@ -479,12 +480,7 @@ public:
 	float m_fLastRechargeTime = 0.0f;
 	float m_fSafeModeRotationFactor = 0.0f;
 	float m_fSafeModeRotateTime = 0.25f;
-	Fvector SafemodeVelocityPos = {};
-	Fvector SafemodeVelocityRot = {};
-	float SafemodeDamping = -1.f;
-	bool SafemodeFeedbackPending = false;
-	bool SafemodeFeedbackFrom = false;
-	bool SafemodeTogglePending = false;
+	SHudSafemode Safemode;
 	float AimReloadFovOut = 0.f;
 
 

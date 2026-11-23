@@ -272,6 +272,25 @@ struct SHudAimReload
 	void UpdateRelease(float Progress);
 };
 
+struct SHudSafemode
+{
+	Fvector VelocityPos = {};
+	Fvector VelocityRot = {};
+	float Damping = -1.f;
+	bool FeedbackPending = false;
+	bool FeedbackFrom = false;
+	bool TogglePending = false;
+
+	void ResetVelocity()
+	{
+		VelocityPos.set(0.f, 0.f, 0.f);
+		VelocityRot.set(0.f, 0.f, 0.f);
+	}
+
+	float SpringDamping() const;
+	void Spring(const Fvector& CurrentPos, Fvector& SavedPos, const Fvector& CurrentRot, Fvector& SavedRot, float HalfLife);
+};
+
 enum class EHudSprintStage : u8
 {
 	None,

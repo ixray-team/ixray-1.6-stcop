@@ -4276,7 +4276,7 @@ void SHudSprint::UpdatePose(IKinematicsAnimated* Model, const attachable_hud_ite
 
 	const float HalfLife = Current != nullptr ? Current->SprintPoseInertia : 0.f;
 	const CWeapon* Weapon = Current != nullptr && Current->m_parent_hud_item != nullptr ? Current->m_parent_hud_item->cast_weapon() : nullptr;
-	const float Damping = Weapon != nullptr && Weapon->SafemodeDamping >= 0.f ? Weapon->SafemodeDamping : CCameraRig::Params().safemode_damping;
+	const float Damping = Weapon != nullptr ? Weapon->Safemode.SpringDamping() : CCameraRig::Params().safemode_damping;
 	HudSpring::Step(Pose, PoseVelocity, Target, HalfLife, Damping, Device.fTimeDelta);
 	Pose = std::clamp(Pose, -0.25f, 1.25f);
 
@@ -4399,3 +4399,23 @@ void SHudAimReload::UpdateRelease(float Progress)
 	}
 }
 
+float SHudSafemode::SpringDamping() const
+{
+	return Damping >= 0.f ? Damping : CCameraRig::Params().safemode_damping;
+}
+
+void SHudSafemode::Spring(const Fvector& CurrentPos, Fvector& SavedPos, const Fvector& CurrentRot, Fvector& SavedRot, float HalfLife)
+{
+	const float Zeta = SpringDamping();
+	const auto Settle = [&](float Error, float& Velocity)
+	{
+		HudSpring::Step(Error, Velocity, 0.f, HalfLife, Zeta, Device.fTimeDelta);
+		return Error;
+	};
+
+	for (int i = 0; i < 3; ++i)
+	{
+		SavedPos[i] = CurrentPos[i] + Settle(SavedPos[i] - CurrentPos[i], VelocityPos[i]);
+		SavedRot[i] = angle_normalize_signed(CurrentRot[i] + Settle(-angle_difference_signed(CurrentRot[i], SavedRot[i]), VelocityRot[i]));
+	}
+}
