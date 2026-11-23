@@ -956,8 +956,13 @@ function ixr_options.register_option(group_name, variable_name, display_text, co
 	end
 	
 	if tostring(type(controll_data)) == "table" then
-		controll_data["default_value"] = ixr_options.get_stored_variable(script_name, variable_name, controll_data["default_value"])
-		ixr_options.set_variable_value(script_name, variable_name, controll_data["default_value"])
+		local default_value = controll_data["default_value"]
+		local stored_value = ixr_options.get_stored_variable(script_name, variable_name, default_value)
+		if controll_data["controll"] == "track_bar" then
+			stored_value = tonumber(stored_value) or tonumber(default_value) or controll_data["min_value"]
+		end
+		controll_data["default_value"] = stored_value
+		ixr_options.set_variable_value(script_name, variable_name, stored_value)
 	end
 
 	table.insert(ixr_options.options[script_name], {
@@ -2084,6 +2089,10 @@ end
 
 function IXRTrackBar:SetValue(value)
 	value = tonumber(value)
+	if value == nil then
+		return
+	end
+
 	if value < self.min_value then
 		value = self.min_value
 	end
