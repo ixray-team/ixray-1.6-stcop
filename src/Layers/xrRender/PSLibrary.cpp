@@ -226,7 +226,7 @@ bool CPSLibrary::Load2()
 				);
             	if (found_elem!=m_PEDs.end())
             	{
-					Msg("* Particle %s replaced by addon", (*found_elem)->m_Name.c_str());
+					//Msg("* Particle %s replaced by addon", (*found_elem)->m_Name.c_str());
             		xr_delete(*found_elem);
             		*found_elem = def;
             	} else
@@ -249,7 +249,7 @@ bool CPSLibrary::Load2()
 				auto found_elem = std::find_if(m_PGDs.begin(), m_PGDs.end(), [&def](const auto& elem){ return xr_strcmp(def->m_Name.c_str(), *elem->m_Name) == 0; });
             	if (found_elem!=m_PGDs.end())
             	{
-					Msg("* Particle %s replaced by addon", (*found_elem)->m_Name.c_str());
+					//Msg("* Particle %s replaced by addon", (*found_elem)->m_Name.c_str());
             		xr_delete(*found_elem);
             		*found_elem = def;
             	} else
@@ -271,7 +271,7 @@ bool CPSLibrary::Load2()
 				auto found_elem = std::find_if(m_PACDs.begin(), m_PACDs.end(), [&def](const auto& elem){ return xr_strcmp(def->getName(), elem->getName()) == 0; });
 				if (found_elem!=m_PACDs.end())
 				{
-					Msg("* Particle %s replaced by addon", (*found_elem)->getName());
+					//Msg("* Particle %s replaced by addon", (*found_elem)->getName());
 					xr_delete(*found_elem);
 					*found_elem = def;
 				} else

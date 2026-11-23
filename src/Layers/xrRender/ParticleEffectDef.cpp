@@ -252,7 +252,7 @@ void CPEDef::NormalizeActionLayout()
 			Action->Save(m_Actions);
 		}
 		ParticleActionLayout::DeleteActions(Actions);
-		Msg("* Particle effect '%s': SoC action layout converted", m_Name.c_str());
+		// Msg("* Particle effect '%s': SoC action layout converted", m_Name.c_str());
 		return;
 	}
 
