@@ -26,6 +26,11 @@ constexpr float CarDoorSpringDamping = 0.5f;
 constexpr float CarDoorSpringSettleAngle = 0.035f;
 constexpr float CarDoorSpringSettleRate = 0.2f;
 
+// A top hatch is a horizontal door: its thinnest OBB axis is nearly vertical.
+// Side doors use the same code with a horizontal thin axis and must keep the
+// existing sideways exit.
+constexpr float CarDoorTopExitNormalY = 0.7f;
+
 bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 {
 	if(hit_type==ALife::eHitTypeStrike && P > 20.f)
@@ -1021,6 +1026,15 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 		MIN_OF(bb.m_halfsize.x,add1.set(pf.i);add1.mul(bb.m_halfsize.x),
 			   bb.m_halfsize.y,add1.set(pf.j);add1.mul(bb.m_halfsize.y),
 			  bb.m_halfsize.z,add1.set(pf.k);add1.mul(bb.m_halfsize.z))
+		// The smallest half-size is the door thickness. For a top hatch this
+		// axis points up/down, and the horizontal dir_from_car sign test below
+		// cannot decide which way the player should leave. Detect it here and
+		// use the roof-safe fallback instead of pushing the actor through the
+		// hull.
+		const Fvector DoorThinAxis = add1;
+		const float DoorThinAxisLength = DoorThinAxis.magnitude();
+		const bool TopExit = DoorThinAxisLength > EPS &&
+			fabsf(DoorThinAxis.y) / DoorThinAxisLength >= CarDoorTopExitNormalY;
 		Fvector dir_from_car;dir_from_car.sub(pf.c,pcar->Position());
 		dir_from_car.y=0.f;
 		if(add1.dotproduct(dir_from_car)<0.f)add1.invert();	
@@ -1066,11 +1080,12 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 		}
 
 		// A car lying on its side or upside down cannot use its doors even if
-		// the horizontal exit ray happens to be clear. Force the world-space
-		// point above the car instead of transforming the seat through the
-		// rolled car transform.
+		// the horizontal exit ray happens to be clear. A top hatch also needs
+		// a point above the hull: its horizontal offset is a thin vertical
+		// axis and would leave the actor with his feet inside the vehicle.
+		// Force the world-space point above the car in all these cases.
 		const bool CarRolled = pcar->XFORM().j.y < 0.5f;
-		if (exit_blocked || CarRolled)
+		if (exit_blocked || CarRolled || TopExit)
 		{
 			Fbox LocalBox = pcar->BoundingBox();
 			if (LocalBox.is_valid())
