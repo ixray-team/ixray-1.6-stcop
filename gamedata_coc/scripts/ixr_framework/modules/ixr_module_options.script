@@ -29,6 +29,7 @@ local DRAW_VAR_NAME = false
 
 local CONST_APPDATA_FOLDER = nil -- auto
 local options_scroll_wnd = nil
+local update_aspect_layout
 
 local ixr_options = {
 	options = {},
@@ -74,7 +75,7 @@ local ixr_options = {
 		track_bar_height = 18,
 		track_bar_alpha = 128,
 		
-		option_plane_width = 820,
+		option_plane_width = 615,
 		option_plane_height = 40,
 	}
 }
@@ -742,6 +743,7 @@ function ixr_options.init()
 end
 
 function _on_main_menu_update(_ref)
+	update_aspect_layout(_ref)
 	if ixr_options.__timer <= device().dwtime_continual then 
 		ixr_options.__timer = device().dwtime_continual + 100
 
@@ -1122,7 +1124,61 @@ function set_menu_ref(_ref)
 	ixr_options.main_menu_ref = _ref
 end
 
+local function layout_close_button(button, background, aspect_scale)
+	local height = button:GetHeight()
+	local width = height * aspect_scale
+	local pos = background:GetWndPos()
+	button:SetWndPos(vector2():set(
+		pos.x + (background:GetWidth() - width) / 2,
+		pos.y + (background:GetHeight() - height) / 2
+	))
+	button:SetWidth(width)
+end
+
+local function layout_option_arrows(control, aspect_scale)
+	local size = 16
+	local width = size * aspect_scale
+	local background_width = control.controll_background:GetWidth()
+	control.controll_arrow_left:SetWndSize(vector2():set(width, size))
+	control.controll_arrow_right:SetWndSize(vector2():set(width, size))
+	control.controll_arrow_right:SetWndPos(vector2():set(background_width - width - 1, 1))
+	control.controll_text:SetWndPos(vector2():set(width + 3, 1))
+	control.controll_text:SetWndSize(vector2():set(background_width - 2 * (width + 3), size))
+end
+
+update_aspect_layout = function(menu)
+	local aspect_scale = ui.get_current_kx()
+	if menu.ixr_options_aspect_scale == aspect_scale then
+		return
+	end
+
+	local controls = menu.ixr_controlls
+	local close_button = controls and controls.ixr_options_exit_btn
+	if not close_button then
+		return
+	end
+
+	menu.ixr_options_aspect_scale = aspect_scale
+	layout_close_button(close_button, controls.ixr_options_title_close_btn_bg, aspect_scale)
+	if menu.ixr_options_btn then
+		local pos = menu.ixr_options_btn:GetWndPos()
+		menu.ixr_options_btn:SetWndPos(vector2():set(menu.ixr_options_launcher_x * aspect_scale, pos.y))
+		menu.ixr_options_btn:SetWidth(menu.ixr_options_launcher_width * aspect_scale)
+	end
+	for _, addon in ipairs(ixr_options.gamepad_supported_controlls.addons) do
+		addon.addon_controll_ref:LayoutIcon(aspect_scale)
+	end
+	for _, option in ipairs(ixr_options.gamepad_supported_controlls.options_controlls) do
+		if option.controll_type == "check_box" then
+			option.controll_ref:LayoutSwitch(aspect_scale)
+		elseif option.controll_type == "combo_box" or option.controll_type == "numeric_up_down" then
+			layout_option_arrows(option.controll_ref, aspect_scale)
+		end
+	end
+end
+
 function draw_options()
+	update_aspect_layout(get_menu_ref())
 	for k, v in pairs(get_menu_ref().ixr_controlls) do
 		v:Show(true)
 	end
@@ -1301,14 +1357,19 @@ function _on_main_menu_init(_ref)
 	get_menu_ref().options_xml = CScriptXmlInit()
 	get_menu_ref().options_xml:ParseFile("ui_ixr_options.xml")
 	ixr_options.main_menu_ref.ixr_controlls = {}
+	ixr_options.main_menu_ref.ixr_options_aspect_scale = nil
 end
 
 function _on_main_menu_init_callbacks(_ref)
 	set_menu_ref(_ref)
 	
 	get_menu_ref().ixr_options_btn = get_menu_ref().options_xml:Init3tButton("ixr_options_btn", get_menu_ref())
-	get_menu_ref().ixr_options_btn:SetWndPos(vector2():set(get_menu_ref().ixr_options_btn:GetWndPos().x * ui.get_current_kx(), get_menu_ref().ixr_options_btn:GetWndPos().y))
-    get_menu_ref().ixr_options_btn:SetWidth(get_menu_ref().ixr_options_btn:GetWidth()*ui.get_current_kx())
+	local button = get_menu_ref().ixr_options_btn
+	local pos = button:GetWndPos()
+	_ref.ixr_options_launcher_x = pos.x
+	_ref.ixr_options_launcher_width = button:GetWidth()
+	button:SetWndPos(vector2():set(pos.x * ui.get_current_kx(), pos.y))
+	button:SetWidth(_ref.ixr_options_launcher_width * ui.get_current_kx())
 	get_menu_ref():Register(get_menu_ref().ixr_options_btn, "ixr_options_btn")
 	get_menu_ref():AddCallback("ixr_options_btn", ui_events.BUTTON_CLICKED, this.on_btn_options_ixr_clicked, get_menu_ref())
 end
@@ -1353,7 +1414,8 @@ function _on_main_menu_init_controlls(_ref)
 	register_text("ixr_options_title_text", "ixr_options_boycott_32_l", "IX-RAY OPTIONS", 442, 23, 287, 43, GetARGB(title_text_alpha, 255, 255, 255))
 	
 	register_static("ixr_options_title_close_btn_bg", "black_texture", 971, 13, 43, 43, GetARGB(255, 255, 255, 255))
-	register_button("ixr_options_exit_btn", "ixr_options_close_button", 976, 18, 32, 32, this.on_ixr_options_exit_btn_clicked)
+	local close_button = register_button("ixr_options_exit_btn", "ixr_options_close_button", 976, 18, 32, 32, this.on_ixr_options_exit_btn_clicked)
+	layout_close_button(close_button, get_controll("ixr_options_title_close_btn_bg"), ui.get_current_kx())
 	
 	register_static("ixr_options_middle_bg", "black_texture", 13, 56, 1001, 654, GetARGB(middle_alpha, 255, 255, 255))
 	
@@ -1578,7 +1640,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 	if controll_type == "check_box" then
 		return register_checkbox(
 			tostring(controll_type) .. tostring(option_key_name),
-			parent_element_width - ixr_options.controlls_defines.check_box_width - 3.5,
+			parent_element_width - ixr_options.controlls_defines.check_box_width * ui.get_current_kx() - 3.5,
 			4,
 			ixr_options.controlls_defines.check_box_alpha,
 			option_data["controll_data"]["default_value"],
@@ -1672,7 +1734,6 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		option_bg:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
 		option_bg:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		get_menu_ref():Register(option_bg, controll_option_bg_name)
-		fix_controll_size(option_bg)
 		
 		local option_bg_selected = get_options_xml():InitStatic("black_option_rounded_rect_selected", _shell)
 		option_bg_selected:SetWndPos(vector2():set(padding, padding))
@@ -1680,7 +1741,6 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		option_bg_selected:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		option_bg_selected:Show(false)
 		get_menu_ref():Register(option_bg_selected, controll_option_bg_name.."_selected")
-		fix_controll_size(option_bg_selected)
 		
 		local option_bg_focused = get_options_xml():InitStatic("black_option_rounded_rect_focused", _shell)
 		option_bg_focused:SetWndPos(vector2():set(padding, padding))
@@ -1688,7 +1748,6 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		option_bg_focused:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		option_bg_focused:Show(false)
 		get_menu_ref():Register(option_bg_focused, controll_option_bg_name.."_focused")
-		fix_controll_size(option_bg_focused)
 		
 		local displayText = "text_" .. tostring(option_index)
 		local ctrl_name = "txt_"  .. tostring(option_index)
@@ -1763,7 +1822,6 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_bg:SetWndSize(vector2():set(texture_width - (padding * 2), texture_height - (padding * 2)))
 		option_bg:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		get_menu_ref():Register(option_bg, controll_option_bg_name .. "_" .. tostring(i))
-		fix_controll_size(option_bg)
 		
 		local option_bg_selected = get_options_xml():InitStatic("black_option_rounded_rect_selected", group_bg)
 		option_bg_selected:SetWndPos(vector2():set(padding, padding + y_offset))
@@ -1771,7 +1829,6 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_bg_selected:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		option_bg_selected:Show(false)
 		get_menu_ref():Register(option_bg_selected, controll_option_bg_name .. "_selected_" .. tostring(i))
-		fix_controll_size(option_bg_selected)
 		
 		local option_bg_focused = get_options_xml():InitStatic("black_option_rounded_rect_focused", group_bg)
 		option_bg_focused:SetWndPos(vector2():set(padding, padding + y_offset))
@@ -1779,7 +1836,6 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_bg_focused:SetTextureColor(GetARGB(alpha, 225, 225, 225))
 		option_bg_focused:Show(false)
 		get_menu_ref():Register(option_bg_focused, controll_option_bg_name .. "_focused_" .. tostring(i))
-		fix_controll_size(option_bg_focused)
 		
 		local option_name_controll = get_options_xml():InitStatic("ixr_product_sans_12_l", option_bg)
 		option_name_controll:SetWndPos(vector2():set(padding, padding))
@@ -2090,11 +2146,8 @@ function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_
 	self.controll_background:SetStretchTexture(true)
 	self.controll_background:Show(false)
 	
-	local arrow_size = 16
-	
 	self.controll_arrow_left = get_options_xml():Init3tButton("combo_box_left_arrow", self.controll_background)
 	self.controll_arrow_left:SetWndPos(vector2():set(1, 1))
-	self.controll_arrow_left:SetWndSize(vector2():set(arrow_size, arrow_size))
 	self.controll_arrow_left:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.controll_arrow_left:SetStretchTexture(true)
 	self.controll_arrow_left:Show(false)
@@ -2102,8 +2155,6 @@ function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_
 	get_menu_ref():AddCallback(self.controll_name .. "_left_arrow_btn", ui_events.BUTTON_CLICKED, function () self:LeftArrowClick() end, get_menu_ref())
 	
 	self.controll_arrow_right = get_options_xml():Init3tButton("combo_box_right_arrow", self.controll_background)
-	self.controll_arrow_right:SetWndPos(vector2():set(self.controll_background:GetWidth() - (arrow_size + 1), 1))
-	self.controll_arrow_right:SetWndSize(vector2():set(arrow_size, arrow_size))
 	self.controll_arrow_right:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.controll_arrow_right:SetStretchTexture(true)
 	self.controll_arrow_right:Show(false)
@@ -2111,8 +2162,7 @@ function IXRNumericUpDown:__init(controll_name, x, y, alpha, default_value, min_
 	get_menu_ref():AddCallback(self.controll_name .. "_right_arrow_btn", ui_events.BUTTON_CLICKED, function () self:RightArrowClick() end, get_menu_ref())
 	
 	self.controll_text = get_options_xml():InitStatic("text_box_middle", self.controll_background)
-	self.controll_text:SetWndPos(vector2():set(arrow_size + 3, 1))
-	self.controll_text:SetWndSize(vector2():set(self.controll_background:GetWidth() - ((arrow_size * 2) + 6), arrow_size))
+	layout_option_arrows(self, ui.get_current_kx())
 	self.controll_text:Show(false)
 	self.controll_text:TextControl():SetText("0.0")
 	self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
@@ -2262,11 +2312,8 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	self.controll_background:SetStretchTexture(true)
 	self.controll_background:Show(false)
 	
-	local arrow_size = 16
-	
 	self.controll_arrow_left = get_options_xml():Init3tButton("combo_box_left_arrow", self.controll_background)
 	self.controll_arrow_left:SetWndPos(vector2():set(1, 1))
-	self.controll_arrow_left:SetWndSize(vector2():set(arrow_size, arrow_size))
 	self.controll_arrow_left:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.controll_arrow_left:SetStretchTexture(true)
 	self.controll_arrow_left:Show(false)
@@ -2274,8 +2321,6 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	get_menu_ref():AddCallback(self.controll_name .. "_left_arrow_btn", ui_events.BUTTON_CLICKED, function () self:LeftArrowClick() end, get_menu_ref())
 	
 	self.controll_arrow_right = get_options_xml():Init3tButton("combo_box_right_arrow", self.controll_background)
-	self.controll_arrow_right:SetWndPos(vector2():set(self.controll_background:GetWidth() - (arrow_size + 1), 1))
-	self.controll_arrow_right:SetWndSize(vector2():set(arrow_size, arrow_size))
 	self.controll_arrow_right:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.controll_arrow_right:SetStretchTexture(true)
 	self.controll_arrow_right:Show(false)
@@ -2283,8 +2328,7 @@ function IXRComboBox:__init(controll_name, x, y, alpha, default_value_index, lis
 	get_menu_ref():AddCallback(self.controll_name .. "_right_arrow_btn", ui_events.BUTTON_CLICKED, function () self:RightArrowClick() end, get_menu_ref())
 	
 	self.controll_text = get_options_xml():InitStatic("text_box_middle", self.controll_background)
-	self.controll_text:SetWndPos(vector2():set(arrow_size + 3, 1))
-	self.controll_text:SetWndSize(vector2():set(self.controll_background:GetWidth() - ((arrow_size * 2) + 6), arrow_size))
+	layout_option_arrows(self, ui.get_current_kx())
 	self.controll_text:Show(false)
 	self.controll_text:TextControl():SetText("---")
 	self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
@@ -2615,38 +2659,46 @@ function IXRCheckBox:__init(check_box_ctrl_name, x, y, alpha, state, _callback, 
 	self.on_change_callback = _callback
 	self.check_box_ctrl_name = check_box_ctrl_name .. "_" .. tostring(getNextControllIndex())
 	
-	local w = ixr_options.controlls_defines.check_box_width
-	local h = ixr_options.controlls_defines.check_box_height
-	
+	self.switch_right = x + ixr_options.controlls_defines.check_box_width * ui.get_current_kx()
+	self.switch_y = y
 	self:SetWndSize(vector2():set(x, y))
-	self:SetWndPos(vector2():set(w, h))
+	self:SetWndPos(vector2():set(ixr_options.controlls_defines.check_box_width * ui.get_current_kx(), ixr_options.controlls_defines.check_box_height))
 	
 	self.check_box_background = get_options_xml():InitStatic("check_box_background", _ref)
-	self.check_box_background:SetWndPos(vector2():set(x, y))
-	self.check_box_background:SetWndSize(vector2():set(w, h))
 	self.check_box_background:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.check_box_background:SetStretchTexture(true)
 	self.check_box_background:Show(false)
 	
 	self.check_box_on = get_options_xml():Init3tButton("check_box_on", _ref)
-	self.check_box_on:SetWndPos(vector2():set(x, y))
-	self.check_box_on:SetWndSize(vector2():set(w, h))
 	self.check_box_on:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.check_box_on:SetStretchTexture(true)
 	self.check_box_on:Show(false)
 	
 	self.check_box_off = get_options_xml():Init3tButton("check_box_off", _ref)
-	self.check_box_off:SetWndPos(vector2():set(x, y))
-	self.check_box_off:SetWndSize(vector2():set(w, h))
 	self.check_box_off:SetTextureColor(GetARGB(alpha, 255, 255, 255))
 	self.check_box_off:SetStretchTexture(true)
 	self.check_box_off:Show(false)
 	
+	self:LayoutSwitch(ui.get_current_kx())
+
 	get_menu_ref():Register(self.check_box_off, self.check_box_ctrl_name .. "_check_box_off")
 	get_menu_ref():AddCallback(self.check_box_ctrl_name .. "_check_box_off", ui_events.BUTTON_CLICKED, function () self:SwitchState() end, get_menu_ref())
 	
 	get_menu_ref():Register(self.check_box_on, self.check_box_ctrl_name .. "_check_box_on")
 	get_menu_ref():AddCallback(self.check_box_ctrl_name .. "_check_box_on", ui_events.BUTTON_CLICKED, function () self:SwitchState() end, get_menu_ref())
+end
+
+function IXRCheckBox:LayoutSwitch(aspect_scale)
+	local width = ixr_options.controlls_defines.check_box_width * aspect_scale
+	local height = ixr_options.controlls_defines.check_box_height
+	local pos = vector2():set(self.switch_right - width, self.switch_y)
+	local size = vector2():set(width, height)
+	self.check_box_background:SetWndPos(pos)
+	self.check_box_background:SetWndSize(size)
+	self.check_box_on:SetWndPos(pos)
+	self.check_box_on:SetWndSize(size)
+	self.check_box_off:SetWndPos(pos)
+	self.check_box_off:SetWndSize(size)
 end
 
 function IXRCheckBox:Show(flag)
@@ -2781,11 +2833,9 @@ function AddonItem:__init(wnd_size, icon_path, script_name, color_option_title, 
 	self.addon_icon = get_options_xml():InitStatic("addon_icon", self)
 	self.addon_icon:InitTexture(self.icon_path)
 	self.addon_icon:SetStretchTexture(true)
-	self.addon_icon:SetWndPos(vector2():set(14, self.y_offset + 10))
-	self.addon_icon:SetWndSize(vector2():set(64, 64))
+	self:LayoutIcon(ui.get_current_kx())
 	self.addon_icon:SetTextureColor(GetARGB(200, 255, 255, 255))
 	
-	fix_controll_size(self.addon_icon)
 	
 	if self.addon_info.options_title ~= nil then
 		self.addon_title = get_options_xml():InitStatic("ixr_product_sans_16_l", self)
@@ -2841,6 +2891,13 @@ function AddonItem:__init(wnd_size, icon_path, script_name, color_option_title, 
 	
 	-- for gamepads
 	register_addon_for_gamepad(script_name, self)
+end
+
+function AddonItem:LayoutIcon(aspect_scale)
+	local width = math.min(64 * aspect_scale, 56)
+	local height = width / aspect_scale
+	self.addon_icon:SetWndPos(vector2():set(34 - width / 2, self.y_offset + 42 - height / 2))
+	self.addon_icon:SetWndSize(vector2():set(width, height))
 end
 
 function AddonItem:SetSelectedState(is_selected)
