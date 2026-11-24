@@ -350,7 +350,10 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bM
     
 	if (channel == 0 && m_InertialTime > 0.f)
 	{
-		InertialMarkPart(part);
+		if (!InertialAddRestart(part, motion_ID))
+		{
+			InertialMarkPart(part);
+		}
 		bMixing = false;
 	}
 
@@ -1349,23 +1352,16 @@ void CKinematicsAnimated::InertialMarkPart(u16 part, float time, u8 channel)
 	}
 }
 
-void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
+void CKinematicsAnimated::InertialAddJump(u16 part, const CBlend& blend, float FromTime, float ToTime, float Weight)
 {
-	if (m_InertialBones.empty() || part >= MAX_PARTS || blend.timeTotal <= END_EPS)
-	{
-		return;
-	}
+	CBlend FromSample;
+	FromSample.timeCurrent = FromTime;
+	FromSample.stop_at_end = true;
 
-	CBlend End;
-	End.timeCurrent = blend.timeTotal - END_EPS;
-	End.stop_at_end = true;
+	CBlend ToSample;
+	ToSample.timeCurrent = ToTime;
+	ToSample.stop_at_end = true;
 
-	CBlend Start;
-	Start.timeCurrent = 0.f;
-	Start.stop_at_end = true;
-
-	const float Weight = std::clamp(blend.Weight(), 0.f, 1.f);
-	const bool Forward = blend.speed >= 0.f;
 	for (u16 Bone : (*m_Partition)[part].bones)
 	{
 		if (Bone >= m_InertialBones.size() || !m_InertialBones[Bone].Enabled)
@@ -1374,18 +1370,59 @@ void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
 		}
 
 		const CMotion& Motion = *LL_GetMotion(blend.motionID, Bone);
-		CKey KeyEnd, KeyStart;
-		Dequantize(KeyEnd, End, Motion);
-		Dequantize(KeyStart, Start, Motion);
-
-		const CKey& From = Forward ? KeyEnd : KeyStart;
-		const CKey& To = Forward ? KeyStart : KeyEnd;
+		CKey From, To;
+		Dequantize(From, FromSample, Motion);
+		Dequantize(To, ToSample, Motion);
 
 		SInertialBone& S = m_InertialBones[Bone];
 		SInertialOffset& Offset = blend.channel != 0 && blend.channel == S.LayerChannel ? S.Layer : S.Base;
 		Offset.OffsetT.mad(Fvector().sub(From.T, To.T), Weight);
 		Offset.OffsetR.mad(Inertialization::QuatLog(Fquaternion().mul(From.Q, Inertialization::QuatInverse(To.Q))), Weight);
 	}
+}
+
+void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
+{
+	if (m_InertialBones.empty() || part >= MAX_PARTS || blend.timeTotal <= END_EPS)
+	{
+		return;
+	}
+
+	const float End = blend.timeTotal - END_EPS;
+	const bool Forward = blend.speed >= 0.f;
+	InertialAddJump(part, blend, Forward ? End : 0.f, Forward ? 0.f : End, std::clamp(blend.Weight(), 0.f, 1.f));
+}
+
+bool CKinematicsAnimated::InertialAddRestart(u16 part, MotionID motion)
+{
+	if (m_InertialBones.empty() || part >= MAX_PARTS)
+	{
+		return false;
+	}
+
+	const CBlend* Restart = nullptr;
+	for (const CBlend* B : blend_cycles[part])
+	{
+		if (B->channel != 0 || B->blend_state() == CBlend::eFREE_SLOT)
+		{
+			continue;
+		}
+
+		if (Restart != nullptr || !(B->motionID == motion) || B->blend_state() != CBlend::eAccrue || !B->stop_at_end)
+		{
+			return false;
+		}
+
+		Restart = B;
+	}
+
+	if (Restart == nullptr || Restart->timeTotal - END_EPS - Restart->timeCurrent > std::abs(Restart->speed) * RDEVICE.fTimeDelta)
+	{
+		return false;
+	}
+
+	InertialAddJump(part, *Restart, Restart->timeCurrent, 0.f, 1.f);
+	return true;
 }
 
 void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update, u8 channel_mask)

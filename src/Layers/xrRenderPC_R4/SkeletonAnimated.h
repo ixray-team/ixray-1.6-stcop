@@ -110,6 +110,8 @@ private:
 	void						InertialAdvance			();
 	void						InertialMarkPart		( u16 part, float time = 0.f, u8 channel = 0 );
 	void						InertialAddSeam			( u16 part, const CBlend& blend );
+	bool						InertialAddRestart		( u16 part, MotionID motion );
+	void						InertialAddJump			( u16 part, const CBlend& blend, float FromTime, float ToTime, float Weight );
 	void						InertialApply			( u16 bone, CKey& key, bool update, u8 channel_mask );
 public:
 	virtual void				OnCalculateBones		() override;
