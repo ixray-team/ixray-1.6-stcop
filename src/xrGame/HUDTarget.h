@@ -35,7 +35,7 @@ class CHUDTarget
 public:
 	static constexpr float NEAR_LIM = .5f;
 	static constexpr float C_SIZE = .025f;
-	static constexpr float PICKUP_DISTANCE = 2.5f;
+	static constexpr float PICKUP_DISTANCE = 2.2f;
 	static constexpr float SHOW_INFO_SPEED = 1.5f;
 	static constexpr float HIDE_INFO_SPEED = 10.f;
 
