@@ -23,7 +23,7 @@ bool CCar::HUDView() const
 {
 	return active_camera->tag==EctFirstCam;
 }
-#include "phworld.h"
+#include "PHWorld.h"
 float rs_car_fov_effects = 1.f;
 float rs_car_cam_inert = 1.f;
 float inertion_factor	= 0.95f;
