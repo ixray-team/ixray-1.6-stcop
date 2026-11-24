@@ -982,6 +982,23 @@ static CBlend* hud_playing_cycle(IKinematicsAnimated* ka, u16 part, MotionID mot
 	return nullptr;
 }
 
+static MotionID hud_base_cycle(IKinematicsAnimated* ka, u16 part)
+{
+	MotionID Motion;
+	float Amount = 0.f;
+	for (u32 i = 0, count = ka->LL_PartBlendsCount(part); i < count; i++)
+	{
+		const CBlend* B = ka->LL_PartBlend(part, i);
+		if (B != nullptr && B->channel == 0 && B->blend_state() != CBlend::eFREE_SLOT && B->blend_state() != CBlend::eFalloff && B->blendAmount > Amount)
+		{
+			Amount = B->blendAmount;
+			Motion = B->motionID;
+		}
+	}
+
+	return Motion;
+}
+
 static CBlend* hud_play_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion, bool mix, float speed, float fade, const SHudCycleMode& mode)
 {
 	if (mode.Type == EHudCycleMode::Additive)
@@ -1090,7 +1107,7 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 			}
 
 			SHudCycleMode item_mode = m_parent->CycleMode;
-			item_mode.Reference = MotionID();
+			item_mode.Reference = item_mode.Shot ? hud_base_cycle(ka, pid) : MotionID();
 			CBlend* B = hud_play_cycle(ka, pid, M2, bMixIn > EHudMixType::eMixHands, speed, m_parent->CycleFade, item_mode);
 			R_ASSERT(B);
 		}
@@ -1213,6 +1230,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	mode.BlendOut = AdditiveBlendOut;
 	mode.Loop = additive && idle && strstr(anm_name_b.c_str(), "_start") == nullptr && strstr(anm_name_b.c_str(), "_end") == nullptr;
 	mode.FadeAdditive = !additive && AdditivePlaying && !keep_additive;
+	mode.Shot = additive && listed && !retarget && !overlay && !mode.Loop;
 	mode.Reference = MotionID();
 	const shared_str reference = retarget ? retarget_reference : listed ? AdditiveReference : shared_str();
 	if (additive && reference.size() != 0 && !m_model_combined && g_player_hud->GetModel() != nullptr)

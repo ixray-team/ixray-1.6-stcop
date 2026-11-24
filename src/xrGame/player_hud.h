@@ -36,6 +36,7 @@ struct SHudCycleMode
 	float			BlendOut = 0.f;
 	bool			Loop = false;
 	bool			FadeAdditive = false;
+	bool			Shot = false;
 	MotionID		Reference;
 };
 
