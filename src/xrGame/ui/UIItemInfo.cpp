@@ -36,6 +36,45 @@ extern const char* g_inventory_upgrade_xml;
 #define INV_GRID_WIDTH2(SCALE_ICON) (40.0f * SCALE_ICON)
 #define INV_GRID_HEIGHT2(SCALE_ICON) (40.0f * SCALE_ICON)
 
+class CUIItemTooltipFrame final : public CUIFrameWindow
+{
+	float TopHeight = 0.0f;
+	float BottomHeight = 0.0f;
+
+public:
+	bool InitTextureEx(const char* Texture, const char* Shader, bool Fatal) override
+	{
+		if (!CUIFrameWindow::InitTextureEx(Texture, Shader, Fatal))
+		{
+			return false;
+		}
+		TopHeight = m_tex_rect[fmT].height();
+		BottomHeight = m_tex_rect[fmB].height();
+		return true;
+	}
+
+	void SetWndSize(const Fvector2& Size) override
+	{
+		if (m_bTextureVisible && TopHeight + BottomHeight > 0.0f)
+		{
+			Fvector2 Pixels = Size;
+			UI().ClientToScreenScaled(Pixels);
+			const float Scale = std::max(0.0f, Pixels.y) / (TopHeight + BottomHeight);
+			const float Top = Scale < 1.0f ? std::floor(TopHeight * Scale) : TopHeight;
+			const float Bottom = Scale < 1.0f ? std::floor(BottomHeight * Scale) : BottomHeight;
+			for (const auto Part : {fmLT, fmT, fmRT})
+			{
+				m_tex_rect[Part].y2 = m_tex_rect[Part].y1 + Top;
+			}
+			for (const auto Part : {fmLB, fmB, fmRB})
+			{
+				m_tex_rect[Part].y1 = m_tex_rect[Part].y2 - Bottom;
+			}
+		}
+		CUIFrameWindow::SetWndSize(Size);
+	}
+};
+
 CUIItemInfo::CUIItemInfo()
 {
 	UIItemImageSize.set			(0.0f,0.0f);
@@ -102,9 +141,10 @@ bool CUIItemInfo::InitItemInfo(const char* xml_name)
 		
 		delay			= uiXml.ReadAttribInt("main_frame", 0, "delay", 500);
 	}
+	m_b_FitToHeight = uiXml.ReadAttribInt("descr_list", 0, "fit_to_height", 0) != 0;
 	if(uiXml.NavigateToNode("background_frame",0))
 	{
-		UIBackground				= new CUIFrameWindow();
+		UIBackground = m_b_FitToHeight ? new CUIItemTooltipFrame() : new CUIFrameWindow();
 		UIBackground->SetAutoDelete	(true);
 		AttachChild					(UIBackground);
 		xml_init.InitFrameWindow	(uiXml, "background_frame", 0,	UIBackground);
@@ -199,7 +239,7 @@ bool CUIItemInfo::InitItemInfo(const char* xml_name)
 		AttachChild						(UIDesc);		
 		UIDesc->SetAutoDelete			(true);
 		m_desc_info.bShowDescrText		= !!uiXml.ReadAttribInt("descr_list",0,"only_text_info", 1);
-		m_b_FitToHeight					= !!uiXml.ReadAttribInt("descr_list",0,"fit_to_height", 0);
+
 		xml_init.InitScrollView			(uiXml, "descr_list", 0, UIDesc);
 		xml_init.InitFont				(uiXml, "descr_list:font", 0, m_desc_info.uDescClr, m_desc_info.pDescFont);
 	}	
