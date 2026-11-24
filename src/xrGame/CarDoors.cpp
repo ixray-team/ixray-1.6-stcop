@@ -5,15 +5,15 @@
 #include "PHDebug.h"
 #endif
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
+#include "Car.h"
 #include "Level.h"
 #include "../xrCore/net_utils.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "MathUtils.h"
 #include "game_object_space.h"
-#include "actor.h"
+#include "Actor.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Below this speed the car is treated as parked: an open door is held by the

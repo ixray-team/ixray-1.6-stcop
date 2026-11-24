@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 #ifdef DEBUG
 #include "ode_include.h"
@@ -6,9 +6,9 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 #include "PHDebug.h"
 #endif
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
+#include "Car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ExtendedGeom.h"
 #include "mathutilsode.h"

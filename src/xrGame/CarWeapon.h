@@ -1,8 +1,8 @@
 #pragma once
 #include "ShootingObject.h"
 #include "HudSound.h"
-#include "car.h"
-#include "weaponAmmo.h"
+#include "Car.h"
+#include "WeaponAmmo.h"
 
 XREFLECT(LuaEnum, Self="CCar", Name="wpn_action")
 enum ECarWeaponAction

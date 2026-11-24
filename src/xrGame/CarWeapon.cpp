@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 #include "CarWeapon.h"
 #include "Inventory.h"

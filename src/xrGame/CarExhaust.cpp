@@ -5,9 +5,9 @@
 #include "PHDebug.h"
 #endif
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
+#include "Car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 
