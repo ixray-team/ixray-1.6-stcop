@@ -60,7 +60,10 @@ struct sound_slot_state
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
     Fvector prev_position = {};
     Fvector velocity = {};
+    // Playback rate factor requested by the voice shaders (doppler), applied on the next block
     f32 doppler = 1.0f;
+    // Resampling ratio at the end of the last block, 0 before the first one
+    f32 LastRate = 0.0f;
     f32 fade_volume = 1.0f;
 
 	f32 ReverbDryGain = -1.0f;
@@ -68,10 +71,16 @@ struct sound_slot_state
 	bool IndoorFactorValid = false;
 	u32 SendBus = 0;
 	f32 SendGain = 0.0f;
+	// Mixer::RouteVoice: the voice is mixed into this bus instead of its own
+	u32 RouteBus = 0;
+	// Source frame a shader reads ahead of (SoundShaderSource::Prefetch), -1 when none; reset on play
+	u32 ShaderPrefetch = (u32)-1;
 	// From the sound config, rebuilt on play
 	SoundShaderChain SourceShaders;
 	// Set at runtime on the ref_sound (scripts, Audio Debug)
 	SoundShaderChain Shaders;
+	// Doppler of a 3D voice whose chains have no "doppler" shader; created on the first such block
+	xr_unique_ptr<ISoundShader> DefaultDoppler;
 	u8 VoiceEffects[SND_VOICE_EFFECT_COUNT] = {};
 	alignas(16) u8 VoiceEffectState[SND_VOICE_EFFECT_COUNT][SND_VOICE_EFFECT_STATE_SIZE] = {};
 };

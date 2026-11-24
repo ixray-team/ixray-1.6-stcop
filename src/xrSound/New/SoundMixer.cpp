@@ -36,6 +36,7 @@
 #include "SoundConfig.h"
 #include "SoundEffect.h"
 #include "SoundShaders.h"
+#include "SoundAnalyzer.h"
 
 #include "../Sound.h"
 #include "../SoundRender.h"
@@ -47,7 +48,10 @@
 
 #define DEFAULT_SLOT_COUNT (1024)
 #define SND_MAX_PITCH (4)
+// A position jump faster than this is a teleport, not motion
 #define SND_MAX_VELOCITY (100.0f)
+// Seconds of velocity smoothing: positions that move every few frames (physics steps, scripts) average out
+#define SND_VELOCITY_SMOOTH (0.08f)
 
 using namespace XRay::Sound;
 enum class ESoundMixerCommands : u16
@@ -64,7 +68,10 @@ enum class ESoundMixerCommands : u16
 	set_volume,
 	set_panning,
 	slot_shader,
-	bus_shader
+	bus_shader,
+	slot_route,
+	bus_route,
+	bus_release
 };
 
 enum class ESoundShaderOp : u8
@@ -74,8 +81,28 @@ enum class ESoundShaderOp : u8
 	Clear,
 	SetParam,
 	// Copies the chain of the slot in param3
-	Copy
+	Copy,
+	// param2: target, param3: seconds (float bits) | curve << 32
+	Ramp,
+	// param2: rate, param3: depth (float bits) | shape << 32
+	Lfo,
+	StopAutomation
 };
+
+static u64 Snd_PackFloat(float Value, u8 Extra)
+{
+	u32 Bits = 0;
+	memcpy(&Bits, &Value, sizeof(Bits));
+	return (u64)Bits | ((u64)Extra << 32);
+}
+
+static float Snd_UnpackFloat(u64 Packed)
+{
+	const u32 Bits = (u32)Packed;
+	float Value = 0.0f;
+	memcpy(&Value, &Bits, sizeof(Value));
+	return Value;
+}
 
 struct SoundCommand
 {
@@ -87,6 +114,7 @@ struct SoundCommand
 	u64 param3;
 	shared_str string_storage;
 	u32 bus = 0;
+	u32 route = 0;
 };
 
 struct sound_mixer_state
@@ -140,11 +168,20 @@ static void Snd_ApplyShaderCommand(SoundShaderChain& Chain, const SoundCommand& 
 			Chain.CopyFrom(GMixer.slots[Command.param3 - 1].Shaders);
 		}
 		break;
+	case ESoundShaderOp::Ramp:
+		Chain.RampParam(Type, Command.string_storage.c_str(), (float)*(double*)&Command.param2, Snd_UnpackFloat(Command.param3), (Shader::Curve)(Command.param3 >> 32));
+		break;
+	case ESoundShaderOp::Lfo:
+		Chain.SetParamLfo(Type, Command.string_storage.c_str(), (float)*(double*)&Command.param2, Snd_UnpackFloat(Command.param3), (Shader::LfoShape)(Command.param3 >> 32));
+		break;
+	case ESoundShaderOp::StopAutomation:
+		Chain.StopAutomation(Type, Command.string_storage.c_str());
+		break;
 	}
 }
 
-// Extra: source slot for Copy, SpatialOnly for Add / Remove
-static void Snd_QueueShaderCommand(ESoundMixerCommands Id, u32 Target, SoundShaderType Type, ESoundShaderOp Op, double Value = 0.0, const char* Param = nullptr, u32 Extra = 0)
+// Extra: source slot for Copy, SpatialOnly for Add / Remove, packed seconds / depth for Ramp / Lfo
+static void Snd_QueueShaderCommand(ESoundMixerCommands Id, u32 Target, SoundShaderType Type, ESoundShaderOp Op, double Value = 0.0, const char* Param = nullptr, u64 Extra = 0)
 {
 	if (Target == 0 || (Op != ESoundShaderOp::Clear && Op != ESoundShaderOp::Copy && (Type == SoundShaderType::None || Type >= SoundShaderType::Count)))
 	{
@@ -376,14 +413,18 @@ ICF void Snd_ReadSlot(u32 slot_idx, SoundSourceState& source, float** data, u32 
 	}
 }
 
-ICF void Snd_ProcessSlot(u32 slot_idx, SoundSourceState& source, float** data)
+// Returns the source frames read per output frame
+ICF float Snd_ProcessSlot(u32 slot_idx, SoundSourceState& source, float** data)
 {
 	auto& slot = GMixer.slots[slot_idx - 1];
 	float pitch = slot.parameters[(u32)Mixer::ParameterId::Pitch].x;
 
 	u32 output_frames = SND_BLOCKSIZE;
 	float ratio = std::clamp(pitch * slot.doppler * GMixer.time_factor, 0.0f, (float)SND_MAX_PITCH);
-	u32 input_frames = std::max((u32)((float)output_frames * ratio), 1u);
+	// Glide from the ratio of the last block, so doppler and pitch changes are not stepped
+	const float begin_ratio = slot.LastRate > 0.0f ? slot.LastRate : ratio;
+	slot.LastRate = ratio;
+	u32 input_frames = std::max((u32)((float)output_frames * (begin_ratio + ratio) * 0.5f + 0.5f), 1u);
 
 	bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
@@ -392,9 +433,10 @@ ICF void Snd_ProcessSlot(u32 slot_idx, SoundSourceState& source, float** data)
 		memset(GMixer.read_buffer[Channel], 0, (input_frames + 1) * sizeof(float));
 	}
 
-	if (is_music || fis_zero(1.0f - ratio))
+	if (is_music || (fis_zero(1.0f - ratio) && fis_zero(1.0f - begin_ratio)))
 	{
 		Snd_ReadSlot(slot_idx, source, data, SND_BLOCKSIZE);
+		return 1.0f;
 	}
 	else
 	{
@@ -410,8 +452,60 @@ ICF void Snd_ProcessSlot(u32 slot_idx, SoundSourceState& source, float** data)
 			slot.position -= 1; // account 1 sample of tail for interpolation
 		}
 
-		DSP_ResampleBuffer(offfseted_data, data, slot.history, input_frames, output_frames);
+		if (fis_zero(begin_ratio - ratio))
+		{
+			DSP_ResampleBuffer(offfseted_data, data, slot.history, input_frames, output_frames);
+		}
+		else
+		{
+			DSP_ResampleBufferRamp(offfseted_data, data, slot.history, input_frames, output_frames, begin_ratio, ratio);
+		}
 	}
+
+	return (float)input_frames / (float)output_frames;
+}
+
+struct SoundShaderSourceUser
+{
+	u32 SlotIdx;
+	SoundSourceState* Source;
+};
+
+static u32 Snd_ShaderReadSource(void* User, u32 Position, float** Data, u32 Frames)
+{
+	const SoundShaderSourceUser* Info = (const SoundShaderSourceUser*)User;
+	SoundSourceState* Source = Info->Source;
+	u32 Read = 0;
+	u32 DecodeAttempts = 0;
+	while (Read < Frames && Position + Read < Source->Desc.frames_total)
+	{
+		float* Dest[SND_CHANNEL_COUNT];
+		for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			Dest[Channel] = Data[Channel] + Read;
+		}
+
+		const u32 CacheFrames = Snd_CopyCached(Source, Position + Read, Dest, Frames - Read);
+		if (CacheFrames != 0)
+		{
+			Read += CacheFrames;
+			DecodeAttempts = 0;
+			continue;
+		}
+
+		SND_STAT_ADD(g_SoundStats.render_cache_miss, 1u);
+		if (++DecodeAttempts > 2 || !Snd_DecodeNow(Source, Position + Read))
+		{
+			break;
+		}
+	}
+	return Read;
+}
+
+static void Snd_ShaderPrefetchSource(void* User, u32 Position)
+{
+	const SoundShaderSourceUser* Info = (const SoundShaderSourceUser*)User;
+	GMixer.slots[Info->SlotIdx - 1].ShaderPrefetch = Position;
 }
 
 ICF void Snd_PrecacheRenderCallback()
@@ -446,6 +540,13 @@ ICF void Snd_PrecacheRenderCallback()
 				// Whatever doesn't make it in time is decoded on the fly by the render thread.
 				PROF_EVENT("Sound: Prefetch");
 				Snd_PrefetchSource(source, &slot.sound_name, slot.position, (slot.flags & (u8)Mixer::Flags::Looped) != 0);
+
+				// A shader reads elsewhere in the source (reverse)
+				const u32 ShaderPrefetch = slot.ShaderPrefetch;
+				if (ShaderPrefetch != (u32)-1)
+				{
+					Snd_PrefetchSource(source, &slot.sound_name, ShaderPrefetch, (slot.flags & (u8)Mixer::Flags::Looped) != 0);
+				}
 			}
 
 			if (source != nullptr)
@@ -469,22 +570,26 @@ ICF void Snd_PrecacheRenderCallback()
 	}
 }
 
-ICF Fvector Snd_Velocity(const Fvector& From, const Fvector& To)
+// Smoothed velocity of a point that moved From -> To during the last frame. A teleport drops the history
+ICF void Snd_UpdateVelocity(Fvector& Velocity, const Fvector& From, const Fvector& To)
 {
-	Fvector Out;
-	Out.set(0.0f, 0.0f, 0.0f);
-
-	if (GMixer.dt > EPS_S)
+	if (GMixer.dt <= 0.0f)
 	{
-		Out.sub(To, From).mul(1.0f / GMixer.dt);
+		return;
 	}
 
-	if (Out.square_magnitude() > SND_MAX_VELOCITY * SND_MAX_VELOCITY)
+	Fvector Frame;
+	Frame.sub(To, From).mul(1.0f / GMixer.dt);
+	if (Frame.square_magnitude() > SND_MAX_VELOCITY * SND_MAX_VELOCITY)
 	{
-		Out.set(0.0f, 0.0f, 0.0f);
+		Velocity.set(0.0f, 0.0f, 0.0f);
+		return;
 	}
 
-	return Out;
+	const float Alpha = 1.0f - std::exp(-GMixer.dt / SND_VELOCITY_SMOOTH);
+	Velocity.x += (Frame.x - Velocity.x) * Alpha;
+	Velocity.y += (Frame.y - Velocity.y) * Alpha;
+	Velocity.z += (Frame.z - Velocity.z) * Alpha;
 }
 
 static float Snd_HemiIndoorFactor(const Fvector& Pos)
@@ -601,14 +706,48 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 		memset(process_buffer[Channel], 0, SND_BLOCKSIZE * sizeof(float));
 	}
 
-	Snd_ProcessSlot(SlotIdx, Source, process_buffer);
+	const u32 StartPosition = Slot.position;
+	const float Rate = Snd_ProcessSlot(SlotIdx, Source, process_buffer);
 
-	if (!Slot.SourceShaders.IsEmpty() || !Slot.Shaders.IsEmpty())
+	// 3D voices get doppler by default; a "doppler" shader in a chain replaces it (amount = 0 turns it off)
+	const bool IsSpatialVoice = (Slot.flags & (u16)Mixer::Flags::Spatial) != 0;
+	const bool UseDefaultDoppler = IsSpatialVoice && Slot.SourceShaders.Find(SoundShaderType::Doppler) == nullptr && Slot.Shaders.Find(SoundShaderType::Doppler) == nullptr;
+	if (UseDefaultDoppler && !Slot.DefaultDoppler)
+	{
+		Slot.DefaultDoppler.reset(Shader::Create(SoundShaderType::Doppler));
+	}
+
+	if (!Slot.SourceShaders.IsEmpty() || !Slot.Shaders.IsEmpty() || (UseDefaultDoppler && Slot.DefaultDoppler))
 	{
 		PROF_EVENT("Slot Shaders");
-		SoundShaderContext Context = {false, true};
+		SoundShaderSourceUser SourceUser = {SlotIdx, &Source};
+		SoundShaderSource SourceAccess;
+		SourceAccess.User = &SourceUser;
+		SourceAccess.Read = Snd_ShaderReadSource;
+		SourceAccess.Prefetch = Snd_ShaderPrefetchSource;
+		SourceAccess.TotalFrames = Source.Desc.frames_total;
+		SourceAccess.Position = StartPosition;
+		SourceAccess.Rate = Rate;
+		SourceAccess.IsLooped = (Slot.flags & (u16)Mixer::Flags::Looped) != 0;
+		SoundShaderSpace Space;
+		Space.ListenerPosition = GMixer.listener.Position;
+		Space.ListenerVelocity = GMixer.listener.Velocity;
+		Space.VoicePosition = Slot.parameters[(u32)Mixer::ParameterId::Position];
+		Space.VoiceVelocity = Slot.velocity;
+
+		float ShaderPitch = 1.0f;
+		SoundShaderContext Context = {false, true, &SourceAccess, IsSpatialVoice ? &Space : nullptr, &ShaderPitch};
+		if (UseDefaultDoppler && Slot.DefaultDoppler)
+		{
+			Slot.DefaultDoppler->Process(process_buffer, SND_BLOCKSIZE, Context);
+		}
 		Slot.SourceShaders.Process(process_buffer, SND_BLOCKSIZE, Context);
 		Slot.Shaders.Process(process_buffer, SND_BLOCKSIZE, Context);
+		Slot.doppler = ShaderPitch;
+	}
+	else
+	{
+		Slot.doppler = 1.0f;
 	}
 
 	const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
@@ -656,7 +795,7 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	if (IsMono && IsSpatial)
 	{
 		PROF_EVENT("Slot Spatial");
-		SoundEffectVoice Voice = {Pos, Slot.velocity, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], &Slot.doppler, Gain};
+		SoundEffectVoice Voice = {Pos, Slot.velocity, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], Gain};
 		SoundEffectProcess Process = {process_buffer, nullptr, &GMixer.listener, &Voice, true};
 		Snd_ProcessVoiceEffects(Slot, Bus, &Process);
 		Gain = Voice.Gain;
@@ -689,7 +828,8 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	Snd_SendToBus(ZoneBus, process_buffer, BeginFactor * Slot.SendGain, EndFactor * ZoneGain, LeftPanning, RightPanning, Slot.flags);
 	Slot.SendGain = ZoneGain;
 
-	Snd_SendToBus(Slot.bus, process_buffer, BeginFactor, EndFactor, LeftPanning, RightPanning, Slot.flags);
+	const u32 MainBus = (Slot.RouteBus != 0 && Snd_GetBus(Slot.RouteBus) != nullptr) ? Slot.RouteBus : Slot.bus;
+	Snd_SendToBus(MainBus, process_buffer, BeginFactor, EndFactor, LeftPanning, RightPanning, Slot.flags);
 }
 
 void Snd_MixerRenderCallback(float* buffer)
@@ -828,6 +968,7 @@ ICF void DestroyInternal(int slot)
 	GMixer.slots[slot - 1].bus = 0;
 	GMixer.slots[slot - 1].SendBus = 0;
 	GMixer.slots[slot - 1].SendGain = 0.0f;
+	GMixer.slots[slot - 1].RouteBus = 0;
 	GMixer.slots[slot - 1].state = Mixer::State::Stopped;
 	GMixer.slots[slot - 1].prev_state = Mixer::State::Stopped;
 	GMixer.slots[slot - 1].fake_state = Mixer::State::Stopped;
@@ -841,8 +982,10 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 	sound_event* Handler = (sound_event*)event_handler;
 
 	static u64 TimeStamp = Snd_GetTimestamp();
-	GMixer.dt = (float)((Snd_GetTimestamp() - TimeStamp) / 1000000) * 0.001f;
-	TimeStamp = Snd_GetTimestamp();
+	// Nanoseconds to seconds without rounding to milliseconds: velocities divide by it
+	const u64 Now = Snd_GetTimestamp();
+	GMixer.dt = (float)((double)(Now - TimeStamp) * 1e-9);
+	TimeStamp = Now;
 
 	GMixer.time_factor = std::clamp(time_factor, 0.1f, 10.0f);
 	GMixer.mute_volume = mute_volume;
@@ -851,7 +994,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 	GMixer.manage_lock.AcquireExclusive();
 	GMixer.update_lock.AcquireExclusive();
 
-	GMixer.listener.Velocity = Snd_Velocity(GMixer.listener.Position, P);
+	Snd_UpdateVelocity(GMixer.listener.Velocity, GMixer.listener.Position, P);
 	GMixer.listener.Position = P;
 	GMixer.listener.Direction = D;
 	GMixer.listener.Normal = N;
@@ -933,7 +1076,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 			if (Slot.flags & (u16)Flags::Spatial)
 			{
 				const Fvector& Pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
-				Slot.velocity = Snd_Velocity(Slot.prev_position, Pos);
+				Snd_UpdateVelocity(Slot.velocity, Slot.prev_position, Pos);
 				Slot.prev_position = Pos;
 			}
 
@@ -1050,6 +1193,8 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				ActualSlot.bus = Snd_GetBus(Command.bus) != nullptr ? Command.bus : Snd_GetBus(Source.Desc.bus) != nullptr ? Source.Desc.bus : GMixer.default_bus;
 				ActualSlot.SendBus = 0;
 				ActualSlot.SendGain = 0.0f;
+				ActualSlot.RouteBus = Snd_GetBus(Command.route) != nullptr ? Command.route : 0;
+				ActualSlot.ShaderPrefetch = (u32)-1;
 				ActualSlot.fade_volume = 0.0f;
 				ActualSlot.ReverbDryGain = -1.0f;
 				Snd_SyncShaderChain(ActualSlot.SourceShaders, Source.Desc.shaders);
@@ -1068,6 +1213,11 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				}
 
 				ActualSlot.doppler = 1.0f;
+				ActualSlot.LastRate = 0.0f;
+				if (ActualSlot.DefaultDoppler)
+				{
+					ActualSlot.DefaultDoppler->Reset();
+				}
 				ActualSlot.velocity.set(0.0f, 0.0f, 0.0f);
 				ActualSlot.prev_position = ActualSlot.parameters[(u32)Mixer::ParameterId::Position];
 
@@ -1237,6 +1387,28 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				}
 			}
 			break;
+			case ESoundMixerCommands::slot_route:
+			{
+				const u32 Route = (u32)Command.param1;
+				GMixer.slots[Command.slot - 1].RouteBus = Snd_GetBus(Route) != nullptr ? Route : 0;
+			}
+			break;
+			case ESoundMixerCommands::bus_route:
+			{
+				Snd_RouteBus(Command.slot, (u32)Command.param1);
+			}
+			break;
+			case ESoundMixerCommands::bus_release:
+			{
+				if (Snd_ReleaseDynamicBus(Command.slot))
+				{
+					for (sound_slot_state& Slot : GMixer.slots)
+					{
+						Slot.RouteBus = Slot.RouteBus == Command.slot ? 0 : Slot.RouteBus;
+					}
+				}
+			}
+			break;
 		}
 	}
 
@@ -1342,7 +1514,7 @@ void Mixer::Destroy(u32 SlotID)
 	g_SoundStats.possible_free_count++;
 }
 
-void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay, u32 Bus)
+void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay, u32 Bus, u32 Route)
 {
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 
@@ -1354,11 +1526,11 @@ void Mixer::Play(u32 SlotID, u16 flags, ref_sound* SoundRef, double Delay, u32 B
 	GMixer.slots[SlotID - 1].fake_state = State::Playing;
 
 	GMixer.cmd.emplace_back(SoundCommand{
-		.slot = SlotID, .id = ESoundMixerCommands::play, .param0 = flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)SoundRef->_g_object(), .string_storage = SoundRef->_p->fn_attached[0], .bus = Bus
+		.slot = SlotID, .id = ESoundMixerCommands::play, .param0 = flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)SoundRef->_g_object(), .string_storage = SoundRef->_p->fn_attached[0], .bus = Bus, .route = Route
 	});
 }
 
-void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double Delay, float* Pitch, float* Volume, Fvector* Distance, Fvector* Pos, u32 Bus)
+void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double Delay, float* Pitch, float* Volume, Fvector* Distance, Fvector* Pos, u32 Bus, u32 Route)
 {
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
 
@@ -1374,7 +1546,7 @@ void Mixer::PlayNoFeedback(u16 Flags, ref_sound* SoundRef, CObject* Obj, double 
 	Slot.fake_state = State::Playing;
 
 	GMixer.cmd.emplace_back(SoundCommand{
-		.slot = SlotIdx, .id = ESoundMixerCommands::play, .param0 = Flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)Obj, .string_storage = SoundRef->_p->fn_attached[0], .bus = Bus
+		.slot = SlotIdx, .id = ESoundMixerCommands::play, .param0 = Flags, .param1 = (u64)SoundRef, .param2 = *(u64*)&Delay, .param3 = (u64)Obj, .string_storage = SoundRef->_p->fn_attached[0], .bus = Bus, .route = Route
 	});
 
 	auto Params = SoundRef->_p->get_params();
@@ -1520,6 +1692,41 @@ float* Mixer::GetBusVolume(const char* Name)
 u32 Mixer::FindBus(const char* Name)
 {
 	return Snd_FindBus(Name);
+}
+
+const char* Mixer::GetBusName(u32 Bus)
+{
+	const SoundBus* Data = Snd_GetBus(Bus);
+	return Data != nullptr ? Data->Name.c_str() : "";
+}
+
+void Mixer::GetDynamicBuses(xr_vector<SoundDynamicBusInfo>& Buses)
+{
+	// Acquire and the queued release write it under the update lock
+	xrSRWLockGuard Guard(GMixer.update_lock, true);
+	Snd_GetDynamicBuses(Buses);
+}
+
+void Mixer::ForgetDynamicBuses()
+{
+	xrSRWLockGuard RenderGuard(GMixer.render_lock);
+	xrSRWLockGuard UpdateGuard(GMixer.update_lock);
+	Snd_ForgetDynamicBuses();
+}
+
+bool Mixer::GetBusSpectrum(u32 Bus, u32 Channel, float* BandsDb, u32 BandCount, float MinHz, float MaxHz, u32 FftSize)
+{
+	float Samples[SoundSpectrumAnalyzer::MaxFftSize];
+	FftSize = std::clamp(FftSize, SoundSpectrumAnalyzer::MinFftSize, SoundSpectrumAnalyzer::MaxFftSize);
+	if (BandsDb == nullptr || BandCount == 0 || !Snd_ReadBusScope(Bus, Channel, Samples, FftSize))
+	{
+		return false;
+	}
+
+	static xrCriticalSection Lock;
+	static SoundSpectrumAnalyzer Analyzer;
+	xrCriticalSectionGuard Guard(Lock);
+	return Analyzer.Analyze(Samples, FftSize, BandsDb, BandCount, MinHz, MaxHz);
 }
 
 u32 Mixer::RegisterEffect(const char* Name, SoundEffectProc Proc)
@@ -1720,9 +1927,103 @@ void Mixer::SetBusShaderParam(u32 Bus, SoundShaderType Type, const char* Param, 
 	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::SetParam, Value, Param);
 }
 
+void Mixer::RampShaderParam(u32 Slot, SoundShaderType Type, const char* Param, float Value, float Seconds, Shader::Curve Curve)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, Type, ESoundShaderOp::Ramp, Value, Param, Snd_PackFloat(Seconds, (u8)Curve));
+}
+
+void Mixer::SetShaderLfo(u32 Slot, SoundShaderType Type, const char* Param, float RateHz, float Depth, Shader::LfoShape Shape)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, Type, ESoundShaderOp::Lfo, RateHz, Param, Snd_PackFloat(Depth, (u8)Shape));
+}
+
+void Mixer::StopShaderAutomation(u32 Slot, SoundShaderType Type, const char* Param)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::slot_shader, Slot, Type, ESoundShaderOp::StopAutomation, 0.0, Param != nullptr ? Param : "");
+}
+
+void Mixer::RampBusShaderParam(u32 Bus, SoundShaderType Type, const char* Param, float Value, float Seconds, Shader::Curve Curve)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::Ramp, Value, Param, Snd_PackFloat(Seconds, (u8)Curve));
+}
+
+void Mixer::SetBusShaderLfo(u32 Bus, SoundShaderType Type, const char* Param, float RateHz, float Depth, Shader::LfoShape Shape)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::Lfo, RateHz, Param, Snd_PackFloat(Depth, (u8)Shape));
+}
+
+void Mixer::StopBusShaderAutomation(u32 Bus, SoundShaderType Type, const char* Param)
+{
+	Snd_QueueShaderCommand(ESoundMixerCommands::bus_shader, Bus, Type, ESoundShaderOp::StopAutomation, 0.0, Param != nullptr ? Param : "");
+}
+
 const SoundShaderChain* Mixer::GetBusShaders(u32 Bus)
 {
 	return Snd_GetBusShaders(Bus);
+}
+
+u32 Mixer::AcquireDynamicBus(const char* Name, u32 Output)
+{
+	xrSRWLockGuard RenderGuard(GMixer.render_lock);
+	xrSRWLockGuard UpdateGuard(GMixer.update_lock);
+	return Snd_AcquireDynamicBus(Name, Output);
+}
+
+u32 Mixer::AcquireShaderBus(SoundShaderType Type, u32 Output)
+{
+	const Shader::ClassInfo* Info = Shader::GetClass(Type);
+	if (Info == nullptr)
+	{
+		return 0;
+	}
+
+	string128 Name;
+	xr_strconcat(Name, "fx:", Info->Name);
+
+	xrSRWLockGuard RenderGuard(GMixer.render_lock);
+	xrSRWLockGuard UpdateGuard(GMixer.update_lock);
+	const u32 BusIdx = Snd_AcquireDynamicBus(Name, Output);
+	const SoundBus* Bus = Snd_GetBus(BusIdx);
+	SoundShaderChain* Chain = Snd_GetBusShaders(BusIdx);
+	if (Bus != nullptr && Bus->IsDynamic && Chain != nullptr && Chain->Find(Type) == nullptr)
+	{
+		Chain->Add(Type);
+	}
+
+	return BusIdx;
+}
+
+void Mixer::ReleaseDynamicBus(u32 Bus)
+{
+	if (Bus == 0)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(SoundCommand{.slot = Bus, .id = ESoundMixerCommands::bus_release});
+}
+
+void Mixer::RouteBus(u32 Bus, u32 Target)
+{
+	if (Bus == 0)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(SoundCommand{.slot = Bus, .id = ESoundMixerCommands::bus_route, .param1 = Target});
+}
+
+void Mixer::RouteVoice(u32 Slot, u32 Bus)
+{
+	if (Slot == 0)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(GMixer.play_lock);
+	GMixer.cmd.emplace_back(SoundCommand{.slot = Slot, .id = ESoundMixerCommands::slot_route, .param1 = Bus});
 }
 
 sound_stats* Mixer::GetStats()

@@ -90,6 +90,7 @@ enum class EditorUI : u8
 	Game_CameraRig,
 	Profiler,
 	Game_WeaponCustomize,
+	Audio_BusGraph,
 	Count
 };
 

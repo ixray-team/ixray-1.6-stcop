@@ -248,6 +248,7 @@ void RenderUI()
 	GImGUIManager->Windows().Subscribe("Actor InfoPortions", ImGuiPriority::Medium, RenderActorInfos);
 	GImGUIManager->Windows().Subscribe("Scenes Viewer", ImGuiPriority::Medium, RenderScenesViewer);
 	GImGUIManager->Windows().Subscribe("Audio Editor", ImGuiPriority::Medium, RenderUIAudio);
+	GImGUIManager->Windows().Subscribe("Audio Bus Graph", ImGuiPriority::Medium, RenderUIAudioBusGraph);
 }
 
 bool ImGui_ListBox(const char* label, int* current_item, bool(*items_getter)(void*, int, const char**), void* data,

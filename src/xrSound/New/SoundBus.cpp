@@ -34,6 +34,8 @@
 
 #define SND_ZONE_RAY_RANGE (1000.0f)
 #define SND_ZONE_REVERB_GAIN (0.005f)
+// Blocks a bus keeps being captured after the last Snd_ReadBusScope (about one second)
+#define SND_SCOPE_HOLD_BLOCKS (48)
 
 struct SoundBusState
 {
@@ -48,10 +50,83 @@ struct SoundBusState
 	u32 Master = 0;
 	xr_vector<sound_zone_params> Zones;
 	xr_hash_map<shared_str, shared_str> ZoneBuses;
+	xr_vector<SoundDynamicBusInfo> DynamicHistory;
 	bool IsEditorZone = false;
 };
 
 static SoundBusState GBuses = {};
+
+// Last SND_SCOPE_FRAMES of the buses someone looks at (Mixer::GetBusSpectrum): per channel, after the effects and
+// the fader, a ring written one block at a time
+struct SoundBusScope
+{
+	xrCriticalSection Lock;
+	xr_atomic_u32 Requests[SND_BUS_COUNT] = {};
+	u32 Head[SND_BUS_COUNT] = {};
+	float Data[SND_BUS_COUNT][SND_CHANNEL_COUNT][SND_SCOPE_FRAMES] = {};
+};
+
+static SoundBusScope GScope;
+
+static void Snd_CaptureScopes(const bool* IsRendered)
+{
+	bool HasRequests = false;
+	for (u32 Index = 0; Index < SND_BUS_COUNT && !HasRequests; Index++)
+	{
+		HasRequests = GScope.Requests[Index].load(std::memory_order_relaxed) != 0;
+	}
+
+	if (!HasRequests)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(GScope.Lock);
+	for (u32 Index = 0; Index < SND_BUS_COUNT; Index++)
+	{
+		if (GScope.Requests[Index].load(std::memory_order_relaxed) == 0)
+		{
+			continue;
+		}
+
+		GScope.Requests[Index].fetch_sub(1, std::memory_order_relaxed);
+		const SoundBus& Bus = GBuses.Buses[Index];
+		const bool IsSilent = !IsRendered[Index] || !Bus.IsUsed;
+		const float Gain = std::max(Bus.Gain, 0.0f);
+		const u32 Head = GScope.Head[Index];
+		for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+		{
+			float* Scope = GScope.Data[Index][Channel] + Head;
+			for (u32 Frame = 0; Frame < SND_BLOCKSIZE; Frame++)
+			{
+				Scope[Frame] = IsSilent ? 0.0f : Bus.Data[Channel][Frame] * Gain;
+			}
+		}
+
+		GScope.Head[Index] = (Head + SND_BLOCKSIZE) % SND_SCOPE_FRAMES;
+	}
+}
+
+bool Snd_ReadBusScope(u32 BusIdx, u32 Channel, float* Out, u32 Frames)
+{
+	if (Snd_GetBus(BusIdx) == nullptr || Channel > SND_SCOPE_MID || Frames == 0 || Frames > SND_SCOPE_FRAMES)
+	{
+		return false;
+	}
+
+	// The first read after a pause sees old frames until the ring is rewritten
+	const u32 Index = BusIdx - 1;
+	GScope.Requests[Index].store(SND_SCOPE_HOLD_BLOCKS, std::memory_order_relaxed);
+	xrCriticalSectionGuard Guard(GScope.Lock);
+	const u32 Start = (GScope.Head[Index] + SND_SCOPE_FRAMES - Frames) % SND_SCOPE_FRAMES;
+	for (u32 Frame = 0; Frame < Frames; Frame++)
+	{
+		const u32 Ring = (Start + Frame) % SND_SCOPE_FRAMES;
+		Out[Frame] = Channel == SND_SCOPE_MID ? (GScope.Data[Index][0][Ring] + GScope.Data[Index][1][Ring]) * 0.5f : GScope.Data[Index][Channel][Ring];
+	}
+
+	return true;
+}
 
 u32 Snd_ReserveBus(const char* Name)
 {
@@ -119,6 +194,7 @@ SoundShaderChain* Snd_GetBusShaders(u32 BusIdx)
 	return Snd_GetBus(BusIdx) != nullptr ? &GBuses.Shaders[BusIdx - 1] : nullptr;
 }
 
+// Keeps the name, the user fader and the runtime routing (config reloads go through here)
 static void Snd_ClearBus(SoundBus* Bus)
 {
 	for (u32 EffectIdx = 0; EffectIdx < Bus->EffectCount; EffectIdx++)
@@ -128,9 +204,33 @@ static void Snd_ClearBus(SoundBus* Bus)
 
 	shared_str Name = Bus->Name;
 	float UserVolume = Bus->UserVolume;
+	u32 Route = Bus->Route;
+	u32 DynamicOwners = Bus->DynamicOwners;
+	bool IsDynamic = Bus->IsDynamic;
 	*Bus = SoundBus();
 	Bus->Name = Name;
 	Bus->UserVolume = UserVolume;
+	Bus->Route = Route;
+	Bus->DynamicOwners = DynamicOwners;
+	Bus->IsDynamic = IsDynamic;
+}
+
+// Drops everything of a runtime bus (zone, dynamic) and the routes into it; the slot can be reserved again
+static void Snd_FreeBus(u32 BusIdx)
+{
+	SoundBus* Bus = &GBuses.Buses[BusIdx - 1];
+	Snd_ClearBus(Bus);
+	*Bus = SoundBus();
+	GBuses.Shaders[BusIdx - 1].Clear();
+	GBuses.HasDryInput[BusIdx - 1] = false;
+
+	for (u32 OtherIdx = 0; OtherIdx < SND_BUS_COUNT; OtherIdx++)
+	{
+		if (GBuses.Buses[OtherIdx].Route == BusIdx)
+		{
+			GBuses.Buses[OtherIdx].Route = 0;
+		}
+	}
 }
 
 static u32 Snd_ParseEffects(SoundBusEffect* Effects, u32 Capacity, SoundEffectScope Scope, const char* List)
@@ -249,15 +349,62 @@ static void Snd_ApplyBusConfig(u32 BusIdx, const SoundConfigSection* Section)
 	Snd_CreateBusEffects(Bus);
 }
 
+// True when the output chain that starts at From reaches BusIdx
+static bool Snd_IsRoutedInto(u32 From, u32 BusIdx)
+{
+	u32 Cursor = From;
+	for (u32 Step = 0; Step <= SND_BUS_COUNT && Cursor != 0; Step++)
+	{
+		if (Cursor == BusIdx)
+		{
+			return true;
+		}
+
+		const SoundBus* Bus = Snd_GetBus(Cursor);
+		Cursor = Bus != nullptr ? Bus->GetOutput() : 0;
+	}
+
+	// A loop that misses BusIdx is a config loop, Snd_RebuildOrder breaks it
+	return false;
+}
+
 static void Snd_RebuildOrder()
 {
 	u32 Master = GBuses.Master;
 	for (u32 BusIdx = 1; BusIdx <= SND_BUS_COUNT; BusIdx++)
 	{
 		SoundBus* Bus = Snd_GetBus(BusIdx);
-		if (Bus != nullptr && BusIdx != Master && Snd_GetBus(Bus->Output) == nullptr)
+		if (Bus == nullptr)
+		{
+			GBuses.Buses[BusIdx - 1].Route = 0;
+			continue;
+		}
+
+		if (BusIdx == Master)
+		{
+			Bus->Route = 0;
+			continue;
+		}
+
+		if (Snd_GetBus(Bus->Output) == nullptr)
 		{
 			Bus->Output = Master;
+		}
+
+		if (Bus->Route != 0 && Snd_GetBus(Bus->Route) == nullptr)
+		{
+			Bus->Route = 0;
+		}
+	}
+
+	// A runtime route that closes a loop is dropped, the config output stays
+	for (u32 BusIdx = 1; BusIdx <= SND_BUS_COUNT; BusIdx++)
+	{
+		SoundBus* Bus = Snd_GetBus(BusIdx);
+		if (Bus != nullptr && Bus->Route != 0 && Snd_IsRoutedInto(Bus->Route, BusIdx))
+		{
+			Msg("! [Sound] Route '%s' -> '%s' makes a loop, dropped", Bus->Name.c_str(), GBuses.Buses[Bus->Route - 1].Name.c_str());
+			Bus->Route = 0;
 		}
 	}
 
@@ -271,12 +418,13 @@ static void Snd_RebuildOrder()
 		}
 
 		Bus->Depth = 0;
-		for (u32 Cursor = BusIdx; Cursor != Master; Cursor = Snd_GetBus(Cursor)->Output)
+		for (u32 Cursor = BusIdx; Cursor != Master; Cursor = Snd_GetBus(Cursor)->GetOutput())
 		{
 			if (++Bus->Depth > SND_BUS_COUNT)
 			{
 				Msg("! [Sound] Bus '%s' output loop, routed to master", Bus->Name.c_str());
 				Bus->Output = Master;
+				Bus->Route = 0;
 				Bus->Depth = 1;
 				break;
 			}
@@ -387,12 +535,20 @@ void Snd_ShutdownBuses()
 	for (u32 BusIdx = 0; BusIdx < SND_BUS_COUNT; BusIdx++)
 	{
 		SoundBus* Bus = &GBuses.Buses[BusIdx];
+		if (Bus->IsDynamic)
+		{
+			Snd_FreeBus(BusIdx + 1);
+			continue;
+		}
+
 		Snd_ClearBus(Bus);
+		Bus->Route = 0;
 		GBuses.Shaders[BusIdx].Clear();
 	}
 
 	GBuses.OrderCount = 0;
 	GBuses.ZoneBuses.clear();
+	GBuses.DynamicHistory.clear();
 }
 
 void Snd_SetBusParam(u32 BusIdx, const char* Effect, const char* Param, float Value)
@@ -433,7 +589,7 @@ u32 Snd_CreateBus(const char* Name)
 void Snd_DeleteBus(u32 BusIdx)
 {
 	SoundBus* Bus = Snd_GetBus(BusIdx);
-	if (Bus == nullptr || BusIdx == GBuses.Master || Bus->IsGenerated)
+	if (Bus == nullptr || BusIdx == GBuses.Master || Bus->IsRuntime())
 	{
 		return;
 	}
@@ -449,7 +605,7 @@ void Snd_DeleteBus(u32 BusIdx)
 void Snd_SetBusValue(u32 BusIdx, const char* Key, const char* Value)
 {
 	SoundBus* Bus = Snd_GetBus(BusIdx);
-	if (Bus == nullptr || Bus->IsGenerated)
+	if (Bus == nullptr || Bus->IsRuntime())
 	{
 		return;
 	}
@@ -489,7 +645,7 @@ void Snd_SetBusEffectParam(u32 BusIdx, bool IsVoice, u32 EffectIdx, u32 ParamIdx
 
 	const char* ParamName = Entry->Desc.Params[ParamIdx].Name;
 	Snd_SetEffectParam(Effect, ParamName, Value);
-	if (Bus->IsGenerated)
+	if (Bus->IsRuntime())
 	{
 		return;
 	}
@@ -517,7 +673,7 @@ const char* Snd_GetBusValue(u32 BusIdx, const char* Key)
 
 bool Snd_SaveBus(u32 BusIdx)
 {
-	if (BusIdx == 0 || BusIdx > SND_BUS_COUNT || GBuses.Buses[BusIdx - 1].IsGenerated)
+	if (BusIdx == 0 || BusIdx > SND_BUS_COUNT || GBuses.Buses[BusIdx - 1].IsRuntime())
 	{
 		return false;
 	}
@@ -525,6 +681,126 @@ bool Snd_SaveBus(u32 BusIdx)
 	string128 Name;
 	xr_strconcat(Name, "bus:", GBuses.Buses[BusIdx - 1].Name.c_str());
 	return Snd_SaveConfig(Name);
+}
+
+static SoundDynamicBusInfo* Snd_FindDynamicRecord(const shared_str& Name)
+{
+	for (SoundDynamicBusInfo& Info : GBuses.DynamicHistory)
+	{
+		if (Info.Name == Name)
+		{
+			return &Info;
+		}
+	}
+
+	return nullptr;
+}
+
+static void Snd_RecordDynamicBus(u32 BusIdx, bool IsReleased)
+{
+	const SoundBus& Bus = GBuses.Buses[BusIdx - 1];
+	SoundDynamicBusInfo* Info = Snd_FindDynamicRecord(Bus.Name);
+	if (Info == nullptr)
+	{
+		Info = &GBuses.DynamicHistory.emplace_back();
+		Info->Name = Bus.Name;
+	}
+
+	const SoundBus* Output = Snd_GetBus(Bus.GetOutput());
+	Info->Output = Output != nullptr ? Output->Name : shared_str();
+	Info->Bus = IsReleased ? 0 : BusIdx;
+	Info->CreateCount += IsReleased ? 0 : 1;
+	if (!IsReleased)
+	{
+		return;
+	}
+
+	string256 Shaders = {};
+	const SoundShaderChain& Chain = GBuses.Shaders[BusIdx - 1];
+	for (u32 ShaderIdx = 0; ShaderIdx < Chain.GetCount(); ShaderIdx++)
+	{
+		xr_strcat(Shaders, ShaderIdx == 0 ? "" : ", ");
+		xr_strcat(Shaders, Chain.Get(ShaderIdx)->GetClass().Name);
+	}
+	Info->Shaders = Shaders;
+}
+
+void Snd_GetDynamicBuses(xr_vector<SoundDynamicBusInfo>& Out)
+{
+	Out = GBuses.DynamicHistory;
+}
+
+void Snd_ForgetDynamicBuses()
+{
+	xr_vector<SoundDynamicBusInfo>& History = GBuses.DynamicHistory;
+	History.erase(std::remove_if(History.begin(), History.end(), [](const SoundDynamicBusInfo& Info) { return Info.Bus == 0; }), History.end());
+}
+
+u32 Snd_AcquireDynamicBus(const char* Name, u32 Output)
+{
+	if (Name == nullptr || Name[0] == 0)
+	{
+		return 0;
+	}
+
+	u32 BusIdx = Snd_FindBus(Name);
+	if (BusIdx != 0)
+	{
+		// A config bus of that name is used as is, it has no owners
+		SoundBus* Bus = &GBuses.Buses[BusIdx - 1];
+		Bus->DynamicOwners += Bus->IsDynamic ? 1 : 0;
+		return BusIdx;
+	}
+
+	BusIdx = Snd_ReserveBus(Name);
+	if (BusIdx == 0)
+	{
+		return 0;
+	}
+
+	SoundBus* Bus = &GBuses.Buses[BusIdx - 1];
+	Snd_ClearBus(Bus);
+	Bus->IsUsed = true;
+	Bus->IsDynamic = true;
+	Bus->DynamicOwners = 1;
+	Bus->Route = 0;
+	Bus->Output = (Output != BusIdx && Snd_GetBus(Output) != nullptr) ? Output : GBuses.Master;
+	GBuses.Shaders[BusIdx - 1].Clear();
+	GBuses.HasDryInput[BusIdx - 1] = false;
+	Snd_RebuildOrder();
+	Snd_RecordDynamicBus(BusIdx, false);
+	return BusIdx;
+}
+
+bool Snd_ReleaseDynamicBus(u32 BusIdx)
+{
+	SoundBus* Bus = Snd_GetBus(BusIdx);
+	if (Bus == nullptr || !Bus->IsDynamic || Bus->DynamicOwners == 0)
+	{
+		return false;
+	}
+
+	if (--Bus->DynamicOwners != 0)
+	{
+		return false;
+	}
+
+	Snd_RecordDynamicBus(BusIdx, true);
+	Snd_FreeBus(BusIdx);
+	Snd_RebuildOrder();
+	return true;
+}
+
+void Snd_RouteBus(u32 BusIdx, u32 Target)
+{
+	SoundBus* Bus = Snd_GetBus(BusIdx);
+	if (Bus == nullptr || BusIdx == GBuses.Master || (Target != 0 && Snd_GetBus(Target) == nullptr))
+	{
+		return;
+	}
+
+	Bus->Route = Target == BusIdx ? 0 : Target;
+	Snd_RebuildOrder();
 }
 
 void Snd_BeginBuses()
@@ -596,6 +872,7 @@ void Snd_RenderBuses(float* Output, float MuteVolume)
 {
 	memset(Output, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
 
+	bool IsRendered[SND_BUS_COUNT] = {};
 	for (u32 OrderIdx = 0; OrderIdx < GBuses.OrderCount; OrderIdx++)
 	{
 		u32 BusIdx = GBuses.Order[OrderIdx];
@@ -605,6 +882,8 @@ void Snd_RenderBuses(float* Output, float MuteVolume)
 			Bus->Peak[0] = Bus->Peak[1] = 0.0f;
 			continue;
 		}
+
+		IsRendered[BusIdx - 1] = true;
 
 		float* Data[SND_CHANNEL_COUNT] = {Bus->Data[0], Bus->Data[1]};
 		u32 TailFrames = 0;
@@ -660,7 +939,7 @@ void Snd_RenderBuses(float* Output, float MuteVolume)
 			Bus->Peak[Channel] = Peak * Gain;
 		}
 
-		SoundBus* OutputBus = Snd_GetBus(Bus->Output);
+		SoundBus* OutputBus = Snd_GetBus(Bus->GetOutput());
 		if (OutputBus != nullptr)
 		{
 			float* OutputData[SND_CHANNEL_COUNT];
@@ -678,6 +957,8 @@ void Snd_RenderBuses(float* Output, float MuteVolume)
 			}
 		}
 	}
+
+	Snd_CaptureScopes(IsRendered);
 }
 
 void Snd_AddZone(sound_zone_params* Params, bool IsEditor)
@@ -697,12 +978,9 @@ void Snd_ResetZones()
 {
 	for (u32 BusIdx = 0; BusIdx < SND_BUS_COUNT; BusIdx++)
 	{
-		SoundBus* Bus = &GBuses.Buses[BusIdx];
-		if (Bus->IsGenerated)
+		if (GBuses.Buses[BusIdx].IsGenerated)
 		{
-			Snd_ClearBus(Bus);
-			GBuses.Shaders[BusIdx].Clear();
-			Bus->Name = nullptr;
+			Snd_FreeBus(BusIdx + 1);
 		}
 	}
 

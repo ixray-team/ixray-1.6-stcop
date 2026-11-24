@@ -62,19 +62,53 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void RemoveShader(u32 slot, SoundShaderType type);
     XRSOUND_API void ClearShaders(u32 slot);
     XRSOUND_API void SetShaderParam(u32 slot, SoundShaderType type, const char* param, float value);
+    // Parameter automation, also queued. A ramp moves the parameter from its current value to value over seconds
+    // (0 sets it at once); an LFO swings it by depth (parameter units) around its value, rate or depth 0 stops it.
+    // A direct SetShaderParam drops the ramp and keeps the LFO. Automation time runs while the voice renders.
+    // StopShaderAutomation keeps the current value; param nullptr or "" stops every parameter of the shader
+    XRSOUND_API void RampShaderParam(u32 slot, SoundShaderType type, const char* param, float value, float seconds, Shader::Curve curve = Shader::Curve::Linear);
+    XRSOUND_API void SetShaderLfo(u32 slot, SoundShaderType type, const char* param, float rate_hz, float depth, Shader::LfoShape shape = Shader::LfoShape::Sine);
+    XRSOUND_API void StopShaderAutomation(u32 slot, SoundShaderType type, const char* param = nullptr);
     // Bus shaders run before the bus effects. Add / Remove count owners, the shader stays while one is left.
     // spatial_only: 2D voices skip the shaders of a bus that has such a shader; remove with the same value
     XRSOUND_API void AddBusShader(u32 bus, SoundShaderType type, bool spatial_only = false);
     XRSOUND_API void RemoveBusShader(u32 bus, SoundShaderType type, bool spatial_only = false);
     XRSOUND_API void ClearBusShaders(u32 bus);
     XRSOUND_API void SetBusShaderParam(u32 bus, SoundShaderType type, const char* param, float value);
+    // Same as the voice automation above; time runs while the bus renders (input or tail)
+    XRSOUND_API void RampBusShaderParam(u32 bus, SoundShaderType type, const char* param, float value, float seconds, Shader::Curve curve = Shader::Curve::Linear);
+    XRSOUND_API void SetBusShaderLfo(u32 bus, SoundShaderType type, const char* param, float rate_hz, float depth, Shader::LfoShape shape = Shader::LfoShape::Sine);
+    XRSOUND_API void StopBusShaderAutomation(u32 bus, SoundShaderType type, const char* param = nullptr);
     // Read under GetUpdateMutex (shared); nullptr for an unused bus
     XRSOUND_API const SoundShaderChain* GetBusShaders(u32 bus);
+
+    // Dynamic buses: runtime only, never saved. Acquire adds an owner and returns the bus (a config bus of that name
+    // is returned as is), Release drops one. The last Release frees the bus and drops every route into it. output 0 = master
+    XRSOUND_API u32 AcquireDynamicBus(const char* name, u32 output = 0);
+    // Dynamic bus "fx:<shader>" with one instance of the shader: the voices and buses routed into it share that instance
+    XRSOUND_API u32 AcquireShaderBus(SoundShaderType type, u32 output = 0);
+    XRSOUND_API void ReleaseDynamicBus(u32 bus);
+    // Queued. Mixes the whole bus into target instead of its output; target 0 restores the config output
+    XRSOUND_API void RouteBus(u32 bus, u32 target);
+    // Queued. Mixes the voice into bus instead of its own bus (sends and voice effects stay); 0 restores.
+    // The next play resets it, ref_sound::set_route_bus keeps a route across plays
+    XRSOUND_API void RouteVoice(u32 slot, u32 bus);
 
     // General volume (snd_volume_eff) and bus faders. Pointers stay valid for the whole process
     XRSOUND_API float* GetMasterVolume();
     XRSOUND_API float* GetBusVolume(const char* name);
     XRSOUND_API u32 FindBus(const char* name);
+    // "" for an unused bus
+    XRSOUND_API const char* GetBusName(u32 bus);
+    // Spectrum of one channel (0 left, 1 right, SND_SCOPE_MID for (L + R) / 2) of the bus output, after its effects
+    // and fader: band_count log-spaced bands in [min_hz, max_hz], in dB of a full scale sine. fft_size: a power of two
+    // in [256, SND_SCOPE_FRAMES]. The first call starts capturing the bus, it stops about a second after the last one.
+    // Debug views only; false for an unused bus
+    XRSOUND_API bool GetBusSpectrum(u32 bus, u32 channel, float* bands_db, u32 band_count, float min_hz = 20.0f, float max_hz = 20000.0f, u32 fft_size = SND_BLOCKSIZE * 2);
+    // Every dynamic bus created so far, released ones included (debug views)
+    XRSOUND_API void GetDynamicBuses(xr_vector<SoundDynamicBusInfo>& buses);
+    // Drops the released ones from that list
+    XRSOUND_API void ForgetDynamicBuses();
     XRSOUND_API u32 RegisterEffect(const char* name, SoundEffectProc proc);
     XRSOUND_API void ExportConfig();
     XRSOUND_API void ReloadSources();
@@ -90,8 +124,9 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void Destroy(u32 slot);
 
     // Scheduled stuff
-    XRSOUND_API void Play(u32 slot, u16 flags, ref_sound* sound, double delay, u32 bus = 0);
-    XRSOUND_API void PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos, u32 bus = 0);
+    // route: bus the voice is mixed into instead of its own (RouteVoice)
+    XRSOUND_API void Play(u32 slot, u16 flags, ref_sound* sound, double delay, u32 bus = 0, u32 route = 0);
+    XRSOUND_API void PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos, u32 bus = 0, u32 route = 0);
     XRSOUND_API void Pause(u32 slot);
     XRSOUND_API void Stop(u32 slot, bool deferred);
     XRSOUND_API void Stop(u32 slot, bool deferred, float fade_seconds);

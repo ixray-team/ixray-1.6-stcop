@@ -39,6 +39,10 @@
 #define SND_EFFECT_COUNT (32)
 #define SND_EFFECT_PARAM_COUNT (16)
 #define SND_SHADER_CHAIN_COUNT (4)
+// Frames of bus output kept for the analyzers (Mixer::GetBusSpectrum)
+#define SND_SCOPE_FRAMES (SND_BLOCKSIZE * 4)
+// Analyzer channel that mixes left and right
+#define SND_SCOPE_MID (SND_CHANNEL_COUNT)
 
 typedef void(*audio_render_callback)(float*);
 typedef void(*audio_precache_callback)();
@@ -127,7 +131,6 @@ struct SoundEffectVoice
 	Fvector Position;
 	Fvector Velocity;
 	Fvector Distances;
-	float* Doppler;
 	float Gain;
 };
 
@@ -166,7 +169,10 @@ struct SoundBusEffect
 struct SoundBus
 {
 	shared_str Name;
+	// From the config (or the creator of a dynamic bus)
 	u32 Output = 0;
+	// Runtime override of Output (Mixer::RouteBus), never saved
+	u32 Route = 0;
 	u32 Depth = 0;
 	float Volume = 1.0f;
 	float UserVolume = 1.0f;
@@ -181,10 +187,36 @@ struct SoundBus
 	u32 VoiceEffectCount = 0;
 	SoundBusEffect Effects[SND_BUS_EFFECT_COUNT];
 	SoundBusEffect VoiceEffects[SND_VOICE_EFFECT_COUNT];
+	// Dynamic buses (Mixer::AcquireDynamicBus) live while they have owners and are never saved
+	u32 DynamicOwners = 0;
 	bool IsUsed = false;
 	bool IsGenerated = false;
+	bool IsDynamic = false;
 	bool HasInput = false;
 	float Data[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
+
+	u32 GetOutput() const
+	{
+		return Route != 0 ? Route : Output;
+	}
+
+	bool IsRuntime() const
+	{
+		return IsGenerated || IsDynamic;
+	}
+};
+
+// Every dynamic bus created since the mixer started, kept after release for debug views (Mixer::GetDynamicBuses)
+struct SoundDynamicBusInfo
+{
+	shared_str Name;
+	// Effective output on creation, then on the last release
+	shared_str Output;
+	// Runtime shaders on the last release, comma separated
+	shared_str Shaders;
+	// Current bus, 0 while released
+	u32 Bus = 0;
+	u32 CreateCount = 0;
 };
 
 struct sound_stats

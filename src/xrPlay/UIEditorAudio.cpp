@@ -19,6 +19,33 @@ enum EAudioSoundFlag : u8
 static const char* AudioFilterNames[] = {"All", "Loaded", "Playing", "Stopped", "Simulated", "Delayed"};
 static const u8 AudioFilterMasks[] = {0, AudioLoaded, AudioPlaying, AudioStopped, AudioSimulated, AudioDelayed};
 
+constexpr u32 AudioRowBandCount = 64;
+constexpr u32 AudioDetailBandCount = 240;
+// Left, right, mid (SND_SCOPE_MID)
+constexpr u32 AudioTraceCount = SND_CHANNEL_COUNT + 1;
+constexpr float AudioAnalyzerFloorDb = -150.0f;
+constexpr float AudioAnalyzerMinHz = 20.0f;
+constexpr float AudioAnalyzerMaxHz = 20000.0f;
+
+// Smoothed analyzer curve of one channel, in dB
+struct AudioAnalyzerTrace
+{
+	float Level[AudioDetailBandCount] = {};
+	float Peak[AudioDetailBandCount] = {};
+	bool IsValid = false;
+};
+
+struct AudioAnalyzerSettings
+{
+	// AudioAnalyzerChannelNames: L / R, Mid, Left, Right
+	int Channels = 0;
+	int Resolution = 1;
+	int Speed = 1;
+	int Range = 1;
+	int Tilt = 2;
+	bool PeakHold = true;
+};
+
 struct AudioEditorState
 {
 	xr_vector<shared_str> DiskSounds;
@@ -42,6 +69,16 @@ struct AudioEditorState
 	float BusMeters[SND_BUS_COUNT] = {};
 	char NewBusName[64] = {};
 	const char* BusStatus = "";
+	bool GraphShowZones = false;
+	bool GraphShowSends = true;
+	bool GraphShowSpectrum = true;
+	bool GraphShowReleased = true;
+	AudioAnalyzerSettings Analyzer;
+	AudioAnalyzerTrace RowTraces[SND_BUS_COUNT][AudioTraceCount];
+	AudioAnalyzerTrace DetailTraces[AudioTraceCount];
+	float GraphMeters[SND_BUS_COUNT][SND_CHANNEL_COUNT] = {};
+	u32 DetailBus = 0;
+	xr_vector<SoundDynamicBusInfo> DynamicBuses;
 	float LoadHistory[120] = {};
 	u32 HistoryIdx = 0;
 	ref_sound* Preview = nullptr;
@@ -286,6 +323,35 @@ static void Audio_DrawSounds()
 	}
 }
 
+// A frequency parameter: named so, or with a range up into the kHz
+static bool Audio_IsFrequencyParam(const SoundEffectParam& Param)
+{
+	const char* Names[] = {"cut", "freq", "hz", "crossover"};
+	for (const char* Name : Names)
+	{
+		if (strstr(Param.Name, Name) != nullptr)
+		{
+			return true;
+		}
+	}
+
+	return Param.Min >= 10.0f && Param.Max >= 1000.0f;
+}
+
+// Slider for a shader or effect parameter: plain numbers (no exponent), frequencies in Hz on a log scale
+static bool Audio_ParamSlider(const SoundEffectParam& Param, float* Value)
+{
+	const float Range = Param.Max - Param.Min;
+	if (Audio_IsFrequencyParam(Param))
+	{
+		const char* Format = *Value < 100.0f ? "%.1f Hz" : "%.0f Hz";
+		return ImGui::SliderFloat(Param.Name, Value, Param.Min, Param.Max, Format, Param.Min > 0.0f ? ImGuiSliderFlags_Logarithmic : ImGuiSliderFlags_None);
+	}
+
+	const char* Format = Range >= 1000.0f ? "%.0f" : Range >= 100.0f ? "%.1f" : Range >= 10.0f ? "%.2f" : Range > 1.0f ? "%.3f" : "%.4f";
+	return ImGui::SliderFloat(Param.Name, Value, Param.Min, Param.Max, Format);
+}
+
 // Edit requested by a shader chain widget. Mixer calls take play_lock, so they run only after the widget
 // released GetUpdateMutex: PlayNoFeedback takes play_lock and then update_lock, the reverse order would deadlock
 struct AudioShaderEdit
@@ -376,7 +442,7 @@ static void Audio_RenderShaderChain(const SoundShaderChain* Chain, bool IsBus, u
 			{
 				const SoundEffectParam* Param = Shader->GetParamDesc(ParamIdx);
 				float Value = Shader->GetParam(ParamIdx);
-				if (ImGui::SliderFloat(Param->Name, &Value, Param->Min, Param->Max, "%.4g"))
+				if (Audio_ParamSlider(*Param, &Value))
 				{
 					Request(AudioShaderEdit::EKind::SetParam, Type, Param->Name, Value);
 				}
@@ -447,7 +513,7 @@ static bool Audio_RenderShaderPreset(SoundShaderPreset& Preset)
 			{
 				const SoundEffectParam& Param = Info->Params[ParamIdx];
 				float& Value = Preset.Params[Index][ParamIdx];
-				IsChanged |= ImGui::SliderFloat(Param.Name, &Value, Param.Min, Param.Max, "%.4g");
+				IsChanged |= Audio_ParamSlider(Param, &Value);
 				if (ImGui::BeginPopupContextItem())
 				{
 					if (ImGui::MenuItem("Reset to default"))
@@ -531,7 +597,7 @@ static void Audio_RenderDetails()
 
 		for (u32 BusIdx = 0; BusIdx < SND_BUS_COUNT; BusIdx++)
 		{
-			if (Buses[BusIdx].IsUsed && !Buses[BusIdx].IsGenerated && ImGui::Selectable(Buses[BusIdx].Name.c_str(), Config.bus == BusIdx + 1))
+			if (Buses[BusIdx].IsUsed && !Buses[BusIdx].IsRuntime() && ImGui::Selectable(Buses[BusIdx].Name.c_str(), Config.bus == BusIdx + 1))
 			{
 				Config.bus = BusIdx + 1;
 				IsChanged = true;
@@ -775,7 +841,8 @@ static const char* Audio_BusName(u32 BusIdx)
 	return (BusIdx != 0 && BusIdx <= SND_BUS_COUNT && Buses[BusIdx - 1].IsUsed) ? Buses[BusIdx - 1].Name.c_str() : "<none>";
 }
 
-static bool Audio_BusCombo(const char* Label, u32 Current, u32 Exclude, bool HasNone, const char** OutName)
+// HasDynamic: list dynamic buses too (runtime routes; the config cannot name them)
+static bool Audio_BusCombo(const char* Label, u32 Current, u32 Exclude, bool HasNone, const char** OutName, bool HasDynamic = false)
 {
 	bool IsChanged = false;
 	if (ImGui::BeginCombo(Label, Audio_BusName(Current)))
@@ -790,7 +857,7 @@ static bool Audio_BusCombo(const char* Label, u32 Current, u32 Exclude, bool Has
 		for (u32 BusIdx = 1; BusIdx <= SND_BUS_COUNT; BusIdx++)
 		{
 			const SoundBus& Bus = Buses[BusIdx - 1];
-			if (Bus.IsUsed && !Bus.IsGenerated && BusIdx != Exclude && ImGui::Selectable(Bus.Name.c_str(), BusIdx == Current))
+			if (Bus.IsUsed && !Bus.IsGenerated && (HasDynamic || !Bus.IsDynamic) && BusIdx != Exclude && ImGui::Selectable(Bus.Name.c_str(), BusIdx == Current))
 			{
 				*OutName = Bus.Name.c_str();
 				IsChanged = true;
@@ -835,7 +902,7 @@ static void Audio_RenderBusRow(u32 BusIdx, u32 Depth)
 	bool HasChildren = false;
 	for (u32 ChildIdx = 1; ChildIdx <= SND_BUS_COUNT && !HasChildren; ChildIdx++)
 	{
-		HasChildren = Buses[ChildIdx - 1].IsUsed && ChildIdx != BusIdx && Buses[ChildIdx - 1].Output == BusIdx;
+		HasChildren = Buses[ChildIdx - 1].IsUsed && ChildIdx != BusIdx && Buses[ChildIdx - 1].GetOutput() == BusIdx;
 	}
 
 	ImGui::TableNextRow();
@@ -843,7 +910,7 @@ static void Audio_RenderBusRow(u32 BusIdx, u32 Depth)
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAllColumns;
 	Flags |= HasChildren ? 0 : ImGuiTreeNodeFlags_Leaf;
 	Flags |= GAudioEditor.SelectedBus == BusIdx ? ImGuiTreeNodeFlags_Selected : 0;
-	bool IsOpen = ImGui::TreeNodeEx((void*)(uintptr_t)BusIdx, Flags, "%s", Bus.Name.c_str());
+	bool IsOpen = ImGui::TreeNodeEx((void*)(uintptr_t)BusIdx, Flags, "%s%s%s", Bus.Name.c_str(), Bus.IsDynamic ? " (dynamic)" : "", Bus.Route != 0 ? " (routed)" : "");
 	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 	{
 		GAudioEditor.SelectedBus = BusIdx;
@@ -862,7 +929,7 @@ static void Audio_RenderBusRow(u32 BusIdx, u32 Depth)
 	for (u32 ChildIdx = 1; ChildIdx <= SND_BUS_COUNT && Depth < SND_BUS_COUNT; ChildIdx++)
 	{
 		const SoundBus& Child = Buses[ChildIdx - 1];
-		if (Child.IsUsed && ChildIdx != BusIdx && Child.Output == BusIdx)
+		if (Child.IsUsed && ChildIdx != BusIdx && Child.GetOutput() == BusIdx)
 		{
 			ZoneCount += Child.IsGenerated ? 1 : 0;
 			if (!Child.IsGenerated)
@@ -881,7 +948,7 @@ static void Audio_RenderBusRow(u32 BusIdx, u32 Depth)
 			for (u32 ChildIdx = 1; ChildIdx <= SND_BUS_COUNT; ChildIdx++)
 			{
 				const SoundBus& Child = Buses[ChildIdx - 1];
-				if (Child.IsUsed && Child.IsGenerated && Child.Output == BusIdx)
+				if (Child.IsUsed && Child.IsGenerated && Child.GetOutput() == BusIdx)
 				{
 					Audio_RenderBusRow(ChildIdx, Depth + 1);
 				}
@@ -904,7 +971,7 @@ static void Audio_RenderEffectChain(u32 BusIdx, bool IsVoice)
 
 	xr_vector<xr_string> Items;
 	const char* Value = Mixer::GetBusValue(BusIdx, Key);
-	if (Bus.IsGenerated)
+	if (Bus.IsRuntime())
 	{
 		for (u32 EffectIdx = 0; EffectIdx < Bus.EffectCount; EffectIdx++)
 		{
@@ -934,7 +1001,7 @@ static void Audio_RenderEffectChain(u32 BusIdx, bool IsVoice)
 		SoundBusEffect* Effect = IsResolved ? (IsVoice ? &Bus.VoiceEffects[EffectIdx] : &Bus.Effects[EffectIdx]) : nullptr;
 		Entry = Effect != nullptr ? Mixer::GetEffect(Effect->Effect) : nullptr;
 
-		if (!Bus.IsGenerated)
+		if (!Bus.IsRuntime())
 		{
 			if (ImGui::ArrowButton("##Up", ImGuiDir_Up) && ItemIdx > 0)
 			{
@@ -968,7 +1035,7 @@ static void Audio_RenderEffectChain(u32 BusIdx, bool IsVoice)
 			{
 				const SoundEffectParam& Param = Entry->Desc.Params[ParamIdx];
 				float ParamValue = Effect->Params[ParamIdx];
-				if (ImGui::SliderFloat(Param.Name, &ParamValue, Param.Min, Param.Max, "%.4g"))
+				if (Audio_ParamSlider(Param, &ParamValue))
 				{
 					Mixer::SetBusEffectParam(BusIdx, IsVoice, EffectIdx, ParamIdx, ParamValue);
 					GAudioEditor.BusStatus = "Modified";
@@ -987,7 +1054,7 @@ static void Audio_RenderEffectChain(u32 BusIdx, bool IsVoice)
 		ImGui::PopID();
 	}
 
-	if (!Bus.IsGenerated && ImGui::BeginCombo("##Add", "Add effect...", ImGuiComboFlags_NoArrowButton))
+	if (!Bus.IsRuntime() && ImGui::BeginCombo("##Add", "Add effect...", ImGuiComboFlags_NoArrowButton))
 	{
 		for (u32 EffectId = 1; EffectId <= Mixer::GetEffectCount(); EffectId++)
 		{
@@ -1054,9 +1121,19 @@ static void Audio_RenderBusDetails()
 	{
 		ImGui::TextDisabled("Generated from a zone environment; changes are live only.");
 	}
+	else if (Bus.IsDynamic)
+	{
+		ImGui::TextDisabled("Dynamic bus (%u owners), runtime only.", Bus.DynamicOwners);
+	}
 
-	ImGui::BeginDisabled(Bus.IsGenerated);
 	const char* Name = nullptr;
+	if (BusIdx != Master && Audio_BusCombo("Route", Bus.Route, BusIdx, true, &Name, true))
+	{
+		Mixer::RouteBus(BusIdx, Name[0] != 0 ? Mixer::FindBus(Name) : 0);
+	}
+	ImGui::SetItemTooltip("Runtime output override (scripts, snd_bus_route), not saved to the config");
+
+	ImGui::BeginDisabled(Bus.IsRuntime());
 	if (BusIdx != Master && Audio_BusCombo("Output", Bus.Output, BusIdx, false, &Name))
 	{
 		Mixer::SetBusValue(BusIdx, "output", Name);
@@ -1144,6 +1221,12 @@ static void Audio_RenderBuses()
 
 	ImGui::EndDisabled();
 	ImGui::SameLine();
+	bool& IsGraphOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::Audio_BusGraph)];
+	if (ImGui::Button(IsGraphOpen ? "Close graph###BusGraph" : "Open graph###BusGraph"))
+	{
+		IsGraphOpen = !IsGraphOpen;
+	}
+	ImGui::SameLine();
 	ImGui::TextDisabled("%s", GAudioEditor.BusStatus);
 
 	if (ImGui::BeginChild("##BusTree", ImVec2(0.0f, ImGui::GetContentRegionAvail().y * 0.4f), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
@@ -1174,6 +1257,728 @@ static void Audio_RenderBuses()
 	ImGui::EndChild();
 	if (ImGui::BeginChild("##BusDetails"))
 	{
+		Audio_RenderBusDetails();
+	}
+
+	ImGui::EndChild();
+}
+
+// Bus chain (own window): the buses in processing order, every bus before the one it outputs to, master last
+struct AudioChainItem
+{
+	u32 Bus = 0;
+	// A released dynamic bus, listed before its last output
+	const SoundDynamicBusInfo* Ghost = nullptr;
+	u32 Depth = 0;
+	u32 HiddenZones = 0;
+};
+
+struct AudioChainGhost
+{
+	const SoundDynamicBusInfo* Info = nullptr;
+	u32 Parent = 0;
+};
+
+struct AudioChainState
+{
+	xr_vector<AudioChainItem> Items;
+	xr_vector<AudioChainGhost> Ghosts;
+	bool IsListed[SND_BUS_COUNT] = {};
+	u32 Voices[SND_BUS_COUNT] = {};
+	u32 RoutedVoices[SND_BUS_COUNT] = {};
+};
+
+constexpr float AudioChainIndent = 14.0f;
+constexpr float AudioChainTextWidth = 300.0f;
+constexpr float AudioChainAnalyzerWidth = 340.0f;
+constexpr float AudioChainMeterWidth = 120.0f;
+constexpr float AudioChainGap = 6.0f;
+static const char* AudioChannelNames[SND_CHANNEL_COUNT] = {"L", "R"};
+
+static float Audio_ChainItemHeight()
+{
+	return ImGui::GetTextLineHeight() * 3.0f + 10.0f;
+}
+
+static ImU32 Audio_ChainAlpha(ImU32 Color, float Alpha)
+{
+	u32 A = (u32)(((Color >> IM_COL32_A_SHIFT) & 0xFF) * std::clamp(Alpha, 0.0f, 1.0f));
+	return (Color & ~IM_COL32_A_MASK) | (A << IM_COL32_A_SHIFT);
+}
+
+static ImU32 Audio_LevelColor(float Db)
+{
+	// Same thresholds as the peak meters: -18 dB yellow, -6 dB red
+	return Db > -6.0f ? IM_COL32(220, 60, 50, 255) : Db > -18.0f ? IM_COL32(220, 190, 50, 255) : IM_COL32(60, 180, 75, 255);
+}
+
+static float Audio_PeakDb(float Peak)
+{
+	return (Peak == Peak && Peak > 1e-6f) ? 20.0f * log10f(Peak) : -INFINITY;
+}
+
+static const char* AudioAnalyzerChannelNames[] = {"L / R", "Mid", "Left", "Right"};
+static const char* AudioAnalyzerResolutionNames[] = {"Low (1024)", "Medium (2048)", "High (4096)"};
+static const u32 AudioAnalyzerFftSizes[] = {1024, 2048, 4096};
+static const char* AudioAnalyzerSpeedNames[] = {"Slow", "Medium", "Fast"};
+static const float AudioAnalyzerReleaseDb[] = {12.0f, 30.0f, 70.0f};
+static const char* AudioAnalyzerRangeNames[] = {"60 dB", "90 dB", "120 dB"};
+static const float AudioAnalyzerRangeDb[] = {60.0f, 90.0f, 120.0f};
+static const char* AudioAnalyzerTiltNames[] = {"0 dB/oct", "3 dB/oct", "4.5 dB/oct", "6 dB/oct"};
+static const float AudioAnalyzerTiltDb[] = {0.0f, 3.0f, 4.5f, 6.0f};
+// Trace colors: left, right, mid
+static const ImU32 AudioAnalyzerColors[AudioTraceCount] = {IM_COL32(120, 190, 255, 255), IM_COL32(255, 165, 95, 255), IM_COL32(205, 225, 255, 255)};
+
+// Traces the current channel setting draws, in drawing order
+static u32 Audio_AnalyzerChannels(u32* Channels)
+{
+	switch (GAudioEditor.Analyzer.Channels)
+	{
+	case 1:
+		Channels[0] = SND_SCOPE_MID;
+		return 1;
+	case 2:
+		Channels[0] = 0;
+		return 1;
+	case 3:
+		Channels[0] = 1;
+		return 1;
+	default:
+		Channels[0] = 1;
+		Channels[1] = 0;
+		return 2;
+	}
+}
+
+static float Audio_AnalyzerBandHz(u32 Band, u32 BandCount)
+{
+	const float LogMin = std::log(AudioAnalyzerMinHz);
+	const float LogStep = (std::log(AudioAnalyzerMaxHz) - LogMin) / (float)BandCount;
+	return std::exp(LogMin + LogStep * ((float)Band + 0.5f));
+}
+
+// Spectrum of one channel (pffft in xrSound) into the trace: instant attack, release by the speed setting,
+// the peak hold line falls 3 dB/s
+static void Audio_UpdateTrace(u32 BusIdx, u32 Channel, AudioAnalyzerTrace& Trace, u32 BandCount)
+{
+	float Bands[AudioDetailBandCount];
+	BandCount = std::min(BandCount, AudioDetailBandCount);
+	const AudioAnalyzerSettings& Settings = GAudioEditor.Analyzer;
+	const bool IsValid = Mixer::GetBusSpectrum(BusIdx, Channel, Bands, BandCount, AudioAnalyzerMinHz, AudioAnalyzerMaxHz, AudioAnalyzerFftSizes[Settings.Resolution]);
+	const float DeltaTime = ImGui::GetIO().DeltaTime;
+	const float Release = AudioAnalyzerReleaseDb[Settings.Speed] * DeltaTime;
+	const float PeakRelease = 3.0f * DeltaTime;
+	for (u32 Band = 0; Band < BandCount; Band++)
+	{
+		const float Value = IsValid ? std::max(Bands[Band], AudioAnalyzerFloorDb) : AudioAnalyzerFloorDb;
+		Trace.Level[Band] = Trace.IsValid ? std::max(Value, Trace.Level[Band] - Release) : Value;
+		Trace.Peak[Band] = Trace.IsValid ? std::max(Trace.Level[Band], Trace.Peak[Band] - PeakRelease) : Value;
+	}
+
+	Trace.IsValid = true;
+}
+
+static void Audio_UpdateTraces(u32 BusIdx, AudioAnalyzerTrace* Traces, u32 BandCount)
+{
+	u32 Channels[AudioTraceCount];
+	const u32 Count = Audio_AnalyzerChannels(Channels);
+	for (u32 Index = 0; Index < Count; Index++)
+	{
+		Audio_UpdateTrace(BusIdx, Channels[Index], Traces[Channels[Index]], BandCount);
+	}
+}
+
+static float Audio_AnalyzerY(float Db, float Hz, const ImVec2& Min, const ImVec2& Max)
+{
+	const AudioAnalyzerSettings& Settings = GAudioEditor.Analyzer;
+	const float Range = AudioAnalyzerRangeDb[Settings.Range];
+	// Tilt pivots at 1 kHz, as music has less energy up high
+	Db += AudioAnalyzerTiltDb[Settings.Tilt] * std::log2(Hz / 1000.0f);
+	const float Fraction = std::clamp((Db + Range) / Range, 0.0f, 1.0f);
+	return Max.y - (Max.y - Min.y) * Fraction;
+}
+
+// Filled curve with a vertical gradient: strong under the line, fading to the floor
+static void Audio_DrawTraceFill(ImDrawList* DrawList, const ImVec2* Points, u32 Count, const ImVec2& Min, const ImVec2& Max, ImU32 Color)
+{
+	const ImVec2 Uv = ImGui::GetFontTexUvWhitePixel();
+	const float Height = std::max(Max.y - Min.y, 1.0f);
+	const ImU32 Bottom = Audio_ChainAlpha(Color, 0.03f);
+	auto TopColor = [&](float Y) { return Audio_ChainAlpha(Color, 0.08f + 0.4f * (1.0f - (Y - Min.y) / Height)); };
+	for (u32 Index = 0; Index + 1 < Count; Index++)
+	{
+		const ImVec2& A = Points[Index];
+		const ImVec2& B = Points[Index + 1];
+		DrawList->PrimReserve(6, 4);
+		const ImDrawIdx Base = (ImDrawIdx)DrawList->_VtxCurrentIdx;
+		DrawList->PrimWriteIdx(Base);
+		DrawList->PrimWriteIdx((ImDrawIdx)(Base + 1));
+		DrawList->PrimWriteIdx((ImDrawIdx)(Base + 2));
+		DrawList->PrimWriteIdx(Base);
+		DrawList->PrimWriteIdx((ImDrawIdx)(Base + 2));
+		DrawList->PrimWriteIdx((ImDrawIdx)(Base + 3));
+		DrawList->PrimWriteVtx(A, Uv, TopColor(A.y));
+		DrawList->PrimWriteVtx(B, Uv, TopColor(B.y));
+		DrawList->PrimWriteVtx(ImVec2(B.x, Max.y), Uv, Bottom);
+		DrawList->PrimWriteVtx(ImVec2(A.x, Max.y), Uv, Bottom);
+	}
+}
+
+static void Audio_DrawAnalyzerGrid(ImDrawList* DrawList, const ImVec2& Min, const ImVec2& Max, bool IsCompact)
+{
+	const float Width = Max.x - Min.x;
+	const float LogMin = std::log(AudioAnalyzerMinHz);
+	const float LogRange = std::log(AudioAnalyzerMaxHz) - LogMin;
+	const ImU32 Minor = IM_COL32(255, 255, 255, IsCompact ? 8 : 12);
+	const ImU32 Major = IM_COL32(255, 255, 255, IsCompact ? 22 : 34);
+	const ImU32 Label = IM_COL32(255, 255, 255, 110);
+
+	for (float Decade = 10.0f; Decade <= 10000.0f; Decade *= 10.0f)
+	{
+		for (u32 Multiple = 1; Multiple <= 9; Multiple++)
+		{
+			const float Hz = Decade * (float)Multiple;
+			if (Hz < AudioAnalyzerMinHz || Hz > AudioAnalyzerMaxHz || (IsCompact && Multiple != 1))
+			{
+				continue;
+			}
+
+			const bool IsMajor = Multiple == 1 || Multiple == 2 || Multiple == 5;
+			const float X = Min.x + Width * (std::log(Hz) - LogMin) / LogRange;
+			DrawList->AddLine(ImVec2(X, Min.y), ImVec2(X, Max.y), IsMajor ? Major : Minor);
+			if (!IsCompact && IsMajor)
+			{
+				string16 Text;
+				Hz >= 1000.0f ? xr_sprintf(Text, "%gk", Hz / 1000.0f) : xr_sprintf(Text, "%g", Hz);
+				DrawList->AddText(ImVec2(X + 3.0f, Max.y - ImGui::GetTextLineHeight() - 1.0f), Label, Text);
+			}
+		}
+	}
+
+	const float Range = AudioAnalyzerRangeDb[GAudioEditor.Analyzer.Range];
+	const float Step = IsCompact ? Range / 3.0f : (Range > 60.0f ? 12.0f : 6.0f);
+	for (float Db = -Step; Db > -Range + 0.5f; Db -= Step)
+	{
+		const float Y = Max.y - (Max.y - Min.y) * (Db + Range) / Range;
+		DrawList->AddLine(ImVec2(Min.x, Y), ImVec2(Max.x, Y), Minor);
+		if (!IsCompact)
+		{
+			string16 Text;
+			xr_sprintf(Text, "%.0f", Db);
+			DrawList->AddText(ImVec2(Max.x - ImGui::CalcTextSize(Text).x - 4.0f, Y - ImGui::GetTextLineHeight() * 0.5f), Label, Text);
+		}
+	}
+}
+
+// Analyzer panel: grid, a gradient filled curve per channel, peak hold lines
+static void Audio_DrawAnalyzer(ImDrawList* DrawList, const ImVec2& Min, const ImVec2& Max, const AudioAnalyzerTrace* Traces, u32 BandCount, bool IsCompact)
+{
+	DrawList->AddRectFilled(Min, Max, IM_COL32(14, 16, 21, 255), 3.0f);
+	DrawList->PushClipRect(Min, Max, true);
+	Audio_DrawAnalyzerGrid(DrawList, Min, Max, IsCompact);
+
+	u32 Channels[AudioTraceCount];
+	const u32 ChannelCount = Audio_AnalyzerChannels(Channels);
+	ImVec2 Points[AudioDetailBandCount];
+	ImVec2 PeakPoints[AudioDetailBandCount];
+	const float Width = Max.x - Min.x;
+	for (u32 Index = 0; Index < ChannelCount; Index++)
+	{
+		const AudioAnalyzerTrace& Trace = Traces[Channels[Index]];
+		if (!Trace.IsValid)
+		{
+			continue;
+		}
+
+		for (u32 Band = 0; Band < BandCount; Band++)
+		{
+			const float Hz = Audio_AnalyzerBandHz(Band, BandCount);
+			const float X = Min.x + Width * ((float)Band + 0.5f) / (float)BandCount;
+			Points[Band] = ImVec2(X, Audio_AnalyzerY(Trace.Level[Band], Hz, Min, Max));
+			PeakPoints[Band] = ImVec2(X, Audio_AnalyzerY(Trace.Peak[Band], Hz, Min, Max));
+		}
+
+		const ImU32 Color = AudioAnalyzerColors[Channels[Index]];
+		Audio_DrawTraceFill(DrawList, Points, BandCount, Min, Max, ChannelCount > 1 ? Audio_ChainAlpha(Color, 0.75f) : Color);
+		if (GAudioEditor.Analyzer.PeakHold)
+		{
+			DrawList->AddPolyline(PeakPoints, (int)BandCount, Audio_ChainAlpha(Color, 0.35f), ImDrawFlags_None, 1.0f);
+		}
+		DrawList->AddPolyline(Points, (int)BandCount, Color, ImDrawFlags_None, IsCompact ? 1.0f : 1.6f);
+	}
+
+	DrawList->PopClipRect();
+	DrawList->AddRect(Min, Max, IM_COL32(255, 255, 255, 25), 3.0f);
+}
+
+static void Audio_NoteName(float Hz, char* Text, u32 Size)
+{
+	static const char* Names[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+	const s32 Midi = (s32)std::lround(69.0f + 12.0f * std::log2(Hz / 440.0f));
+	const s32 Note = ((Midi % 12) + 12) % 12;
+	xr_sprintf(Text, Size, "%s%d", Names[Note], Midi / 12 - 1);
+}
+
+static void Audio_RenderAnalyzerSettings()
+{
+	AudioAnalyzerSettings& Settings = GAudioEditor.Analyzer;
+	auto Combo = [](const char* Label, int& Value, const char* const* Names, int Count, float Width)
+	{
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(Width);
+		ImGui::Combo(Label, &Value, Names, Count);
+	};
+
+	ImGui::TextDisabled("Analyzer");
+	Combo("##Channels", Settings.Channels, AudioAnalyzerChannelNames, (int)std::size(AudioAnalyzerChannelNames), 70.0f);
+	ImGui::SetItemTooltip("Channels");
+	Combo("##Resolution", Settings.Resolution, AudioAnalyzerResolutionNames, (int)std::size(AudioAnalyzerResolutionNames), 120.0f);
+	ImGui::SetItemTooltip("FFT size: higher resolves the lows better and reacts slower");
+	Combo("##Speed", Settings.Speed, AudioAnalyzerSpeedNames, (int)std::size(AudioAnalyzerSpeedNames), 80.0f);
+	ImGui::SetItemTooltip("Release speed");
+	Combo("##Range", Settings.Range, AudioAnalyzerRangeNames, (int)std::size(AudioAnalyzerRangeNames), 80.0f);
+	ImGui::SetItemTooltip("Level range");
+	Combo("##Tilt", Settings.Tilt, AudioAnalyzerTiltNames, (int)std::size(AudioAnalyzerTiltNames), 95.0f);
+	ImGui::SetItemTooltip("Tilt around 1 kHz, so pink-ish music reads flat");
+	ImGui::SameLine();
+	ImGui::Checkbox("Peak hold", &Settings.PeakHold);
+}
+
+// Large analyzer of the selected bus with a cursor readout
+static void Audio_RenderSpectrumView(u32 BusIdx)
+{
+	if (GAudioEditor.DetailBus != BusIdx)
+	{
+		GAudioEditor.DetailBus = BusIdx;
+		for (AudioAnalyzerTrace& Trace : GAudioEditor.DetailTraces)
+		{
+			Trace.IsValid = false;
+		}
+	}
+
+	Audio_UpdateTraces(BusIdx, GAudioEditor.DetailTraces, AudioDetailBandCount);
+
+	const SoundBus& Bus = Mixer::GetBuses()[BusIdx - 1];
+	ImGui::SeparatorText("Analyzer");
+	ImGui::Text("%s   peak L %.1f dB, R %.1f dB", Bus.Name.c_str(), Audio_PeakDb(Bus.Peak[0]), Audio_PeakDb(Bus.Peak[1]));
+
+	const ImVec2 Size(std::max(ImGui::GetContentRegionAvail().x, 64.0f), 220.0f);
+	ImGui::InvisibleButton("##Analyzer", Size);
+	const ImVec2 Min = ImGui::GetItemRectMin();
+	const ImVec2 Max = ImGui::GetItemRectMax();
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	Audio_DrawAnalyzer(DrawList, Min, Max, GAudioEditor.DetailTraces, AudioDetailBandCount, false);
+
+	if (!ImGui::IsItemHovered())
+	{
+		return;
+	}
+
+	// Cursor readout: frequency, note and the level of every shown channel
+	const float MouseX = std::clamp(ImGui::GetIO().MousePos.x, Min.x, Max.x - 1.0f);
+	const float Fraction = (MouseX - Min.x) / (Max.x - Min.x);
+	const float Hz = std::exp(std::log(AudioAnalyzerMinHz) + (std::log(AudioAnalyzerMaxHz) - std::log(AudioAnalyzerMinHz)) * Fraction);
+	const u32 Band = std::min((u32)(Fraction * (float)AudioDetailBandCount), AudioDetailBandCount - 1);
+	DrawList->AddLine(ImVec2(MouseX, Min.y), ImVec2(MouseX, Max.y), IM_COL32(255, 255, 255, 70));
+
+	string16 Note;
+	Audio_NoteName(Hz, Note, sizeof(Note));
+	string128 Text;
+	Hz >= 1000.0f ? xr_sprintf(Text, "%.2f kHz  %s", Hz / 1000.0f, Note) : xr_sprintf(Text, "%.0f Hz  %s", Hz, Note);
+
+	u32 Channels[AudioTraceCount];
+	const u32 ChannelCount = Audio_AnalyzerChannels(Channels);
+	static const char* TraceNames[AudioTraceCount] = {"L", "R", "Mid"};
+	for (u32 Index = ChannelCount; Index-- > 0;)
+	{
+		const AudioAnalyzerTrace& Trace = GAudioEditor.DetailTraces[Channels[Index]];
+		string32 Level;
+		xr_sprintf(Level, "   %s %.1f dB", TraceNames[Channels[Index]], Trace.Level[Band]);
+		xr_strcat(Text, Level);
+	}
+
+	const ImVec2 TextSize = ImGui::CalcTextSize(Text);
+	const float TextX = std::min(MouseX + 8.0f, Max.x - TextSize.x - 8.0f);
+	DrawList->AddRectFilled(ImVec2(TextX - 4.0f, Min.y + 4.0f), ImVec2(TextX + TextSize.x + 4.0f, Min.y + 8.0f + TextSize.y), IM_COL32(0, 0, 0, 170), 3.0f);
+	DrawList->AddText(ImVec2(TextX, Min.y + 6.0f), IM_COL32(235, 235, 235, 255), Text);
+}
+
+// L / R peak meters with their level in dB, decaying like the tree meters
+static void Audio_DrawChannelMeters(ImDrawList* DrawList, u32 BusIdx, const SoundBus& Bus, const ImVec2& Min, const ImVec2& Max)
+{
+	const float Height = (Max.y - Min.y - 2.0f) / (float)SND_CHANNEL_COUNT;
+	for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		float& Meter = GAudioEditor.GraphMeters[BusIdx - 1][Channel];
+		const float Peak = Bus.Peak[Channel];
+		Meter = (Peak == Peak && Peak < FLT_MAX) ? std::max(Peak, Meter * 0.9f) : 0.0f;
+		const float Db = 20.0f * log10f(std::max(Meter, 1e-6f));
+		const float Fraction = std::clamp((Db + 60.0f) / 60.0f, 0.0f, 1.0f);
+		const ImVec2 BarMin(Min.x, Min.y + (Height + 2.0f) * (float)Channel);
+		const ImVec2 BarMax(Max.x, BarMin.y + Height);
+		DrawList->AddRectFilled(BarMin, BarMax, ImGui::GetColorU32(ImGuiCol_WindowBg), 2.0f);
+		DrawList->AddRectFilled(BarMin, ImVec2(BarMin.x + (BarMax.x - BarMin.x) * Fraction, BarMax.y), Audio_LevelColor(Db), 2.0f);
+
+		string32 Text;
+		xr_sprintf(Text, Meter > 1e-6f ? "%s %.1f" : "%s -inf", AudioChannelNames[Channel], Db);
+		DrawList->AddText(ImVec2(BarMin.x + 3.0f, BarMin.y + (Height - ImGui::GetTextLineHeight()) * 0.5f), ImGui::GetColorU32(ImGuiCol_Text), Text);
+	}
+}
+
+static bool Audio_ChainIsShown(const SoundBus& Bus)
+{
+	return Bus.IsUsed && (!Bus.IsGenerated || GAudioEditor.GraphShowZones);
+}
+
+// Post-order walk: the inputs of a bus (and its released dynamic buses) come right before it
+static void Audio_ChainCollect(AudioChainState& Chain, u32 BusIdx, u32 Depth)
+{
+	SoundBus* Buses = Mixer::GetBuses();
+	Chain.IsListed[BusIdx - 1] = true;
+
+	u32 HiddenZones = 0;
+	for (u32 ChildIdx = 1; ChildIdx <= SND_BUS_COUNT && Depth < SND_BUS_COUNT; ChildIdx++)
+	{
+		const SoundBus& Child = Buses[ChildIdx - 1];
+		if (!Child.IsUsed || ChildIdx == BusIdx || Child.GetOutput() != BusIdx || Chain.IsListed[ChildIdx - 1])
+		{
+			continue;
+		}
+
+		if (!Audio_ChainIsShown(Child))
+		{
+			HiddenZones++;
+			continue;
+		}
+
+		Audio_ChainCollect(Chain, ChildIdx, Depth + 1);
+	}
+
+	for (const AudioChainGhost& Ghost : Chain.Ghosts)
+	{
+		if (Ghost.Parent == BusIdx)
+		{
+			Chain.Items.push_back({0, Ghost.Info, Depth + 1, 0});
+		}
+	}
+
+	Chain.Items.push_back({BusIdx, nullptr, Depth, HiddenZones});
+}
+
+static void Audio_ChainShaderNames(u32 BusIdx, char* Text, u32 Size)
+{
+	Text[0] = 0;
+	const SoundShaderChain* Shaders = Mixer::GetBusShaders(BusIdx);
+	for (u32 ShaderIdx = 0; Shaders != nullptr && ShaderIdx < Shaders->GetCount(); ShaderIdx++)
+	{
+		const ISoundShader* Shader = Shaders->Get(ShaderIdx);
+		if (Shader != nullptr)
+		{
+			xr_strcat(Text, Size, ShaderIdx == 0 ? "" : ", ");
+			xr_strcat(Text, Size, Shader->GetClass().Name);
+		}
+	}
+}
+
+static void Audio_ChainEffectNames(const SoundBus& Bus, char* Text, u32 Size)
+{
+	Text[0] = 0;
+	for (u32 EffectIdx = 0; EffectIdx < Bus.EffectCount; EffectIdx++)
+	{
+		const SoundEffectEntry* Entry = Mixer::GetEffect(Bus.Effects[EffectIdx].Effect);
+		xr_strcat(Text, Size, EffectIdx == 0 ? "" : ", ");
+		xr_strcat(Text, Size, Entry != nullptr ? Entry->Name.c_str() : "?");
+	}
+}
+
+static void Audio_ChainTooltip(u32 BusIdx, const SoundBus& Bus, const AudioChainState& Chain, const AudioChainItem& Item)
+{
+	string512 Text;
+	ImGui::TextUnformatted(Bus.Name.c_str());
+	ImGui::Separator();
+	ImGui::Text("Output: %s", Audio_BusName(Bus.Output));
+	if (Bus.Route != 0)
+	{
+		ImGui::Text("Route: %s", Audio_BusName(Bus.Route));
+	}
+
+	ImGui::Text("Volume: %.2f x %.2f (user)", Bus.Volume, Bus.UserVolume);
+	ImGui::Text("Peak: L %.1f dB, R %.1f dB", Audio_PeakDb(Bus.Peak[0]), Audio_PeakDb(Bus.Peak[1]));
+	if (Bus.FarSend != 0 || Bus.IndoorSend != 0)
+	{
+		ImGui::Text("Sends: far %s, indoor %s", Audio_BusName(Bus.FarSend), Audio_BusName(Bus.IndoorSend));
+	}
+
+	Audio_ChainEffectNames(Bus, Text, sizeof(Text));
+	ImGui::Text("Effects: %s", Text[0] != 0 ? Text : "-");
+	Audio_ChainShaderNames(BusIdx, Text, sizeof(Text));
+	ImGui::Text("Shaders: %s", Text[0] != 0 ? Text : "-");
+	ImGui::Text("Voices: %u own, %u routed in", Chain.Voices[BusIdx - 1], Chain.RoutedVoices[BusIdx - 1]);
+	if (Bus.IsDynamic)
+	{
+		ImGui::Text("Dynamic, %u owners", Bus.DynamicOwners);
+	}
+
+	if (Item.HiddenZones != 0)
+	{
+		ImGui::Text("Hidden zone buses: %u", Item.HiddenZones);
+	}
+}
+
+static void Audio_ChainGhostTooltip(const SoundDynamicBusInfo& Info)
+{
+	ImGui::TextUnformatted(Info.Name.c_str());
+	ImGui::Separator();
+	ImGui::TextDisabled("Released dynamic bus");
+	ImGui::Text("Last output: %s", Info.Output.size() ? Info.Output.c_str() : "master");
+	ImGui::Text("Last shaders: %s", Info.Shaders.size() ? Info.Shaders.c_str() : "-");
+	ImGui::Text("Created %u times", Info.CreateCount);
+	ImGui::TextDisabled("Comes back here when acquired again; Forget released drops it");
+}
+
+static void Audio_ChainDrawBus(ImDrawList* DrawList, const ImVec2& Min, const ImVec2& Max, const AudioChainState& Chain, const AudioChainItem& Item, bool IsMaster)
+{
+	const u32 BusIdx = Item.Bus;
+	const SoundBus& Bus = Mixer::GetBuses()[BusIdx - 1];
+	const bool IsSelected = GAudioEditor.SelectedBus == BusIdx;
+	const ImU32 RouteColor = IM_COL32(230, 150, 50, 255);
+	const ImU32 SendColor = IM_COL32(100, 165, 240, 255);
+	const ImU32 Stripe = Bus.IsDynamic ? IM_COL32(170, 110, 230, 255) : Bus.IsGenerated ? IM_COL32(90, 150, 200, 255) : IsMaster ? IM_COL32(220, 220, 220, 255) : ImGui::GetColorU32(ImGuiCol_Border);
+	DrawList->AddRectFilled(Min, Max, ImGui::GetColorU32(IsSelected ? ImGuiCol_Header : ImGuiCol_FrameBg), 4.0f);
+	DrawList->AddRectFilled(Min, ImVec2(Min.x + 4.0f, Max.y), Stripe, 4.0f, ImDrawFlags_RoundCornersLeft);
+	if (IsSelected || IsMaster)
+	{
+		DrawList->AddRect(Min, Max, IsSelected ? ImGui::GetColorU32(ImGuiCol_NavCursor) : Stripe, 4.0f, 0, IsSelected ? 2.0f : 1.0f);
+	}
+
+	// Right to left: meters, R spectrum, L spectrum; the text gets what is left
+	const float Inner = 5.0f;
+	float Right = Max.x - Inner;
+	Audio_DrawChannelMeters(DrawList, BusIdx, Bus, ImVec2(Right - AudioChainMeterWidth, Min.y + Inner), ImVec2(Right, Max.y - Inner));
+	Right -= AudioChainMeterWidth + AudioChainGap;
+	if (GAudioEditor.GraphShowSpectrum)
+	{
+		const ImVec2 AnalyzerMin(Right - AudioChainAnalyzerWidth, Min.y + Inner);
+		Audio_DrawAnalyzer(DrawList, AnalyzerMin, ImVec2(Right, Max.y - Inner), GAudioEditor.RowTraces[BusIdx - 1], AudioRowBandCount, true);
+		Right -= AudioChainAnalyzerWidth + AudioChainGap;
+	}
+
+	DrawList->PushClipRect(Min, ImVec2(std::max(Right, Min.x + 40.0f), Max.y), true);
+	const float LineHeight = ImGui::GetTextLineHeight();
+	ImVec2 Cursor(Min.x + 10.0f, Min.y + Inner);
+	DrawList->AddText(Cursor, ImGui::GetColorU32(ImGuiCol_Text), Bus.Name.c_str());
+
+	string128 Tags;
+	xr_sprintf(Tags, "%s%s  voices %u", Bus.IsDynamic ? "  dynamic" : "", Bus.IsGenerated ? "  zone" : "", Chain.Voices[BusIdx - 1] + Chain.RoutedVoices[BusIdx - 1]);
+	if (Chain.RoutedVoices[BusIdx - 1] != 0)
+	{
+		string32 Routed;
+		xr_sprintf(Routed, " (%u routed in)", Chain.RoutedVoices[BusIdx - 1]);
+		xr_strcat(Tags, Routed);
+	}
+	if (Item.HiddenZones != 0)
+	{
+		string32 Zones;
+		xr_sprintf(Zones, "  +%u zones", Item.HiddenZones);
+		xr_strcat(Tags, Zones);
+	}
+	DrawList->AddText(ImVec2(Cursor.x + ImGui::CalcTextSize(Bus.Name.c_str()).x, Cursor.y), ImGui::GetColorU32(ImGuiCol_TextDisabled), Tags);
+
+	// Where the signal goes next
+	Cursor.y += LineHeight;
+	string256 Line;
+	if (IsMaster)
+	{
+		xr_strcpy(Line, "-> output device");
+	}
+	else if (Bus.Route != 0)
+	{
+		xr_sprintf(Line, "-> %s (route, config %s)", Audio_BusName(Bus.Route), Audio_BusName(Bus.Output));
+	}
+	else
+	{
+		xr_sprintf(Line, "-> %s", Audio_BusName(Bus.Output));
+	}
+	DrawList->AddText(Cursor, Bus.Route != 0 ? RouteColor : ImGui::GetColorU32(ImGuiCol_Text), Line);
+
+	if (GAudioEditor.GraphShowSends && (Bus.FarSend != 0 || Bus.IndoorSend != 0))
+	{
+		string128 Sends;
+		xr_sprintf(Sends, "   sends: %s%s%s", Bus.FarSend != 0 ? Audio_BusName(Bus.FarSend) : "", Bus.FarSend != 0 && Bus.IndoorSend != 0 ? ", " : "", Bus.IndoorSend != 0 ? Audio_BusName(Bus.IndoorSend) : "");
+		DrawList->AddText(ImVec2(Cursor.x + ImGui::CalcTextSize(Line).x, Cursor.y), SendColor, Sends);
+	}
+
+	Cursor.y += LineHeight;
+	string256 Shaders;
+	Audio_ChainShaderNames(BusIdx, Shaders, sizeof(Shaders));
+	const bool HasShaders = Shaders[0] != 0;
+	if (!HasShaders)
+	{
+		Audio_ChainEffectNames(Bus, Shaders, sizeof(Shaders));
+	}
+	DrawList->AddText(Cursor, HasShaders ? IM_COL32(230, 170, 70, 255) : ImGui::GetColorU32(ImGuiCol_TextDisabled), Shaders[0] != 0 ? Shaders : "-");
+	DrawList->PopClipRect();
+}
+
+static void Audio_ChainDrawGhost(ImDrawList* DrawList, const ImVec2& Min, const ImVec2& Max, const SoundDynamicBusInfo& Info)
+{
+	DrawList->AddRectFilled(Min, Max, ImGui::GetColorU32(ImGuiCol_FrameBg, 0.35f), 4.0f);
+	DrawList->AddRectFilled(Min, ImVec2(Min.x + 4.0f, Max.y), IM_COL32(170, 110, 230, 90), 4.0f, ImDrawFlags_RoundCornersLeft);
+
+	const ImU32 Color = ImGui::GetColorU32(ImGuiCol_TextDisabled);
+	const float LineHeight = ImGui::GetTextLineHeight();
+	ImVec2 Cursor(Min.x + 10.0f, Min.y + 5.0f);
+	DrawList->PushClipRect(Min, Max, true);
+	string256 Line;
+	xr_sprintf(Line, "%s  released, created %ux", Info.Name.c_str(), Info.CreateCount);
+	DrawList->AddText(Cursor, Color, Line);
+	Cursor.y += LineHeight;
+	xr_sprintf(Line, "-> %s", Info.Output.size() ? Info.Output.c_str() : "master");
+	DrawList->AddText(Cursor, Color, Line);
+	Cursor.y += LineHeight;
+	DrawList->AddText(Cursor, Color, Info.Shaders.size() ? Info.Shaders.c_str() : "-");
+	DrawList->PopClipRect();
+}
+
+static void Audio_RenderBusGraph()
+{
+	ImGui::Checkbox("Zone buses", &GAudioEditor.GraphShowZones);
+	ImGui::SameLine();
+	ImGui::Checkbox("Sends", &GAudioEditor.GraphShowSends);
+	ImGui::SameLine();
+	ImGui::Checkbox("Analyzer", &GAudioEditor.GraphShowSpectrum);
+	ImGui::SameLine();
+	ImGui::Checkbox("Released buses", &GAudioEditor.GraphShowReleased);
+	ImGui::SameLine();
+	if (ImGui::Button("Forget released"))
+	{
+		Mixer::ForgetDynamicBuses();
+	}
+	ImGui::SetItemTooltip("Drops the released dynamic buses from the list");
+
+	ImGui::TextColored(ImVec4(0.9f, 0.6f, 0.2f, 1.0f), "route");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0.4f, 0.65f, 0.95f, 1.0f), "send");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0.67f, 0.43f, 0.9f, 1.0f), "dynamic");
+	ImGui::SameLine();
+	ImGui::TextDisabled("| processing order, every bus before its output, master last; indent = depth");
+	if (GAudioEditor.GraphShowSpectrum)
+	{
+		Audio_RenderAnalyzerSettings();
+	}
+
+	const u32 Master = Mixer::FindBus("master");
+	SoundBus* Buses = Mixer::GetBuses();
+	AudioChainState Chain;
+	{
+		xrSRWLockGuard Guard(Mixer::GetUpdateMutex(), true);
+		for (const sound_slot_state& Slot : Mixer::GetSlots())
+		{
+			if (Slot.state != Mixer::State::Playing)
+			{
+				continue;
+			}
+
+			bool IsRouted = Slot.RouteBus != 0 && Slot.RouteBus <= SND_BUS_COUNT && Buses[Slot.RouteBus - 1].IsUsed;
+			u32 BusIdx = IsRouted ? Slot.RouteBus : Slot.bus;
+			if (BusIdx != 0 && BusIdx <= SND_BUS_COUNT)
+			{
+				(IsRouted ? Chain.RoutedVoices[BusIdx - 1] : Chain.Voices[BusIdx - 1])++;
+			}
+		}
+	}
+
+	// Dynamic buses are listed from their creation on; a released one stays before its last output
+	Mixer::GetDynamicBuses(GAudioEditor.DynamicBuses);
+	for (const SoundDynamicBusInfo& Info : GAudioEditor.DynamicBuses)
+	{
+		const bool IsAlive = Info.Bus != 0 && Info.Bus <= SND_BUS_COUNT && Buses[Info.Bus - 1].IsUsed && Buses[Info.Bus - 1].Name == Info.Name;
+		if (IsAlive || !GAudioEditor.GraphShowReleased)
+		{
+			continue;
+		}
+
+		u32 Parent = Info.Output.size() ? Mixer::FindBus(Info.Output.c_str()) : 0;
+		Parent = (Parent == 0 || !Audio_ChainIsShown(Buses[Parent - 1])) ? Master : Parent;
+		Chain.Ghosts.push_back({&Info, Parent});
+	}
+
+	// Buses that do not reach master (the mixer reroutes them, so only for a moment) go first
+	for (u32 BusIdx = 1; BusIdx <= SND_BUS_COUNT; BusIdx++)
+	{
+		const SoundBus& Bus = Buses[BusIdx - 1];
+		if (BusIdx != Master && Audio_ChainIsShown(Bus) && Bus.GetOutput() == 0 && !Chain.IsListed[BusIdx - 1])
+		{
+			Audio_ChainCollect(Chain, BusIdx, 0);
+		}
+	}
+
+	if (Master != 0)
+	{
+		Audio_ChainCollect(Chain, Master, 0);
+	}
+
+	const float ListHeight = std::max(ImGui::GetContentRegionAvail().y * 0.6f, 160.0f);
+	if (ImGui::BeginChild("##BusChain", ImVec2(0.0f, ListHeight), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
+	{
+		// Indent grows with depth, master sits at the left edge at the bottom
+		ImDrawList* DrawList = ImGui::GetWindowDrawList();
+		const float ItemHeight = Audio_ChainItemHeight();
+		xrSRWLockGuard Guard(Mixer::GetUpdateMutex(), true);
+		for (u32 ItemIdx = 0; ItemIdx < Chain.Items.size(); ItemIdx++)
+		{
+			const AudioChainItem& Item = Chain.Items[ItemIdx];
+			const float Indent = AudioChainIndent * (float)Item.Depth;
+			const float Width = std::max(ImGui::GetContentRegionAvail().x - Indent, 200.0f);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + Indent);
+			ImGui::PushID((int)ItemIdx);
+			const bool IsClicked = ImGui::InvisibleButton("##Item", ImVec2(Width, Item.Ghost != nullptr ? ItemHeight * 0.75f : ItemHeight));
+			const bool IsHovered = ImGui::IsItemHovered();
+			const ImVec2 Min = ImGui::GetItemRectMin();
+			const ImVec2 Max = ImGui::GetItemRectMax();
+			ImGui::PopID();
+
+			if (Item.Ghost != nullptr)
+			{
+				Audio_ChainDrawGhost(DrawList, Min, Max, *Item.Ghost);
+				if (IsHovered && ImGui::BeginTooltip())
+				{
+					Audio_ChainGhostTooltip(*Item.Ghost);
+					ImGui::EndTooltip();
+				}
+				continue;
+			}
+
+			if (GAudioEditor.GraphShowSpectrum)
+			{
+				Audio_UpdateTraces(Item.Bus, GAudioEditor.RowTraces[Item.Bus - 1], AudioRowBandCount);
+			}
+
+			Audio_ChainDrawBus(DrawList, Min, Max, Chain, Item, Item.Bus == Master);
+			if (IsClicked)
+			{
+				GAudioEditor.SelectedBus = Item.Bus;
+				GAudioEditor.BusStatus = "";
+			}
+
+			if (IsHovered && ImGui::BeginTooltip())
+			{
+				Audio_ChainTooltip(Item.Bus, Buses[Item.Bus - 1], Chain, Item);
+				ImGui::EndTooltip();
+			}
+		}
+	}
+
+	ImGui::EndChild();
+	if (ImGui::BeginChild("##GraphBusDetails"))
+	{
+		const u32 Selected = GAudioEditor.SelectedBus;
+		if (GAudioEditor.GraphShowSpectrum && Selected != 0 && Selected <= SND_BUS_COUNT && Buses[Selected - 1].IsUsed)
+		{
+			Audio_RenderSpectrumView(Selected);
+		}
+
 		Audio_RenderBusDetails();
 	}
 
@@ -1296,6 +2101,23 @@ void RenderUIAudio()
 		}
 
 		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+}
+
+void RenderUIAudioBusGraph()
+{
+	bool& IsOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::Audio_BusGraph)];
+	if (!IsOpen)
+	{
+		return;
+	}
+
+	ImGui::SetNextWindowSize(ImVec2(1100.0f, 720.0f), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("Audio Bus Graph", &IsOpen))
+	{
+		Audio_RenderBusGraph();
 	}
 
 	ImGui::End();

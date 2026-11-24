@@ -64,6 +64,78 @@ static void SetBusShaderParam(const char* Bus, const char* Shader, const char* P
 	XRay::Sound::Mixer::SetBusShaderParam(FindScriptBus(Bus), FindMixerShader(Shader), Param, Value);
 }
 
+static void RampBusShaderParamCurve(const char* Bus, const char* Shader, const char* Param, float Value, float Seconds, const char* Curve)
+{
+	XRay::Sound::Mixer::RampBusShaderParam(FindScriptBus(Bus), FindMixerShader(Shader), Param, Value, Seconds, XRay::Sound::Shader::FindCurve(Curve));
+}
+
+static void RampBusShaderParam(const char* Bus, const char* Shader, const char* Param, float Value, float Seconds)
+{
+	RampBusShaderParamCurve(Bus, Shader, Param, Value, Seconds, nullptr);
+}
+
+static void SetBusShaderLfoShape(const char* Bus, const char* Shader, const char* Param, float Rate, float Depth, const char* Shape)
+{
+	XRay::Sound::Mixer::SetBusShaderLfo(FindScriptBus(Bus), FindMixerShader(Shader), Param, Rate, Depth, XRay::Sound::Shader::FindLfoShape(Shape));
+}
+
+static void SetBusShaderLfo(const char* Bus, const char* Shader, const char* Param, float Rate, float Depth)
+{
+	SetBusShaderLfoShape(Bus, Shader, Param, Rate, Depth, nullptr);
+}
+
+static void StopBusShaderAutomationParam(const char* Bus, const char* Shader, const char* Param)
+{
+	XRay::Sound::Mixer::StopBusShaderAutomation(FindScriptBus(Bus), FindMixerShader(Shader), Param);
+}
+
+static void StopBusShaderAutomation(const char* Bus, const char* Shader)
+{
+	StopBusShaderAutomationParam(Bus, Shader, nullptr);
+}
+
+static u32 FindScriptOutputBus(const char* Bus)
+{
+	return (Bus != nullptr && Bus[0] != 0) ? FindScriptBus(Bus) : 0;
+}
+
+// Returns the bus name, "" on failure
+static const char* AcquireBus(const char* Name)
+{
+	return XRay::Sound::Mixer::GetBusName(XRay::Sound::Mixer::AcquireDynamicBus(Name));
+}
+
+static const char* AcquireBusOutput(const char* Name, const char* Output)
+{
+	return XRay::Sound::Mixer::GetBusName(XRay::Sound::Mixer::AcquireDynamicBus(Name, FindScriptOutputBus(Output)));
+}
+
+static const char* AcquireShaderBus(const char* Shader)
+{
+	return XRay::Sound::Mixer::GetBusName(XRay::Sound::Mixer::AcquireShaderBus(FindMixerShader(Shader)));
+}
+
+static const char* AcquireShaderBusOutput(const char* Shader, const char* Output)
+{
+	return XRay::Sound::Mixer::GetBusName(XRay::Sound::Mixer::AcquireShaderBus(FindMixerShader(Shader), FindScriptOutputBus(Output)));
+}
+
+static void ReleaseBus(const char* Bus)
+{
+	XRay::Sound::Mixer::ReleaseDynamicBus(FindScriptBus(Bus));
+}
+
+// Target "" restores the config output
+static void RouteBus(const char* Bus, const char* Target)
+{
+	XRay::Sound::Mixer::RouteBus(FindScriptBus(Bus), FindScriptOutputBus(Target));
+}
+
+static void UnrouteBus(const char* Bus)
+{
+	XRay::Sound::Mixer::RouteBus(FindScriptBus(Bus), 0);
+}
+
 #pragma optimize("s",on)
 void CScriptSound::script_register(lua_State *L)
 {
@@ -88,6 +160,7 @@ void CScriptSound::script_register(lua_State *L)
 			.property("max_distance",			&CScriptSound::GetMaxDistance,	&CScriptSound::SetMaxDistance)
 			.property("volume",					&CScriptSound::GetVolume,		&CScriptSound::SetVolume)
 			.property("ignore_bus_shaders",		&CScriptSound::GetIgnoreBusShaders,	&CScriptSound::SetIgnoreBusShaders)
+			.property("route_bus",				&CScriptSound::GetRouteBus,			&CScriptSound::SetRouteBus)
 			.def(								constructor<const char*>())
 			.def(								constructor<const char*,ESoundTypes>())
 			.def("get_position",				&CScriptSound::GetPosition)
@@ -109,6 +182,12 @@ void CScriptSound::script_register(lua_State *L)
 			.def("remove_shader",				&CScriptSound::RemoveShader)
 			.def("clear_shaders",				&CScriptSound::ClearShaders)
 			.def("set_shader_param",			&CScriptSound::SetShaderParam)
+			.def("ramp_shader_param",			&CScriptSound::RampShaderParamLinear)
+			.def("ramp_shader_param",			&CScriptSound::RampShaderParam)
+			.def("set_shader_lfo",				&CScriptSound::SetShaderLfoSine)
+			.def("set_shader_lfo",				&CScriptSound::SetShaderLfo)
+			.def("stop_shader_automation",		&CScriptSound::StopShaderAutomationAll)
+			.def("stop_shader_automation",		&CScriptSound::StopShaderAutomation)
 	];
 
 	module(L, "sound_mixer")
@@ -118,6 +197,19 @@ void CScriptSound::script_register(lua_State *L)
 		def("remove_bus_shader",				&RemoveBusShader),
 		def("remove_bus_shader",				&RemoveBusShaderSpatial),
 		def("clear_bus_shaders",				&ClearBusShaders),
-		def("set_bus_shader_param",				&SetBusShaderParam)
+		def("set_bus_shader_param",				&SetBusShaderParam),
+		def("ramp_bus_shader_param",			&RampBusShaderParam),
+		def("ramp_bus_shader_param",			&RampBusShaderParamCurve),
+		def("set_bus_shader_lfo",				&SetBusShaderLfo),
+		def("set_bus_shader_lfo",				&SetBusShaderLfoShape),
+		def("stop_bus_shader_automation",		&StopBusShaderAutomation),
+		def("stop_bus_shader_automation",		&StopBusShaderAutomationParam),
+		def("acquire_bus",						&AcquireBus),
+		def("acquire_bus",						&AcquireBusOutput),
+		def("acquire_shader_bus",				&AcquireShaderBus),
+		def("acquire_shader_bus",				&AcquireShaderBusOutput),
+		def("release_bus",						&ReleaseBus),
+		def("route_bus",						&RouteBus),
+		def("unroute_bus",						&UnrouteBus)
 	];
 }

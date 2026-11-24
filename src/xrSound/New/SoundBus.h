@@ -49,10 +49,23 @@ void Snd_SetBusEffectParam(u32 BusIdx, bool IsVoice, u32 EffectIdx, u32 ParamIdx
 const char* Snd_GetBusValue(u32 BusIdx, const char* Key);
 bool Snd_SaveBus(u32 BusIdx);
 
+// Runtime buses: Acquire counts owners (a config bus of that name is returned without one), the last Release frees the bus
+u32 Snd_AcquireDynamicBus(const char* Name, u32 Output);
+// True when the bus was freed
+bool Snd_ReleaseDynamicBus(u32 BusIdx);
+// Overrides the output of a bus until Target 0; a route that makes a loop is dropped
+void Snd_RouteBus(u32 BusIdx, u32 Target);
+void Snd_GetDynamicBuses(xr_vector<SoundDynamicBusInfo>& Out);
+// Drops the records of released dynamic buses
+void Snd_ForgetDynamicBuses();
+
 void Snd_BeginBuses();
 // VoiceFlags (Mixer::Flags): NoBusShaders, or a 2D voice on a bus with a spatial-only shader, skips the runtime shaders
 bool Snd_SendToBus(u32 BusIdx, float** Data, float BeginFactor, float EndFactor, float Left, float Right, u8 VoiceFlags);
 void Snd_RenderBuses(float* Output, float MuteVolume);
+// Copies the last Frames (up to SND_SCOPE_FRAMES) of one channel, SND_SCOPE_MID for (L + R) / 2,
+// and keeps the capture on for about a second
+bool Snd_ReadBusScope(u32 BusIdx, u32 Channel, float* Out, u32 Frames);
 
 void Snd_AddZone(sound_zone_params* Params, bool IsEditor);
 void Snd_ResetZones();

@@ -31,8 +31,6 @@
 #include "SoundDSP.h"
 #include "../Plugins/ResonanceAudio.h"
 
-#define SND_SPEED_OF_SOUND (343.0f)
-#define SND_DOPPLER_SMOOTH (4.0f)
 #define SND_PANNING_SMOOTH (10.0f)
 
 struct SoundEffectRegistry
@@ -44,38 +42,13 @@ struct SoundEffectRegistry
 enum SoundSpatialParam : u32
 {
 	SpatialRolloff,
-	SpatialBackAttenuation,
-	SpatialDoppler
-};
-
-enum SoundCompressorParam : u32
-{
-	CompressorAttack,
-	CompressorRelease,
-	CompressorThreshold,
-	CompressorRatio,
-	CompressorMix
-};
-
-struct SoundCompressorState
-{
-	float Envelope[SND_CHANNEL_COUNT];
+	SpatialBackAttenuation
 };
 
 static const SoundEffectParam SpatialParams[] =
 {
 	{"rolloff", 1.3f, 0.1f, 4.0f},
-	{"back_attenuation", 0.3f, 0.0f, 1.0f},
-	{"doppler", 1.0f, 0.0f, 10.0f}
-};
-
-static const SoundEffectParam CompressorParams[] =
-{
-	{"attack", 0.0001f, 0.0f, 1.0f},
-	{"release", 0.1f, 0.0f, 5.0f},
-	{"threshold", -20.0f, -60.0f, 0.0f},
-	{"ratio", 2.0f, 1.0f, 20.0f},
-	{"mix", 1.0f, 0.0f, 1.0f}
+	{"back_attenuation", 0.3f, 0.0f, 1.0f}
 };
 
 static SoundEffectRegistry GEffects = {};
@@ -83,8 +56,8 @@ static SoundEffectRegistry GEffects = {};
 void Snd_InitEffects()
 {
 	Snd_RegisterEffect("spatial", Snd_SpatialProc);
-	Snd_RegisterEffect("compressor", Snd_CompressorProc);
 	Snd_RegisterEffect("convolution", Snd_ConvolutionProc);
+	// Shaders are bus effects too: "compressor" and the rest come from here
 	Snd_RegisterShaderEffects();
 	Resonance_RegisterEffects();
 }
@@ -208,7 +181,7 @@ void Snd_DestroyEffect(SoundBusEffect* Effect)
 	xr_free(Effect->State);
 }
 
-void Snd_SpatialLocate(SoundEffectProcess* Process, float DopplerScale, SoundSpatialPosition* OutPosition)
+void Snd_SpatialLocate(SoundEffectProcess* Process, SoundSpatialPosition* OutPosition)
 {
 	const SoundEffectListener* Listener = Process->Listener;
 	SoundEffectVoice* Voice = Process->Voice;
@@ -221,20 +194,6 @@ void Snd_SpatialLocate(SoundEffectProcess* Process, float DopplerScale, SoundSpa
 	Camera.build_camera_dir(Listener->Position, Listener->Direction, Listener->Normal);
 	Camera.transform_tiny_noadd(OutPosition->Local, Direction);
 	OutPosition->Local.normalize_safe();
-
-	float Doppler = 1.0f;
-	if (Distance > EPS_S)
-	{
-		Fvector ToListener;
-		ToListener.set(Direction).mul(-1.0f / Distance);
-
-		float Scale = psSoundDoppler * DopplerScale;
-		float Closing = ToListener.dotproduct(Listener->Velocity) * Scale;
-		float Approach = ToListener.dotproduct(Voice->Velocity) * Scale;
-		Doppler = std::clamp((SND_SPEED_OF_SOUND - Closing) / std::max(SND_SPEED_OF_SOUND - Approach, 1.0f), 0.5f, 2.0f);
-	}
-
-	volume_lerp(*Voice->Doppler, Doppler, SND_DOPPLER_SMOOTH, (float)SND_BLOCKSIZE / (float)SND_SAMPLERATE);
 
 	OutPosition->MinDistance = std::max(Voice->Distances.x, EPS_S);
 	OutPosition->MaxDistance = std::max(Voice->Distances.y, OutPosition->MinDistance + EPS_S);
@@ -297,7 +256,7 @@ bool Snd_SpatialProc(void* StatePtr, SoundEffectOp Op, void* Arg)
 	{
 		SoundEffectProcess* Process = (SoundEffectProcess*)Arg;
 		SoundSpatialPosition Position;
-		Snd_SpatialLocate(Process, Process->Params[SpatialDoppler], &Position);
+		Snd_SpatialLocate(Process, &Position);
 		Snd_SpatialPan(State, Process, &Position, Process->Params[SpatialRolloff], Process->Params[SpatialBackAttenuation]);
 		return true;
 	}
@@ -306,30 +265,3 @@ bool Snd_SpatialProc(void* StatePtr, SoundEffectOp Op, void* Arg)
 	}
 }
 
-bool Snd_CompressorProc(void* StatePtr, SoundEffectOp Op, void* Arg)
-{
-	SoundCompressorState* State = (SoundCompressorState*)StatePtr;
-	switch (Op)
-	{
-	case SoundEffectOp::Describe:
-		*(SoundEffectDesc*)Arg = {SoundEffectScope::Bus, sizeof(SoundCompressorState), (u32)std::size(CompressorParams), CompressorParams};
-		return true;
-	case SoundEffectOp::Create:
-	case SoundEffectOp::Reset:
-		State->Envelope[0] = FLT_EPSILON;
-		State->Envelope[1] = FLT_EPSILON;
-		return true;
-	case SoundEffectOp::Process:
-	{
-		SoundEffectProcess* Process = (SoundEffectProcess*)Arg;
-		const float* Params = Process->Params;
-		if (Params[CompressorMix] > 0.0f)
-		{
-			DSP_Compressor(Params[CompressorAttack], Params[CompressorRelease], Params[CompressorThreshold], Params[CompressorRatio], Process->Data, Params[CompressorMix], SND_BLOCKSIZE, State->Envelope);
-		}
-		return true;
-	}
-	default:
-		return false;
-	}
-}

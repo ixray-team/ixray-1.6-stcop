@@ -113,6 +113,8 @@ public:
 	bool                            dont_destroy_slot = false;
 	//!< See ref_sound::set_ignore_bus_shaders
 	bool							ignore_bus_shaders = false;
+	//!< See ref_sound::set_route_bus
+	shared_str						route_bus;
 public:
 
 	IC CSound_params get_params()
@@ -203,10 +205,27 @@ public:
 	IC void					remove_shader			(SoundShaderType type)								{ XRay::Sound::Mixer::RemoveShader(slot(), type); }
 	IC void					clear_shaders			()													{ XRay::Sound::Mixer::ClearShaders(slot()); }
 	IC void					set_shader_param		(SoundShaderType type, const char* name, float value)	{ XRay::Sound::Mixer::SetShaderParam(slot(), type, name, value); }
+	// Parameter automation of the runtime shaders, see XRay::Sound::Mixer::RampShaderParam
+	IC void					ramp_shader_param		(SoundShaderType type, const char* name, float value, float seconds, XRay::Sound::Shader::Curve curve = XRay::Sound::Shader::Curve::Linear)	{ XRay::Sound::Mixer::RampShaderParam(slot(), type, name, value, seconds, curve); }
+	IC void					set_shader_lfo			(SoundShaderType type, const char* name, float rate_hz, float depth, XRay::Sound::Shader::LfoShape shape = XRay::Sound::Shader::LfoShape::Sine)	{ XRay::Sound::Mixer::SetShaderLfo(slot(), type, name, rate_hz, depth, shape); }
+	IC void					stop_shader_automation	(SoundShaderType type, const char* name = nullptr)	{ XRay::Sound::Mixer::StopShaderAutomation(slot(), type, name); }
 
 	// Skip the runtime shaders of the buses; config bus effects still apply. Takes effect on the next play
 	IC void					set_ignore_bus_shaders	(bool value)										{ if (_p) { _p->ignore_bus_shaders = value; } }
 	IC bool					ignores_bus_shaders		() const											{ return _p ? _p->ignore_bus_shaders : false; }
+
+	// Mixes the voice into this bus (a dynamic one, say) instead of its own; kept across plays, nullptr or "" restores
+	IC void					set_route_bus			(const char* bus)
+	{
+		if (_p == nullptr)
+		{
+			return;
+		}
+
+		_p->route_bus = (bus != nullptr && bus[0] != 0) ? bus : nullptr;
+		XRay::Sound::Mixer::RouteVoice(slot(), _p->route_bus.size() ? XRay::Sound::Mixer::FindBus(_p->route_bus.c_str()) : 0);
+	}
+	IC const char*			route_bus				() const											{ return (_p && _p->route_bus.size()) ? _p->route_bus.c_str() : ""; }
 };
 
 /// definition (Sound Source)

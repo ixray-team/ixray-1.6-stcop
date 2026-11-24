@@ -58,10 +58,10 @@ struct SoundSpatialPosition
 	float Gain;
 };
 
-void Snd_SpatialLocate(SoundEffectProcess* Process, float DopplerScale, SoundSpatialPosition* OutPosition);
+// Doppler is the "doppler" voice shader (Shaders/SoundDopplerShader.h)
+void Snd_SpatialLocate(SoundEffectProcess* Process, SoundSpatialPosition* OutPosition);
 float Snd_DistanceAttenuation(const SoundSpatialPosition* Position, float Power);
 void Snd_SpatialPan(SoundSpatialState* State, SoundEffectProcess* Process, const SoundSpatialPosition* Position, float Rolloff, float BackAttenuation);
 
 bool Snd_SpatialProc(void* State, SoundEffectOp Op, void* Arg);
-bool Snd_CompressorProc(void* State, SoundEffectOp Op, void* Arg);
 bool Snd_ConvolutionProc(void* State, SoundEffectOp Op, void* Arg);

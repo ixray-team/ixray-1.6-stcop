@@ -547,9 +547,75 @@ public:
 	}
 };
 
+// snd_bus_dynamic <name> [output]   acquires a dynamic bus (one owner)
+// snd_bus_dynamic <name> off        releases one owner
+class CCC_SND_BusDynamic : public IConsole_Command
+{
+public:
+	CCC_SND_BusDynamic(const char* N) : IConsole_Command(N) {}
+
+	void Execute(const char* args) override
+	{
+		string128 BusName = {}, Arg = {};
+		const int Count = sscanf(args, "%127s %127s", BusName, Arg);
+		if (Count < 1)
+		{
+			InvalidSyntax();
+			return;
+		}
+
+		if (Count >= 2 && xr_strcmp(Arg, "off") == 0)
+		{
+			XRay::Sound::Mixer::ReleaseDynamicBus(XRay::Sound::Mixer::FindBus(BusName));
+			return;
+		}
+
+		const u32 Output = Count >= 2 ? XRay::Sound::Mixer::FindBus(Arg) : 0;
+		if (XRay::Sound::Mixer::AcquireDynamicBus(BusName, Output) == 0)
+		{
+			Msg("! Cannot create sound bus '%s'", BusName);
+		}
+	}
+
+	void Info(TInfo& I) override
+	{
+		xr_strcpy(I, "<name> [<output> | off]");
+	}
+};
+
+// snd_bus_route <bus> <target>   mixes the whole bus into target
+// snd_bus_route <bus> off        restores the config output
+class CCC_SND_BusRoute : public IConsole_Command
+{
+public:
+	CCC_SND_BusRoute(const char* N) : IConsole_Command(N) {}
+
+	void Execute(const char* args) override
+	{
+		string128 BusName = {}, Target = {};
+		const u32 Bus = sscanf(args, "%127s %127s", BusName, Target) == 2 ? XRay::Sound::Mixer::FindBus(BusName) : 0;
+		const u32 TargetBus = xr_strcmp(Target, "off") == 0 ? 0 : XRay::Sound::Mixer::FindBus(Target);
+		if (Bus == 0 || (TargetBus == 0 && xr_strcmp(Target, "off") != 0))
+		{
+			InvalidSyntax();
+			return;
+		}
+
+		XRay::Sound::Mixer::RouteBus(Bus, TargetBus);
+	}
+
+	void Info(TInfo& I) override
+	{
+		xr_strcpy(I, "<bus> <target | off>");
+	}
+};
+
 // snd_bus_shader <bus> <shader>                 adds the shader to the bus
 // snd_bus_shader <bus> <shader> off             removes it
 // snd_bus_shader <bus> <shader> <param> <value> sets a parameter
+// snd_bus_shader <bus> <shader> <param> <value> <seconds> [curve]   ramps it (linear, exp, smooth)
+// snd_bus_shader <bus> <shader> <param> lfo <rate> <depth> [shape]  swings it (sine, triangle, square, saw_up, saw_down, random)
+// snd_bus_shader <bus> <shader> stop [param]    stops the automation, keeps the current values
 // snd_bus_shader <bus> clear                    removes all shaders of the bus
 class CCC_SND_BusShader : public IConsole_Command
 {
@@ -558,9 +624,9 @@ public:
 
 	virtual void Execute(const char* args) override
 	{
-		string128 BusName = {}, ShaderName = {}, Param = {};
+		string128 BusName = {}, ShaderName = {}, Param = {}, Word = {};
 		float Value = 0.0f;
-		const int Count = sscanf(args, "%127s %127s %127s %f", BusName, ShaderName, Param, &Value);
+		const int Count = sscanf(args, "%127s %127s %127s %127s", BusName, ShaderName, Param, Word);
 
 		const u32 Bus = XRay::Sound::Mixer::FindBus(BusName);
 		if (Count < 2 || Bus == 0)
@@ -590,9 +656,37 @@ public:
 		{
 			XRay::Sound::Mixer::RemoveBusShader(Bus, Type);
 		}
-		else if (Count == 4)
+		else if (xr_strcmp(Param, "stop") == 0)
 		{
-			XRay::Sound::Mixer::SetBusShaderParam(Bus, Type, Param, Value);
+			XRay::Sound::Mixer::StopBusShaderAutomation(Bus, Type, Count == 4 ? Word : nullptr);
+		}
+		else if (Count == 4 && xr_strcmp(Word, "lfo") == 0)
+		{
+			float Rate = 0.0f, Depth = 0.0f;
+			string128 Shape = {};
+			string128 Skip[4];
+			const int LfoCount = sscanf(args, "%127s %127s %127s %127s %f %f %127s", Skip[0], Skip[1], Skip[2], Skip[3], &Rate, &Depth, Shape);
+			if (LfoCount < 6)
+			{
+				InvalidSyntax();
+				return;
+			}
+			XRay::Sound::Mixer::SetBusShaderLfo(Bus, Type, Param, Rate, Depth, XRay::Sound::Shader::FindLfoShape(Shape));
+		}
+		else if (Count == 4 && sscanf(Word, "%f", &Value) == 1)
+		{
+			float Seconds = 0.0f;
+			string128 Curve = {};
+			string128 Skip[4];
+			const int RampCount = sscanf(args, "%127s %127s %127s %127s %f %127s", Skip[0], Skip[1], Skip[2], Skip[3], &Seconds, Curve);
+			if (RampCount >= 5)
+			{
+				XRay::Sound::Mixer::RampBusShaderParam(Bus, Type, Param, Value, Seconds, XRay::Sound::Shader::FindCurve(Curve));
+			}
+			else
+			{
+				XRay::Sound::Mixer::SetBusShaderParam(Bus, Type, Param, Value);
+			}
 		}
 		else
 		{
@@ -602,7 +696,7 @@ public:
 
 	virtual void Info(TInfo& I) override
 	{
-		xr_strcpy(I, "<bus> <shader> [off | <param> <value>], <bus> clear");
+		xr_strcpy(I, "<bus> <shader> [off | stop [param] | <param> <value> [seconds [curve]] | <param> lfo <rate> <depth> [shape]], <bus> clear");
 	}
 };
 
@@ -969,6 +1063,8 @@ void CCC_Register()
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD1(CCC_SND_ExportConfig,"snd_export_config"	);
 	CMD1(CCC_SND_BusShader,	"snd_bus_shader"		);
+	CMD1(CCC_SND_BusDynamic,	"snd_bus_dynamic"		);
+	CMD1(CCC_SND_BusRoute,	"snd_bus_route"			);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
 	CMD3(CCC_Mask32,		"snd_hrtf",				&psSoundFlags,		ss_HRTF		);
 

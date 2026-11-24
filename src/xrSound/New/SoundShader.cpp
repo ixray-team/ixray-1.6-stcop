@@ -320,6 +320,325 @@ void Snd_RegisterShaderEffects()
 	RegisterShaderEffects(std::make_integer_sequence<u8, (u8)SoundShaderType::Count>{});
 }
 
+namespace XRay::Sound::Shader
+{
+	namespace
+	{
+		struct NamedValue
+		{
+			const char* Name;
+			u8 Value;
+		};
+
+		constexpr NamedValue CurveNames[] = {
+			{"linear", (u8)Curve::Linear}, {"exp", (u8)Curve::Exponential}, {"exponential", (u8)Curve::Exponential}, {"smooth", (u8)Curve::Smooth}};
+
+		constexpr NamedValue LfoShapeNames[] = {
+			{"sine", (u8)LfoShape::Sine}, {"triangle", (u8)LfoShape::Triangle}, {"square", (u8)LfoShape::Square},
+			{"saw_up", (u8)LfoShape::SawUp}, {"saw_down", (u8)LfoShape::SawDown}, {"random", (u8)LfoShape::Random}};
+
+		template <size_t N>
+		u8 FindNamed(const NamedValue (&Table)[N], const char* Name, const char* What)
+		{
+			if (Name == nullptr || Name[0] == 0)
+			{
+				return Table[0].Value;
+			}
+
+			for (const NamedValue& Item : Table)
+			{
+				if (xr_strcmp(Item.Name, Name) == 0)
+				{
+					return Item.Value;
+				}
+			}
+
+			Msg("! [Sound] Unknown %s '%s', using '%s'", What, Name, Table[0].Name);
+			return Table[0].Value;
+		}
+
+		float ClampParam(const ISoundShader& Shader, u32 Param, float Value)
+		{
+			const SoundEffectParam& Desc = Shader.GetClass().Params[Param];
+			return std::clamp(Value, Desc.Min, Desc.Max);
+		}
+
+		float& ParamField(ISoundShader& Shader, u32 Param)
+		{
+			return Shader.*Shader.GetClass().Fields[Param];
+		}
+	}
+
+	Curve FindCurve(const char* Name)
+	{
+		return (Curve)FindNamed(CurveNames, Name, "automation curve");
+	}
+
+	LfoShape FindLfoShape(const char* Name)
+	{
+		return (LfoShape)FindNamed(LfoShapeNames, Name, "LFO shape");
+	}
+
+	float Automation::Random()
+	{
+		// xorshift32, -1..1
+		Seed ^= Seed << 13;
+		Seed ^= Seed >> 17;
+		Seed ^= Seed << 5;
+		return (float)(Seed >> 8) * (2.0f / 16777216.0f) - 1.0f;
+	}
+
+	float Automation::GetBase(const ISoundShader& Shader, u32 Param) const
+	{
+		if (!IsActive(Param))
+		{
+			return Shader.GetParam(Param);
+		}
+
+		const ParamLane& Lane = Lanes[Param];
+		return Lane.HasRamp ? RampValue(Lane) : Lane.Base;
+	}
+
+	float Automation::RampValue(const ParamLane& Lane) const
+	{
+		if (Lane.RampFrames == 0 || Lane.RampFrame >= Lane.RampFrames)
+		{
+			return Lane.RampTo;
+		}
+
+		const float Factor = (float)Lane.RampFrame / (float)Lane.RampFrames;
+		switch (Lane.RampCurve)
+		{
+		case Curve::Exponential:
+			if (Lane.RampFrom > 0.0f && Lane.RampTo > 0.0f)
+			{
+				return Lane.RampFrom * std::pow(Lane.RampTo / Lane.RampFrom, Factor);
+			}
+			break;
+		case Curve::Smooth:
+			return lerp(Lane.RampFrom, Lane.RampTo, Factor * Factor * (3.0f - 2.0f * Factor));
+		default:
+			break;
+		}
+
+		return lerp(Lane.RampFrom, Lane.RampTo, Factor);
+	}
+
+	float Automation::LfoValue(const ParamLane& Lane) const
+	{
+		const float Phase = Lane.LfoPhase;
+		float Wave = 0.0f;
+		switch (Lane.Shape)
+		{
+		case LfoShape::Triangle:
+			Wave = 1.0f - 4.0f * std::abs(Phase - 0.5f);
+			break;
+		case LfoShape::Square:
+			Wave = Phase < 0.5f ? 1.0f : -1.0f;
+			break;
+		case LfoShape::SawUp:
+			Wave = 2.0f * Phase - 1.0f;
+			break;
+		case LfoShape::SawDown:
+			Wave = 1.0f - 2.0f * Phase;
+			break;
+		case LfoShape::Random:
+			Wave = Lane.LfoHold;
+			break;
+		default:
+			Wave = std::sin(2.0f * PI * Phase);
+			break;
+		}
+		return Wave * Lane.LfoDepth;
+	}
+
+	void Automation::Ramp(ISoundShader& Shader, u32 Param, float Target, float Seconds, Curve Shape)
+	{
+		if (Param >= Shader.GetParamCount())
+		{
+			return;
+		}
+
+		ParamLane& Lane = Lanes[Param];
+		const float From = GetBase(Shader, Param);
+		Target = ClampParam(Shader, Param, Target);
+		const u32 Frames = Seconds > 0.0f ? (u32)(Seconds * (float)SND_SAMPLERATE) : 0;
+
+		if (Frames == 0)
+		{
+			Shader.SetParam(Param, Target);
+			OnSet(Param, Target);
+			return;
+		}
+
+		Lane.Base = From;
+		Lane.RampFrom = From;
+		Lane.RampTo = Target;
+		Lane.RampFrame = 0;
+		Lane.RampFrames = Frames;
+		Lane.RampCurve = Shape;
+		Lane.HasRamp = true;
+		ActiveMask |= 1u << Param;
+	}
+
+	void Automation::SetLfo(ISoundShader& Shader, u32 Param, float RateHz, float Depth, LfoShape Shape)
+	{
+		if (Param >= Shader.GetParamCount())
+		{
+			return;
+		}
+
+		ParamLane& Lane = Lanes[Param];
+		if (RateHz <= 0.0f || Depth == 0.0f)
+		{
+			if (Lane.HasLfo)
+			{
+				Lane.HasLfo = false;
+				if (!Lane.HasRamp)
+				{
+					Shader.SetParam(Param, Lane.Base);
+					ActiveMask &= ~(1u << Param);
+				}
+			}
+			return;
+		}
+
+		if (!IsActive(Param))
+		{
+			Lane.Base = Shader.GetParam(Param);
+		}
+
+		if (!Lane.HasLfo)
+		{
+			Lane.LfoPhase = 0.0f;
+			Lane.LfoHold = Random();
+		}
+
+		Lane.LfoRate = RateHz;
+		Lane.LfoDepth = Depth;
+		Lane.Shape = Shape;
+		Lane.HasLfo = true;
+		ActiveMask |= 1u << Param;
+	}
+
+	void Automation::Stop(ISoundShader& Shader, u32 Param)
+	{
+		if (!IsActive(Param))
+		{
+			return;
+		}
+
+		const float Value = GetBase(Shader, Param);
+		Lanes[Param].HasRamp = false;
+		Lanes[Param].HasLfo = false;
+		ActiveMask &= ~(1u << Param);
+		Shader.SetParam(Param, Value);
+	}
+
+	void Automation::StopAll(ISoundShader& Shader)
+	{
+		for (u32 Param = 0; Param < SND_EFFECT_PARAM_COUNT; Param++)
+		{
+			Stop(Shader, Param);
+		}
+	}
+
+	void Automation::OnSet(u32 Param, float Value)
+	{
+		if (!IsActive(Param))
+		{
+			return;
+		}
+
+		ParamLane& Lane = Lanes[Param];
+		Lane.HasRamp = false;
+		Lane.Base = Value;
+		if (!Lane.HasLfo)
+		{
+			ActiveMask &= ~(1u << Param);
+		}
+	}
+
+	void Automation::CopyFrom(const Automation& Other)
+	{
+		*this = Other;
+	}
+
+	void Automation::Apply(ISoundShader& Shader)
+	{
+		if (ActiveMask == 0)
+		{
+			return;
+		}
+
+		for (u32 Param = 0; Param < Shader.GetParamCount(); Param++)
+		{
+			if (!IsActive(Param))
+			{
+				continue;
+			}
+
+			const ParamLane& Lane = Lanes[Param];
+			float Value = Lane.HasRamp ? RampValue(Lane) : Lane.Base;
+			if (Lane.HasLfo)
+			{
+				Value += LfoValue(Lane);
+			}
+			ParamField(Shader, Param) = ClampParam(Shader, Param, Value);
+		}
+
+		Shader.OnParamsChanged();
+	}
+
+	void Automation::Step(ISoundShader& Shader, u32 Frames)
+	{
+		bool IsChanged = false;
+		for (u32 Param = 0; Param < SND_EFFECT_PARAM_COUNT; Param++)
+		{
+			if (!IsActive(Param))
+			{
+				continue;
+			}
+
+			ParamLane& Lane = Lanes[Param];
+			if (Lane.HasLfo)
+			{
+				Lane.LfoPhase += Lane.LfoRate * (float)Frames / (float)SND_SAMPLERATE;
+				if (Lane.LfoPhase >= 1.0f)
+				{
+					Lane.LfoPhase -= std::floor(Lane.LfoPhase);
+					Lane.LfoHold = Random();
+				}
+			}
+
+			if (!Lane.HasRamp)
+			{
+				continue;
+			}
+
+			Lane.RampFrame = std::min(Lane.RampFrame + Frames, Lane.RampFrames);
+			if (Lane.RampFrame < Lane.RampFrames)
+			{
+				continue;
+			}
+
+			Lane.HasRamp = false;
+			Lane.Base = Lane.RampTo;
+			if (!Lane.HasLfo && Param < Shader.GetParamCount())
+			{
+				ActiveMask &= ~(1u << Param);
+				ParamField(Shader, Param) = ClampParam(Shader, Param, Lane.RampTo);
+				IsChanged = true;
+			}
+		}
+
+		if (IsChanged)
+		{
+			Shader.OnParamsChanged();
+		}
+	}
+}
+
 SoundShaderChain::SoundShaderChain() = default;
 SoundShaderChain::~SoundShaderChain() = default;
 
@@ -335,6 +654,7 @@ SoundShaderChain& SoundShaderChain::operator=(SoundShaderChain&& Other) noexcept
 		for (u32 Index = 0; Index < SND_SHADER_CHAIN_COUNT; Index++)
 		{
 			Items[Index] = std::move(Other.Items[Index]);
+			Automations[Index] = std::move(Other.Automations[Index]);
 			Owners[Index] = Other.Owners[Index];
 			AllVoiceOwners[Index] = Other.AllVoiceOwners[Index];
 		}
@@ -378,9 +698,11 @@ ISoundShader* SoundShaderChain::Add(SoundShaderType Type, bool SpatialOnly)
 void SoundShaderChain::RemoveAt(u32 Index)
 {
 	Items[Index].reset();
+	Automations[Index].reset();
 	for (u32 Next = Index + 1; Next < Count; Next++)
 	{
 		Items[Next - 1] = std::move(Items[Next]);
+		Automations[Next - 1] = std::move(Automations[Next]);
 		Owners[Next - 1] = Owners[Next];
 		AllVoiceOwners[Next - 1] = AllVoiceOwners[Next];
 	}
@@ -418,6 +740,7 @@ void SoundShaderChain::Clear()
 	for (u32 Index = 0; Index < Count; Index++)
 	{
 		Items[Index].reset();
+		Automations[Index].reset();
 		Owners[Index] = 0;
 		AllVoiceOwners[Index] = 0;
 	}
@@ -437,15 +760,114 @@ ISoundShader* SoundShaderChain::Find(SoundShaderType Type) const
 	return nullptr;
 }
 
+s32 SoundShaderChain::IndexOf(SoundShaderType Type) const
+{
+	for (u32 Index = 0; Index < Count; Index++)
+	{
+		if (Items[Index]->GetType() == Type)
+		{
+			return (s32)Index;
+		}
+	}
+
+	return -1;
+}
+
+ISoundShader* SoundShaderChain::FindParam(SoundShaderType Type, const char* Name, u32& Index, u32& Param) const
+{
+	const s32 ShaderIdx = IndexOf(Type);
+	const s32 ParamIdx = ShaderIdx >= 0 && Name != nullptr ? Items[ShaderIdx]->FindParam(Name) : -1;
+	if (ParamIdx < 0)
+	{
+		Msg("! [Sound] Unknown shader parameter '%s.%s'", XRay::Sound::Shader::GetName(Type), Name ? Name : "");
+		return nullptr;
+	}
+
+	Index = (u32)ShaderIdx;
+	Param = (u32)ParamIdx;
+	return Items[ShaderIdx].get();
+}
+
+XRay::Sound::Shader::Automation& SoundShaderChain::GetOrCreateAutomation(u32 Index)
+{
+	if (!Automations[Index])
+	{
+		Automations[Index].reset(new XRay::Sound::Shader::Automation());
+	}
+	return *Automations[Index];
+}
+
 bool SoundShaderChain::SetParam(SoundShaderType Type, const char* Name, float Value)
 {
-	ISoundShader* Shader = Find(Type);
-	if (Shader == nullptr || !Shader->SetParam(Name, Value))
+	u32 Index = 0, Param = 0;
+	ISoundShader* Shader = FindParam(Type, Name, Index, Param);
+	if (Shader == nullptr)
 	{
-		Msg("! [Sound] Unknown shader parameter '%s.%s'", XRay::Sound::Shader::GetName(Type), Name);
 		return false;
 	}
 
+	Shader->SetParam(Param, Value);
+	if (Automations[Index])
+	{
+		Automations[Index]->OnSet(Param, Shader->GetParam(Param));
+	}
+	return true;
+}
+
+bool SoundShaderChain::RampParam(SoundShaderType Type, const char* Name, float Target, float Seconds, XRay::Sound::Shader::Curve Shape)
+{
+	u32 Index = 0, Param = 0;
+	ISoundShader* Shader = FindParam(Type, Name, Index, Param);
+	if (Shader == nullptr)
+	{
+		return false;
+	}
+
+	GetOrCreateAutomation(Index).Ramp(*Shader, Param, Target, Seconds, Shape);
+	return true;
+}
+
+bool SoundShaderChain::SetParamLfo(SoundShaderType Type, const char* Name, float RateHz, float Depth, XRay::Sound::Shader::LfoShape Shape)
+{
+	u32 Index = 0, Param = 0;
+	ISoundShader* Shader = FindParam(Type, Name, Index, Param);
+	if (Shader == nullptr)
+	{
+		return false;
+	}
+
+	GetOrCreateAutomation(Index).SetLfo(*Shader, Param, RateHz, Depth, Shape);
+	return true;
+}
+
+bool SoundShaderChain::StopAutomation(SoundShaderType Type, const char* Name)
+{
+	if (Name == nullptr || Name[0] == 0)
+	{
+		const s32 Index = IndexOf(Type);
+		if (Index < 0)
+		{
+			return false;
+		}
+
+		if (Automations[Index])
+		{
+			Automations[Index]->StopAll(*Items[Index]);
+		}
+		return true;
+	}
+
+	u32 Index = 0, Param = 0;
+	ISoundShader* Shader = FindParam(Type, Name, Index, Param);
+	if (Shader == nullptr)
+	{
+		return false;
+	}
+
+	if (Automations[Index])
+	{
+		Automations[Index]->Stop(*Shader, Param);
+	}
 	return true;
 }
 
@@ -463,6 +885,10 @@ void SoundShaderChain::CopyFrom(const SoundShaderChain& Other)
 		if (ISoundShader* Shader = Add(Source->GetType()))
 		{
 			Shader->CopyParams(*Source);
+			if (Other.Automations[Index] && Other.Automations[Index]->IsActive())
+			{
+				GetOrCreateAutomation(Count - 1).CopyFrom(*Other.Automations[Index]);
+			}
 		}
 	}
 }
@@ -479,7 +905,39 @@ void SoundShaderChain::Process(float** Data, u32 Frames, const SoundShaderContex
 {
 	for (u32 Index = 0; Index < Count; Index++)
 	{
-		Items[Index]->Process(Data, Frames, Context);
+		ISoundShader& Shader = *Items[Index];
+		XRay::Sound::Shader::Automation* Auto = Automations[Index].get();
+		if (Auto == nullptr || !Auto->IsActive())
+		{
+			Shader.Process(Data, Frames, Context);
+			continue;
+		}
+
+		// Automated parameters move every AutomationStep frames
+		for (u32 Offset = 0; Offset < Frames;)
+		{
+			float* Piece[SND_CHANNEL_COUNT];
+			for (u32 Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+			{
+				Piece[Channel] = Data[Channel] + Offset;
+			}
+
+			if (!Auto->IsActive())
+			{
+				SoundShaderContext PieceContext = Context;
+				PieceContext.Offset = Context.Offset + Offset;
+				Shader.Process(Piece, Frames - Offset, PieceContext);
+				break;
+			}
+
+			const u32 PieceFrames = std::min(XRay::Sound::Shader::AutomationStep, Frames - Offset);
+			SoundShaderContext PieceContext = Context;
+			PieceContext.Offset = Context.Offset + Offset;
+			Auto->Apply(Shader);
+			Shader.Process(Piece, PieceFrames, PieceContext);
+			Auto->Step(Shader, PieceFrames);
+			Offset += PieceFrames;
+		}
 	}
 }
 

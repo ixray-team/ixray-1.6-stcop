@@ -4,10 +4,45 @@
 #include "SoundMeta.h"
 #include "SoundShaderType.gen.h"
 
+// Random access to the decoded source of a voice, for shaders that read more than the current block
+struct SoundShaderSource
+{
+	void* User = nullptr;
+	// Reads Frames from Position forward into Data (SND_CHANNEL_COUNT channels), returns the frames read.
+	// Decodes on the calling thread when the range is not cached
+	u32 (*Read)(void* User, u32 Position, float** Data, u32 Frames) = nullptr;
+	// Asks the mixer to keep the range from Position on cached for the next blocks
+	void (*Prefetch)(void* User, u32 Position) = nullptr;
+	u32 TotalFrames = 0;
+	// Source frame of the first output frame of the block
+	u32 Position = 0;
+	// Source frames per output frame (pitch, doppler, time factor)
+	float Rate = 1.0f;
+	bool IsLooped = false;
+};
+
+// Where a 3D voice and the listener are, in world space (meters, meters per second)
+struct SoundShaderSpace
+{
+	Fvector ListenerPosition;
+	Fvector ListenerVelocity;
+	Fvector VoicePosition;
+	Fvector VoiceVelocity;
+};
+
 struct SoundShaderContext
 {
 	bool IsBus;
 	bool HasInput;
+	// Voice shaders only, nullptr on buses
+	const SoundShaderSource* Source = nullptr;
+	// Voice shaders only, nullptr on buses and 2D voices
+	const SoundShaderSpace* Space = nullptr;
+	// Voice shaders only, nullptr on buses: playback rate factor of the voice, starts at 1 every block.
+	// A shader multiplies it once per block (at Offset 0); the resampler glides to it over the next block
+	float* Pitch = nullptr;
+	// Output frames from the start of the block to Data (automated shaders are processed in pieces)
+	u32 Offset = 0;
 };
 
 class ISoundShader;
@@ -177,6 +212,103 @@ inline void ISoundShader::CopyParams(const ISoundShader& Other)
 	OnParamsChanged();
 }
 
+namespace XRay::Sound::Shader
+{
+	// Shape of a parameter ramp
+	enum class Curve : u8
+	{
+		Linear,
+		// Geometric between two positive values (frequencies, times); linear otherwise
+		Exponential,
+		// Smoothstep: slow start and end
+		Smooth
+	};
+
+	// LFO waveform, -1..1 around the parameter value
+	enum class LfoShape : u8
+	{
+		Sine,
+		Triangle,
+		Square,
+		SawUp,
+		SawDown,
+		// New random value every cycle (sample and hold)
+		Random
+	};
+
+	// Frames between automation updates: an automated shader is processed in pieces of this size
+	constexpr u32 AutomationStep = 32;
+
+	// "linear", "exp", "smooth"; nullptr or "" is linear, an unknown name is logged and linear
+	XRSOUND_API Curve FindCurve(const char* Name);
+	// "sine", "triangle", "square", "saw_up", "saw_down", "random"; nullptr or "" is sine
+	XRSOUND_API LfoShape FindLfoShape(const char* Name);
+
+	struct ParamLane
+	{
+		// Value without the LFO, valid while the lane is active
+		float Base = 0.0f;
+		float RampFrom = 0.0f;
+		float RampTo = 0.0f;
+		u32 RampFrame = 0;
+		u32 RampFrames = 0;
+		float LfoRate = 0.0f;
+		float LfoDepth = 0.0f;
+		float LfoPhase = 0.0f;
+		float LfoHold = 0.0f;
+		Curve RampCurve = Curve::Linear;
+		LfoShape Shape = LfoShape::Sine;
+		bool HasRamp = false;
+		bool HasLfo = false;
+	};
+
+	// Ramps and LFOs of the parameters of one shader instance. Time runs with the processed frames:
+	// a stopped voice or a silent bus holds its automation
+	class XRSOUND_API Automation
+	{
+	public:
+		void Ramp(ISoundShader& Shader, u32 Param, float Target, float Seconds, Curve Shape);
+		// Rate or depth 0 stops the LFO and restores the value under it
+		void SetLfo(ISoundShader& Shader, u32 Param, float RateHz, float Depth, LfoShape Shape);
+		// Keeps the current ramp value, drops the LFO
+		void Stop(ISoundShader& Shader, u32 Param);
+		void StopAll(ISoundShader& Shader);
+		// A direct parameter write: drops the ramp, the LFO keeps running around the new value
+		void OnSet(u32 Param, float Value);
+		void CopyFrom(const Automation& Other);
+
+		// Writes the automated values to the shader
+		void Apply(ISoundShader& Shader);
+		// Moves the automation by Frames; finished ramps write their target
+		void Step(ISoundShader& Shader, u32 Frames);
+
+		bool IsActive() const
+		{
+			return ActiveMask != 0;
+		}
+
+		bool IsActive(u32 Param) const
+		{
+			return Param < SND_EFFECT_PARAM_COUNT && (ActiveMask & (1u << Param)) != 0;
+		}
+
+		const ParamLane& GetLane(u32 Param) const
+		{
+			return Lanes[Param];
+		}
+
+	private:
+		float GetBase(const ISoundShader& Shader, u32 Param) const;
+		float RampValue(const ParamLane& Lane) const;
+		float LfoValue(const ParamLane& Lane) const;
+		float Random();
+
+		ParamLane Lanes[SND_EFFECT_PARAM_COUNT];
+		u32 ActiveMask = 0;
+		u32 Seed = 0x2545F491u;
+	};
+}
+
 // Ordered shader instances of one voice or bus. One instance per shader type
 class XRSOUND_API SoundShaderChain
 {
@@ -196,6 +328,11 @@ public:
 	void Clear();
 	ISoundShader* Find(SoundShaderType Type) const;
 	bool SetParam(SoundShaderType Type, const char* Name, float Value);
+	// Automation (XRay::Sound::Shader::Automation). Seconds <= 0 sets the value at once
+	bool RampParam(SoundShaderType Type, const char* Name, float Target, float Seconds, XRay::Sound::Shader::Curve Shape);
+	bool SetParamLfo(SoundShaderType Type, const char* Name, float RateHz, float Depth, XRay::Sound::Shader::LfoShape Shape);
+	// nullptr or "" stops every parameter of the shader
+	bool StopAutomation(SoundShaderType Type, const char* Name);
 
 	// Replaces this chain with copies of the other one (types and parameters, not DSP state)
 	void CopyFrom(const SoundShaderChain& Other);
@@ -224,6 +361,12 @@ public:
 		return Index < Count ? Owners[Index] : 0;
 	}
 
+	// nullptr when no parameter of the shader was ever automated
+	const XRay::Sound::Shader::Automation* GetAutomation(u32 Index) const
+	{
+		return Index < Count ? Automations[Index].get() : nullptr;
+	}
+
 	bool IsSpatialOnly(u32 Index) const
 	{
 		return Index < Count && AllVoiceOwners[Index] == 0;
@@ -243,8 +386,13 @@ public:
 
 private:
 	void RemoveAt(u32 Index);
+	s32 IndexOf(SoundShaderType Type) const;
+	// Shader and the index of its parameter, logs an unknown one
+	ISoundShader* FindParam(SoundShaderType Type, const char* Name, u32& Index, u32& Param) const;
+	XRay::Sound::Shader::Automation& GetOrCreateAutomation(u32 Index);
 
 	xr_unique_ptr<ISoundShader> Items[SND_SHADER_CHAIN_COUNT];
+	xr_unique_ptr<XRay::Sound::Shader::Automation> Automations[SND_SHADER_CHAIN_COUNT];
 	u16 Owners[SND_SHADER_CHAIN_COUNT] = {};
 	u16 AllVoiceOwners[SND_SHADER_CHAIN_COUNT] = {};
 	u32 Count = 0;

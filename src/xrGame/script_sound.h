@@ -53,8 +53,18 @@ public:
 			void				RemoveShader		(const char* shader);
 			void				ClearShaders		();
 			void				SetShaderParam		(const char* shader, const char* param, float value);
+			// Automation: curve "linear" / "exp" / "smooth", shape "sine" / "triangle" / "square" / "saw_up" / "saw_down" / "random"
+			void				RampShaderParam		(const char* shader, const char* param, float value, float seconds, const char* curve);
+	IC		void				RampShaderParamLinear(const char* shader, const char* param, float value, float seconds)	{ RampShaderParam(shader, param, value, seconds, nullptr); }
+			void				SetShaderLfo		(const char* shader, const char* param, float rate, float depth, const char* shape);
+	IC		void				SetShaderLfoSine	(const char* shader, const char* param, float rate, float depth)	{ SetShaderLfo(shader, param, rate, depth, nullptr); }
+			void				StopShaderAutomation(const char* shader, const char* param);
+	IC		void				StopShaderAutomationAll(const char* shader)						{ StopShaderAutomation(shader, nullptr); }
 	IC		bool				GetIgnoreBusShaders	() const						{ return m_sound.ignores_bus_shaders(); }
 	IC		void				SetIgnoreBusShaders	(bool value)					{ m_sound.set_ignore_bus_shaders(value); }
+	// Bus the sound is mixed into instead of its own ("" restores), kept across plays
+	IC		const char*			GetRouteBus			() const						{ return m_sound.route_bus(); }
+	IC		void				SetRouteBus			(const char* bus)				{ m_sound.set_route_bus(bus); }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

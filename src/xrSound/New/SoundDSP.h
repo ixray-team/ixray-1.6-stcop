@@ -43,6 +43,8 @@ inline double dB2lin(double dB)
 }
 
 void DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames); // requires +1 sample of tail
+// Same, with the ratio gliding from begin_ratio to end_ratio over the block; still consumes exactly input_frames
+void DSP_ResampleBufferRamp(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames, float begin_ratio, float end_ratio);
 void DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT]);
 void DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_factor, u32 frames);
 void DSP_MixBufferPanning(float** mix_buffer, float** data, float begin_factor, float end_factor, float left, float right, u32 frames);

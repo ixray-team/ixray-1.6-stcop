@@ -14,27 +14,27 @@
 
 using namespace XRay::Sound;
 
-int		psSoundTargets			= 1024 - 32;
-Flags32	psSoundFlags = { 0 };
-float	psSoundOcclusionScale = 0.5f;
-float	psSoundDoppler = 0.1f;
-float	psSoundCull = 0.01f;
-float	psSoundRolloff = 0.75f;
-u32		psSoundModel = 0;
-float	psSoundVFactor = 1.0f;
-float	psSoundCarFactor = 1.0f;
-float	psSoundShootingReverb = 0.1f;
-float	psSoundCompression = 0.5f;
+int psSoundTargets = 1024 - 32;
+Flags32 psSoundFlags = {0};
+float psSoundOcclusionScale = 0.5f;
+float psSoundDoppler = 0.5f;
+float psSoundCull = 0.01f;
+float psSoundRolloff = 0.75f;
+u32 psSoundModel = 0;
+float psSoundVFactor = 1.0f;
+float psSoundCarFactor = 1.0f;
+float psSoundShootingReverb = 0.1f;
+float psSoundCompression = 0.5f;
 
-int		psSoundCacheSizeMB = 256;
+int psSoundCacheSizeMB = 256;
 
 // Voice Chat
-float	psSoundVRecorder = 1.f;
-int		psSoundRecorderMode = 1;
-int		psSoundRecorderDenoise = 1;
-float	psSoundVPlayers = 1.f;
+float psSoundVRecorder = 1.f;
+int psSoundRecorderMode = 1;
+int psSoundRecorderDenoise = 1;
+float psSoundVPlayers = 1.f;
 
-float   psTimeFactor = 1.0f;
+float psTimeFactor = 1.0f;
 
 CSoundRender_Core* SoundRender = nullptr;
 CSound_manager_interface* Sound = nullptr;
@@ -491,6 +491,11 @@ static u32 Snd_GetTypeBus(const ref_sound& S)
 	return Type == st_Music ? Mixer::FindBus("music") : Type == st_Shooting ? Mixer::FindBus("shooting") : 0;
 }
 
+static u32 Snd_GetRouteBus(const ref_sound& S)
+{
+	return (S._p != nullptr && S._p->route_bus.size()) ? Mixer::FindBus(S._p->route_bus.c_str()) : 0;
+}
+
 void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int	game_type)
 {
 	if (!bPresent)		return;
@@ -502,6 +507,7 @@ void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
 	S._p->g_type = game_type;// (game_type == sg_SourceType) ? S._p->handle->game_type() : game_type;
 	S._p->s_type = sound_type;
 	S._p->ignore_bus_shaders = from._p->ignore_bus_shaders;
+	S._p->route_bus = from._p->route_bus;
 }
 
 u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
@@ -562,7 +568,7 @@ void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 		S._p->slot = Mixer::Create();
 	}
 
-	Mixer::Play(S.slot(), mixer_flags, &S, delay, Snd_GetTypeBus(S));
+	Mixer::Play(S.slot(), mixer_flags, &S, delay, Snd_GetTypeBus(S), Snd_GetRouteBus(S));
 	if (O) {
 		Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, ((IRenderable*)O)->renderable.xform.c);
 	}
@@ -581,7 +587,7 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 	}
 
 	u32 mixer_flags = (u32)Mixer::Flags::NoFeedback | GetMixedFlags(flags, S);
-	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos, Snd_GetTypeBus(S));
+	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos, Snd_GetTypeBus(S), Snd_GetRouteBus(S));
 }
 
 void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
@@ -596,7 +602,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 	}
 
 	u32 mixer_flags = (u32)Mixer::Flags::NoPosUpdate | GetMixedFlags(flags, S);
-	Mixer::Play(S.slot(), mixer_flags, &S, delay, Snd_GetTypeBus(S));
+	Mixer::Play(S.slot(), mixer_flags, &S, delay, Snd_GetTypeBus(S), Snd_GetRouteBus(S));
 	S._p->fTimeTotal = Mixer::GetDuration(S.slot());
 	S._p->g_type = (S._p->g_type == sg_SourceType) ? XRay::Sound::Mixer::GetGameType(S.slot()) : S._p->g_type;
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, pos);

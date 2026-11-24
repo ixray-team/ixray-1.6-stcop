@@ -82,3 +82,18 @@ void CScriptSound::SetShaderParam(const char* Shader, const char* Param, float V
 {
 	m_sound.set_shader_param(FindScriptShader(Shader), Param, Value);
 }
+
+void CScriptSound::RampShaderParam(const char* Shader, const char* Param, float Value, float Seconds, const char* Curve)
+{
+	m_sound.ramp_shader_param(FindScriptShader(Shader), Param, Value, Seconds, XRay::Sound::Shader::FindCurve(Curve));
+}
+
+void CScriptSound::SetShaderLfo(const char* Shader, const char* Param, float Rate, float Depth, const char* Shape)
+{
+	m_sound.set_shader_lfo(FindScriptShader(Shader), Param, Rate, Depth, XRay::Sound::Shader::FindLfoShape(Shape));
+}
+
+void CScriptSound::StopShaderAutomation(const char* Shader, const char* Param)
+{
+	m_sound.stop_shader_automation(FindScriptShader(Shader), Param);
+}

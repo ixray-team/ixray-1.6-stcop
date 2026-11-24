@@ -60,6 +60,32 @@ void DSP_ResampleBuffer(float** Input, float** Output, float History[SND_CHANNEL
 	}
 }
 
+void DSP_ResampleBufferRamp(float** Input, float** Output, float History[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1], u32 InputFrames, u32 OutputFrames, float BeginRatio, float EndRatio)
+{
+	// Scale the ramp so the block consumes InputFrames, the caller rounded the average ratio
+	const float Average = (BeginRatio + EndRatio) * 0.5f;
+	const float Scale = Average > 0.0f ? ((float)InputFrames / (float)OutputFrames) / Average : 1.0f;
+	const float Begin = BeginRatio * Scale;
+	const float Step = (EndRatio - BeginRatio) * Scale / (float)OutputFrames;
+
+	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)
+	{
+		float& Phase = History[Channel][0];
+		Phase = fmodf(Phase, 1.0f);
+
+		for (u32 Frame = 0; Frame < OutputFrames; ++Frame)
+		{
+			// InputFrames is the last valid index: the caller decodes InputFrames+1 frames
+			const u32 Idx0 = std::min((u32)Phase, InputFrames);
+			const u32 Idx1 = std::min(Idx0 + 1, InputFrames);
+			const float Delta = Phase - (float)Idx0;
+			Output[Channel][Frame] += lerp(Input[Channel][Idx0], Input[Channel][Idx1], Delta);
+			// Midpoint of the frame's ratio keeps the sum at InputFrames
+			Phase += Begin + Step * ((float)Frame + 0.5f);
+		}
+	}
+}
+
 void DSP_MixBuffer(float** MixBuffer, float** Data, float BeginFactor, float EndFactor, u32 Frames)
 {
 	for (size_t Channel = 0; Channel < SND_CHANNEL_COUNT; Channel++)

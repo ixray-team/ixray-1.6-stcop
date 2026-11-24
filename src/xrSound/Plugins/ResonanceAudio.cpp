@@ -9,8 +9,7 @@ enum ResonanceSpatializeParam : u32
 {
 	SpatializeRolloff,
 	SpatializeFallbackRolloff,
-	SpatializeBackAttenuation,
-	SpatializeDoppler
+	SpatializeBackAttenuation
 };
 
 enum ResonanceReverbParam : u32
@@ -55,7 +54,6 @@ static const SoundEffectParam SpatializeParams[] =
 	{"rolloff", 2.0f, 0.1f, 4.0f},
 	{"fallback_rolloff", 1.3f, 0.1f, 4.0f},
 	{"back_attenuation", 0.3f, 0.0f, 1.0f},
-	{"doppler", 1.0f, 0.0f, 10.0f}
 };
 
 static const SoundEffectParam ReverbParams[] =
@@ -152,7 +150,7 @@ static void Resonance_Spatialize(ResonanceSpatializeState* State, SoundEffectPro
 {
 	const float* Params = Process->Params;
 	SoundSpatialPosition Position;
-	Snd_SpatialLocate(Process, Params[SpatializeDoppler], &Position);
+	Snd_SpatialLocate(Process, &Position);
 
 	if (!psSoundFlags.is(ss_HRTF))
 	{
