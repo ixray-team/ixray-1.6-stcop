@@ -244,7 +244,9 @@ static	const u16				cAsCallsnum						= 3;
 	void						StabilizeWheelAxes			();
 	void						UpdateSteerAnimation		();
 	bool						UpdateWheelPhysics		();
+public:
 	struct SWheel;
+private:
 	void						UpdateWheelSuspension		(SWheel& Wheel);
 	void						StoreAllElementSpawnLocalTransforms	();
 	bool						RestoreAllElementSpawnLocalTransforms(const Fmatrix& RestoredForm, bool TrustSavedWheels);

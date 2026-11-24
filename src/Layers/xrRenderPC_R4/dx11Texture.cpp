@@ -178,7 +178,7 @@ ERHI_FORMAT CRender::PeekTextureFormat(const char* Name)
 	}
 
 	TexMetadata Metadata = {};
-	const HRESULT Result = GetMetadataFromDDSMemory(Reader->pointer(), Reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, Metadata);
+	const HRESULT Result = GetMetadataFromDDSMemory((u8*)Reader->pointer(), Reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, Metadata);
 	FS.r_close(Reader);
 	return SUCCEEDED(Result) ? (ERHI_FORMAT)Metadata.format : ERHI_FORMAT::UNKNOWN;
 }
