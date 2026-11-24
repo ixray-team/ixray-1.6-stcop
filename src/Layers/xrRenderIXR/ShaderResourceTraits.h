@@ -1,0 +1,169 @@
+#pragma once
+
+
+#	include "ResourceManager.h"
+
+	template<typename T>
+	struct ShaderTypeTraits;
+
+	template<>
+	struct ShaderTypeTraits<SHS>
+	{
+		typedef CResourceManager::map_HS	MapType;
+		typedef RHIObject DXIface;
+
+		static inline const char* GetShaderExt() {return ".hs.hlsl";}
+		static inline const char* GetCompilationTarget() {return "hs_5_0";}
+		static inline DXIface* CreateHWShader(u32 const* buffer, size_t size)
+		{
+			DXIface* hs = 0;
+			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::HS, &hs)))
+			{
+				return nullptr;
+			}
+			return hs;
+		}
+	};
+
+	template<>
+	struct ShaderTypeTraits<SDS>
+	{
+		typedef CResourceManager::map_DS	MapType;
+		typedef RHIObject			DXIface;
+
+		static inline const char* GetShaderExt() {return ".ds.hlsl";}
+		static inline const char* GetCompilationTarget() {return "ds_5_0";}
+		static inline DXIface* CreateHWShader(u32 const* buffer, size_t size)
+		{
+			DXIface* hs = 0;
+			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::DS, &hs)))
+			{
+				return nullptr;
+			}
+			return hs;
+		}
+	};
+
+	template<>
+	struct ShaderTypeTraits<SCS>
+	{
+		typedef CResourceManager::map_CS	MapType;
+		typedef RHIObject			DXIface;
+
+		static inline const char* GetShaderExt() {return ".cs.hlsl";}
+		static inline const char* GetCompilationTarget() {return "cs_5_0";}
+		static inline DXIface* CreateHWShader(u32 const* buffer, size_t size)
+		{
+			DXIface* cs = 0;
+			if (FAILED(GRHI->CreateShader(buffer, size, ERHI_SHADER_TYPE::CS, &cs)))
+			{
+				return nullptr;
+			}
+			return cs;
+		}
+	};
+
+	template<>
+	inline CResourceManager::map_DS& CResourceManager::GetShaderMap(){return m_ds;}
+
+	template<>
+	inline CResourceManager::map_HS& CResourceManager::GetShaderMap(){return m_hs;}
+
+	template<>
+	inline CResourceManager::map_CS& CResourceManager::GetShaderMap(){return m_cs;}
+
+	template<typename T>
+	inline resptr_core<T, resptr_base<T>> CResourceManager::CreateShader(const char* _name, const ShaderExternalMap& Defines)
+	{
+		xr_string res_name = _name + RImplementation.getShaderParams(Defines);
+		const char* name = res_name.c_str();
+
+		using RefType = resptr_core<T, resptr_base<T>>;
+		T* sh = nullptr;
+		RefType Result;
+		bool IsNew = false;
+		{
+			xrCriticalSectionGuard guard(creationGuard);
+			typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
+			typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find((char*)(name));
+			if (I != sh_map.end())
+			{
+				if (ResourceLifetime::TryAcquire(I->second, Result))
+				{
+					sh = I->second;
+				}
+				else
+				{
+					sh_map.erase(I);
+				}
+			}
+			if (!sh)
+			{
+				sh = new T();
+				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+				sh_map.insert(std::make_pair(sh->set_name(name), sh));
+				RememberStage(sh, _name, Defines);
+				Manifest.Remember(ShaderTypeTraits<T>::GetCompilationTarget()[0], _name, Defines);
+				RefType(sh).swap(Result);
+				IsNew = true;
+			}
+		}
+
+		if (!IsNew)
+		{
+			sh->CompileState.WaitCompiled();
+			return Result;
+		}
+
+		{
+			if (0==_stricmp(_name,"null"))
+			{
+				sh->sh = nullptr;
+				sh->CompileState.MarkCompiled();
+				return Result;
+			}
+
+			// Open file
+			string_path					cname;
+			// duplicate and zero-terminate
+			string16 Entry;
+			IReader* file				= RImplementation.OpenShader(cname, _name, ShaderTypeTraits<T>::GetShaderExt(), Entry);
+			R_ASSERT2					( file, cname );
+
+			// Select target
+			const char*						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
+
+			// Compile
+			HRESULT const _hr = RImplementation.shader_compile(name, (u32 const*)file->pointer(), file->length(), Entry, c_target, RHI_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh, Defines);
+
+			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
+			sh->CompileState.MarkCompiled();
+			FS.r_close					( file );
+
+			return			Result;
+		}
+	}
+
+	template<typename T>
+	inline void CResourceManager::DestroyShader(const T* sh)
+	{
+		xrCriticalSectionGuard guard(creationGuard);
+		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
+
+		if (0==(sh->dwFlags&xr_resource_flagged::RF_REGISTERED))
+			return;
+
+		ForgetStage(sh);
+		char* N = (char*)(*sh->cName);
+		typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(N);
+		
+		if (I!=sh_map.end())
+		{
+			if (I->second == sh)
+			{
+				sh_map.erase(I);
+			}
+			return;
+		}
+		Msg	("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
+	}

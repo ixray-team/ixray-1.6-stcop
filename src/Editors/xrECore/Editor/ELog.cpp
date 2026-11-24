@@ -124,6 +124,18 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 		nullptr													/* .colorScheme */
 	};
 
+	// A headless run has nobody to answer: No where it is offered, else the first button
+	if (Core.ParamsData.test(ECoreParams::autotest))
+	{
+		buttonid = ButtonsList[0].buttonID;
+		for (const SDL_MessageBoxButtonData& Button : ButtonsList)
+		{
+			buttonid = Button.buttonID == mrNo ? mrNo : buttonid;
+		}
+
+		return (TMsgDlgButtons)buttonid;
+	}
+
 	SDL_ShowMessageBox(&messageboxContainer, &buttonid);
 
 	return (TMsgDlgButtons)buttonid;

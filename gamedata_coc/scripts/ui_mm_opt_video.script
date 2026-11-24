@@ -15,29 +15,42 @@ function opt_video:InitControls(x, y, xml, handler)
 	if xml:NodeExist("frame", 0) then
 		self.bk = xml:InitFrame			("frame", self)
 	end
-	
+
 	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
 	handler:addVramBar(self, true)
 
-	handler:addComboBox(self, true, "ui_mm_graphics_api", "renderer_api", 2, false, system_depends.sdSystemRestart)
-	handler.combo_renderer = handler:addComboBox(self, true, "ui_mm_renderer", "renderer", 3, false, system_depends.sdSystemRestart, "combo_renderer")
-	handler.combo_preset = handler:addComboBox(self, true, "ui_mm_quality_presets", "_preset", 6, false, system_depends.sdSystemRestart, "combo_preset")
-	handler:addComboBox(self, true, "ui_mm_resolution", "vid_mode", 7, false, system_depends.sdVidRestart, "vidMode")
+	handler:lineFrame(self, true, "st_display_options")
+	handler:addComboBox(self, true, "ui_mm_resolution", "r_resolution", 7, false, system_depends.sdVidRestart, "vidMode")
+	handler:addCheck(self, true, "ui_mm_fullscreen", "r_fullscreen", system_depends.sdVidRestart)
+	handler:addCheck(self, true, "ui_mm_vsync", "r_vsync", system_depends.sdNothing)
+	handler:addTrack(self, true, "ui_mm_fps_limit", "r_fps_limit", 1, false, "int", true, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_latency", "r_latency", 2, false, system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_submit_thread", "r_submit_thread", system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_graphics_api", "r_api", 2, false, system_depends.sdSystemRestart)
+	handler:addTrack(self, true, "ui_mm_brightness", "r_brightness", 0.1, false, "float", false, system_depends.sdApplyOnChange)
+	handler:addTrack(self, true, "ui_mm_contrast", "r_contrast", 0.1, false, "float", false, system_depends.sdApplyOnChange)
+	handler:addTrack(self, true, "ui_mm_gamma", "r_gamma", 0.1, false, "float", false, system_depends.sdApplyOnChange)
 
-	handler:addTrack(self, true, "ui_mm_brightness", "rs_c_brightness", 0.1, false, "float", false, system_depends.sdApplyOnChange)
-	handler:addTrack(self, true, "ui_mm_contrast", "rs_c_contrast", 0.1, false, "float", false, system_depends.sdApplyOnChange)
-	handler:addTrack(self, true, "ui_mm_gamma", "rs_c_gamma", 0.1, false, "float", false, system_depends.sdApplyOnChange)
-	handler:addTrack(self, true, "ui_mm_bloom_amount", "r2_bloom_amount", 0.01, false, "float", true, system_depends.sdNothing)
-	
-	handler:addCheck(self, true, "ui_mm_fullscreen", "rs_fullscreen", system_depends.sdVidRestart)
-	handler:addCheck(self, true, "ui_rs_device_active", "rs_device_active", system_depends.sdNothing)
-	handler:addCheck(self, true, "ui_mm_vsync", "rs_v_sync", system_depends.sdVidRestart)
+	handler:lineFrame(self, true, "st_quality_options")
+	handler.combo_preset = handler:addComboBox(self, true, "ui_mm_quality_presets", "r_quality_preset", 7, false, system_depends.sdNothing, "combo_preset", nil, "mm_opt_video_preset")
+	handler:addComboBox(self, true, "ui_mm_upscaler", "r_upscaler", 5, false, system_depends.sdNothing, "upscaler")
+	handler:addComboBox(self, true, "ui_mm_render_scale", "r_scale", 5, false, system_depends.sdNothing, "renderScale")
+	handler:addComboBox(self, true, "ui_mm_dlss_preset", "r_dlss_preset", 4, false, system_depends.sdNothing, "dlssPreset")
+	handler:addComboBox(self, true, "ui_mm_anti_aliasing", "r_anti_aliasing", 5, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_msaa", "r_msaa", 3, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_motion_blur", "r_motion_blur", 3, false, system_depends.sdNothing)
 
-	handler:addComboBox(self, true, "ui_mm_screenshot_format", "r__screenshot_format", 3, false, system_depends.sdApplyOnChange)
+	ui_mm_dof_options.add(self, handler)
 
 	self.btn_advanced = xml:Init3tButton("main_dialog:btn_template", self)
 	self.btn_advanced:SetTextST("ui_mm_advanced")
 	handler:Register(self.btn_advanced, "btn_advanced_graphic")
+
+	local pos = self.btn_advanced:GetWndPos()
+	self.btn_extras = xml:Init3tButton("main_dialog:btn_template", self)
+	self.btn_extras:SetWndPos(vector2():set(pos.x - self.btn_advanced:GetWidth() - 4, pos.y))
+	self.btn_extras:SetTextST("ui_mm_extras")
+	handler:Register(self.btn_extras, "btn_extras_graphic")
 end

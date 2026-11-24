@@ -22,19 +22,12 @@ CTorch::CTorch()
 	light_render->set_shadow(true);
 	light_omni = ::Render->light_create();
 	light_omni->set_type(IRender_Light::POINT);
-	light_omni->set_shadow(LightingModeIsDynamic());
+	light_omni->set_shadow(g_RenderFeatures.LampShadows);
 
 	glow_render = ::Render->glow_create();
 
 	m_prev_hp.set(0.0f, 0.0f);
 
-	// Disabling shift by x and z axes for 1st render, 
-	// because we don't have dynamic lighting in it. 
-	if (LightingModeIsStatic())
-	{
-		TORCH_OFFSET.x = 0.0f;
-		TORCH_OFFSET.z = 0.0f;
-	}
 }
 
 CTorch::~CTorch()
@@ -169,8 +162,6 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 		return false;
 	}
 
-	bool b_r2 = LightingModeIsDynamic();
-
 	IKinematics* K = PKinematics(Visual());
 	CInifile* pUserData = K->LL_UserData();
 
@@ -180,14 +171,14 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 		lanim = LALib.FindItem(pUserData->r_string("torch_definition", "color_animator"));
 		guid_bone = K->LL_BoneID(pUserData->r_string("torch_definition", "guide_bone"));	VERIFY(guid_bone != BI_NONE);
 
-		Fcolor clr = pUserData->r_fcolor("torch_definition", (b_r2) ? "color_r2" : "color");
+		Fcolor clr = pUserData->r_fcolor("torch_definition", "color_r2");
 		fBrightness = clr.intensity();
-		float range = pUserData->r_float("torch_definition", (b_r2) ? "range_r2" : "range");
+		float range = pUserData->r_float("torch_definition", "range_r2");
 		light_render->set_color(clr);
 		light_render->set_range(range);
 
-		Fcolor clr_o = pUserData->r_fcolor("torch_definition", (b_r2) ? "omni_color_r2" : "omni_color");
-		float range_o = pUserData->r_float("torch_definition", (b_r2) ? "omni_range_r2" : "omni_range");
+		Fcolor clr_o = pUserData->r_fcolor("torch_definition", "omni_color_r2");
+		float range_o = pUserData->r_float("torch_definition", "omni_range_r2");
 		light_omni->set_color(clr_o);
 		light_omni->set_range(range_o);
 

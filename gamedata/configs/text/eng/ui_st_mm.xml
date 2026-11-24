@@ -351,21 +351,6 @@
 	<string id="players">
 		<text>PLAYERS</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Static lighting</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Full dynamic lighting</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Enhanced full dynamic lighting</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Objects dynamic lighting</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Enhanced full dyn. lighting (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>SERVER NAME</text>
 	</string>
@@ -621,9 +606,6 @@
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
 	</string>
-	<string id="ui_mm_renderer">
-		<text>Render type</text>
-	</string>
 	<string id="ui_mm_resolution">
 		<text>Resolution</text>
 	</string>
@@ -863,9 +845,6 @@
 	</string>
 	<string id="st_opt_extreme">
 		<text>max high</text>
-	</string>
-	<string id="renderer_r4">
-		<text>Enhanced full dyn. lighting (DX11)</text>
 	</string>
 	<string id="mp_please_login">
 		<text>Please login to connect to the external server.</text>

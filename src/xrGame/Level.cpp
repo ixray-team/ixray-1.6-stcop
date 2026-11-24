@@ -600,7 +600,7 @@ int ps_precache_events_budget_ms = 8;
 int CLevel::GameEventsBudget() const
 {
 	extern ENGINE_API bool g_appLoaded;
-	const bool IsGameplay = g_appLoaded && (Device.dwPrecacheFrame == 0);
+	const bool IsGameplay = g_appLoaded && (Device.dwPrecacheFrame == 0) && !Core.ParamsData.test(ECoreParams::autotest_dt);
 	return IsGameplay ? ps_events_time_budget_ms : 0;
 }
 

@@ -1,0 +1,17 @@
+#include "common\common.hlsli"
+
+struct v2p
+{
+    float2 tc : TEXCOORD0;
+    float4 c : COLOR0;
+};
+
+// Pixel
+Texture2D s_distort : register(t25);
+float4 ps_main(v2p I) : SV_Target
+{
+    float4 distort = s_distort.Sample(smp_linear, I.tc);
+    float factor = distort.w * dot(I.c.xyz, 0.3333f);
+	
+    return float4(distort.xyz, factor);
+}

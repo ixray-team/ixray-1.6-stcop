@@ -1,8 +1,48 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "Device.h"
 #include "GPUEvents.h"
 #include "../RHITopologyUtils.h"
 #include "../Nri/NriDevice.h"
 #include <d3d12sdklayers.h>
+#include <NRI.h>
+
+static const nri::CoreInterface& NriCore()
+{
+    return GRHI->Nri->CoreApi();
+}
 
 static void CALLBACK DebugMessage(D3D12_MESSAGE_CATEGORY, D3D12_MESSAGE_SEVERITY severity,
     D3D12_MESSAGE_ID id, LPCSTR description, void*)
@@ -36,7 +76,7 @@ bool InternalDevice12::StateCovers(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_
     constexpr D3D12_RESOURCE_STATES writes = D3D12_RESOURCE_STATE_RENDER_TARGET | D3D12_RESOURCE_STATE_UNORDERED_ACCESS |
         D3D12_RESOURCE_STATE_DEPTH_WRITE | D3D12_RESOURCE_STATE_STREAM_OUT | D3D12_RESOURCE_STATE_COPY_DEST |
         D3D12_RESOURCE_STATE_RESOLVE_DEST;
-    return (before & after) == after && (before & writes) == (after & writes);
+    return after ? (before & after) == after && (before & writes) == (after & writes) : !before;
 }
 
 InternalDevice12::InternalDevice12()
@@ -86,33 +126,11 @@ InternalDevice12::InternalDevice12()
         Optick::InitGpuD3D12(GetDevice(), queues, 1);
     }
 #endif
-    D3D12_QUERY_HEAP_DESC occlusion = {};
-    occlusion.Type = D3D12_QUERY_HEAP_TYPE_OCCLUSION;
-    occlusion.Count = QuerySlots;
-    R_CHK(GetDevice()->CreateQueryHeap(&occlusion, IID_PPV_ARGS(&_occlusionHeap)));
-    _occlusionReadback = CreateNativeBuffer(QuerySlots * sizeof(u64), D3D12_HEAP_TYPE_READBACK);
-    for (u32 slot = 0; slot < QuerySlots; ++slot)
-    {
-        _occlusionFree[_occlusionFreeCount++] = slot;
-    }
 #if defined(IXRAY_PROFILER_TRACY)
     g_tracyD3D12GPUContext = TracyD3D12Context(GetDevice(), _queue);
     TracyD3D12ContextName(g_tracyD3D12GPUContext, "D3D12 graphics", sizeof("D3D12 graphics") - 1);
 #endif
-    for (u32 frame_idx = 0; frame_idx < FrameCount; ++frame_idx)
-    {
-        ID3D12CommandAllocator* allocator = nullptr;
-        R_CHK(GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)));
-        _frames[frame_idx].Allocators.push_back(allocator);
-    }
-    R_CHK(GetDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frames[0].Allocators[0], nullptr, IID_PPV_ARGS(&_commands)));
-    _commands->SetName(L"xrRHI D3D12 graphics commands");
-    R_CHK(_commands->Close());
-    _commands->QueryInterface(IID_PPV_ARGS(&_commands1));
-    R_CHK(GetDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
-    _fence->SetName(L"xrRHI D3D12 graphics fence");
-    _fenceEvent = CreateEventW(nullptr, FALSE, FALSE, nullptr);
-    R_ASSERT(_fenceEvent);
+    GRHI->Nri->Borrow(CloseList, this);
     const u32 descriptorCounts[4] = { ResourceDescriptorCount, SamplerDescriptorCount, 65536, 4096 };
     for (u32 type_idx = 0; type_idx < 4; ++type_idx)
     {
@@ -142,20 +160,8 @@ InternalDevice12::InternalDevice12()
     CreateRootSignatures();
     HWND window = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
     R_ASSERT(window);
-    DXGI_SWAP_CHAIN_DESC1 swapDesc = {};
-    swapDesc.Width = psCurrentVidMode[0];
-    swapDesc.Height = psCurrentVidMode[1];
-    swapDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-    swapDesc.SampleDesc.Count = 1;
-    swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapDesc.BufferCount = FrameCount;
-    swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    IDXGISwapChain1* swapchain = nullptr;
-    R_CHK(_factory->CreateSwapChainForHwnd(_queue, window, &swapDesc, nullptr, nullptr, &swapchain));
-    R_CHK(swapchain->QueryInterface(IID_PPV_ARGS(&_swapchain)));
-    swapchain->Release();
-    R_CHK(_factory->MakeWindowAssociation(window, DXGI_MWA_NO_ALT_ENTER));
-    _frame = _swapchain->GetCurrentBackBufferIndex();
+    GRHI->Nri->CreateSwapChain(window, GRHI->SwapChain, FrameCount);
+    _backbuffer = GRHI->Nri->AcquireTexture();
     _textureFactory = new DX12TextureFactory(*this);
     TextureFactory = _textureFactory;
     UpdateBuffers();
@@ -173,6 +179,7 @@ InternalDevice12::~InternalDevice12()
     }
 #endif
     ReleaseBuffers();
+    GRHI->Nri->DestroySwapChain();
     xr_delete(_textureFactory);
     TextureFactory = nullptr;
     for (auto& pipeline : _graphicsPipelines)
@@ -196,10 +203,10 @@ InternalDevice12::~InternalDevice12()
     release(_rasterStates);
     release(_depthStates);
     release(_blendStates);
-    CollectRetired();
+    GRHI->Nri->Borrow(nullptr, nullptr);
+    CollectRetired(true);
     for (auto& frame : _frames)
     {
-        Wait(frame.Fence);
         for (auto& chunk : frame.Uploads)
         {
             chunk.Resource->Unmap(0, nullptr);
@@ -210,19 +217,11 @@ InternalDevice12::~InternalDevice12()
             frame.Timestamps->Release();
             frame.TimestampReadback->Release();
         }
-        for (auto allocator : frame.Allocators)
-        {
-            allocator->Release();
-        }
     }
     for (auto& stream : _streamPool)
     {
         stream.Resource->Unmap(0, nullptr);
         stream.Resource->Release();
-    }
-    if (_commands1)
-    {
-        _commands1->Release();
     }
     if (_device1)
     {
@@ -236,12 +235,6 @@ InternalDevice12::~InternalDevice12()
     {
         _mipRoot->Release();
     }
-    if (_occlusionHeap)
-    {
-        _occlusionHeap->Release();
-        _occlusionReadback->Release();
-    }
-    _commands->Release();
     _graphicsRoot->Release();
     _computeRoot->Release();
     _storageHeaps[0]->Release();
@@ -250,10 +243,7 @@ InternalDevice12::~InternalDevice12()
     _samplerHeap->Release();
     _rtvHeap->Release();
     _dsvHeap->Release();
-    _swapchain->Release();
     _queue->Release();
-    _fence->Release();
-    CloseHandle(_fenceEvent);
     if (_debugQueue)
     {
         _debugQueue->UnregisterMessageCallback(_debugCallback);
@@ -319,7 +309,7 @@ void InternalDevice12::Retire(IUnknown* object)
     ContextLock guard(*this);
     if (object)
     {
-        _retiredObjects.push_back({ _isRecording ? _nextFence : _nextFence - 1, object });
+        _retiredObjects.push_back({ GRHI->Nri->FrameFence(), object });
     }
 }
 
@@ -328,7 +318,7 @@ void InternalDevice12::Retire(const DX12Descriptor& descriptor)
     ContextLock guard(*this);
     if (descriptor.Index != UINT32_MAX)
     {
-        _retiredDescriptors.push_back({ _isRecording ? _nextFence : _nextFence - 1, descriptor });
+        _retiredDescriptors.push_back({ GRHI->Nri->FrameFence(), descriptor });
     }
 }
 
@@ -385,12 +375,12 @@ void InternalDevice12::ReportDeviceRemoval() const
         }
         dred->Release();
     }
-    xrLogger::FlushLog();
+    GRHI->Nri->ReportLoss(u32(GetDevice()->GetDeviceRemovedReason()));
 }
 
 bool InternalDevice12::IsComplete(u64 fence) const
 {
-    const u64 completed = _fence->GetCompletedValue();
+    const u64 completed = GRHI->Nri->CompletedFence();
     if (completed == UINT64_MAX)
     {
         ReportDeviceRemoval();
@@ -402,20 +392,24 @@ bool InternalDevice12::IsComplete(u64 fence) const
 
 void InternalDevice12::Wait(u64 fence)
 {
-    if (!IsComplete(fence))
+    if (IsComplete(fence))
     {
-        PROF_EVENT("D3D12: WaitFence");
-        R_CHK(_fence->SetEventOnCompletion(fence, _fenceEvent));
-        R_ASSERT(WaitForSingleObject(_fenceEvent, INFINITE) == WAIT_OBJECT_0);
-        R_ASSERT(IsComplete(fence));
+        return;
     }
+    PROF_EVENT("D3D12: WaitFence");
+    // NRI gives a wait up after a few seconds
+    do
+    {
+        GRHI->Nri->Wait(fence);
+    } while (!IsComplete(fence));
 }
 
-void InternalDevice12::CollectRetired()
+// Idle: the GPU has run everything recorded, whatever its stamp
+void InternalDevice12::CollectRetired(bool isIdle)
 {
     PROF_EVENT("D3D12: CollectRetired");
-    const u64 completed = _fence->GetCompletedValue();
-    if (completed == UINT64_MAX)
+    const u64 completed = isIdle ? UINT64_MAX : GRHI->Nri->CompletedFence();
+    if (!isIdle && completed == UINT64_MAX)
     {
         IsComplete(0);
         return;
@@ -461,7 +455,7 @@ DX12Upload InternalDevice12::AcquireStream(u64 size)
     DX12Upload upload;
     upload.Size = size;
     upload.Owned = true;
-    const u64 completed = _fence->GetCompletedValue();
+    const u64 completed = GRHI->Nri->CompletedFence();
     if (completed == UINT64_MAX)
     {
         IsComplete(0);
@@ -491,7 +485,7 @@ void InternalDevice12::RecycleStream(const DX12Upload& upload)
         return;
     }
     _streamPoolBytes += upload.Size;
-    _streamPool.push_back({ upload.Resource, upload.Data, upload.Size, _isRecording ? _nextFence : _nextFence - 1 });
+    _streamPool.push_back({ upload.Resource, upload.Data, upload.Size, GRHI->Nri->FrameFence() });
 }
 
 ID3D12GraphicsCommandList* InternalDevice12::Commands()
@@ -499,21 +493,9 @@ ID3D12GraphicsCommandList* InternalDevice12::Commands()
     ContextLock guard(*this);
     if (!_isRecording)
     {
-        Frame& frame = _frames[_frame];
-        // An allocator cannot be reset while its commands run: take another one instead of waiting
-        if (IsComplete(frame.Fence))
-        {
-            frame.AllocatorsUsed = 0;
-        }
-        if (frame.AllocatorsUsed == frame.Allocators.size())
-        {
-            ID3D12CommandAllocator* allocator = nullptr;
-            R_CHK(GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)));
-            frame.Allocators.push_back(allocator);
-        }
-        ID3D12CommandAllocator* allocator = frame.Allocators[frame.AllocatorsUsed++];
-        R_CHK(allocator->Reset());
-        R_CHK(_commands->Reset(allocator, nullptr));
+        PrepareSlot();
+        _commandBuffer = &GRHI->Nri->FrameCommands();
+        _commands = static_cast<ID3D12GraphicsCommandList1*>(static_cast<ID3D12CommandList*>(NriCore().GetCommandBufferNativeObject(_commandBuffer)));
         _isRecording = true;
         ++_epoch;
         for (auto name : _markers)
@@ -552,40 +534,112 @@ u64 InternalDevice12::GetEpoch()
     return _epoch;
 }
 
-u64 InternalDevice12::Submit()
+// Called by the NRI device before it closes the frame's command buffer: queued copies and the markers' ends go in first,
+// and the next command takes the buffer that follows
+void InternalDevice12::CloseList(void* owner)
 {
-    PROF_EVENT("D3D12: Submit");
-    DrainUploads();
-    if (!_isRecording)
+    auto& device = *static_cast<InternalDevice12*>(owner);
+    ContextLock guard(device);
+    if (!device._isRecording)
     {
-        return _nextFence - 1;
+        return;
     }
-    ResolveQueries();
-    for (size_t marker_idx = _markers.size(); marker_idx; --marker_idx)
+    device.DrainUploads();
+    for (size_t marker_idx = device._markers.size(); marker_idx; --marker_idx)
     {
-        _commands->EndEvent();
+        device._commands->EndEvent();
     }
-    R_CHK(_commands->Close());
-    ID3D12CommandList* lists[] = { _commands };
-    _queue->ExecuteCommandLists(1, lists);
-    const u64 submitted = _nextFence++;
-    R_CHK(_queue->Signal(_fence, submitted));
-    _frames[_frame].Fence = submitted;
-    _isRecording = false;
-    return submitted;
+    device._isRecording = false;
+}
+
+// The frame value's slot: its upload chunks and descriptor tables are taken again once the frame that last used them is done
+void InternalDevice12::PrepareSlot()
+{
+    const u64 value = GRHI->Nri->FrameFence();
+    if (_frameValue.load(std::memory_order_acquire) == value)
+    {
+        return;
+    }
+    ContextLock guard(*this);
+    if (_frameValue.load(std::memory_order_relaxed) == value)
+    {
+        return;
+    }
+    const u32 slot = u32(value % FrameCount);
+    Frame& frame = _frames[slot];
+    Wait(frame.Fence);
+    _uploadLock.Enter();
+    // A chunk the slot has not written to for several turns goes, but for a few to spare: a level load fills hundreds
+    // of them in a frame or two, and kept for good they were over a gigabyte of upload memory nothing wrote to again.
+    // A copy still queued may read a chunk filled turns ago (DrainUploads runs when the primary thread next records),
+    // so a chunk such a copy names stays
+    size_t kept = 0;
+    u32 spare = 0;
+    for (auto& chunk : frame.Uploads)
+    {
+        chunk.Idle = chunk.Used == 0 ? chunk.Idle + 1 : 0;
+        chunk.Used = 0;
+        bool isQueued = false;
+        for (size_t copy_idx = 0; chunk.Idle >= 4 && !isQueued && copy_idx < _pending.size(); ++copy_idx)
+        {
+            isQueued = _pending[copy_idx].Source.Resource == chunk.Resource;
+        }
+        if (chunk.Idle >= 4 && !isQueued && spare++ >= 4)
+        {
+            chunk.Resource->Unmap(0, nullptr);
+            Retire(chunk.Resource);
+            continue;
+        }
+        frame.Uploads[kept++] = chunk;
+    }
+    frame.Uploads.resize(kept);
+    ++frame.UploadSerial;
+    frame.Fence = value;
+    _frame = slot;
+    _frameValue.store(value, std::memory_order_release);
+    _uploadLock.Leave();
+    frame.ResourcesUsed = 0;
+    frame.SamplersUsed = 0;
+    frame.Tables.clear();
+    std::fill(std::begin(frame.TableBuckets), std::end(frame.TableBuckets), 0);
 }
 
 void InternalDevice12::Flush()
 {
     PROF_EVENT("D3D12: Flush");
     ContextLock guard(*this);
-    Wait(Submit());
-    CollectRetired();
+    DrainUploads();
+    GRHI->Nri->DrainAll();
+    CollectRetired(true);
+}
+
+// With buffers they follow what is recorded, in the frame's submit; with none what is recorded goes to the queue now,
+// for a submitter of its own
+bool InternalDevice12::SubmitExternalCommands(nri::CommandBuffer* const* buffers, u32 count)
+{
+    PROF_EVENT("D3D12: SubmitExternalCommands");
+    ContextLock guard(*this);
+    R_ASSERT(!_externalPasses);
+    if (count)
+    {
+        GRHI->Nri->Chain(buffers, count);
+    }
+    else
+    {
+        GRHI->Nri->Flush();
+    }
+    return true;
 }
 
 void InternalDevice12::BeginFrame()
 {
     ContextLock guard(*this);
+    // A submit or present the submit thread failed is reported here, before the frame records
+    if (GRHI->Nri->IsLost())
+    {
+        ReportDeviceRemoval();
+        R_CHK(DXGI_ERROR_DEVICE_REMOVED);
+    }
     Commands();
 #if defined(IXRAY_PROFILER)
     if (Core.ParamsData.test(ECoreParams::prof_gpu))
@@ -602,6 +656,8 @@ void InternalDevice12::BeginFrame()
     }
 #endif
 #if defined(IXRAY_PROFILER_TRACY)
+    // Its signal goes to the queue: after the frame on the submit thread
+    GRHI->Nri->Idle();
     TracyD3D12NewFrame(g_tracyD3D12GPUContext);
 #endif
 }
@@ -614,12 +670,13 @@ void* InternalDevice12::GetContext()
 
 void* InternalDevice12::GetSwapchain()
 {
-    return _swapchain;
+    return nullptr;
 }
 
 DX12Upload InternalDevice12::AllocateUpload(u64 size, u64 alignment)
 {
     R_ASSERT(size && alignment && !(alignment & (alignment - 1)) && size <= UINT64_MAX - alignment);
+    PrepareSlot();
     _uploadLock.Enter();
     Frame& frame = _frames[_frame];
     for (auto& chunk : frame.Uploads)
@@ -689,6 +746,8 @@ void InternalDevice12::Transition(DX12Resource& resource, D3D12_RESOURCE_STATES 
     }
     ContextLock guard(*this);
     R_ASSERT(resource.Native && !resource.States.empty());
+    // Commands() can drain uploads that transition this resource; do it before reading states.
+    auto commands = Commands();
     D3D12_RESOURCE_BARRIER batch[BarrierBatch];
     u32 count = 0;
     auto flush = [&]()
@@ -697,7 +756,7 @@ void InternalDevice12::Transition(DX12Resource& resource, D3D12_RESOURCE_STATES 
         {
             return;
         }
-        Commands()->ResourceBarrier(count, batch);
+        commands->ResourceBarrier(count, batch);
         _counters.Barriers.fetch_add(count, std::memory_order_relaxed);
         ++_barrierEpoch;
         count = 0;
@@ -735,7 +794,7 @@ void InternalDevice12::Transition(DX12Resource& resource, D3D12_RESOURCE_STATES 
             barrier.Transition.StateBefore = resource.States.front();
             barrier.Transition.StateAfter = state;
             barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-            Commands()->ResourceBarrier(1, &barrier);
+            commands->ResourceBarrier(1, &barrier);
             _counters.Barriers.fetch_add(1, std::memory_order_relaxed);
             ++_barrierEpoch;
             if ((barrier.Transition.StateBefore & D3D12_RESOURCE_STATE_UNORDERED_ACCESS) &&
@@ -798,6 +857,7 @@ void InternalDevice12::TransitionView(DX12Surface& surface, D3D12_RESOURCE_STATE
         return;
     }
     ContextLock guard(*this);
+    auto commands = Commands();
     D3D12_RESOURCE_BARRIER batch[BarrierBatch];
     u32 count = 0;
     auto flush = [&]()
@@ -806,7 +866,7 @@ void InternalDevice12::TransitionView(DX12Surface& surface, D3D12_RESOURCE_STATE
         {
             return;
         }
-        Commands()->ResourceBarrier(count, batch);
+        commands->ResourceBarrier(count, batch);
         _counters.Barriers.fetch_add(count, std::memory_order_relaxed);
         ++_barrierEpoch;
         count = 0;
@@ -918,7 +978,7 @@ void InternalDevice12::DrainUploads()
         if (!copy.Source.Owned && copy.Source.Frame < FrameCount && copy.Source.Frame != _frame)
         {
             auto& owner = _frames[copy.Source.Frame];
-            owner.Fence = std::max(owner.Fence, _nextFence);
+            owner.Fence = std::max(owner.Fence, GRHI->Nri->FrameFence());
         }
         if (copy.Surface)
         {
@@ -1094,68 +1154,22 @@ DX12Descriptor InternalDevice12::NullUav(u32 dimension, u8 kind)
     return created.Descriptor;
 }
 
-void InternalDevice12::DumpCounters()
+void InternalDevice12::CreateBackBuffers(u32 width, u32 height)
 {
-    const auto us = [&](u64 ticks) { return _tickFrequency ? ticks * 1000000 / _tickFrequency : 0; };
-    const auto& frame = _frames[_frame];
-    Msg("* D3D12 desc-copy %llu cbv %llu srv %llu samp %llu uav %llu table %llu/%llu root %llu barrier %llu upload %llu copied %llu alloc %llu discard %llu pso %llu/%llu flush %llu heap %u/%u mutex %llu/%llu us upload-lock %llu/%llu us",
-        _counters.DescriptorCopies.load(std::memory_order_relaxed),
-        _counters.CbvCreates.load(std::memory_order_relaxed),
-        _counters.SrvCreates.load(std::memory_order_relaxed),
-        _counters.SamplerCreates.load(std::memory_order_relaxed),
-        _counters.UavCreates.load(std::memory_order_relaxed),
-        _counters.TableHits.load(std::memory_order_relaxed),
-        _counters.TableMisses.load(std::memory_order_relaxed),
-        _counters.RootBinds.load(std::memory_order_relaxed),
-        _counters.Barriers.load(std::memory_order_relaxed),
-        _counters.UploadBytes.load(std::memory_order_relaxed),
-        _counters.CopiedBytes.load(std::memory_order_relaxed),
-        _counters.Allocations.load(std::memory_order_relaxed),
-        _counters.Discards.load(std::memory_order_relaxed),
-        _counters.PipelineHits.load(std::memory_order_relaxed),
-        _counters.PipelineMisses.load(std::memory_order_relaxed),
-        _counters.DescriptorFlushes.load(std::memory_order_relaxed),
-        frame.ResourcesUsed, frame.SamplersUsed,
-        us(_counters.MutexWait.load(std::memory_order_relaxed)),
-        us(_counters.MutexHold.load(std::memory_order_relaxed)),
-        us(_counters.UploadWait.load(std::memory_order_relaxed)),
-        us(_counters.UploadHold.load(std::memory_order_relaxed)));
-}
-
-void InternalDevice12::UpdateBuffers()
-{
-    RHITextureDesc backDesc(psCurrentVidMode[0], psCurrentVidMode[1], ERHI_FORMAT::B8G8R8A8_UNORM);
+    // The swap chain's own format
+    RHITextureDesc backDesc(width, height, ERHI_FORMAT::R8G8B8A8_UNORM);
     backDesc.BindFlags = ERHI_BIND_FLAG::RENDER_TARGET;
     for (u32 buffer_idx = 0; buffer_idx < FrameCount; ++buffer_idx)
     {
-        ID3D12Resource* resource = nullptr;
-        R_CHK(_swapchain->GetBuffer(buffer_idx, IID_PPV_ARGS(&resource)));
+        ID3D12Resource* resource = static_cast<ID3D12Resource*>(GRHI->Nri->SwapChainTexture(buffer_idx));
+        resource->AddRef();
         _backbuffers[buffer_idx] = new DX12Surface(*this, backDesc, D3D12_RESOURCE_DIMENSION_TEXTURE2D, resource, D3D12_RESOURCE_STATE_PRESENT);
         _backbufferViews[buffer_idx] = static_cast<DX12RenderTargetView*>(_textureFactory->CreateRenderTargetView(_backbuffers[buffer_idx]));
     }
-    SwapChainRTV = _backbufferViews[_frame];
-    RHITextureDesc renderDesc = backDesc;
-    // Not B8G8R8X8: NRI has no such format, and the gamma pass writes this target through it
-    renderDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-    renderDesc.BindFlags = (ERHI_BIND_FLAG)(ERHI_BIND_FLAG::RENDER_TARGET | ERHI_BIND_FLAG::SHADER_RESOURCE);
-    _renderSurface = static_cast<DX12Surface*>(_textureFactory->CreateRenderTarget(renderDesc));
-    RenderRTV = _textureFactory->CreateRenderTargetView(_renderSurface);
-    _renderView = static_cast<DX12ShaderResourceView*>(_textureFactory->CreateShaderResourceView(_renderSurface, nullptr));
-    RenderSRV = _renderView->GetRawSRV();
-    RenderTexture = reinterpret_cast<IRHIRenderTargetView*>(_renderSurface->GetRawTexture());
-    RHITextureDesc depthDesc = backDesc;
-    depthDesc.Width = u32(depthDesc.Width * RenderScale);
-    depthDesc.Height = u32(depthDesc.Height * RenderScale);
-    depthDesc.Width += depthDesc.Width % 2;
-    depthDesc.Height += depthDesc.Height % 2;
-    depthDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
-    depthDesc.BindFlags = ERHI_BIND_FLAG::DEPTH_STENCIL;
-    HalfTarget.set((int)depthDesc.Width, (int)depthDesc.Height);
-    _depthSurface = static_cast<DX12Surface*>(_textureFactory->CreateTexture2D(depthDesc, nullptr));
-    RenderDSV = _textureFactory->CreateDepthStencilView(_depthSurface);
+    SwapChainRTV = _backbufferViews[_backbuffer];
 }
 
-void InternalDevice12::ReleaseBuffers()
+void InternalDevice12::ReleaseBackBuffers()
 {
     for (u32 buffer_idx = 0; buffer_idx < FrameCount; ++buffer_idx)
     {
@@ -1170,6 +1184,38 @@ void InternalDevice12::ReleaseBuffers()
             _backbuffers[buffer_idx] = nullptr;
         }
     }
+    SwapChainRTV = nullptr;
+}
+
+void InternalDevice12::UpdateBuffers()
+{
+    CreateBackBuffers(GRHI->SwapChain.Width, GRHI->SwapChain.Height);
+    // The output and the depth are made at the video mode, whatever size the window's swap chain has
+    RHITextureDesc renderDesc(psCurrentVidMode[0], psCurrentVidMode[1], ERHI_FORMAT::R8G8B8A8_UNORM);
+    // Not B8G8R8X8: NRI has no such format, and the gamma pass writes this target through it
+    renderDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
+    renderDesc.BindFlags = (ERHI_BIND_FLAG)(ERHI_BIND_FLAG::RENDER_TARGET | ERHI_BIND_FLAG::SHADER_RESOURCE);
+    _renderSurface = static_cast<DX12Surface*>(_textureFactory->CreateRenderTarget(renderDesc));
+    RenderRTV = _textureFactory->CreateRenderTargetView(_renderSurface);
+    _renderView = static_cast<DX12ShaderResourceView*>(_textureFactory->CreateShaderResourceView(_renderSurface, nullptr));
+    RenderSRV = _renderView->GetRawSRV();
+    RenderTexture = reinterpret_cast<IRHIRenderTargetView*>(_renderSurface->GetRawTexture());
+    RHITextureDesc depthDesc = renderDesc;
+    depthDesc.Width = u32(depthDesc.Width * RenderScale);
+    depthDesc.Height = u32(depthDesc.Height * RenderScale);
+    depthDesc.Width += depthDesc.Width % 2;
+    depthDesc.Height += depthDesc.Height % 2;
+    depthDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
+    depthDesc.BindFlags = ERHI_BIND_FLAG::DEPTH_STENCIL;
+    HalfTarget.set((int)depthDesc.Width, (int)depthDesc.Height);
+    AllocHalfTarget = HalfTarget;
+    _depthSurface = static_cast<DX12Surface*>(_textureFactory->CreateTexture2D(depthDesc, nullptr));
+    RenderDSV = _textureFactory->CreateDepthStencilView(_depthSurface);
+}
+
+void InternalDevice12::ReleaseBuffers()
+{
+    ReleaseBackBuffers();
     if (RenderRTV)
     {
         RenderRTV->Release();
@@ -1195,7 +1241,6 @@ void InternalDevice12::ReleaseBuffers()
         _depthSurface->Release();
         _depthSurface = nullptr;
     }
-    SwapChainRTV = nullptr;
     RenderSRV = nullptr;
     RenderTexture = nullptr;
     ZeroMemory(_targets, sizeof(_targets));
@@ -1204,33 +1249,42 @@ void InternalDevice12::ReleaseBuffers()
     MarkViewsDirty();
 }
 
-void InternalDevice12::ResizeBuffers(u32 width, u32 height)
+void InternalDevice12::ResizeBuffers(const RHISwapChainDesc& swapChain)
 {
     ContextLock guard(*this);
-    if (!width || !height)
+    if (!swapChain.Width || !swapChain.Height)
+    {
+        return;
+    }
+    // The drain waits for the queue to be idle, which also covers the swap chain's own presents
+    Flush();
+    ReleaseBuffers();
+    CollectRetired(true);
+    GRHI->Nri->CreateSwapChain(nullptr, swapChain, FrameCount);
+    _backbuffer = GRHI->Nri->AcquireTexture();
+    UpdateBuffers();
+}
+
+void InternalDevice12::ResizeSwapChain(const RHISwapChainDesc& swapChain)
+{
+    ContextLock guard(*this);
+    if (!swapChain.Width || !swapChain.Height)
     {
         return;
     }
     Flush();
-    for (auto& frame : _frames)
-    {
-        Wait(frame.Fence);
-    }
-    ReleaseBuffers();
-    CollectRetired();
-    R_CHK(_swapchain->ResizeBuffers(FrameCount, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0));
-    psCurrentVidMode[0] = width;
-    psCurrentVidMode[1] = height;
-    _frame = _swapchain->GetCurrentBackBufferIndex();
-    UpdateBuffers();
+    ReleaseBackBuffers();
+    CollectRetired(true);
+    GRHI->Nri->CreateSwapChain(nullptr, swapChain, FrameCount);
+    _backbuffer = GRHI->Nri->AcquireTexture();
+    CreateBackBuffers(swapChain.Width, swapChain.Height);
 }
 
 void InternalDevice12::Present()
 {
     PROF_EVENT("D3D12: Present");
     ContextLock guard(*this);
-    Transition(_backbuffers[_frame]->GetResource(), D3D12_RESOURCE_STATE_PRESENT);
-    Submit();
+    Transition(_backbuffers[_backbuffer]->GetResource(), D3D12_RESOURCE_STATE_PRESENT);
 #if defined(IXRAY_PROFILER)
     if (Core.ParamsData.test(ECoreParams::prof_gpu))
     {
@@ -1239,31 +1293,18 @@ void InternalDevice12::Present()
             Optick::SetGpuContext(Optick::GPUContext(_prevGpuCommand, (Optick::GPUQueueType)_prevGpuQueue, _prevGpuNode));
             _gpuContextLive = false;
         }
-        Optick::GpuFlip(_swapchain);
     }
 #endif
-    R_CHK(_swapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0));
-    const u32 next = _swapchain->GetCurrentBackBufferIndex();
-    Frame& frame = _frames[next];
-    Wait(frame.Fence);
-    _uploadLock.Enter();
-    for (auto& chunk : frame.Uploads)
+    // The submit thread submits and presents. No wait here: the next frame's slot is taken again when it is first used,
+    // once its frame is done, and it draws into the back buffer that follows this one
+    if (!GRHI->Nri->EndFrame())
     {
-        chunk.Used = 0;
+        ReportDeviceRemoval();
+        R_CHK(DXGI_ERROR_DEVICE_REMOVED);
     }
-    ++frame.UploadSerial;
+    _backbuffer = GRHI->Nri->AcquireTexture();
     ++ConstantEpoch;
-    _frame = next;
-    _uploadLock.Leave();
-    if ((++_presentCount & 255) == 0)
-    {
-        DumpCounters();
-    }
-    frame.ResourcesUsed = 0;
-    frame.SamplersUsed = 0;
-    frame.Tables.clear();
-    std::fill(std::begin(frame.TableBuckets), std::end(frame.TableBuckets), 0);
-    SwapChainRTV = _backbufferViews[_frame];
+    SwapChainRTV = _backbufferViews[_backbuffer];
 }
 
 IRHITextureFactory* InternalDevice12::GetTextureFactory()
@@ -1372,12 +1413,6 @@ void InternalDevice12::CopySurface(IRHIRenderTargetView* destination, IRHIRender
 {
     ContextLock guard(*this);
     CopySurface(destination->GetSurface(), source->GetSurface());
-}
-
-void InternalDevice12::CopySwapchain(IRHISurface* destination)
-{
-    ContextLock guard(*this);
-    CopySurface(destination, _backbuffers[_frame]);
 }
 
 bool InternalDevice12::SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags)

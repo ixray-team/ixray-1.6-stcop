@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "DX11Texture.h"
 #include <d3d11.h>
 
@@ -170,6 +204,25 @@ DX11Surface::DX11Surface(ID3D11Texture1D* texture)
 	}
 }
 
+DX11Surface* DX11Surface::Adopt(const RHITextureDesc& desc)
+{
+	ID3D11Resource* resource = static_cast<ID3D11Resource*>(desc.Adopt);
+	D3D11_RESOURCE_DIMENSION kind = D3D11_RESOURCE_DIMENSION_UNKNOWN;
+	resource->GetType(&kind);
+
+	if (kind != D3D11_RESOURCE_DIMENSION_TEXTURE2D && kind != D3D11_RESOURCE_DIMENSION_TEXTURE3D)
+	{
+		return nullptr;
+	}
+
+	resource->AddRef();
+	DX11Surface* surface = kind == D3D11_RESOURCE_DIMENSION_TEXTURE3D ? new DX11Surface(static_cast<ID3D11Texture3D*>(resource)) : new DX11Surface(static_cast<ID3D11Texture2D*>(resource));
+	surface->m_desc.Format = desc.Format;
+	surface->m_desc.MiscFlags = desc.MiscFlags & u32(ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE);
+	surface->Adopted = 1;
+	return surface;
+}
+
 DX11Surface::~DX11Surface()
 {
 	if (Resource)
@@ -185,11 +238,29 @@ void* DX11Surface::GetRawTexture()
 
 void DX11Surface::AddRef()
 {
+	if (Adopted)
+	{
+		++Adopted;
+		return;
+	}
+
 	if (Resource) Resource->AddRef();
 }
 
 u32 DX11Surface::Release()
 {
+	if (Adopted)
+	{
+		const u32 Counter = --Adopted;
+
+		if (Counter == 0)
+		{
+			xr_delete(this);
+		}
+
+		return Counter;
+	}
+
 	if (Resource)
 	{
 		u32 Counter = Resource->Release();
@@ -529,27 +600,7 @@ IRHISurface* DX11TextureFactory::CreateTexture3D(const RHITextureDesc& Desc, con
 
 IRHISurface* DX11TextureFactory::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc)
 {
-	if (data && size == 0)
-	{
-		ID3D11Resource* Resource = static_cast<ID3D11Resource*>(const_cast<void*>(data));
-
-		if (Resource)
-		{
-			D3D11_RESOURCE_DIMENSION Info;
-			Resource->GetType(&Info);
-
-			switch (Info)
-			{
-				case D3D11_RESOURCE_DIMENSION_TEXTURE1D: return new DX11Surface((ID3D11Texture1D*)Resource);
-				case D3D11_RESOURCE_DIMENSION_TEXTURE2D: return new DX11Surface((ID3D11Texture2D*)Resource);
-				case D3D11_RESOURCE_DIMENSION_TEXTURE3D: return new DX11Surface((ID3D11Texture3D*)Resource);
-			}
-
-			VERIFY(!"Invalid texture type");
-		}
-	}
-	
-	return CreateTexture2D(desc, nullptr);
+	return desc.Adopt ? DX11Surface::Adopt(desc) : CreateTexture2D(desc, nullptr);
 }
 
 IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
@@ -607,6 +658,11 @@ IRHIShaderResourceView* DX11TextureFactory::CreateShaderResourceView(IRHISurface
 		{
 			srvDesc.TextureCube.MostDetailedMip = desc->MostDetailedMip;
 			srvDesc.TextureCube.MipLevels = desc->MipLevels;
+		}
+		else if (desc->ViewDimension == ERHI_SRV_DIMENSION::TEXTURE3D)
+		{
+			srvDesc.Texture3D.MostDetailedMip = desc->MostDetailedMip;
+			srvDesc.Texture3D.MipLevels = desc->MipLevels;
 		}
 	}
 

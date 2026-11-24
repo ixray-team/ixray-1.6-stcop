@@ -475,14 +475,14 @@ void UITopBarForm::ClickPlayPC()
 		return;
 
 	string_path params;
-	xr_sprintf(params, "-r4 -start server(%s/single/alife/new) client(localhost) -noprefetch -nointro -fsltx fsgame_editor.ltx", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	xr_sprintf(params, "-r1 -start server(%s/single/alife/new) client(localhost) -noprefetch -nointro -fsltx fsgame_editor.ltx", Scene->m_LevelOp.m_FNLevelPath.c_str());
 
 	LTools->RunGame(params);
 
 }
 void UITopBarForm::ClickPlayCleanGame()
 {
-	LTools->RunGame("-noprefetch -r4  -fsltx fsgame_editor.ltx");
+	LTools->RunGame("-noprefetch -r1  -fsltx fsgame_editor.ltx");
 }
 
 void UITopBarForm::ClickPreferences()

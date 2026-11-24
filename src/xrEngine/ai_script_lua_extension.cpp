@@ -11,9 +11,9 @@
 #include "ai_script_lua_extension.h"
 #include "ai_script_space.h"
 
-#ifdef XRRENDER_R4_EXPORTS
+#ifdef XRRENDER_IXR_EXPORTS
 #define ENGINE_BUILD
-#endif	//	XRRENDER_R4_EXPORTS
+#endif	//	XRRENDER_IXR_EXPORTS
 
 #if !defined(ENGINE_BUILD) && !defined(_EDITOR)
 	#include "ai_space.h"

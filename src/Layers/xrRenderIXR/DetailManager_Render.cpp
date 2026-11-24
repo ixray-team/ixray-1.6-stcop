@@ -1,0 +1,611 @@
+#include "stdafx.h"
+#include "DetailManager.h"
+#include "DetailsWind.h"
+#include "SH_Atomic.h"
+#include "../../xrEngine/xr_ioc_cmd.h"
+#include "../../xrEngine/EngineAPI.h"
+
+extern float ps_r__detail_rnd_scale_max;
+
+
+extern float ps_trample_bend;
+extern float ps_trample_squash;
+extern float ps_trample_trail_min;
+extern float ps_trample_trail_max;
+extern float ps_trample_obj_radius_scale;
+extern float ps_trample_actor_radius_scale;
+extern int   ps_trample_enabled;
+extern float ps_trample_cooltime;
+extern float ps_trample_draw_radius;
+extern float ps_trample_brush_fill;
+extern float ps_trample_press_speed;
+
+void CDetailManager::hw_Load()
+{
+	RHIBufferDesc bufferDesc{};
+	bufferDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+	bufferDesc.Type = ERHI_BUFFER_TYPE::STRUCTURED;
+	bufferDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
+	bufferDesc.StructureByteStride = sizeof(CDetail::SlotItem);
+
+	RHIShaderResourceViewDesc srvDesc{};
+	srvDesc.Format = ERHI_FORMAT::UNKNOWN;
+
+	const u32 bufferSizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
+	for (int i = 0; i < std::size(bufferSizes); ++i)
+	{
+		u32 buff_size = bufferSizes[i];
+		bufferDesc.Size = buff_size * sizeof(CDetail::SlotItem);
+		IRHIBuffer* buffer = GRHI->CreateBuffer(bufferDesc, nullptr);
+
+		srvDesc.ElementWidth = buff_size;
+		IRHIShaderResourceView* srv = GRHI->CreateShaderResourceView(buffer, &srvDesc);
+		DetailInstanceBuffers[buff_size] = std::make_pair(buffer, srv);
+	}
+}
+
+void CDetailManager::TrampleMark(float x, float y, float z, float radius, float weight, bool isActor)
+{
+	if (!ps_trample_enabled) return;
+	radius = std::clamp(radius, ps_trample_trail_min, ps_trample_trail_max);
+	radius *= isActor ? ps_trample_actor_radius_scale : ps_trample_obj_radius_scale;
+	STramplePendingMark m;
+	m.x = x; m.y = y; m.z = z; m.radius = radius; m.weight = weight;
+	std::lock_guard<std::mutex> lock(TramplePendingLock);
+	if (TramplePendingMarks.empty())
+		TramplePlayerRadius = radius;
+	TramplePendingMarks.push_back(m);
+}
+
+void CDetailManager::TrampleProcessMarks()
+{
+	if (!ps_trample_enabled) return;
+
+	xr_vector<STramplePendingMark> marks;
+	{
+		std::lock_guard<std::mutex> lock(TramplePendingLock);
+		marks.swap(TramplePendingMarks);
+	}
+	if (marks.empty() || cache.empty()) return;
+
+	const float texel = 0.5f;
+
+	for (const auto& mk : marks)
+	{
+		const int sx = iFloor(mk.x / dm_slot_size);
+		const int sz = iFloor(mk.z / dm_slot_size);
+		const int range = std::max(1, (int)std::ceil(mk.radius / dm_slot_size));
+
+		for (int dz = -range; dz <= range; ++dz)
+		{
+			for (int dx = -range; dx <= range; ++dx)
+			{
+				const int wsx = sx + dx;
+				const int wsz = sz + dz;
+				const int gx = w2cg_X(wsx);
+				const int gz = w2cg_Z(wsz);
+				if (gx < 0 || gz < 0 || gx >= (int)dm_cache_line || gz >= (int)dm_cache_line) continue;
+				Slot* S = cache[gz][gx];
+				if (!S || S->empty) continue;
+
+				bool painted = false;
+				for (u32 sp = 0; sp < dm_obj_in_slot; ++sp)
+				{
+					SlotPart& part = S->G[sp];
+					for (u32 vi = 0; vi < 3; ++vi)
+					{
+						for (CDetail::SlotItem* item : part.items[vi])
+						{
+							const float dx2 = item->pos.x - mk.x;
+							const float dz2 = item->pos.z - mk.z;
+							const float d2d = std::sqrt(dx2 * dx2 + dz2 * dz2);
+							if (d2d >= mk.radius) continue;
+
+							const float dy = mk.y - item->pos.y;
+							const float d3d = std::sqrt(d2d * d2d + dy * dy * 0.25f);
+							if (d3d >= mk.radius) continue;
+
+							float innerR = mk.radius * ps_trample_brush_fill;
+							if (innerR > mk.radius - 2.0f * texel) innerR = std::max(0.0f, mk.radius - 2.0f * texel);
+							float t;
+							if (d3d <= innerR)
+								t = 1.0f;
+							else
+							{
+								const float s = (mk.radius - d3d) / (mk.radius - innerR);
+								t = s * s * (3.0f - 2.0f * s);
+							}
+
+							const float add = t * mk.weight;
+							if (item->trample_strength < 0.001f && item->trample_visual < 0.001f)
+							{
+								item->trample_visual = 0.0f;
+								const float nl = d2d / texel;
+								const float radialX = (nl > 0.001f) ? (item->pos.x - mk.x) / (nl * texel) : 0.0f;
+								const float radialZ = (nl > 0.001f) ? (item->pos.z - mk.z) / (nl * texel) : 0.0f;
+								const float edgeF = 1.0f - t;
+								const float radialW = 0.6f + 0.4f * edgeF;
+								float bx = radialX * radialW;
+								float bz = radialZ * radialW;
+								const float bl = std::sqrt(bx * bx + bz * bz);
+								if (bl > 0.001f) { bx /= bl; bz /= bl; }
+								item->trample_dirX = bx;
+								item->trample_dirZ = bz;
+							}
+							item->trample_strength = std::min(item->trample_strength + add, 1.0f);
+							painted = true;
+						}
+					}
+				}
+				if (painted)
+				{
+					S->has_trample = true;
+					if (S->trample_tick == 0)
+						S->trample_tick = RDEVICE.dwTimeGlobal;
+					const u32 packed = ((u32)(u16)wsz << 16) | (u32)(u16)wsx;
+					bool found = false;
+					for (u32 k = 0; k < TrampleActiveSlots.size(); ++k)
+						if (TrampleActiveSlots[k] == packed) { found = true; break; }
+					if (!found) TrampleActiveSlots.push_back(packed);
+				}
+			}
+		}
+	}
+}
+
+void CDetailManager::TrampleAnimateItems()
+{
+	if (!ps_trample_enabled)
+	{
+		if (!TrampleActiveSlots.empty())
+		{
+			for (u32 packed : TrampleActiveSlots)
+			{
+				const int wsx = (int)(s16)(packed & 0xFFFF);
+				const int wsz = (int)(s16)((packed >> 16) & 0xFFFF);
+				const int gx = w2cg_X(wsx);
+				const int gz = w2cg_Z(wsz);
+				if (gx >= 0 && gz >= 0 && gx < (int)dm_cache_line && gz < (int)dm_cache_line)
+				{
+					Slot* S = cache[gz][gx];
+					if (S)
+					{
+						S->has_trample = false;
+						for (u32 sp = 0; sp < dm_obj_in_slot; ++sp)
+						{
+							SlotPart& part = S->G[sp];
+							for (u32 vi = 0; vi < 3; ++vi)
+							{
+								for (CDetail::SlotItem* item : part.items[vi])
+								{
+									item->trample_strength = 0.0f;
+									item->trample_visual = 0.0f;
+									item->trample_dirX = 0.0f;
+									item->trample_dirZ = 0.0f;
+								}
+							}
+						}
+					}
+				}
+			}
+			TrampleActiveSlots.clear();
+		}
+		return;
+	}
+
+	if (TrampleActiveSlots.empty()) return;
+
+	const u32 now_ms = RDEVICE.dwTimeGlobal;
+
+	u32 write = 0;
+	for (u32 read = 0; read < TrampleActiveSlots.size(); ++read)
+	{
+		const u32 packed = TrampleActiveSlots[read];
+		const int wsx = (int)(s16)(packed & 0xFFFF);
+		const int wsz = (int)(s16)((packed >> 16) & 0xFFFF);
+
+		const int gx = w2cg_X(wsx);
+		const int gz = w2cg_Z(wsz);
+		Slot* S = (gx >= 0 && gz >= 0 && gx < (int)dm_cache_line && gz < (int)dm_cache_line) ? cache[gz][gx] : nullptr;
+		if (!S || S->empty || !S->has_trample)
+			continue;
+
+		float dt;
+		if (S->trample_tick == 0)
+			dt = 1.0f / 60.0f;
+		else
+			dt = std::min((now_ms - S->trample_tick) / 1000.0f, 0.5f);
+		S->trample_tick = now_ms;
+
+		const float decay_rate = dt / std::max(ps_trample_cooltime, 0.5f);
+		const float anim_rate = std::min(1.0f, ps_trample_press_speed * dt);
+
+		bool anyActive = false;
+		for (u32 sp = 0; sp < dm_obj_in_slot; ++sp)
+		{
+			SlotPart& part = S->G[sp];
+			for (u32 vi = 0; vi < 3; ++vi)
+			{
+				for (CDetail::SlotItem* item : part.items[vi])
+				{
+					if (item->trample_visual < 0.001f && item->trample_strength < 0.001f)
+						continue;
+
+					item->trample_strength = std::max(0.0f, item->trample_strength - decay_rate);
+					item->trample_visual += (item->trample_strength - item->trample_visual) * anim_rate;
+
+					if (item->trample_strength < 0.001f && item->trample_visual < 0.001f)
+					{
+						item->trample_visual = 0.0f;
+						item->trample_strength = 0.0f;
+					}
+					else
+					{
+						anyActive = true;
+					}
+				}
+			}
+		}
+
+		if (anyActive)
+			TrampleActiveSlots[write++] = packed;
+		else
+			S->has_trample = false;
+
+		// The blades changed where they stand in the slot: the GPU's copy follows
+		if (S->StoreKept > 0.0f)
+		{
+			StoreSlot(*S, S->StoreKept);
+		}
+	}
+	TrampleActiveSlots.resize(write);
+}
+
+void CDetailManager::hw_Unload()
+{
+	for (auto& [_, it] : DetailInstanceBuffers)
+	{
+		_RELEASE(it.first);
+		_RELEASE(it.second);
+	}
+
+	{
+		std::lock_guard<std::mutex> lock(TramplePendingLock);
+		TramplePendingMarks.clear();
+	}
+	TrampleActiveSlots.clear();
+}
+
+static void SetWindConstants(GfxCmdList& Cmd)
+{
+	CDetailWind::Constants wc;
+	CDetailWind::ComputeConstants(wc);
+	CBDetail& Block = Cmd.Constants.Write<CBDetail>();
+	Block.wind_global = wc.global;
+	Block.wind_xz1 = wc.xz1;
+	Block.wind_xz1_dir = wc.xz1_dir;
+	Block.wind_xz2 = wc.xz2;
+	Block.wind_xz2_dir = wc.xz2_dir;
+	Block.wind_xz3 = wc.xz3;
+	Block.wind_xz3_dir = wc.xz3_dir;
+	Block.wind_swirl = wc.swirl;
+	Block.wind_swirl_dir = wc.swirl_dir;
+}
+
+// Both wind variants of the frame's grass in one pass of the scene, which culls the instances on the GPU.
+// False when the scene cannot draw them: the caller then draws each variant itself.
+bool CDetailManager::hw_Render_batch(GfxCmdList& Cmd, u32 lod_id, const CFrustum& CullFrustum, const GpuDepthDraw& Batch, const Fvector4 (&Waves)[2][4])
+{
+	if (Device.IsEditorMode() || objects.empty())
+	{
+		return false;
+	}
+
+	GpuScene::GrassBin Bins[SCENE_GRASS_BINS];
+	u32 BinCount = 0;
+	// The task left runs of the slots' stored blades: a bin is a model and variant that has any, in the task's order
+	const bool IsStored = IsStoredResult[render_key] && StoredTotals[render_key].size() == objects.size() * 3;
+
+	// The swaying variants first, the plain one after them, so the instances keep one order for the frame. A shadow
+	// view takes the plain one too: a fir or a bush that stands still casts a shadow as the grass around it does
+	for (u32 Order = 0; Order < 3u; ++Order)
+	{
+		const u32 var_id = (Order + 1) % 3;
+
+		for (size_t Index = 0; Index < objects.size(); ++Index)
+		{
+			const CDetail& Object = *objects[Index];
+			const auto& Items = Object.m_items[render_key][var_id];
+			const u32 Count = IsStored ? StoredTotals[render_key][Index * 3 + var_id] : u32(Items.size());
+			if (!Count)
+			{
+				continue;
+			}
+
+			if (BinCount == SCENE_GRASS_BINS)
+			{
+				if (IsStored)
+				{
+					break;
+				}
+
+				return false;
+			}
+
+			// The model's sphere moved onto its up axis, so that a blade's turn is all the cull needs to place it
+			const Fvector& Middle = Object.bv_sphere.P;
+			const float OwnRadius = Object.bv_sphere.R + std::sqrt(Middle.x * Middle.x + Middle.z * Middle.z) + std::max(-Middle.y, 0.0f);
+			Bins[BinCount++] = { IsStored ? nullptr : Items.data(), Count, std::max(Middle.y, 0.0f) + OwnRadius, OwnRadius, Object.SceneCluster, Object.FarCount / 3, Object.number_indices / 3, Waves[var_id ? var_id - 1 : 1], var_id };
+		}
+	}
+
+	const bool IsOutdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.IsVisited(RImplementation.pOutdoorSector->index));
+	if (!BinCount || !IsOutdoor)
+	{
+		return true;
+	}
+
+	// The forward frame's blender has no shadow element: the scene draws the shadow with shaders of its own
+	if (objects[0]->shader->E[lod_id])
+	{
+		Cmd.SetPass(objects[0]->shader->E[lod_id], 0);	
+	}
+
+	Cmd.Constants.Write<CBPass>().consts.set(1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+
+	SetWindConstants(Cmd);
+	if (ps_trample_enabled)
+	{
+		Cmd.Constants.Write<CBDetail>().trample_params.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
+	}
+
+	const GpuScene::GrassRuns Runs = { StoredChunks[render_key].data(), u32(StoredChunks[render_key].size()), &Store };
+	return RImplementation.Scene.DrawGrass(Cmd, RFrame.dwFrame,Bins, BinCount, CullFrustum, Batch, IsStored ? &Runs : nullptr);
+}
+
+void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, const GpuDepthDraw* Batch)
+{
+	if (!psDeviceFlags.is(rsDetails)) return;
+	PROF_EVENT("CDetailManager::hw_Render");
+
+	// A shadow view can come before the main one in a frame
+	if (Batch && !Prepare())
+	{
+		return;
+	}
+
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetObjectTransform(Fidentity);
+
+	CFrustum Frustum;
+	const CFrustum* CullFrustum = CullXform ? &Frustum.CreateFromMatrix(*CullXform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR) : nullptr;
+	Fvector4 wave, wave_old;
+
+	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? ShaderVariant::NormalHQ : SE_R2_DETAIL_SHADOW_HQ;
+	auto LodLQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? ShaderVariant::NormalLQ : SE_R2_DETAIL_SHADOW_LQ;
+
+	// The forward frame's grass: culled by the scene once, drawn with its clusters
+	const bool IsForward = !Batch && RImplementation.phase == CRender::PHASE_NORMAL && !Device.IsEditorMode() && RImplementation.Scene.HasForwardGrass();
+
+	if (IsForward && RImplementation.ForwardPassOnly == 1 && RImplementation.Scene.IsForwardGrassReady())
+	{
+		Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+		return;
+	}
+
+	if (IsForward || (Batch && CullFrustum && RImplementation.phase == CRender::PHASE_SMAP))
+	{
+		const Fvector4 Rate0 = Fvector4().set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos).div(PI_MUL_2);
+		const Fvector4 Rate0Old = Fvector4().set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old).div(PI_MUL_2);
+		const Fvector4 Rate1 = Fvector4().set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos).div(PI_MUL_2);
+		const Fvector4 Rate1Old = Fvector4().set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old).div(PI_MUL_2);
+		const Fvector4 Waves[2][4] = { { Rate0, wave_dir1, Rate0Old, wave_dir1_old }, { Rate1, wave_dir2, Rate1Old, wave_dir2_old } };
+
+		// The main view's grass is culled by the scene once and drawn with its clusters
+		GpuDepthDraw Visibility = {};
+		Visibility.IsForward = IsForward;
+		hw_Render_batch(Cmd, LodHQ, IsForward ? RImplementation.ViewBase : *CullFrustum, IsForward ? Visibility : *Batch, Waves);
+
+		// The game's grass is the scene's alone: a view the scene cannot draw has none
+		if (!Device.IsEditorMode())
+		{
+			Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+			return;
+		}
+
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+		Cmd.SetObjectTransform(Fidentity);
+	}
+
+	// Wave0
+	{
+		PROF_EVENT("Wave0")
+		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
+		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
+
+		hw_Render_dump(Cmd, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, CullFrustum);
+	}
+
+	// Wave1
+	{
+		PROF_EVENT("Wave1")
+		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
+		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
+		hw_Render_dump(Cmd, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, CullFrustum);
+	}
+
+	// Still
+	if(RImplementation.phase != CRender::PHASE_SMAP)
+	{
+		PROF_EVENT("Still")
+		hw_Render_dump(Cmd, wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, CullFrustum);
+	}
+
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+}
+
+void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum)
+{
+	const bool EditorMode = Device.IsEditorMode();
+	if (!EditorMode && !objects.empty())
+	{
+		//Render state, shaders & so on [only 1st pass]
+		Cmd.SetPass(objects[0]->shader->E[lod_id], 0);
+	}
+
+	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
+	if(!phase_shmap)
+		RImplementation.apply_lmaterial(Cmd); //Material ID
+
+	Cmd.Constants.Write<CBPass>().consts.set(1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+
+	if(var_id != 0)
+	{
+		Cmd.Constants.Write<CBPass>().wave = wave;
+		Cmd.Constants.Write<CBPass>().wind = wind;
+
+		Cmd.Constants.Write<CBPass>().wave_old = wave_old;
+		Cmd.Constants.Write<CBPass>().wind_old = wind_old;
+	}
+
+	if (!EditorMode)
+	{
+		SetWindConstants(Cmd);
+	}
+
+	if (!EditorMode)
+	{
+		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.IsVisited(RImplementation.pOutdoorSector->index));
+		if (!in_outdoor)
+			return;
+	}
+
+	if (phase_shmap && CullFrustum)
+	{
+		for (CDetail* ObjectPtr : objects)
+		{
+			CDetail& Object = *ObjectPtr;
+			auto& items = Object.m_items[render_key][var_id];
+			u32 totalInstances = items.size();
+			if (totalInstances == 0) continue;
+
+			Cmd.SetPass(Object.shader->E[lod_id], 0);
+			if (!EditorMode && ps_trample_enabled)
+			{
+				Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
+				Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
+			}
+
+			auto it = DetailInstanceBuffers.lower_bound(totalInstances);
+
+			//Use largest buffer possible [should keep HUGE buffer around in those cases]
+			if (it == DetailInstanceBuffers.end())
+			{
+				it = std::prev(DetailInstanceBuffers.end());
+			}
+
+			//Current buffer size and resources
+			u32 currentSize = it->first;
+			IRHIBuffer* currentBuffer = it->second.first;
+			IRHIShaderResourceView* currentSRV = it->second.second;
+
+			//Bind (current) buffer SRV
+			Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
+
+			const GeometryAlloc& Block = Object.Alloc;
+			Cmd.SetGeometry(Object.hw_Geom);
+
+			const float ObjectRadius = Object.bv_sphere.P.magnitude() + Object.bv_sphere.R;
+			u32 instanceCount = 0;
+			RHIMappedSubresource pSubRes;
+			for (CDetail::SlotItem& Instance : items)
+			{
+				if (!CullFrustum->testSphere_dirty(Instance.pos, ObjectRadius * Instance.scale))
+					continue;
+
+				if (instanceCount == 0)
+					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+
+				static_cast<CDetail::SlotItem*>(pSubRes.pData)[instanceCount++] = Instance;
+
+				if (instanceCount == currentSize)
+				{
+					currentBuffer->Unmap();
+					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Block.IndexCount, instanceCount, Block.IndexBase, Block.VertexBase, 0);
+					instanceCount = 0; //Reset
+				}
+			}
+
+			//Render remaining instances
+			if (instanceCount > 0)
+			{
+				currentBuffer->Unmap();
+				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Block.IndexCount, instanceCount, Block.IndexBase, Block.VertexBase, 0);
+			}
+		}
+	}
+	else
+	{
+		for (u32 PassIdx = 0; PassIdx < SHADER_PASSES_MAX; ++PassIdx)
+		{
+			for (CDetail* ObjectPtr : objects)
+			{
+				CDetail& Object = *ObjectPtr;
+				if (PassIdx >= Object.shader->E[lod_id]->passes.size() || (RImplementation.ForwardPassOnly != u32(-1) && PassIdx != RImplementation.ForwardPassOnly))
+				{
+					continue;
+				}
+
+				Cmd.SetPass(Object.shader->E[lod_id], PassIdx);
+				if (!EditorMode && ps_trample_enabled)
+				{
+					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
+					Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
+				}
+				auto& items = Object.m_items[render_key][var_id];
+				u32 totalInstances = items.size();
+				if (u32(0) == totalInstances) continue;
+
+				Cmd.SetGeometry(Object.hw_Geom);
+				const u32 Split = std::min(Object.FarStart[render_key][var_id], totalInstances);
+				const u32 Ranges[2][3] = { { 0, Split, Object.number_indices }, { Split, totalInstances, Object.FarCount } };
+
+				auto it = DetailInstanceBuffers.lower_bound(totalInstances);
+
+				//Use largest buffer possible [should keep HUGE buffer around in those cases]
+				if (it == DetailInstanceBuffers.end())
+				{
+					it = std::prev(DetailInstanceBuffers.end());
+				}
+
+				//Current buffer size and resources
+				u32 currentSize = it->first;
+				IRHIBuffer* currentBuffer = it->second.first;
+				IRHIShaderResourceView* currentSRV = it->second.second;
+
+				//Bind (current) buffer SRV
+				Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
+
+				RHIMappedSubresource pSubRes;
+				CDetail::SlotItem* items_data = items.data();
+
+				for (const auto& Range : Ranges)
+				{
+					for (u32 offset = Range[0]; offset < Range[1];)
+					{
+						const u32 chunkSize = std::min(currentSize, Range[1] - offset);
+
+						R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+
+						memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(CDetail::SlotItem));
+
+						currentBuffer->Unmap();
+						Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Range[2], chunkSize, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
+
+						offset += chunkSize;
+					}
+				}
+			}
+		}
+	}
+}

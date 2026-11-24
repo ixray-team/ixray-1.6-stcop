@@ -1,0 +1,10 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "ps": {
+            "particle_distort_hard": [
+                "DISABLE_SOFT_PARTICLES"
+            ]
+        }
+    }
+}

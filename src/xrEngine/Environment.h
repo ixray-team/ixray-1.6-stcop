@@ -171,6 +171,7 @@ public:
 	Fvector3			sun_dir		;
 	float				m_fSunShaftsIntensity;
 	float				m_fWaterIntensity;
+	float				m_fAmbientScale;
 
 	float				trees_amplitude;
 	float				trees_speed;
@@ -471,6 +472,7 @@ public:
 };
 
 ENGINE_API extern Flags32	psEnvFlags;
-ENGINE_API extern float		psVisDistance;
+// r_distance_quality: the farthest the view and the fog reach, in metres
+ENGINE_API extern float		psViewDistance;
 
 #endif //EnvironmentH

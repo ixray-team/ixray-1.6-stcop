@@ -52,6 +52,9 @@ enum class ECoreParams : u64
 
 	// Profiler
 	prof_gpu = u64(1) << 32, // D3D12: Optick GPU timestamps and events
+	gpu_dump = u64(1) << 33, // D3D12: record what the GPU was doing, for the dump written when the device is lost
+
+	autotest_dt = u64(1) << 34, // -autotest: a fixed step, no real-time budgets, fixed seeds
 };
 
 void LoadParams();

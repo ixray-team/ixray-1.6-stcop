@@ -9,8 +9,8 @@
 #include "ExportObjectOGF.h"
 #include "D3DUtils.h"
 #include "ui_main.h"
-#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
-#include "../../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../../../Layers/xrRenderIXR/RenderEditorApi.h"
+#include "../../Layers/xrRenderIXR/ResourceManager.h"
 #include "ImageManager.h"
 #include "EditorInstancing.h"
 #include "EditorSceneSubmit.h"
@@ -519,20 +519,22 @@ void CEditableObject::RenderLOD(const Fmatrix& parent)
 	Fvector2 t[4];
 	GetLODFrame(max_frame, p, t, &parent);
 
-	// Imposter record (facets at vBase + 1, best = next = 0, alpha = blend = 255), then 4 world-space facet corners for lod.vs
-	VertexRing& Stream = RImplementation.Imm().Vertex;
+	// Imposter record (facets at the next record of its chunk, best = next = 0, alpha = blend = 255), then 4 world-space
+	// facet corners for lod.vs; the sixth record is not read but lies in the six vertices' range the draw takes
+	DynamicGeometry& Stream = RImplementation.Dynamic;
 	u32 vBase;
-	PackedVertex* V = (PackedVertex*)Stream.Lock(5, EVertexFormat::Packed, vBase);
-	V[0] = { {}, vBase + 1, 255u << 8 | 255u << 16, 0, 0, 0 };
+	PackedVertex* V = (PackedVertex*)Stream.Lock(6, EVertexFormat::Packed, vBase);
+	V[0] = { {}, vBase % DynamicGeometry::ChunkRecords + 1, 255u << 8 | 255u << 16, 0, 0, 0 };
 	for (u32 i = 0; i < 4; ++i)
 	{
 		V[i + 1] = { p[i], 0, 0, 0, 0xFFFFFFFF, 255 };
 		VertexPacking::EncodeUV(V[i + 1], t[i].x, t[i].y);
 	}
-	Stream.Unlock(5);
+	V[5] = {};
+	Stream.Unlock(6);
 
 	EDevice->SetShader(m_LODShader);
-	EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, DU_impl.RingGeom, vBase, 2);
+	GEditorDraw.DrawStream(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, DU_impl.RingGeom, vBase, 2);
 }
 
 xr_string CEditableObject::GetLODTextureName()

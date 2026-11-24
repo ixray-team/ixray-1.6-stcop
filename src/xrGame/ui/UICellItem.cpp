@@ -69,13 +69,11 @@ CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 CUICellItem::CUICellItem()
 {	Icon3dAdjust_RegisterCell(this);
 
-	OnDrawVisual = [this](IDSGraphManager* Graph, const Fmatrix& Xform)
+	OnDrawVisual = [this](xr_vector<UIIconVisual>& Visuals, const Fmatrix& Xform)
 	{
-		static xr_deque<Fmatrix> xforms;
-		xforms.clear();
 		if (PIItem item = static_cast<PIItem>(m_pData))
 		{
-			item->RenderIcon(Xform, pCurrentVisual->dcast_PKinematics(), Graph, xforms);
+			item->RenderIcon(Xform, pCurrentVisual->dcast_PKinematics(), Visuals);
 		}
 	};
 
@@ -744,13 +742,11 @@ CUIDragItem* CUICellItem::CreateDragItem()
 		{
 			CUI3dStatic* wnd = tmp->wnd();
 			const u32 id = item->object().ID();
-			wnd->OnDrawVisual = [id, wnd](IDSGraphManager* Graph, const Fmatrix& Xform)
+			wnd->OnDrawVisual = [id, wnd](xr_vector<UIIconVisual>& Visuals, const Fmatrix& Xform)
 			{
-				static xr_deque<Fmatrix> xforms;
-				xforms.clear();
 				if (PIItem drag_item = smart_cast<PIItem>(Level().Objects.net_Find(id)))
 				{
-					drag_item->RenderIcon(Xform, wnd->GetVisual()->dcast_PKinematics(), Graph, xforms);
+					drag_item->RenderIcon(Xform, wnd->GetVisual()->dcast_PKinematics(), Visuals);
 				}
 			};
 		}

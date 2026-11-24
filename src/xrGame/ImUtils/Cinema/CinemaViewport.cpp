@@ -59,7 +59,7 @@ float Project(const Fvector& Point, ImVec2& Screen)
 	{
 		return 0.0f;
 	}
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Main = &View;
 	Screen = ImVec2(Main->Pos.x + (Clip.x + 1.0f) * 0.5f * Main->Size.x, Main->Pos.y + (1.0f - Clip.y) * 0.5f * Main->Size.y);
 	return 0.5f * Main->Size.y * Device.mProject._22 / Clip.w;
 }
@@ -102,7 +102,7 @@ void Line3D(ImDrawList* List, Fvector From, Fvector To, u32 Color)
 
 bool MouseRay(Fvector& Origin, Fvector& Direction)
 {
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Main = &View;
 	const ImVec2 Mouse = ImGui::GetIO().MousePos;
 	if (!(Main->Size.x > 0.0f && Main->Size.y > 0.0f))
 	{
@@ -389,7 +389,7 @@ void Editor::UseEditorCamera(Player& Core)
 
 bool Editor::IsViewportFree() const
 {
-	return CImGuiManager::Instance().IsCapturingInputs() && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemActive() && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel) && !IsGizmoActive && !IsGizmoCancelled && !IsTangentActive && !IsTangentCancelled && !IsPickingColor && !IsPickingFocus && !ImGuizmo::IsUsingViewManipulate();
+	return CImGuiManager::Instance().IsCapturingInputs() && CImGuiManager::Instance().IsGameViewHovered() && !ImGui::IsAnyItemActive() && !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel) && !IsGizmoActive && !IsGizmoCancelled && !IsTangentActive && !IsTangentCancelled && !IsPickingColor && !IsPickingFocus && !ImGuizmo::IsUsingViewManipulate();
 }
 
 void Editor::UpdateFly(Player& Core)
@@ -750,8 +750,9 @@ bool Editor::HasSelectedParent(const Scene& Data, u32 Parent, GizmoMode Mode) co
 void Editor::DrawGizmo(Player& Core)
 {
 	const ImGuiIO& Input = ImGui::GetIO();
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Main = &View;
 	ImGuizmo::BeginFrame();
+	ImGui::SetNextWindowViewport(CImGuiManager::Instance().GetGameViewport()->ID);
 	ImGui::SetNextWindowPos(Main->Pos);
 	ImGui::SetNextWindowSize(Main->Size);
 	ImGui::SetNextWindowBgAlpha(0.0f);
@@ -1090,9 +1091,10 @@ void Editor::DrawTangents(Player& Core)
 
 void Editor::DrawToolbar(Player& Core)
 {
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
+	const ImGuiViewport* Main = CImGuiManager::Instance().GetGameViewport();
+	const CImGuiManager::GameViewRect Picture = CImGuiManager::Instance().GetGameViewRect();
 	const ImGuiStyle& Style = ImGui::GetStyle();
-	ImGui::SetNextWindowPos(ImVec2(Main->WorkPos.x + 8.0f, Main->WorkPos.y + 8.0f), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(std::max(Main->WorkPos.x, Picture.Pos.x) + 8.0f, std::max(Main->WorkPos.y, Picture.Pos.y) + 8.0f), ImGuiCond_FirstUseEver);
 	if (!ImGui::Begin("##CinemaTools", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNavInputs))
 	{
 		ImGui::End();
@@ -1176,10 +1178,13 @@ void Editor::DrawToolbar(Player& Core)
 
 void Editor::DrawViewCube(Player& Core)
 {
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
-	const float Right = std::max(std::min(ViewRight, Main->Pos.x + Main->Size.x), Main->Pos.x + ViewportUi::CubeSize);
+	// In the top right corner of the game's picture, left of the inspector
+	const ImGuiViewport* Main = CImGuiManager::Instance().GetGameViewport();
+	const CImGuiManager::GameViewRect Picture = CImGuiManager::Instance().GetGameViewRect();
+	const float Top = std::max(Main->WorkPos.y, Picture.Pos.y);
+	const float Right = std::max(std::min(ViewRight, Picture.Pos.x + Picture.Size.x), Picture.Pos.x + ViewportUi::CubeSize);
 	const bool IsShown = Core.View() == ViewSource::Editor && Settings.ShowHelpers && !IsGizmoActive && Drag == DragKind::None;
-	CubeRect = IsShown ? ImRect(Right - ViewportUi::CubeSize, Main->WorkPos.y, Right, Main->WorkPos.y + ViewportUi::CubeSize) : ImRect();
+	CubeRect = IsShown ? ImRect(Right - ViewportUi::CubeSize, Top, Right, Top + ViewportUi::CubeSize) : ImRect();
 	if (!IsShown)
 	{
 		return;
@@ -1472,7 +1477,7 @@ void Editor::DrawFrameLines(const Player& Core)
 	{
 		return;
 	}
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Main = &View;
 	const float Screen = Main->Size.x / std::max(Main->Size.y, 1.0f), Wanted = Ratio ? FrameAspects[Ratio] : Screen;
 	const ImVec2 Size = Wanted > Screen ? ImVec2(Main->Size.x, Main->Size.x / Wanted) : ImVec2(Main->Size.y * Wanted, Main->Size.y);
 	const ImVec2 Min(Main->Pos.x + 0.5f * (Main->Size.x - Size.x), Main->Pos.y + 0.5f * (Main->Size.y - Size.y)), Max(Min.x + Size.x, Min.y + Size.y);

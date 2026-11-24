@@ -48,17 +48,37 @@ void CUICursor::Show()
 	// curve) instead of raw device counts. The camera keeps raw counts - the hint is
 	// turned off again in Hide().
 	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE, "1");
+	Center();
+	bVisible = true;
+}
 
-	u32 screenWidth = psCurrentVidMode[0];
-	u32 screenHeight = psCurrentVidMode[1];
-
+void CUICursor::Center()
+{
 	SetUICursorPosition(Fvector2().set(512.0f, 384.0f));
-	if (!Core.ParamsData.test(ECoreParams::autotest))
+	const CImGuiManager& Manager = CImGuiManager::Instance();
+
+	// The mouse is the tools' while they take the input, as the cursor is
+	if (Core.ParamsData.test(ECoreParams::autotest) || Manager.IsCapturingInputs())
 	{
-		SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
+		return;
 	}
 
-	bVisible = true;
+	// In the window: the Game window's picture, or where the view is shown in the main window. ImGui's positions
+	// are the desktop's, the window's own corner taken from SDL, in the units of the warp
+	const Irect& Shown = Device.PresentRect;
+	SDL_Window* Window = Manager.GetGameWindow();
+	float X = float(Shown.x1 + Shown.x2) * 0.5f;
+	float Y = float(Shown.y1 + Shown.y2) * 0.5f;
+
+	if (Manager.IsGameViewWindow())
+	{
+		int Left = 0, Top = 0;
+		SDL_GetWindowPosition(Window, &Left, &Top);
+		X = Manager.GameViewPos.x + Manager.GameViewSize.x * 0.5f - float(Left);
+		Y = Manager.GameViewPos.y + Manager.GameViewSize.y * 0.5f - float(Top);
+	}
+
+	SDL_WarpMouseInWindow(Window, X, Y);
 }
 
 void CUICursor::Hide()
@@ -176,16 +196,29 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 	{
 		vPrevPos = vPos;
 
-		if (SDL_GetWindowRelativeMouseMode(g_AppInfo.Window))
+		const CImGuiManager& Manager = CImGuiManager::Instance();
+		// The window's pixels the view is shown on: the Game window's picture may be scaled into it
+		const Irect& Shown = Device.PresentRect;
+		const bool IsHosted = Manager.IsGameViewWindow();
+		const float ShownWidth = std::max(IsHosted ? Manager.GameViewSize.x : float(Shown.width()), 1.0f);
+		const float ShownHeight = std::max(IsHosted ? Manager.GameViewSize.y : float(Shown.height()), 1.0f);
+
+		if (SDL_GetWindowRelativeMouseMode(Manager.GetGameWindow()))
 		{
-			vPos.x += _dx * (UI_BASE_WIDTH / (float)Device.TargetWidth);
-			vPos.y += _dy * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+			vPos.x += _dx * (UI_BASE_WIDTH / ShownWidth);
+			vPos.y += _dy * (UI_BASE_HEIGHT / ShownHeight);
+		}
+		else if (Manager.IsGameViewWindow())
+		{
+			// The picture is a window among the tools: the cursor is where the mouse is inside it
+			const ImVec2 At = Manager.GetGameViewMouse();
+			vPos.set(At.x * UI_BASE_WIDTH, At.y * UI_BASE_HEIGHT);
 		}
 		else
 		{
 			SDL_GetMouseState(&vPos.x, &vPos.y);
-			vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
-			vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+			vPos.x = (vPos.x - float(Shown.x1)) * (UI_BASE_WIDTH / ShownWidth);
+			vPos.y = (vPos.y - float(Shown.y1)) * (UI_BASE_HEIGHT / ShownHeight);
 		}
 
 		clamp(vPos.x, 0.f, UI_BASE_WIDTH);

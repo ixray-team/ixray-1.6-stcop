@@ -2,15 +2,15 @@
 
 #include "../../../xrEngine/device.h"
 #include "UI_Camera.h"
-#include "../../../Layers/xrRenderPC_R4/HWCaps.h"
-#include "../../../Layers/xrRenderPC_R4/HW.h"
+#include "../../../Layers/xrRenderIXR/HWCaps.h"
+#include "../../../Layers/xrRenderIXR/HW.h"
 #include "../../../xrEngine/pure.h"
 #include "../../../xrCore/FTimer.h"
 #include "EStats.h"
 #include "../../../xrEngine/Shader_xrLC.h"
-#include "../../../Layers/xrRenderPC_R4/Shader.h"
-#include "../../../Layers/xrRenderPC_R4/R_Backend.h"
-#include "../../../Layers/xrRenderPC_R4/EditorDrawContext.h"
+#include "../../../Layers/xrRenderIXR/Shader.h"
+#include "../../../Layers/xrRenderIXR/R_Backend.h"
+#include "../../../Layers/xrRenderIXR/EditorDrawContext.h"
 
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 
@@ -182,11 +182,11 @@ public:
 	virtual bool IsEditorMode() override { return true; }
 };
 
-#include "../../../Layers/xrRenderPC_R4/EditorDeviceFlags.h"
+#include "../../../Layers/xrRenderIXR/EditorDeviceFlags.h"
 
 #define DEFAULT_CLEARCOLOR 0x00555555
 
 #define REQ_CREATE()	if (!EDevice->bReady)	return;
 #define REQ_DESTROY()	if (EDevice->bReady)	return;
 
-#include "../../../Layers/xrRenderPC_R4/R_Backend_Runtime.h"
+#include "../../../Layers/xrRenderIXR/R_Backend_Runtime.h"

@@ -1,0 +1,10 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "vs": {
+            "deffer_model": [
+                "DEFERRED_MODEL=1"
+            ]
+        }
+    }
+}

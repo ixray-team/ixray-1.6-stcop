@@ -7,7 +7,7 @@
 #include "UI_PACEditorForm.h"
 #include "IconsFontAwesome7.h"
 
-#include "../../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
+#include "../../../Layers/xrRenderIXR/ParticleAnimCurve.h"
 #include "../../../xrEngine/ObjectAnimator.h"
 #include "ParticleEffectActions.h"
 //------------------------------------------------------------------------------

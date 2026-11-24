@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="off">
+		<text>Выкл.</text>
+	</string>
+	<string id="on">
+		<text>Вкл.</text>
+	</string>
+	<string id="low">
+		<text>Низкое</text>
+	</string>
+	<string id="medium">
+		<text>Среднее</text>
+	</string>
+	<string id="high">
+		<text>Высокое</text>
+	</string>
+	<string id="ultra">
+		<text>Ультра</text>
+	</string>
+	<string id="minimal">
+		<text>Минимальное</text>
+	</string>
+	<string id="extreme">
+		<text>Экстремальное</text>
+	</string>
+	<string id="custom">
+		<text>Свои</text>
+	</string>
+	<string id="normal">
+		<text>Обычное</text>
+	</string>
+	<string id="linear">
+		<text>Линейное</text>
+	</string>
+	<string id="nearest">
+		<text>Ближайшее</text>
+	</string>
+	<string id="dlss">
+		<text>NVIDIA DLSS</text>
+	</string>
+	<string id="fsr">
+		<text>AMD FSR</text>
+	</string>
+	<string id="xess">
+		<text>Intel XeSS</text>
+	</string>
+	<string id="native">
+		<text>Нативное</text>
+	</string>
+	<string id="quality">
+		<text>Качество</text>
+	</string>
+	<string id="balanced">
+		<text>Баланс</text>
+	</string>
+	<string id="performance">
+		<text>Производительность</text>
+	</string>
+	<string id="ultra_performance">
+		<text>Макс. производительность</text>
+	</string>
+	<string id="preset_e">
+		<text>E (CNN)</text>
+	</string>
+	<string id="preset_k">
+		<text>K (трансформер)</text>
+	</string>
+	<string id="preset_l">
+		<text>L (трансформер 2)</text>
+	</string>
+	<string id="preset_m">
+		<text>M (трансформер 2, быстрый)</text>
+	</string>
+	<string id="msaa">
+		<text>MSAA</text>
+	</string>
+	<string id="d3d11">
+		<text>DirectX 11</text>
+	</string>
+	<string id="d3d12">
+		<text>DirectX 12</text>
+	</string>
+	<string id="jpg">
+		<text>JPG</text>
+	</string>
+	<string id="png">
+		<text>PNG</text>
+	</string>
+	<string id="tga">
+		<text>TGA</text>
+	</string>
+	<string id="autofocus">
+		<text>Автофокус</text>
+	</string>
+	<string id="manual">
+		<text>Ручной</text>
+	</string>
+	<string id="st_display_options">
+		<text>Экран</text>
+	</string>
+	<string id="st_quality_options">
+		<text>Качество</text>
+	</string>
+	<string id="st_scene_options">
+		<text>Детализация и дальность</text>
+	</string>
+	<string id="ui_mm_extras">
+		<text>Прочее</text>
+	</string>
+	<string id="st_options_extras">
+		<text>$$ACTION_UI_ACTION_2$$ Прочие параметры графики</text>
+	</string>
+	<string id="ui_mm_fps_limit">
+		<text>Предел FPS</text>
+	</string>
+	<string id="ui_mm_latency">
+		<text>Задержка</text>
+	</string>
+	<string id="ui_mm_submit_thread">
+		<text>Поток отправки кадров</text>
+	</string>
+	<string id="ui_mm_upscaler">
+		<text>Апскейлер</text>
+	</string>
+	<string id="ui_mm_render_scale">
+		<text>Масштаб рендера</text>
+	</string>
+	<string id="ui_mm_dlss_preset">
+		<text>Пресет DLSS</text>
+	</string>
+	<string id="ui_mm_anti_aliasing">
+		<text>Сглаживание</text>
+	</string>
+	<string id="ui_mm_msaa">
+		<text>Выборки MSAA</text>
+	</string>
+	<string id="ui_mm_motion_blur">
+		<text>Размытие движения</text>
+	</string>
+	<string id="ui_mm_dof_inventory">
+		<text>DoF в инвентаре</text>
+	</string>
+	<string id="ui_mm_dof_physical_mode">
+		<text>Физический фокус</text>
+	</string>
+	<string id="ui_mm_shading_quality">
+		<text>Затенение</text>
+	</string>
+	<string id="ui_mm_shadow_quality">
+		<text>Тени</text>
+	</string>
+	<string id="ui_mm_pcss">
+		<text>Мягкие тени</text>
+	</string>
+	<string id="ui_mm_volumetric_quality">
+		<text>Объёмный свет</text>
+	</string>
+	<string id="ui_mm_occlusion_quality">
+		<text>Фоновое затенение</text>
+	</string>
+	<string id="ui_mm_screen_space_quality">
+		<text>Экранные эффекты</text>
+	</string>
+	<string id="ui_mm_reflection_quality">
+		<text>Отражения</text>
+	</string>
+	<string id="ui_mm_gi_quality">
+		<text>Глобальное освещение</text>
+	</string>
+	<string id="ui_mm_culling_quality">
+		<text>Отсечение</text>
+	</string>
+	<string id="ui_mm_geometry_quality">
+		<text>Геометрия</text>
+	</string>
+	<string id="ui_mm_streaming_quality">
+		<text>Текстуры</text>
+	</string>
+	<string id="ui_mm_streaming_priority">
+		<text>Приоритет загрузки</text>
+	</string>
+	<string id="ui_mm_post_processing_quality">
+		<text>Постобработка</text>
+	</string>
+	<string id="ui_mm_grass_quality">
+		<text>Трава</text>
+	</string>
+	<string id="ui_mm_distance_quality">
+		<text>Дальность обзора</text>
+	</string>
+	<string id="ui_mm_motion_vectors_quality">
+		<text>Векторы движения</text>
+	</string>
+	<string id="ui_mm_wet_surfaces">
+		<text>Мокрые поверхности</text>
+	</string>
+	<string id="ui_mm_variable_shading">
+		<text>Затенение VRS</text>
+	</string>
+	<string id="st_reason_unavailable">
+		<text>Пока недоступно.</text>
+	</string>
+	<string id="st_reason_hardware">
+		<text>Не поддерживается видеокартой или графическим API.</text>
+	</string>
+	<string id="st_reason_shading">
+		<text>Ограничено качеством затенения.</text>
+	</string>
+	<string id="st_reason_shadow">
+		<text>Требуются тени.</text>
+	</string>
+	<string id="st_reason_occlusion">
+		<text>Требуется фоновое затенение.</text>
+	</string>
+	<string id="st_reason_anti_aliasing">
+		<text>Зависит от режима сглаживания.</text>
+	</string>
+	<string id="st_reason_msaa">
+		<text>Недоступно с MSAA.</text>
+	</string>
+	<string id="st_reason_upscaler">
+		<text>Зависит от апскейлера.</text>
+	</string>
+	<string id="st_reason_dof">
+		<text>Требуется глубина резкости.</text>
+	</string>
+	<string id="st_reason_dof_physical">
+		<text>Требуется глубина резкости «Высокое».</text>
+	</string>
+	<string id="st_reason_effective">
+		<text>Сейчас:</text>
+	</string>
+	<string id="st_setting_changed">
+		<text>* Отличается от установки качества.</text>
+	</string>
+	<string id="st_apply_recompile">
+		<text>Шейдеры пересобираются при применении настроек: короткая пауза.</text>
+	</string>
+	<string id="st_apply_restart">
+		<text>Применяется перезапуском рендера при применении настроек.</text>
+	</string>
+	<string id="st_apply_level">
+		<text>Применяется при следующей загрузке уровня.</text>
+	</string>
+	<string id="ui_mm_fps_limit_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]снижает нагрузку%c[default]) \nОграничивает частоту кадров; 0 снимает предел</text>
+	</string>
+	<string id="ui_mm_latency_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] %c[255,110,200,90]нет%c[default] \nОбычное - два кадра в очереди, ровнее частота кадров \nНизкое - один кадр, быстрее отклик, FPS может снизиться</text>
+	</string>
+	<string id="ui_mm_submit_thread_hint">
+		<text>Отправка кадра и вывод на экран выполняются в отдельном потоке \nМожет снизить время кадра на процессоре; выключите, если управление запаздывает \n%c[255,150,150,150]Только Direct3D 12%c[default]</text>
+	</string>
+	<string id="ui_mm_graphics_api_hint">
+		<text>DirectX 11 - из апскейлеров только FSR \nDirectX 12 - нужен для DLSS и XeSS \n%c[255,150,150,150]Применяется при следующем запуске игры%c[default]</text>
+	</string>
+	<string id="ui_mm_upscaler_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]снижает нагрузку%c[default]), VRAM (%c[255,110,200,90]низкие%c[default]) \nЛинейное - простое растяжение до размера экрана \nБлижайшее - пикселизация, только сборки для разработки \nNVIDIA DLSS - восстановление деталей, NVIDIA, DirectX 12 \nAMD FSR - восстановление деталей, DirectX 11 и 12 \nIntel XeSS - восстановление деталей, DirectX 12 \n%c[255,150,150,150]Показаны только поддерживаемые видеокартой%c[default]</text>
+	</string>
+	<string id="ui_mm_render_scale_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,235,80,60]высокие%c[default]), VRAM (%c[255,230,190,60]средние%c[default]) \nНативное - полное разрешение экрана \nКачество - 67% экрана по каждой оси \nБаланс - 58% по каждой оси \nПроизводительность - 50% по каждой оси \nМакс. производительность - 33% по каждой оси</text>
+	</string>
+	<string id="ui_mm_dlss_preset_hint">
+		<text>E (CNN) - прежняя сверточная модель \nK (трансформер) - трансформер, по умолчанию \nL (трансформер 2) - трансформер второго поколения \nM (трансформер 2, быстрый) - быстрый вариант L</text>
+	</string>
+	<string id="ui_mm_anti_aliasing_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,230,190,60]от низких до высоких%c[default]) \nВыкл. - без сглаживания \nFXAA - самое дешёвое, слегка мылит \nSMAA - чётче, чуть дороже \nTAA - ещё и убирает мерцание в движении \nMSAA - доп. выборки на краях, дороже всех</text>
+	</string>
+	<string id="ui_mm_msaa_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,235,80,60]высокие%c[default]), VRAM (%c[255,235,80,60]высокие%c[default]) \n2x - две выборки на пиксель \n4x - четыре выборки, ровнее края \n8x - восемь выборок, ровнее и тяжелее всего</text>
+	</string>
+	<string id="ui_mm_motion_blur_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]низкие%c[default]) \nВыкл. - без размытия \nНизкое - размытие камеры и объектов, меньше выборок \nВысокое - более плавное размытие, больше выборок</text>
+	</string>
+	<string id="ui_mm_dof_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]низкие%c[default]) \nВыкл. - без глубины резкости \nНизкое - классическое размытие вне фокуса \nВысокое - физическая модель камеры</text>
+	</string>
+	<string id="ui_mm_dof_inventory_hint">
+		<text>Физическая глубина резкости при открытом инвентаре</text>
+	</string>
+	<string id="ui_mm_dof_physical_mode_hint">
+		<text>Автофокус - фокус на том, что перед вами \nРучной - фокус на расстоянии из профиля</text>
+	</string>
+	<string id="ui_mm_shading_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,235,80,60]высокие%c[default]) \nНизкое - только запечённый свет, без теней и эффектов \nСреднее - рельеф, блики, простое IBL, тени солнца \nВысокое - экранные эффекты, детальный рельеф, параллакс \nУльтра - порядконезависимая прозрачность, 8x анизотропия \n%c[255,150,150,150]Низкие уровни ограничивают ряд других настроек%c[default]</text>
+	</string>
+	<string id="ui_mm_shadow_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,235,80,60]высокие%c[default]), CPU (%c[255,230,190,60]средние%c[default]) \nВыкл. - только карты освещения, без динамических теней \nНизкое - каскад солнца поверх карт освещения, фильтр 3x3 \nСреднее - плюс тени ламп и HUD, фильтр 5x5 \nВысокое - три каскада, динамический свет, детальные тени \nУльтра - пока недоступно</text>
+	</string>
+	<string id="ui_mm_pcss_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,230,190,60]средние%c[default]) \nТени резкие у объекта и мягче вдали от него</text>
+	</string>
+	<string id="ui_mm_volumetric_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,230,190,60]средние%c[default]) \nВыкл. - без солнечных лучей и объёмных ламп \nНизкое - грубые солнечные лучи, объёмные лампы \nСреднее - более гладкие солнечные лучи \nВысокое - солнечные лучи, рассеянные в тумане \nУльтра - лучи в тумане, больше выборок</text>
+	</string>
+	<string id="ui_mm_occlusion_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,230,190,60]средние%c[default]) \nВыкл. - без фонового затенения \nСреднее - затемняет углы, складки и места касания \nВысокое - пока недоступно</text>
+	</string>
+	<string id="ui_mm_screen_space_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,235,80,60]высокие%c[default]) \nНизкое - затенение и отражения в половинном разрешении \nВысокое - затенение и отражения в полном разрешении</text>
+	</string>
+	<string id="ui_mm_reflection_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,230,190,60]средние%c[default]) \nНизкое - только небо и запечённое окружение \nСреднее - плюс экранные отражения \nВысокое - плюс куб отражений для того, что вне экрана \nУльтра - пока недоступно</text>
+	</string>
+	<string id="ui_mm_gi_quality_hint">
+		<text>Низкое - только запечённое освещение \nСреднее - пока недоступно \nВысокое - пока недоступно</text>
+	</string>
+	<string id="ui_mm_culling_quality_hint">
+		<text>Низкое - пока недоступно \nВысокое - обычное отсечение скрытых объектов</text>
+	</string>
+	<string id="ui_mm_geometry_quality_hint">
+		<text>Низкое - пока недоступно \nВысокое - обычный пул памяти геометрии</text>
+	</string>
+	<string id="ui_mm_streaming_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] VRAM (%c[255,235,80,60]высокие%c[default]), RAM (%c[255,230,190,60]средние%c[default]) \nНизкое - текстуры в 1/4 разрешения, меньше видеопамяти \nСреднее - текстуры в 1/2 разрешения \nВысокое - текстуры в полном разрешении \nУльтра - пока как Высокое</text>
+	</string>
+	<string id="ui_mm_streaming_priority_hint">
+		<text>Низкое - пока недоступно \nСреднее - обычная подгрузка текстур \nВысокое - пока недоступно</text>
+	</string>
+	<string id="ui_mm_post_processing_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]низкие%c[default]) \nВыкл. - без свечения \nСреднее - свечение \nВысокое - пока недоступно</text>
+	</string>
+	<string id="ui_mm_grass_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,235,80,60]высокие%c[default]), CPU (%c[255,230,190,60]средние%c[default]) \nНизкое - редкая трава, полная густота до 24 м \nСреднее - гуще, полная густота до 40 м \nВысокое - густая, полная густота до 64 м \nУльтра - самая густая, полная густота до 96 м</text>
+	</string>
+	<string id="ui_mm_distance_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,230,190,60]средние%c[default]), CPU (%c[255,230,190,60]средние%c[default]) \nНизкое - 100 м, самые грубые дальние модели \nСреднее - 300 м, грубые дальние модели \nВысокое - 500 м, детальные дальние модели \nУльтра - 2000 м, самые детальные дальние модели</text>
+	</string>
+	<string id="ui_mm_motion_vectors_quality_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]низкие%c[default]) \nНизкое - движение только от камеры \nВысокое - учитывается каждый движущийся объект</text>
+	</string>
+	<string id="ui_mm_wet_surfaces_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]низкие%c[default]), VRAM (%c[255,110,200,90]низкие%c[default]) \nМокрые от дождя поверхности, брызги, потёки и лужи</text>
+	</string>
+	<string id="ui_mm_variable_shading_hint">
+		<text>%c[255,150,150,150]Затраты:%c[default] GPU (%c[255,110,200,90]снижает нагрузку%c[default]) \nРовные участки затеняются грубее, экономя время GPU</text>
+	</string>
+</string_table>

@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>SPIELER</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Statische Beleuchtung</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Dynamische Beleuchtung</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Erweiterte dynamische Beleuchtung</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Dynamische Beleuchtung der Objekte</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Erweiterte dynamische Beleuchtung der Objekte</text>
-	</string>
 	<string id="server name">
 		<text>SERVERNAME</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Render</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Auflösung</text>

@@ -24,8 +24,7 @@ namespace
 	{
 		Fmatrix View;
 		Fmatrix Project;
-		Fmatrix Matrices[MaxPreviewVisuals];
-		IRenderVisual* Visuals[MaxPreviewVisuals];
+		UIIconVisual Visuals[MaxPreviewVisuals];
 		u32 Count = 0;
 	};
 
@@ -36,12 +35,6 @@ namespace
 		const RStringVec* Sections;
 		PIItem Attached;
 		ImVec2 Point;
-	};
-
-	struct SPreviewDrawData
-	{
-		ImVec2 Min;
-		ImVec2 Max;
 	};
 
 	ALife::_OBJECT_ID g_customize_id = ALife::_OBJECT_ID(-1);
@@ -64,9 +57,7 @@ namespace
 
 		if (g_preview_frame.Count < MaxPreviewVisuals)
 		{
-			g_preview_frame.Matrices[g_preview_frame.Count] = xform;
-			g_preview_frame.Visuals[g_preview_frame.Count] = item->object().Visual();
-			++g_preview_frame.Count;
+			g_preview_frame.Visuals[g_preview_frame.Count++] = { item->object().Visual(), xform };
 		}
 
 		for (const auto& [bone, sections] : item->ItemDesc().m_customize_bones)
@@ -101,48 +92,31 @@ namespace
 		}
 	}
 
-	void DrawPreview(const ImDrawList*, const ImDrawCmd* Command)
+	// Drawn into the interface image's bottom right corner, away from the spawn menu's icons that fill it from the top, then shown from it
+	void DrawPreview(const ImVec2& Min, const ImVec2& Max, const ImVec2& Corner, const ImVec2& Room)
 	{
-		const auto& Data = *static_cast<const SPreviewDrawData*>(Command->UserCallbackData);
-		const ImVec2 Origin = ImGui::GetMainViewport()->Pos;
-		const float ScaleX = UI().ClientToScreenScaledX(1.0f);
-		const float ScaleY = UI().ClientToScreenScaledY(1.0f);
+		const ImVec2 Scale(UI().ClientToScreenScaledX(1.0f), UI().ClientToScreenScaledY(1.0f));
 
 		Frect Clip;
-		Clip.set((Data.Min.x - Origin.x) / ScaleX, (Data.Min.y - Origin.y) / ScaleY, (Data.Max.x - Origin.x) / ScaleX, (Data.Max.y - Origin.y) / ScaleY);
+		Clip.set(Corner.x / Scale.x, Corner.y / Scale.y, Room.x / Scale.x, Room.y / Scale.y);
 
-		Device.m_pRender->InvalidateRenderCache();
-		UI().PushScissor(Clip);
-
-		Device.vCameraTop.set(Fidentity.j);
-		Device.vCameraRight.set(Fidentity.i);
-		Device.vCameraDirection.set(Fidentity.k);
-		Device.vCameraPosition.set(Fidentity.c);
-		Device.mView = g_preview_frame.View;
-		Device.mProject = g_preview_frame.Project;
-		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
-
-		IDSGraphManager* Graph = ::Render->GetUIGraph();
-		Graph->set_UI(true);
-		for (u32 i = 0; i < g_preview_frame.Count; ++i)
+		const IRender_interface::SurfaceParams Image = ::Render->BeginUIImage();
+		if (Image.Surface)
 		{
-			Graph->add_Dynamic(g_preview_frame.Visuals[i], &g_preview_frame.Matrices[i], true);
+			UI().PushScissor(Clip);
+
+			Fcolor Color;
+			Color.set(1.f, 1.f, 1.f, 1.f);
+			::Render->RenderUI(xr_span<const UIIconVisual>(g_preview_frame.Visuals, g_preview_frame.Count), g_preview_frame.View, g_preview_frame.Project, &Color);
+
+			UI().PopScissor();
 		}
-		Graph->set_UI(false);
+		::Render->EndUIImage();
 
-		Fcolor Color;
-		Color.set(1.f, 1.f, 1.f, 1.f);
-		::Render->RenderUI(&Color);
-
-		UI().PopScissor();
-
-		Device.vCameraPosition.set(Device.vCameraPosition_saved);
-		Device.vCameraDirection.set(Device.vCameraDirection_saved);
-		Device.vCameraRight.set(Device.vCameraRight_saved);
-		Device.vCameraTop.set(Device.vCameraTop_saved);
-		Device.mView = Device.mView_saved;
-		Device.mProject = Device.mProject_saved;
-		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+		if (Image.Surface)
+		{
+			ImGui::GetWindowDrawList()->AddImage(Image.Surface, Min, Max, ImVec2(Corner.x / Image.w, Corner.y / Image.h), ImVec2(Room.x / Image.w, Room.y / Image.h));
+		}
 	}
 
 	bool IconButton(const char* id, const shared_str& section, const ImVec2& size)
@@ -342,8 +316,13 @@ void RenderWeaponCustomizeWindow()
 		g_customize_pitch = std::clamp(g_customize_pitch + delta.y * 0.01f, -PI_DIV_2, PI_DIV_2);
 	}
 
-	const ImVec2 screen_origin = ImGui::GetMainViewport()->Pos;
-	const ImVec2 screen_size = ImGui::GetMainViewport()->Size;
+	const ImVec2 density = ImGui::GetWindowViewport()->FramebufferScale;
+	const ImVec2 room(UI_BASE_WIDTH * UI().ClientToScreenScaledX(1.0f), UI_BASE_HEIGHT * UI().ClientToScreenScaledY(1.0f));
+	const float fit = std::min({ 1.f, room.x / (avail.x * density.x), room.y / (avail.y * density.y) });
+	const ImVec2 texels(density.x * fit, density.y * fit);
+	const ImVec2 corner(room.x - avail.x * texels.x, room.y - avail.y * texels.y);
+	const ImVec2 screen_origin(min.x - corner.x / texels.x, min.y - corner.y / texels.y);
+	const ImVec2 screen_size(room.x / texels.x, room.y / texels.y);
 
 	g_preview_frame.View.build_camera_dir(Fidentity.c, Fidentity.k, Fidentity.j);
 	g_preview_frame.Project.build_projection(deg2rad(20.f), screen_size.y / screen_size.x, 0.1f, 50.f);
@@ -373,10 +352,7 @@ void RenderWeaponCustomizeWindow()
 	xr_vector<SSlot> slots;
 	CollectVisuals(weapon, xform, screen_origin, screen_size, slots);
 
-	SPreviewDrawData data{ min, max };
-	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	draw_list->AddCallback(DrawPreview, &data, sizeof(data));
-	draw_list->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
+	DrawPreview(min, max, corner, room);
 
 	for (const SSlot& slot : slots)
 	{

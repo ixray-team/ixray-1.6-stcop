@@ -9,6 +9,22 @@
 
 Fvector2 fingerInitialPos;
 #define DEADZONE_SIZE 0.2f
+
+void CRenderDevice::ReadWindowState()
+{
+	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Window.PixelWidth, &Window.PixelHeight);
+	Window.DisplayId = SDL_GetDisplayForWindow(g_AppInfo.Window);
+
+	const float Scale = SDL_GetWindowDisplayScale(g_AppInfo.Window);
+	Window.DisplayScale = Scale > 0.0f ? Scale : 1.0f;
+
+	const SDL_WindowFlags Flags = SDL_GetWindowFlags(g_AppInfo.Window);
+	Window.IsMinimized = (Flags & SDL_WINDOW_MINIMIZED) != 0;
+	Window.IsFocused = (Flags & SDL_WINDOW_INPUT_FOCUS) != 0;
+	Window.IsOccluded = (Flags & SDL_WINDOW_OCCLUDED) != 0;
+	Window.IsFullscreen = (Flags & SDL_WINDOW_FULLSCREEN) != 0;
+}
+
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	PROF_EVENT("CRenderDevice::on_event");
@@ -192,9 +208,20 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		}
 	}
 
-	if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID)
+	// A quit event has no window: its window id is whatever the event queue left there. Window events are the main
+	// window's; input also comes from the OS window of the Game window, where the game is played
+	const bool IsWindowEvent = Event.type >= SDL_EVENT_WINDOW_FIRST && Event.type <= SDL_EVENT_WINDOW_LAST;
+	const bool IsMain = SDL_GetWindowID(g_AppInfo.Window) == Event.window.windowID;
+	const bool IsGame = !IsWindowEvent && SDL_GetWindowID(CImGuiManager::Instance().GetGameWindow()) == Event.window.windowID;
+
+	if (Event.type != SDL_EVENT_QUIT && !IsMain && !IsGame)
 	{
 		return true;
+	}
+
+	if (IsWindowEvent)
+	{
+		ReadWindowState();
 	}
 
 	switch (Event.type)
@@ -208,17 +235,15 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				break;
 			}
 #endif
-			OnWM_Activate(Event.type == SDL_EVENT_WINDOW_MOUSE_ENTER, false);
-			break;
-		}
-		case SDL_EVENT_WINDOW_SHOWN:
-		{
-			OnWM_Activate(true, false);
-			break;
-		}
-		case SDL_EVENT_WINDOW_HIDDEN:
-		{
-			OnWM_Activate(false, true);
+			// Only the system cursor follows the mouse out of the window; the focus decides whether the game is active
+			if (Event.type == SDL_EVENT_WINDOW_MOUSE_ENTER && !g_dedicated_server)
+			{
+				SDL_HideCursor();
+			}
+			else
+			{
+				SDL_ShowCursor();
+			}
 			break;
 		}
 		case SDL_EVENT_QUIT:

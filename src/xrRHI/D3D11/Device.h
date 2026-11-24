@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #pragma once
 #include <d3d11_4.h>
 
@@ -14,7 +48,8 @@ public:
 
 	// Inherited via IRHIDevice
 
-	virtual void ResizeBuffers(u32 Width, u32 Height) override;
+	virtual void ResizeBuffers(const RHISwapChainDesc& SwapChain) override;
+	virtual void ResizeSwapChain(const RHISwapChainDesc& SwapChain) override;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
 	virtual void ClearTarget(void* Target, const float* Color) override;
 	virtual void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil) override;
@@ -55,7 +90,6 @@ public:
     void SetConstants(const RHIConstantWrite* Writes, u32 Count) override;
     void ClearIndexBuffer() override;
     void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) override;
-    HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) override;
 
     HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) override;
     HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout) override;
@@ -65,12 +99,7 @@ public:
     void SetSamplers(RHIObject* const* States, u32 Count) override;
     void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) override;
     void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) override;
-    HRESULT CreateOcclusionQuery(RHIObject** out_query) override;
-    HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags) override;
-    void BeginQuery(RHIObject* query) override;
-    void EndQuery(RHIObject* query) override;
     IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data) override;
-    void CopySwapchain(IRHISurface* dest) override;
     bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags) override;
     void* GetState(const RHIRasterizerDesc& desc) override;
     void* GetState(const RHIDepthStencilDesc& desc) override;
@@ -90,7 +119,7 @@ public:
 
 	void InvalidateBindings();
 	bool GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size) override;
-	void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) override;
+	nri::CommandBuffer* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) override;
 	void EndExternalPass() override;
 	void* ReadExternalBuffer(IRHIBuffer* Buffer) override;
 
@@ -115,6 +144,7 @@ private:
 	bool CreateD3D11();
 	void DestroyD3D11();
 	bool UpdateBuffersD3D11();
-	
+	bool CreateSwapChainView();
+
 	DX11TextureFactory* TextureFactory = nullptr;
 };

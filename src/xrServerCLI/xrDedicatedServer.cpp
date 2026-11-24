@@ -142,15 +142,14 @@ int main(int argc, char** argv)
 	EngineLoadStage3();
 
 	Engine.External.CreateRendererList();
-	Console->Execute("renderer renderer_ds0");
 	Engine.External.Initialize();
 
 	DedicatedConsoleInput::Start();
 
 	EngineLoadStage4();
-	Console->Execute("rs_fullscreen 0");
-	Console->Execute("vid_mode 800x600");
-	Console->Execute("vid_restart");
+	Console->Execute("r_fullscreen off");
+	Console->Execute("r_resolution 800x600");
+	Console->Execute("r_restart");
 
 	EngineLoadStage5();
 	EngineLoopAndDestroy();

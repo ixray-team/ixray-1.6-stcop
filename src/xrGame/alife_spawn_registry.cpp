@@ -24,7 +24,7 @@
 CALifeSpawnRegistry::CALifeSpawnRegistry	(const char* section)
 {
 	m_spawn_name				= "";
-	seed						(u32(CPU::QPC() & 0xffffffff));
+	seed						(Core.ParamsData.test(ECoreParams::autotest_dt) ? 1 : u32(CPU::QPC() & 0xffffffff));
 	m_game_graph				= 0;
 	m_chunk						= 0;
 	m_file						= 0;

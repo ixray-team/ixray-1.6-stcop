@@ -5,7 +5,7 @@
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "ui_main.h"
-#include "../Layers/xrRenderPC_R4/SH_RT.h"
+#include "../Layers/xrRenderIXR/SH_RT.h"
 #include "../xrEngine/xrHemisphere.h"
 
 using Fvector4Vec = xr_vector<Fvector4>;
@@ -192,7 +192,7 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 				u32 Color = 0;
 				if (Covered != 0)
 				{
-					// B8G8R8X8 is already the ARGB layout of color_rgba
+					// B8G8R8A8_UNORM is already the ARGB layout of color_rgba
 					Color = color_rgba(Rc / Covered, G / Covered, B / Covered, A / Q2);
 				}
 				tgt_data[y * Pitch + Frame * tgt_w + x] = Color;

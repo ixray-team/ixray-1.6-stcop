@@ -204,7 +204,12 @@ public:
 	virtual void set_HUD(bool V = false) = 0;
 	virtual bool get_HUD() const = 0;
 	virtual void set_Invisible(bool V = false) = 0;
-	virtual void set_UI(bool V = false) = 0;
+};
+
+struct UIIconVisual
+{
+	IRenderVisual* Visual;
+	Fmatrix Xform;
 };
 
 class	ENGINE_API	IRender_interface
@@ -243,6 +248,8 @@ public:
 	virtual	GenerationLevel			get_generation			()											= 0;
 
 	virtual bool					is_sun_static			() { return false; };
+	// Where the renderer's sun lights from: the weather's sun, or the one a level's lightmaps were baked with
+	virtual Fvector SunDirection();
 	virtual u32 get_dx_level() { return 0; };
 
 	// Loading / Unloading
@@ -322,11 +329,15 @@ public:
 	// Main
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;
-	virtual void					RenderUI				(Fcolor* = nullptr)							= 0;
+	// A 3D icon of the interface: its visuals (an item and its attachments) each placed by its Xform, seen by the device's
+	// view and projection, drawn into the interface's target within its scissor and tinted by Color
+	virtual void					RenderUI				(xr_span<const UIIconVisual> Visuals, const Fmatrix& View, const Fmatrix& Project, Fcolor* Color = nullptr) = 0;
+	// Interface draws between these go into an image instead of the bound target: the view's size from its corner, in
+	// the interface's scale, cleared by the first BeginUIImage of a frame. Gives the image as ImGui samples it
+	virtual SurfaceParams			BeginUIImage			()											{ return SurfaceParams(); }
+	virtual void					EndUIImage				()											{}
 	// Graph of the main view
 	virtual IDSGraphManager*		GetMainGraph			()											{ return nullptr; }
-	// Graph of the 3D icons
-	virtual IDSGraphManager*		GetUIGraph				()											{ return nullptr; }
 	
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, const char* name = 0) {};
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {};

@@ -53,7 +53,7 @@ use_condition = false; Имеет ли предмет прогрессбар и�
 > [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
 
-Текущие консольные команды: `r4_use_gasmask`, `r2_use_rain_drops` и `r2_rain_drops_mode`. Типы стекла, состояние предмета, накопление капель и анимации протирания в текущей ветке описаны в [Стекло маски и капли дождя](visor-glass.md).
+Текущие консольные команды: `r_gasmask`, `r_raindrops` и `r2_rain_drops_mode`. Типы стекла, состояние предмета, накопление капель и анимации протирания в текущей ветке описаны в [Стекло маски и капли дождя](visor-glass.md).
 
 ```ini
 glass_present = true; The item has visor glass
@@ -82,7 +82,7 @@ forbid_change_skin = false ; Меняет ли визуал (руки/ноги)
 
 > [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
-Текущие консольные команды: `r4_use_gasmask`, `r2_use_rain_drops` и `r2_rain_drops_mode`. Типы стекла, состояние предмета, накопление капель и анимации протирания в текущей ветке описаны в [Стекло маски и капли дождя](visor-glass.md).
+Текущие консольные команды: `r_gasmask`, `r_raindrops` и `r2_rain_drops_mode`. Типы стекла, состояние предмета, накопление капель и анимации протирания в текущей ветке описаны в [Стекло маски и капли дождя](visor-glass.md).
 ```ini
 glass_present = true; The item has visor glass
 hud_gas_mask_avaliable = true; Allow glass rendering

@@ -1,0 +1,9 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="hud_contact_filter" zfunc="always" zwrite="0" cull="none">
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_thin" src="$user$thin"/>
+			<texture name="s_generic" src="$user$hud_contact_raw"/>
+		</pass>
+	</normal>
+</shader>

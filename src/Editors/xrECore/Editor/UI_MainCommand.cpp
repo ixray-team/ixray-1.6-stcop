@@ -17,12 +17,12 @@
 #include "UIMoveToCamera.h"
 
 #include "Library.h"
-#include "../Layers/xrRenderPC_R4/PSLibrary.h"
+#include "../Layers/xrRenderIXR/PSLibrary.h"
 #include "../xrEngine/LightAnimLibrary.h"
 
 #include "ImageManager.h"
 #include "SoundManager.h"
-#include "../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../Layers/xrRenderIXR/ResourceManager.h"
 #include "engine/XrGamePersistentEditors.h"
 #include "../../../xrEngine/string_table.h"
 

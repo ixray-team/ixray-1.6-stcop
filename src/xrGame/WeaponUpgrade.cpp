@@ -704,13 +704,6 @@ bool CWeapon::install_upgrade_scope_zoom(const char* section, bool test)
 	result |= process_if_exists_set(section, "scope_nightvision_min_factor", m_lens_night_brightness.min_factor, test);
 	result |= process_if_exists_set(section, "default_brightness_step", m_lens_night_brightness.cur_step, test);
 
-	bool b_r2 = LightingModeIsDynamic();
-
-	if (!test && !b_r2 && m_lens_night_brightness.max_value > 1.0f)
-	{
-		m_lens_night_brightness.max_value = 1.0f;
-	}
-
 	if (!test && (abs(m_lens_night_brightness.max_value - last.max_value) > EPS || fabs(m_lens_night_brightness.min_value - last.min_value) > EPS || m_lens_night_brightness.steps != last.steps))
 	{
 		if (m_lens_night_brightness.lens_night_brightness_saved_step >= 0)

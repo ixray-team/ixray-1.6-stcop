@@ -242,7 +242,7 @@ void CDS0_RenderInterface::Render()
 	GModelPool->Render();
 }
 
-void CDS0_RenderInterface::RenderUI(Fcolor*)
+void CDS0_RenderInterface::RenderUI(xr_span<const UIIconVisual>, const Fmatrix&, const Fmatrix&, Fcolor*)
 {
 }
 

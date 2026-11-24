@@ -5,7 +5,7 @@
 
 ## Overview
 
-Shader blends of the D3D11 renderer are XML files in the shader folder (`shaders\d3d11`). A blend is found by its shader name: `effects\water` is `effects_water.xml`.
+Shader blends of the D3D11 renderer are XML files in `shaders\blends` (an addon may also put a blend straight into `shaders`, which replaces the engine's one of the same name; an addon may still ship its files under `shaders\d3d11`, which the loader checks first). A blend is found by its shader name: `effects\water` is `effects_water.xml`.
 
 > [!WARNING]
 > Lua blends (`.lua`) are no longer supported. The engine ignores them and writes `! Lua shader blend '<file>' is not supported` to the log. Convert them to XML version 2: the table [Lua to XML](#lua-to-xml) lists the equivalents.
@@ -15,7 +15,7 @@ When a shader name has no XML blend, the engine uses the C++ blender of that nam
 ## Version 2
 
 ```xml
-<shader version="2" r1_static="1">
+<shader version="2" simplified="1">
     <normal>
         <pass vs="model_distort" ps="model_scope_gauss"/>
         <fog value="1"/>
@@ -38,7 +38,7 @@ When a shader name has no XML blend, the engine uses the C++ blender of that nam
 ### Root **shader**
 
 * `version` - `2`
-* `r1_static` - `1`: with static lighting the blend is used instead of the C++ blender of the same name (0/1, default 0)
+* `simplified` - `1`: with static lighting the blend is used instead of the C++ blender of the same name (0/1, default 0)
 
 ### Elements
 
@@ -48,18 +48,16 @@ An element is one shader element. Its operations run in the order they are writt
 | --- | --- |
 | `normal_hq` | Main element when the base texture has a detail texture |
 | `normal` | Main element otherwise; also the second element |
-| `l_point` | Point light |
-| `l_spot` | Spot light |
 | `l_special` | Special pass (emissive, scope mask) |
 | `normal_hud` | HUD element; not used with static lighting |
-| `normal_ui` | UI element |
+| `normal_ui` | UI element (3D icon). Drawn only when it has `cluster="1"` and one pass whose vertex shader is a model shader |
 
 Instead of named elements, a blend may fill slots directly with `<element index="N" detail="0|1">` (N = 0..5, `detail` enables the detail texture lookup). A blend uses either named or slot elements.
 
 * `option` - `NAME` or `!NAME`: the element is an alternative used when the shader option `NAME` is set (or not set). Write alternatives of one name one after another; the first one that matches is used.
 
 ```xml
-<normal option="ALLOW_WBOIT_TRANSPARENCY">
+<normal option="USE_SURFACE_WBOIT">
     ...
 </normal>
 <normal>
@@ -69,7 +67,7 @@ Instead of named elements, a blend may fill slots directly with `<element index=
 
 ### Tag **static**
 
-Holds a complete set of elements used with static lighting (`renderer_r4_static`) instead of the elements outside it.
+Holds a complete set of elements used with static lighting instead of the elements outside it.
 
 ### Textures
 
@@ -132,8 +130,8 @@ Holds a complete set of elements used with static lighting (`renderer_r4_static`
 | `:dx10stencil(...)`, `:dx10stencil_ref(n)`, `:dx10zfunc(cmp.less)` | `<stencil .../>`, `<stencil_ref value="n"/>`, `<zfunc func="less"/>` |
 | `AddShaderOption(name, value)`, `ClearAllShaderOptions()` | `<shader_option name="" value=""/>`, `<clear_shader_options/>` |
 | `if GetShaderOption("NAME") then ... else ... end` inside a function | Two elements: `option="NAME"`, then the one without it |
-| `if GetShaderOption("USE_R1_STATIC_LIGHTING")` at file level | `<static>` set |
-| `r1_static = true` | `r1_static="1"` |
+| `if GetShaderOption("USE_SIMPLIFIED_LIGHTING")` at file level | `<static>` set |
+| `r1_static = true` | `simplified="1"` |
 
 Texture names are written with a single `\`: `fx\fx_noise`.
 
@@ -189,6 +187,8 @@ The older format without `version` is still supported.
 
 * `status` - enable/disable (0/1)
 
+In the simplified preset it acts only with `r_msaa` on. The pass is compiled with `USE_ALPHA_COVERAGE` defined.
+
 ### Tag **aref**
 
 * `status` - enable/disable (0/1)
@@ -226,3 +226,11 @@ The older format without `version` is still supported.
 ### Tag **cull_mode**
 
 * `mode` - (`none`, `cw`, `ccw`)
+
+## Shader files
+
+Shaders are sorted into folders under `shaders` (`surface`, `lighting`, `postfx`, `effects`, `ui`, `screens`, `editor`, `common`). A shader is one file named after it, holding all its stages: `ps="bloom_downsample"` is `shaders\postfx\bloom_downsample.hlsl`, with entry points `vs_main` / `ps_main`. Nothing changes for a blend: the old names still work.
+
+To replace a shader in an addon, either ship the file in its folder, or ship a file of the old form (`shaders\bloom_downsample.ps.hlsl`), which always wins.
+
+A variant that only adds defines to another shader is a line in the `.json` beside that shader (`particle_hard` is `particle` with `DISABLE_SOFT_PARTICLES`). Surface shaders (`shaders\surface`) are packed by family for now and are being rewritten.

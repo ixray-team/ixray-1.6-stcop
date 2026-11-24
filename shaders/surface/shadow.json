@@ -1,0 +1,21 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "vs": {
+            "shadow_base": [
+                "SHADOW_LEVEL=1"
+            ],
+            "shadow_lod": [
+                "SHADOW_TREE=1"
+            ],
+            "shadow_model": [
+                "SHADOW_MODEL=1"
+            ]
+        },
+        "ps": {
+            "shadow_base": [
+                "SHADOW_LEVEL=1"
+            ]
+        }
+    }
+}

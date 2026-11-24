@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "Device.h"
 #include "GPUEvents.h"
 #include <DirectXTex.h>
@@ -89,7 +123,7 @@ DX12Surface* InternalDevice12::CreateTexture(const RHITextureDesc& requested, D3
     }
     if (FAILED(result))
     {
-        Msg("! D3D12 texture creation failed: 0x%08x", result);
+        Msg("! D3D12 texture creation failed: 0x%08x (%ux%u, format %u, %u samples, flags 0x%x)", result, u32(native.Width), native.Height, u32(native.Format), native.SampleDesc.Count, u32(native.Flags));
         return nullptr;
     }
     _counters.Allocations.fetch_add(1, std::memory_order_relaxed);
@@ -254,7 +288,9 @@ bool InternalDevice12::ReadRenderTargetPixels(IRHIRenderTargetView* target, void
     out_height = std::max(1u, view.Surface->GetHeight() >> view.Mip);
     const auto desc = view.Surface->GetResource().Native->GetDesc();
     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {};
-    GetDevice()->GetCopyableFootprints(&desc, view.Mip, 1, 0, &footprint, nullptr, nullptr, nullptr);
+    // The last row is not padded: the copy holds this many bytes, fewer than pitch * height where rows are padded
+    u64 bytes = 0;
+    GetDevice()->GetCopyableFootprints(&desc, view.Mip, 1, 0, &footprint, nullptr, nullptr, &bytes);
     out_pitch = footprint.Footprint.RowPitch;
     if (!data || u64(out_pitch) * out_height > size)
     {
@@ -266,9 +302,17 @@ bool InternalDevice12::ReadRenderTargetPixels(IRHIRenderTargetView* target, void
         return false;
     }
     void* mapped = nullptr;
-    D3D12_RANGE range = { (SIZE_T)footprint.Offset, (SIZE_T)(footprint.Offset + u64(out_pitch) * out_height) };
+    D3D12_RANGE range = { (SIZE_T)footprint.Offset, (SIZE_T)(footprint.Offset + bytes) };
     R_CHK(readback->Map(0, &range, &mapped));
-    memcpy(data, (u8*)mapped + footprint.Offset, size_t(out_pitch) * out_height);
+    memcpy(data, (u8*)mapped + footprint.Offset, size_t(bytes));
+    // The swap chain holds red first; what reads the back buffer takes blue first, as it always was
+    if (target == SwapChainRTV)
+    {
+        for (u8* pixel = (u8*)data, *end = pixel + size_t(bytes); pixel + 3 < end; pixel += 4)
+        {
+            std::swap(pixel[0], pixel[2]);
+        }
+    }
     D3D12_RANGE written = {};
     readback->Unmap(0, &written);
     readback->Release();
@@ -292,106 +336,31 @@ IRHISurface* DX12TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 
 IRHISurface* DX12TextureFactory::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& requested)
 {
-    if (!data)
+    if (!requested.Adopt)
     {
         return CreateTexture2D(requested, nullptr);
     }
-    if (size)
+    InternalDevice12::ContextLock guard(_device);
+    auto native = static_cast<ID3D12Resource*>(requested.Adopt);
+    if (auto surface = _device.FindSurface(native))
     {
-        int lod = 0;
-        IRHISurface* surface = nullptr;
-        if (FAILED(_device.LoadDDS(data, size, requested.Usage, requested.BindFlags,
-            (ERHI_CPU_ACCESS_FLAG)requested.CPUAccessFlags, lod, false, &surface)))
-        {
-            return nullptr;
-        }
+        surface->AddRef();
         return surface;
     }
-    InternalDevice12::ContextLock guard(_device);
-    {
-        auto native = (ID3D12Resource*)data;
-        if (auto surface = _device.FindSurface(native))
-        {
-            surface->AddRef();
-            return surface;
-        }
-        const auto nativeDesc = native->GetDesc();
-        RHITextureDesc desc = requested;
-        desc.Width = (u32)nativeDesc.Width;
-        desc.Height = nativeDesc.Height;
-        desc.Depth = nativeDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D ? nativeDesc.DepthOrArraySize : 1;
-        desc.ArraySize = nativeDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D ? 1 : nativeDesc.DepthOrArraySize;
-        desc.MipLevels = nativeDesc.MipLevels;
-        desc.Format = (ERHI_FORMAT)nativeDesc.Format;
-        desc.SampleDescCount = nativeDesc.SampleDesc.Count;
-        native->AddRef();
-        return new DX12Surface(_device, desc, nativeDesc.Dimension, native, D3D12_RESOURCE_STATE_COMMON);
-    }
-}
-
-HRESULT InternalDevice12::LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bindFlags,
-    ERHI_CPU_ACCESS_FLAG cpuFlags, int& lod, bool fallback, IRHISurface** out_surface)
-{
-    PROF_EVENT("D3D12: LoadDDS");
-    *out_surface = nullptr;
-    DirectX::ScratchImage image;
-    DirectX::TexMetadata metadata = {};
-    HRESULT result = DirectX::LoadFromDDSMemory(data, size, fallback ? DirectX::DDS_FLAGS_NO_16BPP : DirectX::DDS_FLAGS_NONE,
-        &metadata, image);
-    if (FAILED(result))
-    {
-        return result;
-    }
-    size_t firstMip = 0;
-    if (!metadata.IsCubemap() && !metadata.IsVolumemap())
-    {
-        while (lod > 0 && metadata.mipLevels - firstMip > 1 &&
-            (metadata.width >> firstMip) > 4 && (metadata.height >> firstMip) > 4)
-        {
-            ++firstMip;
-            --lod;
-        }
-    }
-    if (metadata.width > UINT32_MAX || metadata.height > UINT32_MAX || metadata.depth > UINT16_MAX || metadata.arraySize > UINT16_MAX)
-    {
-        return E_INVALIDARG;
-    }
-    RHITextureDesc desc((u32)(metadata.width >> firstMip), (u32)(metadata.height >> firstMip), (ERHI_FORMAT)metadata.format);
-    desc.Depth = (u32)metadata.depth;
-    desc.ArraySize = (u32)metadata.arraySize;
-    desc.MipLevels = (u32)(metadata.mipLevels - firstMip);
-    desc.Usage = usage;
-    desc.BindFlags = (ERHI_BIND_FLAG)bindFlags;
-    desc.CPUAccessFlags = cpuFlags;
-    desc.MiscFlags = (u32)metadata.miscFlags;
-    DX12Surface* surface = CreateTexture(desc, (D3D12_RESOURCE_DIMENSION)metadata.dimension, nullptr, 0);
-    if (!surface)
-    {
-        return E_FAIL;
-    }
-    for (u32 layer_idx = 0; layer_idx < desc.ArraySize; ++layer_idx)
-    {
-        for (u32 mip_idx = 0; mip_idx < desc.MipLevels; ++mip_idx)
-        {
-            const auto source = image.GetImage(mip_idx + firstMip, layer_idx, 0);
-            if (!source || source->rowPitch > UINT32_MAX || source->slicePitch > UINT32_MAX)
-            {
-                surface->Release();
-                return E_INVALIDARG;
-            }
-            RHISubResource subresource;
-            subresource.Data = source->pixels;
-            subresource.RowPitch = (u32)source->rowPitch;
-            subresource.DepthPitch = (u32)source->slicePitch;
-            if (!UploadTexture(*surface, mip_idx + layer_idx * desc.MipLevels, subresource))
-            {
-                surface->Release();
-                return E_FAIL;
-            }
-        }
-    }
-    *out_surface = surface;
-    return S_OK;
+    const auto nativeDesc = native->GetDesc();
+    RHITextureDesc desc;
+    desc.Width = (u32)nativeDesc.Width;
+    desc.Height = nativeDesc.Height;
+    desc.Depth = nativeDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D ? nativeDesc.DepthOrArraySize : 1;
+    desc.ArraySize = nativeDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D ? 1 : nativeDesc.DepthOrArraySize;
+    desc.MipLevels = nativeDesc.MipLevels;
+    desc.Format = requested.Format;
+    desc.MiscFlags = requested.MiscFlags & u32(ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE);
+    desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+    desc.SampleDescCount = nativeDesc.SampleDesc.Count;
+    native->AddRef();
+    return new DX12Surface(_device, desc, nativeDesc.Dimension, native,
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 }
 
 IRHIShaderResourceView* DX12TextureFactory::CreateShaderResourceView(IRHISurface* source, const RHIShaderResourceViewDesc* requested)

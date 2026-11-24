@@ -1,41 +1,38 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "Device.h"
-#include <DirectXTex.h>
-
-HRESULT InternalDevice11::LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface)
-{
-	*out_surface = nullptr;
-	DirectX::ScratchImage image;
-	DirectX::TexMetadata metadata = {};
-	HRESULT result = DirectX::LoadFromDDSMemory(static_cast<const uint8_t*>(data), size, fallback ? DirectX::DDS_FLAGS_NO_16BPP : DirectX::DDS_FLAGS_NONE, &metadata, image);
-	if (FAILED(result)) {
-		return result;
-	}
-	size_t first_mip = 0;
-	if (!metadata.IsCubemap() && !metadata.IsVolumemap() && lod) {
-		while (metadata.mipLevels > 1 && metadata.width > 4 && metadata.height > 4 && lod) {
-			metadata.width /= 2;
-			metadata.height /= 2;
-			--metadata.mipLevels;
-			--lod;
-			++first_mip;
-		}
-		metadata.width = std::max(size_t(4), metadata.width);
-		metadata.height = std::max(size_t(4), metadata.height);
-	}
-	ID3D11Resource* texture = nullptr;
-	result = DirectX::CreateTextureEx(static_cast<ID3D11Device*>(RawDevice), image.GetImages() + first_mip,
-		image.GetImageCount() - first_mip, metadata, static_cast<D3D11_USAGE>(usage), bind_flags, GetD3D11CPUAccess(cpu_flags),
-		metadata.miscFlags, DirectX::CREATETEX_DEFAULT, &texture);
-	if (SUCCEEDED(result)) {
-		RHITextureDesc desc;
-		*out_surface = GRHI->CreateTextureFromMemory(texture, 0, desc);
-	}
-	if (texture && FAILED(result)) {
-		texture->Release();
-	}
-	return result;
-}
-
 void* InternalDevice11::GetContext()
 {
     return HWRenderContext;

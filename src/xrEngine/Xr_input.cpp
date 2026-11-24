@@ -705,7 +705,7 @@ bool CInput::GetVendorInfoAboutInputDevice(const CInputDevice& device, CInputDev
 
 void CInput::unacquire()
 {
-	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, false);
+	SDL_SetWindowRelativeMouseMode(CImGuiManager::Instance().GetGameWindow(), false);
 	IsAcquire = false;
 }
 
@@ -717,7 +717,7 @@ void CInput::acquire()
 	}
 
 	IsAcquire = true;
-	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, true);
+	SDL_SetWindowRelativeMouseMode(CImGuiManager::Instance().GetGameWindow(), true);
 }
 
 void  CInput::feedback(u16 s1, u16 s2, float time)

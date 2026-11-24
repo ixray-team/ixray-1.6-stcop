@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "Device.h"
 #include "RHIStateTypesDX11.h"
 #include "RHIStateManagerDX11.h"
@@ -43,19 +77,21 @@ InternalDevice11::CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE t
 	return result;
 }
 
-void* InternalDevice11::BeginExternalPass(IRHISurface* const*, u32, IRHIRenderTargetView* const*, u32, IRHIDepthStencilView*)
+nri::CommandBuffer* InternalDevice11::BeginExternalPass(IRHISurface* const*, u32, IRHIRenderTargetView* const*, u32, IRHIDepthStencilView*)
 {
+	PROF_EVENT("D3D11: BeginExternalPass");
 	// The pass records on this context, where what is bound stays bound: a texture left as a
 	// render target would be dropped from the pass's inputs
 	HWRenderContext->OMSetRenderTargets(0, nullptr, nullptr);
 	// Likewise what an earlier pass wrote from a compute shader and this one reads
 	ID3D11UnorderedAccessView* const Unbound[D3D11_1_UAV_SLOT_COUNT] = {};
 	HWRenderContext->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, Unbound, nullptr);
-	return HWRenderContext;
+	return nullptr;
 }
 
 void InternalDevice11::EndExternalPass()
 {
+	PROF_EVENT("D3D11: EndExternalPass");
 	InvalidateBindings();
 	static_cast<DX11ShaderResourceStateCache*>(GRHI->ShaderResourceCache)->Restore();
 	static_cast<RHIStateManagerDX11*>(GRHI->StateManager)->Restore();
@@ -156,34 +192,6 @@ InternalDevice11::SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* 
 	static_cast<ID3D11DeviceContext*>(GetImmediateContext())->CSSetUnorderedAccessViews(start, count, native, initial_counts);
 }
 
-HRESULT
-InternalDevice11::CreateOcclusionQuery(RHIObject** out_query)
-{
-	D3D11_QUERY_DESC desc = { D3D11_QUERY_OCCLUSION, 0 };
-	ID3D11Query* query = nullptr;
-	HRESULT result = static_cast<ID3D11Device*>(RawDevice)->CreateQuery(&desc, &query);
-	*out_query = query ? new RHIObject(query, ReleaseObject) : nullptr;
-	return result;
-}
-
-HRESULT
-InternalDevice11::GetQueryData(RHIObject* query, void* data, u32 size, u32 flags)
-{
-	return static_cast<ID3D11DeviceContext*>(GetImmediateContext())->GetData(static_cast<ID3D11Query*>(query->resource), data, size, flags);
-}
-
-void
-InternalDevice11::BeginQuery(RHIObject* query)
-{
-	static_cast<ID3D11DeviceContext*>(GetImmediateContext())->Begin(static_cast<ID3D11Query*>(query->resource));
-}
-
-void
-InternalDevice11::EndQuery(RHIObject* query)
-{
-	static_cast<ID3D11DeviceContext*>(GetImmediateContext())->End(static_cast<ID3D11Query*>(query->resource));
-}
-
 IRHISurface*
 InternalDevice11::CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data)
 {
@@ -196,15 +204,6 @@ InternalDevice11::CreateTexture1D(const RHITextureDesc& desc, const RHISubResour
 		return nullptr;
 	}
 	return new DX11Surface(texture);
-}
-
-void
-InternalDevice11::CopySwapchain(IRHISurface* dest)
-{
-	ID3D11Texture2D* buffer = nullptr;
-	CHK_DX(static_cast<IDXGISwapChain*>(HWSwapchain)->GetBuffer(0, IID_PPV_ARGS(&buffer)));
-	static_cast<ID3D11DeviceContext*>(GetImmediateContext())->CopyResource(static_cast<ID3D11Resource*>(dest->GetRawTexture()), buffer);
-	buffer->Release();
 }
 
 bool

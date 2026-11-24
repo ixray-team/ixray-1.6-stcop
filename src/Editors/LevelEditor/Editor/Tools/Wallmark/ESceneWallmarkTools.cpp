@@ -252,7 +252,8 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
             float	ssaCLIP		   	= r_ssaDISCARD/4;
 
             u32			w_offset   	= 0;
-            FVF::LIT*	w_verts 	= (FVF::LIT*) Cmd.Vertex.Lock(MAX_R_VERTEX,EVertexFormat::LIT,w_offset);
+            DynamicGeometry&	Stream		= RImplementation.Dynamic;
+            FVF::LIT*	w_verts 	= (FVF::LIT*) Stream.Lock(MAX_R_VERTEX,EVertexFormat::LIT,w_offset);
             FVF::LIT*	w_start 	= w_verts;
 
             for (WMVecIt w_it=slot->items.begin(); w_it!=slot->items.end(); w_it++){
@@ -269,12 +270,12 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
 	                        u32 w_count	= u32(w_verts-w_start);
                             if (w_count+3>MAX_R_VERTEX){
                                 // Flush stream
-                                Cmd.Vertex.Unlock   	(w_count);
+                                Stream.Unlock   	(w_count);
                                 Cmd.SetPass		(slot->shader);
                                 Cmd.SetGeometry		(hGeom);
-                                Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
+                                Stream.Draw(Cmd, ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
                                 // Restart (re-lock/re-calc)
-                                w_verts					= (FVF::LIT*)	Cmd.Vertex.Lock	(MAX_R_VERTEX,EVertexFormat::LIT,w_offset);
+                                w_verts					= (FVF::LIT*)	Stream.Lock	(MAX_R_VERTEX,EVertexFormat::LIT,w_offset);
                                 w_start					= w_verts;
                             }
                             // real fill buffer
@@ -290,12 +291,12 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
             }
             // Flush stream
             u32 w_count				= u32(w_verts-w_start);
-            Cmd.Vertex.Unlock	(w_count);
+            Stream.Unlock	(w_count);
             if (w_count)			
             {
 				Cmd.SetPass	(slot->shader);
                 Cmd.SetGeometry	(hGeom);
-                Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
+                Stream.Draw(Cmd, ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
             }
             // Projection
             EDevice->mProject._43		= _43;

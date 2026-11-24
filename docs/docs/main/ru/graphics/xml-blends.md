@@ -5,7 +5,7 @@
 
 ## Общее
 
-Бленды шейдеров D3D11-рендера — это XML-файлы в папке шейдеров (`shaders\d3d11`). Бленд ищется по имени шейдера: `effects\water` — это `effects_water.xml`.
+Бленды шейдеров D3D11-рендера — это XML-файлы в папке шейдеров (`shaders`; an addon may still ship its files under `shaders\d3d11`, which the loader checks first). Бленд ищется по имени шейдера: `effects\water` — это `effects_water.xml`.
 
 > [!WARNING]
 > Lua-бленды (`.lua`) больше не поддерживаются. Движок их не загружает и пишет в лог `! Lua shader blend '<файл>' is not supported`. Переведите их в XML версии 2: соответствия приведены в таблице «Lua → XML» ниже.
@@ -15,7 +15,7 @@
 ## Версия 2
 
 ```xml
-<shader version="2" r1_static="1">
+<shader version="2" simplified="1">
     <normal>
         <pass vs="model_distort" ps="model_scope_gauss"/>
         <fog value="1"/>
@@ -38,7 +38,7 @@
 ### Корень **shader**
 
 * `version` - `2`
-* `r1_static` - `1`: при статическом освещении используется этот бленд, а не C++-блендер с тем же именем (0/1, по умолчанию 0)
+* `simplified` - `1`: при статическом освещении используется этот бленд, а не C++-блендер с тем же именем (0/1, по умолчанию 0)
 
 ### Элементы
 
@@ -48,18 +48,16 @@
 | --- | --- |
 | `normal_hq` | Основной элемент, если у базовой текстуры есть detail-текстура |
 | `normal` | Основной элемент в остальных случаях; также второй элемент |
-| `l_point` | Точечный свет |
-| `l_spot` | Прожектор |
 | `l_special` | Специальный проход (emissive, маска прицела) |
 | `normal_hud` | Элемент HUD; не используется при статическом освещении |
-| `normal_ui` | Элемент UI |
+| `normal_ui` | Элемент UI (3D-иконка). Рисуется, только если у него есть `cluster="1"` и один проход с вершинным шейдером модели |
 
 Вместо именованных элементов можно заполнять слоты напрямую: `<element index="N" detail="0|1">` (N = 0..5, `detail` включает поиск detail-текстуры). Бленд использует либо именованные элементы, либо слоты.
 
 * `option` - `NAME` или `!NAME`: элемент — альтернатива, которая используется, когда опция шейдера `NAME` задана (или не задана). Альтернативы одного имени пишутся подряд; используется первая подходящая.
 
 ```xml
-<normal option="ALLOW_WBOIT_TRANSPARENCY">
+<normal option="USE_SURFACE_WBOIT">
     ...
 </normal>
 <normal>
@@ -69,7 +67,7 @@
 
 ### Тег **static**
 
-Содержит полный набор элементов, который используется при статическом освещении (`renderer_r4_static`) вместо элементов вне него.
+Содержит полный набор элементов, который используется при статическом освещении вместо элементов вне него.
 
 ### Текстуры
 
@@ -132,8 +130,8 @@
 | `:dx10stencil(...)`, `:dx10stencil_ref(n)`, `:dx10zfunc(cmp.less)` | `<stencil .../>`, `<stencil_ref value="n"/>`, `<zfunc func="less"/>` |
 | `AddShaderOption(name, value)`, `ClearAllShaderOptions()` | `<shader_option name="" value=""/>`, `<clear_shader_options/>` |
 | `if GetShaderOption("NAME") then ... else ... end` внутри функции | Два элемента: с `option="NAME"`, затем без него |
-| `if GetShaderOption("USE_R1_STATIC_LIGHTING")` на уровне файла | Набор `<static>` |
-| `r1_static = true` | `r1_static="1"` |
+| `if GetShaderOption("USE_SIMPLIFIED_LIGHTING")` на уровне файла | Набор `<static>` |
+| `r1_static = true` | `simplified="1"` |
 
 Имена текстур пишутся с одним `\`: `fx\fx_noise`.
 
@@ -189,6 +187,8 @@
 
 * `status` - enable/disable (0/1)
 
+В упрощённом рендере работает только при включённом `r_msaa`. Проход компилируется с макросом `USE_ALPHA_COVERAGE`.
+
 ### Tag **aref**
 
 * `status` - enable/disable (0/1)
@@ -226,3 +226,11 @@
 ### Tag **cull_mode**
 
 * `mode` - (`none`, `cw`, `ccw`)
+
+## Файлы шейдеров
+
+Шейдеры разложены по папкам в `shaders` (`surface`, `lighting`, `postfx`, `effects`, `ui`, `screens`, `editor`, `common`). Шейдер - это один файл с его именем, в котором лежат все его стадии: `ps="bloom_downsample"` - это `shaders\postfx\bloom_downsample.hlsl` с точками входа `vs_main` / `ps_main`. Для бленда ничего не меняется: старые имена работают.
+
+Чтобы заменить шейдер в аддоне, положите файл в его папку или файл старого вида (`shaders\bloom_downsample.ps.hlsl`) - он всегда важнее.
+
+Вариант, который только добавляет определения к другому шейдеру, - это строка в `.json` рядом с этим шейдером (`particle_hard` - это `particle` с `DISABLE_SOFT_PARTICLES`). Шейдеры поверхностей (`shaders\surface`) пока упакованы по семействам и переписываются.

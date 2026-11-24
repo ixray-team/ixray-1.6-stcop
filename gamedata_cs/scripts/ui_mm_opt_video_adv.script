@@ -5,22 +5,6 @@ end
 function opt_video_adv:__finalize()
 end
 
-function all_modes(render_id)
-	return true
-end
-
-function mode_1(id)
-	return id == "renderer_r1"
-end
-
-function mode_2(id)
-	return id ~= "renderer_r1"
-end
-
-function mode_4(id)
-	return id == "renderer_r4"
-end
-
 function opt_video_adv:InitControls(x, y, xml, handler)
 	self:SetWndPos(vector2():set(x,y))
 	self:SetWndSize(vector2():set(738,416))
@@ -31,200 +15,31 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	end
 	self.focusList = {}
 	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
-    handler.scroll_v = self.scroll_v
-	
+
 	self.btn_simply = xml:Init3tButton("main_dialog:btn_template", self)
 	self.btn_simply:SetTextST("ui_mm_simply")
 	handler:Register(self.btn_simply, "btn_simply_graphic")
-	
-	local ctl = nil
 
-	local reloadControls = function()
-		local pos = handler.scroll_v:GetCurrentScrollPos()
-		handler:UpdateDependControls()
-		handler.scroll_v:SetScrollPos(pos)
-	end
-	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:addVramBar(self, all_modes)
+	handler:addVramBar(self, true)
 
-	handler:lineFrame(self, all_modes, "st_common_settings")
+	handler:lineFrame(self, true, "st_lights_options")
+	handler:addComboBox(self, true, "ui_mm_shading_quality", "r_shading_quality", 4, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_shadow_quality", "r_shadow_quality", 5, false, system_depends.sdNothing, "shadowQuality")
+	handler:addCheck(self, true, "ui_mm_pcss", "r_pcss", system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_volumetric_quality", "r_volumetric_quality", 5, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_occlusion_quality", "r_occlusion_quality", 3, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_screen_space_quality", "r_screen_space_quality", 2, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_reflection_quality", "r_reflection_quality", 4, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_gi_quality", "r_gi_quality", 3, false, system_depends.sdNothing)
 
-	handler:addTrack(self, all_modes, "ui_mm_detail_density", "r__detail_density", 0.02, true, "float", false, system_depends.sdVidRestart)
-	handler:addTrack(self, all_modes, "ui_mm_grass_distance", "r__detail_radius", 1, false, "int", true, system_depends.sdNothing)    
-	handler:addTrack(self, all_modes, "ui_mm_vis_distance", "rs_vis_distance", 0.1, false, "float", false, system_depends.sdNothing)
-	handler:addTrack(self, all_modes, "ui_mm_geometry_lod", "r__geometry_lod", 0.1, false, "float", false, system_depends.sdNothing)
-
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, all_modes, "st_surface_options")
-
-	handler:addTrack(self, all_modes, "ui_mm_texture_quality", "texture_lod", 1, true, "int", false, system_depends.sdVidRestart, "texQuality")
-	handler:addTrack(self, all_modes, "ui_mm_anisotropic", "r__tf_aniso", 1, false, "int", false, system_depends.sdNothing)
-	
-	handler:addCheck(self, mode_1, "ui_mm_r1_detail_textures", "r1_detail_textures", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_r2_detail_bump", "r2_detail_bump", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_r2_steep_parallax", "r2_steep_parallax", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_r4_enable_tessellation", "r4_enable_tessellation", system_depends.sdVidRestart)
-	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, all_modes, "st_aa_options")
-
- 	handler:addComboBox(self, mode_4, "ui_mm_r_scale_mode", "vid_scale_mode", 5, false, system_depends.sdVidRestart, "scaleMode")
-    handler:AddCallback("scaleMode", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
-	
-	local scalePresetPrec = function(id)
-		if mode_4(id) then
-			local current_id = handler:GetComboBox("scaleMode"):CurrentID()
-			if current_id > 1 then
-				return true
-			end
-		end
-		return false
-	end
-	
- 	handler:addComboBox(self, scalePresetPrec, "ui_mm_r_scale_preset", "vid_scale_preset", 7, false, system_depends.sdVidRestart, "scalePreset")
-    handler:AddCallback("scalePreset", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
-
-	local dlssModelPrec = function(id)
-		if mode_4(id) then
-			local scale_mode = handler:GetComboBox("scaleMode")
-			return scale_mode:GetValueOf(scale_mode:CurrentID()) == "st_filter_dlss"
-		end
-		return false
-	end
-
-	handler:addComboBox(self, dlssModelPrec, "ui_mm_r_dlss_model", "r_dlss_model", 4, false, system_depends.sdVidRestart, "dlssModel")
-	
-	local vidScalePrec = function(id)
-		if mode_4(id) then
-			local scale_mode = handler:GetComboBox("scaleMode"):CurrentID()
-			if scale_mode > 1 then
-				local scale_preset = handler:GetComboBox("scalePreset"):CurrentID()
-				local value = handler:GetComboBox("scalePreset"):GetValueOf(scale_preset)
-				return value == "st_scale_custom"
-			end
-			return true
-		end
-		return false
-	end
-	
-	handler:addTrack(self, vidScalePrec, "ui_mm_vid_scale", "vid_scale", 0.01, false, "float", true, system_depends.sdVidRestart, "scaleTrack", 100)
-
-	local typeAAPrec = function(id)
-		if mode_4(id) then
-			local current_id = handler:GetComboBox("scaleMode"):CurrentID()
-			if current_id > 1 then
-				handler:GetCheck("hashedAlpha"):Enable(true)
-				return false
-			end
-			handler:GetCheck("hashedAlpha"):Enable(false)
-			handler:GetCheck("hashedAlpha"):SetCheck(false)
-		end
-		return true
-	end
-	
-	handler:addTrack(self, mode_4, "ui_mm_cas_sharpening", "r4_cas_sharpening", 0.01, false, "float", true, system_depends.sdNothing, "sharpeningTrack", 100)
-
-	handler:addCheck(self, mode_4, "ui_mm_hashed_alpha_test", "r4_hashed_alpha_test", system_depends.sdSystemRestart, "hashedAlpha")
-	
-	handler:addComboBox(self, typeAAPrec, "ui_mm_supersample", "r_aa", 4, false, system_depends.sdNothing)
-	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, all_modes, "st_lights_options")
-
-	handler:addTrack(self, mode_2, "ui_mm_sun_quality", "r2_ls_squality", 0.1, false, "float", false, system_depends.sdNothing)
-	handler:addTrack(self, mode_2, "ui_mm_light_distance", "r2_slight_fade", 0.01, false, "float", false, system_depends.sdNothing)
-	handler:addCheck(self, all_modes, "ui_mm_npc_torch", "ai_use_torch_dynamic_lights", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_volumetric_light", "r2_volumetric_lights", system_depends.sdVidRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r4_hud_shadows", "r4_hud_shadows", system_depends.sdVidRestart)
-	handler:addCheck(self, all_modes, "ui_mm_r_actor_shadow", "r_actor_shadow", system_depends.sdNothing)
-	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, mode_2, "st_sunlight_options")
-
-    local sunTable = {}	
-	
-	handler.enableSun = handler:addCheck(self, nil, "ui_mm_r2_sun", "r2_sun", system_depends.sdSystemRestart, "enableSun")
-
-    local enableSunFunc = function(id)
-		if mode_2(id) then
-			for _, control in pairs(sunTable) do
-				control:Enable(handler.enableSun:GetCheck())
-				if control.GetCheck then
-					control:SetCheck(control:GetCheck() and handler.enableSun:GetCheck())
-				end
-			end
-			return true
-		end
-		return false
-    end
-	
-	table.insert(handler.m_preconditions, {func=enableSunFunc, control=handler.enableSun:GetParent()})
-    handler:AddCallback("enableSun", ui_events.BUTTON_CLICKED, reloadControls, nil)
-
-	ctl = handler:addCheck(self, mode_2, "ui_mm_r2_details_shadows", "r2_sun_details", system_depends.sdNothing)
-    table.insert(sunTable, ctl)
-	
-	ctl = handler:addCheck(self, mode_2, "ui_mm_lights_details", "r2_lights_details", system_depends.sdNothing)
-    table.insert(sunTable, ctl)
-	
-	ctl = handler:addCheck(self, mode_2, "ui_mm_r2_cloud_shadows", "r2_cloud_shadows", system_depends.sdVidRestart)
-    table.insert(sunTable, ctl)
-	
-  	ctl = handler:addComboBox(self, mode_2, "ui_mm_r2_sun_quality", "r2_sun_quality", 6, false, system_depends.sdVidRestart)
-    table.insert(sunTable, ctl)
-	
-  	ctl = handler:addComboBox(self, mode_2, "ui_mm_sun_shafts", "r2_sun_shafts", 5, false, system_depends.sdVidRestart)
-    table.insert(sunTable, ctl)
-
-  	handler:addComboBox(self, mode_2, "ui_mm_r__smap_size", "r2_smap_size", 5, false, system_depends.sdSystemRestart, "smapSize")
-	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, mode_2, "st_effects_options")
-
-  	handler:addComboBox(self, mode_2, "ui_mm_ssao_text", "r2_ssao_mode", 5, false, system_depends.sdSystemRestart)
-
-	handler:addCheck(self, mode_2, "ui_mm_soft_water", "r2_soft_water", system_depends.sdVidRestart)
-	handler:addCheck(self, mode_2, "ui_mm_soft_particles", "r2_soft_particles", system_depends.sdVidRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r3_dynamic_wet_surfaces", "r3_dynamic_wet_surfaces", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_sslr_water", "r4_sslr_water", system_depends.sdSystemRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r3_volumetric_smoke", "r3_volumetric_smoke", system_depends.sdNothing, "volSmoke")
-	handler:addCheck(self, mode_4, "ui_mm_puddles", "r4_puddles", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_rain_puddles", "r4_rain_puddles", system_depends.sdSystemRestart, "rainPuddles")
-	handler:addCheck(self, all_modes, "ui_mm_dynamic_wallmarks", "r__wallmark_dyn", system_depends.sdNothing)
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, mode_2, "st_postprocess_options")
-	
-	handler:addCheck(self, mode_2, "ui_mm_vignette", "r2_vignette", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_aberration", "r2_aberration", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_saturation", "r2_saturation", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_r4_use_gasmask", "r4_use_gasmask", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_r2_use_rain_drops", "r2_use_rain_drops", system_depends.sdNothing)
-	handler:addComboBox(self, mode_2, "ui_mm_r2_rain_drops_mode", "r2_rain_drops_mode", 2, false, system_depends.sdNothing)
-
-	handler:addTrack(self, mode_4, "st_motion_blur_power", "r4_mblur_power", 0.1, false, "float", false, system_depends.sdNothing)
-  	handler:addComboBox(self, mode_4, "st_motion_blur_quality", "r4_mblur_quality", 6, false, system_depends.sdSystemRestart)
-
-	ui_mm_dof_options.add(self, handler, mode_2, reloadControls)
+	handler:lineFrame(self, true, "st_scene_options")
+	handler:addComboBox(self, true, "ui_mm_culling_quality", "r_culling_quality", 2, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_geometry_quality", "r_geometry_quality", 2, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_streaming_quality", "r_streaming_quality", 4, false, system_depends.sdNothing, "streamingQuality")
+	handler:addComboBox(self, true, "ui_mm_streaming_priority", "r_streaming_priority", 3, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_post_processing_quality", "r_post_processing_quality", 3, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_grass_quality", "r_grass_quality", 4, false, system_depends.sdNothing)
+	handler:addTrack(self, true, "ui_mm_grass_distance", "r_grass_distance", 10, false, "int", true, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_distance_quality", "r_distance_quality", 4, false, system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_motion_vectors_quality", "r_motion_vectors_quality", 2, false, system_depends.sdNothing)
 end

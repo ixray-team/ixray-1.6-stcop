@@ -19,8 +19,8 @@ use_condition = true
 Enable the effects in the console:
 
 ```text
-r4_use_gasmask true
-r2_use_rain_drops true
+r_gasmask on
+r_raindrops on
 r2_rain_drops_mode procedural
 ```
 
@@ -30,11 +30,11 @@ Use R4, equip the item and switch to first-person view. Cracks follow the item's
 
 | Command | Values | Engine initial value | Effect |
 | --- | --- | --- | --- |
-| `r4_use_gasmask` | `true`, `false` | `false` | Enables the glass postprocess, including condition-dependent damage, on R4. |
-| `r2_use_rain_drops` | `true`, `false` | `false` | Enables visor rain drops on R2 and R4. |
+| `r_gasmask` | `off`, `on` | `off` | Enables the glass postprocess, including condition-dependent damage, on R4. |
+| `r_raindrops` | `off`, `on` | `on` | Enables visor rain drops and weapon rain drops on R2 and R4. |
 | `r2_rain_drops_mode` | `texture`, `procedural` | `texture` | Selects the rain-drop implementation. |
 
-User profiles and presets can override the initial values. These settings are also available in advanced graphics/postprocess options and take effect without restarting the renderer. Use the exact console names above; the historical names `r_use_gasmask` and `r_use_rain_drops` are not the commands for this implementation.
+User profiles can override the initial values; the quality presets do not change them. `r_gasmask` and `r_raindrops` are also on the **Extras** page of the video options (Options → Video → Extras, the postprocessing group); `r2_rain_drops_mode` is console only. All three take effect without restarting the renderer. Use the exact console names above; the historical names `r_use_gasmask` and `r_use_rain_drops` are not the commands for this implementation.
 
 | Renderer | `flat` glass | `curved` glass | Texture drops | Procedural drops |
 | --- | --- | --- | --- | --- |
@@ -44,7 +44,7 @@ User profiles and presets can override the initial values. These settings are al
 
 Glass and drops are independent switches. With glass disabled, eligible equipment can still display drops. With drops disabled, glass and cracks can still appear. On R2 the glass type does not change the image, but an equipped item with glass is still required for drops.
 
-`r2_use_weapon_raindrops` controls a separate weapon effect. Wiping the visor does not clear weapon drops or world wetness.
+The weapon drops are a separate effect that `r_raindrops` switches together with the visor drops. Wiping the visor does not clear weapon drops or world wetness.
 
 ## Equipment configuration
 
@@ -214,11 +214,11 @@ Shader paths are relative to `gamedata` for every game; texture paths are relati
 
 | Resource | Purpose |
 | --- | --- |
-| `shaders/d3d11/flat_gasmask.ps.hlsl` | Flat glass, damage/reflections and the selected drop effect in a combined pass. |
-| `shaders/d3d11/effector_gasmask.ps.hlsl` | Preserved curved glass shader. |
-| `shaders/{d3d11,r2}/raindrops.ps.hlsl` | Separate texture-drop pass. |
-| `shaders/{d3d11,r2}/procedural_raindrops.ps.hlsl` | Separate procedural-drop pass. |
-| `shaders/{d3d11,r2}/shared/VisorDrops.hlsli` | Shared procedural-drop algorithm for each shader backend. |
+| `shaders/postfx/gasmask.hlsl` | Flat glass, damage/reflections and the selected drop effect in a combined pass. |
+| `shaders/postfx/gasmask.hlsl` | Preserved curved glass shader. |
+| `shaders/effects/rain.hlsl` | Separate texture-drop pass. |
+| `shaders/effects/rain.hlsl` | Separate procedural-drop pass. |
+| `shaders/common/VisorDrops.hlsli` | Shared procedural-drop algorithm for each shader backend. |
 | `textures/shaders/gasmasks/mask_nm_1.dds` … `mask_nm_10.dds` | Ten flat-glass damage maps. |
 | `textures/shaders/gasmask/{Good,Medium,Bad,Broken}.dds` | Original curved-glass damage maps. |
 | `textures/shaders/gasmask/Condensation.dds` | Curved-glass condensation. |
@@ -232,9 +232,9 @@ For R4 flat glass with its postprocess enabled, drops are integrated into the gl
 
 | Symptom | Check |
 | --- | --- |
-| No glass | R4, `r4_use_gasmask true`, a living actor in first person, equipped `glass_present = true`, and `hud_gas_mask_avaliable = true`. |
+| No glass | R4, `r_gasmask on`, a living actor in first person, equipped `glass_present = true`, and `hud_gas_mask_avaliable = true`. |
 | Outfit settings seem ignored | A helmet with glass takes priority, including its type, condition and both availability flags. |
-| No drops | `r2_use_rain_drops true`, R2/R4, eligible equipment and `hud_rain_drops_avaliable = true`; active rainfall, its density and overhead collision cover. Allow time to accumulate. |
+| No drops | `r_raindrops on`, R2/R4, eligible equipment and `hud_rain_drops_avaliable = true`; active rainfall, its density and overhead collision cover. Allow time to accumulate. |
 | Unexpected glass shape | Set `curved` or `flat` on the selected item. Unknown tokens, uppercase tokens and misspellings fall back to flat and warn in the log. |
 | Cracks do not match actor HP | They follow the selected equipment's condition. Check damage/repair handling and `use_condition` in the item configuration. |
 | `anm_gasmask` plays but drops remain | Add the `Left` motion mark to the actual hand motion used by the clear-mask state. Check that the callback belongs to the viewed actor. |
@@ -258,4 +258,4 @@ For R4 flat glass with its postprocess enabled, drops are integrated into the gl
 
 `src/xrEngine/VisorRainDrops.cpp` implements accumulation, cover tests, clear and reset; `IGame_Persistent::VisorRain` owns the state. `src/Include/xrRender/VisorGlassType.h` defines `Flat` and `Curved` without a game implementation dependency in the renderer.
 
-The R4 passes are in `src/Layers/xrRenderPC_R4/r4_rendertarget_phase_screen_postprocess.cpp`; glass bindings and texture selection are in `BlenderGasMask.cpp`. Console commands are registered in `src/Layers/xrRender/xrRender_console.cpp`. Shader constant `visor_rain.x` carries accumulated amount, and the flat shader's `mask_control` carries damage phase and drop mode.
+The R4 passes are in `src/Layers/xrRenderIXR/ixr_rendertarget_phase_screen_postprocess.cpp`; glass bindings and texture selection are in `BlenderGasMask.cpp`. Console commands are registered in `src/Layers/xrRender/xrRender_console.cpp`. Shader constant `visor_rain.x` carries accumulated amount, and the flat shader's `mask_control` carries damage phase and drop mode.

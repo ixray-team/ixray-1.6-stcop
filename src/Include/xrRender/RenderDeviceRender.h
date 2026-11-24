@@ -5,6 +5,8 @@
 #include "SVGTypes.h"
 
 struct SDL_Window;
+struct RHISwapChainDesc;
+struct ImDrawData;
 
 struct UIIconLighting
 {
@@ -41,6 +43,8 @@ public:
 	virtual void	ValidateHW() = 0;
 	virtual void	DestroyHW() = 0;
 	virtual void	Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight) = 0;
+	// Between frames: the window's swap chain alone is made again; targets, shaders and the interface stay
+	virtual void	ResizeSwapChain(const RHISwapChainDesc& Desc) {}
 	//	Init
 	virtual void	SetupStates() = 0;
 	virtual void	OnDeviceCreate(const char* shName) = 0;
@@ -71,12 +75,16 @@ public:
 	virtual void	Begin() = 0;
 	virtual void	Clear() = 0;
 	virtual void	End() = 0;
+	// The main viewport's ImGui frame, into the target bound now
+	virtual void	DrawImGui(ImDrawData* Data) {}
 	virtual void	ClearTarget() = 0;
 	virtual void	SetupDefaultTarget() = 0;
-	virtual void InvalidateRenderCache() {}
 	virtual UIIconLighting* GetUIIconLighting() { return nullptr; }
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
+	// Runs a part of the frame where the renderer draws it: on its render thread with r_render_thread, the caller
+	// waiting; in place otherwise. IsScene: the part that draws the level, whose collect the caller's thread keeps
+	virtual void	RunFrame(const std::function<void()>& Job, bool IsScene = false) { Job(); }
 	virtual void	OnAssetsChanged() = 0;
 	virtual const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height, SVGTintRGBA tint = {}) = 0;
 	virtual const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height, SVGTintRGBA tint = {}) = 0;

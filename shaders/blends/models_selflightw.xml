@@ -1,0 +1,7 @@
+<shader simplified="1">
+	<normal cluster="1">
+		<pass vs="r1_model_selflight" ps="r1_selflight">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

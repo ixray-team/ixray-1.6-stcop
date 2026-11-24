@@ -351,21 +351,6 @@
 	<string id="players">
 		<text>SPIELER</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Statische Beleuchtung</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Dynamische Beleuchtung</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Erweit. dyn. Beleuchtung</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Dynamische Objektbeleuchtung</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Erweiterte dyn. Objektbel. (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>SERVERNAME</text>
 	</string>
@@ -621,9 +606,6 @@
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
 	</string>
-	<string id="ui_mm_renderer">
-		<text>Render-Art</text>
-	</string>
 	<string id="ui_mm_resolution">
 		<text>Auflösung</text>
 	</string>
@@ -863,9 +845,6 @@
 	</string>
 	<string id="st_opt_extreme">
 		<text>maximal</text>
-	</string>
-	<string id="renderer_r4">
-		<text>Erweiterte dyn. Objektbel. (DX11)</text>
 	</string>
 	<string id="mp_please_login">
 		<text>Bitte melden Sie sich an, um eine Verbindung mit dem externen Server herzustellen.</text>

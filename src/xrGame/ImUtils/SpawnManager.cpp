@@ -16,6 +16,13 @@
 #include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../Weapons/WeaponBoneVisibility.h"
 
+struct SpawnManagerIconImage
+{
+	ImTextureID Texture = ImTextureID_Invalid;
+	ImVec2 UvMin;
+	ImVec2 UvMax;
+};
+
 class SpawnManagerIconViews final
 {
 public:
@@ -29,6 +36,9 @@ public:
 
 	void BeginFrame(bool IsEnabled)
 	{
+		Cursor = ImVec2(0.0f, 0.0f);
+		RowHeight = 0.0f;
+
 		for (auto It = Icons.begin(); It != Icons.end();)
 		{
 			if (!IsEnabled || It->second.LastFrame + 1 < Device.dwFrame)
@@ -76,7 +86,44 @@ public:
 		return Entry.Icon.get();
 	}
 
+	// The frame's icons share the interface image, row after row, a texel for each pixel of the window they are shown in
+	SpawnManagerIconImage Draw(CUI3dStatic& Icon, const ImVec2& Size)
+	{
+		const ImVec2 Density = ImGui::GetWindowViewport()->FramebufferScale;
+		const ImVec2 Pixels(std::ceil(Size.x * Density.x), std::ceil(Size.y * Density.y));
+		const ImVec2 Scale(UI().ClientToScreenScaledX(1.0f), UI().ClientToScreenScaledY(1.0f));
+		const ImVec2 Room(UI_BASE_WIDTH * Scale.x, UI_BASE_HEIGHT * Scale.y);
+
+		if (Cursor.x + Pixels.x > Room.x)
+		{
+			Cursor = ImVec2(0.0f, Cursor.y + RowHeight + IconGap);
+			RowHeight = 0.0f;
+		}
+
+		if (Pixels.x > Room.x || Cursor.y + Pixels.y > Room.y)
+		{
+			return {};
+		}
+
+		const IRender_interface::SurfaceParams Image = ::Render->BeginUIImage();
+		if (Image.Surface)
+		{
+			Icon.SetWndPos(Fvector2().set(Cursor.x / Scale.x, Cursor.y / Scale.y));
+			Icon.SetWndSize(Fvector2().set(Pixels.x / Scale.x, Pixels.y / Scale.y));
+			Icon.Draw();
+		}
+		::Render->EndUIImage();
+
+		const ImVec2 Texel(1.0f / std::max(Image.w, 1.0f), 1.0f / std::max(Image.h, 1.0f));
+		const SpawnManagerIconImage Result{ Image.Surface, ImVec2(Cursor.x * Texel.x, Cursor.y * Texel.y), ImVec2((Cursor.x + Pixels.x) * Texel.x, (Cursor.y + Pixels.y) * Texel.y) };
+		Cursor.x += Pixels.x + IconGap;
+		RowHeight = std::max(RowHeight, Pixels.y);
+		return Result;
+	}
+
 private:
+	static constexpr float IconGap = 2.0f;
+
 	struct IconEntry
 	{
 		xr_unique_ptr<CUI3dStatic> Icon;
@@ -84,30 +131,9 @@ private:
 	};
 
 	xr_map<xr_string, IconEntry> Icons;
+	ImVec2 Cursor;
+	float RowHeight = 0.0f;
 };
-
-struct SpawnManagerIconDrawData
-{
-	CUI3dStatic* Icon;
-	ImVec2 Position;
-	ImVec2 Size;
-};
-
-static void SpawnManagerDrawIcon(const ImDrawList*, const ImDrawCmd* Command)
-{
-	const auto& Data = *static_cast<const SpawnManagerIconDrawData*>(Command->UserCallbackData);
-	const ImVec2 Origin = ImGui::GetMainViewport()->Pos;
-	const float ScaleX = UI().ClientToScreenScaledX(1.0f);
-	const float ScaleY = UI().ClientToScreenScaledY(1.0f);
-	Data.Icon->SetWndPos(Fvector2().set((Data.Position.x - Origin.x) / ScaleX, (Data.Position.y - Origin.y) / ScaleY));
-	Data.Icon->SetWndSize(Fvector2().set(Data.Size.x / ScaleX, Data.Size.y / ScaleY));
-	Frect Clip;
-	Clip.set((Command->ClipRect.x - Origin.x) / ScaleX, (Command->ClipRect.y - Origin.y) / ScaleY, (Command->ClipRect.z - Origin.x) / ScaleX, (Command->ClipRect.w - Origin.y) / ScaleY);
-	Device.m_pRender->InvalidateRenderCache();
-	UI().PushScissor(Clip);
-	Data.Icon->Draw();
-	UI().PopScissor();
-}
 
 using Section = xr_vector<xr_pair<xr_string_view, CInifile::Sect*>>;
 struct SectionData
@@ -1317,18 +1343,16 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 			const ImVec2 ButtonSize(Size.x + Padding.x * 2.0f, Size.y + Padding.y * 2.0f);
 			const bool IsVisible = ImGui::IsRectVisible(ButtonSize);
 			auto* Icon = IsVisible ? imgui_spawn_manager.IconCache.Get(name) : nullptr;
-			if (Icon || !IsVisible)
+			const SpawnManagerIconImage Image = Icon ? imgui_spawn_manager.IconCache.Draw(*Icon, Size) : SpawnManagerIconImage();
+			if (Image.Texture || !IsVisible)
 			{
 				ImGui::PushID(imname);
 				const bool IsPressed = ImGui::Button("##3d_icon", ButtonSize);
 				ImGui::PopID();
-				if (Icon && ImGui::IsItemVisible())
+				if (Image.Texture)
 				{
-					const ImVec2 Min = ImGui::GetItemRectMin();
-					SpawnManagerIconDrawData Data{Icon, ImVec2(Min.x + Padding.x, Min.y + Padding.y), Size};
-					auto* DrawList = ImGui::GetWindowDrawList();
-					DrawList->AddCallback(SpawnManagerDrawIcon, &Data, sizeof(Data));
-					DrawList->AddCallback(ImDrawCallback_ResetRenderState, nullptr);
+					const ImVec2 Min(ImGui::GetItemRectMin().x + Padding.x, ImGui::GetItemRectMin().y + Padding.y);
+					ImGui::GetWindowDrawList()->AddImage(Image.Texture, Min, ImVec2(Min.x + Size.x, Min.y + Size.y), Image.UvMin, Image.UvMax);
 				}
 				return IsPressed;
 			}

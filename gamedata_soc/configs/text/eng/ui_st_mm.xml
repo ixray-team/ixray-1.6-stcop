@@ -42,15 +42,6 @@
 	<string id="Rain">
 		<text>rainy</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Static lighting</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Full dynamic lighting</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Objects dynamic lighting</text>
-	</string>
 	<string id="st_artefacthunt">
 		<text>Artifact hunt</text>
 	</string>
@@ -248,9 +239,6 @@
 	</string>
 	<string id="ui_mm_quit2windows">
 		<text>Exit to Windows</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Render</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Resolution</text>

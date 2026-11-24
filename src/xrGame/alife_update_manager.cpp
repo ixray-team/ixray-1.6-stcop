@@ -156,7 +156,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
 void CALifeUpdateManager::set_process_time	(int microseconds)
 {
-	const float SwitchBudgetSeconds = float(microseconds) * (1.f - update_monster_factor()) / 1000000.f;
+	const float SwitchBudgetSeconds = Core.ParamsData.test(ECoreParams::autotest_dt) ? flt_max : float(microseconds) * (1.f - update_monster_factor()) / 1000000.f;
 	graph().set_process_time(SwitchBudgetSeconds);
 }
 

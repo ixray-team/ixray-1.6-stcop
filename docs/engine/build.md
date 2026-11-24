@@ -16,7 +16,7 @@ Default Windows targets (`src/CMakeLists.txt`). Compressor-only builds retain `x
 | `xrRHI` | `xrRHI.dll` | `src/xrRHI` |
 | `xrRender_R1` | `xrRender_R1.dll` | `src/Layers/xrRenderPC_R1` |
 | `xrRender_R2` | `xrRender_R2.dll` | `src/Layers/xrRenderPC_R2` |
-| `xrRender_R4` | `xrRender_R4.dll` | `src/Layers/xrRenderPC_R4` |
+| `xrRender_IXR` | `xrRender_IXR.dll` | `src/Layers/xrRenderIXR` |
 | `xrGame` | `xrGame.dll` | `src/xrGame` |
 | `xrEngine` | `xrEngine.exe` | `src/xrPlay` |
 | `xrCrashDumpHelper` | `xrCrashDumpHelper.exe` | `src/xrCrashDumpHelper` |
@@ -52,11 +52,11 @@ Defines: Debug = `DEBUG` + `DEBUG_DRAW`. RelWithDebInfo = `DEBUG_DRAW`. Release 
 
 Unity errors point at the batch, not the `.cpp`. Set `IXRAY_UNITYBUILD=OFF` to map them.
 
-Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet, except DLSS 310.9.1: CMake downloads the official NVIDIA release tag archive, verifies SHA-256, and extracts it into `build/dep/DLSS-310.9.1`. Offline builds require the extracted SDK or the cached `build/dep/DLSS-310.9.1.zip` archive. The release DLL and `DLSS-LICENSE.txt` are copied to the output directory. SDL: window and input. Audio playback uses OpenAL.
+Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet. The upscaler SDKs of the D3D12 renderer come with NRI: `cmake/modules/NRI.cmake` turns on `NRI_ENABLE_NGX_SDK`, `NRI_ENABLE_FFX_SDK` and `NRI_ENABLE_XESS_SDK` on Windows, and NRI's own CMake downloads DLSS 310.9.16, FidelityFX 2.4.0 and XeSS 3.0.2 at configure time (into `build/_deps`) and copies `nvngx_dlss.dll`, `amd_fidelityfx_*_dx12.dll` and `libxess.dll` beside `NRI.dll`. A build without network needs those archives fetched once. `NRI_ENABLE_NIS_SDK` stays off. SDL: window and input. Audio playback uses OpenAL.
 
 DXC public headers on Linux and macOS are downloaded from DirectXShaderCompiler `v1.8.2505.1` into the build directory's `_deps_header_only/dxc/` cache; Windows uses the Windows SDK headers. DXC is compiled separately from the DXVK/DXMT headers to keep their COM declarations independent. The compiler is loaded at runtime as `dxcompiler.dll`, `libdxcompiler.so`, or `libdxcompiler.dylib`; native libraries must be available on the platform's shared-library search path when DXIL compilation or reflection is needed. Windows also requires the matching `dxil.dll` validator. D3D11 uses the existing DXBC compiler without requiring a DXC runtime library.
 
-The bundled DLSS and FSR3 Direct3D implementations and SDK libraries are used only on Windows. Linux and macOS exclude those implementations and use fallback wrappers that report the upscalers as unavailable, without requiring NGX or FidelityFX SDK headers. XeSS already guards its SDK calls for Windows x64.
+The FSR 3 implementation for D3D11 (`src/xrRHI/D3D11/FSR3Wrapper.cpp`, NuGet `IXRay.FSR3-DX11`) is used only on Windows; Linux and macOS use a fallback wrapper that reports it unavailable. The engine has no DLSS or XeSS code of its own: both go through NRI, which reports them unsupported where their SDK option is off.
 
 Native Linux and macOS builds fetch vkd3d 2.1 for DXBC compilation, reflection, disassembly, and input signatures. Its x64 calling convention is adjusted to the host ABI used by DXVK/DXMT, including COM callbacks. Linux requires `bison`, `flex`, Perl's `JSON` module (`libjson-perl` on Debian/Ubuntu, `perl-JSON` on Fedora), `patchelf`, and the Vulkan/SPIR-V development headers. The Linux CI workflows and Debian/Fedora dependency checks include these packages. Linux copies the vkd3d shared libraries beside `xrRHI`, with `$ORIGIN` lookup paths so their dependencies remain discoverable outside the build tree. The native D3D11 texture-upload implementation is shared by Linux and macOS; Windows uses the implementation from DirectXTex.
 

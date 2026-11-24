@@ -90,7 +90,7 @@ void InternalDevice12::PrepareImGuiTarget()
 {
     ContextLock guard(*this);
     auto target = static_cast<DX12RenderTargetView*>(SwapChainRTV);
-    R_ASSERT(target && target->View.Format == DXGI_FORMAT_B8G8R8A8_UNORM);
+    R_ASSERT(target && target->View.Format == DXGI_FORMAT_R8G8B8A8_UNORM);
     Transition(target->View.Surface->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET);
     InvalidateBindings();
     Commands()->SetDescriptorHeaps(1, &_resourceHeap);
@@ -105,9 +105,13 @@ bool InternalDevice12::GetShaderCode(RHIObject* Shader, const void*& Code, size_
     return Size != 0;
 }
 
-void* InternalDevice12::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth)
+nri::CommandBuffer* InternalDevice12::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth)
 {
+    PROF_EVENT("D3D12: BeginExternalPass");
     ContextLock guard(*this);
+    // Held until EndExternalPass: another thread must not take or submit the list meanwhile
+    _contextMutex.Enter();
+    ++_externalPasses;
     for (u32 read_idx = 0; read_idx < ReadCount; ++read_idx)
     {
         Transition(static_cast<DX12Surface*>(Reads[read_idx])->GetResource(),
@@ -121,11 +125,14 @@ void* InternalDevice12::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCou
     {
         Transition(static_cast<DX12DepthStencilView*>(Depth)->View.Surface->GetResource(), D3D12_RESOURCE_STATE_DEPTH_WRITE);
     }
-    return Commands();
+    // NRI's D3D12 command buffer caches no binding the old backend could overwrite: every pass sets its own layout
+    Commands();
+    return _commandBuffer;
 }
 
 void* InternalDevice12::ReadExternalBuffer(IRHIBuffer* Buffer)
 {
+    PROF_EVENT("D3D12: ReadExternalBuffer");
     auto& native = *static_cast<DX12Buffer*>(Buffer);
     // Queued uploads move the buffer between states when the list is taken: have that done first
     Commands();
@@ -134,42 +141,17 @@ void* InternalDevice12::ReadExternalBuffer(IRHIBuffer* Buffer)
     return native.GetNative();
 }
 
-void InternalDevice12::ReadExternalSurface(IRHISurface* Surface)
-{
-    Transition(static_cast<DX12Surface*>(Surface)->GetResource(),
-        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_COPY_SOURCE);
-}
-
 void InternalDevice12::EndExternalPass()
 {
-    InvalidateBindings();
-}
-
-void InternalDevice12::FinishExternalWork()
-{
+    PROF_EVENT("D3D12: EndExternalPass");
     ContextLock guard(*this);
-    R_ASSERT(!_isRecording);
-    const u64 fence = _nextFence++;
-    R_CHK(_queue->Signal(_fence, fence));
-    _frames[_frame].Fence = fence;
     InvalidateBindings();
-}
 
-void InternalDevice12::PrepareUpscale(IRHISurface* source, bool output)
-{
-    ContextLock guard(*this);
-    if (!source)
+    // Also called with no pass open, to drop what the device believes is bound
+    if (_externalPasses)
     {
-        return;
-    }
-    auto& surface = *static_cast<DX12Surface*>(source);
-    auto& resource = surface.GetResource();
-    Transition(resource, output ? D3D12_RESOURCE_STATE_UNORDERED_ACCESS :
-        D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-    if (output && resource.UAVPendingEpoch == GetEpoch())
-    {
-        UAVBarrier(resource.Native);
-        resource.UAVPendingEpoch = 0;
+        --_externalPasses;
+        _contextMutex.Leave();
     }
 }
 

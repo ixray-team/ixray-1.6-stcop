@@ -61,6 +61,8 @@ ImGui_ImplDX11_Data* ImGui_ImplDX11_GetBackendData()
 	return ImGui::GetCurrentContext() ? (ImGui_ImplDX11_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 }
 
+ImTextureID (*ImGui_ImplDX11_ResolveTexture)(ImTextureID texture) = nullptr;
+
 // Forward Declarations
 static void ImGui_ImplDX11_InitPlatformInterface();
 static void ImGui_ImplDX11_ShutdownPlatformInterface();
@@ -264,7 +266,7 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 				ctx->RSSetScissorRects(1, &r);
 
 				// Bind texture, Draw
-				ID3D11ShaderResourceView* texture_srv = (ID3D11ShaderResourceView*)pcmd->GetTexID();
+				ID3D11ShaderResourceView* texture_srv = (ID3D11ShaderResourceView*)(ImGui_ImplDX11_ResolveTexture ? ImGui_ImplDX11_ResolveTexture(pcmd->GetTexID()) : pcmd->GetTexID());
 				ctx->PSSetShaderResources(0, 1, &texture_srv);
 				ctx->DrawIndexed(pcmd->ElemCount, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset);
 			}
@@ -295,9 +297,32 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 
 static void ImGui_ImplDX11_CreateFontsTexture()
 {
-	// Build texture atlas
 	ImGuiIO& io = ImGui::GetIO();
 	ImGui_ImplDX11_Data* bd = ImGui_ImplDX11_GetBackendData();
+
+	// Create texture sampler
+	// (Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling)
+	{
+		D3D11_SAMPLER_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.MipLODBias = 0.f;
+		desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		desc.MinLOD = 0.f;
+		desc.MaxLOD = 0.f;
+		bd->pd3dDevice->CreateSamplerState(&desc, &bd->pFontSampler);
+	}
+
+	// The engine makes the textures itself when it says so
+	if (io.BackendFlags & ImGuiBackendFlags_RendererHasTextures)
+	{
+		return;
+	}
+
+	// Build texture atlas
 	unsigned char* pixels;
 	int width, height;
 	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
@@ -337,22 +362,6 @@ static void ImGui_ImplDX11_CreateFontsTexture()
 
 	// Store our identifier
 	io.Fonts->SetTexID((ImTextureID)bd->pFontTextureView);
-
-	// Create texture sampler
-	// (Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling)
-	{
-		D3D11_SAMPLER_DESC desc;
-		ZeroMemory(&desc, sizeof(desc));
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		desc.MipLODBias = 0.f;
-		desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		desc.MinLOD = 0.f;
-		desc.MaxLOD = 0.f;
-		bd->pd3dDevice->CreateSamplerState(&desc, &bd->pFontSampler);
-	}
 }
 
 bool    ImGui_ImplDX11_CreateDeviceObjects()

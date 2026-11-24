@@ -2,7 +2,7 @@
 
 Reference: `D:\ixray-team\ixray-render-graph-manager`, `09b81bde4..1b880ce3b`.
 Target branch: `feature/parallel-model-load` (`ad7e2da039`, 2026-11-06). R4 only: R1 and R2 are no longer in it.
-Paths below are for this branch, with the `src/Layers/xrRenderPC_R4/` prefix omitted. Everything was checked by reading the code; nothing was run in game.
+Paths below are for this branch, with the `src/Layers/xrRenderIXR/` prefix omitted. Everything was checked by reading the code; nothing was run in game.
 
 ## Status
 
@@ -41,9 +41,9 @@ The branch has already gone part of the way. The reference did not have the foll
 
 | Already present | Where |
 | --- | --- |
-| Graph objects: `GraphMain`, `GraphSun[3]`, `GraphReflection[6]` | `r4.h:118-120` |
+| Graph objects: `GraphMain`, `GraphSun[3]`, `GraphReflection[6]` | `ixr.h:118-120` |
 | Each graph has its own `CPortalTraverser` and local `own_clips` | `r__portal_traverser.h` |
-| Real multithreading: cascades and reflections are collected on `PreRenderThread` | `R_sun.cpp:213`, `r4_rendertarget_phase_sslr.cpp` |
+| Real multithreading: cascades and reflections are collected on `PreRenderThread` | `R_sun.cpp:213`, `ixr_rendertarget_phase_sslr.cpp` |
 | `renderable_Render(void* graph)`, `::Render->add_Visual(..., graph)` | `IRenderable.h:25`, `xrEngine/Render.h` |
 | `SkeletonBatch`, compute skinning, `GfxCmdList`, MU LODs, shadow caches | |
 
@@ -51,15 +51,15 @@ What is missing, that is, where unification has not been done:
 
 | Problem | Where |
 | --- | --- |
-| Rain, projectors, `decor_object`, shadow cache, ZPrefill and static lighting go through `GraphMain` and take turns using its maps | `r4_R_rain.cpp:203-226`, `lights_render.cpp:115-213` |
-| View setup is copied by hand in every place | `R_sun.cpp:242-252`, `:476-486`, `r4_rendertarget_phase_sslr.cpp:254-260` |
+| Rain, projectors, `decor_object`, shadow cache, ZPrefill and static lighting go through `GraphMain` and take turns using its maps | `ixr_R_rain.cpp:203-226`, `lights_render.cpp:115-213` |
+| View setup is copied by hand in every place | `R_sun.cpp:242-252`, `:476-486`, `ixr_rendertarget_phase_sslr.cpp:254-260` |
 | Two traversal modes: `own_clips` and the global `CSector::r_frustums`, with branching in every consumer | `r__sector.cpp:89-110`, `r__dsgraph_render.cpp:442-456, 479-481` |
 | Two deduplication modes: the shared `marker` and `private_visuals` | `r__dsgraph_build.cpp:420-436` |
 | View parameters live in TLS, and not all of them: `R_CullTLS` covers the phase and SSA, while the camera, FOV and fog are read globally | `r__dsgraph_structure.h:18-27`, `r__dsgraph_build.cpp:208, 222, 362, 929, 966` |
-| Each pass has its own launch protocol: `sun_ticket`, `reflection_ticket`, `Collect*` delegates | `r4.h:246-257`, `EngineThreading.cpp` |
+| Each pass has its own launch protocol: `sun_ticket`, `reflection_ticket`, `Collect*` delegates | `ixr.h:246-257`, `EngineThreading.cpp` |
 | `ViewBase` is substituted in the non-isolated mode, although `ParticleEffect.cpp:151` reads it from the particle simulation | `r__dsgraph_render.cpp:447-452` |
 | Collection is not separated from traversal: `append_sun_dynamics` traverses the portals of the same cascades again | `R_sun.cpp:487` |
-| Two main-scene collections per frame | `r4_R_render.cpp:620, 879` |
+| Two main-scene collections per frame | `ixr_R_render.cpp:620, 879` |
 | Cascades wait for the main thread (see section 4) | `R_sun.cpp:216-220` |
 
 ## 3. Target model
@@ -119,7 +119,7 @@ Instances differ only in their description:
 
 ## 4. Remove the cascade wait
 
-In the profiler, `Collect Sun Cascades` sits idle for the whole of `OnFrame`. The cause: `PreRenderThread` starts before `FrameMove`, and the cascade matrices are published later, from `CRender::Render` (`r4_R_render.cpp:507`). Reflections do not do this: `BeginReflectionCollect` snapshots the camera before the thread starts (`device.cpp:237`).
+In the profiler, `Collect Sun Cascades` sits idle for the whole of `OnFrame`. The cause: `PreRenderThread` starts before `FrameMove`, and the cascade matrices are published later, from `CRender::Render` (`ixr_R_render.cpp:507`). Reflections do not do this: `BeginReflectionCollect` snapshots the camera before the thread starts (`device.cpp:237`).
 
 **What we do:** compute the matrices and publish the request before `PreRenderThread.Run()`, as reflections do. `sun_ticket`, `EnsureSunCollect` and the `wait` at the start of `collect_sun_cascades` are removed.
 
@@ -127,12 +127,12 @@ What to take into account when moving it; all items were found in the code:
 
 1. **The build reads the global camera.** `CalcSSA`, `IsValuableToRender`, `FullDetailRejectStatic`, fog and MU LOD selection take `Device.vCameraPosition`, `Device.fFOV` and `CurrentEnv` directly during `OnFrame`, which changes them. So the `GraphView` snapshot (stage 1) comes **before** the wait is removed. Reflections already read these fields in parallel with `OnFrame`, and the snapshot fixes that as well.
 2. **`dwFrame`.** `FrameMove` increments it after publication. `prepare_sun_cascade_xforms` compares `LastSunUpdateFrame != Device.dwFrame` (`R_sun.cpp:337`), and `LastSunUpdateFrame` is written during rendering (`:580`). With a plain move the condition becomes false and the sun cache stops updating. The target frame number has to be passed in.
-3. **`BeginSunShadowFrame`** (`r4_R_render.cpp:505`) moves together with publication.
+3. **`BeginSunShadowFrame`** (`ixr_R_render.cpp:505`) moves together with publication.
 4. **Early exits from `Render`.** The menu, `m_bFirstFrameAfterReset` and static lighting are now known only after the build has started. The launch condition has to be checked in advance. An extra build is harmless: the next one clears the graph.
 5. **Matrices lag the camera by one frame.** Accum uses the same `Cascade.xform`, so there is no mismatch; only the coverage shifts. The sun cache already lives with old matrices. Check a sharp turn and a teleport.
 6. **`g_StaticTraversalStats.Current`** is read in the build from any thread (`r__dsgraph_build.cpp:930, 1039`). Build counters from the worker must not end up in the main view's statistics.
 
-**Unload and reset.** The current wait also protected against `disconnect` and `vid_restart`: both run inside `FrameMove` and delete what the build reads. Instead of a per-frame lock, `level_Unload` and `reset_begin` call `PreRenderThread.Wait()` once. Frames without an unload wait for nothing.
+**Unload and reset.** The current wait also protected against `disconnect` and `r_restart`: both run inside `FrameMove` and delete what the build reads. Instead of a per-frame lock, `level_Unload` and `reset_begin` call `PreRenderThread.Wait()` once. Frames without an unload wait for nothing.
 
 **Lock with the destruction stage.** Not introduced in stages 1–2. `CObjectList::Update` destroys objects in `xr_object_list.cpp:263-317`, and once the worker walks dynamics, that section will have to take an `xrSRWLock` exclusively, and the build will take it for reading while it works with objects.
 
@@ -148,7 +148,7 @@ The current cascade build on the worker is statics only: sectors, portals and le
 | `SNODE` dangles after `Realloc` at 64 nodes, because recursion inserts into the same map (`r__sector.cpp:98,106,165`) | `local_frustums` by sector index, as now |
 | Light statics are frozen together with camera filters until the light moves (`m_moving_frames`) | Stage 7 |
 | No invalidation on shaders and textures | Revisions from the shadow cache |
-| `o.distortion == false` at collection time, the Distort lists are empty (`r4_R_render.cpp:259,285,418`) | With a single collection, the condition depends on `distortion_enabled` |
+| `o.distortion == false` at collection time, the Distort lists are empty (`ixr_R_render.cpp:259,285,418`) | With a single collection, the condition depends on `distortion_enabled` |
 | `Fmatrix*` in the item | A copy of the matrix, as now |
 | A single `DSGraphItem` | `_NormalItem` with resolved geometry, as now |
 | A light query and spin in `vis_update` | `R_occlusion`, as now |
@@ -214,7 +214,7 @@ Reduce deduplication to one mechanism: for statics, a per-graph bit array by vis
 
 ### Stage 6. The main scene as an ordinary view, one collection per frame
 
-`render_main` becomes `Begin` + `Traverse` + `Capture*`. The collection includes priorities 0 and 1 and wallmarks at once, so `render_forward` no longer traverses the scene (`r4_R_render.cpp:879`). Particles are collected separately before forward, the HUD once. `mapHUDScopeMask` must be known before the `split_the_scene` decision. Inserting Distort depends on `distortion_enabled`. Remove the `r_dsgraph_render_subspace` wrappers.
+`render_main` becomes `Begin` + `Traverse` + `Capture*`. The collection includes priorities 0 and 1 and wallmarks at once, so `render_forward` no longer traverses the scene (`ixr_R_render.cpp:879`). Particles are collected separately before forward, the HUD once. `mapHUDScopeMask` must be known before the `split_the_scene` decision. Inserting Distort depends on `distortion_enabled`. Remove the `r_dsgraph_render_subspace` wrappers.
 
 This is the riskiest stage: the two `render_main` calls with different masks carry many implicit dependencies. Move them one at a time and compare draw calls.
 

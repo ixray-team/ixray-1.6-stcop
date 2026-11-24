@@ -1499,8 +1499,7 @@ public:
 
 	virtual void Execute(const char* /**args/**/) override
 	{
-		VERIFY3(false, "This is a test crash", "Do not post it as a bug");
-		int* pointer = 0;
+		volatile int* pointer = nullptr;
 		*pointer = 0;
 	}
 };
@@ -2557,7 +2556,7 @@ public:
 };
 
 #include "../Include/xrRender/particles_systems_library_interface.hpp"
-#include "../Layers/xrRenderPC_R4/PSLibrary.h"
+#include "../Layers/xrRenderIXR/PSLibrary.h"
 #include "GamePersistent.h"
 class CCC_Particle_TEST : public IConsole_Command
 {
@@ -3372,11 +3371,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
 	CMD1(CCC_MainMenu, "main_menu");
 
-	CMD2(CCC_Boolean, "enable_dof_reload", &g_DofOptions.Reload);
 	CMD2(CCC_Boolean, "r2_dynamic_dof", &g_DofOptions.Dynamic);
-	CMD2(CCC_Boolean, "r2_const_zoomdof", &g_DofOptions.ConstantZoom);
 	CMD2(CCC_Boolean, "enable_dof_hud_animator", &g_DofOptions.HudAnimator);
-	CMD2(CCC_Boolean, "enable_dof_talk", &g_DofOptions.Talk);
 	CMD2(CCC_Boolean, "r4_ndof_inventory", &g_DofOptions.Inventory);
 
 #ifndef MASTER_GOLD
@@ -3387,7 +3383,7 @@ void CCC_RegisterCommands()
 	g_uCommonFlags.zero();
 	g_uCommonFlags.set(flAiUseTorchDynamicLights, true);
 
-	CMD3(CCC_Mask32, "ai_use_torch_dynamic_lights", &g_uCommonFlags, flAiUseTorchDynamicLights);
+	CMD3(CCC_Mask32, "r_npc_torches", &g_uCommonFlags, flAiUseTorchDynamicLights);
 
 #ifndef MASTER_GOLD
 	CMD4(CCC_Vector3, "psp_cam_offset_r", &CCameraLook2::m_cam_offset_r, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));

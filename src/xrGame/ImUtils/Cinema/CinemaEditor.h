@@ -47,7 +47,7 @@ inline xr_string DefaultName(const Object& Item)
 
 inline bool IsParamShown(const Object& Target, Param Id)
 {
-	return (Id != Param::AttachWeight || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId) && (Id != Param::LookWeight || Target.Type == ObjectType::Camera || Target.Attach.LookAt.ObjectId) && (Id != Param::FollowSmooth || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId || Target.Attach.LookAt.ObjectId) && !(Target.Type == ObjectType::Light && Target.Light.Kind == LightKind::Point && (Id == Param::Rotation || Id == Param::Cone));
+	return !IsParamRetired(Id) && (Id != Param::AttachWeight || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId) && (Id != Param::LookWeight || Target.Type == ObjectType::Camera || Target.Attach.LookAt.ObjectId) && (Id != Param::FollowSmooth || Target.Type == ObjectType::Camera || Target.Attach.Parent.ObjectId || Target.Attach.LookAt.ObjectId) && !(Target.Type == ObjectType::Light && Target.Light.Kind == LightKind::Point && (Id == Param::Rotation || Id == Param::Cone));
 }
 
 inline const char* DisplayName(const Object* Item)

@@ -22,6 +22,8 @@ public:
 
 	Fvector2		GetCursorPosition			();
 	void			SetUICursorPosition			(Fvector2 pos);
+	// The cursor and the mouse to the middle of the game's picture
+	void			Center();
 	void			UpdateCursorPosition		(int _dx, int _dy);
 	virtual void	OnScreenResolutionChanged	();
 

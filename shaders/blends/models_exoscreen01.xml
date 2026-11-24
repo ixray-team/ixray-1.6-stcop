@@ -1,0 +1,8 @@
+<shader simplified="1">
+	<normal sort="2" strict="1">
+		<pass vs="r1_model_lplanes" ps="r1_exoscreen" zwrite="0" blend="srcalpha,one" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_arrow_lmap" src="ui\ui_mono_noise"/>
+		</pass>
+	</normal>
+</shader>

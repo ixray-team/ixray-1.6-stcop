@@ -453,6 +453,9 @@ void ImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandL
                 // Bind texture, Draw
                 D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
 				texture_handle.ptr = bd->InitInfo.ResolveTextureFn ? (UINT64)bd->InitInfo.ResolveTextureFn(&bd->InitInfo, pcmd->GetTexID()) : (UINT64)pcmd->GetTexID();
+                // An image with no view the backend can bind is not drawn
+                if (!texture_handle.ptr)
+                    continue;
                 command_list->SetGraphicsRootDescriptorTable(1, texture_handle);
                 command_list->DrawIndexedInstanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
             }

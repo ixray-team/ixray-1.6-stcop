@@ -73,7 +73,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
 				HashRect(EContext.UI->CurrentView().m_Camera.GetPosition(), m_VisRadius, rect);
 
                 u32 vBase;
-                VertexRing* Stream= &Cmd.Vertex;
+                DynamicGeometry* Stream= &RImplementation.Dynamic;
                 FVF::LIT* pv		= (FVF::LIT*)Stream->Lock(block_size,EVertexFormat::LIT,vBase);
                 u32	cnt				= 0;
 
@@ -118,7 +118,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                                     
                                     if (cnt>=block_size-6){
                                         Stream->Unlock	(cnt);
-                                        EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
+                                        GEditorDraw.DrawStream(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
                                         pv 				= (FVF::LIT*)Stream->Lock(block_size,EVertexFormat::LIT,vBase);
                                         cnt				= 0;
                                     }	
@@ -129,7 +129,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                 }
 
 				Stream->Unlock		(cnt);
-                if (cnt) EDevice->DP	(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
+                if (cnt) GEditorDraw.DrawStream(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
                 EDevice->SetRS		(D3DRS_CULLMODE,		D3DCULL_CCW);
             }
         }

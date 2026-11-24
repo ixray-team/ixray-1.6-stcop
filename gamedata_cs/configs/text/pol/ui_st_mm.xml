@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>GRACZE</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Oœwietlenie statyczne</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Pe³ne oœwietlenie dynamiczne</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Rozszerzone pe³ne oœwietlenie dynam.</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Dynamiczne oœwietlenie obiektów</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Rozsz. pe³ne oœw. dynamiczne (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>NAZWA SERWERA</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Render</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Rozdzielczoœæ</text>

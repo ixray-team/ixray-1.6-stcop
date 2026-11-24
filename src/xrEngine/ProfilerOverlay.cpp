@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include <ctime>
+#include "XR_IOConsole.h"
+#include "../xrCore/FrameStackSampler.h"
+
 #ifdef DEBUG_DRAW
 class CProfilerOverlay
 {
@@ -28,16 +32,41 @@ class CProfilerOverlay
 	u32 Zoom = None;
 	u32 GpuTrack = None;
 	u32 TrackOrder[CFrameProfiler::MaxTracks] = {};
+	u32 TrackDepth[CFrameProfiler::MaxTracks] = {};
 	u32 TrackOrderCount = 0;
 	bool Frozen = false;
 	bool Interactive = false;
 	bool SortRequested = false;
 	bool WasVisible = false;
 
+	// A capture: the sums of every frame between its start and its end, however many
+	u64 CaptureTicks[CFrameProfiler::MaxNodes] = {};
+	u64 CapturePeak[CFrameProfiler::MaxNodes] = {};
+	u64 CaptureCalls[CFrameProfiler::MaxNodes] = {};
+	u64 CaptureNext = 0;
+	u32 CaptureFrames = 0;
+	double CaptureMs = 0.0;
+	float CaptureWorstMs = 0.0f;
+	bool IsCapturing = false;
+
+	// The watch: a GPU pass that takes several times its usual time is named in the log, with the renderer's memory
+	// and streaming state of that moment
+	float WatchUsual[CFrameProfiler::MaxNodes] = {};
+	u32 WatchSeen[CFrameProfiler::MaxNodes] = {};
+	u64 WatchNext = 0;
+	u64 WatchQuiet = 0;
+	bool IsWatching = false;
+
 public:
 	void Draw();
+	void SetWatch(bool IsOn);
+	void Export(u64 Current) const;
+	void BeginCapture();
+	void EndCapture();
 
 private:
+	void Accumulate();
+	void Watch();
 	void RecordGpu();
 	void Collect(const u64* Frames, u32 Count);
 	void DrawHistory(u64 Current);
@@ -70,11 +99,27 @@ void CProfilerOverlay::Draw()
 {
 	CFrameProfiler& Profiler = g_FrameProfiler;
 	const bool Visible = Engine.External.EditorStates[static_cast<u8>(EditorUI::Profiler)];
-	Profiler.SetEnabled(Visible);
-	GRHI->GPUStatsEnable = Visible || Engine.External.EditorStates[static_cast<u8>(EditorUI::Shaders)];
+	Profiler.SetEnabled(Visible || IsCapturing || IsWatching);
+	GRHI->GPUStatsEnable = Visible || IsCapturing || IsWatching || Engine.External.EditorStates[static_cast<u8>(EditorUI::Shaders)];
 	if (!Visible)
 	{
 		WasVisible = false;
+
+		if (IsCapturing || IsWatching)
+		{
+			RecordGpu();
+		}
+
+		if (IsCapturing)
+		{
+			Accumulate();
+		}
+
+		if (IsWatching)
+		{
+			Watch();
+		}
+
 		return;
 	}
 
@@ -85,6 +130,16 @@ void CProfilerOverlay::Draw()
 	}
 
 	RecordGpu();
+
+	if (IsCapturing)
+	{
+		Accumulate();
+	}
+
+	if (IsWatching)
+	{
+		Watch();
+	}
 
 	const u64 Current = Profiler.FrameIndex.load(std::memory_order_acquire);
 	const u64 Second = CPU::qpc_freq;
@@ -176,6 +231,17 @@ void CProfilerOverlay::Draw()
 		{
 			ImGui::SetTooltip("Re-sort tracks by the number of active labels");
 		}
+
+		ImGui::SameLine(0.0f, 8.0f);
+		if (ImGui::Button("Export"))
+		{
+			Export(Current);
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Write every frame of the history to a .csv in the logs folder");
+		}
 		ImGui::SameLine(0.0f, 24.0f);
 		ImGui::Text("%.2f ms avg   %.2f ms worst   %.0f fps", AverageMs, SlowestMs, 1000.0f / std::max(AverageMs, 0.001f));
 		ImGui::SameLine(0.0f, 24.0f);
@@ -216,6 +282,277 @@ void CProfilerOverlay::RecordGpu()
 			g_FrameProfiler.Record(GpuTrack, u32(Event.stack), Event.name.c_str(), Duration);
 		}
 	}
+}
+
+void CProfilerOverlay::Export(u64 Current) const
+{
+	const CFrameProfiler& Profiler = g_FrameProfiler;
+	string_path Name;
+	xr_sprintf(Name, "profiler_%llu.csv", static_cast<unsigned long long>(std::time(nullptr)));
+	IWriter* File = FS.w_open("$logs$", Name);
+	if (!File)
+	{
+		Msg("! Profiler: cannot write %s", Name);
+		return;
+	}
+
+	File->w_string("frame,frame_ms,track,depth,path,calls,ms");
+	const u32 NodeCount = Profiler.NodeCount();
+	u32 Frames = 0;
+
+	for (u64 Age = std::min<u64>(Columns, Current); Age >= 1; Age--)
+	{
+		const u64 Index = Current - Age;
+		const u32 Slot = u32(Index % CFrameProfiler::HistorySize);
+		const float Ms = FrameMs(Index);
+		if (Ms == 0.0f)
+		{
+			continue;
+		}
+
+		Frames++;
+		for (u32 Node = 0; Node < NodeCount; Node++)
+		{
+			const CFrameProfiler::Node& Item = Profiler.Nodes[Node];
+			if (Item.Parent == None || Profiler.Calls[Slot][Node] == 0)
+			{
+				continue;
+			}
+
+			u32 Chain[CFrameProfiler::MaxDepth + 1];
+			u32 Length = 0;
+			for (u32 Up = Node; Profiler.Nodes[Up].Parent != None && Length < std::size(Chain); Up = Profiler.Nodes[Up].Parent)
+			{
+				Chain[Length++] = Up;
+			}
+
+			File->w_printf("%llu,%.4f,\"%s\",%u,\"", static_cast<unsigned long long>(Index), Ms, Profiler.Tracks[Item.Track].Name, Item.Depth);
+			while (Length != 0)
+			{
+				Length--;
+			File->w_printf(Length != 0 ? "%s/" : "%s", Profiler.Nodes[Chain[Length]].Name);
+			}
+
+			File->w_printf("\",%u,%.4f\r\n", Profiler.Calls[Slot][Node], ToMs(Profiler.Ticks[Slot][Node]));
+		}
+	}
+
+	FS.w_close(File);
+	Msg("* Profiler: %u frames written to %s", Frames, Name);
+}
+
+void CProfilerOverlay::BeginCapture()
+{
+	std::memset(CaptureTicks, 0, sizeof(CaptureTicks));
+	std::memset(CapturePeak, 0, sizeof(CapturePeak));
+	std::memset(CaptureCalls, 0, sizeof(CaptureCalls));
+	CaptureFrames = 0;
+	CaptureMs = 0.0;
+	CaptureWorstMs = 0.0f;
+	// The first frames after the profiler is switched on are not whole
+	CaptureNext = g_FrameProfiler.FrameIndex.load(std::memory_order_acquire) + 2;
+	IsCapturing = true;
+	Msg("* Profiler: capture started");
+}
+
+void CProfilerOverlay::Accumulate()
+{
+	const CFrameProfiler& Profiler = g_FrameProfiler;
+	const u64 Current = Profiler.FrameIndex.load(std::memory_order_acquire);
+	const u32 NodeCount = Profiler.NodeCount();
+
+	for (u64 Index = std::max(CaptureNext, Current > Columns ? Current - Columns : 0); Index < Current; ++Index)
+	{
+		const u32 Slot = u32(Index % CFrameProfiler::HistorySize);
+		const float Ms = FrameMs(Index);
+
+		if (Ms == 0.0f)
+		{
+			continue;
+		}
+
+		++CaptureFrames;
+		CaptureMs += Ms;
+		CaptureWorstMs = std::max(CaptureWorstMs, Ms);
+
+		for (u32 Node = 0; Node < NodeCount; ++Node)
+		{
+			CaptureTicks[Node] += Profiler.Ticks[Slot][Node];
+			CapturePeak[Node] = std::max(CapturePeak[Node], Profiler.Ticks[Slot][Node]);
+			CaptureCalls[Node] += Profiler.Calls[Slot][Node];
+		}
+	}
+
+	CaptureNext = std::max(CaptureNext, Current);
+}
+
+void CProfilerOverlay::SetWatch(bool IsOn)
+{
+	IsWatching = IsOn;
+	std::memset(WatchUsual, 0, sizeof(WatchUsual));
+	std::memset(WatchSeen, 0, sizeof(WatchSeen));
+	WatchNext = g_FrameProfiler.FrameIndex.load(std::memory_order_acquire) + 2;
+	WatchQuiet = 0;
+#ifdef _WIN32
+	// The primary thread's stacks while a frame is long: zones end where nobody put one
+	if (IsOn)
+	{
+		string_path Folder;
+		FS.update_path(Folder, "$logs$", "");
+		FrameStackSampler::Start(Folder, 8.0f);
+	}
+	else
+	{
+		FrameStackSampler::Stop();
+	}
+#endif
+	Msg("* Profiler: spike watch %s", IsOn ? "on" : "off");
+}
+
+void CProfilerOverlay::Watch()
+{
+	constexpr u32 Settled = 120; // frames a pass is measured for before it can be called slow
+	constexpr float Times = 3.0f; // of its usual time, and at least a millisecond over it
+	constexpr u64 Quiet = 120; // frames between two reports
+	constexpr u32 Named = 4;
+	const CFrameProfiler& Profiler = g_FrameProfiler;
+	const u64 Current = Profiler.FrameIndex.load(std::memory_order_acquire);
+	const u32 NodeCount = Profiler.NodeCount();
+
+	for (u64 Index = std::max(WatchNext, Current > 4 ? Current - 4 : 0); Index < Current; ++Index)
+	{
+		const u32 Slot = u32(Index % CFrameProfiler::HistorySize);
+		u32 Slow[Named];
+		float Over[Named];
+		u32 SlowCount = 0;
+
+		for (u32 Node = 0; Node < NodeCount; ++Node)
+		{
+			const CFrameProfiler::Node& Item = Profiler.Nodes[Node];
+
+			if (Item.Track != GpuTrack || Item.Parent == None || Profiler.Calls[Slot][Node] == 0)
+			{
+				continue;
+			}
+
+			const float Ms = ToMs(Profiler.Ticks[Slot][Node]);
+			const float Usual = WatchUsual[Node];
+
+			if (WatchSeen[Node] >= Settled && Ms > std::max(Usual * Times, Usual + 1.0f))
+			{
+				// The deepest passes first: a parent is slow because its child is
+				u32 Place = SlowCount < Named ? SlowCount++ : Named - 1;
+
+				if (Place == Named - 1 && SlowCount == Named && Profiler.Nodes[Slow[Place]].Depth >= Item.Depth && Slow[Place] != Node)
+				{
+					continue;
+				}
+
+				Slow[Place] = Node;
+				Over[Place] = Ms;
+				continue;
+			}
+
+			WatchUsual[Node] = WatchSeen[Node] ? Usual + (Ms - Usual) * 0.05f : Ms;
+			++WatchSeen[Node];
+		}
+
+		if (!SlowCount || Index < WatchQuiet)
+		{
+			continue;
+		}
+
+		WatchQuiet = Index + Quiet;
+		Msg("! GPU spike at frame %llu, %.2f ms the frame:", static_cast<unsigned long long>(Index), FrameMs(Index));
+
+		for (u32 Place = 0; Place < SlowCount; ++Place)
+		{
+			u32 Chain[CFrameProfiler::MaxDepth + 1];
+			u32 Length = 0;
+			xr_string Path;
+
+			for (u32 Up = Slow[Place]; Profiler.Nodes[Up].Parent != None && Length < std::size(Chain); Up = Profiler.Nodes[Up].Parent)
+			{
+				Chain[Length++] = Up;
+			}
+
+			while (Length != 0)
+			{
+				Path += Profiler.Nodes[Chain[--Length]].Name;
+				Path += Length ? "/" : "";
+			}
+
+			Msg("!   %s: %.2f ms, usually %.2f ms", Path.c_str(), Over[Place], WatchUsual[Slow[Place]]);
+		}
+
+		Console->Execute("render_memory_stats");
+	}
+
+	WatchNext = std::max(WatchNext, Current);
+}
+
+void CProfilerOverlay::EndCapture()
+{
+	if (!IsCapturing)
+	{
+		Msg("! Profiler: no capture to end, profiler_start begins one");
+		return;
+	}
+
+	Accumulate();
+	IsCapturing = false;
+
+	if (!CaptureFrames)
+	{
+		Msg("! Profiler: the capture holds no frame");
+		return;
+	}
+
+	const CFrameProfiler& Profiler = g_FrameProfiler;
+	string_path Name;
+	xr_sprintf(Name, "profiler_capture_%llu.csv", static_cast<unsigned long long>(std::time(nullptr)));
+	IWriter* File = FS.w_open("$logs$", Name);
+
+	if (!File)
+	{
+		Msg("! Profiler: cannot write %s", Name);
+		return;
+	}
+
+	const double Frames = double(CaptureFrames);
+	File->w_string("track,depth,path,calls_per_frame,avg_ms,peak_ms");
+	File->w_printf("\"frame\",0,\"%u frames\",1.00,%.4f,%.4f\r\n", CaptureFrames, CaptureMs / Frames, CaptureWorstMs);
+
+	for (u32 Node = 0; Node < Profiler.NodeCount(); ++Node)
+	{
+		const CFrameProfiler::Node& Item = Profiler.Nodes[Node];
+
+		if (Item.Parent == None || CaptureCalls[Node] == 0)
+		{
+			continue;
+		}
+
+		u32 Chain[CFrameProfiler::MaxDepth + 1];
+		u32 Length = 0;
+
+		for (u32 Up = Node; Profiler.Nodes[Up].Parent != None && Length < std::size(Chain); Up = Profiler.Nodes[Up].Parent)
+		{
+			Chain[Length++] = Up;
+		}
+
+		File->w_printf("\"%s\",%u,\"", Profiler.Tracks[Item.Track].Name, Item.Depth);
+
+		while (Length != 0)
+		{
+			Length--;
+			File->w_printf(Length != 0 ? "%s/" : "%s", Profiler.Nodes[Chain[Length]].Name);
+		}
+
+		File->w_printf("\",%.2f,%.4f,%.4f\r\n", double(CaptureCalls[Node]) / Frames, ToMs(CaptureTicks[Node]) / float(Frames), ToMs(CapturePeak[Node]));
+	}
+
+	FS.w_close(File);
+	Msg("* Profiler: capture of %u frames, %.1f s: %.3f ms a frame on average (%.1f fps), %.3f ms the worst; written to %s", CaptureFrames, CaptureMs / 1000.0, CaptureMs / Frames, 1000.0 * Frames / CaptureMs, CaptureWorstMs, Name);
 }
 
 void CProfilerOverlay::Collect(const u64* Frames, u32 Count)
@@ -405,9 +742,14 @@ void CProfilerOverlay::DrawFlame()
 		SortRequested = false;
 	}
 
-	const int Rows = std::max(TrackRows, 1);
-	const float TrackHeight = float(Rows) * RowHeight;
-	const float ContentHeight = float(TrackOrderCount) * (TrackHeight + 4.0f);
+	const u32 Rows = u32(std::max(TrackRows, 1));
+	const auto TrackHeight = [&](u32 TrackId) { return float(std::min(TrackDepth[TrackId] + 1, Rows)) * RowHeight; };
+	float ContentHeight = 0.0f;
+	for (u32 Index = 0; Index < TrackOrderCount; Index++)
+	{
+		ContentHeight += TrackHeight(TrackOrder[Index]) + 4.0f;
+	}
+
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	const ImGuiStyle& Style = ImGui::GetStyle();
 	const float MaxBottom = Viewport->WorkPos.y + Viewport->WorkSize.y - Style.WindowPadding.y - Style.WindowBorderSize;
@@ -423,7 +765,7 @@ void CProfilerOverlay::DrawFlame()
 			const u32 TrackId = TrackOrder[Index];
 			const u32 Root = Profiler.Tracks[TrackId].Root;
 			ImGui::PushID(int(TrackId));
-			if (ImGui::BeginChild("##Track", ImVec2(0.0f, TrackHeight), ImGuiChildFlags_None))
+			if (ImGui::BeginChild("##Track", ImVec2(0.0f, TrackHeight(TrackId)), ImGuiChildFlags_None))
 			{
 				List = ImGui::GetWindowDrawList();
 				const ImVec2 TrackCorner = ImGui::GetCursorScreenPos();
@@ -438,6 +780,7 @@ void CProfilerOverlay::DrawFlame()
 				}
 
 				ImGui::Dummy(ImVec2(TrackWidth, float(Deepest + 1) * RowHeight));
+				TrackDepth[TrackId] = Deepest;
 			}
 
 			ImGui::EndChild();
@@ -614,9 +957,9 @@ void CProfilerOverlay::DrawBlock(u32 Node, float X, float Width, float Y, bool A
 	{
 		string256 Label;
 		xr_sprintf(Label, "%s  %.2f ms", Item.Name, NodeMs[Node]);
-		List->PushClipRect(Min, Max, true);
-		List->AddText(ImVec2(X + 2.0f, Y + 1.0f), IM_COL32_BLACK, Label);
-		List->PopClipRect();
+		// Cut by the glyph, not by a clip rectangle of its own: that made a draw of every labelled block
+		const ImVec4 Clip(Min.x, Min.y, Max.x, Max.y);
+		List->AddText(nullptr, 0.0f, ImVec2(X + 2.0f, Y + 1.0f), IM_COL32_BLACK, Label, nullptr, 0.0f, &Clip);
 	}
 
 	if (!Interactive || !ImGui::IsWindowHovered() || !ImGui::IsMouseHoveringRect(Min, Max))
@@ -683,5 +1026,25 @@ ImU32 CProfilerOverlay::BlockColor(u32 Node, float Alpha) const
 void DrawProfilerOverlay()
 {
 	Overlay.Draw();
+}
+
+void ExportProfilerOverlay()
+{
+	Overlay.Export(g_FrameProfiler.FrameIndex.load(std::memory_order_acquire));
+}
+
+void BeginProfilerCapture()
+{
+	Overlay.BeginCapture();
+}
+
+void EndProfilerCapture()
+{
+	Overlay.EndCapture();
+}
+
+void SetProfilerWatch(bool IsOn)
+{
+	Overlay.SetWatch(IsOn);
 }
 #endif

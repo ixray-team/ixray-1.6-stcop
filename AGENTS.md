@@ -11,10 +11,7 @@ C++23 X-Ray 1.6 fork. Engine internals: [docs/engine](docs/engine/README.md). St
 | `src/xrCore` | `xrCore.dll` | `Memory`, `FS`, `CInifile`, log, `xrDebug`, addons |
 | `src/xrEngine` | `xrEngineCore.dll` | `Device`, loop, input, console, scheduler, `CEngineAPI` |
 | `src/xrRHI` | `xrRHI.dll` | D3D9, D3D11 and D3D12 backends (`D3D9/`, `D3D11/`, `D3D12/`); Linux uses DXVK Native |
-| `src/Layers/xrRenderPC_R1` | `xrRender_R1.dll` | D3D9 static lighting (`renderer_r1`) |
-| `src/Layers/xrRenderPC_R2` | `xrRender_R2.dll` | D3D9 dynamic lighting (`renderer_r2`) |
-| `src/Layers/xrRenderPC_R4` | `xrRender_R4.dll` | D3D11 dynamic lighting (`renderer_r4`) |
-| `src/Layers/xrRender`, `xrRenderDX9`, `xrRenderDX10` | Shared renderer sources | Common scene, resources, blenders, and DX9/DX11 code compiled into renderer DLLs |
+| `src/Layers/xrRenderIXR` | `xrRender_IXR.dll` | The client renderer: one forward+ frame over the baked light (`renderer_simplified`), D3D11 / D3D12 through NRI |
 | `src/Layers/xrRenderDS_R0` | `xrRender_DS0.dll` | Dedicated server (`IXRAY_MP`) |
 | `src/xrGame` | `xrGame.dll` | Level, actor, AI, ALife, weapons, `*_script.cpp` |
 | `src/xrScripts` | `xrScripts.dll` | LuaJIT + luabind. `ai().script_engine()` |
@@ -30,15 +27,15 @@ Coordinate system: left-handed (LH), with +Y pointing up.
 
 ## Renderer
 
-Dynamic geometry (UI, fonts, particles, debug draws) goes through `GfxCmdList::Vertex`, a ring of 32 B records the VS reads at t57; quads draw with `DrawQuads` (no index buffer, no 16-bit limit). Console fonts share the R4 batching path; preserve draw order. Console performance and D3D12 stream uploads: [docs/engine/rendering.md](docs/engine/rendering.md).
+Dynamic geometry (UI, fonts, debug draws, stat graphs, particles, glows, flares, sky, clouds, thunderbolt, portals, rain, puddles, editor helpers) goes through `RImplementation.Dynamic` (`DynamicGeometry`): 32 B records the VS pulls at t57 (`g_RingVertices`), drawn through NRI by `NriPass::DrawDynamic` with the pass and state set on the command list; quads draw with `DrawQuads`, no index buffer (indexed producers expand on the CPU). A view bound by hand reaches it only when `SetResource` is given its surface or an NRI view of the same data; a register read with nothing bound gets a zero view of its kind. Fullscreen passes (`DrawFullscreen`), clears, copies, mips and dispatches (`NriPass::Dispatch`, the skinning pass included) go through NRI too. There is no old-backend fallback: what NRI cannot take is a caller error, logged once a reason and not drawn. The graph's LOD cards (`r_dsgraph_render_lods`) go through the same stream. On D3D11 consecutive dynamic draws form one replayed run: anything else that reaches the context must call `FlushNriRun` first (`GfxCmdList` draws, dispatches, clears, copies, queries and `BeginNriCommands` do). Preserve draw order. Details: [docs/engine/rendering.md](docs/engine/rendering.md#dynamic-geometry-stream).
 
 Terrain is an editor heightmap converted to ordinary static level meshes. Implicit lighting follows the base texture's `flImplicitLighted` metadata: base alpha stores hemi; `_lm.dds` stores RGB light + sun alpha; `_mask` blends four detail materials. Editor chunks are not runtime terrain tiles. Authoring, xrLC bake, R4 shading and current export/persistence defects: [docs/engine/terrain.md](docs/engine/terrain.md).
 
 ## Frame
 
-`CApplication::Run` → `BeginPlay` → `InitEngine` → `MigrateToGameWindow` → `EngineLoopAndDestroy` → `Device.Run` → `message_loop` (SDL, then `on_idle`).
+`CApplication::Run` → `BeginPlay` → `InitEngine` → `MigrateToGameWindow` → `EngineLoopAndDestroy` → `Device.Run` → `message_loop` (a swap-chain-only resize when the window's size, `rs_v_sync` or `r_frame_queue` changed, `GRHI->BeginFrame`, the renderer's `PaceFrame` wait, SDL input, then `on_idle`). Sizes: swap chain = window, targets = `vid_mode` (made by `vid_restart`; a windowed window sized by its frame becomes `vid_mode` once it rests), view <= targets fitted into the window by the gamma pass: [docs/engine/rendering.md](docs/engine/rendering.md#view-rectangle).
 
-`on_idle` (`src/xrEngine/device.cpp`): if `g_loading_events` is non-empty, run one functor and `LoadDraw`. Else launch `PreRenderThread` (`seqParallelRender`, rain, particles), run `FrameMove` (`seqFrame`) on the primary thread, launch `GameThread` (scheduler, `seqFrameMT`, `seqParallel` including level scripts/GC, sound events), and process `seqRender` on the primary thread. Wait for secondary tasks before `EndRender`.
+`on_idle` (`src/xrEngine/device.cpp`): if `g_loading_events` is non-empty, run one functor and `LoadDraw`. Else launch `PreRenderThread` (`seqParallelRender`, the reflection cube's graphs, rain, particles), run `FrameMove` (`seqFrame`) on the primary thread, launch `GameThread` (sound events, scheduler, `seqParallel` including level scripts, `seqFrameMT`, `LuaGC`, sound update), and process `seqRender` and the frame's end on the primary thread (the sun cascades' portals, and the main view's sector walk on a level the scene does not draw whole, run on the task pool while the main view collects its dynamic objects, and with `r_parallel_views 1`, default 0, on D3D12 the sun cascades and the lamp atlas pages record their NRI command buffers there). On D3D12 `NriDevice::EndFrame` hands the frame's command buffers, its fence signal and its present to the submit thread (`NriSubmitThread`: `QueueSubmit`, `QueuePresent`); D3D11 submits and presents in place. Then join both threads, and `EndRender` runs the `rs_fps_limit` limiter.
 
 `NEW_INSTANCE(clsid)` → `xrFactory_Create` in `xrGame`.
 
@@ -47,11 +44,11 @@ Terrain is an editor heightmap converted to ordinary static level meshes. Implic
 | Change | File |
 | --- | --- |
 | Boot, console, input, dt | `src/xrEngine/x_ray.cpp`, `device.cpp`, `XR_IOConsole.cpp` |
-| Render passes | `src/Layers/xrRenderPC_R1/FStaticRender.cpp`, `src/Layers/xrRenderPC_R2/r2_R_render.cpp`, `src/Layers/xrRenderPC_R4/r4_R_render.cpp` |
-| Renderer selection / API | `src/xrEngine/EngineAPI.cpp`, `xr_ioc_cmd.cpp`, `Device_create_render.cpp` |
-| Shared render resources / blenders | `src/Layers/xrRender`, `src/Layers/xrRenderDX9` |
+| Render passes | `src/Layers/xrRenderIXR/ixr_R_render.cpp` (`RenderForwardLevel`), `Forward*.cpp` |
+| Renderer selection / API | `src/xrEngine/RenderFeatures.cpp`, `EngineAPI.cpp`, `xr_ioc_cmd.cpp`, `Device_create_render.cpp` |
+| Shared render resources / blenders | `src/Layers/xrRenderIXR` (`r__blenders.cpp`, `Blender_*.cpp`, `ResourceManager*.cpp`) |
 | GPU | `src/xrRHI` |
-| Terrain authoring / bake / material | `src/Editors/LevelEditor/Editor/Terrain`, `Entry/Terrain`, `Tools/Terrain`; `src/utils/xrLC_Light/xrLight_Implicit*`; `src/Layers/xrRenderPC_R4/Blender_BmmD.cpp` |
+| Terrain authoring / bake / material | `src/Editors/LevelEditor/Editor/Terrain`, `Entry/Terrain`, `Tools/Terrain`; `src/utils/xrLC_Light/xrLight_Implicit*`; `src/Layers/xrRenderIXR/Blender_BmmD.cpp` |
 | Actor, inventory, weapons | `Actor.*`, `inventory*.*`, `Weapon*` |
 | Stalker AI | `src/xrGame/ai/stalker`, `Legacy/StalkerPlanner`, `stalker_*`, `cover_manager.*`, `ai_space.*` |
 | ALife | `alife_*` |
@@ -80,7 +77,7 @@ Never build the project unless the user explicitly requests a build. This includ
 
 CMake ≥ 3.30, x64, output `build/bin/<Config>/`. Details: [docs/engine/build.md](docs/engine/build.md).
 
-`IXRAY_USE_R1` and `IXRAY_USE_R2` default on; R4 is added when `IXR_TEST_CI` is true (see `src/CMakeLists.txt`). `IXRAY_UNITYBUILD` defaults on for `xrGame` (batch 32). `IXRAY_MP` adds the dedicated renderer; `xrServer` / `xrServerCLI` / `xrGameSpy` also require `IXR_TEST_CI`. `IXRAY_EDITORS`, `IXRAY_UTILS`, `IXRAY_PLUGINS`, `IXRAY_TESTS` default off. `IXRAY_ASAN` requires a full rebuild. `IXRAY_PROFILER` (Optick) defaults on.
+`xrRender_IXR` is added when `IXR_TEST_CI` or `IXRAY_EDITORS` is true (see `src/CMakeLists.txt`). `IXRAY_UNITYBUILD` defaults on for `xrGame` (batch 32). `IXRAY_MP` adds the dedicated renderer; `xrServer` / `xrServerCLI` / `xrGameSpy` also require `IXR_TEST_CI`. `IXRAY_EDITORS`, `IXRAY_UTILS`, `IXRAY_PLUGINS`, `IXRAY_TESTS` default off. `IXRAY_ASAN` requires a full rebuild. `IXRAY_PROFILER` (Optick) defaults on.
 
 ## Runtime diagnosis
 
@@ -96,9 +93,9 @@ For runtime bug work, the user builds and tests. Do not run local builds/tests o
 - New names: PascalCase for types, namespaces, functions, variables, fields, and constants (no `_` or `m_` field prefix). `g_` globals, `I` interfaces, `UPPER_CASE` macros. Keep existing public names. Checked by `.clang-tidy`.
 - Formatting: `.clang-format` (tabs, Allman braces, braces always, no column limit, includes are not sorted).
 - UTF-8, CRLF, one trailing empty line. Comments in English. Hacks: `// HACK:`.
-- Client renderers are separate DLLs: `xrRender_R1`, `xrRender_R2`, `xrRender_R4`. `renderer_r1`, `renderer_r2`, and `renderer_r4` select them via `rsR2` / `rsR4` in `xr_ioc_cmd.cpp`. `CEngineAPI::InitializeNotDedicated` tries R4, then R2 on load failure; `Initialize` falls back to R1. `GetAPI()` returns D3D11 for `rsR4`, otherwise D3D9. `CreateRendererList` checks renderer library presence. This branch has no `ELightingMode`, `LightingModeIsStatic()` / `LightingModeIsDynamic()`, or `renderer_r4_static`.
+- One client renderer DLL, `xrRender_IXR`, with one frame: the forward+ level frame (`RenderForwardLevel`). The deferred (advanced) frame is removed: `renderer_simplified` is the only preset; `renderer_advanced`, `renderer_r2`, `renderer_r4` and `-r2` / `-r4` still parse and run it with one log line (`RenderPresetParseToken`). `renderer_api d3d11|d3d12` picks the API.
 - `VERIFY` is enabled only with `DEBUG`. `R_ASSERT` is stripped with `SHIPPING_BUILD`; checks that must survive Shipping need explicit control flow (or `CHECK_OR_EXIT` for fatal errors).
-- Swapchain and Lua stay off `PreRenderThread`. `GRHI` draws stay on the primary thread.
+- Swapchain and Lua stay off `PreRenderThread`. `GRHI` draws stay on the primary thread. Only the submit thread submits and presents a D3D12 frame; anything else that reaches the queue (`Flush`, `DrainAll`, `UploadData`, ImGui's own windows) or makes the swap chain waits for it with `NriDevice::Idle` first, and the swap chain is made, resized and destroyed on the primary thread only.
 
 ## graphify
 

@@ -57,7 +57,6 @@ enum
 	mtParticles = (1ul << 17ul),
 
 	rsCameraPos = (1ul << 18ul),
-	rsR2 = (1ul << 19ul),
 	rsR4 = (1ul << 20ul),
 
 	rsDeviceActive = (1ul << 21ul),
@@ -65,9 +64,16 @@ enum
 };
 
 extern RHI_API u32 psCurrentVidMode[2];
+extern RHI_API int psFrameQueue;
+// r_submit_thread: on D3D12 the frame's submit and present run on the submit thread; read once a frame while it is idle
+extern RHI_API int psSubmitThread;
 extern RHI_API u32 g_graphicsAPI;
 extern RHI_API Flags32 psDeviceFlags;
 extern RHI_API Ivector2 HalfTarget;
+// The size the scene's depth and the render-size targets were made with. HalfTarget is the part of them the frame
+// draws into: the same, or less under r_view_scale
+extern RHI_API Ivector2 AllocHalfTarget;
+extern RHI_API float psViewScale;
 
 class RHI_API CRHI final
 {
@@ -84,7 +90,9 @@ public:
 	void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex);
 	void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance);
 	IRHIDevice* CreateDevice(ERHI_API_LAYER APILevel);
-	void ResizeBuffers(u32 Width, u32 Height);
+	void ResizeBuffers(const RHISwapChainDesc& Desc);
+	// Between frames: the swap chain alone, for the window's size, v-sync or queue; no target is made again
+	void ResizeSwapChain(const RHISwapChainDesc& Desc);
 
 	void* GetContext();
 	void* GetSwapchain();
@@ -123,10 +131,6 @@ public:
 	void SetSamplers(RHIObject* const* States, u32 Count);
 	void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views);
 	void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts = nullptr);
-	HRESULT CreateOcclusionQuery(RHIObject** out_query);
-	HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags);
-	void BeginQuery(RHIObject* query);
-	void EndQuery(RHIObject* query);
 	HRESULT ReflectShader(const void* code, size_t size, RHIShaderReflection& out_reflection);
 	HRESULT GetInputSignature(const void* code, size_t size, RHIBlob** out_blob);
 	HRESULT CreateBlob(size_t size, RHIBlob** out_blob);
@@ -139,12 +143,11 @@ public:
 	void SetBlendState(RHIObject* state, const float* factor, u32 mask);
 	void SetRawBlendState(void* state, const float* factor, u32 mask);
 	IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data);
-	void CopySwapchain(IRHISurface* dest);
 	bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags);
 	HRESULT GetDDSMetadata(const void* data, size_t size, RHITextureMetadata& out_metadata);
 	bool DecodeAlpha(const void* Data, size_t Size, xr_vector<u8>& Alpha, u32& Width, u32& Height);
-	HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface);
-	HRESULT EncodeRenderTarget(IRHIRenderTargetView* target, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data);
+	// area: the part of the target to encode, cut to its size
+	HRESULT EncodeRenderTarget(IRHIRenderTargetView* target, const Irect& area, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data);
 	HRESULT EncodeFrame(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_vector<u8>& Out, float Quality);
 	void SetViewport(RHIViewport& VP);
 	void SetScissorRect(Irect* R);
@@ -155,7 +158,7 @@ public:
 	void ApplyRenderTargetChange();
 
 	// A pass recorded through NRI into the native backend's command list (see IRHIDevice)
-	void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth);
+	nri::CommandBuffer* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth);
 	void EndExternalPass();
 
 	IRHIDepthStencilView* GetDepthStencilView() const;
@@ -176,6 +179,8 @@ public:
 public:
 	NriDevice* Nri = nullptr;
 	IRHIDevice* DevicePtr = nullptr;
+	// The swap chain as it was made; set before CreateDevice for the first one
+	RHISwapChainDesc SwapChain;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
 	IRHIStateManager* StateManager = nullptr;
 

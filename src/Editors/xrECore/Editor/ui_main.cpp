@@ -8,8 +8,8 @@
 #include "D3DUtils.h"
 #include "SoundManager.h"
 #include "../../../xrCore/Kernel/TaskbarProgress.h"
-#include "../Layers/xrRenderPC_R4/PSLibrary.h"
-#include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
+#include "../Layers/xrRenderIXR/PSLibrary.h"
+#include "../Layers/xrRenderIXR/dxRenderDeviceRender.h"
 
 #include "UIIConPicker.h"
 #include "UIEditLightAnim.h"
@@ -41,7 +41,7 @@ namespace
 	}
 
 	// Scene scale for the current render quality. The temporal upscalers (DLSS, FSR) run their
-	// quality presets: the quality picks the preset the way vid_scale_preset 5 picks it from vid_scale.
+	// quality presets: the quality picks the preset the way a percentage of r_scale picks it.
 	float GetSceneScale()
 	{
 		const float Quality = std::clamp(GEditorDraw.ScreenQuality, 0.25f, 1.f);
@@ -500,7 +500,7 @@ void TUI::PrepareRedraw()
 void TUI::Invalidate()
 {
 	RT.destroy();
-	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
@@ -549,20 +549,21 @@ void TUI::Redraw()
 			UpscalerReset = true;
 			TargetsReset = true;
 
-			EDevice->TargetWidth = View.RTSize.x;
-			EDevice->TargetHeight = View.RTSize.y;
+			EDevice->TargetWidth = EDevice->OutputWidth = View.RTSize.x;
+			EDevice->TargetHeight = EDevice->OutputHeight = View.RTSize.y;
 
 			RT.destroy();
 			RTCopy.destroy();
 			View.RTFreez.destroy();
 
-			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
+			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
+			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 
-			// The renderer targets follow the viewport size, the scene resolution (HalfTarget)
-			// follows the render quality
+			// The screen targets are made at the viewport size, the scene targets at the scene resolution
+			// (HalfTarget, by the render quality): both are also the allocated sizes, so the view fills them
 			HalfTarget = SceneSize;
+			AllocHalfTarget = SceneSize;
 
 			::Render->reset_begin();
 			::Render->reset_end();
@@ -643,6 +644,12 @@ void TUI::Redraw()
 			GEditorDraw.UpscalerReset = UpscalerReset;
 			UpscaledViewID = View.ViewGlobalIDX;
 
+			// Another view or new targets: the exposure and the temporal history start over
+			if (UpscalerReset)
+			{
+				EDevice->MarkCameraCut();
+			}
+
 			for (u32 k = 0; k < Caps.raster.dwStages; k++)
 			{
 				if (psDeviceFlags.is(rsFilterLinear))
@@ -677,7 +684,7 @@ void TUI::Redraw()
 
 			GEditorDraw.UpscalerReset = false;
 
-			// An unavailable DLSS falls back to FSR, FSR to the linear filter (phase_combine)
+			// An unavailable DLSS falls back to FSR, FSR to the linear filter (phase_post)
 			if (ps_proxy_r_scale_mode != GEditorDraw.Upscaler)
 			{
 				GEditorDraw.Upscaler = ps_proxy_r_scale_mode;
@@ -921,7 +928,7 @@ bool TUI::OnCreate()
 	for (auto& [ID, View] : Views)
 	{
 		View.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)ViewID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 	}
 
 	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
@@ -934,8 +941,8 @@ bool TUI::OnCreate()
 	Cmd.SetObjectTransform(Fidentity);
 
 
-	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
-	RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
+	RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 
 	return true;
 }
@@ -1039,7 +1046,7 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 	MainView.ViewGlobalIDX = ID;
 
 	MainView.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
-	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 }
 
 void TUI::DestroyViewport(int ID)

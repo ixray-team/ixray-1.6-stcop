@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="decal_copy" zfunc="always" zwrite="0" cull="none">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

@@ -71,22 +71,16 @@ void CZoneCampfire::GoDisabledState()
 #define OVL_TIME 3000
 void CZoneCampfire::turn_on_script()
 {
-	if( LightingModeIsDynamic() )
-	{
-		m_turn_time				= Device.dwTimeGlobal+OVL_TIME;
-		m_turned_on				= true;
-		GoEnabledState			();
-	}
+	m_turn_time				= Device.dwTimeGlobal+OVL_TIME;
+	m_turned_on				= true;
+	GoEnabledState			();
 }
 
 void CZoneCampfire::turn_off_script()
 {
-	if( LightingModeIsDynamic() )
-	{
-		m_turn_time				= Device.dwTimeGlobal+OVL_TIME;
-		m_turned_on				= false;
-		GoDisabledState			();
-	}
+	m_turn_time				= Device.dwTimeGlobal+OVL_TIME;
+	m_turned_on				= false;
+	GoDisabledState			();
 }
 
 bool CZoneCampfire::is_on()

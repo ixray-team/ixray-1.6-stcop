@@ -2,12 +2,13 @@
 
 Source of truth for `src/`. Modder docs stay in `docs/docs`.
 
-Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` client renderers. Entry is `CApplication::Run` in `src/xrPlay/Application.cpp`. Verify external documentation against the current sources.
+Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_IXR` client renderers. Entry is `CApplication::Run` in `src/xrPlay/Application.cpp`. Verify external documentation against the current sources.
 
 | Doc | Contents |
 | --- | --- |
 | [architecture.md](architecture.md) | DLL load, globals, registrators, factory |
 | [lifecycle.md](lifecycle.md) | Load stages, `on_idle`, threads |
+| [render-thread-plan.md](render-thread-plan.md) | Plan: an optional render thread, one frame behind the game |
 | [core.md](core.md) | Memory, `FS`, ltx, console, input, sound |
 | [rendering.md](rendering.md) | R1/R2/R4 selection, APIs, dynamic and static frames |
 | [terrain.md](terrain.md) | Heightmap authoring, mesh export, implicit lighting bake, landscape shading |
@@ -21,11 +22,14 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [cutscene-adjust.md](cutscene-adjust.md) | Legacy cutscene adjustment: configs, controls and closing the tool |
 | [actor-animations.md](actor-animations.md) | Actor animation library, playback and favorites |
 | [spawn-manager.md](spawn-manager.md) | In-game object browser, icons and spawning |
+| [weapon-customize.md](weapon-customize.md) | In-game Weapon Customize: attachments on bones, preview, checks |
 | [weather-editor.md](weather-editor.md) | Live environment editing, texture browsing and saving |
 | [detail-layers-editor.md](detail-layers-editor.md) | In-game detail vegetation masks, controls and checks |
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
 | [dof-setup.md](dof-setup.md) | In-game DOF setup: base camera, physical presets, events, HUD and weapon profiles |
 | [level-inspector.md](level-inspector.md) | In-game Level Inspector: modder guide and checks |
+| [render-debug.md](render-debug.md) | Render debug window: debug views (overdraw, ids, surface values, streaming), render targets, tiles |
+| [profiler.md](profiler.md) | In-game Profiler: flame graph, controls and CSV export |
 | [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs and particles, held items, animation playlists, scene save/load |
 | [cinema-editor.md](cinema-editor.md) | In-game Cinema Editor (rewrite): object rows, animation blocks, global camera, lights, particles, lanes, undo, presets, markers, v5 scenes in gamedata |
 | [physics-abstraction.md](physics-abstraction.md) | Plan to hide ODE behind xrPhysics interfaces for Box3D |

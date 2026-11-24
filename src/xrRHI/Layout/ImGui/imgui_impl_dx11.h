@@ -30,6 +30,9 @@ void     ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data);
 void     ImGui_ImplDX11_InvalidateDeviceObjects();
 bool     ImGui_ImplDX11_CreateDeviceObjects();
 
+// The shader resource view a draw command's texture is bound through, when set
+extern ImTextureID (*ImGui_ImplDX11_ResolveTexture)(ImTextureID texture);
+
 
 // DirectX11 data
 struct ImGui_ImplDX11_Data

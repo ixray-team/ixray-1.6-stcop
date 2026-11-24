@@ -1,0 +1,14 @@
+<shader>
+	<normal sort="2">
+		<pass vs="r1_water_puddles" ps="r1_water_puddles" zwrite="0" cull="none" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="water\water_water"/>
+			<texture name="s_water_nmap" src="water\water_normal"/>
+			<texture name="sky_s0" src="$user$sky0"/>
+			<texture name="sky_s1" src="$user$sky1"/>
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_frame_before" src="$user$generic"/>
+			<texture name="s_water_env" src="$user$env"/>
+			<texture name="s_water_env_dist" src="$user$env_temp"/>
+		</pass>
+	</normal>
+</shader>

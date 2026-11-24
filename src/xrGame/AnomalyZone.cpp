@@ -416,12 +416,7 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	m_zone_flags.set			(eUseOnOffTime,	(m_TimeToDisable!=0)&&(m_TimeToEnable!=0) );
 
 	//добавить источники света
-	bool br1 = LightingModeIsStatic();
-	
-	
-	bool render_ver_allowed = !br1 || (br1&&m_zone_flags.test(eIdleLightR1)) ;
-
-	if ( m_zone_flags.test(eIdleLight) && render_ver_allowed)
+	if ( m_zone_flags.test(eIdleLight))
 	{
 		m_pIdleLight = ::Render->light_create();
 		m_pIdleLight->set_shadow(!!m_zone_flags.test(eIdleLightShadow));

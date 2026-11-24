@@ -52,8 +52,8 @@ struct SBullet
 
 	float fly_dist; // дистанция которую пуля пролетела
 
-	Fvector tracer_pos[2];
-	Fvector tracer_last_pos[2];
+	Fvector tracer_pos;
+	Fvector tracer_last_pos;
 
 	Fvector start_position;
 	Fvector start_velocity;

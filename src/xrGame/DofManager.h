@@ -7,10 +7,7 @@
 struct SDofOptions
 {
 	bool Dynamic = false;
-	bool ConstantZoom = false;
-	bool Reload = true;
 	bool HudAnimator = false;
-	bool Talk = true;
 	bool Inventory = true;
 };
 

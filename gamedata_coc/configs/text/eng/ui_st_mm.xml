@@ -45,24 +45,6 @@
 	<string id="map">
 		<text>MAP</text>
 	</string>
-	<string id="renderer_r1">
-		<text>DirectX 8 (Basic)</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>DirectX 9 (Basic)</text>
-	</string>
-	<string id="renderer_r2">
-		<text>DirectX 9 (Normal)</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>DirectX 9 (Enhanced)</text>
-	</string>
-	<string id="renderer_r3">
-		<text>DirectX 10 (Enhanced)</text>
-	</string>
-	<string id="renderer_r4">
-		<text>DirectX 11 (Enhanced)</text>
-	</string>
 	<string id="st_opt_high">
 		<text>High</text>
 	</string>
@@ -293,9 +275,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Render type</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Resolution</text>

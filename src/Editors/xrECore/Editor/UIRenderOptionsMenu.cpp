@@ -20,7 +20,7 @@ namespace
 	struct SUpscalerItem
 	{
 		const char* Name;
-		// vid_scale_mode value
+		// scale mode value of r_upscaler
 		u32 Mode;
 	};
 

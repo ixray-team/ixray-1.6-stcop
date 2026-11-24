@@ -1,0 +1,172 @@
+{
+    "type": "Surface",
+    "permutations": {
+        "vs": {
+            "r1_selflight": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_None"
+            ],
+            "r1_model_selflight": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_None"
+            ],
+            "lmap": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Lightmap"
+            ],
+            "lmap_dt": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Lightmap|SurfaceMask_Detail"
+            ],
+            "vert": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex"
+            ],
+            "vert_dt": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex|SurfaceMask_Detail"
+            ],
+            "impl_dt": [
+                "FEATURE_SET=SurfaceVertex_Terrain|SurfaceLight_Terrain|SurfaceMask_Detail"
+            ],
+            "impl_dt_bump": [
+                "FEATURE_SET=SurfaceVertex_Terrain|SurfaceLight_Terrain|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "model_env_hq_bump": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex|SurfaceMask_Environment|SurfaceMask_Bump"
+            ],
+            "tree_w": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree"
+            ],
+            "tree_w_dt": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Detail"
+            ],
+            "tree_s": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Still"
+            ],
+            "tree_s_dt": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Still|SurfaceMask_Detail"
+            ],
+            "tree_w_bump": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Bump"
+            ],
+            "tree_w_dt_bump": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "tree_s_bump": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Still|SurfaceMask_Bump"
+            ],
+            "tree_s_dt_bump": [
+                "FEATURE_SET=SurfaceVertex_Tree|SurfaceLight_Tree|SurfaceMask_Still|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "lmap_bump": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Lightmap|SurfaceMask_Bump"
+            ],
+            "lmap_dt_bump": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Lightmap|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "vert_bump": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex|SurfaceMask_Bump"
+            ],
+            "vert_dt_bump": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "model_def_lq": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex"
+            ],
+            "model_def_hq": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex"
+            ],
+            "model_def_hq_bump": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex|SurfaceMask_Bump"
+            ],
+            "model_def_hq_dt": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex|SurfaceMask_Detail"
+            ],
+            "model_def_hq_dt_bump": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "model_env_lq": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex|SurfaceMask_Environment"
+            ],
+            "model_env_hq": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_Vertex|SurfaceMask_Environment"
+            ],
+            "detail_wave": [
+                "FEATURE_SET=SurfaceVertex_Detail|SurfaceLight_Vertex"
+            ],
+            "detail_still": [
+                "FEATURE_SET=SurfaceVertex_Detail|SurfaceLight_Vertex|SurfaceMask_Still"
+            ],
+            "lmapE": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Lightmap|SurfaceMask_Environment"
+            ]
+        },
+        "ps": {
+            "r1_selflight": [
+                "FEATURE_SET=SurfaceLight_None",
+                "SURFACE_SELFLIGHT=1"
+            ],
+            "lmap": [
+                "FEATURE_SET=SurfaceLight_Lightmap"
+            ],
+            "lmap_dt": [
+                "FEATURE_SET=SurfaceLight_Lightmap|SurfaceMask_Detail"
+            ],
+            "vert": [
+                "FEATURE_SET=SurfaceLight_Vertex"
+            ],
+            "vert_dt": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Detail"
+            ],
+            "impl_dt": [
+                "FEATURE_SET=SurfaceLight_Terrain|SurfaceMask_Detail"
+            ],
+            "impl_dt_hq": [
+                "FEATURE_SET=SurfaceLight_Terrain|SurfaceMask_Layers"
+            ],
+            "impl_dt_hq_bump": [
+                "FEATURE_SET=SurfaceLight_Terrain|SurfaceMask_Layers|SurfaceMask_Bump"
+            ],
+            "model_env_hq_bump": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Environment|SurfaceMask_Bump"
+            ],
+            "lmap_bump": [
+                "FEATURE_SET=SurfaceLight_Lightmap|SurfaceMask_Bump"
+            ],
+            "lmap_dt_bump": [
+                "FEATURE_SET=SurfaceLight_Lightmap|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "vert_bump": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Bump"
+            ],
+            "vert_dt_bump": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "model_def_lq": [
+                "FEATURE_SET=SurfaceLight_Vertex"
+            ],
+            "model_def_hq": [
+                "FEATURE_SET=SurfaceLight_Vertex"
+            ],
+            "model_def_hq_bump": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Bump"
+            ],
+            "model_def_hq_dt": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Detail"
+            ],
+            "model_def_hq_dt_bump": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Detail|SurfaceMask_Bump"
+            ],
+            "model_env_lq": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Environment"
+            ],
+            "model_env_hq": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Environment"
+            ],
+            "model_env_sl": [
+                "FEATURE_SET=SurfaceLight_None|SurfaceMask_Environment"
+            ],
+            "detail": [
+                "FEATURE_SET=SurfaceVertex_Detail|SurfaceLight_Vertex"
+            ],
+            "lmapE": [
+                "FEATURE_SET=SurfaceLight_Lightmap|SurfaceMask_Environment"
+            ]
+        }
+    }
+}

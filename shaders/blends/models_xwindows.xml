@@ -1,0 +1,21 @@
+<shader simplified="1">
+	<normal_hq sort="3" strict="1" cluster="1">
+		<pass vs="model_env_hq" ps="model_env_hq" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_env" src="sky\sky_5_cube"/>
+			<texture name="s_lmap" src="$user$projector"/>
+		</pass>
+	</normal_hq>
+	<normal sort="3" strict="1" cluster="1">
+		<pass vs="model_env_lq" ps="model_env_lq" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_env" src="sky\sky_5_cube"/>
+		</pass>
+	</normal>
+	<l_special sort="3" strict="1" distort="1" cluster="1">
+		<pass vs="model_distort4glass" ps="particle_distort_hard" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_distort" src="pfx\pfx_dist_glass"/>
+		</pass>
+	</l_special>
+</shader>

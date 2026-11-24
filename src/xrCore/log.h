@@ -24,6 +24,8 @@ public:
 	static void EnableFastDebugLog();
 	static void InitLog();
 	static void FlushLog();
+	static void EmergencyFlush();
+	static void WriteCrashLine(const char* Line);
 	static void CloseLog();
 
 	static void AddLogCallback(LogCallback logCb);
@@ -36,12 +38,13 @@ public:
 
 private:
 	void InternalCloseLog();
-	std::atomic_bool bIsAlive = true;
-
+	void InternalFlushLog();
+	void InternalEmergencyFlush();
+	void InternalWriteCrashText(const char* Text, u32 Size, bool bAppendNewLine);
 	void InternalOpenLogFile();
 
 	string_path logFileName;
-	volatile IWriter* logFile;
+	IWriter* logFile;
 
 	struct LogRecord
 	{
@@ -51,11 +54,17 @@ private:
 		Time time;
 	};
 
+	void WriteRecord(const LogRecord& Record, bool bRunCallbacks);
+
 	xrCriticalSection logDataGuard;
+	xrCriticalSection logFileGuard;
 	xrCriticalSection logCallbackGuard;
 	bool bFastDebugLog;
+	bool bLogFileOpened;
 
+	std::atomic_bool bIsAlive = true;
 	std::atomic_bool bFlushRequested;
+	std::atomic_bool bCrashMode;
 
 	//LogCallback onLogMsg;
 	xr_list<LogCallback> logCallbackList;

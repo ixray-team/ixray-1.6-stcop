@@ -236,7 +236,7 @@ jobs:
         run: |
           cmake \
             --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
-            --target xrEngine xrGame xrRender_R4 \
+            --target xrEngine xrGame xrRender_IXR \
             -j$(sysctl -n hw.ncpu)
 
       - name: Upload binaries

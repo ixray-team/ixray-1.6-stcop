@@ -147,6 +147,11 @@ bool CXml::Load(const char* path_alias, const char* path, const char* _xml_filen
 {
 	shared_str fn			= correct_file_name(path, _xml_filename);
 
+	if (!path[0])
+	{
+		return Load(path_alias, *fn);
+	}
+
 	string_path				str;
 	xr_sprintf					(str,"%s\\%s", path, *fn);
 	return Load				(path_alias, str);

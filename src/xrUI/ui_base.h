@@ -17,9 +17,18 @@ public:
 
 };
 
-class UI_API ui_core: 
-	public CDeviceResetNotifier
+class UI_API ui_core:
+	public CDeviceResetNotifier,
+	public pureFrame
 {
+	// The view the scale was made for: the frame may draw at another size without a reset
+	u32				m_view_width = 0;
+	u32				m_view_height = 0;
+
+public:
+	virtual void	OnFrame							() override;
+
+private:
 	C2DFrustum		m_2DFrustum;
 	C2DFrustum		m_2DFrustumPP;
 	C2DFrustum		m_FrustumLIT;

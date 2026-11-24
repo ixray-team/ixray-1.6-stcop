@@ -129,16 +129,12 @@
 		</cap_template>
         <selection_color r="255" g="255" b="255"/>
 		<track_template_float x="194" y="0" width="245" height="21" show_value="1">
-			<options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
 		</track_template_float>
 		<track_template_int x="194" y="0" width="245" height="21" is_integer="1" show_value="1">
-			<options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
 		</track_template_int>
 		<check_template x="194" y="0" width="30" height="21">
-			<options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
 		</check_template>
 		<list_template x="194" y="0" width="245" height="21">
-			<options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
 				<d color="ui_gray"/>

@@ -1,0 +1,10 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "cs": {
+            "lod_downsample": [
+                "LOD_ATLAS=1"
+            ]
+        }
+    }
+}

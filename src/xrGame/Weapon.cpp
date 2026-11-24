@@ -5241,13 +5241,6 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 		process_if_exists_set(Parameters.c_str(), "scope_nightvision_min_factor", m_lens_night_brightness.min_factor, false);
 	}
 
-	bool b_r2 = LightingModeIsDynamic();
-
-	if (!b_r2 && m_lens_night_brightness.max_value > 1.0f)
-	{
-		m_lens_night_brightness.max_value = 1.0f;
-	}
-
 	if (abs(m_lens_night_brightness.max_value - last.max_value) > EPS || fabs(m_lens_night_brightness.min_value - last.min_value) > EPS || m_lens_night_brightness.steps != last.steps)
 	{
 		if (m_lens_night_brightness.lens_night_brightness_saved_step >= 0 && m_lens_night_brightness.steps > 0)

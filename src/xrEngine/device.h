@@ -184,6 +184,35 @@ class ENGINE_API CRenderDevice:
 public:
 	int Width = 0, Height = 0, PosX = 0, PosY = 0;
 
+	// The size the screen targets were made with (r_resolution at the last reset); the view (TargetWidth / TargetHeight)
+	// is at most this. The swap chain has the window's size (GRHI->SwapChain)
+	u32 OutputWidth = 0;
+	u32 OutputHeight = 0;
+
+	// Where the view is shown in the window, in its pixels: pixel for pixel when the window holds it, else stretched
+	// over the window with its own proportions; the rest of the window is black
+	Irect PresentRect;
+
+	struct WindowState
+	{
+		s32 PixelWidth = 0;
+		s32 PixelHeight = 0;
+		u32 DisplayId = 0;
+		float DisplayScale = 1.0f;
+		bool IsMinimized = false;
+		bool IsFocused = false;
+		bool IsOccluded = false;
+		bool IsFullscreen = false;
+	};
+
+	// The main window as its events left it, read again from SDL on each of them
+	WindowState Window;
+	void ReadWindowState();
+	// The window's swap chain as the window and the settings ask for it now
+	RHISwapChainDesc WantedSwapChain() const;
+	// The view for this frame: the Game window, else the window fitted into the targets; and where it is shown
+	void FitView();
+
 	CTimer									TimerMM;
 
 	void									_Create		(const char* shName);
@@ -213,7 +242,8 @@ public:
 	void DrawStartupFrame(bool WithWindowButtons = false);
 	static void SetStartupStatus(int Progress, const char* Status = nullptr);
 	static void UpdateStartupFrame();
-	static void StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress = -1, const char* TargetStatus = nullptr);
+	// EachFrame runs on the calling thread before every frame drawn while the task works: for a status that moves
+	static void StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress = -1, const char* TargetStatus = nullptr, std::function<void()> EachFrame = {});
 	static void PumpStartupFrames(u32 FrameCount = 1);
 	static void FinishStartup();
 
@@ -256,6 +286,8 @@ public:
 	xr_delegate<void()> LuaGC;
 	xr_delegate<void()> BeginGraphCollect;
 	xr_delegate<void()> CollectGraphs;
+	// The renderer holds the frame here until the GPU is close enough: the last thing before the input is read
+	xr_delegate<void()> PaceFrame;
 
 	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;
 	ICF void callback(u32 cb_time, const std::function<void()>& func)
@@ -286,6 +318,8 @@ public:
 	IC	 CTimer_paused* GetTimerGlobal		()	{ return &TimerGlobal;								}
 	u32	 TimerAsync							()	{ return static_cast<u32>((static_cast<s64>(TimerGlobal.GetElapsed_mcs()) + GlobalShift.load(std::memory_order_relaxed)) / 1000); }
 	u32	 TimerAsync_MMT						()	{ return TimerMM.GetElapsed_ms() +	Timer_MM_Delta; }
+	// Puts the engine time and dwTimeContinual at this time, between frames only; a jump back breaks every stored time
+	void AnchorTime							(u64 Mcs);
 
 	// Creation & Destroying
 	void ConnectToRender();
@@ -361,7 +395,7 @@ public:
 	}
 
 public:
-			void 		on_idle				();
+			void 		on_idle				(bool IsDrawn);
 			bool 		on_event			(SDL_Event& Event);
 
 private:
@@ -381,6 +415,12 @@ extern ENGINE_API bool loading_save_timer_started;
 
 typedef xr_delegate<bool()>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
+
+// The view the game's interface and its fonts were last made for. The frame may draw at another size at once; they
+// follow when the size has rested (CRenderDevice::on_idle)
+extern ENGINE_API Ivector2 g_UiView;
+// True while the interface is made again for a view that changed with no reset of the device
+extern ENGINE_API bool g_IsViewResize;
 
 class ENGINE_API CLoadScreenRenderer :public pureRender
 {

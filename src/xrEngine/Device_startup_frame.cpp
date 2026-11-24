@@ -129,7 +129,7 @@ void CRenderDevice::FinishStartup()
 	// <<< UX-PROGRESS
 }
 
-void CRenderDevice::StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress, const char* TargetStatus)
+void CRenderDevice::StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress, const char* TargetStatus, std::function<void()> EachFrame)
 {
 	if (TargetStatus != nullptr || TargetProgress >= 0)
 	{
@@ -157,6 +157,11 @@ void CRenderDevice::StartupFrameWaitTask(std::function<void()> TaskFunc, int Tar
 				quiting = true;
 				break;
 			}
+		}
+
+		if (EachFrame)
+		{
+			EachFrame();
 		}
 
 		if (DevicePtr != nullptr && GRHI != nullptr && GRHI->DevicePtr != nullptr)

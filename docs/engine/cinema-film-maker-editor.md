@@ -1,6 +1,6 @@
 # Cinema Film Maker Editor
 
-The panel and timeline can be moved outside the game window, including to another monitor; see [in-game ImGui windows](imgui-windows.md). Detached panels keep the scene updating and handle editor input. Object picking, gizmos and the scene color-picker hint stay in the main game image and follow the game window when it moves.
+The panel and timeline can be moved outside the game window, including to another monitor; see [in-game ImGui windows](imgui-windows.md). Detached panels keep the scene updating and handle editor input. Object picking, gizmos and the scene color-picker hint stay on the game image and follow the game window when it moves; the hint is drawn in the desktop window that shows the image, which is the **Game** window's own when it is taken out of the main window. The light's scene colour pick reads the game's picture without the editor's windows and helpers, and also takes a click on the picture of the **Game** window (**View → Game window**).
 
 An in-game editor for staging shots and scenes with NPCs. You can place "dummies", move them into position, pick their model and pose, put an item in their hands and build a sequence of animations.
 
@@ -267,5 +267,6 @@ Besides resetting single values, **More → Reset editor settings** resets every
 22. Give an NPC a name of 127 characters, duplicate its clip several times (clip context menu → **Duplicate**) and open the settings of each copy: no crash; the names shown are cut to fit the name field.
 23. Save a scene with a few muted or grouped tracks: saving completes without a stall, and the `[scene]` section lists `master_track_*` keys only for tracks that are muted, grouped, collapsed or parented. Load it in this build and in the previous build: track mute, groups and collapse are the same.
 24. In windowed mode, move the panel and timeline to another monitor and check input and playback. Move the game window across the desktop and check object picking, gizmos and the scene color picker inside its image; clicks outside the game image must not select scene objects. Repeat in Debug and RelWithDebInfo.
+25. Pick a light's scene colour next to a helper or under the edge of a panel: the colour is the scene's. Turn on **View → Game window**, shrink it and pick inside its picture: the colour under the cursor is taken; the dark border around the picture takes nothing. Drag the **Game** window out onto another monitor and pick again: the hint follows the cursor in that window and the colour is taken.
 
 After animation portability changes, repeat playlist playback, pause, stop and looping on Windows and macOS in Debug and RelWithDebInfo. Confirm that clip completion advances to the next playlist entry.

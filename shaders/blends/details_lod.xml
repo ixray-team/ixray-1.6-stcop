@@ -1,0 +1,18 @@
+<shader simplified="1">
+	<normal>
+		<pass vs="lod_static" ps="lod_static" zwrite="0" blend="srcalpha,invsrcalpha" aref="8">
+			<texture name="s_base0" src="@base"/>
+			<texture name="s_base1" src="@base"/>
+			<texture name="s_hemi0" src="@base_nm"/>
+			<texture name="s_hemi1" src="@base_nm"/>
+		</pass>
+	</normal>
+	<l_special>
+		<pass vs="lod_static" ps="lod_static" aref="200" atoc="1">
+			<texture name="s_base0" src="@base"/>
+			<texture name="s_base1" src="@base"/>
+			<texture name="s_hemi0" src="@base_nm"/>
+			<texture name="s_hemi1" src="@base_nm"/>
+		</pass>
+	</l_special>
+</shader>

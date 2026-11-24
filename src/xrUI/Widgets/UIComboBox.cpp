@@ -178,7 +178,7 @@ void CUIComboBox::SetCurrentOptValue()
 	if(itm)
 		m_itoken_id			= (int)(__int64)itm->GetData();
 	else
-		m_itoken_id			= 1; //first
+		m_itoken_id			= -1;
 }
 
 void CUIComboBox::SaveBackUpOptValue()
@@ -191,7 +191,17 @@ void CUIComboBox::UndoOptValue()
 {
 	m_itoken_id			= m_opt_backup_value;
 	OnChangedOptValue	();
-	SetItemToken		(m_itoken_id);
+
+	// A stored value the list does not offer has no item to go back to: its text is read again
+	if (m_itoken_id == -1)
+	{
+		SetCurrentOptValue();
+	}
+	else
+	{
+		SetItemToken(m_itoken_id);
+	}
+
 	CUIOptionsItem::UndoOptValue	();
 }
 
@@ -199,7 +209,7 @@ void CUIComboBox::SaveOptValue()
 {
 	CUIOptionsItem::SaveOptValue	();
 	xr_token* tok					= GetOptToken();
-	if(tok)
+	if(tok && m_itoken_id != -1)
 	{
 		const char*	cur_val				= get_token_name(tok, m_itoken_id);
 		SaveOptStringValue			(cur_val);

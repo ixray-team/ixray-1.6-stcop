@@ -342,6 +342,21 @@ public:
 		return clampr(Value, 0.0f, 1.0f);
 	}
 
+	virtual void ResetScripts() override
+	{
+		SurgeSecondsFunction.reset();
+		SurgeProgressFunction.reset();
+		SurgeBridgeMissing = false;
+		SurgeBridgeResolved = false;
+
+		for (SScriptSource& Source : ScriptSources)
+		{
+			Source.Functor.reset();
+			Source.Resolved = false;
+			Source.Valid = false;
+		}
+	}
+
 private:
 	struct SScriptSource
 	{

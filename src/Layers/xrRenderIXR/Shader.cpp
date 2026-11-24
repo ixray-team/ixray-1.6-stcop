@@ -1,0 +1,236 @@
+// Shader.cpp: implementation of the CShader class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
+
+
+#include "Shader.h"
+#include "ResourceManager.h"
+
+#include "dxRenderDeviceRender.h"
+
+static bool ResourcesAlive()
+{
+	return DevicePtr != nullptr && Device.m_pRender != nullptr && DEV != nullptr;
+}
+
+//
+STextureList::~STextureList()
+{
+	// Unregistered lists can outlive the render device (for example, CRender members).
+	if ((dwFlags & xr_resource_flagged::RF_REGISTERED) == 0)
+	{
+		return;
+	}
+
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteTextureList(this);
+	}
+}
+SMatrixList::~SMatrixList()
+{
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteMatrixList(this);
+	}
+}
+SPass::~SPass()
+{
+	if (ResourcesAlive())
+	{
+		DEV->_DeletePass(this);
+	}
+}
+ShaderElement::~ShaderElement()
+{
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteElement(this);
+	}
+}
+SGeometry::~SGeometry()
+{
+	if (ResourcesAlive())
+	{
+		DEV->DeleteGeom(this);
+	}
+}
+Shader::~Shader()
+{
+	if (ResourcesAlive())
+	{
+		DEV->Delete(this);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void resptrcode_shader::create(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+{
+	_set(DEV->Create(s_shader, s_textures, s_constants, s_matrices));
+}
+void resptrcode_shader::create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+{
+	_set(DEV->Create(B, s_shader, s_textures, s_constants, s_matrices));
+}
+
+//////////////////////////////////////////////////////////////////////////
+void resptrcode_geom::create(EGeomSource Source, u32 Page)
+{
+	_set(DEV->CreatePulledGeom(Source, Page));
+}
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+bool SPass::equal(const SPass& other)
+{
+	if (state		!= other.state)		return false;
+	if (ps			!= other.ps)			return false;
+	if (vs			!= other.vs)			return false;
+	if (gs			!= other.gs)			return false;
+	if (hs			!= other.hs)			return false;
+	if (ds			!= other.ds)			return false;
+	if (cs			!= other.cs)			return false;
+	if (iPriority != other.iPriority)		return false;
+	if (constants	!= other.constants)		return false;	// is this nessesary??? (ps+vs already combines)
+
+	if (T != other.T)					return false;
+	if (M != other.M)					return false;
+	return true;
+}
+
+//
+ShaderElement::ShaderElement()
+{
+	flags.iPriority		= 1;
+	flags.bStrictB2F	= false;
+	flags.bEmissive		= false;
+	flags.bScopeMask	= false;
+	flags.ScopePostprocess = true;
+	flags.OrderIndependent = false;
+	flags.OwnMaps = false;
+	flags.bDistort		= false;
+	flags.bWmark		= false;
+	flags.bLandscape	= false;
+}
+
+bool ShaderElement::equal	(ShaderElement& S)
+{
+	if (flags.iPriority		!= S.flags.iPriority)	return false;
+	if (flags.bStrictB2F	!= S.flags.bStrictB2F)	return false;
+	if (flags.bEmissive		!= S.flags.bEmissive)	return false;
+	if (flags.bScopeMask	!= S.flags.bScopeMask)	return false;
+	if (flags.ScopePostprocess != S.flags.ScopePostprocess || flags.OrderIndependent != S.flags.OrderIndependent || flags.OwnMaps != S.flags.OwnMaps)
+	{
+		return false;
+	}
+	if (flags.bWmark		!= S.flags.bWmark)		return false;
+	if (flags.bLandscape	!= S.flags.bLandscape)	return false;
+	if (flags.bDistort		!= S.flags.bDistort)	return false;
+	if (passes.size() != S.passes.size())			return false;
+	for (u32 p=0; p<passes.size(); p++)
+		if (passes[p] != S.passes[p])				return false;
+	return true;
+}
+
+bool ShaderElement::equal	(ShaderElement* S)
+{	
+	if (nullptr==S)	return false;
+	return	equal	(*S);	
+}
+
+//
+bool Shader::equal	(Shader& S)
+{
+	return std::equal(std::begin(E), std::end(E), std::begin(S.E));
+}
+bool Shader::equal	(Shader* S)
+{	return	equal(*S);	}
+
+void STextureList::clear()
+{
+	iterator it			= begin();
+	iterator it_e		= end();
+	for(;it!=it_e; ++it)
+		(*it).second.destroy();
+
+	erase(begin(),end());
+}
+
+void STextureList::clear_not_free()
+{
+	iterator it			= begin();
+	iterator it_e		= end();
+	for(;it!=it_e; ++it)
+		(*it).second.destroy();
+
+	erase(begin(),end());
+}
+
+u32 STextureList::find_texture_stage(const shared_str &TexName) const
+{
+	u32	dwTextureStage	= 0;
+
+	STextureList::const_iterator	_it		= this->begin	();
+	STextureList::const_iterator	_end	= this->end	();
+	for (; _it!=_end; _it++)
+	{
+		const std::pair<u32,ref_texture>&		loader	=	*_it;
+
+		//	Shadowmap texture always uses 0 texture unit
+		if (loader.second->cName==TexName)
+		{
+			//	Assign correct texture
+			dwTextureStage	= loader.first;
+			break;
+		}
+	}
+
+	VERIFY(_it!=_end);
+
+	return dwTextureStage;
+}
+
+STextureList::STextureList()
+{}
+
+void STextureList::_copy(const STextureList& Other)
+{
+	assign(Other.begin(), Other.end());
+}
+
+Shader::Shader()
+{}
+
+void Shader::_copy(Shader& Other)
+{
+	for (u32 i = 0; i < SHADER_ELEMENTS_MAX; i++)
+	{
+		E[i] = Other.E[i];
+	}
+}
+
+void SMatrixList::_copy(const SMatrixList& Other)
+{
+	clear();
+	for (u32 i = 0; i < Other.size(); i++)
+	{
+		push_back(Other[i]);
+	}
+}
+
+SMatrixList::SMatrixList()
+{}
+
+void ShaderElement::_copy(const ShaderElement& Other)
+{
+	flags = Other.flags;
+
+	passes.clear();
+	for (u32 i = 0; i < Other.passes.size(); i++)
+	{
+		passes.push_back(Other.passes[i]);
+	}
+}

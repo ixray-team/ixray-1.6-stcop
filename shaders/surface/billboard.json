@@ -1,0 +1,25 @@
+{
+    "type": "Surface",
+    "permutations": {
+        "vs": {
+            "r1_particle": [
+                "FEATURE_SET=SurfaceVertex_Particle"
+            ],
+            "r1_glow": [
+                "FEATURE_SET=SurfaceVertex_Particle"
+            ]
+        },
+        "ps": {
+            "r1_particle": [
+                "FEATURE_SET=SurfaceLight_None"
+            ],
+            "r1_particle_lit": [
+                "FEATURE_SET=SurfaceLight_Environment"
+            ],
+            "r1_glow": [
+                "FEATURE_SET=SurfaceLight_None",
+                "BILLBOARD_GLOW=1"
+            ]
+        }
+    }
+}

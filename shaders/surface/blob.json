@@ -1,0 +1,21 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "vs": {
+            "r1_shadow_blur": [
+                "BLOB_BLUR=1"
+            ],
+            "r1_shadow_world": [
+                "BLOB_WORLD=1"
+            ]
+        },
+        "ps": {
+            "r1_shadow_blur": [
+                "BLOB_BLUR=1"
+            ],
+            "r1_shadow_world": [
+                "BLOB_WORLD=1"
+            ]
+        }
+    }
+}

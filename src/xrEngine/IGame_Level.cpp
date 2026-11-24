@@ -15,6 +15,9 @@
 #include "GameMtlLib.h"
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
+extern xrCriticalSection g_RenderLoadLock;
+extern xr_atomic_u32 g_RenderLoadWaiting;
+
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
 extern	bool g_bLoaded;
 
@@ -285,17 +288,22 @@ bool IGame_Level::Load			(u32 dwNum)
 		g_hud					= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
 	}
 
-	// Render-level Load
-	try {
-		Render->level_Unload(); // try to unload old data
-	}
-	catch (...) {
-		Msg("Level data empty: %s", temp);
-	}
+	// Render-level Load, between frames
+	++g_RenderLoadWaiting;
 	{
+		xrCriticalSectionGuard Frame(g_RenderLoadLock);
+
+		try {
+			Render->level_Unload(); // try to unload old data
+		}
+		catch (...) {
+			Msg("Level data empty: %s", temp);
+		}
+
 		PROF_EVENT("IGame_Level::Load: render");
 		Render->level_Load			(LL_Stream);
 	}
+	--g_RenderLoadWaiting;
 
 	// Objects
 	{

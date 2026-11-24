@@ -35,8 +35,6 @@ float bullet_manager_time_factor = 1.f;
 bool bullet_manager_debug_trajectory = false;
 bool bullet_manager_simulation_stop = false;
 
-int bp_update_idx = 0;
-int bp_render_idx = 0;
 
 void SBullet::Init(const Fvector& position, const Fvector& direction, float starting_speed, float power,
 				   //.				   float power_critical,
@@ -52,10 +50,8 @@ void SBullet::Init(const Fvector& position, const Fvector& direction, float star
 	flags._storage = 0;
 
 	bullet_pos = position;
-	tracer_pos[0] = position;
-	tracer_pos[1] = position;
-	tracer_last_pos[0] = position;
-	tracer_last_pos[1] = position;
+	tracer_pos = position;
+	tracer_last_pos = position;
 
 	speed = max_speed = starting_speed;
 	VERIFY(speed > 0.f);
@@ -914,9 +910,9 @@ ICF bool try_update_bullet(SBullet& bullet, Fvector const& gravity, Fvector wind
 		return false;
 	}
 
-	bullet.tracer_last_pos[bp_update_idx] = bullet.bullet_pos;
+	bullet.tracer_last_pos = bullet.bullet_pos;
 	bullet.bullet_pos = new_position;
-	bullet.tracer_pos[bp_update_idx] = new_position;
+	bullet.tracer_pos = new_position;
 	bullet.dir = Fvector(new_velocity).normalize_safe();
 	bullet.life_time = time;
 
@@ -986,7 +982,7 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, void* params
 					{
 						bullet.start_position = collide_position;
 						bullet.bullet_pos = collide_position;
-						bullet.tracer_pos[bp_update_idx] = collide_position;
+						bullet.tracer_pos = collide_position;
 
 						Fvector C;
 						CZ->Center(C);
@@ -1019,7 +1015,7 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, void* params
 					{
 						bullet.start_position = collide_position;
 						bullet.bullet_pos = collide_position;
-						bullet.tracer_pos[bp_update_idx] = collide_position;
+						bullet.tracer_pos = collide_position;
 						bullet.dir.random_dir();
 						bullet.start_velocity = Fvector(bullet.dir).mul(bullet.speed * 0.2f);
 					}
@@ -1255,8 +1251,8 @@ void CBulletManager::Render()
 			{
 				continue;
 			}
-			Fvector tracer_last_pos = bullet.tracer_last_pos[bp_render_idx];
-			Fvector const tracer = Fvector().sub(bullet.tracer_pos[bp_render_idx], tracer_last_pos);
+			Fvector tracer_last_pos = bullet.tracer_last_pos;
+			Fvector const tracer = Fvector().sub(bullet.tracer_pos, tracer_last_pos);
 			float length = tracer.magnitude();
 
 			if (length < m_fTracerLengthMin)
@@ -1321,8 +1317,8 @@ void CBulletManager::Render()
 			{
 				SBullet* bullet = visible_tracers[start_idx + i];
 
-				Fvector tracer_last_pos = bullet->tracer_last_pos[bp_render_idx];
-				Fvector tracer_pos = bullet->tracer_pos[bp_render_idx];
+				Fvector tracer_last_pos = bullet->tracer_last_pos;
+				Fvector tracer_pos = bullet->tracer_pos;
 
 				Fvector gravity = Fvector().set(0.f, -m_fGravityConst, 0.f);
 				float air_res = IsGameTypeSingle() ? m_fAirResistanceK : bullet->air_resistance;

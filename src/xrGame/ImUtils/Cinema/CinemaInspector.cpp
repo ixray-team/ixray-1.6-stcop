@@ -132,7 +132,7 @@ void Editor::DrawInspector(Player& Core)
 	}
 	const bool IsVisible = ImGui::Begin(ShowAnimator ? "Inspector###CinemaInspectorAnimation" : "Inspector###CinemaInspector", &Settings.ShowInspector, ImGuiWindowFlags_NoNavInputs);
 	IsOwnWindowFocused |= ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-	ViewRight = ImGui::GetWindowPos().x;
+	ViewRight = ImGui::GetWindowViewport() == CImGuiManager::Instance().GetGameViewport() ? ImGui::GetWindowPos().x : FLT_MAX;
 	std::erase_if(PinnedIds, [&Core](u32 Id) { return !Find(Core.Data, Id); });
 	IsPinned = IsPinned && !PinnedIds.empty();
 	xr_vector<u32>* const Lists[8] = { &InspectActors, &InspectCameras, &InspectLights, &InspectParticles, &InspectDecals, &InspectSounds, &InspectWeathers, &InspectPosts };
@@ -2382,12 +2382,12 @@ void Editor::DrawPostSection(Player& Core, const xr_vector<u32>& Ids, bool HasPi
 		float Speed;
 		const char* Format;
 	};
-	static constexpr Row Rows[17] = {
+	static constexpr Row Rows[15] = {
 		{ Param::PostFade, "Fade", 0.01f, "%.2f" }, { Param::PostFadeColor, nullptr, 0.01f, "%.2f" },
 		{ Param::PostBase, "Color", 0.005f, "%.3f" }, { Param::PostAdd, nullptr, 0.005f, "%.3f" }, { Param::PostGray, nullptr, 0.01f, "%.2f" }, { Param::PostGrayColor, nullptr, 0.005f, "%.3f" },
 		{ Param::PostBlur, "Image", 0.01f, "%.2f" }, { Param::PostDualityH, nullptr, 0.001f, "%.3f" }, { Param::PostDualityV, nullptr, 0.001f, "%.3f" },
 		{ Param::PostNoise, "Noise", 0.01f, "%.2f" }, { Param::PostGrain, nullptr, 0.01f, "%.2f" }, { Param::PostNoiseFps, nullptr, 1.0f, "%.0f" },
-		{ Param::PostExposure, "Grade", 0.02f, "%.2f" }, { Param::PostBloom, nullptr, 0.005f, "%.3f" }, { Param::PostTonemap, nullptr, 0.01f, "%.2f" }, { Param::PostMiddleGray, nullptr, 0.01f, "%.2f" }, { Param::PostMotionBlur, nullptr, 0.01f, "%.2f" }
+		{ Param::PostExposure, "Grade", 0.02f, "%.2f" }, { Param::PostBloom, nullptr, 0.005f, "%.3f" }, { Param::PostMotionBlur, nullptr, 0.01f, "%.2f" }
 	};
 	const Object& Primary = *Find(Core.Data, Ids[0]);
 	const PostData& Setup = Primary.Post;
@@ -2584,28 +2584,19 @@ void Editor::PickColor(Player& Core)
 	}
 	ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 	IsPickingColor = false;
-	const bool IsSampling = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && IsViewportFree();
+	// A click does not move the Game window: the pick takes the picture through it
+	const bool IsSampling = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && CImGuiManager::Instance().IsCapturingInputs() && CImGuiManager::Instance().IsGameViewHovered() && !ImGui::IsAnyItemActive();
 	IsPickingColor = !IsSampling && !ImGui::IsKeyPressed(ImGuiKey_Escape, false) && !ImGui::IsMouseClicked(ImGuiMouseButton_Right);
 	if (!IsSampling)
 	{
 		return;
 	}
-	const ImGuiViewport* Main = ImGui::GetMainViewport();
-	const ImVec2 Mouse = ImGui::GetIO().MousePos;
-	const float X = (Mouse.x - Main->Pos.x) / Main->Size.x, Y = (Mouse.y - Main->Pos.y) / Main->Size.y;
-	IRHIDevice* Rhi = GRHI ? GRHI->DevicePtr : nullptr;
-	const u64 Capacity = (static_cast<u64>(Device.TargetWidth) + 64) * (static_cast<u64>(Device.TargetHeight) + 64) * 4;
-	const bool CanRead = Rhi && Rhi->SwapChainRTV && Capacity <= u32(-1) && X >= 0.0f && X < 1.0f && Y >= 0.0f && Y < 1.0f;
-	xr_vector<u8> Pixels(CanRead ? static_cast<size_t>(Capacity) : 0);
-	u32 Width = 0, Height = 0, Pitch = 0;
-	const bool IsRead = CanRead && Rhi->ReadRenderTargetPixels(Rhi->SwapChainRTV, Pixels.data(), static_cast<u32>(Pixels.size()), Width, Height, Pitch) && Width && Height;
-	const size_t Offset = IsRead ? static_cast<size_t>(std::min(static_cast<u32>(Y * Height), Height - 1)) * Pitch + static_cast<size_t>(std::min(static_cast<u32>(X * Width), Width - 1)) * 4 : 0;
-	if (!IsRead || Offset + 3 >= Pixels.size())
+	float Picked[3];
+	if (!CImGuiManager::Instance().ReadGameViewColor(Picked))
 	{
 		SetStatus(true, "The colour under the cursor could not be read.");
 		return;
 	}
-	const float Picked[3] = { Pixels[Offset + 2] / 255.0f, Pixels[Offset + 1] / 255.0f, Pixels[Offset] / 255.0f };
 	for (u32 Id : PickColorIds)
 	{
 		const Object* Item = Find(Core.Data, Id);
@@ -3848,7 +3839,7 @@ bool Editor::ChooserList(Player& Core, ChooserKind Kind, const xr_vector<u32>& O
 		List->AddRectFilled(Corner, ImVec2(Corner.x + Side, Corner.y + Side), ImGui::GetColorU32(ImGuiCol_FrameBg));
 		if (HasPreview)
 		{
-			List->AddImage(PreviewView->GetRawSRV(), ImVec2(Corner.x + Offset.x, Corner.y + Offset.y), ImVec2(Corner.x + Offset.x + Size.x, Corner.y + Offset.y + Size.y));
+			List->AddImage(RHIUtils::ImGui::Image(PreviewSurface), ImVec2(Corner.x + Offset.x, Corner.y + Offset.y), ImVec2(Corner.x + Offset.x + Size.x, Corner.y + Offset.y + Size.y));
 			ImGui::SameLine();
 			ImGui::TextDisabled("%s\n%ux%u", PreviewName.c_str(), PreviewSurface->GetWidth(), PreviewSurface->GetHeight());
 		}

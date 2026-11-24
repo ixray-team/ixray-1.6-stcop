@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UI_ParticleTools.h"
-#include "../../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
+#include "../../../Layers/xrRenderIXR/ParticleAnimCurve.h"
 
 extern xr_string _item_to_select_after_edit;
 

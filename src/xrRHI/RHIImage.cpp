@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "RHI.h"
 #include <DirectXTex.h>
 
@@ -60,12 +94,6 @@ CRHI::DecodeAlpha(const void* Data, size_t Size, xr_vector<u8>& Alpha, u32& Widt
 	return true;
 }
 
-HRESULT
-CRHI::LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface)
-{
-    return DevicePtr->LoadDDS(data, size, usage, bind_flags, cpu_flags, lod, fallback, out_surface);
-}
-
 HRESULT CRHI::EncodeFrame(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr_vector<u8>& Out, float Quality)
 {
 	const bool IsPng = Quality <= 0.0f;
@@ -126,7 +154,7 @@ HRESULT CRHI::EncodeFrame(const u8* Pixels, u32 Width, u32 Height, u32 Pitch, xr
 }
 
 HRESULT
-CRHI::EncodeRenderTarget(IRHIRenderTargetView* target, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data)
+CRHI::EncodeRenderTarget(IRHIRenderTargetView* target, const Irect& area, u32 width, u32 height, u32 format, bool linear, bool srgb, xr_vector<u8>& out_data)
 {
 	out_data.clear();
 	auto surface = target->GetSurface();
@@ -147,21 +175,33 @@ CRHI::EncodeRenderTarget(IRHIRenderTargetView* target, u32 width, u32 height, u3
 			return E_FAIL;
 		}
 	}
+	// ReadRenderTargetPixels hands the swap chain's pixels over blue first, whatever the swap chain holds
+	DXGI_FORMAT pixel_format = static_cast<DXGI_FORMAT>(surface->GetFormat());
+	if (target == DevicePtr->SwapChainRTV && pixel_format == DXGI_FORMAT_R8G8B8A8_UNORM) {
+		pixel_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	}
+	const u32 left = std::min(u32(std::max(area.x1, 0)), source_width);
+	const u32 top = std::min(u32(std::max(area.y1, 0)), source_height);
+	const u32 area_width = std::clamp(u32(std::max(area.x2, 0)), left, source_width) - left;
+	const u32 area_height = std::clamp(u32(std::max(area.y2, 0)), top, source_height) - top;
+	if (!area_width || !area_height) {
+		return E_INVALIDARG;
+	}
 	DirectX::ScratchImage image;
-	HRESULT result = image.Initialize2D(static_cast<DXGI_FORMAT>(surface->GetFormat()), source_width, source_height, 1, 1);
+	HRESULT result = image.Initialize2D(pixel_format, area_width, area_height, 1, 1);
 	if (FAILED(result)) {
 		return result;
 	}
 	const auto input = image.GetImage(0, 0, 0);
-	if (input->rowPitch != size_t(source_width) * 4 || row_pitch < input->rowPitch ||
+	if (input->rowPitch != size_t(area_width) * 4 || row_pitch < size_t(source_width) * 4 ||
 		size_t(row_pitch) * source_height > pixels.size()) {
 		return E_INVALIDARG;
 	}
-	for (u32 row_idx = 0; row_idx < source_height; ++row_idx) {
-		memcpy(image.GetPixels() + row_idx * input->rowPitch, pixels.data() + size_t(row_idx) * row_pitch, input->rowPitch);
+	for (u32 row_idx = 0; row_idx < area_height; ++row_idx) {
+		memcpy(image.GetPixels() + row_idx * input->rowPitch, pixels.data() + size_t(top + row_idx) * row_pitch + size_t(left) * 4, input->rowPitch);
 	}
 #ifndef IXR_WINDOWS
-	for (u32 pixel_idx = 0; format != 3 && pixel_idx < source_width * source_height; ++pixel_idx) {
+	for (u32 pixel_idx = 0; format != 3 && pixel_idx < area_width * area_height; ++pixel_idx) {
 		std::swap(image.GetPixels()[pixel_idx * 4], image.GetPixels()[pixel_idx * 4 + 2]);
 	}
 #endif

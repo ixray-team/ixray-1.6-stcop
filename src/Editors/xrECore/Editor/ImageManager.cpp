@@ -4,7 +4,7 @@
 #include "CubeMapHelper.h"
 #include "ui_main.h"
 #include "EditObject.h"
-#include "../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../Layers/xrRenderIXR/ResourceManager.h"
 
 CImageManager ImageLib;
 
@@ -753,7 +753,7 @@ static bool GetViewportSquare(U32Vec& Pixels, u32& Width, u32& Height)
 		u32* Dst = Pixels.data() + Y * Side;
 		for (u32 X = 0; X < Side; ++X)
 		{
-			// B8G8R8X8: the alpha byte is undefined
+			// The target's alpha is not written by the frame: opaque
 			Dst[X] = Src[X] | 0xFF000000;
 		}
 	}

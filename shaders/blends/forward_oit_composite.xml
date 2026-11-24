@@ -1,0 +1,8 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="forward_oit_composite" zfunc="always" zwrite="0" cull="none" blend="srcalpha,invsrcalpha">
+			<texture name="s_oit_accum" src="$user$wboit"/>
+			<texture name="s_oit_revealage" src="$user$wboit_revealage"/>
+		</pass>
+	</normal>
+</shader>

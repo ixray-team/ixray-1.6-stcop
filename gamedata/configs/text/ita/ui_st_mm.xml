@@ -351,21 +351,6 @@
 	<string id="players">
 		<text>GIOCATORI</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Illuminazione statica</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Illuminazione dinamica completa</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Illum. dinam. completa potenziata</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Illuminaz. dinamica degli oggetti</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Ill. din. completa potenz. (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>NOME DEL SERVER</text>
 	</string>
@@ -621,9 +606,6 @@
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
 	</string>
-	<string id="ui_mm_renderer">
-		<text>Tipo di render</text>
-	</string>
 	<string id="ui_mm_resolution">
 		<text>Risoluzione</text>
 	</string>
@@ -863,9 +845,6 @@
 	</string>
 	<string id="st_opt_extreme">
 		<text>massimo</text>
-	</string>
-	<string id="renderer_r4">
-		<text>Ill. din. completa potenz. (DX11)</text>
 	</string>
 	<string id="mp_please_login">
 		<text>Collegati per accedere al server esterno.</text>

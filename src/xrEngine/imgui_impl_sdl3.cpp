@@ -727,7 +727,8 @@ static void ImGui_ImplSDL3_UpdateMouseData()
         }
 
         // (Optional) Fallback to provide mouse position when focused (SDL_EVENT_MOUSE_MOTION already provides this when hovered or captured)
-        const bool is_relative_mouse_mode = SDL_GetWindowRelativeMouseMode(bd->Window);
+        // Relative mode is set on the window the game is played in, which may be a secondary viewport's
+        const bool is_relative_mouse_mode = SDL_GetWindowRelativeMouseMode(focused_window);
         if (bd->MouseCanUseGlobalState && bd->MouseButtonsDown == 0 && !is_relative_mouse_mode)
         {
             // Single-viewport mode: mouse position in client window coordinates (io.MousePos is (0,0) when the mouse is on the upper-left corner of the app window)

@@ -1,0 +1,26 @@
+{
+    "type": "Surface",
+    "permutations": {
+        "vs": {
+            "r1_lplanes": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_None"
+            ],
+            "r1_model_lplanes": [
+                "FEATURE_SET=SurfaceVertex_Model|SurfaceLight_None"
+            ]
+        },
+        "ps": {
+            "r1_lplanes": [
+                "FEATURE_SET=SurfaceLight_None"
+            ],
+            "r1_exoscreen": [
+                "FEATURE_SET=SurfaceLight_None",
+                "LIGHTPLANE_NOISE=1"
+            ],
+            "r1_simple": [
+                "FEATURE_SET=SurfaceLight_None",
+                "LIGHTPLANE_PLAIN=1"
+            ]
+        }
+    }
+}

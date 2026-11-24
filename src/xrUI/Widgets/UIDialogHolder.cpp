@@ -255,16 +255,9 @@ void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)
 
 void CDialogHolder::StartDialog(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
-	u32 screenWidth = psCurrentVidMode[0];
-	u32 screenHeight = psCurrentVidMode[1];
-
 	if (pDialog && pDialog->NeedCenterCursor())
 	{
-		GetUICursor().SetUICursorPosition	(Fvector2().set(512.0f,384.0f));
-		if (!Core.ParamsData.test(ECoreParams::autotest))
-		{
-			SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
-		}
+		GetUICursor().Center();
 	}
 	StartMenu(pDialog, bDoHideIndicators);
 }

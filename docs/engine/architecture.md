@@ -9,7 +9,7 @@
 
 | Call | DLL | Condition |
 | --- | --- | --- |
-| `InitializeNotDedicated` | `xrRender_R4` / `xrRender_R2` | client; selected by `rsR4` / `rsR2`, R4 load failure tries R2 |
+| `InitializeNotDedicated` | `xrRender_IXR` | client; sets `rsR4` |
 | `Initialize` | `xrRender_R1` | fallback when no renderer DLL loaded |
 | `InitializeDedicated` | `xrRender_DS0` | `g_dedicated_server` (`IXRAY_MP`) |
 | `Initialize` | `xrGame` | always |

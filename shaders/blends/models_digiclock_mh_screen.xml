@@ -1,0 +1,7 @@
+<shader simplified="1">
+	<normal cluster="1">
+		<pass vs="deffer_model" ps="model_digiclock_mh" prepass="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../xrCore/FrameStackSampler.h"
 #include <csignal>
 #include "../xrCore/Collision/Frustum.h"
 
@@ -134,6 +135,8 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
 int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
+ENGINE_API Ivector2 g_UiView = { 0, 0 };
+ENGINE_API bool g_IsViewResize = false;
 int fps_limit, main_menu_fps_limit = 144;
 
 void CRenderDevice::time_factor(const float &time_factor)
@@ -143,13 +146,119 @@ void CRenderDevice::time_factor(const float &time_factor)
 	Sound->time_factor		(time_factor);
 }
 
-void CRenderDevice::on_idle		()
+RHISwapChainDesc CRenderDevice::WantedSwapChain() const
 {
+	// A window with no pixels (minimised) keeps the size it had
+	const bool HasSize = Window.PixelWidth > 0 && Window.PixelHeight > 0;
+	const u32 Width = HasSize ? u32(Window.PixelWidth) : GRHI->SwapChain.Width;
+	const u32 Height = HasSize ? u32(Window.PixelHeight) : GRHI->SwapChain.Height;
+	return { Width ? Width : OutputWidth, Height ? Height : OutputHeight, u32(psFrameQueue), psDeviceFlags.test(rsVSync) };
+}
+
+void CRenderDevice::FitView()
+{
+	const u32 SwapWidth = std::max(GRHI->SwapChain.Width, 1u);
+	const u32 SwapHeight = std::max(GRHI->SwapChain.Height, 1u);
+	u32 ViewWidth = 0;
+	u32 ViewHeight = 0;
+	bool IsHosted = false;
+
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+	IsHosted = CImGuiManager::Instance().FitGameView(OutputWidth, OutputHeight, ViewWidth, ViewHeight);
+#endif
+
+	// The window pixel for pixel, or shrunk with its proportions into the targets, and r_view_scale shrinks it more.
+	// Even sizes: the half-size targets of the frame take whole pixels of them
+	if (!IsHosted)
+	{
+		const float Scale = std::min({ 1.0f, float(OutputWidth) / float(SwapWidth), float(OutputHeight) / float(SwapHeight) }) * psViewScale;
+		const auto Fit = [Scale](u32 Size, u32 Most)
+		{
+			return std::min(Most, std::max(2u, u32(float(Size) * Scale) & ~1u));
+		};
+
+		ViewWidth = Fit(SwapWidth, OutputWidth);
+		ViewHeight = Fit(SwapHeight, OutputHeight);
+	}
+
+	// An odd side of the window leaves a line of it black rather than scale the view by a pixel
+	const bool IsWhole = ViewWidth <= SwapWidth && ViewHeight <= SwapHeight && SwapWidth - ViewWidth < 2 && SwapHeight - ViewHeight < 2;
+	const float Shown = IsWhole ? 1.0f : std::min(float(SwapWidth) / float(ViewWidth), float(SwapHeight) / float(ViewHeight));
+	const s32 ShownWidth = std::min(s32(SwapWidth), s32(float(ViewWidth) * Shown + 0.5f));
+	const s32 ShownHeight = std::min(s32(SwapHeight), s32(float(ViewHeight) * Shown + 0.5f));
+	const s32 X = (s32(SwapWidth) - ShownWidth) / 2;
+	const s32 Y = (s32(SwapHeight) - ShownHeight) / 2;
+	PresentRect.set(X, Y, X + ShownWidth, Y + ShownHeight);
+
+	// The render size keeps its share of the output size
+	const auto Share = [](int Alloc, u32 View, u32 Whole)
+	{
+		const u32 Size = u32(std::ceil(float(Alloc) * float(View) / float(Whole)));
+		return int(std::min(u32(Alloc), Size + (Size & 1)));
+	};
+
+	TargetWidth = ViewWidth;
+	TargetHeight = ViewHeight;
+	HalfTarget.set(Share(AllocHalfTarget.x, ViewWidth, OutputWidth), Share(AllocHalfTarget.y, ViewHeight, OutputHeight));
+}
+
+void CRenderDevice::on_idle		(bool IsDrawn)
+{
+	// The frame draws into a part of its targets, from their corner: the view, apart from the size they were made
+	// with. The interface's fonts and layouts are made for a size, and making them again stops the frame for a
+	// while: they follow once the view has kept its new size with the mouse released, as the level editor's view does
+	if (!IsEditorMode() && AllocHalfTarget.x)
+	{
+		const u32 WidthBefore = TargetWidth;
+		const u32 HeightBefore = TargetHeight;
+		FitView();
+
+		static u32 Rested = 0;
+		Rested = TargetWidth == WidthBefore && TargetHeight == HeightBefore ? Rested + 1 : 0;
+
+#ifdef IXR_WINDOWS
+		const bool IsHeld = ImGui::GetCurrentContext() && ImGui::GetIO().MouseDown[0];
+#else
+		const bool IsHeld = false;
+#endif
+
+		if ((int(TargetWidth) != g_UiView.x || int(TargetHeight) != g_UiView.y) && Rested > 20 && !IsHeld && g_loading_events.empty())
+		{
+			g_UiView.set(int(TargetWidth), int(TargetHeight));
+			g_IsViewResize = true;
+			seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
+			seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
+			g_IsViewResize = false;
+		}
+
+		// A window sized by its frame becomes the video mode once it rests: the targets and the interface follow it
+		static u32 WindowRested = 0;
+		static s32 RestedWidth = 0;
+		static s32 RestedHeight = 0;
+		WindowRested = Window.PixelWidth == RestedWidth && Window.PixelHeight == RestedHeight ? WindowRested + 1 : 0;
+		RestedWidth = Window.PixelWidth;
+		RestedHeight = Window.PixelHeight;
+
+		const u32 WindowWidth = u32(std::max(Window.PixelWidth, 0)) & ~1u;
+		const u32 WindowHeight = u32(std::max(Window.PixelHeight, 0)) & ~1u;
+		const bool IsSized = WindowWidth && WindowHeight && (WindowWidth != OutputWidth || WindowHeight != OutputHeight);
+
+		if (IsSized && !Window.IsFullscreen && !Window.IsMinimized && WindowRested > 20 && !IsHeld && g_loading_events.empty())
+		{
+			psCurrentVidMode[0] = WindowWidth;
+			psCurrentVidMode[1] = WindowHeight;
+			Reset();
+		}
+	}
+
 #ifdef IXRAY_PROFILER // optick
 	PROF_FRAME("CPU FRAME BEGIN");
 #endif
 #ifdef DEBUG_DRAW
 	g_FrameProfiler.Frame();
+#endif
+#ifdef _WIN32
+	FrameStackSampler::BeginFrame();
 #endif
 
 	PROF_EVENT("on_idle");
@@ -174,14 +283,29 @@ void CRenderDevice::on_idle		()
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
-	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = !s_StartupActive && !Minimized && SDL_GetKeyboardFocus() == g_AppInfo.Window &&
+
+	// The game is played in the window that shows its picture: the main one, or the Game window's own
+	SDL_Window* GameWindow = CImGuiManager::Instance().GetGameWindow();
+	const bool IsGameFocused = GameWindow == g_AppInfo.Window ? Window.IsFocused : SDL_GetKeyboardFocus() == GameWindow;
+	const bool Focus = !s_StartupActive && !Window.IsMinimized && IsGameFocused &&
 					   !CImGuiManager::Instance().IsCapturingInputs() && (psDeviceFlags.test(rsFullscreen) || !IsMainMenuActive);
+
+	static SDL_WindowID HeldWindow = 0;
+	if (HeldWindow != SDL_GetWindowID(GameWindow))
+	{
+		if (SDL_Window* Held = HeldWindow ? SDL_GetWindowFromID(HeldWindow) : nullptr)
+		{
+			SDL_SetWindowMouseGrab(Held, false);
+			SDL_SetWindowRelativeMouseMode(Held, false);
+		}
+
+		HeldWindow = SDL_GetWindowID(GameWindow);
+	}
 
 	const bool IsLooking = CImGuiManager::Instance().IsMouseLook();
 	const bool IsRelative = IsLooking || (Focus && !CImGuiManager::Instance().IsCapturingInputs());
-	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && !Autotest::Active() && (Focus || IsLooking));
-	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && !Autotest::Active() && IsRelative);
+	SDL_SetWindowMouseGrab(GameWindow, !g_dedicated_server && !Autotest::Active() && (Focus || IsLooking));
+	SDL_SetWindowRelativeMouseMode(GameWindow, !g_dedicated_server && !Autotest::Active() && IsRelative);
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
@@ -262,7 +386,7 @@ void CRenderDevice::on_idle		()
 	{
 		Statistic->RenderTOTAL_Real.FrameStart();
 		Statistic->RenderTOTAL_Real.Begin();
-		if (b_is_Active)
+		if (b_is_Active && IsDrawn)
 		{
 			if (s_StartupActive)
 			{
@@ -270,10 +394,13 @@ void CRenderDevice::on_idle		()
 			}
 			else if (Begin())
 			{
+				// With r_render_thread the frame is drawn on the render thread, this one waiting (the render thread plan's
+				// stage 4: the whole phase goes over, the game's code in it included)
+				m_pRender->RunFrame([this]
 				{
 					PROF_EVENT("------ [OnRender phase] ------")
 					seqRender.Process<&pureRender::OnRender>();
-				}
+				}, true);
 
 				g_MonsterLogicTelemetry.CaptureFrame(Device.fTimeDeltaContinual);
 				if (IsFpsShow &&
@@ -299,9 +426,9 @@ void CRenderDevice::on_idle		()
 	PROF_FRAME("idle");
 #endif
 	
-	if (!b_is_Active)
+	if (!b_is_Active || !IsDrawn)
 	{
-		Sleep(1);
+		Sleep(IsDrawn ? 1 : 10);
 	}
 }
 
@@ -365,11 +492,49 @@ static void device_request_quit(int)
 	quiting = true;
 }
 
+// The renderer loads its part of a level on the load task (IGame_Level::Load) and reaches the graphics device from
+// there: a frame and that load take turns. A frame that finds the load waiting or at work is not drawn (the loading
+// events still run), so the load never waits for more than the frame it met
+xrCriticalSection g_RenderLoadLock;
+xr_atomic_u32 g_RenderLoadWaiting = 0;
+bool g_IsRenderLoadFrame = false;
+
 void CRenderDevice::message_loop()
 {
 	while (!quiting)
 	{
-		GRHI->BeginFrame();
+		g_IsRenderLoadFrame = g_RenderLoadWaiting.load(std::memory_order_acquire) || !g_RenderLoadLock.TryEnter();
+
+		// A minimised window is not drawn, and nothing waits for the swap chain: with no present its wait times out
+		const bool IsDrawn = !Window.IsMinimized && !g_IsRenderLoadFrame;
+
+		if (IsDrawn)
+		{
+			// Between frames the swap chain takes what the window and the settings ask for: its size, v-sync, queue
+			if (b_is_Ready && !g_dedicated_server && !IsEditorMode())
+			{
+				const RHISwapChainDesc Wanted = WantedSwapChain();
+
+				if (Wanted != GRHI->SwapChain)
+				{
+					m_pRender->ResizeSwapChain(Wanted);
+				}
+			}
+
+			// With the frames one behind the game (r_render_thread pipelined) the last one is still drawn here: the
+			// renderer begins the next, and waits for its turn, where the two meet (dxRenderDeviceRender::Begin)
+			const bool IsBegunLater = VideoSettings::Effective(EVideoSetting::RenderThread) == 2 && !IsEditorMode() && !g_dedicated_server && !s_StartupActive;
+
+			if (!IsBegunLater)
+			{
+				GRHI->BeginFrame();
+			}
+
+			if (PaceFrame)
+			{
+				PaceFrame();
+			}
+		}
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -383,19 +548,20 @@ void CRenderDevice::message_loop()
 
 		if (!quiting)
 		{
-#ifdef IXR_WINDOWS
-			if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			// The focus may also be in a tool window of the game's own
+			const bool IsFocused = CImGuiManager::Instance().IsFocused();
+			const bool IsActive = psDeviceFlags.test(rsDeviceActive) || g_dedicated_server || (IsFocused && !Window.IsMinimized);
+			if (IsActive != b_is_Active)
 			{
-				const bool IsMinimized = (SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED) != 0;
-				const bool IsFocused = CImGuiManager::Instance().IsFocused();
-				const bool IsActive = psDeviceFlags.test(rsDeviceActive) || (IsFocused && !IsMinimized);
-				if (IsActive != b_is_Active)
-				{
-					OnWM_Activate(IsFocused, IsMinimized);
-				}
+				OnWM_Activate(IsFocused, Window.IsMinimized);
 			}
-#endif
-			on_idle();
+
+			on_idle(IsDrawn);
+		}
+
+		if (!g_IsRenderLoadFrame)
+		{
+			g_RenderLoadLock.Leave();
 		}
 	}
 }
@@ -430,6 +596,8 @@ void CRenderDevice::Run()
 	// Message cycle
 	seqAppStart.Process<&pureAppStart::OnAppStart>();
 
+	// The start screen took the window's events so far
+	ReadWindowState();
 	message_loop();
 
 	seqAppEnd.Process<&pureAppEnd::OnAppEnd>();
@@ -450,6 +618,8 @@ void CRenderDevice::Run()
 
 u32 app_inactive_time		= 0;
 u32 app_inactive_time_start = 0;
+static s64 ContinualShift	= 0;
+static u32 LastContinual	= 0;
 
 struct EfficientFilteredDelta
 {
@@ -555,8 +725,7 @@ bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
 	dwFrame++;
-	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
-	
+
 	float dt = 0;
 	
 	const bool IsFixed = FixedDelta > 0.0f;
@@ -600,6 +769,11 @@ void CRenderDevice::FrameMove()
 	dwTimeGlobal = static_cast<u32>(Global / 1000);
 	dwTimeDelta = dwTimeGlobal - _old_global;
 
+	const u32 RealContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
+	ContinualShift += IsFixed && !Paused() ? s64(dwTimeDelta) - s64(RealContinual - LastContinual) : 0;
+	LastContinual = RealContinual;
+	dwTimeContinual = u32(s64(RealContinual) + ContinualShift);
+
 	Statistic->EngineTOTAL.Begin();
 	{
 		{
@@ -611,7 +785,15 @@ void CRenderDevice::FrameMove()
 	Statistic->EngineTOTAL.End();
 }
 
-CRenderDevice::CRenderDevice() : 
+void CRenderDevice::AnchorTime(u64 Mcs)
+{
+	GlobalShift.fetch_add(static_cast<s64>(Mcs) - static_cast<s64>(LastGlobal) - GlobalShift.load(std::memory_order_relaxed), std::memory_order_relaxed);
+	ContinualShift += static_cast<s64>(Mcs / 1000) - static_cast<s64>(dwTimeContinual);
+	fTimeGlobal = static_cast<float>(static_cast<double>(Mcs) / 1000000.0);
+	dwTimeGlobal = dwTimeContinual = static_cast<u32>(Mcs / 1000);
+}
+
+CRenderDevice::CRenderDevice() :
 	dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr), 
 	//GCThread(XRay::Engine::GCThread, "X-Ray GC Thread"),
 	PreRenderThread(XRay::Engine::PreRenderThread, "X-Ray PreRender Thread", EThreadRole::PreRender),

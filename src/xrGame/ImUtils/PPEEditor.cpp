@@ -1743,7 +1743,7 @@ void RenderPPEEditorUI_TexturePreview(IRHISurface* pTexture, IRHIShaderResourceV
 
 	if (pView && pView->GetRawSRV())
 	{
-		ImGui::Image(pView->GetRawSRV(), preview_size);
+		ImGui::Image(RHIUtils::ImGui::Image(pTexture), preview_size);
 	}
 }
 

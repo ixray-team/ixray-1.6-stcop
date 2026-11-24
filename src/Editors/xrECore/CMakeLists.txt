@@ -46,10 +46,10 @@ file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
 	"../../xrEngine/ObjectAnimator.cpp"
 	"../../xrServerEntities/LevelGameDef.cpp"
 
-	"../../Layers/xrRenderPC_R4/Blender_Blur.*"
-	"../../Layers/xrRenderPC_R4/Blender_LaEmB.*"
-	"../../Layers/xrRenderPC_R4/Blender_Screen_GRAY.*"
-	"../../Layers/xrRenderPC_R4/Blender_Shadow_World.*"
+	"../../Layers/xrRenderIXR/Blender_Blur.*"
+	"../../Layers/xrRenderIXR/Blender_LaEmB.*"
+	"../../Layers/xrRenderIXR/Blender_Screen_GRAY.*"
+	"../../Layers/xrRenderIXR/Blender_Shadow_World.*"
 )
 
 set(ECORE_SRC_FILES)
@@ -103,7 +103,7 @@ target_compile_definitions(xrECore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrECore PUBLIC xrRHI)
 target_link_libraries(xrECore PUBLIC xrEProps)
-target_link_libraries(xrECore PUBLIC xrRender_R4)
+target_link_libraries(xrECore PUBLIC xrRender_IXR)
 target_link_libraries(xrECore PUBLIC NvTriStrip)
 target_link_libraries(xrECore PUBLIC luabind)
 target_link_libraries(xrECore PUBLIC xrEngineCore)
@@ -123,7 +123,6 @@ if (WIN32)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGI)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGUID)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::D3DCompiler)
-	target_link_libraries(xrECore PUBLIC NVIDIA::DLSS)
 endif()
 
 

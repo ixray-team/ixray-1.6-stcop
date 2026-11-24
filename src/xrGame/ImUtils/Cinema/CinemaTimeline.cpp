@@ -5025,7 +5025,7 @@ void Editor::DrawKeyTicks(ImDrawList* List, const xr_vector<Lane>& Lanes, float 
 		const float Lo = Warp ? Cameras::PathTime(*Warp, Earliest) : Earliest, Hi = Warp ? Cameras::PathTime(*Warp, Latest) : Latest;
 		for (const Curve& Part : Track.Curves)
 		{
-			for (auto Item = std::lower_bound(Part.Keys.begin(), Part.Keys.end(), Lo, [](const Key& Other, float Moment) { return Other.Time < Moment; }); Item != Part.Keys.end() && Item->Time <= Hi; ++Item)
+			for (auto Item = std::lower_bound(Part.Keys.begin(), Part.Keys.end(), Lo, [](const Key& Other, float Moment) { return Other.Time < Moment; }); !IsParamRetired(Track.Id) && Item != Part.Keys.end() && Item->Time <= Hi; ++Item)
 			{
 				List->AddNgonFilled(ImVec2(TimeToX(Start + (Warp ? Cameras::LocalFromPath(*Warp, Item->Time) : Item->Time)), Y), TimelineUi::TickRadius, Color, 4);
 			}
@@ -5686,7 +5686,7 @@ void Editor::DrawGraph(Player& Core)
 				{
 					continue;
 				}
-				for (u8 Axis = 0; Axis < Info(Track.Id).Components; ++Axis)
+				for (u8 Axis = 0; !IsParamRetired(Track.Id) && Axis < Info(Track.Id).Components; ++Axis)
 				{
 					const Curve& Part = Track.Curves[Axis];
 					float Lo = FLT_MAX, Hi = -FLT_MAX;

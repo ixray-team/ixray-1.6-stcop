@@ -2723,7 +2723,7 @@ static SProjectedPoint ProjectWorld(const Fvector& world)
 		return result;
 	}
 
-	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Viewport = &View;
 	result.Screen.x = Viewport->Pos.x + (clip.x + 1.0f) * 0.5f * Viewport->Size.x;
 	result.Screen.y = Viewport->Pos.y + (1.0f - clip.y) * 0.5f * Viewport->Size.y;
 	result.Visible = true;
@@ -2733,7 +2733,7 @@ static SProjectedPoint ProjectWorld(const Fvector& world)
 static bool MouseRay(Fvector& origin, Fvector& direction)
 {
 	const ImGuiIO& io = ImGui::GetIO();
-	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Viewport = &View;
 
 	if (Viewport->Size.x <= 0.0f || Viewport->Size.y <= 0.0f)
 	{
@@ -12334,39 +12334,24 @@ void CCinemaFilmMakerManager::DrawLightTab()
 	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		const ImVec2 mouse = ImGui::GetIO().MousePos;
-		ImGui::GetForegroundDrawList(ImGui::GetMainViewport())->AddText(ImVec2(mouse.x + 16.0f, mouse.y + 16.0f), ImGui::GetColorU32(ImGuiCol_Text), "Pick scene color | Esc / right-click: cancel");
+		ImGui::GetForegroundDrawList(CImGuiManager::Instance().GetGameViewport())->AddText(ImVec2(mouse.x + 16.0f, mouse.y + 16.0f), ImGui::GetColorU32(ImGuiCol_Text), "Pick scene color | Esc / right-click: cancel");
 		if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
 			LightColorPicking = false;
 		}
-		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+		else if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && CImGuiManager::Instance().IsGameViewHovered())
 		{
 			LightColorPicking = false;
-			const ImGuiViewport* viewport = ImGui::GetMainViewport();
-			const float x = (mouse.x - viewport->Pos.x) / viewport->Size.x;
-			const float y = (mouse.y - viewport->Pos.y) / viewport->Size.y;
-			bool sampled = false;
-			if (x >= 0.0f && x < 1.0f && y >= 0.0f && y < 1.0f && GRHI && GRHI->DevicePtr && GRHI->DevicePtr->SwapChainRTV)
+			float picked[3];
+			if (CImGuiManager::Instance().ReadGameViewColor(picked))
 			{
-				const size_t capacity = (static_cast<size_t>(Device.TargetWidth) + 64) * (static_cast<size_t>(Device.TargetHeight) + 64) * 4;
-				if (capacity <= static_cast<size_t>(u32(-1)))
-				{
-					xr_vector<u8> pixels(capacity);
-					u32 width = 0, height = 0, pitch = 0;
-					if (GRHI->DevicePtr->ReadRenderTargetPixels(GRHI->DevicePtr->SwapChainRTV, pixels.data(), static_cast<u32>(pixels.size()), width, height, pitch) && width > 0 && height > 0)
-					{
-						const u32 px = std::min(static_cast<u32>(x * width), width - 1);
-						const u32 py = std::min(static_cast<u32>(y * height), height - 1);
-						const size_t offset = static_cast<size_t>(py) * pitch + static_cast<size_t>(px) * 4;
-						if (offset + 3 < pixels.size())
-						{
-							light.Color.set(pixels[offset + 2] / 255.0f, pixels[offset + 1] / 255.0f, pixels[offset] / 255.0f);
-							colorChanged = changed = sampled = true;
-						}
-					}
-				}
+				light.Color.set(picked[0], picked[1], picked[2]);
+				colorChanged = changed = true;
 			}
-			if (!sampled) ShowSceneDialog(ESceneDialog::Info, "Pick light color", { "Could not read the scene color at the selected position." });
+			else
+			{
+				ShowSceneDialog(ESceneDialog::Info, "Pick light color", { "Could not read the scene color at the selected position." });
+			}
 		}
 	}
 	if (ImGui::TreeNodeEx("Transform##light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
@@ -15913,8 +15898,8 @@ void CCinemaFilmMakerManager::DrawGizmo()
 			return;
 		}
 	}
-	const bool mouseOverUi = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
-	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const bool mouseOverUi = !CImGuiManager::Instance().IsGameViewHovered();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Viewport = &View;
 	const bool IsOverGame = ImGui::IsMouseHoveringRect(Viewport->Pos, ImVec2(Viewport->Pos.x + Viewport->Size.x, Viewport->Pos.y + Viewport->Size.y), false);
 	const bool canInteract = capturing && IsOverGame && !mouseOverUi && !ImGui::IsAnyItemActive();
 

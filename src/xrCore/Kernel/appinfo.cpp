@@ -20,7 +20,24 @@ bool CAppInfo::IsAsyncLoadThread() const noexcept
 	return Id != 0 && Id == Platform::GetThreadId(Platform::GetCurrentThread());
 }
 
+void CAppInfo::SetRenderThread(bool IsActive)
+{
+	RenderThreadId.store(IsActive ? Platform::GetThreadId(Platform::GetCurrentThread()) : 0, std::memory_order_release);
+}
+
+bool CAppInfo::IsRenderThread() const noexcept
+{
+	const size_t Id = RenderThreadId.load(std::memory_order_acquire);
+	return Id != 0 ? Id == Platform::GetThreadId(Platform::GetCurrentThread()) : IsPrimaryThread();
+}
+
+void CAppInfo::SetPrimaryDelegate(bool IsActive)
+{
+	PrimaryDelegateId.store(IsActive ? Platform::GetThreadId(Platform::GetCurrentThread()) : 0, std::memory_order_release);
+}
+
 bool CAppInfo::IsPrimaryThread() const noexcept
 {
-	return MainThreadId != 0 && MainThreadId == Platform::GetThreadId(Platform::GetCurrentThread());
+	const size_t Id = Platform::GetThreadId(Platform::GetCurrentThread());
+	return MainThreadId != 0 && (MainThreadId == Id || PrimaryDelegateId.load(std::memory_order_acquire) == Id);
 }

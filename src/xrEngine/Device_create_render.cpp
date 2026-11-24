@@ -9,13 +9,149 @@ static ERHI_API_LAYER CurrentAPILevel = ERHI_API_LAYER::D3D11;
 
 extern ENGINE_API bool g_appLoaded;
 void DrawProfilerOverlay();
+
+// The frame the gamma pass leaves for the tools, in the output target's corner
+static void* GamePicture()
+{
+	IRHIRenderTargetView* Picture = GRHI->DevicePtr->RenderRTV;
+	return RHIUtils::ImGui::Image(Picture ? Picture->GetSurface() : nullptr);
+}
+
+// The game's picture as a window among the tools: moved, sized and docked as any of them, the picture fitted
+// into it with its own proportions. Ctrl+Alt hides the tools and this window with them; the picture then fills
+// the main window, as it does without imgui_game_window
+static void DrawGameWindow()
+{
+	CImGuiManager& Manager = CImGuiManager::Instance();
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+
+	// Nothing else covers the back buffer now
+	ImGui::GetBackgroundDrawList(ImGui::GetMainViewport())->AddRectFilled(Viewport->Pos, ImVec2(Viewport->Pos.x + Viewport->Size.x, Viewport->Pos.y + Viewport->Size.y), IM_COL32(24, 24, 24, 255));
+
+	ImGui::SetNextWindowPos(Viewport->WorkPos, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(Viewport->WorkSize, ImGuiCond_FirstUseEver);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	// Moved, docked and taken out into an OS window of its own by its title bar or tab, as the tools are. The
+	// hidden autotest keeps it in the main window, which its window shots take
+	if (Autotest::Active())
+	{
+		ImGui::SetNextWindowViewport(Viewport->ID);
+	}
+
+	const bool IsShown = ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing);
+	const ImGuiViewport* Host = ImGui::GetWindowViewport();
+	Manager.GameViewportId = Host->ID;
+	Manager.GameWindowId = Host != Viewport ? u32(size_t(Host->PlatformHandle)) : 0;
+
+	if (IsShown)
+	{
+		const ImVec2 Room = ImGui::GetContentRegionAvail();
+		Manager.GameViewRoom = Room;
+
+		// A set size is shown scaled into the window; the other modes draw the frame at the window's own size,
+		// pixel for pixel, and only a window that has just shrunk scales it down for a frame
+		const float Fitted = std::min(Room.x / (float)Device.TargetWidth, Room.y / (float)Device.TargetHeight);
+		const float Scale = psGameViewMode == 2 ? Fitted : std::min(Fitted, 1.0f);
+		const ImVec2 Size((float)Device.TargetWidth * Scale, (float)Device.TargetHeight * Scale);
+		const ImVec2 Corner = ImGui::GetCursorScreenPos();
+		// Whole pixels: the linear filter of the image then returns the frame's own pixels
+		const ImVec2 At(std::floor(Corner.x + (Room.x - Size.x) * 0.5f), std::floor(Corner.y + (Room.y - Size.y) * 0.5f));
+
+		if (Size.x >= 1.0f && Size.y >= 1.0f)
+		{
+			ImGui::SetCursorScreenPos(At);
+			ImGui::Image(GamePicture(), Size, ImVec2(0.0f, 0.0f), ImVec2((float)Device.TargetWidth / (float)Device.OutputWidth, (float)Device.TargetHeight / (float)Device.OutputHeight));
+			// Hovered as an item, never active: a drag over the picture is the game's or a tool's, not a move of the window
+			ImGui::ItemHoverable(ImRect(At.x, At.y, At.x + Size.x, At.y + Size.y), ImGui::GetID("Picture"), ImGuiItemFlags_None);
+			Manager.GameViewPos = At;
+			Manager.GameViewSize = Size;
+		}
+
+		if (ImGui::BeginPopupContextWindow("GameView"))
+		{
+			static const struct
+			{
+				const char* Name;
+				float Aspect;
+			} Shapes[] = { { "16:9", 16.0f / 9.0f }, { "16:10", 16.0f / 10.0f }, { "4:3", 4.0f / 3.0f }, { "21:9", 21.0f / 9.0f }, { "1:1", 1.0f } };
+
+			static const int Sizes[][2] = { { 1280, 720 }, { 1600, 900 }, { 1920, 1080 }, { 2560, 1440 }, { 3840, 2160 } };
+
+			if (ImGui::MenuItem("Free", nullptr, psGameViewMode == 0))
+			{
+				psGameViewMode = 0;
+			}
+
+			ImGui::Separator();
+
+			for (const auto& Shape : Shapes)
+			{
+				if (ImGui::MenuItem(Shape.Name, nullptr, psGameViewMode == 1 && std::abs(psGameViewAspect - Shape.Aspect) < 0.01f))
+				{
+					psGameViewMode = 1;
+					psGameViewAspect = Shape.Aspect;
+				}
+			}
+
+			ImGui::Separator();
+
+			for (const auto& Item : Sizes)
+			{
+				string64 Name;
+				xr_sprintf(Name, "%d x %d", Item[0], Item[1]);
+
+				// A size larger than the targets has nothing to draw into
+				if (ImGui::MenuItem(Name, nullptr, psGameViewMode == 2 && psGameViewWidth == Item[0] && psGameViewHeight == Item[1], u32(Item[0]) <= Device.OutputWidth && u32(Item[1]) <= Device.OutputHeight))
+				{
+					psGameViewMode = 2;
+					psGameViewWidth = Item[0];
+					psGameViewHeight = Item[1];
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+	else
+	{
+		Manager.GameViewRoom = ImVec2(0.0f, 0.0f);
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar();
+}
+
 void DrawMainViewport()
 {
+	CImGuiManager& Manager = CImGuiManager::Instance();
+
+	if (Manager.IsGameViewWindow() && g_appLoaded)
+	{
+		DrawGameWindow();
+		return;
+	}
+
+	// The view where the gamma pass of the builds without the tools puts it: fitted into the window, the rest black
+	ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const Irect& Shown = Device.PresentRect;
+	const ImVec2 At(Viewport->Pos.x + (float)Shown.x1, Viewport->Pos.y + (float)Shown.y1);
+	const ImVec2 Size((float)Shown.width(), (float)Shown.height());
+
+	Manager.GameViewRoom = ImVec2(0.0f, 0.0f);
+	Manager.GameViewPos = At;
+	Manager.GameViewSize = Size;
+	Manager.GameViewportId = Viewport->ID;
+	Manager.GameWindowId = 0;
+
+	if (Shown.x1 > 0 || Shown.y1 > 0 || Size.x < Viewport->Size.x || Size.y < Viewport->Size.y)
+	{
+		ImGui::GetBackgroundDrawList(Viewport)->AddRectFilled(Viewport->Pos, ImVec2(Viewport->Pos.x + Viewport->Size.x, Viewport->Pos.y + Viewport->Size.y), IM_COL32(0, 0, 0, 255));
+	}
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowViewport(Viewport->ID);
 
 	if (g_appLoaded)
@@ -23,15 +159,15 @@ void DrawMainViewport()
 		ImGui::SetNextWindowBgAlpha(0.f);
 	}
 
-	ImGui::SetNextWindowPos(Viewport->Pos);
-	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+	ImGui::SetNextWindowPos(At);
+	ImGui::SetNextWindowSize(Size);
 	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing))
 	{
 		ImGui::BringWindowToDisplayBack(ImGui::GetCurrentWindow());
 		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::GetWindowDrawList()->AddRect(Viewport->Pos, ImVec2((float)Device.TargetWidth + Viewport->Pos.x, (float)Device.TargetHeight + Viewport->Pos.y), 0xFFFFFFFF);
+		ImGui::GetWindowDrawList()->AddRect(At, ImVec2(At.x + Size.x, At.y + Size.y), 0xFFFFFFFF);
 		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::Image(GRHI->DevicePtr->RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+		ImGui::Image(GamePicture(), Size, ImVec2(0.0f, 0.0f), ImVec2((float)Device.TargetWidth / (float)Device.OutputWidth, (float)Device.TargetHeight / (float)Device.OutputHeight));
 	}
 	ImGui::End();
 
@@ -98,14 +234,17 @@ bool CRenderDevice::InitRenderDeviceEditor()
 {
 	GRHI = new CRHI;
 	GetVideoModeList();
+	GRHI->SwapChain = { psCurrentVidMode[0], psCurrentVidMode[1], u32(psFrameQueue), psDeviceFlags.test(rsVSync) };
 
 	if (!GRHI->CreateDevice((ERHI_API_LAYER)g_graphicsAPI))
 	{
 		return false;
 	}
 
-	Device.TargetWidth = psCurrentVidMode[0];
-	Device.TargetHeight = psCurrentVidMode[1];
+	Device.TargetWidth = OutputWidth = psCurrentVidMode[0];
+	Device.TargetHeight = OutputHeight = psCurrentVidMode[1];
+	PresentRect.set(0, 0, int(OutputWidth), int(OutputHeight));
+	g_UiView.set(int(psCurrentVidMode[0]), int(psCurrentVidMode[1]));
 	CurrentAPILevel = GRHI->APILevel;
 
 	return true;
@@ -151,6 +290,10 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
 				bool IsDockWindow = psImGuiDockWindow != 0;
 				ImGui::Separator();
+				bool IsGameWindow = psImGuiGameWindow != 0;
+				ImGui::MenuItem("Game window", nullptr, &IsGameWindow);
+				ImGui::SetItemTooltip("The game's picture as a window to move, size and dock; Ctrl+Alt brings it back to the whole screen");
+				psImGuiGameWindow = IsGameWindow ? 1 : 0;
 				ImGui::MenuItem("Dock window", nullptr, &IsDockWindow);
 				ImGui::SetItemTooltip("An empty window to drag onto another screen and dock panels into");
 				psImGuiDockWindow = IsDockWindow ? 1 : 0;
@@ -301,7 +444,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		if (ImGui::Begin("DockSpaceViewport_Main", nullptr, dockspace_window_flags)) 
+		if (ImGui::Begin("DockSpaceViewport_Main", nullptr, dockspace_window_flags))
 		{
 			ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 		}
@@ -331,11 +474,16 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 	ImManager.Subscribe("Profiler", CImGuiManager::ERenderPriority::eLow, DrawProfilerOverlay);
 #endif
 #endif
+	// The swap chain takes the window's size; the targets the video mode
+	ReadWindowState();
+	Device.TargetWidth = OutputWidth = psCurrentVidMode[0];
+	Device.TargetHeight = OutputHeight = psCurrentVidMode[1];
+	GRHI->SwapChain = WantedSwapChain();
 	GRHI->CreateDevice(API);
 
-	Device.TargetWidth = psCurrentVidMode[0];
-	Device.TargetHeight = psCurrentVidMode[1];
-	CurrentAPILevel = API;
+	PresentRect.set(0, 0, int(OutputWidth), int(OutputHeight));
+	g_UiView.set(int(psCurrentVidMode[0]), int(psCurrentVidMode[1]));
+	CurrentAPILevel = GRHI->APILevel;
 	return true;
 }
 
@@ -395,10 +543,18 @@ u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime, u32 endtime)
 
 void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
-	GRHI->ResizeBuffers(Width, Height);
+	// The editors draw their viewport at its own size: the targets follow it
+	if (IsEditorMode())
+	{
+		psCurrentVidMode[0] = Width;
+		psCurrentVidMode[1] = Height;
+	}
 
-	Device.TargetWidth = Width;
-	Device.TargetHeight = Height;
+	GRHI->ResizeBuffers({ Width, Height, u32(psFrameQueue), psDeviceFlags.test(rsVSync) });
+
+	Device.TargetWidth = OutputWidth = psCurrentVidMode[0];
+	Device.TargetHeight = OutputHeight = psCurrentVidMode[1];
+	PresentRect.set(0, 0, int(OutputWidth), int(OutputHeight));
 }
 
 void CRenderDevice::ResizeWindow(u32 width, u32 height)
@@ -406,30 +562,30 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 	if (Autotest::Active())
 		psDeviceFlags.set(rsFullscreen, FALSE);
 
-	if (psDeviceFlags.is(rsFullscreen)) 
+	// Borderless at the desktop size of the window's display; the display mode is never changed
+	if (psDeviceFlags.is(rsFullscreen))
 	{
-#if defined(IXR_APPLE_SERIES)
-		// Do not pin a display mode: SDL3 then uses the current desktop resolution, while a
-		// mode that is missing from the list (a fresh install starts from 1024x768) leaves
-		// the window windowed.
-		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
-#else
-		SDL_DisplayMode displayMode;
-		displayMode.w = psCurrentVidMode[0];
-		displayMode.h = psCurrentVidMode[1];
-		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
-		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
-#endif
+		SDL_SetWindowFullscreenMode(g_AppInfo.Window, nullptr);
+		SDL_SetWindowFullscreen(g_AppInfo.Window, true);
 	}
 	else 
 	{
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 		SDL_SetWindowBordered(g_AppInfo.Window, true);
-		SDL_SetWindowSize(g_AppInfo.Window, width, height);
+		SDL_SetWindowResizable(g_AppInfo.Window, true);
 
-		const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
-		if (bCentered) {
-			SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+		SDL_SetWindowMinimumSize(g_AppInfo.Window, 640, 480);
+		ReadWindowState();
+
+		if (Window.PixelWidth != s32(width) || Window.PixelHeight != s32(height))
+		{
+			const float Density = std::max(SDL_GetWindowPixelDensity(g_AppInfo.Window), 0.01f);
+			SDL_SetWindowSize(g_AppInfo.Window, int(float(width) / Density + 0.5f), int(float(height) / Density + 0.5f));
+
+			const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
+			if (bCentered) {
+				SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+			}
 		}
 	}
 
@@ -439,9 +595,14 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		SDL_RaiseWindow(g_AppInfo.Window);
 	}
 
+	// The swap chain is made for the size the window has now, not for the one its events will report
+	SDL_SyncWindow(g_AppInfo.Window);
+	ReadWindowState();
+
 	if (GRHI->DevicePtr != nullptr)
 	{
-		ResizeBuffers(width, height);
+		const RHISwapChainDesc Wanted = WantedSwapChain();
+		ResizeBuffers(Wanted.Width, Wanted.Height);
 	}
 }
 
@@ -484,24 +645,19 @@ void CRenderDevice::EndRender()
 		
 		if (current_ticks < target_ticks)
 		{
-#if false
-			auto ms_sleep = std::chrono::duration_cast<std::chrono::milliseconds>(
-				std::chrono::nanoseconds(
-						target_ticks - current_ticks
-					)
-				);
+			// The system wakes a sleeper late by up to a millisecond or so: the last stretch is spun
+			constexpr tick Spin = 1'500'000;
+			const tick Deadline = prev_ticks + target_ticks;
+			PROF_EVENT("FPS limiter")
 
+			if (Deadline - curr_ticks > Spin)
 			{
-				PROF_EVENT("FPS limiter - sleep")
-				std::this_thread::sleep_for(ms_sleep);
+				SDL_DelayNS(u64(Deadline - curr_ticks - Spin));
 			}
-#else // precise fps limiter
-			long long ticks_wait = curr_ticks + target_ticks - current_ticks;
+
+			while (clock::now().time_since_epoch().count() < Deadline)
 			{
-				PROF_EVENT("FPS limiter - spin wait")
-				while (clock::now().time_since_epoch().count() < ticks_wait);
 			}
-#endif
 		}
 		prev_ticks = clock::now().time_since_epoch().count();
 	}

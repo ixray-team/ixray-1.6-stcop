@@ -95,7 +95,7 @@ void CImGuiManager::InitPlatform()
 
 void CImGuiManager::InitHardware()
 {
-	RHIUtils::ImGui::Init();
+	RHIUtils::ImGui::Init(true);
 }
 
 void CImGuiManager::Reset()
@@ -180,17 +180,73 @@ void CImGuiManager::BeginRender()
 
 void CImGuiManager::AfterRender()
 {
+	UpdatePlatform();
+	RenderPlatform();
+}
+
+void CImGuiManager::UpdatePlatform()
+{
+#ifdef IXR_WINDOWS
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+	}
+#endif
+}
+
+void CImGuiManager::RenderPlatform()
+{
 #ifdef IXR_WINDOWS
 	ImGuiIO& io = ImGui::GetIO();
 
-	// Update and Render additional Platform Windows
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		ImGui::UpdatePlatformWindows();
-		if (PlatformTimer.GetElapsed_mcs() >= 1000000 / 60)
+		// The tools' windows are drawn at most 60 times a second, the one with the game's picture every frame
+		const bool IsDue = PlatformTimer.GetElapsed_mcs() >= 1000000 / 60;
+		if (IsDue)
 		{
 			PlatformTimer.Start();
-			ImGui::RenderPlatformWindowsDefault();
+		}
+
+		const ImGuiViewport* Game = GetGameViewport();
+		ImGuiPlatformIO& PlatformIO = ImGui::GetPlatformIO();
+		const auto IsDrawn = [IsDue, Game](const ImGuiViewport* Viewport)
+		{
+			return !(Viewport->Flags & ImGuiViewportFlags_IsMinimized) && (IsDue || Viewport == Game);
+		};
+
+		for (int i = 1; i < PlatformIO.Viewports.Size; i++)
+		{
+			ImGuiViewport* Viewport = PlatformIO.Viewports[i];
+			if (IsDrawn(Viewport))
+			{
+				if (PlatformIO.Platform_RenderWindow)
+				{
+					PlatformIO.Platform_RenderWindow(Viewport, nullptr);
+				}
+
+				if (PlatformIO.Renderer_RenderWindow)
+				{
+					PlatformIO.Renderer_RenderWindow(Viewport, nullptr);
+				}
+			}
+		}
+
+		for (int i = 1; i < PlatformIO.Viewports.Size; i++)
+		{
+			ImGuiViewport* Viewport = PlatformIO.Viewports[i];
+			if (IsDrawn(Viewport))
+			{
+				if (PlatformIO.Platform_SwapBuffers)
+				{
+					PlatformIO.Platform_SwapBuffers(Viewport, nullptr);
+				}
+
+				if (PlatformIO.Renderer_SwapBuffers)
+				{
+					PlatformIO.Renderer_SwapBuffers(Viewport, nullptr);
+				}
+			}
 		}
 	}
 #endif
@@ -198,15 +254,23 @@ void CImGuiManager::AfterRender()
 
 void CImGuiManager::Render()
 {
+	Build();
+	Draw();
+}
+
+void CImGuiManager::Build()
+{
 #ifdef IXR_WINDOWS
-	if (AppliedScale != psImGuiScale)
+	// Before the frame, not when the display's scale changes: the font atlas may be in use then
+	const float Scale = psImGuiScale * Device.Window.DisplayScale;
+	if (AppliedScale != Scale)
 	{
 		BaseStyle = AppliedScale > 0.0f ? BaseStyle : ImGui::GetStyle();
 		ImGuiStyle Scaled = BaseStyle;
-		Scaled.ScaleAllSizes(psImGuiScale);
-		Scaled.FontScaleMain = psImGuiScale;
+		Scaled.ScaleAllSizes(Scale);
+		Scaled.FontScaleMain = Scale;
 		ImGui::GetStyle() = Scaled;
-		AppliedScale = psImGuiScale;
+		AppliedScale = Scale;
 	}
 	ImGui::NewFrame();
 
@@ -220,9 +284,10 @@ void CImGuiManager::Render()
 
 		if (!IsCapturingInputs())
 		{
-			for (auto& Window : ImGui::GetCurrentContext()->Windows) 
+			const ImGuiViewport* Game = GetGameViewport();
+			for (auto& Window : ImGui::GetCurrentContext()->Windows)
 			{
-				if (Window->Viewport == ImGui::GetMainViewport())
+				if (Window->Viewport == Game)
 				{
 					Window->Flags |= ImGuiWindowFlags_NoInputs;
 				}
@@ -243,13 +308,18 @@ void CImGuiManager::Render()
 
 	ImGui::Render();
 #endif
+}
 
-	RHIUtils::ImGui::DrawData();
+void CImGuiManager::Draw()
+{
+#ifdef IXR_WINDOWS
+	Device.m_pRender->DrawImGui(ImGui::GetDrawData());
+#endif
 }
 
 void CImGuiManager::UpdateCapture()
 {
-	HasPlatformWindowFocus = SDL_GetKeyboardFocus() != g_AppInfo.Window && IsFocused();
+	HasPlatformWindowFocus = SDL_GetKeyboardFocus() != GetGameWindow() && IsFocused();
 
 	static bool keyProcessed = false;
 
@@ -261,8 +331,12 @@ void CImGuiManager::UpdateCapture()
             {
                 DrawUIRender = !DrawUIRender;
 
+                // The picture goes back to the main window, whichever window had the focus
                 if (!DrawUIRender)
+                {
                     CaptureInputs = false;
+                    SDL_RaiseWindow(g_AppInfo.Window);
+                }
             }
             else if (DrawUIRender)
             {
@@ -327,6 +401,11 @@ void CImGuiManager::SetMouseLook(bool IsEnabled)
 
 float psImGuiScale = 1.0f;
 int psImGuiDockWindow = 0;
+int psImGuiGameWindow = 0;
+int psGameViewMode = 0;
+float psGameViewAspect = 16.0f / 9.0f;
+int psGameViewWidth = 1280;
+int psGameViewHeight = 720;
 
 bool CImGuiManager::IsButtonHeld(bool IsMiddle) const
 {
@@ -367,6 +446,108 @@ void CImGuiManager::NewHardwareFrame() const
 bool CImGuiManager::IsGUIRendering() const
 {
 	return DrawUIRender;
+}
+
+bool CImGuiManager::IsGameViewWindow() const
+{
+#ifdef DEBUG_DRAW
+	return DrawUIRender && psImGuiGameWindow != 0 && !psDeviceFlags.test(rsClearBB);
+#else
+	return false;
+#endif
+}
+
+ImGuiViewport* CImGuiManager::GetGameViewport() const
+{
+	ImGuiViewport* Viewport = ImGui::FindViewportByID(GameViewportId);
+	return Viewport ? Viewport : ImGui::GetMainViewport();
+}
+
+SDL_Window* CImGuiManager::GetGameWindow() const
+{
+	SDL_Window* Window = GameWindowId ? SDL_GetWindowFromID(GameWindowId) : nullptr;
+	return Window ? Window : g_AppInfo.Window;
+}
+
+bool CImGuiManager::FitGameView(u32 MaxWidth, u32 MaxHeight, u32& Width, u32& Height) const
+{
+	if (!IsGameViewWindow() || GameViewRoom.x < 1.0f || GameViewRoom.y < 1.0f)
+	{
+		return false;
+	}
+
+	float Wide = GameViewRoom.x;
+	float High = GameViewRoom.y;
+
+	if (psGameViewMode == 1)
+	{
+		const float Aspect = std::max(psGameViewAspect, 0.1f);
+		Wide = std::min(Wide, High * Aspect);
+		High = Wide / Aspect;
+	}
+	else if (psGameViewMode == 2)
+	{
+		Wide = float(psGameViewWidth);
+		High = float(psGameViewHeight);
+	}
+
+	// Even sizes: the half-size targets of the frame take whole pixels of them
+	Width = std::min(MaxWidth, std::max(64u, u32(Wide) & ~1u));
+	Height = std::min(MaxHeight, std::max(64u, u32(High) & ~1u));
+	return true;
+}
+
+ImVec2 CImGuiManager::GetGameViewMouse() const
+{
+	const ImVec2 Mouse = ImGui::GetIO().MousePos;
+	return ImVec2((Mouse.x - GameViewPos.x) / std::max(GameViewSize.x, 1.0f), (Mouse.y - GameViewPos.y) / std::max(GameViewSize.y, 1.0f));
+}
+
+bool CImGuiManager::IsGameViewHovered() const
+{
+	const ImGuiContext* Context = ImGui::GetCurrentContext();
+	const ImVec2 At = Context ? GetGameViewMouse() : ImVec2(-1.0f, -1.0f);
+
+	if (At.x < 0.0f || At.x >= 1.0f || At.y < 0.0f || At.y >= 1.0f)
+	{
+		return false;
+	}
+
+	return !Context->HoveredWindow || (IsGameViewWindow() && Context->HoveredWindow == ImGui::FindWindowByName("Game"));
+}
+
+bool CImGuiManager::ReadGameViewColor(float (&Color)[3]) const
+{
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+	// The gamma pass leaves the frame in the output target's corner, the size of the view
+	IRHIDevice* Rhi = GRHI ? GRHI->DevicePtr : nullptr;
+	const ImVec2 At = GetGameViewMouse();
+	const u64 Capacity = (u64(Device.OutputWidth) + 64) * (u64(Device.OutputHeight) + 64) * 4;
+
+	if (!Rhi || !Rhi->RenderRTV || Capacity > u32(-1) || At.x < 0.0f || At.x >= 1.0f || At.y < 0.0f || At.y >= 1.0f)
+	{
+		return false;
+	}
+
+	xr_vector<u8> Pixels(static_cast<size_t>(Capacity));
+	u32 Width = 0, Height = 0, Pitch = 0;
+
+	if (!Rhi->ReadRenderTargetPixels(Rhi->RenderRTV, Pixels.data(), u32(Pixels.size()), Width, Height, Pitch) || !Width || !Height)
+	{
+		return false;
+	}
+
+	const u32 X = std::min(u32(At.x * float(Device.TargetWidth)), std::min(Device.TargetWidth, Width) - 1);
+	const u32 Y = std::min(u32(At.y * float(Device.TargetHeight)), std::min(Device.TargetHeight, Height) - 1);
+	const u8* Pixel = Pixels.data() + size_t(Y) * Pitch + size_t(X) * 4;
+	Color[0] = Pixel[2] / 255.0f;
+	Color[1] = Pixel[1] / 255.0f;
+	Color[2] = Pixel[0] / 255.0f;
+	return true;
+#else
+	Color[0] = Color[1] = Color[2] = 0.0f;
+	return false;
+#endif
 }
 
 CImGuiManager& CImGuiManager::Instance()

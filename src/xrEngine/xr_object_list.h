@@ -98,7 +98,8 @@ public:
 private:
 	IC		Objects&			get_crows			()
 	{
-		if (std::this_thread::get_id() == m_owner_thread_id)
+		// The primary thread's list is also that of the thread it has handed its frame to
+		if (std::this_thread::get_id() == m_owner_thread_id || g_AppInfo.IsPrimaryThread())
 			return				(m_crows[0]);
 
 		return					(m_crows[1]);

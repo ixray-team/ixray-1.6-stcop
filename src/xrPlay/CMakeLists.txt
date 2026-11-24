@@ -42,7 +42,7 @@ target_link_libraries(xrEngine PUBLIC xrScripts)
 target_link_libraries(xrEngine PUBLIC Steamworks::Steamworks)
 
 if (WIN32)
-    add_dependencies(xrEngine xrGame xrRender_R4 xrCrashDumpHelper)
+    add_dependencies(xrEngine xrGame xrRender_IXR xrCrashDumpHelper)
 endif()
 
 if(IXRAY_MP)

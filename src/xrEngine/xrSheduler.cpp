@@ -343,7 +343,7 @@ void CSheduler::ProcessStep			()
 		if ((i % 3) != (3 - 1))
 			continue;
 
-		if (Device.dwPrecacheFrame==0 && CPU::QPC() > cycles_limit)		
+		if (Device.dwPrecacheFrame==0 && !Core.ParamsData.test(ECoreParams::autotest_dt) && CPU::QPC() > cycles_limit)
 		{
 			// we have maxed out the load - increase heap
 			psShedulerTarget		+= (psShedulerReaction * 3);

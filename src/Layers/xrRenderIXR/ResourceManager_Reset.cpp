@@ -1,0 +1,97 @@
+#include "stdafx.h"
+#include "ResourceManager.h"
+
+#include "../../xrEngine/Render.h"
+
+void CResourceManager::reset_begin()
+{
+	WaitForTextureLoading();
+	// destroy everything, renderer may use
+	::Render->reset_begin		();
+
+	// destroy state-blocks
+	for (u32 _it=0; _it<v_states.size(); _it++)
+		_RELEASE(v_states[_it]->state);
+
+	// destroy RTs
+	for (map_RTIt rt_it=m_rtargets.begin(); rt_it!=m_rtargets.end(); rt_it++)
+		rt_it->second->reset_begin();
+
+	for (map_RTCIt rtc_it=m_rtargets_c.begin(); rtc_it!=m_rtargets_c.end(); rtc_it++)
+	{
+		rtc_it->second->reset_begin();
+	}
+}
+
+void CResourceManager::reset_end()
+{
+	Evict();
+
+	// create RTs in the same order as them was first created
+	{
+		// RT
+		m_rt_sorter.clear();
+
+		for (auto&[Name, Target] : m_rtargets)
+			m_rt_sorter.push_back(Target);
+
+		std::sort(m_rt_sorter.begin(), m_rt_sorter.end(),[](const CRT* A, const CRT* B) 
+		{
+			return A->_order < B->_order;
+		});
+
+		for (CRT* Target : m_rt_sorter)
+			Target->reset_end	();
+	}
+	// create state-blocks
+	{
+		for (u32 _it=0; _it<v_states.size(); _it++)
+			v_states[_it]->state = GfxPipelineState::Create(v_states[_it]->state_code);
+	}
+
+	// create everything, renderer may use
+	::Render->reset_end		();
+#ifdef DEBUG
+	Dump(true);
+#endif
+}
+
+template<class C>	void mdump(C c)
+{
+	if (0==c.size())	return;
+	for (auto &[ref, val] : c) {
+		Msg	("*        : %3d: %s", (u32)val->dwReference, val->cName.c_str());
+	}
+}
+
+CResourceManager::~CResourceManager		()
+{
+	WaitForTextureLoading();
+	DestroyNecessaryTextures	();
+	PinnedTextures.clear		();
+	TexturePlaceholder			= nullptr;
+#ifdef DEBUG
+	Dump(false);
+#endif
+}
+
+void CResourceManager::Dump(bool bBrief)
+{
+	RenderThread::WaitIdle();
+	Msg		("* RM_Dump: textures  : %d",		m_textures.size());		if(!bBrief) mdump(m_textures);
+	Msg		("* RM_Dump: rtargets  : %d",		m_rtargets.size());		if(!bBrief) mdump(m_rtargets);
+	Msg		("* RM_Dump: rtargetsc : %d",		m_rtargets_c.size());	if(!bBrief) mdump(m_rtargets_c);
+	Msg		("* RM_Dump: vs        : %d",		m_vs.size());			if(!bBrief) mdump(m_vs);
+	Msg		("* RM_Dump: ps        : %d",		m_ps.size());			if(!bBrief) mdump(m_ps);
+	Msg		("* RM_Dump: states    : %d",		v_states.size());
+	Msg		("* RM_Dump: tex_list  : %d",		lst_textures.size());
+	Msg		("* RM_Dump: matrices  : %d",		lst_matrices.size());
+	Msg		("* RM_Dump: v_passes  : %d",		v_passes.size());
+	Msg		("* RM_Dump: v_elements: %d",		v_elements.size());
+	Msg		("* RM_Dump: v_shaders : %d",		v_shaders.size());
+}
+
+CSVGStorage* CResourceManager::GetSVGStorage() const
+{
+	return m_pStorageSVG;
+}

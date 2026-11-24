@@ -32,6 +32,47 @@ bool get_console_bool( CConsole* c, const char* cmd )
 	return c->GetBool( cmd );
 }
 
+// The video settings for the options menu (xrEngine/VideoSettings.h)
+const char* get_setting_reason(CConsole*, const char* cmd)
+{
+	return VideoSettings::Reason(cmd);
+}
+
+const char* get_setting_effective(CConsole*, const char* cmd)
+{
+	return VideoSettings::EffectiveToken(cmd);
+}
+
+const char* get_setting_apply(CConsole*, const char* cmd)
+{
+	return VideoSettings::ApplyClass(cmd);
+}
+
+bool is_setting_changed(CConsole*, const char* cmd)
+{
+	return VideoSettings::DiffersFromPreset(cmd);
+}
+
+const char* get_quality_preset_base(CConsole*)
+{
+	return VideoSettings::PresetBase();
+}
+
+bool is_restart_pending(CConsole*)
+{
+	return VideoSettings::IsRestartPending();
+}
+
+void set_setting_preview(CConsole*, const char* cmd, const char* token)
+{
+	VideoSettings::SetPreview(cmd, token);
+}
+
+void clear_setting_preview(CConsole*)
+{
+	VideoSettings::ClearPreview();
+}
+
 void execute_console_command_deferred	(CConsole* c, const char* string_to_execute)
 {
 	g_pEventManager->Event.Defer	("KERNEL:console", size_t(xr_strdup(string_to_execute)) );
@@ -120,5 +161,14 @@ void console_registrator::script_register(lua_State *L)
 			.def("get_bool",				&get_console_bool)
 			.def("get_float",				&get_console_float)
 			.def("get_token",				&CConsole::GetToken)
+
+			.def("get_setting_reason",		&get_setting_reason)
+			.def("get_setting_effective",	&get_setting_effective)
+			.def("get_setting_apply",		&get_setting_apply)
+			.def("is_setting_changed",		&is_setting_changed)
+			.def("get_quality_preset_base",	&get_quality_preset_base)
+			.def("is_restart_pending",		&is_restart_pending)
+			.def("set_setting_preview",		&set_setting_preview)
+			.def("clear_setting_preview",	&clear_setting_preview)
 	];
 }

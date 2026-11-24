@@ -799,7 +799,7 @@ bool CDofManager::SelectRequest(SHudDofRequest& Request)
 	if (Actor->IsTalking())
 	{
 		CInventoryOwner* Partner = Actor->GetTalkPartner();
-		if (g_DofOptions.Talk && Talk.w >= 0.0f && Partner && Partner->GetFocusingOnNpc())
+		if (VideoSettings::Effective(EVideoSetting::DofDialogue) && Talk.w >= 0.0f && Partner && Partner->GetFocusingOnNpc())
 		{
 			Fvector Position;
 			Partner->cast_game_object()->Center(Position);
@@ -863,7 +863,8 @@ bool CDofManager::SelectRequest(SHudDofRequest& Request)
 	const SHudDofSource& Source = HudItem->DofSource;
 	CWeapon* Weapon = Item->cast_weapon();
 	const bool IsReloading = Weapon && Weapon->GetState() == CWeapon::eReload;
-	if ((!IsReloading || g_DofOptions.Reload) && GetAction(Source, false, Request))
+	const bool IsReloadDof = VideoSettings::Effective(EVideoSetting::DofReload) != 0;
+	if ((!IsReloading || IsReloadDof) && GetAction(Source, false, Request))
 	{
 		ActiveEvent = IsReloading || Source.ReloadAction ? EDofEvent::Reload : EDofEvent::WeaponAction;
 		ActiveBinding = Source.Motion;
@@ -873,7 +874,7 @@ bool CDofManager::SelectRequest(SHudDofRequest& Request)
 	{
 		return false;
 	}
-	if (!g_DofOptions.Dynamic && g_DofOptions.Reload && Weapon->GetState() == CWeapon::eReload && Source.Item &&
+	if (!g_DofOptions.Dynamic && IsReloadDof && Weapon->GetState() == CWeapon::eReload && Source.Item &&
 		GetTimedAction(Source, Source.Item->Reload, Request))
 	{
 		ActiveEvent = EDofEvent::Reload;
@@ -912,7 +913,7 @@ bool CDofManager::SelectRequest(SHudDofRequest& Request)
 		}
 		return true;
 	}
-	if (g_DofOptions.ConstantZoom)
+	if (VideoSettings::Effective(EVideoSetting::DofZoom))
 	{
 		if (Weapon->IsGrenadeMode())
 		{

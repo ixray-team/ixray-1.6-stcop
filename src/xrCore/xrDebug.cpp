@@ -5,6 +5,21 @@
 #include "Kernel/EngineExternal.h"
 #include "Kernel/os_clipboard.h"
 #include "CrashDumpHelper.h"
+#include "CrashWindow.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <exception>
+
+#ifdef IXR_WINDOWS
+#	include "StackTrace/StackTrace.h"
+#else
+#	include <csignal>
+#	if defined(IXR_LINUX) || defined(IXR_MACOS)
+#		include <execinfo.h>
+#	endif
+#endif
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -22,6 +37,181 @@ XRCORE_API xrDebug Debug;
 #endif // DEBUG
 
 static bool	error_after_dialog = false;
+
+namespace
+{
+	void AppendBufferText(char*& Cursor, const char* Base, size_t TotalSize, const char* Text)
+	{
+		if (Cursor == nullptr || Base == nullptr || Text == nullptr || TotalSize == 0)
+		{
+			return;
+		}
+		const size_t Used = static_cast<size_t>(Cursor - Base);
+		if (Used + 1 >= TotalSize)
+		{
+			return;
+		}
+		const size_t Remaining = TotalSize - Used;
+		const int Added = std::snprintf(Cursor, Remaining, "%s", Text);
+		if (Added > 0)
+		{
+			const size_t Step = static_cast<size_t>(Added) < Remaining ? static_cast<size_t>(Added) : (Remaining - 1);
+			Cursor += Step;
+		}
+	}
+
+	struct StackCaptureState
+	{
+		char* Buffer;
+		const char* Base;
+		size_t TotalSize;
+		const char* Endline;
+		int FrameIndex;
+		bool bUseCrashWrite;
+	};
+
+	void EmitStackFrameLine(const char* Line, void* UserData)
+	{
+		auto* State = static_cast<StackCaptureState*>(UserData);
+		if (Line == nullptr || State == nullptr)
+		{
+			return;
+		}
+
+		// Skip internal debug/stack-capture frames
+		if (std::strstr(Line, "xrDebug::gather_info") != nullptr
+			|| std::strstr(Line, "xrDebug::backend") != nullptr
+			|| std::strstr(Line, "xrDebug::fail") != nullptr
+			|| std::strstr(Line, "xrDebug::fatal") != nullptr
+			|| std::strstr(Line, "CaptureCurrentStackTrace") != nullptr
+			|| std::strstr(Line, "LogStackTrace") != nullptr)
+		{
+			return;
+		}
+
+		++State->FrameIndex;
+
+		char Formatted[1280] = {};
+		std::snprintf(Formatted, sizeof(Formatted), "Frame %d: %s", State->FrameIndex, Line);
+
+		if (State->bUseCrashWrite)
+		{
+			xrLogger::WriteCrashLine(Formatted);
+		}
+		else
+		{
+			Msg("%s", Formatted);
+		}
+
+		if (State->Buffer != nullptr && State->Base != nullptr && State->TotalSize > 0)
+		{
+			AppendBufferText(State->Buffer, State->Base, State->TotalSize, Formatted);
+			AppendBufferText(State->Buffer, State->Base, State->TotalSize, State->Endline ? State->Endline : "\r\n");
+		}
+	}
+
+	void CaptureCurrentStackTrace(char*& Buffer, const char* Base, size_t TotalSize, const char* Endline, bool bUseCrashWrite)
+	{
+		int FrameIndex = 0;
+
+#if USE_CXX_STACKTRACE
+		const auto Stack = std::stacktrace::current();
+		for (const std::stacktrace_entry& Entry : Stack)
+		{
+			const std::string SourceFile = Entry.source_file();
+			if (SourceFile.contains("vctools\\crt\\vcstartup")
+				|| SourceFile.contains("VC\\Tools\\MSVC"))
+			{
+				continue;
+			}
+
+			const std::string Description = Entry.description();
+			if (Description.contains("xrDebug::gather_info")
+				|| Description.contains("xrDebug::backend")
+				|| Description.contains("xrDebug::fail")
+				|| Description.contains("xrDebug::fatal")
+				|| Description.contains("CaptureCurrentStackTrace")
+				|| Description.contains("LogStackTrace"))
+			{
+				continue;
+			}
+
+			++FrameIndex;
+			char Line[1280] = {};
+			if (!SourceFile.empty())
+			{
+				std::snprintf(Line, sizeof(Line), "Frame %d: %s - %s:%u", FrameIndex, Description.c_str(), SourceFile.c_str(), static_cast<unsigned int>(Entry.source_line()));
+			}
+			else if (!Description.empty())
+			{
+				std::snprintf(Line, sizeof(Line), "Frame %d: %s", FrameIndex, Description.c_str());
+			}
+			else
+			{
+				std::snprintf(Line, sizeof(Line), "Frame %d: <unknown>", FrameIndex);
+			}
+
+			if (bUseCrashWrite)
+			{
+				xrLogger::WriteCrashLine(Line);
+			}
+			else
+			{
+				Msg("%s", Line);
+			}
+
+			if (Buffer != nullptr && Base != nullptr && TotalSize > 0)
+			{
+				AppendBufferText(Buffer, Base, TotalSize, Line);
+				AppendBufferText(Buffer, Base, TotalSize, Endline ? Endline : "\r\n");
+			}
+		}
+#endif
+
+#ifdef IXR_WINDOWS
+		if (FrameIndex == 0)
+		{
+			CONTEXT Context = {};
+			Context.ContextFlags = CONTEXT_FULL;
+			RtlCaptureContext(&Context);
+
+			StackCaptureState State = { Buffer, Base, TotalSize, Endline, FrameIndex, bUseCrashWrite };
+			StackTrace::WalkStackTrace(&Context, 128, &EmitStackFrameLine, &State);
+			Buffer = State.Buffer;
+			FrameIndex = State.FrameIndex;
+		}
+#elif defined(IXR_LINUX) || defined(IXR_MACOS)
+		if (FrameIndex == 0)
+		{
+			void* Frames[128] = {};
+			const int Count = backtrace(Frames, 128);
+			char** Symbols = backtrace_symbols(Frames, Count);
+			if (Symbols != nullptr)
+			{
+				StackCaptureState State = { Buffer, Base, TotalSize, Endline, FrameIndex, bUseCrashWrite };
+				for (int i = 0; i < Count; ++i)
+				{
+					EmitStackFrameLine(Symbols[i], &State);
+				}
+				Buffer = State.Buffer;
+				free(Symbols);
+			}
+		}
+#endif
+	}
+} // namespace
+
+void LogStackTrace(const char* header)
+{
+	if (header != nullptr && header[0] != '\0')
+	{
+		Msg("%s", header);
+	}
+	Msg("stack trace:\n");
+	char* NullBuffer = nullptr;
+	CaptureCurrentStackTrace(NullBuffer, nullptr, 0, "\n", false);
+	xrLogger::FlushLog();
+}
 
 void xrDebug::gather_info(const char* expression, const char* description, const char* argument0, const char* argument1, const char* file, int line, const char* function, char* assertion_info, u32 const assertion_info_size)
 {
@@ -64,10 +254,8 @@ void xrDebug::gather_info(const char* expression, const char* description, const
 
 		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"%s",endline);
 		if (!i) {
-			if (shared_str_initialized) {
-				Msg		("%s",assertion_info);
-				xrLogger::FlushLog();
-			}
+			Msg			("%s",assertion_info);
+			xrLogger::FlushLog();
 			buffer		= assertion_info;
 			endline		= "\r\n";
 			prefix		= "";
@@ -79,57 +267,38 @@ void xrDebug::gather_info(const char* expression, const char* description, const
 		SendErrorCallback(assertion_info);
 	}
 
-	if (!ignore_error_window && !IsDebuggerPresent() && !strstr(GetCommandLineA(), "-no_call_stack_assert")) {
-		if (shared_str_initialized)
-			Msg			("stack trace:\n");
+	if (!strstr(GetCommandLineA(), "-no_call_stack_assert"))
+	{
+		Msg("stack trace:\n");
+		AppendBufferText(buffer, buffer_base, assertion_info_size, "stack trace:");
+		AppendBufferText(buffer, buffer_base, assertion_info_size, endline);
+		AppendBufferText(buffer, buffer_base, assertion_info_size, endline);
 
-		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"stack trace:%s%s",endline,endline);
+		CaptureCurrentStackTrace(buffer, buffer_base, assertion_info_size, endline, false);
 
-#if USE_CXX_STACKTRACE
-		int frame_i = 0;
-		const auto& stack = std::stacktrace::current();
-		for (const std::stacktrace_entry& entry : stack)
+		xrLogger::FlushLog();
+
+		if (!ignore_error_window && !IsDebuggerPresent())
 		{
-			const std::string& source_file = entry.source_file();
-			if (source_file.empty())
-				continue;
-
-			if (source_file.contains("vctools\\crt\\vcstartup")
-				|| source_file.contains("VC\\Tools\\MSVC"))
-				continue;
-
-			const std::string& description = entry.description();
-			if (description.contains("xrDebug::gather_info+")
-				|| description.contains("xrDebug::backend+")
-				|| description.contains("xrDebug::fail+"))
-				continue;
-
-			buffer += xr_sprintf(buffer, assertion_size - u32(buffer - buffer_base), "Frame %d: %s - %s:%d%s", ++frame_i, description.c_str(), source_file.c_str(), entry.source_line(), endline);
-
-			Msg("Frame %d: %s - %s:%d\n", frame_i, description.c_str(), source_file.c_str(), entry.source_line());
+			os_clipboard::copy_to_clipboard(assertion_info);
 		}
-#endif
-
-		if (shared_str_initialized)
-			xrLogger::FlushLog	();
-
-		os_clipboard::copy_to_clipboard	(assertion_info);
 	}
 }
 
 void xrDebug::do_exit(const std::string& message)
 {
 	extern XRCORE_API bool ignore_error_window;
-	xrLogger::FlushLog();
+	xrLogger::EmergencyFlush();
 
 	if (!SilentErrorMode)
 	{
 		if (!ignore_error_window)
 		{
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
+			CrashWindow::Show("IX-Ray process has crashed", message.c_str());
 		}
 	}
 
+	xrLogger::EmergencyFlush();
 	exit(1);
 }
 
@@ -253,6 +422,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 			{
 				__debugbreak();
 			}
+			xrLogger::EmergencyFlush();
 			// TODO: Maybe not correct
 			exit(-1);
 		}
@@ -471,7 +641,7 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 
 void format_message	(LPSTR buffer, const u32 &buffer_size)
 {
-	LPVOID		message;
+	LPVOID		message = nullptr;
 	DWORD		error_code = GetLastError(); 
 
 	if (!error_code) {
@@ -479,9 +649,10 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 		return;
 	}
 
-	FormatMessageA(
+	const DWORD Length = FormatMessageA(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-		FORMAT_MESSAGE_FROM_SYSTEM,
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
 		nullptr,
 		error_code,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
@@ -490,64 +661,223 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
 		nullptr
 	);
 
-	xr_sprintf	(buffer,buffer_size,"[error][%8d]    : %s",error_code,message);
+	if (Length == 0 || message == nullptr)
+	{
+		xr_sprintf(buffer, buffer_size, "[error][%8lu]    : <unknown system error>", error_code);
+		return;
+	}
+
+	xr_sprintf	(buffer,buffer_size,"[error][%8lu]    : %s",error_code,(const char*)message);
 	LocalFree	(message);
 }
 
 #include <errorrep.h>
 
-#include "StackTrace/StackTrace.h"
 static bool EnabledStackTrace = true;
 
-void ProcessStackTrace(_EXCEPTION_POINTERS *pExceptionInfo)
+static const char* ExceptionCodeToString(u32 Code)
 {
-	
-	string256				error_message;
-	format_message			(error_message,sizeof(error_message));
-
-	if (EnabledStackTrace)
+#define EXCEPTION_CODE_CASE(Name) case EXCEPTION_##Name: return "EXCEPTION_" #Name;
+	switch (Code)
 	{
-		CONTEXT save = *pExceptionInfo->ContextRecord;
+	EXCEPTION_CODE_CASE(ACCESS_VIOLATION)
+	EXCEPTION_CODE_CASE(ARRAY_BOUNDS_EXCEEDED)
+	EXCEPTION_CODE_CASE(BREAKPOINT)
+	EXCEPTION_CODE_CASE(DATATYPE_MISALIGNMENT)
+	EXCEPTION_CODE_CASE(FLT_DENORMAL_OPERAND)
+	EXCEPTION_CODE_CASE(FLT_DIVIDE_BY_ZERO)
+	EXCEPTION_CODE_CASE(FLT_INEXACT_RESULT)
+	EXCEPTION_CODE_CASE(FLT_INVALID_OPERATION)
+	EXCEPTION_CODE_CASE(FLT_OVERFLOW)
+	EXCEPTION_CODE_CASE(FLT_STACK_CHECK)
+	EXCEPTION_CODE_CASE(FLT_UNDERFLOW)
+	EXCEPTION_CODE_CASE(ILLEGAL_INSTRUCTION)
+	EXCEPTION_CODE_CASE(IN_PAGE_ERROR)
+	EXCEPTION_CODE_CASE(INT_DIVIDE_BY_ZERO)
+	EXCEPTION_CODE_CASE(INT_OVERFLOW)
+	EXCEPTION_CODE_CASE(INVALID_DISPOSITION)
+	EXCEPTION_CODE_CASE(NONCONTINUABLE_EXCEPTION)
+	EXCEPTION_CODE_CASE(PRIV_INSTRUCTION)
+	EXCEPTION_CODE_CASE(SINGLE_STEP)
+	EXCEPTION_CODE_CASE(STACK_OVERFLOW)
+	default: return "UNKNOWN_EXCEPTION";
+	}
+#undef EXCEPTION_CODE_CASE
+}
 
-		using namespace StackTrace;
-		std::vector<std::string> stackTrace = BuildStackTrace(pExceptionInfo->ContextRecord, 1024);
-		*pExceptionInfo->ContextRecord = save;
-		Msg("\n----------------------------------------------");
-		Msg("stack trace:\n");
+struct CrashStackContext
+{
+	char* Cursor;
+	const char* Base;
+	size_t TotalSize;
+};
 
-		string4096			buffer;
+static void OnCrashStackFrame(const char* Line, void* UserData)
+{
+	xrLogger::WriteCrashLine(Line);
 
-		for (size_t i = 0; i < stackTrace.size(); i++)
+	auto* Ctx = static_cast<CrashStackContext*>(UserData);
+	if (Ctx != nullptr && Ctx->Cursor != nullptr)
+	{
+		AppendBufferText(Ctx->Cursor, Ctx->Base, Ctx->TotalSize, Line);
+		AppendBufferText(Ctx->Cursor, Ctx->Base, Ctx->TotalSize, "\r\n");
+	}
+}
+
+static void WalkCrashStackProtected(PCONTEXT ContextRecord, CrashStackContext* Ctx)
+{
+	__try
+	{
+		StackTrace::WalkAllThreads(ContextRecord, 128, &OnCrashStackFrame, Ctx);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		xrLogger::WriteCrashLine("! Exception while capturing stack trace");
+	}
+}
+
+static void ShowCrashWindowProtected(const char* Title, const char* Details)
+{
+	__try
+	{
+		CrashWindow::Show(Title, Details);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		xrLogger::WriteCrashLine("! Exception inside CrashWindow::Show");
+	}
+}
+
+static void InvokeOnDialogProtected(on_dialog* Callback, bool Before)
+{
+	if (Callback == nullptr)
+	{
+		return;
+	}
+	__try
+	{
+		Callback(Before);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		xrLogger::WriteCrashLine("! Exception inside on_dialog callback");
+	}
+}
+
+static void UpdateClipboardOnCrashProtected(const char* Text)
+{
+	if (Text == nullptr || Text[0] == '\0')
+	{
+		return;
+	}
+	__try
+	{
+		os_clipboard::copy_to_clipboard(Text);
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		xrLogger::WriteCrashLine("! Exception while updating clipboard on crash");
+	}
+}
+
+void ProcessStackTrace(_EXCEPTION_POINTERS *pExceptionInfo, char* OutCrashText, size_t OutCrashTextSize)
+{
+	string256 error_message = {};
+	format_message(error_message, sizeof(error_message));
+
+	char* CrashCursor = OutCrashText;
+	if (OutCrashText != nullptr && OutCrashTextSize > 0)
+	{
+		OutCrashText[0] = '\0';
+	}
+
+	xrLogger::WriteCrashLine("");
+	xrLogger::WriteCrashLine("FATAL ERROR");
+	if (pExceptionInfo != nullptr && pExceptionInfo->ExceptionRecord != nullptr)
+	{
+		const EXCEPTION_RECORD* Rec = pExceptionInfo->ExceptionRecord;
+		char Header[512] = {};
+		if (Rec->ExceptionCode == EXCEPTION_ACCESS_VIOLATION && Rec->NumberParameters >= 2)
 		{
-			Msg(stackTrace[i].c_str());
-			xr_sprintf(buffer, sizeof(buffer), "%s\r\n", stackTrace[i].c_str());
+			const char* AccessOp = Rec->ExceptionInformation[0] == 0 ? "reading" : (Rec->ExceptionInformation[0] == 1 ? "writing" : "executing");
+			std::snprintf(Header, sizeof(Header), "[error] Unhandled exception: 0x%08lx (%s) at 0x%016llx (%s address 0x%016llx)",
+				Rec->ExceptionCode, ExceptionCodeToString(Rec->ExceptionCode),
+				static_cast<unsigned long long>(reinterpret_cast<uintptr_t>(Rec->ExceptionAddress)),
+				AccessOp, static_cast<unsigned long long>(Rec->ExceptionInformation[1]));
 		}
+		else
+		{
+			std::snprintf(Header, sizeof(Header), "[error] Unhandled exception: 0x%08lx (%s) at 0x%016llx",
+				Rec->ExceptionCode, ExceptionCodeToString(Rec->ExceptionCode),
+				static_cast<unsigned long long>(reinterpret_cast<uintptr_t>(Rec->ExceptionAddress)));
+		}
+		xrLogger::WriteCrashLine(Header);
+		if (OutCrashText != nullptr)
+		{
+			AppendBufferText(CrashCursor, OutCrashText, OutCrashTextSize, Header);
+			AppendBufferText(CrashCursor, OutCrashText, OutCrashTextSize, "\r\n\r\n");
+		}
+	}
 
-		Msg("----------------------------------------------\n\n");
+	if (EnabledStackTrace && pExceptionInfo != nullptr && pExceptionInfo->ContextRecord != nullptr)
+	{
+		xrLogger::WriteCrashLine("----------------------------------------------");
+		xrLogger::WriteCrashLine("stack trace:");
+
+		static char StackBuffer[65536] = {};
+		StackBuffer[0] = '\0';
+		CrashStackContext Ctx = { StackBuffer, StackBuffer, sizeof(StackBuffer) };
+		WalkCrashStackProtected(pExceptionInfo->ContextRecord, &Ctx);
+
+		xrLogger::WriteCrashLine("----------------------------------------------");
+
+		if (OutCrashText != nullptr && StackBuffer[0] != '\0')
+		{
+			AppendBufferText(CrashCursor, OutCrashText, OutCrashTextSize, StackBuffer);
+		}
 
 		if (*error_message)
 		{
-			//if (shared_str_initialized)
-			Msg("\n%s", error_message);
-			if (EngineExternal()[EEngineExternalSystem::CustomMessageInClipboardOnCrash])
+			xrLogger::WriteCrashLine(error_message);
+			if (OutCrashText != nullptr)
 			{
-				xr_stack_string256 ClipboardMessage = "Please, provide a full log in bugreport";
-				auto GetFunc = ClipboardMessageCallback::instance().GetFunc();
-				if (GetFunc)
-				{
-					ClipboardMessage = GetFunc();
-				}
-				os_clipboard::update_clipboard(ClipboardMessage.c_str());
-			} else
-			{
-
-				xr_strcat(error_message, sizeof(error_message), "\r\n");
-				os_clipboard::update_clipboard(buffer);
+				AppendBufferText(CrashCursor, OutCrashText, OutCrashTextSize, "\r\n");
+				AppendBufferText(CrashCursor, OutCrashText, OutCrashTextSize, error_message);
 			}
 		}
-	}	
 
-	xrLogger::FlushLog();
+		if (EngineExternal()[EEngineExternalSystem::CustomMessageInClipboardOnCrash])
+		{
+			xr_stack_string256 ClipboardMessage = "Please, provide a full log in bugreport";
+			auto GetFunc = ClipboardMessageCallback::instance().GetFunc();
+			if (GetFunc)
+			{
+				ClipboardMessage = GetFunc();
+			}
+			UpdateClipboardOnCrashProtected(ClipboardMessage.c_str());
+		}
+		else if (StackBuffer[0] != '\0')
+		{
+			if (*error_message)
+			{
+				AppendBufferText(Ctx.Cursor, Ctx.Base, Ctx.TotalSize, "\r\n");
+				AppendBufferText(Ctx.Cursor, Ctx.Base, Ctx.TotalSize, error_message);
+			}
+			static char MarkdownBuffer[65568] = {};
+			char* MdCursor = MarkdownBuffer;
+			MarkdownBuffer[0] = '\0';
+			AppendBufferText(MdCursor, MarkdownBuffer, sizeof(MarkdownBuffer), "```\r\n");
+			AppendBufferText(MdCursor, MarkdownBuffer, sizeof(MarkdownBuffer), StackBuffer);
+			if (MdCursor > MarkdownBuffer && *(MdCursor - 1) != '\n')
+			{
+				AppendBufferText(MdCursor, MarkdownBuffer, sizeof(MarkdownBuffer), "\r\n");
+			}
+			AppendBufferText(MdCursor, MarkdownBuffer, sizeof(MarkdownBuffer), "```");
+			UpdateClipboardOnCrashProtected(MarkdownBuffer);
+		}
+	}
+
+	xrLogger::EmergencyFlush();
 }
 
 LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
@@ -562,6 +892,9 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		::Sleep(INFINITE);
 	}
 
+	// Flush all buffered log lines immediately before minidump or symbol loading.
+	xrLogger::EmergencyFlush();
+
 #ifdef USE_OWN_MINI_DUMP
 	// Before the stack trace: the symbol engine takes seconds and allocates from a heap that may be broken.
 	// The helper process writes the dumps without this process allocating; without it the dump is written here.
@@ -571,41 +904,69 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	}
 #endif // USE_OWN_MINI_DUMP
 
-	ProcessStackTrace(pExceptionInfo);
+	static char CrashText[65536] = {};
+	ProcessStackTrace(pExceptionInfo, CrashText, sizeof(CrashText));
 
-	if (!error_after_dialog)
+	InvokeOnDialogProtected(Debug.get_on_dialog(), true);
+
+	extern XRCORE_API bool ignore_error_window;
+	if (!ignore_error_window && !Debug.SilentErrorMode)
 	{
-		if (Debug.get_on_dialog())
-		{
-			Debug.get_on_dialog()	(true);
-		}
-
-		extern XRCORE_API bool ignore_error_window;
-		if(!ignore_error_window)
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error", "Fatal error occured\n\nPress OK to abort program execution", nullptr);
+		ShowCrashWindowProtected("IX-Ray process has crashed", CrashText[0] != '\0' ? CrashText : "Fatal error occurred.");
+	}
+	else
+	{
+		char SkipMsg[128] = {};
+		std::snprintf(SkipMsg, sizeof(SkipMsg), "! Crash window suppressed (ignore_error_window=%d, SilentErrorMode=%d)",
+			ignore_error_window ? 1 : 0, Debug.SilentErrorMode ? 1 : 0);
+		xrLogger::WriteCrashLine(SkipMsg);
 	}
 
 	ReportFault(pExceptionInfo, 0);
 
-	if (Debug.get_on_dialog())
-	{
-		Debug.get_on_dialog()(false);
-	}
+	InvokeOnDialogProtected(Debug.get_on_dialog(), false);
+
+	xrLogger::EmergencyFlush();
 
 	return EXCEPTION_EXECUTE_HANDLER;
+}
+#else
+static void PosixCrashSignalHandler(int SignalNumber)
+{
+	static std::atomic_bool bHandlingCrash = false;
+	if (bHandlingCrash.exchange(true))
+	{
+		std::signal(SignalNumber, SIG_DFL);
+		std::raise(SignalNumber);
+		return;
+	}
+
+	xrLogger::EmergencyFlush();
+
+	char Header[128] = {};
+	std::snprintf(Header, sizeof(Header), "FATAL ERROR: Unhandled signal %d", SignalNumber);
+	xrLogger::WriteCrashLine("");
+	xrLogger::WriteCrashLine(Header);
+	xrLogger::WriteCrashLine("----------------------------------------------");
+	xrLogger::WriteCrashLine("stack trace:");
+
+	char* NullBuffer = nullptr;
+	CaptureCurrentStackTrace(NullBuffer, nullptr, 0, "\n", true);
+
+	xrLogger::WriteCrashLine("----------------------------------------------");
+	xrLogger::EmergencyFlush();
+
+	std::signal(SignalNumber, SIG_DFL);
+	std::raise(SignalNumber);
 }
 #endif
 
 //////////////////////////////////////////////////////////////////////
 void _terminate()
 {
-	if (strstr(GetCommandLineA(), "-silent_error_mode"))
-		exit(-1);
-
-	string4096				assertion_info;
+	string4096 assertion_info = {};
 
 	Debug.gather_info(
-		//gather_info				(
 		"<no expression>",
 		"Unexpected application termination",
 		nullptr,
@@ -621,14 +982,25 @@ void _terminate()
 		assertion_info
 	);
 
+	xrLogger::EmergencyFlush();
+
+	if (strstr(GetCommandLineA(), "-silent_error_mode"))
+	{
+		exit(-1);
+	}
+
 	const char* endline = "\r\n";
 	char* buffer = assertion_info + xr_strlen(assertion_info);
-	buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
+	AppendBufferText(buffer, assertion_info, sizeof(assertion_info), "Press OK to abort execution");
+	AppendBufferText(buffer, assertion_info, sizeof(assertion_info), endline);
 
 	extern XRCORE_API bool ignore_error_window;
-	if (!ignore_error_window)
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", assertion_info, nullptr);
+	if (!ignore_error_window && !Debug.SilentErrorMode)
+	{
+		CrashWindow::Show("IX-Ray process has crashed", assertion_info);
+	}
 
+	xrLogger::EmergencyFlush();
 	exit(-1);
 }
 
@@ -672,6 +1044,7 @@ void invalid_parameter_handler(const wchar_t* expression, const wchar_t* functio
 
 void __cdecl debug_on_thread_spawn(void)
 {
+	std::set_terminate(&_terminate);
 #ifdef IXR_WINDOWS
 	SetUnhandledExceptionFilter(UnhandledFilter);
 
@@ -701,8 +1074,15 @@ void xrDebug::_initialize(bool dedicated)
 		SilentErrorMode = true;
 	}
 	*g_bug_report_file = 0;
+	std::set_terminate(&_terminate);
 #ifdef IXR_WINDOWS
 	previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
+#else
+	std::signal(SIGSEGV, &PosixCrashSignalHandler);
+	std::signal(SIGABRT, &PosixCrashSignalHandler);
+	std::signal(SIGFPE, &PosixCrashSignalHandler);
+	std::signal(SIGILL, &PosixCrashSignalHandler);
+	std::signal(SIGBUS, &PosixCrashSignalHandler);
 #endif
 }
 

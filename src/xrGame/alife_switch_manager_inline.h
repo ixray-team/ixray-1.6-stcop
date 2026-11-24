@@ -14,7 +14,7 @@ IC	CALifeSwitchManager::CALifeSwitchManager		(xrServer *server, const char* sect
 	m_switch_distance	= pSettings->r_float(section,"switch_distance");
 	m_switch_factor		= pSettings->r_float(section,"switch_factor");
 	set_switch_distance	(m_switch_distance);
-	seed				(u32(CPU::QPC() & 0xffffffff));
+	seed				(Core.ParamsData.test(ECoreParams::autotest_dt) ? 1 : u32(CPU::QPC() & 0xffffffff));
 }
 
 IC	float CALifeSwitchManager::online_distance		() const

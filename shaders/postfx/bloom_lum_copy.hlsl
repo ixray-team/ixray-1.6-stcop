@@ -1,0 +1,24 @@
+/*
+Made by Papa Doenitz for IX-ray engine 2026-03-05
+CC BY-NC-SA 4.0 Lisence https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Credits goes to:
+Bruno Opsenica https://bruop.github.io/exposure/
+Krzysztof Narkowicz https://knarkowicz.wordpress.com/2016/01/09/automatic-exposure/
+The Real MJP https://mynameismjp.wordpress.com/2011/08/10/average-luminance-compute-shader/
+*/
+
+#include "common\common.hlsli"
+
+float ps_main(PSInputFullscreen I) : SV_Target
+{
+    float3 Color = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).rgb;
+    float Final = dot(Color, LUMINANCE_VECTOR);
+#ifdef USE_LEGACY_LIGHT
+    // The old light model measures the display luminance itself, and averages that
+    return pow(max(Final, 0.0f), 1.0f / 2.2f);
+#else
+    Final = max(Final, 0.001); // just protec low before log
+    return log2(Final);
+#endif
+}

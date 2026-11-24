@@ -42,7 +42,7 @@ CALifeSimulatorBase::CALifeSimulatorBase	(xrServer *server, const char* section)
 	m_groups					= 0;
 	m_registry_container		= 0;
 
-	random().seed				(u32(CPU::QPC() & 0xffffffff));
+	random().seed				(Core.ParamsData.test(ECoreParams::autotest_dt) ? 1 : u32(CPU::QPC() & 0xffffffff));
 	m_can_register_objects		= true;
 }
 

@@ -143,7 +143,7 @@ void CNightVisionEffector::Start(const shared_str& sect, bool play_sound, const 
 {
 	nvg_color = color;
 	const u32 Generation = std::min(pSettings->read_if_exists<u32>(sect, "shader_effect_range", 1u), 3u);
-	ShaderNightVision = LightingModeIsDynamic() && Generation != 0;
+	ShaderNightVision = Generation != 0;
 	m_bNightVisionOn = true;
 
 	if (ShaderNightVision)

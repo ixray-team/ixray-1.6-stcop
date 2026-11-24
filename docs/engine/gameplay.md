@@ -91,19 +91,19 @@ Priority is dialogue focus, anomaly ray focus, the active HUD animator, weapon a
 
 | Command | Default | Effect |
 | --- | --- | --- |
-| `r2_dof_enable` | renderer preset | Renderer master switch; reload the shader variant after changing it |
+| `r_dof` | `off` | Master switch: `off`, `low` (static profiles), `high` (physical camera); applied at once. While it is `off`, `r_dof_reload`, `r_dof_dialogue` and `r_dof_zoom` run as off |
 | `r2_dynamic_dof` | `false` | Weapon action profiles |
-| `r2_const_zoomdof` | `false` | Fixed iron-sight, alternate-sight and grenade-launcher profiles; otherwise use ray-picked focus |
-| `enable_dof_reload` | `true` | Cached legacy `reload_dof` profile when dynamic weapon DOF is off |
+| `r_dof_zoom` | `off` | Fixed iron-sight, alternate-sight and grenade-launcher profiles; otherwise use ray-picked focus |
+| `r_dof_reload` | `on` | Cached legacy `reload_dof` profile when dynamic weapon DOF is off |
 | `enable_dof_hud_animator` | `false` | Usable-item and PDA profiles, independently of weapon actions |
-| `enable_dof_talk` | `true` | Focus relative to the conversation partner |
+| `r_dof_dialogue` | `on` | Focus relative to the conversation partner |
 | `r2_dof_kernel` | `5` | The one blur size: the static blur radius, and four times it (1 to 40 output pixels) is the largest bokeh radius of the physical camera. Outside a rendered 3D lens the radius is doubled, fading with aiming |
 | `r2_dof_sky` | `30` | Sky focus distance |
 | `r2_dof_near/focus/far` | `-1.25, 1.4, 600` | Base profile, saved together by `r2_dof` |
 
 3D lenses use a fixed lens profile in either zoom mode. Ordinary collimators and optical scopes do not enable ray-picked focus. `disable_zoom_dof` in the weapon or HUD section suppresses its zoom profile. Native usable-item animators use the manager for both new animation profiles and legacy `dof = near, focus, far, release_time` fallback values.
 
-The `[gunslinger_base]` defaults are `default_zoom_dof_near/focus/far` (0.5, 0.8, 100), `default_action_dof_near/focus/far` (0, 0.5, 5), `default_dof_speed` (5), `default_dof_speed_in/out` (3/1), and `default_dof_time_offset` (-0.4 seconds). Speeds are interpolation rates in inverse seconds. Zero holds the current focus. Non-finite values fall back to defaults; inverted near/focus/far profiles are rejected. Ray focus offsets are cached from `[zone_pick_dof]`. An explicit resource value overrides the engine default. Fixed zoom profiles focus at the configured HUD distance, often 0.5 meters; reducing their far distance can blur the entire landscape. For iron sights that keep the aimed world target sharp, use `r2_const_zoomdof false`: the manager picks the target distance from the HUD ray and uses the cached near/far offsets around it. Keep `r2_dynamic_dof` enabled for weapon actions. Lens profiles keep their own `lens_dof_*` values in either zoom mode.
+The `[gunslinger_base]` defaults are `default_zoom_dof_near/focus/far` (0.5, 0.8, 100), `default_action_dof_near/focus/far` (0, 0.5, 5), `default_dof_speed` (5), `default_dof_speed_in/out` (3/1), and `default_dof_time_offset` (-0.4 seconds). Speeds are interpolation rates in inverse seconds. Zero holds the current focus. Non-finite values fall back to defaults; inverted near/focus/far profiles are rejected. Ray focus offsets are cached from `[zone_pick_dof]`. An explicit resource value overrides the engine default. Fixed zoom profiles focus at the configured HUD distance, often 0.5 meters; reducing their far distance can blur the entire landscape. For iron sights that keep the aimed world target sharp, use `r_dof_zoom off`: the manager picks the target distance from the HUD ray and uses the cached near/far offsets around it. Keep `r2_dynamic_dof` enabled for weapon actions. Lens profiles keep their own `lens_dof_*` values in either zoom mode.
 
 HUD zoom keys are `zoom_dof_near/focus/far`, `alter_zoom_dof_*`, `gl_dof_*`, and `lens_dof_*`. Alternate zoom inherits the normal profile; other weapon profiles inherit the global zoom defaults. Cached field flags let an attached scope override only its specified lens values. Transition rates are `zoom_in_dof_speed`, `alter_zoom_in_dof_speed`, `gl_in_dof_speed`, and `zoom_out_dof_speed`. PDA animators hold DOF while open; their `zoom_dof_*` overrides inherit the global action profile so the background blurs without a separate zoom action.
 
@@ -115,7 +115,7 @@ R4 writes an R8 lens coverage mask during the existing scope depth-mask pass. Fi
 
 Final DOF reads raw G-buffer depth (`r2_RT_P`) with point sampling. HUD pixels are identified in the reserved 0..0.02 viewport range and assigned the current focus distance: weapons, hands and HUD items remain sharp and do not contribute color to surrounding scene blur. Scene depth still reconstructs distance through the existing projection matrix. DOF does not depend on the temporal R16 depth target or on motion vectors; no extra textures or shader constants are needed for HUD exclusion.
 
-Advanced video options in all four distributions (`gamedata`, `gamedata_soc`, `gamedata_cs`, `gamedata_coc`) call the same `ui_mm_dof_options` module. Each package includes its copy, Russian and English strings, and the matching DOF/lens shaders. The section exposes every DOF console setting. Disabling the master preserves subordinate settings; base-distance sliders preserve profile ordering during apply/cancel. Per-item animation tuning remains in HUD configs.
+The Video page of the options in all four distributions (`gamedata`, `gamedata_soc`, `gamedata_cs`, `gamedata_coc`) calls the same `ui_mm_dof_options` module, identical in each package: `r_dof`, then `r_dof_reload`, `r_dof_dialogue`, `r_dof_zoom`, `r2_dynamic_dof`, `enable_dof_hud_animator`, `r4_ndof_inventory`, `r4_ndof_mode` and the static kernel, sky and distance sliders. With `r_dof off` the rows are greyed (`r4_ndof_mode` also below `high`) and keep their values; base-distance sliders preserve profile ordering during apply/cancel. Per-item animation tuning remains in HUD configs.
 
 ## Living entity weapon modifiers
 

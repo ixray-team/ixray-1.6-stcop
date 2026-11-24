@@ -1,0 +1,15 @@
+{
+    "type": "Surface",
+    "permutations": {
+        "vs": {
+            "lod_static": [
+                "FEATURE_SET=SurfaceVertex_Imposter|SurfaceLight_Vertex"
+            ]
+        },
+        "ps": {
+            "lod_static": [
+                "FEATURE_SET=SurfaceLight_Vertex"
+            ]
+        }
+    }
+}

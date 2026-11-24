@@ -354,6 +354,7 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 
 	m_fSunShaftsIntensity = 0;
 	m_fWaterIntensity = 1;
+	m_fAmbientScale = 1;
 
     lens_flare_id		= "";
 	tb_id				= "";
@@ -519,6 +520,7 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, const ch
 	}
 	config.r_float_nullable(identifier,"sun_shafts_intensity", m_fSunShaftsIntensity);
 	config.r_float_nullable(identifier,"water_intensity", m_fWaterIntensity);
+	config.r_float_nullable(identifier,"ambient_scale", m_fAmbientScale);
 
 	C_CHECK(clouds_color);
 	C_CHECK(sky_color);
@@ -667,11 +669,10 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 
 	sky_rotation			=	(fi*A.sky_rotation + f*B.sky_rotation);
 
-//.	far_plane				=	(fi*A.far_plane + f*B.far_plane + Mdf.far_plane)*psVisDistance*modif_power;
 	if(Mdf.use_flags.test(eViewDist))
-		far_plane				=	(fi*A.far_plane + f*B.far_plane + Mdf.far_plane)*psVisDistance*modif_power;
+		far_plane				=	std::min((fi*A.far_plane + f*B.far_plane + Mdf.far_plane)*modif_power, psViewDistance);
 	else
-		far_plane				=	(fi*A.far_plane + f*B.far_plane)*psVisDistance;
+		far_plane				=	std::min(fi*A.far_plane + f*B.far_plane, psViewDistance);
 	
 //.	fog_color.lerp			(A.fog_color,B.fog_color,f).add(Mdf.fog_color).mul(modif_power);
 	fog_color.lerp			(A.fog_color,B.fog_color,f);
@@ -686,7 +687,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 		fog_density			*= modif_power;
 	}
 
-	fog_distance			=	(fi*A.fog_distance + f*B.fog_distance) * psVisDistance;
+	fog_distance			=	std::min(fi*A.fog_distance + f*B.fog_distance, psViewDistance);
 	fog_near				=	(1.0f - fog_density)*0.85f * fog_distance;
 	fog_far					=	0.99f * fog_distance;
 
@@ -720,6 +721,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 
 	m_fSunShaftsIntensity	=	fi*A.m_fSunShaftsIntensity + f*B.m_fSunShaftsIntensity;
 	m_fWaterIntensity		=	fi*A.m_fWaterIntensity + f*B.m_fWaterIntensity;
+	m_fAmbientScale			=	fi*A.m_fAmbientScale + f*B.m_fAmbientScale;
 
 	trees_amplitude = fi * A.trees_amplitude + f * B.trees_amplitude;
 
@@ -1131,8 +1133,8 @@ void EnvLook::Mix(const CEnvDescriptor& A, const CEnvDescriptor& B, float Weight
 	Early.Read(A);
 	Late.Read(B);
 	Lerp(Early, Late, Weight);
-	FarPlane *= psVisDistance;
-	FogDistance *= psVisDistance;
+	FarPlane = std::min(FarPlane, psViewDistance);
+	FogDistance = std::min(FogDistance, psViewDistance);
 }
 
 void EnvLook::Lerp(const EnvLook& A, const EnvLook& B, float Weight)

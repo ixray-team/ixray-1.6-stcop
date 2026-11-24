@@ -1,33 +1,36 @@
-function add(wnd, handler, modeAllowed, reloadControls)
-	handler:lineFrame(wnd, modeAllowed, "st_dof_options")
-	handler.enableDof = handler:addCheck(wnd, modeAllowed, "ui_mm_dof", "r2_dof_enable", system_depends.sdVidRestart, "enableDof")
-	handler:AddCallback("enableDof", ui_events.BUTTON_CLICKED, reloadControls, nil)
+function add(wnd, handler)
+	handler:lineFrame(wnd, true, "st_dof_options")
+	handler:addComboBox(wnd, true, "ui_mm_dof", "r_dof", 3, false, system_depends.sdNothing)
+	handler:addCheck(wnd, true, "ui_mm_dof_reload", "r_dof_reload", system_depends.sdNothing)
+	handler:addCheck(wnd, true, "ui_mm_dof_talk", "r_dof_dialogue", system_depends.sdNothing)
+	handler:addCheck(wnd, true, "ui_mm_dof_const_zoom", "r_dof_zoom", system_depends.sdNothing)
 
-	local dofControls = {}
-	local dofEnabled = function(id)
-		if not modeAllowed(id) then return false end
-		for _, control in ipairs(dofControls) do
-			control:Enable(handler.enableDof:GetCheck())
+	-- These commands are outside the settings table: they follow r_dof as it runs
+	local setReason = function(physical)
+		handler.setting_rows[#handler.setting_rows].get_reason = function(console)
+			local dof = console:get_setting_effective("r_dof")
+			if dof == "off" then
+				return "st_reason_dof"
+			end
+			return physical and dof ~= "high" and "st_reason_dof_physical" or ""
 		end
-		return true
 	end
 	local addDofCheck = function(text, command)
-		local control = handler:addCheck(wnd, dofEnabled, text, command, system_depends.sdNothing)
-		table.insert(dofControls, control)
+		handler:addCheck(wnd, true, text, command, system_depends.sdNothing)
+		setReason(false)
 	end
 	local addDofTrack = function(text, command, step, name)
-		local control = handler:addTrack(wnd, dofEnabled, text, command, step, false, "float", true, system_depends.sdNothing, name)
-		table.insert(dofControls, control)
+		local control = handler:addTrack(wnd, true, text, command, step, false, "float", true, system_depends.sdNothing, name)
+		setReason(false)
 		return control
 	end
 
 	addDofCheck("ui_mm_dof_dynamic", "r2_dynamic_dof")
-	addDofCheck("ui_mm_dof_const_zoom", "r2_const_zoomdof")
 	addDofCheck("ui_mm_dof_hud_animator", "enable_dof_hud_animator")
-	addDofCheck("ui_mm_dof_reload", "enable_dof_reload")
-	addDofCheck("ui_mm_dof_talk", "enable_dof_talk")
+	addDofCheck("ui_mm_dof_inventory", "r4_ndof_inventory")
+	handler:addComboBox(wnd, true, "ui_mm_dof_physical_mode", "r4_ndof_mode", 2, false, system_depends.sdNothing)
+	setReason(true)
 	addDofTrack("ui_mm_dof_kernel", "r2_dof_kernel", 0.1)
-	addDofTrack("ui_mm_dof_lens_kernel_scale", "r2_dof_lens_kernel_scale", 0.1)
 	addDofTrack("ui_mm_dof_sky", "r2_dof_sky", 1)
 	local dofNear = addDofTrack("ui_mm_dof_near", "r2_dof_near", 0.1, "dofNear")
 	local dofFocus = addDofTrack("ui_mm_dof_focus", "r2_dof_focus", 0.1, "dofFocus")

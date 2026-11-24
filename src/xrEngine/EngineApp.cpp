@@ -201,8 +201,9 @@ void CEngineApp::DestroyLoadingScreen() { xr_delete(GLoadingScreen); }
 
 void CEngineApp::LoadDraw()
 {
-	if (g_appLoaded)				return;
-	if (!g_AppInfo.IsPrimaryThread())
+	extern bool g_IsRenderLoadFrame;
+
+	if (g_appLoaded || !g_AppInfo.IsPrimaryThread() || g_IsRenderLoadFrame)
 		return;
 	Device.dwFrame += 1;
 

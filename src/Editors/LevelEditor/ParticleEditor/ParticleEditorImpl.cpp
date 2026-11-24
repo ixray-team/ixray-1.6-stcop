@@ -2,10 +2,10 @@
 #include "stdafx.h"
 
 
-#include "../../../Layers/xrRenderPC_R4/PSLibrary.h"
-#include "../../../Layers/xrRenderPC_R4/ParticleEffect.h"
-#include "../../../Layers/xrRenderPC_R4/ParticleGroup.h"
-#include "../../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
+#include "../../../Layers/xrRenderIXR/PSLibrary.h"
+#include "../../../Layers/xrRenderIXR/ParticleEffect.h"
+#include "../../../Layers/xrRenderIXR/ParticleGroup.h"
+#include "../../../Layers/xrRenderIXR/ParticleAnimCurve.h"
 
 #include "ParticleEffectActions.h"
 #include "FolderLib.h"

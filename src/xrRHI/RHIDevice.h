@@ -1,6 +1,45 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #pragma once
 #include "RHITypes.h"
 #include "RHIEnums.h"
+
+namespace nri
+{
+struct CommandBuffer;
+}
 
 class RHIObject;
 class IRHIStateManager;
@@ -44,7 +83,10 @@ public:
 
 public:
 	virtual ~IRHIDevice() = default;
-	virtual void ResizeBuffers(u32 Width, u32 Height) = 0;
+	// The swap chain as SwapChain says and the screen targets at the video mode
+	virtual void ResizeBuffers(const RHISwapChainDesc& SwapChain) = 0;
+	// The swap chain alone, made again once the GPU is idle: nothing bound to its back buffers may stay bound
+	virtual void ResizeSwapChain(const RHISwapChainDesc& SwapChain) = 0;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) = 0;
 	virtual void ClearTarget(void* Target, const float* Color) = 0;
 	virtual void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil) = 0;
@@ -82,7 +124,6 @@ public:
     virtual void SetConstants(const RHIConstantWrite* Writes, u32 Count) = 0;
     virtual void ClearIndexBuffer() = 0;
     virtual void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) = 0;
-    virtual HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) = 0;
 
     virtual HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) = 0;
     virtual HRESULT ReplaceShader(RHIObject* shader, const void* code, size_t size) { (void)shader; (void)code; (void)size; return E_NOTIMPL; }
@@ -94,12 +135,7 @@ public:
     virtual void SetSamplers(RHIObject* const* States, u32 Count) = 0;
     virtual void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) = 0;
     virtual void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) = 0;
-    virtual HRESULT CreateOcclusionQuery(RHIObject** out_query) = 0;
-    virtual HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags) = 0;
-    virtual void BeginQuery(RHIObject* query) = 0;
-    virtual void EndQuery(RHIObject* query) = 0;
     virtual IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data) = 0;
-    virtual void CopySwapchain(IRHISurface* dest) = 0;
     virtual bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags) = 0;
     virtual void* GetState(const RHIRasterizerDesc& desc) = 0;
     virtual void* GetState(const RHIDepthStencilDesc& desc) = 0;
@@ -110,16 +146,25 @@ public:
     virtual bool SetDepthBounds(bool enable, float minimum, float maximum) { return false; }
 
 	// Seams for passes recorded through NRI while this backend still owns the resources.
-	// Begin leaves Reads readable by a pixel shader, Targets and Depth writable, and returns what the pass
-	// records into: this backend's own command list (D3D12) or context (D3D11), so the pass lands
-	// in order with no submit. End makes this backend forget the pipeline state it had bound.
+	// Begin leaves Reads readable by a pixel shader, Targets and Depth writable, and returns the NRI command
+	// buffer of this backend's open list (D3D12): every pass of the list records into it in order, with no
+	// wrapper and no submit. Null on D3D11, whose passes replay on its context when submitted. End makes
+	// this backend forget the pipeline state it had bound.
 	virtual bool GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size) { return false; }
-	virtual void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) { return nullptr; }
+	virtual nri::CommandBuffer* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) { return nullptr; }
 	virtual void EndExternalPass() {}
 	// The native buffer, left in a state a shader of the pass can read it in
 	virtual void* ReadExternalBuffer(IRHIBuffer* Buffer) { return nullptr; }
-	// Leaves a surface in a state the pass can sample or copy it in
-	virtual void ReadExternalSurface(IRHISurface* Surface) {}
+	// Command buffers recorded elsewhere through NRI, run after everything recorded so far and before what is recorded
+	// next: the frame's one submit carries them. With none, what is recorded is submitted now. False
+	// where this backend cannot (D3D11 records on one context)
+	virtual bool SubmitExternalCommands(nri::CommandBuffer* const* Buffers, u32 Count) { return false; }
 
 	virtual void EvictManagedResources() {};
+
+	// The graphics pipelines the device made at a draw are remembered between runs: the count of them, making one
+	// of them ahead of its first draw (true if it was made), and writing the list
+	virtual u32 LearnedPipelineCount() { return 0; }
+	virtual bool PrecreatePipeline(u32 Index) { return false; }
+	virtual void SaveLearnedPipelines() {}
 };

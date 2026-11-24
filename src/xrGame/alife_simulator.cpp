@@ -19,6 +19,8 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrScripts/exports/script_ini_file.h"
 #include "../xrCore/IniCache.h"
+#include "player_hud.h"
+#include "WatchDevice/WatchDevice.h"
 
 #ifdef DEBUG
 #	include "moving_objects.h"
@@ -47,6 +49,12 @@ void restart_all				()
 	}
 
 	g_pGamePersistent->ixr_framework_onframe.reset();
+
+	if (g_player_hud)
+	{
+		g_player_hud->WatchDevice().ResetScripts();
+	}
+
 	{
 		PROF_EVENT("restart_all: cached ini");
 		ClearCachedIniFiles();

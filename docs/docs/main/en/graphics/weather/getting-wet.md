@@ -1,6 +1,6 @@
 # Getting Wet
 
-R4 supports general wet surfaces, rain puddles and separate level-authored volumetric puddles. Rain puddles use a texture mask in PBR when one is available, otherwise PBR automatically uses procedural contours. Legacy lighting uses procedural terrain puddles.
+The advanced renderer supports general wet surfaces, rain puddles and separate level-authored volumetric puddles. The simplified renderer has general wet surfaces at high shading quality on surfaces with a normal map, and procedural rain puddles on terrain with PBR textures; it has no texture-mask puddles and no level-authored volumetric puddles. Rain puddles use a texture mask in PBR when one is available, otherwise PBR automatically uses procedural contours. Legacy lighting uses procedural terrain puddles.
 
 ## Weather and accumulated wetness
 
@@ -18,22 +18,10 @@ This state is separate from [visor drops](../../gameplay/equipment/visor-glass.m
 ## Options
 
 ```text
-r4_rain_puddles on
-r3_dynamic_wet_surfaces on
+r_wet_surfaces on
 ```
 
-**Rain puddles** in advanced graphics settings uses `r4_rain_puddles` for both PBR and legacy lighting. It is initially off unless enabled by a user profile. Restart the game after enabling it so procedural shaders and their resources can be created. Disabling it takes effect immediately in the current frame's material calculations and puddle reflection pass.
-
-`r3_dynamic_wet_surfaces` independently controls general wet-surface shading, splashes and streaks. Turning it off does not disable rain puddles. Turning puddles off does not disable general wet surfaces.
-
-| `r4_rain_puddles` | `r3_dynamic_wet_surfaces` | Result |
-| --- | --- | --- |
-| on | on | Rain puddles and general wet surfaces. |
-| on | off | Rain puddles without general wet-surface shading. |
-| off | on | General wet surfaces without rain puddles. |
-| off | off | Neither effect. |
-
-`r4_puddles` remains a separate switch for level-authored volumetric puddle geometry. It is not an alias for `r4_rain_puddles`.
+`r_wet_surfaces` (`off` or `on`, default `on`) is one switch for general wet-surface shading, splashes and streaks, rain puddles in both PBR and legacy lighting, and level-authored volumetric puddles. The effects can no longer be turned on one by one. Run `r_restart` after changing it so procedural shaders and their resources can be created or released. The option is part of the quality presets: `r_quality_preset` sets it, and a different value reads as `custom`.
 
 ## Selecting the puddle algorithm
 
@@ -54,7 +42,7 @@ Use `0` or omit this option for PBR. Check DLTX `mod_engine_external_*.ltx` file
 
 The renderer checks `$level$/rain_mask.dds` (for example, `levels/pripyat/rain_mask.dds`), including files in mounted level archives. If the level has no mask, the procedural fallback is selected automatically; no extra option or authored mask is needed. The shared `textures/rain_mask.dds` placeholder is retained but does not count as a mask for the current level. Selection and the mask texture are refreshed on level changes and device resets, so a previous level's mask is not reused accidentally. A present but empty level mask still selects the mask implementation. With puddles enabled, the log reports `Rain puddles: PBR procedural (no level rain_mask.dds)` or `Rain puddles: PBR level mask` followed by its path.
 
-The existing PBR mask projection, material coefficients, slope and rain-shadow calculations are retained. The fallback uses the shared Perlin contours, waves and rain-impact ripple algorithm; its coordinates come from the existing PBR level-projection bounds. It modifies the G-buffer's roughness, specular response, color, AO and normal before native reflections. It does not use the legacy reflection overlay or overwrite PBR specular data with a puddle coverage channel.
+The existing PBR mask projection, material coefficients, slope and rain-shadow calculations are retained. The fallback fills the terrain from its low places up as wetness accumulates, with the shared wave and rain-impact ripple textures; its coordinates come from the existing PBR level-projection bounds. It changes the terrain's roughness, specular response, color, AO and normal as a part of its material, before lighting and native reflections. It does not use the legacy reflection overlay or overwrite PBR specular data with a puddle coverage channel.
 
 ## Procedural contours and surfaces
 
@@ -68,9 +56,9 @@ Contours are **texture-driven**, rather than generated entirely from mathematica
 
 All three textures are supplied in all four game packages and shared by all levels. A separate terrain or level puddle mask is not required for the procedural algorithm.
 
-Coverage follows accumulated wetness and the upward geometric normal. Contour edges retain the soft `smoothstep(0, 0.255, Amount)` transition. Legacy procedural puddles keep the slope factor `saturate((0.1 - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13)` and remain limited to almost horizontal terrain. The PBR fallback is also restricted to terrain (`TERRAIN_ID`), including shallow terrain slopes. Ordinary static geometry (`BASE_ID`), such as separate pavement or roof meshes, is excluded. It uses `1 - smoothstep(0.05, 0.2, max(abs(WorldNormal.x), abs(WorldNormal.z)))` after contour smoothing, so slopes attenuate coverage without changing the contour threshold. Geometric normals are reconstructed over a projected 25 cm radius, bounded by one texel and 2% of the viewport in each axis, to soften transitions between nearby terrain faces. This reuses the existing four neighboring depth samples. Rain-shadow checks still apply. Objects, foliage and HUD geometry are excluded; vertical walls fail the slope check.
+Coverage follows accumulated wetness and the upward geometric normal. In PBR the water level rises to 0.6 of the terrain layers' height range at full wetness, and terrain below it is under water; layers that let light through hold none. Legacy contour edges retain the soft `smoothstep(0, 0.255, Amount)` transition. Legacy procedural puddles keep the slope factor `saturate((0.1 - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13)` and remain limited to almost horizontal terrain. The PBR fallback is also restricted to terrain (`TERRAIN_ID`), including shallow terrain slopes. Ordinary static geometry (`BASE_ID`), such as separate pavement or roof meshes, is excluded. It uses `1 - smoothstep(0.05, 0.2, max(abs(WorldNormal.x), abs(WorldNormal.z)))` on the terrain's own normal, so slopes attenuate coverage without changing the water level. Rain-shadow checks still apply. Objects, foliage and HUD geometry are excluded; vertical walls fail the slope check.
 
-Legacy terrain shading also refracts detail-texture coordinates. The PBR fallback works on the already rendered G-buffer and therefore uses native material shading instead of detail-texture refraction. Its water normal follows the reconstructed geometric normal, with waves and rain-impact ripples applied in the surface's tangent frame. Keeping the reflection normal aligned with shallow slopes reduces ground self-reflections at grazing angles. The native PBR reflection algorithm is unchanged.
+Legacy terrain shading also refracts detail-texture coordinates. The PBR fallback is part of the terrain's material and uses native material shading instead of detail-texture refraction. Its water normal follows the terrain's geometric normal, with waves and rain-impact ripples applied in the surface's tangent frame. Keeping the reflection normal aligned with shallow slopes reduces ground self-reflections at grazing angles. The native PBR reflection algorithm is unchanged.
 
 ### Water exclusion and shore transitions
 
@@ -85,9 +73,9 @@ The map is prepared on level load or device reset, without per-frame collision q
 Legacy puddles call the water shader's existing `ScreenSpaceLocalReflections` function. Enable scene reflections with:
 
 ```text
-r4_sslr_water on
+r_water_reflections on
 ```
 
-This shader option requires a restart. Without it, legacy puddles still reflect sky maps. Sky maps also provide fallback when SSR has no visible scene hit. Border and fog fading remain part of the water SSR path.
+`r_water_reflections` (`off` or `on`, default `on`) is applied with a shader recompile on the next frame. Without it, legacy puddles still reflect sky maps. Sky maps also provide fallback when SSR has no visible scene hit. Border and fog fading remain part of the water SSR path.
 
-PBR puddles, with either a supplied mask or procedural fallback, use the existing PBR SSLR/VSLR pipeline and material parameters. Their scene reflections are independent of `r4_sslr_water`; this switch still controls water surfaces and the legacy puddle overlay.
+PBR puddles, with either a supplied mask or procedural fallback, use the existing PBR SSLR/VSLR pipeline and material parameters. Their scene reflections are independent of `r_water_reflections`; this switch still controls water surfaces and the legacy puddle overlay.

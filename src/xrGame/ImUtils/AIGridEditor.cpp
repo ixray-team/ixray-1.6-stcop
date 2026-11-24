@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "AIGridEditor.h"
 #include "ImUtils.h"
+#include "../../xrEngine/ImGuiManager.h"
 #include "../Level.h"
 #include "../ai_space.h"
 #include "../level_graph.h"
@@ -85,14 +86,12 @@ static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fv
 
 static Fvector MouseDirection()
 {
-	float X, Y;
-	SDL_GetMouseState(&X, &Y);
-	const float Width = float(Device.GetSwapchainWidth());
-	const float Height = float(Device.GetSwapchainHeight());
+	// The mouse over the game's picture, 0 to 1 a side, wherever the picture is shown
+	const ImVec2 Mouse = CImGuiManager::Instance().GetGameViewMouse();
 	const float Vertical = tan(deg2rad(Device.fFOV) * 0.5f);
 	Fvector Direction = Device.vCameraDirection;
-	Direction.mad(Device.vCameraRight, (2.f * X / std::max(1.f, Width) - 1.f) * Vertical / Device.fASPECT);
-	Direction.mad(Device.vCameraTop, (1.f - 2.f * Y / std::max(1.f, Height)) * Vertical);
+	Direction.mad(Device.vCameraRight, (2.f * Mouse.x - 1.f) * Vertical / Device.fASPECT);
+	Direction.mad(Device.vCameraTop, (1.f - 2.f * Mouse.y) * Vertical);
 	return Direction.normalize_safe();
 }
 
@@ -2037,7 +2036,7 @@ void RenderAIGridEditorWindow()
 	}
 	Fvector Hit, Normal;
 	bool HasHit = AIGrid::Ray(Device.vCameraPosition, AIGrid::MouseDirection(), 500.f, Hit, &Normal);
-	bool CanEdit = CImGuiManager::Instance().IsCapturingInputs() && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && !ImGui::IsAnyItemActive();
+	bool CanEdit = CImGuiManager::Instance().IsCapturingInputs() && CImGuiManager::Instance().IsGameViewHovered() && !ImGui::IsAnyItemActive();
 	if (HasHit && CanEdit)
 	{
 		const bool Erasing = ImGui::IsMouseDown(ImGuiMouseButton_Right);

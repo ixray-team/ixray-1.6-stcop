@@ -110,8 +110,18 @@ sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
 	return dest;
 }
 
+void ui_core::OnFrame()
+{
+	if (Device.TargetWidth != m_view_width || Device.TargetHeight != m_view_height)
+	{
+		OnDeviceReset();
+	}
+}
+
 void ui_core::OnDeviceReset()
 {
+	m_view_width = Device.TargetWidth;
+	m_view_height = Device.TargetHeight;
 	m_scale_.set		( float(Device.TargetWidth)/UI_BASE_WIDTH, float(Device.TargetHeight)/UI_BASE_HEIGHT );
 
 	m_2DFrustum.CreateFromRect	(Frect().set(	0.0f,
@@ -448,6 +458,7 @@ ui_core::ui_core()
 	m_bPostprocess				= false;
 	
 	OnDeviceReset				();
+	Device.seqFrame.Add			(this, REG_PRIORITY_HIGH);
 
 	m_current_scale				= &m_scale_;
 	m_currentPointType			= IUIRender::pttTL;
@@ -462,6 +473,7 @@ ui_core::ui_core()
 
 ui_core::~ui_core()
 {
+	Device.seqFrame.Remove			(this);
 	xr_delete						(m_pUICursor);
 }
 

@@ -107,6 +107,7 @@ public:
 	~CWatchDevice();
 
 	void SetEnvironment(xr_unique_ptr<IWatchEnvironment> NewEnvironment);
+	void ResetScripts() { Env->ResetScripts(); }
 
 	void Load(const shared_str& RootSection);
 	void BindModel(IKinematics* NewModel);

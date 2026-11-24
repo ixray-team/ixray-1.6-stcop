@@ -68,26 +68,53 @@ void xrLogger::Msg(const char* Msg, va_list argList)
 	SimpleMessage(formattedMessage, MsgSize);
 }
 
+static bool TryLockWithTimeout(xrCriticalSection& Lock, u32 TimeoutMs)
+{
+	for (u32 Elapsed = 0; Elapsed <= TimeoutMs; ++Elapsed)
+	{
+		if (Lock.TryEnter())
+		{
+			return true;
+		}
+		if (Elapsed < TimeoutMs)
+		{
+			Sleep(1);
+		}
+	}
+	return false;
+}
+
 void xrLogger::SimpleMessage(const char* Message, u32 MessageSize /*= 0*/)
 {
+	if (!Message)
+	{
+		return;
+	}
 	switch (MessageSize)
 	{
 	case (u32(-1)): return;
-	case 0:			MessageSize = xr_strlen(Message); break;
+	case 0:			MessageSize = (u32)xr_strlen(Message); break;
 	default:		break;
 	}
-	if (!logData)
+	if (bCrashMode.load(std::memory_order_relaxed))
+	{
+		InternalWriteCrashText(Message, MessageSize, true);
 		return;
+	}
+	if (!logData)
+	{
+		return;
+	}
 	xrCriticalSectionGuard guard(&logDataGuard);
 	logData->emplace(LogRecord(Message, MessageSize));
 }
 
 void xrLogger::OpenLogFile()
 {
-	static bool isLogOpened = false;
-	if (!isLogOpened && theLogger) {
+	if (theLogger && !theLogger->bLogFileOpened)
+	{
 		theLogger->InternalOpenLogFile();
-		isLogOpened = true;
+		theLogger->bLogFileOpened = true;
 	}
 }
 
@@ -128,7 +155,33 @@ void xrLogger::FlushLog()
 {
 	if (theLogger)
 	{
-		theLogger->bFlushRequested = true;
+		theLogger->InternalFlushLog();
+	}
+}
+
+void xrLogger::EmergencyFlush()
+{
+	if (theLogger)
+	{
+		theLogger->InternalEmergencyFlush();
+	}
+}
+
+void xrLogger::WriteCrashLine(const char* Line)
+{
+	if (!Line)
+	{
+		return;
+	}
+	if (IsDebuggerPresent())
+	{
+		OutputDebugStringA(Line);
+		OutputDebugStringA("\n");
+	}
+	if (theLogger)
+	{
+		theLogger->bCrashMode.store(true, std::memory_order_release);
+		theLogger->InternalWriteCrashText(Line, (u32)xr_strlen(Line), true);
 	}
 }
 
@@ -169,12 +222,149 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 	theLogger->logCallbackList.remove(logCb);
 }
 
+void xrLogger::WriteRecord(const LogRecord& Record, bool bRunCallbacks)
+{
+	if (Record.Message.empty())
+	{
+		return;
+	}
+
+	const bool bIsDebug = IsDebuggerPresent();
+	xr_vector<xr_string> LogLines = Record.Message.Split('\n');
+
+	PROF_EVENT("Log: Apply Messages");
+	for (const xr_string& Line : LogLines)
+	{
+		u32 LineSize = (u32)Line.size();
+		if (LineSize > 0 && Line[LineSize - 1] == '\r')
+		{
+			--LineSize;
+		}
+
+		if (bIsDebug && !bFastDebugLog)
+		{
+			OutputDebugStringA(Line.c_str());
+			OutputDebugStringA("\n");
+		}
+
+		{
+			xrCriticalSectionGuard FileGuard(&logFileGuard);
+			if (logFile != nullptr)
+			{
+				if (LineSize > 0)
+				{
+					logFile->w(Line.c_str(), LineSize);
+				}
+				logFile->w("\r\n", 2);
+			}
+		}
+
+		if (bRunCallbacks)
+		{
+			xrCriticalSectionGuard CallbackGuard(&logCallbackGuard);
+			for (const LogCallback& FnCallback : logCallbackList)
+			{
+				FnCallback(Line.c_str());
+			}
+		}
+	}
+}
+
+void xrLogger::InternalWriteCrashText(const char* Text, u32 Size, bool bAppendNewLine)
+{
+	if (!TryLockWithTimeout(logFileGuard, 100))
+	{
+		return;
+	}
+	if (logFile != nullptr)
+	{
+		if (Text != nullptr && Size > 0)
+		{
+			logFile->w(Text, Size);
+		}
+		if (bAppendNewLine)
+		{
+			logFile->w("\r\n", 2);
+		}
+		logFile->flush();
+	}
+	logFileGuard.Leave();
+}
+
+void xrLogger::InternalFlushLog()
+{
+	if (bCrashMode.load(std::memory_order_acquire))
+	{
+		InternalEmergencyFlush();
+		return;
+	}
+
+	PROF_EVENT("Log Flush");
+	for (;;)
+	{
+		LogRecord TheRecord;
+		{
+			xrCriticalSectionGuard Guard(&logDataGuard);
+			if (!logData || logData->empty())
+			{
+				break;
+			}
+			TheRecord = std::move(logData->front());
+			logData->pop();
+		}
+		WriteRecord(TheRecord, true);
+	}
+
+	{
+		xrCriticalSectionGuard FileGuard(&logFileGuard);
+		if (logFile != nullptr)
+		{
+			logFile->flush();
+		}
+	}
+	bFlushRequested = false;
+}
+
+void xrLogger::InternalEmergencyFlush()
+{
+	bCrashMode.store(true, std::memory_order_release);
+
+	// Best-effort drain of any pending queued records without blocking forever on a frozen thread.
+	if (logData != nullptr && TryLockWithTimeout(logDataGuard, 100))
+	{
+		while (!logData->empty())
+		{
+			const LogRecord& Record = logData->front();
+			if (!Record.Message.empty())
+			{
+				InternalWriteCrashText(Record.Message.c_str(), (u32)Record.Message.size(), true);
+			}
+			logData->pop();
+		}
+		logDataGuard.Leave();
+	}
+
+	if (TryLockWithTimeout(logFileGuard, 100))
+	{
+		if (logFile != nullptr)
+		{
+			logFile->flush();
+		}
+		logFileGuard.Leave();
+	}
+	bFlushRequested = false;
+}
+
 void xrLogger::InternalCloseLog()
 {
-	FlushLog();
+	InternalFlushLog();
 
-	IWriter* tempCopy = (IWriter*)logFile;
-	logFile = nullptr;
+	IWriter* tempCopy = nullptr;
+	{
+		xrCriticalSectionGuard FileGuard(&logFileGuard);
+		tempCopy = logFile;
+		logFile = nullptr;
+	}
 
 	if (tempCopy != nullptr)
 	{
@@ -184,7 +374,7 @@ void xrLogger::InternalCloseLog()
 }
 
 xrLogger::xrLogger()
-	: logFile(nullptr), bFastDebugLog(true), bFlushRequested(false)
+	: logFile(nullptr), bFastDebugLog(true), bLogFileOpened(false), bFlushRequested(false), bCrashMode(false)
 {}
 
 xrLogger::~xrLogger()
@@ -206,98 +396,81 @@ void xrLogger::InternalOpenLogFile()
 	{
 		FS.update_path(logFileName, "$logs$", logFileName);
 	}
-	logFile = FS.w_open_ex(logFileName);
-	CHECK_OR_EXIT(logFile, "Can't create log file");
+	IWriter* OpenedFile = FS.w_open_ex(logFileName);
+	CHECK_OR_EXIT(OpenedFile, "Can't create log file");
+	xrCriticalSectionGuard FileGuard(&logFileGuard);
+	logFile = OpenedFile;
 }
 
 void xrLogger::LogThreadEntry()
 {
-	bool isDebug = IsDebuggerPresent();
-
-	auto FlushLogIfRequestedLambda = [this]()
+	while (bIsAlive || (logData && !logData->empty()))
 	{
-		if (bFlushRequested)
+		if (bCrashMode.load(std::memory_order_acquire))
 		{
-			PROF_EVENT("Log Flush")
+			if (!bIsAlive)
+			{
+				break;
+			}
+			Sleep(13);
+			continue;
+		}
+
+		PROF_EVENT("Log Frame");
+
+		bool bWroteAny = false;
+		for (;;)
+		{
+			if (bCrashMode.load(std::memory_order_acquire))
+			{
+				break;
+			}
+
+			LogRecord theRecord;
+			{
+				xrCriticalSectionGuard guard(&logDataGuard);
+				if (logData && !logData->empty())
+				{
+					theRecord = std::move(logData->front());
+					logData->pop();
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (!theRecord.Message.empty())
+			{
+				WriteRecord(theRecord, true);
+				bWroteAny = true;
+			}
+		}
+
+		if ((bWroteAny || bFlushRequested.load(std::memory_order_relaxed)) && !bCrashMode.load(std::memory_order_acquire))
+		{
+			PROF_EVENT("Log Flush");
+			xrCriticalSectionGuard FileGuard(&logFileGuard);
 			if (logFile != nullptr)
 			{
-				IWriter* mutableWritter = (IWriter*)logFile;
-				mutableWritter->flush();
-				::Msg("* Log file has been flushed successfully!");
+				logFile->flush();
 			}
 			bFlushRequested = false;
 		}
-	};
 
-	while (bIsAlive || (logData && !logData->empty()))
-	{
-		PROF_EVENT("Log Frame");
-
-		bool bHaveMore = false;
-		LogRecord theRecord;
-
+		if (bIsAlive)
+		{
+			Sleep(13); // work at 60 FPS roughly
+		}
+		else
 		{
 			xrCriticalSectionGuard guard(&logDataGuard);
-			if (logData && !logData->empty())
-			{
-				theRecord = logData->front();
-				logData->pop();
-				bHaveMore = !logData->empty();
-			}
-			else if (!bIsAlive)
+			if (!logData || logData->empty())
 			{
 				break;
 			}
 		}
-
-		if (!theRecord.Message.empty())
-		{
-			xr_vector<xr_string> LogLines = theRecord.Message.Split('\n');
-
-			string256 TimeOfDay = {};
-
-			PROF_EVENT("Log: Apply Messages")
-			int TimeOfDaySize = 0;
-			for (const xr_string& line : LogLines)
-			{
-				string4096 finalLine;
-				xr_strconcat(finalLine, TimeOfDay, line.c_str());
-
-				int FinalSize = TimeOfDaySize + (int)line.size();
-				// line is ready, ready up everything
-
-				// Output to MSVC debug output
-				if (isDebug && !bFastDebugLog)
-				{
-					OutputDebugStringA(finalLine);
-					OutputDebugStringA("\n");
-				}
-
-				if (logFile != nullptr)
-				{
-					IWriter* mutableWritter = (IWriter*)logFile;
-					// write to file
-					mutableWritter->w(finalLine, FinalSize);
-					mutableWritter->w("\r\n", 2);
-				}
-
-				xrCriticalSectionGuard guard(&logCallbackGuard);
-				for (const LogCallback& FnCallback : logCallbackList)
-				{
-					FnCallback(finalLine);
-				}
-			}
-		}
-
-		FlushLogIfRequestedLambda();
-
-		if (bIsAlive && !bHaveMore)
-		{
-			Sleep(13); // work at 60 FPS roughly
-		}
 	}
-
-	FlushLogIfRequestedLambda();
 }
 
 xrLogger::LogRecord::LogRecord(const char* Msg, u32 sizeMsg)

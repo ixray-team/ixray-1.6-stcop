@@ -98,15 +98,15 @@ The bake groups by texture and selects the first containing triangle per UV samp
 
 ## Runtime landscape material
 
-[r4_loader.cpp](../../src/Layers/xrRenderPC_R4/r4_loader.cpp) loads shaders, buffers, visuals and sectors. [dx11Texture.cpp](../../src/Layers/xrRenderPC_R4/dx11Texture.cpp), `texture_load`, searches the level directory before global textures for ordinary DDS assets, allowing baked base textures to override global originals.
+[ixr_loader.cpp](../../src/Layers/xrRenderIXR/ixr_loader.cpp) loads shaders, buffers, visuals and sectors. [dx11Texture.cpp](../../src/Layers/xrRenderIXR/dx11Texture.cpp), `texture_load`, searches the level directory before global textures for ordinary DDS assets, allowing baked base textures to override global originals.
 
 Terrain uses ordinary sector/portal traversal, frustum and HOM tests, scene-graph sorting and indexed mesh draws. Where progressive data exists, `FProgressive` chooses a compiled slide window. Runtime does not reconstruct the authoring grid or use the editor's 32-cell chunks.
 
-[Blender_BmmD.cpp](../../src/Layers/xrRenderPC_R4/Blender_BmmD.cpp) implements the landscape material. Shader names retain `R1`/`R2` terminology, but both lighting modes run in `xrRender_R4`.
+[Blender_BmmD.cpp](../../src/Layers/xrRenderIXR/Blender_BmmD.cpp) implements the landscape material. Shader names retain `R1`/`R2` terminology, but both lighting modes run in `xrRender_IXR`. The class registers under two ids, `B_BmmD` and `B_LmBmmD` (`r__blenders.cpp`), and a loaded shader keeps the id it was saved with. In the forward level frame both compile the cluster element and draw from the scene's clusters (`HasCluster` in `ResourceManager.cpp`), with the same shader code as the graph path: the maps come from the scene's texture buckets, base alpha is still the hemi, `_lm` RGB the light and its alpha the sun, `_mask` the weights of the four layers.
 
 ### Dynamic lighting mode
 
-Normal passes use `deffer_base` and [deffer_impl.ps.hlsl](../../gamedata/shaders/d3d11/deffer_impl.ps.hlsl). HQ enables `USE_4_BUMP` and binds:
+Normal passes use `deffer_base` and `deffer_impl`, the `DEFERRED_TERRAIN` pixel of [deferred.hlsl](../../shaders/surface/deferred.hlsl). HQ enables `USE_4_BUMP` and binds:
 
 - Base texture and baked `_lm` texture.
 - `<base>_mask`, whose normalized RGBA weights select four tiled detail materials.
@@ -124,7 +124,7 @@ The shadow element uses `shadow_base` and can draw compiled fast geometry. `USE_
 
 Forward `impl_dt` shaders combine ambient light, baked `_lm` RGB, hemisphere light modulated by base alpha and sun light modulated by `_lm` alpha. Base/detail colors modulate the result, followed by fog.
 
-HQ uses four-layer mask blending when `r1_use_terrain_mask` is enabled; otherwise it uses one detail texture. LQ uses one detail texture. Landscape visuals are exempt from some distance/size optimization gates through `bLandscape` in this mode; ordinary visibility tests still apply.
+HQ uses four-layer mask blending when `r_terrain_mask` is enabled; otherwise it uses one detail texture. LQ uses one detail texture. Landscape visuals are exempt from some distance/size optimization gates through `bLandscape` in this mode; ordinary visibility tests still apply.
 
 ## Current defects and verification limits
 

@@ -1,0 +1,47 @@
+/*
+Made by Papa Doenitz for IX-ray engine 2026-03-05
+CC BY-NC-SA 4.0 Lisence https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Based on awesome tutorial
+by AlexanderChristensen: https://learnopengl.com/Guest-Articles/2022/Phys.-Based-Bloom
+Which in turn is based on research by
+Jorge Jimenez http://www.iryoku.com/publications
+*/
+
+#include "common\common.hlsli"
+
+Texture2D t_image : register(t25);
+#include "common\post_cb.hlsli"
+
+// The targets may be larger than the view, which is in their corner: a step is a texel of the target, and no tap
+// leaves the view for what lies beside it
+float2 bloom_uv(float u, float v)
+{
+    return min(float2(u, v), view_uv.zw);
+}
+
+void ps_main(in PSInputFullscreen I, out float3 upsample : SV_Target)
+{
+    float2 center = I.texcoord.xy;
+	
+    float x = 2.f * upsample_params.z * view_uv.x;
+    float y = 2.f * upsample_params.w * view_uv.y;
+
+    float3 a = s_image.Sample (smp_rtlinear, bloom_uv(center.x - x, center.y + y)).rgb;
+    float3 b = s_image.Sample (smp_rtlinear, bloom_uv(center.x,     center.y + y)).rgb;
+    float3 c = s_image.Sample (smp_rtlinear, bloom_uv(center.x + x, center.y + y)).rgb;
+
+    float3 d = s_image.Sample (smp_rtlinear, bloom_uv(center.x - x, center.y)).rgb;
+    float3 e = s_image.Sample (smp_rtlinear, bloom_uv(center.x,     center.y)).rgb;
+    float3 f = s_image.Sample (smp_rtlinear, bloom_uv(center.x + x, center.y)).rgb;
+
+    float3 g = s_image.Sample (smp_rtlinear, bloom_uv(center.x - x, center.y - y)).rgb;
+    float3 h = s_image.Sample (smp_rtlinear, bloom_uv(center.x,     center.y - y)).rgb;
+    float3 i = s_image.Sample (smp_rtlinear, bloom_uv(center.x + x, center.y - y)).rgb;
+	
+    upsample = t_image.Sample(smp_rtlinear, center).rgb;
+
+    upsample += e * 0.25f;
+    upsample += (b + d + f + h) * 0.125f;
+    upsample += (a + c + g + i) * 0.0625f;
+}

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="off">
+		<text>Off</text>
+	</string>
+	<string id="on">
+		<text>On</text>
+	</string>
+	<string id="low">
+		<text>Low</text>
+	</string>
+	<string id="medium">
+		<text>Medium</text>
+	</string>
+	<string id="high">
+		<text>High</text>
+	</string>
+	<string id="ultra">
+		<text>Ultra</text>
+	</string>
+	<string id="minimal">
+		<text>Minimal</text>
+	</string>
+	<string id="extreme">
+		<text>Extreme</text>
+	</string>
+	<string id="custom">
+		<text>Custom</text>
+	</string>
+	<string id="normal">
+		<text>Normal</text>
+	</string>
+	<string id="linear">
+		<text>Linear</text>
+	</string>
+	<string id="nearest">
+		<text>Nearest</text>
+	</string>
+	<string id="dlss">
+		<text>NVIDIA DLSS</text>
+	</string>
+	<string id="fsr">
+		<text>AMD FSR</text>
+	</string>
+	<string id="xess">
+		<text>Intel XeSS</text>
+	</string>
+	<string id="native">
+		<text>Native</text>
+	</string>
+	<string id="quality">
+		<text>Quality</text>
+	</string>
+	<string id="balanced">
+		<text>Balanced</text>
+	</string>
+	<string id="performance">
+		<text>Performance</text>
+	</string>
+	<string id="ultra_performance">
+		<text>Ultra performance</text>
+	</string>
+	<string id="preset_e">
+		<text>E (CNN)</text>
+	</string>
+	<string id="preset_k">
+		<text>K (Transformer)</text>
+	</string>
+	<string id="preset_l">
+		<text>L (Transformer 2)</text>
+	</string>
+	<string id="preset_m">
+		<text>M (Transformer 2, fast)</text>
+	</string>
+	<string id="msaa">
+		<text>MSAA</text>
+	</string>
+	<string id="d3d11">
+		<text>DirectX 11</text>
+	</string>
+	<string id="d3d12">
+		<text>DirectX 12</text>
+	</string>
+	<string id="jpg">
+		<text>JPG</text>
+	</string>
+	<string id="png">
+		<text>PNG</text>
+	</string>
+	<string id="tga">
+		<text>TGA</text>
+	</string>
+	<string id="autofocus">
+		<text>Autofocus</text>
+	</string>
+	<string id="manual">
+		<text>Manual</text>
+	</string>
+	<string id="st_display_options">
+		<text>Display</text>
+	</string>
+	<string id="st_quality_options">
+		<text>Quality</text>
+	</string>
+	<string id="st_scene_options">
+		<text>Detail and distance</text>
+	</string>
+	<string id="ui_mm_extras">
+		<text>Extras</text>
+	</string>
+	<string id="st_options_extras">
+		<text>$$ACTION_UI_ACTION_2$$ Extra Video Options</text>
+	</string>
+	<string id="ui_mm_fps_limit">
+		<text>FPS limit</text>
+	</string>
+	<string id="ui_mm_latency">
+		<text>Latency</text>
+	</string>
+	<string id="ui_mm_submit_thread">
+		<text>Submit thread</text>
+	</string>
+	<string id="ui_mm_upscaler">
+		<text>Upscaler</text>
+	</string>
+	<string id="ui_mm_render_scale">
+		<text>Render scale</text>
+	</string>
+	<string id="ui_mm_dlss_preset">
+		<text>DLSS preset</text>
+	</string>
+	<string id="ui_mm_anti_aliasing">
+		<text>Anti-aliasing</text>
+	</string>
+	<string id="ui_mm_msaa">
+		<text>MSAA samples</text>
+	</string>
+	<string id="ui_mm_motion_blur">
+		<text>Motion blur</text>
+	</string>
+	<string id="ui_mm_dof_inventory">
+		<text>DoF in inventory</text>
+	</string>
+	<string id="ui_mm_dof_physical_mode">
+		<text>Physical focus</text>
+	</string>
+	<string id="ui_mm_shading_quality">
+		<text>Shading</text>
+	</string>
+	<string id="ui_mm_shadow_quality">
+		<text>Shadows</text>
+	</string>
+	<string id="ui_mm_pcss">
+		<text>Soft shadows</text>
+	</string>
+	<string id="ui_mm_volumetric_quality">
+		<text>Volumetric light</text>
+	</string>
+	<string id="ui_mm_occlusion_quality">
+		<text>Ambient occlusion</text>
+	</string>
+	<string id="ui_mm_screen_space_quality">
+		<text>Screen-space quality</text>
+	</string>
+	<string id="ui_mm_reflection_quality">
+		<text>Reflections</text>
+	</string>
+	<string id="ui_mm_gi_quality">
+		<text>Global illumination</text>
+	</string>
+	<string id="ui_mm_culling_quality">
+		<text>Culling</text>
+	</string>
+	<string id="ui_mm_geometry_quality">
+		<text>Geometry</text>
+	</string>
+	<string id="ui_mm_streaming_quality">
+		<text>Textures</text>
+	</string>
+	<string id="ui_mm_streaming_priority">
+		<text>Streaming priority</text>
+	</string>
+	<string id="ui_mm_post_processing_quality">
+		<text>Post-processing</text>
+	</string>
+	<string id="ui_mm_grass_quality">
+		<text>Grass</text>
+	</string>
+	<string id="ui_mm_distance_quality">
+		<text>View distance</text>
+	</string>
+	<string id="ui_mm_motion_vectors_quality">
+		<text>Motion vectors</text>
+	</string>
+	<string id="ui_mm_wet_surfaces">
+		<text>Wet surfaces</text>
+	</string>
+	<string id="ui_mm_variable_shading">
+		<text>Variable shading</text>
+	</string>
+	<string id="st_reason_unavailable">
+		<text>Not available yet.</text>
+	</string>
+	<string id="st_reason_hardware">
+		<text>Not supported by the video card or the graphics API.</text>
+	</string>
+	<string id="st_reason_shading">
+		<text>Limited by the shading quality.</text>
+	</string>
+	<string id="st_reason_shadow">
+		<text>Needs shadows.</text>
+	</string>
+	<string id="st_reason_occlusion">
+		<text>Needs ambient occlusion.</text>
+	</string>
+	<string id="st_reason_anti_aliasing">
+		<text>Set by the anti-aliasing mode.</text>
+	</string>
+	<string id="st_reason_msaa">
+		<text>Not available with MSAA.</text>
+	</string>
+	<string id="st_reason_upscaler">
+		<text>Set by the upscaler.</text>
+	</string>
+	<string id="st_reason_dof">
+		<text>Needs depth of field.</text>
+	</string>
+	<string id="st_reason_dof_physical">
+		<text>Needs depth of field set to High.</text>
+	</string>
+	<string id="st_reason_effective">
+		<text>Now:</text>
+	</string>
+	<string id="st_setting_changed">
+		<text>* Differs from the quality preset.</text>
+	</string>
+	<string id="st_apply_recompile">
+		<text>Shaders are rebuilt when the settings are applied: a short pause.</text>
+	</string>
+	<string id="st_apply_restart">
+		<text>Applied by restarting the renderer when the settings are applied.</text>
+	</string>
+	<string id="st_apply_level">
+		<text>Applied at the next level load.</text>
+	</string>
+	<string id="ui_mm_fps_limit_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]reduces load%c[default]) \nCaps the frame rate; 0 turns the cap off</text>
+	</string>
+	<string id="ui_mm_latency_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] %c[255,110,200,90]none%c[default] \nNormal - two frames queued, steadier frame rate \nLow - one frame queued, faster response, may lower FPS</text>
+	</string>
+	<string id="ui_mm_submit_thread_hint">
+		<text>Moves frame submission and present to a separate thread \nCan lower CPU frame time; turn off if input feels delayed \n%c[255,150,150,150]Direct3D 12 only%c[default]</text>
+	</string>
+	<string id="ui_mm_graphics_api_hint">
+		<text>DirectX 11 - FSR is the only upscaler \nDirectX 12 - needed for DLSS and XeSS \n%c[255,150,150,150]Applied at the next game start%c[default]</text>
+	</string>
+	<string id="ui_mm_upscaler_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]reduces load%c[default]), VRAM (%c[255,110,200,90]low%c[default]) \nLinear - plain stretch to the screen size \nNearest - pixelated stretch, developer builds only \nNVIDIA DLSS - rebuilds detail, NVIDIA cards, DirectX 12 \nAMD FSR - rebuilds detail, DirectX 11 and 12 \nIntel XeSS - rebuilds detail, DirectX 12 \n%c[255,150,150,150]Only upscalers the video card supports are listed%c[default]</text>
+	</string>
+	<string id="ui_mm_render_scale_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]), VRAM (%c[255,230,190,60]medium%c[default]) \nNative - full screen resolution \nQuality - 67% of the screen on each axis \nBalanced - 58% on each axis \nPerformance - 50% on each axis \nUltra performance - 33% on each axis</text>
+	</string>
+	<string id="ui_mm_dlss_preset_hint">
+		<text>E (CNN) - older convolutional model \nK (Transformer) - transformer model, the default \nL (Transformer 2) - second-generation transformer \nM (Transformer 2, fast) - faster variant of L</text>
+	</string>
+	<string id="ui_mm_anti_aliasing_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]low to high%c[default]) \nOff - no edge smoothing \nFXAA - cheapest, slightly soft \nSMAA - sharper edges, a little more cost \nTAA - also calms shimmering in motion \nMSAA - extra samples on edges, costs the most</text>
+	</string>
+	<string id="ui_mm_msaa_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]), VRAM (%c[255,235,80,60]high%c[default]) \n2x - two samples per pixel \n4x - four samples, smoother edges \n8x - eight samples, smoothest and heaviest</text>
+	</string>
+	<string id="ui_mm_motion_blur_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]low%c[default]) \nOff - no motion blur \nLow - camera and object blur, fewer samples \nHigh - smoother blur, more samples</text>
+	</string>
+	<string id="ui_mm_dof_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]low%c[default]) \nOff - no depth of field \nLow - classic blur of what is out of focus \nHigh - physically based camera</text>
+	</string>
+	<string id="ui_mm_dof_inventory_hint">
+		<text>Physical depth of field while the inventory is open</text>
+	</string>
+	<string id="ui_mm_dof_physical_mode_hint">
+		<text>Autofocus - focuses on what is in front of you \nManual - focuses at the distance its profile sets</text>
+	</string>
+	<string id="ui_mm_shading_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]) \nLow - baked light only, no dynamic shadows or screen effects \nMedium - bump maps, highlights, simple IBL, sun shadows \nHigh - full shading, screen effects, detail bump, parallax \nUltra - adds order-independent transparency, 8x anisotropy \n%c[255,150,150,150]Lower tiers limit several other settings%c[default]</text>
+	</string>
+	<string id="ui_mm_shadow_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]), CPU (%c[255,230,190,60]medium%c[default]) \nOff - lightmaps only, no dynamic shadows \nLow - one wide sun cascade over the lightmaps, 3x3 filter \nMedium - adds lamp shadows and HUD shadows, 5x5 filter \nHigh - three cascades, dynamic sun and lamps, detail shadows \nUltra - not available yet</text>
+	</string>
+	<string id="ui_mm_pcss_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nShadows sharp near the caster and softer further away</text>
+	</string>
+	<string id="ui_mm_volumetric_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nOff - no sun shafts, no volumetric lamps \nLow - coarse sun shafts, volumetric lamps \nMedium - smoother sun shafts \nHigh - sun shafts scattered in the fog \nUltra - sun shafts in the fog, more samples</text>
+	</string>
+	<string id="ui_mm_occlusion_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nOff - no ambient occlusion \nMedium - darker corners, creases and contact spots \nHigh - not available yet</text>
+	</string>
+	<string id="ui_mm_screen_space_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]) \nLow - occlusion and reflections at half size on each axis \nHigh - occlusion and reflections at full resolution</text>
+	</string>
+	<string id="ui_mm_reflection_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nLow - sky and baked surroundings only \nMedium - adds screen-space reflections \nHigh - adds a reflection cube for what is off screen \nUltra - not available yet</text>
+	</string>
+	<string id="ui_mm_gi_quality_hint">
+		<text>Low - baked lighting only \nMedium - not available yet \nHigh - not available yet</text>
+	</string>
+	<string id="ui_mm_culling_quality_hint">
+		<text>Low - not available yet \nHigh - standard skipping of hidden objects</text>
+	</string>
+	<string id="ui_mm_geometry_quality_hint">
+		<text>Low - not available yet \nHigh - standard geometry memory pool</text>
+	</string>
+	<string id="ui_mm_streaming_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] VRAM (%c[255,235,80,60]high%c[default]), RAM (%c[255,230,190,60]medium%c[default]) \nLow - textures at quarter resolution, least video memory \nMedium - textures at half resolution \nHigh - full texture resolution \nUltra - same as High for now</text>
+	</string>
+	<string id="ui_mm_streaming_priority_hint">
+		<text>Low - not available yet \nMedium - standard texture loading \nHigh - not available yet</text>
+	</string>
+	<string id="ui_mm_post_processing_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]low%c[default]) \nOff - no bloom \nMedium - bloom \nHigh - not available yet</text>
+	</string>
+	<string id="ui_mm_grass_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]), CPU (%c[255,230,190,60]medium%c[default]) \nLow - sparse grass, full density up to 24 m \nMedium - denser grass, full density up to 40 m \nHigh - dense grass, full density up to 64 m \nUltra - densest grass, full density up to 96 m</text>
+	</string>
+	<string id="ui_mm_distance_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]), CPU (%c[255,230,190,60]medium%c[default]) \nLow - 100 m, coarsest distant models \nMedium - 300 m, coarse distant models \nHigh - 500 m, detailed distant models \nUltra - 2000 m, most detailed distant models</text>
+	</string>
+	<string id="ui_mm_motion_vectors_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]low%c[default]) \nLow - motion from the camera only \nHigh - tracks every moving object</text>
+	</string>
+	<string id="ui_mm_wet_surfaces_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]low%c[default]), VRAM (%c[255,110,200,90]low%c[default]) \nRain-wet surfaces, splashes, streaks and puddles</text>
+	</string>
+	<string id="ui_mm_variable_shading_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]reduces load%c[default]) \nShades flat, plain areas coarser to save GPU time</text>
+	</string>
+</string_table>

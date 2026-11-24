@@ -1,0 +1,10 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "ps": {
+            "forwrad_interior": [
+                "INTERIOR_WINDOW=1"
+            ]
+        }
+    }
+}

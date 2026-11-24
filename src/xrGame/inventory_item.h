@@ -37,6 +37,7 @@ class NET_Packet;
 class CEatableItem;
 class CArtefact;
 class IDSGraphManager;
+struct UIIconVisual;
 class CPhysicsElement;
 class IKinematics;
 class CCustomOutfit;
@@ -235,7 +236,7 @@ public:
 	bool AttachTransform(bool hud, IKinematics*& kin, Fmatrix& xform);
 	static bool GetHandsBasis(const Fmatrix& left, const Fmatrix& right, Fmatrix& result);
 	void RenderHud(const Fmatrix& xform, IKinematics* model, IDSGraphManager* DM);
-	void RenderIcon(const Fmatrix& xform, IKinematics* model, IDSGraphManager* DM, xr_deque<Fmatrix>& xforms);
+	void RenderIcon(const Fmatrix& xform, IKinematics* model, xr_vector<UIIconVisual>& visuals);
 	void AddAttachmentShapes(CPhysicsElement* element, const Fmatrix& xform);
 	void PlayHudMotion(const shared_str& name, bool mix, float speed);
 	void FindAttachPose(shared_str& pose, shared_str& ik_mark, shared_str& fingers_mark) const;

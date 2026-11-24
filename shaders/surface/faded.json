@@ -1,0 +1,19 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "vs": {
+            "model_distort": [
+                "FADED_AWAY=1",
+                "FADED_JITTER=1"
+            ],
+            "model_distort4ghost": [
+                "FADED_AWAY=1",
+                "FADED_SCALE=1.3f"
+            ],
+            "model_distort4glass": [
+                "FADED_SCALE=0.9f"
+            ],
+            "model_distort_inv": []
+        }
+    }
+}

@@ -26,6 +26,7 @@ enum class FieldKind
 	Bool,
 	Mode,
 	Quality,
+	Tier,
 	Reference
 };
 
@@ -52,8 +53,8 @@ static const Field CameraFields[] = {
 };
 
 static const Field GeneralFields[] = {
-	{"r2_dof_enable", "Enable DOF", FieldKind::Bool},
-	{"r4_ndof_mode", "DOF mode", FieldKind::Mode},
+	{"r_dof", "DOF (low: static, high: physical)", FieldKind::Tier},
+	{"r4_ndof_mode", "Physical focus mode", FieldKind::Mode},
 	{"r4_ndof_manual_focal_length", "Use manual focal length", FieldKind::Bool},
 	{"r4_ndof_focal_length", "Focal length (mm)"},
 	{"r4_ndof_f_number", "Aperture (f-number)"},
@@ -65,10 +66,10 @@ static const Field GeneralFields[] = {
 	{"r2_dof_kernel", "Blur size (kernel; maximum radius is 4x)"},
 	{"r2_dof_sky", "Static sky distance (m)"},
 	{"r2_dynamic_dof", "Static weapon action profiles", FieldKind::Bool},
-	{"r2_const_zoomdof", "Static fixed aiming distances", FieldKind::Bool},
-	{"enable_dof_reload", "Static reload DOF", FieldKind::Bool},
+	{"r_dof_zoom", "Static fixed aiming distances", FieldKind::Bool},
+	{"r_dof_reload", "Static reload DOF", FieldKind::Bool},
 	{"enable_dof_hud_animator", "Static HUD animator / PDA DOF", FieldKind::Bool},
-	{"enable_dof_talk", "Static dialogue DOF", FieldKind::Bool},
+	{"r_dof_dialogue", "Static dialogue DOF", FieldKind::Bool},
 	{"r4_ndof_inventory", "Static inventory DOF", FieldKind::Bool}
 };
 
@@ -194,7 +195,7 @@ static xr_string Canonical(FieldKind Kind, const char* Text)
 	{
 		return !xr_strcmp(Text, "auto") ? "autofocus" : Text;
 	}
-	if (Kind == FieldKind::Quality)
+	if (Kind == FieldKind::Quality || Kind == FieldKind::Tier)
 	{
 		return Text;
 	}
@@ -483,7 +484,7 @@ bool Editor::DrawInput(const Field& Definition, const xr_string& Value, xr_strin
 			Changed = true;
 		}
 	}
-	else if (Definition.Kind == FieldKind::Mode || Definition.Kind == FieldKind::Quality || Definition.Kind == FieldKind::Reference)
+	else if (Definition.Kind == FieldKind::Mode || Definition.Kind == FieldKind::Quality || Definition.Kind == FieldKind::Tier || Definition.Kind == FieldKind::Reference)
 	{
 		if (ImGui::BeginCombo(Definition.Label, Value.c_str()))
 		{
@@ -510,6 +511,12 @@ bool Editor::DrawInput(const Field& Definition, const xr_string& Value, xr_strin
 				{
 					OptionLambda("static");
 				}
+			}
+			else if (Definition.Kind == FieldKind::Tier)
+			{
+				OptionLambda("off");
+				OptionLambda("low");
+				OptionLambda("high");
 			}
 			else
 			{
@@ -593,7 +600,7 @@ void Editor::GeneralTab()
 			Active.Max = Range->second.second;
 		}
 		xr_string Edited;
-		if (!DrawInput(Active, It->second, Edited, true))
+		if (!DrawInput(Active, It->second, Edited, false))
 		{
 			continue;
 		}
@@ -1086,8 +1093,8 @@ void Editor::OnFrame(CDofManager& Manager)
 		ApplyGeneral(xr_map<xr_string, xr_string>(General));
 	}
 	IsLevelReady = g_pGameLevel && g_pGameLevel->bReady;
-	const auto Master = General.find("r2_dof_enable");
-	IsMasterEnabled = Master != General.end() && IsTrue(Master->second);
+	const auto Master = General.find("r_dof");
+	IsMasterEnabled = Master != General.end() && Master->second != "off";
 	CurrentSections = {};
 	if (CActor* Actor = IsLevelReady ? ::Actor() : nullptr)
 	{
@@ -1148,8 +1155,8 @@ void Editor::OnFrame(CDofManager& Manager)
 	ActiveEvent = Manager.GetActiveEvent();
 	ActiveProfile = Manager.GetActiveProfile().size() ? Manager.GetActiveProfile().c_str() : "base/static";
 	ActiveBinding = Manager.GetActiveBinding().size() ? Manager.GetActiveBinding().c_str() : "base";
-	const char* Token = Console->GetCommand("r4_ndof_mode") ? Console->GetToken("r4_ndof_mode") : "static";
-	Mode = Token ? Token : "static";
+	static const char* const Modes[] = { "autofocus", "static", "manual" };
+	Mode = Modes[std::min(g_NewDofMode, 2u)];
 }
 
 void Editor::Draw()
@@ -1176,8 +1183,7 @@ void Editor::Draw()
 		return;
 	}
 	const bool HasUnsaved = Changes != Saved || General != SavedGeneral;
-	ImGui::Text("%s | %s | event: %s", psDeviceFlags.test(rsR4) ? "R4" : psDeviceFlags.test(rsR2) ? "R2"
-																								  : "R1",
+	ImGui::Text("%s | %s | event: %s", psDeviceFlags.test(rsR4) ? "R4" : "R1",
 				Mode.c_str(),
 				CDofManager::EventName(ActiveEvent));
 	ImGui::TextWrapped("Profile: %s | binding: %s", ActiveProfile.c_str(), ActiveBinding.c_str());
@@ -1236,7 +1242,7 @@ void Editor::Draw()
 	{
 		ImGui::TextDisabled("Load a level to preview DOF. Config editing is available.");
 	}
-	if (!IsMasterEnabled && General.contains("r2_dof_enable"))
+	if (!IsMasterEnabled && General.contains("r_dof"))
 	{
 		ImGui::TextDisabled("DOF master is off: enable it in General to preview.");
 	}

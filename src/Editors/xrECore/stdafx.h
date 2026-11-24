@@ -9,8 +9,8 @@
 #include <d3d11shader.h>
 
 #include "../xrEUI/stdafx.h"
-#include "../../Layers/xrRenderPC_R4/DXCommonTypes.h"
-#include "../../Layers/xrRenderPC_R4/r__types.h"
+#include "../../Layers/xrRenderIXR/DXCommonTypes.h"
+#include "../../Layers/xrRenderIXR/r__types.h"
 
 #include "../../utils/xrDXT/xrDXT.h"
 
@@ -35,7 +35,7 @@
 #include "Props/UIKeyPressForm.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrSound/Sound.h"
-#include "../../Layers/xrRenderPC_R4/particle_core/psystem.h"
+#include "../../Layers/xrRenderIXR/particle_core/psystem.h"
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/_d3d_extensions.h"
@@ -73,7 +73,7 @@ using LPAStringIt = LPAStringVec::iterator;
 #include "../../xrEngine/defines.h"
 
 #include "../../xrPhysics/xrPhysics.h"
-#include "../../Layers/xrRenderPC_R4/FVF.h"
+#include "../../Layers/xrRenderIXR/FVF.h"
 
 struct str_pred 
 {
@@ -88,7 +88,7 @@ struct astr_pred
 
 #include "Editor/device.h"
 #include "../../xrEngine/Properties.h"
-#include "../../Layers/xrRenderPC_R4/RenderEditorApi.h"
+#include "../../Layers/xrRenderIXR/RenderEditorApi.h"
 #include "Editor/ui_main.h"
 #include "Editor/UIRenderOptionsMenu.h"
 using FLvertexVec = xr_vector<FVF::L>;
@@ -136,7 +136,7 @@ using RStrVecIt = RStrVec::iterator;
 #define		TEX_SPOT_ATT	"internal\\internal_light_attclip"
 
 #include "../../xrEngine/ETextureParams.h"
-#include "../../Layers/xrRenderPC_R4/ResourceManager.h"
+#include "../../Layers/xrRenderIXR/ResourceManager.h"
 #include "Editor/EditorContext.h"
 inline xr_string ChangeFileExt(const char* name, const char* e)
 {

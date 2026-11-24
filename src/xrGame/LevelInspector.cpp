@@ -914,10 +914,11 @@ void LevelInspector::OnRender()
 
 			if (Device.m_pRender)
 			{
-				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
-				Device.mFullTransform.mul(Device.mProject, Device.mView);
-				Device.mView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
-				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+				// The overlay's own view and projection, handed to the renderer: the frame's camera is not written
+				Fmatrix ShiftedProject, ShiftedView;
+				ShiftedProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				ShiftedView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
+				Device.m_pRender->SetCacheXform(ShiftedView, ShiftedProject);
 			}
 		}
 
@@ -2407,10 +2408,11 @@ void LevelInspector::DrawLevelGraph()
 			UIRender->CacheSetXformWorld(Fidentity);
 			if (Device.m_pRender)
 			{
-				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
-				Device.mFullTransform.mul(Device.mProject, Device.mView);
-				Device.mView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
-				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+				// The overlay's own view and projection, handed to the renderer: the frame's camera is not written
+				Fmatrix ShiftedProject, ShiftedView;
+				ShiftedProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				ShiftedView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
+				Device.m_pRender->SetCacheXform(ShiftedView, ShiftedProject);
 			}
 
 			UIRender->SetShader(*shader);
@@ -4023,10 +4025,11 @@ void LevelInspector::DrawCFORM()
 			UIRender->CacheSetXformWorld(Fidentity);
 			if (Device.m_pRender)
 			{
-				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
-				Device.mFullTransform.mul(Device.mProject, Device.mView);
-				Device.mView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
-				Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
+				// The overlay's own view and projection, handed to the renderer: the frame's camera is not written
+				Fmatrix ShiftedProject, ShiftedView;
+				ShiftedProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+				ShiftedView.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
+				Device.m_pRender->SetCacheXform(ShiftedView, ShiftedProject);
 			}
 
 			UIRender->SetShader(*shader);

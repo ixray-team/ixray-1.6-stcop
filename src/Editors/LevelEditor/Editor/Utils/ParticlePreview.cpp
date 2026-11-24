@@ -2,6 +2,7 @@
 #include "ParticlePreview.h"
 
 #include "../xrCore/FS_internal.h"
+#include "../../../../Layers/xrRenderIXR/RenderScope.h"
 
 // Effects without a time limit are looped: take a frame after they have settled
 static constexpr float DefaultPreviewTime = 2.0f;
@@ -339,12 +340,6 @@ bool CParticlePreviewCache::Render(Entry& Item)
 	const Fvector SavedRight = Device.vCameraRight;
 
 	GfxCmdList& Cmd = RImplementation.Imm();
-	IRHIRenderTargetView* SavedRT[4] = {};
-	for (u32 Idx = 0; Idx < 4; ++Idx)
-	{
-		SavedRT[Idx] = Cmd.GetRenderTarget(Idx);
-	}
-	IRHIDepthStencilView* SavedDSV = Cmd.GetDepthStencil();
 
 	Device.mView = View;
 	Device.mProject = Project;
@@ -359,18 +354,9 @@ bool CParticlePreviewCache::Render(Entry& Item)
 
 	Cmd.SetView(View, Project);
 
-	Cmd.SetRenderTarget(TargetColor->pRT);
-	Cmd.SetRenderTarget(nullptr, 1);
-	Cmd.SetRenderTarget(nullptr, 2);
-	Cmd.SetRenderTarget(nullptr, 3);
-	Cmd.SetDepthStencil(TargetDepth->pZRT);
-	Cmd.ApplyRenderTargets();
-
+	RenderScope Scope(Cmd, TargetColor->pRT, TargetDepth->pZRT, PreviewSize, PreviewSize);
 	Cmd.ClearTarget(TargetColor->pRT, PreviewClearColor);
 	Cmd.ClearDepthStencil(TargetDepth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
-
-	RHIViewport Viewport = {0, 0, (float)PreviewSize, (float)PreviewSize, 0.f, 1.f};
-	Cmd.SetViewport(Viewport);
 
 	((CRender*)::Render)->Models->RenderSingle(Cmd, Item.Visual, Fidentity, 1.0f);
 	Cmd.ApplyRenderTargets();
@@ -386,13 +372,6 @@ bool CParticlePreviewCache::Render(Entry& Item)
 	Device.vCameraTop = SavedTop;
 	Device.vCameraRight = SavedRight;
 	Cmd.SetView(SavedView, SavedProject);
-
-	for (u32 Idx = 0; Idx < 4; ++Idx)
-	{
-		Cmd.SetRenderTarget(SavedRT[Idx], Idx);
-	}
-	Cmd.SetDepthStencil(SavedDSV);
-	Cmd.ApplyRenderTargets();
 
 	if (!IsValid)
 	{

@@ -1,0 +1,7 @@
+<shader simplified="1">
+	<normal sort="2" wmark="1" cluster="1">
+		<pass vs="r1_wmark" ps="r1_wmark" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

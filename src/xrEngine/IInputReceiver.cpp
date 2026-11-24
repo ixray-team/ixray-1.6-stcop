@@ -85,11 +85,13 @@ void	IInputReceiver::IR_GetMousePosReal				(Ivector2 &p)
 }
 void	IInputReceiver::IR_GetMousePosIndependent		(Fvector2 &f)
 {
+	// From the window's pixels into the part of the window the view is shown on
 	Ivector2 p;
 	IR_GetMousePosReal(p);
+	const Irect& Shown = Device.PresentRect;
 	f.set(
-		2.f*float(p.x)/float(Device.TargetWidth)-1.f,
-		2.f*float(p.y)/float(Device.TargetHeight)-1.f
+		2.f*float(p.x - Shown.x1)/float(std::max(Shown.width(), 1))-1.f,
+		2.f*float(p.y - Shown.y1)/float(std::max(Shown.height(), 1))-1.f
 		);
 }
 void	IInputReceiver::IR_GetMousePosIndependentCrop	(Fvector2 &f)

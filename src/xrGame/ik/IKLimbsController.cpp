@@ -342,6 +342,16 @@ void TIKLimbsController::IKVisualCallback(IKinematics* K)
 #endif
 
 	CGameObject* O = ((CGameObject*)K->GetUpdateCallbackParam());
+
+	// Past this the few centimetres a foot is moved by are under a pixel, and every character costs the frame's main
+	// thread its rays
+	constexpr float FootDistance = 30.0f;
+
+	if (O != Actor() && Device.vCameraPosition.distance_to_sqr(O->Position()) > FootDistance * FootDistance)
+	{
+		return;
+	}
+
 	CPhysicsShellHolder* Sh = O->cast_physics_shell_holder();
 	TIKLimbsController* ik = Sh->GetComponent<TIKLimbsController>();
 	VERIFY(ik);

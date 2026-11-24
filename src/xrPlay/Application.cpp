@@ -250,7 +250,7 @@ void CApplication::MigrateToGameWindow()
 
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
-	Console->Execute("vid_restart");
+	Console->Execute("r_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 	CRenderDevice::UpdateStartupFrame();
@@ -285,24 +285,11 @@ void CApplication::LoadCustomSettings()
 
 void CApplication::ConfigureRenderer()
 {
-	if (strstr(Core.Params, "-r1"))
+	for (const RenderFeatureSwitch& Switch : g_RenderFeatureSwitches)
 	{
-		Console->Execute("renderer renderer_r4_static");
-	}
-	else if (Core.ParamsData.test(ECoreParams::r4))
-	{
-		Console->Execute("renderer renderer_r4");
-	}
-	else if (Core.ParamsData.test(ECoreParams::r2))
-	{
-		Console->Execute("renderer renderer_r2");
-	}
-	else
-	{
-		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
-		pTmp->Execute(Console->ConfigFile);
-		xr_delete(pTmp);
-		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
+		const xr_string Prefix = xr_string(Switch.Command) + " ";
+		CCC_LoadCFG_custom Line(Prefix.c_str());
+		Line.Execute(Console->ConfigFile);
 	}
 }
 

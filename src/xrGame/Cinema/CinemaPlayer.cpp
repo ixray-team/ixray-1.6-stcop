@@ -1379,7 +1379,7 @@ void Player::OutputPost()
 		for (u32 Id = static_cast<u32>(Param::PostBase); Weight > 0.0f && Id <= static_cast<u32>(Param::PostMotionBlur); ++Id)
 		{
 			const Param Which = static_cast<Param>(Id);
-			if (!IsPostSet(Setup, Item.Lanes, Which))
+			if (IsParamRetired(Which) || !IsPostSet(Setup, Item.Lanes, Which))
 			{
 				continue;
 			}

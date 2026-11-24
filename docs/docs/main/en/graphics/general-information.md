@@ -3,9 +3,9 @@
 
 ![image](https://github.com/user-attachments/assets/9c4b5508-8f0a-4d95-9329-a15f004746a6)
 
-* vid_scale
-* vid_scale_mode
-* vid_scale_preset
+* r_upscaler
+* r_scale
+* r_dlss_preset
 
 ## Upscale
 
@@ -74,3 +74,15 @@ Water reflections simulate a mirror of the environment on the surface, accountin
 
 * `engine_external.ltx`
 * * `UseDynamicSnowMask = true`
+
+## Graphics API and Submit Thread
+
+The video options have no renderer list: the game has one renderer. **Graphics API** picks Direct3D 11 or Direct3D 12 (`r_api`, applied at the next game start).
+
+**Submit thread** (`r_submit_thread`, 0 / 1, off by default) moves the frame's submission to the GPU and its present to a separate thread on Direct3D 12. It can lower the CPU frame time; turn it off if input feels delayed. It switches at once, also in a level, and does nothing on Direct3D 11.
+
+* `r_submit_thread 1`
+
+## Settings applied at the next level load
+
+**Shading**, **Textures**, **Steep parallax** and **Detail bump** (`r_shading_quality`, `r_streaming_quality`, `r_parallax`, `r_detail_bump`) decide which textures and shaders a level's surfaces are loaded with. Changed while a level is loaded, the new choice is saved and shown at once, but the level keeps drawing with the values it was loaded with: they take effect when a level loads (a save, a new level), and at once in the main menu with no level. A quality preset changes them together with the rest; the rest applies at once. The console prints one line, `- r_shading_quality, ...: applied at the next level load`, and the option's hint says the same. Settings the shading quality limits (shadows, reflections and others) follow the shading quality the level was loaded with until then.

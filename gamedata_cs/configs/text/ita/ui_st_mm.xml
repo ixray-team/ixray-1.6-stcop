@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>GIOC.</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Illuminazione fissa</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Illuminazione dinamica</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Illuminazione dinamica migliorata</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Illuminazione dinamica oggetti</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Illuminazione dinamica migliorata (DirectX 10)</text>
-	</string>
 	<string id="server name">
 		<text>NOME SERVER</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Rendering 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Rendering</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Risoluzione</text>

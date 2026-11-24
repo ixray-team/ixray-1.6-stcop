@@ -269,7 +269,8 @@ void CLensFlare::OnFrame(shared_str id)
 	dwFrame			= Device.dwFrame;
 
 	R_ASSERT		( _valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir) );
-	vSunDir.mul		(g_pGamePersistent->Environment().CurrentEnv->sun_dir,-1);
+	// The sun and its glare stand where the renderer lights from
+	vSunDir.mul		(::Render->SunDirection(),-1);
 	R_ASSERT		( _valid(vSunDir) );
 
 	// color

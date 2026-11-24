@@ -273,7 +273,7 @@ void CMainMenu::Activate	(bool bActivate)
 		if(m_Flags.test(flNeedVidRestart))
 		{
 			m_Flags.set			(flNeedVidRestart, false);
-			Console->Execute	("vid_restart");
+			Console->Execute	("r_restart");
 		}
 
 		GamePersistent().SetDiscordStatus();
@@ -300,7 +300,7 @@ bool CMainMenu::ReloadUI()
 	m_startDialog->m_bWorkInPause= true;
 	m_startDialog->ShowDialog	(true);
 
-	m_activatedScreenRatio.set((float)Device.TargetWidth, (float)Device.TargetHeight);
+	m_activatedScreenRatio.set((float)g_UiView.x, (float)g_UiView.y);
 	return true;
 }
 
@@ -544,7 +544,8 @@ void CMainMenu::OnFrame()
 	if(IsActive())
 	{
 		CheckForErrorDlg();
-		Fvector2 newRatio	= Fvector2().set((float)Device.TargetWidth, (float)Device.TargetHeight);
+		// The size the interface is made for: the view may pass through many sizes before it rests at one
+		Fvector2 newRatio	= Fvector2().set((float)g_UiView.x, (float)g_UiView.y);
 		if(!newRatio.similar(m_activatedScreenRatio))
 		{
 			ReloadUI();
@@ -776,7 +777,8 @@ void CMainMenu::SetNeedVidRestart()
 
 void CMainMenu::OnDeviceReset()
 {
-	if(IsActive() && g_pGameLevel)
+	// A view that changed its size reset no device: nothing to restart
+	if(IsActive() && g_pGameLevel && !g_IsViewResize)
 		SetNeedVidRestart();
 }
 

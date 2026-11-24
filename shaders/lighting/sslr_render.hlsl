@@ -1,0 +1,194 @@
+#include "common\common.hlsli"
+#define IXR_COMPUTE
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	#define USE_VIEW_REFLECTIONS
+#endif
+#include "common\reflections.hlsli"
+#include "common\thin_surface.hlsli"
+#include "common\metalic_roughness_ambient.hlsli"
+#include "common\metalic_roughness_light.hlsli"
+
+//LVutner: UAVs. See CPP code
+RWTexture2D<float4> u_sslr : register(u0);
+RWTexture2D<float4> u_sslr_data : register(u1);
+
+Texture2D s_occ : register(t26);
+
+[numthreads(8, 8, 1)]
+void cs_main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
+{
+	uint2 Pixel = SslrTracedPixel(DTid);
+
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpackDepth(Pixel, O);
+
+	// The surface beside its depth: the thin target
+	thin_surface Thin = thin_unpack(s_thin.Load(int3(Pixel, 0)));
+	O.Normal = Thin.normal;
+	O.Hemi = Thin.hemi;
+	O.MaterialID = Thin.id;
+
+	// u_sslr.w: view distance of the ray origin, negative on the HUD. sslr_filter rebuilds the origin from it
+	float OriginDist = O.Depth < 0.02f ? -O.ViewDist : O.ViewDist;
+	float Roughness = Thin.roughness;
+
+	//LVutner: Init
+	float4 Final = (0.0).xxxx;
+	float4 Point = (0.0).xxxx;
+	
+	float2 TexCoord = float2(Pixel + 0.5) * pos_decompression_params2.zw;
+	
+	float3 ReflectPoint = GbufferGetPointRealUnjitter(TexCoord, O.Depth);
+	float3 ViewVec = normalize(ReflectPoint);
+
+	// A two-sided surface seen from behind: its normal is turned to the eye. Left facing away, the sampled half
+	// vector collapses, the ray runs on into the surface it starts from and the surface mirrors itself
+	O.Normal = dot(O.Normal, ViewVec) > 0.0f ? -O.Normal : O.Normal;
+
+	if(O.Depth >= 1.0f)
+	{
+		Point.xyz = ViewVec * fog_params.z;
+		Point.w = EPS_S;
+		
+		Final.xyz = CompureSpecularIrradance(ViewVec.xyz, 1.0f, 0.2f).xyz;
+		
+		Final.xyz *= rcp(1.0f + Final.xyz);
+		Final.xyz = saturate(Final.xyz);
+		Final.w = OriginDist;
+
+		u_sslr[DTid.xy] = Final;
+		u_sslr_data[DTid.xy] = Point;
+		
+		return;
+	}
+	
+	[branch]
+	if (!Thin.reflects)
+	{
+		// Zero ray data: sslr_filter gives it the floor weight
+		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, OriginDist);
+		u_sslr_data[DTid.xy] = 0.0f;
+		return;
+	}
+
+	float3 Jitter = s_blue_noise[uint3(Pixel % 128, uint(m_taa_jitter.w) % 32)].xyz;
+
+	//LVutner: VNDF is biased, cause I don't want random fireflies
+	float4 H;
+	
+#ifdef USE_SURFACE_REFLECTIONS
+	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter.xy * float2(1.0, 0.7), Roughness * Roughness);
+	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), Roughness * Roughness);
+#else
+	H.xyz = O.Normal;
+	H.w = EPS;
+#endif
+	
+	float3 Reflection = reflect(ViewVec, H.xyz);
+	
+	if (dot(Reflection, O.Normal) < 0.0f)
+    {
+       Reflection = normalize(Reflection + O.Normal);
+    }
+	
+	float3 StartPoint = ReflectPoint * 0.996f;
+	
+	Point.xyz = StartPoint + Reflection * fog_params.z;	
+	
+	bool isHUDRender = O.Depth < 0.02f;
+
+	StartPoint += !isHUDRender ? O.Normal * 0.025f : 0.0f;
+	float4 SSLR;
+	float VslrStart = 0.0f;
+
+	[branch]
+	if (isHUDRender)
+	{
+		SSLR = FastViewReflectionsSSR(StartPoint, Reflection, true, Jitter.z);
+	}
+	else
+	{
+		SSLR = HiZTraceSSR(StartPoint, Reflection, uint(lerp(HIZ_MAX_ITERATIONS, HIZ_ROUGH_ITERATIONS, SslrRoughTrace(Roughness))), VslrStart);
+	}
+	
+	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
+	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
+	
+	EndProj.xy += s_velocity.SampleLevel(smp_rtlinear, ViewToTarget(EndProj.xy), 0).xy * float2(-0.5f, 0.5f);
+	SSLR *= GetBorderAtten(EndProj.xy);
+	
+	Final = s_image.SampleLevel(smp_rtlinear, ViewToTargetBefore(EndProj.xy), 0.0);
+	// The frame before is linear, but for the forward level frame of low shading quality; what the missed rays add
+	// and what reads this target are gamma space
+	Final.xyz = SceneToGamma(Final.xyz);
+	
+	if(!isHUDRender)
+	{
+#ifdef USE_OFFSCREEN_REFLECTIONS
+		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen
+		if(SSLR.w < 1.0f && VslrStart >= 0.0f)
+		{
+			float4 VSLR = FastViewReflections(StartPoint, Reflection.xyz, VslrStart, Jitter.z);
+			Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
+		}
+	} 
+	else
+	{
+		Point.xyz = Reflection.xyz * s_env_dist.SampleLevel(smp_linear, mul(m_probe, float4(Point.xyz, 1.0f)), 0.0f).x;
+#endif
+	}
+	
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	O.Hemi = isHUDRender ? 1.0f : O.Hemi;
+#endif
+	
+	float3 HitPoint = lerp(Point.xyz, SSLR.xyz, SSLR.w);
+
+	// Traced hits come from the previous final image, which is already fogged: only the fallback of missed rays gets fog here
+	float Fog = max(length(HitPoint), length(StartPoint.xyz) + length(HitPoint - StartPoint.xyz));
+	Fog = saturate(Fog * fog_params.w + fog_params.x) * (1.0f - SSLR.w);
+
+	// The sky irradiance costs four cube taps, only fogged reflections and missed rays without the cube use it
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	bool UseHemi = Fog > 0.0f;
+#else
+	bool UseHemi = Fog > 0.0f || SSLR.w < 1.0f;
+#endif
+
+	float3 Hemi = 0.0f;
+
+	[branch]
+	if (UseHemi)
+	{
+		Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f);
+	}
+
+	if(SSLR.w < 1.0f)
+	{
+		float3 Color = Hemi;
+
+#ifdef USE_OFFSCREEN_REFLECTIONS
+		[branch]
+		if (VslrStart >= 0.0f)
+		{
+			Color = s_env.SampleLevel(smp_linear, mul(m_probe, float4(Point.xyz, 1.0f)), 0.0f);
+		}
+#endif
+
+		// Screen-space AO occludes only the fallback of missed rays, traced hits come from the lit image
+		Color *= LinearToGamma(SpecularOcclusion(saturate(dot(O.Normal, -ViewVec)), s_occ.Load(int3(Pixel, 0)).x, Roughness));
+
+		Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
+	}
+
+	Final.xyz = lerp(Final.xyz, Hemi, Fog);
+	Point.xyz = length(HitPoint - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
+	
+	Point.w = rcp(max(EPS_S, H.w));
+	
+	Final.w = OriginDist;
+
+	//LVutner: Write to UAVs
+	u_sslr[DTid.xy] = Final;
+	u_sslr_data[DTid.xy] = Point;
+}

@@ -6,7 +6,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/Environment.h"
 #include "IconsFontAwesome7.h"
-#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
+#include "../../../Layers/xrRenderIXR/RenderEditorApi.h"
 
 extern ENGINE_API bool bIsSndOnRoof;
 extern ENGINE_API bool bIsRaindropCollision;
@@ -19,8 +19,8 @@ UILightingForm* UILightingForm::Form = nullptr;
 
 namespace
 {
-	// ps_r_ssao_mode
-	const char* const AmbientOcclusionNames[] = { "Off", "SSAO", "GTAO" };
+	// r_occlusion_quality off / medium
+	const char* const AmbientOcclusionNames[] = { "Off", "GTAO" };
 
 	const char* const TimePresetNames[] = { ICON_FA_SUN " 06", ICON_FA_SUN " 12", ICON_FA_CLOUD_SUN " 18", ICON_FA_MOON " 00" };
 	const float TimePresetHours[] = { 6.f, 12.f, 18.f, 0.f };
@@ -294,11 +294,11 @@ void UILightingForm::DrawAmbient()
 	HandCursor();
 
 	Row("Ambient occlusion", "Screen space ambient occlusion of the game renderer");
-	const int Selected = (int)std::min(ps_r_ssao_mode, (u32)IM_ARRAYSIZE(AmbientOcclusionNames) - 1);
+	const int Selected = VideoSettings::Stored(EVideoSetting::OcclusionQuality) ? 1 : 0;
 	const int Mode = Segmented(AmbientOcclusionNames, IM_ARRAYSIZE(AmbientOcclusionNames), Selected);
 	if (Mode >= 0)
 	{
-		ps_r_ssao_mode = (u32)Mode;
+		VideoSettings::Set(EVideoSetting::OcclusionQuality, u32(Mode));
 		EContext.UI->RedrawScene();
 	}
 
@@ -313,20 +313,18 @@ void UILightingForm::DrawReflections()
 	}
 
 	// Both are shader defines: a change recompiles the shaders
-	bool World = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	bool World = VideoSettings::Stored(EVideoSetting::ReflectionQuality) != 0;
 	Row("SSLR", "Screen space reflections on the scene surfaces");
 	if (Switch("SSLRWorld", &World))
 	{
-		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, World);
-		RImplementation.SyncReflections();
+		VideoSettings::Set(EVideoSetting::ReflectionQuality, World);
 	}
 
-	bool Water = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+	bool Water = VideoSettings::Stored(EVideoSetting::WaterReflections) != 0;
 	Row("SSLR Water", "Screen space reflections on the water");
 	if (Switch("SSLRWater", &Water))
 	{
-		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WATER, Water);
-		RImplementation.SyncReflections();
+		VideoSettings::Set(EVideoSetting::WaterReflections, Water);
 	}
 
 	EndSection();

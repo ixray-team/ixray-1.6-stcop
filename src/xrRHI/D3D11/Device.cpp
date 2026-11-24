@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "Device.h"
 #include "RHIProfiler.h"
 
@@ -9,6 +43,7 @@ extern "C" void* IxrDxmtGetNSView(void* sdl_window);
 
 #ifdef IXR_WINDOWS
 #	include "../Nri/NriDevice.h"
+#	include "DX11GPUEventWrapper.h"
 #	include "../Drivers/AMDGPUTransferee.h"
 #endif
 
@@ -49,13 +84,17 @@ IRHITextureFactory* InternalDevice11::GetTextureFactory()
 	return TextureFactory;
 }
 
-bool InternalDevice11::UpdateBuffersD3D11()
+bool InternalDevice11::CreateSwapChainView()
 {
-	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-	// Create a render target view
 	ID3D11Texture2D* pBuffer = nullptr;
+#ifdef IXR_WINDOWS
+	pBuffer = static_cast<ID3D11Texture2D*>(GRHI->Nri->SwapChainTexture(0));
+	pBuffer->AddRef();
+	HRESULT R = S_OK;
+#else
 	HRESULT R = HWSwapchain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
 	R_CHK(R);
+#endif
 
 	if (pBuffer == nullptr)
 	{
@@ -67,28 +106,17 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	pBuffer->Release();
 	R_CHK(R);
 
-	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferDesc.Width = psCurrentVidMode[0];
-	sd.BufferDesc.Height = psCurrentVidMode[1];
-	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	sd.BufferCount = 1;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.OutputWindow = hwnd;
-	sd.Windowed = !psDeviceFlags.is(rsFullscreen);
+	SwapChainRTV = new DX11RenderTargetView(SwapChainRaw, new DX11Surface(pBuffer));
+	return true;
+}
 
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
-
-	//	Additional set up
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-
-	//	Create Depth/stencil buffer
+bool InternalDevice11::UpdateBuffersD3D11()
+{
+	// The output and the depth are made at the video mode, whatever size the window's swap chain has
 	ID3D11Texture2D* pDepthStencil = nullptr;
 	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = sd.BufferDesc.Width;			// TODO: render scale
-	descDepth.Height = sd.BufferDesc.Height;		// TODO: render scale
+	descDepth.Width = psCurrentVidMode[0];
+	descDepth.Height = psCurrentVidMode[1];
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.SampleDesc.Count = 1;
@@ -100,7 +128,7 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	// Not B8G8R8X8: NRI has no such format, and the gamma pass writes this target through it
 	descDepth.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	descDepth.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-	R = (DX11Device)->CreateTexture2D(&descDepth, nullptr, (ID3D11Texture2D**)&RenderTexture);
+	HRESULT R = (DX11Device)->CreateTexture2D(&descDepth, nullptr, (ID3D11Texture2D**)&RenderTexture);
 	R_CHK(R);
 
 	if (RenderTexture == nullptr)
@@ -115,17 +143,19 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	R = DX11Device->CreateShaderResourceView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11ShaderResourceView**)&RenderSRV);
 	R_CHK(R);
 
-	descDepth.Width = UINT(sd.BufferDesc.Width * RenderScale);
-	descDepth.Height = UINT(sd.BufferDesc.Height * RenderScale);
+	descDepth.Width = UINT(psCurrentVidMode[0] * RenderScale);
+	descDepth.Height = UINT(psCurrentVidMode[1] * RenderScale);
 
 	descDepth.Width += descDepth.Width % 2;
 	descDepth.Height += descDepth.Height % 2;
 
 	HalfTarget.x = descDepth.Width;
 	HalfTarget.y = descDepth.Height;
+	AllocHalfTarget = HalfTarget;
 
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	// Typeless and readable: the scene's passes read the depth as a texture, as they do on the other device
+	descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	R = DX11Device->CreateTexture2D(&descDepth, nullptr, &pDepthStencil);
 	R_CHK(R);
 
@@ -137,14 +167,13 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	//	Create Depth/stencil view
 	ID3D11DepthStencilView* Dsv = nullptr;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-	depthStencilViewDesc.Format = descDepth.Format;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 	R = DX11Device->CreateDepthStencilView(pDepthStencil, &depthStencilViewDesc, (ID3D11DepthStencilView**)&Dsv);
 	R_CHK(R);
 
 	RenderDSV = new DX11DepthStencilView(Dsv, new DX11Surface(pDepthStencil));
-	SwapChainRTV = new DX11RenderTargetView(SwapChainRaw, new DX11Surface(((ID3D11Texture2D*)pBuffer)));
 	RenderRTV = new DX11RenderTargetView(RawSRV, new DX11Surface(((ID3D11Texture2D*)RenderTexture)));
 
 	pDepthStencil->Release();
@@ -239,8 +268,8 @@ bool InternalDevice11::CreateD3D11()
 #else
 	HWND hwnd = nullptr;
 #endif
-	sd.BufferDesc.Width = psCurrentVidMode[0];
-	sd.BufferDesc.Height = psCurrentVidMode[1];
+	sd.BufferDesc.Width = GRHI->SwapChain.Width;
+	sd.BufferDesc.Height = GRHI->SwapChain.Height;
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferCount = 1;
 	sd.SampleDesc.Count = 1;
@@ -271,7 +300,8 @@ bool InternalDevice11::CreateD3D11()
 		R_CHK(DX11Device->QueryInterface(IID_PPV_ARGS(&DxgiDevice)));
 		R_CHK(DxgiDevice->GetAdapter(&Adapter));
 		R_CHK(Adapter->GetParent(IID_PPV_ARGS(&Factory)));
-		HRESULT R = Factory->CreateSwapChain(DX11Device, &sd, &HWSwapchain);
+		GRHI->Nri->CreateSwapChain(hwnd, GRHI->SwapChain, 3);
+		HRESULT R = S_OK;
 		Factory->Release();
 		Adapter->Release();
 		DxgiDevice->Release();
@@ -357,7 +387,7 @@ bool InternalDevice11::CreateD3D11()
 	}
 	NoOverwriteSRV = Options.MapNoOverwriteOnDynamicBufferSRV;
 
-	if (!UpdateBuffersD3D11())
+	if (!CreateSwapChainView() || !UpdateBuffersD3D11())
 	{
 		return false;
 	}
@@ -371,7 +401,7 @@ bool InternalDevice11::CreateD3D11()
 	return true;
 }
 
-void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
+void InternalDevice11::ResizeBuffers(const RHISwapChainDesc& SwapChain)
 {
 	if (RenderDSV != nullptr)
 	{
@@ -391,32 +421,42 @@ void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
 		RenderRTV = nullptr;
 	}
 
-	if (SwapChainRTV != nullptr)
-	{
-		SwapChainRTV->Release();
-		SwapChainRTV = nullptr;
-	}
-
 	if (RenderTexture != nullptr)
 	{
 		((ID3D11Texture2D*)RenderTexture)->Release();
 		RenderTexture = nullptr;
 	}
 
-	DXGI_MODE_DESC Desc = {};
-	Desc.Width = Width;
-	Desc.Height = Height;
-	Desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	Desc.RefreshRate.Numerator = 0;
-	Desc.RefreshRate.Denominator = 0;
+#ifndef IXR_WINDOWS
+	DXGI_MODE_DESC Mode = {};
+	Mode.Width = SwapChain.Width;
+	Mode.Height = SwapChain.Height;
+	Mode.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	R_CHK(HWSwapchain->ResizeTarget(&Mode));
+#endif
 
-	HRESULT R = ((IDXGISwapChain*)HWSwapchain)->ResizeTarget(&Desc);
-	R_CHK(R);
-
-	R = ((IDXGISwapChain*)HWSwapchain)->ResizeBuffers(0, Width, Height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
-	R_CHK(R);
-
+	ResizeSwapChain(SwapChain);
 	UpdateBuffersD3D11();
+}
+
+void InternalDevice11::ResizeSwapChain(const RHISwapChainDesc& SwapChain)
+{
+	if (SwapChainRTV != nullptr)
+	{
+		SwapChainRTV->Release();
+		SwapChainRTV = nullptr;
+	}
+
+#ifdef IXR_WINDOWS
+	// The swap chain is made again, and a flip-model one must be gone before its window takes another: the flush
+	// destroys what was released of it. The context keeps its state, which the state cache above it mirrors
+	HWRenderContext->Flush();
+	GRHI->Nri->CreateSwapChain(nullptr, SwapChain, 3);
+#else
+	R_CHK(HWSwapchain->ResizeBuffers(0, SwapChain.Width, SwapChain.Height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
+#endif
+
+	CreateSwapChainView();
 }
 
 void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
@@ -559,6 +599,10 @@ void InternalDevice11::DestroyD3D11()
 			RawDevice = nullptr;
 		}
 
+#ifdef IXR_WINDOWS
+		GRHI->Nri->DestroySwapChain();
+#endif
+
 		if (HWSwapchain != nullptr)
 		{
 			((IDXGISwapChain*)HWSwapchain)->Release();
@@ -569,7 +613,17 @@ void InternalDevice11::DestroyD3D11()
 
 void InternalDevice11::Present()
 {
-	HWSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+#ifdef IXR_WINDOWS
+	if (!GRHI->Nri->EndFrame())
+	{
+		ReportGpuTrail();
+		R_CHK(DXGI_ERROR_DEVICE_REMOVED);
+	}
+#else
+	const HRESULT Presented = HWSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+	R_CHK(Presented);
+#endif
+
 	RingIndex = RingPos = 0;
 	++ConstantEpoch;
 }
@@ -655,6 +709,15 @@ bool InternalDevice11::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* D
 	for (u32 Y = 0; Y < OutHeight; ++Y)
 	{
 		memcpy((u8*)Dst + (size_t)Y * OutRowPitch, (u8*)Mapped.pData + (size_t)Y * Mapped.RowPitch, OutRowPitch);
+	}
+
+	// The swap chain holds red first; what reads the back buffer takes blue first, as it always was
+	if (Rtv == SwapChainRTV && Desc.Format == DXGI_FORMAT_R8G8B8A8_UNORM)
+	{
+		for (u8* Pixel = (u8*)Dst, *End = Pixel + (size_t)OutRowPitch * OutHeight; Pixel + 3 < End; Pixel += 4)
+		{
+			std::swap(Pixel[0], Pixel[2]);
+		}
 	}
 
 	HWRenderContext->Unmap(Staging, 0);

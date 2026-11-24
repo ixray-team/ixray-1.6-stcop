@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FrameStackSampler.h"
 
 XRayWorkerThread::XRayWorkerThread(Callback InCallback, const char* TN, EThreadRole InRole)
 	: Function(std::move(InCallback)), ThreadName(TN), Role(InRole)
@@ -46,6 +47,9 @@ void XRayWorkerThread::ThreadProc(void* InThis)
 	XRayWorkerThread* This = (XRayWorkerThread*)InThis;
 	TaskPool::ApplyThreadRole(This->Role);
 	PROF_START_THREAD(This->ThreadName.c_str());
+#ifdef _WIN32
+	FrameStackSampler::Follow(This->ThreadName.c_str());
+#endif
 
 	while (true)
 	{

@@ -9,7 +9,7 @@
 #include "EditObject.h"
 #include "ui_main.h"
 #include "D3DUtils.h"
-#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
+#include "../../../Layers/xrRenderIXR/RenderEditorApi.h"
 #include "EditorInstancing.h"
 
 #include "../../../xrCore/FVFLegacy.h"
@@ -630,7 +630,8 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 
 	const IntVec& face_lst = sp_it->second;
 	const u32 FaceCount = (u32)face_lst.size();
-	const u32 ChunkFaces = Cmd.Vertex.GetCapacity() / 3;
+	DynamicGeometry& Stream = RImplementation.Dynamic;
+	const u32 ChunkFaces = Stream.GetCapacity() / 3;
 	const BoneVec& Bones = m_Parent->m_Bones;
 
 	ERHI_CULLMODE OldCullMode = Cmd.GetCullMode();
@@ -642,7 +643,7 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 		const u32 Last = std::min(First + ChunkFaces, FaceCount);
 		const u32 Count = (Last - First) * 3;
 		u32 vBase = 0;
-		PackedVertex* V = (PackedVertex*)Cmd.Vertex.Lock(Count, EVertexFormat::Packed, vBase);
+		PackedVertex* V = (PackedVertex*)Stream.Lock(Count, EVertexFormat::Packed, vBase);
 		for (u32 Face = First; Face < Last; ++Face)
 		{
 			const st_SVert* SV = &m_SVertices[face_lst[Face] * 3];
@@ -676,7 +677,7 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 				*V = Out;
 			}
 		}
-		Cmd.Vertex.Unlock(Count);
+		Stream.Unlock(Count);
 
 		for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
 		{
@@ -695,7 +696,7 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 			}
 			EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 			Cmd.SetGeometry(DU_impl.RingGeom);
-			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Count, vBase);
+			Stream.Draw(Cmd, ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Count, vBase);
 		}
 	}
 

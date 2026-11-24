@@ -24,6 +24,12 @@ bool CConsole::GetBool(const char* cmd) const {
 	if (cb) {
 		return cb->GetValue() != 0;
 	}
+
+	// The off / on settings are tokens
+	CCC_Token* ct			= smart_cast<CCC_Token*>(cc);
+	if (ct) {
+		return *ct->value != 0;
+	}
 	return false;
 }
 

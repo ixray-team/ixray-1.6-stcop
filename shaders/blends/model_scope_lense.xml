@@ -1,0 +1,14 @@
+<shader simplified="1">
+	<normal sort="2" strict="1" cluster="1">
+		<pass vs="model_env_lq" ps="model_env_lq" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_env" src="sky\sky_5_cube"/>
+		</pass>
+	</normal>
+	<l_special scope="1" cluster="1">
+		<pass vs="scope_lense_mask" ps="scope_lense_mask" zfunc="always">
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</l_special>
+</shader>

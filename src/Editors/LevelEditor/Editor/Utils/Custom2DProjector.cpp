@@ -75,18 +75,18 @@ void CCustom2DProjector::Render(bool blended)
     EDevice->SetShader	(blended?shader_blended:shader_overlap);
     div_t cnt 			= div(mesh.size(),MAX_BUF_SIZE);
     u32 vBase;
-    VertexRing* Stream = &Cmd.Vertex;
+    DynamicGeometry* Stream = &RImplementation.Dynamic;
     for (int k=0; k<cnt.quot; k++){
 		FVF::V*	pv	 	= (FVF::V*)Stream->Lock(MAX_BUF_SIZE,EVertexFormat::V,vBase);
 		CopyMemory		(pv,mesh.data()+k*MAX_BUF_SIZE,sizeof(FVF::V)*MAX_BUF_SIZE);
 		Stream->Unlock	(MAX_BUF_SIZE);
-		EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,geom,vBase,MAX_BUF_SIZE/3);
+		GEditorDraw.DrawStream(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,geom,vBase,MAX_BUF_SIZE/3);
     }
     if (cnt.rem){
 		FVF::V*	pv	 	= (FVF::V*)Stream->Lock(cnt.rem,EVertexFormat::V,vBase);
 		CopyMemory		(pv,mesh.data()+cnt.quot*MAX_BUF_SIZE,sizeof(FVF::V)*cnt.rem);
 		Stream->Unlock	(cnt.rem);
-		EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,geom,vBase,cnt.rem/3);
+		GEditorDraw.DrawStream(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,geom,vBase,cnt.rem/3);
     }
     EDevice->ResetNearer	();
 }

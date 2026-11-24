@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="depth_resolve_ms" zfunc="always">
+			<texture name="s_position" src="$user$forward_depth_ms"/>
+		</pass>
+	</normal>
+</shader>

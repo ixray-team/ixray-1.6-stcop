@@ -109,6 +109,11 @@ inline const ParamInfo& Info(Param Id)
 {
 	return Params[static_cast<u32>(Id)];
 }
+
+inline bool IsParamRetired(Param Id)
+{
+	return Id == Param::PostTonemap || Id == Param::PostMiddleGray;
+}
 }
 
 namespace Cinema::Curves

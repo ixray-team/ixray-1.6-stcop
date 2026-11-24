@@ -13,7 +13,7 @@
 #include "ExportSkeleton.h"
 #include "ExportObjectOGF.h"
 
-#include "../Layers/xrRenderPC_R4/Shader.h"
+#include "../Layers/xrRenderIXR/Shader.h"
 
 bool CEditableObject::Load(const char* fname)
 {

@@ -1,0 +1,10 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "ps": {
+            "scope_postprocess_cm": [
+                "SCOPE_POSTPROCESS"
+            ]
+        }
+    }
+}

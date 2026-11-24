@@ -772,7 +772,7 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model, IDSGrap
 	}
 }
 
-void CInventoryItem::RenderIcon(const Fmatrix& xform, IKinematics* model, IDSGraphManager* DM, xr_deque<Fmatrix>& xforms)
+void CInventoryItem::RenderIcon(const Fmatrix& xform, IKinematics* model, xr_vector<UIIconVisual>& visuals)
 {
 	for (const auto& [id, child] : m_children)
 	{
@@ -785,12 +785,12 @@ void CInventoryItem::RenderIcon(const Fmatrix& xform, IKinematics* model, IDSGra
 		IKinematics* child_model = PKinematics(child->object().Visual());
 		child_model->CalculateBones(true);
 
-		Fmatrix& child_xform = xforms.emplace_back();
+		Fmatrix child_xform;
 		child_xform.mul_43(xform, model->LL_GetTransform(bone));
 		child_xform.mulB_43(child->m_attach_offset);
-		DM->add_Dynamic(child_model->dcast_RenderVisual(), &child_xform, true);
+		visuals.push_back({ child_model->dcast_RenderVisual(), child_xform });
 
-		child->RenderIcon(child_xform, child_model, DM, xforms);
+		child->RenderIcon(child_xform, child_model, visuals);
 	}
 }
 

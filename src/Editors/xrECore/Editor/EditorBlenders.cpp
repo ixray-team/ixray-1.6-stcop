@@ -3,10 +3,10 @@
 // R1 blender classes of shaders.xr that the game renderer does not implement. The editors
 // create them so the Shader Editor keeps these shaders when it saves the library; every other
 // class comes from the renderer (see CRender::blender_create).
-#include "../../../Layers/xrRenderPC_R4/Blender_Screen_GRAY.h"
-#include "../../../Layers/xrRenderPC_R4/Blender_LaEmB.h"
-#include "../../../Layers/xrRenderPC_R4/Blender_Shadow_World.h"
-#include "../../../Layers/xrRenderPC_R4/Blender_Blur.h"
+#include "../../../Layers/xrRenderIXR/Blender_Screen_GRAY.h"
+#include "../../../Layers/xrRenderIXR/Blender_LaEmB.h"
+#include "../../../Layers/xrRenderIXR/Blender_Shadow_World.h"
+#include "../../../Layers/xrRenderIXR/Blender_Blur.h"
 
 IBlender* CreateEditorBlender(CLASS_ID Class)
 {

@@ -35,18 +35,6 @@ xr_token vid_bpp_token[] =
 	{ nullptr,	 0 }
 };
 
-xr_token vid_scale_preset_token[] = 
-{
-	{ "st_scale_native", 0 },
-	{ "st_scale_quality", 1 },
-	{ "st_scale_balanced", 2 },
-	{ "st_scale_performance", 3 },
-	{ "st_scale_ultraperformance", 4 },
-
-	{ "st_scale_custom", 5 },
-	{ nullptr, 0 }
-};
-
 xr_token gamepad_prefix_override_token[] = 
 {
 	{ "gp_none", 0 },
@@ -59,32 +47,12 @@ xr_token gamepad_prefix_override_token[] =
 	{ nullptr, 0 }
 };
 
-ENGINE_API u32 ps_r_dlss_model = 0;
 float ps_vram_textures_mb = 0.f;
 int ps_vram_textures_lod = 0;
 float ps_vram_other_mb = 0.f;
-xr_token dlss_model_token[] =
-{
-	{ "st_dlss_model_auto", 0 },
-	{ "st_dlss_model_cnn", 1 },
-	{ "st_dlss_model_transformer", 2 },
-	{ "st_dlss_model_transformer2", 3 },
-	{ nullptr, 0 }
-};
 
 ENGINE_API u32 ps_r_scale_mode = 1;
 ENGINE_API u32 ps_proxy_r_scale_mode = 1;
-xr_token qscale_mode_token[] = 
-{
-#ifdef DEBUG_DRAW
-	{ "st_filter_point", 0},
-#endif
-	{ "st_filter_linear", 1},
-	{ "st_filter_dlss", 2},
-	{ "st_filter_fsr", 3},
-	{ "st_filter_xess", 4},
-	{ nullptr, 0 }
-};
 
 void IConsole_Command::add_to_LRU(shared_str const& arg) {
 	if (!arg.size() || bEmptyArgsHandled) 
@@ -280,6 +248,12 @@ public:
 
 void CCC_SaveCFG::Execute(const char* args)
 {
+	if (Core.ParamsData.test(ECoreParams::autotest) || strstr(Core.Params, "-autotest") != nullptr)
+	{
+		Msg("~ [autotest] cfg_save skipped");
+		return;
+	}
+
 	string_path cfg_full_name;
 	xr_strcpy(cfg_full_name, xr_strlen(args) > 0 ? args : Console->ConfigFile);
 
@@ -503,7 +477,7 @@ public :
 
 	virtual void	Info	(TInfo& I) override
 	{	
-		xr_strcpy(I,sizeof(I),"change screen resolution WxH");
+		xr_strcpy(I,sizeof(I),"largest size the frame is drawn at, WxH; taken by r_restart");
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override
@@ -578,60 +552,41 @@ public:
 
 ENGINE_API bool r2_sun_static = true;
 
-u32	renderer_value	= 0;
-class CCC_r2 : public CCC_Token
+// r_fullscreen off / borderless
+class CCC_Fullscreen : public CCC_Mask32
 {
-	typedef CCC_Token inherited;
 public:
-	CCC_r2(const char* N) :inherited(N, &renderer_value, vid_quality_token){renderer_value=0; }
+	CCC_Fullscreen(const char* N) : CCC_Mask32(N, &psDeviceFlags, rsFullscreen) {}
 
-	virtual ~CCC_r2	() override
+	virtual void Execute(const char* args) override
 	{
-		
+		CCC_Mask32::Execute(EQ(args, "borderless") ? "on" : args);
 	}
 
-	virtual void	Execute	(const char* args) override
+	virtual void Status(TStatus& S) override
 	{
-		tokens					= vid_quality_token;
-		if (g_dedicated_server)
-		{
-			inherited::Execute	(args);
-			return;
-		}
-
-		ELightingMode mode;
-		if (!LightingModeParseToken(args, mode))
-		{
-			InvalidSyntax();
-			return;
-		}
-
-		inherited::Execute		(LightingModeCanonicalToken(mode));
-		LightingModeApply		(mode, !g_lighting_mode_locked);
+		xr_strcpy(S, GetValue() ? "borderless" : "off");
 	}
 
-	virtual void	Status	(TStatus& S) override
+	virtual void Info(TInfo& I) override
 	{
-		if (g_dedicated_server)
-		{
-			inherited::Status(S);
-			return;
-		}
-		xr_strcpy(S, LightingModeCanonicalToken(g_lighting_mode_cfg));
+		xr_strcpy(I, "off/borderless");
 	}
+};
 
-	virtual void	Save	(IWriter *F) override
+// r_latency normal / low: two frames in flight or one
+class CCC_Latency : public CCC_Token
+{
+	u32 Queue = 2;
+
+public:
+	CCC_Latency(const char* N, xr_token* T) : CCC_Token(N, &Queue, T) {}
+
+	virtual void Execute(const char* args) override
 	{
-		tokens = vid_quality_token;
-		inherited::Save(F);
+		CCC_Token::Execute(args);
+		psFrameQueue = int(Queue);
 	}
-
-	virtual xr_token* GetToken() override
-	{
-		tokens = vid_quality_token;
-		return inherited::GetToken();
-	}
-
 };
 
 class CCC_GamepadPrefixOverride : public CCC_Token
@@ -754,6 +709,45 @@ extern float fps_smoothing_alpha;
 
 extern bool use_smoothed_delta;
 
+#ifdef DEBUG_DRAW
+void BeginProfilerCapture();
+void EndProfilerCapture();
+void SetProfilerWatch(bool IsOn);
+
+// profiler_watch on|off: names in the log every GPU pass that takes several times its usual time
+class CCC_ProfilerWatch : public IConsole_Command
+{
+public:
+	CCC_ProfilerWatch(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+
+	virtual void Execute(const char* args) override
+	{
+		SetProfilerWatch(!args || !args[0] || !xr_strcmp(args, "on") || !xr_strcmp(args, "1"));
+	}
+};
+
+// profiler_start, profiler_end: the frame profiler's sums between the two, written to the logs folder
+class CCC_ProfilerCapture : public IConsole_Command
+{
+	bool IsEnd;
+
+public:
+	CCC_ProfilerCapture(const char* N, bool IsEnd) : IConsole_Command(N), IsEnd(IsEnd) { bEmptyArgsHandled = true; }
+
+	virtual void Execute(const char* args) override
+	{
+		if (IsEnd)
+		{
+			EndProfilerCapture();
+		}
+		else
+		{
+			BeginProfilerCapture();
+		}
+	}
+};
+#endif
+
 #ifdef IXRAY_PROFILER
 class CCC_Profiler : public IConsole_Command
 {
@@ -789,10 +783,25 @@ public:
 	}
 };
 #endif
+class CCC_IgnoreErrorWindow final : public CCC_Boolean
+{
+public:
+	CCC_IgnoreErrorWindow(const char* N, bool* V) : CCC_Boolean(N, V) {}
+
+	virtual void Save(IWriter* F) override
+	{
+		if (Core.ParamsData.test(ECoreParams::autotest) || strstr(Core.Params, "-autotest") != nullptr)
+		{
+			return;
+		}
+		CCC_Boolean::Save(F);
+	}
+};
+
 void CCC_Register()
 {
 	extern XRCORE_API bool ignore_error_window;
-	CMD2(CCC_Boolean, "ignore_error_window", &ignore_error_window);
+	CMD2(CCC_IgnoreErrorWindow, "ignore_error_window", &ignore_error_window);
 	CMD2(CCC_Boolean, "use_smoothed_delta", &use_smoothed_delta);
 
 	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
@@ -803,6 +812,11 @@ void CCC_Register()
 
 #ifdef IXRAY_PROFILER
 	CMD1(CCC_Profiler, "profiler_switch");
+#endif
+#ifdef DEBUG_DRAW
+	CMD2(CCC_ProfilerCapture, "profiler_start", false);
+	CMD1(CCC_ProfilerWatch, "profiler_watch");
+	CMD2(CCC_ProfilerCapture, "profiler_end", true);
 #endif
 	// General
 	CMD1(CCC_Help,		"help"					);
@@ -846,7 +860,7 @@ void CCC_Register()
 	CMD3(CCC_Mask32,		"rs_render_portals",	&psGameFlags,		rsDrawPortals);
 #endif
 	// Render device states
-	CMD3(CCC_Mask32, "rs_device_active", &psDeviceFlags, rsDeviceActive);
+	CMD3(CCC_Mask32, "r_background_render", &psDeviceFlags, rsDeviceActive);
 
 	extern xr_token fps_text_pos_tokens[];
 	extern xr_token fps_font_tokens[];
@@ -859,7 +873,7 @@ void CCC_Register()
 	extern bool fps_text_outline;
 
 	CMD2(CCC_Boolean, "rs_fps_show", &IsFpsShow)
-	CMD4(CCC_Integer, "rs_fps_limit", &fps_limit, 0, 1000)
+	CMD4(CCC_Integer, "r_fps_limit", &fps_limit, 0, 1000)
 	CMD4(CCC_Float, "rs_fps_smoothing_factor", &fps_smoothing_alpha, EPS_S, 1.f - EPS_S)
 	CMD4(CCC_Integer, "rs_main_menu_fps_limit", &main_menu_fps_limit, 0, 1000)
 	CMD3(CCC_Token, "rs_fps_pos", &fps_text_current_pos, fps_text_pos_tokens)
@@ -871,15 +885,17 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "rs_fps_outline", &fps_text_outline)
 
 
-	CMD3(CCC_Mask32,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
-	
-#ifdef MASTER_GOLD
-	CMD3(CCC_Mask32, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
-#endif // MASTER_GOLD
+	static xr_token LatencyTokens[] = { { "normal", 2 }, { "low", 1 }, { nullptr, 0 } };
+	CMD3(CCC_Mask32, "r_vsync", &psDeviceFlags, rsVSync);
+	CMD2(CCC_Latency, "r_latency", LatencyTokens);
+	CMD4(CCC_Integer, "r_submit_thread", &psSubmitThread, 0, 1);
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+	CMD4(CCC_Float, "r_view_scale", &psViewScale, 0.25f, 1.0f);
+#endif
+	CMD1(CCC_Fullscreen, "r_fullscreen");
 
 	//CMD3(CCC_Mask32,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask32,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
-	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.0f			);
 	CMD3(CCC_Mask32,		"r_actor_shadow",		&psGameFlags,		rsActorShadow			);
 
 	CMD3(CCC_Mask32,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
@@ -888,22 +904,22 @@ void CCC_Register()
 	CMD3(CCC_Mask32,		"rs_occ_stats",			&psDeviceFlags,		rsOcclusionStats		);
 #endif // DEBUG
 
-	CMD2(CCC_Gamma,		"rs_c_gamma"			,&ps_gamma			);
-	CMD2(CCC_Gamma,		"rs_c_brightness"		,&ps_brightness		);
-	CMD2(CCC_Gamma,		"rs_c_contrast"			,&ps_contrast		);
+	CMD2(CCC_Gamma,		"r_gamma"				,&ps_gamma			);
+	CMD2(CCC_Gamma,		"r_brightness"			,&ps_brightness		);
+	CMD2(CCC_Gamma,		"r_contrast"			,&ps_contrast		);
 
-	// Texture manager	
-	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
 	CMD4(CCC_Integer,	"net_dedicated_sleep",	&psNET_DedicatedSleep,		0,	64	);
 
 	// General video control
-	CMD1(CCC_VidMode, "vid_mode");
-	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
-	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
+	CMD1(CCC_VidMode, "r_resolution");
+	VideoSettings::RegisterCommands();
 	CMD4(CCC_Float, "imgui_scale", &psImGuiScale, 0.5f, 3.0f);
 	CMD4(CCC_Integer, "imgui_dock_window", &psImGuiDockWindow, 0, 1);
-	CMD3(CCC_Token, "vid_scale_mode", &ps_proxy_r_scale_mode, qscale_mode_token);
-	CMD3(CCC_Token, "r_dlss_model", &ps_r_dlss_model, dlss_model_token);
+	CMD4(CCC_Integer, "imgui_game_window", &psImGuiGameWindow, 0, 1);
+	CMD4(CCC_Integer, "imgui_game_view_mode", &psGameViewMode, 0, 2);
+	CMD4(CCC_Float, "imgui_game_view_aspect", &psGameViewAspect, 0.25f, 4.0f);
+	CMD4(CCC_Integer, "imgui_game_view_width", &psGameViewWidth, 64, 16384);
+	CMD4(CCC_Integer, "imgui_game_view_height", &psGameViewHeight, 64, 16384);
 	CMD4(CCC_Float, "vram_textures_mb", &ps_vram_textures_mb, 0.f, 65536.f);
 	CMD4(CCC_Integer, "vram_textures_lod", &ps_vram_textures_lod, 0, 4);
 	CMD4(CCC_Float, "vram_other_mb", &ps_vram_other_mb, 0.f, 65536.f);
@@ -912,7 +928,7 @@ void CCC_Register()
 	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );
 #endif // DEBUG
 
-	CMD1(CCC_VID_Reset, "vid_restart"			);
+	CMD1(CCC_VID_Reset, "r_restart"			);
 	
 	// Sound
 	CMD4(CCC_Float,     "snd_compression",      &psSoundCompression, 0.0f, 1.0f);
@@ -981,11 +997,34 @@ void CCC_Register()
 #endif
             { nullptr, -1 }
         };
-        CMD3(CCC_Token, "renderer_api", &g_graphicsAPI, graphicsAPITokens);
-        CMD1(CCC_r2, "renderer");
+        CMD3(CCC_Token, "r_api", &g_graphicsAPI, graphicsAPITokens);
+
+		static xr_token FeatureTokens[] = { { "preset", 0 }, { "off", 1 }, { "on", 2 }, { nullptr, 0 } };
+		struct CCC_RenderFeature : CCC_Token
+		{
+			using CCC_Token::CCC_Token;
+
+			virtual void Execute(const char* Args) override
+			{
+				const u32 Before = *value;
+				CCC_Token::Execute(Args);
+
+				if (g_RenderPresetLocked && *value != Before)
+				{
+					Msg("- %s is applied at the next start of the game", cName);
+				}
+			}
+		};
+
+		static xr_vector<CCC_RenderFeature> FeatureCommands;
+		FeatureCommands.reserve(std::size(g_RenderFeatureSwitches));
+
+		for (RenderFeatureSwitch& Switch : g_RenderFeatureSwitches)
+		{
+			Console->AddCommand(&FeatureCommands.emplace_back(Switch.Command, &Switch.Value, FeatureTokens));
+		}
 	}
 	else {
-		psDeviceFlags.set(rsR2, true);
 		psDeviceFlags.set(rsR4, false);
 	}
 

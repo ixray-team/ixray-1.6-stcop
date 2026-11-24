@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>JOUEURS</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Éclairage statique</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Éclairage dynamique complet</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Éclairage dynamique complet amélioré</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Éclairage dynamique des objets</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Éclairage dyn. complet amélioré (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>NOM DU SERVEUR</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Rendu 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Rendu</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Résolution</text>

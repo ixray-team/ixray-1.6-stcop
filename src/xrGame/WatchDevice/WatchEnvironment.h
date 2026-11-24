@@ -27,6 +27,8 @@ public:
 
 	virtual u32 ResolveScriptSource(const char* Function) = 0;
 	virtual float SampleScriptSource(u32 Handle) = 0;
+	// Before the script engine's state is closed: what was looked up in it is let go while it is still there
+	virtual void ResetScripts() = 0;
 };
 
 xr_unique_ptr<IWatchEnvironment> CreateGameWatchEnvironment();

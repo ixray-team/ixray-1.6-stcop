@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MaterialPreview.h"
+#include "../../../Layers/xrRenderIXR/RenderScope.h"
 
 static const char* ShapeNames[] = {"Sphere", "Box", "Cylinder", "Plane"};
 static_assert(std::size(ShapeNames) == size_t(CMaterialPreview::EShape::Count));
@@ -364,28 +365,12 @@ bool CMaterialPreview::Render(const STextureParams& Params, u32 Width, u32 Heigh
 	LightDir.invert();
 
 	GfxCmdList& Cmd = RImplementation.Imm();
-	IRHIRenderTargetView* SavedRT[4] = {};
-	for (u32 Idx = 0; Idx < 4; ++Idx)
-	{
-		SavedRT[Idx] = Cmd.GetRenderTarget(Idx);
-	}
-	IRHIDepthStencilView* SavedDSV = Cmd.GetDepthStencil();
-
 	Cmd.SetObjectTransform(Fidentity);
 	Cmd.SetView(View, Project);
 
-	Cmd.SetRenderTarget(TargetColor->pRT);
-	Cmd.SetRenderTarget(nullptr, 1);
-	Cmd.SetRenderTarget(nullptr, 2);
-	Cmd.SetRenderTarget(nullptr, 3);
-	Cmd.SetDepthStencil(TargetDepth->pZRT);
-	Cmd.ApplyRenderTargets();
-
+	RenderScope Scope(Cmd, TargetColor->pRT, TargetDepth->pZRT, Width, Height);
 	Cmd.ClearTarget(TargetColor->pRT, PreviewClearColor);
 	Cmd.ClearDepthStencil(TargetDepth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
-
-	RHIViewport Viewport = {0, 0, (float)Width, (float)Height, 0.f, 1.f};
-	Cmd.SetViewport(Viewport);
 
 	const bool IsPBR = Params.material == STextureParams::tmPBR_Material;
 	const bool UseParallax = UseBump && Params.bump_mode == STextureParams::tbmUseParallax;
@@ -399,14 +384,6 @@ bool CMaterialPreview::Render(const STextureParams& Params, u32 Width, u32 Heigh
 	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, IndexCount, Alloc.IndexBase, Alloc.VertexBase);
 
 	Cmd.SetView(Device.mView, Device.mProject);
-
-	for (u32 Idx = 0; Idx < 4; ++Idx)
-	{
-		Cmd.SetRenderTarget(SavedRT[Idx], Idx);
-	}
-	Cmd.SetDepthStencil(SavedDSV);
-	Cmd.ApplyRenderTargets();
-
 	return true;
 }
 

@@ -112,6 +112,7 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_float(el->m_identifier.c_str(), "thunderbolt_duration", el->bolt_duration);
 		f.w_float(el->m_identifier.c_str(), "thunderbolt_period", el->bolt_period);
 		f.w_float(el->m_identifier.c_str(), "water_intensity", el->m_fWaterIntensity);
+		f.w_float(el->m_identifier.c_str(), "ambient_scale", el->m_fAmbientScale);
 		f.w_float(el->m_identifier.c_str(), "wind_direction", rad2deg(el->wind_direction));
 		f.w_float(el->m_identifier.c_str(), "wind_velocity", el->wind_velocity);
 		f.w_fvector4(el->m_identifier.c_str(), "hemisphere_color", el->hemi_color);
@@ -324,7 +325,8 @@ void RenderUIWeather() {
 		return;
 	}
 
-	if (!ImGui::Begin(modifiedWeathers.empty() ? "Weather###Weather" : "Weather*###Weather", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Weather)])) {
+	ImGui::SetNextWindowSize(ImVec2(560.0f, 720.0f), ImGuiCond_FirstUseEver);
+	if (!ImGui::Begin(modifiedWeathers.empty() ? "Weather###WeatherEditor" : "Weather*###WeatherEditor", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Weather)])) {
 		ImGui::End();
 		return;
 	}
@@ -660,6 +662,9 @@ void RenderUIWeather() {
 		changed = true;
 	}
 	if (ImGui::SliderFloat("water_intensity", &cur->m_fWaterIntensity, 0.0f, 1.0f)) {
+		changed = true;
+	}
+	if (ImGui::SliderFloat("ambient_scale", &cur->m_fAmbientScale, 0.0f, 4.0f)) {
 		changed = true;
 	}
 	if (ImGui::SliderFloat("wind_velocity", &cur->wind_velocity, 0.0f, 1000.0f)) {

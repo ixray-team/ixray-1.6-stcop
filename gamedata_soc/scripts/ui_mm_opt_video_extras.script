@@ -1,0 +1,45 @@
+class "opt_video_extras" (CUIWindow)
+function opt_video_extras:__init() super()
+end
+
+function opt_video_extras:__finalize()
+end
+
+function opt_video_extras:InitControls(x, y, xml, handler)
+	self:SetWndPos(vector2():set(x,y))
+	self:SetWndSize(vector2():set(738,416))
+	self:SetAutoDelete(true)
+
+	if xml:NodeExist("frame_videoadv", 0) then
+		xml:InitFrame("frame_videoadv", self)
+	end
+	self.focusList = {}
+	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
+
+	self.btn_simply = xml:Init3tButton("main_dialog:btn_template", self)
+	self.btn_simply:SetTextST("ui_mm_simply")
+	handler:Register(self.btn_simply, "btn_simply_graphic")
+
+	handler:lineFrame(self, true, "st_surface_options")
+	handler:addCheck(self, true, "ui_mm_wet_surfaces", "r_wet_surfaces", system_depends.sdNothing, "wetSurfaces")
+	handler:addCheck(self, true, "ui_mm_soft_particles", "r_soft_particles", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_soft_water", "r_soft_water", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_sslr_water", "r_water_reflections", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_r2_steep_parallax", "r_parallax", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_r2_detail_bump", "r_detail_bump", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_variable_shading", "r_variable_shading", system_depends.sdNothing)
+
+	handler:lineFrame(self, true, "st_postprocess_options")
+	handler:addCheck(self, true, "ui_mm_r2_use_rain_drops", "r_raindrops", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_vignette", "r_vignette", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_aberration", "r_aberration", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_r4_use_gasmask", "r_gasmask", system_depends.sdNothing)
+	handler:addTrack(self, true, "ui_mm_cas_sharpening", "r_sharpening", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
+	handler:addTrack(self, true, "ui_mm_saturation", "r_saturation", 0.05, false, "float", true, system_depends.sdNothing)
+
+	handler:lineFrame(self, true, "st_common_settings")
+	handler:addCheck(self, true, "ui_rs_device_active", "r_background_render", system_depends.sdNothing)
+	handler:addComboBox(self, true, "ui_mm_screenshot_format", "r_screenshot_format", 3, false, system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_r_actor_shadow", "r_actor_shadow", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_npc_torch", "r_npc_torches", system_depends.sdNothing)
+end

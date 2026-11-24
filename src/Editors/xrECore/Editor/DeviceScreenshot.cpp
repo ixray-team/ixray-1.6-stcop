@@ -5,37 +5,11 @@
 #include "EditorSceneSubmit.h"
 #include "device.h"
 #include "ui_main.h"
-#include "../../../Layers/xrRenderPC_R4/ResourceManager.h"
-#include "../../../Layers/xrRenderPC_R4/Shader.h"
-#include "../../../Layers/xrRenderPC_R4/SH_RT.h"
-#include "../../../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
-
-#include <d3d11.h>
-
-struct SRTState
-{
-	IRHIRenderTargetView* RT[4];
-	IRHIDepthStencilView* DSV;
-
-	void Save()
-	{
-		RT[0] = RImplementation.Imm().GetRenderTarget(0);
-		RT[1] = RImplementation.Imm().GetRenderTarget(1);
-		RT[2] = RImplementation.Imm().GetRenderTarget(2);
-		RT[3] = RImplementation.Imm().GetRenderTarget(3);
-		DSV = RImplementation.Imm().GetDepthStencil();
-	}
-
-	void Restore(GfxCmdList& Cmd)
-	{
-		for (u32 Idx = 0; Idx < 4; ++Idx)
-		{
-			Cmd.SetRenderTarget(RT[Idx], Idx);
-		}
-		Cmd.SetDepthStencil(DSV);
-		Cmd.ApplyRenderTargets();
-	}
-};
+#include "../../../Layers/xrRenderIXR/ResourceManager.h"
+#include "../../../Layers/xrRenderIXR/Shader.h"
+#include "../../../Layers/xrRenderIXR/SH_RT.h"
+#include "../../../Layers/xrRenderIXR/dxRenderDeviceRender.h"
+#include "../../../Layers/xrRenderIXR/RenderScope.h"
 
 bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 {
@@ -55,28 +29,16 @@ bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 	DEV->Evict();
 
 	GfxCmdList& Cmd = RImplementation.Imm();
-	SRTState Saved;
-	Saved.Save();
-
-	Cmd.SetRenderTarget(rtColor->pRT);
-	Cmd.SetRenderTarget(nullptr, 1);
-	Cmd.SetRenderTarget(nullptr, 2);
-	Cmd.SetRenderTarget(nullptr, 3);
-	Cmd.SetDepthStencil(rtDepth->pZRT);
-	Cmd.ApplyRenderTargets();
+	RenderScope Scope(Cmd, rtColor->pRT, rtDepth->pZRT, TexWidth, TexHeight);
 
 	Clear();
 
-	RHIViewport VP = {0, 0, (float)TexWidth, (float)TexHeight, 0.f, 1.f};
-	Cmd.SetViewport(VP);
 	Cmd.SetStencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 	ResetMaterial();
 
 	Tools->Render();
 
 	Cmd.ApplyRenderTargets();
-
-	Saved.Restore(Cmd);
 	return true;
 }
 
@@ -97,8 +59,7 @@ bool CEditorRenderDevice::RenderSceneFrame(const Fmatrix& View, const Fmatrix& P
 	const Fvector SavedRight = vCameraRight;
 
 	GfxCmdList& Cmd = RImplementation.Imm();
-	SRTState Saved;
-	Saved.Save();
+	RenderScope Scope(Cmd);
 
 	mView = View;
 	mProject = Project;
@@ -152,7 +113,6 @@ bool CEditorRenderDevice::RenderSceneFrame(const Fmatrix& View, const Fmatrix& P
 	Cmd.SetView(mView, mProject);
 	::Render->ViewBase.CreateFromMatrix(mFullTransform, FRUSTUM_P_ALL);
 
-	Saved.Restore(Cmd);
 	EContext.UI->RedrawScene();
 	return IsValid;
 }
@@ -227,59 +187,25 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 		return false;
 	}
 
-	if (SrcRTs.empty() || !AtlasRT || !AtlasRT->pUAView)
+	NriBinding Reads[64];
+
+	if (SrcRTs.empty() || SrcRTs.size() > std::size(Reads) || !AtlasRT || !AtlasRT->pUAView)
 	{
 		return false;
 	}
 
-	ref_cs Compute;
-	Compute = DEV->_CreateCS("lod_downsample");
+	ref_cs Compute = DEV->_CreateCS("lod_downsample");
 	if (!Compute)
 	{
 		return false;
 	}
 
-	GfxCmdList& Cmd = RImplementation.Imm();
-	xr_vector<IRHIShaderResourceView*> Srvs;
-	Srvs.resize(SrcRTs.size());
 	for (u32 Idx = 0; Idx < SrcRTs.size(); ++Idx)
 	{
-		Srvs[Idx] = GRHI->CreateShaderResourceView(SrcRTs[Idx]->pSurface, nullptr);
-		if (!Srvs[Idx])
-		{
-			for (u32 Idx2 = 0; Idx2 < Idx; ++Idx2)
-			{
-				Srvs[Idx2]->Release();
-			}
-			return false;
-		}
-		Cmd.SetResource(ERHI_SHADER_TYPE::CS, Idx, Srvs[Idx]);
+		Reads[Idx] = { Idx, SrcRTs[Idx]->pSurface };
 	}
 
-	IRHIUnorderedAccessView* Uav = AtlasRT->pUAView;
-	if (!Uav)
-	{
-		for (auto Srv : Srvs)
-		{
-			Srv->Release();
-		}
-		return false;
-	}
-
-	UINT UavInit = 0;
-	Cmd.SetComputeUAVs(0, 1, &Uav, &UavInit);
-
-	Cmd.SetCS(Compute);
-	Cmd.Dispatch(((TargetW * Samples) + 7) / 8, (TargetH + 7) / 8, 1);
-
-	for (u32 Idx = 0; Idx < Srvs.size(); ++Idx)
-	{
-		Cmd.SetResource(ERHI_SHADER_TYPE::CS, Idx, nullptr);
-		Srvs[Idx]->Release();
-	}
-	IRHIUnorderedAccessView* NullUAV = nullptr;
-	Cmd.SetComputeUAVs(0, 1, &NullUAV, &UavInit);
-	Cmd.SetShader(nullptr, ERHI_SHADER_TYPE::CS);
-
+	const NriBinding Written = { 0, AtlasRT->pSurface };
+	RImplementation.NriPasses.Dispatch(RImplementation.Imm(), Compute._get(), Reads, u32(SrcRTs.size()), &Written, 1, ((TargetW * Samples) + 7) / 8, (TargetH + 7) / 8, 1);
 	return true;
 }

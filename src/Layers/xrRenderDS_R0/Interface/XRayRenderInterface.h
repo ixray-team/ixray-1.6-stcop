@@ -13,7 +13,6 @@ public:
 	void set_HUD(bool V = false) override {}
 	bool get_HUD() const override { return false; }
 	void set_Invisible(bool V = false) override {}
-	void set_UI(bool V = false) override {}
 };
 
 class CDS0_RenderInterface :
@@ -99,7 +98,7 @@ public:
 	virtual void Render() override;
 	virtual void OnFrame() override;
 	virtual void Calculate() override;
-	virtual void RenderUI(Fcolor* = nullptr) override;
+	virtual void RenderUI(xr_span<const UIIconVisual> Visuals, const Fmatrix& View, const Fmatrix& Project, Fcolor* Color = nullptr) override;
 
 
 	virtual IRHISurface* load_texture(const char* fname, u32& msize, bool bStaging = false) override { return nullptr; };

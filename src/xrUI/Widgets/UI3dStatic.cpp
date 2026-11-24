@@ -19,10 +19,6 @@ CUI3dStatic::CUI3dStatic()
 	fViewportFOV = deg2rad(2.0f);
 	fViewportSize = fViewportNear * tanf(fViewportFOV * 0.5f);
 
-	fViewportAspect = (float)Device.TargetHeight / (float)Device.TargetWidth;
-
-	mProject.build_projection(fViewportFOV, fViewportAspect, fViewportNear, 20.0f);
-
 	mView.build_camera_dir(Fidentity.c, Fidentity.k, Fidentity.j);
 	mInvView.invert(mView);
 
@@ -164,6 +160,9 @@ void CUI3dStatic::Draw()
 		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
 		pCurrentVisual->dcast_PKinematics()->CalculateBones(true);
 
+		fViewportAspect = float(Device.TargetHeight) / float(Device.TargetWidth);
+		mProject.build_projection(fViewportFOV, fViewportAspect, fViewportNear, 20.0f);
+
 		float x1, y1, x2, y2;
 
 		FromScreenToItem(rect.left, rect.top, x1, y1);
@@ -211,46 +210,21 @@ void CUI3dStatic::Draw()
 		matrix.mulA_44(translate_matrix);
 		matrix.mulA_44(mInvView);
 
-		Device.vCameraTop.set(Fidentity.j);
-		Device.vCameraRight.set(Fidentity.i);
-		Device.vCameraDirection.set(Fidentity.k);
-
-		Device.vCameraPosition.set(Fidentity.c);
-
-		Device.mView = mView;
-		Device.mProject = mProject;
-
-		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
-
 		UI().PushScissor(rect);
-		
-		IDSGraphManager* Graph = ::Render->GetUIGraph();
-		Graph->set_UI(true);
 
-		Graph->add_Dynamic(pCurrentVisual, &matrix, true);
+		static xr_vector<UIIconVisual> Visuals;
+		Visuals.assign(1, { pCurrentVisual, matrix });
+
 		if (OnDrawVisual)
 		{
-			OnDrawVisual(Graph, matrix);
+			OnDrawVisual(Visuals, matrix);
 		}
 
 		Fcolor static_color { };
 		static_color.set(GetTextureColor());
-
-		Graph->set_UI(false);
-		::Render->RenderUI(&static_color);
+		::Render->RenderUI(Visuals, mView, mProject, &static_color);
 
 		UI().PopScissor();
-
-		Device.vCameraPosition.set(Device.vCameraPosition_saved);
-
-		Device.vCameraDirection.set(Device.vCameraDirection_saved);
-		Device.vCameraRight.set(Device.vCameraRight_saved);
-		Device.vCameraTop.set(Device.vCameraTop_saved);
-
-		Device.mView = Device.mView_saved;
-		Device.mProject = Device.mProject_saved;
-
-		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 
 		CUIWindow::Draw();
 		return;

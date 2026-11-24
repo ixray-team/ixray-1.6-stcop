@@ -1,0 +1,8 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="upscale_guides" zfunc="always" zwrite="0">
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_velocity" src="$user$velocity"/>
+		</pass>
+	</normal>
+</shader>

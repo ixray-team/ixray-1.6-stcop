@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>JÁTÉKOS</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Statikus megvilágítás</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Teljes dinamikus megvilágítás</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Továbbfejl. teljes din. megvilágítás</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Tereptárgyak dinamikus megvilágítása</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Továbbfejl. din. megvilágítás (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>SZERVERNÉV</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Megjelenítés 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Megjelenítés</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Felbontás</text>

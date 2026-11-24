@@ -4,7 +4,7 @@
 
 class IRenderVisual;
 class IKinematics;
-class IDSGraphManager;
+struct UIIconVisual;
 
 class UI_API CUI3dStatic : 
     public CUIStatic
@@ -61,5 +61,5 @@ protected:
 	Fvector2 IconOffset{};
 
 public:
-	std::function<void(IDSGraphManager*, const Fmatrix&)> OnDrawVisual;
+	std::function<void(xr_vector<UIIconVisual>&, const Fmatrix&)> OnDrawVisual;
 };

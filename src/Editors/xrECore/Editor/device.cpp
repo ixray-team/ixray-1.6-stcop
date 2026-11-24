@@ -5,13 +5,13 @@
 #include <sal.h>
 #include "ImageManager.h"
 #include "ui_main.h"
-#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
+#include "../../../Layers/xrRenderIXR/RenderEditorApi.h"
 #include "EditorInstancing.h"
 #include "EditorSceneSubmit.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
-#include "../Layers/xrRenderPC_R4/ResourceManager.h"
-#include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
-#include "../Layers/xrRenderPC_R4/StateManager/dx10SamplerStateCache.h"
+#include "../Layers/xrRenderIXR/ResourceManager.h"
+#include "../Layers/xrRenderIXR/dxRenderDeviceRender.h"
+#include "../Layers/xrRenderIXR/StateManager/dx10SamplerStateCache.h"
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
 #include "device_win_custom.h"
@@ -136,11 +136,17 @@ void CEditorRenderDevice::Initialize()
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Width, &Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
 
-	if (EPrefs->start_maximized)
-		SDL_MaximizeWindow(g_AppInfo.Window);
-	
-	SDL_ShowWindow(g_AppInfo.Window);
-	SDL_RaiseWindow(g_AppInfo.Window);
+	// A headless autotest keeps the window hidden, at its stored size: maximizing would show it
+	if (!Core.ParamsData.test(ECoreParams::autotest) || strstr(Core.Params, "-autotest_windowed"))
+	{
+		if (EPrefs->start_maximized)
+		{
+			SDL_MaximizeWindow(g_AppInfo.Window);
+		}
+
+		SDL_ShowWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
+	}
 
 	// The window has no background brush: show a black frame with the logo until the first editor frame
 	DrawStartupFrame(true);
@@ -483,6 +489,7 @@ void CEditorRenderDevice::End()
 	VERIFY(b_is_Ready);
 	g_bRendering = 	false;
 	// end scene
+	RImplementation.EditorEndFrame();
 	RImplementation.Imm().OnFrameEnd();
 	GRHI->Present();
 }
@@ -515,6 +522,7 @@ void CEditorRenderDevice::FrameMove()
     dwTimeGlobal	= TimerGlobal.GetElapsed_ms	();	//u32((qTime*u64(1000))/CPU::cycles_per_second);
     dwTimeDelta		= iFloor(fTimeDelta*1000.f+0.5f);
     dwTimeContinual	= dwTimeGlobal;
+	fTimeDeltaSmoothing = fTimeDeltaContinual = fTimeDelta;
 
 	// The paused game timers stop the game, not the camera of the editor
 	static CTimer CameraTimer;

@@ -58,15 +58,19 @@ Enable `Hide item description` to hide item description windows while the editor
 
 ## DX11 icon lighting
 
-Spawn Manager draws 3D icons from ImGui render callbacks in draw-list order. DX11 preserves coverage alpha when compositing the transparent icon target over the ImGui background; opaque and alpha-tested surfaces provide full coverage. The inventory path retains its background-aware composition.
+Spawn Manager draws 3D icons from ImGui render callbacks in draw-list order. DX11 preserves coverage alpha when compositing the transparent icon target over the ImGui background; opaque and alpha-tested surfaces provide full coverage. The HUD and the inventory composite their icons the same way: the icon's own transparent picture over whatever is behind it, so translucent parts (glass, artefact shells, webs) blend with the screen after tone mapping.
 
 DX11 Lua materials can define an optional `normal_ui(shader, t_base, t_second, t_detail)` color pass for 3D icons. It derives from the visible `normal` pass and performs the same detail-texture lookup (`bDetail`, `t_detail`). It takes precedence over the legacy `l_special` fallback and is stored separately, so world distortion and emissive passes retain their original behavior. Materials such as `models\pautina` and `models\xdistortcolor` use their base color textures in this pass instead of displaying distortion-buffer data as color. Scene refraction is not reproduced by the icon color pass.
 
 `models\xdistortcolorl` also uses its base color in UI. The visible pass of `models\xdistort` uses only texture alpha, so its UI pass preserves that mask and ignores the distortion RGB channels. `models\artefact2` is provided by the compiled environment-model blender in `shaders.xr` and uses its existing lit `ui_base` pass.
 
-Expand `DX11 icon lighting` in either `Spawn Manager` or `3D Icons Adjust`. With `renderer_r4`, you can change the light's RGB color, intensity, view-space direction and ambient contribution. A zero direction uses `(0, 0, 1)`. `Reset icon lighting` restores the defaults. The color and intensity also tint self-lit icon materials, including forward light-plane emission (`base_lplanes`). The light-plane alpha and additive blending are preserved; world emission retains its original color.
+Expand `DX11 icon lighting` in either `Spawn Manager` or `3D Icons Adjust`. You can change the light's RGB color, intensity, view-space direction and ambient contribution. A zero direction uses `(0, 0, 1)`. `Reset icon lighting` restores the defaults. The color and intensity also tint self-lit icon materials, including forward light-plane emission (`base_lplanes`). The light-plane alpha and additive blending are preserved; world emission retains its original color.
 
 Changes apply immediately to all DX11 3D icons. These debug settings are kept for the current session and reset on restart. They do not change world lighting. R1/R2 do not expose these controls.
+
+An inventory icon also draws the items attached to the item (scopes, silencers and other attachments on their bones), as does the dragged icon and the weapon customise window's preview.
+
+Each icon keeps its picture and is drawn again only when something in it changes: the model, its bone visibility (addons, ammo), an attachment added, removed or moved, rotation, scale, offset, the widget's position or size, the icon lighting, the shading quality, or a texture finishing loading. An icon whose model animates is still drawn every frame while it moves. Changing the widget's colour or transparency does not redraw it. Icons that overlap on screen are drawn every frame.
 
 ## Shared model cache
 

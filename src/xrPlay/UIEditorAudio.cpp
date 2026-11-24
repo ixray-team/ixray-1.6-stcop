@@ -200,15 +200,33 @@ static bool Audio_Project(const Fvector& Position, ImVec2& Out)
 		return false;
 	}
 
-	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect(); const CImGuiManager::GameViewRect* Viewport = &View;
 	Out.x = Viewport->Pos.x + (Clip.x / Clip.w * 0.5f + 0.5f) * Viewport->Size.x;
 	Out.y = Viewport->Pos.y + (0.5f - Clip.y / Clip.w * 0.5f) * Viewport->Size.y;
 	return true;
 }
 
+// Over the picture, in the window that shows it, and not over the panels beside it
+struct AudioOverlay
+{
+	ImDrawList* List = ImGui::GetForegroundDrawList(CImGuiManager::Instance().GetGameViewport());
+
+	AudioOverlay()
+	{
+		const CImGuiManager::GameViewRect View = CImGuiManager::Instance().GetGameViewRect();
+		List->PushClipRect(View.Pos, ImVec2(View.Pos.x + View.Size.x, View.Pos.y + View.Size.y));
+	}
+
+	~AudioOverlay()
+	{
+		List->PopClipRect();
+	}
+};
+
 static void Audio_DrawZones()
 {
-	ImDrawList* DrawList = ImGui::GetBackgroundDrawList();
+	AudioOverlay Overlay;
+	ImDrawList* DrawList = Overlay.List;
 	for (const sound_zone_params& Zone : Mixer::GetZones())
 	{
 		ImVec2 Corners[8];
@@ -236,9 +254,10 @@ static void Audio_DrawSounds()
 {
 	static const ImU32 Colors[] = {IM_COL32(45, 166, 69, 255), IM_COL32(117, 45, 166, 255), IM_COL32(252, 157, 3, 255), IM_COL32(128, 128, 128, 255)};
 
-	ImDrawList* DrawList = ImGui::GetBackgroundDrawList();
+	AudioOverlay Overlay;
+	ImDrawList* DrawList = Overlay.List;
 	ImVec2 Mouse = ImGui::GetMousePos();
-	bool IsPicking = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse;
+	bool IsPicking = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && CImGuiManager::Instance().IsGameViewHovered() && !ImGui::IsAnyItemActive();
 	float PickDistance = 12.0f * 12.0f;
 	shared_str Picked;
 

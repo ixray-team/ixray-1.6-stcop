@@ -1,0 +1,151 @@
+#ifndef FIXED_CB_HLSLI
+#define FIXED_CB_HLSLI
+
+#ifndef __cplusplus
+#include "common\cbuffer.hlsli"
+#endif
+
+CBUFFER(CBFrame, 0)
+	float4 timers;
+	float4 fog_plane;
+	float4 fog_params;
+	float4 fog_color;
+	float4 L_sun_color;
+	float4 L_sun_dir_w;
+	float4 L_sun_dir_e;
+	float4 L_hemi_color;
+	float4 L_ambient;
+	float4 L_sky_color;
+	float4 env_wind;
+	float4 water_intensity;
+	float4 sun_shafts_intensity;
+	float4 rain_params;
+	float4 nvg_color;
+	float4 m_hud_params;
+	float4 m_zoom_deviation;
+	float4 m_affects;
+	float4 m_actor_params;
+	float4 m_timearrow;
+	float4 m_timearrow2;
+	float4 debug_view; // x: DebugView_ of debug_view.hlsli
+	float4 test_exp_to_shaders_2;
+	float4 color_params;
+	float4 color_grading;
+	float4 c_brightness;
+	float4 c_colormap;
+	float4 hud_rain;
+	float4 rain_map[3]; // the rows that take a point of the world into the rain's map: uv in the slice, depth
+	float4 rain_level; // xy, zw: the world's xz into the level's rectangle, as the puddles are laid out
+	float4 rain_setup; // x: where wetness starts to fade with distance, y: where it is gone, z: the part of the slice the map takes, w: surfaces get wet
+	float4 m_digiclock;
+	float def_aref;
+CBUFFER_END
+
+CBUFFER(CBView, 1)
+	float3x4 m_V;
+	float4x4 m_P;
+	float4x4 m_VP;
+	float3x4 m_invV;
+	float4x4 m_invP;
+	float4x4 m_VP_old;
+	float4x4 m_invVP_old;
+	float3x4 m_probe;
+	float3 eye_position;
+	float3 eye_direction;
+	float3 eye_normal;
+	float4 m_taa_jitter;
+	float4 screen_res;
+	float4 scaled_screen_res;
+	float4 pos_decompression_params2;
+	float4 view_uv; // xy: the part of a screen target's UV range the view takes, zw: the last UV inside it
+	float4 view_uv_prev; // view_uv of the frame before
+	float3 eye_world; // the camera in the world, also for the HUD's view, whose eye_position is the origin
+CBUFFER_END
+
+CBUFFER(CBObject, 2)
+	float3x4 m_W;
+	float3x4 m_WV;
+	float4x4 m_WVP;
+	float4x4 m_WVP_old;
+	float4 L_dynamic_props;
+	float4x4 m_plmap_xform;
+	float4 m_plmap_clamp[2];
+CBUFFER_END
+
+CBUFFER(CBMaterial, 3)
+	float4 dt_params;
+	float m_AlphaRef;
+	uint BaseIsBC1;
+	float4 m_lmap[2];
+	float4 tfactor;
+CBUFFER_END
+
+CBUFFER(CBLight, 4)
+	float4 Ldynamic_color;
+	float4 Ldynamic_pos;
+	float4 Ldynamic_dir;
+	int Ldynamic_hud;
+	float Ldynamic_smap; // the page of the shadow atlas a local light reads
+	float4x4 m_shadow_sun[3];
+	float4x4 m_shadow;
+	float3x4 m_sunmask;
+	float4x4 L_dynamic_xform;
+	float3 vMinBounds;
+	float3 vMaxBounds;
+	float4 FrustumClipPlane[6];
+	float4 SunCaptureDirectionDepth[3];
+	float4 SunReceiverWarpBias[3];
+	float4 SunCacheParams;
+	int SunContactStart;
+	float4 HeightfieldWorldToGrid; // xy: the grid's origin in the world's xz, zw: texels a metre along x and z
+	float4 HeightfieldDecode; // x, y: a code into metres, z: one code's step in metres
+	float4 HeightfieldGrid; // width, height, scan length, rows of the sheared scan
+	float4 HeightfieldParams; // x: on, y: the ceiling's drop a scan step, z: receiver bias, w: heighfield_filtering
+	float4 HeightfieldScan; // major axis (0 x, 1 z), its direction, shear, row offset
+CBUFFER_END
+
+CBUFFER(CBPass, 5)
+	float4x4 m_P_hud;
+	float4x4 m_texgen;
+	float4x4 m_xform;
+	float4x4 m_xform_v;
+	float4 consts;
+	float4 wave;
+	float4 wind;
+	float4 consts_old;
+	float4 wave_old;
+	float4 wind_old;
+	float4 c_scale;
+	float4 c_bias;
+	float4 c_sun;
+	float4x4 m_invP_hud;
+	float4 mblur_params;
+	float4x4 m_VP_hud; // the HUD's view and projection in every view, for the parts of it the scene draws
+	float4x4 m_VP_hud_old;
+CBUFFER_END
+
+CBUFFER(CBSkin, 6)
+	float4 skin_reserved;
+CBUFFER_END
+
+#define DRAW_SOURCE_STATIC 0u
+#define DRAW_SOURCE_SKINNED 1u
+#define DRAW_SOURCE_RING 2u
+#define DRAW_SOURCE_MASK 3u
+#define DRAW_PAGE_SHIFT 2u
+#define DRAW_PAGE_MASK 7u
+#define DRAW_QUADS 32u
+
+CBUFFER(CBDraw, 13)
+	float4 L_material;
+	float4 hemi_cube_pos_faces;
+	float4 hemi_cube_neg_faces;
+	float4 L_model_light_color;
+	float4 L_model_light_dir;
+	float triLOD;
+	uint draw_vertex_base;
+	uint draw_source_base;
+	uint draw_flags;
+CBUFFER_END
+
+#endif

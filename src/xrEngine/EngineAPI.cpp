@@ -40,69 +40,13 @@ CEngineAPI::~CEngineAPI()
 	}
 }
 
-extern u32 renderer_value; //con cmd
-ENGINE_API int g_current_renderer = 0;
-ENGINE_API ELightingMode g_lighting_mode = ELightingMode::Static;
-ENGINE_API ELightingMode g_lighting_mode_cfg = ELightingMode::Static;
-ENGINE_API bool g_lighting_mode_locked = false;
-
-ENGINE_API bool LightingModeParseToken(const char* name, ELightingMode& mode)
-{
-	if (!name)
-		return false;
-	if (!_stricmp(name, "renderer_r1") || !_stricmp(name, "renderer_r4_static"))
-	{
-		mode = ELightingMode::Static;
-		return true;
-	}
-	if (!_stricmp(name, "renderer_r2") || !_stricmp(name, "renderer_r4"))
-	{
-		mode = ELightingMode::Dynamic;
-		return true;
-	}
-	return false;
-}
-
-ENGINE_API const char* LightingModeCanonicalToken(ELightingMode mode)
-{
-	return mode == ELightingMode::Static ? "renderer_r4_static" : "renderer_r4";
-}
-
-ENGINE_API void LightingModeApply(ELightingMode mode, bool commit_active)
-{
-	g_lighting_mode_cfg = mode;
-	if (!commit_active)
-		return;
-
-	g_lighting_mode = mode;
-	psDeviceFlags.set(rsR4, true);
-	psDeviceFlags.set(rsR2, mode == ELightingMode::Dynamic);
-	g_current_renderer = (mode == ELightingMode::Static) ? 1 : 2;
-}
-
-ENGINE_API bool LightingModeIsStaticRender()
-{
-	return LightingModeIsStatic() && !Device.IsEditorMode();
-}
-
-ENGINE_API bool LightingModeIsDynamicRender()
-{
-	return !LightingModeIsStaticRender();
-}
-
-ENGINE_API void LightingModeLockActive()
-{
-	LightingModeApply(g_lighting_mode_cfg, true);
-	g_lighting_mode_locked = true;
-}
-
 void CEngineAPI::InitializeNotDedicated()
 {
-	const char* r4_name = "xrRender_R4";
+	const char* r4_name = "xrRender_IXR";
 
-	LightingModeLockActive();
+	RenderPresetLockActive();
 
-	Msg("Loading DLL: %s [%s]", r4_name, LightingModeCanonicalToken(g_lighting_mode));
+	Msg("Loading DLL: %s", r4_name);
 	hRender = Platform::LoadLibrary(r4_name);
 	if (0 == hRender)
 	{
@@ -115,14 +59,11 @@ void CEngineAPI::InitializeDedicated()
 {
 	const char* r1_name	= "xrRender_DS0";
 	psDeviceFlags.set	(rsR4,false);
-	psDeviceFlags.set	(rsR2,false);
-	renderer_value		= 0; //con cmd
 
 	Msg("Loading DLL: %s",	r1_name);
 	hRender			= Platform::LoadLibrary(r1_name);
 	if (0==hRender)	R_CHK				(GetLastError());
 	//R_ASSERT		(hRender);
-	g_current_renderer	= 0;
 }
 
 void __cdecl Null_Factory_Destroy(DLL_Pure* O)
@@ -146,7 +87,7 @@ void CEngineAPI::Initialize(void)
 
 	if (0==hRender && !g_dedicated_server)
 	{
-		Msg("! xrRender_R4 is required for client rendering");
+		Msg("! xrRender_IXR is required for client rendering");
 		R_CHK(GetLastError());
 	}
 
@@ -234,11 +175,11 @@ void CEngineAPI::CreateRendererList()
 			return;
 
 #ifdef IXR_WINDOWS
-		const char* r4_name	= "xrRender_R4.dll";
+		const char* r4_name	= "xrRender_IXR.dll";
 #elif defined(IXR_APPLE_SERIES)
-		const char* r4_name	= "libxrRender_R4.dylib";
+		const char* r4_name	= "libxrRender_IXR.dylib";
 #else
-		const char* r4_name	= "libxrRender_R4.so";
+		const char* r4_name	= "libxrRender_IXR.so";
 #endif
 
 		bool bSupports_r4 = Core.ParamsData.test(ECoreParams::perfhud_hack);
@@ -253,8 +194,7 @@ void CEngineAPI::CreateRendererList()
 		xr_vector<const char*> _tmp;
 		if (bSupports_r4)
 		{
-			_tmp.push_back(xr_strdup("renderer_r4_static"));
-			_tmp.push_back(xr_strdup("renderer_r4"));
+			_tmp.push_back(xr_strdup("renderer_simplified"));
 		}
 
 		u32 _cnt = (u32) _tmp.size() + 1;

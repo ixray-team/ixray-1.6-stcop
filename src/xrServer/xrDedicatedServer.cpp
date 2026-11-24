@@ -46,7 +46,6 @@ int APIENTRY WinMain
 
 	Engine.External.CreateRendererList();
 
-	Console->Execute("renderer renderer_ds0");
 	
 	Engine.External.Initialize();
 	//Console->Execute("stat_memory");
@@ -56,9 +55,9 @@ int APIENTRY WinMain
 	// Show main wnd
 	SDL_ShowWindow(g_AppInfo.Window);
 
-	Console->Execute("rs_fullscreen 0");
-	Console->Execute("vid_mode 800x600");
-	Console->Execute("vid_restart");
+	Console->Execute("r_fullscreen off");
+	Console->Execute("r_resolution 800x600");
+	Console->Execute("r_restart");
 
 	EngineLoadStage5();
 	EngineLoopAndDestroy();

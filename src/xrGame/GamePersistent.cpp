@@ -1029,7 +1029,7 @@ void CGamePersistent::ShowLoadTip(const shared_str& map_name, bool IsReseeded)
 		{
 			luabind::functor<void> Seed;
 			if (ai().script_engine().functor("math.randomseed", Seed))
-				Seed(int(CPU::QPC() & 0x3fffffff));
+				Seed(Core.ParamsData.test(ECoreParams::autotest_dt) ? 1 : int(CPU::QPC() & 0x3fffffff));
 		}
 
 		string512				buff;
@@ -1068,6 +1068,12 @@ void CGamePersistent::SetLoadStageTitle(const char* ls_title)
 	string256 buff;
 	if (ls_title)
 	{
+		// Two of these lines in a row give what the first of the two stages took
+		if (loading_save_timer_started)
+		{
+			Msg("* Game Loading Timer: %u ms at %s", loading_save_timer.GetElapsed_ms(), ls_title);
+		}
+
 		xr_sprintf(buff, "%s%s", g_pStringTable->translate(ls_title).c_str(), "...");
 		pApp->SetLoadStageTitle(buff);
 	}
@@ -1143,7 +1149,7 @@ void CGamePersistent::ChangeCursorPosition(Fvector2 value)
 		Fvector2 posCurrent;
 		SDL_GetMouseState(&posCurrent.x, &posCurrent.y);
 		posCurrent.add(value);
-		SDL_WarpMouseGlobal(posCurrent.x, posCurrent.y);
+		SDL_WarpMouseInWindow(CImGuiManager::Instance().GetGameWindow(), posCurrent.x, posCurrent.y);
 	}
 	UI().GetUICursor().UpdateCursorPosition(value.x, value.y);
 }

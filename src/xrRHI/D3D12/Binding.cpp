@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "Device.h"
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
@@ -22,13 +56,6 @@ static void DeleteSampler(void* payload)
 static void DescribeSampler(void* payload, RHISampleDesc* out_desc)
 {
     *out_desc = static_cast<DX12Sampler*>(payload)->Desc;
-}
-
-static void DeleteQuery(void* payload)
-{
-    auto query = static_cast<DX12Query*>(payload);
-    query->Device->RecycleQuery(*query);
-    xr_delete(query);
 }
 
 namespace
@@ -145,6 +172,7 @@ HRESULT InternalDevice12::CreateShader(const void* code, size_t size, ERHI_SHADE
     }
     shader->Id = _nextObject++;
     shader->Code.assign((const u8*)code, (const u8*)code + size);
+    DX12RegisterShader(*shader);
     *out_shader = new RHIObject(shader.release(), DeletePayload<DX12Shader>);
     return S_OK;
 }
@@ -256,6 +284,7 @@ HRESULT InternalDevice12::CreateInputLayout(const RHIInputElementDesc* elements,
         layout->Elements[element_idx] = { layout->Semantics[element_idx].c_str(), source.SemanticIndex, (DXGI_FORMAT)source.Format,
             source.InputSlot, source.AlignedByteOffset, (D3D12_INPUT_CLASSIFICATION)source.InputSlotClass, source.InstanceDataStepRate };
     }
+    DX12RegisterLayout(*layout);
     *out_layout = new RHIObject(layout, DeletePayload<DX12InputLayout>);
     return S_OK;
 }
@@ -413,132 +442,6 @@ void InternalDevice12::ClearIndexBuffer()
 {
     ContextLock guard(*this);
     BindIndexBuffer(nullptr, false, 0);
-}
-
-void InternalDevice12::RecycleQuery(DX12Query& query)
-{
-    ContextLock guard(*this);
-    const u64 fence = query.Fence ? query.Fence : _isRecording ? _nextFence : _nextFence - 1;
-    _occlusionFence[query.Slot] = fence;
-    _occlusionFree[_occlusionFreeCount++] = query.Slot;
-}
-
-HRESULT InternalDevice12::CreateOcclusionQuery(RHIObject** out_query)
-{
-    ContextLock guard(*this);
-    *out_query = nullptr;
-    u32 slot = UINT32_MAX;
-    for (u32 attempt = 0; attempt < 2 && slot == UINT32_MAX; ++attempt)
-    {
-        for (u32 free_idx = 0; free_idx < _occlusionFreeCount; ++free_idx)
-        {
-            const u32 candidate = _occlusionFree[free_idx];
-            if (_occlusionFence[candidate] && !IsComplete(_occlusionFence[candidate]))
-            {
-                continue;
-            }
-            _occlusionFree[free_idx] = _occlusionFree[--_occlusionFreeCount];
-            slot = candidate;
-            break;
-        }
-        if (slot == UINT32_MAX && !attempt)
-        {
-            Flush();
-        }
-    }
-    if (slot == UINT32_MAX)
-    {
-        return E_FAIL;
-    }
-    auto query = new DX12Query;
-    query->Device = this;
-    query->Slot = slot;
-    *out_query = new RHIObject(query, DeleteQuery);
-    return S_OK;
-}
-
-void InternalDevice12::ResolveQuery(u32 slot)
-{
-    _commands->ResolveQueryData(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, slot, 1, _occlusionReadback,
-        u64(slot) * sizeof(u64));
-    _resolveQueries[slot >> 6] &= ~(1ull << (slot & 63));
-}
-
-void InternalDevice12::ResolveQueries()
-{
-    u32 slot = 0;
-    while (slot < QuerySlots)
-    {
-        if (!(_resolveQueries[slot >> 6] & (1ull << (slot & 63))))
-        {
-            ++slot;
-            continue;
-        }
-        const u32 first = slot;
-        while (slot < QuerySlots && (_resolveQueries[slot >> 6] & (1ull << (slot & 63))))
-        {
-            ++slot;
-        }
-        _commands->ResolveQueryData(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, first, slot - first, _occlusionReadback,
-            u64(first) * sizeof(u64));
-    }
-    ZeroMemory(_resolveQueries, sizeof(_resolveQueries));
-}
-
-void InternalDevice12::BeginQuery(RHIObject* object)
-{
-    ContextLock guard(*this);
-    auto query = static_cast<DX12Query*>(object->resource);
-    auto commands = Commands();
-    if (_resolveQueries[query->Slot >> 6] & (1ull << (query->Slot & 63)))
-    {
-        ResolveQuery(query->Slot);
-    }
-    commands->BeginQuery(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, query->Slot);
-    query->IsPending = false;
-}
-
-void InternalDevice12::EndQuery(RHIObject* object)
-{
-    ContextLock guard(*this);
-    auto query = static_cast<DX12Query*>(object->resource);
-    Commands()->EndQuery(_occlusionHeap, D3D12_QUERY_TYPE_OCCLUSION, query->Slot);
-    // Resolved by Submit, in the same command list, before the list fence is signaled.
-    _resolveQueries[query->Slot >> 6] |= 1ull << (query->Slot & 63);
-    query->Fence = _nextFence;
-    query->IsPending = true;
-}
-
-HRESULT InternalDevice12::GetQueryData(RHIObject* object, void* data, u32 size, u32 flags)
-{
-    ContextLock guard(*this);
-    if (!object || !object->resource)
-    {
-        return E_INVALIDARG;
-    }
-    auto query = static_cast<DX12Query*>(object->resource);
-    if (!query->IsPending || size != sizeof(u64) || !data)
-    {
-        return E_INVALIDARG;
-    }
-    (void)flags;
-    if (!IsComplete(query->Fence))
-    {
-        // The frame owns one command allocator. Submitting here makes the next
-        // Commands() wait until the GPU finishes the first half of the frame.
-        return S_FALSE;
-    }
-    void* mapped = nullptr;
-    const u64 offset = u64(query->Slot) * sizeof(u64);
-    D3D12_RANGE range = { SIZE_T(offset), SIZE_T(offset + sizeof(u64)) };
-    const HRESULT result = _occlusionReadback->Map(0, &range, &mapped);
-    if (SUCCEEDED(result))
-    {
-        memcpy(data, (u8*)mapped + offset, sizeof(u64));
-        D3D12_RANGE written = {};
-        _occlusionReadback->Unmap(0, &written);
-    }
-    return result;
 }
 
 void InternalDevice12::CreateRootSignatures()
@@ -981,6 +884,68 @@ void InternalDevice12::TransitionAttachments()
     _attachmentEpoch = _barrierEpoch;
 }
 
+ID3D12PipelineState* InternalDevice12::CreateGraphicsPipeline(const GraphicsPipelineKey& key, DX12Shader* const* stages, const DX12InputLayout* layout, HRESULT& result)
+{
+    ID3D12PipelineState* pipeline = nullptr;
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
+    desc.pRootSignature = _graphicsRoot;
+    D3D12_SHADER_BYTECODE* shaders[] = { &desc.PS, &desc.VS, &desc.GS, &desc.HS, &desc.DS };
+    for (u32 shader_idx = 0; shader_idx < 5; ++shader_idx)
+    {
+        if (auto shader = stages[shader_idx])
+        {
+            *shaders[shader_idx] = { shader->Code.data(), shader->Code.size() };
+        }
+    }
+    desc.BlendState = key.Blend;
+    desc.RasterizerState = key.Rasterizer;
+    desc.DepthStencilState = key.Depth;
+    desc.SampleMask = key.SampleMask;
+    desc.InputLayout = layout ? D3D12_INPUT_LAYOUT_DESC{ layout->Elements.data(), (UINT)layout->Elements.size() } :
+        D3D12_INPUT_LAYOUT_DESC{};
+    desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE(key.Topology);
+    desc.NumRenderTargets = key.TargetCount;
+    memcpy(desc.RTVFormats, key.Formats, sizeof(desc.RTVFormats));
+    desc.DSVFormat = key.DepthFormat;
+    desc.SampleDesc.Count = key.Samples;
+    result = S_OK;
+    if (key.DepthBounds)
+    {
+        DX12GraphicsStream stream;
+        stream.Root.Value = desc.pRootSignature;
+        stream.VS.Value = desc.VS;
+        stream.PS.Value = desc.PS;
+        stream.GS.Value = desc.GS;
+        stream.HS.Value = desc.HS;
+        stream.DS.Value = desc.DS;
+        stream.Blend.Value = desc.BlendState;
+        stream.Mask.Value = desc.SampleMask;
+        stream.Rasterizer.Value = desc.RasterizerState;
+        const auto& depth = desc.DepthStencilState;
+        stream.Depth.Value = { depth.DepthEnable, depth.DepthWriteMask, depth.DepthFunc, depth.StencilEnable,
+            depth.StencilReadMask, depth.StencilWriteMask, depth.FrontFace, depth.BackFace, TRUE };
+        stream.Layout.Value = desc.InputLayout;
+        stream.Topology.Value = desc.PrimitiveTopologyType;
+        stream.Targets.Value.NumRenderTargets = desc.NumRenderTargets;
+        memcpy(stream.Targets.Value.RTFormats, desc.RTVFormats, sizeof(desc.RTVFormats));
+        stream.DepthFormat.Value = desc.DSVFormat;
+        stream.Samples.Value = desc.SampleDesc;
+        ID3D12Device2* device = nullptr;
+        result = GetDevice()->QueryInterface(IID_PPV_ARGS(&device));
+        if (SUCCEEDED(result))
+        {
+            D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = { sizeof(stream), &stream };
+            result = device->CreatePipelineState(&streamDesc, IID_PPV_ARGS(&pipeline));
+            device->Release();
+        }
+    }
+    else
+    {
+        result = GetDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pipeline));
+    }
+    return pipeline;
+}
+
 bool InternalDevice12::PreparePipeline()
 {
     TransitionAttachments();
@@ -1007,15 +972,22 @@ bool InternalDevice12::PreparePipeline()
         GraphicsPipelineKey key;
         ZeroMemory(&key, sizeof(key));
         memcpy(key.ShaderIds, _graphicsState.ShaderIds, sizeof(key.ShaderIds));
-        key.LayoutId = _layout ? _layout->Id : 0;
+        // Two layouts of the same elements make the same pipeline
+        key.LayoutId = _layout ? _layout->Hash : 0;
         key.Rasterizer = _graphicsState.Rasterizer;
         key.Depth = _graphicsState.Depth;
+        // The key is compared and remembered as bytes: what pads its descriptions is not left as it came
+        ZeroMemory(&key.Depth.StencilWriteMask + 1, offsetof(D3D12_DEPTH_STENCIL_DESC, FrontFace) - offsetof(D3D12_DEPTH_STENCIL_DESC, StencilWriteMask) - 1);
         if (!_depth)
         {
             key.Depth.DepthEnable = FALSE;
             key.Depth.StencilEnable = FALSE;
         }
         key.Blend = _graphicsState.Blend;
+        for (auto& target : key.Blend.RenderTarget)
+        {
+            ZeroMemory(&target.RenderTargetWriteMask + 1, sizeof(target) - offsetof(D3D12_RENDER_TARGET_BLEND_DESC, RenderTargetWriteMask) - 1);
+        }
         for (u32 target_idx = 0; target_idx < targetCount; ++target_idx)
         {
             key.Formats[target_idx] = _targets[target_idx] ? _targets[target_idx]->View.Format : DXGI_FORMAT_UNKNOWN;
@@ -1057,63 +1029,9 @@ bool InternalDevice12::PreparePipeline()
         if (!pipeline)
         {
             PROF_EVENT("D3D12: CreateGraphicsPipeline");
-            D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-            desc.pRootSignature = _graphicsRoot;
-            D3D12_SHADER_BYTECODE* shaders[] = { &desc.PS, &desc.VS, &desc.GS, &desc.HS, &desc.DS };
             R_ASSERT(_graphicsState.Shaders[1]);
-            for (u32 shader_idx = 0; shader_idx < 5; ++shader_idx)
-            {
-                if (auto shader = _graphicsState.Shaders[shader_idx])
-                {
-                    *shaders[shader_idx] = { shader->Code.data(), shader->Code.size() };
-                }
-            }
-            desc.BlendState = key.Blend;
-            desc.RasterizerState = key.Rasterizer;
-            desc.DepthStencilState = key.Depth;
-            desc.SampleMask = key.SampleMask;
-            desc.InputLayout = _layout ? D3D12_INPUT_LAYOUT_DESC{ _layout->Elements.data(), (UINT)_layout->Elements.size() } :
-                D3D12_INPUT_LAYOUT_DESC{};
-            desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE(key.Topology);
-            desc.NumRenderTargets = key.TargetCount;
-            memcpy(desc.RTVFormats, key.Formats, sizeof(desc.RTVFormats));
-            desc.DSVFormat = key.DepthFormat;
-            desc.SampleDesc.Count = key.Samples;
             HRESULT result = S_OK;
-            if (key.DepthBounds)
-            {
-                DX12GraphicsStream stream;
-                stream.Root.Value = desc.pRootSignature;
-                stream.VS.Value = desc.VS;
-                stream.PS.Value = desc.PS;
-                stream.GS.Value = desc.GS;
-                stream.HS.Value = desc.HS;
-                stream.DS.Value = desc.DS;
-                stream.Blend.Value = desc.BlendState;
-                stream.Mask.Value = desc.SampleMask;
-                stream.Rasterizer.Value = desc.RasterizerState;
-                const auto& depth = desc.DepthStencilState;
-                stream.Depth.Value = { depth.DepthEnable, depth.DepthWriteMask, depth.DepthFunc, depth.StencilEnable,
-                    depth.StencilReadMask, depth.StencilWriteMask, depth.FrontFace, depth.BackFace, TRUE };
-                stream.Layout.Value = desc.InputLayout;
-                stream.Topology.Value = desc.PrimitiveTopologyType;
-                stream.Targets.Value.NumRenderTargets = desc.NumRenderTargets;
-                memcpy(stream.Targets.Value.RTFormats, desc.RTVFormats, sizeof(desc.RTVFormats));
-                stream.DepthFormat.Value = desc.DSVFormat;
-                stream.Samples.Value = desc.SampleDesc;
-                ID3D12Device2* device = nullptr;
-                result = GetDevice()->QueryInterface(IID_PPV_ARGS(&device));
-                if (SUCCEEDED(result))
-                {
-                    D3D12_PIPELINE_STATE_STREAM_DESC streamDesc = { sizeof(stream), &stream };
-                    result = device->CreatePipelineState(&streamDesc, IID_PPV_ARGS(&pipeline));
-                    device->Release();
-                }
-            }
-            else
-            {
-                result = GetDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pipeline));
-            }
+            pipeline = CreateGraphicsPipeline(key, _graphicsState.Shaders, _layout, result);
             if (FAILED(result))
             {
                 Msg("! D3D12 graphics PSO creation failed: 0x%08x, VS %llu, PS %llu, GS %llu, HS %llu, DS %llu, layout %llu",
@@ -1138,6 +1056,7 @@ bool InternalDevice12::PreparePipeline()
             _graphicsPipelines.push_back(created);
             _pipelineBuckets[pipelineHash & (PipelineBuckets - 1)] = u32(_graphicsPipelines.size());
             _counters.PipelineMisses.fetch_add(1, std::memory_order_relaxed);
+            LearnPipeline(key);
         }
         _graphicsPipeline = pipeline;
         _boundPipelineHash = pipelineHash;
@@ -1433,10 +1352,10 @@ bool InternalDevice12::PrepareDrawLocked(bool compute)
         _commands->IASetIndexBuffer(_index ? &index : nullptr);
         bound.Index = index;
     }
-    if (_commands1 && _graphicsState.DepthBounds &&
+    if (_graphicsState.DepthBounds &&
         (fresh || bound.DepthBounds[0] != _depthMinimum || bound.DepthBounds[1] != _depthMaximum))
     {
-        _commands1->OMSetDepthBounds(_depthMinimum, _depthMaximum);
+        _commands->OMSetDepthBounds(_depthMinimum, _depthMaximum);
         bound.DepthBounds[0] = _depthMinimum;
         bound.DepthBounds[1] = _depthMaximum;
     }
@@ -1447,7 +1366,7 @@ bool InternalDevice12::PrepareDrawLocked(bool compute)
 bool InternalDevice12::SetDepthBounds(bool enable, float minimum, float maximum)
 {
     ContextLock guard(*this);
-    if (!_canUseDepthBounds || !_commands1)
+    if (!_canUseDepthBounds)
     {
         return false;
     }
@@ -1459,7 +1378,7 @@ bool InternalDevice12::SetDepthBounds(bool enable, float minimum, float maximum)
     }
     _depthMinimum = minimum;
     _depthMaximum = maximum;
-    _commands1->OMSetDepthBounds(minimum, maximum);
+    _commands->OMSetDepthBounds(minimum, maximum);
     _drawBindings.DepthBounds[0] = minimum;
     _drawBindings.DepthBounds[1] = maximum;
     return true;

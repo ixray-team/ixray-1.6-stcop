@@ -80,9 +80,10 @@ extern ENGINE_API u32 ps_proxy_r_scale_mode;
 void CRenderDevice::Reset(bool precache)
 {
 	PROF_EVENT("CRenderDevice::Reset");
+	VideoSettings::MarkRestarted();
 	ps_r_scale_mode = ps_proxy_r_scale_mode;
-	u32 dwWidth_before = TargetWidth;
-	u32 dwHeight_before = TargetHeight;
+	const u32 OutputWidthBefore = OutputWidth;
+	const u32 OutputHeightBefore = OutputHeight;
 	float RenderScale_before = GRHI->DevicePtr->RenderScale;
 
 	u32 tm_start = TimerAsync();
@@ -104,7 +105,7 @@ void CRenderDevice::Reset(bool precache)
 		GRHI->DevicePtr->RenderScale = ps_render_scale;
 	}
 
-	if (LightingModeIsStaticRender())
+	if (!g_RenderFeatures.Upscaling)
 		GRHI->DevicePtr->RenderScale = 1.f;
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight);
 
@@ -131,9 +132,16 @@ void CRenderDevice::Reset(bool precache)
 		SDL_ShowCursor();
 	}
 
+	// What follows is made for the view the next frames draw, not for the targets: the interface is built once
+	if (!IsEditorMode() && AllocHalfTarget.x)
+	{
+		FitView();
+	}
+
+	g_UiView.set(int(TargetWidth), int(TargetHeight));
 	seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 
-	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight || RenderScale_before != GRHI->DevicePtr->RenderScale)
+	if (OutputWidthBefore != OutputWidth || OutputHeightBefore != OutputHeight || RenderScale_before != GRHI->DevicePtr->RenderScale)
 	{
 		seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
 	}

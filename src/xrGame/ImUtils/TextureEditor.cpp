@@ -866,7 +866,7 @@ void DrawPreview(IRHISurface* pTexture, IRHIShaderResourceView* pView)
 		{
 			if (pView && pView->GetRawSRV())
 			{
-				ImGui::Image(pView->GetRawSRV(), preview_size);
+				ImGui::Image(RHIUtils::ImGui::Image(pTexture), preview_size);
 			}
 		}
 	}

@@ -98,7 +98,7 @@ void CUIOptionsManager::OptionsPostAccept()
 {
 
 	if (m_restart_flags&e_vid_restart)
-		Console->Execute("vid_restart");
+		Console->Execute("r_restart");
 
 	if (m_restart_flags&e_snd_restart)
 		Console->Execute("snd_restart");

@@ -27,18 +27,6 @@
 	<string id="ui_mm_r_actor_shadow">
 		<text>Protagonist Shadow</text>
 	</string>
-	<string id="ui_mm_r2_details_shadows">
-		<text>Grass Shadows</text>
-	</string>
-	<string id="ui_mm_r4_hud_shadows">
-		<text>Hud Shadows</text>
-	</string>
-	<string id="ui_mm_r2_cloud_shadows">
-		<text>Cloud Shadows</text>
-	</string>
-	<string id="ui_mm_vid_scale">
-		<text>Rendering Scale</text>
-	</string>
 	<string id="fxaa">
 		<text>FXAA</text>
 	</string>
@@ -48,32 +36,11 @@
 	<string id="taa">
 		<text>TAA</text>
 	</string>
-	<string id="ui_mm_r_scale_mode">
-		<text>Scaling</text>
-	</string>
-	<string id="st_filter_linear">
-		<text>Standard (Linear)</text>
-	</string>
-	<string id="st_filter_point">
-		<text>Point</text>
-	</string>
-	<string id="st_filter_dlss">
-		<text>DLSS</text>
-	</string>
-	<string id="st_filter_fsr">
-		<text>FSR2</text>
-	</string>
-	<string id="st_filter_xess">
-		<text>Intel XeSS</text>
-	</string>
 	<string id="st_freemp">
 		<text>Freeplay</text>
 	</string>
 	<string id="ui_mm_mt_tex_load">
 		<text>Multithreaded Texture Loading</text>
-	</string>
-	<string id="ui_mm_r__smap_size">
-		<text>Shadow Map</text>
 	</string>
 	<string id="1024">
 		<text>1024x1024</text>
@@ -114,12 +81,6 @@
 	<string id="ui_mm_cas_sharpening">
 		<text>Sharpness</text>
 	</string>
-	<string id="ui_mm_hashed_alpha_test">
-		<text>Alpha Testing</text>
-	</string>
-	<string id="ui_mm_gtao">
-		<text>GTAO</text>
-	</string>
 	<string id="ui_mm_vignette">
 		<text>Vignette</text>
 	</string>
@@ -128,27 +89,6 @@
 	</string>
 	<string id="ui_mm_sslr_water">
 		<text>Water refl.</text>
-	</string>
-	<string id="ui_mm_r_scale_preset">
-		<text>Scaling Quality</text>
-	</string>
-	<string id="st_scale_native">
-		<text>Anti-Aliasing</text>
-	</string>
-	<string id="st_scale_quality">
-		<text>Quality</text>
-	</string>
-	<string id="st_scale_balanced">
-		<text>Balanced</text>
-	</string>
-	<string id="st_scale_performance">
-		<text>Performance</text>
-	</string>
-	<string id="st_scale_ultraperformance">
-		<text>Ultra Performance</text>
-	</string>
-	<string id="st_scale_custom">
-		<text>Custom</text>
 	</string>
 	<string id="st_common_settings">
 		<text>General</text>
@@ -161,12 +101,6 @@
 	</string>
 	<string id="st_lights_options">
 		<text>Lighting</text>
-	</string>
-	<string id="st_sunlight_options">
-		<text>Sunlight</text>
-	</string>
-	<string id="st_effects_options">
-		<text>Effects</text>
 	</string>
 	<string id="st_postprocess_options">
 		<text>Postprocessing</text>
@@ -191,15 +125,6 @@
 	</string>
 	<string id="st_move_all">
 		<text>move all</text>
-	</string>
-	<string id="renderer_r4_dx10">
-		<text>Enhanced full dyn. lighting (DX10)</text>
-	</string>
-	<string id="renderer_r4_static">
-		<text>Static lighting</text>
-	</string>
-	<string id="renderer_r4">
-		<text>Enhanced full dyn. lighting (DX11)</text>
 	</string>
 	<string id="Ultra">
 		<text>ultra</text>
@@ -357,26 +282,11 @@
 	<string id="SO_HLAMP">
 		<text>Hanging lamp</text>
 	</string>
-	<string id="ui_mm_lights_details">
-		<text>Extended grass shadows</text>
-	</string>
-	<string id="ui_mm_puddles">
-		<text>Volumetric puddles</text>
-	</string>
 	<string id="ui_mm_grass_distance">
 		<text>Grass distance</text>
 	</string>
 	<string id="ui_mm_screenshot_format">
 		<text>Screenshot format</text>
-	</string>
-	<string id="ss_jpg">
-		<text>.jpg</text>
-	</string>
-	<string id="ss_tga">
-		<text>.tga</text>
-	</string>
-	<string id="ss_png">
-		<text>.png</text>
 	</string>
 	<string id="ui_mm_lang">
 		<text>Language</text>
@@ -954,12 +864,6 @@
 	<string id="st_3d_scopes">
 		<text>3D scopes</text>
 	</string>
-	<string id="st_motion_blur_power">
-		<text>Motion blur power</text>
-	</string>
-	<string id="st_motion_blur_quality">
-		<text>Motion blur quality</text>
-	</string>
 	<string id="ui_rmw_grenade_next">
 		<text>$$ACTION_WPN_NEXT$$ Change grenade</text>
 	</string>
@@ -969,9 +873,6 @@
 	<string id="st_autosaves_interval">
 		<text>Autosaves interval</text>
 	</string>
-	<string id="ui_mm_dynamic_wallmarks">
-		<text>Body bullet holes</text>
-	</string>
 	<string id="kb_weapon7">
 		<text>Pistol</text>
 	</string>
@@ -980,9 +881,6 @@
 	</string>
 	<string id="ui_mm_fov">
 		<text>Field of view</text>
-	</string>
-	<string id="ui_mm_bloom_amount">
-		<text>Bloom intensity</text>
 	</string>
 	<string id="st_repair">
 		<text>repair</text>
@@ -1017,41 +915,19 @@
 	<string id="ui_rmw_wpn_laser">
 		<text>$$ACTION_WPN_LASER$$ Laser sight</text>
 	</string>
-	<string id="ui_mm_r2_rain_drops_mode">
-		<text>Glass rain drops type</text>
-	</string>
 	<string id="texture">
 		<text>Texture</text>
 	</string>
 	<string id="procedural">
 		<text>Procedural</text>
 	</string>
-	<string id="ui_mm_rain_puddles">
-		<text>Rain puddles</text>
-	</string>
 	<string id="st_dof_options"><text>Depth of field</text></string>
 	<string id="ui_mm_dof_dynamic"><text>Weapon action DOF</text></string>
 	<string id="ui_mm_dof_const_zoom"><text>Fixed focus when aiming</text></string>
 	<string id="ui_mm_dof_hud_animator"><text>Food, medicine and PDA DOF</text></string>
 	<string id="ui_mm_dof_kernel"><text>Blur radius</text></string>
-	<string id="ui_mm_dof_lens_kernel_scale"><text>3D scope blur multiplier</text></string>
 	<string id="ui_mm_dof_sky"><text>Sky focus distance</text></string>
 	<string id="ui_mm_dof_near"><text>Base DOF near distance</text></string>
 	<string id="ui_mm_dof_focus"><text>Base DOF focus distance</text></string>
 	<string id="ui_mm_dof_far"><text>Base DOF far distance</text></string>
-	<string id="ui_mm_r_dlss_model">
-		<text>DLSS model</text>
-	</string>
-	<string id="st_dlss_model_auto">
-		<text>Auto</text>
-	</string>
-	<string id="st_dlss_model_cnn">
-		<text>Convolutional neural network</text>
-	</string>
-	<string id="st_dlss_model_transformer">
-		<text>Transformer model</text>
-	</string>
-	<string id="st_dlss_model_transformer2">
-		<text>2nd gen transformer model</text>
-	</string>
 </string_table>

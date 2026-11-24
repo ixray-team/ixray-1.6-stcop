@@ -4,6 +4,7 @@
 
 #include "Engine/XrGameManager.h"
 #include "Engine/XRayEditor.h"
+#include "EditorAutotest.h"
 
 #include "Editor/Utils/ContentView.h"
 #include "Editor/Utils/GitIntegration.h"
@@ -69,6 +70,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize("LevelEditor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
+	RenderPresetApply();
+
+	if (EditorAutotest::Active())
+	{
+		EditorAutotest::Initialize();
+	}
 
 	CRenderDevice::SetStartupStatus(20, "Initializing Level Tools");
 
@@ -149,7 +156,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	Console->ExecuteScript(Console->ConfigFile);
 
 	Console->Hide();
-	g_lighting_mode = ELightingMode::Dynamic;
+	RenderPresetApply();
 
 	CRenderDevice::SetStartupStatus(75, "Performing Final UI Setup");
 
@@ -204,7 +211,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	SDL_RaiseWindow(g_AppInfo.Window);
 	// The startup screen polls the events: SDL_EVENT_WINDOW_SHOWN never reaches the loop below
 	Device.b_is_Active = true;
-	
+
+	if (EditorAutotest::Active())
+	{
+		EditorAutotest::Start();
+	}
+
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -231,7 +243,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 					if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
 					{
 						EContext.UI->Resize(Event.window.data1, Event.window.data2, true);
-						EPrefs->SaveConfig();
+						if (!EditorAutotest::Active())
+						{
+							EPrefs->SaveConfig();
+						}
 					}
 				}
 				break;
@@ -245,7 +260,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				break;
 			case SDL_EVENT_WINDOW_HIDDEN:
 			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-				Device.b_is_Active = !!psDeviceFlags.test(rsDeviceActive);
+				Device.b_is_Active = EditorAutotest::Active() || psDeviceFlags.test(rsDeviceActive);
 				//if (UI)UI->OnAppDeactivate();
 				break;
 
@@ -347,6 +362,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
+
+		if (EditorAutotest::Active())
+		{
+			EditorAutotest::Frame();
+		}
 	}
 	//s.join();
 

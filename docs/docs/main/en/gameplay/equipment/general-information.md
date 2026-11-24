@@ -41,7 +41,7 @@ use_condition = false; Whether the item has a wear progress bar
 
 > [!IMPORTANT]
 > **Minimum Version**: 1.2.2
-Current console commands: `r4_use_gasmask`, `r2_use_rain_drops` and `r2_rain_drops_mode`. See [Visor glass and rain drops](visor-glass.md) for glass types, item condition, accumulation and wiping animations in the current branch.
+Current console commands: `r_gasmask`, `r_raindrops` and `r2_rain_drops_mode`. See [Visor glass and rain drops](visor-glass.md) for glass types, item condition, accumulation and wiping animations in the current branch.
 
 ```ini
 glass_present = true; The item has visor glass
@@ -69,7 +69,7 @@ forbid_change_skin = false ; Whether it changes the visual (hands/legs)
 
 > [!IMPORTANT]
 > **Minimum Version**: 1.2.2
-Current console commands: `r4_use_gasmask`, `r2_use_rain_drops` and `r2_rain_drops_mode`. See [Visor glass and rain drops](visor-glass.md) for glass types, item condition, accumulation and wiping animations in the current branch.
+Current console commands: `r_gasmask`, `r_raindrops` and `r2_rain_drops_mode`. See [Visor glass and rain drops](visor-glass.md) for glass types, item condition, accumulation and wiping animations in the current branch.
 ```ini
 glass_present = true; The item has visor glass
 hud_gas_mask_avaliable = true; Allow glass rendering

@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>PLAYERS</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Static lighting</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Full dynamic lighting</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Enhanced full dynamic lighting</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Objects dynamic lighting</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Enhan. full dyn. lighting (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>SERVER NAME</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Render</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Resolution</text>

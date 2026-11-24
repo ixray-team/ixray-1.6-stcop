@@ -1,0 +1,18 @@
+{
+    "type": "Custom",
+    "permutations": {
+        "vs": {
+            "detail_brush": [
+                "BRUSH_CURSOR=1"
+            ]
+        },
+        "ps": {
+            "detail_brush": [
+                "BRUSH_CURSOR=1"
+            ],
+            "detail_brush_trail": [
+                "BRUSH_TRAIL=1"
+            ]
+        }
+    }
+}

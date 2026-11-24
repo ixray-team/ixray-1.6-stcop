@@ -1,9 +1,48 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #pragma once
 #include "Resources.h"
 #include <atomic>
 #include <d3dcommon.h>
 
 struct ID3D12InfoQueue1;
+
+namespace nri
+{
+struct CommandBuffer;
+}
 
 struct DX12Shader
 {
@@ -19,28 +58,29 @@ struct DX12Shader
     D3D12_CPU_DESCRIPTOR_HANDLE NullSrvs[DX12ViewSlots] = {};
     bool NullReady = false;
     xr_vector<u8> Code;
+    u64 Hash = 0; // of the code: what names the shader between runs
+
+    ~DX12Shader();
 };
+
+// Gives the shader its hash and lets the pipelines made ahead find it by that
+void DX12RegisterShader(DX12Shader& shader);
 
 struct DX12InputLayout
 {
     u64 Id = 0;
     xr_vector<D3D12_INPUT_ELEMENT_DESC> Elements;
     xr_vector<shared_str> Semantics;
+    u64 Hash = 0; // of the elements: what names the layout between runs, and in a pipeline's key
 };
+
+void DX12RegisterLayout(DX12InputLayout& layout);
 
 struct DX12Sampler
 {
     InternalDevice12* Device = nullptr;
     DX12Descriptor Descriptor;
     RHISampleDesc Desc = {};
-};
-
-struct DX12Query
-{
-    InternalDevice12* Device = nullptr;
-    u32 Slot = 0;
-    u64 Fence = 0;
-    bool IsPending = false;
 };
 
 class InternalDevice12 final : public IRHIDevice
@@ -53,7 +93,8 @@ public:
     void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex) override;
     void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance) override;
     void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance) override;
-    void ResizeBuffers(u32 Width, u32 Height) override;
+    void ResizeBuffers(const RHISwapChainDesc& SwapChain) override;
+    void ResizeSwapChain(const RHISwapChainDesc& SwapChain) override;
     void ClearTarget(void* Target, ERTColor Transparent) override;
     void ClearTarget(void* Target, const float* Color) override;
     void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil) override;
@@ -76,7 +117,6 @@ public:
     void SetConstants(const RHIConstantWrite* Writes, u32 Count) override;
     void ClearIndexBuffer() override;
     void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) override;
-    HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) override;
     HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader) override;
     HRESULT ReplaceShader(RHIObject* shader, const void* code, size_t size) override;
     void Flush() override;
@@ -87,12 +127,7 @@ public:
     void SetSamplers(RHIObject* const* states, u32 count) override;
     void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) override;
     void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) override;
-    HRESULT CreateOcclusionQuery(RHIObject** out_query) override;
-    HRESULT GetQueryData(RHIObject* query, void* data, u32 size, u32 flags) override;
-    void BeginQuery(RHIObject* query) override;
-    void EndQuery(RHIObject* query) override;
     IRHISurface* CreateTexture1D(const RHITextureDesc& desc, const RHISubResource& data) override;
-    void CopySwapchain(IRHISurface* dest) override;
     bool SupportsTextureSampling(ERHI_FORMAT format, u32& out_flags) override;
     void* GetState(const RHIRasterizerDesc& desc) override;
     void* GetState(const RHIDepthStencilDesc& desc) override;
@@ -114,10 +149,8 @@ public:
     void UAVBarrier(ID3D12Resource* resource);
     DX12Upload AllocateUpload(u64 size, u64 alignment = 256);
     u64 GetEpoch();
-    u64 PendingFence() const { return _nextFence; }
     bool IsComplete(u64 fence) const;
     void InvalidateBindings();
-    void RecycleQuery(DX12Query& query);
     void DrainUploads();
     void TransitionView(DX12Surface& surface, D3D12_RESOURCE_STATES state, const DX12View& view);
     class ContextLock
@@ -150,13 +183,11 @@ public:
     void* GetImageHandle(u32 index);
     u64 ResolveImageHandle(u64 texture) const;
     void PrepareImGuiTarget();
-    void PrepareUpscale(IRHISurface* surface, bool output);
-    void FinishExternalWork();
     bool GetShaderCode(RHIObject* Shader, const void*& Code, size_t& Size) override;
-    void* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) override;
+    nri::CommandBuffer* BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth) override;
     void EndExternalPass() override;
     void* ReadExternalBuffer(IRHIBuffer* Buffer) override;
-    void ReadExternalSurface(IRHISurface* Surface) override;
+    bool SubmitExternalCommands(nri::CommandBuffer* const* Buffers, u32 Count) override;
     void BeginMarker(const char* name);
     void EndMarker();
     void BeginGPUStats();
@@ -164,9 +195,15 @@ public:
     const RHI_GPU_EVENT& GPUStats();
     int PushGPUEvent(const char* name);
     void PopGPUEvent(int index);
+    u32 LearnedPipelineCount() override;
+    bool PrecreatePipeline(u32 Index) override;
+    void SaveLearnedPipelines() override;
 
 private:
     mutable xrCriticalSection _contextMutex;
+    // External passes open on the thread that holds the context: it keeps the mutex until the pass ends,
+    // as the caller records into the command list without the device
+    u32 _externalPasses = 0;
     static constexpr u32 FrameCount = 3;
     static constexpr u32 TablesPerStage = 2;
     static constexpr u32 GraphicsTableCount = 5 * TablesPerStage + 1;
@@ -189,6 +226,7 @@ private:
         u8* Data = nullptr;
         u64 Size = 0;
         u64 Used = 0;
+        u32 Idle = 0; // turns of its slot in a row it was not written to
     };
     struct PendingCopy
     {
@@ -277,11 +315,9 @@ private:
         u64 ShaderId = 0;
         u64 Generation = 0;
     };
+    // Keyed by the NRI device's frame value: the last frame value whose work reads the slot is its fence
     struct Frame
     {
-        // More than one when the list is reopened while the frame is still on the GPU
-        xr_vector<ID3D12CommandAllocator*> Allocators;
-        u32 AllocatorsUsed = 0;
         u64 Fence = 0;
         u32 ResourcesUsed = 0;
         u32 SamplersUsed = 0;
@@ -372,13 +408,12 @@ private:
     ID3D12InfoQueue1* _debugQueue = nullptr;
     DWORD _debugCallback = 0;
     IDXGIFactory4* _factory = nullptr;
-    IDXGISwapChain3* _swapchain = nullptr;
     ID3D12CommandQueue* _queue = nullptr;
-    ID3D12GraphicsCommandList* _commands = nullptr;
-    ID3D12GraphicsCommandList1* _commands1 = nullptr;
+    // The recording list, borrowed from the NRI device's frame command buffer. NRI keeps the newest interface the
+    // runtime has: List1 is there wherever depth bounds, its only call here, are supported
+    ID3D12GraphicsCommandList1* _commands = nullptr;
+    nri::CommandBuffer* _commandBuffer = nullptr;
     ID3D12Device1* _device1 = nullptr;
-    ID3D12Fence* _fence = nullptr;
-    HANDLE _fenceEvent = nullptr;
     ID3D12DescriptorHeap* _resourceHeap = nullptr;
     ID3D12DescriptorHeap* _samplerHeap = nullptr;
     ID3D12DescriptorHeap* _storageHeaps[2] = {};
@@ -396,7 +431,8 @@ private:
     DX12Surface* _depthSurface = nullptr;
     DX12TextureFactory* _textureFactory = nullptr;
     u32 _frame = 0;
-    u64 _nextFence = 1;
+    std::atomic<u64> _frameValue{ 0 };
+    u32 _backbuffer = 0;
     u64 _epoch = 0;
     u64 _nextObject = 1;
     u64 _nextDescriptor = 1;
@@ -486,22 +522,26 @@ private:
 
     void Wait(u64 fence);
     u32 ImageIndex(u64 texture) const;
-    u64 Submit();
-    void CollectRetired();
+    static void CloseList(void* device);
+    void PrepareSlot();
+    void CollectRetired(bool isIdle = false);
     DX12Upload CreateUpload(u64 size);
     DX12Upload AcquireStream(u64 size);
     void RecycleStream(const DX12Upload& upload);
     void Prioritize(ID3D12Pageable* object);
     void UpdateBuffers();
     void ReleaseBuffers();
+    void CreateBackBuffers(u32 width, u32 height);
+    void ReleaseBackBuffers();
     void CreateRootSignatures();
     bool PrepareDraw(bool compute);
     bool PrepareDrawLocked(bool compute);
     bool PreparePipeline();
+    ID3D12PipelineState* CreateGraphicsPipeline(const GraphicsPipelineKey& key, DX12Shader* const* stages, const DX12InputLayout* layout, HRESULT& result);
+    void LearnPipeline(GraphicsPipelineKey key);
+    void LoadLearnedPipelines();
     void TransitionAttachments();
     ID3D12GraphicsCommandList* ActiveCommands();
-    void ResolveQueries();
-    void ResolveQuery(u32 slot);
     static u64 PipelineHash(const GraphicsPipelineKey& key);
     void DropShaderPipelines(u64 shaderId);
     void BindNullConstants(bool compute);
@@ -526,16 +566,13 @@ private:
     DX12Descriptor NullSrv(u32 dimension, u32 returnType, u8 kind);
     DX12Descriptor NullUav(u32 dimension, u8 kind);
     DX12Descriptor NullSampler();
-    void DumpCounters();
     u64 Tick() const;
     bool StateCovers(D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after) const;
     void EmitBarrier(DX12Resource& resource, D3D12_RESOURCE_STATES after, u32 subresource);
-    static constexpr u32 QuerySlots = 256;
     static constexpr u32 BarrierBatch = 32;
     xrCriticalSection _uploadLock;
     mutable Counters _counters;
     u64 _tickFrequency = 0;
-    u32 _presentCount = 0;
     void* _prevGpuCommand = nullptr;
     u32 _prevGpuQueue = 0;
     int _prevGpuNode = 0;
@@ -544,11 +581,12 @@ private:
     xr_vector<NullDescriptor> _nullUavs;
     DX12Descriptor _nullSampler;
     u32 _pipelineBuckets[PipelineBuckets] = {};
-    ID3D12QueryHeap* _occlusionHeap = nullptr;
-    ID3D12Resource* _occlusionReadback = nullptr;
-    u64 _occlusionFence[QuerySlots] = {};
-    u32 _occlusionFree[QuerySlots] = {};
-    u32 _occlusionFreeCount = 0;
-    // Occlusion slots ended in the recording list; resolved in one pass by Submit.
-    u64 _resolveQueries[QuerySlots / 64] = {};
+    // Keys with the hashes of the shaders' code in the place of their ids
+    xr_vector<GraphicsPipelineKey> _learnedPipelines;
+    xr_hash_set<u64> _learnedHashes;
+    // Per pipeline of the list as it was loaded: not 0 when the start found no shader with the code it names
+    xr_vector<u8> _learnedStale;
+    xr_hash_map<u64, DX12InputLayout> _learnedLayouts;
+    bool _learnedLoaded = false;
+    bool _learnedChanged = false;
 };

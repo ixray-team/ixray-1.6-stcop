@@ -19,4 +19,8 @@
 	<string id="st_ixray_global_options__draw_debug"> 
 		<text>Draw A-Life debug</text>
 	</string>
+	
+	<string id="ui_mm_graphics_api">
+		<text>Graphics API</text>
+	</string>
 </string_table>

@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>Hráèi</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Statické osvìtlení</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Plnì dynamické osvìtlení</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Vylepšené plnì dynamické osvìtlení</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Dynamické osvìtlení objektù</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Vylepšené plnì dyn. osvìtlení (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>Název serveru</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Renderovat</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Rozlišení</text>

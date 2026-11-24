@@ -436,13 +436,8 @@ void CEffect_Rain::UpdateItems()
 	const float Density = clampr(Env.CurrentEnv->rain_density, 0.f, 1.f);
 	RainColor = Env.CurrentEnv->rain_color;
 	RainDropsOpacity = 0.5f + 0.5f * Density;
-	float VisualFactor = RainDropsOpacity;
-	if (LightingModeIsDynamicRender())
-	{
-		RainColor.mul(0.9f);
-		VisualFactor *= 0.8f;
-	}
-	RainLength = std::max(Env.CurrentEnv->rain_length * VisualFactor, 0.f);
+	RainColor.mul(0.9f);
+	RainLength = std::max(Env.CurrentEnv->rain_length * RainDropsOpacity * 0.8f, 0.f);
 	RainWidth = std::max(Env.CurrentEnv->rain_width, 0.f);
 
 	if (IsEnabled && Density >= EPS_L)

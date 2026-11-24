@@ -662,11 +662,13 @@ u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
 			{
 				Descriptor.Direction.setHP(Light->GetRotation().y, Light->GetRotation().x);
 				Descriptor.Cone = Light->m_Cone;
+				Descriptor.Texture = Light->m_FalloffTex;
 			}
 			else
 			{
 				Descriptor.Direction.set(0.f, 0.f, -1.f);
 				Descriptor.Cone = 0.f;
+				Descriptor.Texture = nullptr;
 			}
 			Descriptor.Color.mul_rgb(Light->m_Color, Light->m_Brightness);
 			Descriptor.Range = Light->m_Range;

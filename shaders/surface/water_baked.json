@@ -1,0 +1,31 @@
+{
+    "type": "Surface",
+    "permutations": {
+        "vs": {
+            "r1_water": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex|SurfaceMask_Bump"
+            ],
+            "r1_waterd": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex",
+                "WATER_DISTORT=1"
+            ],
+            "r1_water_puddles": [
+                "FEATURE_SET=SurfaceVertex_Static|SurfaceLight_Vertex|SurfaceMask_Bump",
+                "WATER_PUDDLE=1"
+            ]
+        },
+        "ps": {
+            "r1_water": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Bump"
+            ],
+            "r1_waterd": [
+                "FEATURE_SET=SurfaceLight_None",
+                "WATER_DISTORT=1"
+            ],
+            "r1_water_puddles": [
+                "FEATURE_SET=SurfaceLight_Vertex|SurfaceMask_Bump",
+                "WATER_PUDDLE=1"
+            ]
+        }
+    }
+}

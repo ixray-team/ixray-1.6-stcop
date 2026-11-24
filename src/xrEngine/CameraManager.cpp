@@ -367,6 +367,11 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	float sfar = _inertion(m_cam_info.fFar, fFAR_Dest, powf(psCamFarInert, Device.fTimeDelta * 144.f));
 	float saspect = _inertion(m_cam_info.fAspect, fASPECT_Dest * aspect, psCamAspectInert);
 
+	// A view that has changed its shape is drawn in its new one at once: eased in, the picture stretches for a while
+	static float ViewAspect = aspect;
+	saspect = ViewAspect == aspect ? saspect : fASPECT_Dest * aspect;
+	ViewAspect = aspect;
+
 	m_cam_info.fFov = m_cam_info.first_init ? fFOV_Dest : sfov;
 	m_cam_info.fFar = m_cam_info.first_init ? fFAR_Dest : sfar;
 	m_cam_info.fAspect = m_cam_info.first_init ? fASPECT_Dest * aspect : saspect;

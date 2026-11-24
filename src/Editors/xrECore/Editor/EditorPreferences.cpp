@@ -511,15 +511,16 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "hemi", Hemi);
 		GetSafe(*render, "dynamic_lights", DynamicLights);
 		GetSafe(*render, "light_shadows", LightShadows);
-		GetSafe(*render, "ssao_mode", ps_r_ssao_mode);
-		bool SSLRWorld = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
-		bool SSLRWater = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+		u32 OcclusionMode = VideoSettings::Stored(EVideoSetting::OcclusionQuality) ? 2 : 0;
+		bool SSLRWorld = VideoSettings::Stored(EVideoSetting::ReflectionQuality) != 0;
+		bool SSLRWater = VideoSettings::Stored(EVideoSetting::WaterReflections) != 0;
+		GetSafe(*render, "ssao_mode", OcclusionMode);
 		GetSafe(*render, "sslr", SSLRWorld);
 		GetSafe(*render, "sslr_water", SSLRWater);
-		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, SSLRWorld);
-		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WATER, SSLRWater);
+		VideoSettings::Set(EVideoSetting::OcclusionQuality, OcclusionMode != 0);
+		VideoSettings::Set(EVideoSetting::ReflectionQuality, SSLRWorld);
+		VideoSettings::Set(EVideoSetting::WaterReflections, SSLRWater);
 		Hemi = std::clamp(Hemi, 0.f, 1.f);
-		ps_r_ssao_mode = std::min(ps_r_ssao_mode, 2u);
 		GetSafe(*render, "w", start_w);
 		GetSafe(*render, "h", start_h);
 		GetSafe(*render, "quality", GEditorDraw.ScreenQuality);
@@ -679,9 +680,9 @@ void CCustomPreferences::Save()
 	JSONData["render"]["hemi"]=Hemi;
 	JSONData["render"]["dynamic_lights"]=DynamicLights;
 	JSONData["render"]["light_shadows"]=LightShadows;
-	JSONData["render"]["ssao_mode"]=ps_r_ssao_mode;
-	JSONData["render"]["sslr"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
-	JSONData["render"]["sslr_water"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+	JSONData["render"]["ssao_mode"]=VideoSettings::Stored(EVideoSetting::OcclusionQuality) ? 2u : 0u;
+	JSONData["render"]["sslr"]=VideoSettings::Stored(EVideoSetting::ReflectionQuality) != 0;
+	JSONData["render"]["sslr_water"]=VideoSettings::Stored(EVideoSetting::WaterReflections) != 0;
 	
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts

@@ -300,21 +300,6 @@
 	<string id="players">
 		<text>ИГРОКИ</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Статичное освещение</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Полное динамическое освещение</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Улучшенное полное освещение</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Динам. освещение объектов</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Улучшенное полное освещение (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>ИМЯ СЕРВЕРА</text>
 	</string>
@@ -536,9 +521,6 @@
 	</string>
 	<string id="ui_mm_render_2">
 		<text>Рендер-2</text>
-	</string>
-	<string id="ui_mm_renderer">
-		<text>Тип рендера</text>
 	</string>
 	<string id="ui_mm_resolution">
 		<text>Разрешение</text>

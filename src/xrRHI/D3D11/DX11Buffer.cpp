@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "DX11Buffer.h"
 #include "Device.h"
 
@@ -94,6 +128,13 @@ void CD3D11Buffer::Create(const RHIBufferDesc& desc /*= {}*/, const RHIBufferSub
 	R_ASSERT(pDevice);
 
 	m_bufferDesc = desc;
+
+	if (desc.Adopt)
+	{
+		m_pBuffer = static_cast<ID3D11Buffer*>(desc.Adopt);
+		m_pBuffer->AddRef();
+		return;
+	}
 
 	D3D11_BUFFER_DESC d3d11desc;
 	d3d11desc.ByteWidth = m_bufferDesc.Size;
@@ -197,20 +238,21 @@ void CD3D11Buffer::SetIndexBuffer(bool Is32BitBuffer, u32 Offset)
 	pImmediateContext->IASetIndexBuffer(pD3DBuffer, indicesFormat, Offset);
 }
 
+// Counted apart from the native buffer: NRI and the views hold that too
 void CD3D11Buffer::AddRef()
 {
-	m_pBuffer->AddRef();
+	++References;
 }
 
 u32 CD3D11Buffer::Release()
 {
-	u32 RefCount = m_pBuffer->Release();
+	const u32 Remaining = --References;
 
-	if (RefCount == 0)
+	if (!Remaining)
 	{
-		m_pBuffer = nullptr;
-		xr_delete(this);
+		CD3D11Buffer* Self = this;
+		xr_delete(Self);
 	}
 
-	return RefCount;
+	return Remaining;
 }

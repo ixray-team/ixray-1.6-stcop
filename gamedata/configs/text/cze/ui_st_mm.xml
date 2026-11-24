@@ -351,21 +351,6 @@
 	<string id="players">
 		<text>HRÁÈÙ</text>
 	</string>
-	<string id="renderer_r1">
-		<text>Statické osvìtlení</text>
-	</string>
-	<string id="renderer_r2">
-		<text>Plnì dynamické osvìtlení</text>
-	</string>
-	<string id="renderer_r2.5">
-		<text>Vylepšené plnì dynamické osvìtlení</text>
-	</string>
-	<string id="renderer_r2a">
-		<text>Dynamické osvìtlení objektù</text>
-	</string>
-	<string id="renderer_r3">
-		<text>Lepší plnì dyn. osvìtlení (DX10)</text>
-	</string>
 	<string id="server name">
 		<text>NÁZEV SERVERU</text>
 	</string>
@@ -621,9 +606,6 @@
 	<string id="ui_mm_render_2">
 		<text>Render 2</text>
 	</string>
-	<string id="ui_mm_renderer">
-		<text>Typ renderu</text>
-	</string>
 	<string id="ui_mm_resolution">
 		<text>Rozlišení</text>
 	</string>
@@ -863,9 +845,6 @@
 	</string>
 	<string id="st_opt_extreme">
 		<text>max. výška</text>
-	</string>
-	<string id="renderer_r4">
-		<text>Vylepšené plnì dyn. osvìtlení (DX11)</text>
 	</string>
 	<string id="mp_please_login">
 		<text>Pøed pøipojením k externímu serveru se musíš pøihlásit</text>

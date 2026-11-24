@@ -4,7 +4,7 @@
 
 #include "ParticleEffectActions.h"
 #include "FolderLib.h"
-#include "../../../Layers/xrRenderPC_R4/particle_core/noise.h"
+#include "../../../Layers/xrRenderIXR/particle_core/noise.h"
 
 using namespace PAPI; 
 #define PARTICLE_ACTION_VERSION_MIN 0x0000

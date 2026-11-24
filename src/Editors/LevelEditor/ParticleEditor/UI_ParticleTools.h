@@ -3,8 +3,8 @@
 #define UI_ParticleToolsH
 
 //. ?#include "ParticleSystem.h"
-#include "../../../Layers/xrRenderPC_R4/ParticleEffect.h"
-#include "../../../Layers/xrRenderPC_R4/ParticleGroup.h"
+#include "../../../Layers/xrRenderIXR/ParticleEffect.h"
+#include "../../../Layers/xrRenderIXR/ParticleGroup.h"
 #include "../../../xrEngine/pure.h"
 #include "ParticleEffectActions.h"
 #include "../../xrECore/Editor/UndoJournal.h"

@@ -1,3 +1,37 @@
+/**************************************************************************************
+* Copyright (C) 2026 IXRay-Team
+* IX-Ray Renderer
+***************************************************************************************
+* Source code is licensed under the following terms:
+*
+* "Team" means the maintainers of the official IX-Ray repository.
+*
+* 1. IX-Ray Team License
+*    The Team may copy, modify, merge, publish and distribute this Software
+*    and its documentation, in source and binary form, without restriction.
+*
+* 2. Public Access License
+*    Non-exclusive rights granted to everyone else.
+*
+*    Permitted rights:
+*      a. Read and clone the source code.
+*      b. Fork the repository and modify the source code for the sole purpose
+*         of proposing the change to the official repository. By proposing it,
+*         the author grants the Team a worldwide, perpetual, irrevocable,
+*         royalty-free right to use, modify, relicense and distribute it.
+*      c. Redistribute binaries built and published by the Team, unmodified
+*         and together with this notice.
+*
+* Usage of this Software beyond the rights granted above is strictly prohibited,
+* including distribution of the source code or of any modified version of it and
+* distribution of binaries not built by the Team.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT
+* HOLDERS ARE NOT LIABLE FOR ANY CLAIM OR DAMAGE ARISING FROM IT.
+*
+* The above copyright notice and this license text must be included in all
+* copies or substantial portions of the Software.
+**************************************************************************************/
 #include "RHI.h"
 
 #include "D3D11/Device.h"
@@ -21,6 +55,8 @@
 
 RHI_API u32 g_graphicsAPI = ERHI_API_LAYER::D3D11;
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
+RHI_API int psFrameQueue = 2;
+RHI_API int psSubmitThread = 0;
 RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles
 #if defined(IXR_APPLE_SERIES)
     // The first launch has no user.ltx yet, and the interface only behaves in fullscreen
@@ -29,6 +65,8 @@ RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | 
 #endif
 };
 RHI_API Ivector2 HalfTarget = { 0, 0 };
+RHI_API Ivector2 AllocHalfTarget = { 0, 0 };
+RHI_API float psViewScale = 1.0f;
 RHI_API void* g_pAnnotation = nullptr;
 RHI_API CRHI* GRHI = nullptr;
 
@@ -82,6 +120,14 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 
 #ifdef IXR_WINDOWS
 	Nri = new NriDevice(NewAPILevel);
+
+	if (!Nri->HasBaseFeatures())
+	{
+		Msg("! The video card lacks what the D3D12 renderer requires (bindless resources): using D3D11");
+		xr_delete(Nri);
+		g_graphicsAPI = APILevel = NewAPILevel = ERHI_API_LAYER::D3D11;
+		Nri = new NriDevice(NewAPILevel);
+	}
 #endif
 
 	switch (NewAPILevel)
@@ -116,6 +162,13 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 
 void CRHI::BeginFrame()
 {
+	// Before the frame samples its input: what the swap chain cannot take yet is not started early
+	if (Nri)
+	{
+		PROF_EVENT("WaitForPresent");
+		Nri->BeginFrame();
+	}
+
     if (DevicePtr)
     {
         DevicePtr->BeginFrame();
@@ -126,9 +179,24 @@ void CRHI::BeginFrame()
 	}
 }
 
-void CRHI::ResizeBuffers(u32 Width, u32 Height)
+void CRHI::ResizeBuffers(const RHISwapChainDesc& Desc)
 {
-	DevicePtr->ResizeBuffers(Width, Height);
+	SwapChain = Desc;
+	DevicePtr->ResizeBuffers(Desc);
+}
+
+void CRHI::ResizeSwapChain(const RHISwapChainDesc& Desc)
+{
+	// A back buffer still bound would keep the old swap chain alive
+	for (IRHIRenderTargetView*& View : GRHIRenderViewManager.RenderTargetViews)
+	{
+		View = nullptr;
+	}
+
+	GRHIRenderViewManager.Clear();
+	GRHIRenderViewManager.ChangedRTorZB = true;
+	SwapChain = Desc;
+	DevicePtr->ResizeSwapChain(Desc);
 }
 
 void* CRHI::GetContext()
@@ -180,7 +248,7 @@ void CRHI::CopySurface(IRHISurface* Dest, IRHISurface* Source)
 	DevicePtr->CopySurface(Dest, Source);
 }
 
-void* CRHI::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth)
+nri::CommandBuffer* CRHI::BeginExternalPass(IRHISurface* const* Reads, u32 ReadCount, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth)
 {
 	return DevicePtr->BeginExternalPass(Reads, ReadCount, Targets, TargetCount, Depth);
 }
@@ -215,7 +283,7 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
 		// 16:10
 		if (fabs(Aspect - 16.0f / 10.0f) < 0.02f) return true;
 
-		if (Check21x9 && fabs(Aspect - 21.0f / 3.0f) < 0.02f) return true;
+		if (Check21x9 && fabs(Aspect - 21.0f / 9.0f) < 0.02f) return true;
 
 		return false;
 	};
