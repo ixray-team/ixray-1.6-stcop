@@ -14,14 +14,17 @@
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ParticlesObject.h"
+#include "PuddleEffects.h"
 #include "AnomalyZone.h"
 #include "HUDManager.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
 
 constexpr float MIN_RAYPICK_ERROR_DISTANCE = .1f;
+constexpr float PuddleImpactDistanceSquared = 50.f * 50.f;
 
 int bullet_manager_frequency = 100;
 float const CBulletManager::parent_ignore_distance = 3.f;
@@ -244,11 +247,41 @@ void CBulletManager::Update(float dt)
 	float fixed_step = 1.f / (float)bullet_manager_frequency;
 	clamp(fixed_step, EPS_S, 1.f);
 
+	PuddleWetness = !m_Bullets.empty() ? Level().GetPuddleWetness() : 0.f;
 	while (accumulated_delta >= fixed_step)
 	{
 		accumulated_delta -= fixed_step;
 		Step();
 	}
+	PlayPuddleImpacts();
+}
+
+void CBulletManager::PlayPuddleImpacts()
+{
+	if (PuddleImpacts.empty())
+	{
+		return;
+	}
+
+	const auto& Puddles = Level().Puddles;
+	auto* Default = Puddles.GetDefaultBulletPair();
+	for (const auto& Impact : PuddleImpacts)
+	{
+		auto* Pair = Puddles.GetMaterialPair(Impact.Material);
+		auto* SoundPair = Pair && !Pair->CollideSounds.empty() ? Pair : Default;
+		auto* ParticlePair = Pair && !Pair->CollideParticles.empty() ? Pair : Default;
+		if (SoundPair && !SoundPair->CollideSounds.empty())
+		{
+			auto& Sound = SoundPair->CollideSounds[PuddleRandom.randI(SoundPair->CollideSounds.size())];
+			Fvector Position = Impact.Position;
+			Sound.play_no_feedback(Level().Objects.net_Find(Impact.Shooter), 0, 0.f, &Position);
+		}
+		if (ParticlePair)
+		{
+			PuddleEffects::PlayParticles(*ParticlePair, Impact.Position, Impact.Normal, PuddleRandom);
+		}
+	}
+	PuddleImpacts.clear();
 }
 
 CBulletManager::CBulletManager()
@@ -351,6 +384,7 @@ void CBulletManager::Clear()
 {
 	m_Bullets.clear();
 	m_Events.clear();
+	PuddleImpacts.clear();
 	m_Bullets_Tracers.clear();
 	m_WhineSounds.clear();
 	m_RicochetSounds.clear();
@@ -999,6 +1033,10 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 			if (CAnomalyZone* CZ = go->cast_anomaly_zone())
 			{
 				u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
+				if (flag >= 1 && flag <= 3)
+				{
+					data.PuddleRange = std::min(data.PuddleRange, result.range);
+				}
 				if (flag == u8(1))
 				{
 					data.collide_time = 1.f;
@@ -1057,6 +1095,7 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 	update_bullet(bullet, data, gravity, wind, air_resistance);
 	if (fis_zero(bullet.speed))
 	{
+		data.PuddleRange = std::min(data.PuddleRange, result.range);
 		return false;
 	}
 
@@ -1064,6 +1103,8 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 	{
 		return true;
 	}
+
+	data.PuddleRange = std::min(data.PuddleRange, result.range);
 
 	// статический объект
 	if (!result.O)
@@ -1136,14 +1177,26 @@ bool CBulletManager::trajectory_check_error(
 
 	start_to_target.mul(1.f / distance);
 
-	bullet_test_callback_data data;
+	bullet_test_callback_data data{};
 	data.pBullet = &bullet;
 	data.high_time = high;
+	data.PuddleRange = distance;
 	bullet.flags.ricochet_was = 0;
 	bullet.dir = start_to_target;
 
 	collide::ray_defs RD(start, start_to_target, distance, CDB::OPT_FULL_TEST, collide::rq_target(collide::rqtBoth | collide::rqtShape));
 	bool const result = Level().ObjectSpace.RayQuery(storage, RD, firetrace_callback, &data, test_callback, nullptr);
+
+	if (PuddleWetness > 0.f && PuddleImpacts.size() < MaxPuddleImpacts &&
+		SqrDistancePointToSegment(Device.vCameraPosition, start, Fvector().mul(start_to_target, data.PuddleRange)) < PuddleImpactDistanceSquared)
+	{
+		CLevelPuddles::Hit Surface;
+		if (Level().Puddles.Trace(start, start_to_target, data.PuddleRange, PuddleWetness, Surface) &&
+			Surface.Position.distance_to_sqr(Device.vCameraPosition) < PuddleImpactDistanceSquared)
+		{
+			PuddleImpacts.push_back({Surface.Position, Surface.Normal, bullet.bullet_material_idx, bullet.parent_id});
+		}
+	}
 
 	if (!result || data.collide_time == 0.f)
 	{

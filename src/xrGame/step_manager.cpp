@@ -11,6 +11,7 @@
 #include "CustomOutfit.h"
 #include "InventoryOwner.h"
 #include "ParticlesObject.h"
+#include "PuddleEffects.h"
 
 #ifdef	DEBUG
 bool debug_step_info = false;
@@ -248,25 +249,39 @@ void CStepManager::update(bool b_hud_view)
 				material_picked = true;
 			}
 
-			if ( !mtl_pair )
-							break;
-
 			// Играть звук
-			if(b_play && is_on_ground() )
+			bool PuddlePlayed = false;
+			const bool OnGround = is_on_ground();
+			const bool PlayStep = b_play && OnGround;
+			const float Power = m_step_info.params.step[i].power;
+			const float Wetness = PlayStep ? Level().GetPuddleWetness() : 0.f;
+			if (Wetness > 0.f)
 			{
-				m_step_sound.play_next(mtl_pair, m_object, m_step_info.params.step[i].power, b_hud_view);
-				PlayRainStep(b_hud_view);
+				const Fvector Foot = m_foot_bones[i] != BI_NONE ? get_foot_position(ELegType(i)) : m_object->Position();
+				PuddlePlayed = PlayPuddleStep(Foot, Wetness, Power, b_hud_view);
+			}
+			if (!mtl_pair && !PuddlePlayed)
+			{
+				break;
+			}
+			if (PlayStep)
+			{
+				if (!PuddlePlayed)
+				{
+					m_step_sound.play_next(mtl_pair, m_object, Power, b_hud_view);
+					PlayRainStep(b_hud_view);
+				}
 				PlayExoStep(b_hud_view);
 			}
 
 			CGameObject* object = m_object->cast_game_object();
 			if (object)
 			{
-				object->FootStepCallback(m_step_info.params.step[i].power, b_play, is_on_ground(), b_hud_view);
+				object->FootStepCallback(Power, b_play, OnGround, b_hud_view);
 			}
 
 			// Играть партиклы
-			if(b_play && !mtl_pair->CollideParticles.empty())	
+			if (b_play && !PuddlePlayed && !mtl_pair->CollideParticles.empty())
 			{
 				const char* ps_name = *mtl_pair->CollideParticles[::Random.randI(0, (u32)mtl_pair->CollideParticles.size())];
 
@@ -386,13 +401,91 @@ float CStepManager::get_blend_time()
 	return 	(m_blend->timeTotal / m_blend->speed);
 }
 
-void CStepManager::material_sound::play_next(SGameMtlPair* mtl_pair, CEntityAlive* object, float volume, bool b_hud_mode)
+bool CStepManager::PlayPuddleLanding(float Power, bool HudView)
+{
+	const float Wetness = Level().GetPuddleWetness();
+	if (Wetness <= 0.f || m_object->Position().distance_to_sqr(Device.vCameraPosition) >= 400.f)
+	{
+		return false;
+	}
+
+	m_object->material().get_current_pair();
+	return PlayPuddleStep(m_object->Position(), Wetness, clampr(Power, 0.35f, 1.f), HudView);
+}
+
+bool CStepManager::PlayPuddleStep(const Fvector& Foot, float Wetness, float Power, bool HudView)
+{
+	auto& LevelObject = Level();
+	const auto& Puddles = LevelObject.Puddles;
+	constexpr float AboveFoot = 0.3f;
+	constexpr float BelowFoot = 0.35f;
+	Fvector Start = Foot;
+	Start.y += AboveFoot;
+	const Fvector Down = Fvector().set(0.f, -1.f, 0.f);
+	CLevelPuddles::Hit Surface;
+	if (!Puddles.Trace(Start, Down, AboveFoot + BelowFoot, Wetness, Surface))
+	{
+		return false;
+	}
+
+	const auto& Material = m_object->material();
+	if (GMLib.GetMaterialByIdx(Material.last_material_idx())->Flags.test(SGameMtl::flLiquid))
+	{
+		return false;
+	}
+
+	// The render quad can extend below dry ground or under a walkable platform.
+	struct GroundQuery
+	{
+		CObjectSpace& Space;
+		float Range;
+	} Ground{LevelObject.ObjectSpace, -1.f};
+	const collide::ray_defs Ray(Start, Down, AboveFoot + BelowFoot, CDB::OPT_CULL, collide::rqtBoth);
+	static thread_local collide::rq_results GroundHits;
+	Ground.Space.RayQuery(GroundHits, Ray, [](collide::rq_result& Hit, LPVOID Data)
+	{
+		auto& Query = *static_cast<GroundQuery*>(Data);
+		if (!Hit.O && GMLib.GetMaterialByIdx(Query.Space.GetStaticTris()[Hit.element].material)->Flags.test(SGameMtl::flPassable))
+		{
+			return true;
+		}
+
+		Query.Range = Hit.range;
+		return false;
+	}, &Ground, nullptr, m_object);
+	if (Ground.Range <= Start.y - Surface.Position.y + EPS_L)
+	{
+		return false;
+	}
+
+	auto* Pair = Puddles.GetMaterialPair(Material.self_material_idx());
+	auto* Default = Puddles.GetDefaultStepPair();
+	auto* SoundPair = Pair && !Pair->StepSounds.empty() ? Pair : Default;
+	auto* ParticlePair = Pair && !Pair->CollideParticles.empty() ? Pair : Default;
+	const bool HasSound = SoundPair && !SoundPair->StepSounds.empty();
+	const bool HasParticles = ParticlePair && !ParticlePair->CollideParticles.empty();
+	if (HasSound)
+	{
+		m_step_sound.play_next(SoundPair, m_object, Power, HudView, &Surface.Position);
+	}
+	if (HasParticles)
+	{
+		PuddleEffects::PlayParticles(*ParticlePair, Surface.Position, Surface.Normal, Random);
+	}
+	return HasSound || HasParticles;
+}
+
+void CStepManager::material_sound::play_next(SGameMtlPair* mtl_pair, CEntityAlive* object, float volume, bool b_hud_mode, const Fvector* SurfacePosition)
 {
 	if (mtl_pair->StepSounds.empty() ) 
 		return;
 
 	Fvector sound_pos	= object->Position();
 	sound_pos.y			+= 0.5;
+	if (SurfacePosition)
+	{
+		sound_pos = *SurfacePosition;
+	}
 
 	if( last_mtl_pair!= mtl_pair || m_last_step_sound_played == u8(-1) )
 	{

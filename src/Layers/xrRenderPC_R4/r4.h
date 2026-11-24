@@ -270,15 +270,7 @@ public:
 		DWORD                           Flags,
 		void*&							result);
 
-	struct PuddleBase 
-	{
-		Fmatrix m_world = Fidentity;
-
-		float m_height = EPS;
-		float m_radius = EPS;
-	};
-
-	xr_vector<PuddleBase> m_levels_puddles;
+	bool PuddlesEnabled() const override;
 	Frect m_puddles_level_bound;
 
 	void							LoadPuddles();

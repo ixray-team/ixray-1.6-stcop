@@ -68,6 +68,16 @@ IGame_Level::~IGame_Level() noexcept
 	Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
 }
 
+float IGame_Level::GetPuddleWetness() const
+{
+	if (Puddles.GetSurfaces().empty() || !Render->PuddlesEnabled())
+	{
+		return 0.f;
+	}
+
+	return g_pGamePersistent->Environment().wetness_factor;
+}
+
 void IGame_Level::net_Stop			()
 {
 	for (int i=0; i<6; i++)

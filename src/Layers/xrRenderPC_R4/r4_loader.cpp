@@ -182,47 +182,7 @@ void CRender::LoadPuddles()
 
 	m_puddles_level_bound.lt.mul(m_puddles_level_bound.rb);
 
-	m_levels_puddles.resize(0);
-
-	string_path ini_file;
-
-	if(!FS.exist(ini_file, "$level$", "level.puddles"))
-	{
-		return;
-	}
-
-	CInifile ini(ini_file);
-	CInifile::Root& sections = ini.sections();
-	for(CInifile::Sect& sect : sections)
-	{
-		shared_str& sect_name = sect.Name;
-		PuddleBase& m_puddle = m_levels_puddles.emplace_back();
-
-		Fvector position = ini.r_fvector3(sect_name, "position");
-		float max_height = ini.r_float(sect_name, "max_height");
-
-		Fvector2 size_xz = ini.r_fvector2(sect_name, "size_xz");
-
-		float rotX, rotY, rotZ = 0.0f;
-		int rotArg = sscanf(ini.r_string(sect_name, "rotation"), "%0.3f, %0.3f, %0.3f", &rotX, &rotY, &rotZ);
-		if (rotArg == 3)
-		{
-			m_puddle.m_world.rotateX(-rotX);
-			m_puddle.m_world.rotateY(-rotY);
-			m_puddle.m_world.rotateZ(-rotZ);
-		}
-		else
-		{
-			m_puddle.m_world.rotateY(rotX); // actually Y, just named X because it's the first one
-		}
-
-		m_puddle.m_world.mulB_43(Fmatrix().scale(size_xz.x, 1.0f, size_xz.y));
-
-		m_puddle.m_world.translate_over(position);
-
-		m_puddle.m_height = max_height;
-		m_puddle.m_radius = size_xz.magnitude();
-	}
+	g_pGameLevel->Puddles.Load();
 }
 
 void CRender::level_Unload()
@@ -281,7 +241,7 @@ void CRender::level_Unload()
 	xr_delete					(Details);
 	xr_delete					(Wallmarks);
 
-	m_levels_puddles.resize(0);
+	g_pGameLevel->Puddles.Clear();
 
 	//*** Shaders
 	Shaders.clear();

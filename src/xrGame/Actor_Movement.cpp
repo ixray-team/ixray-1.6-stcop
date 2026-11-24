@@ -75,7 +75,10 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 			}
 		}
 
-		PlayRainStep(!!HUDview());
+		if (!PlayPuddleLanding(character_physics_support()->movement()->gcontact_Power, !!HUDview()))
+		{
+			PlayRainStep(!!HUDview());
+		}
 		PlayExoStep(!!HUDview());
 
 		m_bJumpKeyPressed	=	true;

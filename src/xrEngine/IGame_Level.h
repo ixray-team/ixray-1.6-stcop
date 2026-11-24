@@ -4,6 +4,7 @@
 #include "xr_object_list.h"
 #include "../xrCore/Collision/xr_area.h"
 #include "IGame_Patrol.h"
+#include "LevelPuddles.h"
 
 // refs
 class ENGINE_API CCameraManager;
@@ -159,6 +160,9 @@ public:
 		g_FontManager->pFontSystem->SetColor(color);
 		g_FontManager->pFontSystem->Out(x, y, "%s", str.c_str());
 	}
+
+	CLevelPuddles Puddles;
+	float GetPuddleWetness() const;
 };
 
 extern ENGINE_API IGame_Level* g_pGameLevel;

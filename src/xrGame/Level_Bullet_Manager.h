@@ -112,6 +112,18 @@ class CBulletManager : public pureFrame
 	using BulletVecIt = BulletVec::iterator;
 
 	float accumulated_delta = 0.f;
+	float PuddleWetness = 0.f;
+	static constexpr int MaxPuddleImpacts = 16;
+
+	struct PuddleImpact
+	{
+		Fvector Position;
+		Fvector Normal;
+		u16 Material;
+		u16 Shooter;
+	};
+	FixedVector<PuddleImpact, MaxPuddleImpacts> PuddleImpacts;
+	CRandom PuddleRandom;
 
 	friend CLevel;
 
@@ -183,6 +195,7 @@ protected:
 	void PlayWhineSound(SBullet* bullet, CObject* object, const Fvector& pos);
 	void PlayRicochetSound(SBullet* bullet, CObject* object, const Fvector& pos);
 	void PlayExplodePS(const Fmatrix& xf);
+	void PlayPuddleImpacts();
 	// функция обработки хитов объектов
 	static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
 	static bool firetrace_callback(collide::rq_result& result, LPVOID params);
@@ -258,4 +271,5 @@ struct bullet_test_callback_data
 	SBullet* pBullet;
 	float collide_time;
 	float high_time;
+	float PuddleRange;
 };

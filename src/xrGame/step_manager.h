@@ -19,7 +19,7 @@ class CStepManager {
 		u8				m_last_step_sound_played;
 		SGameMtlPair*	last_mtl_pair;
 						material_sound		():m_last_step_sound_played(u8(-1)), last_mtl_pair(0){}
-		void			play_next			(SGameMtlPair* mtl_pair, CEntityAlive* object, float volume, bool b_hud_mode);
+		void			play_next			(SGameMtlPair* mtl_pair, CEntityAlive* object, float volume, bool b_hud_mode, const Fvector* SurfacePosition = nullptr);
 	} m_step_sound;
 
 	u32					m_time_anim_started = {};
@@ -44,9 +44,11 @@ public:
 	void PlayExoStep(const bool bHudView);
 	void CheckExo();
 protected:
+	bool PlayPuddleLanding(float Power, bool HudView);
 			Fvector		get_foot_position		(ELegType leg_type);
 	virtual bool		is_on_ground			()						{return true;}
 private:
+	bool PlayPuddleStep(const Fvector& Foot, float Wetness, float Power, bool HudView);
 			void		reload_foot_bones		();
 			void		load_foot_bones			(CInifile::Sect &data);
 			

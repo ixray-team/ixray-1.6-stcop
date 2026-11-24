@@ -328,6 +328,9 @@ public:
 	virtual ~IRender_interface() = default;
 protected:
 	virtual	void					ScreenshotImpl			(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
+
+public:
+	virtual bool PuddlesEnabled() const { return false; }
 };
 
 //extern ENGINE_API	IRender_interface*	Render;

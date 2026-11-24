@@ -1,11 +1,17 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
+bool CRender::PuddlesEnabled() const
+{
+	return ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES);
+}
+
 bool CRenderTarget::phase_puddles()
 {
-	auto& wetness_factor = g_pGamePersistent->Environment().wetness_factor;
+	const auto& Surfaces = g_pGameLevel->Puddles.GetSurfaces();
+	const float Wetness = g_pGamePersistent->Environment().wetness_factor;
 
-	if(RImplementation.m_levels_puddles.empty() || wetness_factor == 0.0f)
+	if (Surfaces.empty() || Wetness == 0.f)
 	{
 		return false;
 	}
@@ -13,22 +19,24 @@ bool CRenderTarget::phase_puddles()
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Shader(s_puddles);
 
-	auto puddles = 0;
+	bool Rendered = false;
 
-	for(CRender::PuddleBase& puddle : RImplementation.m_levels_puddles) 
+	for (const auto& Puddle : Surfaces)
 	{
-		if(!RImplementation.ViewBase.testSphere_dirty(puddle.m_world.c, puddle.m_radius))
+		const float Height = Wetness * Puddle.MaxHeight;
+		const Fvector Center = Fvector().mad(Puddle.World.c, Puddle.World.j, Height);
+		if (!RImplementation.ViewBase.testSphere_dirty(Center, Puddle.Radius))
 		{
 			continue;
 		}
 
-		RCache.set_xform_world(puddle.m_world);
+		RCache.set_xform_world(Puddle.World);
 
-		RCache.set_c("puddle_constants", g_pGamePersistent->Environment().wetness_factor * puddle.m_height);
+		RCache.set_c("puddle_constants", Height);
 		RCache.Render_noIA(6);
 
-		++puddles;
+		Rendered = true;
 	}
 
-	return puddles > 0;
+	return Rendered;
 }
