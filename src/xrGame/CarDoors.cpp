@@ -20,11 +20,10 @@
 // hinge motor instead of being driven by the moving-car door logic.
 constexpr float CarDoorHoldSpeed = 0.5f;
 
-// Return spring for spring-loaded doors. The door is held at the open limit
-// and driven back with a damped force if it is pushed away.
-constexpr float CarDoorSpringDamping = 0.5f;
-constexpr float CarDoorSpringSettleAngle = 0.035f;
-constexpr float CarDoorSpringSettleRate = 0.2f;
+// Return spring for spring-loaded doors. The door is driven to the physical
+// hinge limit at a constant speed; the hinge limit defines the open position.
+constexpr float CarDoorSpringLimitEpsilon = 0.005f;
+constexpr float CarDoorSpringReturnSpeed = 0.5f;
 
 // A top hatch is a horizontal door: its thinnest OBB axis is nearly vertical.
 // Side doors use the same code with a horizontal thin axis and must keep the
@@ -448,7 +447,6 @@ void CCar::SDoor::Update()
 				{
 					if (!spring_loaded_door)
 						NeutralTorque(hold_torque);
-					open_time = Device.dwTimeGlobal;
 					state = opened;
 				}
 				break;
@@ -459,34 +457,18 @@ void CCar::SDoor::Update()
 				// must not affect the door physics or prevent it from closing.
 				if (spring_loaded_door)
 				{
-					if (Device.dwTimeGlobal - open_time > 1000)
+					// Drive the door toward the actual hinge limit at a constant
+					// speed. The hinge limit is the target, so a nudge cannot
+					// leave the door stopped short of the fully open pose.
+					const float LimitError = pos_open * (default_opened_angle - door_angle);
+					if (fabsf(LimitError) < CarDoorSpringLimitEpsilon)
 					{
-						const float Range = fabsf(opened_angle - closed_angle);
-						if (Range > EPS)
-						{
-							const float Error = pos_open * (opened_angle - door_angle);
-							const float Rate = pos_open * GetAngleRate();
-
-							if (fabsf(Error) < CarDoorSpringSettleAngle &&
-								fabsf(Rate) < CarDoorSpringSettleRate)
-							{
-								if (!hold_applied)
-									NeutralTorque(hold_torque);
-							}
-							else
-							{
-								// Pull the door back to the open limit. The velocity
-								// target is damped to avoid overshoot and jitter.
-								// A full opening torque is required to overcome friction
-								// and the door weight; the target velocity limits the motion.
-								const float SpringTorque = torque;
-
-								float TargetVel = Error * (a_vel / Range) - Rate * CarDoorSpringDamping;
-								clamp(TargetVel, -a_vel, a_vel);
-
-								ApplyTorque(SpringTorque, TargetVel);
-							}
-						}
+						if (!hold_applied)
+							NeutralTorque(hold_torque);
+					}
+					else
+					{
+						ApplySpringTorque(torque, a_vel * CarDoorSpringReturnSpeed);
 					}
 					break;
 				}
@@ -571,6 +553,23 @@ void CCar::SDoor::ApplyTorque(float atorque,float aa_vel)
 	if(!joint||!joint->bActive)return;
 	hold_applied = false;
 	joint->PSecond_element()->Enable();
+	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
+	dJointSetHingeParam(joint->GetDJoint(),dParamVel,aa_vel*pos_open);
+}
+void CCar::SDoor::ApplySpringTorque(float atorque,float aa_vel)
+{
+	if(!joint||!joint->bActive)return;
+
+	// The return spring must not wake a sleeping car. A door that was pushed
+	// is already awake from the contact that moved it, so the hinge motor can
+	// drive it back without enabling the whole shell. If the shell is already
+	// awake but the door body itself has gone to sleep, wake only that element
+	// once so the motor can finish the return.
+	CPhysicsElement* Element = joint->PSecond_element();
+	if (Element && !Element->isEnabled() && pcar->m_pPhysicsShell && pcar->m_pPhysicsShell->isEnabled())
+		Element->Enable();
+
+	hold_applied = false;
 	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
 	dJointSetHingeParam(joint->GetDJoint(),dParamVel,aa_vel*pos_open);
 }
@@ -1275,10 +1274,9 @@ void CCar::SDoor::RestoreNetState(const CSE_ALifeCar::SDoorState& a_state)
 	}
 	if (lstate == opening || lstate == opened || lstate == closing)
 	{
-		// These runtime timers are not saved. Restart them after load so a
-		// spring-loaded door receives the full opening torque first and does
-		// not immediately switch to the weak hold with a stale timestamp.
-		open_time = Device.dwTimeGlobal;
+		// These runtime timers are not saved. Restart them after load so the
+		// door receives the opening motor before the spring controller takes
+		// over, instead of using a stale timestamp from the previous session.
 		real_open_time = Device.dwTimeGlobal;
 		real_close_time = 0;
 		PlaceInUpdate();
