@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ContentView.h"
+#include "../xrCore/filewatch_wrapper.h"
 
 #include "../../Nodes/UIDialogsView.h"
 #include "../../../../utils/xrDXT/xrDXT.h"

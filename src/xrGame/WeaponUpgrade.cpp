@@ -106,9 +106,31 @@ bool CWeapon::install_upgrade_ammo_class(const char* section, bool test)
 
 bool CWeapon::install_upgrade_disp(const char* section, bool test)
 {
+	struct FloatUpgrade
+	{
+		const char* Key;
+		float& Value;
+		bool InDegrees = false;
+	};
+
 	bool result = process_if_exists(section, "fire_dispersion_condition_factor", fireDispersionConditionFactor, test);
 	result |= process_if_exists(section, "fire_distance", fireDistance, test);
 
+	// Apply each kind of float setting at one call site to limit optimizer expansion.
+	const auto ApplyFloatUpgrades = [&](xr_span<const FloatUpgrade> Upgrades)
+	{
+		for (const auto& Upgrade : Upgrades)
+		{
+			if (Upgrade.InDegrees)
+			{
+				result |= process_if_exists_deg2rad(section, Upgrade.Key, Upgrade.Value, test);
+			}
+			else
+			{
+				result |= process_if_exists(section, Upgrade.Key, Upgrade.Value, test);
+			}
+		}
+	};
 
 	u8 rm = (cam_recoil.ReturnMode) ? 1 : 0;
 	result |= process_if_exists_set(section, "cam_return", rm, test);
@@ -118,76 +140,80 @@ bool CWeapon::install_upgrade_disp(const char* section, bool test)
 	result |= process_if_exists_set(section, "cam_return_stop", rm, test);
 	cam_recoil.StopReturn = (rm == 1);
 
-	result |= process_if_exists_deg2rad(section, "fire_dispersion_base", fireDispersionBase, test);
-
-	result |= process_if_exists_deg2rad(section, "cam_relax_speed", cam_recoil.RelaxSpeed, test);
-	result |= process_if_exists_deg2rad(section, "cam_relax_speed_ai", cam_recoil.RelaxSpeed_AI, test);
-	result |= process_if_exists_deg2rad(section, "cam_dispersion", cam_recoil.Dispersion, test);
-	result |= process_if_exists_deg2rad(section, "cam_dispersion_inc", cam_recoil.DispersionInc, test);
-
-	result |= process_if_exists(section, "cam_dispersion_frac", cam_recoil.DispersionFrac, test);
-
-	result |= process_if_exists_deg2rad(section, "cam_max_angle", cam_recoil.MaxAngleVert, test);
-	result |= process_if_exists_deg2rad(section, "cam_max_angle_horz", cam_recoil.MaxAngleHorz, test);
-	result |= process_if_exists_deg2rad(section, "cam_step_angle_horz", cam_recoil.StepAngleHorz, test);
+	const FloatUpgrade RecoilUpgrades[] =
+	{
+		{ "fire_dispersion_base", fireDispersionBase, true },
+		{ "cam_relax_speed", cam_recoil.RelaxSpeed, true },
+		{ "cam_relax_speed_ai", cam_recoil.RelaxSpeed_AI, true },
+		{ "cam_dispersion", cam_recoil.Dispersion, true },
+		{ "cam_dispersion_inc", cam_recoil.DispersionInc, true },
+		{ "cam_dispersion_frac", cam_recoil.DispersionFrac },
+		{ "cam_max_angle", cam_recoil.MaxAngleVert, true },
+		{ "cam_max_angle_horz", cam_recoil.MaxAngleHorz, true },
+		{ "cam_step_angle_horz", cam_recoil.StepAngleHorz, true },
+	};
+	ApplyFloatUpgrades(RecoilUpgrades);
 
 	VERIFY(!fis_zero(cam_recoil.RelaxSpeed));
 	VERIFY(!fis_zero(cam_recoil.RelaxSpeed_AI));
 	VERIFY(!fis_zero(cam_recoil.MaxAngleVert));
 	VERIFY(!fis_zero(cam_recoil.MaxAngleHorz));
 
-	result |= process_if_exists_deg2rad(section, "zoom_cam_relax_speed", zoom_cam_recoil.RelaxSpeed, test);// zoom_ ...
-	result |= process_if_exists_deg2rad(section, "zoom_cam_relax_speed_ai", zoom_cam_recoil.RelaxSpeed_AI, test);
-	result |= process_if_exists_deg2rad(section, "zoom_cam_dispersion", zoom_cam_recoil.Dispersion, test);
-	result |= process_if_exists_deg2rad(section, "zoom_cam_dispersion_inc", zoom_cam_recoil.DispersionInc, test);
-
-	result |= process_if_exists(section, "zoom_cam_dispersion_frac", zoom_cam_recoil.DispersionFrac, test);
-
-	result |= process_if_exists_deg2rad(section, "zoom_cam_max_angle", zoom_cam_recoil.MaxAngleVert, test);
-	result |= process_if_exists_deg2rad(section, "zoom_cam_max_angle_horz", zoom_cam_recoil.MaxAngleHorz, test);
-	result |= process_if_exists_deg2rad(section, "zoom_cam_step_angle_horz", zoom_cam_recoil.StepAngleHorz, test);
+	const FloatUpgrade ZoomRecoilUpgrades[] =
+	{
+		{ "zoom_cam_relax_speed", zoom_cam_recoil.RelaxSpeed, true },
+		{ "zoom_cam_relax_speed_ai", zoom_cam_recoil.RelaxSpeed_AI, true },
+		{ "zoom_cam_dispersion", zoom_cam_recoil.Dispersion, true },
+		{ "zoom_cam_dispersion_inc", zoom_cam_recoil.DispersionInc, true },
+		{ "zoom_cam_dispersion_frac", zoom_cam_recoil.DispersionFrac },
+		{ "zoom_cam_max_angle", zoom_cam_recoil.MaxAngleVert, true },
+		{ "zoom_cam_max_angle_horz", zoom_cam_recoil.MaxAngleHorz, true },
+		{ "zoom_cam_step_angle_horz", zoom_cam_recoil.StepAngleHorz, true },
+	};
+	ApplyFloatUpgrades(ZoomRecoilUpgrades);
 
 	VERIFY(!fis_zero(zoom_cam_recoil.RelaxSpeed));
 	VERIFY(!fis_zero(zoom_cam_recoil.RelaxSpeed_AI));
 	VERIFY(!fis_zero(zoom_cam_recoil.MaxAngleVert));
 	VERIFY(!fis_zero(zoom_cam_recoil.MaxAngleHorz));
 
-	result |= process_if_exists(section, "pattern_factor", cam_recoil.Pattern.Factor, test);
-	result |= process_if_exists(section, "pattern_factor_agility", cam_recoil.Pattern.FactorAgility, test);
-	result |= process_if_exists(section, "pattern_factor_agility_vel", cam_recoil.Pattern.FactorAgilityVel, test);
-	result |= process_if_exists(section, "pattern_factor_agility_accel", cam_recoil.Pattern.FactorAgilityAccel, test);
-	result |= process_if_exists(section, "pattern_factor_agility_crouch", cam_recoil.Pattern.FactorAgilityCrouch, test);
-	result |= process_if_exists(section, "pattern_factor_agility_crouch_no_acc", cam_recoil.Pattern.FactorAgilityCrouchNoAcc, test);
-	result |= process_if_exists(section, "pattern_stiffness", cam_recoil.Pattern.Stiffness, test);
-	result |= process_if_exists(section, "pattern_damping", cam_recoil.Pattern.Damping, test);
-	result |= process_if_exists(section, "pattern_impulse", cam_recoil.Pattern.Impulse, test);
-	result |= process_if_exists(section, "pattern_return_speed", cam_recoil.Pattern.ReturnSpeed, test);
-	result |= process_if_exists(section, "zoom_pattern_factor", zoom_cam_recoil.Pattern.Factor, test);
-	result |= process_if_exists(section, "zoom_pattern_factor_agility", zoom_cam_recoil.Pattern.FactorAgility, test);
-	result |= process_if_exists(section, "zoom_pattern_factor_agility_vel", zoom_cam_recoil.Pattern.FactorAgilityVel, test);
-	result |= process_if_exists(section, "zoom_pattern_factor_agility_accel", zoom_cam_recoil.Pattern.FactorAgilityAccel, test);
-	result |= process_if_exists(section, "zoom_pattern_factor_agility_crouch", zoom_cam_recoil.Pattern.FactorAgilityCrouch, test);
-	result |= process_if_exists(section, "zoom_pattern_factor_agility_crouch_no_acc", zoom_cam_recoil.Pattern.FactorAgilityCrouchNoAcc, test);
-	result |= process_if_exists(section, "zoom_pattern_stiffness", zoom_cam_recoil.Pattern.Stiffness, test);
-	result |= process_if_exists(section, "zoom_pattern_damping", zoom_cam_recoil.Pattern.Damping, test);
-	result |= process_if_exists(section, "zoom_pattern_impulse", zoom_cam_recoil.Pattern.Impulse, test);
-	result |= process_if_exists(section, "zoom_pattern_return_speed", zoom_cam_recoil.Pattern.ReturnSpeed, test);
-
-
-	result |= process_if_exists(section, "PDM_disp_base", m_pdm.m_fPDM_disp_base, test);
-	result |= process_if_exists(section, "PDM_disp_vel_factor", m_pdm.m_fPDM_disp_vel_factor, test);
-	result |= process_if_exists(section, "PDM_disp_accel_factor", m_pdm.m_fPDM_disp_accel_factor, test);
-	result |= process_if_exists(section, "PDM_disp_crouch", m_pdm.m_fPDM_disp_crouch, test);
-	result |= process_if_exists(section, "PDM_disp_crouch_no_acc", m_pdm.m_fPDM_disp_crouch_no_acc, test);
-
-	result |= process_if_exists(section, "misfire_probability", misfireProbability, test);
-	result |= process_if_exists(section, "misfire_condition_k", misfireConditionK, test);
-	result |= process_if_exists(section, "condition_shot_dec", conditionDecreasePerShot, test);
-	result |= process_if_exists(section, "condition_queue_shot_dec", conditionDecreasePerQueueShot, test);
-	result |= process_if_exists(section, "misfire_start_condition", misfireStartCondition, test);
-	result |= process_if_exists(section, "misfire_end_condition", misfireEndCondition, test);
-	result |= process_if_exists(section, "misfire_start_prob", misfireStartProbability, test);
-	result |= process_if_exists(section, "misfire_end_prob", misfireEndProbability, test);
+	const FloatUpgrade DispersionUpgrades[] =
+	{
+		{ "pattern_factor", cam_recoil.Pattern.Factor },
+		{ "pattern_factor_agility", cam_recoil.Pattern.FactorAgility },
+		{ "pattern_factor_agility_vel", cam_recoil.Pattern.FactorAgilityVel },
+		{ "pattern_factor_agility_accel", cam_recoil.Pattern.FactorAgilityAccel },
+		{ "pattern_factor_agility_crouch", cam_recoil.Pattern.FactorAgilityCrouch },
+		{ "pattern_factor_agility_crouch_no_acc", cam_recoil.Pattern.FactorAgilityCrouchNoAcc },
+		{ "pattern_stiffness", cam_recoil.Pattern.Stiffness },
+		{ "pattern_damping", cam_recoil.Pattern.Damping },
+		{ "pattern_impulse", cam_recoil.Pattern.Impulse },
+		{ "pattern_return_speed", cam_recoil.Pattern.ReturnSpeed },
+		{ "zoom_pattern_factor", zoom_cam_recoil.Pattern.Factor },
+		{ "zoom_pattern_factor_agility", zoom_cam_recoil.Pattern.FactorAgility },
+		{ "zoom_pattern_factor_agility_vel", zoom_cam_recoil.Pattern.FactorAgilityVel },
+		{ "zoom_pattern_factor_agility_accel", zoom_cam_recoil.Pattern.FactorAgilityAccel },
+		{ "zoom_pattern_factor_agility_crouch", zoom_cam_recoil.Pattern.FactorAgilityCrouch },
+		{ "zoom_pattern_factor_agility_crouch_no_acc", zoom_cam_recoil.Pattern.FactorAgilityCrouchNoAcc },
+		{ "zoom_pattern_stiffness", zoom_cam_recoil.Pattern.Stiffness },
+		{ "zoom_pattern_damping", zoom_cam_recoil.Pattern.Damping },
+		{ "zoom_pattern_impulse", zoom_cam_recoil.Pattern.Impulse },
+		{ "zoom_pattern_return_speed", zoom_cam_recoil.Pattern.ReturnSpeed },
+		{ "PDM_disp_base", m_pdm.m_fPDM_disp_base },
+		{ "PDM_disp_vel_factor", m_pdm.m_fPDM_disp_vel_factor },
+		{ "PDM_disp_accel_factor", m_pdm.m_fPDM_disp_accel_factor },
+		{ "PDM_disp_crouch", m_pdm.m_fPDM_disp_crouch },
+		{ "PDM_disp_crouch_no_acc", m_pdm.m_fPDM_disp_crouch_no_acc },
+		{ "misfire_probability", misfireProbability },
+		{ "misfire_condition_k", misfireConditionK },
+		{ "condition_shot_dec", conditionDecreasePerShot },
+		{ "condition_queue_shot_dec", conditionDecreasePerQueueShot },
+		{ "misfire_start_condition", misfireStartCondition },
+		{ "misfire_end_condition", misfireEndCondition },
+		{ "misfire_start_prob", misfireStartProbability },
+		{ "misfire_end_prob", misfireEndProbability },
+	};
+	ApplyFloatUpgrades(DispersionUpgrades);
 
 	result |= process_if_exists_set(section, "zoom_enabled", m_zoom_params.m_bZoomEnabled, test);
 

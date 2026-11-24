@@ -8,6 +8,7 @@
 
 
 #include "FS_internal.h"
+#include "filewatch_wrapper.h"
 #include "stream_reader.h"
 #include "file_stream_reader.h"
 #include "Crypto/trivial_encryptor.h"

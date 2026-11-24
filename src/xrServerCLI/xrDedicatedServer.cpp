@@ -5,6 +5,7 @@
 
 #include <cctype>
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <vector>
 #ifndef IXR_WINDOWS

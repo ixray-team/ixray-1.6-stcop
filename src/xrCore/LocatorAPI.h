@@ -2,8 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
-#include "filewatch_wrapper.h"
 #include "LocatorAPI_defs.h"
+
+namespace filewatch
+{
+	template <typename StringType>
+	class FileWatch;
+}
 
 class XRCORE_API CStreamReader;
 class XRCORE_API CReaderGuarded;

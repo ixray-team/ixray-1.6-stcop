@@ -3,6 +3,7 @@
 
 #include "../xrEngine/XR_IOConsole.h"
 
+#include <iostream>
 #include <limits>
 
 namespace DedicatedConsoleInput

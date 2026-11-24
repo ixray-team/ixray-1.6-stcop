@@ -75,7 +75,6 @@
 #include <algorithm>
 #include <ranges>
 #include <limits>
-#include <regex>
 #include <vector>
 #include <queue>
 #include <stack>

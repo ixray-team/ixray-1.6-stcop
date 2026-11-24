@@ -2,6 +2,7 @@
 #include "PluginPython.h"
 
 #include <fstream>
+#include <regex>
 
 bool CPluginPython::IsPythonInstalled() const
 {

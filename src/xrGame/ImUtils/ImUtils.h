@@ -7,6 +7,7 @@
 #include "../xrEngine/IGame_Level.h"
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include <clsid_game.h>
+#include <condition_variable>
 
 struct STextureParams;
 class CUICellItem;

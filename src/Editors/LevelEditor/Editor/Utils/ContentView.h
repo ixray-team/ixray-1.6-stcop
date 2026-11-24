@@ -1,9 +1,13 @@
 #pragma once
-#include "../xrCore/filewatch_wrapper.h"
-
 #include "ThmProperties.h"
 #include "SoundPreview.h"
 #include "ParticlePreview.h"
+
+namespace filewatch
+{
+	template <typename StringType>
+	class FileWatch;
+}
 
 class CContentView:
 	public IEditorWnd

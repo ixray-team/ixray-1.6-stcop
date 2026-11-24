@@ -5,6 +5,7 @@
 #include "../../../xrScripts/script_engine.h"
 
 #include <fstream>
+#include <regex>
 #include <lua.h>
 
 CPluginLua::CPluginLua()

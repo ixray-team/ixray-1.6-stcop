@@ -2,6 +2,7 @@
 #include "IconsFontAwesome7.h"
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
+#include <fstream>
 
 // file: SceneChunks.h
 #define CURRENT_FILE_VERSION    	0x00000005

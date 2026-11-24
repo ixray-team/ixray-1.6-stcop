@@ -250,8 +250,15 @@ if (IXRAY_MP)
 	endif()
 endif()
 
-# Move precompiled header
-set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+# Reuse the game precompiled header across native MSVC unity batches.
+if (IXRAY_UNITYBUILD AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT IXRAY_CROSS_COMPILATION)
+	target_precompile_headers(xrGame PRIVATE
+		"$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.h>"
+		"$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/xrServer.h>"
+	)
+else()
+	set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+endif()
 
 if (NOT IXRAY_UNITYBUILD AND WIN32)
 	set_target_properties(xrGame PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
@@ -268,4 +275,8 @@ source_group("pch" FILES ${GAME_SOURCE_PCH_FILES})
 # RedImage
 if(IXRAY_MP)
 	target_link_libraries(xrGame PUBLIC RedImage::RedImage)
+endif()
+
+if (IXRAY_UNITYBUILD AND CMAKE_GENERATOR MATCHES "^Visual Studio" AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT IXRAY_CROSS_COMPILATION)
+	ixray_split_compile(xrGame)
 endif()

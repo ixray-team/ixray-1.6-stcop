@@ -42,6 +42,7 @@ Root `CMakeLists.txt`.
 | `IXRAY_USE_MIMALLOC` | ON | mimalloc 3.5.3 engine heap; automatically bypassed with `IXRAY_ASAN=ON`. Set OFF for CRT comparison |
 | `IXRAY_LDEBUG` | OFF | `LUABIND_DEBUG_SCRIPTS`; affects MSVC Debug exception flags |
 | `IXRAY_UNITYBUILD` | ON | `xrGame` unity batches. `IXRAY_BUILD_BATCH_SIZE` default 32 |
+| `IXRAY_MSVC_LTCG_RELWITHDEBINFO` | OFF | Enable `/GL` and `/LTCG:incremental` in MSVC RelWithDebInfo |
 | `IXRAY_PROFILER` | ON | Optick unless `IXRAY_PROFILER_TRACY` is enabled. `PROF_EVENT` / `PROF_FRAME`. Debug and RelWithDebInfo also feed `PROF_EVENT` into the in-game flame graph (Debug > Profiler, `Kernel/FrameProfiler.h`) whatever this option is |
 | `IXRAY_PROFILER_TRACY` | OFF | Tracy |
 | `IXRAY_USE_COMPRESSOR` | ON | `xrCompress` target, even with `IXRAY_UTILS=OFF` |
@@ -51,6 +52,10 @@ Root `CMakeLists.txt`.
 Defines: Debug = `DEBUG` + `DEBUG_DRAW`. RelWithDebInfo = `DEBUG_DRAW`. Release = `MASTER_GOLD`. Shipping defines `MASTER_GOLD` and `SHIPPING_BUILD`.
 
 Unity errors point at the batch, not the `.cpp`. Set `IXRAY_UNITYBUILD=OFF` to map them.
+
+Native MSVC unity builds of `xrGame` use a C++ precompiled header. MSVC RelWithDebInfo retains compiler optimizations and PDBs, with link-time code generation available through `-DIXRAY_MSVC_LTCG_RELWITHDEBINFO=ON`. MSVC Release always uses link-time code generation.
+
+With the Visual Studio generator, native MSVC unity builds compile `xrGame` in the `xrGame_obj` project after Lua bindings are generated. The `xrGame` project links those objects after its DLL dependencies are ready.
 
 Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet, except DLSS 310.9.1: CMake downloads the official NVIDIA release tag archive, verifies SHA-256, and extracts it into `build/dep/DLSS-310.9.1`. Offline builds require the extracted SDK or the cached `build/dep/DLSS-310.9.1.zip` archive. The release DLL and `DLSS-LICENSE.txt` are copied to the output directory. SDL: window and input. Audio playback uses OpenAL.
 
