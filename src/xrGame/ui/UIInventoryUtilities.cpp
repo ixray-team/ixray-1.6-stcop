@@ -22,6 +22,17 @@
 
 #include "../Include/xrRender/UIShader.h"
 
+Fvector2 InventoryUtilities::CalcInvCellAnchorPos(const Fvector2& CellSize, const Fvector2& ChildSize,
+	CInventoryItem::EInvCellAnchor Anchor, const Fvector2& Inset)
+{
+	using EAnchor = CInventoryItem::EInvCellAnchor;
+	const bool Left = Anchor == EAnchor::TopLeft || Anchor == EAnchor::BottomLeft;
+	const bool Top = Anchor == EAnchor::TopLeft || Anchor == EAnchor::TopRight;
+
+	return Fvector2().set(Left ? Inset.x : CellSize.x - ChildSize.x - Inset.x,
+		Top ? Inset.y : CellSize.y - ChildSize.y - Inset.y);
+}
+
 const char* relationsLtxSection	= "game_relations";
 const char* ratingField			= "rating_names";
 const char* reputationgField		= "reputation_names";

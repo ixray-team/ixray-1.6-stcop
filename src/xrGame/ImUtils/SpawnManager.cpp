@@ -15,6 +15,7 @@
 #include "../../xrCore/xr_ini.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
 #include "../../xrUI/UITextureMaster.h"
+#include "../../Include/xrRender/UIShader.h"
 #include "../Weapons/WeaponBoneVisibility.h"
 #include "../SquadSpawn.h"
 
@@ -1330,23 +1331,56 @@ namespace SpawnManagerMarks
 			return;
 		}
 
-		const TEX_INFO Info = CUITextureMaster::FindItem(TextureName);
-		const char* FileName = Info.get_file_name();
-		if (!FileName || !FileName[0])
+		IUIShader::TextureSurface Surface;
+		Frect Rect;
+		const char* Extension = strext(TextureName);
+		if (Extension && !_stricmp(Extension, ".svg"))
+		{
+			xr_string Path = "ui" PLATFORM_SLASH_STR;
+			Path += TextureName;
+			if (!FS.exist(_game_textures_, Path.c_str()))
+			{
+				return;
+			}
+
+			SVGTintRGBA Tint;
+			if (Color)
+			{
+				Tint.SetFromColourDword(Color);
+			}
+
+			const auto& Shader = UI().GetVectorShader(TextureName, Size.x, Size.y, Tint);
+			if (!Shader)
+			{
+				return;
+			}
+
+			Surface = Shader->GetTextureSurface();
+			Rect = UI().GetVectorUV(TextureName, Size.x, Size.y, Tint);
+			Color = 0;
+		}
+		else
+		{
+			const TEX_INFO Info = CUITextureMaster::FindItem(TextureName);
+			const char* FileName = Info.get_file_name();
+			if (!FileName || !FileName[0])
+			{
+				return;
+			}
+
+			const auto Bitmap = ::Render->getSurface(FileName);
+			Surface = {Bitmap.Surface, Bitmap.w, Bitmap.h};
+			Rect = Info.get_rect();
+		}
+
+		if (!Surface.Handle || Surface.Width <= 0.0f || Surface.Height <= 0.0f || Rect.width() <= 0.0f || Rect.height() <= 0.0f)
 		{
 			return;
 		}
 
-		const auto Surface = ::Render->getSurface(FileName);
-		if (Surface.Surface == nullptr || Surface.w <= 0.0f || Surface.h <= 0.0f)
-		{
-			return;
-		}
-
-		const Frect Rect = Info.get_rect();
 		const ImU32 Tint = Color ? IM_COL32(color_get_R(Color), color_get_G(Color), color_get_B(Color), color_get_A(Color)) : IM_COL32_WHITE;
-		ImGui::GetWindowDrawList()->AddImage(Surface.Surface, Min, ImVec2(Min.x + Size.x, Min.y + Size.y),
-			ImVec2(Rect.x1 / Surface.w, Rect.y1 / Surface.h), ImVec2(Rect.x2 / Surface.w, Rect.y2 / Surface.h), Tint);
+		ImGui::GetWindowDrawList()->AddImage(Surface.Handle, Min, ImVec2(Min.x + Size.x, Min.y + Size.y),
+			ImVec2(Rect.x1 / Surface.Width, Rect.y1 / Surface.Height), ImVec2(Rect.x2 / Surface.Width, Rect.y2 / Surface.Height), Tint);
 	}
 
 	// Draws the inventory cell marks (upgrade arrow, custom mark) over the last item button.
@@ -1371,7 +1405,12 @@ namespace SpawnManagerMarks
 				Size.set(MarkSize, MarkSize);
 			}
 			const u32 Color = READ_IF_EXISTS(pSettings, r_color, SectionName, "item_custom_mark_clr", 0);
-			DrawTexture(Texture, ImVec2(Max.x - Padding.x - Size.x, Max.y - Padding.y - Size.y), ImVec2(Size.x, Size.y), Color);
+			const auto Anchor = CInventoryItem::ParseInvCellAnchor(
+				READ_IF_EXISTS(pSettings, r_string, SectionName, "item_custom_mark_anchor", nullptr));
+			const Fvector2 Inset = READ_IF_EXISTS(pSettings, r_fvector2, SectionName, "item_custom_mark_offset", Fvector2().set(0.0f, 0.0f));
+			const Fvector2 ContentSize = Fvector2().set(Max.x - Min.x - 2.0f * Padding.x, Max.y - Min.y - 2.0f * Padding.y);
+			const Fvector2 Position = InventoryUtilities::CalcInvCellAnchorPos(ContentSize, Size, Anchor, Inset);
+			DrawTexture(Texture, ImVec2(Min.x + Padding.x + Position.x, Min.y + Padding.y + Position.y), ImVec2(Size.x, Size.y), Color);
 		}
 	}
 }
@@ -1441,7 +1480,10 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	const bool IsPressed = ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isScaleIcon), h / (1 + isScaleIcon)},
 		{ x / surfaceParams.w, y / surfaceParams.h },
 		{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h });
-	SpawnManagerMarks::DrawItemMarks(name);
+	if (ImGui::IsItemVisible())
+	{
+		SpawnManagerMarks::DrawItemMarks(name);
+	}
 	return IsPressed;
 }
 

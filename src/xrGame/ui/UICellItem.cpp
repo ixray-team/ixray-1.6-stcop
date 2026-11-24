@@ -32,36 +32,6 @@ bool IsSvgTexturePath(const shared_str& path)
 	const char* ext = strext(path.c_str());
 	return ext && !_stricmp(ext, ".svg");
 }
-
-Fvector2 CalcInvCellAnchorPos(
-	const Fvector2& cellSize,
-	const Fvector2& childSize,
-	CInventoryItem::EInvCellAnchor anchor,
-	const Fvector2& inset)
-{
-	// XML x/y (stored as inset) are the only padding from the corner.
-	const float padX = inset.x;
-	const float padY = inset.y;
-
-	Fvector2 pos;
-	switch (anchor)
-	{
-	case CInventoryItem::EInvCellAnchor::TopLeft:
-		pos.set(padX, padY);
-		break;
-	case CInventoryItem::EInvCellAnchor::TopRight:
-		pos.set(cellSize.x - childSize.x - padX, padY);
-		break;
-	case CInventoryItem::EInvCellAnchor::BottomLeft:
-		pos.set(padX, cellSize.y - childSize.y - padY);
-		break;
-	case CInventoryItem::EInvCellAnchor::BottomRight:
-	default:
-		pos.set(cellSize.x - childSize.x - padX, cellSize.y - childSize.y - padY);
-		break;
-	}
-	return pos;
-}
 } // namespace
 
 CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
@@ -530,7 +500,7 @@ void CUICellItem::UpdateCustomMarksAndText()
 		if (m_with_custom_text)
 		{
 			const Fvector2 textSize = m_custom_text->GetWndSize();
-			m_custom_text->SetWndPos(CalcInvCellAnchorPos(
+			m_custom_text->SetWndPos(InventoryUtilities::CalcInvCellAnchorPos(
 				cellSize, textSize, item->m_custom_text_anchor, item->m_custom_text_offset));
 
 			if (useStringTable)
@@ -568,7 +538,7 @@ void CUICellItem::UpdateCustomMarksAndText()
 			}
 
 			const Fvector2 markSize = m_custom_mark->GetWndSize();
-			m_custom_mark->SetWndPos(CalcInvCellAnchorPos(
+			m_custom_mark->SetWndPos(InventoryUtilities::CalcInvCellAnchorPos(
 				cellSize, markSize, item->m_custom_mark_anchor, item->m_custom_mark_offset));
 
 			if (item->m_custom_mark_texture.size())
@@ -803,7 +773,7 @@ void CUICellItem::UpdateConditionProgressBar()
 
 	if (m_condition_use_anchor)
 	{
-		m_pConditionState->SetWndPos(CalcInvCellAnchorPos(
+		m_pConditionState->SetWndPos(InventoryUtilities::CalcInvCellAnchorPos(
 			GetWndSize(),
 			m_pConditionState->GetWndSize(),
 			static_cast<CInventoryItem::EInvCellAnchor>(m_condition_anchor),
@@ -911,7 +881,7 @@ void CUICellItem::UpdateItemTextAnchor()
 		return;
 	}
 
-	m_text->SetWndPos(CalcInvCellAnchorPos(
+	m_text->SetWndPos(InventoryUtilities::CalcInvCellAnchorPos(
 		GetWndSize(),
 		m_text->GetWndSize(),
 		static_cast<CInventoryItem::EInvCellAnchor>(m_text_anchor),

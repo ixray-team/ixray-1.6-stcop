@@ -12,6 +12,15 @@ public:
 	virtual void create(const char* sh, const char* tex=0) = 0;
 	virtual bool inited() = 0;
 	virtual void destroy() = 0;
+
+	struct TextureSurface
+	{
+		void* Handle = nullptr;
+		float Width = 0.0f;
+		float Height = 0.0f;
+	};
+
+	virtual TextureSurface GetTextureSurface() const = 0;
 };
 
 #endif	//	UIShader_included

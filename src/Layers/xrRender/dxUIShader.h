@@ -16,6 +16,7 @@ public:
 	virtual void create(const char* sh, const char* tex=nullptr);
 	virtual bool inited() {return hShader;}
 	virtual void destroy();
+	TextureSurface GetTextureSurface() const override;
 private:
 	ref_shader		hShader;
 };

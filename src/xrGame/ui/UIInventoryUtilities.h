@@ -124,6 +124,8 @@ void	SendInfoToLuaScripts		(shared_str info);
 u32		GetGoodwillColor			(s32 gw);
 u32		GetRelationColor			(ALife::ERelationType r);
 u32		GetReputationColor			(s32 rv);
+Fvector2 CalcInvCellAnchorPos(const Fvector2& CellSize, const Fvector2& ChildSize,
+	CInventoryItem::EInvCellAnchor Anchor, const Fvector2& Inset);
 InventoryIconParams	GetInventoryIconParams(const char* section);
 ConditionDisplayParams GetConditionDisplayParams(CInventoryItem* item);
 };

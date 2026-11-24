@@ -9,6 +9,10 @@ public:
 	virtual void create(LPCSTR sh, LPCSTR tex = 0);
 	virtual bool inited();
 	virtual void destroy();
+	TextureSurface GetTextureSurface() const override
+	{
+		return {};
+	}
 };
 
 class CDS0_UIRender:
