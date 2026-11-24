@@ -16,6 +16,9 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
 | [physics-abstraction.md](physics-abstraction.md) | Plan to hide ODE behind xrPhysics interfaces for Box3D |
 | [detail-layers-editor.md](detail-layers-editor.md) | In-game vegetation detail masks, brush and previews |
+| [hud-adjust.md](hud-adjust.md) | In-game Hud Adjust: controls, export and screen guides |
+| [third-person-adjust.md](third-person-adjust.md) | Third-person item placement and weapon fire points |
+| [weapon-customize.md](weapon-customize.md) | Inventory weapon preview and attachment slots |
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
 | [level-inspector.md](level-inspector.md) | In-game Level Inspector: modder guide and checks |
 | [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs and particles, held items, animation playlists, scene save/load |
