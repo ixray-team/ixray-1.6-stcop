@@ -7,7 +7,7 @@
 #endif
 #include "alife_space.h"
 #include "Hit.h"
-#include "phdestroyable.h"
+#include "PHDestroyable.h"
 #include "Car.h"
 #include "Actor.h"
 #include "cameralook.h"

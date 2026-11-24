@@ -6,9 +6,9 @@
 //	Description : car memory
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "car_memory.h"
-#include "car.h"
+#include "Car.h"
 
 car_memory::car_memory					(CCar *object) :
 	inherited		(
