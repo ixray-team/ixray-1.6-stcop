@@ -20,10 +20,12 @@
 // hinge motor instead of being driven by the moving-car door logic.
 constexpr float CarDoorHoldSpeed = 0.5f;
 
-// Return spring for spring-loaded doors. The door is driven to the physical
-// hinge limit at a constant speed; the hinge limit defines the open position.
-constexpr float CarDoorSpringLimitEpsilon = 0.005f;
-constexpr float CarDoorSpringReturnSpeed = 0.5f;
+// Return spring for spring-loaded doors. The physical hinge limit is the
+// target; the movement is velocity-controlled and damped so the leaf settles
+// against the stop instead of being driven into it at constant speed.
+constexpr float CarDoorSpringDamping = 0.5f;
+constexpr float CarDoorSpringSettleAngle = 0.01f;
+constexpr float CarDoorSpringSettleRate = 0.2f;
 
 // A top hatch is a horizontal door: its thinnest OBB axis is nearly vertical.
 // Side doors use the same code with a horizontal thin axis and must keep the
@@ -457,18 +459,40 @@ void CCar::SDoor::Update()
 				// must not affect the door physics or prevent it from closing.
 				if (spring_loaded_door)
 				{
-					// Drive the door toward the actual hinge limit at a constant
-					// speed. The hinge limit is the target, so a nudge cannot
-					// leave the door stopped short of the fully open pose.
-					const float LimitError = pos_open * (default_opened_angle - door_angle);
-					if (fabsf(LimitError) < CarDoorSpringLimitEpsilon)
+					// The hard hinge limit is the target, not opened_angle:
+					// opened_angle is intentionally two degrees inside the limit
+					// so the state machine can report "opened" before the leaf
+					// hits the stop. Using opened_angle as the spring target left
+					// the door visibly short of fully open.
+					const float Range = fabsf(default_opened_angle - default_closed_angle);
+					if (Range > EPS)
 					{
-						if (!hold_applied)
+						const float Error = pos_open * (default_opened_angle - door_angle);
+						const float Rate = pos_open * GetAngleRate();
+
+						if (fabsf(Error) < CarDoorSpringSettleAngle &&
+							fabsf(Rate) < CarDoorSpringSettleRate)
+						{
+							if (!hold_applied)
+								NeutralTorque(hold_torque);
+						}
+						else if (Error > -CarDoorSpringSettleAngle)
+						{
+							// Drive only toward the open limit. A negative target
+							// would pull the leaf closed after an overshoot, so the
+							// result is clamped to zero. Damping the current rate
+							// stops the constant-speed motor from hammering the
+							// hinge stop and keeps the door body asleep once settled.
+							float TargetVel = Error * (a_vel / Range) - Rate * CarDoorSpringDamping;
+							clamp(TargetVel, 0.f, a_vel);
+							ApplySpringTorque(torque, TargetVel);
+						}
+						else if (!hold_applied)
+						{
+							// The leaf is past the stop; let the hinge and the
+							// static hold settle it instead of reversing the spring.
 							NeutralTorque(hold_torque);
-					}
-					else
-					{
-						ApplySpringTorque(torque, a_vel * CarDoorSpringReturnSpeed);
+						}
 					}
 					break;
 				}
@@ -560,11 +584,10 @@ void CCar::SDoor::ApplySpringTorque(float atorque,float aa_vel)
 {
 	if(!joint||!joint->bActive)return;
 
-	// The return spring must not wake a sleeping car. A door that was pushed
-	// is already awake from the contact that moved it, so the hinge motor can
-	// drive it back without enabling the whole shell. If the shell is already
-	// awake but the door body itself has gone to sleep, wake only that element
-	// once so the motor can finish the return.
+	// The door leaf may have gone to sleep while the shell is still active.
+	// EnableObject() is a no-op when the shell is already active, so this wakes
+	// only the leaf and lets the motor finish the return. Once the leaf settles,
+	// Update() switches to NeutralTorque() and stops calling this at all.
 	CPhysicsElement* Element = joint->PSecond_element();
 	if (Element && !Element->isEnabled() && pcar->m_pPhysicsShell && pcar->m_pPhysicsShell->isEnabled())
 		Element->Enable();
