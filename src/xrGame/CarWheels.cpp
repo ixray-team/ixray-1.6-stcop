@@ -11,7 +11,7 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 #include "Car.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ExtendedGeom.h"
-#include "mathutilsode.h"
+#include "MathUtilsOde.h"
 
 BOOL rs_car_wheel_friction_direction = false;
 
