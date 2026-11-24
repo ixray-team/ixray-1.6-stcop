@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../xrCore/Template/ScalarTypes.h"
+
 enum class ERHI_FORMAT : u32
 {
     UNKNOWN = 0,

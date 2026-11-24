@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../xrCore/Template/ScalarTypes.h"
+
 constexpr u32 RHI_VERTEX_TEXTURESAMPLER = 256;
 constexpr u32 RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION = 16384;
 constexpr u32 RHI_SHADERS_TYPE_SIZE = 6;

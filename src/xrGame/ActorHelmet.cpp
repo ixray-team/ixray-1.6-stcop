@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "ActorHelmet.h"
 #include "Actor.h"
+#include "EffectorNightVision.h"
 #include "Inventory.h"
 #include "BoneProtections.h"
 #include "../Include/xrRender/Kinematics.h"

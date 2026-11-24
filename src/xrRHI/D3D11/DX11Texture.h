@@ -1,6 +1,6 @@
 #pragma once
 #include <d3d11.h>
-#include "../RHI.h"
+#include "../RHITextureInterfaces.h"
 
 class DX11Surface :
     public IRHISurface

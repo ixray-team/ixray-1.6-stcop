@@ -1,5 +1,6 @@
 #pragma once
 #include "RHIEnums.h"
+#include "../xrCore/Template/ScalarTypes.h"
 
 struct RHIBufferSubresource
 {

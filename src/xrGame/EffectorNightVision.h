@@ -1,9 +1,9 @@
 #pragma once
 
 #include "HudSound.h"
-#include "Actor.h"
 #include "PostprocessAnimator.h"
 
+class CActor;
 class CUIGameCustom;
 
 class CNightVisionEffector

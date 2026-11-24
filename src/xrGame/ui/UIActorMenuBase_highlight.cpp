@@ -2,6 +2,9 @@
 #include "UIActorMenuBase.h"
 #include "UICellItem.h"
 #include "../PowerCell.h"
+#include "../PowerBank.h"
+#include "../IPowerManager.h"
+#include "../antigas_filter.h"
 #include "../WeaponMagazinedWGrenade.h"
 #include "../InventoryWeaponSlotLayout.h"
 

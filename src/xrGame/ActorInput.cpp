@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Actor.h"
+#include "EffectorNightVision.h"
 #include "PickupManager.h"
 #include "Torch.h"
 #include "TacticalFlashLaser.h"

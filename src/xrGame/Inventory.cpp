@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "Inventory.h"
+#include "InventoryBox.h"
 #include "eatable_item.h"
 #include "InventoryWeaponSlotLayout.h"
 #include "ui/UIActorMenu.h"

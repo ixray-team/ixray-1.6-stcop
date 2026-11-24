@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../RHIDriversExt.h"
+
 class CIntelReader :
 	public IRHIGPU
 {

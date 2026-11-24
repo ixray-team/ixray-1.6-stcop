@@ -7,6 +7,7 @@
 #include "../InventoryOwner.h"
 #include "../IPowerManager.h"
 #include "../antigas_filter.h"
+#include "../PowerBank.h"
 #include "../antigas.h"
 #include "UIItemInfo.h"
 #include "UIDragDropReferenceList.h"

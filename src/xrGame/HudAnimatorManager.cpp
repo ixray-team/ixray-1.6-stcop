@@ -3,6 +3,8 @@
 #include "player_hud.h"
 #include "CustomDevice.h"
 #include "Actor.h"
+#include "Torch.h"
+#include "EffectorNightVision.h"
 #include "Inventory.h"
 #include "InventoryWeaponSlotLayout.h"
 #include "ui/UIGameCustom.h"

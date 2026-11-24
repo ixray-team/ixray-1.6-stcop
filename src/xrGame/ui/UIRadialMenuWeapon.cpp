@@ -2,6 +2,7 @@
 #include "UIRadialMenuWeapon.h"
 
 #include "../Actor.h"
+#include "../nvg.h"
 #include "../Inventory.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"

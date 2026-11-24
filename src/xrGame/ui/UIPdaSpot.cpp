@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "UIPdaSpot.h"
+#include "../Actor.h"
 #include "PdaUiSound.h"
 //#include <dinput.h>
 #include "Level.h"

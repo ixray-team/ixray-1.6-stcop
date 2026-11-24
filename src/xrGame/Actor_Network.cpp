@@ -8,6 +8,7 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "xrServer.h"
 #include "../xrEngine/CustomHUD.h"
+#include "../xrEngine/StatGraph.h"
 #include "cameralook.h"
 #include "CameraFirstEye.h"
 

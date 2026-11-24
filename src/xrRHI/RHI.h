@@ -25,12 +25,13 @@
 #include "RHIDevice.h"
 #include "RHIGPUMark.h"
 #include "RHITypes.h"
-#include "RHIShaderCompiler.h"
 #include "RHIShaderDeclaration.h"
-#include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
 #include "RHIStateManager.h"
-#include "Drivers/AMDAntiLag.h"
+
+class CAMDAntiLag;
+class CRHIShaderCompilerShell;
+class IRHIGPU;
 
 enum
 {

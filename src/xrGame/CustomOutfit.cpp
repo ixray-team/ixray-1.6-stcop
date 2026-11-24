@@ -5,6 +5,8 @@
 #include "inventory_space.h"
 #include "Inventory.h"
 #include "Actor.h"
+#include "Torch.h"
+#include "EffectorNightVision.h"
 #include "game_cl_base.h"
 #include "Level.h"
 #include "BoneProtections.h"

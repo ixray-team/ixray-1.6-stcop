@@ -1,6 +1,6 @@
 #pragma once
 // AMD (AGS and ADL) detection system
-#include "../RHI.h"
+#include "../RHIDriversExt.h"
 
 #include <amd_adl\adl_sdk.h>
 #include <amd_ags.h>

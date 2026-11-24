@@ -4,7 +4,6 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrNetServer/NET_Client.h"
 #include "../xrScripts/script_export_space.h"
-#include "../xrEngine/StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
 #include "../xrCore/xrDebug.h"
@@ -16,10 +15,6 @@
 #include "../xrEngine/xr_level_controller.h"
 
 #include "game_cl_base.h"
-#include "FreeMP/ScriptEvents.h"
-
-#include "UIWorldSpace.h"
-#include "ShellManager.h"
 
 // always try to forward declare your script implementations
 class CRandomManager;
@@ -52,7 +47,9 @@ class	demo_info;
 
 class CElectronicsProblemsManager;
 
+class ENGINE_API CStatGraph;
 class CUIWorldSpaceManager;
+struct SShellManager;
 
 #ifdef DEBUG_DRAW
 	class	CDebugRenderer;

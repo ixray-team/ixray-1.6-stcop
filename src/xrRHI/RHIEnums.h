@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../xrCore/Template/EnumFlags.h"
+
 enum ERHI_API_LAYER
 {
     D3D11,

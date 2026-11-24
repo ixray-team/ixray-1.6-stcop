@@ -1,6 +1,6 @@
 #pragma once
 #include <d3d11.h>
-#include "RHI.h"
+#include "../RHIBuffer.h"
 
 class CD3D11Buffer : 
 	public IRHIBuffer

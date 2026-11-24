@@ -1,4 +1,5 @@
 #include "RHIRenderViewManager.h"
+#include "../RHI.h"
 
 CRHIRenderViewManager GRHIRenderViewManager;
 

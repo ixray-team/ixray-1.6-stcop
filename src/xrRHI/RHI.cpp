@@ -1,4 +1,7 @@
 #include "RHI.h"
+#include "RHIDriversExt.h"
+#include "RHIShaderCompiler.h"
+#include "Drivers/AMDAntiLag.h"
 
 #include "D3D11/Device.h"
 #include "D3D11/DX11GPUEvents.h"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../xrCore/Template/ScalarTypes.h"
+
 enum class ERHI_GPU
 {
 	NVIDIA,

@@ -8,6 +8,8 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "ParticlesObject.h"
 #include "Level.h"
+#include "ShellManager.h"
+#include "../xrEngine/StatGraph.h"
 #include "../xrEngine/MonsterLogicTelemetry.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "MonsterEnemySharingDebug.h"

@@ -1,6 +1,7 @@
 ﻿#include "StdAfx.h"
 
 #include "Shell.h"
+#include "ShellManager.h"
 
 #include "Level.h"
 #include "Weapon.h"

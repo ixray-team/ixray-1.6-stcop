@@ -12,6 +12,7 @@
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 #include "Explosive.h"
+#include "Torch.h"
 #include "script_zone.h"
 #include "script_hit.h"
 #include "../Include/xrRender/Kinematics.h"

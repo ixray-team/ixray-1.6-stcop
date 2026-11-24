@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "nvg.h"
+#include "EffectorNightVision.h"
 #include "UICellItem.h"
 #include "Actor.h"
 #include "Inventory.h"

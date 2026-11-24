@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "Actor.h"
+#include "Torch.h"
+#include "EffectorNightVision.h"
 #include "ControllerAutoaim.h"
 #include "HUDManager.h"
 #include "Car.h"

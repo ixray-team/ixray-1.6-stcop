@@ -1,3 +1,4 @@
+#include "../RHI.h"
 #include "AMDGPUTransferee.h"
 
 extern "C"

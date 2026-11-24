@@ -1,7 +1,7 @@
 #pragma once
 // NVidia detection system
 
-#include "../RHI.h"
+#include "../RHIDriversExt.h"
 
 extern "C"
 {

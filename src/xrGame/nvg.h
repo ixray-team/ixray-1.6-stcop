@@ -2,7 +2,6 @@
 
 #include "inventory_item_object.h"
 #include "IPowerManager.h"
-#include "EffectorNightVision.h"
 
 // CLSID_IITEM_NIGHT_VISION D_NVG  NVG_SLOT
 

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "UIPdaWnd.h"
+#include "../Actor.h"
 #include "../PDA.h"
 #include "UIPdaAux.h"
 #include "../../xrUI/xrUIXmlParser.h"

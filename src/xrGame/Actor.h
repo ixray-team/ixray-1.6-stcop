@@ -12,15 +12,12 @@
 #include "PHMovementControl.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "InventoryOwner.h"
-#include "../xrEngine/StatGraph.h"
 #include "PhraseDialogManager.h"
 #include "../../xrUI/ui_defs.h"
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
 #include "CustomDevice.h"
-#include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
-#include "nvg.h"
 #include "CameraFocus.h"
 #include "ActorCondition.h"
 #include "ActorLightPerception.h"
@@ -70,6 +67,7 @@ class CPickUpManager;
 class CCustomDevice;
 class CAutoAim;
 
+class ENGINE_API CStatGraph;
 class CNightVisionEffector;
 class CHudAnimatorManager;
 

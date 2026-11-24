@@ -3,6 +3,7 @@
 
 #include "HWCaps.h"
 #include "HW.h"
+#include "../../xrRHI/RHIDriversExt.h"
 
 RENDER_API CHWCaps Caps;
 

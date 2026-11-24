@@ -7,6 +7,7 @@
 #include "InventoryWeaponSlotLayout.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "Actor.h"
+#include "EffectorNightVision.h"
 #include "ActorEffector.h"
 #include "Level.h"
 #include "../xrEngine/xr_level_controller.h"

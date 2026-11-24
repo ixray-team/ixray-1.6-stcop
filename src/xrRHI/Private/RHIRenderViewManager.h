@@ -1,6 +1,10 @@
 #pragma once
 
-#include "../RHI.h"
+#include "../RHIConstants.h"
+
+class IRHIDepthStencilView;
+class IRHIRenderTargetView;
+class IRHIUnorderedAccessView;
 
 class CRHIRenderViewManager
 {

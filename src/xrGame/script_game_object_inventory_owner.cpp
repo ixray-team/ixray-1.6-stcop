@@ -12,6 +12,8 @@
 #include "character_info.h"
 #include "GameTask.h"
 #include "Actor.h"
+#include "InventoryBox.h"
+#include "EffectorNightVision.h"
 #include "Level.h"
 #include "../xrEngine/date_time.h"
 #include "UIGameSP.h"

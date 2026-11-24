@@ -1,3 +1,4 @@
+#include "../RHI.h"
 #include "NvGPUTransferee.h"
 #include <d3d11.h>
 

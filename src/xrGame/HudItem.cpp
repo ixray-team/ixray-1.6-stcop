@@ -3,6 +3,8 @@
 #include "HudItem.h"
 #include "physic_item.h"
 #include "Actor.h"
+#include "Torch.h"
+#include "EffectorNightVision.h"
 #include "ActorEffector.h"
 #include "Missile.h"
 #include "xrMessages.h"
