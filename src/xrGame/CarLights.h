@@ -1,8 +1,8 @@
 #ifndef	CAR_LIGHTS_H
 #define CAR_LIGHTS_H
 #pragma once
-#include "../../Include/xrRender/Kinematics.h"
-#include "../xrEngine/render.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../xrEngine/Render.h"
 #include "../xrEngine/xr_efflensflare.h"
 class CCarLights;
 class CCar;
