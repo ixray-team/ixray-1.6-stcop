@@ -17,6 +17,7 @@
 #include "../../Include/xrRender/Kinematics.h"
 #include "Level.h"
 #include "CarWeapon.h"
+#include "../xrEngine/xr_input.h"
 
 // Transport actions form their own group and take precedence over pedestrian
 // actions, so a key bound in agTransport cannot trigger an action from the

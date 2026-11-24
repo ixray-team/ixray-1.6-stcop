@@ -6,6 +6,7 @@
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrEngine/CustomHUD.h"
+#include "../../xrEngine/xr_level_controller.h"
 
 CUIKeyBinding::CUIKeyBinding()
 	: m_scroll_wnd(nullptr)

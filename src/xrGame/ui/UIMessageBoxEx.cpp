@@ -3,6 +3,7 @@
 #include "UIMessageBox.h"
 #include "UIMessageBoxEx.h"
 #include "../../xrUI/Widgets/UIDialogHolder.h"
+#include "xrEngine/xr_level_controller.h"
 
 CUIMessageBoxEx::CUIMessageBoxEx(){
 	m_pMessageBox = new CUIMessageBox();

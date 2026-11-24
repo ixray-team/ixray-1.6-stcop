@@ -274,8 +274,4 @@ public:
 constexpr dReal def_spring_rate = 0.5f;
 constexpr dReal def_dumping_rate = 20.1f;
 
-IC bool ignore_material(u16 material_idx)
-{
-	SGameMtl* material = GMLibrary().GetMaterialByIdx(material_idx);
-	return !!material->Flags.test(SGameMtl::flActorObstacle);
-}
+bool ignore_material(u16 material_idx);

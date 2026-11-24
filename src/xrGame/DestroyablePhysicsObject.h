@@ -3,6 +3,7 @@
 #include "PhysicObject.h"
 #include "PHDestroyable.h"
 #include "PHCollisionDamageReceiver.h"
+#include "hit_immunity.h"
 
 XREFLECT(LuaExport, Bases="CPhysicObject", Constructible)
 class CDestroyablePhysicsObject :

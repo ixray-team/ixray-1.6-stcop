@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+
+#include "entity_alive.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 #ifdef DEBUG
 #include "ode_include.h"

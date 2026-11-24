@@ -1136,6 +1136,12 @@ void CPHSimpleCharacter::OnRender()
 }
 #endif
 
+bool ignore_material(u16 material_idx)
+{
+	SGameMtl* material = GMLibrary().GetMaterialByIdx(material_idx);
+	return !!material->Flags.test(SGameMtl::flActorObstacle);
+}
+
 EEnvironment CPHSimpleCharacter::CheckInvironment()
 {
 	if (b_lose_control && !m_elevator_state.ClimbingState())
