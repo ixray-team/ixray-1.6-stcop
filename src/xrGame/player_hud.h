@@ -294,7 +294,10 @@ struct attachable_hud_item final
 	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
 	void		anim_play_bonepart	(const shared_str& anim, bool bMixIn);
 	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd, bool disable_random);
+	void UpdateHandsMotions();
 
+private:
+	shared_str HandsMotionSection;
 };
 
 struct animator_item

@@ -858,6 +858,24 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 	m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
 	m_measures.load				(sect_name, m_model, m_model_combined);
+
+	if (m_model_combined)
+	{
+		IKinematicsAnimated* ItemModel = m_model->dcast_PKinematicsAnimated();
+		m_hand_motions.load(ItemModel, m_sect_name, ItemModel);
+	}
+}
+
+void attachable_hud_item::UpdateHandsMotions()
+{
+	if (m_model_combined || HandsMotionSection == m_parent->section_name())
+	{
+		return;
+	}
+
+	m_hand_motions = {};
+	m_hand_motions.load(m_parent->GetModel(), m_sect_name, m_model->dcast_PKinematicsAnimated());
+	HandsMotionSection = m_parent->section_name();
 }
 
 void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm)
@@ -1654,15 +1672,13 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	if (b_reload && m_model)
 	{
-		for (attachable_hud_item* Item : m_pool)
+		// Resolve motions for attached items before their reattach callbacks.
+		for (attachable_hud_item* Item : m_attached_items)
 		{
-			if (Item->m_model_combined)
+			if (Item)
 			{
-				continue;
+				Item->UpdateHandsMotions();
 			}
-
-			Item->m_hand_motions = player_hud_motion_container();
-			Item->m_hand_motions.load(m_model, Item->m_sect_name, Item->m_model->dcast_PKinematicsAnimated());
 		}
 	}
 
@@ -2269,12 +2285,15 @@ attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 	for(;it!=it_e;++it)
 	{
 		attachable_hud_item* itm = *it;
-		if(itm->m_sect_name==sect)
+		if (itm->m_sect_name == sect)
+		{
+			itm->UpdateHandsMotions();
 			return itm;
+		}
 	}
 	attachable_hud_item* res	= new attachable_hud_item(this);
 	res->load					(sect);
-	res->m_hand_motions.load	(res->m_model_combined ? res->m_model->dcast_PKinematicsAnimated() : m_model, sect, res->m_model->dcast_PKinematicsAnimated());
+	res->UpdateHandsMotions();
 	m_pool.push_back			(res);
 
 	return	res;
