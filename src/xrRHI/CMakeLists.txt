@@ -33,13 +33,22 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx11\\.cpp$")
 endif()
 
+if (NOT APPLE)
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "MacMetalBridge\\.mm$")
+endif()
+
 # xrRHI project
 add_library(xrRHI SHARED ${XRHI_SRC_FILES})
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRHI PRIVATE "${IXRAY_SDK_INC}")
 target_include_directories(xrRHI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_compile_definitions(xrRHI PRIVATE XR_RHI_EXPORTS)
-set_target_properties(xrRHI PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT IXRAY_CROSS_COMPILATION)
+	target_precompile_headers(xrRHI PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/xrCore.h>")
+	set_source_files_properties(Layout/ImGui/imgui_impl_dx11.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+else()
+	set_target_properties(xrRHI PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+endif()
 
 # Project defines
 target_compile_definitions(xrRHI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
