@@ -987,15 +987,36 @@ void CInventoryItem::FindAttachPose(shared_str& pose, shared_str& ik_mark, share
 		}
 
 		const SInventoryItemDesc& desc = child->ItemDesc();
-		if (desc.m_anim_pose.size())
-		{
-			pose = desc.m_anim_pose;
-			ik_mark = desc.m_ik_mark.size() ? desc.m_ik_mark : ik_mark;
-			fingers_mark = desc.m_fingers_mark.size() ? desc.m_fingers_mark : fingers_mark;
-		}
+		pose = desc.m_anim_pose.size() ? desc.m_anim_pose : pose;
+		ik_mark = desc.m_ik_mark.size() ? desc.m_ik_mark : ik_mark;
+		fingers_mark = desc.m_fingers_mark.size() ? desc.m_fingers_mark : fingers_mark;
 
 		child->FindAttachPose(pose, ik_mark, fingers_mark);
 	}
+}
+
+CInventoryItem* CInventoryItem::FindGripArm(const shared_str* ArmBones, size_t Count) const
+{
+	for (const auto& [Id, Child] : m_children)
+	{
+		IKinematics* Model = Child->m_attach_bone.size() ? Child->HudModel() : nullptr;
+		if (Model == nullptr)
+		{
+			continue;
+		}
+
+		if (std::all_of(ArmBones, ArmBones + Count, [Model](const shared_str& Bone) { return Model->LL_BoneID(Bone) != BI_NONE; }))
+		{
+			return Child;
+		}
+
+		if (CInventoryItem* Item = Child->FindGripArm(ArmBones, Count))
+		{
+			return Item;
+		}
+	}
+
+	return nullptr;
 }
 
 void CInventoryItem::renderable_Render()

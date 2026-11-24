@@ -198,6 +198,7 @@ struct SHudHandsIk
 	float LeftHandAttachArmWeight = 1.f;
 	bool LeftHandAttachAnimatedArm = false;
 	bool LeftGripActive = false;
+	float GripArmWeight = -1.f;
 
 	xr_vector<u16> FingerGripBones;
 	xr_vector<Fquaternion> FingerStartPose;
@@ -226,6 +227,7 @@ struct SHudHandsIk
 
 	void ResetItem()
 	{
+		GripArmWeight = -1.f;
 		RetargetWeight = 0.f;
 		RetargetLeftValid = false;
 		RetargetRightValid = false;

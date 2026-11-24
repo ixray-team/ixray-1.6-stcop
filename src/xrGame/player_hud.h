@@ -11,6 +11,7 @@
 class player_hud;
 class CWatchDevice;
 class CHudItem;
+class CInventoryItem;
 class CMotionDef;
 class CHudAnimatorBase;
 class CObjectAnimator;
@@ -281,6 +282,7 @@ struct attachable_hud_item final
 	float							LeftHandFingerGrip = 1.f;
 	shared_str						LeftHandAttachTarget;
 	shared_str						AttachPose;
+	bool							GripArm = false;
 	shared_str						IkMark = HudAttachMarks::Ik;
 	shared_str						FingersMark = HudAttachMarks::Fingers;
 	xr_vector<shared_str>			LeftHandAttachMotions;
@@ -892,6 +894,7 @@ public:
 
 	IKinematicsAnimated* GetModel() { return m_model; }
 	bool			PreviewGripBlocked = false;
+	CInventoryItem*	GripArmItem			(const attachable_hud_item* Item) const;
 	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();
 	animator_item* GetAnimator() { return m_animator_item; }
@@ -916,6 +919,11 @@ private:
 	void			HandsIkWeaponDelta	(SHandsIkFrame& F);
 	void			HandsIkHandTargets	(SHandsIkFrame& F);
 	void			HandsIkAttachTarget	(SHandsIkFrame& F);
+	void			HandsIkGripArm		(SHandsIkFrame& F);
+	bool			GripIdleAttach		(attachable_hud_item* Item, u16 RootBone, Fmatrix& Attach, Fmatrix& Root, Fmatrix& Ancor);
+	void			HandsIkGripTarget	(SHandsIkFrame& F);
+	void			HandsIkGripSolve	(SHandsIkFrame& F);
+	void			HandsIkGripFingers	(SHandsIkFrame& F);
 	bool			HandsIkSwayNeeded	(const SHandsIkFrame& F) const;
 	void			HandsIkLeftSway		(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
 	void			HandsIkRightSway	(SHandsIkFrame& F, CActor* actor);
@@ -933,7 +941,7 @@ private:
 	void			HandsIkFingerInertia	(SHandsIkFrame& F);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
-	bool			RetargetHandTarget	(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f, float* deviation = nullptr);
+	bool			RetargetHandTarget	(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f, float* deviation = nullptr, const Fmatrix* base = nullptr);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
 	bool			FingerGripReference	(attachable_hud_item* item);
