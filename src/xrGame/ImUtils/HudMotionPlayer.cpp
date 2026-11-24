@@ -210,6 +210,7 @@ static void HudMotionPlayerPlay(CHudItem* hud_item, attachable_hud_item* item, c
 		return;
 	}
 
+	hud_item->StopCurrentAnimWithoutCallback();
 	if (hud_item->PlayHUDMotion_noCB(motion, mix, true) == 0)
 	{
 		return;
@@ -259,6 +260,7 @@ static void HudMotionPlayerPlayAdditive(CHudItem* hud_item, attachable_hud_item*
 		return;
 	}
 
+	hud_item->StopCurrentAnimWithoutCallback();
 	hud_item->PlayHUDMotion_noCB(Base, EHudMixType::eMixHands, true);
 
 	constexpr float Rate = 1.f / HudMotionPlayerAdditiveEnterTime;

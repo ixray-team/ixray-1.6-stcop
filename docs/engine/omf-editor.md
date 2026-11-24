@@ -6,8 +6,8 @@ Open it from **Game → Editors → OMF Editor** (needs a build with `DEBUG_DRAW
 
 ## Window
 
-- **Motion Player** — plays the aliases of the item (`anm_*` from its hud section) and its additive motions, so the motion you edit can be scrubbed and watched on the HUD.
-- **Hands / Weapon** — selects whose motion is edited: the hands model or the weapon model of the item. Combined models only have the hands side.
+- **Motion Player** — plays the aliases of the item (`anm_*` from its hud section) and its additive motions, so the motion you edit can be scrubbed and watched on the HUD. Starting a motion cancels the pending end of the motion the item played before, so an idle marked "Stop at end" (for example `pm_idle`) no longer replaces the preview a moment after it starts.
+- **Hands / Weapon** — selects whose motion is edited: the hands model or the weapon model of the item. Combined models only have the hands side. When the weapon model has no motion with the name the alias uses (for example `anm_idle = pm_idle`, or `anm_show` from a retarget set), the weapon side shows `idle` of the weapon model, the same motion the game plays in that case.
 - **Motion info** — the motion name, the `.omf` file it comes from, its length in keys (30 per second) and in real seconds at the motion speed.
 - **Flags** — the motion flags: Stop at end, No mix, Sync part, Use foot steps, Move XForm, Use weapon bone.
 - **Motion Marks** — the marks of the motion (`mm_*` names such as `mm_unpend`, `mm_shoot`, `mm_ik`).
@@ -45,3 +45,5 @@ The game keeps motion files open while the models that use them are loaded. Befo
 4. Make the file read-only and save: the status says "Not saved: can't write [...]" and the file is unchanged.
 5. Delete a motion: the status asks for a restart, **Save OMF** is disabled for that file, and after a restart the motion is gone.
 6. Play several motions of a saved file (reload, sprint, shots) right after saving: no corrupted poses or crashes.
+7. Take the PM or PB, play `anm_reload` and `anm_shoot` in the Motion Player, also paused and scrubbed: the motion stays on screen and does not jump back to idle.
+8. On the PM select `anm_idle` and `anm_show`: the weapon motion is `idle` of the weapon model, the Weapon side opens it, and `idle` is not marked "(not played)" in the weapon file list.

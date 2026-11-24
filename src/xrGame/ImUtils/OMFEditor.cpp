@@ -672,15 +672,22 @@ static void OMFEditorAddMotion(IKinematicsAnimated* model, const motion_descr& d
 	}
 }
 
-static shared_str OMFEditorWeaponMotionName(const player_hud_motion& motion)
+static shared_str OMFEditorWeaponMotionName(attachable_hud_item* item, const player_hud_motion& motion)
 {
-	return motion.m_base_name != motion.m_additional_name ? motion.m_additional_name : motion.m_animations[0].name;
+	const shared_str name = motion.m_base_name != motion.m_additional_name ? motion.m_additional_name : motion.m_animations[0].name;
+	IKinematicsAnimated* model = item->m_model != nullptr ? item->m_model->dcast_PKinematicsAnimated() : nullptr;
+	if (model != nullptr && !model->ID_Cycle_Safe(name).valid() && model->ID_Cycle_Safe("idle").valid())
+	{
+		return "idle";
+	}
+
+	return name;
 }
 
 static MotionID OMFEditorWeaponMotion(attachable_hud_item* item, const player_hud_motion& motion)
 {
 	IKinematicsAnimated* model = item->m_model != nullptr ? item->m_model->dcast_PKinematicsAnimated() : nullptr;
-	return model != nullptr && !motion.m_animations.empty() ? model->ID_Cycle_Safe(OMFEditorWeaponMotionName(motion)) : MotionID();
+	return model != nullptr && !motion.m_animations.empty() ? model->ID_Cycle_Safe(OMFEditorWeaponMotionName(item, motion)) : MotionID();
 }
 
 static void OMFEditorBind(attachable_hud_item* item, IKinematicsAnimated* hands)
@@ -708,7 +715,7 @@ static void OMFEditorBind(attachable_hud_item* item, IKinematicsAnimated* hands)
 		const MotionID weapon = OMFEditorWeaponMotion(item, motion);
 		if (!item->m_model_combined && weapon.valid())
 		{
-			OMFEditorAddMotion(item_model, motion_descr{ weapon, OMFEditorWeaponMotionName(motion) }, false);
+			OMFEditorAddMotion(item_model, motion_descr{ weapon, OMFEditorWeaponMotionName(item, motion) }, false);
 		}
 	}
 
@@ -1092,7 +1099,7 @@ static xr_map<shared_str, xr_string> OMFEditorMotionUses(attachable_hud_item* it
 		}
 		else if (!anm.m_animations.empty())
 		{
-			OMFEditorAppendUse(used, OMFEditorWeaponMotionName(anm), anm.m_alias_name);
+			OMFEditorAppendUse(used, OMFEditorWeaponMotionName(item, anm), anm.m_alias_name);
 		}
 	}
 
@@ -1602,7 +1609,7 @@ void RenderToolsOMFEditorWindow()
 		OMFEditorMotionInfo(combined ? "Motion" : "Hand motion", hands, anm->m_animations[0].name.c_str());
 		if (!combined)
 		{
-			OMFEditorMotionInfo("Weapon motion", weapon, OMFEditorWeaponMotionName(*anm).c_str());
+			OMFEditorMotionInfo("Weapon motion", weapon, OMFEditorWeaponMotionName(item, *anm).c_str());
 
 			ImGui::Separator();
 			if (ImGui::RadioButton("Hands", !state.Weapon))
