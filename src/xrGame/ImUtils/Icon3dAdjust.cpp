@@ -861,11 +861,13 @@ namespace
 			{
 				release();
 			}
+			else
+			{
+				ImGui::Text("Section: %s", safe_c_str(m_target_item->m_section_id));
 
-			ImGui::Text("Section: %s", safe_c_str(m_target_item->m_section_id));
-
-			const xr_string translated_name = translate_to_utf8(safe_c_str(item_name_key(m_target_item)));
-			ImGui::Text("Name: %s", translated_name.c_str());
+				const xr_string translated_name = translate_to_utf8(safe_c_str(item_name_key(m_target_item)));
+				ImGui::Text("Name: %s", translated_name.c_str());
+			}
 		}
 
 		ImGui::SeparatorText("Inventory");
