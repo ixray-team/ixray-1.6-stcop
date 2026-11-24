@@ -8,10 +8,10 @@ struct SDL_Window;
 
 struct UIIconLighting
 {
-	Fvector Color = {1.0f, 1.0f, 1.0f};
-	float Intensity = 1.0f;
-	Fvector Direction = {0.0f, 0.0f, 1.0f};
-	float Ambient = 1.0f;
+	Fvector Color = {106.0f / 255.0f, 108.0f / 255.0f, 134.0f / 255.0f};
+	float Intensity = 1.48f;
+	Fvector Direction = {0.0f, -0.5f, 1.0f};
+	float Ambient = 0.666f;
 };
 
 class IRenderDeviceRender
