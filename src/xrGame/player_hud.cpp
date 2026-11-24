@@ -1232,7 +1232,16 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	mode.FadeAdditive = !additive && AdditivePlaying && !keep_additive;
 	mode.Shot = additive && listed && !retarget && !overlay && !mode.Loop;
 	mode.Reference = MotionID();
-	const shared_str reference = retarget ? retarget_reference : listed ? AdditiveReference : shared_str();
+	shared_str additive_reference = AdditiveReference;
+	if (listed && additive_reference.size() == 0)
+	{
+		if (const player_hud_motion* own_idle = OwnIdle())
+		{
+			additive_reference = own_idle->m_base_name;
+		}
+	}
+
+	const shared_str reference = retarget ? retarget_reference : listed ? additive_reference : shared_str();
 	if (additive && reference.size() != 0 && !m_model_combined && g_player_hud->GetModel() != nullptr)
 	{
 		mode.Reference = g_player_hud->GetModel()->ID_Cycle_Safe(reference);
