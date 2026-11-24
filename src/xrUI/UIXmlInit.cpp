@@ -4,6 +4,7 @@
 #include "../../xrEngine/IGame_ObjectPool.h"
 #include "UIFontDefines.h"
 #include "../../xrEngine/string_table.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "Widgets/UIFrameWindow.h"
 #include "Widgets/UICheckButton.h"
 #include "Widgets/UICustomSpin.h"

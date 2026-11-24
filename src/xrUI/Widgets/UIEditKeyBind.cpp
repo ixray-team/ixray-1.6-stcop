@@ -3,6 +3,7 @@
 #include "UIEditKeyBind.h"
 #include "../../xrServerEntities/object_broker.h"
 #include "../../xrEngine/XR_IOConsole.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "../UIFontDefines.h"
 #include "../UITextureMaster.h"
 

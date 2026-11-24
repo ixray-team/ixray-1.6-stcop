@@ -21,3 +21,5 @@ target_link_libraries(imgui PUBLIC xrCore)
 if (IXRAY_EDITORS)
 	target_link_libraries(imgui_node_editor PUBLIC imgui)
 endif()
+
+ixray_split_compile_for_msvc(imgui)

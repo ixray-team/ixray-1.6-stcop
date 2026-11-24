@@ -5,6 +5,7 @@
 #include "../xrEngine/xr_object.h"
 //#include "../xrEngine/xrLevel.h"
 #include "../xrEngine/xr_collide_form.h"
+#include "FormatParsers/LevelCForm/CFormIO.h"
 #include "FormatParsers/LevelGeom/GeomIO.h"
 #include "override/Model.h"
 

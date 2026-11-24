@@ -4,6 +4,7 @@
 #include "IPHCharacter.h"
 #include "../../xrCore/Collision/xr_area.h"
 #include "../../xrCore/Collision/ISpatial.h"
+#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 #include "../../xrEngine/GameMtlLib.h"
 #include "../../xrEngine/device.h"
 

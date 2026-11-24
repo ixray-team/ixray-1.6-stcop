@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIPropertiesBox.h"
 #include "../../xrEngine/xr_input.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "UIListBoxItem.h"
 #include "../UIXmlInit.h"
 #include "../UIFontDefines.h"

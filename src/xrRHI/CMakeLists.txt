@@ -66,3 +66,5 @@ endif()
 target_link_libraries(xrRHI PUBLIC xrCore)
 target_link_libraries(xrRHI PUBLIC imgui)
 target_link_libraries(xrRHI PRIVATE DirectX::Mesh)
+
+ixray_split_compile_for_msvc(xrRHI)

@@ -277,6 +277,6 @@ if(IXRAY_MP)
 	target_link_libraries(xrGame PUBLIC RedImage::RedImage)
 endif()
 
-if (IXRAY_UNITYBUILD AND CMAKE_GENERATOR MATCHES "^Visual Studio" AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT IXRAY_CROSS_COMPILATION)
-	ixray_split_compile(xrGame)
+if (IXRAY_UNITYBUILD)
+	ixray_split_compile_for_msvc(xrGame)
 endif()

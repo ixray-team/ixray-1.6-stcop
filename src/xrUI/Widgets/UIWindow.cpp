@@ -7,6 +7,7 @@
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UIRender.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "UIBtnHint.h"
 #include "UIStatic.h"
 #include "../../xrScripts/script_callback_ex.h"

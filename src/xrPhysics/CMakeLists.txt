@@ -93,3 +93,5 @@ if(IXRAY_TESTS AND IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
     target_validate_pch(TestBox3DCollision ${CMAKE_CURRENT_SOURCE_DIR})
     set_target_properties(TestBox3DCollision PROPERTIES FOLDER "Test")
 endif()
+
+ixray_split_compile_for_msvc(xrPhysics)

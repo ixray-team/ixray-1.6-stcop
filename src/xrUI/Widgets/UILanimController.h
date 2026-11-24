@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UIWindow.h"
-#include "../../xrEngine/LightAnimLibrary.h"
 
 class CLAItem;
 
@@ -44,71 +43,10 @@ public:
 
 	virtual CUILightAnimColorConroller* ui_cast_light_anim_color_controller() { return this; }
 
-	void	SetColorAnimation(const char* lanim, u8 const& flags, float delay=0.0f)
-	{
-		if(lanim && lanim[0]!=0)
-			m_lanim_clr.m_lanim	= LALib.FindItem(lanim);
-		else
-		{
-			m_lanim_clr.m_lanim	= NULL;
-			return;
-		}
-		
-		m_lanim_clr.m_lanim_delay_time		= delay;
-		m_lanim_clr.m_lanimFlags.assign		(flags);
-		R_ASSERT( (m_lanim_clr.m_lanim==NULL) || m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR|LA_TEXTURECOLOR) );
-	}
-	virtual void	ResetColorAnimation	()
-	{
-		m_lanim_clr.m_lanim_start_time = Device.dwTimeContinual/1000.0f + m_lanim_clr.m_lanim_delay_time/1000.0f;
-	}
-	virtual bool IsColorAnimationPresent()
-	{
-		if(m_lanim_clr.m_lanim==NULL)	return false;
-
-		if (m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || m_lanim_clr.m_lanim_start_time<0.0f)
-			return true;
-		
-		float t = Device.dwTimeContinual/1000.0f;
-		if(t-m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
-			return true;
-		else 
-			return false;
-	}
-
-	void	UpdateColorAnimation	()
-	{
-		if (m_lanim_clr.m_lanim==NULL)	return;
-		if(m_lanim_clr.m_lanim_start_time<0.0f)		
-			ResetColorAnimation	();
-
-		float t = Device.dwTimeContinual/1000.0f;
-
-		if (t < m_lanim_clr.m_lanim_start_time)	// consider animation delay
-			return;
-
-		if(m_lanim_clr.m_lanimFlags.test(LA_CYCLIC) || t-m_lanim_clr.m_lanim_start_time < m_lanim_clr.m_lanim->Length_sec())
-		{
-
-			int frame;
-			u32 clr					= m_lanim_clr.m_lanim->CalculateRGB(t-m_lanim_clr.m_lanim_start_time,frame);
-
-			if(m_lanim_clr.m_lanimFlags.test(LA_TEXTURECOLOR))
-			{
-				if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-					ColorAnimationSetTextureColor	(color_get_A(clr), true);
-				else
-					ColorAnimationSetTextureColor	(clr, false);
-			}
-			if(m_lanim_clr.m_lanimFlags.test(LA_TEXTCOLOR))
-			{
-				if(m_lanim_clr.m_lanimFlags.test(LA_ONLYALPHA))
-					ColorAnimationSetTextColor				(color_get_A(clr), true);
-				else
-					ColorAnimationSetTextColor				(clr, false);
-			}
-		}	
-	}
+	void SetColorAnimation(const char* lanim, u8 const& flags, float delay = 0.0f) override;
+	void ResetColorAnimation() override;
+	bool IsColorAnimationPresent() override;
+	void UpdateColorAnimation();
 };
 
 class UI_API CUIColorAnimConrollerContainer :	

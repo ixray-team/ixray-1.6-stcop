@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "xrCore/FormatParsers/LevelCForm/CFormFormat.h"
 
 // chunks
 

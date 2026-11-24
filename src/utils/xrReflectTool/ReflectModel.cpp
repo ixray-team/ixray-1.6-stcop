@@ -15,6 +15,7 @@
 
 #include "ReflectModel.h"
 
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -63,12 +64,20 @@ namespace XReflectTool
 		return "#if " + Condition + "\n" + Text + "#endif\n";
 	}
 
-	std::string ReadFile(const std::filesystem::path& Path)
+	std::string ReadFile(const std::string& Path)
 	{
-		std::ifstream Stream(Path, std::ios::binary);
-		std::ostringstream Content;
-		Content << Stream.rdbuf();
-		return Content.str();
+		std::ifstream Stream(std::filesystem::path(Path), std::ios::binary | std::ios::ate);
+		const std::streamsize Size = Stream.tellg();
+		if (Size <= 0)
+		{
+			return {};
+		}
+
+		std::string Content(static_cast<size_t>(Size), '\0');
+		Stream.seekg(0);
+		Stream.read(Content.data(), Size);
+		Content.resize(static_cast<size_t>(Stream.gcount()));
+		return Content;
 	}
 
 	std::string ToCrlf(const std::string& Text)

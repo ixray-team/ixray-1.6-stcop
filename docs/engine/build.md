@@ -57,6 +57,8 @@ Native MSVC unity builds of `xrGame` use a C++ precompiled header. MSVC RelWithD
 
 With the Visual Studio generator, native MSVC unity builds compile `xrGame` in the `xrGame_obj` project after Lua bindings are generated. The `xrGame` project links those objects after its DLL dependencies are ready.
 
+Use the `xrEngine` target to build the Windows game executable, `xrGame.dll`, the R4 renderer, and their dependencies. Separate solution targets such as LevelEditor and xrLevelBuilder are outside this build. Native MSVC Visual Studio projects compile engine DLL sources in object projects while their link dependencies build. The `xrScripts` object project waits for Lua binding generation and uses a precompiled header for C++ sources.
+
 Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet, except DLSS 310.9.1: CMake downloads the official NVIDIA release tag archive, verifies SHA-256, and extracts it into `build/dep/DLSS-310.9.1`. Offline builds require the extracted SDK or the cached `build/dep/DLSS-310.9.1.zip` archive. The release DLL and `DLSS-LICENSE.txt` are copied to the output directory. SDL: window and input. Audio playback uses OpenAL.
 
 ## xrLevelBuilder CUDA/OptiX

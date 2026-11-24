@@ -16,8 +16,9 @@
 #include "IniGenerator.h"
 
 #include <algorithm>
+#include <cctype>
 #include <map>
-#include <regex>
+#include <string_view>
 
 namespace XReflectTool
 {
@@ -75,10 +76,64 @@ namespace XReflectTool
 		return Out + "\"";
 	}
 
-	// The header that defines the class: the owner checks need the complete type
+	static constexpr std::string_view Whitespace = " \t\n\r\f\v";
+
+	static std::string_view TakePreviousWord(std::string_view& Text)
+	{
+		const size_t Last = Text.find_last_not_of(Whitespace);
+		if (Last == std::string_view::npos)
+		{
+			Text = {};
+			return {};
+		}
+		size_t First = Last + 1;
+		while (First > 0 && (Text[First - 1] == '_' || std::isalnum(static_cast<unsigned char>(Text[First - 1]))))
+		{
+			--First;
+		}
+		const std::string_view Word = Text.substr(First, Last + 1 - First);
+		Text = Text.substr(0, First);
+		return Word;
+	}
+
+	static bool DefinesClass(std::string_view Source, std::string_view Name)
+	{
+		for (size_t Position = Source.find(Name); Position != std::string_view::npos; Position = Source.find(Name, Position + 1))
+		{
+			auto Before = Source.substr(0, Position);
+			if (Before.empty() || !Whitespace.contains(Before.back()))
+			{
+				continue;
+			}
+
+			auto Keyword = TakePreviousWord(Before);
+			if (Keyword.size() > 4 && Keyword.ends_with("_API") && !Before.empty() && Whitespace.contains(Before.back()))
+			{
+				Keyword = TakePreviousWord(Before);
+			}
+			if (Keyword != "class" && Keyword != "struct")
+			{
+				continue;
+			}
+
+			auto After = Source.substr(Position + Name.size());
+			const size_t First = After.find_first_not_of(Whitespace);
+			if (First != std::string_view::npos && After.substr(First).starts_with("final"))
+			{
+				After.remove_prefix(First + 5);
+			}
+			const size_t Delimiter = After.find_first_not_of(Whitespace);
+			if (Delimiter != std::string_view::npos && (After[Delimiter] == ':' || After[Delimiter] == '{'))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Owner checks need the header that defines the class.
 	static std::string FindClassHeader(const std::string& Name, const std::vector<std::string>& Paths, std::map<std::string, std::string>& Cache)
 	{
-		const std::regex Definition("\\b(class|struct)\\s+(\\w+_API\\s+)?" + Name + "\\s*(final\\s*)?[:{]");
 		for (const std::string& Path : Paths)
 		{
 			if (!Path.ends_with(".h") && !Path.ends_with(".hpp"))
@@ -91,7 +146,7 @@ namespace XReflectTool
 			{
 				It = Cache.emplace(Path, ReadFile(Path)).first;
 			}
-			if (It->second.find(Name) != std::string::npos && std::regex_search(It->second, Definition))
+			if (DefinesClass(It->second, Name))
 			{
 				return Path;
 			}

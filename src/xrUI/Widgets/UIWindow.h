@@ -1,5 +1,4 @@
 #pragma once
-#include "../xrEngine/xr_level_controller.h"
 #include "../xrCore/FormatParsers/XML/Expression.h"
 class CUIWindow;
 

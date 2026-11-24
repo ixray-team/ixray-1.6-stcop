@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIListBoxItem.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "UIScrollView.h"
 #include "../../xrServerEntities/object_broker.h"
 #include "UIStatic.h"

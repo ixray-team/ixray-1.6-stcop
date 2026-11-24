@@ -3,6 +3,7 @@
 #include "mesh_data.h"
 #include "../../xrPhysics/iphworld.h"
 #include "../../xrCore/Collision/xr_area.h"
+#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 #include "../Entry/Terrain/Terrain.h"
 #include "../Entry/Road/Road.h"
 

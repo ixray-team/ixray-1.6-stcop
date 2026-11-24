@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIScrollBar.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "UI3tButton.h"
 #include "UIScrollBox.h"
 #include "../UICursor.h"

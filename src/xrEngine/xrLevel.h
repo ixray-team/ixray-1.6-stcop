@@ -3,6 +3,7 @@
 #pragma warning(disable: 4715)
 #include "ExportDefines.h"
 #include "../xrCore/guid.h"
+#include "../xrCore/FormatParsers/LevelCForm/CFormTypes.h"
 
 enum fsL_Chunks
 {
@@ -52,32 +53,11 @@ enum EBuildQuality
 	ebq_force_u16 = u16(-1)
 };
 
-enum class CFormVersions : u32 // because old CForm version was just an 4-b int
-{
-	Vanilla = 4,
-	VanillaChunked,
-	VanillaChunkedData,
-	Instanced,
-	InstancedChunked,
-	InstancedChunkedData,
-	// Keep existing version numbers stable. Streamed masters contain metadata only.
-	Streamed,
-	StreamedInstanced
-};
-
 #pragma pack(push,8)
 struct hdrLEVEL
 {
 	u16 XRLC_version;
 	u16 XRLC_quality;
-};
-
-struct hdrCFORM
-{
-	CFormVersions version;
-	u32 vertcount;
-	u32 facecount;
-	Fbox aabb;
 };
 
 struct hdrNODES

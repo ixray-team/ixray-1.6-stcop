@@ -2,6 +2,7 @@
 #include "mesh_data.h"
 #include "../../xrPhysics/IPHWorld.h"
 #include "../../xrCore/Collision/xr_area.h"
+#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 
 CFormBuilder::CFormBuilder()
 {

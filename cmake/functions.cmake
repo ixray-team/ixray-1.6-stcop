@@ -124,6 +124,12 @@ function(ixray_split_compile target)
 		cmake_language(DEFER DIRECTORY [[${CMAKE_SOURCE_DIR}]] CALL _ixray_split_compile_usage ${target} ${objs})")
 endfunction()
 
+function(ixray_split_compile_for_msvc target)
+	if(CMAKE_GENERATOR MATCHES "^Visual Studio" AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT IXRAY_CROSS_COMPILATION)
+		ixray_split_compile(${target} ${ARGN})
+	endif()
+endfunction()
+
 function(_ixray_split_compile_sources target)
 	set(link_inputs "\\.(rc|def|manifest|ico|bmp)$")
 	get_target_property(sources ${target} SOURCES)

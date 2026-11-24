@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UITabButton.h"
+#include "../../xrEngine/xr_level_controller.h"
 
 CUITabButton::CUITabButton()
 {}

@@ -57,6 +57,8 @@ if(IXRAY_USE_MIMALLOC AND IXRAY_MIMALLOC_AVAILABLE AND NOT IXRAY_ASAN)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different "${mimalloc_SOURCE_DIR}/LICENSE" "${IXRAY_OUTPUT}/licenses/mimalloc-LICENSE.txt"
 	)
 endif()
+
+ixray_split_compile_for_msvc(xrCore)
 if(WIN32)
 	# Prebuilt SDK libraries exist only for Windows.
 	target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})

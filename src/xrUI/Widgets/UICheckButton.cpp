@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "UICheckButton.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "UIXmlInit.h"
 #include "UIHint.h"
 #include "../../xrEngine/xr_input.h"	

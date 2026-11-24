@@ -43,7 +43,11 @@ endif()
 
 # xrScripts project
 add_library(xrScripts SHARED ${XRPS_SRC_FILES})
-set_target_properties(xrScripts PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT IXRAY_CROSS_COMPILATION)
+    target_precompile_headers(xrScripts PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>")
+else()
+    set_target_properties(xrScripts PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+endif()
 
 # XREFLECT Lua bindings
 ixray_reflect_lua(xrScripts xrScripts PCH "stdafx.h" SOURCES ${XRPS_SRC_FILES})
@@ -76,3 +80,5 @@ if (APPLE)
     # the engine runs LuaJIT in interpreter mode there.
     target_compile_definitions(xrScripts PRIVATE IXR_APPLE_SERIES)
 endif()
+
+ixray_split_compile_for_msvc(xrScripts)

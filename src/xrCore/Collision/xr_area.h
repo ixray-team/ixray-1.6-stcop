@@ -1,6 +1,6 @@
 #pragma once
 #include "xr_collide_defs.h"
-#include "../FormatParsers/LevelCForm/CFormIO.h"
+#include "../FormatParsers/LevelCForm/CFormFormat.h"
 
 // refs
 class ISpatial;

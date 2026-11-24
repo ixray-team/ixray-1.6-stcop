@@ -2,6 +2,7 @@
 #include "../../xrCore/Collision/xr_area.h"
 #include "../../xrCore/Collision/ISpatial.h"
 #include "../../xrCore/Collision/Frustum.h"
+#include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 
 namespace
 {
