@@ -32,6 +32,8 @@ class CWeaponRPG7;
 class CWeaponRG6;
 class CWeaponPistol;
 class CParticlesObject;
+class CSilencer;
+class CGrenadeLauncher;
 class CUIStatic;
 class CFlamethrower;
 struct TAmmoBones;

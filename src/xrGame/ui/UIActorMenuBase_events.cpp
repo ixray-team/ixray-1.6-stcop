@@ -13,6 +13,9 @@
 #include "../InventoryVolumeSystem.h"
 #include "../InventoryWeaponSlotLayout.h"
 #include "../eatable_item_object.h"
+#include "../medkit.h"
+#include "../antirad.h"
+#include "../BottleItem.h"
 #include "../Car.h"
 #include "../../xrUI/UICursor.h"
 

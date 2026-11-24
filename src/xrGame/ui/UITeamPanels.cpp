@@ -1,5 +1,8 @@
 #include "StdAfx.h"
 #include "UITeamPanels.h"
+#include "UITeamState.h"
+#include "Level.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "ui/UIStatsIcon.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIStatic.h"

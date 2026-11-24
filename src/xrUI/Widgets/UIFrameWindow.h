@@ -1,6 +1,8 @@
 #pragma once
 #include "UIWindow.h"
-#include "UIStatic.h"
+#include "../ui_defs.h"
+
+class CUIStatic;
 
 class UI_API CUIFrameWindow: public CUIWindow,
 					  public ITextureOwner

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "HudSound.h"
-#include "Actor.h"
 #include "DofManager.h"
+#include "../xrEngine/device.h"
 
-class HUD_SOUND_COLLECTION;
 class CActor;
 class CMotionDef;
+class motion_marks;
 class CHudPdaAnimator;
 class CHudItemAnimator;
 class CBackpackAnimator;

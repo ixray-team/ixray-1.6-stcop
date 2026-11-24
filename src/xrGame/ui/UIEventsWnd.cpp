@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "UIEventsWnd.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"

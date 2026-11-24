@@ -15,7 +15,6 @@
 #include "../xrEngine/StatGraph.h"
 #include "PhraseDialogManager.h"
 #include "../../xrUI/ui_defs.h"
-#include "ControllerAutoaim.h"
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
 #include "CustomDevice.h"

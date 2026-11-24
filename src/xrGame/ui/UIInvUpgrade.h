@@ -9,8 +9,8 @@
 #pragma once
 
 #include "../../xrUI/Widgets/UIStatic.h"
-#include "../../xrUI/xrUIXmlParser.h"
-#include "../../xrUI/UIXmlInit.h"
+
+class CUIXml;
 
 namespace inventory::upgrade
 {

@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "script_game_object.h"
+#include "ScriptInventoryItemTypes.h"
 #include "WeaponsModifiers.h"
 #include "game_object_space.h"
 #include "sight_manager_space.h"

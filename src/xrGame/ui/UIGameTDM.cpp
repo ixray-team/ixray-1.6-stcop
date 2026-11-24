@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "UIGameTDM.h"
+#include "UISpawnWnd.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "game_cl_base.h"
 

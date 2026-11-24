@@ -6,6 +6,7 @@
 #include "entity_alive.h"
 
 #include "../Include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "animation_utils.h"
 #ifdef DEBUG
 #include "PHDebug.h"

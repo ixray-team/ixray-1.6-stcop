@@ -2,6 +2,7 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "Entity.h"
 #include "GrenadeLauncher.h"
+#include "Silencer.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "ExplosiveRocket.h"
 #include "Actor.h"

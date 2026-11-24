@@ -1,10 +1,6 @@
 #pragma once
 
-#include "UIGameCustom.h"
 #include "UIGameDM.h"
-
-#include "../../xrUI/Widgets/UIDialogWnd.h"
-#include "ui/UISpawnWnd.h"
 
 // refs 
 

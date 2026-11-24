@@ -2,6 +2,7 @@
 #include "UICellCustomItems.h"
 #include "UIInventoryUtilities.h"
 #include "../Weapon.h"
+#include "../eatable_item.h"
 #include "UIDragDropListEx.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"

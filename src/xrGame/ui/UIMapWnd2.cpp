@@ -6,6 +6,7 @@
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/UIHelper.h"
 #include "UITaskWnd.h"
+#include "../GameTask.h"
 #include "PdaConstants.h"
 #include "../../xrEngine/string_table.h"
 

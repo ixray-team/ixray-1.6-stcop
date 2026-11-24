@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "UITeamHeader.h"
 #include "UITeamState.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 
 UITeamHeader::UITeamHeader(UITeamState const * const parent) : 

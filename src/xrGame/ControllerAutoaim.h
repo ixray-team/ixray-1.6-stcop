@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Actor.h"
-#include "actor_memory.h"
+#include <utility>
 
-#include "../xrCore/_flags.h"
 #include "../xrCore/math/_vector3d.h"
 
 class CActor;

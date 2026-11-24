@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UIWindow.h"
-#include "UIButton.h"
+#include "UIStatic.h"
 
 class UI_API CUIProgressBar : 
 	public CUIWindow

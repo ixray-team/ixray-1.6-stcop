@@ -20,6 +20,8 @@
 #include "inventory_upgrade.h"
 #include "Level.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "Silencer.h"
+#include "GrenadeLauncher.h"
 
 bool CInventoryItem::has_upgrade_group(const shared_str& upgrade_group_id)
 {

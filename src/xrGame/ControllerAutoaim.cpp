@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "ControllerAutoaim.h"
+#include "Actor.h"
+#include "actor_memory.h"
 #include "../xrEngine/CameraBase.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../xrEngine/xr_collide_form.h"

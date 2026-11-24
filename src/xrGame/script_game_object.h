@@ -15,12 +15,8 @@
 #include "game_graph_space.h"
 #include "game_location_selector.h"
 #include "Artefact.h"
-#include "medkit.h"
-#include "antirad.h"
 #include "CustomOutfit.h"
 #include "Scope.h"
-#include "Silencer.h"
-#include "GrenadeLauncher.h"
 #include "InventoryBox.h"
 #include "InventoryOwner.h"
 #include "Actor.h"
@@ -33,9 +29,7 @@
 #include "space_restrictor.h"
 #include "AnomalyZone.h"
 #include "HudItem.h"
-#include "FoodItem.h"
 #include "PhysicsShellHolder.h"
-#include "BottleItem.h"
 #include "danger_object.h"
 #include "danger_manager.h"		
 #include "GameTaskDefs.h"
@@ -47,7 +41,6 @@
 #include "alife_space.h"
 #include "pda_space.h"
 #include "../xrSound/ai_sounds.h"
-#include "GameTaskDefs.h"
 #include "patrol_path_manager_space.h"
 #include "ai_monster_space.h"
 #include "game_object_space.h"
@@ -89,6 +82,12 @@ class CScriptGameObject;
 class CZoneCampfire;
 class CPhysicObject;
 class CArtefact;
+class CMedkit;
+class CAntirad;
+class CSilencer;
+class CGrenadeLauncher;
+class CFoodItem;
+class CBottleItem;
 
 #ifdef DEBUG
 	template <typename _object_type>

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 
 #include "UIStatsWnd.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrEngine/string_table.h"
 
 //////////////////////////////////////////////////////////////////////////

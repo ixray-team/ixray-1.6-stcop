@@ -36,6 +36,7 @@
 #include "ui/UIActorMenu.h"
 #include "ui/UISkinSelector.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #define CTA_GAME_WND_XML	"ui_game_cta.xml"
 

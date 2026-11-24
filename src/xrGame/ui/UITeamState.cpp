@@ -5,6 +5,8 @@
 
 #include "UIPlayerItem.h"
 #include "UITeamHeader.h"
+#include "Level.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIScrollView.h"

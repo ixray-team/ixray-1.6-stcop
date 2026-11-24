@@ -1,17 +1,18 @@
 #pragma once
 
 #include "../../xrUI/Widgets/UIWindow.h"
-#include "../../xrUI/xrUIXmlParser.h"
-#include "../../xrUI/UIXmlInit.h"
-
-#include "game_cl_base.h"
 #include "../xrEngine/string_table.h"
-#include "Level.h"
 #include "../xrCore/Containers/associative_vector.h"
 
 class CUIStatic;
 
 class UITeamState;
+class CUIXml;
+
+namespace tinyxml2
+{
+	class XMLNode;
+}
 
 class UITeamHeader final : public CUIWindow
 {
@@ -27,7 +28,7 @@ private:
 	TranslatedStrings			m_translated_strings;
 
 	UITeamState const * const	m_parent;
-	XML_NODE*					m_team_header_root;
+	tinyxml2::XMLNode*					m_team_header_root;
 
 	void			InitColumnsStatics	(CUIXml& uiXml);
 	void			InitFieldsStatics	(CUIXml& uiXml);

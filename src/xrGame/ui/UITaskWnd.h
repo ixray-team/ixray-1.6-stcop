@@ -3,13 +3,13 @@
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../../xrCore/Containers/associative_vector.h"
 #include "../GameTaskDefs.h"
-#include "../GameTask.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
 #include "PdaConstants.h"
 #include "UISecondTaskWnd.h"
 class CPdaUiSounds;
 class CUIMapWnd;
 class CUIStatic;
+class CGameTask;
 class CUIXml;
 class CUITaskItem;
 class CUI3tButton;

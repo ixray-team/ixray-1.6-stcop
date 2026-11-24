@@ -13,7 +13,7 @@
 #include "../holder_custom.h"
 #include "../Car.h"
 #include "../Level.h"
-#include "../medkit.h"
+#include "../eatable_item.h"
 #include "../Weapon.h"
 #include "../trade_parameters.h"
 #include "UICellItemFactory.h"

@@ -1,10 +1,8 @@
 #ifndef UIPANELSCLASSFACTORY
 #define UIPANELSCLASSFACTORY
 
-#include "UITeamState.h"
-#include "UIPlayerItem.h"
-
 class UITeamPanels;
+class UITeamState;
 
 class UIPanelsClassFactory final
 {

@@ -4,9 +4,10 @@
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIListWnd.h"
 #include "../../xrUI/Widgets/UIListItem.h"
-#include "../../xrUI/UIXmlInit.h"
-#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIMultiTextStatic.h"
+
+class CUI3tButton;
+class CUIXml;
 
 using FIELDS_VECTOR = xr_vector<CUI3tButton*>;
 using FIELDS_VECTOR_it = FIELDS_VECTOR::iterator;

@@ -6,6 +6,8 @@
 #include "../../xrUI/UICursor.h"
 #include "UICellItem.h"
 #include "../medkit.h"
+#include "../antirad.h"
+#include "../BottleItem.h"
 #include "../eatable_item_object.h"
 #include "../WeaponMagazined.h"
 #include "../PDA.h"

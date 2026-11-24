@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "UIDMStatisticWnd.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../Level.h"
 #include "../game_cl_base_weapon_usage_statistic.h"
 

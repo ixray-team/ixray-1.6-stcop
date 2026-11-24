@@ -1,7 +1,7 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
-#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
 
 class CUIFrameWindow;
 class CUIFrameLineWnd;

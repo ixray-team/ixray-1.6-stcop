@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../xrCore/Collision/Frustum.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "../xrCore/Collision/xr_collide_defs.h"
-#include "Render.h"
 #include "pure_relcase.h"
 
-class IRender_Sector;
 class CObject;
 class ISpatial;
 

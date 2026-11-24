@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "HudPdaAnimator.h"
+#include "Actor.h"
 #include "UIGameCustom.h"
 #include "Inventory.h"
 #include "InventoryWeaponSlotLayout.h"

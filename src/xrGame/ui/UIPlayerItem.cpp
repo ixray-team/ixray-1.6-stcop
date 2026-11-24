@@ -2,6 +2,8 @@
 #include "UIPlayerItem.h"
 #include "UITeamState.h"
 #include "UITeamPanels.h"
+#include "Level.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "ui/UIStatsIcon.h"

@@ -4,8 +4,9 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "UIPanelsClassFactory.h"
 #include "../../xrUI/xrUIXmlParser.h"
-#include "../../xrUI/UIXmlInit.h"
+#include "../xrCore/Containers/associative_vector.h"
 
+class ClientID;
 class UITeamState;
 
 class UITeamPanels final : public CUIWindow

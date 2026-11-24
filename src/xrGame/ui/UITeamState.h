@@ -1,20 +1,20 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
-#include "../../xrUI/xrUIXmlParser.h"
-#include "../../xrUI/UIXmlInit.h"
-
-#include "game_cl_base.h"
 #include "game_base.h"
-#include "Level.h"
-
+#include "../xrCore/client_id.h"
 #include "../xrCore/Containers/associative_vector.h"
 
 class UITeamPanels;
 class CUIFrameLineWnd;
 class CUIScrollView;
-class CUIXml;
 class UIPlayerItem;
 class UITeamHeader;
+class CUIXml;
+
+namespace tinyxml2
+{
+	class XMLNode;
+}
 
 class UITeamState final : public CUIWindow
 {
@@ -42,7 +42,7 @@ private:
 	ETeam					myTeam;
 	MapClientIdToUIPlayer	myPlayers;
 	
-	XML_NODE*				teamXmlNode;
+	tinyxml2::XMLNode*				teamXmlNode;
 	CUIXml*					mainUiXml;
 	
 		

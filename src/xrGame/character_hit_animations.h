@@ -1,9 +1,11 @@
 #pragma once
+#include "../Include/xrRender/animation_motion.h"
+
+class CBlend;
 class CEntityAlive;
 class IKinematics;
+class IKinematicsAnimated;
 
-//#include "../Include/xrRender/KinematicsAnimated.h"
-#include "../Include/xrRender/KinematicsAnimated.h"
 class character_hit_animation_controller
 {
 public:

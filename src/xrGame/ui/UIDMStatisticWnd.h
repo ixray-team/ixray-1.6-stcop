@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UIStatsWnd.h"
-#include "../game_cl_base.h"
 
 struct Weapon_Statistic;
 

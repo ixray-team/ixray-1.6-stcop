@@ -1,16 +1,19 @@
 #pragma once
 
 #include "../../xrUI/Widgets/UIWindow.h"
-#include "../../xrUI/xrUIXmlParser.h"
-#include "../../xrUI/UIXmlInit.h"
-
-#include "game_cl_base.h"
-#include "Level.h"
+#include "game_base.h"
+#include "../xrCore/client_id.h"
 #include "../xrCore/Containers/associative_vector.h"
 
 class UITeamState;
 class UITeamPanels;	//for switching teams
 class CUIStatsIcon;
+class CUIXml;
+
+namespace tinyxml2
+{
+	class XMLNode;
+}
 
 class UIPlayerItem final :
 	public CUIWindow
@@ -23,7 +26,7 @@ private:
 	// we just call method RemovePlayer
 	UITeamState*	m_teamState;
 	UITeamPanels*	m_teamPanels;
-	XML_NODE*		m_player_node_root;
+	tinyxml2::XMLNode*		m_player_node_root;
 	ETeam			m_prevTeam;
 	s32				m_checkPoints;
 

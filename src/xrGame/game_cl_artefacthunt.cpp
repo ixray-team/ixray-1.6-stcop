@@ -3,6 +3,7 @@
 #include "xrMessages.h"
 #include "Level.h"
 #include "UIGameAHunt.h"
+#include "ui/UISpawnWnd.h"
 #include "map_manager.h"
 #include "LevelGameDef.h"
 #include "Hit.h"

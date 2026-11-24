@@ -1,6 +1,5 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
-#include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/uiabstract.h"
 #include "../../xrUI/ui_defs.h"
 #include "../map_location_defs.h"
@@ -8,6 +7,7 @@
 
 class CUIStatic;
 class CUIXml;
+class CUIXmlInit;
 class CMapLocation;
 
 struct SSpotRenderItem
