@@ -1,6 +1,6 @@
 // Do NOT build this file seperately. It is included in dTriList.cpp automatically.
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "../../../xrCore/Collision/cl_intersect.h"
 #include "dTriCollideK.h"
 #include "dSortTriPrimitive.h"

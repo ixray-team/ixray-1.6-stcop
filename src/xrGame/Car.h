@@ -22,7 +22,7 @@
 #include "PHCommander.h"
 #include "PHContact.h"
 #include "ParticlesPlayer.h"
-#include "gamepersistent.h"
+#include "GamePersistent.h"
 #include "ParticlesObject.h"
 #include "RocketLauncher.h"
 #include "../xrEngine/GameMtlLib.h"
