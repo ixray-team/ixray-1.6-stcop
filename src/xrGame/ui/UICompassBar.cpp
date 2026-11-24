@@ -2,6 +2,7 @@
 #include "UICompassBar.h"
 #include "UICompassProjection.h"
 #include "UICompassLabelGenerator.h"
+#include "UICompassHazardState.h"
 #include "../Actor.h"
 #include "../Level.h"
 #include "../map_location.h"
@@ -94,6 +95,14 @@ void CUICompassBar::Init()
 
     InitWindowAndBackground(uiXml, xmlInit);
     InitLayoutFromXml(uiXml);
+
+    if (uiXml.NavigateToNode("compass_bar:hazard_state", 0))
+    {
+        CUICompassHazardState* HazardState = new CUICompassHazardState();
+        HazardState->SetAutoDelete(true);
+        AttachChild(HazardState);
+        HazardState->InitFromXml(uiXml, "compass_bar:hazard_state");
+    }
 
     _layerBg = new CUIWindow();
     _layerBg->SetAutoDelete(true);

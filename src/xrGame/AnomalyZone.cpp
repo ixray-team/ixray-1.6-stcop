@@ -6,6 +6,7 @@
 #include "PHDestroyable.h"
 #include "Actor.h"
 #include "EncyclopediaCatalog.h"
+#include "AnomalyZoneRegistry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../xrEngine/EngineAPI.h"
@@ -472,6 +473,8 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return					(false);
 
+	AnomalyZoneRegistry::Add(this);
+
 	CSE_Abstract				*e = (CSE_Abstract*)(DC);
 	CSE_ALifeAnomalyZone			*Z = smart_cast<CSE_ALifeAnomalyZone*>(e);
 	VERIFY						(Z);
@@ -577,6 +580,7 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 
 void CAnomalyZone::net_Destroy() 
 {
+	AnomalyZoneRegistry::Remove(this);
 	g_pGamePersistent->Environment().eff_Rain->RemoveRainCollidableObject(this);
 
 	StopIdleParticles		();
