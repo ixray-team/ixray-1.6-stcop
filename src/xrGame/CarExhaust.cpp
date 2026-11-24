@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #ifdef DEBUG
 #include "ode_include.h"
 #include "../xrEngine/StatGraph.h"
