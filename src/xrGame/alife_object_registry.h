@@ -35,13 +35,13 @@ public:
 		ALIFE_OBJECT_ID_S()
 		{
 			for (u16 i = 0; i < SIZE; ++i)
-				ids[i] = 0xFFFF;
+				ids[i] = ALife::INVALID_OBJECT_ID;
 		}
 		ALIFE_OBJECT_ID_S(ALife::_OBJECT_ID id)
 		{
 			ids[0] = id;
 			for (u16 i = 1; i < SIZE; ++i)
-				ids[i] = 0xFFFF;
+				ids[i] = ALife::INVALID_OBJECT_ID;
 		}
 		ALife::_OBJECT_ID ids[SIZE];
 
@@ -51,7 +51,7 @@ public:
 			{
 				if (ids[i] == id)
 					return;
-				if (ids[i] == 0xFFFF)
+				if (ids[i] == ALife::INVALID_OBJECT_ID)
 				{
 					ids[i] = id;
 					return;
@@ -66,9 +66,9 @@ public:
 			{
 				if (ids[i] == id)
 				{
-					ids[i] = 0xFFFF;
+					ids[i] = ALife::INVALID_OBJECT_ID;
 				}
-				else if (ids[i] != 0xFFFF)
+				else if (ids[i] != ALife::INVALID_OBJECT_ID)
 				{
 					++validCount;
 				}
