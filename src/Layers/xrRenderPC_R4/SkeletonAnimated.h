@@ -67,6 +67,25 @@ private:
 	void						LL_BlendKeys				( CKey& Result, const SKeyTable& keys );
 	virtual void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) ) override;
 
+	struct SInertialOffset
+	{
+		Fvector					OffsetR = {};
+		Fvector					VelocityR = {};
+		Fvector					OffsetT = {};
+		Fvector					VelocityT = {};
+		float					Time = 0.f;
+		bool					Pending = false;
+
+		void					Clear					()
+		{
+			OffsetR.set(0.f, 0.f, 0.f);
+			VelocityR.set(0.f, 0.f, 0.f);
+			OffsetT.set(0.f, 0.f, 0.f);
+			VelocityT.set(0.f, 0.f, 0.f);
+			Pending = false;
+		}
+	};
+
 	struct SInertialBone
 	{
 		Fquaternion				LastQ;
@@ -75,14 +94,10 @@ private:
 		Fvector					PrevT = {};
 		Fvector					SourceVelocityR = {};
 		Fvector					SourceVelocityT = {};
-		Fvector					OffsetR = {};
-		Fvector					VelocityR = {};
-		Fvector					OffsetT = {};
-		Fvector					VelocityT = {};
-		float					Time = 0.f;
-		u8						Channel = 0;
+		SInertialOffset			Base;
+		SInertialOffset			Layer;
+		u8						LayerChannel = 0;
 		bool					Valid = false;
-		bool					Pending = false;
 		bool					Enabled = true;
 	};
 

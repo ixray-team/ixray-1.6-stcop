@@ -1237,10 +1237,8 @@ void CKinematicsAnimated::LL_SetInertializationBone(u16 bone, bool enabled)
 	{
 		SInertialBone& S = m_InertialBones[bone];
 		S.Enabled = enabled;
-		S.OffsetR.set(0.f, 0.f, 0.f);
-		S.VelocityR.set(0.f, 0.f, 0.f);
-		S.OffsetT.set(0.f, 0.f, 0.f);
-		S.VelocityT.set(0.f, 0.f, 0.f);
+		S.Base.Clear();
+		S.Layer.Clear();
 	}
 }
 
@@ -1262,11 +1260,8 @@ void CKinematicsAnimated::LL_ResetInertialization()
 	for (SInertialBone& S : m_InertialBones)
 	{
 		S.Valid = false;
-		S.Pending = false;
-		S.OffsetR.set(0.f, 0.f, 0.f);
-		S.VelocityR.set(0.f, 0.f, 0.f);
-		S.OffsetT.set(0.f, 0.f, 0.f);
-		S.VelocityT.set(0.f, 0.f, 0.f);
+		S.Base.Clear();
+		S.Layer.Clear();
 		S.SourceVelocityR.set(0.f, 0.f, 0.f);
 		S.SourceVelocityT.set(0.f, 0.f, 0.f);
 	}
@@ -1294,7 +1289,6 @@ void CKinematicsAnimated::InertialAdvance()
 	const float Dt = std::min(Gap, 0.1f);
 	for (SInertialBone& S : m_InertialBones)
 	{
-		const float HalfLife = (S.Time > 0.f ? S.Time : m_InertialTime) / 3.f;
 		if (S.Valid && m_InertialDelta > EPS_S && Gap <= 0.1f)
 		{
 			S.SourceVelocityT.sub(S.LastT, S.PrevT).div(m_InertialDelta);
@@ -1320,8 +1314,12 @@ void CKinematicsAnimated::InertialAdvance()
 
 		S.PrevQ = S.LastQ;
 		S.PrevT = S.LastT;
-		Inertialization::Decay(S.OffsetT, S.VelocityT, HalfLife, Dt);
-		Inertialization::Decay(S.OffsetR, S.VelocityR, HalfLife, Dt);
+		for (SInertialOffset* Offset : { &S.Base, &S.Layer })
+		{
+			const float HalfLife = (Offset->Time > 0.f ? Offset->Time : m_InertialTime) / 3.f;
+			Inertialization::Decay(Offset->OffsetT, Offset->VelocityT, HalfLife, Dt);
+			Inertialization::Decay(Offset->OffsetR, Offset->VelocityR, HalfLife, Dt);
+		}
 	}
 
 	m_InertialStamp = Now;
@@ -1339,9 +1337,14 @@ void CKinematicsAnimated::InertialMarkPart(u16 part, float time, u8 channel)
 	{
 		if (Bone < m_InertialBones.size())
 		{
-			m_InertialBones[Bone].Pending = true;
-			m_InertialBones[Bone].Time = time;
-			m_InertialBones[Bone].Channel = channel;
+			SInertialBone& S = m_InertialBones[Bone];
+			SInertialOffset& Offset = channel == 0 ? S.Base : S.Layer;
+			Offset.Pending = true;
+			Offset.Time = time;
+			if (channel != 0)
+			{
+				S.LayerChannel = channel;
+			}
 		}
 	}
 }
@@ -1379,8 +1382,9 @@ void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
 		const CKey& To = Forward ? KeyStart : KeyEnd;
 
 		SInertialBone& S = m_InertialBones[Bone];
-		S.OffsetT.mad(Fvector().sub(From.T, To.T), Weight);
-		S.OffsetR.mad(Inertialization::QuatLog(Fquaternion().mul(From.Q, Inertialization::QuatInverse(To.Q))), Weight);
+		SInertialOffset& Offset = blend.channel != 0 && blend.channel == S.LayerChannel ? S.Layer : S.Base;
+		Offset.OffsetT.mad(Fvector().sub(From.T, To.T), Weight);
+		Offset.OffsetR.mad(Inertialization::QuatLog(Fquaternion().mul(From.Q, Inertialization::QuatInverse(To.Q))), Weight);
 	}
 }
 
@@ -1392,25 +1396,45 @@ void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update, u8 cha
 	}
 
 	SInertialBone& S = m_InertialBones[bone];
-	if (!update && S.Channel != 0 && (channel_mask & (1 << S.Channel)) == 0)
+	if (update)
 	{
-		return;
-	}
-
-	if (update && S.Pending)
-	{
-		S.Pending = false;
-		if (S.Valid && S.Enabled)
+		const auto Capture = [&](SInertialOffset& Offset, const SInertialOffset& Other, bool OtherOuter)
 		{
-			S.OffsetT.sub(S.LastT, key.T);
-			S.VelocityT = S.SourceVelocityT;
-			S.OffsetR = Inertialization::QuatLog(Fquaternion().mul(S.LastQ, Inertialization::QuatInverse(key.Q)));
-			S.VelocityR = S.SourceVelocityR;
-		}
+			if (!Offset.Pending)
+			{
+				return;
+			}
+
+			Offset.Pending = false;
+			if (!S.Valid || !S.Enabled)
+			{
+				return;
+			}
+
+			const Fquaternion OtherQ = Inertialization::QuatExp(Other.OffsetR);
+			Fquaternion Rest = OtherOuter ? Fquaternion().mul(Inertialization::QuatInverse(OtherQ), S.LastQ) : Fquaternion(S.LastQ);
+			const Fquaternion Inner = OtherOuter ? Fquaternion(key.Q) : Fquaternion().mul(OtherQ, key.Q);
+			Rest.normalize();
+
+			Offset.OffsetT.sub(S.LastT, key.T).sub(Other.OffsetT);
+			Offset.VelocityT.sub(S.SourceVelocityT, Other.VelocityT);
+			Offset.OffsetR = Inertialization::QuatLog(Fquaternion().mul(Rest, Inertialization::QuatInverse(Inner)));
+			Offset.VelocityR.sub(S.SourceVelocityR, Other.VelocityR);
+		};
+
+		Capture(S.Base, S.Layer, true);
+		Capture(S.Layer, S.Base, false);
 	}
 
-	key.T.add(S.OffsetT);
-	key.Q.mul(Inertialization::QuatExp(S.OffsetR), Fquaternion(key.Q));
+	key.T.add(S.Base.OffsetT);
+	key.Q.mul(Inertialization::QuatExp(S.Base.OffsetR), Fquaternion(key.Q));
+
+	if (update || S.LayerChannel == 0 || (channel_mask & (1 << S.LayerChannel)) != 0)
+	{
+		key.T.add(S.Layer.OffsetT);
+		key.Q.mul(Inertialization::QuatExp(S.Layer.OffsetR), Fquaternion(key.Q));
+	}
+
 	key.Q.normalize();
 
 	if (update)
