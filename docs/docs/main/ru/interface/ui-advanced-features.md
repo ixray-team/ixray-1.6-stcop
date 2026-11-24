@@ -20,6 +20,7 @@
 8. [SVG на HUD](hud-svg-vector-icons.md)
 9. [Прогресс бар веса](weight-progress-bar.md)
 10. [Окно сна](sleep-dialog.md)
+11. [Профили полос прокрутки](scrollbar-profiles.md)
 
 ## Быстрые переключатели
 

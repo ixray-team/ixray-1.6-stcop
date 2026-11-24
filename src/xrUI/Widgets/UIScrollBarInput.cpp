@@ -6,16 +6,7 @@
 
 ScrollHitZone CUIScrollBar::hitTestScrollZone() const
 {
-	CUIWindow* thumb = GetThumbWindow();
-	if (!thumb)
-	{
-		return ScrollHitZone::None;
-	}
-
 	Fvector2 cursorPos = GetUICursor().GetCursorPosition();
-	Frect boxRect;
-	thumb->GetAbsoluteRect(boxRect);
-
 	Frect decRect;
 	Frect incRect;
 	_decButton->GetAbsoluteRect(decRect);
@@ -30,6 +21,14 @@ ScrollHitZone CUIScrollBar::hitTestScrollZone() const
 	{
 		return ScrollHitZone::IncButton;
 	}
+
+	CUIWindow* thumb = GetThumbWindow();
+	if (!thumb)
+	{
+		return ScrollHitZone::None;
+	}
+	Frect boxRect;
+	thumb->GetAbsoluteRect(boxRect);
 
 	Frect barRect;
 	const_cast<CUIScrollBar*>(this)->GetAbsoluteRect(barRect);
@@ -91,6 +90,10 @@ bool CUIScrollBar::applyHitZone(ScrollHitZone zone)
 
 bool CUIScrollBar::OnKeyboardHold(int dik)
 {
+	if (IsStyled())
+	{
+		return ScrollBarBase::OnKeyboardHold(dik);
+	}
 	if (dik == MOUSE_1 && (_lastHoldTimeMs + _holdDelay) < Device.dwTimeContinual)
 	{
 		if (OnMouseDownEx())
@@ -107,21 +110,38 @@ bool CUIScrollBar::handleFixedLayoutMouseAction(CUIWindow* thumb, EUIMessages mo
 	switch (mouseAction)
 	{
 	case WINDOW_LBUTTON_UP:
+		if (GetMouseCapturer() != thumb)
+		{
+			return false;
+		}
 		SetCapture(thumb, false);
 		_mouseState = 0;
 		return true;
 	case WINDOW_LBUTTON_DOWN:
+	case WINDOW_LBUTTON_DB_CLICK:
+	{
+		Frect ThumbRect;
+		thumb->GetAbsoluteRect(ThumbRect);
+		Fvector2 CursorPos = GetUICursor().GetCursorPosition();
+		if (!ThumbRect.in(CursorPos))
+		{
+			return false;
+		}
 		SetCapture(thumb, true);
 		return true;
+	}
 	case WINDOW_MOUSE_MOVE:
 	{
-		const bool imCapturer = (GetMouseCapturer() == thumb);
+		if (GetMouseCapturer() != thumb)
+		{
+			return false;
+		}
 		Fvector2 cursorPos = GetUICursor().GetCursorPosition();
 		Frect boxRect;
 		thumb->GetAbsoluteRect(boxRect);
 		const bool cursorOver = boxRect.in(cursorPos);
 
-		if (imCapturer && cursorOver)
+		if (cursorOver)
 		{
 			Fvector2 thumbPos = thumb->GetWndPos();
 			Fvector2 delta = GetUICursor().GetCursorPositionDelta();
@@ -159,6 +179,21 @@ bool CUIScrollBar::OnMouseAction(float x, float y, EUIMessages mouseAction)
 		return true;
 	default:
 		break;
+	}
+
+	if (IsStyled())
+	{
+		return StyledMouseAction(x, y, mouseAction);
+	}
+
+	if (mouseAction == WINDOW_LBUTTON_DOWN || mouseAction == WINDOW_LBUTTON_DB_CLICK)
+	{
+		_mouseState = 0;
+		if (OnMouseDownEx())
+		{
+			_lastHoldTimeMs = Device.dwTimeContinual;
+			return true;
+		}
 	}
 
 	CUIWindow* thumb = GetThumbWindow();

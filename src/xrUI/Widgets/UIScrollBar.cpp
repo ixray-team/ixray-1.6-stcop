@@ -161,7 +161,22 @@ void CUIScrollBar::Show(bool show)
 	{
 		return;
 	}
+	if (!show)
+	{
+		StopStyledDrag();
+		_holdButtonDir = 0;
+		_holdTrackDir = 0;
+	}
 	ScrollBarBase::Show(show);
+}
+
+void CUIScrollBar::Update()
+{
+	ScrollBarBase::Update();
+	if (IsStyled())
+	{
+		UpdateStyled();
+	}
 }
 
 void CUIScrollBar::Enable(bool enable)
@@ -219,6 +234,13 @@ void CUIScrollBar::layoutThumbGeometry(CUIWindow* thumb, float boxSz)
 
 void CUIScrollBar::UpdateScrollBar()
 {
+	if (IsStyled())
+	{
+		LayoutStyled();
+		ApplyStyledColors();
+		return;
+	}
+
 	CUIWindow* thumb = GetThumbWindow();
 	if (!thumb)
 	{
@@ -256,7 +278,7 @@ void CUIScrollBar::SetPosScrollFromView(float viewPos, float viewWidth, float vi
 	const int scrollSize = ScrollSize();
 	const float pos = viewPos - viewOffs;
 	const float workSize = float(_scrollWorkArea) - viewWidth;
-	SetScrollPosClamped(workSize ? iFloor(((pos / workSize) * scrollSize) + _minPos) : 0);
+	SetScrollPosClamped(workSize ? iFloor(((pos / workSize) * scrollSize) + _minPos) : _minPos);
 
 	if (_layoutMode == ScrollLayoutMode::Fixed)
 	{
@@ -295,7 +317,24 @@ void CUIScrollBar::NotifyScrollChanged()
 
 void CUIScrollBar::SendMessage(CUIWindow* wnd, s16 msg, void* data)
 {
-	if (wnd == _decButton)
+	if (IsStyled() && (wnd == _decButton || wnd == _incButton))
+	{
+		if (msg == BUTTON_DOWN)
+		{
+			_holdButtonDir = wnd == _incButton ? 1 : -1;
+			_holdStartTime = Device.dwTimeGlobal;
+			_holdLastTime = _holdStartTime;
+			if (_holdButtonDir > 0)
+			{
+				TryScrollInc();
+			}
+			else
+			{
+				TryScrollDec();
+			}
+		}
+	}
+	else if (wnd == _decButton)
 	{
 		if (msg == BUTTON_CLICKED || msg == BUTTON_DOWN)
 		{
@@ -319,61 +358,31 @@ void CUIScrollBar::SendMessage(CUIWindow* wnd, s16 msg, void* data)
 	ScrollBarBase::SendMessage(wnd, msg, data);
 }
 
+int CUIScrollBar::GetScrollStep(bool ByScrollbox) const
+{
+	if (!ByScrollbox)
+	{
+		return _stepSize;
+	}
+	return IsStyled() ? std::max(1, iFloor(float(_stepSize) * _style.WheelLines)) : _stepSize * 4;
+}
+
 void CUIScrollBar::TryScrollInc(bool byScrollbox)
 {
-	if (ScrollInc(byScrollbox))
+	if (_scrollPos <= _maxPos - _pageSize + 1)
 	{
+		SetScrollPos(_scrollPos + GetScrollStep(byScrollbox));
 		NotifyScrollChanged();
 	}
 }
 
 void CUIScrollBar::TryScrollDec(bool byScrollbox)
 {
-	if (ScrollDec(byScrollbox))
-	{
-		NotifyScrollChanged();
-	}
-}
-
-bool CUIScrollBar::ScrollDec(bool byScrollbox)
-{
 	if (_scrollPos > _minPos)
 	{
-		if (_scrollPos > _stepSize)
-		{
-			if (byScrollbox)
-			{
-				SetScrollPos(_scrollPos - _stepSize * 4);
-			}
-			else
-			{
-				SetScrollPos(_scrollPos - _stepSize);
-			}
-		}
-		else
-		{
-			SetScrollPos(0);
-		}
-		return true;
+		SetScrollPos(_scrollPos > _stepSize ? _scrollPos - GetScrollStep(byScrollbox) : _minPos);
+		NotifyScrollChanged();
 	}
-	return false;
-}
-
-bool CUIScrollBar::ScrollInc(bool byScrollbox)
-{
-	if (_scrollPos <= (_maxPos - _pageSize + 1))
-	{
-		if (byScrollbox)
-		{
-			SetScrollPos(_scrollPos + _stepSize * 4);
-		}
-		else
-		{
-			SetScrollPos(_scrollPos + _stepSize);
-		}
-		return true;
-	}
-	return false;
 }
 
 void CUIScrollBar::Reset()
@@ -410,6 +419,12 @@ void CUIScrollBar::Draw()
 
 void CUIScrollBar::SyncThumbFromScrollPos()
 {
+	if (IsStyled())
+	{
+		UpdateScrollBar();
+		return;
+	}
+
 	CUIWindow* thumb = GetThumbWindow();
 	if (thumb)
 	{
