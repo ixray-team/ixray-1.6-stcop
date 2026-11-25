@@ -18,9 +18,6 @@
 
 #include "PDA.h"
 #include "ai/monsters/basemonster/base_monster.h"
-#include "UIGameCustom.h"
-#include "ui/UIMainIngameWnd.h"
-#include "../../xrUI/Widgets/UIStatic.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "CharacterPhysicsSupport.h"
 #include "RadioactiveZone.h"
@@ -361,11 +358,6 @@ void CActorCondition::UpdateBoosters()
 			booster.second.fBoostValue = 0.0f;
 			DisableBoostParameters(booster.second);
 		}
-	}
-
-	if (m_object == Level().CurrentViewEntity() && !g_dedicated_server)
-	{
-		CurrentGameUI()->UIMainIngameWnd->UpdateBoosterIndicators(m_booster_influences);
 	}
 }
 

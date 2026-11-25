@@ -230,12 +230,12 @@ public:
 
 	void				ReceiveNews(GAME_NEWS_DATA* news);
 	void				UpdateMainIndicators();
-	void				UpdateBoosterIndicators(const xr_map<EBoostParams, SBooster> influences);
 
 	void				SetActiveVoiceIcon(bool active);
 	void				SetVoiceDistance(u8 distance);
 
 protected:
+	void				UpdateBoosterIndicators(const CEntityCondition::BOOSTER_MAP& influences);
 	void				UpdateQuickSlots();
 	void				SetWarningIconColorUI(CUIStatic* s, const u32 cl);
 	void				InitFlashingIcons(CUIXml* node);

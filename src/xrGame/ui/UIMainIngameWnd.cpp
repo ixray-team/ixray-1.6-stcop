@@ -807,6 +807,7 @@ void CUIMainIngameWnd::Update()
 	if (pActor)
 	{
 		UpdateNavigationHud();
+		UpdateBoosterIndicators(pActor->conditions().GetCurBoosterInfluences());
 	}
 
 	CUIWindow::Update();
@@ -1945,7 +1946,6 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 	}
 
 	UpdateQuickSlots();
-	UpdateBoosterIndicators(pActor->conditions().GetCurBoosterInfluences());
 
 	// Проверяем, должна ли панель быть видимой
 	// If hide quick slots option is disabled, panel is always visible
@@ -2018,7 +2018,7 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 	}
 }
 
-void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBooster> influences)
+void CUIMainIngameWnd::UpdateBoosterIndicators(const CEntityCondition::BOOSTER_MAP& influences)
 {
 	if (m_ind_boost_psy)
 		m_ind_boost_psy->Show(false);
