@@ -156,6 +156,8 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 			{
 				AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 			}
+
+			THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
 		}
 	}
 
@@ -261,6 +263,8 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 			{
 				AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 			}
+
+			THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
 		}
 	}
 
@@ -280,6 +284,8 @@ void CWeapon::StopShooting()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
 
 	StopShotEffector();
 	StopPattern();

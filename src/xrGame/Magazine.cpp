@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Magazine.h"
 #include "WeaponAmmo.h"
+#include "Weapons/Components/HudCartridges.h"
 
 void CMagazine::Load(const char* section)
 {
@@ -32,6 +33,11 @@ bool CMagazine::net_Spawn(CSE_Abstract* DC)
 		}
 
 		l_cartridge.Load(MagazineDesc().AmmoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+	}
+
+	if (THudCartridges* HudCartridges = GetComponent<THudCartridges>())
+	{
+		HudCartridges->Update(Cartridges.size(), Cartridges.empty() ? 0 : Cartridges.back().m_LocalAmmoType);
 	}
 
 	return Result;
@@ -69,6 +75,11 @@ void CMagazine::net_Import(NET_Packet& P)
 		}
 
 		l_cartridge.Load(MagazineDesc().AmmoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+	}
+
+	if (THudCartridges* HudCartridges = GetComponent<THudCartridges>())
+	{
+		HudCartridges->Update(Cartridges.size(), Cartridges.empty() ? 0 : Cartridges.back().m_LocalAmmoType);
 	}
 }
 

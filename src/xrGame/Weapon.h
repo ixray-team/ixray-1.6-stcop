@@ -37,6 +37,7 @@ class CGrenadeLauncher;
 class CUIStatic;
 class CFlamethrower;
 struct TAmmoBones;
+struct THudCartridges;
 
 class CWeapon : public CHudItemObject,
 				public CShootingObject
@@ -46,6 +47,7 @@ class CWeapon : public CHudItemObject,
 
 protected:
 	friend struct TAmmoBones;
+	friend struct THudCartridges;
 
 public:
 	CWeapon();

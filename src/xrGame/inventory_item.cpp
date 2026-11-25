@@ -26,6 +26,7 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "HudItem.h"
+#include "Weapons/Components/HudCartridges.h"
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
@@ -107,6 +108,11 @@ void CInventoryItem::Load(const char* section)
 
 	// FFx0001 ++ begin
 	SetDrawCost(pSettings->read_if_exists<bool>(section, "is_draw_cost", true));
+
+	if (pSettings->line_exist(section, "hud_cartridge_bones"))
+	{
+		object().CreateComponent<THudCartridges>();
+	}
 
 	// Highlight separated by delimeter ',' related item sections on mouseover from the actor's inventory
 	CurrentItemDesc = &SInventoryItemDesc::Registry::Get(section);
@@ -711,6 +717,11 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 {
 	model->CalculateBones(true);
 
+	if (THudCartridges* cartridges = object().GetComponent<THudCartridges>())
+	{
+		cartridges->Render(xform, model, DM);
+	}
+
 	for (const auto& [id, child] : m_children)
 	{
 		if (!child->m_attach_bone.size())
@@ -767,6 +778,11 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 			mirror.transform.mulB_43(child->m_attach_hud_offset);
 			::Render->set_Transform(mirror.transform);
 			::Render->add_Visual(mirror.model->dcast_RenderVisual(), true);
+
+			if (THudCartridges* cartridges = child->object().GetComponent<THudCartridges>())
+			{
+				cartridges->Render(mirror.transform, mirror.model, DM, i + 1);
+			}
 		}
 	}
 }
