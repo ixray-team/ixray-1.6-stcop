@@ -3,7 +3,7 @@
 
 float r1_fog(float3 wpos)
 {
-	return saturate(dot(float4(wpos, 1.0f), fog_plane));
+	return saturate(1.0f - (dot(wpos - eye_position, eye_direction) - fog_params.y) * fog_params.w);
 }
 
 float3 r1_v_hemi(float3 n)
