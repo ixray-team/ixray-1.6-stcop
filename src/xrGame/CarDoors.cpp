@@ -295,6 +295,10 @@ void CCar::SDoor::Init()
 		closed_angle-=2.f*M_PI/180.f;
 	}
 	joint->GetLimits(default_opened_angle,default_closed_angle,0);
+	// GetLimits returns the lower limit first and the upper limit second.
+	// The opening direction depends on pos_open, so select the real open
+	// limit explicitly instead of assuming default_opened_angle is always it.
+	spring_opened_angle = (pos_open > 0.f) ? default_closed_angle : default_opened_angle;
 	joint->PSecond_element()->SetAirResistance(0, 0);
 	CInifile* ini = pKinematics->LL_UserData();
 	LPCSTR b_name = pKinematics->LL_BoneName_dbg(bone_id);
@@ -469,12 +473,12 @@ void CCar::SDoor::Update()
 					// The hard hinge limit is the target, not opened_angle:
 					// opened_angle is intentionally two degrees inside the limit
 					// so the state machine can report "opened" before the leaf
-					// hits the stop. Using opened_angle as the spring target left
-					// the door visibly short of fully open.
-					const float Range = fabsf(default_opened_angle - default_closed_angle);
+					// hits the stop. spring_opened_angle selects the upper or
+					// lower limit according to pos_open.
+					const float Range = fabsf(spring_opened_angle - closed_angle);
 					if (Range > EPS)
 					{
-						const float Error = pos_open * (default_opened_angle - door_angle);
+						const float Error = pos_open * (spring_opened_angle - door_angle);
 						const float Rate = pos_open * GetAngleRate();
 
 						if (fabsf(Error) < CarDoorSpringSettleAngle &&

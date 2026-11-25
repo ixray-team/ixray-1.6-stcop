@@ -751,6 +751,7 @@ virtual void ApplyDamage			(u16 level);
 		float			dist_to_door_avlbl;
 		float			opened_angle;
 		float			closed_angle;
+		float			spring_opened_angle;
 		Fbox			ExitArea;
 		bool			ExitAreaValid;
 
@@ -837,6 +838,7 @@ virtual void ApplyDamage(u16 level);
 			a_vel=M_PI;
 // 			dist_to_door = 0.0f;
 			dist_to_door_avlbl = 3.0f;
+			spring_opened_angle = 0.f;
 			ExitArea.invalidate();
 			ExitAreaValid = false;
 
