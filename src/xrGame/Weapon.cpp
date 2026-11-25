@@ -35,6 +35,7 @@
 #include "ai/crow/ai_crow.h"
 #include "ai/monsters/bloodsucker/bloodsucker.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "Weapons/Components/HudCartridges.h"
 #include "WeaponAmmo.h"
 #include "ParticlesObject.h"
 #include "Silencer.h"
@@ -1206,6 +1207,8 @@ bool CWeapon::net_Spawn(CSE_Abstract* DC)
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
 
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
+
 	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
 	{
 		GLAmmoBones->UpdateGLAmmoBones(this, GetTargetAmmoType(true));
@@ -1745,6 +1748,8 @@ void CWeapon::ForceUpdateHUD()
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 	}
 
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
+
 	if (TShellBones* ShellBones = GetComponent<TShellBones>())
 	{
 		ShellBones->UpdateShellBones(this, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
@@ -1835,6 +1840,8 @@ static bool IsMuzzle(PIItem item)
 
 void CWeapon::OnAttachmentInc(PIItem item)
 {
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
+
 	if (IsMuzzle(item))
 	{
 		bool deeper = !m_muzzle;
@@ -4349,6 +4356,8 @@ void CWeapon::OnStateSwitch	(u8 S)
 		{
 			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 		}
+
+		THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
 	}
 }
 
@@ -4985,6 +4994,8 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
 		}
 
+		THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
+
 		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
 		{
 			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
@@ -5079,6 +5090,8 @@ void CWeapon::LoadChamber()
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, m_ChamberAmmoType);
 	}
 
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, m_ChamberAmmoType);
+
 	if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
 	{
 		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
@@ -5126,6 +5139,8 @@ void CWeapon::OnMotionMark(u8 state, const motion_marks& mark)
 		{
 			AmmoBones->UpdateAmmoBones(this, current_configuration, GetTargetAmmoType());
 		}
+
+		THudCartridges::Update(this, current_configuration, GetTargetAmmoType());
 
 		if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
 		{
@@ -5517,6 +5532,8 @@ void CWeapon::OnChangeVisual()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 
 	if (TGrenadeLauncherAmmoBones* GLAmmoBones = GetComponent<TGrenadeLauncherAmmoBones>())
 	{

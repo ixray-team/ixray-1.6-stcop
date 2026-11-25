@@ -33,6 +33,7 @@
 #include "../xrEngine/xr_input.h"
 #include "HUDManager.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "Weapons/Components/HudCartridges.h"
 #include "WeaponBinocularsVision.h"
 #include "../xrEngine/GamepadService.h"
 
@@ -927,6 +928,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
 		}
 
+		THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
+
 		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
 		{
 			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
@@ -1033,6 +1036,8 @@ void CWeaponMagazined::ReloadMagazine()
 		{
 			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
 		}
+
+		THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, AmmoType.MagazineType);
 
 		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
 		{
@@ -1437,6 +1442,8 @@ void CWeaponMagazined::state_Fire(float dt)
 				{
 					AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 				}
+
+				THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
 			}
 
 			if (cast_weapon_bm16() && AmmoElapsed.MagazineElapsed == 2 && GetQueueSize() == 2)
@@ -2304,6 +2311,7 @@ void CWeaponMagazined::switch2_Reload()
 {
 	CWeapon::FireEnd	();
 	m_bIsReloaded = false;
+	THudCartridges::Update(this, FakeReload(), GetTargetAmmoType(), true);
 	PlayAnimReload		();
 	PlayReloadSound		();
 	SetPending			(true);
@@ -2534,6 +2542,8 @@ void CWeaponMagazined::switch2_ChamberLoad()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 }
 
 void CWeaponMagazined::switch2_ChamberUnload()
@@ -2555,6 +2565,8 @@ void CWeaponMagazined::switch2_ChamberUnload()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, m_chamber.back().m_LocalAmmoType);
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, m_chamber.back().m_LocalAmmoType);
 }
 
 void CWeaponMagazined::switch2_ChamberCheck()
@@ -2599,6 +2611,8 @@ void CWeaponMagazined::switch2_ChamberCheck()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, is_empty ? undefined_ammo_type : m_bAmmoInChamber ? m_chamber.back().m_LocalAmmoType : m_magazine.back().m_LocalAmmoType);
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, is_empty ? undefined_ammo_type : m_bAmmoInChamber ? m_chamber.back().m_LocalAmmoType : m_magazine.back().m_LocalAmmoType);
 
 	if (TShellBones* ShellBones = GetComponent<TShellBones>())
 	{
@@ -3323,6 +3337,8 @@ void CWeaponMagazined::PlayAnimReload()
 				{
 					AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type);
 				}
+
+				THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type);
 
 				if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
 				{
