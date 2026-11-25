@@ -160,7 +160,14 @@ function evaluator_danger:evaluate()
 	end
 
 	-- инерция возврата
-	if self.a.danger_time ~= nil and self.object:best_danger() ~= nil and time_global() - self.a.danger_time < DANGER_INERTION_TIME then
+	local best_danger = self.object:best_danger()
+	-- Evaluate the explosion sound independently of the grenade.
+	if self.a.danger_type == danger_object.grenade and (best_danger == nil or best_danger:type() ~= danger_object.grenade) then
+		self.a.danger_time = nil
+		self.a.danger_type = nil
+	end
+
+	if self.a.danger_time ~= nil and best_danger ~= nil and time_global() - self.a.danger_time < DANGER_INERTION_TIME then
 	 	--printf("%s [%s] [%s]", self.object:name(), time_global() - self.danger_time, DANGER_INERTION_TIME)
 
 		db.storage[self.object:id()].danger_flag = true
@@ -177,7 +184,8 @@ function evaluator_danger:evaluate()
 	end
 
 	if self.mgr:initialized() and self.mgr:current_action_id() == stalker_ids.action_danger_planner then
-		self.a.danger_time = get_danger_time(self.object:best_danger())
+		self.a.danger_time = get_danger_time(best_danger)
+		self.a.danger_type = best_danger:type()
 	end
 
 	db.storage[self.object:id()].danger_flag = true

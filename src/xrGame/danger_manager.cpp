@@ -183,6 +183,11 @@ void CDangerManager::remove_links(const CObject* object)
 bool CDangerManager::useful			(const CDangerObject &object) const
 {
 	if (object.object() && !object.dependent_object()) {
+		if (object.type() == CDangerObject::eDangerTypeGrenade && !m_object->is_relation_enemy(object.object()))
+		{
+			return false;
+		}
+
 		IGNORED::const_iterator	I = std::find(m_ignored.begin(),m_ignored.end(),object.object()->ID());
 		if (I != m_ignored.end())
 			return				(false);
