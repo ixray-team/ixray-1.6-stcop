@@ -914,6 +914,7 @@ private:
 	bool			HandsIkBegin		(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkSprint		(SHandsIkFrame& F);
 	void			HandsIkSprintLeft	(SHandsIkFrame& F, MotionID SprintMotion, float SprintLayer);
+	void			HandsIkSprintCut	(SHandsIkFrame& F);
 	void			HandsIkWeaponPose	(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkFingerState	(SHandsIkFrame& F);
 	void			HandsIkWeaponDelta	(SHandsIkFrame& F);

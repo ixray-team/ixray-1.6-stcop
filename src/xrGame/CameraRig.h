@@ -365,6 +365,10 @@ struct SHudSprint
 	Fmatrix						BaseResidual[2] = { Fidentity, Fidentity };
 	MotionID					BaseMotion;
 	u32							BaseState = 0;
+	u32							BaseFrame = u32(-1);
+	bool						HandsCut = false;
+	float						CutGlue = 0.f;
+	float						CutTime = 0.f;
 	float						EndPower = 1.f;
 	float						Pose = 0.f;
 	float						PoseShape = 0.f;
@@ -392,6 +396,7 @@ struct SHudSprint
 	void			CutEnd			(IKinematicsAnimated* Model);
 	void			SmoothLayer		(SHandsIkFrame& F);
 	void			SmoothBase		(IKinematicsAnimated* Model, SHandsIkFrame& F);
+	bool			HandsSettling	();
 	void			Resolve			(IKinematicsAnimated* Model, const attachable_hud_item* Current);
 	bool			Play			(IKinematicsAnimated* Model, const attachable_hud_item* Current, MotionID Motion, bool Loop, float Phase, float Power = 1.f, bool Inertialize = false);
 	void			Stop			(IKinematicsAnimated* Model, float Blend);
