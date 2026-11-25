@@ -29,8 +29,7 @@ if (IXRAY_EDITORS)
     include("${CMAKE_MODULE_PATHEX}/cgltf.cmake")
 endif()
 
-# Resonance Audio 3rd
-include("${CMAKE_MODULE_PATHEX}/eigen.cmake")
+# Sound FFT (convolution reverb, HRTF, spectrum analyzer)
 include("${CMAKE_MODULE_PATHEX}/pffft.cmake")
 
 if(IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")

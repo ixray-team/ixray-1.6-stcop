@@ -16,10 +16,6 @@ if(NOT IXRAY_MP)
     list(FILTER SND_SRC_FILES EXCLUDE REGEX "Recorder/*.*")
 endif()
 
-if (NOT IXRAY_ENABLE_RESONANCEAUDIO)
-	list(FILTER SND_SRC_FILES EXCLUDE REGEX "Plugins/ResonanceAudio.*")
-endif()
-
 # xrSound project
 add_library(xrSound SHARED ${SND_SRC_FILES})
 target_include_directories(xrSound PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -39,12 +35,6 @@ target_link_libraries(xrSound PUBLIC pffft)
 target_link_libraries(xrSound PRIVATE Ogg::ogg)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbis)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbisfile)
-
-if (IXRAY_ENABLE_RESONANCEAUDIO)
-    target_link_libraries(xrSound PRIVATE ResonanceAudioStatic)
-else()
-    target_compile_definitions(xrSound PRIVATE DISABLE_RESONANCE_AUDIO)
-endif()
 
 if (IXRAY_MP)
     target_link_libraries(xrSound PRIVATE SpeexDSP::SpeexDSP)

@@ -7,7 +7,7 @@
 
 The system replaces the legacy **OpenAL / OpenAL Soft** audio stack with a modern pipeline: better spatialization, improved mixing, and richer processing without third-party sound libs. You can author custom filters and precise audio manipulations.
 
-Reverb is powered by [Resonance Audio](https://github.com/resonance-audio/resonance-audio).
+HRTF and reverb are built into the engine; no external audio library is needed on any platform. The HRTF uses the head-related impulse responses of the [SADIE](https://www.york.ac.uk/sadie-project/) database (KU100 dummy head), the same data Resonance Audio shipped.
 
 ![image](https://github.com/user-attachments/assets/8350c915-e1ec-4ea8-9485-a4dfc71c0543)
 
@@ -84,39 +84,49 @@ Implemented:
 
 ---
 
-### Resonance Audio (new)
+### Built-in room reverb (new)
 
 - **Type:**  
   **Parametric Algorithmic Reverb**
 
 - **Approach:**
-  - Computes reverb params (RT60, decay, frequency response) from:
-    - area size  
-    - materials  
-    - source/listener positions  
-  - Tails are generated **algorithmically** (no convolution, no FDN)  
-  - Early reflections are approximated with a simplified room model
+  - Every reverb zone gets its own bus with the `reverb` effect; its parameters come from the zone preset (decay time, HF decay ratio, air absorption, size, diffusion, reflections, room HF)
+  - The tail is a 16-line feedback delay network with separate decay times below and above about 1.4 kHz (`decay` and `decay * decay_hf * air_hf`), limited to about 11 kHz; the decay time holds in every octave up to 11 kHz
+  - A 16-channel diffuser spreads every sound over the lines, and the line lengths drift slowly (about 1.5 cents of pitch), so the tail stays dense and smooth instead of ringing like metal on shots and other short sounds
+  - Early reflections: one low-passed echo whose delay grows with the zone size (listener in the middle of a cube room)
+  - Decay changes glide over about one second, so walking between zones does not click
+  - The tail level over decay time matches the previous Resonance Audio reverb, so existing zone presets keep their loudness; a decay below about 0.16 s gives no tail, as before
 
 - **Benefits:**
   - Context-aware sound  
-  - Auto-adapts to environment  
   - Easy integration, minimal tuning  
   - Sounds outside the reverb zone play dry (no sampling)
+  - Same sound on Windows, Linux and macOS
 ---
 
 ### Reverb comparison
 
-| Parameter            | EFX (OpenAL)                      | Resonance Audio                                       |
+| Parameter            | EFX (OpenAL)                      | Built-in room reverb                                  |
 |----------------------|-----------------------------------|-------------------------------------------------------|
 | Type                 | Preset algorithmic                | Parametric algorithmic                                |
-| Early reflections    | Presets                           | Geometry-based modeling                               |
-| Late reverb          | Algorithmic                       | Algorithmic, auto-tuned                               |
-| Realism              | Medium                            | High (environment-adaptive)                           |
-| Adaptiveness         | Low                               | High                                                  |
-| Tuning               | Manual                            | Nearly automatic                                      |
+| Early reflections    | Presets                           | Room-size echo                                        |
+| Late reverb          | Algorithmic                       | Modulated 16-line feedback delay network, two-band decay |
+| Adaptiveness         | Low                               | Per-zone parameters, smooth zone transitions          |
+| Tuning               | Manual                            | Zone presets                                          |
 
 ---
-## 6. Sound Debug Info
+
+## 6. HRTF
+
+- The `spatialize` voice effect (default for the `effects` and `music` buses) renders 3D sounds binaurally for headphones
+- `snd_hrtf 1` turns it on, `snd_hrtf 0` falls back to plain stereo panning (`spatial`)
+- Direction changes are crossfaded every audio block, so moving sources do not click
+- Up to 512 voices use HRTF at once; further voices are panned
+- Parameters: `rolloff` (distance rolloff with HRTF), `fallback_rolloff` and `back_attenuation` (used by the panned fallback)
+- Sounds in front of the listener are rendered in front: the previous Resonance Audio build mirrored front and back
+
+---
+## 7. Sound Debug Info
 ![image](https://github.com/user-attachments/assets/462bf94d-03f5-45e3-a1d0-1830953afff5)
 
 Tools to visualize scene audio:
@@ -137,7 +147,7 @@ Tools to visualize scene audio:
 - Avoid cranking everything to max
 - Balance sources manually
 
-### 3. Working with reverb (Resonance Audio)
+### 3. Working with reverb
 - Assign correct surface materials (good practice in X-Ray SDK overall)
 - Configure base presets in `Shader Editor`
 - Pick presets matching expected zone intensity (test with `Play In Editor`)

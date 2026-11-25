@@ -127,7 +127,6 @@ jobs:
             -G "Ninja Multi-Config" \
             -DCMAKE_C_COMPILER=clang \
             -DCMAKE_CXX_COMPILER=clang++ \
-            -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
             -DIXRAY_CI=ON \
             -DIXRAY_PROFILER=OFF
 
@@ -222,7 +221,6 @@ jobs:
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -DDXMT_LLVM_PATH="$(brew --prefix llvm@15)" \
-            -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
             -DIXRAY_CI=ON \
             -DIXRAY_PROFILER=OFF
 

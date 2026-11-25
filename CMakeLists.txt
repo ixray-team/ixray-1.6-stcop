@@ -23,7 +23,6 @@ option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame and xrECore" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" ON)
 option(IXRAY_PROFILER_TRACY "Enable Tracy for perf debug" OFF)
 option(IXRAY_DISCORD_RPC "Enable Discord activity" ${WIN32})
-option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
 option(IXRAY_CROSS_COMPILATION "Enable cross-compilation" OFF)
 
 set(IXRAY_PHYSICS_BACKEND "ODE" CACHE STRING "Physics backend for xrPhysics: ODE or Box3D")

@@ -44,10 +44,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
             set_target_properties(${EmbreeTarget} PROPERTIES FOLDER "3rd Party/Embree Lib")
         endif()
     endforeach()
-    
-    if (IXRAY_ENABLE_RESONANCEAUDIO)
-        add_subdirectory("resonance-audio")
-    endif()
 endif()
 
 add_subdirectory("imgui")
@@ -80,12 +76,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(lunasvg PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(pffft PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(plutovg PROPERTIES ${IXRAY_FOLDER_3RD})
-    
-    if (IXRAY_ENABLE_RESONANCEAUDIO)
-        set_target_properties(ResonanceAudioStatic PROPERTIES ${IXRAY_FOLDER_3RD})
-        set_target_properties(SadieHrtfsObj PROPERTIES ${IXRAY_FOLDER_3RD})
-        set_target_properties(ResonanceAudioObj PROPERTIES ${IXRAY_FOLDER_3RD})
-    endif()
 endif()
 
 set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
