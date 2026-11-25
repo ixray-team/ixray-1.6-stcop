@@ -466,7 +466,8 @@ bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 	SCamEffectorInfo	prev			= m_cam_info;
 
 	bool res = inherited::ProcessCameraEffector	(eff);
-	if(res)
+	// A retiring absolute effector still supplies the rendered camera pose for this frame.
+	if (res || eff->AllowProcessingIfInvalid())
 	{
 		if(eff->GetHudAffect())
 		{
