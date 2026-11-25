@@ -4052,7 +4052,9 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		reload_offset.setXYZ(reload_rot);
 		const Fvector& reload_pos = hi->AimReloadOffsetPos;
 		reload_offset.translate_over(Fvector().set(reload_pos.x * aim_reload_pose, reload_pos.y * aim_reload_drop, reload_pos.z * aim_reload_pose).mad(hi->AimReloadPushPos, aim_reload_push));
-		trans.mulB_43(reload_offset);
+		Fmatrix hud_axes = hud_rotation;
+		hud_axes.c.set(0.f, 0.f, 0.f);
+		trans.mulB_43(Fmatrix().mul_43(Fmatrix().invert(hud_axes), Fmatrix().mul_43(reload_offset, hud_axes)));
 	}
 
 	if (IsZoomed())
