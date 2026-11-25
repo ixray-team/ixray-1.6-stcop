@@ -293,7 +293,7 @@ void CCustomDevice::switch_device()
 		return;
 	}
 
-	if (NextState == eShowing)
+	if (NextState == eShowing || NextState == eSprintStart || NextState == eSprintEnd)
 	{
 		return;
 	}
