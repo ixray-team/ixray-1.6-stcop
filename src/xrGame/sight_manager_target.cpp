@@ -12,236 +12,215 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "level_graph.h"
 #include "ai_space.h"
-#include "ai/stalker/ai_stalker_space.h"
 #include "detail_path_manager.h"
-
-void CSightManager::SetPointLookAngles(const Fvector &tPosition, float &yaw, float &pitch, Fvector const& look_position, const CGameObject *object)
-{
-	Fvector						my_position = look_position;
-	Fvector						target = tPosition;
-	if (!aim_target(my_position, target, object)) {
-		target					= tPosition;
-		my_position				= look_position;
-	}
-
-	target.sub					(my_position);
-	target.getHP				(yaw,pitch);
-
-	VERIFY						(_valid(yaw));
-	yaw							*= -1;
-
-	VERIFY						(_valid(pitch));
-	pitch						*= -1;
-}
-
 #include "Actor.h"
 #include "../xrEngine/CameraBase.h"
+
+void CSightManager::SetPointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, Fvector const& look_position, const CGameObject* object)
+{
+	Fvector my_position = look_position;
+	Fvector target = tPosition;
+	if (!aim_target(my_position, target, object))
+	{
+		target = tPosition;
+		my_position = look_position;
+	}
+
+	target.sub(my_position);
+	if (fis_zero(target.square_magnitude()))
+	{
+		target.set(0.f, 0.f, 1.f);
+	}
+
+	target.getHP(yaw, pitch);
+	VERIFY(_valid(yaw));
+	VERIFY(_valid(pitch));
+	yaw *= -1;
+	pitch *= -1;
+}
+
+void CSightManager::SetFirePointLookAngles(const Fvector& tPosition, float& yaw, float& pitch, Fvector const& look_position, const CGameObject* object)
+{
+	SetPointLookAngles(tPosition, yaw, pitch, look_position, object);
+}
+
 bool CSightManager::aim_target(Fvector& my_position, Fvector& aim_target, const CGameObject* object) const
 {
 	if (!object)
 	{
-		return (false);
+		return false;
 	}
 
 	if (m_object->aim_bone_id().size())
 	{
 		m_object->aim_target(aim_target, object);
-		return (true);
+		return true;
 	}
-	CGameObject* GO = const_cast<CGameObject*>(object);
 
-	if (GO && GO->cast_entity() && GO->cast_entity()->g_Alive() && (GO->cast_actor() || GO->cast_stalker()))
+	CGameObject* game_object = const_cast<CGameObject*>(object);
+	CActor* actor = game_object->cast_actor();
+	CEntity* entity = game_object->cast_entity();
+
+	if (entity && entity->g_Alive() && (actor || game_object->cast_stalker()))
 	{
-		if (GO->cast_actor() && GO->cast_actor()->HUDview())
+		if (actor && actor->HUDview())
 		{
-			aim_target = GO->cast_actor()->cam_Active()->vPosition;
+			aim_target = actor->cam_Active()->vPosition;
 		}
 		else
 		{
 			IKinematics* kinematics = PKinematics(object->Visual());
-			u16 bone_id = kinematics->LL_BoneID("bip01_head");
-			kinematics->LL_GetBoneWorldPosition(bone_id, object->XFORM(), aim_target);
+			kinematics->LL_GetBoneWorldPosition(kinematics->LL_BoneID("bip01_head"), object->XFORM(), aim_target);
 		}
-		return (true);
+		return true;
 	}
 
 	if (!object->use_center_to_aim())
 	{
-		return (false);
+		return false;
 	}
 
-	if (GO->cast_actor())
+	if (actor)
 	{
 		m_object->Visual()->dcast_PKinematics()->CalculateBBox(false);
 	}
 
 	m_object->Center(my_position);
 
-	//. hack is here, just because our actor model is animated with 20cm shift
-	m_object->XFORM().transform_tiny
-	(
-		my_position,
-		Fvector().set
-		(
-			.2f,
-			my_position.y - m_object->Position().y,
-			0.f
-		)
-	);
-
-	return (true);
-}
-
-void CSightManager::SetFirePointLookAngles(const Fvector &tPosition, float &yaw, float &pitch, Fvector const& look_position, const CGameObject *object)
-{
-	Fvector						my_position = look_position;
-	Fvector						target = tPosition;
-	if (!aim_target(my_position, target, object)) {
-		target					= tPosition;
-		my_position				= look_position;
-	}
-
-	target.sub					(my_position);
-	if (fis_zero(target.square_magnitude()))
-		target.set				(0.f,0.f,1.f);
-
-	target.getHP				(yaw,pitch);
-	VERIFY						(_valid(yaw));
-	VERIFY						(_valid(pitch));
-	yaw							*= -1;
-	pitch						*= -1;
+	// hack: the actor model is animated with a 20cm shift
+	m_object->XFORM().transform_tiny(my_position, Fvector().set(.2f, my_position.y - m_object->Position().y, 0.f));
+	return true;
 }
 
 void CSightManager::SetDirectionLook()
 {
-	if (GetDirectionAngles(object().movement().m_head.target.yaw, object().movement().m_head.target.pitch))
+	MonsterSpace::SBoneRotation& head = object().movement().m_head;
+	if (GetDirectionAngles(head.target.yaw, head.target.pitch))
 	{
-		object().movement().m_head.target.yaw *= -1;
-		object().movement().m_head.target.pitch *= 0; //-1;
+		head.target.yaw *= -1;
+		head.target.pitch = 0.f;
 	}
 	else
 	{
-		object().movement().m_head.target = object().movement().m_head.current;
+		head.target = head.current;
 	}
 
-	object().movement().m_body.target = object().movement().m_head.target;
+	object().movement().m_body.target = head.target;
 }
 
-void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, bool bDifferenceLook)
+void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex* tpNode, bool bDifferenceLook)
 {
-	SetDirectionLook	();
+	SetDirectionLook();
 
 	if (m_object->movement().detail().path().empty())
+	{
 		return;
+	}
 
-	SetLessCoverLook	(tpNode, MAX_HEAD_TURN_ANGLE, bDifferenceLook);
+	SetLessCoverLook(tpNode, MAX_HEAD_TURN_ANGLE, bDifferenceLook);
 }
 
-void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, float fMaxHeadTurnAngle, bool bDifferenceLook)
+void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex* tpNode, float fMaxHeadTurnAngle, bool bDifferenceLook)
 {
-	float					fAngleOfView, range, fMaxSquare = -1.f, fBestAngle = object().movement().m_head.target.yaw;
-	m_object->update_range_fov(range,fAngleOfView,m_object->eye_range,m_object->eye_fov);
-	fAngleOfView			= (fAngleOfView/180.f*PI)/2.f;
+	const ILevelGraph& level_graph = ai().level_graph();
+	const auto& detail = m_object->movement().detail();
+	const float body_yaw = object().movement().m_body.target.yaw;
 
-	CLevelGraph::CVertex	*tpNextNode = 0;
-	u32						node_id;
-	bool bOk = false;
-	if (bDifferenceLook && !m_object->movement().detail().path().empty() && (m_object->movement().detail().path().size() - 1 > m_object->movement().detail().curr_travel_point_index())) {
-		CLevelGraph::const_iterator	i, e;
-		ai().level_graph().begin(tpNode,i,e);
-		for ( ; i != e; ++i) {
-			node_id			= ai().level_graph().value(tpNode,i);
-			if (!ai().level_graph().valid_vertex_id(node_id))
+	float range = 0.f, fAngleOfView = 0.f;
+	m_object->update_range_fov(range, fAngleOfView, m_object->eye_range, m_object->eye_fov);
+	fAngleOfView = deg2rad(fAngleOfView) / 2.f;
+
+	const ILevelGraph::CVertex* tpNextNode = nullptr;
+	if (bDifferenceLook && !detail.path().empty() && detail.path().size() - 1 > detail.curr_travel_point_index())
+	{
+		const Fvector& next_point = detail.path()[detail.curr_travel_point_index() + 1].position;
+
+		ILevelGraph::const_iterator i, e;
+		level_graph.begin(tpNode, i, e);
+		for (; i != e; ++i)
+		{
+			const u32 node_id = level_graph.value(tpNode, i);
+			if (!level_graph.valid_vertex_id(node_id))
+			{
 				continue;
-			tpNextNode = ai().level_graph().vertex(node_id);
-			if (ai().level_graph().inside(tpNextNode,m_object->movement().detail().path()[m_object->movement().detail().curr_travel_point_index() + 1].position)) {
-				bOk = true;
+			}
+
+			const ILevelGraph::CVertex* node = level_graph.vertex(node_id);
+			if (level_graph.inside(node, next_point))
+			{
+				tpNextNode = node;
 				break;
 			}
 		}
 	}
 
-	if (!bDifferenceLook || !bOk) 
-		for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle; fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle; fIncrement += fMaxHeadTurnAngle/18.f) {
-			float fSquare = ai().level_graph().compute_high_square(-fIncrement,fAngleOfView,tpNode);
-			if (fSquare > fMaxSquare) {
+	float fMaxSquare = -1.f;
+	float fBestAngle = object().movement().m_head.target.yaw;
+
+	if (!tpNextNode)
+	{
+		for (float fIncrement = body_yaw - fMaxHeadTurnAngle; fIncrement <= body_yaw + fMaxHeadTurnAngle; fIncrement += fMaxHeadTurnAngle / 18.f)
+		{
+			const float fSquare = level_graph.compute_high_square(-fIncrement, fAngleOfView, tpNode);
+			if (fSquare > fMaxSquare)
+			{
 				fMaxSquare = fSquare;
 				fBestAngle = fIncrement;
 			}
 		}
-	else {
-		float fMaxSquareSingle = -1.f, fSingleIncrement = object().movement().m_head.target.yaw;
-		for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle; fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle; fIncrement += 2*fMaxHeadTurnAngle/60.f) {
-			float fSquare0 = ai().level_graph().compute_high_square(-fIncrement,fAngleOfView,tpNode);
-			float fSquare1 = ai().level_graph().compute_high_square(-fIncrement,fAngleOfView,tpNextNode);
-			if	(
-					(fSquare1 - fSquare0 > fMaxSquare) || 
-					(
-						fsimilar(fSquare1 - fSquare0,fMaxSquare,EPS_L) && 
-						(std::abs(fIncrement - object().movement().m_body.target.yaw) < std::abs(fBestAngle - object().movement().m_body.target.yaw))
-					)
-				)
+	}
+	else
+	{
+		for (float fIncrement = body_yaw - fMaxHeadTurnAngle; fIncrement <= body_yaw + fMaxHeadTurnAngle; fIncrement += 2 * fMaxHeadTurnAngle / 60.f)
+		{
+			const float fSquare = level_graph.compute_high_square(-fIncrement, fAngleOfView, tpNextNode) - level_graph.compute_high_square(-fIncrement, fAngleOfView, tpNode);
+			if (fSquare > fMaxSquare || (fsimilar(fSquare, fMaxSquare, EPS_L) && std::abs(fIncrement - body_yaw) < std::abs(fBestAngle - body_yaw)))
 			{
-				fMaxSquare = fSquare1 - fSquare0;
+				fMaxSquare = fSquare;
 				fBestAngle = fIncrement;
 			}
-
-			if (fSquare0 > fMaxSquareSingle) {
-				fMaxSquareSingle = fSquare0;
-				fSingleIncrement = fIncrement;
-			}
 		}
-		if (_sqrt(fMaxSquare) < 0*PI_DIV_6)
-			fBestAngle = fSingleIncrement;
 	}
 
 	object().movement().m_head.target.yaw = angle_normalize_signed(fBestAngle);
 	object().movement().m_head.target.pitch = 0;
-	VERIFY					(_valid(object().movement().m_head.target.yaw));
+	VERIFY(_valid(object().movement().m_head.target.yaw));
 }
-
 
 bool CSightManager::GetDirectionAngles(float& yaw, float& pitch)
 {
-	if (!object().movement().path().empty() && (m_object->movement().detail().curr_travel_point_index() + 1 < m_object->movement().detail().path().size()))
+	const auto& path = object().movement().path();
+	const u32 index = m_object->movement().detail().curr_travel_point_index();
+	if (path.empty() || index + 1 >= m_object->movement().detail().path().size())
 	{
-		Fvector Temp;
-		Temp.sub
-		(
-			object().movement().path()[m_object->movement().detail().curr_travel_point_index() + 1].position,
-			object().movement().path()[m_object->movement().detail().curr_travel_point_index()].position
-		);
-
-		Temp.getHP(yaw, pitch);
-		return (true);
+		return GetDirectionAnglesByPrevPositions(yaw, pitch);
 	}
-	return (GetDirectionAnglesByPrevPositions(yaw, pitch));
+
+	Fvector().sub(path[index + 1].position, path[index].position).getHP(yaw, pitch);
+	return true;
 }
 
 bool CSightManager::GetDirectionAnglesByPrevPositions(float& yaw, float& pitch)
 {
-	Fvector Direction;
-	int i = m_object->ps_Size();
-
-	if (i < 2)
+	const u32 count = m_object->ps_Size();
+	if (count < 2)
 	{
-		return (false);
+		return false;
 	}
 
-	CObject::SavedPosition PreviousPosition = m_object->ps_Element(i - 2);
-	CObject::SavedPosition CurrentPosition = m_object->ps_Element(i - 1);
-	VERIFY(_valid(PreviousPosition.vPosition));
-	VERIFY(_valid(CurrentPosition.vPosition));
-	Direction.sub(CurrentPosition.vPosition, PreviousPosition.vPosition);
+	const Fvector previous = m_object->ps_Element(count - 2).vPosition;
+	const Fvector current = m_object->ps_Element(count - 1).vPosition;
+	VERIFY(_valid(previous));
+	VERIFY(_valid(current));
 
-	if (Direction.magnitude() < EPS_L)
+	const Fvector direction = Fvector().sub(current, previous);
+	if (direction.magnitude() < EPS_L)
 	{
-		return (false);
+		return false;
 	}
 
-	Direction.getHP(yaw, pitch);
+	direction.getHP(yaw, pitch);
 	VERIFY(_valid(yaw));
 	VERIFY(_valid(pitch));
-
-	return (true);
+	return true;
 }

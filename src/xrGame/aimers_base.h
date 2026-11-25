@@ -17,25 +17,28 @@ class IKinematicsAnimated;
 namespace aimers
 {
 
+constexpr u32 max_pose_bones = 4;
+
+struct pose_cache
+{
+	const IKinematics* kinematics = nullptr;
+	MotionID animation;
+	u16 bones_ids[max_pose_bones] = {};
+	u32 count = 0;
+	Fmatrix local_bones[max_pose_bones] = {};
+};
+
 class base
 {
 public:
 	base(const base& other) = delete;
 	base& operator=(const base& other) = delete;
-	base(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target);
+	base(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, pose_cache& cache);
 
 protected:
-	template <u32 bone_count0, u32 bone_count1>
-	void fill_bones(u32 const (&bones)[bone_count0], u16 const (&bones_ids)[bone_count1],
-		Fmatrix (&local_bones)[bone_count1], Fmatrix (&global_bones)[bone_count1])
-	{
-		static_assert(bone_count0 <= bone_count1, "Invalid arrays passed");
-		fill_bones(bones, bone_count0, bones_ids, bone_count1, local_bones, global_bones);
-	}
-
-	void fill_bones(u32 const* bones, u32 bones_count, u16 const* bones_ids, u32 bones_ids_count, Fmatrix* local_bones, Fmatrix* global_bones);
+	void fill_bones(u16 const* bones_ids, u32 count, Fmatrix* local_bones);
+	void rotate_children(u16 root_id, Fmatrix const& rotation, u16 const* bones_ids, u32 count, Fmatrix* local_bones) const;
 	void aim_at_position(Fvector const& bone_position, Fvector const& object_position, Fvector object_direction, Fmatrix& result);
-	static void callback(CBoneInstance* bone);
 
 protected:
 	Fmatrix m_start_transform = Fidentity;
@@ -43,7 +46,8 @@ protected:
 	IKinematics& m_kinematics;
 	IKinematicsAnimated& m_animated;
 	Fvector const& m_target;
-	MotionID m_animation_id = {};
+	pose_cache& m_cache;
+	MotionID m_animation_id;
 	bool m_animation_start = false;
 };
 

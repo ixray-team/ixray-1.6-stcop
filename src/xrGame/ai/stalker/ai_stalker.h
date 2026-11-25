@@ -12,6 +12,7 @@
 #include "../../ObjectHandler.h"
 #include "../../AI_PhraseDialogManager.h"
 #include "../../step_manager.h"
+#include "../../Descs/AIStalkerDesc.h"
 #include "../../../xrScripts/script_export_space.h"
 
 #include "ai_stalker_state_net.h"
@@ -103,8 +104,7 @@ class CAI_Stalker final :
 	public CAI_PhraseDialogManager,
 	public CStepManager
 {
-private:
-	typedef CCreature								inherited;
+	using inherited = CCreature;
 
 public:
 	using inherited::useful;
@@ -125,20 +125,9 @@ private:
 	SBoneProtections*				m_boneHitProtection;
 	bool m_isUpdateBestWeapon = false;
 	const char* m_onUpdateBestWeaponName = {};
-	// weapon dispersion
-private:
-	float							m_disp_walk_stand;
-	float							m_disp_walk_crouch;
-	float							m_disp_run_stand;
-	float							m_disp_run_crouch;
-	float							m_disp_stand_stand;
-	float							m_disp_stand_crouch;
-	float							m_disp_stand_stand_zoom;
-	float							m_disp_stand_crouch_zoom;
+	const SAIStalker* CurrentStalkerDesc = nullptr;
 
 private:
-	float							m_power_fx_factor;
-
 	Fvector HeadLookOrientation;
 	u32 HeadLookTime;
 private:
@@ -509,105 +498,9 @@ public:
 			void						debug_planner					(const script_planner *planner);
 #endif
 
-private:
-	u32				m_pstl_min_queue_size_far;
-	u32				m_pstl_max_queue_size_far;
-	u32				m_pstl_min_queue_interval_far;
-	u32				m_pstl_max_queue_interval_far;
+public:
+	const SAIStalker&					StalkerDesc						() const { VERIFY(CurrentStalkerDesc); return *CurrentStalkerDesc; }
 
-	u32				m_pstl_min_queue_size_medium;
-	u32				m_pstl_max_queue_size_medium;
-	u32				m_pstl_min_queue_interval_medium;
-	u32				m_pstl_max_queue_interval_medium;
-
-	u32				m_pstl_min_queue_size_close;
-	u32				m_pstl_max_queue_size_close;
-	u32				m_pstl_min_queue_interval_close;
-	u32				m_pstl_max_queue_interval_close;
-
-
-	u32				m_shtg_min_queue_size_far;
-	u32				m_shtg_max_queue_size_far;
-	u32				m_shtg_min_queue_interval_far;
-	u32				m_shtg_max_queue_interval_far;
-
-	u32				m_shtg_min_queue_size_medium;
-	u32				m_shtg_max_queue_size_medium;
-	u32				m_shtg_min_queue_interval_medium;
-	u32				m_shtg_max_queue_interval_medium;
-
-	u32				m_shtg_min_queue_size_close;
-	u32				m_shtg_max_queue_size_close;
-	u32				m_shtg_min_queue_interval_close;
-	u32				m_shtg_max_queue_interval_close;
-
-
-	u32				m_snp_min_queue_size_far;
-	u32				m_snp_max_queue_size_far;
-	u32				m_snp_min_queue_interval_far;
-	u32				m_snp_max_queue_interval_far;
-
-	u32				m_snp_min_queue_size_medium;
-	u32				m_snp_max_queue_size_medium;
-	u32				m_snp_min_queue_interval_medium;
-	u32				m_snp_max_queue_interval_medium;
-
-	u32				m_snp_min_queue_size_close;
-	u32				m_snp_max_queue_size_close;
-	u32				m_snp_min_queue_interval_close;
-	u32				m_snp_max_queue_interval_close;
-
-
-	u32				m_mchg_min_queue_size_far;
-	u32				m_mchg_max_queue_size_far;
-	u32				m_mchg_min_queue_interval_far;
-	u32				m_mchg_max_queue_interval_far;
-
-	u32				m_mchg_min_queue_size_medium;
-	u32				m_mchg_max_queue_size_medium;
-	u32				m_mchg_min_queue_interval_medium;
-	u32				m_mchg_max_queue_interval_medium;
-
-	u32				m_mchg_min_queue_size_close;
-	u32				m_mchg_max_queue_size_close;
-	u32				m_mchg_min_queue_interval_close;
-	u32				m_mchg_max_queue_interval_close;
-
-
-	u32				m_auto_min_queue_size_far;
-	u32				m_auto_max_queue_size_far;
-	u32				m_auto_min_queue_interval_far;
-	u32				m_auto_max_queue_interval_far;
-
-	u32				m_auto_min_queue_size_medium;
-	u32				m_auto_max_queue_size_medium;
-	u32				m_auto_min_queue_interval_medium;
-	u32				m_auto_max_queue_interval_medium;
-
-	u32				m_auto_min_queue_size_close;
-	u32				m_auto_max_queue_size_close;
-	u32				m_auto_min_queue_interval_close;
-	u32				m_auto_max_queue_interval_close;
-
-//	float			m_pstl_queue_fire_dist_close;
-	float			m_pstl_queue_fire_dist_med;
-	float			m_pstl_queue_fire_dist_far;
-
-//	float			m_shtg_queue_fire_dist_close;
-	float			m_shtg_queue_fire_dist_med;
-	float			m_shtg_queue_fire_dist_far;
-
-//	float			m_snp_queue_fire_dist_close;
-	float			m_snp_queue_fire_dist_med;
-	float			m_snp_queue_fire_dist_far;
-
-//	float			m_mchg_queue_fire_dist_close;
-	float			m_mchg_queue_fire_dist_med;
-	float			m_mchg_queue_fire_dist_far;
-
-//	float			m_auto_queue_fire_dist_close;
-	float			m_auto_queue_fire_dist_med;
-	float			m_auto_queue_fire_dist_far;
 public:
 	IC		u32							pstl_min_queue_size_far			() const;
 	IC		u32							pstl_max_queue_size_far			() const;
@@ -853,9 +746,6 @@ public:
 public:
 	virtual void						create_anim_mov_ctrl						( CBlend *b, Fmatrix *start_pose, bool local_animation ) override;
 	virtual void						destroy_anim_mov_ctrl						() override;
-
-private:
-	bool	m_can_select_items;
 
 public:
 	IC		const u32					&throw_time_interval						() const;

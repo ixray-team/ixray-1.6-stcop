@@ -281,7 +281,7 @@ void CAI_Stalker::choose_equipment()
 
 void CAI_Stalker::select_items()
 {
-	if (!m_can_select_items)
+	if (!StalkerDesc().CanSelectItems)
 	{
 		return;
 	}

@@ -90,7 +90,6 @@ CObjectHandler(this),
 	m_movement_manager				= 0;
 	m_group_behaviour				= true;
 	m_boneHitProtection				= nullptr;
-	m_power_fx_factor				= flt_max;
 	m_wounded						= false;
 #ifdef DEBUG
 	m_debug_planner					= 0;
@@ -270,217 +269,9 @@ void CAI_Stalker::reload			(const char* section)
 		CObjectHandler::reload		(section);
 
 	if (!already_dead())
-		sight().reload				(section);
-
-	if (!already_dead())
 		movement().reload			(section);
 
-	m_disp_walk_stand				= pSettings->r_float(section,"disp_walk_stand");
-	m_disp_walk_crouch				= pSettings->r_float(section,"disp_walk_crouch");
-	m_disp_run_stand				= pSettings->r_float(section,"disp_run_stand");
-	m_disp_run_crouch				= pSettings->r_float(section,"disp_run_crouch");
-	m_disp_stand_stand				= pSettings->r_float(section,"disp_stand_stand");
-	m_disp_stand_crouch				= pSettings->r_float(section,"disp_stand_crouch");
-	m_disp_stand_stand_zoom			= pSettings->r_float(section,"disp_stand_stand_zoom");
-	m_disp_stand_crouch_zoom		= pSettings->r_float(section,"disp_stand_crouch_zoom");
-
 	m_can_select_weapon				= true;
-
-	const char* queue_sect				= pSettings->read_if_exists<str_c>(*cNameSect(),"fire_queue_section", "");
-	if(xr_strcmp(queue_sect, "") && pSettings->section_exist(queue_sect))
-	{
-		m_pstl_min_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_size_far", 1);
-		m_pstl_max_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"pstl_max_queue_size_far", 1);
-		m_pstl_min_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_interval_far", 1000);
-		m_pstl_max_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"pstl_max_queue_interval_far", 1250);
-
-		m_pstl_min_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_size_medium", 2);
-		m_pstl_max_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"pstl_max_queue_size_medium", 4);
-		m_pstl_min_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_interval_medium", 750);
-		m_pstl_max_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"pstl_max_queue_interval_medium", 1000);
-
-		m_pstl_min_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_size_close", 3);
-		m_pstl_max_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"pstl_max_queue_size_close", 5);
-		m_pstl_min_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_interval_close", 500);
-		m_pstl_max_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"pstl_max_queue_interval_close", 750);
-
-
-		m_shtg_min_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"shtg_min_queue_size_far", 1);
-		m_shtg_max_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"shtg_max_queue_size_far", 1);
-		m_shtg_min_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"shtg_min_queue_interval_far", 1250);
-		m_shtg_max_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"shtg_max_queue_interval_far", 1500);
-
-		m_shtg_min_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"shtg_min_queue_size_medium", 1);
-		m_shtg_max_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"shtg_max_queue_size_medium", 1);
-		m_shtg_min_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"shtg_min_queue_interval_medium", 750);
-		m_shtg_max_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"shtg_max_queue_interval_medium", 1250);
-
-		m_shtg_min_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"shtg_min_queue_size_close", 1);
-		m_shtg_max_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"shtg_max_queue_size_close", 1);
-		m_shtg_min_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"shtg_min_queue_interval_close", 500);
-		m_shtg_max_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"shtg_max_queue_interval_close", 1000);
-
-
-		m_snp_min_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"snp_min_queue_size_far", 1);
-		m_snp_max_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"snp_max_queue_size_far", 1);
-		m_snp_min_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"snp_min_queue_interval_far", 3000);
-		m_snp_max_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"snp_max_queue_interval_far", 4000);
-
-		m_snp_min_queue_size_medium			= pSettings->read_if_exists<u32>(queue_sect,"snp_min_queue_size_medium", 1);
-		m_snp_max_queue_size_medium			= pSettings->read_if_exists<u32>(queue_sect,"snp_max_queue_size_medium", 1);
-		m_snp_min_queue_interval_medium		= pSettings->read_if_exists<u32>(queue_sect,"snp_min_queue_interval_medium", 3000);
-		m_snp_max_queue_interval_medium		= pSettings->read_if_exists<u32>(queue_sect,"snp_max_queue_interval_medium", 4000);
-
-		m_snp_min_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"snp_min_queue_size_close", 1);
-		m_snp_max_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"snp_max_queue_size_close", 1);
-		m_snp_min_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"snp_min_queue_interval_close", 3000);
-		m_snp_max_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"snp_max_queue_interval_close", 4000);
-
-
-		m_mchg_min_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"mchg_min_queue_size_far", 1);
-		m_mchg_max_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"mchg_max_queue_size_far", 6);
-		m_mchg_min_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"mchg_min_queue_interval_far", 500);
-		m_mchg_max_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"mchg_max_queue_interval_far", 1000);
-
-		m_mchg_min_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"mchg_min_queue_size_medium", 4);
-		m_mchg_max_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"mchg_max_queue_size_medium", 6);
-		m_mchg_min_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"mchg_min_queue_interval_medium", 500);
-		m_mchg_max_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"mchg_max_queue_interval_medium", 750);
-
-		m_mchg_min_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"mchg_min_queue_size_close", 4);
-		m_mchg_max_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"mchg_max_queue_size_close", 10);
-		m_mchg_min_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"mchg_min_queue_interval_close", 300);
-		m_mchg_max_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"mchg_max_queue_interval_close", 500);
-
-
-		m_auto_min_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"auto_min_queue_size_far", 1);
-		m_auto_max_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"auto_max_queue_size_far", 6);
-		m_auto_min_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"auto_min_queue_interval_far", 500);
-		m_auto_max_queue_interval_far		= pSettings->read_if_exists<u32>(queue_sect,"auto_max_queue_interval_far", 1000);
-
-		m_auto_min_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"auto_min_queue_size_medium", 4);
-		m_auto_max_queue_size_medium		= pSettings->read_if_exists<u32>(queue_sect,"auto_max_queue_size_medium", 6);
-		m_auto_min_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"auto_min_queue_interval_medium", 500);
-		m_auto_max_queue_interval_medium	= pSettings->read_if_exists<u32>(queue_sect,"auto_max_queue_interval_medium", 750);
-
-		m_auto_min_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"auto_min_queue_size_close", 4);
-		m_auto_max_queue_size_close			= pSettings->read_if_exists<u32>(queue_sect,"auto_max_queue_size_close", 10);
-		m_auto_min_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"auto_min_queue_interval_close", 300);
-		m_auto_max_queue_interval_close		= pSettings->read_if_exists<u32>(queue_sect,"auto_max_queue_interval_close", 500);
-
-
-//		m_pstl_queue_fire_dist_close		= pSettings->read_if_exists<float>(queue_sect,"pstl_queue_fire_dist_close", 15.0f);
-		m_pstl_queue_fire_dist_med			= pSettings->read_if_exists<float>(queue_sect,"pstl_queue_fire_dist_med", 15.0f);
-		m_pstl_queue_fire_dist_far			= pSettings->read_if_exists<float>(queue_sect,"pstl_queue_fire_dist_far", 30.0f);
-//		m_shtg_queue_fire_dist_close		= pSettings->read_if_exists<float>(queue_sect,"shtg_queue_fire_dist_close", 15.0f);
-		m_shtg_queue_fire_dist_med			= pSettings->read_if_exists<float>(queue_sect,"shtg_queue_fire_dist_med", 15.0f);
-		m_shtg_queue_fire_dist_far			= pSettings->read_if_exists<float>(queue_sect,"shtg_queue_fire_dist_far", 30.0f);
-//		m_snp_queue_fire_dist_close			= pSettings->read_if_exists<float>(queue_sect,"snp_queue_fire_dist_close", 15.0f);
-		m_snp_queue_fire_dist_med			= pSettings->read_if_exists<float>(queue_sect,"snp_queue_fire_dist_med", 15.0f);
-		m_snp_queue_fire_dist_far			= pSettings->read_if_exists<float>(queue_sect,"snp_queue_fire_dist_far", 30.0f);
-//		m_mchg_queue_fire_dist_close			= pSettings->read_if_exists<float>(queue_sect,"mchg_queue_fire_dist_close", 15.0f);
-		m_mchg_queue_fire_dist_med			= pSettings->read_if_exists<float>(queue_sect,"mchg_queue_fire_dist_med", 15.0f);
-		m_mchg_queue_fire_dist_far			= pSettings->read_if_exists<float>(queue_sect,"mchg_queue_fire_dist_far", 30.0f);
-//		m_auto_queue_fire_dist_close		= pSettings->read_if_exists<float>(queue_sect,"auto_queue_fire_dist_close", 15.0f);
-		m_auto_queue_fire_dist_med			= pSettings->read_if_exists<float>(queue_sect,"auto_queue_fire_dist_med", 15.0f);
-		m_auto_queue_fire_dist_far			= pSettings->read_if_exists<float>(queue_sect,"auto_queue_fire_dist_far", 30.0f);
-	}
-	else
-	{
-		m_pstl_min_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_min_queue_size_far", 1);
-		m_pstl_max_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_max_queue_size_far", 1);
-		m_pstl_min_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_min_queue_interval_far", 1000);
-		m_pstl_max_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_max_queue_interval_far", 1250);
-
-		m_pstl_min_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_min_queue_size_medium", 2);
-		m_pstl_max_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_max_queue_size_medium", 4);
-		m_pstl_min_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_min_queue_interval_medium", 750);
-		m_pstl_max_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_max_queue_interval_medium", 1000);
-
-		m_pstl_min_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_min_queue_size_close", 3);
-		m_pstl_max_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_max_queue_size_close", 5);
-		m_pstl_min_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_min_queue_interval_close", 500);
-		m_pstl_max_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"pstl_max_queue_interval_close", 750);
-
-
-		m_shtg_min_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_min_queue_size_far", 1);
-		m_shtg_max_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_max_queue_size_far", 1);
-		m_shtg_min_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_min_queue_interval_far", 1250);
-		m_shtg_max_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_max_queue_interval_far", 1500);
-
-		m_shtg_min_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_min_queue_size_medium", 1);
-		m_shtg_max_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_max_queue_size_medium", 1);
-		m_shtg_min_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_min_queue_interval_medium", 750);
-		m_shtg_max_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_max_queue_interval_medium", 1250);
-
-		m_shtg_min_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_min_queue_size_close", 1);
-		m_shtg_max_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_max_queue_size_close", 1);
-		m_shtg_min_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_min_queue_interval_close", 500);
-		m_shtg_max_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"shtg_max_queue_interval_close", 1000);
-
-
-		m_snp_min_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"snp_min_queue_size_far", 1);
-		m_snp_max_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"snp_max_queue_size_far", 1);
-		m_snp_min_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"snp_min_queue_interval_far", 3000);
-		m_snp_max_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"snp_max_queue_interval_far", 4000);
-
-		m_snp_min_queue_size_medium			= pSettings->read_if_exists<u32>(*cNameSect(),"snp_min_queue_size_medium", 1);
-		m_snp_max_queue_size_medium			= pSettings->read_if_exists<u32>(*cNameSect(),"snp_max_queue_size_medium", 1);
-		m_snp_min_queue_interval_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"snp_min_queue_interval_medium", 3000);
-		m_snp_max_queue_interval_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"snp_max_queue_interval_medium", 4000);
-
-		m_snp_min_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"snp_min_queue_size_close", 1);
-		m_snp_max_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"snp_max_queue_size_close", 1);
-		m_snp_min_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"snp_min_queue_interval_close", 3000);
-		m_snp_max_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"snp_max_queue_interval_close", 4000);
-
-		m_mchg_min_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_min_queue_size_far", 1);
-		m_mchg_max_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_max_queue_size_far", 6);
-		m_mchg_min_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_min_queue_interval_far", 500);
-		m_mchg_max_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_max_queue_interval_far", 1000);
-
-		m_mchg_min_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_min_queue_size_medium", 4);
-		m_mchg_max_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_max_queue_size_medium", 6);
-		m_mchg_min_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_min_queue_interval_medium", 500);
-		m_mchg_max_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_max_queue_interval_medium", 750);
-
-		m_mchg_min_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_min_queue_size_close", 4);
-		m_mchg_max_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_max_queue_size_close", 10);
-		m_mchg_min_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_min_queue_interval_close", 300);
-		m_mchg_max_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"mchg_max_queue_interval_close", 500);
-
-		m_auto_min_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"auto_min_queue_size_far", 1);
-		m_auto_max_queue_size_far			= pSettings->read_if_exists<u32>(*cNameSect(),"auto_max_queue_size_far", 6);
-		m_auto_min_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"auto_min_queue_interval_far", 500);
-		m_auto_max_queue_interval_far		= pSettings->read_if_exists<u32>(*cNameSect(),"auto_max_queue_interval_far", 1000);
-
-		m_auto_min_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"auto_min_queue_size_medium", 4);
-		m_auto_max_queue_size_medium		= pSettings->read_if_exists<u32>(*cNameSect(),"auto_max_queue_size_medium", 6);
-		m_auto_min_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"auto_min_queue_interval_medium", 500);
-		m_auto_max_queue_interval_medium	= pSettings->read_if_exists<u32>(*cNameSect(),"auto_max_queue_interval_medium", 750);
-
-		m_auto_min_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"auto_min_queue_size_close", 4);
-		m_auto_max_queue_size_close			= pSettings->read_if_exists<u32>(*cNameSect(),"auto_max_queue_size_close", 10);
-		m_auto_min_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"auto_min_queue_interval_close", 300);
-		m_auto_max_queue_interval_close		= pSettings->read_if_exists<u32>(*cNameSect(),"auto_max_queue_interval_close", 500);
-
-//		m_pstl_queue_fire_dist_close		= pSettings->read_if_exists<float>(*cNameSect(),"pstl_queue_fire_dist_close", 15.0f);
-		m_pstl_queue_fire_dist_med			= pSettings->read_if_exists<float>(*cNameSect(),"pstl_queue_fire_dist_med", 15.0f);
-		m_pstl_queue_fire_dist_far			= pSettings->read_if_exists<float>(*cNameSect(),"pstl_queue_fire_dist_far", 30.0f);
-//		m_shtg_queue_fire_dist_close		= pSettings->read_if_exists<float>(*cNameSect(),"shtg_queue_fire_dist_close", 15.0f);
-		m_shtg_queue_fire_dist_med			= pSettings->read_if_exists<float>(*cNameSect(),"shtg_queue_fire_dist_med", 15.0f);
-		m_shtg_queue_fire_dist_far			= pSettings->read_if_exists<float>(*cNameSect(),"shtg_queue_fire_dist_far", 30.0f);
-//		m_snp_queue_fire_dist_close			= pSettings->read_if_exists<float>(*cNameSect(),"snp_queue_fire_dist_close", 15.0f);
-		m_snp_queue_fire_dist_med			= pSettings->read_if_exists<float>(*cNameSect(),"snp_queue_fire_dist_med", 15.0f);
-		m_snp_queue_fire_dist_far			= pSettings->read_if_exists<float>(*cNameSect(),"snp_queue_fire_dist_far", 30.0f);
-//		m_mchg_queue_fire_dist_close			= pSettings->read_if_exists<float>(*cNameSect(),"mchg_queue_fire_dist_close", 15.0f);
-		m_mchg_queue_fire_dist_med			= pSettings->read_if_exists<float>(*cNameSect(),"mchg_queue_fire_dist_med", 15.0f);
-		m_mchg_queue_fire_dist_far			= pSettings->read_if_exists<float>(*cNameSect(),"mchg_queue_fire_dist_far", 30.0f);
-//		m_auto_queue_fire_dist_close		= pSettings->read_if_exists<float>(**cNameSect(),"auto_queue_fire_dist_close", 15.0f);
-		m_auto_queue_fire_dist_med			= pSettings->read_if_exists<float>(*cNameSect(),"auto_queue_fire_dist_med", 15.0f);
-		m_auto_queue_fire_dist_far			= pSettings->read_if_exists<float>(*cNameSect(),"auto_queue_fire_dist_far", 30.0f);
-	}
-	m_power_fx_factor				= pSettings->r_float(section,"power_fx_factor");
 }
 
 void CAI_Stalker::Die				(CObject* who)
@@ -548,14 +339,14 @@ void CAI_Stalker::Die				(CObject* who)
 
 void CAI_Stalker::Load				(const char* section)
 { 
+	CurrentStalkerDesc = &SAIStalker::Registry::Get(section);
+
 	CCreature::Load			(section);
 	CObjectHandler::Load			(section);
 	sight().Load					(section);
 	
 	// skeleton physics
 	m_pPhysics_support->in_Load		(section);
-
-	m_can_select_items				= !!pSettings->r_bool(section,"can_select_items");
 }
 
 void CAI_Stalker::BoneCallback(CBoneInstance* HeadBone)
@@ -567,7 +358,9 @@ void CAI_Stalker::BoneCallback(CBoneInstance* HeadBone)
 
 void CAI_Stalker::LookAtActor(CBoneInstance* HeadBone, float Weight)
 {
-	if (!EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor] || !m_bHeadRotate || !g_Alive() || wounded() || !g_actor)
+	const static bool EnableLook = EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor];
+
+	if (!EnableLook || !m_bHeadRotate || !g_Alive() || wounded() || !g_actor)
 	{
 		HeadLookOrientation.set(0.f, 0.f, 0.f);
 		HeadLookTime = u32(-1);

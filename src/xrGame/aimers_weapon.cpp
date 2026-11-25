@@ -9,24 +9,22 @@
 #include "StdAfx.h"
 #include "aimers_weapon.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xrEngine/bone.h"
 #include "Weapon.h"
 
 using aimers::weapon;
 
-weapon::weapon(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, const char* bone0,
+weapon::weapon(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, pose_cache& cache, const char* bone0,
 	const char* bone1, const char* weapon_bone0, const char* weapon_bone1, CWeapon const& weapon)
-	: inherited(object, animation_id, animation_start, target), m_weapon(weapon)
+	: inherited(object, animation_id, animation_start, target, cache), m_weapon(weapon)
 {
-	const char* bones[4] = {bone0, bone1, weapon_bone0, weapon_bone1};
-	for (u32 i = 0; i < 4; ++i)
+	const char* bones[bones_count] = {bone0, bone1, weapon_bone0, weapon_bone1};
+	for (u32 i = 0; i < bones_count; ++i)
 	{
 		m_bones_ids[i] = m_kinematics.LL_BoneID(bones[i]);
+		VERIFY2(m_bones_ids[i] != BI_NONE, bones[i]);
 	}
 
-	const CBoneData& bone_data = m_kinematics.LL_GetData(m_bones_ids[weapon_bone_id0]);
-	m_bones_ids[parent_weapon_bone_id0] = bone_data.GetParentID();
-	VERIFY(m_bones_ids[parent_weapon_bone_id0] != BI_NONE);
+	fill_bones(m_bones_ids, bones_count, m_local_bones);
 
 	compute_bone(bone_id0);
 
@@ -39,22 +37,14 @@ weapon::weapon(CGameObject* object, const char* animation_id, bool animation_sta
 	bone_0.setXYZ(angles);
 	VERIFY(_valid(bone_0));
 
-	CBoneInstance& bone = m_kinematics.LL_GetBoneInstance(m_bones_ids[bone_id0]);
-	const BoneCallback& old_callback = bone.callback();
-	void* old_callback_param = bone.callback_param();
-	bone.set_callback(bctCustom, &callback, &bone_0);
+	rotate_children(m_bones_ids[bone_id0], bone_0, m_bones_ids, bones_count, m_local_bones);
 
 	compute_bone(bone_id1);
-
-	bone.set_callback(bctCustom, old_callback, old_callback_param);
 }
 
 void weapon::compute_bone(u32 const bone_id)
 {
 	VERIFY(bone_id < weapon_bone_id0);
-
-	u32 bones_ids[] = {bone_id, weapon_bone_id0, weapon_bone_id1, parent_weapon_bone_id0};
-	fill_bones(bones_ids, m_bones_ids, m_local_bones, m_bones);
 
 	Fmatrix transform = Fidentity;
 	CInventoryItem::GetHandsBasis(m_local_bones[weapon_bone_id1], m_local_bones[weapon_bone_id0], transform);
@@ -65,10 +55,13 @@ void weapon::compute_bone(u32 const bone_id)
 	m_weapon.FirePoint(transform, m_weapon.ItemDesc().FireBone, m_weapon.ItemDesc().FirePoint, position);
 	const Fvector direction = transform.k;
 
-	VERIFY(_valid(m_bones[bone_id]));
+	Fvector bone_position = zero_vel;
+	m_start_transform.transform_tiny(bone_position, m_local_bones[bone_id].c);
+
+	VERIFY(_valid(bone_position));
 	VERIFY(_valid(position));
 	VERIFY(_valid(direction));
-	aim_at_position(m_bones[bone_id].c, position, direction, m_result[bone_id]);
+	aim_at_position(bone_position, position, direction, m_result[bone_id]);
 	VERIFY(_valid(m_result[bone_id]));
 	VERIFY(_valid(m_start_transform));
 	VERIFY(_valid(Fmatrix(m_start_transform).invert()));
