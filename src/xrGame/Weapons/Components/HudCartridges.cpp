@@ -80,7 +80,7 @@ void THudCartridges::Apply(CInventoryItem& Item, u32 Count, u8 Type, bool Mirror
 	}
 }
 
-void THudCartridges::Render(const Fmatrix& XForm, IKinematics* Model, IDSGraphManager* DM, u32 Mirror)
+void THudCartridges::Render(const Fmatrix& XForm, IKinematics* Model, u32 Mirror)
 {
 	if (m_bones.empty())
 	{
@@ -124,6 +124,7 @@ void THudCartridges::Render(const Fmatrix& XForm, IKinematics* Model, IDSGraphMa
 		}
 
 		Slot.Transform.mul_43(XForm, Model->LL_GetTransform(m_bones[i]));
-		DM->add_Dynamic(RenderVisual, &Slot.Transform, true);
+		::Render->set_Transform(Slot.Transform);
+		::Render->add_Visual(RenderVisual, true);
 	}
 }

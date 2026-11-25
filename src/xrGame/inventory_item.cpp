@@ -735,7 +735,7 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 
 	if (THudCartridges* cartridges = object().GetComponent<THudCartridges>())
 	{
-		cartridges->Render(xform, model, DM);
+		cartridges->Render(xform, model);
 	}
 
 	for (const auto& [id, child] : m_children)
@@ -799,7 +799,7 @@ void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model)
 
 			if (THudCartridges* cartridges = child->object().GetComponent<THudCartridges>())
 			{
-				cartridges->Render(mirror.transform, mirror.model, DM, i + 1);
+				cartridges->Render(mirror.transform, mirror.model, i + 1);
 			}
 		}
 	}

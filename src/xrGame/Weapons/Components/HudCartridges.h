@@ -4,7 +4,6 @@ class CInventoryItem;
 class CWeapon;
 class IKinematics;
 class IRenderVisual;
-class IDSGraphManager;
 
 struct THudCartridges final
 {
@@ -36,7 +35,7 @@ private:
 public:
 	void BeginComponent(IECSOwner* O);
 	void EndComponent();
-	void Render(const Fmatrix& XForm, IKinematics* Model, IDSGraphManager* DM, u32 Mirror = 0);
+	void Render(const Fmatrix& XForm, IKinematics* Model, u32 Mirror = 0);
 	void Update(u32 Count, u8 Type, bool Mirror = false);
 	static void Update(CWeapon* Weapon, u32 Count, u8 Type, bool Mirror = false);
 
