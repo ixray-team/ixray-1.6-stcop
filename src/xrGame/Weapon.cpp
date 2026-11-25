@@ -19,6 +19,7 @@
 #include "../xrPhysics/MathUtils.h"
 #include "object_broker.h"
 #include "player_hud.h"
+#include "PlayerHudUtils.h"
 #include "GamePersistent.h"
 #include "debug_renderer.h"
 #include "clsid_game.h"
@@ -1941,77 +1942,215 @@ void CWeapon::UpdateSight()
 	}
 }
 
-void CWeapon::UpdateBoneAiming()
+bool CWeapon::AimBone(attachable_hud_item* Item, Fmatrix& Local, const void*& Sight)
 {
-	static constexpr float AIM_ALIGN_TIME = 0.15f;
-	const float align_k = clampr(Device.fTimeDelta / AIM_ALIGN_TIME, 0.0f, 1.0f);
-
-	const Fmatrix* parent = nullptr;
-	IKinematics* model = nullptr;
-	u16 bone = BI_NONE;
-
-	if (GetCurrentHudOffsetIdx() == EHudOffsetType::eAim)
+	for (u32 n = 0; n < m_sights.size(); ++n)
 	{
-		for (u32 n = 0; n < m_sights.size(); ++n)
+		PIItem Candidate = m_sights[(m_sight_idx + n) % m_sights.size()];
+		IKinematics* Model = Candidate->HudModel();
+		const u16 Bone = Model != nullptr ? Model->LL_BoneID(Candidate->ItemDesc().m_aim_bone) : BI_NONE;
+		if (Bone == BI_NONE || !Model->LL_GetBoneVisible(Bone))
 		{
-			PIItem sight = m_sights[(m_sight_idx + n) % m_sights.size()];
-			if (sight->m_attach_hud_bone_id == BI_NONE)
-			{
-				continue;
-			}
+			continue;
+		}
 
-			IKinematics* sight_model = sight->HudModel();
-			const u16 sight_bone = sight_model->LL_BoneID(sight->ItemDesc().m_aim_bone);
-			if (sight_bone != BI_NONE && sight_model->LL_GetBoneVisible(sight_bone))
+		Fmatrix Chain = Model->LL_GetTransform(Bone);
+		bool Attached = true;
+		for (PIItem Child = Candidate; Child != this; Child = Child->m_attach_parent)
+		{
+			PIItem Parent = Child->m_attach_parent;
+			IKinematics* ParentModel = Parent == this ? Item->m_model : Parent != nullptr ? Parent->HudModel() : nullptr;
+			if (ParentModel == nullptr || Child->m_attach_hud_bone_id == BI_NONE)
 			{
-				parent = &sight->m_attach_hud_transform;
-				model = sight_model;
-				bone = sight_bone;
+				Attached = false;
 				break;
 			}
+
+			Chain.mulA_43(Child->m_attach_hud_offset);
+			Chain.mulA_43(ParentModel->LL_GetTransform(Child->m_attach_hud_bone_id));
 		}
 
-		if (!model && ItemDesc().m_aim_bone.size())
+		if (Attached)
 		{
-			attachable_hud_item* hi = HudItemData();
-			const u16 own_bone = hi->m_model->LL_BoneID(ItemDesc().m_aim_bone);
-			if (own_bone != BI_NONE && hi->m_model->LL_GetBoneVisible(own_bone))
+			Local = Chain;
+			Sight = Candidate;
+			return true;
+		}
+	}
+
+	if (ItemDesc().m_aim_bone.size())
+	{
+		const u16 Bone = Item->m_model->LL_BoneID(ItemDesc().m_aim_bone);
+		if (Bone != BI_NONE && Item->m_model->LL_GetBoneVisible(Bone))
+		{
+			Local = Item->m_model->LL_GetTransform(Bone);
+			Sight = this;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void CWeapon::UpdateAimRestMotion(attachable_hud_item* Item)
+{
+	player_hud_motion_container& Motions = Item->m_hand_motions;
+	const bool HasAim = Motions.find_motion("anm_idle_aim") != nullptr;
+	const auto IsRest = [&](const shared_str& Alias)
+	{
+		const char* Name = Alias.c_str();
+		if (Name == nullptr || strstr(Name, "anm_idle") != Name || (HasAim && strstr(Name, "_aim") == nullptr))
+		{
+			return false;
+		}
+
+		for (const char* Skip : { "_start", "_end", "_sprint", "_moving", "_bore" })
+		{
+			if (strstr(Name, Skip) != nullptr)
 			{
-				parent = &hi->m_item_transform;
-				model = hi->m_model;
-				bone = own_bone;
+				return false;
 			}
 		}
-	}
 
-	if (!model)
+		return Motions.find_motion(Alias) != nullptr;
+	};
+
+	if (IsRest(m_current_motion))
 	{
-		m_fHudAimAlign = clampr(m_fHudAimAlign - align_k, 0.0f, 1.0f);
-		return;
+		AimAlign.RestMotion = m_current_motion;
 	}
-
-	Fmatrix bone_world;
-	bone_world.mul_43(*parent, model->LL_GetTransform(bone));
-	bone_world.invert();
-
-	Fmatrix target;
-	target.mul_43(bone_world, m_hud_trans_last);
-
-	Fquaternion q_target;
-	q_target.set(target);
-
-	if (m_fHudAimAlign <= 0.0f)
+	else if (!IsRest(AimAlign.RestMotion))
 	{
-		m_hud_aim_align = q_target;
-		m_hud_aim_align_pos = target.c;
+		AimAlign.RestMotion = HasAim ? "anm_idle_aim" : "anm_idle";
 	}
-	else
+}
+
+float CWeapon::AimLayerProgress(const shared_str& Name, const Fmatrix& Layer) const
+{
+	for (const SBlendParams& Params : m_sAimBlendParams)
 	{
-		m_hud_aim_align.slerp(m_hud_aim_align, q_target, align_k);
-		m_hud_aim_align_pos.lerp(m_hud_aim_align_pos, target.c, align_k);
+		if (Params.has_motion && Params.camera_name == Name)
+		{
+			return AimAlign.LayerProgress(Layer);
+		}
 	}
 
-	m_fHudAimAlign = clampr(m_fHudAimAlign + align_k, 0.0f, 1.0f);
+	return 0.f;
+}
+
+bool CWeapon::AimLayer(const shared_str& Name) const
+{
+	for (u32 i = 0; i < 3; ++i)
+	{
+		if (m_sAimBlendParams[i].has_motion && m_sAimBlendParams[i].camera_name == Name || m_sGLAimBlendParams[i].has_motion && m_sGLAimBlendParams[i].camera_name == Name)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CWeapon::AimLayered() const
+{
+	return IsZoomed() && (IsGrenadeMode() ? m_sGLAimBlendParams[0].has_motion : m_sAimBlendParams[0].has_motion);
+}
+
+void CWeapon::AimLayerPath(const shared_str& Name, float Scale, Fmatrix& Layer) const
+{
+	const SBlendParams& Start = m_sAimBlendParams[0];
+	if (Start.has_motion && Start.camera_name == Name && AimAlign.RestLayerName == Name)
+	{
+		AimAlign.ApplyPath(Layer, Scale);
+	}
+}
+
+void CWeapon::UpdateBoneAiming()
+{
+	constexpr float AlignTime = 0.15f;
+	constexpr float TargetSmooth = 0.08f;
+	constexpr float SnapWeight = 0.01f;
+
+	attachable_hud_item* Item = HudItemData();
+	const SBlendParams& Start = m_sAimBlendParams[0];
+
+	Fmatrix Local;
+	const void* Sight = nullptr;
+	const bool Found = GetCurrentHudOffsetIdx() == EHudOffsetType::eAim && AimBone(Item, Local, Sight);
+	if (Found || IsZoomed() && !IsGrenadeMode())
+	{
+		AimAlign.UpdateRestLayer(Start.has_motion ? Start.camera_name : shared_str(), Start.speed_power.y);
+	}
+
+	const bool Travels = AimAlign.LayerProgress(AimAlign.RestLayer) > 0.f;
+	const bool LayerHeld = g_player_hud->attached_item(0) == Item && Start.has_motion && (!IsZoomed() || g_player_hud->IsBlendAnmActive(Start.camera_name));
+	const float Progress = Travels && LayerHeld ? g_player_hud->AimLayersProgress() : m_zoom_params.m_fZoomRotationFactor;
+	const float ProgressWeight = hud_smooth(std::clamp(Progress, 0.f, 1.f));
+	const float TurnTime = Travels ? AimAlign.RestTime / std::max(Start.speed_power.x, EPS) : m_zoom_params.m_fZoomRotateTime;
+	const bool AtHip = std::max({ ProgressWeight, AimAlign.TurnRamp, AimAlign.TurnPhase }) <= SnapWeight;
+	const bool Snap = !AimAlign.Valid || AimAlign.Gate <= SnapWeight || AtHip;
+
+	if (Found)
+	{
+		UpdateAimRestMotion(Item);
+	}
+
+	if (Found && (Snap || GetState() == eIdle || AimAlign.Sight != Sight))
+	{
+		const auto& Rest = Item->m_measures.m_hands_positions.hands_offsets_tune;
+		const Fvector RestRot = Fvector(Rest[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault]).mul(PI / 180.f);
+		Fmatrix Base;
+		Base.setHPB(RestRot.x, RestRot.y, RestRot.z);
+		Base.c.set(Rest[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault]);
+
+		Fmatrix SightOffset = Fidentity;
+		Fmatrix Ancor;
+		if (g_player_hud->RestAncor(Item, AimAlign.RestMotion, Ancor))
+		{
+			SightOffset.mulB_43(Ancor);
+		}
+
+		SightOffset.mulB_43(Item->m_attach_offset);
+		SightOffset.mulB_43(Local);
+
+		Fmatrix Pose = Base;
+		if (LayerHeld)
+		{
+			Pose.mulB_43(AimAlign.RestLayer);
+		}
+
+		Pose.mulB_43(SightOffset);
+		Base.mulB_43(SightOffset);
+
+		const Fmatrix Target = Fmatrix().invert(Pose);
+		const Fquaternion TargetRotation = Fquaternion().set(Target);
+		const float Step = Snap ? 1.f : HudBlend::Smooth(TargetSmooth, Device.fTimeDelta);
+		AimAlign.Rotation.slerp(Fquaternion(AimAlign.Rotation), TargetRotation, Step);
+		AimAlign.Position.lerp(Fvector(AimAlign.Position), Target.c, Step);
+		AimAlign.HipPoint.lerp(Fvector(AimAlign.HipPoint), Base.c, Step);
+		AimAlign.AimPoint.lerp(Fvector(AimAlign.AimPoint), Pose.c, Step);
+		AimAlign.Valid = true;
+		AimAlign.Sight = Sight;
+	}
+
+	if (AtHip && IsZoomed())
+	{
+		AimAlign.Gate = Found ? 1.f : 0.f;
+	}
+	else if (IsZoomed())
+	{
+		AimAlign.Gate = HudBlend::Ramp(AimAlign.Gate, Found, AlignTime, Device.fTimeDelta);
+	}
+
+	AimAlign.UpdateTurn(IsZoomed(), TurnTime, Device.fTimeDelta);
+	if (IsZoomed())
+	{
+		AimAlign.PathPhase = std::clamp((AimAlign.TurnPhase - AimAlign.PathFrom) / (1.f - AimAlign.PathFrom), 0.f, 1.f);
+	}
+
+	AimAlign.Travel = std::clamp(Progress, -0.2f, 1.2f);
+	AimAlign.Weight = AimAlign.Valid ? AimAlign.Gate * ProgressWeight : 0.f;
+	AimAlign.Turn = AimAlign.Valid ? AimAlign.Gate * AimAlign.TurnPhase : 0.f;
 }
 
 void CWeapon::signal_HideComplete()
@@ -3435,6 +3574,7 @@ void CWeapon::OnZoomIn()
 			SwitchState(eSprintEnd);
 		}
 
+		AimAlign.BeginPath(0.f);
 		g_player_hud->UpdateMovementLayers();
 		if (CCameraRig::Enabled())
 		{
@@ -3902,18 +4042,8 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	hud_rotation.mulA_43(hud_rotation_y);
 	hud_rotation.translate_over(applied_offs);
 
-	if (m_fHudAimAlign > 0.0f)
-	{
-		Fquaternion q_config, q_blend;
-		q_config.set(hud_rotation);
-		q_blend.slerp(q_config, m_hud_aim_align, m_fHudAimAlign);
-		hud_rotation.rotation(q_blend);
-		hud_rotation.c.lerp(applied_offs, m_hud_aim_align_pos, m_fHudAimAlign);
-		hud_rotation.c.z = applied_offs.z;
-	}
-
+	AimAlign.Apply(hud_rotation);
 	trans.mulB_43(hud_rotation);
-	m_hud_trans_last = trans;
 
 	if (aim_reload_pose > 0.f || aim_reload_push > 0.f || aim_reload_drop > 0.f)
 	{

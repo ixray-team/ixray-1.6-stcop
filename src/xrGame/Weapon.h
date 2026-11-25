@@ -98,10 +98,13 @@ public:
 	u32						m_sight_idx = 0;
 	void					UpdateSight();
 	void					UpdateBoneAiming();
-	Fmatrix					m_hud_trans_last = Fidentity;
-	Fquaternion				m_hud_aim_align;
-	Fvector					m_hud_aim_align_pos = zero_vel;
-	float					m_fHudAimAlign = 0.0f;
+	bool					AimBone(attachable_hud_item* Item, Fmatrix& Local, const void*& Sight);
+	void					UpdateAimRestMotion(attachable_hud_item* Item);
+	float					AimLayerProgress(const shared_str& Name, const Fmatrix& Layer) const;
+	bool					AimLayer(const shared_str& Name) const;
+	bool					AimLayered() const;
+	void					AimLayerPath(const shared_str& Name, float Scale, Fmatrix& Layer) const;
+	SHudAimAlign			AimAlign;
 
 	virtual void			render_hud_mode		() override;
 	virtual bool			need_renderable		() override;

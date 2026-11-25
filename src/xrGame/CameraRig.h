@@ -274,6 +274,41 @@ struct SHudAimReload
 	void UpdateRelease(float Progress);
 };
 
+struct SHudAimAlign
+{
+	Fquaternion Rotation;
+	Fvector Position = {};
+	Fvector HipPoint = {};
+	Fvector AimPoint = {};
+	Fmatrix RestLayer = Fidentity;
+	shared_str RestLayerName;
+	float RestLayerPower = 0.f;
+	float RestTravel = 0.f;
+	float RestTime = 0.f;
+	shared_str RestMotion;
+	const void* Sight = nullptr;
+	float Gate = 0.f;
+	float Weight = 0.f;
+	float Travel = 0.f;
+	float Turn = 0.f;
+	float TurnRamp = 0.f;
+	float TurnPhase = 0.f;
+	float TurnVelocity = 0.f;
+	float PathWeight = 0.f;
+	float PathFrom = 0.f;
+	float PathPhase = 0.f;
+	bool Valid = false;
+
+	SHudAimAlign() { Rotation.identity(); }
+
+	void UpdateRestLayer(const shared_str& Name, float Power);
+	float LayerProgress(const Fmatrix& Layer) const;
+	void UpdateTurn(bool Aiming, float Time, float Delta);
+	void BeginPath(float Weight);
+	void ApplyPath(Fmatrix& Layer, float Scale) const;
+	void Apply(Fmatrix& Offset) const;
+};
+
 struct SHudSafemode
 {
 	Fvector VelocityPos = {};
@@ -298,7 +333,8 @@ enum class EHudSprintStage : u8
 	None,
 	Start,
 	Loop,
-	End
+	End,
+	Aim
 };
 
 struct SHudSprintLeftCancel
@@ -338,13 +374,19 @@ struct SHudSprint
 	float						PoseVelocity = 0.f;
 	float						Yield = 0.f;
 	float						HandWeight = 0.f;
+	float						Fade = 1.f;
+	float						AimFrom = 0.f;
+	float						AimEndFrom = 0.f;
+	bool						AimEnd = false;
 
 	static bool		BaseTransform	(IKinematicsAnimated* Model, u16 Bone, Fmatrix& Result);
 	static bool		BoneDelta		(IKinematicsAnimated* Model, u16 Bone, Fmatrix& Result);
 
 	bool			Enabled			(IKinematicsAnimated* Model, const attachable_hud_item* Current) const;
 	void			Attach			(IKinematicsAnimated* Model, const attachable_hud_item* Current);
-	void			Update			(IKinematicsAnimated* Model, const attachable_hud_item* Current, bool Sprinting);
+	void			Update			(IKinematicsAnimated* Model, const attachable_hud_item* Current, bool Sprinting, bool Aiming);
+	void			BeginAim		(IKinematicsAnimated* Model, const attachable_hud_item* Current, CWeapon* Weapon);
+	void			UpdateFade		(IKinematicsAnimated* Model, const attachable_hud_item* Current);
 	void			UpdateChain		(IKinematicsAnimated* Model, const attachable_hud_item* Current);
 	void			UpdatePose		(IKinematicsAnimated* Model, const attachable_hud_item* Current, u16 Ancor);
 	void			CutEnd			(IKinematicsAnimated* Model);

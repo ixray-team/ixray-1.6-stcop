@@ -880,6 +880,8 @@ public:
 	void			UpdateCarryPose			(CActor* actor);
 	Fmatrix			CarryPoseOffset			() const;
 	void			TriggerScriptLayersInertia(float half_life);
+	float			AimLayersProgress		() const { return AimProgress; }
+	bool			RestAncor				(attachable_hud_item* Item, const shared_str& Alias, Fmatrix& Result);
 	void			UpdateSprintPose		();
 	void			UpdateRetargetLayerWeight();
 	void			CutSprintEnd			();
@@ -976,6 +978,9 @@ private:
 	float								ScriptInertiaTime = 0.f;
 	Fvector								ScriptInertiaPos = {};
 	Fquaternion							ScriptInertiaRot;
+	float								AimProgress = 0.f;
+	float								AimProgressGap = 0.f;
+	float								AimHold = 0.f;
 	Fmatrix								ShotRef = Fidentity;
 	float								ShotWeight = 0.f;
 	float								ShotRelease = 1.f;

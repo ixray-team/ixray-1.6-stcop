@@ -2379,6 +2379,12 @@ void player_hud::update(const Fmatrix& world_cam_trans)
 	Sprint.Yield = Sprint.Pose;
 	Fmatrix movement_layers = Fidentity;
 
+	const CWeapon* AimWeapon = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr ? m_attached_items[0]->m_parent_hud_item->cast_weapon() : nullptr;
+	float AimLayers = 0.f;
+
+	constexpr float AimHoldOut = 0.2f;
+	AimHold = HudBlend::Ramp(AimHold, AimWeapon != nullptr && AimWeapon->AimLayered(), 0.f, AimHoldOut, Device.fTimeDelta);
+
 	for (script_layer* anm : m_script_layers)
 	{
 		if (!anm || !anm->anim || (!anm->active && anm->blend_scale == 0.0f))
@@ -2419,15 +2425,30 @@ void player_hud::update(const Fmatrix& world_cam_trans)
 		}
 
 		Fmatrix layer = anm->XFORM();
-		if (Sprint.Yield > 0.f)
+		float LayerYield = Sprint.Yield;
+		if (AimWeapon != nullptr)
 		{
-			layer = scale_layer_offset(layer, 1.f - Sprint.Yield);
+			AimWeapon->AimLayerPath(anm->name, hud_smooth(anm->blend_scale), layer);
+			if (AimWeapon->AimLayer(anm->name))
+			{
+				LayerYield *= 1.f - AimHold;
+			}
+		}
+
+		if (LayerYield > 0.f)
+		{
+			layer = scale_layer_offset(layer, 1.f - LayerYield);
 		}
 
 		if (anm->part == 0 || anm->part == 2)
 		{
 			m_transform.mulB_43(layer);
 			script_layers.mulB_43(layer);
+
+			if (AimWeapon != nullptr)
+			{
+				AimLayers += AimWeapon->AimLayerProgress(anm->name, layer);
+			}
 		}
 		
 		if (anm->part == 1 || anm->part == 2)
@@ -2448,6 +2469,7 @@ void player_hud::update(const Fmatrix& world_cam_trans)
 		ScriptInertiaPos.set(gap.c);
 		ScriptInertiaRot.set(gap);
 		ScriptInertiaTime = 0.f;
+		AimProgressGap = AimProgress - AimLayers;
 	}
 
 	if (ScriptInertiaHalfLife > 0.f && ScriptInertiaTime < ScriptInertiaHalfLife * 8.f)
@@ -2460,6 +2482,7 @@ void player_hud::update(const Fmatrix& world_cam_trans)
 		Fmatrix gap;
 		gap.rotation(rotation);
 		gap.c.mul(ScriptInertiaPos, weight);
+		AimLayers += AimProgressGap * weight;
 		m_transform.mulB_43(gap);
 		if (m_attached_items[1] == nullptr)
 		{
@@ -2470,6 +2493,7 @@ void player_hud::update(const Fmatrix& world_cam_trans)
 	}
 
 	ScriptLayersLast = script_layers;
+	AimProgress = AimLayers;
 
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
@@ -2887,6 +2911,23 @@ void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmat
 		result.set(m_transform);
 	}
 	result.mulB_43			(offset);
+}
+
+bool player_hud::RestAncor(attachable_hud_item* Item, const shared_str& Alias, Fmatrix& Result)
+{
+	if (m_model == nullptr || Item == nullptr || Item->m_model_combined || Item->m_attach_place_idx >= m_ancors.size())
+	{
+		return false;
+	}
+
+	shared_str Reference;
+	const player_hud_motion* Motion = Item->m_hand_motions.find_motion(Item->RetargetMode(Alias, Reference) ? shared_str("anm_idle") : Alias);
+	if (Motion == nullptr || Motion->m_animations.empty())
+	{
+		return false;
+	}
+
+	return m_model->LL_GetMotionBoneTransform(Motion->m_animations[0].mid, 0.f, m_ancors[Item->m_attach_place_idx], Result);
 }
 
 void player_hud::UpdateMovementLayers(bool reload_anims)
