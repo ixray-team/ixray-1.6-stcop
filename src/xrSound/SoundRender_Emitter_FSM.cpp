@@ -52,7 +52,7 @@ void CSoundRender_Emitter::update(float dt)
 		fTimeToPropagade					= fTime;
 		fade_volume							= 1.f;
 		occluder_volume						= SoundRender->get_occlusion	(p_source.position,.2f,occluder);
-		smooth_volume = p_source.base_volume * p_source.volume;
+		smooth_volume = p_source.base_volume * PlaybackVolume;
 		switch (owner_data->s_type)
 		{
 			case st_Effect:
@@ -88,7 +88,7 @@ void CSoundRender_Emitter::update(float dt)
 		fTimeToPropagade					= fTime;
 		fade_volume							= 1.f;
 		occluder_volume						= SoundRender->get_occlusion	(p_source.position,.2f,occluder);
-		smooth_volume = p_source.base_volume * p_source.volume;
+		smooth_volume = p_source.base_volume * PlaybackVolume;
 		switch (owner_data->s_type)
 		{
 			case st_Effect:
@@ -282,7 +282,7 @@ bool CSoundRender_Emitter::update_culling(float dt)
 	{
 		occluder_volume = 1.f;
 		fade_volume += dt * 10.f * (bStopping ? -1.f : 1.f);
-		volume_att = p_source.volume;
+		volume_att = PlaybackVolume;
 	}
 	else
 	{
@@ -293,9 +293,9 @@ bool CSoundRender_Emitter::update_culling(float dt)
 		// Calc attenuated volume
 		//LostAlphaRus in
 		volume_att = linear_attenuation(p_source, dist);
-		clamp(volume_att, 0.f, p_source.volume);
+		clamp(volume_att, 0.f, PlaybackVolume);
 
-		float fade_scale = bStopping || Muted || (p_source.base_volume * p_source.volume < psSoundCull) ? -1.f : 1.f;
+		float fade_scale = bStopping || Muted || (p_source.base_volume * PlaybackVolume < psSoundCull) ? -1.f : 1.f;
 		fade_volume += dt * 10.f * fade_scale;
 		//LostAlphaRus out
 
@@ -339,7 +339,7 @@ float CSoundRender_Emitter::priority()
 	{
 		float dist = SoundRender->listener_position().distance_to(p_source.position);
 		volume_att = linear_attenuation(p_source, dist);
-		clamp(volume_att, 0.f, p_source.volume);
+		clamp(volume_att, 0.f, PlaybackVolume);
 	}
 
 	return	smooth_volume * volume_att * priority_scale;

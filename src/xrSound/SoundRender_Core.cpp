@@ -338,7 +338,7 @@ void	CSoundRender_Core::play					( ref_sound& S, CObject* O, u32 flags, float de
 	}
 }
 
-void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range, float* base_vol_scale)
+void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range, const float* PlaybackVolume)
 {
 	if (!bPresent || (0 == S._handle())) return;
 	ref_sound_data_ptr	orig = S._p;
@@ -366,9 +366,9 @@ void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags,
 	if (freq)			S._feedback()->set_frequency(*freq);
 	if (range)			S._feedback()->set_range   	((*range)[0],(*range)[1]);
 	if (vol)			S._feedback()->set_volume   (*vol);
-	if (base_vol_scale)
+	if (PlaybackVolume)
 	{
-		S._feedback()->SetBaseVolumeScale(*base_vol_scale);
+		S._feedback()->SetPlaybackVolume(*PlaybackVolume);
 	}
 	S._p				= orig;
 }

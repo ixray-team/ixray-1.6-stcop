@@ -8,6 +8,7 @@
 class CSoundRender_Emitter : public CSound_emitter
 {
 	float						starting_delay;
+	float PlaybackVolume;
 public:
 	enum State
 	{
@@ -79,9 +80,9 @@ public:
 	virtual void				set_position			(const Fvector &pos);
 	virtual void				set_frequency			(float scale)			{ VERIFY(_valid(scale));			p_source.freq=scale;}
 	virtual void				set_range				(float min, float max)	{ VERIFY(_valid(min)&&_valid(max));	p_source.min_distance=min; p_source.max_distance=max;}
-	virtual void				set_volume				(float vol)				{ if(!_valid(vol)) vol=0.0f;		p_source.volume=vol;}
+	void set_volume(float Volume) override;
 	virtual void				set_base_volume			(float vol)				{ if(!_valid(vol)) vol=0.0f;		p_source.base_volume=vol;}
-	void SetBaseVolumeScale(float Scale) override;
+	void SetPlaybackVolume(float Volume) override;
 	virtual void				set_priority			(float p)				{ priority_scale = p;									}
 	virtual	CSound_params		get_params				()						{ return p_source;										}
 

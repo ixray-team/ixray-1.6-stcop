@@ -129,23 +129,24 @@ void HUD_SOUND_ITEM::PlaySound(HUD_SOUND_ITEM& hud_snd, const Fvector& position,
 		hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(sounds_pool_size)];
 	}
 
-	// AI sound propagation uses Volume before the HUD playback scale.
-	float Volume = hud_snd.m_activeSnd->volume * g_fHudSndVolumeFactor;
-	float PlaybackScale = b_hud_mode ? psHUDSoundVolume : 1.0f;
+	// NPC hearing uses the configured volume before the HUD playback scale.
+	const float HudVolumeScale = b_hud_mode ? psHUDSoundVolume : 1.0f;
+	float AiVolume = hud_snd.m_activeSnd->volume * g_fHudSndVolumeFactor;
+	const float PlaybackVolume = hud_snd.m_activeSnd->volume * HudVolumeScale * g_fHudSndVolumeFactor;
 	Fvector Position = (flags & sm_2D) ? zero_vel : position;
 
 	if (!allowOverlap)
 	{
 		auto& Sound = hud_snd.m_activeSnd->snd;
 		Sound.play_at_pos(const_cast<CObject*>(parent), Position, flags, hud_snd.m_activeSnd->delay);
-		Sound.set_volume(Volume);
+		Sound.set_volume(AiVolume);
+		Sound.SetPlaybackVolume(PlaybackVolume);
 		Sound.set_frequency(g_fHudSndFrequency);
-		Sound.SetBaseVolumeScale(PlaybackScale);
 	}
 	else
 	{
 		hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay,
-			&Position, &Volume, &g_fHudSndFrequency, nullptr, &PlaybackScale);
+			&Position, &AiVolume, &g_fHudSndFrequency, nullptr, &PlaybackVolume);
 	}
 }
 

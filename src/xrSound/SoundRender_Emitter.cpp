@@ -19,9 +19,15 @@ void CSoundRender_Emitter::set_position(const Fvector& pos)
 	bMoved = true;
 }
 
-void CSoundRender_Emitter::SetBaseVolumeScale(float Scale)
+void CSoundRender_Emitter::set_volume(float Volume)
 {
-	set_base_volume(source()->m_fBaseVolume * Scale);
+	p_source.volume = _valid(Volume) ? Volume : 0.0f;
+	PlaybackVolume = p_source.volume;
+}
+
+void CSoundRender_Emitter::SetPlaybackVolume(float Volume)
+{
+	PlaybackVolume = _valid(Volume) ? Volume : 0.0f;
 }
 
 CSoundRender_Emitter::CSoundRender_Emitter(void)
