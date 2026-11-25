@@ -6,6 +6,7 @@
 #include "Environment.h"
 #include "x_ray.h"
 #include "IGame_Level.h"
+#include "IGame_UICustom.h"
 #include "XR_IOConsole.h"
 #include "Render.h"
 #include "CustomHUD.h"
@@ -93,6 +94,11 @@ void IGame_Persistent::Start(const char* op)
 	{
 		UpdateGameType();
 	}
+}
+
+bool IGame_Persistent::CanRenderVisorEffects() const
+{
+	return !ShaderParams.HideVisorForCamera && (!g_pGameCustom || g_pGameCustom->GameIndicatorsShown());
 }
 
 void IGame_Persistent::Disconnect()

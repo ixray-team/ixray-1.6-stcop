@@ -437,6 +437,7 @@ bool similar_cam_info(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2)
 void CActorCameraManager::UpdateCamEffectors()
 {
 	m_cam_info_hud		= m_cam_info;
+	UsesAbsoluteCamera = false;
 	inherited::UpdateCamEffectors();
 
 	m_cam_info_hud.d.normalize			();
@@ -469,6 +470,7 @@ bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 	// A retiring absolute effector still supplies the rendered camera pose for this frame.
 	if (res || eff->AllowProcessingIfInvalid())
 	{
+		UsesAbsoluteCamera = UsesAbsoluteCamera || eff->AbsolutePositioning();
 		if(eff->GetHudAffect())
 		{
 			SCamEffectorInfo affected	= m_cam_info;

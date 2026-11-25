@@ -1778,6 +1778,21 @@ void CActor::UpdateLensFOV(CWeapon* wpn, float value)
 	Cameras().SetCameraFov(value);
 }
 
+CArmorBase* CActor::GetVisorArmor() const
+{
+	if (CHelmet* Helmet = GetHelmet(); Helmet && Helmet->GlassPresent)
+	{
+		return Helmet;
+	}
+
+	if (CCustomOutfit* Outfit = GetOutfit(); Outfit && Outfit->GlassPresent)
+	{
+		return Outfit;
+	}
+
+	return nullptr;
+}
+
 #include "game_sv_mp.h"
 void CActor::UpdateCL()
 {
@@ -2134,20 +2149,11 @@ void CActor::UpdateCL()
 		Params.ItemCfgHudRainDropsAvailable = false;
 		Params.GlassType = VisorGlassType::Flat;
 		Params.VisorItemId = u16(-1);
+		Params.HideVisorForCamera = !m_holder && Cameras().HasAppliedAbsoluteEffector();
 
 		if (g_Alive() && cam_active == eacFirstEye)
 		{
-			CArmorBase* GlassArmor = nullptr;
-			if (CHelmet* Helmet = GetHelmet(); Helmet && Helmet->GlassPresent)
-			{
-				GlassArmor = Helmet;
-			}
-			else if (CCustomOutfit* Outfit = GetOutfit(); Outfit && Outfit->GlassPresent)
-			{
-				GlassArmor = Outfit;
-			}
-
-			if (GlassArmor)
+			if (CArmorBase* GlassArmor = GetVisorArmor())
 			{
 				Params.HelmetCondition = GlassArmor->GetCondition();
 				Params.ItemCfgHudGasMaskAvailable = GlassArmor->IsHudGasMaskAvailable();

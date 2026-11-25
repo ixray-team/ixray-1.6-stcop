@@ -60,12 +60,14 @@ public:
 		bool ItemCfgHudRainDropsAvailable = false;
 		VisorGlassType GlassType = VisorGlassType::Flat;
 		u16 VisorItemId = u16(-1);
+		bool HideVisorForCamera = false;
 		Fvector4 NightVisionPostprocess{};
 	};
 
 	params m_game_params;
 	ShaderParamsData ShaderParams;
 	VisorRainDrops VisorRain;
+	bool CanRenderVisorEffects() const;
 	luabind::functor<void> ixr_framework_onframe;
 public:
 	virtual void					PreStart			(const char* op);

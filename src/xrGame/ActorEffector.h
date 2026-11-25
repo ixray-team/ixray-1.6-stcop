@@ -11,6 +11,7 @@ class CActorCameraManager	:public CCameraManager
 	typedef CCameraManager	inherited;
 
 	SCamEffectorInfo		m_cam_info_hud;
+	bool UsesAbsoluteCamera = false;
 
 protected:
 	virtual void			UpdateCamEffectors		();
@@ -20,6 +21,7 @@ public:
 							CActorCameraManager():inherited(false){}
 	virtual					~CActorCameraManager() {}
 
+	bool HasAppliedAbsoluteEffector() const { return UsesAbsoluteCamera; }
 	IC void					hud_camera_Matrix		(Fmatrix& M){M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p);}
 };
 

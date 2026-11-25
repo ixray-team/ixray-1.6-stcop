@@ -310,12 +310,15 @@ void CRenderTarget::phase_combine()
 	}
 
 	extern bool UseGasmak;
-	if (UseGasmak)
+	if (g_pGamePersistent->CanRenderVisorEffects())
 	{
-		PhaseGasmask();
-	}
+		if (UseGasmak)
+		{
+			PhaseGasmask();
+		}
 
-	PhaseRaindrops();
+		PhaseRaindrops();
+	}
 
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION)) {
 		GPU_EVENT(PhaseSaturation);

@@ -274,7 +274,10 @@ void	CRenderTarget::phase_combine	()
 	RCache.set_Stencil (false);
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 
-	PhaseRaindrops();
+	if (g_pGamePersistent->CanRenderVisorEffects())
+	{
+		PhaseRaindrops();
+	}
 	//	Igor: screenshot will not have postprocess applied.
 	//	TODO: fox that later
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION))

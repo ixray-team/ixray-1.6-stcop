@@ -52,6 +52,7 @@
 #include "GametaskManager.h"
 #include "player_hud.h"
 #include "CustomOutfit.h"
+#include "ArmorBase.h"
 #include "ActorBackpack.h"
 #include "Car.h"
 
@@ -2750,31 +2751,16 @@ bool CScriptGameObject::IsInCar()
 
 bool CScriptGameObject::GetGasmaskStatus()
 {
-	//if (CActor* pActor = smart_cast<CActor*>(&object()))
-	//{
-	//	return g_pGamePersistent && g_pGamePersistent->m_pGShaderConstants
-	//		&& g_pGamePersistent->m_pGShaderConstants->m_fGasMaskEnabled;
-	//}
-	//else
-	//{
-	//	Msg("! GetGasmaskStatus(): method applicable only for actor!");
-	//}
-	return false;
+	const CActor* Actor = object().cast_actor();
+	CArmorBase* Armor = Actor ? Actor->GetVisorArmor() : nullptr;
+	return Armor && Armor->IsHudGasMaskAvailable();
 }
 
 float CScriptGameObject::GetGasmaskCondition()
 {
-	//if (CActor* pActor = smart_cast<CActor*>(&object()))
-	//{
-	//	return g_pGamePersistent && g_pGamePersistent->m_pGShaderConstants
-	//		&& g_pGamePersistent->m_pGShaderConstants->m_fGasMaskCondition;
-	//}
-	//else
-	//{
-	//	Msg("! GetGasmaskCondition(): method applicable only for actor!");
-	//}
-	//return 0.f;
-	return 1.f;
+	const CActor* Actor = object().cast_actor();
+	const CArmorBase* Armor = Actor ? Actor->GetVisorArmor() : nullptr;
+	return Armor ? Armor->GetCondition() : 1.f;
 }
 
 bool CScriptGameObject::IsActorSafemode() const

@@ -32,6 +32,7 @@ class CActorCondition;
 class CAI_Stalker;
 class CInventoryItem;
 class CCustomOutfit;
+class CArmorBase;
 class CGameTaskRegistryWrapper;
 class CGameNewsRegistryWrapper;
 class CCharacterPhysicsSupport;
@@ -136,6 +137,7 @@ public:
 	virtual void						Load				( const char* section );
 
 	virtual void						shedule_Update		( u32 T );
+	CArmorBase* GetVisorArmor() const;
 	void PlayRainOnHelmetSound();
 	virtual void						UpdateCL			( );
 	void draw_electrical_fur();

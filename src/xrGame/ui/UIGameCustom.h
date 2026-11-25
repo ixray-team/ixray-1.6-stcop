@@ -142,7 +142,7 @@ protected:
 	CUIPdaWnd*			m_PdaMenu;
 	CUIRadialMenuWeapon* m_RadialMenuWeapon;
 
-	bool				m_bShowGameIndicators;
+	xr_atomic_bool		ShowIngameIndicators = true;
 public:
 	CUIMainIngameWnd*	UIMainIngameWnd;
 	CUIMessagesWindow*	m_pMessagesWnd;
@@ -185,8 +185,8 @@ public:
 			bool		ShowRadialMenuWeapon	();
 			void		HideRadialMenuWeapon	();
 
-	virtual void		ShowGameIndicators		(bool b) override {m_bShowGameIndicators	= b;};
-	virtual bool		GameIndicatorsShown		() const override {return m_bShowGameIndicators;};
+	virtual void		ShowGameIndicators		(bool b) override {ShowIngameIndicators.store(b, std::memory_order_relaxed);};
+	virtual bool		GameIndicatorsShown		() const override {return ShowIngameIndicators.load(std::memory_order_relaxed);};
 	virtual CDialogHolder* GetDialogHolder		() { return this; };
 	void				ShowCrosshair			(bool b)			{psHUD_Flags.set			(HUD_CROSSHAIR_RT, b);}
 	bool				CrosshairShown			()					{return !!psHUD_Flags.test	(HUD_CROSSHAIR_RT);}
