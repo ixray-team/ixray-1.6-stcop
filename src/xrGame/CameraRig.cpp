@@ -1081,43 +1081,28 @@ void attachable_hud_item::PlayRetargetBase(const shared_str& alias)
 	g_player_hud->CycleMode = {};
 }
 
-void attachable_hud_item::UpdateAttachPose()
+void attachable_hud_item::UpdateAttachGrip()
 {
-	shared_str pose;
 	IkMark = HudAttachMarks::Ik;
 	FingersMark = HudAttachMarks::Fingers;
 	if (m_parent_hud_item != nullptr)
 	{
-		m_parent_hud_item->item().FindAttachPose(pose, IkMark, FingersMark);
+		m_parent_hud_item->item().FindAttachMarks(IkMark, FingersMark);
 	}
 
 	const bool HasGripArm = m_parent->GripArmItem(this) != nullptr;
-	if (pose == AttachPose && HasGripArm == GripArm)
+	if (HasGripArm == GripArm)
 	{
 		return;
 	}
 
-	AttachPose = pose;
 	GripArm = HasGripArm;
-	AttachPoseReference = nullptr;
-	m_hand_motions.PoseOverrides.clear();
-	const bool HasPose = pose.size() != 0 && m_hand_motions.find_motion(pose) != nullptr;
-	if (HasPose || GripArm)
+	GripIdleReference = nullptr;
+	if (GripArm)
 	{
 		if (const player_hud_motion* base = m_hand_motions.find_motion("anm_idle"); base != nullptr && !base->m_animations.empty())
 		{
-			AttachPoseReference = base->m_animations[0].name;
-		}
-	}
-
-	if (HasPose)
-	{
-		for (const char* idle : { "anm_idle", "anm_idle_aim", "anm_idle_moving", "anm_idle_sprint" })
-		{
-			if (m_hand_motions.find_motion(idle) != nullptr)
-			{
-				m_hand_motions.PoseOverrides[idle] = pose;
-			}
+			GripIdleReference = base->m_animations[0].name;
 		}
 	}
 
@@ -1187,8 +1172,8 @@ bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& ref
 		return true;
 	}
 
-	reference = own.size() != 0 ? own : AttachPoseReference;
-	return AttachPoseReference.size() != 0;
+	reference = own.size() != 0 ? own : GripIdleReference;
+	return GripIdleReference.size() != 0;
 }
 
 bool attachable_hud_item::RetargetLayer(const shared_str& alias, MotionID& motion, shared_str& reference) const
@@ -2447,7 +2432,7 @@ void player_hud::HandsIkFingerState(SHandsIkFrame& F)
 	const bool finger_mark = finger.Motion.valid() && finger.Hold > 0.f;
 	const bool finger_hold = finger_mark && finger.Idle > 0.f && !Ik.FingerGripBones.empty();
 	float finger_settle = 0.f;
-	if (F.HasAttach && F.Weapon != nullptr && !Ik.FingerGripBones.empty() && !item->LeftHandFree && (item->AttachPose.size() != 0 || item->LeftHandAttachBlend > 0.f))
+	if (F.HasAttach && F.Weapon != nullptr && !Ik.FingerGripBones.empty() && !item->LeftHandFree && item->LeftHandAttachBlend > 0.f)
 	{
 		const float settle_time = item->LeftHandAttachBlend > 0.f ? item->LeftHandAttachBlend : std::max(item->IdleFade, 0.1f);
 		finger_settle = hud_motion_settle(m_model, item->m_hand_motions, settle_time, !finger_mark && Ik.LeftHandAttachWeight <= 0.f);

@@ -33,8 +33,6 @@ struct SInventoryItemDesc final
 	XPROPERTY(IniReadExist, Name="hud_visual")
 	shared_str m_attach_hud_visual;
 	xr_hash_map<shared_str, RStringVec> m_attach_hud_mirrors;
-	XPROPERTY(IniReadExist, Name="anim_pose")
-	shared_str m_anim_pose;
 	XPROPERTY(IniReadExist, Name="ik_mark")
 	shared_str m_ik_mark;
 	XPROPERTY(IniReadExist, Name="ik_fingers_mark")

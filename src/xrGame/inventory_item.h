@@ -261,7 +261,7 @@ public:
 	void RenderIcon(const Fmatrix& xform, IKinematics* model, xr_deque<Fmatrix>& xforms);
 	void AddAttachmentShapes(CPhysicsElement* element, const Fmatrix& xform);
 	void PlayHudMotion(const shared_str& name, bool mix, float speed);
-	void FindAttachPose(shared_str& pose, shared_str& ik_mark, shared_str& fingers_mark) const;
+	void FindAttachMarks(shared_str& ik_mark, shared_str& fingers_mark) const;
 	CInventoryItem* FindGripArm(const shared_str* ArmBones, size_t Count) const;
 
 	CInventoryItem* AttachRoot();

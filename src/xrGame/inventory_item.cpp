@@ -977,7 +977,7 @@ void CInventoryItem::NotifyAttachment(PIItem item, bool attached)
 	}
 }
 
-void CInventoryItem::FindAttachPose(shared_str& pose, shared_str& ik_mark, shared_str& fingers_mark) const
+void CInventoryItem::FindAttachMarks(shared_str& ik_mark, shared_str& fingers_mark) const
 {
 	for (const auto& [id, child] : m_children)
 	{
@@ -987,11 +987,10 @@ void CInventoryItem::FindAttachPose(shared_str& pose, shared_str& ik_mark, share
 		}
 
 		const SInventoryItemDesc& desc = child->ItemDesc();
-		pose = desc.m_anim_pose.size() ? desc.m_anim_pose : pose;
 		ik_mark = desc.m_ik_mark.size() ? desc.m_ik_mark : ik_mark;
 		fingers_mark = desc.m_fingers_mark.size() ? desc.m_fingers_mark : fingers_mark;
 
-		child->FindAttachPose(pose, ik_mark, fingers_mark);
+		child->FindAttachMarks(ik_mark, fingers_mark);
 	}
 }
 

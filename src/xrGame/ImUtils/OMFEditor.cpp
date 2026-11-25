@@ -961,7 +961,7 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 		xr_vector<shared_str> names = { HudAttachMarks::Ik, HudAttachMarks::Fingers, "mm_unpend", "Left", "Right" };
 		if (state.Item != nullptr)
 		{
-			state.Item->UpdateAttachPose();
+			state.Item->UpdateAttachGrip();
 			size_t front = 0;
 			for (const shared_str& mark : { state.Item->IkMark, state.Item->FingersMark })
 			{

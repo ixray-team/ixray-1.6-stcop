@@ -110,7 +110,6 @@ struct player_hud_motion_container final
 	xr_vector<attachable_hud_item_motion> m_item_anims;
 	xr_hash_map<shared_str, bool> m_names;
 	xr_vector<shared_str> m_banned_bone_parts = {};
-	xr_hash_map<shared_str, shared_str> PoseOverrides;
 	player_hud_motion* find_motion(const shared_str& name);
 	attachable_hud_item_motion* find_item_motion(const shared_str& name);
 	bool has_motion(const shared_str& name);
@@ -281,7 +280,6 @@ struct attachable_hud_item final
 	float							LeftHandIkBlend = 0.25f;
 	float							LeftHandFingerGrip = 1.f;
 	shared_str						LeftHandAttachTarget;
-	shared_str						AttachPose;
 	bool							GripArm = false;
 	shared_str						IkMark = HudAttachMarks::Ik;
 	shared_str						FingersMark = HudAttachMarks::Fingers;
@@ -372,7 +370,7 @@ struct attachable_hud_item final
 	shared_str						RetargetReference;
 	shared_str						RetargetSource;
 	xr_hash_map<shared_str, SHudRetargetLayer>	RetargetLayers;
-	shared_str						AttachPoseReference;
+	shared_str						GripIdleReference;
 	bool							RetargetPlaying = false;
 	bool							RetargetLayerPlaying = false;
 	MotionID						RetargetMotion;
@@ -453,7 +451,7 @@ struct attachable_hud_item final
 	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
 	void		anim_play_bonepart	(const shared_str& anim, bool bMixIn);
 	void		PlayRetargetBase	(const shared_str& alias);
-	void		UpdateAttachPose	();
+	void		UpdateAttachGrip	();
 	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd, bool disable_random);
 
 };

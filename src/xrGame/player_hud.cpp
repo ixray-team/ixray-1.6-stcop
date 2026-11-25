@@ -44,15 +44,12 @@ float CalcMotionSpeed(const shared_str& anim_name)
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
 {
-	const auto pose = PoseOverrides.find(name);
-	const shared_str& alias = pose != PoseOverrides.end() ? pose->second : name;
-
 	xr_vector<player_hud_motion>::iterator it = m_anims.begin();
 	xr_vector<player_hud_motion>::iterator it_e = m_anims.end();
 	for (; it != it_e; ++it)
 	{
 		const shared_str& s = (true) ? (*it).m_alias_name : (*it).m_base_name;
-		if (s == alias)
+		if (s == name)
 		{
 			return &(*it);
 		}
@@ -1178,7 +1175,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 {
 	R_ASSERT				(strstr(anm_name_b.c_str(),"anm_")==anm_name_b.c_str());
 
-	UpdateAttachPose();
+	UpdateAttachGrip();
 
 	player_hud_motion* anm	= m_hand_motions.find_motion(anm_name_b);
 	R_ASSERT2(anm, make_string<const char*>("model [%s] has no motion alias defined [%s]", m_sect_name.c_str(), anm_name_b.c_str()));
