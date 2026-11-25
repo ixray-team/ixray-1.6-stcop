@@ -709,10 +709,7 @@ IKinematics* CInventoryItem::HudModel()
 
 void CInventoryItem::RenderHud(const Fmatrix& xform, IKinematics* model, IDSGraphManager* DM)
 {
-	if (m_children.empty())
-	{
-		return;
-	}
+	model->CalculateBones(true);
 
 	for (const auto& [id, child] : m_children)
 	{
