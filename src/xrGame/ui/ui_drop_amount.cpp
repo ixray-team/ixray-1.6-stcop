@@ -20,11 +20,11 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UITrackBar.h"
 #include "../../xrUI/xrUIXmlParser.h"
-#include "../../xrCore/xr_ini.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_input.h"
 #include "UITalkWnd.h"
 #include "UITradeWnd.h"
+#include "UICellItem.h"
 
 namespace
 {

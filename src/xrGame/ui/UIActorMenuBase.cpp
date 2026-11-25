@@ -38,6 +38,7 @@
 #include "../../xrUI/UICursor.h"
 #include "UIInvUpgradeInfo.h"
 #include "UIMessageBoxEx.h"
+#include "InventoryBox.h"
 
 static CCar* ActorHolderCar(CInventoryOwner* Owner)
 {

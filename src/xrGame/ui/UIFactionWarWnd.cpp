@@ -12,6 +12,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/UICursor.h"
 #include "FactionState.h"

@@ -18,6 +18,7 @@
 #include "../BottleItem.h"
 #include "../Car.h"
 #include "../../xrUI/UICursor.h"
+#include "InventoryBox.h"
 
 void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
 
