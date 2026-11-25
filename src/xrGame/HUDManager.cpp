@@ -182,11 +182,9 @@ void  CHUDManager::RenderUI()
 			pUIGame->Render();
 		}
 
+		m_pHUDTarget->Render();
 		UI().RenderFont				();
 	}
-
-		m_pHUDTarget->Render();
-
 
 	if( Device.Paused() && bShowPauseString)
 	{
