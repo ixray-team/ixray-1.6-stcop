@@ -65,7 +65,7 @@ void CRender::render_static()
     L_Glows->Render();
     g_pGamePersistent->Environment().RenderFlares();
     g_pGamePersistent->Environment().RenderLast();
-    Target->u_setrt(Target->rt_Generic_0, nullptr, nullptr);
+    Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
     g_pGamePersistent->OnRenderPPUI_main();
     Target->u_setrt(Target->rt_Generic_1, nullptr, RDepth);
     GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
