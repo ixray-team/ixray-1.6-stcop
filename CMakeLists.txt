@@ -107,6 +107,8 @@ include("cmake/modules.cmake")
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+# ALL_BUILD, INSTALL, PACKAGE, ZERO_CHECK
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "${PREDEFINED_TARGETS_FOLDER}")
 
 # 3rd libraries
 if(APPLE)
@@ -114,6 +116,10 @@ if(APPLE)
 endif()
 
 add_subdirectory("src/3rd-party")
+# Embree hardcodes the CMakePredefinedTargets folder for its uninstall target
+if(TARGET uninstall)
+    set_property(TARGET uninstall PROPERTY FOLDER "${PREDEFINED_TARGETS_FOLDER}")
+endif()
 
 # Engine libraries
 add_subdirectory("src")

@@ -49,7 +49,7 @@ function(ixray_reflect_lua TARGET MODULE)
 	)
 
 	add_custom_target(${TARGET}_reflect DEPENDS "${STAMP_FILE}")
-	set_target_properties(${TARGET}_reflect PROPERTIES FOLDER "Engine/Pre Build")
+	set_target_properties(${TARGET}_reflect PROPERTIES FOLDER "${PREDEFINED_TARGETS_FOLDER}/Pre Build")
 	add_dependencies(${TARGET} ${TARGET}_reflect)
 
 	set_source_files_properties("${OUTPUT_FILE}" "${INI_OUTPUT_FILE}" PROPERTIES GENERATED ON SKIP_UNITY_BUILD_INCLUSION ON)
@@ -87,7 +87,7 @@ function(ixray_reflect_sound TARGET MODULE)
 	)
 
 	add_custom_target(${TARGET}_reflect_sound DEPENDS "${STAMP_FILE}")
-	set_target_properties(${TARGET}_reflect_sound PROPERTIES FOLDER "Engine/Pre Build")
+	set_target_properties(${TARGET}_reflect_sound PROPERTIES FOLDER "${PREDEFINED_TARGETS_FOLDER}/Pre Build")
 	add_dependencies(${TARGET} ${TARGET}_reflect_sound)
 
 	set_source_files_properties("${HEADER_FILE}" "${OUTPUT_FILE}" PROPERTIES GENERATED ON SKIP_UNITY_BUILD_INCLUSION ON)

@@ -105,11 +105,11 @@ endfunction()
 # Папка с зависимостями
 set(DEP_DIR ${CMAKE_BINARY_DIR}/dep)
 
-# Compiles a module in an object library that has no build-order dependencies on the
-# modules it links, so compilation does not wait for the DLL link chain.
-# Extra arguments are <name> <path regex> pairs: matching sources go to their own object
-# library <name>, linked into the same module.
 function(ixray_split_compile target)
+	get_target_property(type ${target} TYPE)
+	if(CMAKE_GENERATOR MATCHES "^Ninja" OR type STREQUAL "EXECUTABLE")
+		return()
+	endif()
 	set(args ${ARGN})
 	set(objs ${target}_obj)
 	set(parts)
@@ -166,16 +166,9 @@ function(_ixray_split_compile_sources target)
 		list(APPEND objects $<TARGET_OBJECTS:${obj}>)
 	endwhile()
 
-	set(shown)
-	if(CMAKE_GENERATOR MATCHES "Visual Studio")
-		# HACK: the module project keeps listing the sources of <target>_obj so the solution
-		# reads as before; the props file excludes them from its build.
-		set(shown ${part})
-		set(props "${CMAKE_BINARY_DIR}/ixray_link_only.props")
-		file(CONFIGURE OUTPUT "${props}" CONTENT "<Project><ItemDefinitionGroup><ClCompile><ExcludedFromBuild>true</ExcludedFromBuild></ClCompile></ItemDefinitionGroup></Project>\n")
-		set_target_properties(${target} PROPERTIES VS_USER_PROPS "${props}")
-	endif()
-	set_property(TARGET ${target} PROPERTY SOURCES ${kept} ${shown} ${objects})
+	# The sources live only in the object libraries, so the IDE takes their IntelliSense
+	# context from the project that actually compiles them.
+	set_property(TARGET ${target} PROPERTY SOURCES ${kept} ${objects})
 	set_target_properties(${target} PROPERTIES LINKER_LANGUAGE CXX DISABLE_PRECOMPILE_HEADERS ON UNITY_BUILD OFF COMPILE_FLAGS "")
 endfunction()
 
@@ -183,13 +176,13 @@ endfunction()
 # of the whole link closure without adding the build-order dependency that linking would.
 function(_ixray_split_compile_usage target)
 	get_target_property(folder ${target} FOLDER)
-	foreach(obj IN LISTS ARGN)
-		if(obj STREQUAL "${target}_obj")
-			set_target_properties(${obj} PROPERTIES FOLDER "${PREDEFINED_TARGETS_FOLDER}/Compile")
-		elseif(folder)
+	if(folder)
+		foreach(obj IN LISTS ARGN)
 			set_target_properties(${obj} PROPERTIES FOLDER "${folder}")
-		endif()
-	endforeach()
+		endforeach()
+	endif()
+	set_target_properties(${target}_obj PROPERTIES PROJECT_LABEL ${target})
+	set_target_properties(${target} PROPERTIES PROJECT_LABEL ${target}_link FOLDER "${PREDEFINED_TARGETS_FOLDER}/Link")
 
 	get_target_property(queue ${target} LINK_LIBRARIES)
 	if(NOT queue)
@@ -209,7 +202,24 @@ function(_ixray_split_compile_usage target)
 		endif()
 		get_target_property(system_target ${dep} SYSTEM)
 		get_target_property(imported_target ${dep} IMPORTED)
+		# Code generators of a dependency (XREFLECT) emit its public headers, so they must run
+		# before the objects compile even though the dependency itself is not waited for.
+		set(generators)
+		if(NOT imported_target)
+			get_target_property(dep_manual ${dep} MANUALLY_ADDED_DEPENDENCIES)
+			foreach(gen IN LISTS dep_manual)
+				if(TARGET ${gen})
+					get_target_property(gen_type ${gen} TYPE)
+					if(gen_type STREQUAL "UTILITY")
+						list(APPEND generators ${gen})
+					endif()
+				endif()
+			endforeach()
+		endif()
 		foreach(obj IN LISTS ARGN)
+			if(generators)
+				add_dependencies(${obj} ${generators})
+			endif()
 			if(system_target AND NOT (imported_target AND no_system_from_imported))
 				target_include_directories(${obj} SYSTEM PRIVATE $<TARGET_PROPERTY:${dep},INTERFACE_INCLUDE_DIRECTORIES>)
 			else()

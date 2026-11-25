@@ -48,5 +48,3 @@ endif()
 if(IXRAY_MP)
     add_dependencies(xrEngine xrGameSpy)
 endif()
-
-ixray_split_compile(xrEngine)
