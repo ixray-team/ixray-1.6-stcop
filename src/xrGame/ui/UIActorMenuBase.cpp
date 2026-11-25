@@ -740,6 +740,10 @@ void CUIActorMenuBase::ClearAllLists()
 
 	for (u8 i = 1; i <= LAST_SLOT; ++i)
 	{
+		if (m_pInvSlotHighlight[i])
+		{
+			m_pInvSlotHighlight[i]->Show(false);
+		}
 		CLEAR_LIST(m_pInvList[i])
 	}
 

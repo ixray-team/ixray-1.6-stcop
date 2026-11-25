@@ -11,6 +11,11 @@ void CUIActorMenuBase::clear_highlight_lists()
 	{
 		if (m_pInvSlotHighlight[i])
 			m_pInvSlotHighlight[i]->Show(false);
+
+		if (m_pInvList[i])
+		{
+			m_pInvList[i]->clear_select_armament();
+		}
 	}
 
 	for (u8 i = 0; i < 4; i++)
@@ -53,6 +58,41 @@ void CUIActorMenuBase::set_highlight_item(CUICellItem* cell_item)
 	if (!item)
 	{
 		return;
+	}
+
+	for (u8 Slot = 1; Slot <= LAST_SLOT; ++Slot)
+	{
+		CUIStatic* SlotHighlight = m_pInvSlotHighlight[Slot];
+		if (SlotHighlight)
+		{
+			SlotHighlight->Show(false);
+		}
+
+		CUIDragDropListEx* SlotList = m_pInvList[Slot];
+		if (!SlotList || !SlotList->IsShown())
+		{
+			continue;
+		}
+
+		const u32 ItemCount = SlotList->ItemsCount();
+		if (ItemCount == 0)
+		{
+			continue;
+		}
+
+		highlight_armament(item, SlotList);
+
+		if (SlotHighlight)
+		{
+			for (u32 Index = 0; Index < ItemCount; ++Index)
+			{
+				if (SlotList->GetItemIdx(Index)->m_select_armament)
+				{
+					SlotHighlight->SetVisible(true);
+					break;
+				}
+			}
+		}
 	}
 
 	highlight_item_slot(cell_item);
