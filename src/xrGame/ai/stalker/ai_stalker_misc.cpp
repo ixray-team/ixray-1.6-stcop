@@ -180,11 +180,15 @@ void CAI_Stalker::process_enemies		()
 
 	PROF_EVENT("process enumies");
 
-	typedef CVisualMemoryManager::VISIBLES	VISIBLES;
+	const auto* VisibleObjects = memory().visual().objectsPtr();
+	if (!VisibleObjects)
+	{
+		return;
+	}
 
 	u64				mask = memory().visual().mask();
-	VISIBLES::const_iterator	I = memory().visual().objects().begin();
-	VISIBLES::const_iterator	E = memory().visual().objects().end();
+	auto I = VisibleObjects->begin();
+	const auto E = VisibleObjects->end();
 	for ( ; I != E; ++I) {
 		if (!(*I).visible(mask))
 			continue;

@@ -137,7 +137,7 @@ IC	bool is_sound_type(int s, const ESoundTypes &t)
 
 bool CSoundMemoryManager::HearsWorldSound(float Power) const
 {
-	return Power > EPS_S && Power * m_world_factor >= CalculateSoundThreshold();
+	return m_sounds && Power > EPS_S && Power * m_world_factor >= CalculateSoundThreshold();
 }
 
 void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power)

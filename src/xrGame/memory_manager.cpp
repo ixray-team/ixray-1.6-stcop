@@ -125,6 +125,11 @@ void CMemoryManager::update			(float time_delta)
 {
 	PROF_EVENT("CMemoryManager::update");
 
+	if (!visual().objectsPtr())
+	{
+		return;
+	}
+
 	visual().update		(time_delta);
 	sound().update		();
 	hit().update		();
@@ -312,7 +317,7 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 
 void CMemoryManager::remove_links	(CObject *object)
 {
-	if (m_object->g_Alive()) {
+	if (m_object->g_Alive() && visual().objectsPtr()) {
 		visual().remove_links	(object);
 		sound().remove_links	(object);
 		hit().remove_links		(object);

@@ -769,7 +769,7 @@ void CAI_Stalker::net_Destroy()
 
 void CAI_Stalker::update_object_handler	()
 {
-	if (!g_Alive())
+	if (!g_Alive() || !memory().visual().objectsPtr())
 		return;
 
 	PROF_EVENT("AI: [Stalker] Update Handler");
@@ -947,11 +947,24 @@ void CAI_Stalker::shedule_Update(u32 DT)
 	float dt = float(DT) / 1000.f;
 	CScriptEntity::process_sound_callbacks();
 
-	if (g_Alive())
+	const auto CanUpdateAI = [this]()
+	{
+		return g_Alive() && memory().visual().objectsPtr() != nullptr;
+	};
+
+	if (CanUpdateAI())
 	{
 		animation().play_delayed_callbacks();
-		agent_manager().update();
+	}
 
+	// Script callbacks can change squad membership before the AI update.
+	if (CanUpdateAI())
+	{
+		agent_manager().update();
+	}
+
+	if (CanUpdateAI())
+	{
 		Exec_Visibility();
 		update_can_kill_info();
 		process_enemies();
@@ -962,7 +975,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 
 	inherited::inherited::shedule_Update(DT);
 
-	if (!Remote())
+	if (!Remote() && (!g_Alive() || CanUpdateAI()))
 	{
 		// here is monster AI call
 		VERIFY(_valid(Position()));
@@ -1093,7 +1106,10 @@ void CAI_Stalker::net_Relcase				(CObject*	 O)
 	if (!g_Alive())
 		return;
 
-	agent_manager().remove_links		(O);
+	if (memory().visual().objectsPtr())
+	{
+		agent_manager().remove_links(O);
+	}
 	m_pPhysics_support->in_NetRelcase	(O);
 }
 
