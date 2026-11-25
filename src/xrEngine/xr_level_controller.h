@@ -275,6 +275,7 @@ public:
 };
 
 ENGINE_API void GetActionAllBinding	(const char* action, char* dst_buff, int dst_buff_sz);
+void GetActionAllBinding(const char* Action, char* Destination, int Capacity, bool ShortKeyNames);
 
 extern ENGINE_API ConsoleBindCmds bindConsoleCmds;
 

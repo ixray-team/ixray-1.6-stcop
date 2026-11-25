@@ -17,6 +17,8 @@ struct STRING_TABLE_DATA
 	STRING_TABLE_MAP		m_FallbackStringTable;
 	STRING_TABLE_MAP		m_string_key_binding;
 	STRING_TABLE_MAP		m_string_key_binding_gamepad;
+	STRING_TABLE_MAP FallbackBindingTemplates;
+	STRING_TABLE_MAP ObjectHintsWithShortKeys;
 };
 
 class ENGINE_API CStringTable 
@@ -37,11 +39,14 @@ public:
 	static	xr_string			LangName				();
 			void				ReloadLanguage(const char* lang);
 			STRING_VALUE		ParseStringFromScript	(STRING_ID input);
+	STRING_VALUE FormatObjectHint(const STRING_ID& Text) const;
 private:
 			void				Init					();
 			void				Load					(const char* xml_file);
 			void				LoadFallback			(const char* xml_file);
-	static STRING_VALUE			ParseLine				(const char* str, const char* key, bool bFirst, bool isGamepad = false);
+	static STRING_VALUE ParseLine(const char* Text, bool ShortKeyNames = false, STRING_TABLE_MAP* BindingTemplates = nullptr, const char* Key = nullptr);
+	STRING_VALUE Translate(const STRING_ID& Id, bool ShortKeyNames) const;
+	STRING_VALUE ParseScriptText(const STRING_ID& Text, bool ShortKeyNames) const;
 	static STRING_TABLE_DATA*	pData;
 };
 

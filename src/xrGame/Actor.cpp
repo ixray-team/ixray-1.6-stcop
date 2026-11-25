@@ -2030,7 +2030,7 @@ void CActor::UpdateCL()
 			}
 			else if (m_pUsableObject && m_pUsableObject->tip_text())
 			{
-				m_sDefaultObjAction = g_pStringTable->translate( m_pUsableObject->tip_text() );
+				m_sDefaultObjAction = m_pUsableObject->tip_text();
 			}
 			else
 			{

@@ -102,6 +102,10 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 		itm.m_functor				= xml->Read(xml->GetLocalRoot(), "action", idx_, "");
 	}
 
+	// Quest use prompts run as tutorial items without taking over player input.
+	const bool IsObjectUseHint = !m_flags.test(etiGrabInput) && m_continue_dik_guard == kUSE &&
+		std::ranges::any_of(m_actions, [](const SActionItem& Action) { return Action.m_action == kUSE; });
+
 	//ui-components
 	m_UIWindow						= new CUIWindow();
 	m_UIWindow->SetAutoDelete		(false);
@@ -145,7 +149,13 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 		if (nullptr == _si.m_wnd)
 			continue;
 
-		_si.m_wnd->TextItemControl()->SetTextComplexMode(true);
+		CUILines* Lines = _si.m_wnd->TextItemControl();
+		Lines->SetTextComplexMode(true);
+		if (IsObjectUseHint && Lines->m_text_src.size())
+		{
+			const shared_str Hint = g_pStringTable->FormatObjectHint(Lines->m_text_src);
+			Lines->SetText(Hint.c_str());
+		}
 		_si.m_wnd->Show			(false);
 		if (m_compatibility_mode == eCompatibilityDefault)
 			_si.m_wnd->SetWidth		(_si.m_wnd->GetWidth()*UI().get_current_kx());

@@ -209,13 +209,13 @@ void CStringTable::Load	(const char* xml_file_full)
 		
 		VERIFY3						(string_text, "string table entry does not have a text", string_name);
 		
-		STRING_VALUE str_val		= ParseLine(string_text, string_name, true);
+		STRING_VALUE str_val		= ParseLine(string_text, false, &pData->m_string_key_binding, string_name);
 		
 		pData->m_StringTable[string_name] = str_val;
 		const char* gamepad_text = uiXml.Read(uiXml.GetRoot(), "string:text_gamepad", i, nullptr);
 		if (gamepad_text)
 		{
-			STRING_VALUE str_val = ParseLine(gamepad_text, string_name, true, true);
+			STRING_VALUE str_val = ParseLine(gamepad_text, false, &pData->m_string_key_binding_gamepad, string_name);
 			pData->m_StringTableGamepad[string_name] = str_val;
 		}
 	}
@@ -241,6 +241,7 @@ void CStringTable::LoadFallback	(const char* xml_file_full)
 		{
 			//VERIFY3(!isDublicate, "duplicate string table id", string_name);
 			Msg("! duplicate fallback string table id: %s", string_name);
+			pData->FallbackBindingTemplates.erase(string_name);
 		}
 
 		const char* string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
@@ -250,7 +251,7 @@ void CStringTable::LoadFallback	(const char* xml_file_full)
 		
 		if (string_text != nullptr)
 		{
-			STRING_VALUE str_val		= ParseLine(string_text, string_name, false);
+			STRING_VALUE str_val		= ParseLine(string_text, false, &pData->FallbackBindingTemplates, string_name);
 			
 			pData->m_FallbackStringTable[string_name] = str_val;
 		}
@@ -262,13 +263,28 @@ void CStringTable::ReparseKeyBindings()
 	if(pData == nullptr)
 		return;
 	
-	for (auto& key : pData->m_string_key_binding)
+	const bool KeyboardMode = pInput && !pInput->GetControllerMode();
+	for (const auto& [Id, Template] : pData->m_string_key_binding)
 	{
-		pData->m_StringTable[key.first] = ParseLine(*key.second, *key.first, false);
+		pData->m_StringTable[Id] = ParseLine(*Template);
+		if (KeyboardMode)
+		{
+			pData->ObjectHintsWithShortKeys[Id] = ParseLine(*Template, true);
+		}
+	}
+	if (KeyboardMode)
+	{
+		for (const auto& [Id, Template] : pData->FallbackBindingTemplates)
+		{
+			if (!pData->m_StringTable.contains(Id))
+			{
+				pData->ObjectHintsWithShortKeys[Id] = ParseLine(*Template, true);
+			}
+		}
 	}
 	for (auto& key : pData->m_string_key_binding_gamepad)
 	{
-		pData->m_StringTableGamepad[key.first] = ParseLine(*key.second, *key.first, false);
+		pData->m_StringTableGamepad[key.first] = ParseLine(*key.second);
 	}
 	if (g_pGameCustom)
 	{
@@ -353,7 +369,7 @@ xr_string CStringTable::LangName()
 	return pData->m_sLanguage.c_str();
 }
 
-STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFirst, bool isGamepad)
+STRING_VALUE CStringTable::ParseLine(const char* str, bool ShortKeyNames, STRING_TABLE_MAP* BindingTemplates, const char* Key)
 {
 	constexpr char ActionPrefix[] = "$$ACTION_";
 	if (!strstr(str, ActionPrefix))
@@ -384,54 +400,75 @@ STRING_VALUE CStringTable::ParseLine(const char* str, const char* skey, bool bFi
 		Result.append(Cursor, Token);
 		const xr_string ActionName(Action, static_cast<u32>(End - Action));
 		string256 Binding;
-		GetActionAllBinding(ActionName.c_str(), Binding, sizeof(Binding));
+		GetActionAllBinding(ActionName.c_str(), Binding, sizeof(Binding), ShortKeyNames);
 		Result += Binding;
 		Cursor = End + 2;
 	}
 	Result += Cursor;
 
-	if (Cursor != Text && bFirst)
+	if (Cursor != Text && BindingTemplates)
 	{
-		if (isGamepad)
-		{
-			pData->m_string_key_binding_gamepad[skey] = str;
-		}
-		else
-		{
-			pData->m_string_key_binding[skey] = str;
-		}
+		(*BindingTemplates)[Key] = str;
 	}
 
 	return Result.c_str();
 }
 
-STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
+STRING_VALUE CStringTable::translate(const STRING_ID& str_id) const
 {
-	if(pData != nullptr)
+	return Translate(str_id, false);
+}
+
+STRING_VALUE CStringTable::Translate(const STRING_ID& Id, bool ShortKeyNames) const
+{
+	if (!pData)
 	{
-		// First try to find in main language
-		if (pData->m_StringTable.find(str_id) != pData->m_StringTable.end())
+		return Id;
+	}
+
+	const bool ControllerMode = pInput && pInput->GetControllerMode();
+	if (ShortKeyNames && !ControllerMode)
+	{
+		if (const auto Hint = pData->ObjectHintsWithShortKeys.find(Id); Hint != pData->ObjectHintsWithShortKeys.end())
 		{
-			if (pInput != nullptr && pInput->GetControllerMode() && pData->m_StringTableGamepad.contains(str_id))
+			return Hint->second;
+		}
+	}
+
+	if (const auto Main = pData->m_StringTable.find(Id); Main != pData->m_StringTable.end())
+	{
+		if (ControllerMode)
+		{
+			if (const auto Gamepad = pData->m_StringTableGamepad.find(Id); Gamepad != pData->m_StringTableGamepad.end())
 			{
-				return pData->m_StringTableGamepad[str_id];
-			}
-			else
-			{
-				return pData->m_StringTable[str_id];
+				return Gamepad->second;
 			}
 		}
-		// If not found and fallback table exists, try fallback language
-		if(pData->m_FallbackStringTable.find(str_id)!=pData->m_FallbackStringTable.end())
-			return  pData->m_FallbackStringTable[str_id];
+		return Main->second;
 	}
-	
-	// If not found in either table, return the original string ID
-	return str_id;
+	if (const auto Fallback = pData->m_FallbackStringTable.find(Id); Fallback != pData->m_FallbackStringTable.end())
+	{
+		return Fallback->second;
+	}
+	return Id;
+}
+
+STRING_VALUE CStringTable::FormatObjectHint(const STRING_ID& Text) const
+{
+	if (Text.size() && !strpbrk(Text.c_str(), "#\n"))
+	{
+		return Translate(Text, true);
+	}
+	return ParseScriptText(Text, true);
 }
 
 // St4lker0k765: Enhanced Edition-style parsing for tasks, etc
 STRING_VALUE CStringTable::ParseStringFromScript(STRING_ID input)
+{
+	return ParseScriptText(input, false);
+}
+
+STRING_VALUE CStringTable::ParseScriptText(const STRING_ID& input, bool ShortKeyNames) const
 {
 	xr_string out = "";
 	if (!input.size())
@@ -446,11 +483,11 @@ STRING_VALUE CStringTable::ParseStringFromScript(STRING_ID input)
 		while ((pos = line.find_first_of("#", prev)) != xr_string::npos)
 		{
 			if (pos > prev)
-				out += translate(line.substr(prev, pos - prev).c_str()).c_str();
+				out += Translate(line.substr(prev, pos - prev).c_str(), ShortKeyNames).c_str();
 			prev = pos + 1;
 		}
 		if (prev < line.length())
-			out += translate(line.substr(prev, xr_string::npos).c_str()).c_str();
+			out += Translate(line.substr(prev, xr_string::npos).c_str(), ShortKeyNames).c_str();
 	}
 	return STRING_VALUE(out.c_str());
 }

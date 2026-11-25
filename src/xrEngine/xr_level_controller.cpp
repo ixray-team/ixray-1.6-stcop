@@ -1082,8 +1082,12 @@ const char* GetGamepadSymbol(int dik)
 
 ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst_buff_sz)
 {
+	GetActionAllBinding(_action, dst_buff, dst_buff_sz, false);
+}
+
+void GetActionAllBinding(const char* _action, char* dst_buff, int dst_buff_sz, bool ShortKeyNames)
+{
 	int action_id = action_name_to_id(_action);
-	_binding* pbinding = &g_key_bindings[action_id];
 
 	if (action_id == kNOTBINDED)
 	{
@@ -1092,19 +1096,32 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 		return;
 	}
 
+	const _binding* pbinding = &g_key_bindings[action_id];
 	const auto GetUtf8Label = [](const char* Label) -> xr_string
 	{
 		return IsUTF8(Label) ? xr_string(Label) : Platform::ANSI_TO_UTF8(Label);
+	};
+	const auto GetKeyLabel = [ShortKeyNames, &GetUtf8Label](const _keyboard& Key) -> xr_string
+	{
+		if (ShortKeyNames && Key.dik >= 0 && Key.dik < SDL_SCANCODE_COUNT)
+		{
+			const auto Scancode = static_cast<SDL_Scancode>(Key.dik);
+			if (CInput::GetRussianKeyCharacter(Scancode))
+			{
+				return SDL_GetScancodeName(Scancode);
+			}
+		}
+		return GetUtf8Label(Key.GetDisplayName());
 	};
 	xr_string prim;
 	xr_string sec;
 	string128 gp_prim = {};
 
 	if (pbinding->m_keyboard[0])
-		prim = GetUtf8Label(pbinding->m_keyboard[0]->GetDisplayName());
+		prim = GetKeyLabel(*pbinding->m_keyboard[0]);
 
 	if (pbinding->m_keyboard[1])
-		sec = GetUtf8Label(pbinding->m_keyboard[1]->GetDisplayName());
+		sec = GetKeyLabel(*pbinding->m_keyboard[1]);
 
 	if (pbinding->m_gamepad[0])
 	{

@@ -994,23 +994,24 @@ void CUIMainIngameWnd::RenderQuickInfos()
 		return;
 	}
 
-	static CGameObject *pObject = nullptr;
-	const char* actor_action	= pActor->GetDefaultActionForObject();
-	UIStaticQuickHelp->Show(nullptr!=actor_action);
+	static CGameObject* LastObject = nullptr;
+	const shared_str& Action = pActor->GetDefaultActionForObject();
+	UIStaticQuickHelp->Show(Action);
 
-	if (nullptr != actor_action)
+	if (Action)
 	{
-		if (_stricmp(actor_action,UIStaticQuickHelp->GetText()))
+		const shared_str Hint = g_pStringTable->FormatObjectHint(Action);
+		// Both texts are interned as shared_str.
+		if (UIStaticQuickHelp->GetText() != Hint.c_str())
 		{
-			UIStaticQuickHelp->SetTextST(actor_action);
+			UIStaticQuickHelp->SetText(Hint.c_str());
 		}
 	}
 
-	if (pObject != pActor->ObjectWeLookingAt())
+	if (LastObject != pActor->ObjectWeLookingAt())
 	{
-		UIStaticQuickHelp->SetTextST(actor_action ? actor_action : " ");
 		UIStaticQuickHelp->ResetColorAnimation();
-		pObject	= pActor->ObjectWeLookingAt();
+		LastObject = pActor->ObjectWeLookingAt();
 	}
 }
 
