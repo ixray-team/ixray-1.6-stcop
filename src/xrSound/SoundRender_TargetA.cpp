@@ -12,16 +12,24 @@ CSoundRender_TargetA::CSoundRender_TargetA():CSoundRender_Target()
     cache_gain			= 0.f;
     cache_pitch			= 1.f;
     pSource				= 0;
-    Slot = u32(-1);
 }
 
 CSoundRender_TargetA::~CSoundRender_TargetA()
 {
 }
 
-void CSoundRender_TargetA::SetSlot(ALuint NewSlot)
+void CSoundRender_TargetA::SetEffectSlot(ALuint NewSlot)
 {
-    Slot = NewSlot;
+	if (NewSlot != AL_EFFECTSLOT_NULL && (!m_pEmitter || m_pEmitter->bIntro))
+	{
+		NewSlot = AL_EFFECTSLOT_NULL;
+	}
+
+	if (EffectSlot != NewSlot)
+	{
+		A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, NewSlot, 0, AL_FILTER_NULL));
+		EffectSlot = NewSlot;
+	}
 }
 
 bool	CSoundRender_TargetA::_initialize		()
@@ -33,6 +41,7 @@ bool	CSoundRender_TargetA::_initialize		()
    
     ALenum error_		= alGetError();
     if (AL_NO_ERROR==error_){
+        EffectSlot = AL_EFFECTSLOT_NULL;
         A_CHK(alSourcei	(pSource, AL_LOOPING, AL_FALSE));
         A_CHK(alSourcef	(pSource, AL_MIN_GAIN, 0.f));
         A_CHK(alSourcef	(pSource, AL_MAX_GAIN, 1.f));
@@ -77,12 +86,7 @@ void	CSoundRender_TargetA::render()
         fill_block(pBuffers[buf_idx]);
 
     A_CHK(alSourceQueueBuffers(pSource, sdef_target_count, pBuffers));
-    
-    if (Slot != u32(-1) && !m_pEmitter->bIntro)
-    {
-        A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, Slot, 0, AL_FILTER_NULL));
-    }
-    
+
     A_CHK(alSourcePlay(pSource));
 
     inherited::render();

@@ -50,6 +50,16 @@ private:
 
 	SoundVoiceChat* pSoundVoiceChat = nullptr;
 
+	bool EffectsRequested = false;
+	bool PreviousEffectsRequest = false;
+	ALuint effect = AL_EFFECT_NULL;
+	ALuint EffectSlot = AL_EFFECTSLOT_NULL;
+
+	bool LoadEffect();
+	void DestroyEffect();
+	void UpdateEffects(const Fvector& Position);
+	int load_reverb(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
+
 	/* Filter object functions */
 	LPALGENFILTERS alGenFilters{};
 	LPALDELETEFILTERS alDeleteFilters{};
@@ -91,16 +101,9 @@ private:
 
 
 public:
-	ALuint effect{};
-	ALuint effectfv{};
-	ALuint slot{};
-
 	virtual void			update_listener			( const Fvector& P, const Fvector& D, const Fvector& N, float dt );
 public:	
 						    CSoundRender_CoreA		();
-    virtual					~CSoundRender_CoreA		();
-
-	int load_reverb(ALuint effect, const EFXEAXREVERBPROPERTIES* reverb);
 
 	virtual void			_initialize				(int stage);
 	virtual void			_clear					( );
@@ -113,9 +116,8 @@ public:
 	virtual const Fvector&	listener_position		( ){return Listener.position;}
 	virtual ISoundVoiceChat* GetSoundVoiceChat		() { return (ISoundVoiceChat*)pSoundVoiceChat; }
 
-	// EFX Slots
-	void LoadEffect();
-	void DestroyEffect();
+	void SyncEffectsSetting() override;
+	ALuint GetEffectSlot() const { return EffectSlot; }
 
 	// EFX listener
 	void set_listener(const CSoundRender_Environment& env);

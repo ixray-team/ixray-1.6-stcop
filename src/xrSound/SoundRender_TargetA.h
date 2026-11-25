@@ -15,16 +15,16 @@ public:
 	ALuint						pBuffers[sdef_target_count];
     float						cache_gain;
     float						cache_pitch;
-    ALuint						Slot;
 
     ALuint						buf_block;
 private:
+	ALuint EffectSlot = AL_EFFECTSLOT_NULL;
 	void						fill_block				(ALuint BufferID);
 public:
 								CSoundRender_TargetA	();
 	virtual 					~CSoundRender_TargetA	();
 
-			void				SetSlot					(ALuint NewSlot);
+	void SetEffectSlot(ALuint NewSlot);
 	virtual bool				_initialize				();
 	virtual void				_destroy				();
 	virtual void				_restart				();

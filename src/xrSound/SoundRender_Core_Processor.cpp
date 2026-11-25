@@ -99,7 +99,7 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 	}
 
 	// update EFX
-    if (m_is_supported)
+    if (EffectsEnabled)
 	{
         if (bListenerMoved)
 		{
@@ -125,8 +125,10 @@ void CSoundRender_Core::update	( const Fvector& P, const Fvector& D, const Fvect
 		{
 			CSoundRender_TargetA* Ptr = (CSoundRender_TargetA*)s_targets_defer[it];
 
-			if (m_is_supported)
-				Ptr->SetSlot(Core->slot);
+			if (EffectsEnabled)
+			{
+				Ptr->SetEffectSlot(Core->GetEffectSlot());
+			}
 
 			Ptr->render();
 		}

@@ -19,11 +19,6 @@ CSoundRender_CoreA::CSoundRender_CoreA	():CSoundRender_Core()
     Listener.orientation[1].set(0, 0, 0);
 }
 
-CSoundRender_CoreA::~CSoundRender_CoreA	()
-{
-    DestroyEffect();
-}
-
 // load_reverb loads the given initial reverb properties into the given OpenAL
 //  effect object, and returns non-zero on success.
 int CSoundRender_CoreA::load_reverb(ALuint effect_, const EFXEAXREVERBPROPERTIES* reverb)
@@ -78,48 +73,110 @@ void CSoundRender_CoreA::commit()
     // Tell the effect slot to use the loaded effect object. Note that this
     // effectively copies the effect properties. You can modify or delete the
     // effect object afterward without affecting the effect slot.
-    A_CHK(alAuxiliaryEffectSlotf(slot, AL_EFFECTSLOT_GAIN, 1.f));
-    A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, false));
-    A_CHK(alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, effect));
+    A_CHK(alAuxiliaryEffectSloti(EffectSlot, AL_EFFECTSLOT_EFFECT, effect));
 }
 
-void CSoundRender_CoreA::LoadEffect()
+bool CSoundRender_CoreA::LoadEffect()
 {
-    alGenEffects(1, &effect);
+	if (!alcIsExtensionPresent(pDevice, "ALC_EXT_EFX") || !alGenEffects || !alDeleteEffects ||
+		!alEffecti || !alEffectf || !alEffectfv || !alGenAuxiliaryEffectSlots ||
+		!alDeleteAuxiliaryEffectSlots || !alAuxiliaryEffectSloti)
+	{
+		Msg("! SOUND: OpenAL: EFX is unavailable");
+		return false;
+	}
 
-    load_reverb(effect, &reverbs[0]);
+	ALCint MaxSends = 0;
+	alcGetIntegerv(pDevice, ALC_MAX_AUXILIARY_SENDS, 1, &MaxSends);
+	if (MaxSends < 1)
+	{
+		Msg("! SOUND: OpenAL: EFX requires an auxiliary send");
+		return false;
+	}
 
-    // Check if an error occured, and clean up if so.
-    ALenum err = alGetError();
+	alGetError();
+	alGenEffects(1, &effect);
+	ALenum Error = alGetError();
+	if (Error == AL_NO_ERROR && load_reverb(effect, &reverbs[0]))
+	{
+		alGenAuxiliaryEffectSlots(1, &EffectSlot);
+		Error = alGetError();
+		if (Error == AL_NO_ERROR)
+		{
+			alAuxiliaryEffectSloti(EffectSlot, AL_EFFECTSLOT_AUXILIARY_SEND_AUTO, AL_FALSE);
+			Error = alGetError();
+			if (Error == AL_NO_ERROR)
+			{
+				return true;
+			}
+		}
+	}
 
-    if (psSoundFlags.test(ss_EFX))
-    {
-        if (err == AL_NO_ERROR)
-        {
-            m_is_supported = true;
-            alGenAuxiliaryEffectSlots(1, &slot);
-        }
-        else
-        {
-            Msg("SOUND: OpenAL: Failed to init EFX: %s", alGetString(err));
-            if (alIsEffect(effect))
-                alDeleteEffects(1, &effect);
-        }
-    }
-    else
-    {
-        m_is_supported = false;
-    }
+	if (Error != AL_NO_ERROR)
+	{
+		Msg("! SOUND: OpenAL: Failed to init EFX: %s", alGetString(Error));
+	}
+	DestroyEffect();
+	return false;
 }
 
 void CSoundRender_CoreA::DestroyEffect()
 {
-    if (m_is_supported)
-    {
-        alDeleteEffects(1, &effect);
-        if (alIsAuxiliaryEffectSlot(slot))
-            alDeleteAuxiliaryEffectSlots(1, &slot);
-    }
+	if (EffectSlot != AL_EFFECTSLOT_NULL)
+	{
+		A_CHK(alDeleteAuxiliaryEffectSlots(1, &EffectSlot));
+		EffectSlot = AL_EFFECTSLOT_NULL;
+	}
+	if (effect != AL_EFFECT_NULL)
+	{
+		A_CHK(alDeleteEffects(1, &effect));
+		effect = AL_EFFECT_NULL;
+	}
+}
+
+void CSoundRender_CoreA::SyncEffectsSetting()
+{
+	EffectsRequested = psSoundFlags.test(ss_EFX);
+}
+
+void CSoundRender_CoreA::UpdateEffects(const Fvector& Position)
+{
+	if (!bReady || EffectsRequested == PreviousEffectsRequest)
+	{
+		return;
+	}
+	PreviousEffectsRequest = EffectsRequested;
+
+	if (EffectsRequested)
+	{
+		if (EffectSlot == AL_EFFECTSLOT_NULL && !LoadEffect())
+		{
+			return;
+		}
+
+		e_target = *get_environment(Position);
+		e_current = e_target;
+		bListenerMoved = false;
+		EffectsEnabled = true;
+
+		for (CSoundRender_Target* Target : s_targets)
+		{
+			if (Target->get_Rendering())
+			{
+				static_cast<CSoundRender_TargetA*>(Target)->SetEffectSlot(EffectSlot);
+			}
+		}
+	}
+	else if (EffectsEnabled)
+	{
+		EffectsEnabled = false;
+		A_CHK(alAuxiliaryEffectSloti(EffectSlot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL));
+
+		for (CSoundRender_Target* Target : s_targets)
+		{
+			static_cast<CSoundRender_TargetA*>(Target)->SetEffectSlot(AL_EFFECTSLOT_NULL);
+		}
+	}
 }
 
 void CSoundRender_CoreA::set_listener(const CSoundRender_Environment& env)
@@ -295,7 +352,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     LOAD_PROC(LPALGETAUXILIARYEFFECTSLOTFV, alGetAuxiliaryEffectSlotfv);
 #undef LOAD_PROC
 
-    LoadEffect();
+    SyncEffectsSetting();
 
     inherited::_initialize		(stage);
 
@@ -335,6 +392,7 @@ void CSoundRender_CoreA::update(const Fvector& P, const Fvector& D, const Fvecto
 {
     PROF_EVENT("Sound: Update Core");
 
+    UpdateEffects(P);
     inherited::update(P, D, N);
 
     check_device_connection();
@@ -420,6 +478,8 @@ void CSoundRender_CoreA::_clear	()
 		T->_destroy				();
         xr_delete				(T);
 	}
+
+    DestroyEffect();
 
     // Reset the current context to nullptr.
     alcMakeContextCurrent		(nullptr);         

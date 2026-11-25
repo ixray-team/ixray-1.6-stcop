@@ -476,6 +476,11 @@ struct EfficientFilteredDelta
 bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
+	if (Sound)
+	{
+		Sound->SyncEffectsSetting();
+	}
+
 	dwFrame++;
 	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 	

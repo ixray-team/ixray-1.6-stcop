@@ -15,6 +15,7 @@ protected:
 	virtual void						_destroy_data			( ref_sound_data& S);
 protected:
     bool								bListenerMoved;
+	bool EffectsEnabled = false;
 
 	CNotificationClient*				pSysNotification = nullptr;
 	CSoundRender_Environment			e_current;
@@ -26,8 +27,6 @@ public:
 	bool								bPresent;
 	bool								bUserEnvironment;
     bool								bReady;
-
-	bool m_is_supported; // Boolean variable to indicate presence of EFX Extension
 
 	CTimerFactored						Timer;
 	float								fTimer_Value;

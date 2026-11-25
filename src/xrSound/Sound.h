@@ -313,6 +313,7 @@ public:
 	virtual void					refresh_sources			()																						= 0;
     virtual void					set_environment			(u32 id, CSound_environment** dst_env)													= 0;
     virtual void					set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env)								= 0;
+	virtual void SyncEffectsSetting() = 0;
 };
 
 extern XRSOUND_API CSound_manager_interface*		Sound;

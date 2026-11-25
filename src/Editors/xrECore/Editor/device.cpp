@@ -502,6 +502,11 @@ void CEditorRenderDevice::UpdateView()
 
 void CEditorRenderDevice::FrameMove()
 {
+	if (Sound)
+	{
+		Sound->SyncEffectsSetting();
+	}
+
 	dwFrame++;
 
 	// Timer

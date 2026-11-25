@@ -44,6 +44,7 @@ CSoundRender_Emitter::CSoundRender_Emitter(void)
 	set_cursor					(0);
 	bMoved						= true;
 	b2D							= false;
+	bIntro						= false;
 	bStopping					= false;
 	bRewind						= false;
 	iPaused						= 0;
