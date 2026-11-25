@@ -163,302 +163,302 @@ IC	bool CAI_Stalker::death_sound_enabled						() const
 
 IC	u32 CAI_Stalker::pstl_min_queue_size_far						() const
 {
-	return					(m_pstl_min_queue_size_far);
+	return					StalkerDesc().Queues.Pistol.MinSizeFar;
 }
 
 IC	u32 CAI_Stalker::pstl_max_queue_size_far						() const
 {
-	return					(m_pstl_max_queue_size_far);
+	return					StalkerDesc().Queues.Pistol.MaxSizeFar;
 }
 
 IC	u32 CAI_Stalker::pstl_min_queue_interval_far					() const
 {
-	return					(m_pstl_min_queue_interval_far);
+	return					StalkerDesc().Queues.Pistol.MinIntervalFar;
 }
 
 IC	u32 CAI_Stalker::pstl_max_queue_interval_far					() const
 {
-	return					(m_pstl_max_queue_interval_far);
+	return					StalkerDesc().Queues.Pistol.MaxIntervalFar;
 }
 
 IC	u32 CAI_Stalker::pstl_min_queue_size_medium						() const
 {
-	return					(m_pstl_min_queue_size_medium);
+	return					StalkerDesc().Queues.Pistol.MinSizeMedium;
 }
 
 IC	u32 CAI_Stalker::pstl_max_queue_size_medium						() const
 {
-	return					(m_pstl_max_queue_size_medium);
+	return					StalkerDesc().Queues.Pistol.MaxSizeMedium;
 }
 
 IC	u32 CAI_Stalker::pstl_min_queue_interval_medium					() const
 {
-	return					(m_pstl_min_queue_interval_medium);
+	return					StalkerDesc().Queues.Pistol.MinIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::pstl_max_queue_interval_medium					() const
 {
-	return					(m_pstl_max_queue_interval_medium);
+	return					StalkerDesc().Queues.Pistol.MaxIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::pstl_min_queue_size_close						() const
 {
-	return					(m_pstl_min_queue_size_close);
+	return					StalkerDesc().Queues.Pistol.MinSizeClose;
 }
 
 IC	u32 CAI_Stalker::pstl_max_queue_size_close						() const
 {
-	return					(m_pstl_max_queue_size_close);
+	return					StalkerDesc().Queues.Pistol.MaxSizeClose;
 }
 
 IC	u32 CAI_Stalker::pstl_min_queue_interval_close					() const
 {
-	return					(m_pstl_min_queue_interval_close);
+	return					StalkerDesc().Queues.Pistol.MinIntervalClose;
 }
 
 IC	u32 CAI_Stalker::pstl_max_queue_interval_close					() const
 {
-	return					(m_pstl_max_queue_interval_close);
+	return					StalkerDesc().Queues.Pistol.MaxIntervalClose;
 }
 
 IC	u32 CAI_Stalker::shtg_min_queue_size_far						() const
 {
-	return					(m_shtg_min_queue_size_far);
+	return					StalkerDesc().Queues.Shotgun.MinSizeFar;
 }
 
 IC	u32 CAI_Stalker::shtg_max_queue_size_far						() const
 {
-	return					(m_shtg_max_queue_size_far);
+	return					StalkerDesc().Queues.Shotgun.MaxSizeFar;
 }
 
 IC	u32 CAI_Stalker::shtg_min_queue_interval_far					() const
 {
-	return					(m_shtg_min_queue_interval_far);
+	return					StalkerDesc().Queues.Shotgun.MinIntervalFar;
 }
 
 IC	u32 CAI_Stalker::shtg_max_queue_interval_far					() const
 {
-	return					(m_shtg_max_queue_interval_far);
+	return					StalkerDesc().Queues.Shotgun.MaxIntervalFar;
 }
 
 IC	u32 CAI_Stalker::shtg_min_queue_size_medium						() const
 {
-	return					(m_shtg_min_queue_size_medium);
+	return					StalkerDesc().Queues.Shotgun.MinSizeMedium;
 }
 
 IC	u32 CAI_Stalker::shtg_max_queue_size_medium						() const
 {
-	return					(m_shtg_max_queue_size_medium);
+	return					StalkerDesc().Queues.Shotgun.MaxSizeMedium;
 }
 
 IC	u32 CAI_Stalker::shtg_min_queue_interval_medium					() const
 {
-	return					(m_shtg_min_queue_interval_medium);
+	return					StalkerDesc().Queues.Shotgun.MinIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::shtg_max_queue_interval_medium					() const
 {
-	return					(m_shtg_max_queue_interval_medium);
+	return					StalkerDesc().Queues.Shotgun.MaxIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::shtg_min_queue_size_close						() const
 {
-	return					(m_shtg_min_queue_size_close);
+	return					StalkerDesc().Queues.Shotgun.MinSizeClose;
 }
 
 IC	u32 CAI_Stalker::shtg_max_queue_size_close						() const
 {
-	return					(m_shtg_max_queue_size_close);
+	return					StalkerDesc().Queues.Shotgun.MaxSizeClose;
 }
 
 IC	u32 CAI_Stalker::shtg_min_queue_interval_close					() const
 {
-	return					(m_shtg_min_queue_interval_close);
+	return					StalkerDesc().Queues.Shotgun.MinIntervalClose;
 }
 
 IC	u32 CAI_Stalker::shtg_max_queue_interval_close					() const
 {
-	return					(m_shtg_max_queue_interval_close);
+	return					StalkerDesc().Queues.Shotgun.MaxIntervalClose;
 }
 
 IC	u32 CAI_Stalker::snp_min_queue_size_far						() const
 {
-	return					(m_snp_min_queue_size_far);
+	return					StalkerDesc().Queues.Sniper.MinSizeFar;
 }
 
 IC	u32 CAI_Stalker::snp_max_queue_size_far						() const
 {
-	return					(m_snp_max_queue_size_far);
+	return					StalkerDesc().Queues.Sniper.MaxSizeFar;
 }
 
 IC	u32 CAI_Stalker::snp_min_queue_interval_far					() const
 {
-	return					(m_snp_min_queue_interval_far);
+	return					StalkerDesc().Queues.Sniper.MinIntervalFar;
 }
 
 IC	u32 CAI_Stalker::snp_max_queue_interval_far					() const
 {
-	return					(m_snp_max_queue_interval_far);
+	return					StalkerDesc().Queues.Sniper.MaxIntervalFar;
 }
 
 IC	u32 CAI_Stalker::snp_min_queue_size_medium						() const
 {
-	return					(m_snp_min_queue_size_medium);
+	return					StalkerDesc().Queues.Sniper.MinSizeMedium;
 }
 
 IC	u32 CAI_Stalker::snp_max_queue_size_medium						() const
 {
-	return					(m_snp_max_queue_size_medium);
+	return					StalkerDesc().Queues.Sniper.MaxSizeMedium;
 }
 
 IC	u32 CAI_Stalker::snp_min_queue_interval_medium					() const
 {
-	return					(m_snp_min_queue_interval_medium);
+	return					StalkerDesc().Queues.Sniper.MinIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::snp_max_queue_interval_medium					() const
 {
-	return					(m_snp_max_queue_interval_medium);
+	return					StalkerDesc().Queues.Sniper.MaxIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::snp_min_queue_size_close						() const
 {
-	return					(m_snp_min_queue_size_close);
+	return					StalkerDesc().Queues.Sniper.MinSizeClose;
 }
 
 IC	u32 CAI_Stalker::snp_max_queue_size_close						() const
 {
-	return					(m_snp_max_queue_size_close);
+	return					StalkerDesc().Queues.Sniper.MaxSizeClose;
 }
 
 IC	u32 CAI_Stalker::snp_min_queue_interval_close					() const
 {
-	return					(m_snp_min_queue_interval_close);
+	return					StalkerDesc().Queues.Sniper.MinIntervalClose;
 }
 
 IC	u32 CAI_Stalker::snp_max_queue_interval_close					() const
 {
-	return					(m_snp_max_queue_interval_close);
+	return					StalkerDesc().Queues.Sniper.MaxIntervalClose;
 }
 
 IC	u32 CAI_Stalker::mchg_min_queue_size_far						() const
 {
-	return					(m_mchg_min_queue_size_far);
+	return					StalkerDesc().Queues.MachineGun.MinSizeFar;
 }
 
 IC	u32 CAI_Stalker::mchg_max_queue_size_far						() const
 {
-	return					(m_mchg_max_queue_size_far);
+	return					StalkerDesc().Queues.MachineGun.MaxSizeFar;
 }
 
 IC	u32 CAI_Stalker::mchg_min_queue_interval_far					() const
 {
-	return					(m_mchg_min_queue_interval_far);
+	return					StalkerDesc().Queues.MachineGun.MinIntervalFar;
 }
 
 IC	u32 CAI_Stalker::mchg_max_queue_interval_far					() const
 {
-	return					(m_mchg_max_queue_interval_far);
+	return					StalkerDesc().Queues.MachineGun.MaxIntervalFar;
 }
 
 IC	u32 CAI_Stalker::mchg_min_queue_size_medium						() const
 {
-	return					(m_mchg_min_queue_size_medium);
+	return					StalkerDesc().Queues.MachineGun.MinSizeMedium;
 }
 
 IC	u32 CAI_Stalker::mchg_max_queue_size_medium						() const
 {
-	return					(m_mchg_max_queue_size_medium);
+	return					StalkerDesc().Queues.MachineGun.MaxSizeMedium;
 }
 
 IC	u32 CAI_Stalker::mchg_min_queue_interval_medium					() const
 {
-	return					(m_mchg_min_queue_interval_medium);
+	return					StalkerDesc().Queues.MachineGun.MinIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::mchg_max_queue_interval_medium					() const
 {
-	return					(m_mchg_max_queue_interval_medium);
+	return					StalkerDesc().Queues.MachineGun.MaxIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::mchg_min_queue_size_close						() const
 {
-	return					(m_mchg_min_queue_size_close);
+	return					StalkerDesc().Queues.MachineGun.MinSizeClose;
 }
 
 IC	u32 CAI_Stalker::mchg_max_queue_size_close						() const
 {
-	return					(m_mchg_max_queue_size_close);
+	return					StalkerDesc().Queues.MachineGun.MaxSizeClose;
 }
 
 IC	u32 CAI_Stalker::mchg_min_queue_interval_close					() const
 {
-	return					(m_mchg_min_queue_interval_close);
+	return					StalkerDesc().Queues.MachineGun.MinIntervalClose;
 }
 
 IC	u32 CAI_Stalker::mchg_max_queue_interval_close					() const
 {
-	return					(m_mchg_max_queue_interval_close);
+	return					StalkerDesc().Queues.MachineGun.MaxIntervalClose;
 }
 
 IC	u32 CAI_Stalker::auto_min_queue_size_far						() const
 {
-	return					(m_auto_min_queue_size_far);
+	return					StalkerDesc().Queues.Auto.MinSizeFar;
 }
 
 IC	u32 CAI_Stalker::auto_max_queue_size_far						() const
 {
-	return					(m_auto_max_queue_size_far);
+	return					StalkerDesc().Queues.Auto.MaxSizeFar;
 }
 
 IC	u32 CAI_Stalker::auto_min_queue_interval_far					() const
 {
-	return					(m_auto_min_queue_interval_far);
+	return					StalkerDesc().Queues.Auto.MinIntervalFar;
 }
 
 IC	u32 CAI_Stalker::auto_max_queue_interval_far					() const
 {
-	return					(m_auto_max_queue_interval_far);
+	return					StalkerDesc().Queues.Auto.MaxIntervalFar;
 }
 
 IC	u32 CAI_Stalker::auto_min_queue_size_medium						() const
 {
-	return					(m_auto_min_queue_size_medium);
+	return					StalkerDesc().Queues.Auto.MinSizeMedium;
 }
 
 IC	u32 CAI_Stalker::auto_max_queue_size_medium						() const
 {
-	return					(m_auto_max_queue_size_medium);
+	return					StalkerDesc().Queues.Auto.MaxSizeMedium;
 }
 
 IC	u32 CAI_Stalker::auto_min_queue_interval_medium					() const
 {
-	return					(m_auto_min_queue_interval_medium);
+	return					StalkerDesc().Queues.Auto.MinIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::auto_max_queue_interval_medium					() const
 {
-	return					(m_auto_max_queue_interval_medium);
+	return					StalkerDesc().Queues.Auto.MaxIntervalMedium;
 }
 
 IC	u32 CAI_Stalker::auto_min_queue_size_close						() const
 {
-	return					(m_auto_min_queue_size_close);
+	return					StalkerDesc().Queues.Auto.MinSizeClose;
 }
 
 IC	u32 CAI_Stalker::auto_max_queue_size_close						() const
 {
-	return					(m_auto_max_queue_size_close);
+	return					StalkerDesc().Queues.Auto.MaxSizeClose;
 }
 
 IC	u32 CAI_Stalker::auto_min_queue_interval_close					() const
 {
-	return					(m_auto_min_queue_interval_close);
+	return					StalkerDesc().Queues.Auto.MinIntervalClose;
 }
 
 IC	u32 CAI_Stalker::auto_max_queue_interval_close					() const
 {
-	return					(m_auto_max_queue_interval_close);
+	return					StalkerDesc().Queues.Auto.MaxIntervalClose;
 }
 
 
@@ -469,11 +469,11 @@ IC	u32 CAI_Stalker::auto_max_queue_interval_close					() const
 //}
 IC	float CAI_Stalker::pstl_queue_fire_dist_med						() const
 {
-	return					(m_pstl_queue_fire_dist_med);
+	return					StalkerDesc().Queues.Pistol.FireDistMed;
 }
 IC	float CAI_Stalker::pstl_queue_fire_dist_far						() const
 {
-	return					(m_pstl_queue_fire_dist_far);
+	return					StalkerDesc().Queues.Pistol.FireDistFar;
 }
 //IC	float CAI_Stalker::shtg_queue_fire_dist_close						() const
 //{
@@ -481,11 +481,11 @@ IC	float CAI_Stalker::pstl_queue_fire_dist_far						() const
 //}
 IC	float CAI_Stalker::shtg_queue_fire_dist_med						() const
 {
-	return					(m_shtg_queue_fire_dist_med);
+	return					StalkerDesc().Queues.Shotgun.FireDistMed;
 }
 IC	float CAI_Stalker::shtg_queue_fire_dist_far						() const
 {
-	return					(m_shtg_queue_fire_dist_far);
+	return					StalkerDesc().Queues.Shotgun.FireDistFar;
 }
 //IC	float CAI_Stalker::snp_queue_fire_dist_close						() const
 //{
@@ -493,11 +493,11 @@ IC	float CAI_Stalker::shtg_queue_fire_dist_far						() const
 //}
 IC	float CAI_Stalker::snp_queue_fire_dist_med						() const
 {
-	return					(m_snp_queue_fire_dist_med);
+	return					StalkerDesc().Queues.Sniper.FireDistMed;
 }
 IC	float CAI_Stalker::snp_queue_fire_dist_far						() const
 {
-	return					(m_snp_queue_fire_dist_far);
+	return					StalkerDesc().Queues.Sniper.FireDistFar;
 }
 //IC	float CAI_Stalker::mchg_queue_fire_dist_close						() const
 //{
@@ -505,11 +505,11 @@ IC	float CAI_Stalker::snp_queue_fire_dist_far						() const
 //}
 IC	float CAI_Stalker::mchg_queue_fire_dist_med						() const
 {
-	return					(m_mchg_queue_fire_dist_med);
+	return					StalkerDesc().Queues.MachineGun.FireDistMed;
 }
 IC	float CAI_Stalker::mchg_queue_fire_dist_far						() const
 {
-	return					(m_mchg_queue_fire_dist_far);
+	return					StalkerDesc().Queues.MachineGun.FireDistFar;
 }
 //IC	float CAI_Stalker::auto_queue_fire_dist_close						() const
 //{
@@ -517,9 +517,9 @@ IC	float CAI_Stalker::mchg_queue_fire_dist_far						() const
 //}
 IC	float CAI_Stalker::auto_queue_fire_dist_med						() const
 {
-	return					(m_auto_queue_fire_dist_med);
+	return					StalkerDesc().Queues.Auto.FireDistMed;
 }
 IC	float CAI_Stalker::auto_queue_fire_dist_far						() const
 {
-	return					(m_auto_queue_fire_dist_far);
+	return					StalkerDesc().Queues.Auto.FireDistFar;
 }

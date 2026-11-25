@@ -24,19 +24,18 @@ class weapon final : public base
 		bone_id1,
 		weapon_bone_id0,
 		weapon_bone_id1,
-		parent_weapon_bone_id0,
+		bones_count,
 	};
 
 	Fmatrix m_result[2] = {};
-	Fmatrix m_bones[5] = {};
-	Fmatrix m_local_bones[5] = {};
+	Fmatrix m_local_bones[bones_count] = {};
+	u16 m_bones_ids[bones_count] = {};
 	const CWeapon& m_weapon;
-	u16 m_bones_ids[5] = {};
 
 	void compute_bone(u32 const bone_id);
 
 public:
-	weapon(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, const char* bone0,
+	weapon(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, pose_cache& cache, const char* bone0,
 	const char* bone1, const char* weapon_bone0, const char* weapon_bone1, CWeapon const& weapon);
 
 	inline Fmatrix const& get_bone(const u32& bone_id) const

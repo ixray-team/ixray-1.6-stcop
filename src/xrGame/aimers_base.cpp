@@ -12,6 +12,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "animation_movement_controller.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
+#include "../xrEngine/bone.h"
 
 using aimers::base;
 
@@ -60,17 +61,27 @@ namespace
 	}
 }
 
-base::base(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target)
+base::base(CGameObject* object, const char* animation_id, bool animation_start, Fvector const& target, pose_cache& cache)
 	: m_object(*object), m_kinematics(*PKinematics(object->Visual())), m_animated(*object->Visual()->dcast_PKinematicsAnimated()),
-	m_target(target), m_animation_id(m_animated.LL_MotionID(animation_id)), m_animation_start(animation_start)
+	m_target(target), m_cache(cache), m_animation_id(m_animated.LL_MotionID(animation_id)), m_animation_start(animation_start)
 {
 	const animation_movement_controller* controller = m_object.animation_movement();
 	m_start_transform = controller ? controller->start_transform() : m_object.XFORM();
 	VERIFY(_valid(m_start_transform));
 }
 
-void base::fill_bones(u32 const* bones, u32 bones_count, u16 const* bones_ids, u32 bones_ids_count, Fmatrix* local_bones, Fmatrix* global_bones)
+void base::fill_bones(u16 const* bones_ids, u32 count, Fmatrix* local_bones)
 {
+	VERIFY(count <= max_pose_bones);
+
+	const bool cacheable = !m_animation_start;
+	if (cacheable && m_cache.kinematics == &m_kinematics && m_cache.animation == m_animation_id && m_cache.count == count &&
+		std::equal(bones_ids, bones_ids + count, m_cache.bones_ids))
+	{
+		std::copy_n(m_cache.local_bones, count, local_bones);
+		return;
+	}
+
 	CBoneInstance& root_bone = m_kinematics.LL_GetBoneInstance(m_kinematics.LL_GetBoneRoot());
 	const BoneCallback callback = root_bone.callback();
 	void* callback_params = root_bone.callback_param();
@@ -95,7 +106,7 @@ void base::fill_bones(u32 const* bones, u32 bones_count, u16 const* bones_ids, u
 			continue;
 		}
 
-		for (u32 i = 0, count = m_animated.LL_PartBlendsCount(part); i < count; ++i)
+		for (u32 i = 0, blends = m_animated.LL_PartBlendsCount(part); i < blends; ++i)
 		{
 			CBlend* blend = m_animated.LL_PartBlend(part, i);
 			CBlend* new_blend = m_animated.LL_PlayCycle(part, blend->motionID, true, nullptr, nullptr, channel_id);
@@ -105,14 +116,10 @@ void base::fill_bones(u32 const* bones, u32 bones_count, u16 const* bones_ids, u
 		}
 	}
 
-	for (u32 n = 0; n < bones_count; ++n)
+	for (u32 i = 0; i < count; ++i)
 	{
-		const u32 i = bones[n];
-		VERIFY(i < bones_ids_count);
 		m_kinematics.LL_GetBoneLocalTransform(bones_ids[i], local_bones[i]);
 		VERIFY(_valid(local_bones[i]));
-		global_bones[i].mul_43(m_start_transform, local_bones[i]);
-		VERIFY(_valid(global_bones[i]));
 	}
 
 	for (u16 part = 0; part < MAX_PARTS; ++part)
@@ -121,20 +128,47 @@ void base::fill_bones(u32 const* bones, u32 bones_count, u16 const* bones_ids, u
 	}
 
 	root_bone.set_callback(bctCustom, callback, callback_params);
+
+	if (cacheable)
+	{
+		m_cache.kinematics = &m_kinematics;
+		m_cache.animation = m_animation_id;
+		m_cache.count = count;
+		std::copy_n(bones_ids, count, m_cache.bones_ids);
+		std::copy_n(local_bones, count, m_cache.local_bones);
+	}
 }
 
-void base::callback(CBoneInstance* bone)
+void base::rotate_children(u16 root_id, Fmatrix const& rotation, u16 const* bones_ids, u32 count, Fmatrix* local_bones) const
 {
-	VERIFY(bone);
+	u32 root = count;
+	for (u32 i = 0; i < count; ++i)
+	{
+		if (bones_ids[i] == root_id)
+		{
+			root = i;
+		}
+	}
+	VERIFY(root < count);
 
-	const Fmatrix* rotation = static_cast<Fmatrix*>(bone->callback_param());
-	VERIFY(rotation);
-	VERIFY2(_valid(*rotation), "base::callback[rotation] ");
+	const Fvector& pivot = local_bones[root].c;
+	Fmatrix transform = rotation;
+	transform.c.set(0.0f, 0.0f, 0.0f);
+	Fvector rotated_pivot = zero_vel;
+	transform.transform_dir(rotated_pivot, pivot);
+	transform.c.sub(pivot, rotated_pivot);
 
-	const Fvector position = bone->mTransform.c;
-	bone->mTransform.mulA_43(*rotation);
-	bone->mTransform.c = position;
-	VERIFY2(_valid(bone->mTransform), "base::callback ");
+	for (u32 i = 0; i < count; ++i)
+	{
+		for (u16 bone_id = bones_ids[i]; bone_id != BI_NONE; bone_id = m_kinematics.LL_GetData(bone_id).GetParentID())
+		{
+			if (bone_id == root_id)
+			{
+				local_bones[i].mulA_43(transform);
+				break;
+			}
+		}
+	}
 }
 
 void base::aim_at_position(Fvector const& bone_position, Fvector const& object_position, Fvector object_direction, Fmatrix& result)

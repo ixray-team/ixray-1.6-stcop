@@ -8,6 +8,7 @@
 #include "EatableEffectsDesc.h"
 #include "InventoryItemDesc.h"
 #include "ArtefactDesc.h"
+#include "AIStalkerDesc.h"
 #include "../DofManager.h"
 
 void ClearDescRegistries()
@@ -26,4 +27,5 @@ void ClearDescRegistries()
 	SEatableEffectsDesc::Registry::Clear();
 	SInventoryItemDesc::Registry::Clear();
 	SArtefactDesc::Registry::Clear();
+	SAIStalker::Registry::Clear();
 }

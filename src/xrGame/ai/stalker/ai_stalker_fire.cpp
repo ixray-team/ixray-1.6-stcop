@@ -76,7 +76,7 @@ float CAI_Stalker::GetWeaponAccuracy() const
 
 	if (OnClient())
 	{
-		return base * m_disp_stand_stand;
+		return base * StalkerDesc().DispStandStand;
 	}
 	
 	//влияние ранга на меткость
@@ -87,32 +87,32 @@ float CAI_Stalker::GetWeaponAccuracy() const
 		if (movement().movement_type() == eMovementTypeWalk)
 		{
 			if (movement().body_state() == eBodyStateStand)
-				return		(base * m_disp_walk_stand);
+				return		(base * StalkerDesc().DispWalkStand);
 			else
-				return		(base * m_disp_walk_crouch);
+				return		(base * StalkerDesc().DispWalkCrouch);
 		}
 		else
 		{
 			if (movement().movement_type() == eMovementTypeRun)
 			{
 				if (movement().body_state() == eBodyStateStand)
-					return	(base * m_disp_run_stand);
+					return	(base * StalkerDesc().DispRunStand);
 				else
-					return	(base * m_disp_run_crouch);
+					return	(base * StalkerDesc().DispRunCrouch);
 			}
 		}
 	}
 	
 	if (movement().body_state() == eBodyStateStand)
 		if (zoom_state())
-			return			(base*m_disp_stand_stand);
+			return			(base*StalkerDesc().DispStandStand);
 		else
-			return			(base*m_disp_stand_stand_zoom);
+			return			(base*StalkerDesc().DispStandStandZoom);
 	else
 		if (zoom_state())
-			return			(base*m_disp_stand_crouch);
+			return			(base*StalkerDesc().DispStandCrouch);
 		else
-			return			(base*m_disp_stand_crouch_zoom);
+			return			(base*StalkerDesc().DispStandCrouchZoom);
 }
 
 void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
@@ -399,7 +399,7 @@ void CAI_Stalker::Hit(SHit* pHDS)
 				D.getHP					(yaw,pitch);
 
 	#pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
-				float					power_factor = m_power_fx_factor * HDS.damage() / 100.f;
+				float					power_factor = StalkerDesc().PowerFxFactor * HDS.damage() / 100.f;
 				clamp					(power_factor,0.f,1.f);
 
 				IKinematics *tpKinematics = PKinematics(Visual());
