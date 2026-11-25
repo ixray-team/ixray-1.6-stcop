@@ -204,7 +204,6 @@ void CRenderDevice::on_idle		()
 			GActorInterface->UpdatePlayerHud();
 		}
 
-		secondary_tasks.run(&XRay::Engine::PreRenderThread);
 		FrameMove();
 	}
 

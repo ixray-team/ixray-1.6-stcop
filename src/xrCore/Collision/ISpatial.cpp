@@ -62,13 +62,16 @@ void ISpatial::Register()
 	{
 		// already registered - nothing to do
 	}
-	else 
+	else
 	{
 		// register
 		R_ASSERT(space);
 		xrSRWLockGuard guard(&space->db_lock, false);
-		space->insert(shared_from_this());
-		sector = nullptr;
+		if (node_ptr == nullptr)
+		{
+			space->insert(shared_from_this());
+			sector = nullptr;
+		}
 	}
 }
 
@@ -78,9 +81,12 @@ void ISpatial::Unregister()
 	{
 		// remove
 		xrSRWLockGuard guard(&space->db_lock, false);
-		space->remove(shared_from_this());
-		node_ptr = nullptr;
-		sector = nullptr;
+		if (node_ptr != nullptr)
+		{
+			space->remove(shared_from_this());
+			node_ptr = nullptr;
+			sector = nullptr;
+		}
 	}
 	else {
 		// already unregistered
@@ -101,8 +107,11 @@ void ISpatial::Move()
 		}
 
 		xrSRWLockGuard guard(&space->db_lock, false);
-		space->remove(shared_from_this());
-		space->insert(shared_from_this());
+		if (node_ptr != nullptr)
+		{
+			space->remove(shared_from_this());
+			space->insert(shared_from_this());
+		}
 	}
 	else
 	{

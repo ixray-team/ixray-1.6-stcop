@@ -351,10 +351,15 @@ void CModelPool::DeleteQueuedDeffer()
 {
 	xrCriticalSectionGuard guard(&deffered_del_lock);
 
-	for (dxRender_Visual* Vis : ModelsToDeleteDeffer)
-		DeleteInternal(Vis);
-
-	ModelsToDeleteDeffer.clear();
+	while (!ModelsToDeleteDeffer.empty())
+	{
+		xr_set<dxRender_Visual*> Pending;
+		Pending.swap(ModelsToDeleteDeffer);
+		for (dxRender_Visual* Vis : Pending)
+		{
+			DeleteInternal(Vis);
+		}
+	}
 }
 
 void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
@@ -520,7 +525,6 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
 			if (item.root_effect)
 				Render(item.root_effect, Fidentity, priority, strictB2F, m_fLOD);
 
-			xrCriticalSectionGuard guard(item.childs_cs);
 			for (dxRender_Visual* pEffect : item.children_related)
 				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
 

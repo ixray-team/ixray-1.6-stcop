@@ -209,7 +209,6 @@ void CPGDef::Save2(CInifile& ini)
 //------------------------------------------------------------------------------
 void CParticleGroup::SItem::Clear()
 {
-	xrCriticalSectionGuard guard(childs_cs);
 	for (CParticleEffect* ChildPart : children_related)
 		RImplementation.Models->DeleteDeffered((dxRender_Visual*&)ChildPart);
 
@@ -228,7 +227,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	C->SetHudMode(emitter->GetHudMode());
 
 	Fmatrix M; M.identity();
-	Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
+	Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->GetLiveUpdate()?Device.fTimeDelta:fDT_STEP);
 	if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
 	{
 		M.set(emitter->m_XFORM);
@@ -239,19 +238,17 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	M.c.set(p);
 	C->Play();
 	C->UpdateParent(M,vel,false);
-	C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, false);
-	C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, true);
-	xrCriticalSectionGuard guard(childs_cs);
 	children_related.push_back(C);
 }
 void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 {
-	xrCriticalSectionGuard guard(childs_cs);
-	VERIFY(idx<children_related.size());
+	VERIFY(idx < children_related.size());
+	if (idx >= children_related.size())
+	{
+		return;
+	}
 	CParticleEffect* V = children_related[idx];
 	V->Stop(true);
-	V->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, false);
-	V->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, true);
 	children_free.push_back(V);
 	
 	fast_erase(children_related, idx);
@@ -263,7 +260,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 	if(!C->IsLooped())
 	{
 		Fmatrix M; M.identity();
-		Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
+		Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->GetLiveUpdate()?Device.fTimeDelta:fDT_STEP);
 		if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
 		{
 			M.set(emitter->m_XFORM);
@@ -274,8 +271,6 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 		M.c.set(p);
 		C->Play();
 		C->UpdateParent(M,vel,false);
-		C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, false);
-		C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, true);
 		children_free.push_back(C);
 	}
 	else
@@ -299,26 +294,22 @@ void CParticleGroup::SItem::Stop(bool def_stop)
 	if (root_effect)
 		root_effect->Stop(def_stop);
 
+	for (CParticleEffect* ChildPart : children_related)
 	{
-		xrCriticalSectionGuard guard(childs_cs);
-		for (CParticleEffect* ChildPart : children_related)
-		{
-			ChildPart->Stop(def_stop);
-			if (!def_stop)
-				RImplementation.Models->DeleteDeffered((dxRender_Visual*&)ChildPart);
-		}
+		ChildPart->Stop(def_stop);
+		if (!def_stop)
+			RImplementation.Models->DeleteDeffered((dxRender_Visual*&)ChildPart);
+	}
 
-		for (CParticleEffect* ChildPart : children_free)
-		{
-			ChildPart->Stop(def_stop);
-			if (!def_stop)
-				RImplementation.Models->DeleteDeffered((dxRender_Visual*&)ChildPart);
-		}
+	for (CParticleEffect* ChildPart : children_free)
+	{
+		ChildPart->Stop(def_stop);
+		if (!def_stop)
+			RImplementation.Models->DeleteDeffered((dxRender_Visual*&)ChildPart);
 	}
 
 	if (!def_stop)
 	{
-		xrCriticalSectionGuard guard(childs_cs);
 		children_related.clear();
 		children_free.clear();
 	}
@@ -383,24 +374,20 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 			{
 				PAPI::Particle* particles; u32 p_cnt;
 				E->Pholder.GetParticles(particles, p_cnt);
-				xrCriticalSectionGuard guard(childs_cs);
 				VERIFY(p_cnt == children_related.size());
 
-				if (p_cnt)
+				const size_t ChildCount = std::min<size_t>(p_cnt, children_related.size());
+				for (size_t i = 0; i < ChildCount; i++)
 				{
-					for (u32 i = 0; i < p_cnt; i++)
-					{
-						PAPI::Particle& m = particles[i];
-						CParticleEffect* C = children_related[i];
-						Fmatrix M; M.translate(m.pos);
-						Fvector vel; vel.sub(m.pos, m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate) ? Device.fTimeDelta : fDT_STEP);
-						C->UpdateParent(M, vel, false);
-					}
+					PAPI::Particle& m = particles[i];
+					CParticleEffect* C = children_related[i];
+					Fmatrix M; M.translate(m.pos);
+					Fvector vel; vel.sub(m.pos, m.posB); vel.div(C->GetLiveUpdate() ? Device.fTimeDelta : fDT_STEP);
+					C->UpdateParent(M, vel, false);
 				}
 			}
 		}
 	}
-	xrCriticalSectionGuard guard(childs_cs);
 	if (!children_related.empty())
 	{
 		for (CParticleEffect* E_ : children_related)
@@ -443,7 +430,6 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 u32	CParticleGroup::SItem::SpriteCount()
 {
 	u32 p_count = root_effect ? root_effect->SpriteCount() : 0u;
-	xrCriticalSectionGuard guard(childs_cs);
 	for (CParticleEffect* ChildPart : children_related)
 		p_count += ChildPart->SpriteCount();
 
@@ -544,12 +530,11 @@ void CParticleGroup::OnFrame(u32 u_dt)
 #ifndef _EDITOR
 void CParticleGroup::UpdateCache()
 {
-	// PROF_EVENT(__FUNCTION__);
+	xrCriticalSectionGuard guard(onframe_lock);
 	for (SItem& item : items)
 	{
 		if(item.root_effect)
 			item.root_effect->UpdateCache();
-		xrCriticalSectionGuard guard(item.childs_cs);
 		for (CParticleEffect* ChildPart : item.children_related)
 			ChildPart->UpdateCache();
 
@@ -561,10 +546,8 @@ void CParticleGroup::UpdateCache()
 
 void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
 {
-	{
-		xrCriticalSectionGuard guard(&onframe_lock);
-		m_InitialPosition = m.c;
-	}
+	xrCriticalSectionGuard guard(onframe_lock);
+	m_InitialPosition = m.c;
 	for (SItem& item : items)
 		item.UpdateParent(m,velocity,bXFORM);
 }
@@ -601,29 +584,42 @@ void CParticleGroup::Play()
 
 void CParticleGroup::Stop(bool bDefferedStop)
 {
+	xrCriticalSectionGuard guard(onframe_lock);
+	if (bDefferedStop)
 	{
-		xrCriticalSectionGuard guard(&onframe_lock);
-		if (bDefferedStop)
-			m_RT_Flags.set(flRT_DefferedStop, true);
-		else
-			m_RT_Flags.set(flRT_Playing, false);
+		m_RT_Flags.set(flRT_DefferedStop, true);
 	}
+	else
+	{
+		m_RT_Flags.set(flRT_Playing, false);
+	}
+
 	for (SItem& item : items)
+	{
 		item.Stop(bDefferedStop);
+	}
 }
 
 u32 CParticleGroup::SpriteCount()
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	u32 p_count = 0u;
+	for (SItem& item : items)
 	{
-		for (SItem& item : items)
-			p_count += item.SpriteCount();
+		p_count += item.SpriteCount();
 	}
 	return p_count;
 }
 
+bool CParticleGroup::IsPlaying()
+{
+	xrCriticalSectionGuard guard(onframe_lock);
+	return m_RT_Flags.is(flRT_Playing);
+}
+
 PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnum Action)
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	auto it = std::find_if(items.begin(), items.end(), [PEName](SItem& elem)
 	{
 		return elem.root_effect->dcast_ParticleCustom()->Name() == PEName;
@@ -634,6 +630,7 @@ PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnu
 
 void CParticleGroup::SetHudMode(bool b)
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	for (SItem& item : items)
 	{
 		if(item.root_effect)
@@ -643,6 +640,7 @@ void CParticleGroup::SetHudMode(bool b)
 
 bool CParticleGroup::GetHudMode()
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	if(!items.empty() && items[0].root_effect)
 		return items[0].root_effect->GetHudMode();
 
@@ -651,6 +649,7 @@ bool CParticleGroup::GetHudMode()
 
 void CParticleGroup::SetLiveUpdate(bool b)
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	for (SItem& item : items)
 	{
 		if(item.root_effect)
@@ -660,6 +659,7 @@ void CParticleGroup::SetLiveUpdate(bool b)
 
 bool CParticleGroup::GetLiveUpdate()
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	if(!items.empty() && items[0].root_effect)
 		return items[0].root_effect->GetLiveUpdate();
 

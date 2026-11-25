@@ -88,16 +88,10 @@ namespace PS
 
 		struct SItem final
 		{
-			xrCriticalSection childs_cs;
+			// Runtime access to items and their children is guarded by the group lock.
 			xr_vector<CParticleEffect*> children_related;
 			xr_vector<CParticleEffect*> children_free;
 			CParticleEffect* root_effect = nullptr;
-
-			//�������� ��� CS
-			SItem(){};
-			SItem(SItem&& other){}
-			SItem(const SItem& item){};
-			SItem& operator=(const SItem&) {return *this;};
 
 			void Clear();
 
@@ -139,7 +133,7 @@ namespace PS
 
 		virtual void Play();
 		virtual void Stop(bool bDefferedStop=true);
-		virtual bool IsPlaying(){return m_RT_Flags.is(flRT_Playing);}
+		virtual bool IsPlaying() override;
 
 		virtual void SetHudMode(bool b);
 		virtual bool GetHudMode();

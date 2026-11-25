@@ -83,6 +83,7 @@ xr_shared_ptr<CParticlesObject> Particles::Details::Create(const char* p_name, b
 //----------------------------------------------------
 void CParticlesObject::Play(bool bHudMode)
 {
+	xrCriticalSectionGuard Guard(UpdateLock);
 	if (g_dedicated_server || renderable.visual == nullptr || m_bPlaying)
 		return;
 
@@ -98,6 +99,7 @@ void CParticlesObject::Play(bool bHudMode)
 
 void CParticlesObject::play_at_pos(const Fvector& pos, bool xform)
 {
+	xrCriticalSectionGuard Guard(UpdateLock);
 	if (g_dedicated_server || renderable.visual == nullptr || m_bPlaying)
 		return;
 
@@ -114,6 +116,7 @@ void CParticlesObject::play_at_pos(const Fvector& pos, bool xform)
 
 void CParticlesObject::Stop(bool bDefferedStop)
 {
+	xrCriticalSectionGuard Guard(UpdateLock);
 	if (g_dedicated_server || renderable.visual == nullptr || !m_bPlaying)
 		return;
 
@@ -124,8 +127,21 @@ void CParticlesObject::Stop(bool bDefferedStop)
 		m_bPlaying = false;
 }
 
+void CParticlesObject::UpdateWorld(u32 Time, CFrustum* ViewBase)
+{
+	xrCriticalSectionGuard Guard(UpdateLock);
+	if (m_NeedDestroy || GetHudMode())
+	{
+		return;
+	}
+
+	Update(Time - dwLastTime, ViewBase);
+	dwLastTime = Time;
+}
+
 void CParticlesObject::Update(u32 _dt, CFrustum* viewbase)
 {
+	xrCriticalSectionGuard Guard(UpdateLock);
 	if (m_NeedDestroy || (!m_bPlaying && !m_bAutoRemove)) return;
 	PROF_EVENT(__FUNCTION__);
 	if (m_bPlaying && !IsPlaying())

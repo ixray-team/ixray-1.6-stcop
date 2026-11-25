@@ -1,9 +1,11 @@
 #pragma once
 #include "../Include/xrRender/ParticleCustom.h"
 
-class CParticlesObject : 
+class CParticlesObject :
 	public IRenderable
 {
+	xrCriticalSection	UpdateLock;
+
 public:
 	bool				m_destroy_on_game_load = false;
 	bool				m_bLooped = false;
@@ -19,6 +21,7 @@ public:
 
 	virtual void		renderable_Render	();
 	virtual void		Update				(u32 dt, CFrustum* viewbase = nullptr);
+	void				UpdateWorld			(u32 Time, CFrustum* ViewBase);
 	virtual	IRenderable* dcast_Renderable	() { return this; }
 
 	Fvector&			Position			();

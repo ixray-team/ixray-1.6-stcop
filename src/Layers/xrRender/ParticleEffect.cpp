@@ -129,6 +129,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				}
 			}
 			Pholder.Update(fDT_STEP);
+			CacheFrame = u32(-1);
 
 			PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
 			Pholder.GetParticles(particles, p_cnt);
@@ -177,6 +178,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 	else
 	{
 		Pholder.Update(Device.fTimeDelta);
+		CacheFrame = u32(-1);
 		PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
 		Pholder.GetParticles(particles, p_cnt);
 		// our actions
@@ -228,6 +230,7 @@ void CParticleEffect::Compile(CPEDef* def)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_Def = def;
+	CacheFrame = u32(-1);
 	if (m_Def)
 	{
 		// refresh shader
@@ -275,6 +278,7 @@ void CParticleEffect::SetBirthDeadCB(PAPI::OnBirthParticleCB bc, PAPI::OnDeadPar
 
 u32 CParticleEffect::SpriteCount()
 {
+	xrCriticalSectionGuard guard(onframe_lock);
 	return Pholder.GetParticlesCount();
 }
 
@@ -293,7 +297,7 @@ PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEn
 //------------------------------------------------------------------------------
 #ifndef _EDITOR
 //----------------------------------------------------
-ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fvector& pos, const Fvector& T, const Fvector& R, const Fvector4& uv, const Fvector2& vs, u32 clr)
+ICF void FillSprite	(PAPI::Particle& m, const Fvector& pos, const Fvector& T, const Fvector& R, const Fvector4& uv, const Fvector2& vs, u32 clr)
 {
 	float angle = m.rotI.x;
 	float sa = std::sin(angle);  
@@ -303,7 +307,6 @@ ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fve
 	Fvector Vt = T*vs.y*ca - R*vs.y*sa;
 	Fvector a = Vt-Vr, b = Vt+Vr;
 
-	xrCriticalSectionGuard guard(&cache_lock);
 	m.buff =
 	{
 		-b+pos, clr, uv.x,uv.w,
@@ -315,13 +318,13 @@ ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fve
 
 void CParticleEffect::UpdateCache()
 {
-	// PROF_EVENT(__FUNCTION__);
+	xrCriticalSectionGuard Guard(onframe_lock);
 
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite) || !m_RT_Flags.is(flRT_Playing))
 		return;
 
-	if (Device.dwFrame == chache_frame.load())	return;
-	chache_frame.store(Device.dwFrame);
+	if (Device.dwFrame == CacheFrame)	return;
+	CacheFrame = Device.dwFrame;
 
 
 	// Get a pointer to the particles in gp memory
@@ -399,10 +402,10 @@ void CParticleEffect::UpdateCache()
 					m_XFORM.transform_tiny(p, m.posI);
 					M.mulA_43(m_XFORM);
 
-					FillSprite(m, cache_lock, p, M.k, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(m, p, M.k, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 				}
 				else
-					FillSprite(m, cache_lock, m.posI, M.k, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(m, m.posI, M.k, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 			}
 			else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
 			{
@@ -419,10 +422,10 @@ void CParticleEffect::UpdateCache()
 					m_XFORM.transform_tiny(p, m.posI);
 					M.mulA_43(m_XFORM);
 
-					FillSprite(m, cache_lock, p, M.j, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(m, p, M.j, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 				}
 				else
-					FillSprite(m, cache_lock, m.posI, M.j, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(m, m.posI, M.j, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 			}
 			else
 			{
@@ -436,10 +439,10 @@ void CParticleEffect::UpdateCache()
 					m_XFORM.transform_tiny(p, m.posI);
 					m_XFORM.transform_dir(d, dir);
 
-					FillSprite(m, cache_lock, p, d, Fvector(d^cam_dir).normalize_safe(), {lt.x, lt.y, rb.x, rb.y}, vs, FinalColor.get());
+					FillSprite(m, p, d, Fvector(d^cam_dir).normalize_safe(), {lt.x, lt.y, rb.x, rb.y}, vs, FinalColor.get());
 				}
 				else
-					FillSprite(m, cache_lock, m.posI, dir, Fvector(dir^cam_dir).normalize_safe(), { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(m, m.posI, dir, Fvector(dir^cam_dir).normalize_safe(), { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 			}
 		}
 		else
@@ -448,16 +451,17 @@ void CParticleEffect::UpdateCache()
 			{
 				m_XFORM.transform_tiny(p, m.posI);
 
-				FillSprite(m, cache_lock, p, cam_top, cam_right, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+				FillSprite(m, p, cam_top, cam_right, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 			}
 			else
-				FillSprite(m, cache_lock, m.posI, cam_top, cam_right, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+				FillSprite(m, m.posI, cam_top, cam_right, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 		}
 	}
 }
 
 void CParticleEffect::Render(float)
 {
+	xrCriticalSectionGuard Guard(onframe_lock);
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite))
 	{
 		return;
@@ -473,7 +477,6 @@ void CParticleEffect::Render(float)
 
 	UpdateCache();
 
-	xrCriticalSectionGuard guard(&cache_lock);
 	PAPI::Particle* particles = nullptr; u32 total_sprites = 0u;
 	Pholder.GetParticles(particles, total_sprites);
 

@@ -503,17 +503,13 @@ void CGamePersistent::UpdateParticles()
 
 		extern u32 particles_workers_count;
 		static u32 last_count = particles_workers_count;
-		static xr_vector<std::pair<u32, xr_vector<xr_shared_ptr<CParticlesObject>>>> workers(last_count);
+		static xr_vector<std::pair<u32, xr_vector<CParticlesObject*>>> workers(last_count);
 
 		if (particles_workers_count <= 1)
 		{
-			for (xr_shared_ptr<CParticlesObject> particle : ps_active)
+			for (const xr_shared_ptr<CParticlesObject>& particle : ps_active)
 			{
-				if (!particle->m_NeedDestroy && !particle->GetHudMode())
-				{
-					particle->Update(dwTime - particle->dwLastTime, &frustum);
-					particle->dwLastTime = dwTime;
-				}
+				particle->UpdateWorld(dwTime, &frustum);
 			}
 			return;
 		}
@@ -530,13 +526,24 @@ void CGamePersistent::UpdateParticles()
 			workers[i].second.clear();
 		}
 
-		std::sort(ps_active.begin(), ps_active.end(),
-			[](const xr_shared_ptr<CParticlesObject>& a, const xr_shared_ptr<CParticlesObject>& b)
+		static xr_vector<std::pair<u32, CParticlesObject*>> ParticlesBySize;
+		ParticlesBySize.clear();
+		ParticlesBySize.reserve(ps_active.size());
+		for (const auto& Particle : ps_active)
+		{
+			if (!Particle->m_NeedDestroy && !Particle->GetHudMode())
 			{
-				return a->GetSpriteCount() > b->GetSpriteCount();
+				ParticlesBySize.emplace_back(Particle->GetSpriteCount(), Particle.get());
+			}
+		}
+
+		std::sort(ParticlesBySize.begin(), ParticlesBySize.end(),
+			[](const auto& Left, const auto& Right)
+			{
+				return Left.first > Right.first;
 			});
 
-		for (auto& particle : ps_active)
+		for (const auto& [SpriteCount, Particle] : ParticlesBySize)
 		{
 			u32 min_group = 0;
 			for (u32 i = 0; i < last_count; ++i)
@@ -544,11 +551,8 @@ void CGamePersistent::UpdateParticles()
 				if (workers[i].first < workers[min_group].first)
 					min_group = i;
 			}
-			if (!particle->m_NeedDestroy && !particle->GetHudMode())
-			{
-				workers[min_group].second.push_back(particle);
-				workers[min_group].first += particle->GetSpriteCount();
-			}
+			workers[min_group].second.push_back(Particle);
+			workers[min_group].first += SpriteCount;
 		}
 
 		// A blocking task_group::wait() inside this Pre-Render task resumes only near the end of the frame,
@@ -556,7 +560,8 @@ void CGamePersistent::UpdateParticles()
 		// started and waits only for buckets already in progress. Helpers that start late find nothing.
 		struct UpdateBatch
 		{
-			xr_vector<xr_vector<xr_shared_ptr<CParticlesObject>>> Buckets;
+			// ps_active owns the particles until Pre-Render finishes all claimed buckets.
+			xr_vector<xr_vector<CParticlesObject*>> Buckets;
 			CFrustum Frustum;
 			u32 Time = 0;
 			xr_atomic_u32 NextBucket = 0;
@@ -580,8 +585,8 @@ void CGamePersistent::UpdateParticles()
 			const u32 Count = (u32)Target.Buckets.size();
 			for (u32 Index = Target.NextBucket.fetch_add(1); Index < Count; Index = Target.NextBucket.fetch_add(1))
 			{
-				xr_vector<xr_shared_ptr<CParticlesObject>>& Bucket = Target.Buckets[Index];
-				xr_vector<std::pair<float, xr_shared_ptr<CParticlesObject>>> Sorted;
+				const auto& Bucket = Target.Buckets[Index];
+				xr_vector<std::pair<float, CParticlesObject*>> Sorted;
 				Sorted.reserve(Bucket.size());
 				for (const auto& Particle : Bucket)
 				{
@@ -599,9 +604,7 @@ void CGamePersistent::UpdateParticles()
 
 				for (auto& [Distance, particle] : Sorted)
 				{
-					if (particle->m_NeedDestroy) continue;
-					particle->Update(Target.Time - particle->dwLastTime, &Target.Frustum);
-					particle->dwLastTime = Target.Time;
+					particle->UpdateWorld(Target.Time, &Target.Frustum);
 				}
 
 				Target.FinishedBuckets.fetch_add(1, std::memory_order_release);

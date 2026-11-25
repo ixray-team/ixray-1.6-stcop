@@ -68,7 +68,7 @@ while !quiting:
 | `!b_is_Ready` | sleep 100 ms |
 | `g_loading_events` non-empty | run front; pop if it returns true; `pApp->LoadDraw()`; return |
 | else | particles, `ModelDefferClear`, due `m_time_callbacks`, `UpdatePlayerHud` |
-| | `secondary_tasks.run(&XRay::Engine::PreRenderThread)` + primary `FrameMove()` |
+| | primary `FrameMove()` processes `seqFrame`, which starts `PreRenderThread` from `CEngineApp::OnFrame` |
 | | `secondary_tasks.run(&XRay::Engine::GameThread)` |
 | | active client: `Begin`, `seqRender`, `End` |
 | | `secondary_tasks.wait()`, `EndRender` |
@@ -87,7 +87,7 @@ while !quiting:
 | `PreRenderThread` | Discord update, `seqParallelRender`, rain items, `UpdateParticles` (menu closed) |
 | `GameThread` | HUD `OnFrameMT`, level sound events, `Sheduler.Update`, `seqParallel` (including `CLevel::script_gc`), `seqFrameMT` (sound if `mtSound`, physics if `mtPhysics`), persistent `OnFrameMT` (framework callback) |
 
-`seqFrame`: `CGamePersistent` (weather, DOF, intro), `CLevel` (net, bullets; queues scripts/GC for `GameThread`). Physics and sound use `seqFrameMT` when `mtPhysics` / `mtSound` are enabled, otherwise `seqFrame`. Order within each list is registrator priority.
+`seqFrame`: `CEngineApp` handles deferred events before starting `PreRenderThread`. It skips the task when those events queue loading work or request shutdown. `CGamePersistent` updates weather, DOF, and intros. `CLevel` handles networking and bullets and queues scripts and GC for `GameThread`. Physics and sound use `seqFrameMT` when `mtPhysics` / `mtSound` are enabled, otherwise `seqFrame`. Order within each list is registrator priority.
 
 Shutdown in `EngineLoopAndDestroy`: spatial DBs, `DEL_INSTANCE(g_pGamePersistent)`, `pApp`, input, `cfg_save`, sound, `Device` / unload DLLs. Then `EndPlay`.
 

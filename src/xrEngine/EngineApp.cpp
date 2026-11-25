@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "x_ray.h"
+#include "EngineThreading.h"
 #include "IGame_Level.h"
 #include "IGame_Persistent.h"
 #include "XR_IOConsole.h"
@@ -268,6 +269,12 @@ void CEngineApp::LoadSwitch()
 void CEngineApp::OnFrame()
 {
 	g_pEventManager->Event.OnFrame();
+
+	// Level events can destroy the particles and collision data used by Pre-Render.
+	if (!Device.IsEditorMode() && !quiting && g_loading_events.empty())
+	{
+		Device.secondary_tasks.run(&XRay::Engine::PreRenderThread);
+	}
 }
 
 void CEngineApp::Level_Append(const char* folder)

@@ -971,12 +971,18 @@ void* PAExplosion::GetVariableImpl(u8 VarID)
 // Follow the next particle in the list
 void PAFollow::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	const u32 Count = pHolder->p_count;
+	if (Count < 2)
+	{
+		return;
+	}
+
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for(u32 i = 0; i < pHolder->p_count - 1; i++)
+		for(u32 i = 0; i < Count - 1; i++)
 		{
 			Particle &m = pHolder->particles[i];
 			
@@ -998,7 +1004,7 @@ void PAFollow::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	}
 	else
 	{
-		for(u32 i = 0; i < pHolder->p_count - 1; i++)
+		for(u32 i = 0; i < Count - 1; i++)
 		{
 			Particle &m = pHolder->particles[i];
 			

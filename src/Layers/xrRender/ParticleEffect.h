@@ -19,8 +19,8 @@ namespace PS
 		s32					m_MemDT = 0;
 
 		Fvector				m_InitialPosition = {0.f, 0.f, 0.f};
-		xrCriticalSection	onframe_lock, cache_lock;
-		xr_atomic_u32 chache_frame = 0;
+		xrCriticalSection	onframe_lock;
+		u32 CacheFrame = u32(-1);
 		CPEDef*				m_Def = nullptr;
 		ref_geom			geom;
         Fmatrix				m_XFORM = Fidentity;
@@ -36,8 +36,6 @@ namespace PS
 			flRT_XFORM			= (1<<2),
 			flRT_HUDmode		= (1<<3),
 			flRT_LiveUpdate		= (1<<4),
-			flRT_RelatedChild	= (1<<5),
-			flRT_FreeChild		= (1<<6),
 		};
 		Flags8				m_RT_Flags = {0u};
 
@@ -62,13 +60,33 @@ namespace PS
 
 		virtual void		Play				();
 		virtual void		Stop				(bool bDefferedStop=true);
-		virtual bool		IsPlaying			(){return m_RT_Flags.is(flRT_Playing);}
+		virtual bool		IsPlaying			()
+		{
+			xrCriticalSectionGuard Guard(onframe_lock);
+			return m_RT_Flags.is(flRT_Playing);
+		}
 		
-		virtual void		SetHudMode			(bool b){m_RT_Flags.set(flRT_HUDmode,b);}
-		virtual bool		GetHudMode			()		{return m_RT_Flags.is(flRT_HUDmode);}
+		virtual void		SetHudMode			(bool b)
+		{
+			xrCriticalSectionGuard Guard(onframe_lock);
+			m_RT_Flags.set(flRT_HUDmode,b);
+		}
+		virtual bool		GetHudMode			()
+		{
+			xrCriticalSectionGuard Guard(onframe_lock);
+			return m_RT_Flags.is(flRT_HUDmode);
+		}
 
-		virtual void		SetLiveUpdate		(bool b){m_RT_Flags.set(flRT_LiveUpdate,b);}
-		virtual bool		GetLiveUpdate		()		{return m_RT_Flags.is(flRT_LiveUpdate);}
+		virtual void		SetLiveUpdate		(bool b)
+		{
+			xrCriticalSectionGuard Guard(onframe_lock);
+			m_RT_Flags.set(flRT_LiveUpdate,b);
+		}
+		virtual bool		GetLiveUpdate		()
+		{
+			xrCriticalSectionGuard Guard(onframe_lock);
+			return m_RT_Flags.is(flRT_LiveUpdate);
+		}
 
 		virtual float		GetTimeLimit		(){VERIFY(m_Def); return m_Def->m_Flags.is(CPEDef::dfTimeLimit)?m_Def->m_fTimeLimit:-1.f;}
 

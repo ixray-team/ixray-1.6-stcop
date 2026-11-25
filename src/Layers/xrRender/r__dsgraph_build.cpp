@@ -529,7 +529,6 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 				if (item.root_effect)
 					add_leafs_Dynamic(item.root_effect);
 
-				xrCriticalSectionGuard guard(item.childs_cs);
 				for (dxRender_Visual* pEffect : item.children_related)
 					add_leafs_Dynamic(pEffect);
 
