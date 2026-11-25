@@ -11,6 +11,18 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
 #include "xrServer_Objects_ALife.h"
+#include "ai/stalker/ai_stalker.h"
+#include "danger_manager.h"
+#include "memory_manager.h"
+#include "sound_memory_manager.h"
+
+namespace
+{
+	constexpr float GrenadeImpactHearingDistance = 15.f;
+	constexpr float GrenadeImpactVolume = 2.f;
+	constexpr u32 GrenadeImpactInterval = 250;
+	constexpr float GrenadeImpactMinTravel = 1.f;
+}
 
 #define GRENADE_REMOVE_TIME		30000
 const float default_grenade_detonation_threshold_hit=100;
@@ -103,6 +115,8 @@ void CGrenade::Hit(SHit* pHDS)
 
 bool CGrenade::net_Spawn(CSE_Abstract* DC) 
 {
+	ImpactPending = false;
+	LastImpactTime = u32(-1);
 	m_dwGrenadeIndependencyTime			= 0;
 	bool ret= inherited::net_Spawn		(DC);
 	Fvector box;BoundingBox().getsize	(box);
@@ -139,6 +153,8 @@ void CGrenade::OnH_A_Independent()
 
 void CGrenade::OnH_A_Chield()
 {
+	ImpactPending = false;
+	LastImpactTime = u32(-1);
 	m_dwGrenadeIndependencyTime			= 0;
 	m_dwDestroyTime						= 0xffffffff;
 	inherited::OnH_A_Chield				();
@@ -263,6 +279,80 @@ void CGrenade::FastThrow()
 			DestroyObject();
 		}
 	};
+}
+
+void CGrenade::OnImpact(const Fvector& Position)
+{
+	if (!IsGameTypeSingle() || H_Parent() || ImpactPending)
+	{
+		return;
+	}
+
+	const u32 Now = Device.dwTimeGlobal;
+	if (LastImpactTime != u32(-1) &&
+		(Now - LastImpactTime < GrenadeImpactInterval || ImpactPosition.distance_to_sqr(Position) < _sqr(GrenadeImpactMinTravel)))
+	{
+		return;
+	}
+
+	// Notify listeners from the scheduler after physics has finished the contact.
+	LastImpactTime = Now;
+	ImpactPosition = Position;
+	ImpactPending = true;
+}
+
+void CGrenade::shedule_Update(u32 Dt)
+{
+	inherited::shedule_Update(Dt);
+	if (!ImpactPending)
+	{
+		return;
+	}
+
+	ImpactPending = false;
+	const u32 Now = Device.dwTimeGlobal;
+	if (H_Parent() || getDestroy() || IsExploding() || IsExploded() || destroy_time() == u32(-1) || destroy_time() <= Now)
+	{
+		return;
+	}
+
+	CObject* Thrower = Level().Objects.net_Find(CurrentParentID());
+	CEntityAlive* Initiator = Thrower && !Thrower->getDestroy() ? Thrower->cast_entity_alive() : nullptr;
+	if (!Initiator)
+	{
+		return;
+	}
+
+	xr_vector<ISpatialShared> Listeners;
+	g_SpatialSpace->q_sphere(Listeners, 0, ESPATIAL_TYPE::STALKER_ALIVE, ImpactPosition, GrenadeImpactHearingDistance);
+	for (const auto& Spatial : Listeners)
+	{
+		if ((Spatial->type & ESPATIAL_TYPE::REACTTOSOUND) == ESPATIAL_TYPE::NONE)
+		{
+			continue;
+		}
+
+		CObject* Object = Spatial->dcast_CObject();
+		CAI_Stalker* Stalker = Object && !Object->getDestroy() ? Object->cast_stalker() : nullptr;
+		if (!Stalker || !Stalker->g_Alive())
+		{
+			continue;
+		}
+
+		const float Distance = Spatial->sphere.P.distance_to(ImpactPosition);
+		if (Distance >= GrenadeImpactHearingDistance)
+		{
+			continue;
+		}
+
+		const float Occlusion = Sound->get_occlusion_to(Spatial->sphere.P, ImpactPosition);
+		const float Power = GrenadeImpactVolume * (1.f - Distance / GrenadeImpactHearingDistance) * Occlusion;
+		if (Stalker->memory().sound().HearsWorldSound(Power))
+		{
+			Stalker->memory().danger().add(CDangerObject(Initiator, ImpactPosition, Now,
+				CDangerObject::eDangerTypeGrenade, CDangerObject::eDangerPerceiveTypeSound, this));
+		}
+	}
 }
 
 void CGrenade::Destroy()

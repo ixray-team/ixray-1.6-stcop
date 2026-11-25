@@ -69,6 +69,7 @@ private:
 #endif
 
 private:
+			float				CalculateSoundThreshold() const;
 	IC		void				update_sound_threshold	();
 	IC		u32					priority				(const CSoundObject &sound) const;
 			void				add						(const CSoundObject &sound_object, bool check_for_existance = false);
@@ -99,6 +100,7 @@ public:
 	IC		void				set_squad_objects		(SOUNDS *squad_objects);
 
 public:
+			bool				HearsWorldSound(float Power) const;
 	IC		void				set_threshold			(float threshold);
 	IC		void				restore_threshold		();
 

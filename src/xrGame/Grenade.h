@@ -54,6 +54,8 @@ public:
 	virtual bool			SendDeactivateItem					(bool Force);
 
 	void FastThrow();
+	void OnImpact(const Fvector& Position);
+	void shedule_Update(u32 Dt) override;
 
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
@@ -74,6 +76,9 @@ protected:
 private:
 	float					m_grenade_detonation_threshold_hit;
 	bool					m_thrown;
+	bool					ImpactPending = false;
+	u32						LastImpactTime = u32(-1);
+	Fvector					ImpactPosition;
 
 protected:
 	virtual	void			UpdateXForm							()		{ CMissile::UpdateXForm(); };

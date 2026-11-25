@@ -1071,14 +1071,15 @@ void CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl
 
 	if (do_colide)
 	{
-		ExitContactCallback_Patch(c.geom.g2);
-		ExitContactCallback_Patch(c.geom.g1);
+		const Fvector ContactPosition = Fvector().set(c.geom.pos[0], c.geom.pos[1], c.geom.pos[2]);
+		ExitContactCallback_Patch(c.geom.g2, ContactPosition);
+		ExitContactCallback_Patch(c.geom.g1, ContactPosition);
 	}
 }
 
 #include "Grenade.h"
 
-void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
+void CMissile::ExitContactCallback_Patch(dGeomID dxGeom, const Fvector& ContactPosition)
 {
 	dxGeomUserData* geom_data = PHRetrieveGeomUserData(dxGeom);
 
@@ -1144,6 +1145,11 @@ void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
 		}
 		grenade->set_destroy_time_now(0xffffffff);
 		grenade->Destroy();
+	}
+
+	if (grenade->destroy_time() != u32(-1))
+	{
+		grenade->OnImpact(ContactPosition);
 	}
 }
 

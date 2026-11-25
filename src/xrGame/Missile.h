@@ -134,5 +134,5 @@ public:
 	IC		int				time_from_begin_throw	() const { return (Device.dwTimeGlobal + m_dwDestroyTimeMax - m_dwDestroyTime); }
 	IC		void			set_destroy_time_now	(u32 time) { m_dwDestroyTime = time; }
 	static	void			ExitContactCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
-	static	void			ExitContactCallback_Patch(dGeomID dxGeom);
+	static	void			ExitContactCallback_Patch(dGeomID dxGeom, const Fvector& ContactPosition);
 };

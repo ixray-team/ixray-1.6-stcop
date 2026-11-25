@@ -71,5 +71,10 @@ IC	bool CDangerObject::operator==											(const CDangerObject &object) const
 	if (m_object && (m_object->ID() != object.object()->ID()))
 		return			(false);
 
+	if (type() == eDangerTypeGrenade && object.type() == eDangerTypeGrenade && (m_dependent_object || object.m_dependent_object))
+	{
+		return m_dependent_object == object.m_dependent_object;
+	}
+
 	return				((type() == object.type()) &&(perceive_type() == object.perceive_type()));
 }

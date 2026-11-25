@@ -85,7 +85,7 @@ void CSoundMemoryManager::reload				(const char* section)
 	m_world_factor			= READ_IF_EXISTS(pSettings,r_float,sound_perceive_section,"world",1.f);
 }
 
-IC	void CSoundMemoryManager::update_sound_threshold			()
+float CSoundMemoryManager::CalculateSoundThreshold() const
 {
 	VERIFY		(_valid(m_self_sound_factor));
 	VERIFY		(_valid(m_sound_threshold));
@@ -93,7 +93,7 @@ IC	void CSoundMemoryManager::update_sound_threshold			()
 	VERIFY		(!fis_zero(m_decrease_factor));
 	VERIFY		(m_sound_decrease_quant);
 	// t = max(t*f^((tc - tl)/tq),min_threshold)
-	m_sound_threshold		= std::max(
+	return std::max(
 		m_self_sound_factor*
 		m_sound_threshold*
 		exp(
@@ -103,7 +103,12 @@ IC	void CSoundMemoryManager::update_sound_threshold			()
 		),
 		m_min_sound_threshold
 	);
-	VERIFY		(_valid(m_sound_threshold));
+}
+
+IC void CSoundMemoryManager::update_sound_threshold()
+{
+	m_sound_threshold = CalculateSoundThreshold();
+	VERIFY(_valid(m_sound_threshold));
 }
 
 IC	u32	 CSoundMemoryManager::priority	(const MemorySpace::CSoundObject &sound) const
@@ -128,6 +133,11 @@ void CSoundMemoryManager::enable		(const CObject *object, bool enable)
 IC	bool is_sound_type(int s, const ESoundTypes &t)
 {
 	return	((s & t) == t);
+}
+
+bool CSoundMemoryManager::HearsWorldSound(float Power) const
+{
+	return Power > EPS_S && Power * m_world_factor >= CalculateSoundThreshold();
 }
 
 void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power)
