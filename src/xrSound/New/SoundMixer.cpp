@@ -41,7 +41,7 @@
 #include "../Sound.h"
 #include "../SoundRender.h"
 #include "../ai_sounds.h"
-#include "../Plugins/ResonanceAudio.h"
+#include "SoundHrtf.h"
 
 #define ENGINE_API
 #include "../xrEngine/xr_object.h"
@@ -933,7 +933,7 @@ void Mixer::Shutdown()
 	}
 
 	Snd_ShutdownBuses();
-	Resonance_Shutdown();
+	Snd_ShutdownHrtf();
 	Snd_ShutdownSources();
 	Snd_UnloadConfig();
 

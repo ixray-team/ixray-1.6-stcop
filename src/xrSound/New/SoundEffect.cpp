@@ -29,7 +29,8 @@
  **************************************************************************************/
 #include "SoundEffect.h"
 #include "SoundDSP.h"
-#include "../Plugins/ResonanceAudio.h"
+#include "SoundHrtf.h"
+#include "SoundRoomReverb.h"
 
 #define SND_PANNING_SMOOTH (10.0f)
 
@@ -59,7 +60,8 @@ void Snd_InitEffects()
 	Snd_RegisterEffect("convolution", Snd_ConvolutionProc);
 	// Shaders are bus effects too: "compressor" and the rest come from here
 	Snd_RegisterShaderEffects();
-	Resonance_RegisterEffects();
+	Snd_RegisterEffect("spatialize", Snd_HrtfProc);
+	Snd_RegisterEffect("reverb", Snd_RoomReverbProc);
 }
 
 u8 Snd_FindEffect(const char* Name)

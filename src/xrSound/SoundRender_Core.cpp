@@ -90,8 +90,8 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 
 	// Calculate RAY params
 	Fvector base = listener_position();
-	Fvector	pos, dir;
-	float	range;
+	Fvector pos, dir;
+	float range;
 	pos.random_dir();
 	pos.mul(R);
 	pos.add(P);
@@ -99,12 +99,19 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 	range = dir.magnitude();
 	dir.div(range);
 
-	if (geom_MODEL) {
+	if (geom_MODEL)
+	{
 		bool bNeedFullTest = true;
 		// 1. Check cached polygon
 		float _u, _v, _range;
 		if (!geom_MODEL->IsStreamingEnabled() && CDB::TestRayTri(base, dir, occ, _u, _v, _range, true))
-			if (_range > 0 && _range < range) { occ_value = psSoundOcclusionScale; bNeedFullTest = false; }
+		{
+			if (_range > 0 && _range < range)
+			{
+				occ_value = psSoundOcclusionScale;
+				bNeedFullTest = false;
+			}
+		}
 		// 2. Polygon doesn't picked up - real database query
 		if (bNeedFullTest)
 		{
@@ -129,6 +136,7 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 			}
 		}
 	}
+
 	if (geom_SOM)
 	{
 		geom_DB.ray_options(CDB::OPT_CULL);
@@ -373,39 +381,65 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
 	hdrCFORM H;
 	GeomChunk->r(&H, sizeof(hdrCFORM));
-	Fvector* verts = (Fvector*)GeomChunk->pointer();
-	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+
+	// The file stores 16-byte vanilla triangles; CDB::TRI is wider, so the chunk is copied into geom_ENV
+	// instead of being cast in place. The reader may also be a read-only mapping of the level file.
+	const size_t GeomBytes = size_t(H.vertcount) * sizeof(Fvector) + size_t(H.facecount) * sizeof(CDB::TRI_Vanilla);
+	if (size_t(GeomChunk->elapsed()) < GeomBytes || H.facecount % 12 != 0)
+	{
+		Msg("! [Sound] level.snd_env: broken geometry chunk (verts: %u, faces: %u), reverb zones are disabled", H.vertcount, H.facecount);
+		GeomChunk->close();
+		return;
+	}
+
+	geom_ENV = new CDB::MODEL();
+	xr_vector<Fvector>& verts = geom_ENV->get_verts();
+	xr_vector<CDB::TRI>& tris = geom_ENV->get_tris();
+	verts.resize(H.vertcount);
+	GeomChunk->r(verts.data(), H.vertcount * sizeof(Fvector));
+	tris.resize(H.facecount);
+	for (CDB::TRI& Tri : tris)
+	{
+		CDB::TRI_Vanilla Packed;
+		GeomChunk->r(&Packed, sizeof(Packed));
+		std::copy(std::begin(Packed.verts), std::end(Packed.verts), Tri.verts);
+		Tri.dummy = Packed.dummy;
+		Tri.StreamedSectorID = 0;
+	}
+	GeomChunk->close();
 
 	Mixer::ResetZones();
 
+	// Every zone is a box of 12 triangles; dummy holds the front/back environment ids and is replaced with the zone index
 	for (u32 idx_offset = 0; idx_offset < H.facecount; idx_offset += 12)
 	{
 		sound_zone_params params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
 
-		u16 base_id_front = (u16)(((tris + idx_offset)->dummy & 0x0000ffff) >> 0);
-		u16 base_id_back = (u16)(((tris + idx_offset)->dummy & 0xffff0000) >> 16);
+		u16 base_id_front = (u16)((tris[idx_offset].dummy & 0x0000ffff) >> 0);
+		u16 base_id_back = (u16)((tris[idx_offset].dummy & 0xffff0000) >> 16);
 		u32 id = base_id_back;
+		R_ASSERT2(id < ids.size(), "level.snd_env: environment id out of range");
 
-		for (size_t i = 0; i < 12; i++)
+		for (u32 i = 0; i < 12; i++)
 		{
-			CDB::TRI* T = tris + idx_offset + i;
+			CDB::TRI& T = tris[idx_offset + i];
 
-			u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
-			u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
+			u16 id_front = (u16)((T.dummy & 0x0000ffff) >> 0); //	front face
+			u16 id_back = (u16)((T.dummy & 0xffff0000) >> 16); //	back face
 			R_ASSERT(id_front == base_id_front);
 			R_ASSERT(id_back == base_id_back);
 
-			// T->dummy = u32(ids[id_back] << 16) | u32(ids[id_front]); // old gsc kal
-			T->dummy = Mixer::GetZones().size();
+			// T.dummy = u32(ids[id_back] << 16) | u32(ids[id_front]); // old gsc kal
+			T.dummy = (u32)Mixer::GetZones().size();
 
-			params.min.min(verts[T->verts[0]]);
-			params.max.max(verts[T->verts[0]]);
-			params.min.min(verts[T->verts[1]]);
-			params.max.max(verts[T->verts[1]]);
-			params.min.min(verts[T->verts[2]]);
-			params.max.max(verts[T->verts[2]]);
+			for (u32 v = 0; v < 3; v++)
+			{
+				R_ASSERT2(T.verts[v] < H.vertcount, "level.snd_env: vertex index out of range");
+				params.min.min(verts[T.verts[v]]);
+				params.max.max(verts[T.verts[v]]);
+			}
 		}
 
 		const CSoundRender_Environment* LocalEnv = s_environment->Get(ids[id]);
@@ -437,14 +471,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 		Mixer::AddZone(params);
 	}
 
-	geom_ENV = new CDB::MODEL();
-	geom_SOM->verts.resize(H.vertcount);
-	std::memcpy(geom_SOM->verts.data(), verts, H.vertcount);
-	geom_SOM->tris.resize(H.facecount);
-	std::memcpy(geom_SOM->tris.data(), tris, H.facecount);
-	geom_SOM->build_simple();
-
-	GeomChunk->close();
+	geom_ENV->build_simple();
 }
 
 void CSoundRender_Core::set_master_volume(float f)
