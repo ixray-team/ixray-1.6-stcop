@@ -283,19 +283,15 @@ function WeatherManager:update()
 		end
 
 		-- применяем секцию погоды с последнего сохранения если есть
-		if tostring(self.storage.w_section) ~= "nil" then
+		if not self.processing_allowed then
+			self:CheckAndSwitchToIndoor()
+		elseif self.storage.w_section then
 			IXRLog("Use saved weather section: "..self.storage.w_section)
 			self:play_weather(self.storage.w_section, true)
 		else
 			IXRLog("Saved weather section not exists")
 		end
-		
-		-- фактически проверка на наличие требования indoor погоды из конфига просто прерываем обновления устанавив погоду
-		if not self.processing_allowed then
-			IXRLog("INDOOR State")
-			level.set_weather("indoor", true)
-		end
-		
+
 		self.storage.is_wfx_initialized = false
 		self.loaded = true
 	end
@@ -448,7 +444,27 @@ end
 function WeatherManager:finalize()
 end
 
-function WeatherManager:reset()	
+function WeatherManager:reset()
+	if not self.loaded then
+		self:update()
+		return
+	end
+
+	if not self.processing_allowed then
+		self:CheckAndSwitchToIndoor()
+	elseif self.storage.w_section then
+		self:play_weather(self.storage.w_section, true)
+	else
+		if level.is_wfx_playing() then
+			level.stop_weather_fx()
+		end
+		self:forced_weather_change()
+		self:tick()
+	end
+
+	if self.storage.is_wfx_palying then
+		self:on_wfx_end()
+	end
 end
 
 function WeatherManager:get_weather_fx()

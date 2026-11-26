@@ -101,7 +101,6 @@ function actor_binder:net_spawn(data)
 		level.enable_input()
 	end
 	xr_s.on_game_load()                                    --' Distemper 03.2008 --
-	self.weather_manager:reset()
 	--' Загружаем настройки дропа
 	death_manager.init_drop_settings()
 	--'Устанавливаем ссылку на таскменеджер
