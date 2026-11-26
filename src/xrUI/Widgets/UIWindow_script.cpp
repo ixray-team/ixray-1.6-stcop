@@ -13,6 +13,50 @@
 #include "UIHint.h"
 #include "UIStackPanel.h"
 #include "UIGamepadLegend.h"
+#include "../../xrScripts/script_engine.h"
+
+void CUIWindow::VerifyScriptAccess(const CUIWindow* Window, const char* Method)
+{
+	if (IsAliveWindow(Window))
+	{
+		return;
+	}
+
+	Msg("! [UI] Script called %s on destroyed window %p", Method, Window);
+
+	if (g_pScriptEngine != nullptr)
+	{
+		lua_State* L = g_pScriptEngine->lua();
+		lua_Debug DebugInfo;
+		for (int Level = 0; L != nullptr && lua_getstack(L, Level, &DebugInfo); ++Level)
+		{
+			lua_getinfo(L, "nSl", &DebugInfo);
+			Msg("! [UI] %2d: %s(%d) : %s", Level, DebugInfo.short_src, DebugInfo.currentline, DebugInfo.name ? DebugInfo.name : "?");
+		}
+	}
+
+	string256 Reason;
+	xr_sprintf(Reason, "Script called %s on destroyed UI window %p", Method, Window);
+	R_ASSERT2(false, Reason);
+}
+
+void CUIWindow::SetWndRect_script(Frect rect)
+{
+	VerifyScriptAccess(this, "SetWndRect");
+	CUISimpleWindow::SetWndRect(rect);
+}
+
+void CUIWindow::SetWndPos_script(Fvector2 pos)
+{
+	VerifyScriptAccess(this, "SetWndPos");
+	CUISimpleWindow::SetWndPos(pos);
+}
+
+void CUIWindow::SetWndSize_script(Fvector2 size)
+{
+	VerifyScriptAccess(this, "SetWndSize");
+	CUISimpleWindow::SetWndSize(size);
+}
 
 CFontManager& mngr()
 {
@@ -149,6 +193,7 @@ void CUIWindow::script_register(lua_State *L)
 
 		.def("Init", +[](CUIWindow* self, float x, float y, float width, float height)
 			{
+				CUIWindow::VerifyScriptAccess(self, "Init");
 				self->SetWndPos(Fvector2().set(x, y));
 				self->SetWndSize(Fvector2().set(width, height));
 			})
@@ -157,6 +202,7 @@ void CUIWindow::script_register(lua_State *L)
 		.def("SetWndRect",				(void (CUIWindow::*)(Frect))	&CUIWindow::SetWndRect_script)
 		.def("SetWndRect", +[](CUIWindow* self, float x, float y, float width, float height)
 			{
+				CUIWindow::VerifyScriptAccess(self, "SetWndRect");
 				const Frect rect{ x, y, width, height };
 				self->SetWndRect(rect);
 			})
@@ -166,11 +212,13 @@ void CUIWindow::script_register(lua_State *L)
 
 		.def("SetWndPos", +[](CUIWindow* self, float x, float y)
 			{
+				CUIWindow::VerifyScriptAccess(self, "SetWndPos");
 				const Fvector2 pos{ x, y };
 				self->SetWndPos(pos);
 			})
 		.def("SetWndSize", +[](CUIWindow* self, float width, float height)
 			{
+				CUIWindow::VerifyScriptAccess(self, "SetWndSize");
 				const Fvector2 size{ width, height };
 				self->SetWndSize(size);
 			})

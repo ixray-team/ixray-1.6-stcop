@@ -1359,6 +1359,8 @@ function _on_main_menu_init(_ref)
 	get_menu_ref().options_xml:ParseFile("ui_ixr_options.xml")
 	ixr_options.main_menu_ref.ixr_controlls = {}
 	ixr_options.main_menu_ref.ixr_options_aspect_scale = nil
+	-- The previous menu destroyed its controls, so drop references to them.
+	on_before_clear_controlls_and_addons_info_gamepads()
 end
 
 function _on_main_menu_init_callbacks(_ref)
@@ -1445,6 +1447,8 @@ function _on_main_menu_init_controlls(_ref)
 	get_controll("ixr_save_options"):TextControl():SetTextColor(GetARGB(title_text_alpha, 255, 255, 255))
 	
 	
+	-- RemoveAll destroys the old addon items, so drop references to them.
+	ixr_options.gamepad_supported_controlls.addons = {}
 	get_controll("addons_list_box"):RemoveAll()
 	
 	-- наши аддоны всегда с верху

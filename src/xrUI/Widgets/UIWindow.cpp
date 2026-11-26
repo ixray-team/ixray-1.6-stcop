@@ -26,6 +26,28 @@
 UI_API void dump_list_wnd(){}
 #endif
 
+namespace UIWindowRegistry
+{
+	// HACK: Intentionally leaked so windows destroyed during shutdown can still unregister.
+	xrCriticalSection& GetLock()
+	{
+		static xrCriticalSection* Lock = new xrCriticalSection();
+		return *Lock;
+	}
+
+	xr_hash_set<const CUIWindow*>& GetLiveWindows()
+	{
+		static xr_hash_set<const CUIWindow*>* LiveWindows = new xr_hash_set<const CUIWindow*>();
+		return *LiveWindows;
+	}
+}
+
+bool CUIWindow::IsAliveWindow(const CUIWindow* Window)
+{
+	xrCriticalSectionGuard Guard(&UIWindowRegistry::GetLock());
+	return UIWindowRegistry::GetLiveWindows().contains(Window);
+}
+
 xr_vector<Frect> g_wnds_rects;
 UI_API bool g_show_wnd_rect2 = false;
 
@@ -108,6 +130,11 @@ m_bCustomDraw(false)
 {
 	Show					(true);
 	Enable					(true);
+
+	{
+		xrCriticalSectionGuard Guard(&UIWindowRegistry::GetLock());
+		UIWindowRegistry::GetLiveWindows().insert(this);
+	}
 #ifdef LOG_ALL_WNDS
 	ListWndCount++;
 	m_dbg_id = ListWndCount;
@@ -119,6 +146,11 @@ m_bCustomDraw(false)
 
 CUIWindow::~CUIWindow()
 {
+	{
+		xrCriticalSectionGuard Guard(&UIWindowRegistry::GetLock());
+		UIWindowRegistry::GetLiveWindows().erase(this);
+	}
+
 	VERIFY( !(GetParent()&&IsAutoDelete()) );
 
 	CUIWindow* parent	= GetParent();

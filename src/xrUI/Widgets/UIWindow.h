@@ -126,9 +126,13 @@ public:
 	IC void					GetAbsolutePos		(Fvector2& p) 	{Frect abs; GetAbsoluteRect(abs); p.set(abs.x1,abs.y1);}
 
 
-			void			SetWndRect_script	(Frect rect)										{CUISimpleWindow::SetWndRect(rect);}
-			void			SetWndPos_script	(Fvector2 pos)										{CUISimpleWindow::SetWndPos(pos);}
-			void			SetWndSize_script	(Fvector2 size)										{CUISimpleWindow::SetWndSize(size);}
+			void			SetWndRect_script	(Frect rect);
+			void			SetWndPos_script	(Fvector2 pos);
+			void			SetWndSize_script	(Fvector2 size);
+
+	// HACK: Diagnostic for scripts that keep pointers to destroyed windows.
+	static	bool			IsAliveWindow		(const CUIWindow* Window);
+	static	void			VerifyScriptAccess	(const CUIWindow* Window, const char* Method);
 
 	//прорисовка окна
 	virtual void			Draw				();
