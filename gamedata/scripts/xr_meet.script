@@ -649,8 +649,12 @@ function process_npc_usability(npc)
             return
         end
     
-        local meet = db.storage[npc:id()].meet
-    
+        local st = db.storage[npc:id()]
+        local meet = st and st.meet
+        if not meet or not meet.meet_manager then
+            return
+        end
+
         local use = meet.meet_manager.use
     
         if use == "true" then

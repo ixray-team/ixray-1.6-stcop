@@ -13,7 +13,16 @@ end
 
 function update_npc_dialog(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-	db.storage[npc:id()].meet.meet_manager:update()
+	local st = db.storage[npc:id()]
+	if not st then
+		return
+	end
+
+	local meet = st.meet
+	if meet and meet.meet_manager then
+		meet.meet_manager:update()
+	end
+
 	xr_meet.process_npc_usability(npc)
 	xr_motivator.update_logic(npc)
 end
