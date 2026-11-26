@@ -14,6 +14,9 @@
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
+#include "CameraRig.h"
+#include "../Include/xrRender/RenderVisual.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "damage_manager.h"
 #include "AnomalyZone.h"
 #include "HUDManager.h"
@@ -21,6 +24,8 @@
 #include "CameraFirstEye.h"
 #include "Actor.h"
 #include "ActorEffector.h"
+#include "CustomOutfit.h"
+#include "player_hud.h"
 #include "math.h"
 #include "script_entity_action.h"
 #include "Inventory.h"
@@ -274,6 +279,60 @@ CCar::CCar()
 	m_power_neutral_factor = 0.25f;
 	m_steer_angle = 0.f;
 	m_wheel_angle = 0.f;
+	m_driver_hands_visual = nullptr;
+	m_driver_hands_kinematics = nullptr;
+	m_driver_hands_source_section = nullptr;
+	m_driver_hands_bind_pose.clear();
+	m_driver_hands_xform.identity();
+	m_driver_hands_left_hand_offset.identity();
+	m_driver_hands_right_hand_offset.identity();
+	m_driver_hands_position.set(0.f, 0.f, 0.f);
+	m_driver_hands_rotation.set(0.f, 0.f, 0.f);
+	m_driver_hands_left_grip.set(0.f, 0.f, 0.f);
+	m_driver_hands_right_grip.set(0.f, 0.f, 0.f);
+	m_driver_hands_left_hand_rotation.set(0.f, 0.f, 0.f);
+	m_driver_hands_right_hand_rotation.set(0.f, 0.f, 0.f);
+	m_driver_hands_left_elbow.set(0.f, 0.f, 0.f);
+	m_driver_hands_right_elbow.set(0.f, 0.f, 0.f);
+	m_driver_hands_left_reach_shift.set(0.f, 0.f, 0.f);
+	m_driver_hands_right_reach_shift.set(0.f, 0.f, 0.f);
+	m_driver_hands_reach_shift_speed = 15.f;
+	m_driver_hands_scale = 1.f;
+	m_driver_hands_shoulder_width = -1.f;
+	m_driver_hands_regrip_trigger = 15.f;
+	m_driver_hands_regrip_end = 165.f;
+	m_driver_hands_regrip_travel = 90.f;
+	m_driver_hands_steer_twist = 0.f;
+	m_driver_hands_steer_twist_start = 90.f;
+	m_driver_hands_steer_twist_axis.set(0.f, 0.f, 1.f);
+	m_driver_hands_regrip_lift = 0.07f;
+	m_driver_hands_regrip_over_radial = 0.04f;
+	m_driver_hands_steer_factor = 1.f;
+	m_driver_hands_regrip_enabled = false;
+	m_driver_hands_regrip_debug = false;
+	m_driver_hands_mirror_hand_rotation = false;
+	m_driver_hands_steer_factored = false;
+	m_driver_hands_active_hand = 0;
+	m_driver_hands_active_sign = 0;
+	m_driver_hands_debug_hand = 0;
+	m_driver_hands_progress = 0.f;
+	for (u8 Group = 0; Group < 4; ++Group)
+		m_driver_hands_finger_angles[Group] = 0.f;
+	m_driver_hands_finger_axis[0].set(0.f, 0.f, -1.f);
+	m_driver_hands_finger_axis[1].set(0.f, 0.f, -1.f);
+	m_driver_hands_finger_speed = 12.f;
+	m_driver_hands_steer_bone = BI_NONE;
+	m_driver_hands_left_clavicle = BI_NONE;
+	m_driver_hands_right_clavicle = BI_NONE;
+	for (u16& Bone : m_driver_hands_left_ik)
+		Bone = BI_NONE;
+	for (u16& Bone : m_driver_hands_right_ik)
+		Bone = BI_NONE;
+	m_driver_hands_ik_ready = false;
+	m_driver_hands_ready = false;
+	m_driver_hands_ik_initialized = false;
+	m_driver_hands_bones_frame = 0;
+	ResetDriverHandStates();
 	m_current_rpm = 0.f;
 	m_current_rpm_brp_n = 1.f;
 	m_current_engine_power = 0.f;
@@ -2595,6 +2654,7 @@ void	CCar::net_Destroy()
 		if (i_w.second.tire_drive._p)
 			i_w.second.tire_drive.destroy();
 	}
+	DestroyDriverHands();
 	m_wheels_map.clear();
 	m_steering_wheels.clear();
 	m_driving_wheels.clear();
@@ -2859,6 +2919,810 @@ void CCar::shedule_Update(u32 dt)
 #endif
 }
 
+static shared_str ResolveDriverHandsSection(CActor* Actor)
+{
+	if (pSettings == nullptr)
+		return shared_str();
+
+	if (Actor != nullptr)
+	{
+		if (CCustomOutfit* Outfit = Actor->GetOutfit())
+		{
+			const shared_str& Section = Outfit->OutfitDesc().PlayerHudSection;
+			if (Section.size() != 0 && pSettings->line_exist(Section, "visual"))
+				return Section;
+		}
+	}
+
+	if (g_player_hud != nullptr)
+	{
+		const shared_str& Section = g_player_hud->section_name();
+		if (Section.size() != 0 && pSettings->line_exist(Section, "visual"))
+			return Section;
+	}
+
+	const char* DefaultSection = pSettings->read_if_exists<str_c>("actor", "player_hud_default", "actor_hud");
+	if (DefaultSection != nullptr && pSettings->line_exist(DefaultSection, "visual"))
+		return shared_str(DefaultSection);
+
+	return shared_str();
+}
+
+void CCar::LoadDriverHands()
+{
+	DestroyDriverHands();
+	m_driver_hands_source_section = ResolveDriverHandsSection(OwnerActor());
+
+	if (g_dedicated_server || OwnerActor() == nullptr || pSettings == nullptr || m_steers.empty())
+		return;
+
+	const char* Section = cNameSect_str();
+	if (Section == nullptr || !pSettings->section_exist(Section))
+		return;
+
+	if (!pSettings->read_if_exists<bool>(Section, "driver_hands", false))
+		return;
+
+	IKinematics* CarKinematics = PKinematics(Visual());
+	if (CarKinematics == nullptr)
+		return;
+
+	const char* BoneName = pSettings->read_if_exists<str_c>(Section, "driver_hands_steer_bone", "");
+	if (BoneName == nullptr || BoneName[0] == '\0')
+		BoneName = pSettings->read_if_exists<str_c>(Section, "driver_hands_bone", "stearing_wheel");
+	u16 SteerBone = BoneName != nullptr ? CarKinematics->LL_BoneID(BoneName) : BI_NONE;
+	if (SteerBone == BI_NONE || SteerBone >= CarKinematics->LL_BoneCount())
+		SteerBone = m_steers.front();
+	if (SteerBone == BI_NONE || SteerBone >= CarKinematics->LL_BoneCount())
+		return;
+
+	// The wheel bone callback rotates the visual wheel by m_steer_angle times
+	// the per-bone factor. The hand-over-hand target must use exactly the same
+	// value, otherwise the grips drift against the visible rim.
+	m_driver_hands_steer_factored = false;
+	m_driver_hands_steer_factor = 1.f;
+	if (CInifile* CarIni = CarKinematics->LL_UserData())
+	{
+		const char* FactorBone = (BoneName != nullptr && BoneName[0] != '\0') ? BoneName : CarKinematics->LL_BoneName_dbg(SteerBone);
+		string128 FactorKey;
+		xr_sprintf(FactorKey, "%s_factor", FactorBone);
+		if (CarIni->line_exist("car_definition", FactorKey))
+		{
+			m_driver_hands_steer_factor = CarIni->r_float("car_definition", FactorKey);
+			m_driver_hands_steer_factored = true;
+		}
+	}
+
+	const shared_str HandsSection = m_driver_hands_source_section;
+	const char* VisualName = nullptr;
+	if (HandsSection.size() != 0)
+		VisualName = pSettings->read_if_exists<str_c>(HandsSection, "visual", nullptr);
+	if (VisualName == nullptr || VisualName[0] == '\0')
+		VisualName = pSettings->read_if_exists<str_c>(Section, "driver_hands_visual", "dynamics\\weapons\\wpn_hand\\wpn_hand_01");
+	if (VisualName == nullptr || VisualName[0] == '\0')
+		return;
+
+	string_path VisualFile;
+	xr_strconcat(VisualFile, VisualName, strext(VisualName) ? "" : ".ogf");
+	if (!FS.exist(_game_meshes_, VisualFile))
+	{
+		Msg("! [%s] driver hands visual not found: %s", Section, VisualName);
+		return;
+	}
+
+	IRenderVisual* Visual = ::Render->model_Create(VisualName);
+	IKinematics* HandsKinematics = Visual != nullptr ? Visual->dcast_PKinematics() : nullptr;
+	if (HandsKinematics == nullptr)
+	{
+		if (Visual != nullptr)
+			::Render->model_Delete(Visual);
+		return;
+	}
+
+	m_driver_hands_visual = Visual;
+	m_driver_hands_kinematics = HandsKinematics;
+	m_driver_hands_steer_bone = SteerBone;
+	m_driver_hands_position = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_position", Fvector().set(0.f, 0.45f, 0.10f));
+	m_driver_hands_rotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_rotation", Fvector().set(0.f, 0.f, 0.f));
+	m_driver_hands_left_grip = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_grip", Fvector().set(-0.16f, 0.f, 0.f));
+	m_driver_hands_right_grip = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_grip", Fvector().set(0.16f, 0.f, 0.f));
+	m_driver_hands_left_hand_rotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_hand_rotation", Fvector().set(0.f, 0.f, 0.f));
+	m_driver_hands_right_hand_rotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_hand_rotation", Fvector().set(0.f, 0.f, 0.f));
+	m_driver_hands_left_elbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_elbow", Fvector().set(-0.15f, -0.35f, -0.10f));
+	m_driver_hands_right_elbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_elbow", Fvector().set(0.15f, -0.35f, -0.10f));
+	m_driver_hands_scale = pSettings->read_if_exists<float>(Section, "driver_hands_scale", 1.f);
+	clamp(m_driver_hands_scale, 0.05f, 10.f);
+	m_driver_hands_reach_shift_speed = pSettings->read_if_exists<float>(Section, "driver_hands_reach_shift_speed", 15.f);
+	clamp(m_driver_hands_reach_shift_speed, 0.f, 120.f);
+	m_driver_hands_shoulder_width = pSettings->read_if_exists<float>(Section, "driver_hands_shoulder_width", -1.f);
+	if (m_driver_hands_shoulder_width > 0.f)
+		clamp(m_driver_hands_shoulder_width, 0.05f, 2.f);
+	m_driver_hands_regrip_enabled = pSettings->read_if_exists<bool>(Section, "driver_hands_regrip", false);
+	m_driver_hands_regrip_trigger = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_trigger", 15.f);
+	clamp(m_driver_hands_regrip_trigger, 0.f, 179.f);
+	m_driver_hands_regrip_end = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_end", 165.f);
+	clamp(m_driver_hands_regrip_end, 1.f, 180.f);
+	if (m_driver_hands_regrip_end <= m_driver_hands_regrip_trigger)
+		m_driver_hands_regrip_end = std::min(180.f, m_driver_hands_regrip_trigger + 1.f);
+	m_driver_hands_regrip_travel = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_travel", 90.f);
+	clamp(m_driver_hands_regrip_travel, 0.f, 180.f);
+	m_driver_hands_regrip_lift = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_lift", 0.07f);
+	clamp(m_driver_hands_regrip_lift, -0.2f, 0.2f);
+	m_driver_hands_regrip_over_radial = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_over_radial", 0.04f);
+	clamp(m_driver_hands_regrip_over_radial, 0.f, 0.15f);
+	m_driver_hands_regrip_debug = pSettings->read_if_exists<bool>(Section, "driver_hands_regrip_debug", false);
+	m_driver_hands_steer_twist = pSettings->read_if_exists<float>(Section, "driver_hands_steer_twist", 0.f);
+	clamp(m_driver_hands_steer_twist, -90.f, 90.f);
+	m_driver_hands_steer_twist_start = pSettings->read_if_exists<float>(Section, "driver_hands_steer_twist_start", 90.f);
+	clamp(m_driver_hands_steer_twist_start, 0.f, 179.f);
+	m_driver_hands_steer_twist_axis = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_steer_twist_axis", Fvector().set(0.f, 0.f, 1.f));
+	if (m_driver_hands_steer_twist_axis.magnitude() < EPS_L)
+		m_driver_hands_steer_twist_axis.set(0.f, 0.f, 1.f);
+	m_driver_hands_steer_twist_axis.normalize();
+	m_driver_hands_mirror_hand_rotation = pSettings->read_if_exists<bool>(Section, "driver_hands_mirror_hand_rotation", false);
+	m_driver_hands_left_clavicle = HandsKinematics->LL_BoneID("l_clavicle");
+	m_driver_hands_right_clavicle = HandsKinematics->LL_BoneID("r_clavicle");
+	m_driver_hands_left_ik[0] = HandsKinematics->LL_BoneID("l_upperarm");
+	m_driver_hands_left_ik[1] = HandsKinematics->LL_BoneID("l_forearm");
+	m_driver_hands_left_ik[2] = HandsKinematics->LL_BoneID("l_hand");
+	m_driver_hands_right_ik[0] = HandsKinematics->LL_BoneID("r_upperarm");
+	m_driver_hands_right_ik[1] = HandsKinematics->LL_BoneID("r_forearm");
+	m_driver_hands_right_ik[2] = HandsKinematics->LL_BoneID("r_hand");
+	m_driver_hands_ik_ready =
+		m_driver_hands_left_ik[0] != BI_NONE && m_driver_hands_left_ik[1] != BI_NONE && m_driver_hands_left_ik[2] != BI_NONE &&
+		m_driver_hands_right_ik[0] != BI_NONE && m_driver_hands_right_ik[1] != BI_NONE && m_driver_hands_right_ik[2] != BI_NONE;
+
+	if (!m_driver_hands_ik_ready)
+	{
+		Msg("! [%s] driver hands: IK arm bones not found", Section);
+		DestroyDriverHands();
+		return;
+	}
+
+	m_driver_hands_finger_angles[0] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_thumb", 30.f);
+	m_driver_hands_finger_angles[1] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_index", 40.f);
+	m_driver_hands_finger_angles[2] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_middle", 35.f);
+	m_driver_hands_finger_angles[3] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_others", 35.f);
+	for (u8 Group = 0; Group < 4; ++Group)
+		clamp(m_driver_hands_finger_angles[Group], -90.f, 90.f);
+
+	m_driver_hands_finger_speed = pSettings->read_if_exists<float>(Section, "driver_hands_finger_speed", 12.f);
+	clamp(m_driver_hands_finger_speed, 0.f, 120.f);
+
+	// Index and remaining fingers use the same local curl axis on both hands.
+	m_driver_hands_finger_axis[0].set(0.f, 0.f, -1.f);
+	m_driver_hands_finger_axis[1].set(0.f, 0.f, -1.f);
+
+	// The thumb has its own local axis. Values are fixed in the engine.
+	Fvector ThumbAxis[2];
+	ThumbAxis[0].set(0.f, -1.f, 0.f);
+	ThumbAxis[1].set(0.f, 0.f, 1.f);
+
+	for (u8 Hand = 0; Hand < 2; ++Hand)
+	{
+		m_driver_hands_finger_state[Hand][0].Axis = ThumbAxis[Hand];
+		m_driver_hands_finger_state[Hand][1].Axis = m_driver_hands_finger_axis[Hand];
+		m_driver_hands_finger_state[Hand][2].Axis = m_driver_hands_finger_axis[Hand];
+		m_driver_hands_finger_state[Hand][3].Axis = m_driver_hands_finger_axis[Hand];
+		for (u8 Group = 0; Group < 4; ++Group)
+			m_driver_hands_finger_state[Hand][Group].Angle = 0.f;
+	}
+
+	m_driver_hands_finger_bone_group.assign(HandsKinematics->LL_BoneCount(), 0xFF);
+	const auto AddFinger = [&](u8 Hand, u8 Group, std::initializer_list<const char*> Names)
+	{
+		for (const char* Name : Names)
+		{
+			const u16 Bone = HandsKinematics->LL_BoneID(Name);
+			if (Bone != BI_NONE && Bone < m_driver_hands_finger_bone_group.size())
+				m_driver_hands_finger_bone_group[Bone] = u8(Hand * 4 + Group);
+		}
+	};
+
+	AddFinger(0, 0, { "l_finger0", "l_finger01", "l_finger02" });
+	AddFinger(0, 1, { "bip01_l_finger1", "bip01_l_finger11", "bip01_l_finger12" });
+	AddFinger(0, 2, { "bip01_l_finger2", "bip01_l_finger21", "bip01_l_finger22" });
+	AddFinger(0, 3, { "bip01_l_finger3", "bip01_l_finger31", "bip01_l_finger32",
+		"bip01_l_finger4", "bip01_l_finger41", "bip01_l_finger42" });
+	AddFinger(1, 0, { "r_finger0", "r_finger01", "r_finger02" });
+	AddFinger(1, 1, { "bip01_r_finger1", "bip01_r_finger11", "bip01_r_finger12" });
+	AddFinger(1, 2, { "bip01_r_finger2", "bip01_r_finger21", "bip01_r_finger22" });
+	AddFinger(1, 3, { "bip01_r_finger3", "bip01_r_finger31", "bip01_r_finger32",
+		"bip01_r_finger4", "bip01_r_finger41", "bip01_r_finger42" });
+
+	m_driver_hands_left_hand_offset.identity();
+	m_driver_hands_right_hand_offset.identity();
+	m_driver_hands_ready = false;
+	m_driver_hands_ik_initialized = false;
+	m_driver_hands_bones_frame = 0;
+	m_driver_hands_xform.identity();
+	ResetDriverHandStates();
+
+	HandsKinematics->CalculateBones_Invalidate();
+	HandsKinematics->CalculateBones(TRUE);
+	HandsKinematics->LL_GetBindTransform(m_driver_hands_bind_pose);
+	if (m_driver_hands_bind_pose.size() != HandsKinematics->LL_BoneCount())
+	{
+		Msg("! [%s] driver hands: invalid bind pose", Section);
+		DestroyDriverHands();
+		return;
+	}
+
+	Msg("* [%s] driver hands: %s (hud %s, ik %s/%s/%s, %s/%s/%s)", Section, VisualName,
+		HandsSection.size() != 0 ? HandsSection.c_str() : "-",
+		HandsKinematics->LL_BoneName_dbg(m_driver_hands_left_ik[0]),
+		HandsKinematics->LL_BoneName_dbg(m_driver_hands_left_ik[1]),
+		HandsKinematics->LL_BoneName_dbg(m_driver_hands_left_ik[2]),
+		HandsKinematics->LL_BoneName_dbg(m_driver_hands_right_ik[0]),
+		HandsKinematics->LL_BoneName_dbg(m_driver_hands_right_ik[1]),
+		HandsKinematics->LL_BoneName_dbg(m_driver_hands_right_ik[2]));
+
+	if (m_driver_hands_regrip_debug)
+	{
+		Msg("* [%s] driver hands regrip: enabled=%d trigger=%.1f end=%.1f travel=%.1f lift=%.2f over=%.2f twist=%.1f start=%.1f wheel_factor=%.2f%s",
+			Section, m_driver_hands_regrip_enabled ? 1 : 0,
+			m_driver_hands_regrip_trigger, m_driver_hands_regrip_end,
+			m_driver_hands_regrip_travel, m_driver_hands_regrip_lift,
+			m_driver_hands_regrip_over_radial, m_driver_hands_steer_twist,
+			m_driver_hands_steer_twist_start, m_driver_hands_steer_factor,
+			m_driver_hands_steer_factored ? "" : " (unfactored)");
+	}
+}
+
+void CCar::ResetDriverHandStates()
+{
+	const auto ResetHand = [](SDriverHandState& Hand, const Fvector& Grip, float DefaultAngle)
+	{
+		const float Radius = sqrtf(Grip.x * Grip.x + Grip.y * Grip.y);
+		if (Radius > EPS_L)
+		{
+			Hand.HomeAngle = atan2f(Grip.y, Grip.x);
+			Hand.Radius = Radius;
+		}
+		else
+		{
+			Hand.HomeAngle = DefaultAngle;
+			Hand.Radius = 0.16f;
+		}
+
+		Hand.Z = Grip.z;
+	};
+
+	ResetHand(m_driver_hands_left_state, m_driver_hands_left_grip, PI);
+	ResetHand(m_driver_hands_right_state, m_driver_hands_right_grip, 0.f);
+	m_driver_hands_active_hand = 0;
+	m_driver_hands_active_sign = 0;
+	m_driver_hands_debug_hand = 0;
+	m_driver_hands_progress = 0.f;
+
+	for (u8 Hand = 0; Hand < 2; ++Hand)
+	{
+		for (u8 Group = 0; Group < 4; ++Group)
+			m_driver_hands_finger_state[Hand][Group].Angle = 0.f;
+	}
+}
+
+void CCar::UpdateDriverFingerStates(float Dt)
+{
+	for (u8 Hand = 0; Hand < 2; ++Hand)
+	{
+		const bool Active = (m_driver_hands_active_hand == u8(Hand + 1));
+		// Fingers open only while the regripping hand is actually in the air.
+		// At progress 0 and 1 the hand is on the rim and must grip again.
+		const bool InAir = Active && m_driver_hands_progress > EPS_L && m_driver_hands_progress < 1.f - EPS_L;
+		for (u8 Group = 0; Group < 4; ++Group)
+		{
+			SDriverFingerBend& State = m_driver_hands_finger_state[Hand][Group];
+			const float TargetDeg = InAir ? 0.f : m_driver_hands_finger_angles[Group];
+			const float Target = deg2rad(TargetDeg);
+			const float Alpha = (m_driver_hands_finger_speed > 0.f) ? (1.f - expf(-m_driver_hands_finger_speed * Dt)) : 1.f;
+			State.Angle += (Target - State.Angle) * Alpha;
+			if (fabsf(State.Angle) < 1e-5f)
+				State.Angle = 0.f;
+		}
+	}
+}
+
+void CCar::DestroyDriverHands()
+{
+	if (m_driver_hands_visual != nullptr)
+	{
+		::Render->model_Delete(m_driver_hands_visual);
+		m_driver_hands_visual = nullptr;
+	}
+
+	ResetDriverHandStates();
+
+	m_driver_hands_kinematics = nullptr;
+	m_driver_hands_bind_pose.clear();
+	m_driver_hands_steer_bone = BI_NONE;
+	m_driver_hands_left_clavicle = BI_NONE;
+	m_driver_hands_right_clavicle = BI_NONE;
+	for (u16& Bone : m_driver_hands_left_ik)
+		Bone = BI_NONE;
+	for (u16& Bone : m_driver_hands_right_ik)
+		Bone = BI_NONE;
+	m_driver_hands_left_hand_offset.identity();
+	m_driver_hands_right_hand_offset.identity();
+	m_driver_hands_left_reach_shift.set(0.f, 0.f, 0.f);
+	m_driver_hands_right_reach_shift.set(0.f, 0.f, 0.f);
+	m_driver_hands_left_grip.set(0.f, 0.f, 0.f);
+	m_driver_hands_right_grip.set(0.f, 0.f, 0.f);
+	m_driver_hands_ik_ready = false;
+	m_driver_hands_ready = false;
+	m_driver_hands_ik_initialized = false;
+	m_driver_hands_bones_frame = 0;
+}
+
+void CCar::UpdateDriverHands()
+{
+	// The hands model follows the player's equipped outfit. Reload it when
+	// the player's HUD hands section changes while sitting in the car.
+	if (OwnerActor() != nullptr && OwnerActor()->IsMyCamera())
+	{
+		const shared_str CurrentSection = ResolveDriverHandsSection(OwnerActor());
+		if (CurrentSection != m_driver_hands_source_section)
+			LoadDriverHands();
+	}
+
+	if (m_driver_hands_visual == nullptr || m_driver_hands_kinematics == nullptr || !m_driver_hands_ik_ready)
+	{
+		m_driver_hands_ready = false;
+		return;
+	}
+
+	if (OwnerActor() == nullptr || !OwnerActor()->IsMyCamera() || !HUDView())
+	{
+		m_driver_hands_ready = false;
+		m_driver_hands_left_reach_shift.set(0.f, 0.f, 0.f);
+		m_driver_hands_right_reach_shift.set(0.f, 0.f, 0.f);
+		ResetDriverHandStates();
+		return;
+	}
+
+	// The hands model is anchored to the driver seat, not to the steering
+	// wheel. The wheel only supplies the two grip targets; its rotation must
+	// not rotate the shoulders.
+	Fmatrix Anchor;
+	Anchor.mul_43(XFORM(), m_sits_transforms);
+
+	// driver_hands_rotation is XYZ Euler angles in degrees, in the seat
+	// frame. rotateX/rotateY/rotateZ are setters, so calling them in a row
+	// would keep only the last one and drop the scale; setXYZ builds the
+	// whole rotation and is then combined with the scale explicitly.
+	Fmatrix Setup;
+	Setup.scale(m_driver_hands_scale, m_driver_hands_scale, m_driver_hands_scale);
+
+	Fmatrix HandRot;
+	HandRot.setXYZ(deg2rad(m_driver_hands_rotation.x),
+		deg2rad(m_driver_hands_rotation.y),
+		deg2rad(m_driver_hands_rotation.z));
+	Setup.mulB_43(HandRot);
+
+	Setup.c.set(m_driver_hands_position);
+	m_driver_hands_xform.mul_43(Anchor, Setup);
+
+	m_driver_hands_kinematics->CalculateBones_Invalidate();
+	m_driver_hands_kinematics->CalculateBones(TRUE);
+
+	UpdateDriverFingerStates(std::clamp(Device.fTimeDelta, 0.f, 0.1f));
+
+	// An IKinematicsAnimated without a motion does not apply the bind pose, so
+	// every bone stays at the model origin and the hands collapse into a blob.
+	// Restore the bind skeleton explicitly before solving the arms.
+	const u16 HandsBoneCount = m_driver_hands_kinematics->LL_BoneCount();
+	for (u16 Bone = 0; Bone < HandsBoneCount; ++Bone)
+	{
+		CBoneInstance& Instance = m_driver_hands_kinematics->LL_GetBoneInstance(Bone);
+		Instance.mTransform.set(m_driver_hands_bind_pose[Bone]);
+		Instance.mRenderTransform.mul_43(Instance.mTransform, m_driver_hands_kinematics->LL_GetData(Bone).m2b_transform);
+	}
+
+	// Bend the fingers after the whole bind pose is restored. The delta is
+	// built around the bone's current model-space origin and its local axis,
+	// and TransformBone applies it to the whole child chain so the segments
+	// follow the parent instead of rotating in place.
+	for (u16 Bone = 0; Bone < HandsBoneCount; ++Bone)
+	{
+		if (Bone >= m_driver_hands_finger_bone_group.size())
+			break;
+
+		const u8 FingerState = m_driver_hands_finger_bone_group[Bone];
+		if (FingerState == 0xFF)
+			continue;
+
+		const SDriverFingerBend& State = m_driver_hands_finger_state[FingerState / 4][FingerState % 4];
+		if (fabsf(State.Angle) <= EPS_L)
+			continue;
+
+		CBoneInstance& Instance = m_driver_hands_kinematics->LL_GetBoneInstance(Bone);
+		const Fmatrix& BoneXform = Instance.mTransform;
+
+		Fvector AxisModel;
+		BoneXform.transform_dir(AxisModel, State.Axis);
+		if (AxisModel.magnitude() <= EPS_L)
+			continue;
+		AxisModel.normalize();
+
+		Fmatrix Delta;
+		Delta.rotation(AxisModel, State.Angle);
+		Fvector RotatedOrigin;
+		Delta.transform_dir(RotatedOrigin, BoneXform.c);
+		Delta.c.sub(BoneXform.c, RotatedOrigin);
+
+		CCameraRig::TransformBone(m_driver_hands_kinematics, Bone, Delta);
+	}
+
+	if (m_driver_hands_shoulder_width > 0.f)
+	{
+		// Shoulder width is a model-space X distance between the upper-arm
+		// roots. Translate the clavicles (their children carry the arms) so
+		// the shoulders can be narrowed or widened independently of the hand
+		// grips and the arm scale.
+		const Fvector LeftRoot = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_left_ik[0]).c;
+		const Fvector RightRoot = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_right_ik[0]).c;
+		const float CenterX = (LeftRoot.x + RightRoot.x) * 0.5f;
+		const float HalfWidth = m_driver_hands_shoulder_width * 0.5f;
+		const u16 LeftBone = m_driver_hands_left_clavicle != BI_NONE ? m_driver_hands_left_clavicle : m_driver_hands_left_ik[0];
+		const u16 RightBone = m_driver_hands_right_clavicle != BI_NONE ? m_driver_hands_right_clavicle : m_driver_hands_right_ik[0];
+
+		Fmatrix Delta;
+		Delta.identity();
+		Delta.c.set((CenterX - HalfWidth) - LeftRoot.x, 0.f, 0.f);
+		CCameraRig::TransformBone(m_driver_hands_kinematics, LeftBone, Delta);
+
+		Delta.identity();
+		Delta.c.set((CenterX + HalfWidth) - RightRoot.x, 0.f, 0.f);
+		CCameraRig::TransformBone(m_driver_hands_kinematics, RightBone, Delta);
+	}
+
+	IKinematics* CarKinematics = PKinematics(Visual());
+	if (CarKinematics == nullptr || m_driver_hands_steer_bone >= CarKinematics->LL_BoneCount())
+	{
+		m_driver_hands_ready = false;
+		return;
+	}
+
+	if (m_driver_hands_bones_frame != Device.dwFrame)
+	{
+		CarKinematics->CalculateBones_Invalidate();
+		CarKinematics->CalculateBones(TRUE);
+		m_driver_hands_bones_frame = Device.dwFrame;
+	}
+
+	Fmatrix WheelWorld;
+	CarKinematics->LL_GetBoneWorldTransform(m_driver_hands_steer_bone, XFORM(), WheelWorld);
+
+	Fmatrix HandsInverse = m_driver_hands_xform;
+	HandsInverse.invert();
+
+	// The hand orientation offset must be calibrated against the wheel's
+	// neutral (bind) rotation, not its current steering angle. Otherwise
+	// entering a car with the wheel already turned leaves the palms rotated
+	// as if the wheel were straight.
+	xr_vector<Fmatrix> CarBind;
+	CarKinematics->LL_GetBindTransform(CarBind);
+	Fmatrix WheelNeutralWorld = WheelWorld;
+	if (m_driver_hands_steer_bone < CarBind.size())
+		WheelNeutralWorld.mul_43(XFORM(), CarBind[m_driver_hands_steer_bone]);
+
+	if (!m_driver_hands_ik_initialized)
+	{
+		// Preserve the authored bind orientation of each hand. The stored
+		// offset is wheel-local, so the palms follow the wheel while the arms
+		// are solved independently.
+		const auto Calibrate = [this, &WheelNeutralWorld](u16 HandBone, const Fmatrix& ConfigRot, Fmatrix& Offset)
+		{
+			Fmatrix HandRot = m_driver_hands_kinematics->LL_GetTransform(HandBone);
+			HandRot.c.set(0.f, 0.f, 0.f);
+			HandRot.mulB_43(ConfigRot);
+
+			Fmatrix HandsRot = m_driver_hands_xform;
+			HandsRot.c.set(0.f, 0.f, 0.f);
+
+			Fmatrix HandWorldRot;
+			HandWorldRot.mul_43(HandsRot, HandRot);
+
+			Fmatrix WheelRot = WheelNeutralWorld;
+			WheelRot.c.set(0.f, 0.f, 0.f);
+			WheelRot.invert();
+
+			Offset.mul_43(WheelRot, HandWorldRot);
+			Offset.c.set(0.f, 0.f, 0.f);
+		};
+
+		Fmatrix LeftConfigRot;
+		LeftConfigRot.setXYZ(deg2rad(m_driver_hands_left_hand_rotation.x),
+			deg2rad(m_driver_hands_left_hand_rotation.y),
+			deg2rad(m_driver_hands_left_hand_rotation.z));
+
+		Fmatrix RightConfigRot;
+		if (m_driver_hands_mirror_hand_rotation)
+		{
+			// Mirror the left hand's deviation from its bind pose in model
+			// space:
+			// C_right = B_right * M * B_left^-1 * C_left * B_left * M * B_right^-1.
+			// Fmatrix::mul_43(A, B) computes B * A, so the operands are
+			// passed in the reverse order.
+			Fmatrix HandRotLeft = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_left_ik[2]);
+			HandRotLeft.c.set(0.f, 0.f, 0.f);
+			Fmatrix HandRotRight = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_right_ik[2]);
+			HandRotRight.c.set(0.f, 0.f, 0.f);
+
+			Fmatrix Mirror;
+			Mirror.identity();
+			Mirror.i.x = -1.f;
+
+			// Mirror about the wheel's neutral left-right plane, not the
+			// hands model X axis: on an offset or tilted wheel those differ.
+			Fvector Normal;
+			HandsInverse.transform_dir(Normal, WheelNeutralWorld.i);
+			if (Normal.magnitude() > EPS_L)
+			{
+				Normal.normalize();
+				const float nx = Normal.x;
+				const float ny = Normal.y;
+				const float nz = Normal.z;
+				Mirror._11 = 1.f - 2.f * nx * nx;
+				Mirror._12 = -2.f * nx * ny;
+				Mirror._13 = -2.f * nx * nz;
+				Mirror._21 = -2.f * ny * nx;
+				Mirror._22 = 1.f - 2.f * ny * ny;
+				Mirror._23 = -2.f * ny * nz;
+				Mirror._31 = -2.f * nz * nx;
+				Mirror._32 = -2.f * nz * ny;
+				Mirror._33 = 1.f - 2.f * nz * nz;
+			}
+
+			Fmatrix LeftInv;
+			LeftInv.invert(HandRotLeft);
+			Fmatrix RightInv;
+			RightInv.invert(HandRotRight);
+
+			Fmatrix Temp;
+			Temp.mul_43(Mirror, HandRotRight);           // B_right * M
+			Fmatrix Temp2;
+			Temp2.mul_43(LeftInv, Temp);                 // Temp * B_left^-1
+			Fmatrix Temp3;
+			Temp3.mul_43(LeftConfigRot, Temp2);          // Temp2 * C_left
+			Temp.mul_43(HandRotLeft, Temp3);             // Temp3 * B_left
+			Fmatrix Temp4;
+			Temp4.mul_43(Mirror, Temp);                  // Temp * M
+			RightConfigRot.mul_43(RightInv, Temp4);      // Temp4 * B_right^-1
+		}
+		else
+		{
+			RightConfigRot.setXYZ(deg2rad(m_driver_hands_right_hand_rotation.x),
+				deg2rad(m_driver_hands_right_hand_rotation.y),
+				deg2rad(m_driver_hands_right_hand_rotation.z));
+		}
+
+		Calibrate(m_driver_hands_left_ik[2], LeftConfigRot, m_driver_hands_left_hand_offset);
+		Calibrate(m_driver_hands_right_ik[2], RightConfigRot, m_driver_hands_right_hand_offset);
+		m_driver_hands_ik_initialized = true;
+	}
+
+	const float WheelAngle = m_steer_angle * (m_driver_hands_steer_factored ? m_driver_hands_steer_factor * rs_car_steer_factor : 1.f);
+	const float AbsWheelAngle = fabsf(WheelAngle);
+	const float TriggerRad = deg2rad(m_driver_hands_regrip_trigger);
+	const float EndRad = deg2rad(m_driver_hands_regrip_end);
+
+	// Regrip is a reversible path parameter driven by the wheel angle, not a
+	// timed animation. If the wheel stops the hand stops; if the wheel returns
+	// the hand goes back along the same path. EndRad is both the point where
+	// the forward move finishes and where the return move starts.
+	float Progress = 0.f;
+	if (m_driver_hands_regrip_enabled && EndRad > TriggerRad)
+		Progress = std::clamp((AbsWheelAngle - TriggerRad) / (EndRad - TriggerRad), 0.f, 1.f);
+
+	const s8 WheelSign = (WheelAngle > 0.f) ? 1 : ((WheelAngle < 0.f) ? -1 : 0);
+
+	// The wheel's local Y axis is its up direction. Use it instead of the
+	// world Y so a tilted or offset wheel does not swap the lower hand.
+	const float LeftHomeY = sinf(m_driver_hands_left_state.HomeAngle) * m_driver_hands_left_state.Radius;
+	const float RightHomeY = sinf(m_driver_hands_right_state.HomeAngle) * m_driver_hands_right_state.Radius;
+	u8 LowerHand = (WheelAngle > 0.f) ? 1 : 2;
+	if (fabsf(LeftHomeY - RightHomeY) > EPS_L)
+		LowerHand = (LeftHomeY < RightHomeY) ? 1 : 2;
+
+	if (m_driver_hands_active_hand != 0 && WheelSign != 0 && m_driver_hands_active_sign != 0 &&
+		WheelSign != m_driver_hands_active_sign)
+	{
+		// The wheel crossed the centre. The previous hand must be back home
+		// before the other hand can start.
+		Progress = 0.f;
+		m_driver_hands_active_hand = 0;
+		m_driver_hands_active_sign = 0;
+	}
+
+	if (Progress <= 0.f || WheelSign == 0)
+	{
+		Progress = 0.f;
+		m_driver_hands_active_hand = 0;
+		m_driver_hands_active_sign = 0;
+	}
+	else if (m_driver_hands_active_hand == 0)
+	{
+		m_driver_hands_active_hand = LowerHand;
+		m_driver_hands_active_sign = WheelSign;
+	}
+
+	m_driver_hands_progress = Progress;
+
+	if (m_driver_hands_regrip_debug && m_driver_hands_active_hand != m_driver_hands_debug_hand)
+	{
+		m_driver_hands_debug_hand = m_driver_hands_active_hand;
+		Msg("* [%s] driver hands: active=%s W=%.1f p=%.2f", cNameSect_str(),
+			m_driver_hands_active_hand == 1 ? "left" : (m_driver_hands_active_hand == 2 ? "right" : "none"),
+			rad2deg(WheelAngle), Progress);
+	}
+
+	Fvector WheelNormal = WheelWorld.k;
+	WheelNormal.normalize();
+
+	// Lift must always go towards the driver, not into the dashboard. The
+	// hands origin is behind the wheel, so its side of the wheel plane gives
+	// the sign without relying on the wheel bone's local Z direction.
+	Fvector ToDriver;
+	ToDriver.sub(m_driver_hands_xform.c, WheelWorld.c);
+	Fvector LiftDir = WheelNormal;
+	if (ToDriver.dotproduct(WheelNormal) < 0.f)
+		LiftDir.mul(-1.f);
+
+	Fmatrix WheelRot = WheelWorld;
+	WheelRot.c.set(0.f, 0.f, 0.f);
+
+	// The moving hand goes over the top of the wheel, not under it. At
+	// progress 1 the wheel has turned by EndRad, so the hand's local angle
+	// must change by travel + end: it cancels the wheel turn and adds its
+	// own short arc over the top. Left hand moves clockwise (negative),
+	// right hand counter-clockwise.
+	const float PathLift = sinf(PI * Progress);
+	const float TravelRad = deg2rad(m_driver_hands_regrip_travel);
+	const float OverTravel = TravelRad + EndRad;
+
+	// Move the hand over the top of the wheel, which may not be at the
+	// canonical 9/3 o'clock positions on a custom/tilted wheel.
+	const auto ToTopDirection = [](float HomeAngle)
+	{
+		return (angle_normalize_signed(PI * 0.5f - HomeAngle) >= 0.f) ? 1.f : -1.f;
+	};
+
+	float LeftLocal = m_driver_hands_left_state.HomeAngle;
+	float RightLocal = m_driver_hands_right_state.HomeAngle;
+	if (m_driver_hands_active_hand == 1)
+		LeftLocal += ToTopDirection(m_driver_hands_left_state.HomeAngle) * OverTravel * Progress;
+	else if (m_driver_hands_active_hand == 2)
+		RightLocal += ToTopDirection(m_driver_hands_right_state.HomeAngle) * OverTravel * Progress;
+
+	// Small passive wrist twist for the hand that stays on the rim (the one
+	// that is not regripping). It starts only after the configured wheel
+	// angle and grows to the full value at full lock.
+	const float TwistStartRad = deg2rad(m_driver_hands_steer_twist_start);
+	float TwistScale = 0.f;
+	if (fabsf(m_driver_hands_steer_twist) > 0.f && AbsWheelAngle > TwistStartRad && PI > TwistStartRad)
+		TwistScale = std::clamp((AbsWheelAngle - TwistStartRad) / (PI - TwistStartRad), 0.f, 1.f);
+
+	const float SteerTwist = -WheelSign * deg2rad(m_driver_hands_steer_twist) * TwistScale;
+	const u8 UpperHand = (m_driver_hands_active_hand != 0) ? u8(3 - m_driver_hands_active_hand) : u8(3 - LowerHand);
+	const float LeftTwist = (UpperHand == 1) ? SteerTwist : 0.f;
+	const float RightTwist = (UpperHand == 2) ? SteerTwist : 0.f;
+
+	const auto BuildTarget = [&](const SDriverHandState& Hand, float LocalAngle, float TwistAngle, const Fmatrix& BaseOffset, float LiftScale, Fmatrix& Result)
+	{
+		const float Radius = Hand.Radius + m_driver_hands_regrip_over_radial * LiftScale;
+		const Fvector Local = Fvector().set(cosf(LocalAngle) * Radius, sinf(LocalAngle) * Radius, Hand.Z);
+		Fvector World;
+		WheelWorld.transform_tiny(World, Local);
+		if (LiftScale > 0.f)
+			World.mad(LiftDir, m_driver_hands_regrip_lift * LiftScale);
+
+		Fmatrix AngleRot;
+		AngleRot.rotateZ(LocalAngle - Hand.HomeAngle);
+
+		if (fabsf(TwistAngle) > EPS_L)
+		{
+			Fmatrix TwistRot;
+			TwistRot.rotation(m_driver_hands_steer_twist_axis, TwistAngle);
+			Fmatrix Rotated;
+			Rotated.mul_43(TwistRot, AngleRot); // standard AngleRot * TwistRot
+			AngleRot = Rotated;
+		}
+
+		Fmatrix Offset;
+		Offset.mul_43(AngleRot, BaseOffset);
+
+		Fmatrix Rotation;
+		Rotation.mul_43(WheelRot, Offset);
+
+		Result = Rotation;
+		Result.c = World;
+	};
+
+	Fmatrix LeftTarget;
+	Fmatrix RightTarget;
+	BuildTarget(m_driver_hands_left_state, LeftLocal, LeftTwist, m_driver_hands_left_hand_offset,
+		m_driver_hands_active_hand == 1 ? PathLift : 0.f, LeftTarget);
+	BuildTarget(m_driver_hands_right_state, RightLocal, RightTwist, m_driver_hands_right_hand_offset,
+		m_driver_hands_active_hand == 2 ? PathLift : 0.f, RightTarget);
+	const auto Solve = [this, &HandsInverse](const u16* Chain, u16 Clavicle, const Fmatrix& TargetWorld, const Fvector& Elbow, Fvector& CurrentShift)
+	{
+		Fmatrix Target;
+		Target.mul_43(HandsInverse, TargetWorld);
+
+		// Fixed-root IK cannot move the shoulder. If the wheel grip is farther
+		// than the arm can reach, move the clavicle toward the target instead
+		// of letting SolveLimb clamp the wrist short.
+		const Fvector Shoulder = m_driver_hands_kinematics->LL_GetTransform(Chain[0]).c;
+		const Fvector ElbowPos = m_driver_hands_kinematics->LL_GetTransform(Chain[1]).c;
+		const Fvector WristPos = m_driver_hands_kinematics->LL_GetTransform(Chain[2]).c;
+		const float UpperLength = Shoulder.distance_to(ElbowPos);
+		const float LowerLength = ElbowPos.distance_to(WristPos);
+
+		Fvector DesiredShift;
+		DesiredShift.set(0.f, 0.f, 0.f);
+		if (UpperLength > EPS_L && LowerLength > EPS_L)
+		{
+			constexpr float ReachMargin = 0.005f;
+			const float MaxReach = UpperLength + LowerLength - ReachMargin;
+			if (MaxReach > EPS_L)
+			{
+				Fvector ToTarget;
+				ToTarget.sub(Target.c, Shoulder);
+				const float Distance = ToTarget.magnitude();
+				if (Distance > EPS_L && Distance > MaxReach)
+				{
+					ToTarget.div(Distance);
+					DesiredShift.mul(ToTarget, Distance - MaxReach);
+				}
+			}
+		}
+
+		if (m_driver_hands_reach_shift_speed > 0.f)
+		{
+			const float Alpha = 1.f - expf(-m_driver_hands_reach_shift_speed * Device.fTimeDelta);
+			Fvector Smoothed;
+			Smoothed.lerp(CurrentShift, DesiredShift, Alpha);
+			CurrentShift = Smoothed;
+		}
+		else
+		{
+			CurrentShift = DesiredShift;
+		}
+
+		if (CurrentShift.magnitude() > EPS_L)
+		{
+			Fmatrix Shift;
+			Shift.identity();
+			Shift.c.set(CurrentShift);
+			const u16 ShiftBone = Clavicle != BI_NONE ? Clavicle : Chain[0];
+			CCameraRig::TransformBone(m_driver_hands_kinematics, ShiftBone, Shift);
+		}
+
+		CCameraRig::SolveLimb(m_driver_hands_kinematics, Chain, Target, 1.f, Elbow);
+	};
+
+	Solve(m_driver_hands_left_ik, m_driver_hands_left_clavicle, LeftTarget, m_driver_hands_left_elbow, m_driver_hands_left_reach_shift);
+	Solve(m_driver_hands_right_ik, m_driver_hands_right_clavicle, RightTarget, m_driver_hands_right_elbow, m_driver_hands_right_reach_shift);
+
+	m_driver_hands_ready = true;
+}
+
+void CCar::RenderDriverHands()
+{
+	if (!m_driver_hands_ready || m_driver_hands_visual == nullptr)
+		return;
+
+	if (OwnerActor() == nullptr || !OwnerActor()->IsMyCamera() || !HUDView())
+		return;
+
+	if (::Render->phase != IRender_interface::PHASE_NORMAL)
+		return;
+
+	::Render->set_Transform(m_driver_hands_xform);
+	::Render->add_Visual(m_driver_hands_visual, true);
+}
+
 void CCar::UpdateEx			(float fov) 
 {
 	#ifdef DEBUG
@@ -2867,6 +3731,7 @@ void CCar::UpdateEx			(float fov)
 
 	VisualUpdate(fov);
 	UpdateSteerAnimation();
+	UpdateDriverHands();
 	for (CCarTurret* CWPB : m_car_weapons)
 	{
 		CWPB->UpdateCL();
@@ -3467,6 +4332,8 @@ void CCar::renderable_Render()
 	{
 		CWPB->Render_internal();
 	}
+
+	RenderDriverHands();
 
 	//for (; i_w != e_w; ++i_w)
 	//
@@ -4259,6 +5126,7 @@ void CCar::detach_Actor()
 	RecalculateExitPosition();
 
 	Owner()->setVisible(1);
+	DestroyDriverHands();
 	psSoundCarFactor = 1.f;
 	CarCabinSound::SetCabinMuffling(0.0f);
 	if (OwnerActor())
@@ -4308,6 +5176,7 @@ bool CCar::attach_Actor(CGameObject* actor)
 	ReleaseBreaks();
 	StopBreaking();
 	OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
+	LoadDriverHands();
 	return true;
 }
 
