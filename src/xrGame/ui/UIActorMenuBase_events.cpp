@@ -271,6 +271,12 @@ void CUIActorMenuBase::OnInventoryAction(PIItem pItem, u16 action_type)
 		case GE_TRADE_SELL :
 		case GE_OWNERSHIP_REJECT :
 			{
+				if (m_lastFocusRecivedItem == pItem)
+				{
+					m_lastFocusRecivedItem = nullptr;
+					m_cell_lastFocusRecivedItem = nullptr;
+				}
+
 				if(CUIDragDropListEx::m_drag_item)
 				{
 					CUIInventoryCellItem* ici = smart_cast<CUIInventoryCellItem*>(CUIDragDropListEx::m_drag_item->ParentItem());

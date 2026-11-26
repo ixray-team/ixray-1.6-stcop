@@ -103,73 +103,83 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 		}
 	}
 
-	switch(t_new)
+	const bool CheckAddonBeforeMove = t_old == iDeadBodyBag || t_new == iDeadBodyBag;
+
+	// Attaching consumes the addon under its current owner.
+	const bool AddonDropHandled = CheckAddonBeforeMove && OnItemDropped(CurrentIItem(), new_owner, old_owner);
+	if (!AddonDropHandled)
 	{
-	case iTrashSlot:
+		switch(t_new)
 		{
-			if(CurrentIItem()->IsQuestItem())
-				return true;
-
-			if(t_old==iQuickSlot)	
+		case iTrashSlot:
 			{
-				old_owner->RemoveItem(itm, false);
-				return true;
-			}
+				if(CurrentIItem()->IsQuestItem())
+					return true;
 
-			SendEvent_Item_Drop(CurrentIItem(), GetInventoryOwner()->object_id());
-			SetCurrentItem(nullptr);
-		}break;
-	case iActorSlot:
-		{
-			u16 slot_to_place;
-			if( CanSetItemToList(CurrentIItem(), new_owner, slot_to_place) )
-			{
-				ToSlot	(itm, true, slot_to_place);
-			}
-			else if (m_pQuickSlot)
-			{
-				Frect quickRect;
-				m_pQuickSlot->GetAbsoluteRect(quickRect);
-				Fvector2 cursorPos = GetUICursor().GetCursorPosition();
-				if (quickRect.in(cursorPos))
-					ToQuickSlot(itm);
-			}
-		}break;
-	case iActorBag:
-		{
-			ToBag	(itm, true);
-		}break;
-	case iActorBelt:
-		{
-			ToBelt	(itm, true);
-		}break;
-	case iActorTrade:
-		{
-			ToActorTrade(itm, true);
-		}break;
-	case iPartnerTrade:
-		{
-			if(t_old!=iPartnerTradeBag)	
-				return false;
-			ToPartnerTrade(itm, true);
-		}break;
-	case iPartnerTradeBag:
-		{
-			if(t_old!=iPartnerTrade)	
-				return false;
-			ToPartnerTradeBag(itm, true);
-		}break;
-	case iDeadBodyBag:
-		{
-			ToDeadBodyBag(itm, true);
-		}break;
-	case iQuickSlot:
-		{
-			ToQuickSlot(itm);
-		}break;
-	};
+				if(t_old==iQuickSlot)
+				{
+					old_owner->RemoveItem(itm, false);
+					return true;
+				}
 
-	OnItemDropped(CurrentIItem(), new_owner, old_owner);
+				SendEvent_Item_Drop(CurrentIItem(), GetInventoryOwner()->object_id());
+				SetCurrentItem(nullptr);
+			}break;
+		case iActorSlot:
+			{
+				u16 slot_to_place;
+				if( CanSetItemToList(CurrentIItem(), new_owner, slot_to_place) )
+				{
+					ToSlot	(itm, true, slot_to_place);
+				}
+				else if (m_pQuickSlot)
+				{
+					Frect quickRect;
+					m_pQuickSlot->GetAbsoluteRect(quickRect);
+					Fvector2 cursorPos = GetUICursor().GetCursorPosition();
+					if (quickRect.in(cursorPos))
+						ToQuickSlot(itm);
+				}
+			}break;
+		case iActorBag:
+			{
+				ToBag	(itm, true);
+			}break;
+		case iActorBelt:
+			{
+				ToBelt	(itm, true);
+			}break;
+		case iActorTrade:
+			{
+				ToActorTrade(itm, true);
+			}break;
+		case iPartnerTrade:
+			{
+				if(t_old!=iPartnerTradeBag)
+					return false;
+				ToPartnerTrade(itm, true);
+			}break;
+		case iPartnerTradeBag:
+			{
+				if(t_old!=iPartnerTrade)
+					return false;
+				ToPartnerTradeBag(itm, true);
+			}break;
+		case iDeadBodyBag:
+			{
+				ToDeadBodyBag(itm, true);
+			}break;
+		case iQuickSlot:
+			{
+				ToQuickSlot(itm);
+			}break;
+		};
+	}
+
+	if (!CheckAddonBeforeMove)
+	{
+		OnItemDropped(CurrentIItem(), new_owner, old_owner);
+	}
 
 	if (!is_on_item_dropped_callback_processed)
 	{
@@ -224,7 +234,7 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 		{
 			luabind::functor<bool> funct1;
 			R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
-			if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+			if (!funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) && !AddonDropHandled)
 			{
 				return false;
 			}
@@ -239,26 +249,34 @@ bool CUIActorMenuBase::OnItemDrop(CUICellItem* itm)
 
 bool CUIActorMenuBase::OnItemDropped(PIItem itm, CUIDragDropListEx* new_owner, CUIDragDropListEx* old_owner)
 {
-	CUICellItem*	_citem	= (new_owner->ItemsCount()==1) ? new_owner->GetItemIdx(0) : new_owner->GetItemAtPos(UI().GetUICursor().GetCursorPosition());
-	PIItem _iitem	= _citem ? (PIItem)_citem->m_pData : nullptr;
-
-	if (!_iitem)
-	{
-		return false;
-	}
-	if (!_iitem->CanAttach(itm))
-	{
-		return false;
-	}
-
-	if (old_owner != GetActorList() && old_owner != GetTradeActorBagList())
+	const bool FromBox = old_owner == GetPartnerList() && GetInvBox();
+	const EDDListType TargetListType = GetListType(new_owner);
+	const bool CanUseSourceList = FromBox
+		? TargetListType == iActorBag || TargetListType == iActorSlot
+		: old_owner == GetActorList() || old_owner == GetTradeActorBagList();
+	if (!itm || !CanUseSourceList)
 	{
 		return false;
 	}
 
-	AttachAddon						(_iitem);
+	const bool AllowWholeListTarget = FromBox ? TargetListType == iActorSlot : TargetListType != iDeadBodyBag;
+	CUICellItem* TargetCell = (AllowWholeListTarget && new_owner->ItemsCount() == 1)
+		? new_owner->GetItemIdx(0)
+		: new_owner->GetItemAtPos(UI().GetUICursor().GetCursorPosition());
 
-	return							true;
+	PIItem TargetItem = TargetCell ? static_cast<PIItem>(TargetCell->m_pData) : nullptr;
+	if (!TargetItem || TargetItem == itm || !TargetItem->CanAttach(itm))
+	{
+		return false;
+	}
+
+	if (FromBox && !IsAllowTakeFromInvBox(CurrentItem()))
+	{
+		return true; // Consume the drop so it cannot fall back to a transfer.
+	}
+
+	AttachAddon(TargetItem);
+	return true;
 }
 
 bool CUIActorMenuBase::OnItemFocusedUpdate(CUICellItem* itm)
