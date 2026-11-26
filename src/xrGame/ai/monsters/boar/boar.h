@@ -12,6 +12,7 @@ class CAI_Boar final : public CBaseMonster,
 	typedef		CControlledEntity<CAI_Boar>	CControlled;
 
 public:
+	const char*		RamPushType		() const override { return "boar"; }
 					CAI_Boar			();
 	virtual ~CAI_Boar			() override;
 

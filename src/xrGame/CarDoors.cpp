@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #ifdef DEBUG
-#include "ode_include.h"
-#include "../xrEngine/StatGraph.h"
-#include "PHDebug.h"
+#	include "ode_include.h"
+#	include "../xrEngine/StatGraph.h"
+#	include "PHDebug.h"
 #endif
 #include "alife_space.h"
 #include "Hit.h"
@@ -14,22 +14,21 @@
 #include "MathUtils.h"
 #include "game_object_space.h"
 #include "Actor.h"
+#include "Inventory.h"
+#include "xrServer_Objects_ALife_Items.h"
+#include "ai_space.h"
+#include "alife_simulator.h"
+#include "UIGameSP.h"
+#include "../xrEngine/xr_input.h"
+#include "../xrPhysics/ODE/Physics.h"
+#include "../xrPhysics/ODE/PHElement.h"
+#include "../xrPhysics/ODE/PHShell.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Below this speed the car is treated as parked: an open door is held by the
-// hinge motor instead of being driven by the moving-car door logic.
 constexpr float CarDoorHoldSpeed = 0.5f;
-
-// Return spring for spring-loaded doors. The physical hinge limit is the
-// target; the movement is velocity-controlled and damped so the leaf settles
-// against the stop instead of being driven into it at constant speed.
 constexpr float CarDoorSpringDamping = 0.5f;
 constexpr float CarDoorSpringSettleAngle = 0.01f;
 constexpr float CarDoorSpringSettleRate = 0.2f;
-
-// A top hatch is a horizontal door: its thinnest OBB axis is nearly vertical.
-// Side doors use the same code with a horizontal thin axis and must keep the
-// existing sideways exit.
 constexpr float CarDoorTopExitNormalY = 0.7f;
 
 bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
@@ -37,7 +36,6 @@ bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 	if(hit_type==ALife::eHitTypeStrike && P > 20.f)
 	{
 		xr_map<u16,SDoor>::iterator	   i=m_doors.begin(),e=m_doors.end();
-		//for(;e!=i;++i)i->second.Open();
 	}
 	xr_map   <u16,SDoor>::iterator i=m_doors.find(element);
 	if(i!=m_doors.end())
@@ -1409,4 +1407,742 @@ void CCar::SDoor::Repair()
 		ClosingToClosed(false);
 		Deactivate();
 	}
+}
+
+bool CCar::HasOpenNormalDoor() const
+{
+	for (const auto& DoorEntry : m_doors)
+	{
+		const SDoor& Door = DoorEntry.second;
+		if (Door.non_enterable || Door.non_exitable)
+			continue;
+
+		if (Door.state != SDoor::closed)
+			return true;
+	}
+
+	return false;
+}
+
+u16 CCar::GetDoorBone(u16 id)
+{
+	IKinematics* K = PKinematics(Visual());
+	if (!K)
+		return BI_NONE;
+
+	const u16 bone_count = K->LL_BoneCount();
+	while (id != BI_NONE && id < bone_count)
+	{
+		if (m_doors.find(id) != m_doors.end())
+			return id;
+
+		id = K->LL_GetData(id).GetParentID();
+	}
+
+	return BI_NONE;
+}
+
+CCar::SDoor* CCar::Get_Door(u16 id, bool all)
+{
+	const u16 door_id = GetDoorBone(id);
+	if (door_id == BI_NONE)
+		return nullptr;
+
+	auto i = m_doors.find(door_id);
+	if (i == m_doors.end())
+		return nullptr;
+
+	if (all || i->second.joint)
+		return &i->second;
+
+	return nullptr;
+}
+
+bool CCar::is_Door(u16 id,xr_map<u16,SDoor>::iterator& i)
+{
+	const u16 door_id = GetDoorBone(id);
+	if (door_id == BI_NONE)
+	{
+		i = m_doors.end();
+		return false;
+	}
+
+	i = m_doors.find(door_id);
+	if (i == m_doors.end())
+	{
+		return false;
+	}
+
+	return i->second.joint != nullptr;
+}
+
+bool CCar::is_Door(u16 id)
+{
+	return GetDoorBone(id) != BI_NONE;
+}
+
+bool CCar::IsDoorInSight(const Fvector& look_pos, const Fvector& look_dir)
+{
+	float distance = 0.f;
+	const u16 bone = GetNearestBone(look_pos, look_dir, distance);
+	(void)distance;
+
+	SDoor* door = Get_Door(bone);
+	return door != nullptr && door->bone_id != m_bone_trunk && door->IsDistOfSight(look_pos);
+}
+
+void CCar::SwitchEngineDoors()
+{
+	VERIFY(!physics_world()->Processing());
+
+	for (auto &it : engine_door)
+		it.Switch(!b_engine_on);
+}
+
+bool CCar::ScriptUseTrunk(u16 bone_id)
+{
+	if (!pSettings->section_exist("lost_alpha_cfg") || !pSettings->line_exist("lost_alpha_cfg", "on_use_trunk"))
+		return false;
+
+	luabind::functor<void>	lua_function;
+	string256		fn;
+	xr_strcpy(fn, pSettings->r_string("lost_alpha_cfg", "on_use_trunk"));
+	if (!ai().script_engine().functor<void>(fn, lua_function))
+	{
+		Msg("! CCar: cannot find Lua function %s", fn);
+		return false;
+	}
+	lua_function(ID());
+	return true;
+}
+
+u16 CCar::GetNearestBone(Fvector look_pos, Fvector look_dir, float &range, bool trunk_test)
+{
+	range = 0.f;
+	xr_map<float, u16> m_bones_ids_v;
+
+	// The car collision model is one-sided, so a ray that starts inside the cabin does
+	// not report the car itself. Bone picking is double-sided, so scan the bones directly
+	// instead of requiring an initial collision hit (needed for first-person door use).
+	PKinematics(Visual())->CalculateBones(TRUE);
+	for (auto I = PKinematics(Visual())->LL_Bones()->begin(); I != PKinematics(Visual())->LL_Bones()->end(); ++I)
+	{
+		if(!PKinematics(Visual())->LL_GetBoneVisible(I->second))
+			continue;
+
+		Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform((*I).second);
+		bone_xform.mulA_43(XFORM());
+
+		float w	= bone_xform.c.x*Device.mFullTransform._14 + bone_xform.c.y*Device.mFullTransform._24 + bone_xform.c.z*Device.mFullTransform._34 + Device.mFullTransform._44;
+		if (w<0) continue;
+
+		IKinematics::pick_result res;
+		if(PKinematics(Visual())->PickBone(XFORM(), res, Radius()*2, look_pos, look_dir, I->second))
+		{
+			Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(res.dist));
+
+			Fvector diff_cam;
+			diff_cam.sub(collide_pos, look_pos);
+			if (!safe_normalize(diff_cam)) continue;
+			if(diff_cam.similar(look_dir, EPS_L))
+				m_bones_ids_v.insert(std::make_pair(look_pos.distance_to(collide_pos), I->second));
+		}
+	}
+	if(trunk_test)
+	{
+		RQR.r_clear();
+		collide::ray_defs	Q(look_pos, look_dir, Radius()*2, CDB::OPT_CULL,collide::rqtObject);  // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
+		if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+		{
+			for (auto I = RQR.results.begin(); I != RQR.results.end(); ++I)
+			{
+				Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(I->range));
+
+				Fvector diff_cam;
+				diff_cam.sub(collide_pos, look_pos);
+				if (!safe_normalize(diff_cam)) continue;
+				if(diff_cam.similar(look_dir, EPS_L) && m_bone_trunk == u16(I->element))
+					m_bones_ids_v.insert(std::make_pair(look_pos.distance_to(collide_pos), u16(I->element)));
+			}
+		}
+	}
+
+	auto nearest_IT = std::min_element(m_bones_ids_v.begin(), m_bones_ids_v.end());
+	if(nearest_IT == m_bones_ids_v.end())
+		return BI_NONE;
+	range = nearest_IT->first;
+	return nearest_IT->second;
+}
+
+static bool drag_activated = false;
+
+void drag_callback(void* ptr)
+{
+	const u16 CarId = static_cast<u16>(reinterpret_cast<size_t>(ptr));
+	if (Device.Paused()) return;
+	if (!g_pGameLevel) return;
+	if (!g_pGameLevel->CurrentEntity()) return;
+	if (!g_actor) return;
+
+	Sleep(150);
+
+	if (!g_pGameLevel || !g_pGameLevel->CurrentEntity() || !g_actor) return;
+	CCar* pCar = smart_cast<CCar*>(Level().Objects.net_Find(CarId));
+	if (!pCar || pCar->getDestroy()) return;
+
+	drag_activated = true;
+	pCar->b_event_drag_activated = true;
+	drag_activated = false;
+}
+
+CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool special)
+{
+	if(Owner() && active_camera->tag != EctFirstCam)
+		return NULL;
+
+	if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
+	{
+		if(!special)
+		{
+			collide::rq_result RQ;
+			bool HasPick = Level().ObjectSpace.RayPick(look_pos, look_dir, 1.5f, collide::rqtObject, RQ, Level().CurrentControlEntity());
+			if(HasPick && !RQ.IsStatic() && RQ.GetDynamic() == this)
+			{
+				if (!Owner() && m_pPhysicsShell && g_actor)
+				{
+					if(!drag_activated)
+						thread_spawn(drag_callback,"drag_callback",0,reinterpret_cast<void*>(static_cast<size_t>(ID())));
+				}
+			}
+		}
+		return NULL;
+	}
+
+	float dist;
+
+	u16 bonebypoly_id = GetNearestBone(look_pos, look_dir, dist, true);
+	const u16 door_bone_id = GetDoorBone(bonebypoly_id);
+	SDoor* door = Get_Door(bonebypoly_id);
+
+	if(door)
+	{
+		if(door->recursive_door)
+		{
+			if(special)
+			{
+				if(!Owner())
+					return door;
+				else
+					return NULL;
+			}
+
+			// Recursive doors are toggled by using any of them: the first use
+			// opens the whole chain, the next one closes it in reverse order.
+			const bool CloseDoors = b_all_recurs_opened || AreRecursiveDoorsOpened();
+			b_start_open_recursive = !CloseDoors;
+			b_start_close_recursive = CloseDoors;
+			return NULL;
+		}
+		if (m_bone_trunk != BI_NONE && m_bone_trunk == door_bone_id)
+		{
+			if(special)
+			{
+				if(!Owner())
+					return door;
+				else
+					return NULL;
+			}
+			ScriptUseTrunk(door_bone_id);
+			return NULL;
+		}
+	}
+	else
+	{
+		if((m_doors_recurs.empty() || (!b_start_close_recursive && b_all_recurs_opened)) && m_bone_trunk != BI_NONE && m_bone_trunk == door_bone_id)
+		{
+			if(special)
+			{
+				if(!Owner())
+					return door;
+				else
+					return NULL;
+			}
+			ScriptUseTrunk(door_bone_id);
+			return NULL;
+		}
+	}
+
+	if(door && special && Owner() && door->non_enterable)
+		return NULL;
+
+	return door;
+}
+
+bool CCar::TryTrunk()
+{
+	if (m_bone_trunk == BI_NONE)
+		return false;
+
+	// The trunk uses the same per-bone parameters as doors from the model ltx,
+	// including use_distance from its [bone] section.
+	float UseDistance = 2.f;
+	auto DoorIt = m_doors.find(m_bone_trunk);
+	if (DoorIt != m_doors.end())
+	{
+		SDoor& Trunk = DoorIt->second;
+		UseDistance = Trunk.dist_to_door_avlbl;
+
+		// A recursive trunk must not bypass the configured door sequence.
+		// While it is not open yet, route the use through GetNearestDoor(),
+		// which starts or continues the chain from the first door.
+		if (Trunk.recursive_door && Trunk.state != SDoor::opened && Trunk.state != SDoor::broken)
+			return false;
+	}
+
+	// The trunk is usable only when the aim ray actually hits its bone.
+	// GetNearestBone scans the car bones and also adds trunk-specific ray hits,
+	// so it works from any side but does not trigger while aiming at a door.
+	float distance = 0.f;
+	const u16 bone = GetNearestBone(Device.vCameraPosition, Device.vCameraDirection, distance, true);
+	if (GetDoorBone(bone) != m_bone_trunk || distance > UseDistance)
+	{
+		return false;
+	}
+
+	return IsGameTypeSingle();
+}
+
+bool CCar::TryUsableBones()
+{
+	if (UsableBones.empty())
+		return false;
+
+	UsableBonesActive = BI_NONE;
+
+	RQR.r_clear();
+	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
+
+	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+	{
+		collide::rq_results& R = RQR;
+		const int Count = (int)R.results.size();
+
+		for (int k = 0; k < Count; ++k)
+		{
+			collide::rq_result* I = R.results.data() + k;
+			if (IsGameTypeSingle() && UsableBones.contains(I->element))
+			{
+				UsableBonesActive = I->element;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool CCar::DoorSwitch(u16 id)
+{
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Switch();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CCar::DoorClose(u16 id)
+{
+
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Close();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CCar::DoorOpen(u16 id)
+{
+
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Open();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CCar::AreRecursiveDoorsOpened() const
+{
+	if (m_doors_recurs.empty())
+		return false;
+
+	for (const auto& DoorEntry : m_doors_recurs)
+	{
+		const SDoor* Door = DoorEntry.second;
+		if (!Door || Door->state != SDoor::opened)
+			return false;
+	}
+
+	return true;
+}
+
+bool CCar::AreRecursiveDoorsClosed() const
+{
+	if (m_doors_recurs.empty())
+		return false;
+
+	for (const auto& DoorEntry : m_doors_recurs)
+	{
+		const SDoor* Door = DoorEntry.second;
+		if (!Door || Door->state != SDoor::closed)
+			return false;
+	}
+
+	return true;
+}
+
+void CCar::UpdateRecursiveDoors()
+{
+	if (b_start_open_recursive)
+	{
+		// Doors are processed in their configured order. Skipping already
+		// opened doors guarantees that a later door is never opened before
+		// all previous doors in the chain.
+		for (int i = 0; i < (int)m_doors_recurs.size(); ++i)
+		{
+			auto curr_dit = m_doors_recurs.find(i);
+			if (curr_dit == m_doors_recurs.end())
+				continue;
+
+			SDoor* Door = curr_dit->second;
+			if (!Door || Door->state == SDoor::opened)
+				continue;
+
+			if (Door->state == SDoor::opening)
+				break;
+
+			if (Door->state == SDoor::broken)
+			{
+				b_start_open_recursive = false;
+				break;
+			}
+
+			if (!Door->IsDistOfSight(Device.vCameraPosition) || !Door->IsLineOfSight())
+			{
+				b_start_open_recursive = false;
+				break;
+			}
+
+			Door->Open();
+			break;
+		}
+
+		if (AreRecursiveDoorsOpened())
+		{
+			ScriptUseTrunk(m_bone_trunk);
+			b_start_open_recursive = false;
+			b_all_recurs_opened = true;
+		}
+	}
+
+	if (b_start_close_recursive)
+	{
+		// Reverse order: the last door closes first, then the previous one,
+		// down to the first door of the chain.
+		for (int i = (int)m_doors_recurs.size() - 1; i >= 0; --i)
+		{
+			auto curr_dit = m_doors_recurs.find(i);
+			if (curr_dit == m_doors_recurs.end())
+				continue;
+
+			SDoor* Door = curr_dit->second;
+			if (!Door || Door->state == SDoor::closed)
+				continue;
+
+			if (Door->state == SDoor::closing)
+				break;
+
+			if (Door->state == SDoor::broken)
+			{
+				b_start_close_recursive = false;
+				break;
+			}
+
+			if (!Door->IsDistOfSight(Device.vCameraPosition) || !Door->IsLineOfSight())
+			{
+				b_start_close_recursive = false;
+				break;
+			}
+
+			Door->Close();
+			break;
+		}
+
+		if (AreRecursiveDoorsClosed())
+		{
+			b_start_close_recursive = false;
+			b_all_recurs_opened = false;
+		}
+	}
+}
+
+void CCar::UpdateDoorState()
+{
+	//////////////////////////////////////////////////////////
+	for (int k = 0; k < (int)m_doors_update.size(); ++k)
+	{
+		SDoor* D = m_doors_update[k];
+		if (!D->update)
+		{
+			m_doors_update.erase(m_doors_update.begin() + k);
+			--k;
+		}
+		else
+		{
+			D->Update();
+		}
+	}
+	UpdateRecursiveDoors();
+}
+
+void CCar::DropTrunkContents()
+{
+	if (inventory().m_ruck.empty())
+	{
+		return;
+	}
+
+	Fvector drop_base = Position();
+	if (IKinematics* kinematics = PKinematics(Visual()))
+	{
+		if (m_bone_trunk != BI_NONE && m_bone_trunk < kinematics->LL_BoneCount())
+		{
+			drop_base = TrunkBoneWorldPos();
+		}
+	}
+
+	const TIItemContainer trunk_items = inventory().m_ruck;
+	for (PIItem item : trunk_items)
+	{
+		if (item == nullptr || item->object().getDestroy())
+			continue;
+
+		Fvector drop_position = drop_base;
+		drop_position.x += Random.randF(-0.5f, 0.5f);
+		drop_position.y += 1.f;
+		drop_position.z += Random.randF(-0.5f, 0.5f);
+
+		// Detach the item on the server first. A direct CInventory::DropItem()
+		// only updates the local object and leaves CSE_Abstract::ID_Parent
+		// pointing to the car, so the server later rejects the item as a car child.
+		if (OnServer() && Level().Server != nullptr)
+		{
+			NET_Packet dummy;
+			Level().Server->Process_event_reject(dummy, BroadcastCID, Device.dwTimeGlobal, ID(), item->object_id(), false);
+		}
+
+		item->object().XFORM().c.set(drop_position);
+		if (!inventory().DropItem(&item->object(), false, false))
+		{
+			continue;
+		}
+
+		// CPhysicItem::activate_physic_shell() uses the old parent's XFORM.
+		// Move the freshly created shell to the intended drop position.
+		Fmatrix drop_xform = item->object().XFORM();
+		drop_xform.c.set(drop_position);
+		item->object().XFORM().set(drop_xform);
+		if (CPhysicsShell* shell = item->object().PPhysicsShell())
+		{
+			shell->SetGlTransformDynamic(drop_xform);
+			shell->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
+			shell->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
+		}
+		item->object().spatial_move();
+	}
+}
+
+void CCar::ShowTrunk()
+{
+	if (CurrentGameUI())
+	{
+		CurrentGameUI()->StartCarBody(Actor(), this);
+	}
+}
+
+void CCar::OpenTrunkBone()
+{
+	if(m_doors_recurs.empty())
+		DoorOpen(m_bone_trunk);
+}
+
+void CCar::CloseTrunkBone()
+{
+	if(m_doors_recurs.empty())
+		DoorClose(m_bone_trunk);
+	else
+	{
+		if(m_pPhysicsShell)
+			m_pPhysicsShell->Enable();
+
+		b_start_close_recursive = true;
+		b_start_open_recursive = false;
+	}
+}
+
+Fvector CCar::TrunkBoneWorldPos()
+{
+	if (IKinematics* pKinematics = PKinematics(Visual()))
+	{
+		if(m_bone_trunk != BI_NONE && m_bone_trunk < pKinematics->LL_BoneCount())
+		{
+			Fmatrix BoneMatrix;
+			Fmatrix BoneMatrixRes;
+			Fobb BoneOBB = pKinematics->LL_GetBox(m_bone_trunk);
+			BoneOBB.xform_get(BoneMatrix);
+			BoneMatrixRes.mul(pKinematics->LL_GetTransform(m_bone_trunk), BoneMatrix);
+			BoneMatrix.mul(XFORM(), BoneMatrixRes);
+			return BoneMatrix.c;
+		}
+	}
+	return Fvector(Device.vCameraPosition);
+}
+
+Fmatrix CCar::SEngineDoor::BuildLocalTarget(bool engine_on, int depth)
+{
+	constexpr int MaxDepth = 8;
+
+	Fmatrix ParentTarget = Fidentity;
+	Fmatrix ParentClosed = Fidentity;
+
+	// One door leaf can be hinged to the previous leaf instead of the chassis.
+	// Build the parent pose first, then express this leaf's bind transform in
+	// the parent's space.
+	CPhysicsElement* First = joint != nullptr ? joint->PFirst_element() : nullptr;
+	if (First != nullptr && pcar != nullptr && depth < MaxDepth)
+	{
+		for (SEngineDoor& Other : pcar->engine_door)
+		{
+			if (&Other == this || Other.joint == nullptr)
+				continue;
+			if (Other.joint->PSecond_element() != First)
+				continue;
+
+			ParentTarget = Other.BuildLocalTarget(engine_on, depth + 1);
+			ParentClosed = Other.closed_local;
+			break;
+		}
+	}
+
+	Fmatrix InvParent;
+	InvParent.invert(ParentClosed);
+
+	Fmatrix Relative;
+	Relative.mul_43(InvParent, closed_local);
+
+	Fvector Axis;
+	InvParent.transform_dir(Axis, axis_local);
+	Axis.normalize();
+	Fvector Anchor;
+	InvParent.transform_tiny(Anchor, anchor_local);
+
+	// The engine doors are open with the engine off and closed with it on.
+	const float TargetODE = engine_on ? closed_angle : opened_angle;
+	const float VisualAngle = -(TargetODE - bind_angle);
+
+	if (_abs(VisualAngle) > EPS)
+	{
+		Fmatrix Rot;
+		Rot.rotation(Axis, VisualAngle);
+
+		Fvector AxisI;
+		Fvector AxisJ;
+		Fvector AxisK;
+		Rot.transform_dir(AxisI, Relative.i);
+		Rot.transform_dir(AxisJ, Relative.j);
+		Rot.transform_dir(AxisK, Relative.k);
+		Relative.i = AxisI;
+		Relative.j = AxisJ;
+		Relative.k = AxisK;
+
+		Fvector Offset;
+		Offset.sub(Relative.c, Anchor);
+		Fvector RotatedOffset;
+		Rot.transform_tiny(RotatedOffset, Offset);
+		Relative.c.add(Anchor, RotatedOffset);
+	}
+
+	Fmatrix Target;
+	Target.mul_43(ParentTarget, Relative);
+	return Target;
+}
+
+void CCar::SEngineDoor::ApplyEngineDoorState(bool engine_on)
+{
+	if (pcar == nullptr || joint == nullptr || joint->PSecond_element() == nullptr)
+		return;
+
+	CPhysicsElement* Element = joint->PSecond_element();
+	if (!Element->isActive())
+		return;
+
+	const Fmatrix Target = BuildLocalTarget(engine_on, 0);
+	Fmatrix World;
+	World.mul_43(pcar->XFORM(), Target);
+
+	Element->SetTransform(World, mh_clear);
+	Element->ResetInterpolation();
+	Element->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
+	Element->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
+
+	Switch(!engine_on, true);
+}
+
+void CCar::SEngineDoor::Hold()
+{
+	if (joint == nullptr)
+		return;
+
+	joint->SetForce(force * 5.f, axis_num);
+	joint->SetVelocity(0.f, axis_num);
+}
+
+void CCar::SEngineDoor::Switch(bool doors_up, bool ForceMotion)
+{
+	if (joint == nullptr)
+		return;
+
+	const float Target = doors_up ? opened_angle : closed_angle;
+	const float Delta = Target - dJointGetHingeAngle(joint->GetDJoint());
+	const float Speed = _abs(velocity);
+
+	joint->SetForce(force, axis_num);
+	if (_abs(Delta) >= 0.001f)
+	{
+		joint->SetVelocity(Delta > 0.f ? Speed : -Speed, axis_num);
+		return;
+	}
+
+	if (!ForceMotion)
+	{
+		joint->SetVelocity(0.f, axis_num);
+		return;
+	}
+
+	const float OpenDirection = opened_angle >= closed_angle ? 1.f : -1.f;
+	joint->SetVelocity(doors_up ? OpenDirection * Speed : -OpenDirection * Speed, axis_num);
 }

@@ -6,6 +6,7 @@ XREFLECT(LuaExport, Bases="CGameObject")
 class CCat final : public CBaseMonster{
 	typedef		CBaseMonster	inherited;
 public:
+	const char*		RamPushType		() const override { return "cat"; }
 	XPROPERTY(LuaConstructor)
 	CCat				();
 	virtual ~CCat				() override;

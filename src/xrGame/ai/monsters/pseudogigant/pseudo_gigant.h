@@ -43,6 +43,7 @@ private:
 
 
 public:
+	const char*		RamPushType		() const override { return "pseudogiant"; }
 					CPseudoGigant				();
 	virtual ~CPseudoGigant				() override;
 

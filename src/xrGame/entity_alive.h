@@ -31,6 +31,9 @@ private:
 public:
 	virtual CEntityAlive*		cast_entity_alive		() override {return this;}
 	virtual CActor*				cast_actor				() override {return nullptr;}
+	// Key of the [ram_push_scale] table used when a car rams this creature.
+	// nullptr keeps the car's base ram_push_scale.
+	virtual const char*			RamPushType			() const { return nullptr; }
 	virtual CAI_Stalker* cast_stalker() override { return nullptr; }
 	virtual CEntity* cast_entity() override { return this; }
 	virtual CInventoryOwner* cast_inventory_owner() override { return nullptr; }

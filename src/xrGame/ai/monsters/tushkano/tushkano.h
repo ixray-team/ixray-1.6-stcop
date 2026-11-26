@@ -12,6 +12,7 @@ class CTushkano final :	public CBaseMonster,
 	typedef		CControlledEntity<CTushkano>	CControlled;
 
 public:
+	const char*		RamPushType		() const override { return "tushkano"; }
 	XPROPERTY(LuaConstructor)
 	CTushkano 			();
 	virtual ~CTushkano 			() override;

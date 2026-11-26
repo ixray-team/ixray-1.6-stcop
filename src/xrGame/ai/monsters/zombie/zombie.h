@@ -21,6 +21,7 @@ class CZombie final :	public CBaseMonster,
 	void StopFakeDeathRagdoll();
 
 public:
+	const char*		RamPushType		() const override { return "zombie"; }
 					CZombie		();
 	virtual ~CZombie	() override;
 

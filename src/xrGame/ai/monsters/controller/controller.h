@@ -48,6 +48,7 @@ class CController final : public CBaseMonster,
 	
 
 public:	
+	const char*		RamPushType		() const override { return "controller"; }
 	float			aura_radius;
 	float			aura_damage;
 

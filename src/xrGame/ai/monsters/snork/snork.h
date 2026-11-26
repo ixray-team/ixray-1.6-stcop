@@ -10,6 +10,7 @@ class CSnork final :	public CBaseMonster {
 	SVelocityParam	m_fsVelocityJumpGround;
 
 public:
+	const char*		RamPushType		() const override { return "snork"; }
 					CSnork				();
 	virtual ~CSnork				() override;
 

@@ -11,6 +11,8 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 #include "../xrEngine/CameraBase.h"
+#include "../xrEngine/GameMtlLib.h"
+#include "../xrSound/New/SoundMixerInternal.h"
 
 constexpr float CarDeferredStopFade = 0.1f;
 constexpr float MaxEngineStartDelayMs = 10000.f;
@@ -1100,4 +1102,283 @@ void CCar::SCarSound::StopFire()
 {
 	if (snd_fire._p && snd_fire.is_playing())
 		snd_fire.stop_deffered(CarDeferredStopFade);
+}
+
+namespace CarCabinSound
+{
+	// Cutoff of the cabin low_pass, 0 when off. Only the car with the actor sets it
+	float g_CabinCutoffHz = 0.0f;
+
+	// World sounds, their reverb sends and the zone reverbs; not music
+	template <typename TCallback>
+	void ForEachCabinBus(TCallback&& Callback)
+	{
+		for (const char* Name : {"effects", "shooting", "shooting_far", "shooting_indoor"})
+		{
+			if (const u32 Bus = XRay::Sound::Mixer::FindBus(Name))
+			{
+				Callback(Bus);
+			}
+		}
+
+		const SoundBus* Buses = XRay::Sound::Mixer::GetBuses();
+		for (u32 BusIdx = 0; BusIdx < SND_BUS_COUNT; BusIdx++)
+		{
+			if (Buses[BusIdx].IsUsed && Buses[BusIdx].IsGenerated)
+			{
+				Callback(BusIdx + 1);
+			}
+		}
+	}
+
+	// CutoffHz <= 0 removes the muffling
+	void SetCabinMuffling(float CutoffHz)
+	{
+		using namespace XRay::Sound;
+		if (CutoffHz <= 0.0f)
+		{
+			if (g_CabinCutoffHz > 0.0f)
+			{
+				ForEachCabinBus([](u32 Bus) { Mixer::RemoveBusShader(Bus, SoundShaderType::LowPass, true); });
+			}
+			g_CabinCutoffHz = 0.0f;
+			return;
+		}
+
+		if (g_CabinCutoffHz <= 0.0f)
+		{
+			// Spatial only: UI and HUD sounds are not in the world
+			ForEachCabinBus([](u32 Bus) { Mixer::AddBusShader(Bus, SoundShaderType::LowPass, true); });
+		}
+
+		// Every call queues commands, skip changes under 1 Hz
+		if (std::abs(CutoffHz - g_CabinCutoffHz) >= 1.0f)
+		{
+			ForEachCabinBus([CutoffHz](u32 Bus) { Mixer::SetBusShaderParam(Bus, SoundShaderType::LowPass, "cutoff", CutoffHz); });
+			g_CabinCutoffHz = CutoffHz;
+		}
+	}
+}
+
+
+void CCar::ResetCabinSound()
+{
+	psSoundCarFactor = 1.f;
+	CarCabinSound::SetCabinMuffling(0.0f);
+}
+
+void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
+{
+	if (!Owner())
+		return;
+
+	float InteriorVolume = m_interior_volume;
+	clamp(InteriorVolume, 0.f, 1.f);
+
+	// An open normal door connects the cabin with the outside, so the
+	// interior volume moves halfway towards the exterior volume.
+	if (FirstPersonView && HasOpenNormalDoor())
+	{
+		InteriorVolume = 0.5f * (InteriorVolume + 1.f);
+	}
+
+	psSoundCarFactor = FirstPersonView ? InteriorVolume : 1.f;
+
+	constexpr float InteriorMinCutoffHz = 500.f;
+	if (FirstPersonView && psSoundCarFactor < 0.999f)
+	{
+		CarCabinSound::SetCabinMuffling(XRay::Sound::LowPass::CutoffFromFactor(psSoundCarFactor * psSoundCarFactor, InteriorMinCutoffHz));
+	}
+	else
+	{
+		CarCabinSound::SetCabinMuffling(0.0f);
+	}
+}
+
+void CCar::LoadCollisionSounds()
+{
+	if (g_dedicated_server || !pSettings || !pSettings->line_exist(cNameSect_str(), "collision_sounds"))
+		return;
+
+	const char* SectionName = pSettings->r_string(cNameSect_str(), "collision_sounds");
+	if (SectionName == nullptr || SectionName[0] == '\0')
+		return;
+
+	if (!pSettings->section_exist(SectionName))
+	{
+		Msg("! [%s] collision_sounds section '%s' does not exist", cNameSect_str(), SectionName);
+		return;
+	}
+
+	// The material pairs are global, so load each section only once.
+	static xr_vector<xr_string> LoadedSections;
+	const xr_string Section(SectionName);
+	if (std::find(LoadedSections.begin(), LoadedSections.end(), Section) != LoadedSections.end())
+		return;
+
+	const CInifile::Sect& Config = pSettings->r_section(SectionName);
+	u32 Overridden = 0;
+	for (const CInifile::Item& Item : Config.Data)
+	{
+		const char* Key = Item.first.c_str();
+		const char* Separator = strchr(Key, '|');
+		if (Separator == nullptr || Separator == Key || Separator[1] == '\0')
+		{
+			Msg("! [%s] collision_sounds: invalid pair '%s', expected 'material0|material1'", cNameSect_str(), Key);
+			continue;
+		}
+
+		const char* SoundList = Item.second.c_str();
+		if (SoundList == nullptr || SoundList[0] == '\0')
+		{
+			// An empty value keeps the sounds loaded from gamemtl.xr.
+			continue;
+		}
+
+		const xr_string Material0(Key, Separator - Key);
+		const char* Material1 = Separator + 1;
+
+		// Wheels use their own tire sound system.
+		if (0 == _stricmp(Material0.c_str(), "objects\\car_wheel") || 0 == _stricmp(Material1, "objects\\car_wheel"))
+			continue;
+
+		auto It0 = GMLib.GetMaterialIt(Material0.c_str());
+		auto It1 = GMLib.GetMaterialIt(Material1);
+		if (It0 == GMLib.LastMaterial() || It1 == GMLib.LastMaterial())
+		{
+#ifndef MASTER_GOLD
+			Msg("~ [%s] collision_sounds: skipping pair '%s' (material not present in this game)", cNameSect_str(), Key);
+#endif
+			continue;
+		}
+
+		const u16 Index0 = u16(It0 - GMLib.FirstMaterial());
+		const u16 Index1 = u16(It1 - GMLib.FirstMaterial());
+		SGameMtlPair* Pair = GMLib.GetMaterialPair(Index0, Index1);
+		if (Pair == nullptr)
+		{
+#ifndef MASTER_GOLD
+			Msg("~ [%s] collision_sounds: skipping pair '%s' (missing in gamemtl.xr)", cNameSect_str(), Key);
+#endif
+			continue;
+		}
+
+		for (ref_sound& Sound : Pair->CollideSounds)
+			Sound.destroy();
+		Pair->CollideSounds.clear();
+
+		const int Count = _GetItemCount(SoundList);
+		Pair->CollideSounds.resize(Count);
+		string128 SoundName;
+		for (int i = 0; i < Count; ++i)
+		{
+			Pair->CollideSounds[i].create(_GetItem(SoundList, i, SoundName), st_Effect, sg_SourceType);
+		}
+		++Overridden;
+	}
+
+	Msg("* [%s] collision_sounds: overridden %u material pairs from '%s'", cNameSect().c_str(), Overridden, SectionName);
+	LoadedSections.push_back(Section);
+}
+
+void CCar::PlayDynamicCollisionSound(SGameMtl* CarMaterial, SGameMtl* OtherMaterial, const Fvector& Position, float RelativeSpeed)
+{
+	if (g_dedicated_server || CarMaterial == nullptr || OtherMaterial == nullptr)
+		return;
+
+	// A resting or slowly pushed prop must not play the impact sound every
+	// physics step. The static collision path uses its own velocity thresholds;
+	// dynamic contacts need a small car-specific one.
+	constexpr float MinRelativeSpeed = 1.f;
+	constexpr u32 SoundCooldownMs = 150;
+
+	if (RelativeSpeed < MinRelativeSpeed || Device.dwTimeGlobal < m_collision_sound_time)
+		return;
+
+	const u16 CarIndex = GMLib.GetMaterialIdx(CarMaterial->ID);
+	const u16 OtherIndex = GMLib.GetMaterialIdx(OtherMaterial->ID);
+	SGameMtlPair* Pair = GMLib.GetMaterialPair(CarIndex, OtherIndex);
+	if (Pair == nullptr || Pair->CollideSounds.empty())
+		return;
+
+	ref_sound* Sound = &Pair->CollideSounds[::Random.randI(Pair->CollideSounds.size())];
+	if (Sound == nullptr || Sound->_p == nullptr)
+		return;
+
+	m_collision_sound_time = Device.dwTimeGlobal + SoundCooldownMs;
+
+	float Volume = RelativeSpeed / 8.f;
+	clamp(Volume, 0.15f, 1.f);
+	float Frequency = ::Random.randF(0.9f, 1.1f);
+	Fvector SoundPosition = Position;
+	Sound->play_no_feedback(nullptr, 0, 0, &SoundPosition, &Volume, &Frequency);
+}
+
+void CCar::LoadSoundDefinitions(CInifile* ini)
+{
+	m_engine_sound_scale_max = ini->read_if_exists<float>("car_sound", "engine_sound_scale_max", m_engine_sound_scale_max);
+	m_engine_sound_scale_min = ini->read_if_exists<float>("car_sound", "engine_sound_scale_min", m_engine_sound_scale_min);
+	m_engine_sound_scale_factor = ini->read_if_exists<float>("car_sound", "engine_sound_scale_factor", m_engine_sound_scale_factor);
+	m_engine_idle_volume = ini->read_if_exists<float>("car_sound", "engine_idle_volume", m_engine_idle_volume);
+	m_sound_state_change_up = ini->read_if_exists<float>("car_sound", "sound_state_change_up", m_sound_state_change_up);
+	m_sound_state_change_down = ini->read_if_exists<float>("car_sound", "sound_state_change_down", m_sound_state_change_down);
+	m_sound_idle_change_up = ini->read_if_exists<float>("car_sound", "sound_idle_change_up", m_sound_idle_change_up);
+	m_sound_idle_change_down = ini->read_if_exists<float>("car_sound", "sound_idle_change_down", m_sound_idle_change_down);
+	m_sound_state_switch_factor = ini->read_if_exists<float>("car_sound", "sound_state_switch_factor", m_sound_state_switch_factor);
+	m_sound_state_after_switch = ini->read_if_exists<float>("car_sound", "sound_state_after_switch", m_sound_state_after_switch);
+	m_sound_switch_effect_type = ini->read_if_exists<u32>("car_sound", "sound_switch_effect_type", m_sound_switch_effect_type);
+	m_sound_switch_effect_power = ini->read_if_exists<float>("car_sound", "sound_switch_effect_power", m_sound_switch_effect_power);
+	m_sound_switch_effect_speed = ini->read_if_exists<float>("car_sound", "sound_switch_effect_speed", m_sound_switch_effect_speed);
+	m_sound_switch_effect_duration = ini->read_if_exists<float>("car_sound", "sound_switch_effect_duration", m_sound_switch_effect_duration);
+	m_turbo_scale_max = ini->read_if_exists<float>("car_sound", "turbo_scale_max", m_turbo_scale_max);
+	m_turbo_scale_min = ini->read_if_exists<float>("car_sound", "turbo_scale_min", m_turbo_scale_min);
+	m_turbo_scale_speed = ini->read_if_exists<float>("car_sound", "turbo_scale_speed", m_turbo_scale_speed);
+	m_valve_switch_volume = ini->read_if_exists<float>("car_sound", "valve_switch_volume", m_valve_switch_volume);
+	m_blower_scale_min = ini->read_if_exists<float>("car_sound", "blower_scale_min", m_blower_scale_min);
+	m_blower_rpm_scale = ini->read_if_exists<float>("car_sound", "blower_rpm_scale", m_blower_rpm_scale);
+	m_blower_volume_min = ini->read_if_exists<float>("car_sound", "blower_volume_min", m_blower_volume_min);
+	m_blower_inertia = ini->read_if_exists<float>("car_sound", "blower_inertia", m_blower_inertia);
+	m_blower_sound_forward = ini->read_if_exists<float>("car_sound", "blower_sound_forward", m_blower_sound_forward);
+	m_engine_state_scale_min = ini->read_if_exists<float>("car_sound", "engine_state_scale_min", m_engine_state_scale_min);
+	m_engine_heavy_constant = ini->read_if_exists<float>("car_sound", "engine_heavy_constant", m_engine_heavy_constant);
+	m_engine_heavy_rpm = ini->read_if_exists<float>("car_sound", "engine_heavy_rpm", m_engine_heavy_rpm);
+	m_engine_heavy_switch = ini->read_if_exists<float>("car_sound", "engine_heavy_switch", m_engine_heavy_switch);
+	m_whine_speed = ini->read_if_exists<float>("car_sound", "whine_speed", m_whine_speed);
+	m_whine_exterior_volume = ini->read_if_exists<float>("car_sound", "whine_exterior_volume", m_whine_exterior_volume);
+	m_whine_reverse = ini->read_if_exists<bool>("car_sound", "whine_reverse", m_whine_reverse);
+	m_enhanced_sound = ini->read_if_exists<bool>("car_sound", "enhanced_sound", m_enhanced_sound);
+}
+
+ref_sound* CCar::GetTireSound(u16 m1_id, u16 m2_id)
+{
+	switch (GetTireSurface(m1_id, m2_id))
+	{
+		case TireSurfaceDirt:	return &m_tire_sound_dirt;
+		case TireSurfaceGrass:	return &m_tire_sound_grass;
+		case TireSurfaceWater:	return &m_tire_sound_water;
+		default:				return &m_tire_sound_road;
+	}
+}
+
+ref_sound* CCar::GetTireSkidSound(u16 m1_id, u16 m2_id)
+{
+	switch (GetTireSurface(m1_id, m2_id))
+	{
+		case TireSurfaceDirt:	return &m_tire_skid_sound_dirt;
+		case TireSurfaceGrass:	return &m_tire_skid_sound_grass;
+		case TireSurfaceWater:	return &m_tire_skid_sound_water;
+		default:				return &m_tire_skid_sound_road;
+	}
+}
+
+void CCar::UpdateWheelTireSound(SWheel& Wheel)
+{
+	const u32 ContactAge = Device.dwTimeGlobal - Wheel.collision_params.last_contact_time;
+	const bool WheelAirborne = ContactAge > 100;
+	const bool WheelStopped = GetSpeedKmH() < 1.f && fabsf(Wheel.GetDriveAngleRate()) * Wheel.radius < 0.5f;
+	if ((WheelAirborne || WheelStopped) && Wheel.tire_drive._p)
+	{
+		Wheel.UpdateSounds();
+		Wheel.tire_drive.stop();
+	}
 }

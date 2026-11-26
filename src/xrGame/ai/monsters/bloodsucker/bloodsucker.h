@@ -16,6 +16,7 @@ class CAI_Bloodsucker final : public CBaseMonster,
 	typedef		CBaseMonster	inherited;
 	
 public:
+	const char*		RamPushType		() const override { return "bloodsucker"; }
 							CAI_Bloodsucker	();
 	virtual ~CAI_Bloodsucker() override;
 

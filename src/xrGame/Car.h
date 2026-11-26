@@ -5,6 +5,8 @@
 #include "../xrPhysics/PHUpdateObject.h"
 #include "script_entity.h"
 #include "CarLights.h"
+#include "CarDriverHands.h"
+#include "CarDashboard.h"
 #include "../xrPhysics/ODE/PHObject.h"
 #include "holder_custom.h"
 #include "PHSkeleton.h"
@@ -225,7 +227,6 @@ static	const u16				cAsCallsnum						= 3;
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
 	BONE_P_MAP							bone_map;					//interface for PhysicsShell
-	xr_set<u16>							pribor_arrows;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void						CarBodySurfaceCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
@@ -1000,80 +1001,7 @@ private:
 	xr_vector <u16>			m_steers;
 	xr_vector <u16>			m_indoor_l_available_doors;
 
-	// One hand's home grip on the rim. The regrip path is derived from the
-	// steering wheel angle every frame; there is no time-based phase.
-	struct SDriverHandState
-	{
-		float					HomeAngle = 0.f;
-		float					Radius = 0.f;
-		float					Z = 0.f;
-	};
-
-	// One finger group's bend state. All bones of the group use the same
-	// angle; Axis is in the finger bone's local space.
-	struct SDriverFingerBend
-	{
-		Fvector					Axis;
-		float					Angle = 0.f;
-	};
-
-	// First-person driver hands. The visual is anchored to the driver seat and
-	// rendered in world space while the local actor is in the driver seat. The
-	// steering-wheel bone only supplies the two IK grip targets. It deliberately
-	// bypasses player_hud/CHudItem.
-	IRenderVisual*			m_driver_hands_visual;
-	IKinematics*			m_driver_hands_kinematics;
-	shared_str				m_driver_hands_source_section;
-	xr_vector<Fmatrix>		m_driver_hands_bind_pose;
-	Fmatrix					m_driver_hands_xform;
-	Fmatrix					m_driver_hands_left_hand_offset;
-	Fmatrix					m_driver_hands_right_hand_offset;
-	Fvector					m_driver_hands_position;
-	Fvector					m_driver_hands_rotation;
-	Fvector					m_driver_hands_left_grip;
-	Fvector					m_driver_hands_right_grip;
-	Fvector					m_driver_hands_left_hand_rotation;
-	Fvector					m_driver_hands_right_hand_rotation;
-	Fvector					m_driver_hands_left_elbow;
-	Fvector					m_driver_hands_right_elbow;
-	Fvector					m_driver_hands_left_reach_shift;
-	Fvector					m_driver_hands_right_reach_shift;
-	float					m_driver_hands_reach_shift_speed;
-	float					m_driver_hands_scale;
-	float					m_driver_hands_shoulder_width;
-	u16						m_driver_hands_steer_bone;
-	u16						m_driver_hands_left_clavicle;
-	u16						m_driver_hands_right_clavicle;
-	u16						m_driver_hands_left_ik[3];
-	u16						m_driver_hands_right_ik[3];
-	bool					m_driver_hands_ik_ready;
-	bool					m_driver_hands_ready;
-	bool					m_driver_hands_ik_initialized;
-	u32						m_driver_hands_bones_frame;
-	SDriverHandState		m_driver_hands_left_state;
-	SDriverHandState		m_driver_hands_right_state;
-	float					m_driver_hands_regrip_trigger;
-	float					m_driver_hands_regrip_end;
-	float					m_driver_hands_regrip_travel;
-	float					m_driver_hands_steer_twist;
-	float					m_driver_hands_steer_twist_start;
-	Fvector					m_driver_hands_steer_twist_axis;
-	float					m_driver_hands_regrip_lift;
-	float					m_driver_hands_regrip_over_radial;
-	float					m_driver_hands_steer_factor;
-	bool					m_driver_hands_regrip_enabled;
-	bool					m_driver_hands_regrip_debug;
-	bool					m_driver_hands_mirror_hand_rotation;
-	bool					m_driver_hands_steer_factored;
-	u8						m_driver_hands_active_hand;
-	s8						m_driver_hands_active_sign;
-	u8						m_driver_hands_debug_hand;
-	float					m_driver_hands_progress;
-	SDriverFingerBend		m_driver_hands_finger_state[2][4];
-	xr_vector<u8>			m_driver_hands_finger_bone_group;
-	float					m_driver_hands_finger_angles[4];
-	Fvector					m_driver_hands_finger_axis[2];
-	float					m_driver_hands_finger_speed;
+	CCarDriverHands			DriverHands;
 	shared_str				m_exhaust_particles;
 	shared_str				m_nitro_particles;
 	shared_str				m_pop_particles;
@@ -1304,66 +1232,7 @@ private:
 	float					m_current_downforce;
 	//bool					b_downforce_compensation;
 
-	//gauge
-	float					m_speedometer_factor;
-	float					m_speedometer_max_speed;
-	float					m_speedometer_min_speed;
-	float					m_speedometer_current;
-	float					m_speedometer_offset;
-	float					m_tachometer_factor;
-	float					m_tachometer_current;
-	float					m_tachometer_min_rpm;
-	float					m_fuel_current;
-	float					m_fuel_angle;
-	float					m_fuel_offset;
-	float					m_temp_angle;
-	float					m_temp_current;
-	float					m_temperature;
-	float					m_temp_offset;
-	float					m_temp_offset_current;
-	float					m_gauge_angle;
-	float					m_gauge_current;
-	float					m_fan_rotation;
-	float					m_fan_speed;
-	float					m_fan_speed_current;
-	bool					m_fan_engine;
-	float					m_pressure_current;
-	float					m_pressure;
-	float					m_pressure_idle_angle;
-	float					m_pressure_max_angle;
-	float					m_pressure_factor;
-	float					m_pressure_offset;
-	float					m_blower_angle;
-	float					m_blower_current;
-	float					m_engine_angle;
-	float					m_engine_current;
-	float					m_engine_speed;
-	bool					m_engine_stage;
-	bool					m_clock_seconds_real;
-	float					m_clock_seconds_offset;
-	float					m_clock_minutes_offset;
-	float					m_clock_hours_offset;
-	float					m_brakes_pressure_factor;
-	float					m_brakes_pressure_max_angle;
-	float					m_brakes_pressure_current;
-	float					m_brakes_pressure;
-	float					m_brakes_pressure_apply_angle;
-	float					m_brakes_pressure_apply_current;
-	float					m_battery_factor;
-	float					m_battery_angle;
-	float					m_battery_current;
-	float					m_gear_park_angle_x;
-	float					m_gear_drive_angle_x;
-	float					m_gear_reverse_angle_x;
-	float					m_gear_current_angle_x;
-	float					m_gear_current_angle_z;
-	float					m_gear_speed;
-	bool					m_gear_manual;
-	float					m_gear_left_angle;
-	float					m_gear_middle_angle;
-	float					m_gear_right_angle;
 	bool					m_torch_usage;
-	//gauge
 
 // 	float					m_fSaveMaxRPM;
 	float					m_max_rpm;
@@ -1491,56 +1360,7 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 
 	static void	__stdcall		cb_Steer				(CBoneInstance* B);
 	static void	__stdcall		cb_Steer_factor			(CBoneInstance* B);
-	static void __stdcall		cb_Gauge				(CBoneInstance* B);
 	static void __stdcall		cb_Suspension			(CBoneInstance* B);
-	bool					UpdateSpeedometerGauge			(Fmatrix& m);
-	bool					UpdateTachometerGauge			(Fmatrix& m);
-	bool					UpdateFuelGauge			(Fmatrix& m);
-	bool					UpdateTemperatureGauge			(Fmatrix& m);
-	bool					UpdateBatteryGauge			(Fmatrix& m);
-	bool					UpdateGenericGauge			(Fmatrix& m);
-	bool					UpdateFanGauge			(Fmatrix& m);
-	bool					UpdateBlowerGauge			(Fmatrix& m);
-	bool					UpdatePressureGauge			(Fmatrix& m);
-	bool					UpdateBrakesPressureGauge			(Fmatrix& m);
-	bool					UpdateBrakesPressureApplyGauge			(Fmatrix& m);
-	bool					UpdateEngineGauge			(Fmatrix& m);
-	bool					UpdateGearGauge			(CBoneInstance* B, Fmatrix& m);
-	bool					UpdateClockSecondsGauge			(Fmatrix& m);
-	bool					UpdateClockMinutesGauge			(Fmatrix& m);
-	bool					UpdateClockHoursGauge			(Fmatrix& m);
-
-	enum EGaugeType
-	{
-		gauge_speedometer,
-		gauge_tachometer,
-		gauge_fuel,
-		gauge_temp,
-		gauge_battery,
-		gauge_gauge,
-		gauge_engine,
-		gauge_blower,
-		gauge_pressure,
-		gauge_brakes_pressure,
-		gauge_brakes_pressure_apply,
-		gauge_fan,
-		gauge_gear,
-		clock_seconds,
-		clock_minutes,
-		clock_hours
-	} eCarGauge;
-
-	class Gauge_struct
-	{
-	public:
-		Gauge_struct(CCar* car = NULL, int type_ = 0)
-		{
-			pcar = car;
-			type = type_;
-		}
-		CCar* pcar;
-		int type;
-	};
 
 	class Suspension_struct
 	{
@@ -1564,9 +1384,8 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 		float steer_factor;
 	};
 
-	xr_vector<xr_unique_ptr<Gauge_struct>> m_gauge_params;
+	CCarDashboard Dashboard;
 	xr_vector<xr_unique_ptr<Suspension_struct>> m_suspension_params;
-	xr_vector<u16> m_gauge_bones;
 	xr_vector<u16> m_suspension_bones;
 
 	virtual	void			Hit							(SHit* pHDS);
@@ -1669,6 +1488,7 @@ public:
 	void					LoadHandlingAndCameraDefinitions	(CInifile* ini);
 	void					LoadEngineDefinitions	(CInifile* ini);
 	void					LoadSoundDefinitions	(CInifile* ini);
+	void					LoadExhaustDefinitions	(CInifile* ini);
 	void					LoadTransmissionDefinitions	(CInifile* ini);
 	void					LoadVisualDefinitions	(CInifile* ini);
 	void					LoadSurfaceParams			();
@@ -1752,10 +1572,9 @@ public:
 		  void				DrawCarInfo				();
 		  bool				HasOpenNormalDoor			() const;
 		  void				UpdateInteriorSoundFactor	(bool FirstPersonView);
+		  void				ResetCabinSound			();
 		  void				LoadDriverHands			();
 		  void				DestroyDriverHands		();
-		  void				ResetDriverHandStates	();
-		  void				UpdateDriverFingerStates(float Dt);
 		  void				UpdateDriverHands		();
 		  void				RenderDriverHands		();
 // 	Fvector					GetTorqAxes					(u16 elem_id);
@@ -1780,23 +1599,7 @@ protected:
 	void					CreateCarTurrets				(CInifile* ini);
 	void					ApplyBonePhysicsParams			(IKinematics* K, CInifile* ini);
 	void					BindGaugeAndSuspensionCallbacks	(IKinematics* K, CInifile* ini);
-		void BindGaugeCallback(IKinematics* K, u16 BoneId, int GaugeType);
-		void BindSpeedometerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindTachometerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindFuelGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindTemperatureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindGenericGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindFanGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindPressureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindBatteryGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindBrakesPressureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindBrakesPressureApplyGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindBlowerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindEngineGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindGearGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindClockSecondsGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindClockMinutesGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
-		void BindClockHoursGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+	void					UpdateDashboardTelemetry		();
 		void BindSuspension(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
 	virtual void					net_Save							(NET_Packet& P)																	;
 	virtual bool					net_SaveRelevant					()																				;

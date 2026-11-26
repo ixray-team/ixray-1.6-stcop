@@ -36,6 +36,7 @@ private:
 	GameGraph::_GRAPH_ID		m_next_graph_point;
 	u32							m_time_to_change_graph_point;
 public:
+	const char*		RamPushType		() const override { return "rat"; }
 	rat_state_manager			*m_state_manager;
 
 public:

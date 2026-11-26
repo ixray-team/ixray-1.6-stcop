@@ -9,6 +9,7 @@ class CFracture final : public CBaseMonster {
 	typedef		CBaseMonster		inherited;
 	
 public:
+	const char*		RamPushType		() const override { return "fracture"; }
 					CFracture 			();
 	virtual ~CFracture 			() override;
 

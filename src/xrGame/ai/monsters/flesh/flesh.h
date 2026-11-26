@@ -11,6 +11,7 @@ class CAI_Flesh final : public CBaseMonster,
 	typedef		CControlledEntity<CAI_Flesh>	CControlled;
 
 public:
+	const char*		RamPushType		() const override { return "flesh"; }
 							CAI_Flesh		();
 	virtual ~CAI_Flesh		() override;
 

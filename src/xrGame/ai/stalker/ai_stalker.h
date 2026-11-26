@@ -107,6 +107,7 @@ class CAI_Stalker final :
 	using inherited = CCreature;
 
 public:
+	const char*		RamPushType		() const override { return "npc"; }
 	using inherited::useful;
 	using inherited::evaluate;
 	

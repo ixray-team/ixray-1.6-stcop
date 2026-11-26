@@ -8,6 +8,7 @@ class CAI_PseudoDog : public CBaseMonster {
 	typedef		CBaseMonster	inherited;
 
 public:
+	const char*		RamPushType		() const override { return "pseudodog"; }
 
 	float			m_anger_hunger_threshold;
 	float			m_anger_loud_threshold;

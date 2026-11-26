@@ -6,6 +6,7 @@ XREFLECT(LuaExport, Bases="CGameObject")
 class CChimera final : public CBaseMonster 
 {
 public:
+	const char*		RamPushType		() const override { return "chimera"; }
 	XPROPERTY(LuaConstructor)
 	CChimera					();
 	virtual ~CChimera					() override;

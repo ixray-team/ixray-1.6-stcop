@@ -16,7 +16,6 @@
 #include "Car.h"
 #include "CameraRig.h"
 #include "../Include/xrRender/RenderVisual.h"
-#include "../Include/xrRender/KinematicsAnimated.h"
 #include "damage_manager.h"
 #include "AnomalyZone.h"
 #include "HUDManager.h"
@@ -42,22 +41,6 @@
 #include "PHMovementControl.h"
 #include "../xrPhysics/PhysicsCommon.h"
 #include "ai/monsters/basemonster/base_monster.h"
-#include "ai/monsters/bloodsucker/bloodsucker.h"
-#include "ai/monsters/boar/boar.h"
-#include "ai/monsters/burer/burer.h"
-#include "ai/monsters/cat/cat.h"
-#include "ai/monsters/chimera/chimera.h"
-#include "ai/monsters/controller/controller.h"
-#include "ai/monsters/dog/dog.h"
-#include "ai/monsters/flesh/flesh.h"
-#include "ai/monsters/fracture/fracture.h"
-#include "ai/monsters/poltergeist/poltergeist.h"
-#include "ai/monsters/pseudodog/pseudodog.h"
-#include "ai/monsters/pseudogigant/pseudo_gigant.h"
-#include "ai/monsters/snork/snork.h"
-#include "ai/monsters/tushkano/tushkano.h"
-#include "ai/monsters/zombie/zombie.h"
-#include "ai/monsters/rats/ai_rat.h"
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "ai/monsters/control_movement_base.h"
@@ -74,64 +57,7 @@
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/EnnumerateVertices.h"
-#include "../xrSound/New/SoundMixerInternal.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
-
-namespace CarCabinSound
-{
-	// Cutoff of the cabin low_pass, 0 when off. Only the car with the actor sets it
-	float g_CabinCutoffHz = 0.0f;
-
-	// World sounds, their reverb sends and the zone reverbs; not music
-	template <typename TCallback>
-	void ForEachCabinBus(TCallback&& Callback)
-	{
-		for (const char* Name : {"effects", "shooting", "shooting_far", "shooting_indoor"})
-		{
-			if (const u32 Bus = XRay::Sound::Mixer::FindBus(Name))
-			{
-				Callback(Bus);
-			}
-		}
-
-		const SoundBus* Buses = XRay::Sound::Mixer::GetBuses();
-		for (u32 BusIdx = 0; BusIdx < SND_BUS_COUNT; BusIdx++)
-		{
-			if (Buses[BusIdx].IsUsed && Buses[BusIdx].IsGenerated)
-			{
-				Callback(BusIdx + 1);
-			}
-		}
-	}
-
-	// CutoffHz <= 0 removes the muffling
-	void SetCabinMuffling(float CutoffHz)
-	{
-		using namespace XRay::Sound;
-		if (CutoffHz <= 0.0f)
-		{
-			if (g_CabinCutoffHz > 0.0f)
-			{
-				ForEachCabinBus([](u32 Bus) { Mixer::RemoveBusShader(Bus, SoundShaderType::LowPass, true); });
-			}
-			g_CabinCutoffHz = 0.0f;
-			return;
-		}
-
-		if (g_CabinCutoffHz <= 0.0f)
-		{
-			// Spatial only: UI and HUD sounds are not in the world
-			ForEachCabinBus([](u32 Bus) { Mixer::AddBusShader(Bus, SoundShaderType::LowPass, true); });
-		}
-
-		// Every call queues commands, skip changes under 1 Hz
-		if (std::abs(CutoffHz - g_CabinCutoffHz) >= 1.0f)
-		{
-			ForEachCabinBus([CutoffHz](u32 Bus) { Mixer::SetBusShaderParam(Bus, SoundShaderType::LowPass, "cutoff", CutoffHz); });
-			g_CabinCutoffHz = CutoffHz;
-		}
-	}
-}
 
 namespace
 {
@@ -279,60 +205,6 @@ CCar::CCar()
 	m_power_neutral_factor = 0.25f;
 	m_steer_angle = 0.f;
 	m_wheel_angle = 0.f;
-	m_driver_hands_visual = nullptr;
-	m_driver_hands_kinematics = nullptr;
-	m_driver_hands_source_section = nullptr;
-	m_driver_hands_bind_pose.clear();
-	m_driver_hands_xform.identity();
-	m_driver_hands_left_hand_offset.identity();
-	m_driver_hands_right_hand_offset.identity();
-	m_driver_hands_position.set(0.f, 0.f, 0.f);
-	m_driver_hands_rotation.set(0.f, 0.f, 0.f);
-	m_driver_hands_left_grip.set(0.f, 0.f, 0.f);
-	m_driver_hands_right_grip.set(0.f, 0.f, 0.f);
-	m_driver_hands_left_hand_rotation.set(0.f, 0.f, 0.f);
-	m_driver_hands_right_hand_rotation.set(0.f, 0.f, 0.f);
-	m_driver_hands_left_elbow.set(0.f, 0.f, 0.f);
-	m_driver_hands_right_elbow.set(0.f, 0.f, 0.f);
-	m_driver_hands_left_reach_shift.set(0.f, 0.f, 0.f);
-	m_driver_hands_right_reach_shift.set(0.f, 0.f, 0.f);
-	m_driver_hands_reach_shift_speed = 15.f;
-	m_driver_hands_scale = 1.f;
-	m_driver_hands_shoulder_width = -1.f;
-	m_driver_hands_regrip_trigger = 15.f;
-	m_driver_hands_regrip_end = 165.f;
-	m_driver_hands_regrip_travel = 90.f;
-	m_driver_hands_steer_twist = 0.f;
-	m_driver_hands_steer_twist_start = 90.f;
-	m_driver_hands_steer_twist_axis.set(0.f, 0.f, 1.f);
-	m_driver_hands_regrip_lift = 0.07f;
-	m_driver_hands_regrip_over_radial = 0.04f;
-	m_driver_hands_steer_factor = 1.f;
-	m_driver_hands_regrip_enabled = false;
-	m_driver_hands_regrip_debug = false;
-	m_driver_hands_mirror_hand_rotation = false;
-	m_driver_hands_steer_factored = false;
-	m_driver_hands_active_hand = 0;
-	m_driver_hands_active_sign = 0;
-	m_driver_hands_debug_hand = 0;
-	m_driver_hands_progress = 0.f;
-	for (u8 Group = 0; Group < 4; ++Group)
-		m_driver_hands_finger_angles[Group] = 0.f;
-	m_driver_hands_finger_axis[0].set(0.f, 0.f, -1.f);
-	m_driver_hands_finger_axis[1].set(0.f, 0.f, -1.f);
-	m_driver_hands_finger_speed = 12.f;
-	m_driver_hands_steer_bone = BI_NONE;
-	m_driver_hands_left_clavicle = BI_NONE;
-	m_driver_hands_right_clavicle = BI_NONE;
-	for (u16& Bone : m_driver_hands_left_ik)
-		Bone = BI_NONE;
-	for (u16& Bone : m_driver_hands_right_ik)
-		Bone = BI_NONE;
-	m_driver_hands_ik_ready = false;
-	m_driver_hands_ready = false;
-	m_driver_hands_ik_initialized = false;
-	m_driver_hands_bones_frame = 0;
-	ResetDriverHandStates();
 	m_current_rpm = 0.f;
 	m_current_rpm_brp_n = 1.f;
 	m_current_engine_power = 0.f;
@@ -463,44 +335,6 @@ CCar::CCar()
 	m_nitro_particle_scale = 1.f;
 	b_nitro_particles_enabled = false;
 
-	m_speedometer_factor = 1.f;
-	m_speedometer_max_speed = flt_max;
-	m_speedometer_min_speed = 0.f;
-	m_speedometer_current = 0.f;
-	m_speedometer_offset = 0.f;
-	m_tachometer_factor = 1.f;
-	m_tachometer_current = 0.f;
-	m_tachometer_min_rpm = 0.f;
-	m_fuel_current = 0.f;
-	m_fuel_angle = 0.f;
-	m_fuel_offset = 0.f;
-	m_temp_current = 0.f;
-	m_temp_angle = 0.f;
-	m_temp_offset = 0.f;
-	m_temp_offset_current = 0.f;
-	m_temperature = 0.f;
-	m_gauge_angle = 0.f;
-	m_gauge_current = 0.f;
-	m_fan_speed = 1.f;
-	m_fan_rotation = 0.f;
-	m_fan_speed_current = 0.f;
-	m_fan_engine = false;
-	m_pressure_max_angle = 0.f;
-	m_pressure_idle_angle = 0.f;
-	m_pressure_factor = 1.f;
-	m_pressure_current = 0.f;
-	m_pressure_offset = 0.f;
-	m_pressure = 0.f;
-	m_blower_angle = 0.f;
-	m_blower_current = 0.f;
-	m_engine_angle = 0.f;
-	m_engine_current = 0.f;
-	m_engine_stage = false;
-	m_engine_speed = 0.f;
-	m_clock_minutes_offset = 0.f;
-	m_clock_seconds_offset = 0.f;
-	m_clock_hours_offset = 0.f;
-	m_clock_seconds_real = true;
 	m_nitro_engage = false;
 	b_nitro_engage = false;
 	m_nitro_engage_time = 0.f;
@@ -559,25 +393,6 @@ CCar::CCar()
 	m_gigant_kick_impulse = -1.f;
 	m_slide_geometry_step = u64(-1);
 	m_slide_geometry_valid = false;
-	m_brakes_pressure_factor = 0.f;
-	m_brakes_pressure_max_angle = 0.f;
-	m_brakes_pressure_current = 0.f;
-	m_brakes_pressure = 0.f;
-	m_brakes_pressure_apply_angle = 0.f;
-	m_brakes_pressure_apply_current = 0.f;
-	m_battery_factor = 0.f;
-	m_battery_angle = 0.f;
-	m_battery_current = 0.f; 
-	m_gear_park_angle_x = 0.f;
-	m_gear_drive_angle_x = -15.f;
-	m_gear_reverse_angle_x = -5.f;
-	m_gear_current_angle_x = 0.f;
-	m_gear_current_angle_z = 0.f;
-	m_gear_speed = 1.f;
-	m_gear_manual = false;
-	m_gear_left_angle = 10.f;
-	m_gear_middle_angle = 0.f;
-	m_gear_right_angle = -10.f;
 	m_car_weapon_slots = 99;
 	m_downforce = 0.f;
 	m_current_downforce = 0.f;
@@ -774,454 +589,6 @@ void CCar::cb_Steer_factor			(CBoneInstance* B)
 		VERIFY2(0,"Bones callback returns BAD!!! matrix");
 	}
 #endif
-}
-
-void CCar::cb_Gauge(CBoneInstance* B)
-{
-	Gauge_struct* C = static_cast<Gauge_struct*>(B->callback_param());
-	if (C == nullptr || C->pcar == nullptr)
-		return;
-
-	Fmatrix m;
-	bool ApplyTransform = false;
-	switch (C->type)
-	{
-		case gauge_speedometer: ApplyTransform = C->pcar->UpdateSpeedometerGauge(m); break;
-		case gauge_tachometer: ApplyTransform = C->pcar->UpdateTachometerGauge(m); break;
-		case gauge_fuel: ApplyTransform = C->pcar->UpdateFuelGauge(m); break;
-		case gauge_temp: ApplyTransform = C->pcar->UpdateTemperatureGauge(m); break;
-		case gauge_battery: ApplyTransform = C->pcar->UpdateBatteryGauge(m); break;
-		case gauge_gauge: ApplyTransform = C->pcar->UpdateGenericGauge(m); break;
-		case gauge_fan: ApplyTransform = C->pcar->UpdateFanGauge(m); break;
-		case gauge_blower: ApplyTransform = C->pcar->UpdateBlowerGauge(m); break;
-		case gauge_pressure: ApplyTransform = C->pcar->UpdatePressureGauge(m); break;
-		case gauge_brakes_pressure: ApplyTransform = C->pcar->UpdateBrakesPressureGauge(m); break;
-		case gauge_brakes_pressure_apply: ApplyTransform = C->pcar->UpdateBrakesPressureApplyGauge(m); break;
-		case gauge_engine: ApplyTransform = C->pcar->UpdateEngineGauge(m); break;
-		case gauge_gear: ApplyTransform = C->pcar->UpdateGearGauge(B, m); break;
-		case clock_seconds: ApplyTransform = C->pcar->UpdateClockSecondsGauge(m); break;
-		case clock_minutes: ApplyTransform = C->pcar->UpdateClockMinutesGauge(m); break;
-		case clock_hours: ApplyTransform = C->pcar->UpdateClockHoursGauge(m); break;
-	}
-
-	if (ApplyTransform)
-		B->mTransform.mulB_43(m);
-}
-
-bool CCar::UpdateSpeedometerGauge(Fmatrix& m)
-{
-	if (m_driving_wheels.empty()) return false;
-
-	float avg_speed = 0.f;
-	for (auto& WheelDrive : m_driving_wheels)
-	{
-		avg_speed += _abs(WheelDrive.ASpeed()) * WheelDrive.pwheel->radius;
-	}
-	avg_speed = -m_speedometer_min_speed * fabsf(m_speedometer_factor) + (avg_speed * 3.6f * fabsf(m_speedometer_factor)) / m_driving_wheels.size();
-	clamp(avg_speed, 0.f, m_speedometer_max_speed * fabsf(m_speedometer_factor));
-
-	m_speedometer_current = (1.f - 6.f * Device.fTimeDelta) * m_speedometer_current + 6.f * Device.fTimeDelta * avg_speed;
-
-	if (m_speedometer_factor < 0.f)
-		m.rotateZ(deg2rad(m_speedometer_offset) + m_speedometer_current / 30.f);
-	else
-		m.rotateZ(-deg2rad(m_speedometer_offset) - m_speedometer_current / 30.f);
-
-	return true;
-}
-
-bool CCar::UpdateTachometerGauge(Fmatrix& m)
-{
-	float cur_rpm = m_current_rpm - (m_tachometer_min_rpm * 0.105f);
-	clamp(cur_rpm, 0.f, cur_rpm);
-	float rpm = (cur_rpm / m_max_rpm) * 3.f * fabsf(m_tachometer_factor);
-	if (!b_engine_on)
-		rpm = 0.f;
-
-	m_tachometer_current = (1.f - 15.f * Device.fTimeDelta) * m_tachometer_current + 15.f * Device.fTimeDelta * rpm;
-
-	if (m_tachometer_factor < 0.f)
-		m.rotateZ(m_tachometer_current);
-	else
-		m.rotateZ(-m_tachometer_current);
-
-	return true;
-}
-
-bool CCar::UpdateFuelGauge(Fmatrix& m)
-{
-	float fuel = (m_fuel / m_fuel_tank) + deg2rad(m_fuel_offset);
-	if (!b_engine_on)
-		fuel = 0.f;
-
-	if (m_fuel_current < fuel)
-		m_fuel_current = (1.f - 0.9f * Device.fTimeDelta) * m_fuel_current + 0.9f * Device.fTimeDelta * fuel;
-	else
-		m_fuel_current = (1.f - 3.f * Device.fTimeDelta) * m_fuel_current + 3.f * Device.fTimeDelta * fuel;
-
-	m.rotateZ(-m_fuel_current * deg2rad(m_fuel_angle));
-
-	return true;
-}
-
-bool CCar::UpdateTemperatureGauge(Fmatrix& m)
-{
-	float temp = 0.f;
-	float temp_speed = 1.f;
-	if (b_engine_on)
-	{
-		temp = 1.f;
-		if (b_engine_on && e_state_drive == drive)
-		{
-			temp = 1.2f;
-			temp_speed = 1.2f;
-		}
-		float speed = GetSpeedKmH();
-		clamp(speed, 0.f, 80.f);
-		temp = temp - (speed / 260.f);
-
-		m_temp_offset_current = (1.f - 0.9f * Device.fTimeDelta) * m_temp_offset_current + 0.9f * Device.fTimeDelta * deg2rad(m_temp_offset);
-		m_temp_current = (1.f - 0.9f * Device.fTimeDelta) * m_temp_current + 0.9f * Device.fTimeDelta;
-	}
-	else
-	{
-		m_temp_offset_current = (1.f - 3.f * Device.fTimeDelta) * m_temp_offset_current;
-		m_temp_current = (1.f - 3.f * Device.fTimeDelta) * m_temp_current;
-	}
-
-	m_temperature = (1.f - 0.006f * temp_speed * Device.fTimeDelta) * m_temperature + 0.006f * temp_speed * Device.fTimeDelta * deg2rad(m_temp_angle) * temp;
-
-	m.rotateZ(-m_temperature * m_temp_current - m_temp_offset_current);
-
-	return true;
-}
-
-bool CCar::UpdateBatteryGauge(Fmatrix& m)
-{
-	float rpm = (1.f + (m_current_rpm - m_min_rpm) / (m_max_rpm - m_min_rpm) * m_battery_factor);
-	float angle = fabsf(m_battery_angle) * rpm;
-	if (!b_engine_on)
-		angle = 0.f;
-
-	if (m_battery_current < angle)
-		m_battery_current = (1.f - 0.9f * Device.fTimeDelta) * m_battery_current + 0.9f * Device.fTimeDelta * deg2rad(angle);
-	else
-		m_battery_current = (1.f - 3.f * Device.fTimeDelta) * m_battery_current + 3.f * Device.fTimeDelta * deg2rad(angle);
-
-	if (m_battery_angle < 0.f)
-		m.rotateZ(m_battery_current);
-	else
-		m.rotateZ(-m_battery_current);
-
-	return true;
-}
-
-bool CCar::UpdateGenericGauge(Fmatrix& m)
-{
-	float angle = fabsf(m_gauge_angle);
-	if (!b_engine_on)
-		angle = 0.f;
-
-	if (m_gauge_current < angle)
-		m_gauge_current = (1.f - 0.9f * Device.fTimeDelta) * m_gauge_current + 0.9f * Device.fTimeDelta * deg2rad(angle);
-	else
-		m_gauge_current = (1.f - 3.f * Device.fTimeDelta) * m_gauge_current + 3.f * Device.fTimeDelta * deg2rad(angle);
-
-	if (m_gauge_angle < 0.f)
-		m.rotateZ(m_gauge_current);
-	else
-		m.rotateZ(-m_gauge_current);
-
-	return true;
-}
-
-bool CCar::UpdateFanGauge(Fmatrix& m)
-{
-	float rpm = m_current_rpm;
-	clamp(rpm, m_min_rpm, rpm);
-
-	if (b_engine_on)
-		m_fan_speed_current += 0.6f * fabsf(m_fan_speed) * Device.fTimeDelta;
-	else
-		m_fan_speed_current -= 0.6f * fabsf(m_fan_speed) * Device.fTimeDelta;
-	clamp(m_fan_speed_current, 0.f, fabsf(m_fan_speed));
-
-	if (!m_fan_engine)
-		m_fan_rotation = m_fan_rotation + m_fan_speed_current * 3.f * Device.fTimeDelta;
-	else
-		m_fan_rotation = m_fan_rotation + m_fan_speed_current * 3.f * Device.fTimeDelta * (rpm / m_max_rpm);
-
-	if (m_fan_speed < 0.f)
-		m.rotateZ(-m_fan_rotation);
-	else
-		m.rotateZ(m_fan_rotation);
-
-	return true;
-}
-
-bool CCar::UpdateBlowerGauge(Fmatrix& m)
-{
-	float angle = fabsf(m_blower_angle);
-	if (e_state_drive != drive)
-	{
-		angle = 0.f;
-	}
-	else
-		if (IsTransmissionSwitching())
-			angle = fabsf(m_blower_angle) * 0.3f;
-
-	float speed = 0.3f;
-	if (IsTransmissionSwitching())
-		speed *= 0.5f;
-
-	if (m_blower_current < angle)
-		m_blower_current = (1.f - speed * Device.fTimeDelta * 30.f) * m_blower_current + speed * Device.fTimeDelta * 30.f * deg2rad(angle);
-	else
-		m_blower_current = (1.f - 1.5f * speed * Device.fTimeDelta * 30.f) * m_blower_current + 1.5f * speed * Device.fTimeDelta * 30.f * deg2rad(angle);
-
-	if (m_blower_angle < 0.f)
-		m.rotateX(m_blower_current);
-	else
-		m.rotateX(-m_blower_current);
-
-	return true;
-}
-
-bool CCar::UpdatePressureGauge(Fmatrix& m)
-{
-	float rpm = m_current_rpm - m_min_rpm;
-	clamp(rpm, 0.f, m_max_rpm - m_min_rpm);
-	rpm = (rpm / (m_max_rpm - m_min_rpm)) * fabsf(m_pressure_factor) + deg2rad(m_pressure_idle_angle + m_pressure_offset);
-
-	if (b_engine_on)
-		m_pressure_current = (1.f - 0.9f * Device.fTimeDelta) * m_pressure_current + 0.9f * Device.fTimeDelta;
-	else
-		m_pressure_current = (1.f - 3.f * Device.fTimeDelta) * m_pressure_current;
-
-	if (e_state_drive == drive)
-		rpm += 0.1f * fabsf(m_pressure_factor);
-
-	m_pressure = (1.f - 1.5f * Device.fTimeDelta) * m_pressure + 1.5f * Device.fTimeDelta * rpm;
-	clamp(m_pressure, m_pressure, deg2rad(m_pressure_max_angle + m_pressure_offset));
-
-	if (m_pressure_factor < 0.f)
-		m.rotateZ(m_pressure_current * m_pressure);
-	else
-		m.rotateZ(-m_pressure_current * m_pressure);
-
-	return true;
-}
-
-bool CCar::UpdateBrakesPressureGauge(Fmatrix& m)
-{
-	float angle = fabsf(m_brakes_pressure_max_angle);
-	if (!b_engine_on)
-		angle = 0.f;
-
-	if (m_brakes_pressure_current < angle)
-		m_brakes_pressure_current = (1.f - 0.9f * Device.fTimeDelta) * m_brakes_pressure_current + 0.9f * Device.fTimeDelta * deg2rad(angle);
-	else
-		m_brakes_pressure_current = (1.f - 3.f * Device.fTimeDelta) * m_brakes_pressure_current + 3.f * Device.fTimeDelta * deg2rad(angle);
-
-	if (b_engine_on)
-	{
-		if (b_breaks)
-		{
-			if (Device.fTimeGlobal - m_break_start < m_break_time && m_break_time > 0.f)
-			{
-				m_brakes_pressure = (1.f - 0.3f * Device.fTimeDelta * (1.f / m_break_time)) * m_brakes_pressure + (0.3f * Device.fTimeDelta * (1.f / m_break_time)) * m_brakes_pressure_factor;
-			}
-			else
-				m_brakes_pressure = (1.f - 0.09f * Device.fTimeDelta) * m_brakes_pressure + (0.09f * Device.fTimeDelta);
-		}
-		else
-			m_brakes_pressure = (1.f - 0.09f * Device.fTimeDelta) * m_brakes_pressure + (0.09f * Device.fTimeDelta);
-	}
-	else
-		m_brakes_pressure = (1.f - 0.05f * Device.fTimeDelta) * m_brakes_pressure;
-
-	if (m_brakes_pressure_max_angle < 0.f)
-		m.rotateZ(m_brakes_pressure_current * m_brakes_pressure);
-	else
-		m.rotateZ(-m_brakes_pressure_current * m_brakes_pressure);
-
-	return true;
-}
-
-bool CCar::UpdateBrakesPressureApplyGauge(Fmatrix& m)
-{
-	float angle = fabsf(m_brakes_pressure_apply_angle);
-	float press = 1.f;
-	if (!b_engine_on || !b_breaks)
-		press = 0.f;
-	else
-		if (m_break_time > 0.f)
-			press = (Device.fTimeGlobal - m_break_start) / m_break_time;
-
-	clamp(press, 0.f, 1.f);
-	m_brakes_pressure_apply_current = (1.f - 3.f * Device.fTimeDelta) * m_brakes_pressure_apply_current + 3.f * Device.fTimeDelta * press;
-
-	if (m_brakes_pressure_apply_angle < 0.f)
-		m.rotateZ(deg2rad(angle) * m_brakes_pressure * m_brakes_pressure_apply_current);
-	else
-		m.rotateZ(-deg2rad(angle) * m_brakes_pressure * m_brakes_pressure_apply_current);
-
-	return true;
-}
-
-bool CCar::UpdateEngineGauge(Fmatrix& m)
-{
-	float rpm = 0.f;
-	float twist = 0.f;
-	float gas = 1.25f;
-	if (e_state_drive != drive || IsTransmissionSwitching())
-		gas = 1.f;
-	if (!b_engine_on)
-		m_engine_current = 0.f;
-	else
-	{
-		rpm = 1.2f * gas * ((m_current_rpm - m_min_rpm) / (m_max_rpm - m_min_rpm));
-		twist = rpm;
-		clamp(twist, 0.f, 1.f);
-		clamp(rpm, 0.f, 1.f);
-		if (!m_engine_stage)
-		{
-			m_engine_current += m_engine_speed * (10.f + 50.f * rpm) * gas * Device.fTimeDelta;
-			if (m_engine_current >= 1.f)
-			{
-				m_engine_current = 1.f;
-				m_engine_stage = true;
-			}
-		}
-		else
-		{
-			m_engine_current -= m_engine_speed * (10.f + 50.f * rpm) * gas * Device.fTimeDelta;
-			if (m_engine_current <= -1.f)
-			{
-				m_engine_current = -1.f;
-				m_engine_stage = false;
-			}
-		}
-	}
-
-	m.rotateZ(-(m_engine_current * (1.f - rpm) * deg2rad(m_engine_angle) * gas + (twist * deg2rad(m_engine_angle)) * gas));
-
-	return true;
-}
-
-bool CCar::UpdateGearGauge(CBoneInstance* B, Fmatrix& m)
-{
-	float angle_x = m_gear_park_angle_x;
-	float angle_z = m_gear_middle_angle;
-	if (Owner())
-	{
-		if (!m_gear_manual)
-		{
-			if (b_engine_on || GetSpeedKmH() > 1.f)
-			{
-				if (m_current_transmission_num == 0)
-					angle_x = m_gear_reverse_angle_x;
-				else
-					angle_x = m_gear_drive_angle_x;
-			}
-		}
-		else
-		{
-			if (IsTransmissionSwitching())
-			{
-				angle_x = m_gear_park_angle_x;
-			}
-			else
-			{
-				if (m_current_transmission_num == 0)
-				{
-					angle_x = m_gear_reverse_angle_x;
-				}
-				else
-				{
-					if (m_current_transmission_num % 2 == 1)
-						angle_x = m_gear_drive_angle_x;
-					else
-						angle_x = m_gear_reverse_angle_x;
-				}
-			}
-
-			if (m_current_transmission_num == 0 || m_current_transmission_num > 4)
-				angle_z = m_gear_right_angle;
-			else
-				if (m_current_transmission_num < 3)
-					angle_z = m_gear_left_angle;
-				else
-					angle_z = m_gear_middle_angle;
-		}
-		float delay = m_transmission_switch_delay;
-		if (delay > 0.f)
-		{
-			clamp(delay, 0.f, 1.f);
-			float spd = (50.f + 150.f * (1.f - delay)) * m_gear_speed * Device.fTimeDelta;
-			if (m_gear_current_angle_x != angle_x)
-			{
-				if (m_gear_current_angle_x > angle_x)
-				{
-					m_gear_current_angle_x -= spd;
-					clamp(m_gear_current_angle_x, angle_x, m_gear_current_angle_x);
-				}
-				else
-				{
-					m_gear_current_angle_x += spd;
-					clamp(m_gear_current_angle_x, m_gear_current_angle_x, angle_x);
-				}
-			}
-			else
-			{
-				if (m_gear_current_angle_z > angle_z)
-				{
-					m_gear_current_angle_z -= spd * 0.5f;
-					clamp(m_gear_current_angle_z, angle_z, m_gear_current_angle_z);
-				}
-				if (m_gear_current_angle_z < angle_z)
-				{
-					m_gear_current_angle_z += spd * 0.5f;
-					clamp(m_gear_current_angle_z, m_gear_current_angle_z, angle_z);
-				}
-			}
-			angle_x = m_gear_current_angle_x;
-			angle_z = m_gear_current_angle_z;
-		}
-	}
-	if (m_gear_manual)
-	{
-		Fmatrix n;
-		n.rotateZ(deg2rad(angle_z));
-		B->mTransform.mulB_43(n);
-	}
-	m.rotateX(deg2rad(angle_x));
-
-	return true;
-}
-
-bool CCar::UpdateClockSecondsGauge(Fmatrix& m)
-{
-	if (!m_clock_seconds_real)
-		m.rotateZ(deg2rad(m_clock_seconds_offset * 6.f) - deg2rad(Level().GetGameDayTimeSec() * 6.f));
-	else
-		m.rotateZ(deg2rad(m_clock_seconds_offset * 6.f) - deg2rad(Level().GetGameDayTimeSec() * 6.f / Level().GetGameTimeFactor()));
-
-	return true;
-}
-
-bool CCar::UpdateClockMinutesGauge(Fmatrix& m)
-{
-	m.rotateZ(deg2rad(m_clock_minutes_offset * 6.f) - deg2rad(Level().GetGameDayTimeSec() / 10.f));
-
-	return true;
-}
-
-bool CCar::UpdateClockHoursGauge(Fmatrix& m)
-{
-	m.rotateZ(deg2rad(m_clock_hours_offset * 30.f) - deg2rad(Level().GetGameDayTimeSec() / 120.f));
-
-	return true;
 }
 
 void CCar::cb_Suspension(CBoneInstance* B)
@@ -1581,7 +948,6 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 	}
 									
 	CDamagableItem::RestoreEffect();
-	
 
 	if (ini)
 	{
@@ -1738,46 +1104,6 @@ void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, S
 		Car->m_body_surface_flotation = Params->Flotation;
 		cphc.SetFlotation(bo1, SurfaceMaterial, Params->Flotation);
 	}
-}
-
-static const char* GetRamPushType(CObject* object)
-{
-	if (smart_cast<CAI_Bloodsucker*>(object))
-		return "bloodsucker";
-	if (smart_cast<CAI_Boar*>(object))
-		return "boar";
-	if (smart_cast<CBurer*>(object))
-		return "burer";
-	if (smart_cast<CCat*>(object))
-		return "cat";
-	if (smart_cast<CChimera*>(object))
-		return "chimera";
-	if (smart_cast<CController*>(object))
-		return "controller";
-	if (smart_cast<CAI_Dog*>(object))
-		return "dog";
-	if (smart_cast<CAI_Flesh*>(object))
-		return "flesh";
-	if (smart_cast<CFracture*>(object))
-		return "fracture";
-	if (smart_cast<CPoltergeist*>(object))
-		return "poltergeist";
-	if (smart_cast<CAI_PseudoDog*>(object))
-		return "pseudodog";
-	if (smart_cast<CPseudoGigant*>(object))
-		return "pseudogiant";
-	if (smart_cast<CSnork*>(object))
-		return "snork";
-	if (smart_cast<CTushkano*>(object))
-		return "tushkano";
-	if (smart_cast<CZombie*>(object))
-		return "zombie";
-	if (smart_cast<CAI_Rat*>(object))
-		return "rat";
-	if (smart_cast<CAI_Stalker*>(object))
-		return "npc";
-
-	return nullptr;
 }
 
 void CCar::PrepareSlideGeometry()
@@ -2007,36 +1333,43 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 
 		bool XFace;
 		if (std::fabs(DX) >= std::fabs(DZ) * 1.1f)
+		{
 			XFace = true;
+		}
 		else if (std::fabs(DZ) >= std::fabs(DX) * 1.1f)
+		{
 			XFace = false;
+		}
 		else
 		{
-			// Near a corner prefer the face the contact normal belongs to.
-			XFace = std::fabs(Normal.dotproduct(SlideAxisX)) >=
-				std::fabs(Normal.dotproduct(SlideAxisZ));
+			XFace = std::fabs(Normal.dotproduct(SlideAxisX)) >= std::fabs(Normal.dotproduct(SlideAxisZ));
 		}
 
-		// Only the coordinate along the slide axis marks the end of the face.
-		// The other coordinate is always at the face boundary for a box contact.
 		NearEnd = std::fabs(XFace ? DZ : DX) > 0.85f;
 
 		Fvector LocalSlide;
 		if (XFace)
-			LocalSlide.set(0.f, 0.f, 1.f); // side face -> slide along car forward/back
+		{
+			// side face -> slide along car forward/back
+			LocalSlide.set(0.f, 0.f, 1.f); 
+		}
 		else
-			LocalSlide.set(1.f, 0.f, 0.f); // front/rear face -> slide sideways
+		{
+			// front/rear face -> slide sideways
+			LocalSlide.set(1.f, 0.f, 0.f); 
+		}
 
-		// The contact offset along the face picks which end of the bumper the
-		// mutant should use when it hits exactly head-on and all velocity
-		// sources point into the car.
 		SideBias = Local.dotproduct(LocalSlide);
 
 		SlideAxis = XFace ? SlideAxisZ : SlideAxisX;
 		if (SlideAxis.magnitude() > EPS_L)
+		{
 			SlideAxis.normalize_safe();
+		}
 		else
+		{
 			SlideAxis.set(0.f, 0.f, 0.f);
+		}
 	}
 
 	bool HasParentCollision = false;
@@ -2059,21 +1392,20 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 		}
 	}
 
-	// If the box face is unusable (a wheel protruding from the box, a damaged
-	// car, etc.), derive a tangent from the contact normal instead.
 	if (SlideAxis.magnitude() <= EPS_L)
 	{
 		SlideAxis.crossproduct(Normal, Fvector().set(0.f, 1.f, 0.f));
 		SlideAxis.y = 0.f;
 		if (SlideAxis.magnitude() > EPS_L)
+		{
 			SlideAxis.normalize_safe();
+		}
 		else
+		{
 			SlideAxis.set(0.f, 0.f, 0.f);
+		}
 	}
 
-	// A stationary car with the engine, transmission and throttle engaged is
-	// already applying force toward the mutant even while its measured
-	// velocity is still zero. Give the contact a small initial push.
 	float StartPushSpeed = 0.f;
 	if (Car->b_engine_on && Car->e_state_drive == CCar::drive && (Car->fwp || Car->bkp))
 	{
@@ -2086,14 +1418,10 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 			StartPushSpeed = Car->m_ram_start_push_speed;
 	}
 
-	// No impulse is applied to the car. The car's own collision reaction is
-	// left to ODE. The movement manager combines this contact with the
-	// mutant's path velocity every frame while the contact is fresh.
-	// Per-creature override: resolve the engine class once and use the
-	// central ram_push_scale table from vehicles.ltx. Unlisted classes keep
-	// the car's base value.
 	if (!Movement->RamPushScaleResolved())
-		Movement->ResolveRamPushScale(GetRamPushType(Other));
+	{
+		Movement->ResolveRamPushScale(Alive->RamPushType());
+	}
 
 	float RamPushScale = Car->m_ram_push_scale;
 	const float CharacterRamPushScale = Movement->RamPushScaleOverride();
@@ -2128,23 +1456,23 @@ void CCar::CarRamCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl*
 	Movement->SetCarContact(Contact);
 }
 
-void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
+void CCar::SpawnInitPhysics(CSE_Abstract* D)
 {
-	CSE_PHSkeleton		*so = smart_cast<CSE_PHSkeleton*>(D);
-	R_ASSERT						(so);
-	ParseDefinitions				();//parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
-	LoadBoneMap						();//fill in bone_map
-	CreateSkeleton					(D);//creates m_pPhysicsShell
-	IKinematics *K					= smart_cast<IKinematics*>(Visual());
-	CInifile* ini					= K->LL_UserData();
-	K->CalculateBones_Invalidate();//this need to call callbacks
-	K->CalculateBones	(TRUE);
-	Init							();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
+	CSE_PHSkeleton* so = smart_cast<CSE_PHSkeleton*>(D);
+	R_ASSERT(so);
+	ParseDefinitions(); // parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
+	LoadBoneMap();		// fill in bone_map
+	CreateSkeleton(D);	// creates m_pPhysicsShell
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	CInifile* ini = K->LL_UserData();
+	K->CalculateBones_Invalidate(); // this need to call callbacks
+	K->CalculateBones(TRUE);
+	Init(); // inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
 	PPhysicsShell()->add_ObjectContactCallback(CarBodySurfaceCallback);
 	PPhysicsShell()->add_ObjectContactCallback(CarRamCallback);
-	SetDefaultNetState				(so);
-	CPHUpdateObject::Activate       ();
+	SetDefaultNetState(so);
+	CPHUpdateObject::Activate();
 
 	if (ini)
 	{
@@ -2154,20 +1482,16 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 
 	ApplyBonePhysicsParams(K, ini);
 
-	// A new car starts with its engine doors closed. A loaded car must keep
-	// the saved leaf pose until the shell is restored; applying the motor here
-	// would move an open leaf only after the car is woken by the first touch.
 	if (!so->_flags.test(CSE_PHSkeleton::flSavedData))
 	{
 		SwitchEngineDoors();
 	}
 	else
 	{
-		// A loaded car keeps the saved leaf pose, but the hinge must not be
-		// left free: without a motor the doors swing under gravity after the
-		// shell is woken. Hold the current angle with zero velocity.
 		for (SEngineDoor& Door : engine_door)
+		{
 			Door.Hold();
+		}
 	}
 
 	BindGaugeAndSuspensionCallbacks(K, ini);
@@ -2175,11 +1499,13 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	NeutralDrive();
 	PressBreaks();
 
-	m_pPhysicsShell->Activate	(XFORM(), 0, XFORM());
-	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();
+	m_pPhysicsShell->Activate(XFORM(), 0, XFORM());
+
+	UpdateDashboardTelemetry();
+	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate();
 	smart_cast<IKinematics*>(Visual())->CalculateBones(TRUE);
 
-	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
+	m_pPhysicsShell->applyForce({0.f, 0.f, 0.f}, 0.00001f);
 
 	for (auto& Door : m_doors)
 	{
@@ -2193,24 +1519,27 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 {
 	if (!ini->line_exist("car_definition", "character_scraper"))
+	{
 		return;
+	}
 
 	characters_scraper_shell = P_create_Shell();
 	CPhysicsElement* RootElement = P_create_Element();
 	bool HasGeometry = false;
 
-	// Build a compound from the car bone boxes instead of one visual AABB.
-	// The AABB includes empty corners outside the bodywork and makes the car
-	// push nearby ragdolls from several metres away.
 	for (auto& Bone : bone_map)
 	{
 		const u16 BoneId = Bone.first;
 		if (BoneId >= bones_bind_forms.size())
+		{
 			continue;
+		}
 
 		Fobb BoneBox = K->LL_GetBox(BoneId);
 		if (BoneBox.m_halfsize.magnitude() < EPS_L)
+		{
 			continue;
+		}
 
 		Fobb LocalBox;
 		LocalBox.transform(BoneBox, bones_bind_forms[BoneId]);
@@ -2232,8 +1561,6 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	characters_scraper_shell->add_Element(RootElement);
 
 	characters_scraper_shell->SetIgnoreStatic();
-	// Do not call SetIgnoreDynamic(): characters and ragdolls are dynamic
-	// shells too. The contact callback rejects the car itself and items.
 	characters_scraper_shell->set_ApplyByGravity(FALSE);
 	characters_scraper_shell->setMass(50.f);
 	characters_scraper_shell->SetMaterial(K->LL_GetData(K->LL_GetBoneRoot()).game_mtl_idx);
@@ -2363,215 +1690,42 @@ void CCar::BindGaugeAndSuspensionCallbacks(IKinematics* K, CInifile* ini)
 			continue;
 
 		const u16 BoneId = Bone.second;
-		if (ini->line_exist(Section, "speedometer"))
-			BindSpeedometerGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "tachometer"))
-			BindTachometerGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "fuel"))
-			BindFuelGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "temp"))
-			BindTemperatureGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "gauge"))
-			BindGenericGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "fan"))
-			BindFanGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "pressure"))
-			BindPressureGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "battery"))
-			BindBatteryGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "brakes_pressure"))
-			BindBrakesPressureGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "brakes_pressure_apply"))
-			BindBrakesPressureApplyGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "blower"))
-			BindBlowerGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "engine"))
-			BindEngineGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "gear"))
-			BindGearGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "clock_seconds"))
-			BindClockSecondsGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "clock_minutes"))
-			BindClockMinutesGauge(Section, BoneId, K, ini);
-		if (ini->line_exist(Section, "clock_hours"))
-			BindClockHoursGauge(Section, BoneId, K, ini);
+		Dashboard.BindBone(*K, *ini, Section, BoneId);
 		if (ini->line_exist(Section, "suspension"))
 			BindSuspension(Section, BoneId, K, ini);
 	}
 }
 
-void CCar::BindGaugeCallback(IKinematics* K, u16 BoneId, int GaugeType)
+void CCar::UpdateDashboardTelemetry()
 {
-	m_gauge_params.push_back(xr_make_unique<Gauge_struct>(this, GaugeType));
-	m_gauge_bones.push_back(BoneId);
-	K->LL_GetBoneInstance(BoneId).set_callback(bctCustom, cb_Gauge, m_gauge_params.back().get());
-}
+	if (Dashboard.Empty())
+		return;
 
-void CCar::BindSpeedometerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_speedometer);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "speedometer_factor"))
-		m_speedometer_factor = ini->r_float(Section, "speedometer_factor");
-	if (ini->line_exist(Section, "speedometer_max_speed"))
-		m_speedometer_max_speed = ini->r_float(Section, "speedometer_max_speed");
-	if (ini->line_exist(Section, "speedometer_min_speed"))
-		m_speedometer_min_speed = ini->r_float(Section, "speedometer_min_speed");
-	if (ini->line_exist(Section, "speedometer_offset"))
-		m_speedometer_offset = ini->r_float(Section, "speedometer_offset");
-}
+	SCarTelemetry Telemetry;
+	Telemetry.HasDriveWheels = !m_driving_wheels.empty();
+	if (Telemetry.HasDriveWheels)
+	{
+		float Speed = 0.f;
+		for (auto& WheelDrive : m_driving_wheels)
+			Speed += _abs(WheelDrive.ASpeed()) * WheelDrive.pwheel->radius;
+		Telemetry.DriveWheelsSpeed = Speed / m_driving_wheels.size();
+	}
 
-void CCar::BindTachometerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_tachometer);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "tachometer_factor"))
-		m_tachometer_factor = ini->r_float(Section, "tachometer_factor");
-	if (ini->line_exist(Section, "tachometer_min_rpm"))
-		m_tachometer_min_rpm = ini->r_float(Section, "tachometer_min_rpm");
-}
-
-void CCar::BindFuelGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_fuel);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "fuel_angle"))
-		m_fuel_angle = ini->r_float(Section, "fuel_angle");
-	if (ini->line_exist(Section, "fuel_offset"))
-		m_fuel_offset = ini->r_float(Section, "fuel_offset");
-}
-
-void CCar::BindTemperatureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_temp);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "temp_angle"))
-		m_temp_angle = ini->r_float(Section, "temp_angle");
-	if (ini->line_exist(Section, "temp_offset"))
-		m_temp_offset = ini->r_float(Section, "temp_offset");
-}
-
-void CCar::BindGenericGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_gauge);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "gauge_angle"))
-		m_gauge_angle = ini->r_float(Section, "gauge_angle");
-}
-
-void CCar::BindFanGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_fan);
-	if (ini->line_exist(Section, "fan_speed"))
-		m_fan_speed = ini->r_float(Section, "fan_speed");
-	if (ini->line_exist(Section, "fan_engine"))
-		m_fan_engine = ini->r_bool(Section, "fan_engine");
-}
-
-void CCar::BindPressureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_pressure);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "pressure_max_angle"))
-		m_pressure_max_angle = ini->r_float(Section, "pressure_max_angle");
-	if (ini->line_exist(Section, "pressure_idle_angle"))
-		m_pressure_idle_angle = ini->r_float(Section, "pressure_idle_angle");
-	if (ini->line_exist(Section, "pressure_factor"))
-		m_pressure_factor = ini->r_float(Section, "pressure_factor");
-	if (ini->line_exist(Section, "pressure_offset"))
-		m_pressure_offset = ini->r_float(Section, "pressure_offset");
-}
-
-void CCar::BindBatteryGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_battery);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "battery_factor"))
-		m_battery_factor = ini->r_float(Section, "battery_factor");
-	if (ini->line_exist(Section, "battery_angle"))
-		m_battery_angle = ini->r_float(Section, "battery_angle");
-}
-
-void CCar::BindBrakesPressureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_brakes_pressure);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "brakes_pressure_factor"))
-		m_brakes_pressure_factor = ini->r_float(Section, "brakes_pressure_factor");
-	if (ini->line_exist(Section, "brakes_pressure_max_angle"))
-		m_brakes_pressure_max_angle = ini->r_float(Section, "brakes_pressure_max_angle");
-}
-
-void CCar::BindBrakesPressureApplyGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_brakes_pressure_apply);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "brakes_pressure_apply_angle"))
-		m_brakes_pressure_apply_angle = ini->r_float(Section, "brakes_pressure_apply_angle");
-}
-
-void CCar::BindBlowerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_blower);
-	if (ini->line_exist(Section, "blower_angle"))
-		m_blower_angle = ini->r_float(Section, "blower_angle");
-}
-
-void CCar::BindEngineGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_engine);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "engine_angle"))
-		m_engine_angle = ini->r_float(Section, "engine_angle");
-	if (ini->line_exist(Section, "engine_speed"))
-		m_engine_speed = ini->r_float(Section, "engine_speed");
-}
-
-void CCar::BindGearGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, gauge_gear);
-	if (ini->line_exist(Section, "gear_manual"))
-		m_gear_manual = ini->r_bool(Section, "gear_manual");
-	if (ini->line_exist(Section, "gear_speed"))
-		m_gear_speed = ini->r_float(Section, "gear_speed");
-	if (ini->line_exist(Section, "gear_park_angle_x"))
-		m_gear_park_angle_x = ini->r_float(Section, "gear_park_angle_x");
-	if (ini->line_exist(Section, "gear_drive_angle_x"))
-		m_gear_drive_angle_x = ini->r_float(Section, "gear_drive_angle_x");
-	if (ini->line_exist(Section, "gear_reverse_angle_x"))
-		m_gear_reverse_angle_x = ini->r_float(Section, "gear_reverse_angle_x");
-	if (ini->line_exist(Section, "gear_left_angle"))
-		m_gear_left_angle = ini->r_float(Section, "gear_left_angle");
-	if (ini->line_exist(Section, "gear_middle_angle"))
-		m_gear_middle_angle = ini->r_float(Section, "gear_middle_angle");
-	if (ini->line_exist(Section, "gear_right_angle"))
-		m_gear_right_angle = ini->r_float(Section, "gear_right_angle");
-}
-
-void CCar::BindClockSecondsGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, clock_seconds);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "clock_seconds_offset"))
-		m_clock_seconds_offset = ini->r_float(Section, "clock_seconds_offset");
-	if (ini->line_exist(Section, "clock_seconds_real"))
-		m_clock_seconds_real = ini->r_bool(Section, "clock_seconds_real");
-}
-
-void CCar::BindClockMinutesGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, clock_minutes);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "clock_minutes_offset"))
-		m_clock_minutes_offset = ini->r_float(Section, "clock_minutes_offset");
-}
-
-void CCar::BindClockHoursGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
-{
-	BindGaugeCallback(K, BoneId, clock_hours);
-	pribor_arrows.emplace(BoneId);
-	if (ini->line_exist(Section, "clock_hours_offset"))
-		m_clock_hours_offset = ini->r_float(Section, "clock_hours_offset");
+	Telemetry.SpeedKmh = GetSpeedKmH();
+	Telemetry.Rpm = m_current_rpm;
+	Telemetry.MinRpm = m_min_rpm;
+	Telemetry.MaxRpm = m_max_rpm;
+	Telemetry.FuelRatio = m_fuel / m_fuel_tank;
+	Telemetry.BrakeElapsed = Device.fTimeGlobal - m_break_start;
+	Telemetry.BrakeTime = m_break_time;
+	Telemetry.TransmissionSwitchDelay = m_transmission_switch_delay;
+	Telemetry.Gear = m_current_transmission_num;
+	Telemetry.EngineOn = b_engine_on;
+	Telemetry.Drive = e_state_drive == drive;
+	Telemetry.TransmissionSwitching = IsTransmissionSwitching();
+	Telemetry.Brakes = b_breaks;
+	Telemetry.HasDriver = Owner() != nullptr;
+	Dashboard.SetTelemetry(Telemetry);
 }
 
 void CCar::BindSuspension(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini)
@@ -2603,15 +1757,15 @@ void	CCar::net_Destroy()
 		};
 
 		for (u16 BoneId : m_steers)
+		{
 			ResetCallback(BoneId);
-		for (u16 BoneId : m_gauge_bones)
-			ResetCallback(BoneId);
+		}
+		Dashboard.Unbind(pKinematics);
 		for (u16 BoneId : m_suspension_bones)
+		{
 			ResetCallback(BoneId);
+		}
 
-		// Closed doors use a custom callback to stay in their closed pose.
-		// Clear it before m_doors is destroyed so it cannot keep a dangling
-		// SDoor pointer in the visual.
 		for (const auto& Door : m_doors)
 		{
 			if (Door.first == BI_NONE || Door.first >= pKinematics->LL_BoneCount())
@@ -2621,9 +1775,8 @@ void	CCar::net_Destroy()
 				BI.reset_callback();
 		}
 	}
-	m_gauge_params.clear();
+	Dashboard.Unbind(nullptr);
 	m_suspension_params.clear();
-	m_gauge_bones.clear();
 	m_suspension_bones.clear();
 	return_bones.clear();
 	m_lights.TurnOffLights();
@@ -2645,8 +1798,7 @@ void	CCar::net_Destroy()
 	CHolderCustom::detach_Actor();
 	if (WasOwned)
 	{
-		psSoundCarFactor = 1.f;
-		CarCabinSound::SetCabinMuffling(0.0f);
+		ResetCabinSound();
 	}
 	ClearExhausts();
 	for (auto& i_w : m_wheels_map)
@@ -2664,7 +1816,6 @@ void	CCar::net_Destroy()
 	m_breaking_wheels.clear();
 	engine_door.clear();
 	headlight_hideaways.clear();
-	pribor_arrows.clear();
 	RemoveGrassSpheres();
 	for (auto& i_d : m_doors)
 	{
@@ -2707,7 +1858,6 @@ void CCar::net_Save(NET_Packet& P)
 	P.w_float(m_fuel);
 }
 
-
 bool CCar::net_SaveRelevant()
 {
 	return TRUE;
@@ -2738,25 +1888,17 @@ void CCar::SaveNetState(NET_Packet& P)
 	P.w_float(GetfHealth());
 }
 
-
 void CCar::RestoreNetState(CSE_PHSkeleton* po)
 {
-	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))return;
+	if (!po->_flags.test(CSE_PHSkeleton::flSavedData))
+	{
+		return;
+	}
 
-	// flActive is the shell state saved by CPHSkeleton::SaveNetState().
-	// Read it before RestoreNetState() clears flSavedData.
 	const bool SavedEnabled = po->_flags.test(CSE_PHSkeleton::flActive);
 
-	// CPHSkeleton::RestoreNetState() applies the saved element states only when
-	// their count matches the current shell. A complete saved state already
-	// contains the suspension compression, so remember whether it was applied.
-	const bool SavedShellApplied =
-		po->saved_bones.bones.size() == size_t(PHGetSyncItemsNumber());
+	const bool SavedShellApplied = po->saved_bones.bones.size() == size_t(PHGetSyncItemsNumber());
 
-	// Older saves quantize all element positions to the range of the whole
-	// saved state. Inactive elements (closed doors) contribute (0,0,0), so for
-	// a car away from the world origin the q8 step becomes metres. Detect such
-	// a degraded range and do not trust the saved wheel transforms from it.
 	const Fvector SavedMin = po->saved_bones.get_min();
 	const Fvector SavedMax = po->saved_bones.get_max();
 	Fvector SavedRange;
@@ -2769,24 +1911,24 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	if (!SavedRangeSane)
 	{
 		Msg("! [car-load] %s: degraded saved element range (%.1f, %.1f, %.1f); wheels reset, re-save the game",
-			cName().c_str(), SavedRange.x, SavedRange.y, SavedRange.z);
+			cName().c_str(),
+			SavedRange.x,
+			SavedRange.y,
+			SavedRange.z);
 	}
 
 	CPHSkeleton::RestoreNetState(po);
-	
-	CSE_ALifeCar* co=smart_cast<CSE_ALifeCar*>(po);
+
+	CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(po);
 	if (co != nullptr)
 	{
-		// Saved bone transforms are authoritative for an online car. The
-		// server o_Position/o_Angle is only a coarse ALife position and can be
-		// one frame behind the shell. Transforming the shell by that delta
-		// moved cars into the ground or rotated them on uneven terrain, and
-		// the next physics step launched them.
 		size_t DoorIndex = 0;
 		for (auto& Door : m_doors)
 		{
 			if (DoorIndex >= co->door_states.size())
+			{
 				break;
+			}
 			Door.second.RestoreNetState(co->door_states[DoorIndex++]);
 		}
 
@@ -2794,82 +1936,64 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 		for (auto& Wheel : m_wheels_map)
 		{
 			if (WheelIndex >= co->wheel_states.size())
+			{
 				break;
+			}
 			Wheel.second.RestoreNetState(co->wheel_states[WheelIndex++]);
 		}
 	}
 
-	// GetGlobalTransformDynamic() refreshes every element mXFORM from its body
-	// and then builds the shell transform through m_object_in_root. Calculate
-	// the bones only after that: physics bone callbacks subtract the shell
-	// transform, so a stale or root-only transform offsets the visual parts
-	// from the chassis.
 	Fmatrix RestoredForm;
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
 
-	// Saved element states can be malformed (old saves, interrupted physics,
-	// or a body that was already displaced when the save was made). Put every
-	// active element back on its spawn-local position relative to the saved car
-	// root. This keeps the joints satisfied and prevents them from snapping and
-	// launching the car on the first touch. Wheel elements are special: their
-	// saved transform is the suspension compression and must be kept when it is
-	// plausible.
-	const bool SavedWheelsTrusted =
-		RestoreAllElementSpawnLocalTransforms(RestoredForm, SavedRangeSane);
+	const bool SavedWheelsTrusted = RestoreAllElementSpawnLocalTransforms(RestoredForm, SavedRangeSane);
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
 
-	// A complete saved pose already contains the wheel contact height. The
-	// activation box is built from the whole car AABB and lifts the shell on
-	// uneven terrain even when the saved pose is valid, so use it only when
-	// the saved state could not be restored.
 	if (!SavedShellApplied || !SavedWheelsTrusted)
+	{
 		ResolveLoadPenetration();
+	}
 
 	if (SavedEnabled)
+	{
 		PPhysicsShell()->Enable();
+	}
 	else
+	{
 		PPhysicsShell()->Disable();
+	}
 
 	if (co != nullptr)
+	{
 		RestoreServerPose(co);
-
-	// A closed door is deactivated and has no bone callback, so
-	// CPHSkeleton::RestoreNetState() cannot apply its saved transform. The door
-	// now pins its visual bone in SDoor::Deactivate(); nothing else to do here.
-
-	// Door state is restored from the save. Do not drive the engine-door
-	// motors here: a disabled car keeps its leaves at the saved pose until the
-	// shell is woken, so applying a motor now would make an open leaf snap
-	// shut on the first touch. SwitchEngineDoors() is called only when the
-	// engine state actually changes.
+	}
 
 	PPhysicsShell()->GetGlobalTransformDynamic(&RestoredForm);
 	XFORM().set(RestoredForm);
 
-	// Engine doors follow the saved engine state and are snapped to the
-	// matching hinge limit. Normal doors keep the state stored in the save.
 	const bool EngineOn = m_has_saved_runtime_state ? m_saved_engine_on : b_engine_on;
 	for (SEngineDoor& Door : engine_door)
+	{
 		Door.ApplyEngineDoorState(EngineOn);
+	}
 
 	for (auto& Door : m_doors)
 	{
 		if (Door.second.state != SDoor::closed && Door.second.state != SDoor::broken)
+		{
 			Door.second.RebuildFromSavedOrientation();
+		}
 	}
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
 
-	// Suspension bone callbacks read wheel bone transforms, so a single pass
-	// leaves the suspension bones one frame stale. Recalculate after the wheel
-	// bones have been placed.
 	PKinematics(Visual())->CalculateBones_Invalidate();
 	PKinematics(Visual())->CalculateBones(TRUE);
-
 }
+
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 {
 	if(po->_flags.test(CSE_PHSkeleton::flSavedData))return;
@@ -2878,19 +2002,21 @@ void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 		i.second.SetDefaultNetState();
 	}
 }
+
 void CCar::shedule_Update(u32 dt)
 {
-	if(Level().Server && !getDestroy() && !b_exploded)
+	if (Level().Server && !getDestroy() && !b_exploded)
 	{
-		if(CSE_Abstract* DC = Level().Server->ID_to_entity(ID()))
+		if (CSE_Abstract* DC = Level().Server->ID_to_entity(ID()))
 		{
-			if(CSE_ALifeCar* secar = smart_cast<CSE_ALifeCar*>(DC))
+			if (CSE_ALifeCar* secar = smart_cast<CSE_ALifeCar*>(DC))
 			{
-				Fvector xyz; XFORM().getXYZ(xyz);
+				Fvector xyz;
+				XFORM().getXYZ(xyz);
 				secar->o_Angle.set(xyz);
 				secar->o_Position.set(Position());
 			}
- 		}
+		}
 	}
 	CInventoryOwner::UpdateInventoryOwner(dt);
 
@@ -2900,827 +2026,87 @@ void CCar::shedule_Update(u32 dt)
 	}
 
 	inherited::shedule_Update(dt);
-	if(CPHDestroyable::Destroyed())CPHDestroyable::SheduleUpdate(dt);
-	else	CPHSkeleton::Update(dt);
+	if (CPHDestroyable::Destroyed())
+	{
+		CPHDestroyable::SheduleUpdate(dt);
+	}
+	else
+	{
+		CPHSkeleton::Update(dt);
+	}
 
-	// The explosion itself can run inside physics processing, where a shell
-	// cannot be deactivated. Release the character scraper on the next
-	// schedule tick instead.
 	if (b_exploded)
+	{
 		DestroyCharacterScraper();
-	
-	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetfHealth()))
-		CarExplode();
+	}
 
-	if(b_exploded&&!m_explosion_flags.test(flExploding)&&!getEnabled())//!m_bExploding
-										setEnabled(TRUE);
+	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetfHealth()))
+	{
+		CarExplode();
+	}
+
+	if (b_exploded && !m_explosion_flags.test(flExploding) && !getEnabled()) //! m_bExploding
+	{
+		setEnabled(TRUE);
+	}
 #ifdef DEBUG
 	DbgSheduleUpdate();
 #endif
 }
 
-static shared_str ResolveDriverHandsSection(CActor* Actor)
-{
-	if (pSettings == nullptr)
-		return shared_str();
-
-	if (Actor != nullptr)
-	{
-		if (CCustomOutfit* Outfit = Actor->GetOutfit())
-		{
-			const shared_str& Section = Outfit->OutfitDesc().PlayerHudSection;
-			if (Section.size() != 0 && pSettings->line_exist(Section, "visual"))
-				return Section;
-		}
-	}
-
-	if (g_player_hud != nullptr)
-	{
-		const shared_str& Section = g_player_hud->section_name();
-		if (Section.size() != 0 && pSettings->line_exist(Section, "visual"))
-			return Section;
-	}
-
-	const char* DefaultSection = pSettings->read_if_exists<str_c>("actor", "player_hud_default", "actor_hud");
-	if (DefaultSection != nullptr && pSettings->line_exist(DefaultSection, "visual"))
-		return shared_str(DefaultSection);
-
-	return shared_str();
-}
-
 void CCar::LoadDriverHands()
 {
-	DestroyDriverHands();
-	m_driver_hands_source_section = ResolveDriverHandsSection(OwnerActor());
-
-	if (g_dedicated_server || OwnerActor() == nullptr || pSettings == nullptr || m_steers.empty())
-		return;
-
-	const char* Section = cNameSect_str();
-	if (Section == nullptr || !pSettings->section_exist(Section))
-		return;
-
-	if (!pSettings->read_if_exists<bool>(Section, "driver_hands", false))
-		return;
-
-	IKinematics* CarKinematics = PKinematics(Visual());
-	if (CarKinematics == nullptr)
-		return;
-
-	const char* BoneName = pSettings->read_if_exists<str_c>(Section, "driver_hands_steer_bone", "");
-	if (BoneName == nullptr || BoneName[0] == '\0')
-		BoneName = pSettings->read_if_exists<str_c>(Section, "driver_hands_bone", "stearing_wheel");
-	u16 SteerBone = BoneName != nullptr ? CarKinematics->LL_BoneID(BoneName) : BI_NONE;
-	if (SteerBone == BI_NONE || SteerBone >= CarKinematics->LL_BoneCount())
-		SteerBone = m_steers.front();
-	if (SteerBone == BI_NONE || SteerBone >= CarKinematics->LL_BoneCount())
-		return;
-
-	// The wheel bone callback rotates the visual wheel by m_steer_angle times
-	// the per-bone factor. The hand-over-hand target must use exactly the same
-	// value, otherwise the grips drift against the visible rim.
-	m_driver_hands_steer_factored = false;
-	m_driver_hands_steer_factor = 1.f;
-	if (CInifile* CarIni = CarKinematics->LL_UserData())
+	CCarDriverHands::SLoadParams Params;
+	if (OwnerActor() != nullptr && !m_steers.empty())
 	{
-		const char* FactorBone = (BoneName != nullptr && BoneName[0] != '\0') ? BoneName : CarKinematics->LL_BoneName_dbg(SteerBone);
-		string128 FactorKey;
-		xr_sprintf(FactorKey, "%s_factor", FactorBone);
-		if (CarIni->line_exist("car_definition", FactorKey))
-		{
-			m_driver_hands_steer_factor = CarIni->r_float("car_definition", FactorKey);
-			m_driver_hands_steer_factored = true;
-		}
+		Params.CarSection = cNameSect_str();
+		Params.CarKinematics = PKinematics(Visual());
+		Params.DefaultSteerBone = m_steers.front();
 	}
 
-	const shared_str HandsSection = m_driver_hands_source_section;
-	const char* VisualName = nullptr;
-	if (HandsSection.size() != 0)
-		VisualName = pSettings->read_if_exists<str_c>(HandsSection, "visual", nullptr);
-	if (VisualName == nullptr || VisualName[0] == '\0')
-		VisualName = pSettings->read_if_exists<str_c>(Section, "driver_hands_visual", "dynamics\\weapons\\wpn_hand\\wpn_hand_01");
-	if (VisualName == nullptr || VisualName[0] == '\0')
-		return;
-
-	string_path VisualFile;
-	xr_strconcat(VisualFile, VisualName, strext(VisualName) ? "" : ".ogf");
-	if (!FS.exist(_game_meshes_, VisualFile))
-	{
-		Msg("! [%s] driver hands visual not found: %s", Section, VisualName);
-		return;
-	}
-
-	IRenderVisual* Visual = ::Render->model_Create(VisualName);
-	IKinematics* HandsKinematics = Visual != nullptr ? Visual->dcast_PKinematics() : nullptr;
-	if (HandsKinematics == nullptr)
-	{
-		if (Visual != nullptr)
-			::Render->model_Delete(Visual);
-		return;
-	}
-
-	m_driver_hands_visual = Visual;
-	m_driver_hands_kinematics = HandsKinematics;
-	m_driver_hands_steer_bone = SteerBone;
-	m_driver_hands_position = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_position", Fvector().set(0.f, 0.45f, 0.10f));
-	m_driver_hands_rotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_rotation", Fvector().set(0.f, 0.f, 0.f));
-	m_driver_hands_left_grip = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_grip", Fvector().set(-0.16f, 0.f, 0.f));
-	m_driver_hands_right_grip = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_grip", Fvector().set(0.16f, 0.f, 0.f));
-	m_driver_hands_left_hand_rotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_hand_rotation", Fvector().set(0.f, 0.f, 0.f));
-	m_driver_hands_right_hand_rotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_hand_rotation", Fvector().set(0.f, 0.f, 0.f));
-	m_driver_hands_left_elbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_elbow", Fvector().set(-0.15f, -0.35f, -0.10f));
-	m_driver_hands_right_elbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_elbow", Fvector().set(0.15f, -0.35f, -0.10f));
-	m_driver_hands_scale = pSettings->read_if_exists<float>(Section, "driver_hands_scale", 1.f);
-	clamp(m_driver_hands_scale, 0.05f, 10.f);
-	m_driver_hands_reach_shift_speed = pSettings->read_if_exists<float>(Section, "driver_hands_reach_shift_speed", 15.f);
-	clamp(m_driver_hands_reach_shift_speed, 0.f, 120.f);
-	m_driver_hands_shoulder_width = pSettings->read_if_exists<float>(Section, "driver_hands_shoulder_width", -1.f);
-	if (m_driver_hands_shoulder_width > 0.f)
-		clamp(m_driver_hands_shoulder_width, 0.05f, 2.f);
-	m_driver_hands_regrip_enabled = pSettings->read_if_exists<bool>(Section, "driver_hands_regrip", false);
-	m_driver_hands_regrip_trigger = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_trigger", 15.f);
-	clamp(m_driver_hands_regrip_trigger, 0.f, 179.f);
-	m_driver_hands_regrip_end = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_end", 165.f);
-	clamp(m_driver_hands_regrip_end, 1.f, 180.f);
-	if (m_driver_hands_regrip_end <= m_driver_hands_regrip_trigger)
-		m_driver_hands_regrip_end = std::min(180.f, m_driver_hands_regrip_trigger + 1.f);
-	m_driver_hands_regrip_travel = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_travel", 90.f);
-	clamp(m_driver_hands_regrip_travel, 0.f, 180.f);
-	m_driver_hands_regrip_lift = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_lift", 0.07f);
-	clamp(m_driver_hands_regrip_lift, -0.2f, 0.2f);
-	m_driver_hands_regrip_over_radial = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_over_radial", 0.04f);
-	clamp(m_driver_hands_regrip_over_radial, 0.f, 0.15f);
-	m_driver_hands_regrip_debug = pSettings->read_if_exists<bool>(Section, "driver_hands_regrip_debug", false);
-	m_driver_hands_steer_twist = pSettings->read_if_exists<float>(Section, "driver_hands_steer_twist", 0.f);
-	clamp(m_driver_hands_steer_twist, -90.f, 90.f);
-	m_driver_hands_steer_twist_start = pSettings->read_if_exists<float>(Section, "driver_hands_steer_twist_start", 90.f);
-	clamp(m_driver_hands_steer_twist_start, 0.f, 179.f);
-	m_driver_hands_steer_twist_axis = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_steer_twist_axis", Fvector().set(0.f, 0.f, 1.f));
-	if (m_driver_hands_steer_twist_axis.magnitude() < EPS_L)
-		m_driver_hands_steer_twist_axis.set(0.f, 0.f, 1.f);
-	m_driver_hands_steer_twist_axis.normalize();
-	m_driver_hands_mirror_hand_rotation = pSettings->read_if_exists<bool>(Section, "driver_hands_mirror_hand_rotation", false);
-	m_driver_hands_left_clavicle = HandsKinematics->LL_BoneID("l_clavicle");
-	m_driver_hands_right_clavicle = HandsKinematics->LL_BoneID("r_clavicle");
-	m_driver_hands_left_ik[0] = HandsKinematics->LL_BoneID("l_upperarm");
-	m_driver_hands_left_ik[1] = HandsKinematics->LL_BoneID("l_forearm");
-	m_driver_hands_left_ik[2] = HandsKinematics->LL_BoneID("l_hand");
-	m_driver_hands_right_ik[0] = HandsKinematics->LL_BoneID("r_upperarm");
-	m_driver_hands_right_ik[1] = HandsKinematics->LL_BoneID("r_forearm");
-	m_driver_hands_right_ik[2] = HandsKinematics->LL_BoneID("r_hand");
-	m_driver_hands_ik_ready =
-		m_driver_hands_left_ik[0] != BI_NONE && m_driver_hands_left_ik[1] != BI_NONE && m_driver_hands_left_ik[2] != BI_NONE &&
-		m_driver_hands_right_ik[0] != BI_NONE && m_driver_hands_right_ik[1] != BI_NONE && m_driver_hands_right_ik[2] != BI_NONE;
-
-	if (!m_driver_hands_ik_ready)
-	{
-		Msg("! [%s] driver hands: IK arm bones not found", Section);
-		DestroyDriverHands();
-		return;
-	}
-
-	m_driver_hands_finger_angles[0] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_thumb", 30.f);
-	m_driver_hands_finger_angles[1] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_index", 40.f);
-	m_driver_hands_finger_angles[2] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_middle", 35.f);
-	m_driver_hands_finger_angles[3] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_others", 35.f);
-	for (u8 Group = 0; Group < 4; ++Group)
-		clamp(m_driver_hands_finger_angles[Group], -90.f, 90.f);
-
-	m_driver_hands_finger_speed = pSettings->read_if_exists<float>(Section, "driver_hands_finger_speed", 12.f);
-	clamp(m_driver_hands_finger_speed, 0.f, 120.f);
-
-	// Index and remaining fingers use the same local curl axis on both hands.
-	m_driver_hands_finger_axis[0].set(0.f, 0.f, -1.f);
-	m_driver_hands_finger_axis[1].set(0.f, 0.f, -1.f);
-
-	// The thumb has its own local axis. Values are fixed in the engine.
-	Fvector ThumbAxis[2];
-	ThumbAxis[0].set(0.f, -1.f, 0.f);
-	ThumbAxis[1].set(0.f, 0.f, 1.f);
-
-	for (u8 Hand = 0; Hand < 2; ++Hand)
-	{
-		m_driver_hands_finger_state[Hand][0].Axis = ThumbAxis[Hand];
-		m_driver_hands_finger_state[Hand][1].Axis = m_driver_hands_finger_axis[Hand];
-		m_driver_hands_finger_state[Hand][2].Axis = m_driver_hands_finger_axis[Hand];
-		m_driver_hands_finger_state[Hand][3].Axis = m_driver_hands_finger_axis[Hand];
-		for (u8 Group = 0; Group < 4; ++Group)
-			m_driver_hands_finger_state[Hand][Group].Angle = 0.f;
-	}
-
-	m_driver_hands_finger_bone_group.assign(HandsKinematics->LL_BoneCount(), 0xFF);
-	const auto AddFinger = [&](u8 Hand, u8 Group, std::initializer_list<const char*> Names)
-	{
-		for (const char* Name : Names)
-		{
-			const u16 Bone = HandsKinematics->LL_BoneID(Name);
-			if (Bone != BI_NONE && Bone < m_driver_hands_finger_bone_group.size())
-				m_driver_hands_finger_bone_group[Bone] = u8(Hand * 4 + Group);
-		}
-	};
-
-	AddFinger(0, 0, { "l_finger0", "l_finger01", "l_finger02" });
-	AddFinger(0, 1, { "bip01_l_finger1", "bip01_l_finger11", "bip01_l_finger12" });
-	AddFinger(0, 2, { "bip01_l_finger2", "bip01_l_finger21", "bip01_l_finger22" });
-	AddFinger(0, 3, { "bip01_l_finger3", "bip01_l_finger31", "bip01_l_finger32",
-		"bip01_l_finger4", "bip01_l_finger41", "bip01_l_finger42" });
-	AddFinger(1, 0, { "r_finger0", "r_finger01", "r_finger02" });
-	AddFinger(1, 1, { "bip01_r_finger1", "bip01_r_finger11", "bip01_r_finger12" });
-	AddFinger(1, 2, { "bip01_r_finger2", "bip01_r_finger21", "bip01_r_finger22" });
-	AddFinger(1, 3, { "bip01_r_finger3", "bip01_r_finger31", "bip01_r_finger32",
-		"bip01_r_finger4", "bip01_r_finger41", "bip01_r_finger42" });
-
-	m_driver_hands_left_hand_offset.identity();
-	m_driver_hands_right_hand_offset.identity();
-	m_driver_hands_ready = false;
-	m_driver_hands_ik_initialized = false;
-	m_driver_hands_bones_frame = 0;
-	m_driver_hands_xform.identity();
-	ResetDriverHandStates();
-
-	HandsKinematics->CalculateBones_Invalidate();
-	HandsKinematics->CalculateBones(TRUE);
-	HandsKinematics->LL_GetBindTransform(m_driver_hands_bind_pose);
-	if (m_driver_hands_bind_pose.size() != HandsKinematics->LL_BoneCount())
-	{
-		Msg("! [%s] driver hands: invalid bind pose", Section);
-		DestroyDriverHands();
-		return;
-	}
-
-	Msg("* [%s] driver hands: %s (hud %s, ik %s/%s/%s, %s/%s/%s)", Section, VisualName,
-		HandsSection.size() != 0 ? HandsSection.c_str() : "-",
-		HandsKinematics->LL_BoneName_dbg(m_driver_hands_left_ik[0]),
-		HandsKinematics->LL_BoneName_dbg(m_driver_hands_left_ik[1]),
-		HandsKinematics->LL_BoneName_dbg(m_driver_hands_left_ik[2]),
-		HandsKinematics->LL_BoneName_dbg(m_driver_hands_right_ik[0]),
-		HandsKinematics->LL_BoneName_dbg(m_driver_hands_right_ik[1]),
-		HandsKinematics->LL_BoneName_dbg(m_driver_hands_right_ik[2]));
-
-	if (m_driver_hands_regrip_debug)
-	{
-		Msg("* [%s] driver hands regrip: enabled=%d trigger=%.1f end=%.1f travel=%.1f lift=%.2f over=%.2f twist=%.1f start=%.1f wheel_factor=%.2f%s",
-			Section, m_driver_hands_regrip_enabled ? 1 : 0,
-			m_driver_hands_regrip_trigger, m_driver_hands_regrip_end,
-			m_driver_hands_regrip_travel, m_driver_hands_regrip_lift,
-			m_driver_hands_regrip_over_radial, m_driver_hands_steer_twist,
-			m_driver_hands_steer_twist_start, m_driver_hands_steer_factor,
-			m_driver_hands_steer_factored ? "" : " (unfactored)");
-	}
-}
-
-void CCar::ResetDriverHandStates()
-{
-	const auto ResetHand = [](SDriverHandState& Hand, const Fvector& Grip, float DefaultAngle)
-	{
-		const float Radius = sqrtf(Grip.x * Grip.x + Grip.y * Grip.y);
-		if (Radius > EPS_L)
-		{
-			Hand.HomeAngle = atan2f(Grip.y, Grip.x);
-			Hand.Radius = Radius;
-		}
-		else
-		{
-			Hand.HomeAngle = DefaultAngle;
-			Hand.Radius = 0.16f;
-		}
-
-		Hand.Z = Grip.z;
-	};
-
-	ResetHand(m_driver_hands_left_state, m_driver_hands_left_grip, PI);
-	ResetHand(m_driver_hands_right_state, m_driver_hands_right_grip, 0.f);
-	m_driver_hands_active_hand = 0;
-	m_driver_hands_active_sign = 0;
-	m_driver_hands_debug_hand = 0;
-	m_driver_hands_progress = 0.f;
-
-	for (u8 Hand = 0; Hand < 2; ++Hand)
-	{
-		for (u8 Group = 0; Group < 4; ++Group)
-			m_driver_hands_finger_state[Hand][Group].Angle = 0.f;
-	}
-}
-
-void CCar::UpdateDriverFingerStates(float Dt)
-{
-	for (u8 Hand = 0; Hand < 2; ++Hand)
-	{
-		const bool Active = (m_driver_hands_active_hand == u8(Hand + 1));
-		// Fingers open only while the regripping hand is actually in the air.
-		// At progress 0 and 1 the hand is on the rim and must grip again.
-		const bool InAir = Active && m_driver_hands_progress > EPS_L && m_driver_hands_progress < 1.f - EPS_L;
-		for (u8 Group = 0; Group < 4; ++Group)
-		{
-			SDriverFingerBend& State = m_driver_hands_finger_state[Hand][Group];
-			const float TargetDeg = InAir ? 0.f : m_driver_hands_finger_angles[Group];
-			const float Target = deg2rad(TargetDeg);
-			const float Alpha = (m_driver_hands_finger_speed > 0.f) ? (1.f - expf(-m_driver_hands_finger_speed * Dt)) : 1.f;
-			State.Angle += (Target - State.Angle) * Alpha;
-			if (fabsf(State.Angle) < 1e-5f)
-				State.Angle = 0.f;
-		}
-	}
+	DriverHands.Load(Params, CCarDriverHands::ResolveSection(OwnerActor()));
 }
 
 void CCar::DestroyDriverHands()
 {
-	if (m_driver_hands_visual != nullptr)
-	{
-		::Render->model_Delete(m_driver_hands_visual);
-		m_driver_hands_visual = nullptr;
-	}
-
-	ResetDriverHandStates();
-
-	m_driver_hands_kinematics = nullptr;
-	m_driver_hands_bind_pose.clear();
-	m_driver_hands_steer_bone = BI_NONE;
-	m_driver_hands_left_clavicle = BI_NONE;
-	m_driver_hands_right_clavicle = BI_NONE;
-	for (u16& Bone : m_driver_hands_left_ik)
-		Bone = BI_NONE;
-	for (u16& Bone : m_driver_hands_right_ik)
-		Bone = BI_NONE;
-	m_driver_hands_left_hand_offset.identity();
-	m_driver_hands_right_hand_offset.identity();
-	m_driver_hands_left_reach_shift.set(0.f, 0.f, 0.f);
-	m_driver_hands_right_reach_shift.set(0.f, 0.f, 0.f);
-	m_driver_hands_left_grip.set(0.f, 0.f, 0.f);
-	m_driver_hands_right_grip.set(0.f, 0.f, 0.f);
-	m_driver_hands_ik_ready = false;
-	m_driver_hands_ready = false;
-	m_driver_hands_ik_initialized = false;
-	m_driver_hands_bones_frame = 0;
+	DriverHands.Destroy();
 }
 
 void CCar::UpdateDriverHands()
 {
+	CActor* Driver = OwnerActor();
+	if (Driver == nullptr || !Driver->IsMyCamera())
+	{
+		DriverHands.Hide();
+		return;
+	}
+
 	// The hands model follows the player's equipped outfit. Reload it when
 	// the player's HUD hands section changes while sitting in the car.
-	if (OwnerActor() != nullptr && OwnerActor()->IsMyCamera())
-	{
-		const shared_str CurrentSection = ResolveDriverHandsSection(OwnerActor());
-		if (CurrentSection != m_driver_hands_source_section)
-			LoadDriverHands();
-	}
+	if (CCarDriverHands::ResolveSection(Driver) != DriverHands.SourceSection())
+		LoadDriverHands();
 
-	if (m_driver_hands_visual == nullptr || m_driver_hands_kinematics == nullptr || !m_driver_hands_ik_ready)
+	if (!HUDView())
 	{
-		m_driver_hands_ready = false;
+		DriverHands.Hide();
 		return;
 	}
 
-	if (OwnerActor() == nullptr || !OwnerActor()->IsMyCamera() || !HUDView())
-	{
-		m_driver_hands_ready = false;
-		m_driver_hands_left_reach_shift.set(0.f, 0.f, 0.f);
-		m_driver_hands_right_reach_shift.set(0.f, 0.f, 0.f);
-		ResetDriverHandStates();
-		return;
-	}
-
-	// The hands model is anchored to the driver seat, not to the steering
-	// wheel. The wheel only supplies the two grip targets; its rotation must
-	// not rotate the shoulders.
-	Fmatrix Anchor;
-	Anchor.mul_43(XFORM(), m_sits_transforms);
-
-	// driver_hands_rotation is XYZ Euler angles in degrees, in the seat
-	// frame. rotateX/rotateY/rotateZ are setters, so calling them in a row
-	// would keep only the last one and drop the scale; setXYZ builds the
-	// whole rotation and is then combined with the scale explicitly.
-	Fmatrix Setup;
-	Setup.scale(m_driver_hands_scale, m_driver_hands_scale, m_driver_hands_scale);
-
-	Fmatrix HandRot;
-	HandRot.setXYZ(deg2rad(m_driver_hands_rotation.x),
-		deg2rad(m_driver_hands_rotation.y),
-		deg2rad(m_driver_hands_rotation.z));
-	Setup.mulB_43(HandRot);
-
-	Setup.c.set(m_driver_hands_position);
-	m_driver_hands_xform.mul_43(Anchor, Setup);
-
-	m_driver_hands_kinematics->CalculateBones_Invalidate();
-	m_driver_hands_kinematics->CalculateBones(TRUE);
-
-	UpdateDriverFingerStates(std::clamp(Device.fTimeDelta, 0.f, 0.1f));
-
-	// An IKinematicsAnimated without a motion does not apply the bind pose, so
-	// every bone stays at the model origin and the hands collapse into a blob.
-	// Restore the bind skeleton explicitly before solving the arms.
-	const u16 HandsBoneCount = m_driver_hands_kinematics->LL_BoneCount();
-	for (u16 Bone = 0; Bone < HandsBoneCount; ++Bone)
-	{
-		CBoneInstance& Instance = m_driver_hands_kinematics->LL_GetBoneInstance(Bone);
-		Instance.mTransform.set(m_driver_hands_bind_pose[Bone]);
-		Instance.mRenderTransform.mul_43(Instance.mTransform, m_driver_hands_kinematics->LL_GetData(Bone).m2b_transform);
-	}
-
-	// Bend the fingers after the whole bind pose is restored. The delta is
-	// built around the bone's current model-space origin and its local axis,
-	// and TransformBone applies it to the whole child chain so the segments
-	// follow the parent instead of rotating in place.
-	for (u16 Bone = 0; Bone < HandsBoneCount; ++Bone)
-	{
-		if (Bone >= m_driver_hands_finger_bone_group.size())
-			break;
-
-		const u8 FingerState = m_driver_hands_finger_bone_group[Bone];
-		if (FingerState == 0xFF)
-			continue;
-
-		const SDriverFingerBend& State = m_driver_hands_finger_state[FingerState / 4][FingerState % 4];
-		if (fabsf(State.Angle) <= EPS_L)
-			continue;
-
-		CBoneInstance& Instance = m_driver_hands_kinematics->LL_GetBoneInstance(Bone);
-		const Fmatrix& BoneXform = Instance.mTransform;
-
-		Fvector AxisModel;
-		BoneXform.transform_dir(AxisModel, State.Axis);
-		if (AxisModel.magnitude() <= EPS_L)
-			continue;
-		AxisModel.normalize();
-
-		Fmatrix Delta;
-		Delta.rotation(AxisModel, State.Angle);
-		Fvector RotatedOrigin;
-		Delta.transform_dir(RotatedOrigin, BoneXform.c);
-		Delta.c.sub(BoneXform.c, RotatedOrigin);
-
-		CCameraRig::TransformBone(m_driver_hands_kinematics, Bone, Delta);
-	}
-
-	if (m_driver_hands_shoulder_width > 0.f)
-	{
-		// Shoulder width is a model-space X distance between the upper-arm
-		// roots. Translate the clavicles (their children carry the arms) so
-		// the shoulders can be narrowed or widened independently of the hand
-		// grips and the arm scale.
-		const Fvector LeftRoot = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_left_ik[0]).c;
-		const Fvector RightRoot = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_right_ik[0]).c;
-		const float CenterX = (LeftRoot.x + RightRoot.x) * 0.5f;
-		const float HalfWidth = m_driver_hands_shoulder_width * 0.5f;
-		const u16 LeftBone = m_driver_hands_left_clavicle != BI_NONE ? m_driver_hands_left_clavicle : m_driver_hands_left_ik[0];
-		const u16 RightBone = m_driver_hands_right_clavicle != BI_NONE ? m_driver_hands_right_clavicle : m_driver_hands_right_ik[0];
-
-		Fmatrix Delta;
-		Delta.identity();
-		Delta.c.set((CenterX - HalfWidth) - LeftRoot.x, 0.f, 0.f);
-		CCameraRig::TransformBone(m_driver_hands_kinematics, LeftBone, Delta);
-
-		Delta.identity();
-		Delta.c.set((CenterX + HalfWidth) - RightRoot.x, 0.f, 0.f);
-		CCameraRig::TransformBone(m_driver_hands_kinematics, RightBone, Delta);
-	}
-
-	IKinematics* CarKinematics = PKinematics(Visual());
-	if (CarKinematics == nullptr || m_driver_hands_steer_bone >= CarKinematics->LL_BoneCount())
-	{
-		m_driver_hands_ready = false;
-		return;
-	}
-
-	if (m_driver_hands_bones_frame != Device.dwFrame)
-	{
-		CarKinematics->CalculateBones_Invalidate();
-		CarKinematics->CalculateBones(TRUE);
-		m_driver_hands_bones_frame = Device.dwFrame;
-	}
-
-	Fmatrix WheelWorld;
-	CarKinematics->LL_GetBoneWorldTransform(m_driver_hands_steer_bone, XFORM(), WheelWorld);
-
-	Fmatrix HandsInverse = m_driver_hands_xform;
-	HandsInverse.invert();
-
-	// The hand orientation offset must be calibrated against the wheel's
-	// neutral (bind) rotation, not its current steering angle. Otherwise
-	// entering a car with the wheel already turned leaves the palms rotated
-	// as if the wheel were straight.
-	xr_vector<Fmatrix> CarBind;
-	CarKinematics->LL_GetBindTransform(CarBind);
-	Fmatrix WheelNeutralWorld = WheelWorld;
-	if (m_driver_hands_steer_bone < CarBind.size())
-		WheelNeutralWorld.mul_43(XFORM(), CarBind[m_driver_hands_steer_bone]);
-
-	if (!m_driver_hands_ik_initialized)
-	{
-		// Preserve the authored bind orientation of each hand. The stored
-		// offset is wheel-local, so the palms follow the wheel while the arms
-		// are solved independently.
-		const auto Calibrate = [this, &WheelNeutralWorld](u16 HandBone, const Fmatrix& ConfigRot, Fmatrix& Offset)
-		{
-			Fmatrix HandRot = m_driver_hands_kinematics->LL_GetTransform(HandBone);
-			HandRot.c.set(0.f, 0.f, 0.f);
-			HandRot.mulB_43(ConfigRot);
-
-			Fmatrix HandsRot = m_driver_hands_xform;
-			HandsRot.c.set(0.f, 0.f, 0.f);
-
-			Fmatrix HandWorldRot;
-			HandWorldRot.mul_43(HandsRot, HandRot);
-
-			Fmatrix WheelRot = WheelNeutralWorld;
-			WheelRot.c.set(0.f, 0.f, 0.f);
-			WheelRot.invert();
-
-			Offset.mul_43(WheelRot, HandWorldRot);
-			Offset.c.set(0.f, 0.f, 0.f);
-		};
-
-		Fmatrix LeftConfigRot;
-		LeftConfigRot.setXYZ(deg2rad(m_driver_hands_left_hand_rotation.x),
-			deg2rad(m_driver_hands_left_hand_rotation.y),
-			deg2rad(m_driver_hands_left_hand_rotation.z));
-
-		Fmatrix RightConfigRot;
-		if (m_driver_hands_mirror_hand_rotation)
-		{
-			// Mirror the left hand's deviation from its bind pose in model
-			// space:
-			// C_right = B_right * M * B_left^-1 * C_left * B_left * M * B_right^-1.
-			// Fmatrix::mul_43(A, B) computes B * A, so the operands are
-			// passed in the reverse order.
-			Fmatrix HandRotLeft = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_left_ik[2]);
-			HandRotLeft.c.set(0.f, 0.f, 0.f);
-			Fmatrix HandRotRight = m_driver_hands_kinematics->LL_GetTransform(m_driver_hands_right_ik[2]);
-			HandRotRight.c.set(0.f, 0.f, 0.f);
-
-			Fmatrix Mirror;
-			Mirror.identity();
-			Mirror.i.x = -1.f;
-
-			// Mirror about the wheel's neutral left-right plane, not the
-			// hands model X axis: on an offset or tilted wheel those differ.
-			Fvector Normal;
-			HandsInverse.transform_dir(Normal, WheelNeutralWorld.i);
-			if (Normal.magnitude() > EPS_L)
-			{
-				Normal.normalize();
-				const float nx = Normal.x;
-				const float ny = Normal.y;
-				const float nz = Normal.z;
-				Mirror._11 = 1.f - 2.f * nx * nx;
-				Mirror._12 = -2.f * nx * ny;
-				Mirror._13 = -2.f * nx * nz;
-				Mirror._21 = -2.f * ny * nx;
-				Mirror._22 = 1.f - 2.f * ny * ny;
-				Mirror._23 = -2.f * ny * nz;
-				Mirror._31 = -2.f * nz * nx;
-				Mirror._32 = -2.f * nz * ny;
-				Mirror._33 = 1.f - 2.f * nz * nz;
-			}
-
-			Fmatrix LeftInv;
-			LeftInv.invert(HandRotLeft);
-			Fmatrix RightInv;
-			RightInv.invert(HandRotRight);
-
-			Fmatrix Temp;
-			Temp.mul_43(Mirror, HandRotRight);           // B_right * M
-			Fmatrix Temp2;
-			Temp2.mul_43(LeftInv, Temp);                 // Temp * B_left^-1
-			Fmatrix Temp3;
-			Temp3.mul_43(LeftConfigRot, Temp2);          // Temp2 * C_left
-			Temp.mul_43(HandRotLeft, Temp3);             // Temp3 * B_left
-			Fmatrix Temp4;
-			Temp4.mul_43(Mirror, Temp);                  // Temp * M
-			RightConfigRot.mul_43(RightInv, Temp4);      // Temp4 * B_right^-1
-		}
-		else
-		{
-			RightConfigRot.setXYZ(deg2rad(m_driver_hands_right_hand_rotation.x),
-				deg2rad(m_driver_hands_right_hand_rotation.y),
-				deg2rad(m_driver_hands_right_hand_rotation.z));
-		}
-
-		Calibrate(m_driver_hands_left_ik[2], LeftConfigRot, m_driver_hands_left_hand_offset);
-		Calibrate(m_driver_hands_right_ik[2], RightConfigRot, m_driver_hands_right_hand_offset);
-		m_driver_hands_ik_initialized = true;
-	}
-
-	const float WheelAngle = m_steer_angle * (m_driver_hands_steer_factored ? m_driver_hands_steer_factor * rs_car_steer_factor : 1.f);
-	const float AbsWheelAngle = fabsf(WheelAngle);
-	const float TriggerRad = deg2rad(m_driver_hands_regrip_trigger);
-	const float EndRad = deg2rad(m_driver_hands_regrip_end);
-
-	// Regrip is a reversible path parameter driven by the wheel angle, not a
-	// timed animation. If the wheel stops the hand stops; if the wheel returns
-	// the hand goes back along the same path. EndRad is both the point where
-	// the forward move finishes and where the return move starts.
-	float Progress = 0.f;
-	if (m_driver_hands_regrip_enabled && EndRad > TriggerRad)
-		Progress = std::clamp((AbsWheelAngle - TriggerRad) / (EndRad - TriggerRad), 0.f, 1.f);
-
-	const s8 WheelSign = (WheelAngle > 0.f) ? 1 : ((WheelAngle < 0.f) ? -1 : 0);
-
-	// The wheel's local Y axis is its up direction. Use it instead of the
-	// world Y so a tilted or offset wheel does not swap the lower hand.
-	const float LeftHomeY = sinf(m_driver_hands_left_state.HomeAngle) * m_driver_hands_left_state.Radius;
-	const float RightHomeY = sinf(m_driver_hands_right_state.HomeAngle) * m_driver_hands_right_state.Radius;
-	u8 LowerHand = (WheelAngle > 0.f) ? 1 : 2;
-	if (fabsf(LeftHomeY - RightHomeY) > EPS_L)
-		LowerHand = (LeftHomeY < RightHomeY) ? 1 : 2;
-
-	if (m_driver_hands_active_hand != 0 && WheelSign != 0 && m_driver_hands_active_sign != 0 &&
-		WheelSign != m_driver_hands_active_sign)
-	{
-		// The wheel crossed the centre. The previous hand must be back home
-		// before the other hand can start.
-		Progress = 0.f;
-		m_driver_hands_active_hand = 0;
-		m_driver_hands_active_sign = 0;
-	}
-
-	if (Progress <= 0.f || WheelSign == 0)
-	{
-		Progress = 0.f;
-		m_driver_hands_active_hand = 0;
-		m_driver_hands_active_sign = 0;
-	}
-	else if (m_driver_hands_active_hand == 0)
-	{
-		m_driver_hands_active_hand = LowerHand;
-		m_driver_hands_active_sign = WheelSign;
-	}
-
-	m_driver_hands_progress = Progress;
-
-	if (m_driver_hands_regrip_debug && m_driver_hands_active_hand != m_driver_hands_debug_hand)
-	{
-		m_driver_hands_debug_hand = m_driver_hands_active_hand;
-		Msg("* [%s] driver hands: active=%s W=%.1f p=%.2f", cNameSect_str(),
-			m_driver_hands_active_hand == 1 ? "left" : (m_driver_hands_active_hand == 2 ? "right" : "none"),
-			rad2deg(WheelAngle), Progress);
-	}
-
-	Fvector WheelNormal = WheelWorld.k;
-	WheelNormal.normalize();
-
-	// Lift must always go towards the driver, not into the dashboard. The
-	// hands origin is behind the wheel, so its side of the wheel plane gives
-	// the sign without relying on the wheel bone's local Z direction.
-	Fvector ToDriver;
-	ToDriver.sub(m_driver_hands_xform.c, WheelWorld.c);
-	Fvector LiftDir = WheelNormal;
-	if (ToDriver.dotproduct(WheelNormal) < 0.f)
-		LiftDir.mul(-1.f);
-
-	Fmatrix WheelRot = WheelWorld;
-	WheelRot.c.set(0.f, 0.f, 0.f);
-
-	// The moving hand goes over the top of the wheel, not under it. At
-	// progress 1 the wheel has turned by EndRad, so the hand's local angle
-	// must change by travel + end: it cancels the wheel turn and adds its
-	// own short arc over the top. Left hand moves clockwise (negative),
-	// right hand counter-clockwise.
-	const float PathLift = sinf(PI * Progress);
-	const float TravelRad = deg2rad(m_driver_hands_regrip_travel);
-	const float OverTravel = TravelRad + EndRad;
-
-	// Move the hand over the top of the wheel, which may not be at the
-	// canonical 9/3 o'clock positions on a custom/tilted wheel.
-	const auto ToTopDirection = [](float HomeAngle)
-	{
-		return (angle_normalize_signed(PI * 0.5f - HomeAngle) >= 0.f) ? 1.f : -1.f;
-	};
-
-	float LeftLocal = m_driver_hands_left_state.HomeAngle;
-	float RightLocal = m_driver_hands_right_state.HomeAngle;
-	if (m_driver_hands_active_hand == 1)
-		LeftLocal += ToTopDirection(m_driver_hands_left_state.HomeAngle) * OverTravel * Progress;
-	else if (m_driver_hands_active_hand == 2)
-		RightLocal += ToTopDirection(m_driver_hands_right_state.HomeAngle) * OverTravel * Progress;
-
-	// Small passive wrist twist for the hand that stays on the rim (the one
-	// that is not regripping). It starts only after the configured wheel
-	// angle and grows to the full value at full lock.
-	const float TwistStartRad = deg2rad(m_driver_hands_steer_twist_start);
-	float TwistScale = 0.f;
-	if (fabsf(m_driver_hands_steer_twist) > 0.f && AbsWheelAngle > TwistStartRad && PI > TwistStartRad)
-		TwistScale = std::clamp((AbsWheelAngle - TwistStartRad) / (PI - TwistStartRad), 0.f, 1.f);
-
-	const float SteerTwist = -WheelSign * deg2rad(m_driver_hands_steer_twist) * TwistScale;
-	const u8 UpperHand = (m_driver_hands_active_hand != 0) ? u8(3 - m_driver_hands_active_hand) : u8(3 - LowerHand);
-	const float LeftTwist = (UpperHand == 1) ? SteerTwist : 0.f;
-	const float RightTwist = (UpperHand == 2) ? SteerTwist : 0.f;
-
-	const auto BuildTarget = [&](const SDriverHandState& Hand, float LocalAngle, float TwistAngle, const Fmatrix& BaseOffset, float LiftScale, Fmatrix& Result)
-	{
-		const float Radius = Hand.Radius + m_driver_hands_regrip_over_radial * LiftScale;
-		const Fvector Local = Fvector().set(cosf(LocalAngle) * Radius, sinf(LocalAngle) * Radius, Hand.Z);
-		Fvector World;
-		WheelWorld.transform_tiny(World, Local);
-		if (LiftScale > 0.f)
-			World.mad(LiftDir, m_driver_hands_regrip_lift * LiftScale);
-
-		Fmatrix AngleRot;
-		AngleRot.rotateZ(LocalAngle - Hand.HomeAngle);
-
-		if (fabsf(TwistAngle) > EPS_L)
-		{
-			Fmatrix TwistRot;
-			TwistRot.rotation(m_driver_hands_steer_twist_axis, TwistAngle);
-			Fmatrix Rotated;
-			Rotated.mul_43(TwistRot, AngleRot); // standard AngleRot * TwistRot
-			AngleRot = Rotated;
-		}
-
-		Fmatrix Offset;
-		Offset.mul_43(AngleRot, BaseOffset);
-
-		Fmatrix Rotation;
-		Rotation.mul_43(WheelRot, Offset);
-
-		Result = Rotation;
-		Result.c = World;
-	};
-
-	Fmatrix LeftTarget;
-	Fmatrix RightTarget;
-	BuildTarget(m_driver_hands_left_state, LeftLocal, LeftTwist, m_driver_hands_left_hand_offset,
-		m_driver_hands_active_hand == 1 ? PathLift : 0.f, LeftTarget);
-	BuildTarget(m_driver_hands_right_state, RightLocal, RightTwist, m_driver_hands_right_hand_offset,
-		m_driver_hands_active_hand == 2 ? PathLift : 0.f, RightTarget);
-	const auto Solve = [this, &HandsInverse](const u16* Chain, u16 Clavicle, const Fmatrix& TargetWorld, const Fvector& Elbow, Fvector& CurrentShift)
-	{
-		Fmatrix Target;
-		Target.mul_43(HandsInverse, TargetWorld);
-
-		// Fixed-root IK cannot move the shoulder. If the wheel grip is farther
-		// than the arm can reach, move the clavicle toward the target instead
-		// of letting SolveLimb clamp the wrist short.
-		const Fvector Shoulder = m_driver_hands_kinematics->LL_GetTransform(Chain[0]).c;
-		const Fvector ElbowPos = m_driver_hands_kinematics->LL_GetTransform(Chain[1]).c;
-		const Fvector WristPos = m_driver_hands_kinematics->LL_GetTransform(Chain[2]).c;
-		const float UpperLength = Shoulder.distance_to(ElbowPos);
-		const float LowerLength = ElbowPos.distance_to(WristPos);
-
-		Fvector DesiredShift;
-		DesiredShift.set(0.f, 0.f, 0.f);
-		if (UpperLength > EPS_L && LowerLength > EPS_L)
-		{
-			constexpr float ReachMargin = 0.005f;
-			const float MaxReach = UpperLength + LowerLength - ReachMargin;
-			if (MaxReach > EPS_L)
-			{
-				Fvector ToTarget;
-				ToTarget.sub(Target.c, Shoulder);
-				const float Distance = ToTarget.magnitude();
-				if (Distance > EPS_L && Distance > MaxReach)
-				{
-					ToTarget.div(Distance);
-					DesiredShift.mul(ToTarget, Distance - MaxReach);
-				}
-			}
-		}
-
-		if (m_driver_hands_reach_shift_speed > 0.f)
-		{
-			const float Alpha = 1.f - expf(-m_driver_hands_reach_shift_speed * Device.fTimeDelta);
-			Fvector Smoothed;
-			Smoothed.lerp(CurrentShift, DesiredShift, Alpha);
-			CurrentShift = Smoothed;
-		}
-		else
-		{
-			CurrentShift = DesiredShift;
-		}
-
-		if (CurrentShift.magnitude() > EPS_L)
-		{
-			Fmatrix Shift;
-			Shift.identity();
-			Shift.c.set(CurrentShift);
-			const u16 ShiftBone = Clavicle != BI_NONE ? Clavicle : Chain[0];
-			CCameraRig::TransformBone(m_driver_hands_kinematics, ShiftBone, Shift);
-		}
-
-		CCameraRig::SolveLimb(m_driver_hands_kinematics, Chain, Target, 1.f, Elbow);
-	};
-
-	Solve(m_driver_hands_left_ik, m_driver_hands_left_clavicle, LeftTarget, m_driver_hands_left_elbow, m_driver_hands_left_reach_shift);
-	Solve(m_driver_hands_right_ik, m_driver_hands_right_clavicle, RightTarget, m_driver_hands_right_elbow, m_driver_hands_right_reach_shift);
-
-	m_driver_hands_ready = true;
+	CCarDriverHands::SFrameParams Params;
+	Params.CarSection = cNameSect_str();
+	Params.CarKinematics = PKinematics(Visual());
+	Params.CarXform = XFORM();
+	Params.SeatXform.mul_43(XFORM(), m_sits_transforms);
+	Params.SteerAngle = m_steer_angle;
+	DriverHands.Update(Params);
 }
 
 void CCar::RenderDriverHands()
 {
-	if (!m_driver_hands_ready || m_driver_hands_visual == nullptr)
-		return;
-
 	if (OwnerActor() == nullptr || !OwnerActor()->IsMyCamera() || !HUDView())
 		return;
 
-	if (::Render->phase != IRender_interface::PHASE_NORMAL)
-		return;
-
-	::Render->set_Transform(m_driver_hands_xform);
-	::Render->add_Visual(m_driver_hands_visual, true);
+	DriverHands.Render();
 }
 
 void CCar::UpdateEx			(float fov) 
@@ -3800,11 +2186,11 @@ bool CCar::AlwaysTheCrow()
 void CCar::RemoveGrassSpheres()
 {
 }
-void CCar::UpdateCL				( )
+
+void CCar::UpdateCL()
 {
-	// Apply saved engine/light state here as well as in net_Spawn. Depending on
-	// the serialization path the client chunk may arrive after net_Spawn, and
-	// then the car would keep b_engine_on but never call SCarSound::Drive().
+	UpdateDashboardTelemetry();
+
 	if (m_has_saved_runtime_state)
 	{
 		m_has_saved_runtime_state = false;
@@ -3817,20 +2203,12 @@ void CCar::UpdateCL				( )
 		RestoreExplosionState();
 	}
 
-	// A starter sequence must not outlive its sound state. A deferred stop
-	// request from a previous engine state can move eCarSound away from
-	// sndStarting and leave b_starting set forever after a failed start.
-	// RestoreEngineAndLights() clears the flag for a saved engine state, so
-	// this watchdog only affects live start attempts.
 	if (b_starting &&
 		Device.dwTimeGlobal - m_dwStartTime > m_car_sound->engine_start_delay + StarterWatchdogMargin)
 	{
 		b_starting = false;
 	}
 
-	// Clear a boost value left by input from a previous frame. Input normally
-	// sets m_steer_boost_frame to the current frame before UpdateCL runs; if
-	// no steering key was held, the stale value must not be displayed.
 	if (m_steer_boost_frame != Device.dwFrame)
 	{
 		m_steer_boost = 0.f;
@@ -3839,17 +2217,12 @@ void CCar::UpdateCL				( )
 	inherited::UpdateCL();
 	CExplosive::UpdateCL();
 
-	// Keep the server object in sync so an offline car still has the engine
-	// and light state when the game is saved.
 	if (Device.dwTimeGlobal - m_last_server_state_sync >= 1000)
 	{
 		m_last_server_state_sync = Device.dwTimeGlobal;
 		SyncServerRuntimeState();
 	}
 
-	// A running engine restored from a save can outlive the loading screen.
-	// Retry the exhaust particles for a few frames until the particle system
-	// is ready; the sound loops retry themselves from UpdateDrive().
 	if (m_restore_engine_effects_attempts > 0)
 	{
 		--m_restore_engine_effects_attempts;
@@ -3932,7 +2305,6 @@ void CCar::UpdateCL				( )
 			else
 				m_reverselights.TurnOffLights();
 
-			
 		}
 		else
 		{
@@ -4171,49 +2543,6 @@ void CCar::DrawCarInfo()
 	}
 }
 
-bool CCar::HasOpenNormalDoor() const
-{
-	for (const auto& DoorEntry : m_doors)
-	{
-		const SDoor& Door = DoorEntry.second;
-		if (Door.non_enterable || Door.non_exitable)
-			continue;
-
-		if (Door.state != SDoor::closed)
-			return true;
-	}
-
-	return false;
-}
-
-void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
-{
-	if (!Owner())
-		return;
-
-	float InteriorVolume = m_interior_volume;
-	clamp(InteriorVolume, 0.f, 1.f);
-
-	// An open normal door connects the cabin with the outside, so the
-	// interior volume moves halfway towards the exterior volume.
-	if (FirstPersonView && HasOpenNormalDoor())
-	{
-		InteriorVolume = 0.5f * (InteriorVolume + 1.f);
-	}
-
-	psSoundCarFactor = FirstPersonView ? InteriorVolume : 1.f;
-
-	constexpr float InteriorMinCutoffHz = 500.f;
-	if (FirstPersonView && psSoundCarFactor < 0.999f)
-	{
-		CarCabinSound::SetCabinMuffling(XRay::Sound::LowPass::CutoffFromFactor(psSoundCarFactor * psSoundCarFactor, InteriorMinCutoffHz));
-	}
-	else
-	{
-		CarCabinSound::SetCabinMuffling(0.0f);
-	}
-}
-
  void CCar::VisualUpdate(float fov)
 {
 	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
@@ -4327,41 +2656,13 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 
 void CCar::renderable_Render()
 {
-	inherited::renderable_Render			();
+	inherited::renderable_Render();
 	for (CCarTurret* CWPB : m_car_weapons)
 	{
 		CWPB->Render_internal();
 	}
 
 	RenderDriverHands();
-
-	//for (; i_w != e_w; ++i_w)
-	//
-	//
-	//	dVector3 vec1;
-	//	dVector3 vec2;
-	//
-	//
-	//	Level().draw_line(wheel_xform.c, pos_z, color_rgba(0, 0, 255, 255));//z
-	//	Level().draw_line(wheel_xform.c, pos_x, color_rgba(255, 0, 0, 255));//x
-	//	Level().draw_line(wheel_xform.c, pos_y, color_rgba(0, 255, 0, 255));//y
-
-		// TRIANGLE PICKER
-		//if(!Actor())
-		//
-		//
-		//if(IRenderVisual* V = Visual())
-		//	if(IKinematics *K = V->dcast_PKinematics())
-		//		if(cam_pos.distance_to(Position()) <= Radius()*2)
-		//			for (auto I=K->LL_Bones()->begin(); I != K->LL_Bones()->end(); I++)
-		//				if(!K->LL_GetBoneVisible(I->second))
-		//
-		//
-		//
-		//				if(K->PickBone(XFORM(), res, Radius()*2, cam_pos, cam_dir, I->second, false))
-		//
-		//					if(!diff_cam.similar(cam_dir, EPS_L))
-		//
 }
 
 float CCar::InterpolateStates(u32 element, SCarNetUpdate const& first, SCarNetUpdate const& last, SPHNetState& current)
@@ -4824,7 +3125,6 @@ void CCar::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_obj
 	if (OwnerActor() && rs_car_god)
 		return;
 
-	
 	for (u16 SteerBone : m_steers)
 	{
 		if (SteerBone == element)
@@ -5127,8 +3427,7 @@ void CCar::detach_Actor()
 
 	Owner()->setVisible(1);
 	DestroyDriverHands();
-	psSoundCarFactor = 1.f;
-	CarCabinSound::SetCabinMuffling(0.0f);
+	ResetCabinSound();
 	if (OwnerActor())
 	{
 		OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
@@ -5226,72 +3525,6 @@ void CCar::TeleportCarAndDriver(const Fvector& position)
 		characters_scraper_shell->set_AngularVel(zero_vel);
 	}
 }
-u16 CCar::GetDoorBone(u16 id)
-{
-	IKinematics* K = PKinematics(Visual());
-	if (!K)
-		return BI_NONE;
-
-	const u16 bone_count = K->LL_BoneCount();
-	while (id != BI_NONE && id < bone_count)
-	{
-		if (m_doors.find(id) != m_doors.end())
-			return id;
-
-		id = K->LL_GetData(id).GetParentID();
-	}
-
-	return BI_NONE;
-}
-
-CCar::SDoor* CCar::Get_Door(u16 id, bool all)
-{
-	const u16 door_id = GetDoorBone(id);
-	if (door_id == BI_NONE)
-		return nullptr;
-
-	auto i = m_doors.find(door_id);
-	if (i == m_doors.end())
-		return nullptr;
-
-	if (all || i->second.joint)
-		return &i->second;
-
-	return nullptr;
-}
-
-
-bool CCar::is_Door(u16 id,xr_map<u16,SDoor>::iterator& i)
-{
-	const u16 door_id = GetDoorBone(id);
-	if (door_id == BI_NONE)
-	{
-		i = m_doors.end();
-		return false;
-	}
-
-	i = m_doors.find(door_id);
-	if (i == m_doors.end())
-	{
-		return false;
-	}
-
-	return i->second.joint != nullptr;
-}
-bool CCar::is_Door(u16 id)
-{
-	return GetDoorBone(id) != BI_NONE;
-}
-
-bool CCar::IsDoorInSight(const Fvector& look_pos, const Fvector& look_dir)
-{
-	float distance = 0.f;
-	const u16 bone = GetNearestBone(look_pos, look_dir, distance);
-	(void)distance;
-
-	SDoor* door = Get_Door(bone);
-	return door != nullptr && door->bone_id != m_bone_trunk && door->IsDistOfSight(look_pos);
-}
 
 bool CCar::Enter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 {
@@ -5350,7 +3583,6 @@ bool CCar::Exit(const Fvector& pos,const Fvector& dir)
 
 }
 
-
 void CCar::DoExit()
 {
 	CActor* A=OwnerActor();
@@ -5403,6 +3635,7 @@ void CCar::ParseDefinitions()
 		LoadHandlingAndCameraDefinitions(ini);
 		LoadEngineDefinitions(ini);
 		LoadSoundDefinitions(ini);
+		LoadExhaustDefinitions(ini);
 		LoadTransmissionDefinitions(ini);
 		LoadVisualDefinitions(ini);
 	}
@@ -5460,125 +3693,6 @@ const CCar::SSurfaceParams* CCar::FindSurfaceParams(const SGameMtl* Material) co
 
 	auto It = m_surface_params.find(Material->ID);
 	return It == m_surface_params.end() ? nullptr : &It->second;
-}
-
-void CCar::LoadCollisionSounds()
-{
-	if (g_dedicated_server || !pSettings || !pSettings->line_exist(cNameSect_str(), "collision_sounds"))
-		return;
-
-	const char* SectionName = pSettings->r_string(cNameSect_str(), "collision_sounds");
-	if (SectionName == nullptr || SectionName[0] == '\0')
-		return;
-
-	if (!pSettings->section_exist(SectionName))
-	{
-		Msg("! [%s] collision_sounds section '%s' does not exist", cNameSect_str(), SectionName);
-		return;
-	}
-
-	// The material pairs are global, so load each section only once.
-	static xr_vector<xr_string> LoadedSections;
-	const xr_string Section(SectionName);
-	if (std::find(LoadedSections.begin(), LoadedSections.end(), Section) != LoadedSections.end())
-		return;
-
-	const CInifile::Sect& Config = pSettings->r_section(SectionName);
-	u32 Overridden = 0;
-	for (const CInifile::Item& Item : Config.Data)
-	{
-		const char* Key = Item.first.c_str();
-		const char* Separator = strchr(Key, '|');
-		if (Separator == nullptr || Separator == Key || Separator[1] == '\0')
-		{
-			Msg("! [%s] collision_sounds: invalid pair '%s', expected 'material0|material1'", cNameSect_str(), Key);
-			continue;
-		}
-
-		const char* SoundList = Item.second.c_str();
-		if (SoundList == nullptr || SoundList[0] == '\0')
-		{
-			// An empty value keeps the sounds loaded from gamemtl.xr.
-			continue;
-		}
-
-		const xr_string Material0(Key, Separator - Key);
-		const char* Material1 = Separator + 1;
-
-		// Wheels use their own tire sound system.
-		if (0 == _stricmp(Material0.c_str(), "objects\\car_wheel") || 0 == _stricmp(Material1, "objects\\car_wheel"))
-			continue;
-
-		auto It0 = GMLib.GetMaterialIt(Material0.c_str());
-		auto It1 = GMLib.GetMaterialIt(Material1);
-		if (It0 == GMLib.LastMaterial() || It1 == GMLib.LastMaterial())
-		{
-#ifndef MASTER_GOLD
-			Msg("~ [%s] collision_sounds: skipping pair '%s' (material not present in this game)", cNameSect_str(), Key);
-#endif
-			continue;
-		}
-
-		const u16 Index0 = u16(It0 - GMLib.FirstMaterial());
-		const u16 Index1 = u16(It1 - GMLib.FirstMaterial());
-		SGameMtlPair* Pair = GMLib.GetMaterialPair(Index0, Index1);
-		if (Pair == nullptr)
-		{
-#ifndef MASTER_GOLD
-			Msg("~ [%s] collision_sounds: skipping pair '%s' (missing in gamemtl.xr)", cNameSect_str(), Key);
-#endif
-			continue;
-		}
-
-		for (ref_sound& Sound : Pair->CollideSounds)
-			Sound.destroy();
-		Pair->CollideSounds.clear();
-
-		const int Count = _GetItemCount(SoundList);
-		Pair->CollideSounds.resize(Count);
-		string128 SoundName;
-		for (int i = 0; i < Count; ++i)
-		{
-			Pair->CollideSounds[i].create(_GetItem(SoundList, i, SoundName), st_Effect, sg_SourceType);
-		}
-		++Overridden;
-	}
-
-	Msg("* [%s] collision_sounds: overridden %u material pairs from '%s'", cNameSect().c_str(), Overridden, SectionName);
-	LoadedSections.push_back(Section);
-}
-
-void CCar::PlayDynamicCollisionSound(SGameMtl* CarMaterial, SGameMtl* OtherMaterial, const Fvector& Position, float RelativeSpeed)
-{
-	if (g_dedicated_server || CarMaterial == nullptr || OtherMaterial == nullptr)
-		return;
-
-	// A resting or slowly pushed prop must not play the impact sound every
-	// physics step. The static collision path uses its own velocity thresholds;
-	// dynamic contacts need a small car-specific one.
-	constexpr float MinRelativeSpeed = 1.f;
-	constexpr u32 SoundCooldownMs = 150;
-
-	if (RelativeSpeed < MinRelativeSpeed || Device.dwTimeGlobal < m_collision_sound_time)
-		return;
-
-	const u16 CarIndex = GMLib.GetMaterialIdx(CarMaterial->ID);
-	const u16 OtherIndex = GMLib.GetMaterialIdx(OtherMaterial->ID);
-	SGameMtlPair* Pair = GMLib.GetMaterialPair(CarIndex, OtherIndex);
-	if (Pair == nullptr || Pair->CollideSounds.empty())
-		return;
-
-	ref_sound* Sound = &Pair->CollideSounds[::Random.randI(Pair->CollideSounds.size())];
-	if (Sound == nullptr || Sound->_p == nullptr)
-		return;
-
-	m_collision_sound_time = Device.dwTimeGlobal + SoundCooldownMs;
-
-	float Volume = RelativeSpeed / 8.f;
-	clamp(Volume, 0.15f, 1.f);
-	float Frequency = ::Random.randF(0.9f, 1.1f);
-	Fvector SoundPosition = Position;
-	Sound->play_no_feedback(nullptr, 0, 0, &SoundPosition, &Volume, &Frequency);
 }
 
 void CCar::LoadExplosionAndDriverDefinitions(CInifile* ini, IKinematics* pKinematics)
@@ -5772,40 +3886,8 @@ void CCar::LoadEngineDefinitions(CInifile* ini)
 	b_nitro_particles_enabled = ini->read_if_exists<bool>("car_definition", "nitro_particles_enabled", b_nitro_particles_enabled);
 }
 
-void CCar::LoadSoundDefinitions(CInifile* ini)
+void CCar::LoadExhaustDefinitions(CInifile* ini)
 {
-	m_engine_sound_scale_max = ini->read_if_exists<float>("car_sound", "engine_sound_scale_max", m_engine_sound_scale_max);
-	m_engine_sound_scale_min = ini->read_if_exists<float>("car_sound", "engine_sound_scale_min", m_engine_sound_scale_min);
-	m_engine_sound_scale_factor = ini->read_if_exists<float>("car_sound", "engine_sound_scale_factor", m_engine_sound_scale_factor);
-	m_engine_idle_volume = ini->read_if_exists<float>("car_sound", "engine_idle_volume", m_engine_idle_volume);
-	m_sound_state_change_up = ini->read_if_exists<float>("car_sound", "sound_state_change_up", m_sound_state_change_up);
-	m_sound_state_change_down = ini->read_if_exists<float>("car_sound", "sound_state_change_down", m_sound_state_change_down);
-	m_sound_idle_change_up = ini->read_if_exists<float>("car_sound", "sound_idle_change_up", m_sound_idle_change_up);
-	m_sound_idle_change_down = ini->read_if_exists<float>("car_sound", "sound_idle_change_down", m_sound_idle_change_down);
-	m_sound_state_switch_factor = ini->read_if_exists<float>("car_sound", "sound_state_switch_factor", m_sound_state_switch_factor);
-	m_sound_state_after_switch = ini->read_if_exists<float>("car_sound", "sound_state_after_switch", m_sound_state_after_switch);
-	m_sound_switch_effect_type = ini->read_if_exists<u32>("car_sound", "sound_switch_effect_type", m_sound_switch_effect_type);
-	m_sound_switch_effect_power = ini->read_if_exists<float>("car_sound", "sound_switch_effect_power", m_sound_switch_effect_power);
-	m_sound_switch_effect_speed = ini->read_if_exists<float>("car_sound", "sound_switch_effect_speed", m_sound_switch_effect_speed);
-	m_sound_switch_effect_duration = ini->read_if_exists<float>("car_sound", "sound_switch_effect_duration", m_sound_switch_effect_duration);
-	m_turbo_scale_max = ini->read_if_exists<float>("car_sound", "turbo_scale_max", m_turbo_scale_max);
-	m_turbo_scale_min = ini->read_if_exists<float>("car_sound", "turbo_scale_min", m_turbo_scale_min);
-	m_turbo_scale_speed = ini->read_if_exists<float>("car_sound", "turbo_scale_speed", m_turbo_scale_speed);
-	m_valve_switch_volume = ini->read_if_exists<float>("car_sound", "valve_switch_volume", m_valve_switch_volume);
-	m_blower_scale_min = ini->read_if_exists<float>("car_sound", "blower_scale_min", m_blower_scale_min);
-	m_blower_rpm_scale = ini->read_if_exists<float>("car_sound", "blower_rpm_scale", m_blower_rpm_scale);
-	m_blower_volume_min = ini->read_if_exists<float>("car_sound", "blower_volume_min", m_blower_volume_min);
-	m_blower_inertia = ini->read_if_exists<float>("car_sound", "blower_inertia", m_blower_inertia);
-	m_blower_sound_forward = ini->read_if_exists<float>("car_sound", "blower_sound_forward", m_blower_sound_forward);
-	m_engine_state_scale_min = ini->read_if_exists<float>("car_sound", "engine_state_scale_min", m_engine_state_scale_min);
-	m_engine_heavy_constant = ini->read_if_exists<float>("car_sound", "engine_heavy_constant", m_engine_heavy_constant);
-	m_engine_heavy_rpm = ini->read_if_exists<float>("car_sound", "engine_heavy_rpm", m_engine_heavy_rpm);
-	m_engine_heavy_switch = ini->read_if_exists<float>("car_sound", "engine_heavy_switch", m_engine_heavy_switch);
-	m_whine_speed = ini->read_if_exists<float>("car_sound", "whine_speed", m_whine_speed);
-	m_whine_exterior_volume = ini->read_if_exists<float>("car_sound", "whine_exterior_volume", m_whine_exterior_volume);
-	m_whine_reverse = ini->read_if_exists<bool>("car_sound", "whine_reverse", m_whine_reverse);
-	m_enhanced_sound = ini->read_if_exists<bool>("car_sound", "enhanced_sound", m_enhanced_sound);
-
 	// read_if_exists returns the stock effect for a missing or empty
 	// exhaust_particles value. A name that is not a loaded effect would assert
 	// inside the renderer, so keep the fallback for a bad car config.
@@ -6014,28 +4096,6 @@ IWallMarkArray* CCar::GetTireWallmarks(u16 m1_id, u16 m2_id)
 	}
 }
 
-ref_sound* CCar::GetTireSound(u16 m1_id, u16 m2_id)
-{
-	switch (GetTireSurface(m1_id, m2_id))
-	{
-		case TireSurfaceDirt:	return &m_tire_sound_dirt;
-		case TireSurfaceGrass:	return &m_tire_sound_grass;
-		case TireSurfaceWater:	return &m_tire_sound_water;
-		default:				return &m_tire_sound_road;
-	}
-}
-
-ref_sound* CCar::GetTireSkidSound(u16 m1_id, u16 m2_id)
-{
-	switch (GetTireSurface(m1_id, m2_id))
-	{
-		case TireSurfaceDirt:	return &m_tire_skid_sound_dirt;
-		case TireSurfaceGrass:	return &m_tire_skid_sound_grass;
-		case TireSurfaceWater:	return &m_tire_skid_sound_water;
-		default:				return &m_tire_skid_sound_road;
-	}
-}
-
 void CCar::LoadBoneMap()
 {
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
@@ -6131,7 +4191,6 @@ void CCar::Init()
 	bind_center.set(0.f, 0.f, 0.f);
 	for (const Fvector& BindPos : m_bind_poses) bind_center.add(BindPos);
 	if (!m_bind_poses.empty()) bind_center.div(float(m_bind_poses.size()));
-
 
 	if(ini->section_exist("air_resistance"))
 	{
@@ -6272,7 +4331,6 @@ void CCar::Init()
 
 		}
 	}
-	
 
 	if(ini->section_exist("immunities"))
 		LoadImmunities("immunities",ini);
@@ -6506,14 +4564,6 @@ void CCar::SwitchEngine()
 {
 	if(b_engine_on) StopEngine();
 	else			StartEngine();
-}
-
-void CCar::SwitchEngineDoors()
-{
-	VERIFY(!physics_world()->Processing());
-
-	for (auto &it : engine_door)
-		it.Switch(!b_engine_on);
 }
 
 void CCar::Clutch()
@@ -6940,7 +4990,6 @@ void CCar::TransmissionDown()
 	Transmission(transmission, ETransmissionStage::SwitchDown);
 }
 
-
 void CCar::PhTune(float step)
 {
 #if defined(DEBUG) || defined(DEBUG_DRAW)
@@ -7027,181 +5076,7 @@ void CCar::ClearExhausts()
 		i.Clear();
 	}
 }
-bool CCar::ScriptUseTrunk(u16 bone_id)
-{
-	if (!pSettings->section_exist("lost_alpha_cfg") || !pSettings->line_exist("lost_alpha_cfg", "on_use_trunk"))
-		return false;
 
-	luabind::functor<void>	lua_function;
-	string256		fn;
-	xr_strcpy(fn, pSettings->r_string("lost_alpha_cfg", "on_use_trunk"));
-	if (!ai().script_engine().functor<void>(fn, lua_function))
-	{
-		Msg("! CCar: cannot find Lua function %s", fn);
-		return false;
-	}
-	lua_function(ID());
-	return true;
-}
-
-u16 CCar::GetNearestBone(Fvector look_pos, Fvector look_dir, float &range, bool trunk_test)
-{
-	range = 0.f;
-	xr_map<float, u16> m_bones_ids_v;
-
-	// The car collision model is one-sided, so a ray that starts inside the cabin does
-	// not report the car itself. Bone picking is double-sided, so scan the bones directly
-	// instead of requiring an initial collision hit (needed for first-person door use).
-	PKinematics(Visual())->CalculateBones(TRUE);
-	for (auto I = PKinematics(Visual())->LL_Bones()->begin(); I != PKinematics(Visual())->LL_Bones()->end(); ++I)
-	{
-		if(!PKinematics(Visual())->LL_GetBoneVisible(I->second))
-			continue;
-
-		Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform((*I).second);
-		bone_xform.mulA_43(XFORM());
-
-		float w	= bone_xform.c.x*Device.mFullTransform._14 + bone_xform.c.y*Device.mFullTransform._24 + bone_xform.c.z*Device.mFullTransform._34 + Device.mFullTransform._44;
-		if (w<0) continue;
-
-		IKinematics::pick_result res;
-		if(PKinematics(Visual())->PickBone(XFORM(), res, Radius()*2, look_pos, look_dir, I->second))
-		{
-			Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(res.dist));
-
-			Fvector diff_cam;
-			diff_cam.sub(collide_pos, look_pos);
-			if (!safe_normalize(diff_cam)) continue;
-			if(diff_cam.similar(look_dir, EPS_L))
-				m_bones_ids_v.insert(std::make_pair(look_pos.distance_to(collide_pos), I->second));
-		}
-	}
-	if(trunk_test)
-	{
-		RQR.r_clear();
-		collide::ray_defs	Q(look_pos, look_dir, Radius()*2, CDB::OPT_CULL,collide::rqtObject);  // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
-		if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
-		{
-			for (auto I = RQR.results.begin(); I != RQR.results.end(); ++I)
-			{
-				Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(I->range));
-
-				Fvector diff_cam;
-				diff_cam.sub(collide_pos, look_pos);
-				if (!safe_normalize(diff_cam)) continue;
-				if(diff_cam.similar(look_dir, EPS_L) && m_bone_trunk == u16(I->element))
-					m_bones_ids_v.insert(std::make_pair(look_pos.distance_to(collide_pos), u16(I->element)));
-			}
-		}
-	}
-
-	auto nearest_IT = std::min_element(m_bones_ids_v.begin(), m_bones_ids_v.end());
-	if(nearest_IT == m_bones_ids_v.end())
-		return BI_NONE;
-	range = nearest_IT->first;
-	return nearest_IT->second;
-}
-bool drag_activated = false;
-void drag_callback(void* ptr)
-{
-	const u16 CarId = static_cast<u16>(reinterpret_cast<size_t>(ptr));
-	if (Device.Paused()) return;
-	if (!g_pGameLevel) return;
-	if (!g_pGameLevel->CurrentEntity()) return;
-	if (!g_actor) return;
-
-	Sleep(150);
-
-	if (!g_pGameLevel || !g_pGameLevel->CurrentEntity() || !g_actor) return;
-	CCar* pCar = smart_cast<CCar*>(Level().Objects.net_Find(CarId));
-	if (!pCar || pCar->getDestroy()) return;
-
-	drag_activated = true;
-	pCar->b_event_drag_activated = true;
-	drag_activated = false;
-}
-CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool special)
-{
-	if(Owner() && active_camera->tag != EctFirstCam)
-		return NULL;
-
-	if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
-	{
-		if(!special)
-		{
-			collide::rq_result RQ;
-			bool HasPick = Level().ObjectSpace.RayPick(look_pos, look_dir, 1.5f, collide::rqtObject, RQ, Level().CurrentControlEntity());
-			if(HasPick && !RQ.IsStatic() && RQ.GetDynamic() == this)
-			{
-				if (!Owner() && m_pPhysicsShell && g_actor)
-				{
-					if(!drag_activated)
-						thread_spawn(drag_callback,"drag_callback",0,reinterpret_cast<void*>(static_cast<size_t>(ID())));
-				}
-			}
-		}
-		return NULL;
-	}
-
-	float dist;
-
-	u16 bonebypoly_id = GetNearestBone(look_pos, look_dir, dist, true);
-	const u16 door_bone_id = GetDoorBone(bonebypoly_id);
-	SDoor* door = Get_Door(bonebypoly_id);
-
-	if(door)
-	{
-		if(door->recursive_door)
-		{
-			if(special)
-			{
-				if(!Owner())
-					return door;
-				else
-					return NULL;
-			}
-
-			// Recursive doors are toggled by using any of them: the first use
-			// opens the whole chain, the next one closes it in reverse order.
-			const bool CloseDoors = b_all_recurs_opened || AreRecursiveDoorsOpened();
-			b_start_open_recursive = !CloseDoors;
-			b_start_close_recursive = CloseDoors;
-			return NULL;
-		}
-		if (m_bone_trunk != BI_NONE && m_bone_trunk == door_bone_id)
-		{
-			if(special)
-			{
-				if(!Owner())
-					return door;
-				else
-					return NULL;
-			}
-			ScriptUseTrunk(door_bone_id);
-			return NULL;
-		}
-	}
-	else
-	{
-		if((m_doors_recurs.empty() || (!b_start_close_recursive && b_all_recurs_opened)) && m_bone_trunk != BI_NONE && m_bone_trunk == door_bone_id)
-		{
-			if(special)
-			{
-				if(!Owner())
-					return door;
-				else
-					return NULL;
-			}
-			ScriptUseTrunk(door_bone_id);
-			return NULL;
-		}
-	}
-
-	if(door && special && Owner() && door->non_enterable)
-		return NULL;
-
-	return door;
-}
 CCar::SDoor* GNearestDoor(CCar* pcar, xr_map<u16,CCar::SDoor> &doors)
 {
 	xr_map<float, CCar::SDoor*> m_doors;
@@ -7218,68 +5093,6 @@ CCar::SDoor* GNearestDoor(CCar* pcar, xr_map<u16,CCar::SDoor> &doors)
 		return nullptr;
 
 	return std::min_element(m_doors.begin(), m_doors.end())->second;
-}
-bool CCar::TryTrunk()
-{
-	if (m_bone_trunk == BI_NONE)
-		return false;
-
-	// The trunk uses the same per-bone parameters as doors from the model ltx,
-	// including use_distance from its [bone] section.
-	float UseDistance = 2.f;
-	auto DoorIt = m_doors.find(m_bone_trunk);
-	if (DoorIt != m_doors.end())
-	{
-		SDoor& Trunk = DoorIt->second;
-		UseDistance = Trunk.dist_to_door_avlbl;
-
-		// A recursive trunk must not bypass the configured door sequence.
-		// While it is not open yet, route the use through GetNearestDoor(),
-		// which starts or continues the chain from the first door.
-		if (Trunk.recursive_door && Trunk.state != SDoor::opened && Trunk.state != SDoor::broken)
-			return false;
-	}
-
-	// The trunk is usable only when the aim ray actually hits its bone.
-	// GetNearestBone scans the car bones and also adds trunk-specific ray hits,
-	// so it works from any side but does not trigger while aiming at a door.
-	float distance = 0.f;
-	const u16 bone = GetNearestBone(Device.vCameraPosition, Device.vCameraDirection, distance, true);
-	if (GetDoorBone(bone) != m_bone_trunk || distance > UseDistance)
-	{
-		return false;
-	}
-
-	return IsGameTypeSingle();
-}
-
-bool CCar::TryUsableBones()
-{
-	if (UsableBones.empty())
-		return false;
-
-	UsableBonesActive = BI_NONE;
-
-	RQR.r_clear();
-	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
-
-	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
-	{
-		collide::rq_results& R = RQR;
-		const int Count = (int)R.results.size();
-
-		for (int k = 0; k < Count; ++k)
-		{
-			collide::rq_result* I = R.results.data() + k;
-			if (IsGameTypeSingle() && UsableBones.contains(I->element))
-			{
-				UsableBonesActive = I->element;
-				return true;
-			}
-		}
-	}
-
-	return false;
 }
 
 bool CCar::Use(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
@@ -7408,51 +5221,8 @@ bool CCar::Use(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 
 }
 
-bool CCar::DoorSwitch(u16 id)
-{
-	xr_map<u16,SDoor>::iterator i;
-	if(is_Door(id,i)) 
-	{
-		i->second.Switch();
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-bool CCar::DoorClose(u16 id)
-{
-
-	xr_map<u16,SDoor>::iterator i;
-	if(is_Door(id,i)) 
-	{
-		i->second.Close();
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool CCar::DoorOpen(u16 id)
-{
-
-	xr_map<u16,SDoor>::iterator i;
-	if(is_Door(id,i)) 
-	{
-		i->second.Open();
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
 void CCar::InitParabola()
 {
-
 
 	m_a=expf((m_power_rpm - m_torque_rpm)/(2.f*m_power_rpm))*m_max_power/m_power_rpm;
 	m_b=m_torque_rpm;
@@ -7536,7 +5306,6 @@ float CCar::EngineDriveSpeed()
 
 	//else					  return 0.f;
 }
-
 
 void CCar::UpdateFuel(float time_delta)
 {
@@ -7756,125 +5525,6 @@ void CCar::Burnout()
 	b_burnout = burn;
 }
 
-bool CCar::AreRecursiveDoorsOpened() const
-{
-	if (m_doors_recurs.empty())
-		return false;
-
-	for (const auto& DoorEntry : m_doors_recurs)
-	{
-		const SDoor* Door = DoorEntry.second;
-		if (!Door || Door->state != SDoor::opened)
-			return false;
-	}
-
-	return true;
-}
-
-bool CCar::AreRecursiveDoorsClosed() const
-{
-	if (m_doors_recurs.empty())
-		return false;
-
-	for (const auto& DoorEntry : m_doors_recurs)
-	{
-		const SDoor* Door = DoorEntry.second;
-		if (!Door || Door->state != SDoor::closed)
-			return false;
-	}
-
-	return true;
-}
-
-void CCar::UpdateRecursiveDoors()
-{
-	if (b_start_open_recursive)
-	{
-		// Doors are processed in their configured order. Skipping already
-		// opened doors guarantees that a later door is never opened before
-		// all previous doors in the chain.
-		for (int i = 0; i < (int)m_doors_recurs.size(); ++i)
-		{
-			auto curr_dit = m_doors_recurs.find(i);
-			if (curr_dit == m_doors_recurs.end())
-				continue;
-
-			SDoor* Door = curr_dit->second;
-			if (!Door || Door->state == SDoor::opened)
-				continue;
-
-			if (Door->state == SDoor::opening)
-				break;
-
-			if (Door->state == SDoor::broken)
-			{
-				b_start_open_recursive = false;
-				break;
-			}
-
-			if (!Door->IsDistOfSight(Device.vCameraPosition) || !Door->IsLineOfSight())
-			{
-				b_start_open_recursive = false;
-				break;
-			}
-
-			Door->Open();
-			break;
-		}
-
-		if (AreRecursiveDoorsOpened())
-		{
-			ScriptUseTrunk(m_bone_trunk);
-			b_start_open_recursive = false;
-			b_all_recurs_opened = true;
-		}
-	}
-
-	if (b_start_close_recursive)
-	{
-		// Reverse order: the last door closes first, then the previous one,
-		// down to the first door of the chain.
-		for (int i = (int)m_doors_recurs.size() - 1; i >= 0; --i)
-		{
-			auto curr_dit = m_doors_recurs.find(i);
-			if (curr_dit == m_doors_recurs.end())
-				continue;
-
-			SDoor* Door = curr_dit->second;
-			if (!Door || Door->state == SDoor::closed)
-				continue;
-
-			if (Door->state == SDoor::closing)
-				break;
-
-			if (Door->state == SDoor::broken)
-			{
-				b_start_close_recursive = false;
-				break;
-			}
-
-			if (!Door->IsDistOfSight(Device.vCameraPosition) || !Door->IsLineOfSight())
-			{
-				b_start_close_recursive = false;
-				break;
-			}
-
-			Door->Close();
-			break;
-		}
-
-		if (AreRecursiveDoorsClosed())
-		{
-			b_start_close_recursive = false;
-			b_all_recurs_opened = false;
-		}
-	}
-}
-
-
-
-
-
 void CCar::PhDataUpdate(float step)
 {
 	UpdatePhDataObjects();
@@ -8050,25 +5700,6 @@ void CCar::UpdateEngineAndBrakes(float step)
 	else
 		break_start_dt = 0.f;
 	clamp(break_start_dt, 0.0f, 1.0f);
-}
-
-void CCar::UpdateDoorState()
-{
-	//////////////////////////////////////////////////////////
-	for (int k = 0; k < (int)m_doors_update.size(); ++k)
-	{
-		SDoor* D = m_doors_update[k];
-		if (!D->update)
-		{
-			m_doors_update.erase(m_doors_update.begin() + k);
-			--k;
-		}
-		else
-		{
-			D->Update();
-		}
-	}
-	UpdateRecursiveDoors();
 }
 
 void CCar::UpdateTransmissionState()
@@ -8879,18 +6510,6 @@ void CCar::UpdateWheelDownforce(SWheel& Wheel)
 			m_current_downforce = 0.f;
 }
 
-void CCar::UpdateWheelTireSound(SWheel& Wheel)
-{
-	const u32 ContactAge = Device.dwTimeGlobal - Wheel.collision_params.last_contact_time;
-	const bool WheelAirborne = ContactAge > 100;
-	const bool WheelStopped = GetSpeedKmH() < 1.f && fabsf(Wheel.GetDriveAngleRate()) * Wheel.radius < 0.5f;
-	if ((WheelAirborne || WheelStopped) && Wheel.tire_drive._p)
-	{
-		Wheel.UpdateSounds();
-		Wheel.tire_drive.stop();
-	}
-}
-
 bool CCar::UpdateWheelTraction(SWheel& Wheel)
 {
 	bool WheelSlip = false;
@@ -8916,7 +6535,6 @@ bool CCar::UpdateWheelTraction(SWheel& Wheel)
 				wheels_spin_factor = m_wheels_spin_factor_stop;
 				WheelSlip = true;
 			}
-
 
 			if (e_state_drive == drive && Wheel.WheelFlags.test(SWheel::eWheelType::wheel_drive) && Wheel.WheelFlags.test(SWheel::eWheelType::wheel_steering))
 				wheels_spin_factor *= 0.95f;
@@ -9546,63 +7164,6 @@ bool CCar::CanRemoveObject()
 	return CExplosive::IsExploded()&&!CExplosive::IsSoundPlaying();
 }
 
-void CCar::DropTrunkContents()
-{
-	if (inventory().m_ruck.empty())
-	{
-		return;
-	}
-
-	Fvector drop_base = Position();
-	if (IKinematics* kinematics = PKinematics(Visual()))
-	{
-		if (m_bone_trunk != BI_NONE && m_bone_trunk < kinematics->LL_BoneCount())
-		{
-			drop_base = TrunkBoneWorldPos();
-		}
-	}
-
-	const TIItemContainer trunk_items = inventory().m_ruck;
-	for (PIItem item : trunk_items)
-	{
-		if (item == nullptr || item->object().getDestroy())
-			continue;
-
-		Fvector drop_position = drop_base;
-		drop_position.x += Random.randF(-0.5f, 0.5f);
-		drop_position.y += 1.f;
-		drop_position.z += Random.randF(-0.5f, 0.5f);
-
-		// Detach the item on the server first. A direct CInventory::DropItem()
-		// only updates the local object and leaves CSE_Abstract::ID_Parent
-		// pointing to the car, so the server later rejects the item as a car child.
-		if (OnServer() && Level().Server != nullptr)
-		{
-			NET_Packet dummy;
-			Level().Server->Process_event_reject(dummy, BroadcastCID, Device.dwTimeGlobal, ID(), item->object_id(), false);
-		}
-
-		item->object().XFORM().c.set(drop_position);
-		if (!inventory().DropItem(&item->object(), false, false))
-		{
-			continue;
-		}
-
-		// CPhysicItem::activate_physic_shell() uses the old parent's XFORM.
-		// Move the freshly created shell to the intended drop position.
-		Fmatrix drop_xform = item->object().XFORM();
-		drop_xform.c.set(drop_position);
-		item->object().XFORM().set(drop_xform);
-		if (CPhysicsShell* shell = item->object().PPhysicsShell())
-		{
-			shell->SetGlTransformDynamic(drop_xform);
-			shell->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
-			shell->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
-		}
-		item->object().spatial_move();
-	}
-}
-
 void		CCar::SetExplodeTime				(u32 et)	
 {
 	CDelayedActionFuse::Initialize(float(et)/1000.f,
@@ -9615,13 +7176,17 @@ u32			CCar::ExplodeTime					()
 	else return 0;
 }
 
-void	CCar::		Die					(CObject* who)
+void CCar::Die(CObject* who)
 {
 	inherited::Die(who);
 	if (m_zero_health_explosion_timer)
+	{
 		StartExplosionTimer();
+	}
 	else
+	{
 		CarExplode();
+	}
 }
 
 Fvector	CCar::		ExitVelocity				()
@@ -9632,32 +7197,6 @@ Fvector	CCar::		ExitVelocity				()
 	Fvector v=ExitPosition();
 	dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
 	return v;
-}
-
-void CCar::ShowTrunk()
-{
-	if (CurrentGameUI())
-		CurrentGameUI()->StartCarBody(Actor(), this);
-}
-
-void CCar::OpenTrunkBone()
-{
-	if(m_doors_recurs.empty())
-		DoorOpen(m_bone_trunk);
-}
-
-void CCar::CloseTrunkBone()
-{
-	if(m_doors_recurs.empty())
-		DoorClose(m_bone_trunk);
-	else
-	{
-		if(m_pPhysicsShell)
-			m_pPhysicsShell->Enable();
-
-		b_start_close_recursive = true;
-		b_start_open_recursive = false;
-	}
 }
 
 Fvector CCar::GetNearestPoint(const Fvector& Point) const
@@ -9680,24 +7219,6 @@ Fvector CCar::GetNearestPoint(const Fvector& Point) const
 	Fvector World;
 	XFORM().transform_tiny(World, Closest);
 	return World;
-}
-
-Fvector CCar::TrunkBoneWorldPos()
-{
-	if (IKinematics* pKinematics = PKinematics(Visual()))
-	{
-		if(m_bone_trunk != BI_NONE && m_bone_trunk < pKinematics->LL_BoneCount())
-		{
-			Fmatrix BoneMatrix;
-			Fmatrix BoneMatrixRes;
-			Fobb BoneOBB = pKinematics->LL_GetBox(m_bone_trunk);
-			BoneOBB.xform_get(BoneMatrix);
-			BoneMatrixRes.mul(pKinematics->LL_GetTransform(m_bone_trunk), BoneMatrix);
-			BoneMatrix.mul(XFORM(), BoneMatrixRes);
-			return BoneMatrix.c;
-		}
-	}
-	return Fvector(Device.vCameraPosition);
 }
 
 void CCar::KillEngine()
@@ -9733,143 +7254,6 @@ void CCar::SHeadlightHideaway::Switch(bool hideaways_up)
 {
 	joint->SetForceAndVelocity(force, hideaways_up ? velocity : -velocity, axis_num);
 }
-Fmatrix CCar::SEngineDoor::BuildLocalTarget(bool engine_on, int depth)
-{
-	constexpr int MaxDepth = 8;
-
-	Fmatrix ParentTarget = Fidentity;
-	Fmatrix ParentClosed = Fidentity;
-
-	// One door leaf can be hinged to the previous leaf instead of the chassis.
-	// Build the parent pose first, then express this leaf's bind transform in
-	// the parent's space.
-	CPhysicsElement* First = joint != nullptr ? joint->PFirst_element() : nullptr;
-	if (First != nullptr && pcar != nullptr && depth < MaxDepth)
-	{
-		for (SEngineDoor& Other : pcar->engine_door)
-		{
-			if (&Other == this || Other.joint == nullptr)
-				continue;
-			if (Other.joint->PSecond_element() != First)
-				continue;
-
-			ParentTarget = Other.BuildLocalTarget(engine_on, depth + 1);
-			ParentClosed = Other.closed_local;
-			break;
-		}
-	}
-
-	Fmatrix InvParent;
-	InvParent.invert(ParentClosed);
-
-	Fmatrix Relative;
-	Relative.mul_43(InvParent, closed_local);
-
-	Fvector Axis;
-	InvParent.transform_dir(Axis, axis_local);
-	Axis.normalize();
-	Fvector Anchor;
-	InvParent.transform_tiny(Anchor, anchor_local);
-
-	// The engine doors are open with the engine off and closed with it on.
-	const float TargetODE = engine_on ? closed_angle : opened_angle;
-	const float VisualAngle = -(TargetODE - bind_angle);
-
-	if (_abs(VisualAngle) > EPS)
-	{
-		Fmatrix Rot;
-		Rot.rotation(Axis, VisualAngle);
-
-		Fvector AxisI;
-		Fvector AxisJ;
-		Fvector AxisK;
-		Rot.transform_dir(AxisI, Relative.i);
-		Rot.transform_dir(AxisJ, Relative.j);
-		Rot.transform_dir(AxisK, Relative.k);
-		Relative.i = AxisI;
-		Relative.j = AxisJ;
-		Relative.k = AxisK;
-
-		Fvector Offset;
-		Offset.sub(Relative.c, Anchor);
-		Fvector RotatedOffset;
-		Rot.transform_tiny(RotatedOffset, Offset);
-		Relative.c.add(Anchor, RotatedOffset);
-	}
-
-	Fmatrix Target;
-	Target.mul_43(ParentTarget, Relative);
-	return Target;
-}
-
-void CCar::SEngineDoor::ApplyEngineDoorState(bool engine_on)
-{
-	if (pcar == nullptr || joint == nullptr || joint->PSecond_element() == nullptr)
-		return;
-
-	CPhysicsElement* Element = joint->PSecond_element();
-	if (!Element->isActive())
-		return;
-
-	const Fmatrix Target = BuildLocalTarget(engine_on, 0);
-	Fmatrix World;
-	World.mul_43(pcar->XFORM(), Target);
-
-	Element->SetTransform(World, mh_clear);
-	Element->ResetInterpolation();
-	Element->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
-	Element->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
-
-	// Apply the same motor command as the first engine toggle, but do it at
-	// load. The motor must keep a non-zero target velocity: otherwise the leaf
-	// is only held at the saved angle and stops returning after an impact.
-	Switch(!engine_on, true);
-}
-
-void CCar::SEngineDoor::Hold()
-{
-	if (joint == nullptr)
-		return;
-
-	// Zero-velocity motor: keeps the saved hinge angle without driving the
-	// leaf open or closed. The normal motor force is enough to move the leaf,
-	// but gravity can make a heavy bus door creep; hold it with extra force.
-	// Do not call SetForceAndVelocity here because it enables the shell and
-	// wakes a disabled car.
-	joint->SetForce(force * 5.f, axis_num);
-	joint->SetVelocity(0.f, axis_num);
-}
-
-void CCar::SEngineDoor::Switch(bool doors_up, bool ForceMotion)
-{
-	if (joint == nullptr)
-		return;
-
-	// Do not use SetForceAndVelocity here: it calls PShell->Enable() and wakes
-	// the car even when the engine-door force is applied during loading.
-	const float Target = doors_up ? opened_angle : closed_angle;
-	const float Delta = Target - dJointGetHingeAngle(joint->GetDJoint());
-	const float Speed = _abs(velocity);
-
-	joint->SetForce(force, axis_num);
-	if (_abs(Delta) >= 0.001f)
-	{
-		joint->SetVelocity(Delta > 0.f ? Speed : -Speed, axis_num);
-		return;
-	}
-
-	if (!ForceMotion)
-	{
-		joint->SetVelocity(0.f, axis_num);
-		return;
-	}
-
-	// The leaf is already at the target limit, so Delta is zero. Keep the
-	// motor pushing into that limit: after an impact the hinge then returns
-	// the leaf instead of only holding it with force.
-	const float OpenDirection = opened_angle >= closed_angle ? 1.f : -1.f;
-	joint->SetVelocity(doors_up ? OpenDirection * Speed : -OpenDirection * Speed, axis_num);
-}
 
 Fvector CCar::GetAvelAxes(u16 elem_id)
 {
@@ -9885,8 +7269,6 @@ Fvector CCar::GetLvelAxes(u16 elem_id)
     dBodyVectorFromWorld(elem->get_body(),elem->get_body()->lvel[0], elem->get_body()->lvel[1], elem->get_body()->lvel[2], tmp);
     return *(Fvector*)tmp;
 }
-
-
 
 void CCar::SetAvelAxes(u16 elem_id, Fvector avel)
 {

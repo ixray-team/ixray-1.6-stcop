@@ -13,6 +13,7 @@ XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CBurer final : public CBaseMonster, public CTelekinesis, public ITelekineticEnemy
 {
 public:
+	const char*		RamPushType		() const override { return "burer"; }
 	using inherited = CBaseMonster;
 	using TTelekinesis = CTelekinesis;
 

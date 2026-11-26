@@ -52,6 +52,7 @@ class CPoltergeist final : public CBaseMonster, public CTelekinesis, public CEne
 	bool m_enable_corpse_on_death;
 
 public:
+	const char*		RamPushType		() const override { return "poltergeist"; }
 	bool m_detect_without_sight;
 
 	CPoltergeist();
