@@ -77,7 +77,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 	if (enable3DIcons)
     {
-		SetIconVisual(itm->m_3d_static_visual_name);
+		SetIconVisual(itm->GetIconVisualName());
 		SetBonesVisible(itm->object().Visual()->dcast_PKinematics());
     }
 }
@@ -436,7 +436,7 @@ void CUIWeaponCellItem::Update()
 
 			if (enable3DIcons)
 			{
-				SetIconVisual(pItem->m_3d_static_visual_name);
+				SetIconVisual(pItem->GetIconVisualName());
 			}
 			SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 		}
@@ -488,7 +488,7 @@ void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 
 		if (EngineExternal()[EEngineExternalGame::Enable3DIcons])
 		{
-			SetIconVisual(pItem->m_3d_static_visual_name);
+			SetIconVisual(pItem->GetIconVisualName());
 		}
 		SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
 	}

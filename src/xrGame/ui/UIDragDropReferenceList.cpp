@@ -106,7 +106,7 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 	if (enable3DIcons)
 	{
 		const PIItem iitem = static_cast<PIItem>(itm->m_pData);
-		ref->SetIconVisual(iitem->m_3d_static_visual_name);
+		ref->SetIconVisual(iitem->GetIconVisualName());
 		ref->SetBonesVisible(iitem->object().Visual()->dcast_PKinematics());
 		ref->SetScaleFactor(iitem->m_3d_static_scale);
 		ref->SetIconOffset(iitem->IconOffset);
@@ -117,7 +117,7 @@ void CUIDragDropReferenceList::SetItem(CUICellItem* itm, Ivector2 cell_pos)
 			fRot.y -= deg2rad(180.f);
 		}
 		ref->SetXYZ(fRot);
-		itm->SetIconVisual(iitem->m_3d_static_visual_name);
+		itm->SetIconVisual(iitem->GetIconVisualName());
 		itm->SetBonesVisible(iitem->object().Visual()->dcast_PKinematics());
 		itm->SetScaleFactor(iitem->m_3d_static_scale);
 		itm->SetIconOffset(iitem->IconOffset);

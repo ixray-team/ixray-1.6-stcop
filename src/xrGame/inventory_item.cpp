@@ -347,13 +347,33 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 
 void CInventoryItem::Read3dStaticsData(const char* section)
 {
-	m_3d_static_visual_name = READ_IF_EXISTS(pSettings, r_string, section, "3d_static_visual_name", *object().cNameVisual());
+	ReadIconVisualOverride(section);
 
 	m_3d_static_rotate = READ_IF_EXISTS(pSettings, r_fvector3, section, "3d_static_rotate", m_3d_static_rotate.set(0,0,0));
 	m_3d_static_rotate.mul(M_PI / 180.0f);
 
 	m_3d_static_scale = READ_IF_EXISTS(pSettings, r_float, section, "3d_static_scale", 1.f);
 	IconOffset = READ_IF_EXISTS(pSettings, r_fvector2, section, "3d_static_offset", Fvector2().set(0.0f, 0.0f));
+}
+
+void CInventoryItem::ReadIconVisualOverride(const char* Section)
+{
+	m_3d_static_visual_name = nullptr;
+	if (pSettings->line_exist(Section, "3d_static_visual_name"))
+	{
+		const char* Name = pSettings->r_string(Section, "3d_static_visual_name");
+		m_3d_static_visual_name = Name ? Name : "";
+	}
+}
+
+shared_str CInventoryItem::GetIconVisualName() const
+{
+	if (!m_3d_static_visual_name)
+	{
+		return object().cNameVisual();
+	}
+
+	return m_3d_static_visual_name.size() ? m_3d_static_visual_name : shared_str{};
 }
 
 void CInventoryItem::RefreshTranslations()

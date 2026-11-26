@@ -3334,7 +3334,8 @@ void RenderOMFEditor_Draw_Game_Info(
 		if (pItem && pItem->cast_hud_item())
 		{
 			ImGui::Text("active item:\n\t%s (%s)", pItem->m_section_id.c_str(), pItem->cast_hud_item()->HudSection().c_str());
-			ImGui::Text("ogf:\n\t[%s]", pItem->m_3d_static_visual_name);
+			const shared_str IconVisual = pItem->GetIconVisualName();
+			ImGui::Text("ogf:\n\t[%s]", IconVisual ? IconVisual.c_str() : "");
 
 			CHudItem* pHI = pItem->cast_hud_item();
 

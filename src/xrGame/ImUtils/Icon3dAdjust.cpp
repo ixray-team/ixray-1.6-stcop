@@ -342,7 +342,7 @@ namespace
 			Offset = m_target_item->IconOffset;
 			GridSize = m_target_item->GetInvGridRect().rb;
 			GridSizeBlocked = false;
-			m_visual_applied = m_target_item->m_3d_static_visual_name;
+			m_visual_applied = m_target_item->GetIconVisualName();
 			xr_strcpy(m_visual, sizeof(m_visual), safe_c_str(m_visual_applied));
 		}
 
@@ -437,7 +437,7 @@ namespace
 
 			for (CInventoryItem* item : m_target_items)
 			{
-				item->m_3d_static_visual_name = safe_c_str(m_visual_applied);
+				item->m_3d_static_visual_name = m_visual_applied;
 			}
 
 			update_cells_visual();

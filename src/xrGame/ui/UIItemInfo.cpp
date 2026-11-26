@@ -465,7 +465,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 		if (enable3DIcons)
         {
-            UIItemImage->SetVisual(pInvItem->m_3d_static_visual_name);
+            UIItemImage->SetVisual(pInvItem->GetIconVisualName());
             UIItemImage->SetScaleFactor(pInvItem->m_3d_static_scale);
             UIItemImage->SetIconOffset(pInvItem->IconOffset);
             UIItemImage->SetXYZ(pInvItem->m_3d_static_rotate);

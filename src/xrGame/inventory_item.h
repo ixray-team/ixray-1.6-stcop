@@ -111,6 +111,7 @@ public:
 	virtual void Load(const char* section);
 	void ReadCustomTextAndMarks(const char* section);
 	void Read3dStaticsData(const char* section);
+	shared_str GetIconVisualName() const;
 	void RefreshTranslations();
 
 	// Дополнение названия предмета для кастомизации через скрипты к основному имени в UIItemInfo.cpp
@@ -242,7 +243,7 @@ public:
 	Fvector m_3d_static_rotate{};
 	float m_3d_static_scale = 1.f;
 	Fvector2 IconOffset{};
-	const char* m_3d_static_visual_name = "";
+	shared_str m_3d_static_visual_name;
 
 	SInvItemPlace m_ItemCurrPlace = {};
 	RStringVec m_HiglightRelatedItemSections = {}; // FFx0001 ++
@@ -293,6 +294,8 @@ public:
 	virtual bool IsNecessaryItem(CInventoryItem* item);
 	virtual bool IsNecessaryItem(const shared_str& item_sect) { return false; };
 protected:
+	void ReadIconVisualOverride(const char* Section);
+
 	u32 m_cost = 0;
 	float m_weight = 0.0f;
 	float m_fCondition = 1.0f;

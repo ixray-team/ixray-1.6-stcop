@@ -1313,7 +1313,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
 	if (enable3DIcons)
 	{
-		UIPickUpItemIcon->SetIconVisual(icons_struct._3d_static_visual);
+		UIPickUpItemIcon->SetIconVisual(m_pPickUpItem->GetIconVisualName());
 		UIPickUpItemIcon->SetXYZ(icons_struct._3d_static_rotate);
 		UIPickUpItemIcon->SetScaleFactor(icons_struct._3d_static_scale);
 		UIPickUpItemIcon->SetIconOffset(icons_struct.IconOffset);
