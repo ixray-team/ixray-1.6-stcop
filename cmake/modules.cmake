@@ -44,9 +44,12 @@ endif()
 
 if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/amd_ags.cmake")
+    include("${CMAKE_MODULE_PATHEX}/Embree.cmake")
+
     if(IXRAY_DISCORD_RPC)
         include("${CMAKE_MODULE_PATHEX}/discord_game_sdk.cmake")
     endif()
+    
     include("${CMAKE_MODULE_PATHEX}/FSR3.cmake")
     include("${CMAKE_MODULE_PATHEX}/NGX.cmake")
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")

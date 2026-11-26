@@ -149,14 +149,11 @@ if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	)
 endif()
 
-target_include_directories(xrCore PUBLIC "${CMAKE_SOURCE_DIR}/src/3rd-party/embree/include/")
+# Windows: prebuilt imported target (cmake/modules/Embree.cmake), its DLL is copied by copy_all_dlls
 target_link_libraries(xrCore PUBLIC embree)
 
-if(WIN32)
-    add_custom_command(TARGET xrCore POST_BUILD
-    	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/embree4.dll ${IXRAY_OUTPUT}
-    )
-else()
+if(NOT WIN32)
+	target_include_directories(xrCore PUBLIC "${CMAKE_SOURCE_DIR}/src/3rd-party/embree/include/")
 	add_custom_command(TARGET xrCore POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:embree>" "$<TARGET_FILE_DIR:xrCore>"
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_SONAME_FILE:embree>" "$<TARGET_FILE_DIR:xrCore>"
