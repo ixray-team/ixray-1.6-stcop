@@ -90,6 +90,8 @@ protected:
 	void SetUpgradeSelected(UIUpgrade* pUpgrade);
 
 private:
+	bool UpdatePreviewVisual(CInventoryItem& Item);
+
 	void LoadCellsBacks(CUIXml& uiXml);
 	void LoadCellStates(const char* state_str, const char* texture_name, const char* texture_name2, u32 color);
 	UIUpgrade::ViewState SelectCellState(const char* state_str);
@@ -100,6 +102,11 @@ private:
 	void SetCurScheme(const shared_str& id);
 	bool install_item(CInventoryItem& inv_item, bool can_upgrade);
 	bool CheckEnableDisassembleButton(CInventoryItem& inv_item);
+
+	u16 PreviewItemId = u16(-1);
+	shared_str PreviewIconName;
+	const IRenderVisual* PreviewSource = nullptr;
+	VisMask PreviewBones;
 public:
 	CUI3tButton* m_btn_repair = nullptr;
 	CUI3tButton* m_btn_disassemble = nullptr;

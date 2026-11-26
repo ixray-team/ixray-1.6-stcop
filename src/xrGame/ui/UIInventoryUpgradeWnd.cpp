@@ -165,21 +165,21 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 		}
 
 		InventoryIconParams icons_struct = GetInventoryIconParams(m_inv_item->m_section_id.c_str());
-		static const bool enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
-		if (enable3DIcons)
-        {
-			IRenderVisual* prevVisual = m_item->GetVisual();
-			m_item->SetIconVisual(m_inv_item->GetIconVisualName());
-			if (m_item->GetVisual() != prevVisual)
+		static const bool Enable3DIcons = EngineExternal()[EEngineExternalGame::Enable3DIcons];
+		if (Enable3DIcons)
+		{
+			PreviewItemId = m_inv_item->object_id();
+			if (UpdatePreviewVisual(*m_inv_item))
 			{
 				m_item->SetXYZ(icons_struct._3d_static_rotate);
 			}
-            m_item->SetScaleFactor(icons_struct._3d_static_scale);
-            m_item->SetIconOffset(icons_struct.IconOffset);
-            m_item->SetBonesVisible(m_inv_item->object().Visual()->dcast_PKinematics());
-        }
-        else
-            m_item->SetVisual(nullptr);
+			m_item->SetScaleFactor(icons_struct._3d_static_scale);
+			m_item->SetIconOffset(icons_struct.IconOffset);
+		}
+		else
+		{
+			m_item->SetVisual(nullptr);
+		}
 
 		if (is_shader)
 		{
@@ -241,10 +241,40 @@ void CUIInventoryUpgradeWnd::Show(bool status)
 void CUIInventoryUpgradeWnd::Update()
 {
 	inherited::Update();
+	if (m_item && m_item->IsShown() && m_inv_item && PreviewItemId != u16(-1))
+	{
+		// The item can replace its world visual in UpdateCL after the upgrade callback.
+		CObject* Object = Level().Objects.net_Find(PreviewItemId);
+		if (Object && !Object->getDestroy() && Object->cast_inventory_item() == m_inv_item)
+		{
+			UpdatePreviewVisual(*m_inv_item);
+		}
+	}
 	if (m_selectorFrame)
 	{
 		m_selectorFrame->SetVisible(pInput->GetControllerMode() && m_selector_shown);
 	}
+}
+
+bool CUIInventoryUpgradeWnd::UpdatePreviewVisual(CInventoryItem& Item)
+{
+	const shared_str IconName = Item.GetIconVisualName();
+	IRenderVisual* Source = Item.object().Visual();
+	IKinematics* Kinematics = Source ? Source->dcast_PKinematics() : nullptr;
+	const VisMask Bones = Kinematics ? Kinematics->LL_GetBonesVisible() : VisMask{};
+	const bool ModelChanged = IconName != PreviewIconName;
+	if (ModelChanged)
+	{
+		m_item->SetIconVisual(IconName);
+		PreviewIconName = IconName;
+	}
+	if (ModelChanged || Source != PreviewSource || Bones != PreviewBones)
+	{
+		m_item->SetBonesVisible(Kinematics);
+		PreviewSource = Source;
+		PreviewBones = Bones;
+	}
+	return ModelChanged;
 }
 
 void CUIInventoryUpgradeWnd::Reset()
@@ -531,6 +561,7 @@ void CUIInventoryUpgradeWnd::DeInitInventory()
 	}
 
 	m_inv_item = nullptr;
+	PreviewItemId = u16(-1);
 }
 
 bool CUIInventoryUpgradeWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
