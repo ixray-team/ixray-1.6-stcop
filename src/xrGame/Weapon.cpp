@@ -9,6 +9,7 @@
 #include "Actor.h"
 #include "ActorEffector.h"
 #include "Level.h"
+#include "xrServer.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/EngineAPI.h"
 #include "../xrEngine/IGame_ObjectPool.h"

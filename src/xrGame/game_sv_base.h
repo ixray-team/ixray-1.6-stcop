@@ -8,8 +8,6 @@
 #include "game_sv_item_respawner.h"
 #include "../xrNetServer/NET_Server.h"
 
-#define MAX_PLAYERS_COUNT 32
-
 enum ERoundEnd_Result
 {
 	eRoundEnd_Finish		= u32(0),

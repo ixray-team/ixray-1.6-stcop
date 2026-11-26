@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "EditorLevel.h"
+#include "xrServer.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "PHCommander.h"
 #include "physics_game.h"

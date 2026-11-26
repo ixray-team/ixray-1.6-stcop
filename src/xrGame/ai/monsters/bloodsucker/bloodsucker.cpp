@@ -5,6 +5,7 @@
 #include "../../../ActorEffector.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../Level.h"
+#include "../../../xrServer.h"
 #include "../../../material_manager.h"
 #include "bloodsucker_vampire_effector.h"
 #include "../../../detail_path_manager.h"

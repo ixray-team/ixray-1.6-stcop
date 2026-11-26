@@ -3,12 +3,12 @@
 #include "../xrEngine/IGame_Level.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrNetServer/NET_Client.h"
+#include "../xrNetServer/traffic_optimization.h"
 #include "../xrScripts/script_export_space.h"
 #include "../xrEngine/StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
 #include "../xrCore/xrDebug.h"
-#include "xrServer.h"
 #include "GlobalFeelTouch.hpp"
 
 #include "Level_network_map_sync.h"
@@ -206,7 +206,7 @@ private:
 	OBJECTS_LIST				pObjects4CrPr;
 	OBJECTS_LIST				pActors4CrPr;
 
-	xrServer::EConnect			m_connect_server_err;
+	bool ServerConnectFailed = false;
 public:
 	void						AddObject_To_Objects4CrPr	(CGameObject* pObj);
 	void						AddActor_To_Actors4CrPr		(CGameObject* pActor);

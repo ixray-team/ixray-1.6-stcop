@@ -8,6 +8,7 @@
 #include "Actor.h"
 #include "GamePersistent.h"
 #include "Level.h"
+#include "xrServer.h"
 #include "CameraFirstEye.h"
 #include "Hit.h"
 #include "PHDestroyable.h"

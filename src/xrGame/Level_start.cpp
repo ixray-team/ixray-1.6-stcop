@@ -177,7 +177,9 @@ void CLevel::ConnectServer()
 {
 	PROF_EVENT("CLevel::ConnectServer");
 	GameDescriptionData game_descr;
-	if ((m_connect_server_err=Server->Connect(m_caServerOptions, game_descr))!=xrServer::ErrNoError)
+	const xrServer::EConnect Result = Server->Connect(m_caServerOptions, game_descr);
+	ServerConnectFailed = Result == xrServer::ErrConnect;
+	if (Result != xrServer::ErrNoError)
 	{
 		net_start_result_total = false;
 		Msg				("! Failed to start server.");
@@ -342,7 +344,7 @@ bool CLevel::net_start6				()
 	}else{
 		Msg				("! Failed to start client. Check the connection or level existance.");
 
-		if (m_connect_server_err==xrServer::ErrConnect&&!psNET_direct_connect && !g_dedicated_server) 
+		if (ServerConnectFailed && !psNET_direct_connect && !g_dedicated_server)
 		{
 			DEL_INSTANCE	(g_pGameLevel);
 			Console->Execute("main_menu on");

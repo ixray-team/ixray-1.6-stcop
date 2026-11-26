@@ -4,6 +4,7 @@
 #include "../../../Actor.h"
 #include "../../../ActorEffector.h"
 #include "../../../Level.h"
+#include "../../../xrServer.h"
 #include "pseudogigant_state_manager.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"

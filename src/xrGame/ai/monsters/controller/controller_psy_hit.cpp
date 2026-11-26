@@ -6,6 +6,7 @@
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
 #include "../../../Level.h"
+#include "../../../xrServer.h"
 #include "../../../Actor.h"
 #include "../../../ActorEffector.h"
 #include "../../../../xrEngine/CameraBase.h"

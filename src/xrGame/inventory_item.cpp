@@ -12,6 +12,7 @@
 #include "inventory_item_impl.h"
 #include "PhysicsShellHolder.h"
 #include "Level.h"
+#include "xrServer.h"
 #include "Actor.h"
 #include "../../xrUI/ui_base.h"
 #include "ui/UIGameSP.h"

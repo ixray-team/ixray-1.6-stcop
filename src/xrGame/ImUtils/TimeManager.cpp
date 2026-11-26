@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "../Level.h"
+#include "../xrServer.h"
 #include "../GamePersistent.h"
 #include "../game_sv_single.h"
 #include "../alife_simulator.h"

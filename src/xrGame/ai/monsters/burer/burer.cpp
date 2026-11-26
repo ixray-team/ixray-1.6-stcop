@@ -7,6 +7,7 @@
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
 #include "../../../Level.h"
+#include "../../../xrServer.h"
 #include "../../../ai_monster_space.h"
 #include "../../../level_debug.h"
 #include "../monster_velocity_space.h"

@@ -5,6 +5,8 @@
 #include "gametype_chooser.h"
 #include "player_account.h"
 
+#define MAX_PLAYERS_COUNT 32
+
 #pragma pack(push,1)
 
 

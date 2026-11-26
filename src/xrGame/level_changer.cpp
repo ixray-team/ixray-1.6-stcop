@@ -12,6 +12,7 @@
 #include "Actor.h"
 #include "xrServer_Objects_ALife.h"
 #include "Level.h"
+#include "xrServer.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "level_graph.h"

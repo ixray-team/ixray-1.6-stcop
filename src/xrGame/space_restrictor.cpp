@@ -11,6 +11,7 @@
 #include "space_restrictor.h"
 #include "xrServer_Objects_ALife.h"
 #include "Level.h"
+#include "xrServer.h"
 #include "space_restriction_manager.h"
 #include "restriction_space.h"
 #include "ai_space.h"

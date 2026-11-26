@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "StdAfx.h"
 #include "ai_stalker.h"
+#include "xrServer.h"
 
 #include "ai_object_location.h"
 #include "CharacterPhysicsSupport.h"

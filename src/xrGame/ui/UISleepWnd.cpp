@@ -6,6 +6,7 @@
 #include "ActorCondition.h"
 #include "ActorEffector.h"
 #include "Level.h"
+#include "xrServer.h"
 #include "PostprocessAnimator.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"

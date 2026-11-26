@@ -10,6 +10,7 @@
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #	include "Level.h"
+#	include "xrServer.h"
 #	include "PHDebug.h"
 #endif
 

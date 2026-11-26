@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "ai_stalker_state_net.h"
+#include "xrServer.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "Inventory.h"
 #include "Weapon.h"

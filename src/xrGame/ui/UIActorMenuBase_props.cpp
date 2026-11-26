@@ -13,6 +13,7 @@
 #include "../../xrEngine/string_table.h"
 #include "../ai_object_location.h"
 #include "../game_sv_single.h"
+#include "../xrServer.h"
 #include "../InventoryWeaponSlotLayout.h"
 
 void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
