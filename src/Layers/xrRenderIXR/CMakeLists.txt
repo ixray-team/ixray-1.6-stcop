@@ -86,5 +86,3 @@ endif()
 
 ## RenderDoc
 target_include_directories(xrRender_IXR PUBLIC "${RENDERDOC_API}")
-
-ixray_split_compile(xrRender_IXR)

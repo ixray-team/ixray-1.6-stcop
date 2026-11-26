@@ -79,5 +79,3 @@ target_link_libraries(xrPhysics PUBLIC xrEngineCore)
 
 # Move precompiled header
 target_validate_pch(xrPhysics ${CMAKE_CURRENT_SOURCE_DIR})
-
-ixray_split_compile(xrPhysics)

@@ -39,10 +39,8 @@ add_compile_options("$<$<CONFIG:RELEASE>:/GF>" "$<$<CONFIG:RELWITHDEBINFO>:/GF>"
 add_compile_options("$<$<CONFIG:RELEASE>:/Oi>" "$<$<CONFIG:RELWITHDEBINFO>:/Oi>")
 add_compile_options("$<$<CONFIG:RELEASE>:/Oy>" "$<$<CONFIG:RELWITHDEBINFO>:/Oy>")
 add_compile_options("$<$<CONFIG:RELEASE>:/GT>" "$<$<CONFIG:RELWITHDEBINFO>:/GT>")
-add_compile_options("$<$<CONFIG:RELEASE>:/GL>" "$<$<CONFIG:RELWITHDEBINFO>:/GL>")
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>")
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ot>")
-add_link_options("$<$<CONFIG:RELEASE>:/LTCG:incremental>" "$<$<CONFIG:RELWITHDEBINFO>:/LTCG:incremental>")
 add_link_options("$<$<CONFIG:RELEASE>:/INCREMENTAL:NO>" "$<$<CONFIG:RELWITHDEBINFO>:/INCREMENTAL:NO>")
 
 ## Exceptions...
@@ -50,7 +48,12 @@ if (NOT IXRAY_LDEBUG)
     add_compile_options("$<$<CONFIG:DEBUG>:/EHsc>")
 endif()
 
-add_compile_options(/Zi)
+## Edit and Continue mode
+if (IXRAY_ASAN)
+    add_compile_options("$<$<CONFIG:DEBUG>:/Zi>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+else()
+    add_compile_options("$<$<CONFIG:DEBUG>:/ZI>" "$<$<CONFIG:RELWITHDEBINFO>:/Zi>" "$<$<CONFIG:RELEASE>:/Zi>")
+endif()
 
 if(${CMAKE_GENERATOR_PLATFORM} MATCHES "arm64")
     set(IXR_ARM_ENABLE ON)
