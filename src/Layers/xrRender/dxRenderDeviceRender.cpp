@@ -459,6 +459,8 @@ void dxRenderDeviceRender::End()
 
 		MyImGui.Render();
 		MyImGui.AfterRender();
+		// ImGui restores native state after callbacks that used the engine renderer.
+		InvalidateRenderCache();
 
 		DebugRenderImpl.m_lines.resize(0);
 		GRHI->GPUStatsEnd();

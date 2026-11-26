@@ -55,14 +55,29 @@ public:
 		Entry.LastFrame = Device.dwFrame;
 		if (IsNew)
 		{
-			LPCSTR Visual = READ_IF_EXISTS(pSettings, r_string, SectionName, "3d_static_visual_name", READ_IF_EXISTS(pSettings, r_string, SectionName, "visual", nullptr));
+			const bool IsWeapon = pSettings->line_exist(SectionName, "class") && g_pClsidManager->is_weapon(pSettings->r_clsid(SectionName, "class"));
+			xr_vector<shared_str> InstalledSections;
+			LPCSTR WorldVisual = READ_IF_EXISTS(pSettings, r_string, SectionName, "visual", nullptr);
+			if (IsWeapon)
+			{
+				InstalledSections = WeaponBoneVisibility::GetDefaultUpgradeSections(SectionName);
+				for (const auto& Parameters : InstalledSections)
+				{
+					LPCSTR UpgradeVisual = WeaponBoneVisibility::ReadString(Parameters.c_str(), "visual");
+					if (*UpgradeVisual)
+					{
+						WorldVisual = UpgradeVisual;
+					}
+				}
+			}
+			LPCSTR Visual = READ_IF_EXISTS(pSettings, r_string, SectionName, "3d_static_visual_name", WorldVisual);
 			Entry.Icon = xr_make_unique<CUI3dStatic>();
 			Entry.Icon->SetIconVisual(Visual);
-			if (Entry.Icon->GetVisual())
+			if (IRenderVisual* IconVisual = Entry.Icon->GetVisual())
 			{
-				if (pSettings->line_exist(SectionName, "class") && g_pClsidManager->is_weapon(pSettings->r_clsid(SectionName, "class")))
+				if (IsWeapon)
 				{
-					WeaponBoneVisibility::ConfigureDefault(*Entry.Icon->GetVisual()->dcast_PKinematics(), SectionName);
+					WeaponBoneVisibility::ConfigureDefault(*IconVisual->dcast_PKinematics(), SectionName, InstalledSections);
 					Entry.Icon->CaptureIconBones();
 				}
 			}

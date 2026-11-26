@@ -611,7 +611,9 @@ void CRHI::EvictManagedResources()
 
 void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
 {
-	if (Shaders[(size_t)Type] == NativeShader)
+	const auto Index = static_cast<size_t>(Type);
+	const u32 Binding = u32(1) << Index;
+	if ((ValidShaderBindings & Binding) && Shaders[Index] == NativeShader)
 	{
 		return;
 	}
@@ -643,7 +645,15 @@ void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
 		}
 	}
 
-	Shaders[(size_t)Type] = NativeShader;
+	Shaders[Index] = NativeShader;
+	ValidShaderBindings |= Binding;
+}
+
+void CRHI::InvalidateShaderBindings()
+{
+	// Native drawing code can replace the bindings outside SetShader.
+	std::fill_n(Shaders, RHI_SHADERS_TYPE_SIZE, nullptr);
+	ValidShaderBindings = 0;
 }
 
 void CRHI::SetViewport(RHIViewport& VP)

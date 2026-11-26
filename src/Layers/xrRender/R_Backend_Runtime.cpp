@@ -58,6 +58,7 @@ void CBackend::Invalidate	()
 {
 	if (GRHI != nullptr)
 	{
+		GRHI->InvalidateShaderBindings();
 		GRHI->SetRenderTargetView(nullptr, 0);
 		GRHI->SetRenderTargetView(nullptr, 1);
 		GRHI->SetRenderTargetView(nullptr, 2);

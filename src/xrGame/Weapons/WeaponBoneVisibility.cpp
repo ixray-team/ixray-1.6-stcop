@@ -2,6 +2,7 @@
 #include "WeaponBoneVisibility.h"
 #include "Components/WeaponAmmoBones.h"
 #include "../../Include/xrRender/Kinematics.h"
+#include "../../xrEngine/AI/alife_space.h"
 
 namespace WeaponBoneVisibility
 {
@@ -96,7 +97,7 @@ void CollectUpgradeBones(LPCSTR SectionName, xr_vector<shared_str>& Bones)
 	CollectUpgradeBonesRecursive(SectionName, Bones, Visited);
 }
 
-void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
+xr_vector<shared_str> GetDefaultUpgradeSections(LPCSTR SectionName)
 {
 	xr_vector<shared_str> InstalledSections;
 	LPCSTR Installed = ReadString(SectionName, "installed_upgrades");
@@ -110,6 +111,11 @@ void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 			InstalledSections.emplace_back(Parameters);
 		}
 	}
+	return InstalledSections;
+}
+
+void ConfigureDefault(IKinematics& Model, LPCSTR SectionName, xr_span<const shared_str> InstalledSections)
+{
 	const auto ReadStatus = [&](LPCSTR Field)
 	{
 		u32 Status = READ_IF_EXISTS(pSettings, r_u32, SectionName, Field, 0);
@@ -153,8 +159,26 @@ void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 		_GetItem(Upgrades, Index, Upgrade);
 		CollectUpgradeBones(Upgrade, UpgradeHide);
 	}
-	const u32 ScopeStatus = ReadStatus("scope_status");
-	ApplyAddons(Model, {.HasScope = ScopeStatus == 1, .HasSilencer = ReadStatus("silencer_status") == 1, .HasLauncher = ReadStatus("grenade_launcher_status") == 1, .DefaultHide = DefaultHide, .DefaultShow = DefaultShow, .UpgradeHide = UpgradeHide, .UpgradeShow = InstalledShow, .InstalledHide = InstalledHide, .InstalledShow = InstalledShow, .OverrideHide = OverrideHide, .SilencerHide = SilencerHide, .DefaultSilencerHide = DefaultSilencerHide, .ScopeHide = ScopeHide, .DefaultScopeHide = DefaultScopeHide, .LauncherHide = LauncherHide, .DefaultLauncherHide = DefaultLauncherHide});
+	const u32 SilencerStatus = ReadStatus("silencer_status");
+	const u32 LauncherStatus = ReadStatus("grenade_launcher_status");
+	ApplyAddons(Model, {
+		.HasScope = ReadStatus("scope_status") == ALife::eAddonPermanent,
+		.HasSilencer = SilencerStatus == ALife::eAddonPermanent,
+		.HasLauncher = LauncherStatus == ALife::eAddonPermanent,
+		.DefaultHide = DefaultHide,
+		.DefaultShow = DefaultShow,
+		.UpgradeHide = UpgradeHide,
+		.UpgradeShow = InstalledShow,
+		.InstalledHide = InstalledHide,
+		.InstalledShow = InstalledShow,
+		.OverrideHide = OverrideHide,
+		.SilencerHide = SilencerHide,
+		.DefaultSilencerHide = DefaultSilencerHide,
+		.ScopeHide = ScopeHide,
+		.DefaultScopeHide = DefaultScopeHide,
+		.LauncherHide = LauncherHide,
+		.DefaultLauncherHide = DefaultLauncherHide
+	});
 
 	xr_vector<shared_str> Scopes;
 	const auto AppendScopes = [&](LPCSTR Parameters, u32 Status)
@@ -192,6 +216,15 @@ void ConfigureDefault(IKinematics& Model, LPCSTR SectionName)
 	VisitScopeBones(Scopes, nullptr, NoScopeHide, NoScopeShow, [&](const shared_str& Bone, bool IsVisible, bool IsRecursive)
 					{ SetBone(Model, Bone, IsVisible, IsRecursive); });
 	TAmmoBones::ApplyDefaultIconBones(Model, SectionName, InstalledSections);
+	// A scope or ammo rule can show a child of an addon which is absent on the preview.
+	if (LauncherStatus == ALife::eAddonAttachable)
+	{
+		SetBone(Model, "wpn_launcher", false, true);
+	}
+	if (SilencerStatus == ALife::eAddonAttachable)
+	{
+		SetBone(Model, "wpn_silencer", false, true);
+	}
 	Model.CalculateBones_Invalidate();
 }
 } // namespace WeaponBoneVisibility

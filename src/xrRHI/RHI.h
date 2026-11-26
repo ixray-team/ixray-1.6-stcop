@@ -118,6 +118,7 @@ public:
 
 	void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type);
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
+	void InvalidateShaderBindings();
 	void SetViewport(RHIViewport& VP);
 	void SetScissorRect(Irect* R);
 
@@ -166,7 +167,8 @@ public:
 	CAMDAntiLag* DriverAntiLag = nullptr;
 
 private:
-	void* Shaders[RHI_SHADERS_TYPE_SIZE];
+	void* Shaders[RHI_SHADERS_TYPE_SIZE]{};
+	u32 ValidShaderBindings = 0;
 };
 
 extern RHI_API CRHI* GRHI;

@@ -29,7 +29,8 @@ void SetBone(IKinematics& Model, const shared_str& Bone, bool IsVisible, bool Is
 LPCSTR ReadString(LPCSTR SectionName, LPCSTR Field);
 void ApplyAddons(IKinematics& Model, const AddonState& State);
 void CollectUpgradeBones(LPCSTR SectionName, xr_vector<shared_str>& Bones);
-void ConfigureDefault(IKinematics& Model, LPCSTR SectionName);
+xr_vector<shared_str> GetDefaultUpgradeSections(LPCSTR SectionName);
+void ConfigureDefault(IKinematics& Model, LPCSTR SectionName, xr_span<const shared_str> InstalledSections);
 
 template <typename TVisitor>
 void VisitBoneList(LPCSTR SectionName, LPCSTR Field, bool IsVisible, bool IsRecursive, const TVisitor& Visitor)
