@@ -42,7 +42,7 @@ void CAddonManager::CollectAddons()
 	{
 		const auto& Entry = *It;
 		const bool IsDirectory = Entry.is_directory();
-		if (FS.IsIgnoredPath(Entry.path().string().c_str(), IsDirectory))
+		if (FS.IsIgnoredPath(xr_path(Entry), IsDirectory))
 		{
 			if (IsDirectory)
 			{
