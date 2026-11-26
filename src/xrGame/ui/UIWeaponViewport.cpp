@@ -629,13 +629,14 @@ void CUIWeaponViewport::Draw()
 	Device.mProject = ProjectMatrix;
 	Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 
-	IDSGraphManager* Graph = ::Render->GetUIGraph();
-	Graph->set_UI(true);
+	::Render->set_UI(true);
 	for (SDrawItem& Entry : Draws)
 	{
-		Graph->add_Dynamic(Entry.Visual, &Entry.World, true);
+		Entry.Visual->getVisData().marker = u32(-1);
+		::Render->set_Transform(Entry.World);
+		::Render->add_Visual(Entry.Visual, true);
 	}
-	Graph->set_UI(false);
+	::Render->set_UI(false);
 
 	Fcolor Color;
 	Color.set(1.0f, 1.0f, 1.0f, 1.0f);
