@@ -118,6 +118,7 @@ public:
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
 	bool ScopeFit(CScope*) const;
+	shared_str GetScopeAddonSection(const shared_str& Scope) const;
 
 	virtual void on_a_hud_attach() override;
 	

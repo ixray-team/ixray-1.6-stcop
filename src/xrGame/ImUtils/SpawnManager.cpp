@@ -5,6 +5,9 @@
 #include "../alife_simulator.h"
 #include "../alife_time_manager.h"
 #include "../ui/UIInventoryUtilities.h"
+#include "../ui/UICellItem.h"
+#include "../ui/UIDragDropListEx.h"
+#include "../WeaponMagazinedWGrenade.h"
 
 #include "ai_space.h"
 #include "ImUtils.h"
@@ -112,15 +115,109 @@ static void SpawnManagerDrawIcon(const ImDrawList*, const ImDrawCmd* Command)
 	UI().PopScissor();
 }
 
+class SpawnManagerWeaponHover final
+{
+public:
+	void Update(const CUICellItem& Cell)
+	{
+		const u32 Frame = Device.dwFrame;
+		if (Frame - ActiveFrame.load(std::memory_order_relaxed) > 1)
+		{
+			return;
+		}
+
+		xrCriticalSectionGuard Guard(&Lock);
+		HoverFrame = Frame;
+		CompatibleSections.clear();
+
+		if (CUIDragDropListEx::m_drag_item || !Cell.IsOwnerListValid() || !Cell.HasValidInventoryBinding())
+		{
+			return;
+		}
+
+		auto* Item = static_cast<PIItem>(Cell.m_pData);
+		CWeapon* Weapon = Item->cast_weapon();
+		if (!Weapon || Item->cast_weapon_binoculars() || Item->cast_weapon_knife())
+		{
+			return;
+		}
+
+		const auto& Ammo = Weapon->getAmmoTypes();
+		CompatibleSections.assign(Ammo.begin(), Ammo.end());
+		if (Item->cast_weapon_magazined_w_grenade() && (Weapon->IsGrenadeLauncherAttached() || Weapon->GrenadeLauncherAttachable()))
+		{
+			const auto& Grenades = Weapon->getAmmoTypes(true);
+			CompatibleSections.insert(CompatibleSections.end(), Grenades.begin(), Grenades.end());
+		}
+
+		if (Item->cast_weapon_magazined())
+		{
+			if (Weapon->ScopeAttachable())
+			{
+				for (const shared_str& Scope : Weapon->m_scopes)
+				{
+					CompatibleSections.push_back(Weapon->GetScopeAddonSection(Scope));
+				}
+			}
+
+			if (Weapon->SilencerAttachable())
+			{
+				CompatibleSections.push_back(Weapon->GetSilencerName());
+			}
+
+			if (Weapon->GrenadeLauncherAttachable())
+			{
+				CompatibleSections.push_back(Weapon->GetGrenadeLauncherName());
+			}
+		}
+	}
+
+	// Inventory UI updates can run concurrently with the ImGui render callback.
+	void Read(bool IsActive, xr_vector<shared_str>& Sections)
+	{
+		const u32 Frame = Device.dwFrame;
+		ActiveFrame.store(IsActive ? Frame : Frame - 2, std::memory_order_relaxed);
+		Sections.clear();
+
+		if (IsActive)
+		{
+			xrCriticalSectionGuard Guard(&Lock);
+			// Render can run before the inventory update for this frame.
+			if (Frame - HoverFrame <= 1)
+			{
+				Sections.assign(CompatibleSections.begin(), CompatibleSections.end());
+			}
+		}
+	}
+
+	void Clear()
+	{
+		const u32 InactiveFrame = Device.dwFrame - 2;
+		ActiveFrame.store(InactiveFrame, std::memory_order_relaxed);
+		xrCriticalSectionGuard Guard(&Lock);
+		HoverFrame = InactiveFrame;
+		CompatibleSections.clear();
+	}
+
+private:
+	std::atomic<u32> ActiveFrame = u32(-2);
+	xrCriticalSection Lock;
+	u32 HoverFrame = u32(-2);
+	xr_vector<shared_str> CompatibleSections;
+};
+
 using Section = xr_vector<xr_pair<xr_string_view, CInifile::Sect*>>;
 struct SectionData
 {
 	Section Sorted{};
 	Section Unsorted{};
+	xr_vector<CInifile::Sect*> BulkSpawn;
+
 	void clear()
 	{
 		Sorted.clear();
 		Unsorted.clear();
+		BulkSpawn.clear();
 	}
 };
 
@@ -142,6 +239,8 @@ struct
 	bool Use3DIcons = false;
 	bool IconSettingsInitialized = false;
 	SpawnManagerIconViews IconCache;
+	SpawnManagerWeaponHover WeaponHover;
+	xr_vector<shared_str> HighlightedSections;
 	string16 spawn_count{};
 	// weapon tab
 
@@ -183,11 +282,20 @@ float SpawnManager_ParseHitPower(const shared_str& hit_str);
 void SpawnManager_RenderTooltip(CInifile::Sect* section);
 bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname);
 void SpawnManager_HandleButtonPress(CInifile::Sect* section);
-void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui);
+void SpawnManager_ProcessSections(const Section& sections, size_t& number_imgui);
 Section FilterSectionsWithSearch(const Section& sections, const char* searchBuffer);
+static void RenderBulkSpawn(std::initializer_list<const SectionData*> Groups);
+static void RenderOutfitSections();
+
+void SpawnManagerNotifyHoveredCell(const CUICellItem& Cell)
+{
+	imgui_spawn_manager.WeaponHover.Update(Cell);
+}
 
 void DestroySpawnManagerWindow()
 {
+	imgui_spawn_manager.WeaponHover.Clear();
+	imgui_spawn_manager.HighlightedSections.clear();
 	imgui_spawn_manager.IconCache.Clear();
 	imgui_spawn_manager.WeaponsSections.clear();
 	imgui_spawn_manager.ItemsSections.clear();
@@ -207,6 +315,30 @@ void DestroySpawnManagerWindow()
 	imgui_spawn_manager.Explosives.clear();
 	imgui_spawn_manager.Anomalies.clear();
 	imgui_spawn_manager.Others.clear();
+}
+
+static bool IsFakeInventorySection(CInifile::Sect& Section)
+{
+	const char* Name = Section.Name.c_str();
+	return Section.line_exist("inv_grid_width") && pSettings->r_u32(Name, "inv_grid_width") == 0
+		&& Section.line_exist("inv_grid_height") && pSettings->r_u32(Name, "inv_grid_height") == 0;
+}
+
+static void InitBulkSpawnSections(SectionData& Group)
+{
+	Group.BulkSpawn.clear();
+	for (const Section* List : {&Group.Sorted, &Group.Unsorted})
+	{
+		for (const auto& Entry : *List)
+		{
+			auto* Item = Entry.second;
+			if (Item->line_exist("cost") && Item->line_exist("inv_weight") && Item->line_exist("inv_name")
+				&& Item->line_exist("inv_name_short") && Item->line_exist("immunities_sect") && !IsFakeInventorySection(*Item))
+			{
+				Group.BulkSpawn.push_back(Item);
+			}
+		}
+	}
 }
 
 void InitSections()
@@ -285,11 +417,7 @@ void InitSections()
 			}
 		}
 
-		bool isInvItem = sect.line_exist("cost") && sect.line_exist("inv_weight");
-		bool isFakeItem = sect.line_exist("inv_grid_width") && pSettings->r_u32(name.data(), "inv_grid_width") <= 0 &&
-			sect.line_exist("inv_grid_height") && pSettings->r_u32(name.data(), "inv_grid_height") <= 0;
-
-		isInvItem &= !isFakeItem;
+		bool isInvItem = sect.line_exist("cost") && sect.line_exist("inv_weight") && !IsFakeInventorySection(sect);
 
 		size_t mp_index = name.find("mp_");
 		if (g_pClsidManager->is_mp_stuff(classId) || (mp_index != xr_string_view::npos && mp_index == 0))
@@ -445,6 +573,15 @@ void InitSections()
 		}
 	}
 
+	InitBulkSpawnSections(imgui_spawn_manager.ItemsUsedSections);
+	InitBulkSpawnSections(imgui_spawn_manager.DevicesSections);
+	InitBulkSpawnSections(imgui_spawn_manager.ItemsSections);
+	InitBulkSpawnSections(imgui_spawn_manager.WeaponsSections);
+	InitBulkSpawnSections(imgui_spawn_manager.AmmoSections);
+	InitBulkSpawnSections(imgui_spawn_manager.AddonSections);
+	InitBulkSpawnSections(imgui_spawn_manager.OutfitSections);
+	InitBulkSpawnSections(imgui_spawn_manager.ArtefactSections);
+
 	xr_vector<CInifile::Sect*> SquadSections;
 	SquadSpawn::CollectSections(SquadSections);
 	for (CInifile::Sect* Squad : SquadSections)
@@ -454,18 +591,14 @@ void InitSections()
 }
 
 void RenderSpawnManagerWindow() {
-	imgui_spawn_manager.IconCache.BeginFrame(imgui_spawn_manager.Use3DIcons && g_pGameLevel && Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)]);
-	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)])
+	const bool IsOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)];
+	const bool IsActive = IsOpen && g_pGameLevel && ai().get_alife() && g_pClsidManager;
+	imgui_spawn_manager.WeaponHover.Read(IsActive, imgui_spawn_manager.HighlightedSections);
+	imgui_spawn_manager.IconCache.BeginFrame(imgui_spawn_manager.Use3DIcons && IsOpen && g_pGameLevel);
+	if (!IsActive)
+	{
 		return;
-
-	if (g_pGameLevel == nullptr)
-		return;
-
-	if (ai().get_alife() == nullptr)
-		return;
-
-	if (g_pClsidManager == nullptr)
-		return;
+	}
 
 	if (imgui_spawn_manager.sound_tip == nullptr)
 	{
@@ -548,7 +681,7 @@ void RenderSpawnManagerWindow() {
 		ImGui::SetItemTooltip("Use inventory 3D icon settings. Unavailable models use the regular icon. Defaults to Enable3DIcons; can be changed independently.");
 		Render3DIconLightingControls();
 
-		ImGui::InputText("count##IT_InGameSpawnManager", imgui_spawn_manager.spawn_count, sizeof(imgui_spawn_manager).spawn_count);
+		ImGui::InputText("count##IT_InGameSpawnManager", imgui_spawn_manager.spawn_count, IM_ARRAYSIZE(imgui_spawn_manager.spawn_count));
 		ImGui::SetItemTooltip("How many items to spawn by one click, from 1 to specified number by user input");
 
 		if (ImGui::Checkbox("sort by max cost##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_max_cost))
@@ -569,6 +702,8 @@ void RenderSpawnManagerWindow() {
 		{
 			if (ImGui::BeginTabItem("Inventory Stuff"))
 			{
+				RenderBulkSpawn({&imgui_spawn_manager.ItemsUsedSections, &imgui_spawn_manager.DevicesSections, &imgui_spawn_manager.ItemsSections});
+
 				if (ImGui::BeginTabBar("##TabBarItems_InGameSpawnManager"))
 				{
 					if (ImGui::BeginTabItem("Used"))
@@ -753,6 +888,7 @@ void RenderSpawnManagerWindow() {
 
 				ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
 				SectionStatistics(imgui_spawn_manager.WeaponsSections);
+				RenderBulkSpawn({&imgui_spawn_manager.WeaponsSections});
 
 				static string128 weaponSearchBuffer = "";
 				ImGui::InputText("Search##Weapons", weaponSearchBuffer, IM_ARRAYSIZE(weaponSearchBuffer));
@@ -950,6 +1086,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.AmmoSections);
+				RenderBulkSpawn({&imgui_spawn_manager.AmmoSections});
 
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Ammo", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -979,6 +1116,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.AddonSections);
+				RenderBulkSpawn({&imgui_spawn_manager.AddonSections});
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Addons", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1006,6 +1144,8 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.ArtefactSections);
+				RenderBulkSpawn({&imgui_spawn_manager.ArtefactSections});
+
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Artefacts", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1031,28 +1171,7 @@ void RenderSpawnManagerWindow() {
 
 			if (ImGui::BeginTabItem("Outfits"))
 			{
-				size_t number_imgui{};
-				SectionStatistics(imgui_spawn_manager.OutfitSections);
-				static string128 searchBuffer = "";
-				ImGui::InputText("Search##Outfits", searchBuffer, IM_ARRAYSIZE(searchBuffer));
-
-				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.OutfitSections.Sorted, searchBuffer);
-				SpawnManager_ProcessSections(filteredList, number_imgui);
-
-				if (imgui_spawn_manager.sort_by_max_cost)
-				{
-					maxSortCost(imgui_spawn_manager.OutfitSections.Sorted);
-				}
-				else if (imgui_spawn_manager.sort_by_min_cost)
-				{
-					minSortCost(imgui_spawn_manager.OutfitSections.Sorted);
-				}
-				if (imgui_spawn_manager.OutfitSections.Unsorted.size() > 0)
-				{
-					ImGui::SeparatorText("Unsorted");
-					SpawnManager_ProcessSections(imgui_spawn_manager.OutfitSections.Unsorted, number_imgui);
-				}
-
+				RenderOutfitSections();
 				ImGui::EndTabItem();
 			}
 
@@ -1231,7 +1350,152 @@ void RenderSpawnManagerWindow() {
 	ImGui::PopStyleColor(1);
 }
 
-void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
+static float ReadOutfitBoneArmor(const char* Name)
+{
+	const char* Protection = READ_IF_EXISTS(pSettings, r_string, Name, "bones_koeff_protection", nullptr);
+	if (!Protection || !pSettings->section_exist(Protection))
+	{
+		return 0.0f;
+	}
+
+	const int Slot = READ_IF_EXISTS(pSettings, r_s32, Name, "slot", -1);
+	const char* Bone = Slot == HELMET_SLOT - 1 ? "bip01_head" : "bip01_spine";
+	const char* ArmorParams = READ_IF_EXISTS(pSettings, r_string, Protection, Bone, nullptr);
+	if (!ArmorParams)
+	{
+		ArmorParams = READ_IF_EXISTS(pSettings, r_string, Protection, "default", nullptr);
+	}
+
+	string64 Armor;
+	return ArmorParams ? static_cast<float>(atof(_GetItem(ArmorParams, 1, Armor))) : 0.0f;
+}
+
+static void RenderOutfitSections()
+{
+	const SectionData& Outfits = imgui_spawn_manager.OutfitSections;
+	SectionStatistics(Outfits);
+	RenderBulkSpawn({&Outfits});
+
+	static string128 Search = "";
+	ImGui::InputText("Search##Outfits", Search, IM_ARRAYSIZE(Search));
+
+	enum OutfitSlotFilter
+	{
+		AllSlots,
+		OutfitSlot,
+		HelmetSlot,
+		OtherSlots,
+	};
+
+	static int SlotFilter = AllSlots;
+	constexpr const char* SlotLabels[] = {"All", "Outfit", "Helmet", "Other"};
+	ImGui::Combo("Equipment slot", &SlotFilter, SlotLabels, IM_ARRAYSIZE(SlotLabels));
+
+	struct OutfitSortOption
+	{
+		const char* Label;
+		const char* Key;
+		float Default = 0.0f;
+	};
+
+	static constexpr char BoneArmorKey[] = "bones_koeff_protection";
+	constexpr OutfitSortOption SortOptions[] = {
+		{"Default", nullptr},
+		{"Equipment slot", "slot", -1.0f},
+		{"Burn protection", "burn_protection"},
+		{"Shock protection", "shock_protection"},
+		{"Chemical burn protection", "chemical_burn_protection"},
+		{"Radiation protection", "radiation_protection"},
+		{"Psi protection", "telepatic_protection"},
+		{"Wound protection", "wound_protection"},
+		{"Ballistic armor (body/head)", BoneArmorKey},
+		{"Fire wound coefficient", "fire_wound_protection"},
+		{"Strike protection", "strike_protection"},
+		{"Explosion protection", "explosion_protection"},
+		{"Artefact slots", "artefact_count"},
+		{"Carry weight bonus", "additional_inventory_weight2"},
+		{"Weight", "inv_weight"},
+		{"Cost", "cost"},
+	};
+
+	static int SortIndex = 0;
+	static bool Descending = true;
+	if (ImGui::BeginCombo("Sort by", SortOptions[SortIndex].Label))
+	{
+		for (int Index = 0; Index < IM_ARRAYSIZE(SortOptions); ++Index)
+		{
+			if (ImGui::Selectable(SortOptions[Index].Label, Index == SortIndex))
+			{
+				SortIndex = Index;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::SetItemTooltip("Sorts by base configuration values.");
+
+	const char* SortKey = SortOptions[SortIndex].Key;
+	bool SortDescending = Descending;
+	if (SortKey)
+	{
+		ImGui::SameLine();
+		ImGui::Checkbox("Descending", &Descending);
+		SortDescending = Descending;
+	}
+	else if (imgui_spawn_manager.sort_by_max_cost || imgui_spawn_manager.sort_by_min_cost)
+	{
+		SortKey = "cost";
+		SortDescending = imgui_spawn_manager.sort_by_max_cost;
+	}
+
+	auto PrepareList = [&](const Section& Source)
+	{
+		Section Result = FilterSectionsWithSearch(Source, Search);
+		if (SlotFilter != AllSlots)
+		{
+			std::erase_if(Result, [&](const auto& Entry)
+			{
+				const int Slot = READ_IF_EXISTS(pSettings, r_s32, Entry.first.data(), "slot", -1);
+				const OutfitSlotFilter Category = Slot == OUTFIT_SLOT - 1 ? OutfitSlot : Slot == HELMET_SLOT - 1 ? HelmetSlot : OtherSlots;
+				return SlotFilter != Category;
+			});
+		}
+
+		if (SortKey)
+		{
+			const float Default = SortOptions[SortIndex].Default;
+			auto GetValue = [&](const char* Name)
+			{
+				const float Value = SortKey == BoneArmorKey ? ReadOutfitBoneArmor(Name) : READ_IF_EXISTS(pSettings, r_float, Name, SortKey, Default);
+				return std::isfinite(Value) ? Value : Default;
+			};
+			std::sort(Result.begin(), Result.end(), [&](const auto& Left, const auto& Right)
+			{
+				const float LeftValue = GetValue(Left.first.data());
+				const float RightValue = GetValue(Right.first.data());
+				if (LeftValue != RightValue)
+				{
+					return SortDescending ? LeftValue > RightValue : LeftValue < RightValue;
+				}
+				return Left.first < Right.first;
+			});
+		}
+		return Result;
+	};
+
+	size_t WidgetIndex = 0;
+	const Section Sorted = PrepareList(Outfits.Sorted);
+	SpawnManager_ProcessSections(Sorted, WidgetIndex);
+
+	const Section Unsorted = PrepareList(Outfits.Unsorted);
+	if (!Unsorted.empty())
+	{
+		ImGui::SeparatorText("Unsorted");
+		SpawnManager_ProcessSections(Unsorted, WidgetIndex);
+	}
+}
+
+void SpawnManager_ProcessSections(const Section& sections, size_t& number_imgui)
 {
 	auto sm_process_button = [](bool is_table, const xr_string_view& section_name, CInifile::Sect* pSection, size_t& number_imgui) {
 		string128 imname{};
@@ -1242,7 +1506,27 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 		xr_sprintf(index, sizeof(index), "##%zu", number_imgui);
 		memcpy(imname + section_name.size(), index, sizeof(index));
 
-		if (SpawnManager_RenderButtonOrImage(pSection, imname))
+		const auto& Highlighted = imgui_spawn_manager.HighlightedSections;
+		const bool IsCompatible = std::find(Highlighted.begin(), Highlighted.end(), pSection->Name) != Highlighted.end();
+		if (IsCompatible)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.10f, 0.41f, 0.47f, 0.90f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.17f, 0.55f, 0.62f, 0.95f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.20f, 0.66f, 0.73f, 1.0f));
+		}
+
+		const bool IsPressed = SpawnManager_RenderButtonOrImage(pSection, imname);
+		if (IsCompatible)
+		{
+			ImGui::PopStyleColor(3);
+			if (ImGui::IsItemVisible())
+			{
+				const ImU32 Border = ImGui::GetColorU32(ImVec4(0.36f, 0.89f, 0.96f, 1.0f));
+				ImGui::GetWindowDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), Border, ImGui::GetStyle().FrameRounding, 0, 2.0f);
+			}
+		}
+
+		if (IsPressed)
 		{
 			SpawnManager_HandleButtonPress(pSection);
 		}
@@ -1307,8 +1591,6 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 			}
 		}
 	}
-
-	std::sort(sections.begin(), sections.end());
 }
 
 namespace SpawnManagerMarks
@@ -1487,77 +1769,109 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	return IsPressed;
 }
 
+static bool SpawnOnLevel()
+{
+	const bool Invert = pInput && pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL);
+	return imgui_spawn_manager.spawn_on_level != Invert;
+}
+
+static void QueueSpawn(const CInifile::Sect& Section, bool OnLevel, bool IsSquad, int Count)
+{
+	xr_string Command = IsSquad ? "g_spawn_squad " : OnLevel ? "g_spawn " : "g_spawn_inv ";
+	Command += Section.Name.c_str();
+	if (Count > 0)
+	{
+		Command += " ";
+		Command += xr_string::ToString(Count);
+	}
+
+	execute_console_command_deferred(Console, Command.c_str());
+}
+
+static void ShowSpawnNotification(const char* Message)
+{
+	CActor* Player = Actor();
+	if (!Player)
+	{
+		return;
+	}
+
+	if (imgui_spawn_manager.sound_tip)
+	{
+		imgui_spawn_manager.sound_tip->PlayAtPos(Player->lua_game_object(), Fvector().set(0.0f, 0.0f, 0.0f), 0.0f, sm_2D);
+	}
+
+	xr_string Text;
+	if (imgui_spawn_manager.legacyNewsMode)
+	{
+		Text += "%c[255,160,160,160]";
+		Text += g_pStringTable->translate("general_in_item").c_str();
+		Text += "\\n%c[default]";
+	}
+	Text += Message;
+
+	GAME_NEWS_DATA News;
+	News.m_type = GAME_NEWS_DATA::eNews;
+	News.news_caption = "general_in_item";
+	News.news_text = Text.c_str();
+	News.show_time = 3000;
+	News.texture_name = "ui_ixray_spawn_icon";
+	Player->AddGameNews(News);
+}
+
+static void RenderBulkSpawn(std::initializer_list<const SectionData*> Groups)
+{
+	size_t SectionCount = 0;
+	for (const SectionData* Group : Groups)
+	{
+		SectionCount += Group->BulkSpawn.size();
+	}
+
+	string64 Label;
+	xr_sprintf(Label, sizeof(Label), "Spawn all (%zu)", SectionCount);
+	ImGui::BeginDisabled(SectionCount == 0 || !Actor());
+	const bool Pressed = ImGui::Button(Label);
+	ImGui::EndDisabled();
+	ImGui::SetItemTooltip("Spawns one item from each inventory section in this tab. Search, filters and count do not apply.");
+
+	if (Pressed)
+	{
+		const bool OnLevel = SpawnOnLevel();
+		for (const SectionData* Group : Groups)
+		{
+			for (const CInifile::Sect* Entry : Group->BulkSpawn)
+			{
+				QueueSpawn(*Entry, OnLevel, false, 1);
+			}
+		}
+
+		string64 Message;
+		xr_sprintf(Message, sizeof(Message), "Queued %zu inventory sections", SectionCount);
+		ShowSpawnNotification(Message);
+	}
+}
+
 void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 {
-	int count = atoi(imgui_spawn_manager.spawn_count);
-	if (count == 0)
-		count = 1;
-
-	if (Actor())
-	{
-		if (imgui_spawn_manager.sound_tip)
-		{
-			imgui_spawn_manager.sound_tip->PlayAtPos(Actor()->lua_game_object(), Fvector().set(0.0f, 0.0f, 0.0f), 0.0f, sm_2D);
-		}
-
-		xr_string text_news_final = "";
-		if (imgui_spawn_manager.legacyNewsMode)
-		{
-			text_news_final += "%c[255,160,160,160]";
-			text_news_final += g_pStringTable->translate("general_in_item").c_str();
-			text_news_final += "\\n%c[default]";
-		}
-
-		string128 text_news;
-		if (section->line_exist("inv_name"))
-		{
-			const char* name = g_pStringTable->translate(pSettings->r_string(section->Name.c_str(), "inv_name")).c_str();
-			xr_sprintf(text_news, sizeof(text_news), "[%s] x [%d] (%s)", section->Name.c_str(), count, name);
-		}
-		else
-		{
-			xr_sprintf(text_news, sizeof(text_news), "[%s] x [%d]", section->Name.c_str(), count);
-		}
-		text_news_final += text_news;
-
-		GAME_NEWS_DATA				news_data;
-		news_data.m_type = GAME_NEWS_DATA::eNews;
-		news_data.news_caption = "general_in_item";
-		news_data.news_text = text_news_final.c_str();
-		news_data.show_time = 3000;
-		news_data.texture_name = "ui_ixray_spawn_icon";
-		Actor()->AddGameNews(news_data);
-	}
-
-	xr_string cmd = "g_spawn_inv ";
-	bool isInvItem = section->line_exist("cost") && section->line_exist("inv_weight");
-
-	bool spawn_on_level = imgui_spawn_manager.spawn_on_level;
-	if (pInput != nullptr && pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL))
-	{
-		spawn_on_level = !imgui_spawn_manager.spawn_on_level;
-	}
-
-	if (spawn_on_level || !isInvItem)
-	{
-		cmd = "g_spawn ";
-	}
-
+	const int InputCount = atoi(imgui_spawn_manager.spawn_count);
+	const int Count = std::max(1, InputCount);
+	const char* SectionName = section->Name.c_str();
+	const bool IsInventoryItem = section->line_exist("cost") && section->line_exist("inv_weight");
 	const bool IsSquad = imgui_spawn_manager.SpawnAsSquad
-		|| (section->line_exist("class") && g_pClsidManager->is_squad(pSettings->r_clsid(section->Name.c_str(), "class")));
-	if (IsSquad)
-	{
-		cmd = "g_spawn_squad ";
-	}
+		|| (section->line_exist("class") && g_pClsidManager->is_squad(pSettings->r_clsid(SectionName, "class")));
+	QueueSpawn(*section, SpawnOnLevel() || !IsInventoryItem, IsSquad, IsSquad && InputCount <= 0 ? 0 : Count);
 
-	cmd += section->Name.c_str();
-	if (!IsSquad || atoi(imgui_spawn_manager.spawn_count) > 0)
+	string128 Message;
+	if (const char* NameKey = READ_IF_EXISTS(pSettings, r_string, SectionName, "inv_name", nullptr))
 	{
-		cmd += " ";
-		cmd += xr_string::ToString(count);
+		const shared_str Name = g_pStringTable->translate(NameKey);
+		xr_sprintf(Message, sizeof(Message), "[%s] x [%d] (%s)", SectionName, Count, Name.c_str());
 	}
-
-	execute_console_command_deferred(Console, cmd.c_str());
+	else
+	{
+		xr_sprintf(Message, sizeof(Message), "[%s] x [%d]", SectionName, Count);
+	}
+	ShowSpawnNotification(Message);
 }
 
 void SpawnManager_RenderTooltip(CInifile::Sect* section)

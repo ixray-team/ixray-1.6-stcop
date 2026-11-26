@@ -259,15 +259,15 @@ void CUICellItem::Update()
 	if (CursorOverWindow())
 	{
 		Icon3dAdjust_NotifyHoveredCell(this);
-	}
-	
-	if ( CursorOverWindow() )
-	{
-		Frect clientArea;
-		m_pParentList->GetClientArea(clientArea);
-		Fvector2 cp			= GetUICursor().GetCursorPosition();
-		if(clientArea.in(cp))
+
+		Frect ClientArea;
+		m_pParentList->GetClientArea(ClientArea);
+		Fvector2 CursorPosition = GetUICursor().GetCursorPosition();
+		if (ClientArea.in(CursorPosition))
+		{
+			SpawnManagerNotifyHoveredCell(*this);
 			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_FOCUSED_UPDATE, nullptr);
+		}
 	}
 	
 	PIItem item = (PIItem)m_pData;

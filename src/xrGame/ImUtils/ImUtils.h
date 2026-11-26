@@ -730,6 +730,7 @@ void InitImGuiQuestEditor();
 /* RENDER */
 void RenderTimeManagerWindow();
 void RenderSpawnManagerWindow();
+void SpawnManagerNotifyHoveredCell(const CUICellItem& Cell);
 void RenderWeaponManagerWindow();
 void RenderSearchManagerWindow();
 void RenderHUDAdjustManager();

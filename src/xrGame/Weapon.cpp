@@ -4212,14 +4212,17 @@ int CWeapon::GetScopeY()
 
 const shared_str CWeapon::GetScopeName() const
 {
+	return GetScopeAddonSection(m_scopes[m_cur_scope]);
+}
+
+shared_str CWeapon::GetScopeAddonSection(const shared_str& Scope) const
+{
 	if (bUseAltScope)
 	{
-		return m_scopes[m_cur_scope];
+		return Scope;
 	}
-	else
-	{
-		return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");
-	}
+
+	return pSettings->r_string(Scope, "scope_name");
 }
 
 void CWeapon::UpdateAltScope()
@@ -4724,14 +4727,7 @@ bool CWeapon::ScopeFit(CScope* pIItem) const
 {
 	for (const shared_str& scope : m_scopes)
 	{
-		if (bUseAltScope)
-		{
-			if (scope == pIItem->cNameSect())
-			{
-				return true;
-			}
-		}
-		else if (pSettings->r_string(scope, "scope_name") == pIItem->cNameSect())
+		if (GetScopeAddonSection(scope) == pIItem->cNameSect())
 		{
 			return true;
 		}
