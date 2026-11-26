@@ -215,7 +215,7 @@ function precondition_functor_a( param1, section )
 		local param = param_ini:r_string_ex(mechanic_name.."_upgr", section)
 		if(param) then
 			if(param=="false") then
-				ret = 1
+				return 1
 			elseif(param~="true") then
 				local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
 				local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)

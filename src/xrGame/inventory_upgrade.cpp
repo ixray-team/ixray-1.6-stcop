@@ -128,42 +128,23 @@ UpgradeStateResult Upgrade::can_install(CInventoryItem& item, bool loading)
 		return result_ok; // later script check
 	}
 
-	if (res == result_ok)
+	static const bool IsLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
+	// A mechanic's refusal takes precedence over missing parent upgrades in the CoP upgrade system.
+	if (res != result_ok && (res != result_e_parents || IsLegacyUpgrade))
 	{
-		int script_res = m_preconditions();
-
-		switch (script_res)
-		{
-		case result_script_ok:
-		{
-			return res;
-		}break;
-		case result_script_e_cant_do:
-		{
-			const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
-			if (isLegacyUpgrade)
-			{
-				if (res != result_ok)
-				{
-					return res;
-				}
-
-				return result_e_precondition_money;
-			}
-
-			return result_e_cant_do;
-		} break;
-		case result_script_e_precondition_any:
-		{
-			if (res != result_ok)
-			{
-				return res;
-			}
-
-			return result_e_precondition_quest;
-		} break;
-		}
+		return res;
 	}
+
+	const int ScriptResult = m_preconditions();
+	if (ScriptResult == result_script_e_cant_do)
+	{
+		return IsLegacyUpgrade ? result_e_precondition_money : result_e_cant_do;
+	}
+	if (res == result_ok && ScriptResult == result_script_e_precondition_any)
+	{
+		return result_e_precondition_quest;
+	}
+
 	return res;
 }
 
