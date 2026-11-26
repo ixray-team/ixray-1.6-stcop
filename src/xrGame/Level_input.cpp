@@ -400,9 +400,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	switch (key) {
 	case SDL_SCANCODE_F7: {
 		if (!IsGameTypeSingle()) return;
-		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, true);
-		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, true);
-		FS.rescan_pathes			();
 		NET_Packet					net_packet;
 		net_packet.w_begin			(M_RELOAD_GAME);
 		Send						(net_packet,net_flags(true));

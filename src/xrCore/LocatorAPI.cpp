@@ -1098,7 +1098,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 	R_ASSERT		(_path);
 	VERIFY			(flags);
 	// проверить нужно ли пересканировать пути
-	check_pathes	();
+	//check_pathes	();
 
 	string_path		N;
 
@@ -1205,7 +1205,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 	R_ASSERT(path);
 	VERIFY(flags);
 	// проверить нужно ли пересканировать пути
-	check_pathes();
+	//check_pathes();
 
 	string_path		N;
 	if (path_exist(path))
@@ -1581,7 +1581,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, const char* source_name)
 bool CLocatorAPI::check_for_file	(const char* path, const char* _fname, string_path& fname, const file *&desc)
 {
 	// проверить нужно ли пересканировать пути
-	check_pathes();
+	//check_pathes();
 
 	// correct path
 	xr_strcpy(fname,_fname);
@@ -1593,6 +1593,7 @@ bool CLocatorAPI::check_for_file	(const char* path, const char* _fname, string_p
 	file desc_f;
 	desc_f.name	= fname;
 
+	xrSRWLockGuard g(m_files_lock, true);
 	files_it I = m_files.find(desc_f);
 
 	if (I == m_files.end()) {
@@ -1822,7 +1823,7 @@ xr_string CLocatorAPI::fix_path(const xr_string& file)
 CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* InputPath)
 {
 	// проверить нужно ли пересканировать пути
-	check_pathes	();
+	//check_pathes	();
 
 	string_path file_name;
 
@@ -2076,7 +2077,7 @@ const char* CLocatorAPI::update_path(xr_stack_string_path& dest, const char* ini
 time_t CLocatorAPI::get_file_age(const char* nm)
 {
 	// проверить нужно ли пересканировать пути
-	check_pathes();
+	//check_pathes();
 
 	xrSRWLockGuard g(m_files_lock, true);
 	files_it I = file_find_it(nm);
@@ -2086,7 +2087,7 @@ time_t CLocatorAPI::get_file_age(const char* nm)
 void CLocatorAPI::set_file_age(const char* nm, time_t age)
 {
 	// проверить нужно ли пересканировать пути
-	check_pathes	();
+	//check_pathes	();
 
 	// set file
 	_utimbuf	tm;

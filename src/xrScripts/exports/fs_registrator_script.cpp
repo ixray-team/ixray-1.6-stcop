@@ -24,7 +24,9 @@ const char* update_path_script(CLocatorAPI* fs, const char* initial, const char*
 //Alundaio: Set flag to rescan all files in path
 void rescan_path_script(CLocatorAPI* fs, const char* initial)
 {
-	fs->get_path(initial)->m_Flags.set(FS_Path::flNeedRescan, true);
+	// No need - filewatcher already handled it
+	//fs->get_path(initial)->m_Flags.set(FS_Path::flNeedRescan, true);
+	Msg("Called dummy script rescan_path function for %s", initial);
 }
 //-Alundaio
 
@@ -107,14 +109,6 @@ public:
 
 FS_file_list_ex::FS_file_list_ex(const char* path, u32 flags, const char* mask)
 {
-	if (strstr(path, "$game_saves$"))
-	{
-		FS_Path* P = FS.get_path(path);
-		P->m_Flags.set(FS_Path::flNeedRescan, true);
-		FS.m_Flags.set(CLocatorAPI::flNeedCheck, true);
-		FS.rescan_pathes(false);
-	}
-
 	FS_FileSet files;
 	FS.file_list(files, path, flags, mask);
 
@@ -127,8 +121,6 @@ FS_file_list_ex::FS_file_list_ex(const char* path, u32 flags, const char* mask)
 		itm.modif = it->time_write;
 		itm.size = it->size;
 	}
-
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
 }
 
 void FS_file_list_ex::Sort(u32 flags)

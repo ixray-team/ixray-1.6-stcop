@@ -566,18 +566,10 @@ bool valid_saved_game_name(const char* file_name)
 	return		(true);
 }
 
-void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* file_ext, bool rescan = true)
+void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* file_ext)
 {
 	VERIFY(dir && file_ext);
 	files.clear();
-
-	if (rescan)
-	{
-		FS_Path* P = FS.get_path(dir);
-		P->m_Flags.set(FS_Path::flNeedRescan, true);
-		FS.m_Flags.set(CLocatorAPI::flNeedCheck, true);
-		FS.rescan_pathes(false);
-	}
 
 	string256 fext;
 	xr_strconcat(fext, "*", file_ext);
@@ -596,9 +588,6 @@ void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* f
 		strncpy_s(fn, sizeof(fn), fn_ext, xr_strlen(fn_ext) - len_str_ext);
 		files.push_back(fn);
 	}
-
-	if (rescan)
-		FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
 }
 
 #include "UIGameCustom.h"
@@ -1334,10 +1323,6 @@ public:
 		}
 		else
 		{
-			// rescan pathes
-			FS_Path* P = FS.get_path("$game_scripts$");
-			P->m_Flags.set(FS_Path::flNeedRescan, true);
-			FS.rescan_pathes();
 			// run script
 			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
 				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(args, false, true);
@@ -3056,7 +3041,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
-		get_files_list(tips, _game_meshes_, ".ogf", false);
+		get_files_list(tips, _game_meshes_, ".ogf");
 	}
 };
 
