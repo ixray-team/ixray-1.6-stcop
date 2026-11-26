@@ -141,6 +141,24 @@ void CParticlesObject::UpdateWorld(u32 Time, CFrustum* ViewBase)
 
 void CParticlesObject::Update(u32 _dt, CFrustum* viewbase)
 {
+	UpdateInternal(_dt, viewbase, true);
+}
+
+void CParticlesObject::UpdateHud(u32 Time)
+{
+	const u32 Delta = Time - dwLastTime;
+	// An update at the start timestamp can start a group without advancing past its stop markers.
+	if (Delta == 0)
+	{
+		return;
+	}
+
+	UpdateInternal(Delta, nullptr, false);
+	dwLastTime = Time;
+}
+
+void CParticlesObject::UpdateInternal(u32 Delta, CFrustum* ViewBase, bool TrackWorldSpatial)
+{
 	xrCriticalSectionGuard Guard(UpdateLock);
 	if (m_NeedDestroy || (!m_bPlaying && !m_bAutoRemove)) return;
 	PROF_EVENT(__FUNCTION__);
@@ -158,17 +176,17 @@ void CParticlesObject::Update(u32 _dt, CFrustum* viewbase)
 		m_bPlaying = false;
 	}
 
-	m_iLifeTime -= _dt;
+	m_iLifeTime -= Delta;
 	if (m_bAutoRemove && !IsAlive())
 		Destroy();
 
 	if (IParticleCustom* V = renderable.visual ? renderable.visual->dcast_ParticleCustom() : NULL)
 	{
-		V->OnFrame(_dt);
+		V->OnFrame(Delta);
 
 		// UpdateSpatial (+ workaround occasional bug inside particle-system)
 		vis_data& vis = renderable.visual->getVisData();
-		if (V->IsPlaying() && vis.sphere.R>EPS_L)
+		if (TrackWorldSpatial && V->IsPlaying() && vis.sphere.R>EPS_L)
 		{
 			Fvector	P; float R = vis.sphere.R;
 			renderable.xform.transform_tiny(P, vis.sphere.P);
@@ -192,7 +210,7 @@ void CParticlesObject::Update(u32 _dt, CFrustum* viewbase)
 			if (RDEVICE.vCameraPosition_saved.distance_to_sqr(P) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
 				return;
 			
-			if (viewbase && !viewbase->testSphere_dirty(P, R))
+			if (ViewBase && !ViewBase->testSphere_dirty(P, R))
 				return;
 		}
 		V->UpdateCache();

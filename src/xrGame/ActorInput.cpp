@@ -1684,7 +1684,6 @@ void CActor::ActorUse()
 	if (IsActorBurning() /* && !IsActorControlled()*/ && HudAnimator() != nullptr && HudAnimator()->BurnAnimator() != nullptr)
 	{
 		HudAnimator()->BurnAnimator()->StartAnimator();
-		m_need_fire_particle = true;
 		return;
 	}
 

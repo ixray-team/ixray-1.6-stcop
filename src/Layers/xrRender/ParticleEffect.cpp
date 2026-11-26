@@ -710,29 +710,24 @@ void CParticleEffect::Render(float)
 			dwCount = u32(pv - pv_start) * 4;
 			RCache.Vertex.Unlock(dwCount, geom->vb_stride);
 
-			CHudInitializer initalizer(false, true);
-
-			if (GetHudMode())
+			const bool IsHud = GetHudMode();
 			{
-				initalizer.SetHudMode();
-				RCache.set_xform_view(Device.mView);
-				RCache.set_xform_project(Device.mProject);
-				ApplyTexgen(Device.mFullTransform);
+				CHudInitializer Hud(IsHud, true);
+				if (IsHud)
+				{
+					ApplyTexgen(Device.mFullTransform);
+				}
+
+				RCache.set_xform_world(Fidentity);
+				RCache.set_Geometry(geom);
+
+				GRHI->StateManager->SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwOffset, 0, dwCount, 0, dwCount / 2);
+				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 			}
 
-
-			RCache.set_xform_world(Fidentity);
-			RCache.set_Geometry(geom);
-
-			GRHI->StateManager->SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-
-			if (GetHudMode())
+			if (IsHud)
 			{
-				initalizer.SetDefaultMode();
-				RCache.set_xform_view(Device.mView);
-				RCache.set_xform_project(Device.mProject);
 				ApplyTexgen(Device.mFullTransform);
 			}
 		}

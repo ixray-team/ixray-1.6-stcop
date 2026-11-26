@@ -333,7 +333,7 @@ struct animator_item
 
 	void anim_play(const shared_str& item_anm_name, bool bMixIn, float speed);
 	u32 anim_play(const shared_str& anim_name, bool bMixIn, const CMotionDef*& md);
-	void			setup_firedeps		(firedeps& fd);
+	bool setup_firedeps(firedeps& fd);
 };
 
 struct script_layer

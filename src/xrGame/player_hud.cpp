@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "player_hud.h"
 #include "HudItem.h"
+#include "HudItemAnimator.h"
 #include "Actor.h"
 #include "physic_item.h"
 #include "ActorEffector.h"
@@ -2148,7 +2149,13 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_attached_items[1]->update(true);
 
 	if (m_animator_item && m_animator_item->IsPlaying)
+	{
 		m_animator_item->update(true);
+		if (CBurnAnimator* BurnAnimator = m_animator_item->m_animator->cast_burn_animator())
+		{
+			BurnAnimator->UpdateFlame(*m_animator_item);
+		}
+	}
 }
 
 u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* model)
@@ -3108,6 +3115,10 @@ void animator_item::render()
 
 	::Render->set_Transform(&m_item_transform);
 	::Render->add_Visual(m_item->dcast_RenderVisual(), true);
+	if (CBurnAnimator* BurnAnimator = m_animator->cast_burn_animator())
+	{
+		BurnAnimator->RenderFlame();
+	}
 }
 
 void animator_item::anim_play(const shared_str& item_anm_name, bool bMixIn, float speed)
@@ -3215,31 +3226,27 @@ Fvector& animator_item::hands_attach_rot()
 	return m_hands_positions.hands_offsets[1][EHudOffsetType::eDefault];
 }
 
-void animator_item::setup_firedeps(firedeps& fd)
+bool animator_item::setup_firedeps(firedeps& fd)
 {
-	update							(false);
-	// fire point&direction
-	if(m_has_fire_point)
+	if (!m_has_fire_point || m_fire_bone == BI_NONE)
 	{
-		if (m_fire_bone == BI_NONE)
-			return;
-
-		Fmatrix& fire_mat								= m_item->LL_GetTransform(m_fire_bone);
-		fire_mat.transform_tiny							(fd.vLastFP, m_fire_point_offset);
-		m_item_transform.transform_tiny					(fd.vLastFP);
-
-		fd.vLastFD.set									(0.f,0.f,1.f);
-		m_item_transform.transform_dir					(fd.vLastFD);
-		VERIFY(_valid(fd.vLastFD));
-		VERIFY(_valid(fd.vLastFD));
-
-		fd.m_FireParticlesXForm.identity				();
-		fd.m_FireParticlesXForm.k.set					(fd.vLastFD);
-		Fvector::generate_orthonormal_basis_normalized	(	fd.m_FireParticlesXForm.k,
-															fd.m_FireParticlesXForm.j, 
-															fd.m_FireParticlesXForm.i);
-		VERIFY(_valid(fd.m_FireParticlesXForm));
+		return false;
 	}
+
+	update(false);
+	const Fmatrix& FireBone = m_item->LL_GetTransform(m_fire_bone);
+	FireBone.transform_tiny(fd.vLastFP, m_fire_point_offset);
+	m_item_transform.transform_tiny(fd.vLastFP);
+
+	fd.vLastFD.set(m_item_transform.k);
+	VERIFY(_valid(fd.vLastFD));
+
+	Fmatrix& ParticleTransform = fd.m_FireParticlesXForm;
+	ParticleTransform.identity();
+	ParticleTransform.k.set(fd.vLastFD);
+	Fvector::generate_orthonormal_basis_normalized(ParticleTransform.k, ParticleTransform.j, ParticleTransform.i);
+	VERIFY(_valid(ParticleTransform));
+	return true;
 }
 
 bool animator_item::NeedMovementBlend()

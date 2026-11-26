@@ -26,6 +26,7 @@
 #include "../../../../xrScripts/script_callback_ex.h"
 #include "../../../ActorCondition.h"
 #include "../../../Inventory.h"
+#include "../boar/boar.h"
 #include "../snork/snork.h"
 #include "../pseudogigant/pseudo_gigant.h"
 
@@ -112,27 +113,32 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		if (pEntityNC == Actor() && !GodMode() && m_bCanDropActorWeapon && smart_cast<CSnork*>(this) == nullptr && smart_cast<CPseudoGigant*>(this) == nullptr)
 		{
 			const float stamina = Actor()->conditions().GetPower();
+			float StaminaHit = HS.power;
+			if (smart_cast<CAI_Boar*>(this))
+			{
+				StaminaHit *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "boar_stamina_hit_k", 1.f);
+			}
+			StaminaHit = std::max(0.f, StaminaHit);
+			Actor()->conditions().SetPower(stamina - StaminaHit);
 
 			bool need_kick_animator = false;
 
 			PIItem active_item = Actor()->inventory().ActiveItem();
 			CCustomDevice* device = Actor()->GetDevice();
 
-			if (stamina > HS.power)
+			if (stamina <= StaminaHit && (active_item != nullptr || device != nullptr))
 			{
-				Actor()->conditions().SetPower(stamina - HS.power);
-			}
-			else if (active_item != nullptr || device != nullptr)
-			{
-				if (::Random.randF(0.0f, 1.0f) < HS.power - stamina)
+				if (::Random.randF(0.0f, 1.0f) < StaminaHit - stamina)
 				{
 					if (active_item != nullptr)
 					{
-						u16 slot = active_item->BaseSlot();
-						if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+						const u16 Slot = Actor()->inventory().GetActiveSlot();
+						if (!active_item->IsQuestItem() &&
+							(Slot == PISTOL_SLOT_NEW || !Actor()->inventory().SlotIsPersistent(Slot)) &&
+							!Actor()->inventory().Action(kDROP, CMD_STOP))
 						{
 							Actor()->g_PerformDrop();
-							need_kick_animator = true;
+							need_kick_animator = active_item->GetDropManual();
 						}
 					}
 
@@ -143,7 +149,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 					}
 				}
 			}
-			else
+			else if (stamina <= StaminaHit)
 			{
 				need_kick_animator = true;
 			}

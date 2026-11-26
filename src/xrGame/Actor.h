@@ -1010,7 +1010,6 @@ private:
 	float m_burn_restore_material_speed = 0.0f;
 	float m_actor_burn_restore_speed = 0.0f;
 	float GetMaterialBurnRestoreSpeed(const char* mtl);
-	bool m_need_fire_particle = false;
 	Fvector2 leftStickThreshold;
 
 	bool isGamepadShooting = false;

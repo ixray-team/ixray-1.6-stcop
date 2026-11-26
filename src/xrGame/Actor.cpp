@@ -2179,12 +2179,6 @@ void CActor::UpdateCL()
 		if (HudAnimator()->BurnAnimator()->IsActive())
 		{
 			conditions().ChangeBleedingCustom(HudAnimator()->BurnAnimator()->m_burn_restore * dt, (1 << ALife::eHitTypeBurn));
-
-			if (m_need_fire_particle)
-			{
-				HudAnimator()->BurnAnimator()->StartFlameParticle();
-				m_need_fire_particle = false;
-			}
 		}
 		else 
 		{

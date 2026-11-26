@@ -5,6 +5,7 @@ class CParticlesObject :
 	public IRenderable
 {
 	xrCriticalSection	UpdateLock;
+	void UpdateInternal(u32 Delta, CFrustum* ViewBase, bool TrackWorldSpatial);
 
 public:
 	bool				m_destroy_on_game_load = false;
@@ -22,6 +23,7 @@ public:
 	virtual void		renderable_Render	();
 	virtual void		Update				(u32 dt, CFrustum* viewbase = nullptr);
 	void				UpdateWorld			(u32 Time, CFrustum* ViewBase);
+	void				UpdateHud			(u32 Time);
 	virtual	IRenderable* dcast_Renderable	() { return this; }
 
 	Fvector&			Position			();

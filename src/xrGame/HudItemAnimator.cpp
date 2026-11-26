@@ -408,6 +408,11 @@ CBurnAnimator::CBurnAnimator(CHudAnimatorManager* m_manager, const shared_str& s
 	Load();
 }
 
+CBurnAnimator::~CBurnAnimator()
+{
+	Particles::Details::Destroy(m_pFlameParticles);
+}
+
 void CBurnAnimator::Load()
 {
 	CHudAnimatorBase::Load();
@@ -485,40 +490,35 @@ void CBurnAnimator::Update()
 		}
 	}
 
-	if (m_pFlameParticles->m_bPlaying)
-	{
-		Fmatrix pos;
-		pos.set(get_ParticlesXFORM());
-		pos.c.set(get_CurrentFirePoint());
-		m_pFlameParticles->UpdateParent(pos, zero_vel);
-	}
-	UpdateFireDependencies();
-
 	UpdateAnimation();
 }
 
-void CBurnAnimator::StartFlameParticle()
+void CBurnAnimator::UpdateFlame(animator_item& Item)
 {
-	m_pFlameParticles->Stop(false);
+	if (!m_bIsPlaying || !m_pFlameParticles->m_bPlaying)
+	{
+		return;
+	}
 
-	Fmatrix pos;
-	pos.set(get_ParticlesXFORM());
-	pos.c.set(get_CurrentFirePoint());
-
-	m_pFlameParticles->UpdateParent(pos, zero_vel);
-	m_pFlameParticles->Play(true);
+	firedeps FireDependencies;
+	if (Item.setup_firedeps(FireDependencies))
+	{
+		Fmatrix Transform = FireDependencies.m_FireParticlesXForm;
+		Transform.c.set(FireDependencies.vLastFP);
+		m_pFlameParticles->UpdateParent(Transform, zero_vel);
+		m_pFlameParticles->UpdateHud(Device.dwTimeGlobal);
+	}
 }
 
-void CBurnAnimator::UpdateFireDependencies_internal()
+void CBurnAnimator::RenderFlame()
 {
-	if (Device.dwFrame == dwFP_Frame)
-		return;
+	m_pFlameParticles->renderable_Render();
+}
 
-	dwFP_Frame = Device.dwFrame;
-
-	if (g_player_hud->GetAnimator())
-		g_player_hud->GetAnimator()->setup_firedeps(m_current_firedeps);
-	VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
+void CBurnAnimator::StopAnimator()
+{
+	m_pFlameParticles->Stop(false);
+	CHudAnimatorBase::StopAnimator();
 }
 
 void CBurnAnimator::PlayAnimBurn()
@@ -536,6 +536,9 @@ void CBurnAnimator::PlayAnimBurn()
 	}
 
 	m_manager->SetCurrentAnimator(this);
+
+	m_pFlameParticles->Play(true);
+	m_pFlameParticles->dwLastTime = Device.dwTimeGlobal;
 
 	if (m_bHideUI)
 	{
