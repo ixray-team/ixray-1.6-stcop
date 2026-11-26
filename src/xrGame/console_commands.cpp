@@ -3494,8 +3494,10 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "rs_car_unlimitedfuel", &rs_car_unlimitedfuel);
 #endif
 
+#ifndef MASTER_GOLD
 	extern float rs_car_steer_factor;
-	CMD4(CCC_Float, "rs_car_steer_factor", &rs_car_steer_factor, 0.5f, 3.f);
+	CMD4(CCC_Float, "rs_car_steer_factor", &rs_car_steer_factor, 0.25f, 3.f);
+#endif
 
 	extern float rs_car_fov_effects;
 	CMD4(CCC_Float, "rs_car_fov_effects", &rs_car_fov_effects, 0.f, 2.f);

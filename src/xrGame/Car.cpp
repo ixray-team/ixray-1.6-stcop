@@ -88,6 +88,10 @@ namespace
 	// the fuel float instead, which cannot collide with this value.
 	constexpr u32 CarRuntimeStateMagic = 0x43415253; // "CARS"
 
+	// A small opposite roll does not need the start-assist brake; the engine
+	// can pull through it. 0.5 km/h in m/s.
+	constexpr float StartBrakeOppositeSpeed = 0.5f / 3.6f;
+
 	xr_token DriverAnimationSetToken[] =
 	{
 		{ "new", 0 },
@@ -2075,7 +2079,7 @@ void CCar::DestroyDriverHands()
 void CCar::UpdateDriverHands()
 {
 	CActor* Driver = OwnerActor();
-	if (Driver == nullptr || !Driver->IsMyCamera())
+	if (Driver == nullptr || !Driver->IsMyCamera() || !HUDView())
 	{
 		DriverHands.Hide();
 		return;
@@ -2085,12 +2089,6 @@ void CCar::UpdateDriverHands()
 	// the player's HUD hands section changes while sitting in the car.
 	if (CCarDriverHands::ResolveSection(Driver) != DriverHands.SourceSection())
 		LoadDriverHands();
-
-	if (!HUDView())
-	{
-		DriverHands.Hide();
-		return;
-	}
 
 	CCarDriverHands::SFrameParams Params;
 	Params.CarSection = cNameSect_str();
@@ -4786,12 +4784,20 @@ void CCar::PressForward()
 	}
 	else
 	{
-		Unclutch();
-		NeutralDrive();
-		StartBreaking();
+		const float ForwardSpeed = GetVelocity().dotproduct(XFORM().k);
+		if (ForwardSpeed < -StartBrakeOppositeSpeed)
+		{
+			Unclutch();
+			NeutralDrive();
+			StartBreaking();
+		}
+		else
+		{
+			DriveForward();
+		}
 	}
 
-	fwp=true;
+	fwp = true;
 }
 void CCar::PressBack()
 {
@@ -4802,11 +4808,20 @@ void CCar::PressBack()
 	}
 	else
 	{
-		Unclutch();
-		NeutralDrive();
-		StartBreaking();
+		const float ForwardSpeed = GetVelocity().dotproduct(XFORM().k);
+		if (ForwardSpeed > StartBrakeOppositeSpeed)
+		{
+			Unclutch();
+			NeutralDrive();
+			StartBreaking();
+		}
+		else
+		{
+			DriveBack();
+		}
 	}
-	bkp=true;
+
+	bkp = true;
 }
 void CCar::PressBreaks()
 {

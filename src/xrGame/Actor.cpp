@@ -3129,7 +3129,12 @@ void CActor::OnHUDDraw(CCustomHUD* Z)
 {
 	R_ASSERT(IsFocused());
 
-	if (!((mstate_real & mcLookout) && !IsGameTypeSingleCompatible()))
+	// A car draws its own driver hands on the steering wheel. The weapon HUD is
+	// deactivated on attach, but its hide animation keeps rendering the hands
+	// for a while, so both sets of hands overlap. Skip the first-person HUD for
+	// the whole time the actor is seated instead of waiting for the hide to end.
+	const bool InCar = Holder() != nullptr && Holder()->cast_car() != nullptr;
+	if (!InCar && !((mstate_real & mcLookout) && !IsGameTypeSingleCompatible()))
 		g_player_hud->render_hud();
 
 	if (CGameObject* pGameObject = Holder() != nullptr ? Holder()->cast_game_object() : nullptr)

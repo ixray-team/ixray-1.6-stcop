@@ -10,6 +10,62 @@
 
 extern float rs_car_steer_factor;
 
+namespace
+{
+	// Phase of a hand-release motion. It drives the finger grip, the active-hand
+	// state and the regrip path. A sharp input must not snap the fingers or the
+	// hand state, so the phase follows its target with a first-order lag. The
+	// regrip path is built from the phase wheel transform, so this lag does not
+	// move the grip points with the wheel.
+	float SmoothHandReleasePhase(float Current, float Target, float Lag, float Dt)
+	{
+		if (Lag <= 0.f)
+		{
+			return Target;
+		}
+
+		const float Alpha = 1.f - expf(-Dt / Lag);
+		float Phase = Current + (Target - Current) * Alpha;
+
+		// The exponential approach never exactly reaches the target. Snap the
+		// tail so the hand lands on the rim and the fingers can close.
+		constexpr float SnapDistance = 0.01f;
+		if (fabsf(Target - Phase) < SnapDistance)
+		{
+			Phase = Target;
+		}
+
+		return Phase;
+	}
+
+	// Finger bend keys accept either the legacy single grip angle or the
+	// "grip, air" pair. The air angle is used while the hand is off the wheel
+	// during a regrip; negative values unbend the finger past the bind pose.
+	void ReadDriverFingerAngles(const CInifile& Ini, const char* Section, const char* Key, float DefaultGrip, float& Grip, float& Air)
+	{
+		Grip = DefaultGrip;
+		Air = 0.f;
+
+		const char* Value = Ini.read_if_exists<str_c>(Section, Key, nullptr);
+		if (Value == nullptr || Value[0] == '\0')
+		{
+			return;
+		}
+
+		float ParsedGrip = DefaultGrip;
+		float ParsedAir = 0.f;
+		const int Count = sscanf(Value, "%f , %f", &ParsedGrip, &ParsedAir);
+		if (Count >= 1)
+		{
+			Grip = ParsedGrip;
+		}
+		if (Count >= 2)
+		{
+			Air = ParsedAir;
+		}
+	}
+}
+
 CCarDriverHands::CCarDriverHands()
 {
 	ResetStates();
@@ -193,22 +249,39 @@ void CCarDriverHands::Load(const SLoadParams& Params, const shared_str& HandsSec
 		return;
 	}
 
+	BindRenderPose.resize(BindPose.size());
+	for (u16 Bone = 0; Bone < BindPose.size(); ++Bone)
+	{
+		BindRenderPose[Bone].mul_43(BindPose[Bone], HandsKinematics->LL_GetData(Bone).m2b_transform);
+	}
+
+	BuildFingerAxes();
+
 	Msg("* [%s] driver hands: %s (hud %s, ik %s/%s/%s, %s/%s/%s)", Section, VisualName, HandsSection.size() != 0 ? HandsSection.c_str() : "-", HandsKinematics->LL_BoneName_dbg(LeftIK[0]), HandsKinematics->LL_BoneName_dbg(LeftIK[1]), HandsKinematics->LL_BoneName_dbg(LeftIK[2]), HandsKinematics->LL_BoneName_dbg(RightIK[0]), HandsKinematics->LL_BoneName_dbg(RightIK[1]), HandsKinematics->LL_BoneName_dbg(RightIK[2]));
 
 	if (RegripDebug)
 	{
-		Msg("* [%s] driver hands regrip: enabled=%d trigger=%.1f end=%.1f travel=%.1f lift=%.2f over=%.2f twist=%.1f start=%.1f wheel_factor=%.2f%s",
+		Msg("* [%s] driver hands regrip: enabled=%d trigger=%.1f end=%.1f travel=%.1f lag=%.2f lift=%.2f over=%.2f twist=%.1f start=%.1f wheel_factor=%.2f%s",
 			Section,
 			RegripEnabled ? 1 : 0,
 			RegripTrigger,
 			RegripEnd,
 			RegripTravel,
+			RegripLag,
 			RegripLift,
 			RegripOverRadial,
 			SteerTwist,
 			SteerTwistStart,
 			SteerFactor,
 			SteerFactored ? "" : " (unfactored)");
+		Msg("* [%s] driver hands fingers: thumb=%.1f/%.1f index=%.1f/%.1f middle=%.1f/%.1f ring=%.1f/%.1f pinky=%.1f/%.1f speed=%.1f",
+			Section,
+			FingerAngles[0], FingerAirAngles[0],
+			FingerAngles[1], FingerAirAngles[1],
+			FingerAngles[2], FingerAirAngles[2],
+			FingerAngles[3], FingerAirAngles[3],
+			FingerAngles[4], FingerAirAngles[4],
+			FingerSpeed);
 	}
 }
 
@@ -220,12 +293,12 @@ void CCarDriverHands::ReadConfig(const char* Section)
 	RightGrip = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_grip", Fvector().set(0.16f, 0.f, 0.f));
 	LeftHandRotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_hand_rotation", Fvector().set(0.f, 0.f, 0.f));
 	RightHandRotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_hand_rotation", Fvector().set(0.f, 0.f, 0.f));
+	LeftHandRotationExplicit = pSettings->line_exist(Section, "driver_hands_left_hand_rotation");
+	RightHandRotationExplicit = pSettings->line_exist(Section, "driver_hands_right_hand_rotation");
 	LeftElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_elbow", Fvector().set(-0.15f, -0.35f, -0.10f));
 	RightElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_elbow", Fvector().set(0.15f, -0.35f, -0.10f));
 	Scale = pSettings->read_if_exists<float>(Section, "driver_hands_scale", 1.f);
 	clamp(Scale, 0.05f, 10.f);
-	ReachShiftSpeed = pSettings->read_if_exists<float>(Section, "driver_hands_reach_shift_speed", 15.f);
-	clamp(ReachShiftSpeed, 0.f, 120.f);
 	ShoulderWidth = pSettings->read_if_exists<float>(Section, "driver_hands_shoulder_width", -1.f);
 	if (ShoulderWidth > 0.f)
 	{
@@ -242,6 +315,8 @@ void CCarDriverHands::ReadConfig(const char* Section)
 	}
 	RegripTravel = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_travel", 90.f);
 	clamp(RegripTravel, 0.f, 180.f);
+	RegripLag = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_lag", 0.08f);
+	clamp(RegripLag, 0.f, 1.f);
 	RegripLift = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_lift", 0.07f);
 	clamp(RegripLift, -0.2f, 0.2f);
 	RegripOverRadial = pSettings->read_if_exists<float>(Section, "driver_hands_regrip_over_radial", 0.04f);
@@ -251,21 +326,38 @@ void CCarDriverHands::ReadConfig(const char* Section)
 	clamp(SteerTwist, -90.f, 90.f);
 	SteerTwistStart = pSettings->read_if_exists<float>(Section, "driver_hands_steer_twist_start", 90.f);
 	clamp(SteerTwistStart, 0.f, 179.f);
-	SteerTwistAxis = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_steer_twist_axis", Fvector().set(0.f, 0.f, 1.f));
-	if (SteerTwistAxis.magnitude() < EPS_L)
-	{
-		SteerTwistAxis.set(0.f, 0.f, 1.f);
-	}
-	SteerTwistAxis.normalize();
-	MirrorHandRotation = pSettings->read_if_exists<bool>(Section, "driver_hands_mirror_hand_rotation", false);
+	const bool LegacyTwistAxisExists = pSettings->line_exist(Section, "driver_hands_steer_twist_axis");
+	const bool LeftTwistAxisExists = pSettings->line_exist(Section, "driver_hands_left_steer_twist_axis");
+	const bool RightTwistAxisExists = pSettings->line_exist(Section, "driver_hands_right_steer_twist_axis");
+	const Fvector LegacyTwistAxis = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_steer_twist_axis", Fvector().set(0.f, 0.f, 1.f));
 
-	FingerAngles[0] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_thumb", 30.f);
-	FingerAngles[1] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_index", 40.f);
-	FingerAngles[2] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_middle", 35.f);
-	FingerAngles[3] = pSettings->read_if_exists<float>(Section, "driver_hands_finger_others", 35.f);
-	for (float& Angle : FingerAngles)
+	LeftSteerTwistAxis = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_steer_twist_axis", Fvector().set(0.f, 0.f, 0.f));
+	RightSteerTwistAxis = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_steer_twist_axis", LegacyTwistAxis);
+	LeftSteerTwistAxisExplicit = LeftTwistAxisExists;
+	RightSteerTwistAxisExplicit = RightTwistAxisExists || LegacyTwistAxisExists;
+
+	if (LeftSteerTwistAxis.magnitude() < EPS_L)
 	{
-		clamp(Angle, -90.f, 90.f);
+		LeftSteerTwistAxis = RightSteerTwistAxis;
+	}
+	if (RightSteerTwistAxis.magnitude() < EPS_L)
+	{
+		RightSteerTwistAxis.set(0.f, 0.f, 1.f);
+	}
+	LeftSteerTwistAxis.normalize();
+	RightSteerTwistAxis.normalize();
+
+	const float FingerOthers = pSettings->read_if_exists<float>(Section, "driver_hands_finger_others", 35.f);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_thumb", 30.f, FingerAngles[0], FingerAirAngles[0]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_index", 40.f, FingerAngles[1], FingerAirAngles[1]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_middle", 35.f, FingerAngles[2], FingerAirAngles[2]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_ring", FingerOthers, FingerAngles[3], FingerAirAngles[3]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_pinky", FingerOthers, FingerAngles[4], FingerAirAngles[4]);
+
+	for (u8 Group = 0; Group < FingerGroupCount; ++Group)
+	{
+		clamp(FingerAngles[Group], -90.f, 90.f);
+		clamp(FingerAirAngles[Group], -90.f, 90.f);
 	}
 
 	FingerSpeed = pSettings->read_if_exists<float>(Section, "driver_hands_finger_speed", 12.f);
@@ -274,10 +366,12 @@ void CCarDriverHands::ReadConfig(const char* Section)
 
 void CCarDriverHands::SetupFingers()
 {
-	// Index and remaining fingers use the same local curl axis on both hands.
-	// The thumb has its own local axis. Values are fixed in the engine.
+	// Curl axes are in the proximal (chain root) bone's local space. The local
+	// axis is baked into the engine and the same for both hands; the geometric
+	// hinge for the remaining fingers is rebuilt from the index finger at
+	// calibration.
 	const Fvector CurlAxis = {0.f, 0.f, -1.f};
-	const Fvector ThumbAxis[2] = {{0.f, -1.f, 0.f}, {0.f, 0.f, 1.f}};
+	const Fvector ThumbAxis[2] = {{0.f, 0.f, -1.f}, {0.f, 0.f, 1.f}};
 
 	for (u8 Hand = 0; Hand < 2; ++Hand)
 	{
@@ -293,14 +387,22 @@ void CCarDriverHands::SetupFingers()
 	}
 
 	FingerBoneGroup.assign(Kinematics->LL_BoneCount(), NoFingerGroup);
+	FingerBoneRoot.assign(Kinematics->LL_BoneCount(), BI_NONE);
 	const auto AddFinger = [this](u8 Hand, u8 Group, std::initializer_list<const char*> Names)
 	{
+		u16 Root = BI_NONE;
 		for (const char* Name : Names)
 		{
 			const u16 Bone = Kinematics->LL_BoneID(Name);
 			if (Bone != BI_NONE && Bone < FingerBoneGroup.size())
 			{
+				if (Root == BI_NONE)
+				{
+					Root = Bone;
+				}
+
 				FingerBoneGroup[Bone] = u8(Hand * FingerGroupCount + Group);
+				FingerBoneRoot[Bone] = Root;
 			}
 		}
 	};
@@ -308,11 +410,16 @@ void CCarDriverHands::SetupFingers()
 	AddFinger(0, 0, {"l_finger0", "l_finger01", "l_finger02"});
 	AddFinger(0, 1, {"bip01_l_finger1", "bip01_l_finger11", "bip01_l_finger12"});
 	AddFinger(0, 2, {"bip01_l_finger2", "bip01_l_finger21", "bip01_l_finger22"});
-	AddFinger(0, 3, {"bip01_l_finger3", "bip01_l_finger31", "bip01_l_finger32", "bip01_l_finger4", "bip01_l_finger41", "bip01_l_finger42"});
+	AddFinger(0, 3, {"bip01_l_finger3", "bip01_l_finger31", "bip01_l_finger32"});
+	AddFinger(0, 4, {"bip01_l_finger4", "bip01_l_finger41", "bip01_l_finger42"});
 	AddFinger(1, 0, {"r_finger0", "r_finger01", "r_finger02"});
 	AddFinger(1, 1, {"bip01_r_finger1", "bip01_r_finger11", "bip01_r_finger12"});
 	AddFinger(1, 2, {"bip01_r_finger2", "bip01_r_finger21", "bip01_r_finger22"});
-	AddFinger(1, 3, {"bip01_r_finger3", "bip01_r_finger31", "bip01_r_finger32", "bip01_r_finger4", "bip01_r_finger41", "bip01_r_finger42"});
+	AddFinger(1, 3, {"bip01_r_finger3", "bip01_r_finger31", "bip01_r_finger32"});
+	AddFinger(1, 4, {"bip01_r_finger4", "bip01_r_finger41", "bip01_r_finger42"});
+
+	LeftThumbRoot = Kinematics->LL_BoneID("l_finger0");
+	RightThumbRoot = Kinematics->LL_BoneID("r_finger0");
 }
 
 void CCarDriverHands::ResetStates()
@@ -362,6 +469,8 @@ void CCarDriverHands::Destroy()
 
 	Kinematics = nullptr;
 	BindPose.clear();
+	BindRenderPose.clear();
+	FingerBoneAxis.clear();
 	SteerBone = BI_NONE;
 	LeftClavicle = BI_NONE;
 	RightClavicle = BI_NONE;
@@ -375,8 +484,6 @@ void CCarDriverHands::Destroy()
 	}
 	LeftHandOffset.identity();
 	RightHandOffset.identity();
-	LeftReachShift.set(0.f, 0.f, 0.f);
-	RightReachShift.set(0.f, 0.f, 0.f);
 	LeftGrip.set(0.f, 0.f, 0.f);
 	RightGrip.set(0.f, 0.f, 0.f);
 	IKReady = false;
@@ -388,8 +495,6 @@ void CCarDriverHands::Destroy()
 void CCarDriverHands::Hide()
 {
 	Ready = false;
-	LeftReachShift.set(0.f, 0.f, 0.f);
-	RightReachShift.set(0.f, 0.f, 0.f);
 	ResetStates();
 }
 
@@ -399,13 +504,13 @@ void CCarDriverHands::UpdateFingerStates(float Dt)
 	for (u8 Hand = 0; Hand < 2; ++Hand)
 	{
 		const bool Active = (ActiveHand == u8(Hand + 1));
-		// Fingers open only while the regripping hand is actually in the air.
-		// At progress 0 and 1 the hand is on the rim and must grip again.
+		// On the rim the finger uses its grip angle; while the regripping hand
+		// is off the wheel it uses the second (air) angle from the config.
 		const bool InAir = Active && Progress > EPS_L && Progress < 1.f - EPS_L;
 		for (u8 Group = 0; Group < FingerGroupCount; ++Group)
 		{
 			SFingerBend& State = FingerState[Hand][Group];
-			const float Target = deg2rad(InAir ? 0.f : FingerAngles[Group]);
+			const float Target = deg2rad(InAir ? FingerAirAngles[Group] : FingerAngles[Group]);
 			State.Angle += (Target - State.Angle) * Alpha;
 			if (fabsf(State.Angle) < 1e-5f)
 			{
@@ -425,16 +530,16 @@ void CCarDriverHands::ApplyBindPose()
 	{
 		CBoneInstance& Instance = Kinematics->LL_GetBoneInstance(Bone);
 		Instance.mTransform.set(BindPose[Bone]);
-		Instance.mRenderTransform.mul_43(Instance.mTransform, Kinematics->LL_GetData(Bone).m2b_transform);
+		Instance.mRenderTransform.set(BindRenderPose[Bone]);
 	}
 }
 
 void CCarDriverHands::ApplyFingerBend()
 {
-	// Bend the fingers after the whole bind pose is restored. The delta is
-	// built around the bone's current model-space origin and its local axis,
-	// and TransformBone applies it to the whole child chain so the segments
-	// follow the parent instead of rotating in place.
+	// Bend the fingers using the per-bone local curl axes built once at load.
+	// The delta is built around the bone's current model-space origin and the
+	// chain axis; TransformBone applies it to the whole child chain so the
+	// segments follow the parent instead of rotating in place.
 	const u16 BoneCount = std::min<u16>(Kinematics->LL_BoneCount(), u16(FingerBoneGroup.size()));
 	for (u16 Bone = 0; Bone < BoneCount; ++Bone)
 	{
@@ -450,10 +555,21 @@ void CCarDriverHands::ApplyFingerBend()
 			continue;
 		}
 
+		if (Bone >= FingerBoneAxis.size())
+		{
+			continue;
+		}
+
+		const Fvector& AxisLocal = FingerBoneAxis[Bone];
+		if (AxisLocal.magnitude() <= EPS_L)
+		{
+			continue;
+		}
+
 		const Fmatrix& BoneXform = Kinematics->LL_GetBoneInstance(Bone).mTransform;
 
 		Fvector AxisModel;
-		BoneXform.transform_dir(AxisModel, State.Axis);
+		BoneXform.transform_dir(AxisModel, AxisLocal);
 		if (AxisModel.magnitude() <= EPS_L)
 		{
 			continue;
@@ -467,6 +583,215 @@ void CCarDriverHands::ApplyFingerBend()
 		Delta.c.sub(BoneXform.c, RotatedOrigin);
 
 		CCameraRig::TransformBone(Kinematics, Bone, Delta);
+	}
+}
+
+void CCarDriverHands::BuildFingerAxes()
+{
+	FingerBoneAxis.clear();
+	if (Kinematics == nullptr)
+	{
+		return;
+	}
+
+	const u16 BoneCount = Kinematics->LL_BoneCount();
+	if (BindPose.size() < BoneCount)
+	{
+		return;
+	}
+
+	FingerBoneAxis.resize(BoneCount);
+	for (Fvector& Axis : FingerBoneAxis)
+	{
+		Axis.set(0.f, 0.f, 0.f);
+	}
+
+	xr_vector<Fvector> FingerRootAxis(BoneCount);
+	for (Fvector& Axis : FingerRootAxis)
+	{
+		Axis.set(0.f, 0.f, 0.f);
+	}
+
+	for (u16 Bone = 0; Bone < BoneCount; ++Bone)
+	{
+		if (Bone >= FingerBoneRoot.size())
+		{
+			break;
+		}
+
+		const u16 Root = FingerBoneRoot[Bone];
+		if (Root == BI_NONE || Root >= FingerRootAxis.size() || Root >= FingerBoneGroup.size())
+		{
+			continue;
+		}
+		if (FingerRootAxis[Root].magnitude() > EPS_L)
+		{
+			continue;
+		}
+
+		const u8 RootState = FingerBoneGroup[Root];
+		if (RootState == NoFingerGroup)
+		{
+			continue;
+		}
+
+		const SFingerBend& State = FingerState[RootState / FingerGroupCount][RootState % FingerGroupCount];
+		const Fmatrix& RootXform = BindPose[Root];
+		RootXform.transform_dir(FingerRootAxis[Root], State.Axis);
+		if (FingerRootAxis[Root].magnitude() > EPS_L)
+		{
+			FingerRootAxis[Root].normalize();
+		}
+		else
+		{
+			FingerRootAxis[Root].set(0.f, 0.f, 0.f);
+		}
+	}
+
+	// The middle and little fingers have their own root rolls in the model, so
+	// using the same local axis on every finger tilts them sideways. Derive a
+	// common palm normal from the index finger, then rebuild each finger's
+	// hinge as palm_normal x finger_direction.
+	for (u8 Hand = 0; Hand < 2; ++Hand)
+	{
+		u16 RootByGroup[FingerGroupCount] = {};
+		for (u16 Bone = 0; Bone < BoneCount; ++Bone)
+		{
+			if (Bone >= FingerBoneGroup.size() || Bone >= FingerBoneRoot.size())
+			{
+				break;
+			}
+
+			const u8 FingerStateIdx = FingerBoneGroup[Bone];
+			if (FingerStateIdx == NoFingerGroup || FingerStateIdx / FingerGroupCount != Hand)
+			{
+				continue;
+			}
+
+			const u8 Group = FingerStateIdx % FingerGroupCount;
+			if (Group == 0)
+			{
+				continue;
+			}
+
+			const u16 Root = FingerBoneRoot[Bone];
+			if (Root == Bone)
+			{
+				RootByGroup[Group] = Root;
+			}
+		}
+
+		const u16 IndexRoot = RootByGroup[1];
+		if (IndexRoot == BI_NONE || IndexRoot >= BindPose.size())
+		{
+			continue;
+		}
+
+		const auto BoneDirection = [&](u16 Root, Fvector& Dir)
+		{
+			if (Root == BI_NONE || Root >= BindPose.size())
+			{
+				return false;
+			}
+
+			const CBoneData& Data = Kinematics->LL_GetData(Root);
+			if (Data.children.empty())
+			{
+				return false;
+			}
+
+			const u16 Child = Data.children.front()->GetSelfID();
+			if (Child == BI_NONE || Child >= BindPose.size())
+			{
+				return false;
+			}
+
+			Dir.sub(BindPose[Child].c, BindPose[Root].c);
+			if (Dir.magnitude() <= EPS_L)
+			{
+				return false;
+			}
+			Dir.normalize();
+			return true;
+		};
+
+		Fvector IndexDir;
+		Fvector IndexHinge = FingerRootAxis[IndexRoot];
+		if (!BoneDirection(IndexRoot, IndexDir) || IndexHinge.magnitude() <= EPS_L)
+		{
+			continue;
+		}
+
+		IndexHinge.mad(IndexDir, -IndexHinge.dotproduct(IndexDir));
+		if (IndexHinge.magnitude() <= EPS_L)
+		{
+			continue;
+		}
+		IndexHinge.normalize();
+
+		Fvector PalmNormal;
+		PalmNormal.crossproduct(IndexDir, IndexHinge);
+		if (PalmNormal.magnitude() <= EPS_L)
+		{
+			continue;
+		}
+		PalmNormal.normalize();
+
+		for (u8 Group = 1; Group < FingerGroupCount; ++Group)
+		{
+			const u16 Root = RootByGroup[Group];
+			Fvector Dir;
+			if (Root == BI_NONE || !BoneDirection(Root, Dir))
+			{
+				continue;
+			}
+
+			Fvector Hinge;
+			Hinge.crossproduct(PalmNormal, Dir);
+			if (Hinge.magnitude() <= EPS_L)
+			{
+				continue;
+			}
+			Hinge.normalize();
+			if (Hinge.dotproduct(IndexHinge) < 0.f)
+			{
+				Hinge.mul(-1.f);
+			}
+			FingerRootAxis[Root] = Hinge;
+		}
+	}
+
+	// Express the chain's model-space curl axis in each segment's own bind
+	// frame. At runtime it follows the parent bend instead of staying fixed in
+	// model space.
+	for (u16 Bone = 0; Bone < BoneCount; ++Bone)
+	{
+		if (Bone >= FingerBoneRoot.size() || Bone >= BindPose.size())
+		{
+			break;
+		}
+
+		const u16 Root = FingerBoneRoot[Bone];
+		if (Root == BI_NONE || Root >= FingerRootAxis.size())
+		{
+			continue;
+		}
+		if (FingerRootAxis[Root].magnitude() <= EPS_L)
+		{
+			continue;
+		}
+
+		Fmatrix BindInv;
+		BindInv.invert(BindPose[Bone]);
+		BindInv.transform_dir(FingerBoneAxis[Bone], FingerRootAxis[Root]);
+		if (FingerBoneAxis[Bone].magnitude() > EPS_L)
+		{
+			FingerBoneAxis[Bone].normalize();
+		}
+		else
+		{
+			FingerBoneAxis[Bone].set(0.f, 0.f, 0.f);
+		}
 	}
 }
 
@@ -498,7 +823,7 @@ void CCarDriverHands::ApplyShoulderWidth()
 	CCameraRig::TransformBone(Kinematics, RightBone, Delta);
 }
 
-void CCarDriverHands::CalibrateHandOffsets(const Fmatrix& WheelNeutralWorld, const Fmatrix& HandsInverse)
+void CCarDriverHands::CalibrateHandOffsets(const Fmatrix& WheelNeutralWorld, const Fmatrix& HandsInverse, const char* CarSection)
 {
 	// Preserve the authored bind orientation of each hand. The stored
 	// offset is wheel-local, so the palms follow the wheel while the arms
@@ -523,66 +848,156 @@ void CCarDriverHands::CalibrateHandOffsets(const Fmatrix& WheelNeutralWorld, con
 		Offset.c.set(0.f, 0.f, 0.f);
 	};
 
-	Fmatrix LeftConfigRot;
-	LeftConfigRot.setXYZ(deg2rad(LeftHandRotation.x), deg2rad(LeftHandRotation.y), deg2rad(LeftHandRotation.z));
-
-	Fmatrix RightConfigRot;
-	if (MirrorHandRotation)
+	// Hand rotation offsets are authored in one common coordinate system:
+	// the left hand's local frame. The right hand's local frame is mirrored,
+	// so its local rotation is derived from the same common angles below.
+	Fmatrix LeftCommonRot;
+	if (LeftHandRotationExplicit)
 	{
-		// Mirror the left hand's deviation from its bind pose in model
-		// space:
-		// C_right = B_right * M * B_left^-1 * C_left * B_left * M * B_right^-1.
-		// Fmatrix::mul_43(A, B) computes B * A, so the operands are
-		// passed in the reverse order.
-		Fmatrix HandRotLeft = Kinematics->LL_GetTransform(LeftIK[2]);
-		HandRotLeft.c.set(0.f, 0.f, 0.f);
-		Fmatrix HandRotRight = Kinematics->LL_GetTransform(RightIK[2]);
-		HandRotRight.c.set(0.f, 0.f, 0.f);
-
-		Fmatrix Mirror;
-		Mirror.identity();
-		Mirror.i.x = -1.f;
-
-		// Mirror about the wheel's neutral left-right plane, not the
-		// hands model X axis: on an offset or tilted wheel those differ.
-		Fvector Normal;
-		HandsInverse.transform_dir(Normal, WheelNeutralWorld.i);
-		if (Normal.magnitude() > EPS_L)
-		{
-			Normal.normalize();
-			const float Nx = Normal.x;
-			const float Ny = Normal.y;
-			const float Nz = Normal.z;
-			Mirror._11 = 1.f - 2.f * Nx * Nx;
-			Mirror._12 = -2.f * Nx * Ny;
-			Mirror._13 = -2.f * Nx * Nz;
-			Mirror._21 = -2.f * Ny * Nx;
-			Mirror._22 = 1.f - 2.f * Ny * Ny;
-			Mirror._23 = -2.f * Ny * Nz;
-			Mirror._31 = -2.f * Nz * Nx;
-			Mirror._32 = -2.f * Nz * Ny;
-			Mirror._33 = 1.f - 2.f * Nz * Nz;
-		}
-
-		Fmatrix LeftInv;
-		LeftInv.invert(HandRotLeft);
-		Fmatrix RightInv;
-		RightInv.invert(HandRotRight);
-
-		Fmatrix Temp;
-		Temp.mul_43(Mirror, HandRotRight); // B_right * M
-		Fmatrix Temp2;
-		Temp2.mul_43(LeftInv, Temp); // Temp * B_left^-1
-		Fmatrix Temp3;
-		Temp3.mul_43(LeftConfigRot, Temp2); // Temp2 * C_left
-		Temp.mul_43(HandRotLeft, Temp3);	// Temp3 * B_left
-		Fmatrix Temp4;
-		Temp4.mul_43(Mirror, Temp);				// Temp * M
-		RightConfigRot.mul_43(RightInv, Temp4); // Temp4 * B_right^-1
+		LeftCommonRot.setXYZ(deg2rad(LeftHandRotation.x), deg2rad(LeftHandRotation.y), deg2rad(LeftHandRotation.z));
+	}
+	else if (RightHandRotationExplicit)
+	{
+		LeftCommonRot.setXYZ(deg2rad(RightHandRotation.x), deg2rad(RightHandRotation.y), deg2rad(RightHandRotation.z));
 	}
 	else
 	{
-		RightConfigRot.setXYZ(deg2rad(RightHandRotation.x), deg2rad(RightHandRotation.y), deg2rad(RightHandRotation.z));
+		LeftCommonRot.identity();
+	}
+
+	Fmatrix RightCommonRot;
+	if (RightHandRotationExplicit)
+	{
+		RightCommonRot.setXYZ(deg2rad(RightHandRotation.x), deg2rad(RightHandRotation.y), deg2rad(RightHandRotation.z));
+	}
+	else
+	{
+		RightCommonRot = LeftCommonRot;
+	}
+
+	Fmatrix LeftConfigRot = LeftCommonRot;
+
+	Fmatrix HandRotLeft = Kinematics->LL_GetTransform(LeftIK[2]);
+	HandRotLeft.c.set(0.f, 0.f, 0.f);
+	Fmatrix HandRotRight = Kinematics->LL_GetTransform(RightIK[2]);
+	HandRotRight.c.set(0.f, 0.f, 0.f);
+
+	Fmatrix Mirror;
+	Mirror.identity();
+	Mirror.i.x = -1.f;
+
+	// Mirror about the wheel's neutral left-right plane, not the hands
+	// model X axis: on an offset or tilted wheel those differ.
+	Fvector Normal;
+	HandsInverse.transform_dir(Normal, WheelNeutralWorld.i);
+	if (Normal.magnitude() > EPS_L)
+	{
+		Normal.normalize();
+		const float nx = Normal.x;
+		const float ny = Normal.y;
+		const float nz = Normal.z;
+		Mirror._11 = 1.f - 2.f * nx * nx;
+		Mirror._12 = -2.f * nx * ny;
+		Mirror._13 = -2.f * nx * nz;
+		Mirror._21 = -2.f * ny * nx;
+		Mirror._22 = 1.f - 2.f * ny * ny;
+		Mirror._23 = -2.f * ny * nz;
+		Mirror._31 = -2.f * nz * nx;
+		Mirror._32 = -2.f * nz * ny;
+		Mirror._33 = 1.f - 2.f * nz * nz;
+	}
+
+	Fmatrix LeftInv;
+	LeftInv.invert(HandRotLeft);
+	Fmatrix RightInv;
+	RightInv.invert(HandRotRight);
+
+	Fmatrix RightConfigRot;
+
+	// Convert the common rotation into the right hand's local frame:
+	// C_right = B_right * M * B_left^-1 * C_common * B_left * M * B_right^-1.
+	// Fmatrix::mul_43(A, B) computes B * A, so the operands are passed in
+	// the reverse order.
+	Fmatrix Temp;
+	Temp.mul_43(Mirror, HandRotRight);           // B_right * M
+	Fmatrix Temp2;
+	Temp2.mul_43(LeftInv, Temp);                 // Temp * B_left^-1
+	Fmatrix Temp3;
+	Temp3.mul_43(RightCommonRot, Temp2);         // Temp2 * C_common
+	Temp.mul_43(HandRotLeft, Temp3);             // Temp3 * B_left
+	Fmatrix Temp4;
+	Temp4.mul_43(Mirror, Temp);                  // Temp * M
+	RightConfigRot.mul_43(RightInv, Temp4);      // Temp4 * B_right^-1
+
+	// The twist axis is applied in the wheel's local space, where the left
+	// and right axes are mirror images: only the local X component changes
+	// sign. Do not convert it through the hand bones; that produced a wrong
+	// direction for the derived hand.
+	if (RightSteerTwistAxisExplicit && !LeftSteerTwistAxisExplicit)
+	{
+		LeftSteerTwistAxis = RightSteerTwistAxis;
+		LeftSteerTwistAxis.x = -LeftSteerTwistAxis.x;
+	}
+	else if (LeftSteerTwistAxisExplicit && !RightSteerTwistAxisExplicit)
+	{
+		RightSteerTwistAxis = LeftSteerTwistAxis;
+		RightSteerTwistAxis.x = -RightSteerTwistAxis.x;
+	}
+
+	// The thumb bones use a different local Z direction on the left and
+	// right hand. A raw local vector therefore bends the left thumb
+	// sideways. Mirror the right thumb's model-space hinge axis through
+	// the same bind-plane transform and convert it back to the left root's
+	// local space.
+	if (LeftThumbRoot != BI_NONE &&
+		RightThumbRoot != BI_NONE &&
+		LeftThumbRoot < BindPose.size() &&
+		RightThumbRoot < BindPose.size())
+	{
+		Fmatrix ThumbLeft = BindPose[LeftThumbRoot];
+		ThumbLeft.c.set(0.f, 0.f, 0.f);
+		Fmatrix ThumbRight = BindPose[RightThumbRoot];
+		ThumbRight.c.set(0.f, 0.f, 0.f);
+		Fmatrix ThumbLeftInv;
+		ThumbLeftInv.invert(ThumbLeft);
+
+		Fvector RightModel;
+		ThumbRight.transform_dir(RightModel, FingerState[1][0].Axis);
+		Fvector Mirrored;
+		Mirror.transform_dir(Mirrored, RightModel);
+		Mirrored.mul(-1.f);
+
+		Fvector LeftLocal;
+		ThumbLeftInv.transform_dir(LeftLocal, Mirrored);
+		if (LeftLocal.magnitude() > EPS_L)
+		{
+			LeftLocal.normalize();
+			FingerState[0][0].Axis = LeftLocal;
+		}
+	}
+
+	// The thumb axis above may have been mirrored during calibration, so
+	// rebuild the cached finger hinges with the final axes.
+	BuildFingerAxes();
+
+	if (RegripDebug)
+	{
+		Msg("* [%s] driver hands twist axes: left=(%.3f, %.3f, %.3f) right=(%.3f, %.3f, %.3f)",
+			CarSection,
+			LeftSteerTwistAxis.x, LeftSteerTwistAxis.y, LeftSteerTwistAxis.z,
+			RightSteerTwistAxis.x, RightSteerTwistAxis.y, RightSteerTwistAxis.z);
+		Msg("* [%s] driver hands thumb axes: left=(%.3f, %.3f, %.3f) right=(%.3f, %.3f, %.3f)",
+			CarSection,
+			FingerState[0][0].Axis.x, FingerState[0][0].Axis.y, FingerState[0][0].Axis.z,
+			FingerState[1][0].Axis.x, FingerState[1][0].Axis.y, FingerState[1][0].Axis.z);
+		Fvector LeftHandEuler;
+		LeftCommonRot.getXYZ(LeftHandEuler);
+		Fvector RightHandEuler;
+		RightCommonRot.getXYZ(RightHandEuler);
+		Msg("* [%s] driver hands rotation (common): left=(%.2f, %.2f, %.2f) right=(%.2f, %.2f, %.2f)",
+			CarSection,
+			rad2deg(LeftHandEuler.x), rad2deg(LeftHandEuler.y), rad2deg(LeftHandEuler.z),
+			rad2deg(RightHandEuler.x), rad2deg(RightHandEuler.y), rad2deg(RightHandEuler.z));
 	}
 
 	Calibrate(LeftIK[2], LeftConfigRot, LeftHandOffset);
@@ -619,28 +1034,33 @@ void CCarDriverHands::UpdateRegrip(float WheelAngle, const char* CarSection)
 	// timed animation. If the wheel stops the hand stops; if the wheel returns
 	// the hand goes back along the same path. EndRad is both the point where
 	// the forward move finishes and where the return move starts.
-	float NewProgress = 0.f;
+	float TargetProgress = 0.f;
 	if (RegripEnabled && EndRad > TriggerRad)
 	{
-		NewProgress = std::clamp((AbsWheelAngle - TriggerRad) / (EndRad - TriggerRad), 0.f, 1.f);
+		TargetProgress = std::clamp((AbsWheelAngle - TriggerRad) / (EndRad - TriggerRad), 0.f, 1.f);
 	}
 
 	const s8 WheelSign = SignOf(WheelAngle);
 
 	const u8 LowerHand = GetLowerHand(WheelAngle);
 
+	// The wheel crossed the centre. The previous hand must return to its home
+	// grip before the other hand can start; keep it active until the lag
+	// brings the phase back to zero.
 	if (ActiveHand != HandNone && WheelSign != 0 && ActiveSign != 0 && WheelSign != ActiveSign)
 	{
-		// The wheel crossed the centre. The previous hand must be back home
-		// before the other hand can start.
-		NewProgress = 0.f;
-		ActiveHand = HandNone;
-		ActiveSign = 0;
+		TargetProgress = 0.f;
 	}
 
-	if (NewProgress <= 0.f || WheelSign == 0)
+	// The phase lag drives the hand-over-hand move. The active hand is built
+	// from a phase wheel transform below, so its grip points stay fixed in
+	// world space even when the real wheel keeps turning under the hand.
+	const float Dt = std::clamp(Device.fTimeDelta, 0.f, 0.1f);
+	Progress = SmoothHandReleasePhase(Progress, TargetProgress, RegripLag, Dt);
+
+	if (Progress <= 0.f)
 	{
-		NewProgress = 0.f;
+		Progress = 0.f;
 		ActiveHand = HandNone;
 		ActiveSign = 0;
 	}
@@ -649,8 +1069,6 @@ void CCarDriverHands::UpdateRegrip(float WheelAngle, const char* CarSection)
 		ActiveHand = LowerHand;
 		ActiveSign = WheelSign;
 	}
-
-	Progress = NewProgress;
 
 	if (RegripDebug && ActiveHand != DebugHand)
 	{
@@ -662,6 +1080,7 @@ void CCarDriverHands::UpdateRegrip(float WheelAngle, const char* CarSection)
 void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, const Fmatrix& HandsInverse)
 {
 	const float AbsWheelAngle = fabsf(WheelAngle);
+	const float TriggerRad = deg2rad(RegripTrigger);
 	const float EndRad = deg2rad(RegripEnd);
 	const s8 WheelSign = SignOf(WheelAngle);
 
@@ -680,8 +1099,25 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 		LiftDir.mul(-1.f);
 	}
 
-	Fmatrix WheelRot = WheelWorld;
-	WheelRot.c.set(0.f, 0.f, 0.f);
+	// The active hand follows the fixed phase path while it travels between the
+	// grip points. The blend returns it to the real wheel at both ends: the hand
+	// starts on the rim and, once it has regripped, keeps moving with the wheel.
+	Fmatrix PhaseWheel = WheelWorld;
+	if (ActiveHand != HandNone && ActiveSign != 0)
+	{
+		constexpr float StartBlend = 0.1f;
+		constexpr float EndBlend = 0.2f;
+		const float Blend = std::min(
+			std::clamp(Progress / StartBlend, 0.f, 1.f),
+			std::clamp((1.f - Progress) / EndBlend, 0.f, 1.f));
+		const float PhaseAngle = float(ActiveSign) * (TriggerRad + Progress * (EndRad - TriggerRad));
+		Fmatrix PhaseRot;
+		PhaseRot.rotateZ((PhaseAngle - WheelAngle) * Blend);
+		PhaseWheel.mulB_43(PhaseRot);
+	}
+
+	const Fmatrix& LeftWheel = (ActiveHand == HandLeft) ? PhaseWheel : WheelWorld;
+	const Fmatrix& RightWheel = (ActiveHand == HandRight) ? PhaseWheel : WheelWorld;
 
 	// The moving hand goes over the top of the wheel, not under it. At
 	// progress 1 the wheel has turned by EndRad, so the hand's local angle
@@ -724,12 +1160,12 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 	const float LeftTwist = (UpperHand == HandLeft) ? TwistAngle : 0.f;
 	const float RightTwist = (UpperHand == HandRight) ? TwistAngle : 0.f;
 
-	const auto BuildTarget = [&](const SHandState& Hand, float LocalAngle, float HandTwist, const Fmatrix& BaseOffset, float LiftScale, Fmatrix& Result)
+	const auto BuildTarget = [&](const Fmatrix& WheelXform, const SHandState& Hand, float LocalAngle, float HandTwist, const Fvector& TwistAxis, const Fmatrix& BaseOffset, float LiftScale, Fmatrix& Result)
 	{
 		const float Radius = Hand.Radius + RegripOverRadial * LiftScale;
 		const Fvector Local = Fvector().set(cosf(LocalAngle) * Radius, sinf(LocalAngle) * Radius, Hand.Z);
 		Fvector World;
-		WheelWorld.transform_tiny(World, Local);
+		WheelXform.transform_tiny(World, Local);
 		if (LiftScale > 0.f)
 		{
 			World.mad(LiftDir, RegripLift * LiftScale);
@@ -741,7 +1177,7 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 		if (fabsf(HandTwist) > EPS_L)
 		{
 			Fmatrix TwistRot;
-			TwistRot.rotation(SteerTwistAxis, HandTwist);
+			TwistRot.rotation(TwistAxis, HandTwist);
 			Fmatrix Rotated;
 			Rotated.mul_43(TwistRot, AngleRot); // standard AngleRot * TwistRot
 			AngleRot = Rotated;
@@ -750,8 +1186,10 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 		Fmatrix Offset;
 		Offset.mul_43(AngleRot, BaseOffset);
 
+		Fmatrix WheelRotation = WheelXform;
+		WheelRotation.c.set(0.f, 0.f, 0.f);
 		Fmatrix HandRotation;
-		HandRotation.mul_43(WheelRot, Offset);
+		HandRotation.mul_43(WheelRotation, Offset);
 
 		Result = HandRotation;
 		Result.c = World;
@@ -759,10 +1197,10 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 
 	Fmatrix LeftTarget;
 	Fmatrix RightTarget;
-	BuildTarget(LeftState, LeftLocal, LeftTwist, LeftHandOffset, ActiveHand == HandLeft ? PathLift : 0.f, LeftTarget);
-	BuildTarget(RightState, RightLocal, RightTwist, RightHandOffset, ActiveHand == HandRight ? PathLift : 0.f, RightTarget);
+	BuildTarget(LeftWheel, LeftState, LeftLocal, LeftTwist, LeftSteerTwistAxis, LeftHandOffset, ActiveHand == HandLeft ? PathLift : 0.f, LeftTarget);
+	BuildTarget(RightWheel, RightState, RightLocal, RightTwist, RightSteerTwistAxis, RightHandOffset, ActiveHand == HandRight ? PathLift : 0.f, RightTarget);
 
-	const auto Solve = [this, &HandsInverse](const u16* Chain, u16 Clavicle, const Fmatrix& TargetWorld, const Fvector& Elbow, Fvector& CurrentShift)
+	const auto Solve = [this, &HandsInverse](const u16* Chain, u16 Clavicle, const Fmatrix& TargetWorld, const Fvector& Elbow)
 	{
 		Fmatrix Target;
 		Target.mul_43(HandsInverse, TargetWorld);
@@ -795,23 +1233,11 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 			}
 		}
 
-		if (ReachShiftSpeed > 0.f)
-		{
-			const float Alpha = 1.f - expf(-ReachShiftSpeed * Device.fTimeDelta);
-			Fvector Smoothed;
-			Smoothed.lerp(CurrentShift, DesiredShift, Alpha);
-			CurrentShift = Smoothed;
-		}
-		else
-		{
-			CurrentShift = DesiredShift;
-		}
-
-		if (CurrentShift.magnitude() > EPS_L)
+		if (DesiredShift.magnitude() > EPS_L)
 		{
 			Fmatrix Shift;
 			Shift.identity();
-			Shift.c.set(CurrentShift);
+			Shift.c.set(DesiredShift);
 			const u16 ShiftBone = Clavicle != BI_NONE ? Clavicle : Chain[0];
 			CCameraRig::TransformBone(Kinematics, ShiftBone, Shift);
 		}
@@ -819,8 +1245,8 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 		CCameraRig::SolveLimb(Kinematics, Chain, Target, 1.f, Elbow);
 	};
 
-	Solve(LeftIK, LeftClavicle, LeftTarget, LeftElbow, LeftReachShift);
-	Solve(RightIK, RightClavicle, RightTarget, RightElbow, RightReachShift);
+	Solve(LeftIK, LeftClavicle, LeftTarget, LeftElbow);
+	Solve(RightIK, RightClavicle, RightTarget, RightElbow);
 }
 
 void CCarDriverHands::Update(const SFrameParams& Params)
@@ -840,9 +1266,6 @@ void CCarDriverHands::Update(const SFrameParams& Params)
 
 	Setup.c.set(Position);
 	Xform.mul_43(Params.SeatXform, Setup);
-
-	Kinematics->CalculateBones_Invalidate();
-	Kinematics->CalculateBones(TRUE);
 
 	UpdateFingerStates(std::clamp(Device.fTimeDelta, 0.f, 0.1f));
 	ApplyBindPose();
@@ -879,7 +1302,7 @@ void CCarDriverHands::Update(const SFrameParams& Params)
 			WheelNeutralWorld.mul_43(Params.CarXform, CarBind[SteerBone]);
 		}
 
-		CalibrateHandOffsets(WheelNeutralWorld, HandsInverse);
+		CalibrateHandOffsets(WheelNeutralWorld, HandsInverse, Params.CarSection);
 	}
 
 	const float WheelAngle = Params.SteerAngle * (SteerFactored ? SteerFactor * rs_car_steer_factor : 1.f);
