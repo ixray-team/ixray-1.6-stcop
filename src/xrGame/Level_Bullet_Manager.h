@@ -4,6 +4,7 @@
 
 #pragma once
 #include "WeaponAmmo.h"
+#include "../xrEngine/pure_relcase.h"
 
 #include "../xrUI/ui_defs.h"
 
@@ -98,7 +99,7 @@ struct SBullet
 
 class CLevel;
 
-class CBulletManager : public pureFrame
+class CBulletManager : public pureFrame, private pure_relcase
 {
 	static float const parent_ignore_distance;
 
@@ -143,7 +144,9 @@ class CBulletManager : public pureFrame
 		SBullet bullet;
 		Fvector normal;
 		Fvector point;
-		collide::rq_result R;
+		float HitRange;
+		int HitElement;
+		u16 TargetId = u16(-1);
 		u16 tgt_material;
 	};
 	static void CalculateNewVelocity(Fvector& dest_new_vel, Fvector const& old_velocity, float ar, float life_time);
@@ -246,6 +249,7 @@ protected:
 		float dt
 	);
 
+	void ReleaseObject(CObject* Object);
 	void Step();
 	void Update(float dt);
 

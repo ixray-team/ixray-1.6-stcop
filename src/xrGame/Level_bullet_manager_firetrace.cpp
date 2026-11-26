@@ -247,7 +247,8 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 void CBulletManager::StaticObjectHit	(CBulletManager::_event& E)
 {
 	PROF_EVENT(__FUNCTION__);
-	FireShotmark(&E.bullet, E.bullet.dir,	E.point, E.R, E.tgt_material, E.normal);
+	collide::rq_result Result{nullptr, E.HitRange, E.HitElement};
+	FireShotmark(&E.bullet, E.bullet.dir, E.point, Result, E.tgt_material, E.normal);
 }
 
 static bool g_clear = false;
@@ -255,10 +256,8 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
 	PROF_EVENT(__FUNCTION__);
 
-	CObject* ERO = E.R.O;
-	VERIFY(ERO || !ERO->getDestroy());
-
-	if (ERO->getDestroy())
+	CObject* ERO = Level().Objects.net_Find(E.TargetId);
+	if (!ERO || ERO->getDestroy())
 	{
 		return;
 	}
@@ -294,7 +293,8 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	}
 
 	//визуальное обозначение попадание на объекте
-	FireShotmark(&E.bullet, E.bullet.dir, E.point, E.R, E.tgt_material, E.normal, NeedShootmark);
+	collide::rq_result Result{ERO, E.HitRange, E.HitElement};
+	FireShotmark(&E.bullet, E.bullet.dir, E.point, Result, E.tgt_material, E.normal, NeedShootmark);
 
 	Fvector original_dir = E.bullet.dir;
 
@@ -310,8 +310,8 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 	// bone-space
 	if (IKinematics* V = PKinematics(ERO->Visual()))
 	{
-		VERIFY3(V->LL_GetBoneVisible(u16(E.R.element)), *ERO->cNameVisual(), V->LL_BoneName_dbg(u16(E.R.element)));
-		Fmatrix& m_bone = (V->LL_GetBoneInstance(u16(E.R.element))).mTransform;
+		VERIFY3(V->LL_GetBoneVisible(u16(E.HitElement)), *ERO->cNameVisual(), V->LL_BoneName_dbg(u16(E.HitElement)));
+		Fmatrix& m_bone = (V->LL_GetBoneInstance(u16(E.HitElement))).mTransform;
 		Fmatrix  m_inv_bone;
 		m_inv_bone.invert(m_bone);
 		m_inv_bone.transform_tiny(position_in_bone_space, p_in_object_space);
@@ -329,13 +329,13 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 		{
 			if (ERO->cast_actor() != nullptr)
 			{
-				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, ERO->ID(), (s16)E.R.element, E.point);
+				Game().m_WeaponUsageStatistic->OnBullet_Hit(&E.bullet, ERO->ID(), (s16)E.HitElement, E.point);
 				AddStatistic = true;
 			}
 		}
 
 		SHit Hit = SHit(hit_param.power, original_dir, nullptr,
-		u16(E.R.element), position_in_bone_space, hit_param.impulse,
+		u16(E.HitElement), position_in_bone_space, hit_param.impulse,
 		E.bullet.hit_type, E.bullet.armor_piercing, E.bullet.flags.aim_bullet);
 
 		Hit.GenHeader(u16(AddStatistic ? GE_HIT_STATISTIC : GE_HIT) & 0xffff, ERO->ID());

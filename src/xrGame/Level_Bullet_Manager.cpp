@@ -284,7 +284,7 @@ void CBulletManager::PlayPuddleImpacts()
 	PuddleImpacts.clear();
 }
 
-CBulletManager::CBulletManager()
+CBulletManager::CBulletManager() : pure_relcase(&CBulletManager::ReleaseObject)
 {
 	m_Bullets.clear();
 	m_Bullets.reserve(100);
@@ -298,6 +298,24 @@ CBulletManager::~CBulletManager()
 	m_RicochetSounds.clear();
 	m_Events.clear();
 	Device.seqFrame.Remove(this);
+}
+
+void CBulletManager::ReleaseObject(CObject* Object)
+{
+	const u16 ObjectId = Object->ID();
+	if (ObjectId == u16(-1))
+	{
+		return;
+	}
+
+	// A new object can reuse this ID before the next simulation step.
+	for (_event& Event : m_Events)
+	{
+		if (Event.TargetId == ObjectId)
+		{
+			Event.TargetId = u16(-1);
+		}
+	}
 }
 
 void CBulletManager::Load()
@@ -1742,27 +1760,29 @@ void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bulle
 		{
 			E.dynamic = _dynamic;
 			E.point = end_point;
-			E.R = R;
+			E.HitRange = R.range;
+			E.HitElement = R.element;
 			E.tgt_material = tgt_material;
 
 			ObjectHit(&E.hit_result, bullet, end_point, R, tgt_material, E.normal);
 
 			if (_dynamic)
 			{
-				E.Repeated = R.O->ID() == E.bullet.targetID;
+				E.TargetId = R.O->ID();
+				E.Repeated = E.TargetId == E.bullet.targetID;
 				
 				if (IsGameTypeSingle())
 				{
-					bullet->targetID = R.O->ID();
+					bullet->targetID = E.TargetId;
 				}
 				else
 				{
-					if (bullet->targetID != R.O->ID())
+					if (bullet->targetID != E.TargetId)
 					{
 						CGameObject* pGO = R.O->cast_game_object();
 						if (pGO == nullptr || !pGO->BonePassBullet((u16)R.element))
 						{
-							bullet->targetID = R.O->ID();
+							bullet->targetID = E.TargetId;
 						}
 					}
 				}
