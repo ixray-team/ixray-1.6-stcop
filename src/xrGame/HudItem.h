@@ -322,11 +322,11 @@ public:
 		sf_mag_shot = (1u << 27),
 	};
 
-	Flags32 m_eDevicesFlags;
-	Flags64 m_eAnimationsFlags;
-	Flags32 m_eBonePartAnimationsFlags;
-	Flags64 m_eSoundsFlags;
-	Flags64 m_eSoundsFlags2;
+	Flags32 m_eDevicesFlags = {};
+	Flags64 m_eAnimationsFlags = {};
+	Flags32 m_eBonePartAnimationsFlags = {};
+	Flags64 m_eSoundsFlags = {};
+	Flags64 m_eSoundsFlags2 = {};
 
 	bool bDisablePrepareAnimation = false;
 

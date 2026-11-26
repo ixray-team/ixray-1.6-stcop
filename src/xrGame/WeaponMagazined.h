@@ -55,7 +55,7 @@ protected:
 		ssf_shoot_indoor_grenade_actor = (1 << 16)
 	};
 
-	Flags32 m_eSoundsShotFlags;
+	Flags32 m_eSoundsShotFlags = {};
 
 protected:
 
