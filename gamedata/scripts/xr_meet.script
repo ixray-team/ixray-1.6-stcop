@@ -187,6 +187,28 @@ function Cmeet_manager:set_start_distance()
     end)
 end
 
+function Cmeet_manager:UpdateTrade(Refresh)
+	local TradeEnable = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.trade_enable)
+	if Refresh or self.trade_enable ~= TradeEnable then
+		if TradeEnable == "true" then
+			self.npc:enable_trade()
+		else
+			self.npc:disable_trade()
+		end
+		self.trade_enable = TradeEnable
+	end
+end
+
+function RestoreTrade(Npc)
+	local Storage = db.storage[Npc:id()]
+	local Meet = Storage and Storage.meet
+	if db.actor and Meet and Meet.meet_manager and Meet.trade_enable then
+		Meet.meet_manager:UpdateTrade(true)
+	else
+		Npc:enable_trade()
+	end
+end
+
 function Cmeet_manager:update()
 	return PROF_EVENT_CLOSURE("update", function() 
 	    -- Определение, в каком радиусе находимся
@@ -252,6 +274,12 @@ function Cmeet_manager:update()
         		self.allow_break = (allow_break == "true")
         	end
         
+		if xr_wounded.is_wounded(self.npc) then
+			self.trade_enable = false
+		else
+			self:UpdateTrade()
+		end
+
         	-- стартовый диалог
         	if self.a.meet_dialog ~= nil then
         		local start_dialog = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
@@ -330,22 +358,6 @@ function Cmeet_manager:update()
         		end
         		self.abuse_mode = abuse
         	end
-        
-        	-- доступность торговли
-        	if xr_wounded.is_wounded(self.npc) then
-        		self.trade_enable = false
-        	else
-        		local trade_enable = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.trade_enable)
-        		--printf("npc [%s] self %s *** %s", self.npc:name(), tostring(self.trade_enable), tostring(trade_enable))
-        		if self.trade_enable ~= trade_enable then
-        			if trade_enable == "true" then
-        				self.npc:enable_trade()
-        			else
-        				self.npc:disable_trade()
-        			end
-        			self.trade_enable = trade_enable
-        		end
-        end
 	end)
 end
 

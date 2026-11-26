@@ -131,10 +131,10 @@ function action_wounded:execute ()
 end
 function action_wounded:finalize ()
 		action_base.finalize (self)
-		self.object:enable_trade()
 		self.object:disable_talk()
 --  xr_sound.set_sound(self.object, nil)
 		self.object:wounded(false)
+		xr_meet.RestoreTrade(self.object)
 		self.object:movement_enabled(true)
 end
 

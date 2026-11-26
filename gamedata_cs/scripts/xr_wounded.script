@@ -162,12 +162,18 @@ function action_wounded:execute ()
 	end
 end
 function action_wounded:finalize ()
-    action_base.finalize (self)
-    self.object:enable_trade()
-    self.object:disable_talk()
+	action_base.finalize (self)
+	local Storage = db.storage[self.object:id()]
+	local Meet = Storage and Storage.meet
+	if Meet and Meet.trade_enable == false then
+		self.object:disable_trade()
+	else
+		self.object:enable_trade()
+	end
+	self.object:disable_talk()
 --  xr_sound.set_sound(self.object, nil)
-    self.object:wounded(false)
-    self.object:movement_enabled(true)
+	self.object:wounded(false)
+	self.object:movement_enabled(true)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
