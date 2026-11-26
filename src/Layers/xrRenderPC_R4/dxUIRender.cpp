@@ -50,6 +50,11 @@ void dxUIRender::SetScissor(Irect* rect)
 void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 {
 	CTexture* T = RCache.get_ActiveTexture(0);
+	if (!T)
+	{
+		res.set(1.0f, 1.0f);
+		return;
+	}
 	res.set(float(T->get_Width()),float(T->get_Height()));
 }
 
