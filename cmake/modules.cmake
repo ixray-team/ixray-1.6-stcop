@@ -19,7 +19,10 @@ include("${CMAKE_MODULE_PATHEX}/lunasvg.cmake")
 include("${CMAKE_MODULE_PATHEX}/meshoptimizer.cmake")
 include("${CMAKE_MODULE_PATHEX}/DirectXMesh.cmake")
 include("${CMAKE_MODULE_PATHEX}/DirectXTex.cmake")
-include("${CMAKE_MODULE_PATHEX}/SteamWorks.cmake")
+
+if (IXRAY_ENABLE_STEAM_OVERLAY)
+    include("${CMAKE_MODULE_PATHEX}/SteamWorks.cmake")
+endif()
 
 if (IXRAY_PROFILER_TRACY)
     include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")

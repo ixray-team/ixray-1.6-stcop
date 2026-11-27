@@ -38,6 +38,7 @@ Root `CMakeLists.txt`.
 | `IXRAY_TESTS` | OFF | `src/test` |
 | `IXRAY_MP` | OFF | `xrRender_DS0`; `xrServer`, `xrServerCLI`, `xrGameSpy` also require `IXR_TEST_CI` |
 | `IXRAY_MP_SQL` | OFF | FreeMP SQL |
+| `IXRAY_ENABLE_STEAM_OVERLAY` | ON | Steam overlay. Set OFF to skip compiling the overlay and downloading or linking the Steamworks SDK |
 | `IXRAY_ASAN` | OFF | full rebuild required |
 | `IXRAY_USE_MIMALLOC` | ON | mimalloc 3.5.3 engine heap; automatically bypassed with `IXRAY_ASAN=ON`. Set OFF for CRT comparison |
 | `IXRAY_LDEBUG` | OFF | `LUABIND_DEBUG_SCRIPTS`; affects MSVC Debug exception flags |

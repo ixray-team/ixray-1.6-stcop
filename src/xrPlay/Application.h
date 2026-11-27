@@ -1,7 +1,9 @@
 #pragma once
 #include "../xrEngine/stdafx.h"
 
+#ifdef IXRAY_ENABLE_STEAM_OVERLAY
 #include "SteamOverlay.h"
+#endif
 #include "resource.h"
 
 class CApplication
@@ -30,5 +32,7 @@ private:
 
 private:
 	xr_string CommandLine;
+#ifdef IXRAY_ENABLE_STEAM_OVERLAY
 	CSteamOverlay SteamWorks;
+#endif
 };

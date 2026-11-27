@@ -36,7 +36,9 @@ int CApplication::Run()
 		return -1;
 	}
 
+#ifdef IXRAY_ENABLE_STEAM_OVERLAY
 	SteamWorks.BeginPlay();
+#endif
 	InitEngine();
 	CrashDumpHelper::Start();
 
@@ -152,7 +154,9 @@ int CApplication::BeginPlay()
 void CApplication::EndPlay()
 {
 	PROF_EVENT("END_PLAY");
+#ifdef IXRAY_ENABLE_STEAM_OVERLAY
 	SteamWorks.EndPlay();
+#endif
 	CTaskbarProgress::Instance().Release();
 	xr_delete(g_pStringTable);
 	if (g_AppInfo.Window)

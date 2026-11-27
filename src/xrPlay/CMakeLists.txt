@@ -25,6 +25,7 @@ source_group("Resources" FILES ${XPLAY_SOURCE_RES_FILES})
 source_group("UI" FILES ${XPLAY_SOURCE_UI_FILES})
 
 # Apply list
+list(REMOVE_ITEM XPLAY_SOURCE_ALL_FILES "${CMAKE_CURRENT_SOURCE_DIR}/SteamOverlay.cpp")
 list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
 
 # xrEngine project
@@ -39,7 +40,12 @@ target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrEngine PUBLIC xrEngineCore)
 target_link_libraries(xrEngine PUBLIC xrScripts)
-target_link_libraries(xrEngine PUBLIC Steamworks::Steamworks)
+
+if (IXRAY_ENABLE_STEAM_OVERLAY)
+    target_sources(xrEngine PRIVATE SteamOverlay.cpp)
+    target_compile_definitions(xrEngine PRIVATE IXRAY_ENABLE_STEAM_OVERLAY)
+    target_link_libraries(xrEngine PRIVATE Steamworks::Steamworks)
+endif()
 
 if (WIN32)
     add_dependencies(xrEngine xrGame xrRender_IXR xrCrashDumpHelper)
