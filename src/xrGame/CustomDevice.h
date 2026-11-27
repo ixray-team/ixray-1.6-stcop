@@ -71,6 +71,7 @@ public:
 	virtual u32	ef_detector_type() const { return 1; }
 
 	bool NeedActivation() const { return m_bNeedActivation; }
+	void RequestActivation() { m_bNeedActivation = true; }
 
 	virtual bool can_be_attached() const;
 	void PlayWpnFinishDetector();

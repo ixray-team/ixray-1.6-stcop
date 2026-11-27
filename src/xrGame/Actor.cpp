@@ -1798,6 +1798,11 @@ void CActor::UpdateCL()
 {
 	PROF_EVENT("CActor UpdateCL");
 
+	if (SavedEquipmentFlags != 0)
+	{
+		RestoreSavedEquipment();
+	}
+
 	if (cam_active == eacFirstEye && !psGameFlags.test(rsActorShadow))
 	{
 		PKinematics(Visual())->CalculateBones();

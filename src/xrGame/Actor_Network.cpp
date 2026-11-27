@@ -28,6 +28,8 @@
 #include "WeaponMagazined.h"
 #include "WeaponKnife.h"
 #include "CustomOutfit.h"
+#include "ActorHelmet.h"
+#include "Torch.h"
 
 #include "actor_anim_defs.h"
 
@@ -476,6 +478,7 @@ void	CActor::net_Import_Physic_proceed	( )
 
 bool CActor::net_Spawn(CSE_Abstract* DC)
 {
+	SavedEquipmentFlags = 0;
 	ResetCameraFocus();
 	m_holder_id				= ALife::_OBJECT_ID(-1);
 	m_snd_noise			= 0.0f;
@@ -1452,11 +1455,91 @@ ACTOR_DEFS::SMemoryPos*				CActor::FindMemoryPos (u32 Time)
 };
 */
 
+namespace
+{
+	enum EActorSaveFlags : u8
+	{
+		SaveOutBorder = 1 << 0,
+		SaveNightVision = 1 << 1,
+		SaveDeviceInHand = 1 << 2,
+		SaveTorch = 1 << 3,
+		SaveEquipmentMask = SaveNightVision | SaveDeviceInHand | SaveTorch,
+	};
+}
+
+void CActor::RestoreSavedEquipment()
+{
+	if (Level().CurrentControlEntity() != this || inventory().GetActiveSlot() != inventory().GetNextActiveSlot())
+	{
+		return;
+	}
+
+	const u8 EquipmentFlags = SavedEquipmentFlags;
+	SavedEquipmentFlags = 0;
+	if (!g_Alive())
+	{
+		return;
+	}
+
+	if (EquipmentFlags & SaveNightVision)
+	{
+		GetNightVisionEffector()->SwitchNightVision(true, false);
+	}
+
+	if (EquipmentFlags & SaveDeviceInHand)
+	{
+		if (CCustomDevice* DeviceItem = GetDevice(true); DeviceItem && DeviceItem->GetNextState() == CHUDState::eHidden)
+		{
+			DeviceItem->RequestActivation();
+		}
+	}
+
+	if (EquipmentFlags & SaveTorch)
+	{
+		PIItem Item = inventory().ItemFromSlot(TORCH_SLOT);
+		if (CTorch* Torch = Item ? Item->cast_torch() : nullptr)
+		{
+			if (!Torch->IsAllow() || Torch->GetLeftPowerValue() > 0.0f)
+			{
+				Torch->Switch(true);
+			}
+		}
+	}
+}
+
 void CActor::save(NET_Packet &output_packet)
 {
 	inherited::save(output_packet);
 	CInventoryOwner::save(output_packet);
-	output_packet.w_u8(u8(m_bOutBorder));
+	// Bit zero is the original out-of-border value. Keep the rest of the actor record at the same offsets.
+	u8 SaveFlags = SavedEquipmentFlags | (m_bOutBorder ? SaveOutBorder : 0);
+	if (IsGameTypeSingle())
+	{
+		const CHelmet* Helmet = GetHelmet();
+		const CCustomOutfit* Outfit = GetOutfit();
+		// A standalone NVG already saves its own power state.
+		if (GetNightVisionEffector()->GetStatus() &&
+			((Helmet && Helmet->GetNV_Sect().size()) || (Outfit && Outfit->GetNV_Sect().size())))
+		{
+			SaveFlags |= SaveNightVision;
+		}
+
+		if (const CCustomDevice* DeviceItem = GetDevice(true))
+		{
+			const u8 NextState = DeviceItem->GetNextState();
+			if (DeviceItem->NeedActivation() || (NextState != CHUDState::eHidden && NextState != CHUDState::eHiding))
+			{
+				SaveFlags |= SaveDeviceInHand;
+			}
+		}
+
+		PIItem Item = inventory().ItemFromSlot(TORCH_SLOT);
+		if (const CTorch* Torch = Item ? Item->cast_torch() : nullptr; Torch && Torch->IsSwitched())
+		{
+			SaveFlags |= SaveTorch;
+		}
+	}
+	output_packet.w_u8(SaveFlags);
 	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu()->pUITaskWnd;
 	if (task_wnd)
 	{
@@ -1499,7 +1582,9 @@ void CActor::load(IReader &input_packet)
 	ResetCameraFocus();
 	inherited::load(input_packet);
 	CInventoryOwner::load(input_packet);
-	m_bOutBorder=!!(input_packet.r_u8());
+	const u8 SaveFlags = input_packet.r_u8();
+	m_bOutBorder = (SaveFlags & SaveOutBorder) != 0;
+	SavedEquipmentFlags = IsGameTypeSingle() ? (SaveFlags & SaveEquipmentMask) : 0;
 	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu()->pUITaskWnd;
 	if (task_wnd)
 	{
