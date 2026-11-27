@@ -122,21 +122,28 @@ void CEngineApp::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if (E == g_pEventManager->eDisconnect)
 	{
-		if (g_pGameLevel)
+		const bool HadLevel = g_pGameLevel != nullptr;
+		if (HadLevel)
 		{
 			Console->Hide();
 			g_pGameLevel->net_Stop();
 			DEL_INSTANCE(g_pGameLevel);
 			Console->Show();
-
-			if ((false == g_pEventManager->Event.Peek("KERNEL:quit")) && (false == g_pEventManager->Event.Peek("KERNEL:start")))
-			{
-				Console->Execute("main_menu off");
-				Console->Execute("main_menu on");
-			}
 		}
+		const bool ReturnToMenu = HadLevel && !g_pEventManager->Event.Peek("KERNEL:quit") && !g_pEventManager->Event.Peek("KERNEL:start");
+		if (ReturnToMenu)
+		{
+			Console->Execute("main_menu off");
+		}
+
 		R_ASSERT(0 != g_pGamePersistent);
 		g_pGamePersistent->Disconnect();
+
+		// Disconnect stops all emitters, so open the menu after sound cleanup.
+		if (ReturnToMenu)
+		{
+			Console->Execute("main_menu on");
+		}
 	}
 	else if (E == g_pEventManager->eConsole)
 	{
