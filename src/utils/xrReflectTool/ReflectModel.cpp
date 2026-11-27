@@ -15,6 +15,7 @@
 
 #include "ReflectModel.h"
 
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -63,9 +64,9 @@ namespace XReflectTool
 		return "#if " + Condition + "\n" + Text + "#endif\n";
 	}
 
-	std::string ReadFile(const std::filesystem::path& Path)
+	std::string ReadFile(const std::string& Path)
 	{
-		std::ifstream Stream(Path, std::ios::binary);
+		std::ifstream Stream(std::filesystem::path(Path), std::ios::binary);
 		std::ostringstream Content;
 		Content << Stream.rdbuf();
 		return Content.str();

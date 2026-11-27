@@ -17,7 +17,6 @@
 
 // Reflection model shared by the parser and the code generators.
 
-#include <filesystem>
 #include <map>
 #include <string>
 #include <utility>
@@ -158,7 +157,7 @@ namespace XReflectTool
 	// Emits Text under "#if Condition" unless the condition is empty or already in force.
 	std::string Guard(const std::string& Condition, const std::string& Enclosing, const std::string& Text);
 
-	std::string ReadFile(const std::filesystem::path& Path);
+	std::string ReadFile(const std::string& Path);
 	std::string ToCrlf(const std::string& Text);
 	bool WriteIfChanged(const std::string& Path, const std::string& Content, std::vector<ParseError>& Errors);
 }
