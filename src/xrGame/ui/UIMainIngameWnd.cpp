@@ -38,6 +38,7 @@
 
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/UIVectorBinding.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIMotionIcon.h"
@@ -498,6 +499,23 @@ void CUIMainIngameWnd::Init()
 	if (enableThirst && uiXml.NavigateToNode("indicator_thirst"))
 	{
 		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", indicatorParent);
+	}
+	else if (enableThirst && m_ind_starvation &&
+		EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster] &&
+		CUITextureMaster::ItemExist("ui_inGame2_circle_thirst_green") &&
+		CUITextureMaster::ItemExist("ui_inGame2_circle_thirst_yellow") &&
+		CUITextureMaster::ItemExist("ui_inGame2_circle_thirst_red"))
+	{
+		// Older layouts may provide the textures without a thirst widget.
+		m_ind_thirst = new CUIStatic();
+		m_ind_thirst->SetAutoDelete(true);
+		m_ind_thirst->SetWndSize(m_ind_starvation->GetWndSize());
+		Fvector2 Position = m_ind_starvation->GetWndPos();
+		Position.y += m_ind_starvation->GetHeight() + 2.0f;
+		m_ind_thirst->SetWndPos(Position);
+		m_ind_thirst->SetStretchTexture(true);
+		m_ind_thirst->Show(false);
+		indicatorParent->AttachChild(m_ind_thirst);
 	}
 
 	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
@@ -1935,6 +1953,49 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 	if (m_QuickSlotText2) m_QuickSlotText2->Show(should_show_panel);
 	if (m_QuickSlotText3) m_QuickSlotText3->Show(should_show_panel);
 	if (m_QuickSlotText4) m_QuickSlotText4->Show(should_show_panel);
+}
+
+void CUIMainIngameWnd::DrawInventoryNeeds()
+{
+	auto* ViewEntity = Level().CurrentViewEntity();
+	const CActor* Player = ViewEntity ? ViewEntity->cast_actor() : nullptr;
+	if (!Player || !Player->g_Alive())
+	{
+		return;
+	}
+
+	const std::array Indicators = { m_ind_starvation, m_ind_thirst };
+	constexpr float Spacing = 7.0f;
+	float Width = 0.0f;
+	for (CUIStatic* Indicator : Indicators)
+	{
+		if (Indicator && Indicator->IsShown())
+		{
+			Width += Indicator->GetWidth() + Spacing;
+		}
+	}
+
+	float X = UIStackPanelIndicators ? (UIStackPanelIndicators->GetWidth() - Width + Spacing) * 0.5f : 0.0f;
+	for (CUIStatic* Indicator : Indicators)
+	{
+		if (!Indicator || !Indicator->IsShown())
+		{
+			continue;
+		}
+
+		if (UIStackPanelIndicators)
+		{
+			const Fvector2 Position = Indicator->GetWndPos();
+			Indicator->SetWndPos(Fvector2().set(X, 0.0f));
+			Indicator->Draw();
+			Indicator->SetWndPos(Position);
+			X += Indicator->GetWidth() + Spacing;
+		}
+		else
+		{
+			Indicator->Draw();
+		}
+	}
 }
 
 void CUIMainIngameWnd::DrawMainIndicatorsForInventory()

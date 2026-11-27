@@ -63,7 +63,7 @@ public:
 
 	CUIStatic* m_ind_bleeding;
 	CUIStatic* m_ind_radiation;
-	CUIStatic* m_ind_starvation;
+	CUIStatic* m_ind_starvation = nullptr;
 	CUIStatic* m_ind_psy = nullptr;
 
 	CUIStatic* UIStaticDiskIO;
@@ -94,6 +94,7 @@ public:
 	bool			RunNavigationOwnershipSmoke(u32 toggleCount = 20);
 
 	void			DrawMainIndicatorsForInventory();
+	void			DrawInventoryNeeds();
 
 	// Quick slots panel visibility / fade control
 	void			ShowQuickSlotsPanel();

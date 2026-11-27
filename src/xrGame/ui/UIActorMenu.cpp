@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "UIActorMenu.h"
 #include "UIActorStateInfo.h"
+#include "../../xrCore/EngineExternal.h"
 #include "../Actor.h"
 #include "UIGameSP.h"
 #include "../Inventory.h"
@@ -11,6 +12,7 @@
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "UIInventoryUtilities.h"
 #include "game_cl_base.h"
+#include "game_cl_single.h"
 #include "UITalkDialogWnd.h"
 #include "../Weapon.h"
 #include "../WeaponKnife.h"
@@ -338,10 +340,13 @@ void CUIActorMenu::Show(bool status)
 
 void CUIActorMenu::Draw()
 {
-	//CurrentGameUI()->UIMainIngameWnd->DrawZoneMap();
-	//CurrentGameUI()->UIMainIngameWnd->DrawMainIndicatorsForInventory();
-
 	inherited::Draw	();
+
+	static const bool HideHudOnMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+	if (m_currMenuMode == mmInventory && HideHudOnMaster && g_SingleGameDifficulty == egdMaster)
+	{
+		CurrentGameUI()->UIMainIngameWnd->DrawInventoryNeeds();
+	}
 	m_ItemInfo->Draw();
 	m_hint_wnd->Draw();
 }

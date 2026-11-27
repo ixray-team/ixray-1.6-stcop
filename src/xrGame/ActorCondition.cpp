@@ -3,6 +3,7 @@
 #include "ActorCondition.h"
 #include "Actor.h"
 #include "ActorEffector.h"
+#include "PostprocessAnimator.h"
 #include "Inventory.h"
 #include "Level.h"
 #include "game_base_space.h"
@@ -28,6 +29,45 @@
 ICF bool GodMode()
 {
 	return IsGameTypeSingle() && psActorFlags.test(AF_GOD_MODE | AF_DISABLE_CONDITION_TEST);
+}
+
+namespace
+{
+class CThirstPPEffector final : public CPostprocessAnimator
+{
+public:
+	static constexpr int EffectorId = eStartEffectorID + 14;
+	static constexpr float Threshold = 0.2f;
+
+	CThirstPPEffector(const CActor& Player, const char* FileName)
+		: CPostprocessAnimator(EffectorId, true), Player(Player), StartTime(Device.dwTimeGlobal)
+	{
+		Load(FileName);
+	}
+
+	bool Process(SPPInfo& Postprocess) override
+	{
+		const float Thirst = Player.conditions().GetThirst();
+		if (Thirst >= Threshold || !Player.g_Alive() || GodMode())
+		{
+			return false;
+		}
+
+		const float Elapsed = (Device.dwTimeGlobal - StartTime) * 0.001f;
+		const float Phase = std::max(0.0f, (std::sin(Elapsed) - 0.66f) * 5.0f);
+		// The original Gunslinger thirst meter could drop to -0.15.
+		const float Fraction = (Thirst + 0.15f) / (Threshold + 0.15f);
+		const float Factor = 0.4f * (1.0f - Fraction * Fraction * Fraction) * Phase;
+
+		// The animator removes itself at its minimum factor.
+		SetCurrentFactor(std::max(0.001f, Factor));
+		return CPostprocessAnimator::Process(Postprocess);
+	}
+
+private:
+	const CActor& Player;
+	const u32 StartTime;
+};
 }
 
 CActorCondition::CActorCondition(CActor *object) :
@@ -290,6 +330,23 @@ void CActorCondition::UpdateCondition()
 
 	if (IsGameTypeSingleCompatible() && !g_dedicated_server)
 	{
+		static const bool EnableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+		if (EnableThirst && GetThirst() < CThirstPPEffector::Threshold && m_object == Level().CurrentViewEntity())
+		{
+			auto& Cameras = object().Cameras();
+			if (!Cameras.GetPPEffector(static_cast<EEffectorPPType>(CThirstPPEffector::EffectorId)))
+			{
+				for (const char* FileName : { "thirst_black.ppe", "black.ppe" })
+				{
+					if (FS.exist("$game_anims$", FileName))
+					{
+						Cameras.AddPPEffector(new CThirstPPEffector(object(), FileName));
+						break;
+					}
+				}
+			}
+		}
+
 		CEffectorCam* pAlcoholEffector = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
 		if ((Alcohol.Current > 0.0001f))
 		{
