@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CameraDefs.h"
+#include "../xrCore/Kernel/xrSyncronize.h"
 
 struct ENGINE_API SPPInfo {
 	struct SColor{
@@ -85,6 +86,7 @@ protected:
 	EffectorCamVec			m_EffectorsCam;
 	EffectorCamVec			m_EffectorsCam_added_deffered;
 	EffectorPPVec			m_EffectorsPP;
+	mutable xrCriticalSection EffectorsMutex;
 
 	bool					m_bAutoApply;
 	bool					m_bAbsolutePositioning;

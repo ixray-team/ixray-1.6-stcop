@@ -149,12 +149,14 @@ CMapManager::CMapManager()
 
 CMapManager::~CMapManager()
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	delete_data		(m_deffered_destroy_queue); //from prev frame
 	delete_data		(m_locations_wrapper);
 }
 
 CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, ALife::_OBJECT_ID id)
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	if (HasMapLocation(spot_type, id))
 		return GetMapLocation(spot_type, id);
 
@@ -170,6 +172,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, ALife::_O
 
 CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	if(!Level().CurrentViewEntity())return nullptr;
 
 	ALife::ERelationType relation = ALife::eRelationTypeFriend;
@@ -375,11 +378,13 @@ CMapLocation* CMapManager::GetAdjacentPersonalSpot(ALife::_OBJECT_ID CurrentId, 
 
 void CMapManager::Destroy(CMapLocation* ml)
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	m_deffered_destroy_queue.push_back(ml);
 }
 
 void CMapManager::RemoveMapLocation(const shared_str& spot_type, ALife::_OBJECT_ID id)
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	FindLocationBySpotID key(spot_type, id);
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it!=Locations().end() )
@@ -398,6 +403,7 @@ void CMapManager::RemoveMapLocation(const shared_str& spot_type, ALife::_OBJECT_
 
 void CMapManager::RemoveMapLocationByObjectID(ALife::_OBJECT_ID id) //call on destroy object
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	if (m_activeUserNavigationLocationId == id)
 	{
 		ClearActiveUserNavigationLocation();
@@ -418,6 +424,7 @@ void CMapManager::RemoveMapLocationByObjectID(ALife::_OBJECT_ID id) //call on de
 
 void CMapManager::RemoveMapLocation(CMapLocation* ml)
 {
+	xrCriticalSectionGuard guard(UpdateCS);
 	if (ml && IsUserNavigationLocation(ml))
 		ClearActiveUserNavigationLocation();
 
@@ -632,7 +639,10 @@ Locations&	CMapManager::Locations	()
 {
 	if(!m_locations)
 	{
-		m_locations = &m_locations_wrapper->registry().objects();
+		// The linked client has its own minimap widgets, not the host's map-location widgets.
+		m_locations = Level().GetLevelDesc().RemoteTransport && !Level().IsServer()
+			? &m_locations_wrapper->registry().objects_local()
+			: &m_locations_wrapper->registry().objects();
 #ifdef DEBUG
 		Msg("m_locations size=%d",m_locations->size());
 #endif // #ifdef DEBUG

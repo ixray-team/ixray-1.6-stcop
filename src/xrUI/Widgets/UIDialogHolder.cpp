@@ -154,7 +154,7 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		}
 	}
 	pDialog->SetHolder				(this);
-	pDialog->GetHotkeyLayer().SetActive(true);
+	pDialog->GetHotkeyLayer().SetActive(g_pGameLevel == nullptr || !g_pGameLevel->IsParallel());
 	AddDialogToRender(pDialog);
 
 	// Show callbacks may reject or close the dialog during initialization.

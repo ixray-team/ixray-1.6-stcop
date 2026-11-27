@@ -75,7 +75,7 @@ CALifeUpdateManager::CALifeUpdateManager	(xrServer *server, const char* section)
 CALifeUpdateManager::~CALifeUpdateManager	()
 {
 	shedule_unregister		();
-	Device.remove_from_seq_parallel	(
+	SeqParallelRemove	(
 		xr_delegate<void()>(
 			this,
 			&CALifeUpdateManager::update
@@ -137,6 +137,8 @@ void CALifeUpdateManager::new_game_for_editor()
 
 void CALifeUpdateManager::shedule_Update(u32 dt)
 {
+	if (ai().get_game_graph() == nullptr || !Level().HasLevelResource(ELevelResource::Spawn))
+		return;
 	ISheduled::shedule_Update(dt);
 
 	if (!initialized())
@@ -144,7 +146,7 @@ void CALifeUpdateManager::shedule_Update(u32 dt)
 
 	if (!m_first_time)
 	{
-		Device.seqParallel.push_back(xr_delegate<void()>(this, &CALifeUpdateManager::update));
+		SeqParallelPush(xr_delegate<void()>(this, &CALifeUpdateManager::update));
 		return;
 	}
 

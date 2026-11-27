@@ -297,7 +297,7 @@ bool DX11Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource*
 	destBox.bottom = Box.bottom;
 	destBox.back = Box.back;
 
-	UINT dstSubresource = 0;
+	UINT dstSubresource = D3D11CalcSubresource(mipLevel, arrayLayer, GetMipLevels());
 
 	context->UpdateSubresource
 	(
@@ -605,8 +605,26 @@ IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 
 IRHISurface* DX11TextureFactory::CreateDepthStencil(const RHITextureDesc& desc)
 {
-	// Similar to CreateRenderTarget but with depth format
-	return nullptr;
+	// Same as CreateRenderTarget, with the depth-stencil bind flag forced.
+	D3D11_TEXTURE2D_DESC d3dDesc = {};
+	d3dDesc.Width = desc.Width;
+	d3dDesc.Height = desc.Height;
+	d3dDesc.MipLevels = desc.MipLevels;
+	d3dDesc.ArraySize = desc.ArraySize;
+	d3dDesc.Format = DXGI_FORMAT(desc.Format);
+	d3dDesc.SampleDesc.Count = desc.SampleDescCount;
+	d3dDesc.SampleDesc.Quality = 0;
+	d3dDesc.Usage = D3D11_USAGE(desc.Usage);
+	d3dDesc.BindFlags = ConvertBindFlags(desc.BindFlags) | D3D11_BIND_DEPTH_STENCIL;
+	d3dDesc.CPUAccessFlags = ConvertCPUAccessFlags(desc.CPUAccessFlags);
+	d3dDesc.MiscFlags = ConvertMiscFlags(desc.MiscFlags);
+
+	ID3D11Texture2D* texture = nullptr;
+	HRESULT hr = Device->CreateTexture2D(&d3dDesc, nullptr, &texture);
+	if (FAILED(hr))
+		return nullptr;
+
+	return new DX11Surface(texture);
 }
 
 IRHIShaderResourceView* DX11TextureFactory::CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc)

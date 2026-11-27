@@ -63,6 +63,7 @@ public:
 	IC		bool				actual				() const;
 	IC		CRestrictedObject	&object				() const;
 	IC		void				invalidate			();
+	IC		void				ClearSelection		();
 	IC		float				best_value			() const;
 	IC		bool				use_smart_covers_only() const;
 	IC		void				use_smart_covers_only(bool value);

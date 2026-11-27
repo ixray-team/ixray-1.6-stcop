@@ -53,6 +53,14 @@ public:
 
     RENDER_API void		OnCreate		();
     RENDER_API void		OnDestroy		();
+	void ShareDefinitions(const CPSLibrary& owner)
+	{
+		m_PEDs = owner.m_PEDs;
+		m_PGDs = owner.m_PGDs;
+		m_PACDs = owner.m_PACDs;
+		m_all_ps = owner.m_all_ps;
+		m_CurrentParticles = owner.m_CurrentParticles;
+	}
 
     RENDER_API PS::CPEDef*		FindPED			(const char* name);
     RENDER_API PS::PEDIt		FindPEDIt		(const char* name);

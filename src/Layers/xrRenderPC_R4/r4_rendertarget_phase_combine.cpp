@@ -42,7 +42,8 @@ void CRenderTarget::phase_combine()
 	GPU_EVENT(phase_combine);
 
 	//	TODO: DX10: Remove half poxel offset
-	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+	const bool parallelScene = g_pGameLevel != nullptr && g_pGameLevel->IsParallel();
+	bool _menu_pp = !parallelScene && g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
@@ -124,11 +125,20 @@ void CRenderTarget::phase_combine()
 		}
 
 		CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
-		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
+		dxEnvDescriptorMixerRender* envdescren = (dxEnvDescriptorMixerRender*)(envdesc.m_pDescriptorMixer ? &*envdesc.m_pDescriptorMixer : nullptr);
 
-		// Setup textures
-		IRHISurface* e0 = _menu_pp ? 0 : envdescren.sky_r_textures_env[0].second->surface_get();
-		IRHISurface* e1 = _menu_pp ? 0 : envdescren.sky_r_textures_env[1].second->surface_get();
+		// Setup textures. A texture-less or mixer-less environment (menu state,
+		// a sandbox before its weather mixes) binds no envmap instead of
+		// crashing on a null mixer or empty texture list.
+		IRHISurface* e0 = nullptr;
+		IRHISurface* e1 = nullptr;
+		if (!_menu_pp && envdescren != nullptr)
+		{
+			if (envdescren->sky_r_textures_env.size() > 0 && envdescren->sky_r_textures_env[0].second._get())
+				e0 = envdescren->sky_r_textures_env[0].second->surface_get();
+			if (envdescren->sky_r_textures_env.size() > 1 && envdescren->sky_r_textures_env[1].second._get())
+				e1 = envdescren->sky_r_textures_env[1].second->surface_get();
+		}
 
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
@@ -205,7 +215,7 @@ void CRenderTarget::phase_combine()
 
 			RCache.set_Stencil(FALSE);
 		}
-		else if(ps_r2_aa_type == 3)
+		else if(ps_r2_aa_type == 3 && !RImplementation.IsSecondaryScene)
 		{
 			GPU_EVENT(phase_taa);
 			phase_taa();
@@ -221,7 +231,7 @@ void CRenderTarget::phase_combine()
 	u_setrt(get_width(), get_height(), 0, 0, 0, 0);
 	RImplementation.rmNormal();
 
-	switch(ps_r_scale_mode)
+	switch(RImplementation.IsSecondaryScene ? 0 : ps_r_scale_mode)
 	{
 		case 4:
 		{

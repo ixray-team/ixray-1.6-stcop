@@ -471,8 +471,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 	{
 		pActor->DeathActionStarted = true;
 		pActor->NotifySuicideShotCallbackIfNeeded();
-		extern bool g_bDisableAllInput;
-		g_bDisableAllInput = true;
+				Level().InputDisabled = true;
 		SetPending(true);
 		PlayHUDMotion("anm_selfkill", EHudMixType::eMixAll, state);
 		PlaySound("sndSelfkill", Position());

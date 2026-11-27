@@ -29,7 +29,8 @@ function lchanger_binder:net_spawn(sobject)
 	local obj = self.object
     db.add_obj(obj)
 
-    self.st.s_obj = alife():object(obj:id())
+    local alife_simulator = alife()
+    self.st.s_obj = (alife_simulator and alife_simulator:object(obj:id())) or sobject
     obj:enable_level_changer(self.st.s_obj.enabled)
     obj:set_level_changer_invitation(self.st.s_obj.hint)
     return true

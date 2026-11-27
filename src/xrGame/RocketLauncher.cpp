@@ -55,12 +55,12 @@ void CRocketLauncher::SpawnRocket(const shared_str& rocket_section, CGameObject*
 
 void CRocketLauncher::AttachRocket(ALife::_OBJECT_ID rocket_id, CGameObject* parent_rocket_launcher)
 {
-	CObject* finded_object = Level().Objects.net_Find(rocket_id);
+	CObject* finded_object = g_pGameLevel != nullptr ? Level().Objects.net_Find(rocket_id) : nullptr;
 	CCustomRocket* pRocket = finded_object != nullptr ? finded_object->cast_custom_rocket() : nullptr;
 
 	if (pRocket == nullptr)
 	{
-		R_ASSERT(pRocket);
+		Msg("! CRocketLauncher::AttachRocket: rocket %u is absent from the current level", rocket_id);
 		return;
 	}
 
@@ -73,15 +73,15 @@ void CRocketLauncher::AttachRocket(ALife::_OBJECT_ID rocket_id, CGameObject* par
 
 void CRocketLauncher::DetachRocket(ALife::_OBJECT_ID rocket_id, bool bLaunch)
 {
-	CObject* finded_object = Level().Objects.net_Find(rocket_id);
+	CObject* finded_object = g_pGameLevel != nullptr ? Level().Objects.net_Find(rocket_id) : nullptr;
 	CCustomRocket* pRocket = finded_object != nullptr ? finded_object->cast_custom_rocket() : nullptr;
 
-	if (pRocket == nullptr && OnClient())
+	if (pRocket == nullptr)
 	{
+		Msg("! CRocketLauncher::DetachRocket: rocket %u is already absent from the current level", rocket_id);
 		return;
 	}
 
-	VERIFY(pRocket);
 	ROCKETIT It = std::ranges::find(m_rockets, pRocket);
 	ROCKETIT It_l = std::ranges::find(m_launched_rockets, pRocket);
 

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "ImUtils.h"
+#include "Viewer/ViewerSession.h"
 #include "ai_space.h"
 #include "../alife_simulator.h"
 #include "../Actor.h"
@@ -1025,7 +1026,10 @@ static void OMFEditorMotion(SOMFMotion& motion)
 		RenderHudMotionPlayerSpeed(state.Item);
 	}
 
-	if (ImGui::Button("Reset motion"))
+	const bool resetMotion = ImGui::Button("Reset motion");
+	if (ImUtils::Viewer::CViewerSession* session = ImUtils::Viewer::ViewerSessionAt(0); session != nullptr)
+		session->UiProbeObserve("Reset motion", resetMotion);
+	if (resetMotion)
 	{
 		OMFEditorReset(def);
 		state.SelectedMark = -1;
@@ -1556,6 +1560,7 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 
 void RenderToolsOMFEditorWindow()
 {
+	ImUtils::Viewer::CPrimaryEditorContextGuard editorContext;
 	SOMFEditorState& state = g_omf_editor;
 	bool& open = Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)];
 	if (!open)
@@ -1578,6 +1583,10 @@ void RenderToolsOMFEditorWindow()
 
 	if (item == nullptr)
 	{
+		if (ImUtils::Viewer::CViewerSession* session = ImUtils::Viewer::ViewerSessionAt(0); session != nullptr && session->UiProbeActive() && ImGui::GetFrameCount() % 120 == 0)
+		{
+			Msg("! [editor-checks] OMF actor=%p active=%p hud-item=%p player-hud=%p level=%p alife=%p", actor, active, hud_item, g_player_hud, g_pGameLevel, ai().get_alife());
+		}
 		HudMotionPlayerClose();
 		state.Item = nullptr;
 		ImGui::TextDisabled("No active HUD item");
@@ -1596,6 +1605,13 @@ void RenderToolsOMFEditorWindow()
 	}
 
 	const player_hud_motion* anm = HudMotionPlayerSelectedAnim(item);
+	if (anm == nullptr)
+	{
+		if (ImUtils::Viewer::CViewerSession* session = ImUtils::Viewer::ViewerSessionAt(0); session != nullptr && session->UiProbeActive() && ImGui::GetFrameCount() % 120 == 0)
+		{
+			Msg("! [editor-checks] OMF has an item but no selected motion: item=%p state-item=%p model=%p", item, state.Item, g_player_hud->GetModel());
+		}
+	}
 	const bool combined = item->m_model_combined;
 	SOMFMotion* hands = nullptr;
 	SOMFMotion* weapon = nullptr;

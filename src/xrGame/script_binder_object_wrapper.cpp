@@ -13,6 +13,7 @@
 #include "script_game_object.h"
 #include "xrServer_Objects_ALife.h"
 #include "luabind/class_info.hpp"
+#include <luabind/error.hpp>
 #include <luabind/detail/class_rep.hpp>
 #include <luabind/detail/class_registry.hpp>
 
@@ -165,7 +166,33 @@ void CScriptBinderObjectWrapper::shedule_Update			(u32 time_delta)
 {
 	if (ReflectionData[int(ScriptBinderMethods::update)])
 	{
-		luabind::call_member<void>(this, "update", time_delta);
+		try
+		{
+			luabind::call_member<void>(this, "update", time_delta)[luabind::detail::policy_cons<>()];
+		}
+#ifndef LUABIND_NO_EXCEPTIONS
+		catch (const luabind::error& error)
+		{
+			lua_State* state = error.state();
+			Msg("! Script update failed for '%s': %s; top=%s", m_object->object().cNameSect().c_str(), error.what(),
+				state != nullptr && lua_isstring(state, -1) ? lua_tostring(state, -1) : "<non-string Lua error>");
+			if (state != nullptr)
+			{
+				lua_Debug debug;
+				for (int level = 0; level < 8 && lua_getstack(state, level, &debug); ++level)
+				{
+					lua_getinfo(state, "nSl", &debug);
+					Msg("! Script update stack [%d]: %s:%d (%s)", level, debug.short_src, debug.currentline, debug.name != nullptr ? debug.name : "unnamed");
+				}
+			}
+			throw;
+		}
+#endif
+		catch (const char* error)
+		{
+			Msg("! Script update failed for '%s': %s", m_object->object().cNameSect().c_str(), error != nullptr ? error : "<non-string Lua error>");
+			throw;
+		}
 	}
 }
 

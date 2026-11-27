@@ -553,18 +553,20 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		{
 			PROF_EVENT("BaseMonster/Animation/HitEntity");
 
-			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false, 3.0f);
-
-			float h1,p1;
-			Device.vCameraDirection.getHP	(h1,p1);
-			Fvector hd				= hit_dir;
-			hd.mul					(-1);
-			float d = -h1 + hd.getH	();
-			s->wnd()->SetHeading	(d);
-			Fvector2 wnd_pos = s->wnd()->GetWndPos();
-			wnd_pos.y	+= 400.0f*std::cos(d);
-			wnd_pos.x	+= 500.0f*std::sin(d);
-			s->wnd()->SetWndPos(wnd_pos);
+			SDrawStaticStruct* s = CurrentGameUI() ? CurrentGameUI()->AddCustomStatic("monster_claws", false, 3.0f) : nullptr;
+			if (s != nullptr)
+			{
+				float h1,p1;
+				Device.vCameraDirection.getHP	(h1,p1);
+				Fvector hd				= hit_dir;
+				hd.mul					(-1);
+				float d = -h1 + hd.getH	();
+				s->wnd()->SetHeading	(d);
+				Fvector2 wnd_pos = s->wnd()->GetWndPos();
+				wnd_pos.y	+= 400.0f*std::cos(d);
+				wnd_pos.x	+= 500.0f*std::sin(d);
+				s->wnd()->SetWndPos(wnd_pos);
+			}
 
 			float time_to_lock		= fDamage * MAX_LOCK_TIME;
 			clamp					(time_to_lock, 0.f, MAX_LOCK_TIME);

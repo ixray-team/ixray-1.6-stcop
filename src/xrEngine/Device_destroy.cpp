@@ -8,6 +8,7 @@
 #include "CustomHUD.h"
 
 extern bool bNeed_re_create_env;
+extern ENGINE_API ref_light precache_light;
 
 void CRenderDevice::_Destroy	(bool bKeepTextures)
 {
@@ -22,6 +23,15 @@ void CRenderDevice::_Destroy	(bool bKeepTextures)
 	Memory.mem_compact			();
 }
 
+void CRenderDevice::ReleasePrecacheLight()
+{
+	if (precache_light)
+	{
+		precache_light->destroy(false);
+		precache_light._clear();
+	}
+}
+
 void CRenderDevice::Destroy()
 {
 	PreRenderThread.Stop();
@@ -30,8 +40,9 @@ void CRenderDevice::Destroy()
 	DetailsTask.wait();
 	SecondaryTasks.wait();
 	async_tasks.wait();
+	ReleasePrecacheLight();
 
-	if (!b_is_Ready)			
+	if (!b_is_Ready)
 		return;
 
 	Log("Destroying Direct3D...");
@@ -40,7 +51,7 @@ void CRenderDevice::Destroy()
 	m_pRender->ValidateHW();
 
 	_Destroy					(false);
-	
+
 	auto& hGameRef = Engine.External.hGame;
 	if (hGameRef)
 	{

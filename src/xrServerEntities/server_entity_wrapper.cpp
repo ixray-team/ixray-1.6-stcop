@@ -152,13 +152,13 @@ void CServerEntityWrapper::load				(IReader &stream)
 	
 		{
 			PROF_EVENT("Spawn entry: F_entity_Create");
-			m_object			= F_entity_Create(s_name);
+			m_object = F_entity_Create(s_name);
 		}
 
-		R_ASSERT3				(m_object,"Can't create entity.",s_name);
+		R_ASSERT3(m_object, "Can't create entity.", s_name);
 		{
 			PROF_EVENT("Spawn entry: Spawn_Read");
-			m_object->Spawn_Read(net_packet);
+			m_object->Spawn_ReadWithOptions(net_packet, false);
 		}
 	
 		chunk					= stream.open_chunk(1);
@@ -174,6 +174,7 @@ void CServerEntityWrapper::load				(IReader &stream)
 			PROF_EVENT("Spawn entry: UPDATE_Read");
 			m_object->UPDATE_Read(net_packet);
 		}
+		m_object->m_wVersion = SPAWN_VERSION;
 	}
 #else
 	R_ASSERT(false);

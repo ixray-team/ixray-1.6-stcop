@@ -462,7 +462,7 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction *tpEntityAction)
 		}
 		case CScriptMovementAction::eGoalTypePatrolPath : {
 			m_monster->movement().set_path_type	(MovementManager::ePathTypePatrolPath);
-			m_monster->movement().patrol().set_path		(l_tMovementAction.m_path,l_tMovementAction.m_path_name);
+			m_monster->movement().patrol().set_path		(l_tMovementAction.m_path.get(),l_tMovementAction.m_path_name);
 			m_monster->movement().patrol().set_start_type	(l_tMovementAction.m_tPatrolPathStart);
 			m_monster->movement().patrol().set_route_type	(l_tMovementAction.m_tPatrolPathStop);
 			m_monster->movement().patrol().set_random		(l_tMovementAction.m_bRandom);

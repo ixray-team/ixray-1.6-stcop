@@ -1204,3 +1204,69 @@ void COLLIDER::custom_query(const MODEL& m_def, CheckFunc AABBCheckF, void* paab
 	};
 	CC.Stab(*m_def.root, Fmatrix{Fmatrix::EIdentity::Identity});
 }
+
+
+void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode, bool UseDelay)
+{
+	if (V == nullptr || T == nullptr || Vcnt < 4 || Tcnt < 2)
+		return;
+	if (verts.empty())
+		verts.assign(V, V + Vcnt);
+	if (tris.empty())
+		tris.assign(T, T + Tcnt);
+	if (bc != nullptr)
+		bc(verts.data(), Vcnt, tris.data(), Tcnt, bcp);
+	build_simple();
+	if (!UseDelay)
+		load_task.wait();
+}
+
+namespace CDBDetail
+{
+	void RebindSwappedScene(CDB::MODEL& Destination, const CDB::MODEL& Source)
+	{
+		if (!Destination.InstaceScene)
+			return;
+		for (size_t Index = 0; Index <= Source.instances.size(); ++Index)
+		{
+			RTCGeometry Geometry = rtcGetGeometry(Destination.InstaceScene, u32(Index));
+			if (Geometry == nullptr)
+				continue;
+			void* UserData = Index < Source.instances.size() ? static_cast<void*>(&Destination.instances[Index]) : static_cast<void*>(&Destination);
+			rtcSetGeometryUserData(Geometry, UserData);
+		}
+	}
+}
+
+void CDB::MODEL::swap(MODEL& other)
+{
+	if (this == &other)
+		return;
+	wait_loading();
+	other.wait_loading();
+	tris.swap(other.tris);
+	verts.swap(other.verts);
+	models.swap(other.models);
+	instances.swap(other.instances);
+	std::swap(InstaceScene, other.InstaceScene);
+	std::swap(tree, other.tree);
+	std::swap(root, other.root);
+	std::swap(Sector, other.Sector);
+	const bool built = IsBuilt.load();
+	IsBuilt.store(other.IsBuilt.load());
+	other.IsBuilt.store(built);
+	CDBDetail::RebindSwappedScene(*this, other);
+	CDBDetail::RebindSwappedScene(other, *this);
+}
+
+u32 MODEL::memory() const
+{
+	wait_loading();
+	u32 result = u32(sizeof(*this) + verts.size() * sizeof(Fvector) + tris.size() * sizeof(TRI) + models.size() * sizeof(MODEL*));
+	for (const MODEL* model : models)
+	{
+		if (model != nullptr)
+			result += model->memory();
+	}
+	return result;
+}

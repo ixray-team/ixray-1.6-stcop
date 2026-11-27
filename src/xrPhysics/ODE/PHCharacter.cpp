@@ -206,7 +206,7 @@ void	virtual_move_collide_callback( bool& do_collide, bool bo1, CPHContact& cont
 
 	c.surface.mu = 0;
 	c.surface.soft_cfm =0.01f;
-	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);//dJointCreateContactSpecial(0, ContactGroup, &c);
+	dJointID contact_joint	= dJointCreateContact(0, ph_world->GetContactGroup(), &c);//dJointCreateContactSpecial(0, ph_world->GetContactGroup(), &c);
 	CPHObject* obj = (CPHObject*)my_data->callback_data;
 	VERIFY( obj );
 

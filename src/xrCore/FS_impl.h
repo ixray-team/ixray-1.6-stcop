@@ -19,11 +19,20 @@ IC intptr_t IReaderBase::find_chunk(u32 ID, bool* bCompressed)
 
 	bool success = false;
 
+	if (m_last_pos != 0 && (length() < 8 || m_last_pos > length() - 8))
+	{
+		m_last_pos = 0;
+	}
 	if ( m_last_pos != 0 )
 	{
 		seek(m_last_pos);
 		dwType = r_u32();
 		dwSize = r_u32();
+		if (dwSize > elapsed())
+		{
+			m_last_pos = 0;
+			return 0;
+		}
 
 		if ( (dwType & (~CFS_CompressMark)) == ID ) 
 		{
@@ -34,10 +43,15 @@ IC intptr_t IReaderBase::find_chunk(u32 ID, bool* bCompressed)
 	if ( !success )
 	{
 		rewind();
-		while ( !eof() ) 
+		while (elapsed() >= 2 * sizeof(u32))
 		{
 			dwType = r_u32();
 			dwSize = r_u32();
+			if (dwSize > elapsed())
+			{
+				m_last_pos = 0;
+				return 0;
+			}
 			if ( (dwType & (~CFS_CompressMark)) == ID )
 			{
 				success = true;

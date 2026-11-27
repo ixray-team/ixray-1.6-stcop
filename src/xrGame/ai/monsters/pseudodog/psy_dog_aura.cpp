@@ -105,16 +105,16 @@ void CPsyDogAura::update_schedule()
 									(m_time_phantom_saw_actor + 10000 > time())) && close_to_actor;
 
 	if (need_be_active)
-		CActorAuraPostEffectsBalancer::RegisterEffect	(
+		Level().AuraEffects().RegisterEffect	(
 			EAuraPostEffectType::Psi, 1.f, m_object->ID(), 30.f, m_section);
 	else
-		CActorAuraPostEffectsBalancer::UnregisterEffect	(
+		Level().AuraEffects().UnregisterEffect	(
 			EAuraPostEffectType::Psi, m_object->ID(), m_section);
 }
 
 void CPsyDogAura::on_death()
 {
-	CActorAuraPostEffectsBalancer::UnregisterEffect	(
+	Level().AuraEffects().UnregisterEffect	(
 		EAuraPostEffectType::Psi, m_object->ID(), m_section);
 }
 

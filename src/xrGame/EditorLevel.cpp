@@ -20,7 +20,6 @@ CLevelEditor::CLevelEditor()
 CLevelEditor::~CLevelEditor()
 {
 }
-extern pureFrame* g_pNetProcessor;
 static void build_callback(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params)
 {
 	g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
@@ -39,9 +38,11 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 	map_data.m_name = "test";
 	m_caServerOptions = op_server;
 	m_caClientOptions = op_client;
+	Server->SetDirectConnection(UseDirectConnection());
+	SetDirectConnection(UseDirectConnection());
 
 	GameDescriptionData game_descr;
-	if ((Server->Connect(m_caServerOptions, game_descr)) != xrServer::ErrNoError)
+	if ((Server->Connect(m_caServerOptions, game_descr, this)) != xrServer::ErrNoError)
 	{
 		net_start_result_total = false;
 		Msg("! Failed to start server.");
@@ -50,7 +51,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 
 	Server->SLS_Default();
 
-	if (psNET_direct_connect)
+	if (UseDirectConnection())
 	{
 		Server->create_direct_client();
 		//offline account creation
@@ -70,7 +71,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 		const char*					level_ver = NULL;
 		const char*					download_url = NULL;
 
-		if (psNET_direct_connect)	//single
+		if (UseDirectConnection())	//single
 		{
 			shared_str const& server_options = Server->GetConnectOptions();
 			level_name = name().c_str();//Server->level_name		(server_options).c_str();
@@ -116,13 +117,13 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled
-		Device.seqFrameMT.Remove(g_pNetProcessor);
-		Device.seqFrame.Remove(g_pNetProcessor);
+		Device.seqFrameMT.Remove(&NetworkProcessor);
+		Device.seqFrame.Remove(&NetworkProcessor);
 
-		if (psDeviceFlags.test(mtNetwork))	Device.seqFrameMT.Add(g_pNetProcessor, REG_PRIORITY_HIGH + 2);
-		else								Device.seqFrame.Add(g_pNetProcessor, REG_PRIORITY_LOW - 2);
+		if (psDeviceFlags.test(mtNetwork))	Device.seqFrameMT.Add(&NetworkProcessor, REG_PRIORITY_HIGH + 2);
+		else								Device.seqFrame.Add(&NetworkProcessor, REG_PRIORITY_LOW - 2);
 
-		if (!psNET_direct_connect)
+		if (!UseDirectConnection())
 		{
 			// Waiting for connection/configuration completition
 			CTimer	timer_sync;	timer_sync.Start();

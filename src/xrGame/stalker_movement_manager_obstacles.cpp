@@ -31,9 +31,14 @@ static const u32 fail_check_time	= 1000;
 
 stalker_movement_manager_obstacles::stalker_movement_manager_obstacles	(CAI_Stalker *object) :
 	inherited						(object),
+	m_saved_state					(false),
+	m_failed_to_build_path			(false),
+	m_detail_current_index			(0),
+	m_detail_last_patrol_point		(0),
+	m_last_query_object				(nullptr),
+	m_restricted_object				(nullptr),
 	m_last_dest_vertex_id			(u32(-1)),
-	m_last_fail_time				(0),
-	m_failed_to_build_path			(false)
+	m_last_fail_time				(0)
 {
 	m_doors_actor					= new doors::actor(*object);
 	m_static_obstacles.construct	(this, m_failed_to_build_path);

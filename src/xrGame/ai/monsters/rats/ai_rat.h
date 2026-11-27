@@ -28,7 +28,7 @@ class CAI_Rat final : public CCreature, public CEatableItem
 {
 private:
 	typedef	CCreature	inherited;
-	const CPatrolPath	*m_path;
+	xr_shared_ptr<const CPatrolPath> m_path;
 
 private:
 	Fvector						m_home_position;

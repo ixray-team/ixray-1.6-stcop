@@ -28,6 +28,28 @@ void smart_cover::object::Load			(const char* section)
 	m_exit_min_enemy_distance		= pSettings->r_float(section, "exit_min_enemy_distance");
 }
 
+smart_cover::object::~object()
+{
+	if (CoverManager != nullptr && m_cover != nullptr)
+		CoverManager->RemoveSmartCover(m_cover);
+	m_cover = nullptr;
+	CoverManager = nullptr;
+}
+
+void smart_cover::object::OnCoverCreated(CCoverManager* manager, smart_cover::cover const* cover) const
+{
+	CoverManager = manager;
+	m_cover = cover;
+}
+
+void smart_cover::object::OnCoverDestroyed(CCoverManager* manager) const
+{
+	if (CoverManager != manager)
+		return;
+	m_cover = nullptr;
+	CoverManager = nullptr;
+}
+
 bool smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 {
 	CSE_SmartCover					*smart_cover = smart_cast<CSE_SmartCover*>(server_entity);
@@ -63,10 +85,16 @@ bool smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 	SpatialComponent->type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
 	SpatialComponent->type |= ESPATIAL_TYPE::SMART_COVER;
 
-	if (ai().get_alife() && smart_cover->m_description.size())
-		m_cover						= ai().cover_manager().add_smart_cover(smart_cover->m_description.c_str(), *this, smart_cover->m_is_combat_cover ? true : false, smart_cover->m_can_fire ? true : false, smart_cover->m_available_loopholes);
+	if (ai().get_alife() && smart_cover->m_description.size() && ai().get_level_graph() != nullptr && ai().level_graph().has_nodes() &&
+		ai().cover_manager().smart_covers_storage() != nullptr && ai().cover_manager().get_covers() != nullptr)
+	{
+		m_cover = ai().cover_manager().add_smart_cover(smart_cover->m_description.c_str(), *this, smart_cover->m_is_combat_cover, smart_cover->m_can_fire, smart_cover->m_available_loopholes);
+	}
 	else
-		m_cover						= 0;
+	{
+		m_cover = nullptr;
+		CoverManager = nullptr;
+	}
 
 	processing_deactivate			();
 

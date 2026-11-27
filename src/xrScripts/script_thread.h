@@ -11,6 +11,7 @@
 #include "script_stack_tracker.h"
 
 struct lua_State;
+class CScriptEngine;
 
 
 class CScriptThread : public CScriptStackTracker
@@ -20,6 +21,7 @@ private:
 	int						m_thread_reference;
 	bool					m_active;
 	lua_State				*m_virtual_machine;
+	CScriptEngine* Owner = nullptr;
 
 #ifdef DEBUG
 protected:
@@ -27,7 +29,7 @@ protected:
 #endif
 
 public:
-							CScriptThread		(const char* caNamespaceName, bool do_string = false, bool reload = false);
+							CScriptThread		(CScriptEngine& engine, const char* caNamespaceName, bool do_string = false, bool reload = false);
 	virtual					~CScriptThread		();
 			bool			update				();
 	IC		bool			active				() const;

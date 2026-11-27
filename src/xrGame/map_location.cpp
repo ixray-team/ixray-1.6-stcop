@@ -1035,10 +1035,13 @@ xr_vector<CMapLocation*> find_locations_res;
 
 bool CRelationMapLocation::Update()
 {
+	if (m_owner_se_object != nullptr && (g_ai_space == nullptr || ai().get_alife() == nullptr))
+	{
+		return true;
+	}
 	if (false==inherited::Update() ) return false;
 	
 	bool bAlive = true;
-
 	m_last_relation = ALife::eRelationTypeFriend;
 
 	if(m_owner_se_object)

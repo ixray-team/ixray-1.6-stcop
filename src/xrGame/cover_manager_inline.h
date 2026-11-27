@@ -16,7 +16,7 @@ IC	CCoverManager::CPointQuadTree &CCoverManager::covers		() const
 	return					(*m_covers);
 }
 
-IC	CCoverManager::CPointQuadTree *CCoverManager::get_covers	()
+IC	CCoverManager::CPointQuadTree *CCoverManager::get_covers	() const
 {
 	return					(m_covers);
 }
@@ -64,6 +64,8 @@ IC	const CCoverPoint *CCoverManager::best_cover				(const Fvector &position, flo
 {
 	PROF_EVENT("Covers/best_cover")
 
+	if (m_covers == nullptr)
+		return nullptr;
 	if (inertia(position,radius,evaluator,restrictor))
 		return				(evaluator.selected());
 

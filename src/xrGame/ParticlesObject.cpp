@@ -3,12 +3,14 @@
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 #include "GamePersistent.h"
+#include "../xrEngine/IGame_Level.h"
 
 CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool destroy_on_game_load) :
 	m_bAutoRemove(bAutoRemove), m_destroy_on_game_load(destroy_on_game_load)
 {
 	renderable.pROS_Allowed = false;
 	dwLastTime = Device.dwTimeGlobal;
+	LevelContext = { g_pGameLevel, g_SpatialSpace, g_SpatialSpacePhysic };
 
 	float time_limit = 1.0f;
 
@@ -19,6 +21,7 @@ CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool de
 		if (renderable.visual != nullptr)
 		{
 			IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
+			V->SetLevelContext(LevelContext);
 			time_limit = V->GetTimeLimit();
 		}
 	}
@@ -39,6 +42,7 @@ CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool de
 
 	// spatial
 	SpatialComponent->type = ESPATIAL_TYPE::NONE;
+	SpatialComponent->space = LevelContext.Spatial;
 	SpatialComponent->sector = nullptr;
 	renderable.pROS_Allowed = false;
 }

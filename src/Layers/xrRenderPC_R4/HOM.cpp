@@ -35,15 +35,18 @@ CHOM::CHOM()
 	m_pModel		= 0;
 #ifdef DEBUG_DRAW
 	// The editors load the renderer before their device exists; they do not draw the HOM.
-	if (DevicePtr)
+	if (DevicePtr && !RImplementation.IsSecondaryScene)
+	{
 		Device.seqRender.Add(this,REG_PRIORITY_LOW-1000);
+		RenderRegistered = true;
+	}
 #endif
 }
 
 CHOM::~CHOM()
 {
 #ifdef DEBUG_DRAW
-	if (DevicePtr)
+	if (RenderRegistered)
 		Device.seqRender.Remove(this);
 #endif
 }
@@ -137,7 +140,7 @@ void CHOM::Load()
 	S->close();
 	FS.r_close(fs);
 
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC) && !RImplementation.IsSecondaryScene)
 	{
 		// MT-details (@front)
 		//Device.seqParallelRender.push_back(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));

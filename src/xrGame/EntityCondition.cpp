@@ -736,10 +736,10 @@ bool CEntityCondition::IsLimping() const
 
 void CEntityCondition::save	(NET_Packet &output_packet)
 {
-	u8 is_alive	= (GetHealth()>0.f)?1:0;
-	
+	const u8 is_alive = u8((GetHealth() > 0.f ? 1 : 0) | (1 << 1));
+
 	output_packet.w_u8	(is_alive);
-	if(is_alive)
+	if(is_alive & 1)
 	{
 		save_data						(m_fPower,output_packet);
 		save_data						(m_fRadiation,output_packet);
@@ -757,6 +757,8 @@ void CEntityCondition::load	(IReader &input_packet)
 	m_bTimeValid = false;
 
 	u8 is_alive				= input_packet.r_u8	();
+	ConditionVersion = is_alive >> 1;
+	is_alive &= 1;
 	if(is_alive)
 	{
 		load_data						(m_fPower,input_packet);

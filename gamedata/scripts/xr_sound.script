@@ -9,133 +9,146 @@
 sound_table = {}
 
 function set_sound_play(npc_id, sound, faction, point)
-    --printf("SET_SOUND_PLAY. theme[%s] object[%s]", tostring(sound), npc_id)
-    if sound == nil then
-        return
-    end
-    if sound_theme.theme[sound] == nil then
-        abort("set_sound_play. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
-        return
-    end
-    local snd_theme = sound_theme.theme[sound]
-    if snd_theme.class_id == "looped_sound" then
-        abort("You trying to play sound [%s] which type is looped", sound)
-    end
-        if sound_table[npc_id] == nil or snd_theme.play_always == true then
-        if sound_table[npc_id] ~= nil then
-            --printf("sound table not nil")
-            if(sound_table[npc_id].reset~=nil) then
-                sound_table[npc_id]:reset(npc_id)
-            else
-                --printf("--------------"..type(sound_table[npc_id]))
-                --printf("npc_id="..npc_id)
-                --printf("sound="..sound)
+    return PROF_EVENT_CLOSURE("set_sound_play", function()
+        --printf("SET_SOUND_PLAY. theme[%s] object[%s]", tostring(sound), npc_id)
+        if sound == nil then
+            return
+        end
+        if sound_theme.theme[sound] == nil then
+            abort("set_sound_play. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
+            return
+        end
+        local snd_theme = sound_theme.theme[sound]
+        if snd_theme.class_id == "looped_sound" then
+            abort("You trying to play sound [%s] which type is looped", sound)
+        end
+            if sound_table[npc_id] == nil or snd_theme.play_always == true then
+            if sound_table[npc_id] ~= nil then
+                --printf("sound table not nil")
+                if(sound_table[npc_id].reset~=nil) then
+                    sound_table[npc_id]:reset(npc_id)
+                else
+                    --printf("--------------"..type(sound_table[npc_id]))
+                    --printf("npc_id="..npc_id)
+                    --printf("sound="..sound)
+                end
             end
+            --printf("PLAY. theme[%s] object[%s]", tostring(sound), npc_id)
+                    if snd_theme:play(npc_id, faction, point) then
+                --printf("PLAY2. theme[%s] object[%s]", tostring(sound), npc_id)
+                --' fill table
+                sound_table[npc_id] = snd_theme
+            end
+            else
+            --printf("xr_sound: cannot play sound [%s] because i'm [%s] already play snd [%s]",tostring(sound), npc_id, sound_table[npc_id].path)
+            return sound_table[npc_id].snd_obj
         end
-        --printf("PLAY. theme[%s] object[%s]", tostring(sound), npc_id)
-                if snd_theme:play(npc_id, faction, point) then
-            --printf("PLAY2. theme[%s] object[%s]", tostring(sound), npc_id)
-            --' fill table
-            sound_table[npc_id] = snd_theme
-        end
-        else
-        --printf("xr_sound: cannot play sound [%s] because i'm [%s] already play snd [%s]",tostring(sound), npc_id, sound_table[npc_id].path)
-        return sound_table[npc_id].snd_obj
-    end
-        return sound_table[npc_id] and sound_table[npc_id].snd_obj
+            return sound_table[npc_id] and sound_table[npc_id].snd_obj
+    end)
 end
 
 function update(npc_id)
-        if sound_table[npc_id] then
-        --		local t = type(sound_table[npc_id])
-                if not(sound_table[npc_id]:is_playing(npc_id)) then
-        --		if(t=="string") or not(sound_table[npc_id]:is_playing(npc_id)) then
-        --	        if(t=="string") then
-        --				sound_table[npc_id] = sound_theme.theme[sound_table[npc_id]]
-        --			end
-
-                            --printf("SOUND_CALLBACK from [%s] sound_path [%s]",npc_id,sound_table[npc_id].path)
-                            sound_table[npc_id]:callback(npc_id)
-                            sound_table[npc_id] = nil
+		return PROF_EVENT_CLOSURE("update", function() 
+            if sound_table[npc_id] then
+            --		local t = type(sound_table[npc_id])
+                    if not(sound_table[npc_id]:is_playing(npc_id)) then
+            --		if(t=="string") or not(sound_table[npc_id]:is_playing(npc_id)) then
+            --	        if(t=="string") then
+            --				sound_table[npc_id] = sound_theme.theme[sound_table[npc_id]]
+            --			end
+            
+                                --printf("SOUND_CALLBACK from [%s] sound_path [%s]",npc_id,sound_table[npc_id].path)
+                                sound_table[npc_id]:callback(npc_id)
+                                sound_table[npc_id] = nil
+                    end
                 end
-            end
+		end)
 end
 
 looped_sound = {}
 
 function play_sound_looped(npc_id, sound)
-    local snd_theme = sound_theme.theme[sound]
-    if snd_theme == nil then
-        abort("play_sound_looped. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
-    end
-    if snd_theme.class_id ~= "looped_sound" then
-        abort("You trying to play sound [%s] which type is not looped", sound)
-    end
-    if looped_sound[npc_id] ~= nil and looped_sound[npc_id][sound] ~= nil and looped_sound[npc_id][sound]:is_playing(npc_id) then
-        return
-    end
-    if snd_theme:play(npc_id) then
-            printf("PLAY2. looped theme[%s] object[%s]", tostring(sound), npc_id)
-            if looped_sound[npc_id] == nil then
-            looped_sound[npc_id] = {}
+	return PROF_EVENT_CLOSURE("play_sound_looped", function()
+        local snd_theme = sound_theme.theme[sound]
+        if snd_theme == nil then
+            abort("play_sound_looped. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
         end
-        looped_sound[npc_id][sound] = snd_theme
-    end
+        if snd_theme.class_id ~= "looped_sound" then
+            abort("You trying to play sound [%s] which type is not looped", sound)
+        end
+        if looped_sound[npc_id] ~= nil and looped_sound[npc_id][sound] ~= nil and looped_sound[npc_id][sound]:is_playing(npc_id) then
+            return
+        end
+        if snd_theme:play(npc_id) then
+                printf("PLAY2. looped theme[%s] object[%s]", tostring(sound), npc_id)
+                if looped_sound[npc_id] == nil then
+                looped_sound[npc_id] = {}
+            end
+            looped_sound[npc_id][sound] = snd_theme
+        end
+    end)
 end
 
 function stop_sound_looped(npc_id, sound)
-    if sound then
-        --[bug] баг - не проверили looped_sound[npc_id] на nil. Исправлено 11.12.16. Sin!
-        if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
-                    if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
-                            printf("looped sound ["..tostring(sound).."] stop for obj [%s]",npc_id)
-                            looped_sound[npc_id][sound]:stop()
-                            looped_sound[npc_id][sound] = nil
-                    end
+	return PROF_EVENT_CLOSURE("stop_sound_looped", function()
+        if sound then
+            --[bug] баг - не проверили looped_sound[npc_id] на nil. Исправлено 11.12.16. Sin!
+            if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
+                        if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
+                                printf("looped sound ["..tostring(sound).."] stop for obj [%s]",npc_id)
+                                looped_sound[npc_id][sound]:stop()
+                                looped_sound[npc_id][sound] = nil
+                        end
+            end
+        else
+            if looped_sound[npc_id] then
+                        for k,v in pairs(looped_sound[npc_id]) do
+                                if v and type(v) ~= "string" and v:is_playing(npc_id) then
+                                        printf("looped sound ["..tostring(k).."] stop for obj [%s]",npc_id)
+                                        v:stop()
+                                end
+                        end
+                        looped_sound[npc_id] = nil
+            end
         end
-    else
-        if looped_sound[npc_id] then
-                    for k,v in pairs(looped_sound[npc_id]) do
-                            if v and type(v) ~= "string" and v:is_playing(npc_id) then
-                                    printf("looped sound ["..tostring(k).."] stop for obj [%s]",npc_id)
-                                    v:stop()
-                            end
-                    end
-                    looped_sound[npc_id] = nil
-        end
-    end
+    end)
 end
 
 -- Добавлена 07.03.17. Sin!
 function is_played_sound_looped(npc_id, sound)
-    if sound then
-        if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
-            if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
-                return true
-            end
-        end
-    else
-        if looped_sound[npc_id] then
-            for k,v in pairs(looped_sound[npc_id]) do
-                if v and type(v) ~= "string" and v:is_playing(npc_id) then
+	return PROF_EVENT_CLOSURE("is_played_sound_looped", function()
+        if sound then
+            if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
+                if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
                     return true
                 end
-            end			
+            end
+        else
+            if looped_sound[npc_id] then
+                for k,v in pairs(looped_sound[npc_id]) do
+                    if v and type(v) ~= "string" and v:is_playing(npc_id) then
+                        return true
+                    end
+                end			
+            end
         end
-    end
-    return false
+        return false
+    end)
 end
 
 function set_volume_sound_looped(npc_id, sound, level)
-    if looped_sound[npc_id] then
-        if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
-            printf("looped sound ["..tostring(sound).."] for obj ["..npc_id.."] set volume "..level)
-            looped_sound[npc_id][sound]:set_volume(level)
+	return PROF_EVENT_CLOSURE("set_volume_sound_looped", function()
+        if looped_sound[npc_id] then
+            if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
+                printf("looped sound ["..tostring(sound).."] for obj ["..npc_id.."] set volume "..level)
+                looped_sound[npc_id][sound]:set_volume(level)
+            end
         end
-    end
+    end)
 end
 
 function actor_save(thread)
+	return PROF_EVENT_CLOSURE("actor_save", function()
         set_save_marker(thread, "save", false, "sound_actor_save")
         for k,v in pairs(sound_theme.theme) do
             v:save(thread)
@@ -179,34 +192,73 @@ function actor_save(thread)
             end
         end
         set_save_marker(thread, "save", true, "sound_actor_save")
+    end)
+end
+
+local function load_looped_sound_table(thread, marker_start)
+	local count_position = thread:r_tell()
+	for attempt = 1, 2 do
+		thread:r_seek(count_position)
+		local count = attempt == 1 and thread:r_u16() or thread:r_u8()
+		local entry_size = attempt == 1 and 6 or 5
+		local parsed = {}
+		local valid = count * entry_size <= thread:r_elapsed()
+		if valid then
+			for i = 1, count do
+				local id = thread:r_object_id()
+				parsed[id] = {}
+				local theme_count = thread:r_u16()
+				if theme_count > thread:r_elapsed() then
+					valid = false
+					break
+				end
+				for j = 1, theme_count do
+					local sound = thread:r_stringZ()
+					parsed[id][sound] = sound_theme.theme[sound]
+				end
+			end
+		end
+		if valid and thread:r_elapsed() >= 2 then
+			local position = thread:r_tell()
+			local difference = thread:r_u16()
+			thread:r_seek(position)
+			valid = difference == position - marker_start
+		else
+			valid = false
+		end
+		if valid then
+			looped_sound = parsed
+			return true
+		end
+	end
+	log("! xr_sound: no valid 8-bit or 16-bit looped-sound count layout")
+	return false
 end
 
 function actor_load(thread)
-    set_save_marker(thread, "load", false, "sound_actor_save")
-    for k,v in pairs(sound_theme.theme) do
-        v:load(thread)
-    end
-    sound_table = {}
-    local n = thread:r_u16()
-    for i = 1,n do
-        local id = thread:r_object_id()
-        local theme = thread:r_stringZ()
---		sound_table[id] = thread:r_stringZ()
-                sound_table[id] = sound_theme.theme[theme]
-    end
-    looped_sound = {}
-    n = thread:r_u16()
-    for i = 1,n do
-        local id = thread:r_object_id()
-        looped_sound[id] = {}
-        n = thread:r_u16()
-        for i = 1,n do
-            local sound = thread:r_stringZ()
---            looped_sound[id][sound] = thread:r_stringZ()
-                        looped_sound[id][sound] = sound_theme.theme[sound]
+	return PROF_EVENT_CLOSURE("actor_load", function()
+        set_save_marker(thread, "load", false, "sound_actor_save")
+		local marker_start = thread:r_tell()
+        for k,v in pairs(sound_theme.theme) do
+            v:load(thread)
         end
-    end
-    set_save_marker(thread, "load", true, "sound_actor_save")
+        sound_table = {}
+        local n = thread:r_u16()
+		if n * 6 > thread:r_elapsed() then
+			log("! xr_sound: sound table exceeds the saved payload")
+			return false
+		end
+        for i = 1,n do
+            local id = thread:r_object_id()
+            local theme = thread:r_stringZ()
+                    sound_table[id] = sound_theme.theme[theme]
+        end
+		if not load_looped_sound_table(thread, marker_start) then
+			return false
+		end
+        set_save_marker(thread, "load", true, "sound_actor_save")
+		return true
+    end)
 end
 
 function actor_Serialize(Object)
@@ -218,7 +270,7 @@ function actor_Serialize(Object)
 				end)
 			end
 		end)
-
+		
 		if Object:IsSave() then
 			local n = 0
 			for k,v in pairs(sound_table) do
@@ -233,7 +285,7 @@ function actor_Serialize(Object)
 					end)
 				end
 			end)
-
+			
 			local n = 0
 			for k,v in pairs(looped_sound) do
 				n = n + 1
@@ -271,7 +323,7 @@ function actor_Serialize(Object)
 					end)
 				end
 			end)
-
+			
 			looped_sound = {}
 			local n = 0
 			n = Object:s_u32(n)
@@ -298,19 +350,23 @@ function actor_Serialize(Object)
 end
 
 function save_npc(thread, npc_id)
-    set_save_marker(thread, "save", false, "sound_npc_save")
-    for k,v in pairs(sound_theme.theme) do
-        v:save_npc(thread, npc_id)
-    end
-    set_save_marker(thread, "save", true, "sound_npc_save")
+	return PROF_EVENT_CLOSURE("save_npc", function()
+        set_save_marker(thread, "save", false, "sound_npc_save")
+        for k,v in pairs(sound_theme.theme) do
+            v:save_npc(thread, npc_id)
+        end
+        set_save_marker(thread, "save", true, "sound_npc_save")
+    end)
 end
 
 function load_npc(thread, npc_id)
-    set_save_marker(thread, "load", false, "sound_npc_save")
-    for k,v in pairs(sound_theme.theme) do
-        v:load_npc(thread, npc_id)
-    end
-    set_save_marker(thread, "load", true, "sound_npc_save")
+	return PROF_EVENT_CLOSURE("load_npc", function()
+        set_save_marker(thread, "load", false, "sound_npc_save")
+        for k,v in pairs(sound_theme.theme) do
+            v:load_npc(thread, npc_id)
+        end
+        set_save_marker(thread, "load", true, "sound_npc_save")
+    end)
 end
 function Serialize_npc(Object, npc_id)
 	Object:ForChunk("sound_npc_save", function()
@@ -330,45 +386,51 @@ function start_game_callback()
 end
 
 function stop_all_sounds()
-    for k,v in pairs(sound_table) do
-        if(type(v)~="string") then
-            v:stop()
-        end
-    end
-    for k,v in pairs(looped_sound) do
-        for k,v in pairs(looped_sound[k]) do
-            if v and v:is_playing(npc_id) then
-                printf("looped sound ["..tostring(k).."] stopped ")
+	return PROF_EVENT_CLOSURE("stop_all_sounds", function()
+        for k,v in pairs(sound_table) do
+            if(type(v)~="string") then
                 v:stop()
             end
         end
-    end
+        for k,v in pairs(looped_sound) do
+            for k,v in pairs(looped_sound[k]) do
+                if v and v:is_playing(npc_id) then
+                    printf("looped sound ["..tostring(k).."] stopped ")
+                    v:stop()
+                end
+            end
+        end
+    end)
 end
 
 function stop_sounds_by_id(obj_id)
-    local sound = sound_table[obj_id]
-    if sound and sound.stop then
-        sound:stop(obj_id)
-    end
-    local looped_snd = looped_sound[obj_id]
-    if looped_snd then
-        for k,v in pairs(looped_snd) do
-            if v and v:is_playing(obj_id) then
-                v:stop(obj_id)
+	return PROF_EVENT_CLOSURE("stop_sounds_by_id", function()
+        local sound = sound_table[obj_id]
+        if sound and sound.stop then
+            sound:stop(obj_id)
+        end
+        local looped_snd = looped_sound[obj_id]
+        if looped_snd then
+            for k,v in pairs(looped_snd) do
+                if v and v:is_playing(obj_id) then
+                    v:stop(obj_id)
+                end
             end
         end
-    end
+    end)
 end
 
 -- FFx0001 restore functions
 local sound_object_by_path = {}
 
 function stop_all_sound_object()
-    for k,v in pairs(sound_object_by_path) do
-        if v:playing() then
-            v:stop()
+	return PROF_EVENT_CLOSURE("stop_all_sound_object", function()
+        for k,v in pairs(sound_object_by_path) do
+            if v:playing() then
+                v:stop()
+            end
         end
-    end
+    end)
 end
 
 function clear_all_sound_object()
@@ -376,8 +438,10 @@ function clear_all_sound_object()
 end
 
 function get_safe_sound_object(path)
-    if sound_object_by_path[path] == nil then
-        sound_object_by_path[path] = sound_object(path)
-    end
-    return sound_object_by_path[path]
+	return PROF_EVENT_CLOSURE("get_safe_sound_object", function()
+        if sound_object_by_path[path] == nil then
+            sound_object_by_path[path] = sound_object(path)
+        end
+        return sound_object_by_path[path]
+    end)
 end

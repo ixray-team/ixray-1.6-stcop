@@ -10,6 +10,9 @@
 #include "Level.h"
 #include "ShellManager.h"
 #include "../xrEngine/StatGraph.h"
+#include "CActorAuraPostEffectsBalancer.h"
+#include "UIGameTutorial.h"
+#include "RemoteSmartZone.h"
 #include "../xrEngine/MonsterLogicTelemetry.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "MonsterEnemySharingDebug.h"
@@ -32,6 +35,7 @@
 #include "../xrScripts/script_engine_space.h"
 #include "team_base_zone.h"
 #include "InfoPortion.h"
+#include "ImUtils/Viewer/ViewerSession.h"
 #include "patrol_path_storage.h"
 #include "../xrEngine/date_time.h"
 #include "space_restriction_manager.h"
@@ -89,28 +93,24 @@
 
 #include "UIWorldSpace.h"
 
-extern CUISequencer * g_tutorial;
-extern CUISequencer * g_tutorial2;
-
 int psLUA_GCSTEP = 10;
 
-float g_cl_lvInterp	= 0.1f;
-u32 lvInterpSteps	= 0;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CLevel::CLevel() :
-	IPureClient(Device.GetTimerGlobal())
+	IPureClient(Device.GetTimerGlobal()), NetworkProcessor(this)
 {
 	PROF_EVENT("CLevel::CLevel");
 	GameHotkeyLayer.SetContext("game");
-	GameHotkeyLayer.SetActive(true);
-	
+	GameHotkeyLayer.SetActive(!LevelDesc.Parallel);
+
 	LoadCallbackGlobals(m_isStartAttack, m_onStartAttack, "OnStartAttack");
 	LoadCallbackGlobals(m_isKeyPress, m_onKeyPress, "OnKeyPress");
 
-	g_bDebugEvents				= Core.ParamsData.test(ECoreParams::debug_ge);
+	DebugEvents				= Core.ParamsData.test(ECoreParams::debug_ge);
 
 	Server						= nullptr;
 
@@ -202,15 +202,15 @@ CLevel::CLevel() :
 	m_demoplay_control = nullptr;
 	m_demo_info	= nullptr;
 
+	if (!LevelDesc.Parallel)
 	{
 		extern shared_str g_StartedLevelName;
 		g_StartedLevelName = nullptr;
+		R_ASSERT(nullptr == g_player_hud);
+		g_player_hud = new player_hud();
+		g_player_hud->RequestDefault();
+		player_hud::RequestAllHands();
 	}
-
-	R_ASSERT				(nullptr==g_player_hud);
-	g_player_hud			= new player_hud();
-	g_player_hud->RequestDefault();
-	player_hud::RequestAllHands();
 	
 	hud_zones_list = nullptr;
 
@@ -236,36 +236,68 @@ CLevel::CLevel() :
 	m_pScriptXRParser = new CScriptXRParser();
 #endif
 
-	Device.LuaGC = xr_make_delegate(+[]()->void
+	if (!LevelDesc.Parallel)
 	{
-		try
+		// Global device hook: parallel (viewer) sessions leave it alone.
+		Device.LuaGC = xr_make_delegate(+[]()->void
 		{
-			lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
-		}
-		catch (...)
-		{
-		}
-	});
+			try
+			{
+				lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
+			}
+			catch (...)
+			{
+			}
+		});
+	}
 }
 
 extern CAI_Space *g_ai_space;
+extern void WaitLevelLoad();
+
+CActorAuraPostEffectsBalancer& CLevel::AuraEffects()
+{
+	if (Aura == nullptr)
+		Aura = xr_make_unique<CActorAuraPostEffectsBalancer>();
+	return *Aura;
+}
 
 CLevel::~CLevel()
 {
 	PROF_EVENT("CLevel::~CLevel");
-	
-	{
-		extern void WaitLevelLoad();
-		extern shared_str g_StartedLevelName;
-		WaitLevelLoad();
-		ai().DropLevelPreload();
-		g_StartedLevelName = nullptr;
-	}
-	
-	Device.LuaGC.clear();
 
-	xr_delete					(g_player_hud);
-	delete_data					(hud_zones_list);
+	ImUtils::Viewer::NotifyPrimaryLevelDestroyed(this);
+
+	CUISequencer* intro = Flow.Intro;
+	CUISequencer* tutorial = Flow.Tutorial;
+	CUISequencer* retiringTutorial = Flow.RetiringTutorial;
+	Flow.IntroEvent = nullptr;
+	if (intro != nullptr)
+	{
+		intro->m_on_destroy_event.clear();
+		intro->Destroy();
+	}
+	if (tutorial != nullptr && tutorial != intro)
+	{
+		tutorial->m_on_destroy_event.clear();
+		tutorial->Destroy();
+	}
+	if (retiringTutorial != nullptr && retiringTutorial != intro && retiringTutorial != tutorial)
+	{
+		retiringTutorial->m_on_destroy_event.clear();
+		retiringTutorial->Destroy();
+	}
+	Flow.ActiveInput = nullptr;
+	
+	WaitLevelLoad();
+	if (!LevelDesc.Parallel)
+		ai().DropLevelPreload();
+	if (!LevelDesc.Parallel)
+		Device.LuaGC.clear();
+
+	if (!LevelDesc.Parallel)
+		xr_delete					(g_player_hud);
+	delete_data						(hud_zones_list);
 	hud_zones_list				= nullptr;
 
 	Msg							("- Destroying level");
@@ -285,8 +317,8 @@ CLevel::~CLevel()
 	if (physics_world())
 	{
 		destroy_physics_world();
-		xr_delete(m_ph_commander_physics_worldstep);
 	}
+	xr_delete(m_ph_commander_physics_worldstep);
 
 	// destroy PSs
 	for (POIt p_it=m_StaticParticles.begin(); m_StaticParticles.end()!=p_it; ++p_it)
@@ -318,7 +350,9 @@ CLevel::~CLevel()
 	xr_delete					(m_debug_renderer);
 #endif
 
-	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
+	if (RemoteServer == nullptr)
+		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
+	FrameworkOnFrame.reset();
 
 #if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
@@ -372,11 +406,23 @@ CLevel::~CLevel()
 	// and I didn't find better place to put this code in
 	CTradeParameters::clean		();
 
-	if(g_tutorial && g_tutorial->m_pStoredInputReceiver==this)
-		g_tutorial->m_pStoredInputReceiver = nullptr;
-
-	if(g_tutorial2 && g_tutorial2->m_pStoredInputReceiver==this)
-		g_tutorial2->m_pStoredInputReceiver = nullptr;
+	Flow.IntroEvent.clear();
+	if (Flow.Intro != nullptr)
+	{
+		Flow.Intro->m_on_destroy_event.clear();
+		Flow.Intro->Destroy();
+		xr_delete(Flow.Intro);
+	}
+	if (Flow.Tutorial != nullptr)
+	{
+		Flow.Tutorial->Destroy();
+		xr_delete(Flow.Tutorial);
+	}
+	if (Flow.RetiringTutorial != nullptr)
+	{
+		Flow.RetiringTutorial->Destroy();
+		xr_delete(Flow.RetiringTutorial);
+	}
 
 	
 	if (IsDemoPlay())
@@ -399,7 +445,8 @@ CLevel::~CLevel()
 
 	xr_delete(GCondlistGC);
 	xr_delete(m_game_graph);
-	m_chunk->close();
+	if (m_chunk)
+		m_chunk->close();
 	FS.r_close(spawn);
 
 	xr_delete(WorldSpaceUIManager);
@@ -455,8 +502,6 @@ int	CLevel::get_RPID(const char* /**name/**/)
 	*/
 	return -1;
 }
-
-bool		g_bDebugEvents = false	;
 
 
 void CLevel::cl_Process_Event				(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P)
@@ -515,12 +560,12 @@ void CLevel::cl_Process_Event				(ALife::_OBJECT_ID dest, u16 type, NET_Packet& 
 			ok			= false;
 		}
 
+		if (!ok)
+			return;
+
 		GO->OnEvent		(P,GE_OWNERSHIP_REJECT);
-		if (ok)
-		{
-			Game().OnDestroy(GD);
-			GD->OnEvent	(P,GE_DESTROY);
-		};
+		Game().OnDestroy(GD);
+		GD->OnEvent	(P,GE_DESTROY);
 	}
 };
 
@@ -677,12 +722,19 @@ void CLevel::ProcessGameEvents		()
 			}			
 		}
 	}
-	if (OnServer() && GameID()!= eGameIDSingle)
+	if (OnServer() && game != nullptr && GameID()!= eGameIDSingle)
 		Game().m_WeaponUsageStatistic->Send_Check_Respond();
 }
 
 void CLevel::MakeReconnect()
 {
+	if (IsParallel())
+	{
+		connected_to_server = false;
+		net_start_result_total = false;
+		net_Disconnected = true;
+		return;
+	}
 	if (!g_pEventManager->Event.Peek("KERNEL:disconnect"))
 	{
 		g_pEventManager->Event.Defer	("KERNEL:disconnect");
@@ -708,13 +760,13 @@ void CLevel::MakeReconnect()
 
 void CLevel::OnFrame()
 {
-	if (Device.dwPrecacheFrame == 0 && BackgroundLoad::GetStage() == EBackgroundLoadStage::FinishLoading)
+	if (!LevelDesc.Parallel && Device.dwPrecacheFrame == 0 && BackgroundLoad::GetStage() == EBackgroundLoadStage::FinishLoading)
 	{
 		BackgroundLoad::SetStage(EBackgroundLoadStage::Gameplay);
 		m_IniReadAheadStopTime = Device.dwTimeContinual + 10000;
 	}
 
-	if (m_IniReadAheadStopTime != 0 && Device.dwTimeContinual >= m_IniReadAheadStopTime)
+	if (!LevelDesc.Parallel && m_IniReadAheadStopTime != 0 && Device.dwTimeContinual >= m_IniReadAheadStopTime)
 	{
 		m_IniReadAheadStopTime = 0;
 		g_IniReadAhead->Stop();
@@ -803,6 +855,12 @@ void CLevel::OnFrame()
 			ClearAllObjects();
 		}
 
+		if (IsParallel())
+		{
+			connected_to_server = false;
+			net_start_result_total = false;
+			return;
+		}
 		g_pEventManager->Event.Defer("kernel:disconnect");
 		return;
 	}
@@ -839,7 +897,13 @@ void CLevel::OnFrame()
 
 	if (!g_dedicated_server)
 	{
-		Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
+		if (LevelDesc.Parallel)
+		{
+			if (g_ai_space != nullptr && ai().get_alife() != nullptr)
+				m_map_manager->Update();
+		}
+		else
+			Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
 	}
 	// Inherited update
 	inherited::OnFrame();
@@ -891,7 +955,7 @@ void CLevel::OnFrame()
 	if (!g_dedicated_server && psDeviceFlags.test(rsStatistic))
 	{
 		CGameFont* F = UI().Font().pFontDI;
-		if (!psNET_direct_connect)
+		if (!UseDirectConnection())
 		{
 			if (IsServer())
 			{
@@ -975,11 +1039,26 @@ void CLevel::OnFrame()
 #ifdef DEBUG
 	g_pGamePersistent->Environment().m_paused = m_bEnvPaused;
 #endif
-	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+	if (game)
+	{
+		g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+	}
 
 	// update static sounds & gc
-	Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
-	Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
+	// Parallel (viewer) sessions run the inline path: seqParallel jobs execute on
+	// the GameThread where the Level() slot is not lent to this session.
+	if (LevelDesc.Parallel)
+	{
+		m_level_sound_manager->Update();
+		// Scriptless sandbox levels have no level script process to GC.
+		if (HasLevelResource(ELevelResource::LevelScripts))
+			script_gc();
+	}
+	else
+	{
+		Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
+		Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
+	}
 
 	//-----------------------------------------------------
 	if (pStatGraphR)
@@ -995,6 +1074,20 @@ void CLevel::OnFrame()
 	{
 		m_electronics_problems_manager->UpdateCL();
 	}
+
+	// Parallel (viewer) sessions: drain the session-local parallel-job queue
+	// (rerouted from Device.seqParallel by SeqParallelPush) here, on the primary
+	// thread, where this session's level slot is lent by its ticker.
+	if (LevelDesc.Parallel && !ParallelJobs.empty())
+	{
+		xr_vector<xr_delegate<void()>> jobs;
+		jobs.swap(ParallelJobs);
+		for (const xr_delegate<void()>& job : jobs)
+		{
+			if (job)
+				job();
+		}
+	}
 }
 
 void CLevel::script_gc()
@@ -1002,7 +1095,12 @@ void CLevel::script_gc()
 	PROF_EVENT("m_ph_commander");
 	try
 	{
-		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
+		// A degraded level may have no level script process at all.
+		if (RemoteServer == nullptr)
+		{
+			if (CScriptProcess* process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
+				process->update();
+		}
 
 		m_ph_commander->update();
 		m_ph_commander_scripts->update();
@@ -1024,6 +1122,14 @@ extern UI_API void draw_wnds_rects();
 
 void CLevel::OnRender()
 {
+	// A parallel (viewer) session renders through the viewer's pass: its own
+	// context lent, its own render target - never the primary session's frame.
+	if (LevelDesc.Parallel)
+	{
+		ImUtils::Viewer::RenderParallelPass(this);
+		return;
+	}
+
 	inherited::OnRender();
 
 	if (!game)
@@ -1048,13 +1154,15 @@ void CLevel::OnRender()
 		WorldSpaceUIManager->OnRender();
 	}
 
-	HUD().RenderUI();
+	if (g_hud)
+		HUD().RenderUI();
 
 #ifdef DEBUG
 	draw_wnds_rects();
-	physics_world()->OnRender();
+	if (physics_world())
+		physics_world()->OnRender();
 
-	if (ai().get_level_graph() && dynamic_cast<CLevelGraph*>(&ai().level_graph()))
+	if (ai().get_level_graph() && ai().level_graph().has_nodes() && dynamic_cast<CLevelGraph*>(&ai().level_graph()))
 		dynamic_cast<CLevelGraph*>(&ai().level_graph())->render();
 
 #endif // DEBUG
@@ -1384,7 +1492,7 @@ void CLevel::make_NetCorrectionPrediction	()
 //////////////////////////////////////////////////////////////////////////////////
 	if (!InterpolationDisabled())
 	{
-		for (u32 i =0; i<lvInterpSteps; i++)	//second prediction "real current" to "future" position
+		for (u32 i =0; i<InterpSteps; i++)	//second prediction "real current" to "future" position
 		{
 			physics_world()->Step();
 #ifdef DEBUG
@@ -1418,7 +1526,7 @@ void CLevel::make_NetCorrectionPrediction	()
 
 u32			CLevel::GetInterpolationSteps	()
 {
-	return lvInterpSteps;
+	return InterpSteps;
 };
 
 void		CLevel::UpdateDeltaUpd	( u32 LastTime )
@@ -1430,24 +1538,24 @@ void		CLevel::UpdateDeltaUpd	( u32 LastTime )
 	m_dwLastNetUpdateTime = LastTime;
 	m_dwDeltaUpdate = CurrentDelta;
 
-	if (0 == g_cl_lvInterp) ReculcInterpolationSteps();
+	if (0 == Interpolation) ReculcInterpolationSteps();
 	else 
-		if (g_cl_lvInterp>0)
+		if (Interpolation>0)
 		{
-			lvInterpSteps = iCeil(g_cl_lvInterp / fixed_step);
+			InterpSteps = iCeil(Interpolation / fixed_step);
 		}
 };
 
 void CLevel::ReculcInterpolationSteps ()
 {
-	lvInterpSteps			= iFloor(float(m_dwDeltaUpdate) / (fixed_step*1000));
-	if (lvInterpSteps > 60) lvInterpSteps = 60;
-	if (lvInterpSteps < 3)	lvInterpSteps = 3;
+	InterpSteps			= iFloor(float(m_dwDeltaUpdate) / (fixed_step*1000));
+	if (InterpSteps > 60) InterpSteps = 60;
+	if (InterpSteps < 3)	InterpSteps = 3;
 };
 
 bool CLevel::InterpolationDisabled	()
 {
-	return g_cl_lvInterp < 0; 
+	return Interpolation < 0;
 }
 
 void CLevel::SetNumCrSteps(u32 NumSteps)
@@ -1545,6 +1653,16 @@ void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTim
 	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
 }
 
+void CLevel::OnFrameworkFrame()
+{
+	if (!FrameworkOnFrame.is_valid())
+		return;
+	CScriptEngine* engine = Services.ScriptEngine != nullptr ? Services.ScriptEngine : g_pScriptEngine;
+	if (engine == nullptr)
+		return;
+	FrameworkOnFrame();
+}
+
 bool CLevel::IsServer ()
 {
 	return Server != nullptr && !IsDemoPlayStarted();
@@ -1562,10 +1680,17 @@ bool CLevel::IsClient ()
 	return true;
 }
 
+void CLevel::ReleaseAlifeScriptBindings()
+{
+	xr_delete(m_upgrade_manager);
+	xr_delete(m_electronics_problems_manager);
+}
+
 void CLevel::OnAlifeSimulatorUnLoaded()
 {
 	MapManager().ResetStorage();
 	GameTaskManager()->ResetStorage();
+	ReleaseAlifeScriptBindings();
 }
 
 void CLevel::OnAlifeSimulatorLoaded()
@@ -1574,17 +1699,30 @@ void CLevel::OnAlifeSimulatorLoaded()
 	MapManager().ResetStorage();
 	GameTaskManager()->ResetStorage();
 
-	if (IsGameTypeSingle() || IsServer())
-	{
-		// moved from alife simulator for supporting in MP
+	if ((IsGameTypeSingle() || IsServer()) && m_upgrade_manager == nullptr)
 		m_upgrade_manager = new inventory::upgrade::Manager();
+	if ((IsGameTypeSingle() || IsServer()) && m_electronics_problems_manager == nullptr)
 		m_electronics_problems_manager = new CElectronicsProblemsManager();
-	}
 }
 
-void CLevel::OnSessionTerminate		(const char* reason)
+void CLevel::OnSessionTerminate(const char* reason)
 {
-	MainMenu()->OnSessionTerminate(reason);
+	if (!IsParallel())
+	{
+		MainMenu()->OnSessionTerminate(reason);
+		return;
+	}
+	Msg("* Level client: server session ended (%s)", reason != nullptr ? reason : "unknown");
+	if (Services.AI != nullptr)
+		Services.AI->SetAlifeBorrowed(nullptr);
+	if (RemoteServer != nullptr)
+		RemoteServer->DisconnectLocalClient(RemoteClientID);
+	RemoteServer = nullptr;
+	RemoteClientID.set(0);
+	connected_to_server = false;
+	net_start_result_total = false;
+	net_Disconnected = true;
+	net_Syncronised = false;
 }
 
 u32	GameID()

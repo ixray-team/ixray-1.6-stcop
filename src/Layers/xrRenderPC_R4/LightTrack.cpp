@@ -260,7 +260,10 @@ void	CROS_impl::update	(IRenderable* O)
 
 	// Process ambient lighting and approximate average lighting
 	// Process our lights to find average luminescences
-	CEnvDescriptor&	desc	=	*g_pGamePersistent->Environment().CurrentEnv;
+	CEnvDescriptor*	descP	=	g_pGamePersistent->Environment().CurrentEnv;
+	if (descP == nullptr)
+		return; // no environment loaded (degraded/sandbox level)
+	CEnvDescriptor&	desc	=	*descP;
 
 	Fvector accum = {
 		desc.ambient.x,
@@ -493,6 +496,13 @@ void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
 {
 
 	light* sun = (light*)RImplementation.Lights.sun_adapted._get();
+	if (sun == nullptr)
+	{
+		// Scenes without a sun light (e.g. procedural sandbox levels): treat as
+		// fully sunlit instead of dereferencing a null light.
+		sun_value = 1.f;
+		return;
+	}
 	if (MODE & IRender_ObjectSpecific::TRACE_SUN) 
 	{
 		if (--result_sun < 0)

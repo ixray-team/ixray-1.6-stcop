@@ -160,6 +160,7 @@ void	CLight_DB::LoadHemi	()
 
 void CLight_DB::LoadEditor()
 {
+	xr_delete(rain_light);
 	rain_light = new light;
 	rain_light->set_type(IRender_Light::DIRECT);
 
@@ -260,7 +261,22 @@ void			CLight_DB::Update			()
 	{
 		light*	_sun_original		= (light*) sun_original._get();
 		light*	_sun_adapted		= (light*) sun_adapted._get();
-		CEnvDescriptor&	E			= *g_pGamePersistent->Environment().CurrentEnv;
+		CEnvDescriptorMixer* pCurEnv	= g_pGamePersistent->Environment().CurrentEnv;
+		// A procedural level can run frames where no environment descriptor has been
+		// mixed yet, or a bad weather frame yields a degenerate sun direction - use a
+		// safe straight-down sun instead of dereferencing a null/NaN one.
+		if (pCurEnv == nullptr || !_valid(pCurEnv->sun_dir) || pCurEnv->sun_dir.square_magnitude() < 1e-6f)
+		{
+			Fvector safeSun = { 0.f, -1.f, 0.f };
+			Fvector safePosition;
+			safePosition.mad(Device.vCameraPosition, safeSun, -500.f);
+			_sun_original->set_rotation(safeSun, _sun_original->right);
+			_sun_original->set_position(safePosition);
+			_sun_adapted->set_rotation(safeSun, _sun_adapted->right);
+			_sun_adapted->set_position(safePosition);
+			return;
+		}
+		CEnvDescriptor&	E			= *pCurEnv;
 		VERIFY						(_valid(E.sun_dir));
 #ifdef DEBUG
 		if(E.sun_dir.y>=0)

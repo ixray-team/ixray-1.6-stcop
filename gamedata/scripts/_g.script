@@ -808,6 +808,9 @@ function get_object_story_id(obj_id)
 end
 
 function get_story_object_id(story_obj_id)
+	if story_object_id ~= nil then
+		return story_object_id(story_obj_id)
+	end
 	return story_objects.get_story_objects_registry().id_by_story_id[story_obj_id]
 end
 

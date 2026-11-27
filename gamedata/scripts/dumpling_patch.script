@@ -14,11 +14,18 @@ local ai_locations_flag_objects =
 }
 
 function fix_ai_locations_flags()
-	local sim = alife()
-	for _, name in pairs(ai_locations_flag_objects) do
-		local sobj = sim:object(name)
+	if alife() == nil then
+		return
+	end
+	for i = 1, 65535 do
+		local sobj = alife():object(i)
 		if sobj and sobj.parent_id == 65535 then
-			sobj:use_ai_locations(false)
+			for _, name in pairs(ai_locations_flag_objects) do
+				if sobj:name() == name then
+					sobj:use_ai_locations(false)
+					break
+				end
+			end
 		end
 	end
 end

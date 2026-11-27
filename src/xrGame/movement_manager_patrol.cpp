@@ -19,6 +19,9 @@
 
 void CMovementManager::process_patrol_path()
 {
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+		return;
+
 	if (!level_path().actual() && (m_path_state > ePathStateBuildLevelPath))
 		m_path_state		= ePathStateBuildLevelPath;
 
@@ -41,12 +44,13 @@ void CMovementManager::process_patrol_path()
 			m_path_state		= ePathStateBuildLevelPath;
 		}
 		case ePathStateBuildLevelPath : {
-			level_path_builder().setup(
+			if (!level_path_builder().setup(
 				object().ai_location().level_vertex_id(),
 				level_dest_vertex_id(),
 				patrol().extrapolate_path(),
 				&patrol().destination_position()
-			);
+			))
+				break;
 
 			if (can_use_distributed_computations())
 			{

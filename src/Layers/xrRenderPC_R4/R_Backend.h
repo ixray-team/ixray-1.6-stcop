@@ -118,8 +118,10 @@ private:
 
 	// Cached Device.IsEditorMode(); enables editor-only per-pass state (texture matrices).
 	bool							EditorMode = false;
+	bool							NullShaderLogged = false;
 
 public:
+	void ReportNullShader();
 	void Invalidate();
 	struct _stats
 	{

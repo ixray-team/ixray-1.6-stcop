@@ -12,6 +12,7 @@
 
 #include "../ai_space.h"
 #include "../Level.h"
+#include "../script_binder.h"
 
 #include "../../xrEngine/string_table.h"
 
@@ -454,6 +455,17 @@ void CUIAchievements::Update()
 	{
 		return;
 	}
+
+	if (!ScriptBinding::HasActor())
+	{
+		if (!m_actor_binding_warning)
+		{
+			Msg("! Achievements UI: waiting for the actor script binding");
+			m_actor_binding_warning = true;
+		}
+		return;
+	}
+	m_actor_binding_warning = false;
 
 	luabind::functor<bool> f;
 

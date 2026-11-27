@@ -120,8 +120,11 @@ bool CPhysicItem::net_Spawn			(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return (false);
 	IKinematics* pK = PKinematics(Visual());
-	pK->CalculateBones_Invalidate();
-	pK->CalculateBones(true);
+	if (pK)
+	{
+		pK->CalculateBones_Invalidate();
+		pK->CalculateBones(true);
+	}
 	CSE_Abstract *abstract = (CSE_Abstract*)DC;
 	if (ALife::INVALID_OBJECT_ID == abstract->ID_Parent)
 	{
@@ -185,8 +188,15 @@ void CPhysicItem::setup_physic_shell	()
 void CPhysicItem::create_box_physic_shell	()
 {
 	// Physics (Box)
-	Fobb obb; 
-	Visual()->getVisData().box.get_CD(obb.m_translate,obb.m_halfsize); 
+	Fobb obb;
+	if (Visual())
+		Visual()->getVisData().box.get_CD(obb.m_translate,obb.m_halfsize);
+	else
+	{
+		// Degraded: no loaded model - small unit box at the origin.
+		obb.m_translate.set(0.f, 0.f, 0.f);
+		obb.m_halfsize.set(0.25f, 0.25f, 0.25f);
+	}
 	obb.m_rotate.identity();
 	
 	// Physics (Elements)
@@ -206,7 +216,13 @@ void CPhysicItem::create_box2sphere_physic_shell()
 {
 	// Physics (Box)
 	Fobb								obb;
-	Visual()->getVisData().box.get_CD			(obb.m_translate,obb.m_halfsize);
+	if (Visual())
+		Visual()->getVisData().box.get_CD			(obb.m_translate,obb.m_halfsize);
+	else
+	{
+		obb.m_translate.set(0.f, 0.f, 0.f);
+		obb.m_halfsize.set(0.25f, 0.25f, 0.25f);
+	}
 	obb.m_rotate.identity				();
 
 	// Physics (Elements)

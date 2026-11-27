@@ -15,7 +15,8 @@
 
 SCRIPTS_API string4096 g_ca_stdout;
 
-CScriptProcess::CScriptProcess	(shared_str name, shared_str scripts) :
+CScriptProcess::CScriptProcess	(CScriptEngine& engine, shared_str name, shared_str scripts) :
+	Owner(&engine),
 	m_name						(name)
 {
 #ifdef DEBUG
@@ -54,7 +55,7 @@ void CScriptProcess::run_scripts()
 		S						= xr_strdup(I);
 		m_scripts_to_run.pop_back();
 
-		CScriptThread			*script = new CScriptThread(S,do_string,reload);
+		CScriptThread			*script = new CScriptThread(*Owner, S, do_string, reload);
 		xr_free					(S);
 
 		if (script->active())
@@ -91,14 +92,14 @@ void CScriptProcess::update()
 
 	if (g_ca_stdout[0]) {
 		fputc							(0,stderr);
-		g_pScriptEngine->script_log	(ScriptStorage::eLuaMessageTypeInfo,"%s",g_ca_stdout);
+		Owner->script_log	(ScriptStorage::eLuaMessageTypeInfo,"%s",g_ca_stdout);
 		fflush							(stderr);
 	}
 
 #if defined(DEBUG)
 	try {
 #pragma todo ("Dima cant find this function 'lua_setgcthreshold' ")
-		lua_gc				(g_pScriptEngine->lua(), LUA_GCSTEP, 0);
+		lua_gc				(Owner->lua(), LUA_GCSTEP, 0);
 	}
 	catch(...) {
 	}

@@ -74,6 +74,7 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
 	if (!result)
 	{
+		Msg("! Space restrictor inherited spawn failed: id=%u, section=%s", abstract->ID, abstract->s_name.c_str());
 		return false;
 	}
 
@@ -120,6 +121,7 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 	}
 
 	Level().space_restriction_manager().register_restrictor(this, RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
+	m_registered_restrictor = true;
 
 	return true;
 }
@@ -134,7 +136,10 @@ void CSpaceRestrictor::net_Destroy	()
 	if (RestrictionSpace::ERestrictorTypes(m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone)
 		return;
 
+	if (!m_registered_restrictor)
+		return;
 	Level().space_restriction_manager().unregister_restrictor(this);
+	m_registered_restrictor = false;
 }
 
 bool CSpaceRestrictor::inside	(const Fsphere &sphere) const

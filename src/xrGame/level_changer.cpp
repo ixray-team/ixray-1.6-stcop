@@ -180,9 +180,10 @@ bool CLevelChanger::get_reject_pos(Fvector& p, Fvector& r)
 		if(m_ini_file && m_ini_file->section_exist("pt_move_if_reject"))
 		{
 			const char* p_name = m_ini_file->r_string("pt_move_if_reject", "path");
-			const CPatrolPath* patrol_path = ai().patrol_paths().path(p_name);
-			VERIFY					(patrol_path);
-			
+			const CPatrolPath* patrol_path = ai().patrol_paths().path(p_name, true);
+			if (patrol_path == nullptr || patrol_path->vertex(0) == nullptr || patrol_path->vertex(1) == nullptr)
+				return false;
+
 			const CPatrolPoint*		pt;
 			pt						= &patrol_path->vertex(0)->data();
 			p						= pt->position();

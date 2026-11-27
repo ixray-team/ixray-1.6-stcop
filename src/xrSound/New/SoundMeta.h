@@ -306,3 +306,5 @@ struct sound_zone_params
 	shared_str name;
 	sound_reverb_settings settings;
 };
+
+using SoundZoneVector = xr_vector<sound_zone_params>;

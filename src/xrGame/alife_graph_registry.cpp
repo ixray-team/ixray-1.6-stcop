@@ -17,6 +17,7 @@ CALifeGraphRegistry::CALifeGraphRegistry	()
 {
 	m_level							= 0;
 	m_process_time					= 0;
+	m_invalid_vertex_log_count = 0;
 	m_actor							= 0;
 }
 
@@ -177,6 +178,8 @@ void CALifeGraphRegistry::setup_current_level	()
 		VERIFY3(id >= 0, "Level is corrupted or doesn't exist", *(*I).second.name());
 	}
 
+	if (!Device.IsEditorMode())
+		WaitLevelLoad();
 	ai().load					(*(*I).second.name());
 
     g_start_game_vertex_id = 0;
@@ -210,7 +213,8 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 #endif
 	if (alife_query)
 		add						(smart_cast<CSE_ALifeDynamicObject*>(item),game_vertex_id);
-	else {
+	else if (m_level != nullptr)
+	{
 		CSE_ALifeDynamicObject	*object_ = smart_cast<CSE_ALifeDynamicObject*>(item);
 		VERIFY					(object_);
 		object_->m_tGraphID		= game_vertex_id;
@@ -220,7 +224,15 @@ void CALifeGraphRegistry::detach	(CSE_Abstract &object, CSE_ALifeInventoryItem *
 	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(&object);
 	R_ASSERT2					(!alife_query || dynamic_object,"Cannot detach an item from non-alife object");
 	
-	VERIFY						(alife_query || !smart_cast<CSE_ALifeDynamicObject*>(&object) || (ai().game_graph().vertex(smart_cast<CSE_ALifeDynamicObject*>(&object)->m_tGraphID)->level_id() == level().level_id()));
+	if (dynamic_object && !alife_query && m_level != nullptr)
+	{
+		const GameGraph::_GRAPH_ID graphId = dynamic_object->m_tGraphID;
+		if (!ai().game_graph().valid_vertex_id(graphId) || ai().game_graph().vertex(graphId)->level_id() != level().level_id())
+		{
+			Msg("! ALife detach: skipping '%s' with invalid graph node %u", object.name_replace(), graphId);
+			return;
+		}
+	}
 
 	if (dynamic_object)
 		dynamic_object->detach	(item,nullptr,alife_query,remove_children);
@@ -245,7 +257,8 @@ void CALifeGraphRegistry::add	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH
 #endif
 	if (!object->m_bOnline && object->used_ai_locations())
 	{
-		VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
+		if (!ai().game_graph().valid_vertex_id(game_vertex_id) && m_invalid_vertex_log_count++ < 8)
+			Msg("! ALife graph registration: object '%s'[%u] has invalid graph vertex %u", object->name_replace(), object->ID, game_vertex_id);
 		if (ai().game_graph().valid_vertex_id(game_vertex_id))
 		{
 			m_objects[game_vertex_id].objects().add(object->ID, object);
@@ -264,14 +277,14 @@ void CALifeGraphRegistry::add	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH
 
 void CALifeGraphRegistry::remove	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH_ID game_vertex_id, bool update)
 {
-	if (object->used_ai_locations() /**&& object->interactive()/**/) {
+	if (object->used_ai_locations() && game_vertex_id < m_objects.size()) {
 	#ifdef DEBUG
 		if (psAI_Flags.test(aiALife)) {
 			Msg					("[LSS] removing object [%s][%d] from graph point %d",object->name_replace(),object->ID,game_vertex_id);
 		}
 	#endif
-		m_objects[game_vertex_id].objects().remove(object->ID);
-	}	
-	if (update && m_level)
-		level().remove			(object,ai().game_graph().vertex(game_vertex_id)->level_id() != level().level_id());
+		m_objects[game_vertex_id].objects().remove(object->ID, true);
+	}
+	if (update && m_level && ai().game_graph().valid_vertex_id(game_vertex_id))
+		level().remove(object, true);
 }

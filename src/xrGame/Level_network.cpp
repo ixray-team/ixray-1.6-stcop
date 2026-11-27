@@ -9,6 +9,7 @@
 #include "NET_Queue.h"
 #include "MainMenu.h"
 #include "../xrCore/BackgroundLoad.h"
+#include "../xrEngine/Engine.h"
 #include "space_restriction_manager.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
@@ -105,7 +106,7 @@ void CLevel::remove_objects	()
 	BulletManager().Clear		();
 	ph_commander().clear		();
 	ph_commander_scripts().clear();
-	m_postponedPackets.clear	();
+	m_postponedPackets.clear();
 
 	space_restriction_manager().clear	();
 
@@ -133,7 +134,8 @@ void CLevel::remove_objects	()
 	}
 
 	g_pGamePersistent->destroy_particles		(false);
-	::Sound->stop_emitters();
+	if (!IsParallel())
+		::Sound->stop_emitters();
 
 //.	xr_delete									(m_seniority_hierarchy_holder);
 //.	m_seniority_hierarchy_holder				= new CSeniorityHierarchyHolder();
@@ -144,16 +146,14 @@ void CLevel::remove_objects	()
 	extern void	show_animation_stats	();
 #endif // DEBUG
 
-extern CUISequencer * g_tutorial;
-extern CUISequencer * g_tutorial2;
-
 void CLevel::net_Stop()
 {
+	bReady = false;
+	if (g_hud != nullptr)
+		g_hud->OnDisconnected();
 	Msg("- Disconnect");
 	if (BackgroundLoad::GetStage() == EBackgroundLoadStage::Gameplay && Device.dwPrecacheFrame == 0)
-	{
 		g_pGamePersistent->SaveLearnedModels(name().c_str());
-	}
 	m_postponedPackets.clear();
 	script_client_events.clear();
 
@@ -164,11 +164,11 @@ void CLevel::net_Stop()
 		CurrentGameUI()->ClearDialogs();
 	}
 
-	if(g_tutorial && !g_tutorial->Persistent())
-		g_tutorial->Stop();
+	if(Flow.Tutorial && !Flow.Tutorial->Persistent())
+		Flow.Tutorial->Stop();
 
-	if(g_tutorial2 && !g_tutorial2->Persistent())
-		g_tutorial2->Stop();
+	if(Flow.RetiringTutorial && !Flow.RetiringTutorial->Persistent())
+		Flow.RetiringTutorial->Stop();
 
 	bReady						= false;
 	m_bGameConfigStarted		= false;
@@ -187,6 +187,7 @@ void CLevel::net_Stop()
 		SaveDemoInfo();
 
 	remove_objects				();
+	WorldTeardown = true;
 	
 	//WARNING ! remove_objects() uses this flag, so position of this line must e here ..
 	game_configured				= false;
@@ -223,6 +224,9 @@ void CLevel::net_Stop()
 #ifdef DEBUG
 	show_animation_stats		();
 #endif // DEBUG
+
+	if (!LevelDesc.Parallel)
+		g_pGamePersistent->OnGameEnd();
 }
 
 
@@ -302,7 +306,6 @@ void CLevel::ClientSend()
 void CLevel::ClientSave()
 {
 	ProcessPostponed(false);
-
 	u32 Iter = 0;
 	u32 ChunkID = 0;
 
@@ -339,7 +342,7 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 	if (IsDemoPlayStarted() || IsDemoPlayFinished()) return;
 	// optimize the case when server located in our memory
 
-	if (psNET_direct_connect)
+	if (UseDirectConnection())
 	{
 		ClientID	_clid;
 		_clid.set(1);
@@ -347,7 +350,7 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 	}
 	else if (Server && game_configured && OnServer())
 	{
-		Server->OnMessageSync(P, Game().local_svdpnid);
+		Server->OnMessageSync(P, LevelDesc.RemoteTransport ? RemoteClientID : Game().local_svdpnid);
 	}
 	else
 	{
@@ -358,6 +361,14 @@ void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 		// anti-cheat
 		phTimefactor = 1.f;
 	}
+}
+
+void CLevel::UpdateRemoteServer()
+{
+	xrServer* server = RemoteServerEndpoint();
+	if (server == nullptr || server->GetOwnerLevel() == nullptr)
+		return;
+	server->GetOwnerLevel()->RunInContext(xr_make_delegate(server, &xrServer::Update));
 }
 
 void CLevel::net_Update	()
@@ -371,22 +382,56 @@ void CLevel::net_Update	()
 	// If server - perform server-update
 	if (Server && OnServer())	{
 		Device.Statistic->netServer.Begin();
-		Server->Update					();
+		UpdateRemoteServer();
 		Device.Statistic->netServer.End	();
 	}
 }
 
-struct _NetworkProcessor	: public pureFrame
+CNetworkProcessor::~CNetworkProcessor()
 {
-	virtual void	_BCL OnFrame	( ) override
-	{
-		if (g_pGameLevel && !Device.Paused() )	g_pGameLevel->net_Update();
-	}
-}	NET_processor;
+	xrCriticalSectionGuard guard(&Engine.Sheduler.UpdateMutex());
+	Device.seqFrameMT.Remove(this);
+	Device.seqFrame.Remove(this);
+}
 
-pureFrame*	g_pNetProcessor	= &NET_processor;
+void CNetworkProcessor::OnFrame()
+{
+	if (Owner != nullptr && !Device.Paused())
+	{
+		xrCriticalSectionGuard guard(&Engine.Sheduler.UpdateMutex());
+		Owner->net_Update();
+	}
+}
 
 const int ConnectionTimeOut = 60000; //1 min
+
+bool CLevel::CreateConnection(ClientConnectionOptions& options)
+{
+	xrServer* server = RemoteServerEndpoint();
+	if (server == nullptr || !server->AcceptLocalClient(this, options, RemoteClientID))
+		return false;
+
+	m_game_description = server->m_game_description;
+	SetClientID(RemoteClientID);
+	net_Connected = EnmConnectionCompleted;
+	return true;
+}
+
+void CLevel::DestroyConnection()
+{
+	if (RemoteServer != nullptr)
+		RemoteServer->DisconnectLocalClient(RemoteClientID);
+	RemoteServer = nullptr;
+	RemoteClientID.set(0);
+}
+
+void CLevel::SendTo_LL(void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+{
+	xrServer* server = RemoteServer != nullptr ? RemoteServer : Server;
+	if (server != nullptr && server->ReceiveLocalPacket(RemoteClientID, data, size))
+		return;
+	Msg("! CLevel::SendTo_LL: the remote session is unavailable");
+}
 
 bool CLevel::Connect2Server(const char* options)
 {
@@ -394,15 +439,16 @@ bool CLevel::Connect2Server(const char* options)
 	m_bConnectResultReceived	= false	;
 	m_bConnectResult			= true	;
 
+	const bool localHost = LevelDesc.RemoteTransport && OnServer();
 	if (!Connect(options))		return	false;
 	//---------------------------------------------------------------------------
-	if (psNET_direct_connect)
+	if (UseDirectConnection() || localHost)
 	{
 		m_bConnectResultReceived = true;
 	}
 	else
 	{
-		size_t EndTime = CPU::GetTickCount() + ConnectionTimeOut;
+		size_t EndTime = CPU::GetTickCount() + (LevelDesc.RemoteTransport ? 5000 : ConnectionTimeOut);
 		while (!HasSessionName())
 		{
 			Sleep(5);
@@ -415,13 +461,14 @@ bool CLevel::Connect2Server(const char* options)
 			}
 		}
 
-		EndTime = CPU::GetTickCount() + ConnectionTimeOut;
+		EndTime = CPU::GetTickCount() + (LevelDesc.RemoteTransport ? 5000 : ConnectionTimeOut);
 		while (!m_bConnectResultReceived)
 		{
 			ClientReceive();
+			if (LevelDesc.RemoteTransport)
+				Flush_Send_Buffer();
 			Sleep(5);
-			if (Server)
-				Server->Update();
+			UpdateRemoteServer();
 
 			size_t CurTime = CPU::GetTickCount();
 			if (CurTime > EndTime)
@@ -433,6 +480,10 @@ bool CLevel::Connect2Server(const char* options)
 				P.w_u8(0);
 				P.w_u8(0);
 				P.w_stringZ("Data verification failed. Cheater?");
+				ClientID clientId(0);
+				P.w_clientID(clientId);
+				P.w_u8(0);
+				P.w_stringZ(m_caServerOptions);
 
 				OnConnectResult(&P);
 			}
@@ -460,7 +511,7 @@ bool CLevel::Connect2Server(const char* options)
 	};
 
 	
-	if(psNET_direct_connect)
+	if(UseDirectConnection() || LevelDesc.RemoteTransport)
 		net_Syncronised = true;
 	else
 		net_Syncronize	();
@@ -506,6 +557,10 @@ void CLevel::OnConnectResult(NET_Packet*	P)
 	P->r_stringZ_s				(ResultStr);
 	ClientID tmp_client_id;
 	P->r_clientID				(tmp_client_id);
+	if (LevelDesc.RemoteTransport)
+	{
+		RemoteClientID = tmp_client_id;
+	}
 	SetClientID					(tmp_client_id);
 	if (!result)				
 	{
@@ -573,7 +628,7 @@ void			CLevel::ClearAllObjects				()
 		for (u32 i=0; i<CLObjNum; i++)
 		{
 			CObject* pObj = Level().Objects.o_get_by_iterator(i);
-			if (!pObj->H_Parent()) continue;
+			if (pObj->getDestroy() || !pObj->H_Parent()) continue;
 			//-----------------------------------------------------------
 			NET_Packet			GEN;
 			GEN.w_begin			(M_EVENT);
@@ -581,8 +636,9 @@ void			CLevel::ClearAllObjects				()
 			GEN.w_u32			(Level().timeServer());
 			GEN.w_u16			(GE_OWNERSHIP_REJECT);
 			GEN << pObj->H_Parent()->ID() << pObj->ID();
+			GEN.w_u8(1);
 			game_events->insert	(GEN);
-			if (g_bDebugEvents)	ProcessGameEvents();
+			if (DebugEvents)	ProcessGameEvents();
 			//-------------------------------------------------------------
 			ParentFound = true;
 			//-------------------------------------------------------------
@@ -617,7 +673,7 @@ void			CLevel::ClearAllObjects				()
 		GEN.w_u16			(GE_DESTROY);
 		GEN << pObj->ID();
 		game_events->insert	(GEN);
-		if (g_bDebugEvents)	ProcessGameEvents();
+		if (DebugEvents)	ProcessGameEvents();
 		//-------------------------------------------------------------
 		ParentFound = true;
 		//-------------------------------------------------------------

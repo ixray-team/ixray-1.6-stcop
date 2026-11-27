@@ -87,9 +87,11 @@ public:
 	IC		const OBJECT_ITEM_STORAGE	&items							() const { return clsids(); }
 	IC virtual int						script_clsid					(const CLASS_ID &clsid) const override;
 	virtual void						register_script					() const override;
+			const CObjectItemAbstract* FindItem(const CLASS_ID& clsid) const;
 			void						register_script_class			(const char* client_class, const char* server_class, const char* clsid, const char* script_clsid);
 			void						register_script_class			(const char* unknown_class, const char* clsid, const char* script_clsid);
 			void						register_script_classes			();
+			void						release_script_engine			(const CScriptEngine* engine) const;
 
 	virtual void						init_script(const char* str) override;
 	virtual void						export_classes(lua_State* L) override;

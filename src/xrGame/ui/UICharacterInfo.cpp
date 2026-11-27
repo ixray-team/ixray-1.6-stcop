@@ -25,12 +25,13 @@ using namespace InventoryUtilities;
 
 CSE_ALifeTraderAbstract* ch_info_get_from_id (ALife::_OBJECT_ID id)
 {
-	if( ai().get_alife() && ai().get_game_graph() )
-	{
-		return	smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(id));
-	}else{
-		return	smart_cast<CSE_ALifeTraderAbstract*>(Level().Server->game->get_entity_from_eid(id));
-	}
+	if (ai().get_alife() != nullptr)
+		return smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(id, true));
+
+	xrServer* server = Level().RemoteServerEndpoint();
+	if (server == nullptr || server->game == nullptr)
+		return nullptr;
+	return smart_cast<CSE_ALifeTraderAbstract*>(server->game->get_entity_from_eid(id));
 }
 
 CUICharacterInfo::CUICharacterInfo()
@@ -255,6 +256,12 @@ void CUICharacterInfo::InitCharacter(ALife::_OBJECT_ID id)
 	m_ownerID = id;
 	CCharacterInfo chInfo;
 	CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);
+	if (T == nullptr)
+	{
+		m_ownerID = ALife::INVALID_OBJECT_ID;
+		ClearInfo();
+		return;
+	}
 	chInfo.Init(T);
 
 	if (m_icons[eName])
@@ -408,7 +415,7 @@ void CUICharacterInfo::UpdateRelation()
 		return;
 	}
 
-	if(Actor()->ID() == m_ownerID || !hasOwner()) 
+	if(g_actor == nullptr || Actor()->ID() == m_ownerID || !hasOwner())
 	{
 		if (m_icons[eRelationCaption])
 		m_icons[eRelationCaption]->Show(false);

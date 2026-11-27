@@ -31,7 +31,16 @@ CALifeMonsterDetailPathManager::CALifeMonsterDetailPathManager	(object_type *obj
 
 void CALifeMonsterDetailPathManager::target					(const GameGraph::_GRAPH_ID &game_vertex_id, const u32 &level_vertex_id, const Fvector &position)
 {
+	if (game_vertex_id == GameGraph::_GRAPH_ID(-1))
+		return;
 	VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
+	if (!ai().game_graph().valid_vertex_id(game_vertex_id))
+		return;
+
+	const bool CurrentLevel = ai().game_graph().vertex(game_vertex_id)->level_id() == ai().alife().graph().level().level_id();
+	if (CurrentLevel && (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes() || ai().get_cross_table() == nullptr))
+		return;
+
 	VERIFY((ai().game_graph().vertex(game_vertex_id)->level_id() != ai().alife().graph().level().level_id()) || ai().level_graph().valid_vertex_id(level_vertex_id));
 	VERIFY((ai().game_graph().vertex(game_vertex_id)->level_id() != ai().alife().graph().level().level_id()) || (ai().cross_table().vertex(level_vertex_id).game_vertex_id() == game_vertex_id));
 	VERIFY((ai().game_graph().vertex(game_vertex_id)->level_id() != ai().alife().graph().level().level_id()) || ai().level_graph().inside(level_vertex_id,position));

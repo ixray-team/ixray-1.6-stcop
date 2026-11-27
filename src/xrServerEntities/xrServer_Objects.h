@@ -169,12 +169,18 @@
 // 132	 CSE_ALifeItemWeapon			added chamber_ammo_type
 // 133	 CSE_ALifeItemWeapon			added a_chamber_elapsed
 // 134	 CSE_ALifeItemWeaponMagazinedWGL	added m_bGrenadeMode
+// 135	 CSE_ALifeObject				added m_script_story_ID
+// 136	 CSE_Abstract					added embedded client-data version
 //------------------------------------------------------------------------------
-#define SPAWN_VERSION u16(135)
-// Last spawn version written by engines with u16 object IDs.
-#define SPAWN_VERSION_LAST_U16_ID u16(134)
-// First spawn version that stores u32 object IDs.
-#define SPAWN_VERSION_U32_ID u16(SPAWN_VERSION_LAST_U16_ID + 1)
+#define SPAWN_VERSION u16(136)
+#define SPAWN_VERSION_CLIENT_DATA u16(136)
+// Last spawn version with 16-bit object IDs in native state, script payloads and the header.
+#define SPAWN_VERSION_LAST_U16_ID u16(129)
+// Native state fields use 32-bit IDs from version 130; high header words appear in version 134.
+#define SPAWN_VERSION_U32_ID u16(130)
+#define SPAWN_VERSION_HEADER_U32_ID u16(134)
+// Script packets use 32-bit IDs from version 134, alongside high header words.
+#define SPAWN_VERSION_SCRIPT_U32_ID u16(134)
 
 // Spawn version used by Spawn_Write and the STATE/UPDATE writers.
 // Tools lower it to build spawn files for older engines; keep it at SPAWN_VERSION otherwise.

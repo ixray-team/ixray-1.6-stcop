@@ -3,6 +3,7 @@
 #include "ParticleEffect.h"
 #include "EditorRenderHost.h"
 #include "../../xrEngine/IGame_Level.h"
+#include "../../xrEngine/Engine.h"
 #include "../../xrServerEntities/object_destroyer.h"
 
 #include "particle_core/EditorLegacy/ParticleEffectActions.h"
@@ -79,6 +80,21 @@ void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CPartic
 	Fvector pt,n;
 	// The editor picks against its scene through the host; the game picks the level.
 	const bool EditorPick = Device.IsEditorMode();
+	const SParticleLevelContext* context = owner->GetLevelContext();
+	IGame_Level* level = context != nullptr && context->Level != nullptr ? context->Level : g_pGameLevel;
+	if (!EditorPick && level == nullptr)
+		return;
+	CSpatialContextGuard spatialGuard(Engine.Sheduler.UpdateMutex(),
+		context != nullptr ? context->Spatial : g_SpatialSpace,
+		context != nullptr ? context->SpatialPhysic : g_SpatialSpacePhysic);
+
+	xr_vector<CDB::TRI>* tris = nullptr;
+	xr_vector<Fvector>* verts = nullptr;
+	if (!EditorPick)
+	{
+		tris = &level->ObjectSpace.GetStaticTris();
+		verts = &level->ObjectSpace.GetStaticVerts();
+	}
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
 		auto& pos = particles.pos_arr[i];
@@ -104,7 +120,7 @@ void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CPartic
 				{
 					collide::rq_result RQ;
 					collide::rq_target RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
-					if (g_pGameLevel->ObjectSpace.RayPick(posB,dir,dist,RT,RQ,nullptr))
+					if (level->ObjectSpace.RayPick(posB,dir,dist,RT,RQ,nullptr))
 					{
 						pt.mad(posB,dir,RQ.range);
 						if (!RQ.IsStatic())

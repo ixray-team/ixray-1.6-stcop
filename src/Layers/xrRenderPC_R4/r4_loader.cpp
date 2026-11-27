@@ -37,11 +37,25 @@ void CRender::level_Load(IReader* fs)
 		Target->InvalidateSpotShadowCache();
 		Target->ClearSpotShadowCache();
 	}
-	R_ASSERT						(nullptr!=g_pGameLevel);
-	R_ASSERT						(!b_loaded);
+	if (fs == nullptr || b_loaded)
+	{
+		Msg("! CRender::level_Load: no scene stream is available or another compiled scene is still loaded");
+		return;
+	}
+	if (!FS.exist("$level$", "level.geom") || (LightingModeIsDynamicRender() && !FS.exist("$level$", "level.geomx")))
+	{
+		Msg("! CRender::level_Load: compiled geometry is missing; continuing without a compiled scene");
+		return;
+	}
+	R_ASSERT(nullptr != g_pGameLevel);
+
+	// A compiled level always replaces any runtime terrain scene (procedural
+	// sandbox) still held from a previous, sectorless level.
+	DestroyRuntimeTerrainScene		();
 
 	// Begin
-	pApp->LoadBegin					();
+	if (!g_pGameLevel->IsParallel())
+		pApp->LoadBegin					();
 	dxRenderDeviceRender::Instance().Resources->DeferredLoad(ps_r__common_flags.test(RFLAG_DD_TEX_LOAD));
 	IReader*						chunk;
 
@@ -203,7 +217,8 @@ void CRender::level_Load(IReader* fs)
 	}
 
 	// End
-	pApp->LoadEnd				();
+	if (!g_pGameLevel->IsParallel())
+		pApp->LoadEnd				();
 
 	// sanity-clear
 	lstLODs.clear				();

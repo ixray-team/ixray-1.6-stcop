@@ -212,6 +212,14 @@ public:
 	IC u32			r_u32		()			{	u32 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
 	IC u16			r_u16		()			{	u16 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
 	IC u8			r_u8		()			{	u8 tmp;		r(&tmp,sizeof(tmp)); return tmp;	};
+	IC u32			r_object_id	()
+	{
+		if (m_script_object_id_size == sizeof(u32))
+			return r_u32();
+		const u16 id = r_u16();
+		return id == u16(-1) ? u32(-1) : id;
+	}
+	IC void			set_script_object_id_size(u32 size)	{	VERIFY(size == sizeof(u16) || size == sizeof(u32)); m_script_object_id_size = u8(size);	}
 	IC s64			r_s64		()			{	s64 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
 	IC s32			r_s32		()			{	s32 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
 	IC s16			r_s16		()			{	s16 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
@@ -293,6 +301,7 @@ public:
 	}
 
 	u32 m_last_pos;
+	u8 m_script_object_id_size = sizeof(u32);
 };
 
 class XRCORE_API IReader :

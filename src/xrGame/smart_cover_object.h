@@ -10,6 +10,8 @@
 #include "GameObject.h"
 #include "../xrScripts/script_export_space.h"
 
+class CCoverManager;
+
 namespace smart_cover {
 	class cover;
 
@@ -21,16 +23,21 @@ private:
 	typedef CGameObject	inherited;
 
 private:
-	cover const			*m_cover;
+	mutable cover const	*m_cover = nullptr;
+	mutable CCoverManager* CoverManager = nullptr;
 	float				m_enter_min_enemy_distance;
 	float				m_exit_min_enemy_distance;
 
 public:
 	object() = default;
+	~object() override;
 	object(const object & other) = delete;
 	object& operator=(const object & other) = delete;
 
 	virtual void		Load							(const char* section) override;
+			void		OnCoverCreated					(CCoverManager* manager, cover const* cover) const;
+			void		OnCoverDestroyed				(CCoverManager* manager) const;
+			bool		HasCover						() const { return m_cover != nullptr; }
 	virtual bool		feel_touch_on_contact			(CObject *) override { return false; }
 	virtual bool		use								(CGameObject* who_use) override { return false; }
 	virtual bool		net_Spawn						(CSE_Abstract* DC) override;

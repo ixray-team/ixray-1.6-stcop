@@ -58,20 +58,20 @@ bool xrCriticalSection::TryEnter()
 xrCriticalSectionGuard::xrCriticalSectionGuard(xrCriticalSection* in_critical_section)
 	: critical_section(in_critical_section)
 {
-	VERIFY(critical_section);
-	critical_section->Enter();
+	if (critical_section != nullptr)
+		critical_section->Enter();
 }
 
 xrCriticalSectionGuard::xrCriticalSectionGuard(xrCriticalSection& in_critical_section)
 	: critical_section(&in_critical_section)
 {
-	VERIFY(critical_section);
 	critical_section->Enter();
 }
 
 xrCriticalSectionGuard::~xrCriticalSectionGuard()
 {
-	critical_section->Leave();
+	if (critical_section != nullptr)
+		critical_section->Leave();
 }
 
 xrSRWLock::xrSRWLock()

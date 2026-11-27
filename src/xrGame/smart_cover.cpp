@@ -70,34 +70,45 @@ cover::cover					(
 			m_loopholes.push_back(it);
 	}
 
-	ILevelGraph const			&graph = ai().level_graph();
-	m_vertices.resize			(loopholes().size());
-	Vertices::iterator			i = m_vertices.begin();
-	Loopholes::const_iterator	J = loopholes().begin();
-	Loopholes::const_iterator	K = loopholes().end();
-	for ( ; J != K; ++J, ++i) {
-		Fvector					position = this->fov_position(**J);
-		position.y				+= 2.0f;
-		u32						level_vertex_id = graph.vertex_id(position);
-		VERIFY2					(
-			graph.valid_vertex_id(level_vertex_id),
-			make_string<const char*>(
-				"invalid vertex id: smart cover[%s], loophole [%s]",
-				m_object.cName().c_str(),
-				(*J)->id().c_str()
-			)
-		);
-		vertex					(**J, (*i).second);
-		const_cast<loophole*&>((*i).first) = *J;
-	}
-
-#ifdef DEBUG
-	check_loopholes_connectivity();
-#endif // DEBUG
+	on_level_graph_change();
 }
 
 cover::~cover					()
 {
+}
+
+void cover::on_level_graph_change()
+{
+	ILevelGraph const& graph = ai().level_graph();
+	m_vertices.resize(loopholes().size());
+	Vertices::iterator i = m_vertices.begin();
+	Loopholes::const_iterator j = loopholes().begin();
+	Loopholes::const_iterator e = loopholes().end();
+	if (!graph.has_nodes())
+	{
+		for (; j != e; ++j, ++i)
+		{
+			(*i).second.m_action_vertices.clear();
+			(*i).second.m_level_vertex_id = u32(-1);
+			const_cast<loophole*&>((*i).first) = *j;
+		}
+		return;
+	}
+	for (; j != e; ++j, ++i)
+	{
+		(*i).second.m_action_vertices.clear();
+		Fvector position = fov_position(**j);
+		position.y += 2.0f;
+		const u32 levelVertex = graph.vertex_id(position);
+		VERIFY2(graph.valid_vertex_id(levelVertex), make_string<const char*>(
+			"invalid vertex id: smart cover[%s], loophole [%s]", m_object.cName().c_str(), (*j)->id().c_str()));
+		(*i).second.m_level_vertex_id = levelVertex;
+		vertex(**j, (*i).second);
+		const_cast<loophole*&>((*i).first) = *j;
+	}
+#ifdef DEBUG
+	check_loopholes_connectivity();
+#endif
 }
 
 

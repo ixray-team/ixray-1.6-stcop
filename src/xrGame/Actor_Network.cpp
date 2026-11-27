@@ -71,7 +71,7 @@ CActor* Actor()
 		//VERIFY(g_actor);
 		return g_actor;
 	}
-	CActor* pActor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+	CActor* pActor = (g_pGameLevel && Level().CurrentControlEntity()) ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 	if(pActor) {
 		return pActor;
 	}
@@ -488,6 +488,8 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 		m_pPhysicsShell->Deactivate();
 		xr_delete(m_pPhysicsShell);
 	};
+	Level().Services.Actor = this;
+
 	//force actor to be local on server client
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeCreatureActor	*E	= smart_cast<CSE_ALifeCreatureActor*>(e);
@@ -543,14 +545,24 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 			E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 		}
 
-		if (true == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && true == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+		CActor* playerActor = nullptr;
+		if (E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 		{
-			GActorInterface = this;
-			g_actor = this;
+			playerActor = this;
+		}
+		else if (Level().GetLevelDesc().RemoteTransport && Level().CurrentViewEntity() != nullptr && Level().CurrentViewEntity()->Local())
+		{
+			playerActor = Level().CurrentViewEntity()->cast_actor();
+		}
+
+		if (playerActor != nullptr)
+		{
+			GActorInterface = playerActor;
+			g_actor = playerActor;
 		}
 
 		if(smart_cast<CActorMP*>(this) == nullptr) {
-			g_actor_single = this;
+			g_actor_single = playerActor != nullptr ? playerActor : this;
 		}
 	}
 
@@ -748,7 +760,7 @@ void CActor::net_Destroy	()
 	}
 	LightPerception.Reset();
 	ResetCameraFocus();
-	CActorAuraPostEffectsBalancer::clear_all	();
+	Level().AuraEffects().clear_all();
 
 	if (g_pGameLevel)
 	{
@@ -795,7 +807,7 @@ void CActor::net_Destroy	()
 
 	if (!g_dedicated_server)
 	{
-		if (CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() == this)
+		if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd && CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() == this)
 		{
 			CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 		}
@@ -804,6 +816,8 @@ void CActor::net_Destroy	()
 	SetDefaultVisualOutfit(nullptr);
 
 
+	if (Level().Services.Actor == this)
+		Level().Services.Actor = nullptr;
 	if (g_actor == this)
 	{
 		g_actor = nullptr;
@@ -1161,7 +1175,6 @@ void CActor::PH_A_CrPr		()
 	mstate_wishful = mstate_real = NET_Last.mstate;
 	CalculateInterpolationParams();
 };
-extern	float		g_cl_lvInterp;
 
 void	CActor::CalculateInterpolationParams()
 {	

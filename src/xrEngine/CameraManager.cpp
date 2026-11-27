@@ -221,6 +221,7 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 
 CCameraManager::~CCameraManager()
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	for (EffectorCamIt it=m_EffectorsCam.begin(); it!=m_EffectorsCam.end(); it++ )
 		xr_delete(*it);
 	for (EffectorPPIt it=m_EffectorsPP.begin(); it!=m_EffectorsPP.end(); it++ )
@@ -231,8 +232,9 @@ CCameraManager::~CCameraManager()
 #endif
 }
 
-CEffectorCam* CCameraManager::GetCamEffector(ECamEffectorType type)	
-{ 
+CEffectorCam* CCameraManager::GetCamEffector(ECamEffectorType type)
+{
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	for (EffectorCamIt it=m_EffectorsCam.begin(); it!=m_EffectorsCam.end(); it++ )
 	{
 		if ((*it)->eType == type)
@@ -245,12 +247,14 @@ CEffectorCam* CCameraManager::GetCamEffector(ECamEffectorType type)
 
 CEffectorCam* CCameraManager::AddCamEffector(CEffectorCam* ef)
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	m_EffectorsCam_added_deffered.push_back(ef);
 	return m_EffectorsCam_added_deffered.back();
 }
 
 void CCameraManager::UpdateDeffered()
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	for (CEffectorCam* Effector : m_EffectorsCam_added_deffered)
 	{
 		RemoveCamEffector(Effector->eType);
@@ -267,6 +271,7 @@ void CCameraManager::UpdateDeffered()
 
 void CCameraManager::RemoveCamEffector(ECamEffectorType type)
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	for (EffectorCamIt it=m_EffectorsCam.begin(); it!=m_EffectorsCam.end(); it++ )
 	{
 		if ((*it)->eType == type)
@@ -278,8 +283,9 @@ void CCameraManager::RemoveCamEffector(ECamEffectorType type)
 	}
 }
 
-CEffectorPP* CCameraManager::GetPPEffector(EEffectorPPType type)	
-{ 
+CEffectorPP* CCameraManager::GetPPEffector(EEffectorPPType type)
+{
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	for (EffectorPPIt it=m_EffectorsPP.begin(); it!=m_EffectorsPP.end(); it++ )
 	{
 		if ((*it)->Type() == type)
@@ -290,8 +296,9 @@ CEffectorPP* CCameraManager::GetPPEffector(EEffectorPPType type)
 	return 0;
 }
 
-ECamEffectorType CCameraManager::RequestCamEffectorId ()
+ECamEffectorType CCameraManager::RequestCamEffectorId()
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	ECamEffectorType index;
 	for (index	=	(ECamEffectorType)effCustomEffectorStartID;
 					 GetCamEffector(index);
@@ -299,8 +306,9 @@ ECamEffectorType CCameraManager::RequestCamEffectorId ()
 	return index;
 }
 
-EEffectorPPType   CCameraManager::RequestPPEffectorId ()
+EEffectorPPType CCameraManager::RequestPPEffectorId()
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	EEffectorPPType index;
 	for (index	=	(EEffectorPPType)effCustomEffectorStartID;
 					 GetPPEffector(index);
@@ -308,8 +316,9 @@ EEffectorPPType   CCameraManager::RequestPPEffectorId ()
 	return index;
 }
 
-CEffectorPP* CCameraManager::AddPPEffector(CEffectorPP* ef) 
+CEffectorPP* CCameraManager::AddPPEffector(CEffectorPP* ef)
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	RemovePPEffector(ef->Type());
 	m_EffectorsPP.push_back(ef);
 	return m_EffectorsPP.back();
@@ -317,6 +326,7 @@ CEffectorPP* CCameraManager::AddPPEffector(CEffectorPP* ef)
 
 void CCameraManager::RemovePPEffector(EEffectorPPType type)
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	for (EffectorPPIt it=m_EffectorsPP.begin(); it!=m_EffectorsPP.end(); it++ )
 	{
 		if ((*it)->Type() == type)
@@ -404,6 +414,7 @@ bool CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 
 void CCameraManager::UpdateCamEffectors()
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	if (m_EffectorsCam.empty()) return;
 
 	for(auto it	= m_EffectorsCam.begin(); it != m_EffectorsCam.end();)
@@ -428,6 +439,7 @@ void CCameraManager::UpdateCamEffectors()
 
 void CCameraManager::UpdatePPEffectors()
 {
+	xrCriticalSectionGuard guard(&EffectorsMutex);
 	pp_affected.validate("before applying pp");
 
 	int _count = 0;

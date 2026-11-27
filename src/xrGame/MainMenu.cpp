@@ -212,7 +212,7 @@ void CMainMenu::Activate	(bool bActivate)
 				Device.Pause			(true, true, false, "mm_activate2");
 		}
 
-		if(g_pGameLevel)
+		if(g_pGameLevel && !g_pGameLevel->IsParallel())
 		{
 			if(b_is_single){
 				Device.seqFrame.Remove		(g_pGameLevel);
@@ -246,7 +246,7 @@ void CMainMenu::Activate	(bool bActivate)
 			m_startDialog->HideDialog		();
 
 		CleanInternals						();
-		if(g_pGameLevel)
+		if(g_pGameLevel && !g_pGameLevel->IsParallel())
 		{
 			if(b_is_single){
 				Device.seqFrame.Add			(g_pGameLevel);
@@ -526,7 +526,7 @@ void CMainMenu::OnFrame()
 		m_Flags.set					(flGameSaveScreenshot,false);
 		::Render->Screenshot		(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
 		
-		if(g_pGameLevel && m_Flags.test(flActive))
+		if(g_pGameLevel && !g_pGameLevel->IsParallel() && m_Flags.test(flActive))
 		{
 			Device.seqFrame.Remove	(g_pGameLevel);
 			Device.seqRender.Remove	(g_pGameLevel);
@@ -566,7 +566,7 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, const char* n
 	}else{
 		m_Flags.set					(flGameSaveScreenshot, true);
 		xr_strcpy(m_screenshot_name,name);
-		if(g_pGameLevel && m_Flags.test(flActive)){
+		if(g_pGameLevel && !g_pGameLevel->IsParallel() && m_Flags.test(flActive)){
 			Device.seqFrame.Add		(g_pGameLevel);
 			Device.seqRender.Add	(g_pGameLevel);
 		};

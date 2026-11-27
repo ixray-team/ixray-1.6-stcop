@@ -17,6 +17,24 @@
 #include "FHierrarhyVisual.h"
 #include "SkeletonAnimated.h"
 
+namespace ModelPoolDetail
+{
+	dxRender_Visual* CreateMissingVisual(CModelPool& pool, const char* name)
+	{
+		Fvisual* visual = static_cast<Fvisual*>(pool.Instance_Create(MT_NORMAL));
+		visual->dbg_name = name;
+		visual->vBase = 0;
+		visual->vCount = 0;
+		visual->iBase = 0;
+		visual->iCount = 0;
+		visual->dwPrimitives = 0;
+		visual->vis.box.set(Fvector().set(-0.01f, -0.01f, -0.01f), Fvector().set(0.01f, 0.01f, 0.01f));
+		visual->vis.sphere.P.set(0.f, 0.f, 0.f);
+		visual->vis.sphere.R = visual->vis.box.getradius();
+		return visual;
+	}
+}
+
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
 	dxRender_Visual *V = nullptr;
@@ -311,6 +329,7 @@ dxRender_Visual* CModelPool::DuplicateInstance(dxRender_Visual* V)
 
 dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 {
+	ActivateMotions();
 	R_ASSERT(V);
 	{
 		// inc ref counter
@@ -409,65 +428,42 @@ void CModelPool::WaitAll()
 	}
 }
 
-dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName)
+dxRender_Visual* CModelPool::Instance_Load(const char* InputName)
 {
+	ActivateMotions();
 	PROF_EVENT(__FUNCTION__);
 	PROF_EVENT_DYNAMIC(InputName ? InputName : "<unnamed>");
-	dxRender_Visual	*V;
-	string_path		fn;
-	string_path		name;
-
-	// Add default ext if no ext at all
+	string_path fn;
+	string_path name;
 	string_path N = {};
 	xr_strcpy(N, Platform::ValidPath(InputName));
-
-	if (nullptr==strext(N))
-	{
+	if (strext(N) == nullptr)
 		xr_strconcat(name, N, ".ogf");
-	}
 	else
-	{	
-		xr_strcpy(name, sizeof(name), N);
-	}
+		xr_strcpy(name, N);
 
-	// Load data from MESHES or LEVEL
-	if (!FS.exist(N))
+	auto Missing = [&](const char* reason)
 	{
-		if (!FS.exist(fn, "$level$", name))
-		{
-			if (!FS.exist(fn, _game_meshes_, name))
-			{
-				if (Device.IsEditorMode())
-				{
-					Msg("! Can't find model file '%s'.",name);
-				}
-				else
-				{
-					Debug.fatal(DEBUG_INFO,"Can't find model file '%s'.",name);
-				}
-				return nullptr;
-			}
-		}
-	}
-	else 
-	{
-		xr_strcpy(fn,N);
-	}
-	
-	// Actual loading
+		Msg("! Model '%s' is %s; using an empty visual.", name, reason);
+		return ModelPoolDetail::CreateMissingVisual(*this, N);
+	};
+
+	if (!FS.exist(N) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, _game_meshes_, name))
+		return Missing("missing");
+	if (FS.exist(N))
+		xr_strcpy(fn, N);
+
 	IReader* data = FS.r_open(fn);
+	if (data == nullptr)
+		return Missing("unreadable");
 	ogf_header H = {};
-	if (data == nullptr || !data->r_chunk_safe(OGF_HEADER, &H, sizeof(H)))
+	if (!data->r_chunk_safe(OGF_HEADER, &H, sizeof(H)))
 	{
-		if (data != nullptr)
-		{
-			FS.r_close(data);
-		}
-		Debug.fatal(DEBUG_INFO, "Invalid or empty model file '%s'.", fn);
-		return nullptr;
+		FS.r_close(data);
+		return Missing("invalid");
 	}
-	V = Instance_Create(H.type);
-	V->Load(N,data,0);
+	dxRender_Visual* V = Instance_Create(H.type);
+	V->Load(N, data, 0);
 	FS.r_close(data);
 	g_pGamePersistent->RegisterModel(V);
 	return V;
@@ -475,18 +471,17 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName)
 
 dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data)
 {
+	ActivateMotions();
 	PROF_EVENT(__FUNCTION__);
 	PROF_EVENT_DYNAMIC(name ? name : "<unnamed>");
-	dxRender_Visual	*V;
-	
-	ogf_header			H = {};
-	if (!data->r_chunk_safe(OGF_HEADER, &H, sizeof(H)))
+	ogf_header H = {};
+	if (data == nullptr || !data->r_chunk_safe(OGF_HEADER, &H, sizeof(H)))
 	{
-		Debug.fatal(DEBUG_INFO, "Invalid model '%s': missing OGF header.", name);
-		return nullptr;
+		Msg("! Model '%s' is unreadable; using an empty visual.", name);
+		return ModelPoolDetail::CreateMissingVisual(*this, name);
 	}
-	V = Instance_Create (H.type);
-	V->Load				(name,data,0);
+	dxRender_Visual* V = Instance_Create(H.type);
+	V->Load(name, data, 0);
 	return V;
 }
 
@@ -536,18 +531,28 @@ void CModelPool::Destroy()
 	}
 
 	// cleanup motions container
-	g_pMotionsContainer->clean(false);
+	g_pMotionsContainer->clean(true);
 }
 
-CModelPool::CModelPool()
+CModelPool::CModelPool(bool primary)
 {
-	g_pMotionsContainer		= new motions_container();
+	Motions = new motions_container();
+	if (primary)
+		g_pMotionsContainer = Motions;
+}
+
+void CModelPool::ActivateMotions()
+{
+	g_pMotionsContainer = Motions;
 }
 
 CModelPool::~CModelPool()
 {
-	Destroy					();
-	xr_delete				(g_pMotionsContainer);
+	motions_container* previous = g_pMotionsContainer;
+	g_pMotionsContainer = Motions;
+	Destroy();
+	xr_delete(Motions);
+	g_pMotionsContainer = previous;
 }
 
 dxRender_Visual* CModelPool::Instance_Find(const char* N)
@@ -625,6 +630,7 @@ dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
 extern  xr_atomic_bool ENGINE_API g_bRendering; 
 void	CModelPool::DeleteInternal	(dxRender_Visual* &V, bool bDiscard)
 {
+	ActivateMotions();
 	VERIFY					(!g_bRendering);
     if (!V)					return;
 	V->Depart				();

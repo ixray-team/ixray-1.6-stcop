@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "ImUtils.h"
+#include "Viewer/ViewerSession.h"
 #include "../Actor.h"
 #include "../ActorEffector.h"
 #include "../CameraRig.h"
@@ -668,8 +669,15 @@ void RenderHudMotionPlayer()
 	}
 
 	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 14.f);
-	if (ImGui::BeginCombo("##motion", state.Selected >= 0 && !item->AdditiveAlias(motions[state.Selected].m_alias_name) ? motions[state.Selected].m_alias_name.c_str() : "-"))
+	const bool motionCombo = ImGui::BeginCombo("##motion", state.Selected >= 0 && !item->AdditiveAlias(motions[state.Selected].m_alias_name) ? motions[state.Selected].m_alias_name.c_str() : "-");
+	ImUtils::Viewer::CViewerSession* session = ImUtils::Viewer::ViewerSessionAt(0);
+	if (session != nullptr)
 	{
+		session->UiProbeObserve("Select HUD motion", motionCombo);
+	}
+	if (motionCombo)
+	{
+		int firstMotion = -1;
 		for (int i = 0; i < int(motions.size()); ++i)
 		{
 			const bool selected = i == state.Selected;
@@ -677,8 +685,17 @@ void RenderHudMotionPlayer()
 			{
 				continue;
 			}
+			if (firstMotion < 0)
+			{
+				firstMotion = i;
+			}
 
-			if (ImGui::Selectable(motions[i].m_alias_name.c_str(), selected))
+			const bool activated = ImGui::Selectable(motions[i].m_alias_name.c_str(), selected);
+			if (firstMotion == i && session != nullptr)
+			{
+				session->UiProbeObserve("First available HUD motion", activated);
+			}
+			if (activated)
 			{
 				state.Selected = i;
 				HudMotionPlayerClearAdditive();
@@ -720,7 +737,12 @@ void RenderHudMotionPlayer()
 	ImGui::EndDisabled();
 
 	ImGui::SameLine();
-	if (ImGui::Button("Idle"))
+	const bool idle = ImGui::Button("Idle");
+	if (ImUtils::Viewer::CViewerSession* session = ImUtils::Viewer::ViewerSessionAt(0); session != nullptr)
+	{
+		session->UiProbeObserve("Idle", idle);
+	}
+	if (idle)
 	{
 		HudMotionPlayerIdle(hud_item);
 	}

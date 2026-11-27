@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DetailManager.h"
+#include "../../xrEngine/IGame_Level.h"
 
 //--------------------------------------------------- Decompression
 static int magic4x4[4][4] =
@@ -143,6 +144,8 @@ void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 void CDetailManager::cache_Update(const Fvector& view)
 {
 	PROF_EVENT("cache_Update");
+	if (LevelContext == nullptr)
+		return;
 
 	// Deferred brush rebuild (requested from the render thread's editor). Runs here on
 	// the DetailsTask worker so schedule_Update/UnpackSlot/UnpackSlotItems and the item

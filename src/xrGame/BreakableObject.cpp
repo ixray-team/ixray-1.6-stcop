@@ -43,6 +43,11 @@ bool CBreakableObject::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeObjectBreakable *obj	= smart_cast<CSE_ALifeObjectBreakable*>(e);
 	R_ASSERT				(obj);
 	inherited::net_Spawn	(DC);
+	if (Visual() == nullptr || PKinematics(Visual()) == nullptr)
+	{
+		Msg("! CBreakableObject: '%s' has no kinematics model; entity spawn rejected safely", cNameSect().c_str());
+		return false;
+	}
 	VERIFY(!collidable.model);
 	collidable.model = new CCF_Skeleton(this);
 	// set bone id

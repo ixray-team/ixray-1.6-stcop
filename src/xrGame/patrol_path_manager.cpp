@@ -53,7 +53,8 @@ CPatrolPathManager::~CPatrolPathManager			()
 
 bool CPatrolPathManager::extrapolate_path		()
 {
-	VERIFY					(m_path && m_path->vertex(m_curr_point_index));
+	if (!m_path || !m_path->vertex(m_curr_point_index))
+		return true;
 	if (!m_extrapolate_callback)
 		return				(true);
 	
@@ -102,7 +103,11 @@ struct CAccessabilityEvaluator {
 
 void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_id)
 {
-	VERIFY						(m_path && !m_path->vertices().empty());
+	if (!m_path || m_path->vertices().empty() || ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+	{
+		m_completed = true;
+		return;
+	}
 	const CPatrolPath::CVertex	*vertex = 0;
 	if (!actual() || !m_path->vertex(m_curr_point_index)) {
 		switch (m_start_type) {

@@ -153,6 +153,7 @@ ENGINE_API void EngineLoopAndDestroy()
 	PROF_EVENT("EngineLoopAndDestroy");
 
 	Device.Run();
+	Device.ReleasePrecacheLight();
 
 	// Destroy level if still loaded (e.g. quit from in-game via window close or console)
 	if (g_pGameLevel)

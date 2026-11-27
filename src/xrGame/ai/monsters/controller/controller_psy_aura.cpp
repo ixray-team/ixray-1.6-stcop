@@ -79,7 +79,7 @@ void CControllerAura::activate()
 		return;
 
 	m_active = true;
-	CActorAuraPostEffectsBalancer::RegisterEffect	(
+	Level().AuraEffects().RegisterEffect	(
 		EAuraPostEffectType::Psi, 1.f, m_object->ID(), aura_radius, m_pp_section);
 
 	aura_sound.left.play	(Actor(), sm_2D);
@@ -94,7 +94,7 @@ void CControllerAura::deactivate()
 		return;
 
 	m_active = false;
-	CActorAuraPostEffectsBalancer::UnregisterEffect	(
+	Level().AuraEffects().UnregisterEffect	(
 		EAuraPostEffectType::Psi, m_object->ID(), m_pp_section);
 
 	if (aura_sound.left.is_playing())	aura_sound.left.stop();

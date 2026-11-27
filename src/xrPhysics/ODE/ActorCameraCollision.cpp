@@ -6,6 +6,7 @@
 #include "../../xrEngine/GameMtlLib.h"
 
 #include "PHWorld.h"
+#include "../xrCore/Collision/xr_area.h"
 #include "PHCollideValidator.h"
 #include "PHShell.h"
 #include "matrix_utils.h"
@@ -22,7 +23,6 @@ bool dbg_draw_camera_collision = false;
 #endif
 static bool cam_collided = false;
 static bool cam_step	= false;
-extern dJointGroupID ContactGroup;
 static const float	camera_collision_sckin_depth = 0.04f;
 float	camera_collision_character_skin_depth = 0.4f;
 float	camera_collision_character_shift_z = 0.3f;
@@ -50,7 +50,7 @@ static void	cammera_shell_collide_callback_common( bool& do_collide, bool bo1, C
 		return;
 	c.surface.mu = 0;
 
-	dJointID contact_joint	= dJointCreateContactSpecial(0, ContactGroup, &c);//dJointCreateContact(0, ContactGroup, &c);//
+	dJointID contact_joint	= dJointCreateContactSpecial(0, ph_world->GetContactGroup(), &c);//dJointCreateContact(0, ph_world->GetContactGroup(), &c);//
 	CPHObject* obj = (CPHObject*)my_data->callback_data;
 	VERIFY( obj );
 #ifdef	DEBUG
@@ -224,6 +224,8 @@ void set_camera_collision(const Fvector& box_size, const Fmatrix& xform, CPhysic
 
 void do_collide_and_move(const Fmatrix& xform, IPhysicsShellHolder* l_actor, CPhysicsShell* shell, CPhysicsElement* roote)
 {
+	if (ph_world == nullptr || ph_world->IsFreezed() || ph_world->ObjectSpace().GetStaticTris().empty())
+		return;
 	///////////////////////////////////////////////////////////////////
 	VERIFY(ph_world);
 	VERIFY(!ph_world->Processing());
@@ -257,6 +259,8 @@ void do_collide_and_move(const Fmatrix& xform, IPhysicsShellHolder* l_actor, CPh
 
 bool do_collide_not_move(const Fmatrix& xform, IPhysicsShellHolder* l_actor, CPhysicsShell* shell, CPhysicsElement* roote)
 {
+	if (ph_world == nullptr || ph_world->IsFreezed() || ph_world->ObjectSpace().GetStaticTris().empty())
+		return false;
 	VERIFY(ph_world);
 	VERIFY(!ph_world->Processing());
 	cam_collided = false;
@@ -275,6 +279,8 @@ bool do_collide_not_move(const Fmatrix& xform, IPhysicsShellHolder* l_actor, CPh
 
 bool test_camera_box(const Fvector& box_size, const Fmatrix& xform, IPhysicsShellHolder* l_actor)
 {
+	if (ph_world == nullptr || ph_world->IsFreezed() || ph_world->ObjectSpace().GetStaticTris().empty())
+		return false;
 	VERIFY(l_actor);
 	update_current_entity_camera_collision(l_actor);
 
@@ -298,6 +304,8 @@ bool test_camera_box(const Fvector& box_size, const Fmatrix& xform, IPhysicsShel
 
 void collide_camera(CCameraBase& camera, float _viewport_near, IPhysicsShellHolder* l_actor)
 {
+	if (ph_world == nullptr || ph_world->IsFreezed() || ph_world->ObjectSpace().GetStaticTris().empty())
+		return;
 	VERIFY(l_actor);
 	update_current_entity_camera_collision(l_actor);
 	Fvector box_size; Fmatrix xform;

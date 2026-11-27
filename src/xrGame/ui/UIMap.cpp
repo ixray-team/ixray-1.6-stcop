@@ -47,8 +47,7 @@ void CUICustomMap::Initialize(shared_str name, const char* sh_name)
 	}
 	else
 	{
-		Msg("! Not found minimap texture in %s level", *name);
-		// The map is drawn every frame (e.g. PIE levels have no map config), so it still needs a shader: Init_internal falls back to the default map
+		Msg("! Not found minimap texture in %s level, using the default UI shader", *name);
 		Init_internal(name, *levelIni, "level_map", sh_name);
 	}
 
@@ -494,6 +493,8 @@ void CUILevelMap::Init_internal	(const shared_str& name, CInifile& pLtx, const s
 
 void CUILevelMap::UpdateSpots()
 {
+	CMapManager& manager = Level().MapManager();
+	xrCriticalSectionGuard guard(manager.UpdateCS);
 	DetachAll			();
 
 //.	if( fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom(),MapWnd()->GlobalMap()->GetMinZoom(),EPS_L ) ) return;
@@ -688,8 +689,10 @@ void CUIMiniMap::Init_internal(const shared_str& name, CInifile& pLtx, const sha
 
 void CUIMiniMap::UpdateSpots()
 {
+	CMapManager& manager = Level().MapManager();
+	xrCriticalSectionGuard guard(manager.UpdateCS);
 	DetachAll();
-	for (auto& elem : Level().MapManager().Locations())
+	for (auto& elem : manager.Locations())
 	{
 		elem.location->UpdateMiniMap(this);
 	}
@@ -698,6 +701,12 @@ void CUIMiniMap::UpdateSpots()
 void  CUIMiniMap::Draw()
 {
 	if (!IsRounded())
+	{
+		inherited::Draw();
+		return;
+	}
+
+	if (!m_UIStaticItem.GetShader() || !m_UIStaticItem.GetShader()->inited())
 	{
 		inherited::Draw();
 		return;

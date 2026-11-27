@@ -596,6 +596,7 @@ static float Snd_HemiIndoorFactor(const Fvector& Pos)
 {
 	PROF_EVENT("Sound: Indoor Hemi");
 
+	xrSRWLockGuard GeometryGuard(::Sound->GetGeometryLock(), true);
 	CDB::MODEL* EnvModel = ::Sound->get_geometry_env();
 	CDB::COLLIDER* Collider = ::Sound->get_geometry_db();
 	if (EnvModel == nullptr || Collider == nullptr)
@@ -973,6 +974,7 @@ ICF void DestroyInternal(int slot)
 	GMixer.slots[slot - 1].prev_state = Mixer::State::Stopped;
 	GMixer.slots[slot - 1].fake_state = Mixer::State::Stopped;
 	GMixer.slots[slot - 1].fade_volume = 1.0f;
+	GMixer.slots[slot - 1].Allocated = false;
 	GMixer.free_slots.push_back(slot);
 }
 
@@ -1449,24 +1451,25 @@ void Mixer::ResumeAll()
 
 void Mixer::DereferenceObjects(CObject** object, int count)
 {
-	// A queued play can wait several frames for its source and outlive its emitter
+	if (object == nullptr || count <= 0)
+		return;
+
 	{
 		xrCriticalSectionGuard Guard(GMixer.play_lock);
-		for (SoundCommand& Command : GMixer.cmd)
+		for (SoundCommand& command : GMixer.cmd)
 		{
-			for (int Iter = 0; Iter < count && Command.id == ESoundMixerCommands::play; Iter++)
-			{
-				if (Command.param3 == (u64)object[Iter])
-				{
-					Command.param3 = 0;
-				}
-			}
+			if (command.id != ESoundMixerCommands::play || command.param3 == 0)
+				continue;
+			const CObject* emitter = reinterpret_cast<const CObject*>(command.param3);
+			if (std::find(object, object + count, emitter) == object + count)
+				continue;
+			command = SoundCommand{ .slot = command.slot, .id = ESoundMixerCommands::destroy };
+			g_SoundStats.possible_free_count++;
 		}
 	}
 
 	xrSRWLockGuard Guard0(GMixer.update_lock);
 	xrSRWLockGuard Guard1(GMixer.manage_lock);
-
 	for (auto& SoundRef : GMixer.sounds)
 	{
 		if (SoundRef == nullptr || SoundRef->_p == nullptr)
@@ -1495,6 +1498,7 @@ u32 Mixer::Create()
 
 	u32 SlotIdx = GMixer.free_slots[GMixer.free_slots.size() - 1];
 	GMixer.free_slots.pop_back();
+	GMixer.slots[SlotIdx - 1].Allocated = true;
 	g_SoundStats.possible_free_count--;
 
 	return SlotIdx;
@@ -1502,7 +1506,7 @@ u32 Mixer::Create()
 
 void Mixer::Destroy(u32 SlotID)
 {
-	if (SlotID == 0 || GMixer.slots[SlotID - 1].state == State::Delay)
+	if (SlotID == 0 || SlotID > GMixer.slots.size() || !GMixer.slots[SlotID - 1].Allocated || GMixer.slots[SlotID - 1].state == State::Delay)
 	{
 		return;
 	}
@@ -1510,6 +1514,12 @@ void Mixer::Destroy(u32 SlotID)
 	GMixer.slots[SlotID - 1].fake_state = State::Stopped;
 
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
+	const bool alreadyDestroying = std::ranges::any_of(GMixer.cmd, [SlotID](const SoundCommand& command)
+	{
+		return command.slot == SlotID && command.id == ESoundMixerCommands::destroy;
+	});
+	if (alreadyDestroying)
+		return;
 	GMixer.cmd.emplace_back(SoundCommand{.slot = SlotID, .id = ESoundMixerCommands::destroy});
 	g_SoundStats.possible_free_count++;
 }
@@ -1677,6 +1687,11 @@ xrSRWLock& Mixer::GetManageMutex()
 	return GMixer.manage_lock;
 }
 
+xrSRWLock& Mixer::GetRenderMutex()
+{
+	return GMixer.render_lock;
+}
+
 float* Mixer::GetMasterVolume()
 {
 	return GetBusVolume("master");
@@ -1801,6 +1816,18 @@ void Mixer::ResetZones()
 {
 	xrSRWLockGuard Guard(GMixer.render_lock);
 	Snd_ResetZones();
+}
+
+void Mixer::SwapZones(SoundZoneVector& zones)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_SwapZones(zones);
+}
+
+void Mixer::PrepareZone(sound_zone_params& params)
+{
+	xrSRWLockGuard Guard(GMixer.render_lock);
+	Snd_AssignZoneBus(&params);
 }
 
 void Mixer::ExportConfig()

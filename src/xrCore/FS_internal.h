@@ -6,19 +6,26 @@ void*			FileDownload	(const char* fn, intptr_t& pdwSize);
 void			FileCompress	(const char *fn, const char* sign, void* data, intptr_t size);
 void * 			FileDecompress	(const char *fn, const char* sign, intptr_t& size);
 
+enum class EFileWriterMode : u8
+{
+	Truncate,
+	Exclusive,
+	Append,
+};
+
 class CFileWriter : public IWriter
 {
 private:
 	FILE* hf;
 public:
-	CFileWriter (const char *name, bool exclusive)
+	CFileWriter (const char *name, EFileWriterMode mode)
 	{
 		R_ASSERT	(name && name[0]);
 		fName		= name;
 		const xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(Platform::ValidPath(name));
 		VerifyPath	(Platform::ValidPath(*fName));
 #ifdef IXR_WINDOWS
-        if (exclusive){
+        if (mode == EFileWriterMode::Exclusive){
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
     		if (handle==-1)
     			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
@@ -27,7 +34,7 @@ public:
         else
 #endif
         {
-			_wfopen_s(&hf, wName, TEXT("wb"));
+			_wfopen_s(&hf, wName, mode == EFileWriterMode::Append ? TEXT("ab") : TEXT("wb"));
 			if (hf==nullptr)
             {
                 string1024 error;

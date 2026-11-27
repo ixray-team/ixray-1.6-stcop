@@ -14,6 +14,8 @@
 #include "patrol_path_storage.h"
 #include "game_graph.h"
 #include "GamePersistent.h"
+#include "../xrCore/FS_internal.h"
+#include <filesystem>
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -137,17 +139,27 @@ void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 	m_spawn_name				= spawn_name;
 	string_path					file_name; 
 
+	bool explicitPath = false;
 	if (g_pGamePersistent->GameType() == eGameIDSingle)
 	{
-		R_ASSERT3(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"), "Can't find spawn file:", *m_spawn_name);
+		explicitPath = strchr(spawn_name, ':') != nullptr || strchr(spawn_name, '/') != nullptr || strchr(spawn_name, '\\') != nullptr;
+		if (explicitPath)
+		{
+			R_ASSERT3(std::filesystem::is_regular_file(spawn_name), "Can't find spawn file:", spawn_name);
+			xr_strcpy(file_name, spawn_name);
+		}
+		else
+		{
+			R_ASSERT3(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"), "Can't find spawn file:", *m_spawn_name);
+		}
 	}
 	else
 	{
 		R_ASSERT3(FS.exist(file_name, "$level$", "alife", ".spawn"), "Can't find spawn file:", "alife.spawn");
 	}
-	
+
 	VERIFY						(!m_file);
-	m_file						= FS.r_open(file_name);
+	m_file = explicitPath ? static_cast<IReader*>(new CFileReader(file_name)) : FS.r_open(file_name);
 	load						(*m_file);
 }
 

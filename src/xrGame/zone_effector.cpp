@@ -29,7 +29,7 @@ void CZoneEffector::Load(const char* section)
 
 void CZoneEffector::Activate()
 {
-	CActorAuraPostEffectsBalancer::RegisterEffect	(
+	Level().AuraEffects().RegisterEffect(
 		m_type, m_factor, m_object_id, flt_max, m_pp_section);
 }
 
@@ -38,7 +38,7 @@ void CZoneEffector::Stop()
 	if (m_object_id == cInvalidAuraObjectID)
 		return;
 
-	CActorAuraPostEffectsBalancer::UnregisterEffect	(m_type, m_object_id, m_pp_section);
+	Level().AuraEffects().UnregisterEffect(m_type, m_object_id, m_pp_section);
 	m_object_id	= cInvalidAuraObjectID;
 	m_pActor	= nullptr;
 }

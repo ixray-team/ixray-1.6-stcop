@@ -19,9 +19,11 @@ public:
 	IC	void		init					(ALife::_OBJECT_ID id) {holder_id = id;}
 	
 	typename _registry_type::_data&			objects					();
+	typename _registry_type::_data&			objects_local			();
 	const typename _registry_type::_data*	objects_ptr				();
 
 	typename _registry_type::_data&			objects					(ALife::_OBJECT_ID id);
+	typename _registry_type::_data&			objects_local			(ALife::_OBJECT_ID id);
 	const typename _registry_type::_data*	objects_ptr				(ALife::_OBJECT_ID id);
 
 private:
@@ -55,21 +57,24 @@ const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::obj
 }
 
 template <typename _registry_type>
-typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects	(ALife::_OBJECT_ID id)
+typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects_local(ALife::_OBJECT_ID id)
 {
-	if(nullptr == ai().get_alife())
+	typename _registry_type::iterator I = local_registry.find(id);
+	if (I == local_registry.end())
 	{
-		typename _registry_type::iterator		I = local_registry.find(id);
-		if (I == local_registry.end()) {
-			typename _registry_type::_data new_registry;
-			std::pair<typename _registry_type::iterator, bool> p = local_registry.insert(std::make_pair(id, new_registry));
-			VERIFY(p.second);
-			return (*local_registry.find(id)).second;
-						
-		}else
-			return	((*I).second);
-
+		typename _registry_type::_data new_registry;
+		std::pair<typename _registry_type::iterator, bool> p = local_registry.insert(std::make_pair(id, new_registry));
+		VERIFY(p.second);
+		return (*local_registry.find(id)).second;
 	}
+	return (*I).second;
+}
+
+template <typename _registry_type>
+typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects(ALife::_OBJECT_ID id)
+{
+	if (nullptr == ai().get_alife())
+		return objects_local(id);
 
 	typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)nullptr).object(id, true);
 
@@ -94,4 +99,10 @@ template <typename _registry_type>
 typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects	()
 {
 	return objects(holder_id);
+}
+
+template <typename _registry_type>
+typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects_local()
+{
+	return objects_local(holder_id);
 }

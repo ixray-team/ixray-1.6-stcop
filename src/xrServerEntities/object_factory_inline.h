@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "object_item_script.h"
+
 IC	const CObjectFactory &object_factory()
 {
 	if (!g_object_factory) {
@@ -123,6 +125,14 @@ IC	void CObjectFactory::add	(CObjectItemAbstract *item)
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateCLSID(item->clsid()));
 	if(I != clsids().end())
 	{
+		CObjectItemScript* existing = dynamic_cast<CObjectItemScript*>(*I);
+		CObjectItemScript* incoming = dynamic_cast<CObjectItemScript*>(item);
+		if (existing != nullptr && incoming != nullptr && existing->script_clsid() == item->script_clsid())
+		{
+			existing->AddCreators(*incoming);
+			xr_delete(item);
+			return;
+		}
 		string16			temp;
 		CLSID2TEXT			(item->clsid(),temp);
 		VERIFY2				(0, make_string<const char*>("clsid is duplicated : %s",temp));

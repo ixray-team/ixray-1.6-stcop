@@ -6,6 +6,7 @@
 
 #include "../../Include/xrRender/ObjectSpaceRender.h"
 #include "../../xrEngine/xr_collide_form.h"
+#include "../../xrCore/Kernel/xrSyncronize.h"
 class dxObjectSpaceRender : public IObjectSpaceRender
 {
 public:
@@ -18,9 +19,11 @@ public:
 	virtual void SetShader() override;
 
 private:
+	static constexpr u32 MaxDebugSpheres = 4096;
 	ref_shader							m_shDebug;
 	clQueryCollision					q_debug;			// MT: dangerous
-	xr_vector<std::pair<Fsphere,u32> >	dbg_S;				// MT: dangerous
+	xr_vector<std::pair<Fsphere,u32> >	dbg_S;
+	xrCriticalSection					DebugLock;
 };
 
 #endif // DEBUG

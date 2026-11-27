@@ -69,7 +69,7 @@ static void	ActivateTestDepthCallback (bool& do_colide,bool bo1,CPHContact& cont
 	{
 		c.surface.soft_cfm=static_cfm;
 		c.surface.soft_erp=static_erp;
-		dJointID contact_joint	= dJointCreateContactSpecial( 0, ContactGroup, &c );
+		dJointID contact_joint	= dJointCreateContactSpecial( 0, ph_world->GetContactGroup(), &c );
 		self->DActiveIsland()->ConnectJoint(contact_joint);
 		dJointAttach(contact_joint, dGeomGetBody(c.geom.g1), dGeomGetBody(c.geom.g2));
 		do_colide = false;
@@ -105,7 +105,7 @@ static void	ActivateTestDepthCallback (bool& do_colide,bool bo1,CPHContact& cont
 	if( max_contacts < 1 )
 		return;
 	
-	dJointID contact_joint	= dJointCreateContactSpecial( 0, ContactGroup, &c );
+	dJointID contact_joint	= dJointCreateContactSpecial( 0, ph_world->GetContactGroup(), &c );
 	obj1->DActiveIsland()->ConnectJoint(contact_joint);
 	dJointAttach			(contact_joint, dGeomGetBody(c.geom.g1), dGeomGetBody(c.geom.g2));
 
@@ -118,7 +118,7 @@ static void	ActivateTestDepthCallback (bool& do_colide,bool bo1,CPHContact& cont
 void	StaticEnvironment ( bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2 )
 {
 	dContact& c = contact.Native();
-	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);
+	dJointID contact_joint	= dJointCreateContact(0, ph_world->GetContactGroup(), &c);
 
 	if(bo1)
 	{
@@ -234,6 +234,11 @@ bool CPHActivationShape::Activate(const Fvector need_size, u16 steps, float max_
 	}
 #endif
 	VERIFY(m_geom&&m_body);
+	if (ph_world == nullptr || ph_world->IsFreezed())
+	{
+		Msg("! Physics activation skipped: the world is frozen or unavailable");
+		return false;
+	}
 	CPHObject::activate();
 	ph_world->Freeze();
 	UnFreeze();
@@ -387,4 +392,4 @@ IPhysicsShellHolder* CPHActivationShape::ref_object	()
 	return ud->ph_ref_object;
 
 }
-#endif
+#endif

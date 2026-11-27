@@ -15,6 +15,7 @@
 
 #include "PHElement.h"
 #include "PHShell.h"
+#include "../xrCore/Collision/xr_area.h"
 
 void CPHShell::activate(bool disable)
 {
@@ -206,7 +207,8 @@ void CPHShell::PresetActive()
 
 void CPHShell::Deactivate()
 {
-	VERIFY(ph_world);
+	if (ph_world == nullptr)
+		return;
 	ph_world->NetRelcase(this);
 	
 	if (m_pPhysicsShellAnimatorC)
@@ -218,7 +220,7 @@ void CPHShell::Deactivate()
 
 	if(!isActive())return;
 	R_ASSERT2(!ph_world->Processing(),"can not deactivate physics shell during physics processing!!!");
-	R_ASSERT2(!ph_world->IsFreezed(),"can not deactivate physics shell when ph world is freezed!!!");
+	PHWorldDetail::CFrozenWorldScope FrozenWorld(ph_world);
 	R_ASSERT2(!CPHObject::IsFreezed(),"can not deactivate freezed !!!");
 	ZeroCallbacks();
 	VERIFY(ph_world&&ph_world->Exist());
@@ -227,7 +229,7 @@ void CPHShell::Deactivate()
 		// Skip world StepTouch while the owner is being destroyed: contact callbacks
 		// (sound/particles) would call into a half-destroyed GameObject vtable.
 		IPhysicsShellHolder* RefObject = PhysicsRefObject();
-		const bool SkipTouch = !RefObject || RefObject->ObjectGetDestroy();
+		const bool SkipTouch = !RefObject || RefObject->ObjectGetDestroy() || ph_world->ObjectSpace().GetStaticTris().empty();
 		if (!SkipTouch)
 		{
 			vis_update_deactivate();
@@ -278,4 +280,4 @@ void CPHShell::ActivatingBonePoses(IKinematics& K)
 	{
 		(*i)->ActivatingPos(K.LL_GetTransform((*i)->m_SelfID));
 	}
-}
+}

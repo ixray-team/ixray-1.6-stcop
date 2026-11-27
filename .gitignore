@@ -88,3 +88,8 @@ graphify-out/
 src/3rd-party/embree/kernels/export.linux.map
 src/3rd-party/embree/kernels/export.macosx.map
 /gamedata/spawns/
+
+# Utility and root build artifacts
+/util/**/*.exe
+/util/**/*.obj
+/*.obj

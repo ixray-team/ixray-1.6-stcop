@@ -12,6 +12,7 @@
 #include "alife_space.h"
 #include "game_graph_space.h"
 #include "../xrServerEntities/object_interfaces.h"
+#include "../xrCore/client_id.h"
 
 class xrServer;
 class CALifeSimulatorHeader;
@@ -99,16 +100,26 @@ protected:
 	virtual void								setup_simulator				(CSE_ALifeObject *object) = 0;
 
 public:
+	struct SSpawnIdentity
+	{
+		ALife::_STORY_ID StoryId = INVALID_STORY_ID;
+		shared_str ScriptStoryId;
+	};
+
 			void								register_object				(CSE_ALifeDynamicObject	*object, bool add_object = false);
 			void								unregister_object			(CSE_ALifeDynamicObject *object, bool alife_query = true);
 			void								release						(CSE_Abstract			*object, bool alife_query = true);
 			void								create						(CSE_ALifeDynamicObject	*&object, CSE_ALifeDynamicObject *spawn_object,	const ALife::_SPAWN_ID &spawn_id);
 			void								create						(CSE_ALifeObject		*object);
 			CSE_Abstract						*create						(CSE_ALifeGroupAbstract	*object, CSE_ALifeDynamicObject	*j);
-			CSE_Abstract						*spawn_item					(const char* section,		const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration = true, const char* build = nullptr);
+			CSE_Abstract						*spawn_item					(const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration = true, const char* build = nullptr, const SSpawnIdentity* identity = nullptr);
+			CSE_Abstract						*spawn_item_online			(const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ClientID clientID, const SSpawnIdentity* identity = nullptr);
 			void								append_item_vector			(ALife::OBJECT_VECTOR	&tObjectVector,	ALife::ITEM_P_VECTOR &tItemList);
 			shared_str							level_name					() const;
 			void								on_death					(CSE_Abstract *killed, CSE_Abstract *killer);
+
+private:
+			CSE_Abstract						*spawn_item_impl			(const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration, const char* build, const SSpawnIdentity* identity, const ClientID* onlineClient);
 
 public:
 	ALife::ITEM_P_VECTOR						m_temp_item_vector;

@@ -57,6 +57,7 @@ private:
 public:
 								cover					(object const &object, DescriptionPtr description, bool is_combat_cover, bool can_fire, luabind::object const &loopholes);
 	virtual ~cover					() override;
+			void				on_level_graph_change();
 	IC		Loopholes const		&loopholes				() const;
 	IC		object const		&object					() const;
 	IC		Fvector				fov_position			(loophole const &loophole) const;

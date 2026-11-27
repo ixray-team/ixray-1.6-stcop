@@ -79,6 +79,7 @@ public:
 	bool							net_Processed;	// Internal flag for connectivity-graph
 	
 	u16								m_wVersion;
+	u16								m_client_data_version;
 	u16								m_script_version;
 	u16								RespawnTime;
 
@@ -135,6 +136,7 @@ virtual ~CSE_Abstract			() override;
 	//
 virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal) override;
 virtual bool			Spawn_Read				(NET_Packet &tNetPacket) override;
+	bool Spawn_ReadWithOptions(NET_Packet& tNetPacket, bool PromoteRuntimeVersion);
 virtual bool Spawn_Serialize(ISaveObject& Object, bool bLocal = true, bool Copying = false) override;
 virtual const char*			name					() const override;
 virtual const char*			name_replace			() const override;

@@ -4,6 +4,7 @@
 #include "r__occlusion.h"
 
 #include "PSLibrary.h"
+#include "FBasicVisual.h"
 
 #include "r__types.h"
 #include "r4_rendertarget.h"
@@ -28,6 +29,7 @@ class CGlowManager;
 
 class dxRender_Visual;
 class CLightR_Manager;
+class Fvisual;
 
 // definition
 class RENDER_API CRender	:	public R_dsgraph_structure
@@ -90,14 +92,14 @@ public:
 	}			stats;
 public:
 	// Sector detection and visibility
-	CSector*													pLastSector;
-	CSector*													pOutdoorSector;
+	CSector*													pLastSector = nullptr;
+	CSector*													pOutdoorSector = nullptr;
 	Fvector														vLastCameraPos;
-	u32															uLastLTRACK;
+	u32															uLastLTRACK = 0;
 	xr_vector<IRender_Portal*>									Portals;
 	xr_vector<IRender_Sector*>									Sectors;
 	CDB::COLLIDER												Sectors_xrc;
-	CDB::MODEL*													rmPortals;
+	CDB::MODEL*													rmPortals = nullptr;
 	CHOM														HOM;
 	R_occlusion													HWOCC;
 
@@ -113,12 +115,12 @@ public:
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
-	CDetailManager*												Details;
+	CDetailManager*												Details = nullptr;
 	CDetailManager*												GetDetails() const;
-	CModelPool*													Models;
-	CWallmarksEngine*											Wallmarks;
+	CModelPool*													Models = nullptr;
+	CWallmarksEngine*											Wallmarks = nullptr;
 
-	CRenderTarget*												Target;			// Render-target
+	CRenderTarget*												Target = nullptr;			// Render-target
 
 	CLight_DB													Lights;
 	xr_vector<light*>											Lights_LastFrame;
@@ -180,6 +182,14 @@ private:
 	void							CollectMainDynamic			(bool deffered, bool dont_test_sectors);
 	void							CollectMainRenderable		(ISpatial* spatial, bool deffered);
 	void							RenderMainDynamic			();
+	void							RenderSceneGraphWireframe	();
+	u32								WireframeMode = 0;
+	u16								WireframeObjectId = u16(-1);
+	void							set_wireframe_mode(u32 mode, u16 objectId) override
+	{
+		WireframeMode = mode <= 2 ? mode : 0;
+		WireframeObjectId = objectId;
+	}
 
 public:	
 	void							render_main					(bool deffered, bool zfill = false);
@@ -358,6 +368,22 @@ public:
 
 	virtual void level_Load(IReader*) override;
 	virtual void level_Unload() override;
+	bool HasLevelScene() const override { return b_loaded; }
+
+	IRender_interface* create_scene() override;
+	void destroy_scene() override;
+	void update_scene() override { OnFrame(); }
+	IRHIShaderResourceView* get_scene_color() const override;
+	IRHIShaderResourceView* get_scene_ui_color() const override;
+	void set_scene_render_target() override;
+	void set_scene_overlay_target() override;
+	IRHIShaderResourceView* get_scene_texture(const char* name) const override;
+	shared_str scene_resource_name(const char* name) const override;
+	const char* scene_resource_prefix() const override { return SceneResourcePrefix.c_str(); }
+	void set_fallback_sky(CEnvironment& env) override;
+	bool IsSecondaryScene = false;
+	xr_string SceneResourcePrefix;
+	static CRender& Current();
 
 	IRHISurface* load_texture(const char*	fname, u32& msize, bool bStaging = false) override;
 	bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override;
@@ -440,6 +466,14 @@ public:
 
 	// Models
 	virtual IRenderVisual*			model_CreateParticles		(const char* name) override;
+	particles_systems::library_interface* particle_library() override { return &PSLibrary; }
+	IParticleDefinition* find_particle_definition(const char* name) override;
+	IParticleDefinition* create_particle_definition(IReader& reader) override;
+	bool validate_particle_definition(IReader& reader) override;
+	void destroy_particle_definition(IParticleDefinition*& definition) override;
+	IRenderVisual* model_CreateParticleDefinition(IParticleDefinition* definition) override;
+	float particle_source_rate(IRenderVisual* visual) const override;
+	bool set_particle_source_rate(IRenderVisual* visual, float rate) override;
 	virtual IRender_DetailModel*	model_CreateDM				(IReader* F);
 	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=0) override;
 	virtual IRenderVisual*			model_CreateChild			(const char* name, IReader* data) override;
@@ -453,6 +487,20 @@ public:
 	EModelLoadState					model_GetState				(const char* name) override;
 	void							models_WaitRequests			() override;
 	void							models_GetLoaded			(xr_vector<shared_str>& Names) override;
+
+	// Runtime terrain scene: one synthetic outdoor sector whose root is a
+	// runtime-built terrain visual, for levels without compiled geometry.
+	// Owned by CRender members (never registered in Visuals/ModelPool).
+	virtual IRenderVisual*			CreateRuntimeTerrainScene	(const Fvector* positions, u32 vertCount, const u32* indices, u32 indexCount, float uvWorldScale, const char* textureName, IRenderRuntimeBufferAllocator* bufferAllocator = nullptr) override;
+	virtual void					DestroyRuntimeTerrainScene	() override;
+	virtual bool					HasRuntimeTerrainScene		() const override	{ return RuntimeTerrainVisual != nullptr; }
+
+	CSector*						RuntimeTerrainSector = nullptr;
+	Fvisual*						RuntimeTerrainVisual = nullptr;
+	IRenderRuntimeBufferAllocator*	RuntimeTerrainBufferAllocator = nullptr;
+	SRuntimeBufferSlice				RuntimeTerrainVertexSlice;
+	SRuntimeBufferSlice				RuntimeTerrainIndexSlice;
+	u32								RuntimeTerrainDrawCalls = 0;
 
 	// Occlusion culling
 	virtual bool					occ_visible					(vis_data&	V) override;
@@ -557,4 +605,13 @@ private:
 	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 };
 
-extern RENDER_API CRender			RImplementation;
+extern RENDER_API CRender PrimaryRender;
+inline CRender& CRender::Current()
+{
+	CRender& scene = ::Render != nullptr ? *static_cast<CRender*>(::Render) : PrimaryRender;
+	if (scene.Models != nullptr)
+		scene.Models->ActivateMotions();
+	return scene;
+}
+// Legacy R4 call sites resolve the scene activated by their owning session.
+#define RImplementation (CRender::Current())

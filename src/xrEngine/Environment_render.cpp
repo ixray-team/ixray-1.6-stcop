@@ -59,7 +59,8 @@ void CEnvironment::RenderLast()
 
 void CEnvironment::OnDeviceCreate()
 {
-	m_pRender->OnDeviceCreate();
+	if (!SharedRenderer)
+		m_pRender->OnDeviceCreate();
 
 	// weathers
 	{
@@ -87,7 +88,8 @@ void CEnvironment::OnDeviceCreate()
 
 void CEnvironment::OnDeviceDestroy()
 {
-	m_pRender->OnDeviceDestroy();
+	if (!SharedRenderer)
+		m_pRender->OnDeviceDestroy();
 
 	// weathers
 	{

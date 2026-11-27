@@ -11,13 +11,27 @@
 #include "object_factory_space.h"
 #include "object_item_abstract.h"
 
+class CScriptEngine;
+
 class CObjectItemScript : public CObjectItemAbstract {
 protected:
 	typedef CObjectItemAbstract inherited;
 
-protected:
-	mutable luabind::object								m_client_creator;
-	mutable luabind::object								m_server_creator;
+	struct SCreators
+	{
+#ifndef NO_XR_GAME
+		luabind::object Client;
+#endif
+		luabind::object Server;
+	};
+
+	xr_map<const CScriptEngine*, SCreators> Creators;
+	const SCreators* FindCreators() const;
+
+public:
+	void AddCreators(const CObjectItemScript& other);
+	void ReleaseCreators(const CScriptEngine* engine);
+	bool HasCreators(const CScriptEngine* engine) const;
 
 public:
 												CObjectItemScript	(

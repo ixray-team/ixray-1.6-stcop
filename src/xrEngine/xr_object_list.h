@@ -4,6 +4,7 @@
 
 // refs
 class	ENGINE_API	CObject;
+class	ENGINE_API	IGame_Level;
 class	NET_Packet	;
 
 class	ENGINE_API 				CObjectList
@@ -41,8 +42,10 @@ public:
 	void						relcase_unregister	(int*);
 
 public:
+	IGame_Level* OwnerLevel = nullptr;
+
 	// methods
-								CObjectList			( );
+								CObjectList			(IGame_Level* owner = nullptr);
 								~CObjectList		( );
 
 	CObject*					FindObjectByName	( shared_str	name	);
@@ -53,6 +56,7 @@ public:
 	void						Unload				( );
 
 	CObject*					Create				( const char*		name	);
+	bool						RegisterExternal	( CObject& object );
 	void						Destroy				( CObject*		O		);
 
 	void						SingleUpdate		( CObject*		O		);

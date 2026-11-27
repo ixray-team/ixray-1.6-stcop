@@ -315,6 +315,27 @@ void dxRenderDeviceRender::Clear()
 
 void DoAsyncScreenshot();
 
+void dxRenderDeviceRender::CopyFinalSceneTo(IRHIRenderTargetView* destination)
+{
+	// The frame's final scene color sits in the target's back-buffer surface
+	// after CRender::Render(); the gamma pass converts it into any destination.
+	// This only reads the pipeline's frame - no pipeline target is redirected.
+	if (destination == nullptr || RImplementation.Target == nullptr)
+		return;
+	RImplementation.Target->PhaseGammaApply(destination);
+}
+
+IRHIShaderResourceView* dxRenderDeviceRender::GetFinalSceneTexture()
+{
+	// rt_Back_Buffer holds the pure scene (post-combine, pre-UI); the LUT target
+	// additionally carries the menu/console UI on top, which a viewer viewport
+	// must not pick up.
+	CRT* bb = (RImplementation.Target != nullptr) ? RImplementation.Target->rt_Back_Buffer._get() : nullptr;
+	if (bb == nullptr || bb->pTexture._get() == nullptr)
+		return nullptr;
+	return bb->pTexture->get_SRView();
+}
+
 void dxRenderDeviceRender::End()
 {
 
@@ -322,7 +343,6 @@ void dxRenderDeviceRender::End()
 		GPU_EVENT(GAMMA_APPLY);
 		RImplementation.Target->PhaseGammaApply();
 	}
-
 	RCache.OnFrameEnd();
 	{
 		PROF_EVENT("Async Screenshot");

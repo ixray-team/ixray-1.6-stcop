@@ -35,6 +35,7 @@ protected:
 	CDB::MODEL*							geom_SOM;
 	CObjectSpace*						geom_MODEL;
 	CDB::MODEL*							geom_ENV;
+	xrSRWLock							GeometryLock;
 
 	// Containers
 	SoundEnvironment_LIB*				s_environment;
@@ -75,10 +76,16 @@ public:
 	virtual void						set_geometry_occ		( CObjectSpace*	M );
 	virtual void						set_handler				( sound_event*	E );
 	
+	virtual xrSRWLock&					GetGeometryLock() override;
 	virtual CDB::COLLIDER*				get_geometry_db         ( );
 	virtual CDB::MODEL*					get_geometry_env        ( );
 	virtual CDB::MODEL*					get_geometry_som        ( );
 	virtual CObjectSpace*				get_geometry_occ        ( );
+	virtual CDB::MODEL*					swap_geometry_env       ( CDB::MODEL* model );
+	virtual CDB::MODEL*					swap_geometry_som       ( CDB::MODEL* model );
+	virtual CObjectSpace*				swap_geometry_occ       ( CObjectSpace* model );
+	virtual CDB::MODEL*					create_geometry_env     ( IReader* reader, SoundZoneVector& zones );
+	virtual CDB::MODEL*					create_geometry_som     ( IReader* reader );
 
 	virtual void                        debug_draw              ();
 	virtual void						update					(const Fvector& P, const Fvector& D, const Fvector& N );

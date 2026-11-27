@@ -48,6 +48,7 @@ struct sound_slot_state
     XRay::Sound::Mixer::State prev_state;
     XRay::Sound::Mixer::State state;
     XRay::Sound::Mixer::State fake_state;
+    bool Allocated = false;
     u8 flags;
     u32 bus;
     u32 zone_idx;
@@ -99,8 +100,11 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void AddEditorZone(sound_zone_params& params);
     XRSOUND_API void AddZone(sound_zone_params& params);
     XRSOUND_API void ResetZones();
+    XRSOUND_API void SwapZones(SoundZoneVector& zones);
+    XRSOUND_API void PrepareZone(sound_zone_params& params);
     const XRSOUND_API xr_vector<sound_zone_params>& GetZones();
     XRSOUND_API xr_vector<sound_slot_state>& GetSlots();
     XRSOUND_API xrSRWLock& GetUpdateMutex();
     XRSOUND_API xrSRWLock& GetManageMutex();
+    XRSOUND_API xrSRWLock& GetRenderMutex();
 }

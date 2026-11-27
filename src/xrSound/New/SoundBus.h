@@ -67,8 +67,10 @@ void Snd_RenderBuses(float* Output, float MuteVolume);
 // and keeps the capture on for about a second
 bool Snd_ReadBusScope(u32 BusIdx, u32 Channel, float* Out, u32 Frames);
 
+void Snd_AssignZoneBus(sound_zone_params* Zone);
 void Snd_AddZone(sound_zone_params* Params, bool IsEditor);
 void Snd_ResetZones();
+void Snd_SwapZones(SoundZoneVector& Zones);
 u32 Snd_FindZone(const Fvector& Position);
 u32 Snd_GetZoneBus(u32 ZoneIdx);
 const xr_vector<sound_zone_params>& Snd_GetZones();

@@ -185,7 +185,11 @@ void CSpaceRestrictionHolder::unregister_restrictor			(CSpaceRestrictor *space_r
 {
 	shared_str				restrictor_id = space_restrictor->cName();
 	RESTRICTIONS::iterator	I = m_restrictions.find(restrictor_id);
-	VERIFY					(I != m_restrictions.end());
+	if (I == m_restrictions.end())
+	{
+		Msg("! CSpaceRestrictionHolder::unregister_restrictor: '%s' is not registered", restrictor_id.c_str());
+		return;
+	}
 
 	CSpaceRestrictionBridge	*bridge	= (*I).second;
 	m_restrictions.erase	(I);

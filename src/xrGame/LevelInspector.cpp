@@ -511,16 +511,18 @@ ICF void fontselectioncombo(LevelInspector& LI)
 	}
 }
 
-LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
+LevelInspector::LevelInspector(bool hm, bool editorUI) : hud_mode(hm), EditorUI(editorUI), Streaming(!editorUI)
 {
 	shader->create("portal");
 
 	dbg_font = g_FontManager->Fonts[shared_str("ui_font_letterica18_russian")];
+	if (dbg_font == nullptr)
+		dbg_font = UI().Font().pFontMedium;
 
 	tris.reserve(256);
 	lines.reserve(256);
 
-	if (!hud_mode)
+	if (!hud_mode && EditorUI)
 	{
 		hud_prims = new LevelInspector(true);
 
@@ -794,13 +796,14 @@ LevelInspector::~LevelInspector()
 	if (!hud_mode)
 		GImGUIManager->Windows().Unsubscribe("LevelInspector");
 	xr_delete(hud_prims);
+	xr_delete(GraphConfig);
 
 	for (const auto& pair : m_clone_fonts_map)
 	{
 		xr_delete(pair.second);
 	}
 }
-ICF u32 positionToColorWithAlpha(const Fvector& C)
+u32 positionToColorWithAlpha(const Fvector& C)
 {
 #if defined(IXR_WINDOWS) && !defined(IXR_CLANG_BUILD)
 	__m128 result = _mm_add_ps
@@ -840,6 +843,10 @@ ICF u32 positionToColorWithAlpha(const Fvector& C)
 void LevelInspector::OnRender()
 {
 	PROF_EVENT(__FUNCTION__);
+	if (g_pGameLevel == nullptr)
+		return;
+	if (Streaming)
+		key_toggle_mode = true;
 	Fmatrix Pold, Vold, FTold;
 
 
@@ -867,6 +874,8 @@ void LevelInspector::OnRender()
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD))
 		{
+			if (hud_prims == nullptr)
+				hud_prims = new LevelInspector(true, EditorUI);
 			hud_prims->OnRender();
 		}
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_AI_PATHS))
@@ -980,7 +989,8 @@ void LevelInspector::OnRender()
 		}
 	}
 
-	dbg_font->OnRender();
+	if (dbg_font != nullptr)
+		dbg_font->OnRender();
 
 	if (hud_mode)
 	{
@@ -1068,6 +1078,11 @@ void LevelInspector::LinesRender(xr_vector<lvertex>& _lines, bool clear)
 void LevelInspector::DrawWayPoints()
 {
 	PROF_EVENT(__FUNCTION__);
+	if (Streaming)
+	{
+		DrawWayPointsStreaming();
+		return;
+	}
 	constexpr float WAYPOINT_SIZE = 1.5f;
 	constexpr float WAYPOINT_HEIGHT = WAYPOINT_SIZE * .85f;
 	constexpr float WAYPOINT_RADIUS = WAYPOINT_SIZE * .5f;
@@ -1675,14 +1690,23 @@ bool SearchSmooth(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPa
 void LevelInspector::DrawGameGraph()
 {
 	PROF_EVENT(__FUNCTION__);
+	if (Streaming)
+	{
+		DrawGameGraphStreaming();
+		return;
+	}
 	IGameGraph& graph = ai().game_graph();
 	ILevelGraph& lgraph = ai().level_graph();
 	u8 curr_level_id = lgraph.level_id();
 	static u8 last_level_id = curr_level_id;
 
-	string_path S;
-	FS.update_path(S, "$game_config$", "game_graphs.ltx");
-	static CInifile* l_tpIniFile = new CInifile(S);
+	if (GraphConfig == nullptr)
+	{
+		string_path path;
+		FS.update_path(path, "$game_config$", "game_graphs.ltx");
+		GraphConfig = new CInifile(path);
+	}
+	CInifile* l_tpIniFile = GraphConfig;
 
 	struct GraphPointD
 	{
@@ -2036,6 +2060,11 @@ void LevelInspector::DrawGameGraph()
 void LevelInspector::DrawLevelGraph()
 {
 	PROF_EVENT(__FUNCTION__);
+	if (Streaming)
+	{
+		DrawLevelGraphStreaming();
+		return;
+	}
 	static xr_task_group calc_nodes;
 	ILevelGraph& lgraph = ai().level_graph();
 	u8 curr_level_id = lgraph.level_id();
@@ -2642,7 +2671,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, const Fmatrix& xform
 
 		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_BONES_VERTS))
 		{
-			static xr_vector<Fvector> m_vertices;
+			xr_vector<Fvector> m_vertices;
 			m_vertices.reserve(pKinematics->GetFacesCount() * 3);
 
 			pKinematics->EnumBoneVertices(m_vertices);
@@ -3250,7 +3279,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 				selected_info_str += '\n';
 				selected_info_height++;
 			}
-			static xr_vector<xr_string> m_splits;
+			xr_vector<xr_string> m_splits;
 			script_info.Split(m_splits, '\n');
 			for (xr_string& str : m_splits)
 			{
@@ -3321,14 +3350,17 @@ void LevelInspector::DrawObjectsInfo()
 	collide::rq_target test_zones = m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z) ? collide::rqtShape : collide::rqtNone;
 	collide::rq_target test_flags = collide::rq_target(test_zones | test_dynamic | test_static);
 	RD = collide::ray_defs(cam_pos, cam_dir, RQ.range, CDB::OPT_CULL | CDB::OPT_FULL_TEST, test_flags);
-	static LevelInspector* LI = this;
-	LI = this;
+	struct SRaySelectionContext
+	{
+		collide::rq_result* Result;
+		const Flags32* ZoneFlags;
+	} selectionContext = { &RQ, &m_zone_flags };
 	Level().ObjectSpace.RayQuery(
-	RQR, 
+	RQR,
 	RD,
 	[](const collide::rq_result& result, void* params) -> bool
 	{
-		collide::rq_result* RQ = (collide::rq_result*)params;
+		const SRaySelectionContext& context = *static_cast<const SRaySelectionContext*>(params);
 
 		if (result.IsStatic() && result.element >=0)
 		{
@@ -3339,40 +3371,32 @@ void LevelInspector::DrawObjectsInfo()
 				return true;
 			}
 		}
-
-		*RQ = result;
+		*context.Result = result;
 		return false;
 	},
-	&RQ,
+	&selectionContext,
 	[](const collide::ray_defs& rd, CObject* object, void* params) -> bool
 	{
+		const SRaySelectionContext& context = *static_cast<const SRaySelectionContext*>(params);
 		if (object && (object->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_SMART_COVER))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_RESTR))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_RESTR))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_ANOMALY_ZONE))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_LEVEL_CHANGER))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_LEVEL_CHANGER))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_CAMP_ZONE))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_TERRAIN))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_SMART_TERRAIN))
 				return false;
-
-			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SIM_FACTION) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SIM_FACTION) != ESPATIAL_TYPE::NONE && !context.ZoneFlags->test(EZONE_INFO::EZI_SIM_FACTION))
 				return false;
 		}
-
 		return true;
 	},
 	m_selection_text_flags.test(EOBJECT_INFO::EOI_ACTOR) ? nullptr : Level().CurrentViewEntity());
@@ -3460,6 +3484,8 @@ void LevelInspector::DrawObjectsInfo()
 
 void LevelInspector::DrawAIPaths()
 {
+	if (ai().get_alife() == nullptr || g_SpatialSpace == nullptr)
+		return;
 	CFrustum& view_base = ::Render->ViewBase;
 	Fvector& cam_pos = Device.vCameraPosition;
 	g_SpatialSpace->q_sphere(m_objects, 0, ESPATIAL_TYPE::AI_ALIVE, cam_pos, ai().get_alife()->online_distance());
@@ -3889,11 +3915,9 @@ void LevelInspector::DrawSpatials()
 
 void LevelInspector::DrawHOM()
 {
-	if (!Render->GetHOMModel())
-	{
+	if (Render->GetHOMModel() == nullptr)
 		return;
-	}
-	static CDB::COLLIDER xrc;
+	CDB::COLLIDER xrc;
 	xrc.frustum_options(0);
 	xrc.frustum_query(*Render->GetHOMModel(), Render->ViewBase);
 	constexpr u32 hom_lclr = color_rgba(20, 20, 20, 255);
@@ -4132,6 +4156,11 @@ void LevelInspector::DrawCollisionQuery()
 void LevelInspector::DrawCFORM()
 {
 	PROF_EVENT(__FUNCTION__);
+	if (Streaming)
+	{
+		DrawCFORMStreaming();
+		return;
+	}
 	static struct tmp_prim
 	{
 		xr_vector<lvertex> temp_lines;

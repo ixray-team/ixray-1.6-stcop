@@ -51,6 +51,7 @@ protected:
 	CALifeLevelRegistry					*m_level;
 	CSE_ALifeCreatureActor				*m_actor;
 	float								m_process_time;
+	u32								m_invalid_vertex_log_count;
 	xr_vector<CSE_ALifeDynamicObject*>	m_temp;
 
 protected:
@@ -70,6 +71,7 @@ public:
 			void						remove					(CSE_ALifeDynamicObject		*object,	GameGraph::_GRAPH_ID		game_vertex_id,	bool				bUpdateSwitchObjects = true);
 	IC		void						change					(CSE_ALifeDynamicObject		*object,	GameGraph::_GRAPH_ID		game_vertex_id,	GameGraph::_GRAPH_ID	next_game_vertex_id);
 	IC		CALifeLevelRegistry			&level					() const;
+	IC		bool						has_level				() const { return m_level != nullptr; }
 	IC		void						set_process_time		(const float &process_time);
 	IC		CSE_ALifeCreatureActor		*actor					() const;
 	IC		const GRAPH_REGISTRY		&objects				() const;

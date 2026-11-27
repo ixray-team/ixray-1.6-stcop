@@ -85,7 +85,7 @@ public:
 	xrGameSpyServer					();
 	virtual ~xrGameSpyServer		() override;
 
-	virtual EConnect		Connect				(shared_str& session_name, GameDescriptionData & game_descr) override;
+	virtual EConnect		Connect				(shared_str& session_name, GameDescriptionData & game_descr, CLevel* owner) override;
 	virtual void			Update				() override;
 
 //	virtual void			OnCL_Connected		(IClient* C);

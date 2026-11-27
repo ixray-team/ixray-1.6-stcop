@@ -106,6 +106,7 @@ public:
 	virtual bool OfferTalk(CInventoryOwner* talk_partner);
 	virtual void StartTalk(CInventoryOwner* talk_partner, bool start_trade = true);
 	virtual void StopTalk();
+	void DetachTalkPartner();
 	virtual bool IsTalking() const { return m_bTalking; }
 	void SetTalkPartner(CInventoryOwner* talk_partner);
 	void SetTalking(bool talking);

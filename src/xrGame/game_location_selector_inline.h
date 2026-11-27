@@ -48,6 +48,12 @@ IC	void CGameLocationSelector::reinit			(const IGameGraph *graph)
 TEMPLATE_SPECIALIZATION
 IC	void CGameLocationSelector::select_location	(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id_)
 {
+	if (this->m_graph == nullptr || !this->m_graph->valid_vertex_id(start_vertex_id))
+	{
+		dest_vertex_id_ = start_vertex_id;
+		this->m_failed = true;
+		return;
+	}
 	switch (m_selection_type) {
 		case eSelectionTypeMask : {
 			if (this->used())

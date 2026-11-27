@@ -55,7 +55,6 @@ void IGame_Persistent::OnAppStart()
 
 void IGame_Persistent::OnAppEnd()
 {
-	g_pGamePersistent->ixr_framework_onframe.reset();
 	Environment().unload();
 	OnGameEnd();
 
@@ -239,6 +238,8 @@ xr_string IGame_Persistent::GetPrefetchSection(const char* Prefix) const
 
 void IGame_Persistent::Prefetch()
 {
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
+		return;
 	PROF_EVENT("Prefetch");
 	{
 		PROF_EVENT("Prefetch requests");

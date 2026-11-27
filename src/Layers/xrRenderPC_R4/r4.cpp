@@ -3,6 +3,7 @@
 
 #include "r1_GlowManager.h"
 #include "FBasicVisual.h"
+#include "FVisual.h"
 #include "../../xrEngine/xr_object.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -22,7 +23,7 @@
 #include "../../xrEngine/EngineAPI.h"
 #include "r1_LightPPA.h"
 
-CRender RImplementation;
+CRender PrimaryRender;
 
 //////////////////////////////////////////////////////////////////////////
 class CDynamicGlow : public IRender_Glow
@@ -301,12 +302,121 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-// Just two static storage
+IRender_interface* CRender::create_scene()
+{
+	if (IsSecondaryScene || Device.IsEditorMode())
+		return nullptr;
+
+	xrCriticalSectionGuard contextGuard(&Engine.Sheduler.UpdateMutex());
+	CRender* scene = new CRender();
+	scene->IsSecondaryScene = true;
+	// Definitions are immutable and owned by the primary renderer; scenes own
+	// their particle instances, not a second global PAC library.
+	scene->PSLibrary.ShareDefinitions(PrimaryRender.PSLibrary);
+	string64 prefix;
+	xr_sprintf(prefix, "scene_%p/", scene);
+	scene->SceneResourcePrefix = prefix;
+	IRender_interface* previous = ::Render;
+	::Render = scene;
+	try
+	{
+		scene->create();
+	}
+	catch (...)
+	{
+		::Render = previous;
+		xr_delete(scene);
+		return nullptr;
+	}
+	::Render = previous;
+	return scene;
+}
+
+void CRender::destroy_scene()
+{
+	if (!IsSecondaryScene)
+		return;
+	destroy();
+	xr_delete(this);
+}
+
+IRHIShaderResourceView* CRender::get_scene_color() const
+{
+	if (Target == nullptr || !Target->rt_Back_Buffer || Target->rt_Back_Buffer->pTexture == nullptr)
+		return nullptr;
+	return Target->rt_Back_Buffer->pTexture->get_SRView();
+}
+
+IRHIShaderResourceView* CRender::get_scene_ui_color() const
+{
+	if (Target == nullptr || !Target->rt_BackbufferLUT || Target->rt_BackbufferLUT->pTexture == nullptr)
+		return nullptr;
+	return Target->rt_BackbufferLUT->pTexture->get_SRView();
+}
+
+void CRender::set_scene_render_target()
+{
+	if (Target != nullptr)
+		Target->u_setrt(Target->rt_BackbufferLUT, 0, 0, 0);
+}
+
+void CRender::set_scene_overlay_target()
+{
+	if (Target != nullptr)
+	{
+		Target->u_setrt(Target->rt_Back_Buffer, 0, 0, 0);
+		rmNormal();
+	}
+}
+
+IRHIShaderResourceView* CRender::get_scene_texture(const char* name) const
+{
+	if (Target == nullptr || name == nullptr)
+		return nullptr;
+	if (0 == xr_strcmp(name, "terrain_texture"))
+	{
+		if (RuntimeTerrainVisual == nullptr || RuntimeTerrainVisual->shader._get() == nullptr || RuntimeTerrainVisual->shader->E[0]._get() == nullptr)
+			return nullptr;
+		ShaderElement* element = RuntimeTerrainVisual->shader->E[0]._get();
+		if (element->passes.empty() || element->passes[0] == nullptr || element->passes[0]->T._get() == nullptr)
+			return nullptr;
+		for (const auto& binding : *element->passes[0]->T)
+		{
+			if (binding.first == 0)
+				return binding.second != nullptr ? binding.second->GetView() : nullptr;
+		}
+		return nullptr;
+	}
+	const CRT* texture = nullptr;
+	if (0 == xr_strcmp(name, "final"))
+		texture = Target->rt_Back_Buffer._get();
+	else if (0 == xr_strcmp(name, "color"))
+		texture = Target->rt_Color._get();
+	else if (0 == xr_strcmp(name, "normal"))
+		texture = Target->rt_Normal._get();
+	else if (0 == xr_strcmp(name, "position"))
+		texture = Target->rt_Position._get();
+	else if (0 == xr_strcmp(name, "accumulator"))
+		texture = Target->rt_Accumulator._get();
+	if (texture == nullptr || texture->pTexture == nullptr)
+		return nullptr;
+	return texture->pTexture->get_SRView();
+}
+
+shared_str CRender::scene_resource_name(const char* name) const
+{
+	if (name == nullptr || SceneResourcePrefix.empty() || strncmp(name, "$user$", 6) != 0)
+		return shared_str(name);
+	xr_string qualified = SceneResourcePrefix + (name + 6);
+	return shared_str(qualified.c_str());
+}
+
 void CRender::create()
 {
 	Engine.External.SetSkinningMode();
 
-	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
+	if (!IsSecondaryScene)
+		Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 
 	// hardware
 	o.smapsize			= ps_r2_smapsize;
@@ -326,7 +436,9 @@ void CRender::create()
 
 	// options
 	o.sunstatic = LightingModeIsStaticRender() || !ps_r2_ls_flags.test(R2FLAG_SUN);
-	o.volumetricfog = LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
+	// Volumetric fluid storage is still a device-wide service. A secondary
+	// scene keeps the stock lighting and weather, but does not replace that service.
+	o.volumetricfog = !IsSecondaryScene && LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows = Core.ParamsData.test(ECoreParams::noshadows);
 	o.distortion_enabled = !Core.ParamsData.test(ECoreParams::nodistort);
 	o.distortion = o.distortion_enabled;
@@ -357,7 +469,9 @@ void CRender::create()
 
 	o.dx11_enable_tessellation = LightingModeIsDynamicRender() && RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
-	// constants
+	// Constant binders dispatch through the active scene; register them once.
+	if (!IsSecondaryScene)
+	{
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
@@ -385,13 +499,18 @@ void CRender::create()
 	DEV->RegisterConstantSetup("test_exp_to_shaders_3", &m_dev_cal3);
 	DEV->RegisterConstantSetup("test_exp_to_shaders_4", &m_dev_cal4);
 
+	}
+
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";
 
 	m_bMakeAsyncSS = false;
 
 	if (LightingModeIsDynamicRender())
-		g_DLSSWrapper.Create();
+	{
+		if (!IsSecondaryScene)
+			g_DLSSWrapper.Create();
+	}
 	else
 		L_Dynamic = new CLightR_Manager();
 
@@ -410,8 +529,9 @@ void CRender::create()
 	}
 	else
 	{
-		Models = new CModelPool();
-		PSLibrary.OnCreate();
+		Models = new CModelPool(!IsSecondaryScene);
+		if (!IsSecondaryScene)
+			PSLibrary.OnCreate();
 	}
 	HWOCC.occq_create(occq_size);
 
@@ -419,30 +539,33 @@ void CRender::create()
 	marker = 0;
 
 	xrRender_apply_tf();
-	::PortalTraverser.initialize();
-
-	if (LightingModeIsDynamicRender())
+	if (!IsSecondaryScene)
 	{
-		FluidManager.Initialize(70, 70, 70);
-		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+		::PortalTraverser.initialize();
+		if (LightingModeIsDynamicRender())
+		{
+			FluidManager.Initialize(70, 70, 70);
+			FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+		}
+		Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
 	}
-
-	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
 }
 
 void CRender::destroy() 
 {
 	ResetSunShadowCache();
-	// Release the editor's lazily created brush resources while the device is still
-	// alive - their destructors dereference DEV, which is null by DLL detach time.
-	DetailLayers_EditorDestroy();
+	DestroyRuntimeTerrainScene();
+	if (!IsSecondaryScene)
+	{
+		DetailLayers_EditorDestroy();
+		if (LightingModeIsDynamicRender())
+			FluidManager.Destroy();
+		::PortalTraverser.destroy();
+	}
 	RainPuddleWater.Destroy();
 
 	m_bMakeAsyncSS = false;
-	if (LightingModeIsDynamicRender())
-		FluidManager.Destroy();
 	xr_delete(L_Dynamic);
-	::PortalTraverser.destroy();
 
 	HWOCC.occq_destroy();
 	xr_delete(Target);
@@ -454,14 +577,17 @@ void CRender::destroy()
 	else
 	{
 		xr_delete(Models);
-		PSLibrary.OnDestroy();
+		if (!IsSecondaryScene)
+			PSLibrary.OnDestroy();
 	}
 	Device.seqFrame.Remove(this);
 	r_dsgraph_destroy();
-	Device.ModelDefferClear = nullptr;
-
-	if (LightingModeIsDynamicRender())
-		g_DLSSWrapper.Destroy();
+	if (!IsSecondaryScene)
+	{
+		Device.ModelDefferClear = nullptr;
+		if (LightingModeIsDynamicRender())
+			g_DLSSWrapper.Destroy();
+	}
 }
 
 void CRender::reset_begin() {
@@ -629,7 +755,12 @@ IRenderVisual* CRender::model_CreateParticles(const char* name) {
 	}
 	else {
 		PS::CPGDef* SG = PSLibrary.FindPGD(name);
-		R_ASSERT3(SG, "Particle effect or group doesn't exist", name);
+		// Missing particle data must not take the game down: the game side
+		// (CParticlesObject) already tolerates a null visual.
+		if (!SG) {
+			Msg("! CRender::model_CreateParticles: particle effect or group '%s' doesn't exist", name);
+			return nullptr;
+		}
 		return Models->CreatePG(SG);
 	}
 }
@@ -828,7 +959,7 @@ xr_string CRender::getShaderParamsDebug()
 
 bool CRender::NeedMotionVectors() const
 {
-	if (LightingModeIsStaticRender())
+	if (LightingModeIsStaticRender() || IsSecondaryScene)
 		return false;
 
 	return (ps_r_scale_mode >= 2) || 

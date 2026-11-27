@@ -53,7 +53,7 @@ public:
 	MonsterSpace::EMovementType					m_tMovementType;
 	DetailPathManager::EDetailPathType			m_tPathType;
 	CObject										*m_tpObjectToGo;
-	const CPatrolPath							*m_path;
+	xr_shared_ptr<const CPatrolPath>			m_path;
 	PatrolPathManager::EPatrolStartType			m_tPatrolPathStart;
 	PatrolPathManager::EPatrolRouteType			m_tPatrolPathStop;
 	Fvector										m_tDestinationPosition;

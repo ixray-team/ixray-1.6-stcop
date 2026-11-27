@@ -385,7 +385,10 @@ void CCreature::UpdateCL	()
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
 
-	update_sound_player			();
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
+		SeqParallelPush(xr_make_delegate(this, &CCreature::update_sound_player));
+	else
+		update_sound_player();
 
 	if (NET.empty())
 	{
@@ -568,11 +571,18 @@ void CCreature::eye_pp_s2()
 	u32 dwDT = dwTime - eye_pp_timestamp;
 	eye_pp_timestamp = dwTime;
 
-	Device.SecondaryTasks.run([=, this]
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
 	{
-		PROF_EVENT("feel_vision_update parallel");
-		feel_vision_update(eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold()); 
-	});
+		feel_vision_update(eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold());
+	}
+	else
+	{
+		Device.SecondaryTasks.run([=]
+		{
+			PROF_THREAD("feel_vision_update parallel");
+			feel_vision_update(eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold());
+		});
+	}
 
 	Device.Statistic->AI_Vis_RayTests.End();
 }
@@ -639,7 +649,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 //		Msg						("%6d : Object [%d][%s][%s] is spawned DEAD",Device.dwTimeGlobal,ID(),*cName(),*cNameSect());
 	}
 
-	if (ai().get_level_graph() && UsedAI_Locations() && (e->ID_Parent == ALife::INVALID_OBJECT_ID)) {
+	if (ai().get_level_graph() && ai().get_game_graph() && UsedAI_Locations() && (e->ID_Parent == ALife::INVALID_OBJECT_ID)) {
 		if (ai().game_graph().valid_vertex_id(E->m_tGraphID))
 			ai_location().game_vertex				(E->m_tGraphID);
 
@@ -729,15 +739,11 @@ void CCreature::net_Destroy()
 {
 	inherited::net_Destroy		();
 	CScriptEntity::net_Destroy	();
-	sound().unload				();
+	if (m_sound_player != nullptr)
+		m_sound_player->unload();
 	movement().net_Destroy		();
 	
-#ifdef DEBUG
-	if (Level().m_level_debug != nullptr)
-	{
-		DBG().on_destroy_object(this);
-	}
-#endif
+	SeqParallelRemove(xr_make_delegate(this, &CCreature::update_sound_player));
 
 	xr_delete				(m_moving_object);
 

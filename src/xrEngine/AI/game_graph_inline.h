@@ -32,6 +32,8 @@ IC	bool IGameGraph::mask											(const _LOCATION_ID M[GameGraph::LOCATION_TYP
 
 IC	float IGameGraph::distance										(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphID1) const
 {
+	if (!valid_vertex_id(tGraphID0) || !valid_vertex_id(tGraphID1))
+		return _GRAPH_ID(-1);
 	const_iterator				i, e;
 	begin						(tGraphID0,i,e);
 	for ( ; i != e; ++i)
@@ -43,14 +45,13 @@ IC	float IGameGraph::distance										(const _GRAPH_ID tGraphID0, const _GRAPH_
 
 IC	bool IGameGraph::accessible										(u32 const vertex_id) const
 {
-	VERIFY						(valid_vertex_id(vertex_id));
-	return						(m_enabled[vertex_id]);
+	return valid_vertex_id(vertex_id) && m_enabled[vertex_id];
 }
 
 IC	void IGameGraph::accessible										(u32 const vertex_id, bool value) const
 {
-	VERIFY						(valid_vertex_id(vertex_id));
-	m_enabled[vertex_id]		= value;
+	if (valid_vertex_id(vertex_id))
+		m_enabled[vertex_id] = value;
 }
 
 IC	bool IGameGraph::valid_vertex_id								(u32 const vertex_id) const
@@ -60,6 +61,12 @@ IC	bool IGameGraph::valid_vertex_id								(u32 const vertex_id) const
 
 IC	void IGameGraph::begin(u32 const vertex_id, const_iterator& start, const_iterator& end) const
 {
+	if (!valid_vertex_id(vertex_id))
+	{
+		start = nullptr;
+		end = nullptr;
+		return;
+	}
 	if (m_edges == nullptr)
 	{
 		end = (start = (const CEdge*)((BYTE*)m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
@@ -83,7 +90,7 @@ IC	const float &IGameGraph::edge_weight							(const_iterator i) const
 
 IC	const IGameGraph::CVertex *IGameGraph::vertex					(u32 const vertex_id) const
 {
-	return						(m_nodes + vertex_id);
+	return valid_vertex_id(vertex_id) ? m_nodes + vertex_id : nullptr;
 }
 
 IC	const u8 &IGameGraph::CHeader::version							() const

@@ -187,6 +187,15 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 					ImGui::MenuItem("Texture Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_TextureEditor)]);
 					ImGui::MenuItem("Quest Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_QuestEditor)]);
 					ImGui::MenuItem("Input", nullptr, &States[static_cast<u8>(EditorUI::Tools_InputManager)]);
+					if (ImGui::BeginMenu("Viewers"))
+				{
+					ImGui::MenuItem("Level Sandbox", nullptr, &States[static_cast<u8>(EditorUI::Tools_LevelViewer)]);
+					ImGui::MenuItem("OGF Viewer", nullptr, &States[static_cast<u8>(EditorUI::Tools_OgfViewer)]);
+					ImGui::MenuItem("Particle Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_ParticleEditor)]);
+					ImGui::MenuItem("AI Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_AiEditor)]);
+					ImGui::MenuItem("Material Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_MaterialEditor)]);
+					ImGui::EndMenu();
+				}
 
 					ImGui::EndMenu();
 				}

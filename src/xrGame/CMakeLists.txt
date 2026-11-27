@@ -260,6 +260,10 @@ else()
 	set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 endif()
 
+if (WIN32)
+	target_link_libraries(xrGame PRIVATE WindowsSDK::DBGHELP)
+endif()
+
 if (NOT IXRAY_UNITYBUILD AND WIN32)
 	set_target_properties(xrGame PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")

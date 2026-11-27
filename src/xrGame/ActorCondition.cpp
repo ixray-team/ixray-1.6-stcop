@@ -377,7 +377,9 @@ void CActorCondition::UpdateBoosters()
 
 	if (m_object == Level().CurrentViewEntity() && !g_dedicated_server)
 	{
-		CurrentGameUI()->UIMainIngameWnd->UpdateBoosterIndicators(m_booster_influences);
+		// HUD is optional (sandbox/viewer sessions run without it).
+		if (CurrentGameUI() != nullptr && CurrentGameUI()->UIMainIngameWnd != nullptr)
+			CurrentGameUI()->UIMainIngameWnd->UpdateBoosterIndicators(m_booster_influences);
 	}
 }
 

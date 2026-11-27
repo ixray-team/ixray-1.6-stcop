@@ -75,6 +75,13 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			}
 			
 			CInventoryItem* invItem = _GO->cast_inventory_item();
+			if (invItem != nullptr && invItem->m_pInventory != nullptr)
+			{
+				// Already inside an inventory: the feel-touch queue can race a
+				// scripted/direct Take of the same object within a frame, and
+				// CInventory::Take asserts on a second take.
+				break;
+			}
 			const bool canTake = invItem && inventory().CanTakeItem(invItem);
 			const bool forceAmmoTake = IsGameTypeSingle() && invItem && invItem->cast_weapon_ammo() != nullptr;
 
@@ -112,8 +119,6 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			P >> id;
 			CObject* Obj					= Level().Objects.net_Find	(id);
 
-//			R_ASSERT2( Obj, make_string<const char*>("GE_OWNERSHIP_REJECT: Object not found, id = %d", id).c_str() );
-			VERIFY2  ( Obj, make_string<const char*>("GE_OWNERSHIP_REJECT: Object not found, id = %d", id) );
 			if ( !Obj ) {
 				Msg                 ( "! GE_OWNERSHIP_REJECT: Object not found, id = %d", id );
 				break;
@@ -131,7 +136,6 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			Msg("--- Actor [%d][%s]  %s  [%d][%s]", ID(), Name(), act, GO->ID(), GO->cNameSect().c_str());
 #endif // MP_LOGGING
 			
-			VERIFY( GO->H_Parent() );
 			if ( !GO->H_Parent() )
 			{
 				Msg("! ERROR: Actor [%d][%s] tries to reject item [%d][%s] that has no parent", 

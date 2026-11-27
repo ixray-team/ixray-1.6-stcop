@@ -250,21 +250,22 @@ extern bool isGodMode();
 
 void CEntity::KillEntity(ALife::_OBJECT_ID whoID, bool bypass_actor_check /*AVO: added for actor_before_death callback*/)
 {
-	if (IsGameTypeSingle() && (this->ID() == Actor()->ID()) && (bypass_actor_check != true))
+	CActor* ActorEntity = cast_actor();
+	if (IsGameTypeSingle() && ActorEntity != nullptr && (bypass_actor_check != true))
 	{
 #ifndef MASTER_GOLD
 		if (isGodMode())
 		{
 			luabind::functor<void> functor;
 			R_ASSERT2(ai().script_engine().functor(m_onSkipKillActor, functor), "failed to get OnSkipKillActor functor");
-			functor(Actor(), 0);
+			functor(ActorEntity, 0);
 			return;
 		}
 #endif // MASTER_GOLD
 
-		Actor()->RegisterPlayerDeath();
-		Actor()->use_HolderEx(nullptr, true);
-		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
+		ActorEntity->RegisterPlayerDeath();
+		ActorEntity->use_HolderEx(nullptr, true);
+		ActorEntity->callback(GameObject::eActorBeforeDeath)(whoID);
 		return;
 	}
 

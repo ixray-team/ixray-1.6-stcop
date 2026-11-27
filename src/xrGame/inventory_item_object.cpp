@@ -104,15 +104,18 @@ bool CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
 	bool res = CPhysicItem::net_Spawn(DC);
 	CInventoryItem::net_Spawn(DC);
 
-	if (IKinematicsAnimated* pKA = Visual()->dcast_PKinematicsAnimated())
+	if (Visual())
 	{
-		MotionID motionId = pKA->ID_Cycle_Safe("idle");
-		if (!motionId)
+		if (IKinematicsAnimated* pKA = Visual()->dcast_PKinematicsAnimated())
 		{
-			motionId.set(0, 0);
-		}
+			MotionID motionId = pKA->ID_Cycle_Safe("idle");
+			if (!motionId)
+			{
+				motionId.set(0, 0);
+			}
 
-		pKA->PlayCycle(motionId, false);
+			pKA->PlayCycle(motionId, false);
+		}
 	}
 
 	return res;

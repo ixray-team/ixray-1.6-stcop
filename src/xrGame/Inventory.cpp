@@ -140,6 +140,36 @@ void CInventory::Clear()
 	InvalidateState();
 }
 
+void CInventory::DetachItemOnDestroy(PIItem item)
+{
+	if (item == nullptr)
+	{
+		return;
+	}
+	const bool wasActive = ActiveItem() == item;
+	const auto detach = [item](TIItemContainer& items)
+	{
+		items.erase(std::remove(items.begin(), items.end(), item), items.end());
+	};
+	detach(m_all);
+	detach(m_ruck);
+	detach(m_belt);
+	for (CInventorySlot& slot : m_slots)
+	{
+		if (slot.m_pIItem == item)
+		{
+			slot.m_pIItem = nullptr;
+		}
+	}
+	if (wasActive)
+	{
+		SetActiveSlot(NO_ACTIVE_SLOT);
+	}
+	item->m_pInventory = nullptr;
+	CalcTotalWeight();
+	InvalidateState();
+}
+
 void CInventory::ClearItemFromAllSlots(PIItem pIItem)
 {
 	if (pIItem == nullptr)
@@ -271,7 +301,14 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 {
 	CInventoryItem* pIItem = pObj->cast_inventory_item();
 	VERIFY(pIItem);
-	VERIFY(pIItem->m_pInventory == nullptr);
+	if (pIItem->m_pInventory != nullptr)
+	{
+		// Several takers can race the same item within a frame (the feel-touch
+		// auto-pickup queue, NPC ground-item collection, a scripted/direct Take):
+		// the first owner wins, a later take is ignored instead of asserting.
+		Msg("! CInventory::Take: '%s' already has an inventory owner, skipping the duplicate take", pIItem->object().cNameSect().c_str());
+		return;
+	}
 	VERIFY(bForce || CanTakeItem(pIItem));
 
 	pIItem->m_pInventory = this;

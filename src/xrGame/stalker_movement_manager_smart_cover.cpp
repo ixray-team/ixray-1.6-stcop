@@ -66,6 +66,33 @@ void stalker_movement_manager_smart_cover::reinit	()
 	m_target.construct				(this);
 }
 
+void stalker_movement_manager_smart_cover::on_cover_manager_clear()
+{
+	cleanup_after_animation_selector();
+	if (m_animation_selector != nullptr)
+	{
+		m_animation_selector->finalize();
+		unbind_global_selector();
+	}
+	if (m_current.cover() != nullptr)
+		object().character_physics_support()->set_use_hit_anims(true);
+	m_current_transition = nullptr;
+	m_current_transition_animation = nullptr;
+	m_path.clear();
+	m_temp_loophole_path.clear();
+	m_current.~stalker_movement_params();
+	new (&m_current) stalker_movement_params();
+	m_target.~stalker_movement_params();
+	new (&m_target) stalker_movement_params();
+	m_current.construct(this);
+	m_target.construct(this);
+	m_entering_smart_cover_with_animation = false;
+	m_non_animated_loophole_change = false;
+	m_enter_cover_id = "";
+	m_enter_loophole_id = "";
+	m_enter_animation = MotionID();
+}
+
 void stalker_movement_manager_smart_cover::update	(u32 time_delta)
 {
 	if (object().getDestroy())

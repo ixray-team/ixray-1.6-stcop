@@ -57,6 +57,7 @@ bool CLevel::synchronize_map_data()
 	{
 		Msg("Wait map data time out: reconnecting...");
 		MakeReconnect();
+		if (!LevelDesc.Parallel)
 		g_loading_events.erase(++g_loading_events.begin(), g_loading_events.end());
 		return true;
 	}
@@ -72,6 +73,7 @@ bool CLevel::synchronize_map_data()
 	{
 		Msg("! Incorect map or version, reconnecting...");
 		MakeReconnect();
+		if (!LevelDesc.Parallel)
 		g_loading_events.erase(++g_loading_events.begin(), g_loading_events.end());
 		return true;
 	}
@@ -103,11 +105,10 @@ bool	CLevel::synchronize_client()
 #ifdef DEBUG
 	Msg("--- Waiting for server configuration...");
 #endif // #ifdef DEBUG
-	if(Server)
-	{
-		ClientReceive();
-		Server->Update();
-	}	// if OnClient ClientReceive method called in upper invokation
+	ClientReceive();
+	if (LevelDesc.RemoteTransport)
+		Flush_Send_Buffer();
+	UpdateRemoteServer();
 	//Sleep(5); 
 	return !!game_configured;
 }

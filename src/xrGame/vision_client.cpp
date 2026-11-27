@@ -19,8 +19,7 @@ IC	const CEntity &vision_client::object		() const
 
 vision_client::vision_client					(CEntity *object, const u32 &update_interval) :
 	Feel::Vision				(object),
-	m_object					(object),
-	m_time_stamp			(Device.dwTimeGlobal)
+	m_object					(object)
 {
 	VERIFY						(m_object);
 
@@ -65,10 +64,17 @@ void vision_client::eye_pp_s2					()
 	u32							dwTime = Device.dwTimeGlobal;
 	u32							dwDT = dwTime - m_time_stamp;
 	m_time_stamp				= dwTime;
-	Device.SecondaryTasks.run([=, this]()
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
 	{
 		feel_vision_update(m_position, float(dwDT)/1000.f, visual().transparency_threshold());
-	});
+	}
+	else
+	{
+		Device.SecondaryTasks.run([=]()
+		{
+			feel_vision_update(m_position, float(dwDT)/1000.f, visual().transparency_threshold());
+		});
+	}
 
 	Device.Statistic->AI_Vis_RayTests.End	();
 }

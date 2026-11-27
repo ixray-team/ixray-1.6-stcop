@@ -22,7 +22,7 @@ IC	GameGraph::_LEVEL_ID CALifeLevelRegistry::level_id	() const
 
 IC	void CALifeLevelRegistry::add				(CSE_ALifeDynamicObject *object)
 {
-	if (ai().game_graph().vertex(object->m_tGraphID)->level_id() != level_id())
+	if (object == nullptr || !ai().game_graph().valid_vertex_id(object->m_tGraphID) || ai().game_graph().vertex(object->m_tGraphID)->level_id() != level_id())
 		return;
 
 #ifdef DEBUG

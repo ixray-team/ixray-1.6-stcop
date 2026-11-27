@@ -158,7 +158,7 @@ void CPHFracturesHolder::InitNewElement(CPHElement* element, const Fmatrix& shif
 void CPHFracturesHolder::PhTune(dBodyID body)
 {
 	//iterate through all body's joints and set joints feedbacks where is not already set
-	//contact feedbacks stored in global storage - ContactFeedBacks wich cleared on each step
+	//contact feedbacks are owned by the current physics world and reset on each step
 	//breacable joints already has their feedbacks, 
 	//feedbacks for rest noncontact joints stored in m_feedbacks in runtime in this function and
 	//and killed by destructor
@@ -170,12 +170,12 @@ void CPHFracturesHolder::PhTune(dBodyID body)
 
 		if (dJointGetType(joint) == dJointTypeContact)
 		{
-			dJointSetFeedback(joint, ContactFeedBacks.add());
+			dJointSetFeedback(joint, ph_world->ContactFeedbacks.add());
 		}
 		else
 		{
 			CPHJoint* ph_joint = (CPHJoint*)dJointGetData(joint);
-			if (!(ph_joint && ph_joint->JointDestroyInfo())) dJointSetFeedback(joint, ContactFeedBacks.add());
+			if (!(ph_joint && ph_joint->JointDestroyInfo())) dJointSetFeedback(joint, ph_world->ContactFeedbacks.add());
 		}
 	}
 }

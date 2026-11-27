@@ -44,6 +44,7 @@ private:
 
 public:
 			u8					m_space_restrictor_type;
+			bool				m_registered_restrictor = false;
 private:
 	IC		void				actual				(bool value) const;
 			void				prepare				() const;

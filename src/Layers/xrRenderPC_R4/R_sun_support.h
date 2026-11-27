@@ -57,7 +57,12 @@ public:
  		compute_planes();
 
 		for( u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++ )
-			VERIFY( light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
+		{
+			const float distance = light_cuboid_polys[i].plane.classify(light_ray.P);
+			if (_debug && distance <= 0.f)
+				Msg("! [sun] plane=%u distance=%.6f light=[%.3f %.3f %.3f]", i, distance, light_ray.P.x, light_ray.P.y, light_ray.P.z);
+			VERIFY(distance > 0.f);
+		}
 
 		int	align_planes[2];
 		int	align_planes_count = 0;

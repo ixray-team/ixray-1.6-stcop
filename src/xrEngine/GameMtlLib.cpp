@@ -93,6 +93,12 @@ void CGameMtlLibrary::Load()
 	string_path			name;
 	if (!FS.exist(name,	_game_data_,GAMEMTL_FILENAME)){
         Msg("! Can't find game material file: %s",name);
+		// Provide a single fallback material so that GetMaterialByIdx(0) and the
+		// "default" name lookup stay valid instead of indexing an empty library.
+		SGameMtl* fallback	= new SGameMtl();
+		fallback->ID		= 0;
+		fallback->m_Name	= "default";
+		materials.push_back	(fallback);
     	return;
     }
 

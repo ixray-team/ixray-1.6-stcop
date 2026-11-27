@@ -25,6 +25,14 @@
 
 extern CSE_ALifeTraderAbstract* ch_info_get_from_id(ALife::_OBJECT_ID id);
 
+using SStatData = SLevelStatisticHuman;
+using TOP_LIST = xr_vector<SStatData>;
+
+TOP_LIST& TopList()
+{
+	return Level().StatisticHumans;
+}
+
 namespace StalkersRanking
 {
 struct Entry
@@ -34,77 +42,31 @@ struct Entry
 	xr_string Name;
 };
 
-static CSE_ALifeTraderAbstract* FindTrader(ALife::_OBJECT_ID Id)
+CSE_ALifeTraderAbstract* FindTrader(ALife::_OBJECT_ID id)
 {
-	if (ai().get_alife() && ai().get_game_graph())
-	{
-		return smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(Id, true));
-	}
-
-	return ch_info_get_from_id(Id);
+	if (ai().get_alife() != nullptr && ai().get_game_graph() != nullptr)
+		return smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(id, true));
+	return ch_info_get_from_id(id);
 }
 
-class Registry
+xr_vector<Entry> Snapshot()
 {
-	xrCriticalSection Lock;
-	xr_vector<ALife::_OBJECT_ID> Ids;
-
-public:
-	void Add(ALife::_OBJECT_ID Id)
+	xr_vector<Entry> entries;
+	for (const SStatData& data : TopList())
 	{
-		if (Id == ALife::INVALID_OBJECT_ID)
-		{
-			return;
-		}
-
-		xrCriticalSectionGuard Guard(Lock);
-		if (std::find(Ids.begin(), Ids.end(), Id) == Ids.end())
-		{
-			Ids.push_back(Id);
-		}
+		if (data.Trader != nullptr && data.Trader->object_id() != ALife::INVALID_OBJECT_ID)
+			entries.push_back({ data.Id, data.Trader->m_rank, data.Trader->m_character_name });
 	}
-
-	void Remove(ALife::_OBJECT_ID Id)
-	{
-		xrCriticalSectionGuard Guard(Lock);
-		std::erase(Ids, Id);
-	}
-
-	xr_vector<Entry> Snapshot()
-	{
-		xr_vector<Entry> Entries;
-		{
-			xrCriticalSectionGuard Guard(Lock);
-			Entries.reserve(Ids.size());
-			for (auto Iterator = Ids.begin(); Iterator != Ids.end();)
-			{
-				const auto* Trader = FindTrader(*Iterator);
-				if (!Trader)
-				{
-					Iterator = Ids.erase(Iterator);
-					continue;
-				}
-
-				Entries.push_back({*Iterator, Trader->m_rank, Trader->m_character_name});
-				++Iterator;
-			}
-		}
-
-		std::stable_sort(Entries.begin(), Entries.end(), [](const Entry& Left, const Entry& Right)
-						 { return Left.Rank > Right.Rank; });
-		return Entries;
-	}
-};
-
-Registry g_Registry;
-
-static int ActorPlace(const xr_vector<Entry>& Entries, ALife::_OBJECT_ID ActorId)
-{
-	const auto Iterator = std::find_if(Entries.begin(), Entries.end(), [ActorId](const Entry& Item)
-									   { return Item.Id == ActorId; });
-	return Iterator != Entries.end() ? static_cast<int>(std::distance(Entries.begin(), Iterator)) : 1;
+	std::stable_sort(entries.begin(), entries.end(), [](const Entry& left, const Entry& right) { return left.Rank > right.Rank; });
+	return entries;
 }
-} // namespace StalkersRanking
+
+int ActorPlace(const xr_vector<Entry>& entries, ALife::_OBJECT_ID actorId)
+{
+	const auto found = std::find_if(entries.begin(), entries.end(), [actorId](const Entry& item) { return item.Id == actorId; });
+	return found != entries.end() ? static_cast<int>(std::distance(entries.begin(), found)) : 1;
+}
+}
 
 CUIStalkersRankingWnd::CUIStalkersRankingWnd()
 {
@@ -192,13 +154,8 @@ void CUIStalkersRankingWnd::Show(bool status)
 
 int get_actor_ranking()
 {
-	const auto* ActorObject = Actor();
-	if (!ActorObject)
-	{
-		return 1;
-	}
-
-	return StalkersRanking::ActorPlace(StalkersRanking::g_Registry.Snapshot(), ActorObject->ID());
+	const auto* actor = Actor();
+	return actor != nullptr ? StalkersRanking::ActorPlace(StalkersRanking::Snapshot(), actor->ID()) : 1;
 }
 
 void CUIStalkersRankingWnd::FillList()
@@ -211,21 +168,21 @@ void CUIStalkersRankingWnd::FillList()
 
 	uiXml.SetLocalRoot						(uiXml.NavigateToNode("stalkers_list",0));
 
-	const auto Entries = StalkersRanking::g_Registry.Snapshot();
-	const auto* ActorObject = Actor();
-	const auto ActorId = ActorObject ? ActorObject->ID() : ALife::INVALID_OBJECT_ID;
+	const auto Entries = StalkersRanking::Snapshot();
+	const auto* actorObject = Actor();
+	const auto actorId = actorObject != nullptr ? actorObject->ID() : ALife::INVALID_OBJECT_ID;
 	if (!Entries.empty())
 	{
-		const int actor_place = StalkersRanking::ActorPlace(Entries, ActorId);
-		const auto ActorEntry = std::find_if(Entries.begin(), Entries.end(), [ActorId](const StalkersRanking::Entry& Item)
-											 { return Item.Id == ActorId; });
+		const int actor_place = StalkersRanking::ActorPlace(Entries, actorId);
+		const auto ActorEntry = std::find_if(Entries.begin(), Entries.end(), [actorId](const StalkersRanking::Entry& Item)
+											 { return Item.Id == actorId; });
 
-		int sz = std::min(Entries.size(), (size_t)m_items_count);
+		const int sz = std::min(Entries.size(), static_cast<size_t>(m_items_count));
 		for (int i = 0; i < sz; ++i)
 		{
 			const auto& Item = Entries[i];
 
-			if (ActorEntry != Entries.end() && (Item.Id == ActorId || (i == m_items_count - 1 && actor_place > m_items_count - 1)))
+			if (ActorEntry != Entries.end() && (Item.Id == actorId || (i == m_items_count - 1 && actor_place > m_items_count - 1)))
 			{
 				AddActorItem(&uiXml, actor_place + 1, *ActorEntry);
 			}
@@ -371,12 +328,22 @@ bool CUIStalkersRankingWnd::OnGamepadKeyHold(int id)
 
 void add_human_to_top_list(ALife::_OBJECT_ID id)
 {
-	StalkersRanking::g_Registry.Add(id);
+	if (id == ALife::INVALID_OBJECT_ID)
+		return;
+	CSE_ALifeTraderAbstract* trader = StalkersRanking::FindTrader(id);
+	if (trader == nullptr)
+		return;
+	SStatData data{ id, trader };
+	auto& list = TopList();
+	list.erase(std::remove(list.begin(), list.end(), data), list.end());
+	list.push_back(data);
 }
 
 void remove_human_from_top_list(ALife::_OBJECT_ID id)
 {
-	StalkersRanking::g_Registry.Remove(id);
+	SStatData data{ id, nullptr };
+	auto& list = TopList();
+	list.erase(std::remove(list.begin(), list.end(), data), list.end());
 }
 
 

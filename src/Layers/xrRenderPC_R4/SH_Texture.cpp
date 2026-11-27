@@ -596,7 +596,7 @@ void CTexture::LoadImpl()
 			{
 				// Load another texture
 				u32	mem = 0;
-				pSurface = ::RImplementation.texture_load(buffer, mem);
+				pSurface = RImplementation.texture_load(buffer, mem);
 				if (pSurface)
 				{
 					seqDATA.push_back(pSurface);
@@ -613,7 +613,7 @@ void CTexture::LoadImpl()
 	{
 		// Normal texture
 		u32	mem = 0;
-		pSurface = ::RImplementation.texture_load(*cName, mem, true);
+		pSurface = RImplementation.texture_load(*cName, mem, true);
 
 		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
 		{

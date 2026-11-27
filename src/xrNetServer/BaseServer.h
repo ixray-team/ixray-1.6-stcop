@@ -95,6 +95,8 @@ protected:
 	bool							m_bDedicated;
 
 	shared_str						connect_options;
+	bool							DirectConnection = false;
+	bool							DirectConnectionConfigured = false;
 
 	// statistic
 	IServerStatistic		stats;
@@ -136,6 +138,8 @@ public:
 
 	EConnect				Connect(const char* options, GameDescriptionData & game_descr);
 	void					Disconnect();
+	void					SetDirectConnection(bool enabled) { DirectConnection = enabled; DirectConnectionConfigured = true; }
+	bool					UseDirectConnection() const { return DirectConnectionConfigured ? DirectConnection : psNET_direct_connect; }
 
 	IClient*            ID_to_client(ClientID ID, bool ScanAll = false);
 

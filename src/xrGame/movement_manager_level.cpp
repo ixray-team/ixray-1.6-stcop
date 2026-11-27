@@ -20,6 +20,9 @@ void CMovementManager::process_level_path()
 {
 	PROF_EVENT("Build Path/Process Level Path");
 
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+		return;
+
 	if (!level_path().actual() && (m_path_state > ePathStateBuildLevelPath))
 	{
 		m_path_state = ePathStateBuildLevelPath;
@@ -29,12 +32,13 @@ void CMovementManager::process_level_path()
 	{
 		case ePathStateBuildLevelPath:
 		{
-			level_path_builder().setup(
+			if (!level_path_builder().setup(
 				object().ai_location().level_vertex_id(),
 				level_dest_vertex_id(),
 				extrapolate_path(),
 				0
-			);
+			))
+				break;
 
 			if (can_use_distributed_computations())
 			{

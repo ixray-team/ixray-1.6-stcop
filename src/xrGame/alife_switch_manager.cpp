@@ -75,13 +75,19 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject *object, bool update
 
 void CALifeSwitchManager::CollectChildrenTree(CSE_ALifeDynamicObject* Object)
 {
-	SavedChildrenTreeData[Object->ID] = Object->children;
+	auto& children = SavedChildrenTreeData[Object->ID];
+	children.clear();
+	children.reserve(Object->children.size());
 	for (const ALife::_OBJECT_ID ChildID : Object->children)
 	{
-		if (CSE_ALifeDynamicObject* Child = ai().get_alife()->objects().object(ChildID))
+		CSE_ALifeDynamicObject* child = ai().get_alife()->objects().object(ChildID, true);
+		if (child == nullptr)
 		{
-			CollectChildrenTree(Child);
+			Msg("! ALife: skipping missing child %u while taking %u offline", ChildID, Object->ID);
+			continue;
 		}
+		children.push_back(ChildID);
+		CollectChildrenTree(child);
 	}
 }
 
@@ -153,6 +159,20 @@ void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject *object)
 bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject *I)
 {
 	PROF_EVENT("ALife/synchronize_location");
+
+	// check if we do not use ai locations
+	if (!I->used_ai_locations())
+		return				(true);
+
+	// check if we are not attached
+	if (ALife::INVALID_OBJECT_ID != I->ID_Parent)
+		return				(true);
+
+	// An explicitly unloaded navigation resource suspends switching, rather than
+	// making the empty fallback graph look like a loaded graph for another level.
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes() || ai().get_cross_table() == nullptr)
+		return				(false);
+
 #ifdef DEBUG
 	VERIFY3					(ai().level_graph().level_id() == ai().game_graph().vertex(I->m_tGraphID)->level_id(),*I->s_name,I->name_replace());
 	if (!I->children.empty()) {
@@ -165,14 +185,6 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject *I)
 		}
 	}
 #endif // DEBUG
-
-	// check if we do not use ai locations
-	if (!I->used_ai_locations())
-		return				(true);
-
-	// check if we are not attached
-	if (ALife::INVALID_OBJECT_ID != I->ID_Parent)
-		return				(true);
 
 	// check if we are not online and have an invalid level vertex id
 	if	(!I->m_bOnline && !ai().level_graph().valid_vertex_id(I->m_tNodeID))

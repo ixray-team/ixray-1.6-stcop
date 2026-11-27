@@ -7,6 +7,7 @@
 
 // refs
 class  dxRender_Visual;
+struct motions_container;
 namespace PS	{ 
 	struct  SEmitter; 
 };
@@ -47,6 +48,7 @@ private:
 
 	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		//
 	xrCriticalSection			deffered_del_lock;
+	motions_container*		Motions = nullptr;
 
 	xr_task_group				RequestTasks{ ETaskPriority::Background };
 	xr_hash_set<shared_str>		Requested;
@@ -63,8 +65,9 @@ private:
 	void						DestroyBase			(ModelEntry* Entry);
 	void						WaitAll				();
 public:
-                            CModelPool			();
+                            CModelPool			(bool primary = true);
 	virtual 				~CModelPool			();
+	void					ActivateMotions();
 	dxRender_Visual*		Instance_Create		(u32 Type);
 	dxRender_Visual*		Instance_Duplicate	(dxRender_Visual* V);
 	dxRender_Visual*		Instance_Load		(const char* N);

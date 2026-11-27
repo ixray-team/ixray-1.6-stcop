@@ -48,6 +48,7 @@ private:
 	SLayoutDefaults m_layoutDefaults = {};
 	string128 m_functor_str = {};
 	bool m_repeat = false;
+	bool m_actor_binding_warning = false;
 
 public:
 	CUIAchievements(CUIScrollView* parent);

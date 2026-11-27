@@ -266,6 +266,8 @@ bool CBastArtefact::feel_touch_contact(CObject* O)
 void CBastArtefact::setup_physic_shell	()
 {
 	inherited::setup_physic_shell();
+	if (!m_pPhysicsShell)
+		return;	// no shell without a loaded model
 	m_pPhysicsShell->set_PhysicsRefObject(this);
 	m_pPhysicsShell->set_ObjectContactCallback(ObjectContactCallback);
 	m_pPhysicsShell->set_ContactCallback(nullptr);

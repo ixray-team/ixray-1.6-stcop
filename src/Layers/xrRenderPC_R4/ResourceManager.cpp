@@ -95,6 +95,8 @@ static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures, c
 	key += s_matrices ? s_matrices : "";
 	key += "|";
 	key += xr_string::ToString(Engine.External.GetSkinningMode());
+	key += "|";
+	key += ::Render != nullptr ? ::Render->scene_resource_prefix() : "";
 	if (RImplementation.IsEditorInstancing())
 	{
 		key += "|inst";
@@ -438,6 +440,7 @@ ref_shader CResourceManager::Create(const char* s_shader, const char* s_textures
 
 void CResourceManager::RecompileShaders()
 {
+	xrCriticalSectionGuard cacheGuard(creationGuard);
 	if (RImplementation.Target)
 	{
 		RImplementation.Target->InvalidateSpotShadowCache();

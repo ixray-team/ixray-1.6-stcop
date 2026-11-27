@@ -27,6 +27,4 @@ public:
 
 IC		CStalkerAnimationDataStorage	&stalker_animation_data_storage	();
 
-extern CStalkerAnimationDataStorage		*g_stalker_animation_data_storage;
-
 #include "stalker_animation_data_storage_inline.h"

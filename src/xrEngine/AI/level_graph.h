@@ -56,6 +56,9 @@ protected:
 	xr_vector<CVertex> SearchNodes;
 	xr_vector<u32> SearchNodeIDs;
 	xr_vector<u8> EditorDeletedNodes;
+	mutable u32 OutOfBoxLogCount = 0;
+	mutable CVertex EmptyVertex = {};
+	CHeader FallbackHeader = {};
 	void RebuildSearchIndex();
 	u32 SearchNodeID(u32 Index) const { return SearchNodeIDs.empty() ? Index : SearchNodeIDs[Index]; }
 
@@ -90,6 +93,7 @@ public:
 	virtual			~ILevelGraph();
 	bool			Search	(u32 start_vertex_id, u32 dest_vertex_id,xr_vector<u32>& OutPath, float MaxRange = type_max(float), u32 MaxIterationCount = 0xFFFFFFFF,u32 MaxVisitedNodeCount = 0xFFFFFFFF) const;
 	u32				SearchNearestVertex	(u32 VertexID , const Fvector & TargetPosition, float Range) const;
+	u32				FindNearestVertex(const Fvector& Position) const { return vertex(Position); }
 
 
 	IC		const_vertex_iterator begin			() const;
@@ -119,6 +123,7 @@ public:
 	IC		u32		value						(const u32 vertex_id,	const_iterator &i) const;
 	IC		const CHeader &header				() const;
 	ICF		bool	valid_vertex_id				(u32 vertex_id) const;
+	bool			has_nodes					() const { return m_nodes != nullptr && m_header != nullptr && m_header->vertex_count() != 0; }
 	IC		const GameGraph::_LEVEL_ID &level_id() const;
 	IC		void	unpack_xz					(const ILevelGraph::CPosition &vertex_position, u32 &x, u32 &z) const;
 	IC		void	unpack_xz					(const ILevelGraph::CPosition &vertex_position, int &x, int &z) const;
@@ -128,6 +133,7 @@ public:
 	template <typename T>
 	IC		void	unpack_xz					(const ILevelGraph::CVertex *vertex, T &x, T &z) const;
 	ICF		CVertex	*vertex						(u32 vertex_id) const;
+	const CVertex* empty_vertex() const { return &EmptyVertex; }
 	ICF		u32		vertex						(const CVertex *vertex_p) const;
 	ICF		u32		vertex						(const CVertex &vertex_r) const;
 	IC		const	Fvector						vertex_position(const ILevelGraph::CPosition &source_position) const;

@@ -53,9 +53,9 @@ xrGameSpyClientData::~xrGameSpyClientData()
 	m_iCDKeyReauthHint = 0;
 }
 //-------------------------------------------------------
-xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name, GameDescriptionData & game_descr)
+xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name, GameDescriptionData & game_descr, CLevel* owner)
 {
-	EConnect res = inherited::Connect(session_name, game_descr);
+	EConnect res = inherited::Connect(session_name, game_descr, owner);
 	if (res!=ErrNoError) return res;
 
 	if ( 0 == *(game->get_option_s		(*session_name,"hname",nullptr)))

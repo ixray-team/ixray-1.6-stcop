@@ -14,6 +14,11 @@
 
 #include "xr_collide_form.h"
 
+IGame_Level& CObject::OwningLevel() const
+{
+	return OwnerLevel != nullptr ? *OwnerLevel : *g_pGameLevel;
+}
+
 inline void CObjectList::o_crow		(CObject*	O)
 {
 	Objects& crows				= get_crows();
@@ -50,22 +55,22 @@ void CObject::MakeMeCrow			()
 	VERIFY							( dwFrame_AsCrow == device_frame_id );
 
 	Props.crow						= 1;
-	g_pGameLevel->Objects.o_crow	(this);
+	OwningLevel().Objects.o_crow	(this);
 }
 
 bool CObject::IsFocused() const
 {
-	return g_pGameLevel->CurrentEntity() == this;
+	return OwningLevel().CurrentEntity() == this;
 }
 
 bool CObject::IsMyCamera() const
 {
-	return g_pGameLevel->CurrentViewEntity() == this;
+	return OwningLevel().CurrentViewEntity() == this;
 }
 
 bool CObject::isLocalPlayer() const
 {
-	return g_pGameLevel->CurrentControlEntity() == this;
+	return OwningLevel().CurrentControlEntity() == this;
 }
 
 void CObject::cName_set			(shared_str N)
@@ -121,7 +126,7 @@ void CObject::processing_activate()
 	Props.bActiveCounter++;
 	if (0 == (Props.bActiveCounter - 1))
 	{
-		g_pGameLevel->Objects.o_activate(this);
+		OwningLevel().Objects.o_activate(this);
 	}
 }
 
@@ -136,7 +141,7 @@ void CObject::processing_deactivate()
 
 	if (0 == Props.bActiveCounter)
 	{
-		g_pGameLevel->Objects.o_sleep(this);
+		OwningLevel().Objects.o_sleep(this);
 	}
 }
 
@@ -177,9 +182,20 @@ void CObject::setVisible(bool _visible, bool _visibleshadow)
 }
 
 //void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->vis.sphere.P);	}
-void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->getVisData().sphere.P);	}
+void	CObject::Center					(Fvector& C)	const
+{
+	if (renderable.visual)
+		renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
+	else
+		C.set(Position());	// visual may be absent (async load / degraded content)
+}
 //float	CObject::Radius					()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->vis.sphere.R;								}
-float	CObject::Radius					()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->getVisData().sphere.R;								}
+float	CObject::Radius					()				const
+{
+	if (renderable.visual)
+		return renderable.visual->getVisData().sphere.R;
+	return 0.5f;	// point-sized fallback
+}
 //const	Fbox&	CObject::BoundingBox	()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->vis.box;									}
 const	Fbox&	CObject::BoundingBox	()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->getVisData().box;									}
 
@@ -273,7 +289,7 @@ void CObject::net_Destroy()
 {
 	VERIFY(getDestroy());
 
-	std::erase_if(g_pGameLevel->scheduled_tasks, [&](const IGame_Level::ScheduledCallbackItem& item)
+	std::erase_if(OwningLevel().scheduled_tasks, [&](const IGame_Level::ScheduledCallbackItem& item)
 	{
 		return item.item_ptr == this;
 	});
@@ -370,7 +386,7 @@ void CObject::UpdateCL			()
 	spatial_update				(base_spu_epsP*5,base_spu_epsR*5);
 
 	// crow
-	if (Parent == g_pGameLevel->CurrentViewEntity())										
+	if (Parent == OwningLevel().CurrentViewEntity())
 		MakeMeCrow	();
 	else if (AlwaysTheCrow())																
 		MakeMeCrow	();
@@ -482,7 +498,7 @@ void CObject::setDestroy			(bool _destroy)
 	Props.bDestroy	= _destroy?1:0;
 	if (_destroy)
 	{
-		g_pGameLevel->Objects.register_object_to_destroy	(this);
+		OwningLevel().Objects.register_object_to_destroy	(this);
 #ifdef DEBUG
 		extern bool debug_destroy;
 		if(debug_destroy)
@@ -492,7 +508,7 @@ void CObject::setDestroy			(bool _destroy)
 		Msg("cl setDestroy [%d][%d]",ID(),Device.dwFrame);
 #endif //#ifdef MP_LOGGING
 	}else
-		VERIFY		(!g_pGameLevel->Objects.registered_object_to_destroy(this));
+		VERIFY		(!OwningLevel().Objects.registered_object_to_destroy(this));
 }
 
 Fvector CObject::get_new_local_point_on_mesh	( u16& bone_id ) const

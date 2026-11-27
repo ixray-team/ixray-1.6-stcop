@@ -17,6 +17,7 @@
 #include "ParticlesObject.h"
 #include "Weapons/Components/HudCartridges.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "Weapons/Components/HudCartridges.h"
 
 #define FLAME_TIME 0.05f
 

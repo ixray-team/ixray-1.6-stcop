@@ -5,6 +5,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "DofManager.h"
 class CMainMenu;
+class CLevel;
 class CUICursor;
 class CParticlesObject;
 class CUISequencer;
@@ -15,18 +16,6 @@ class CGamePersistent:
 	public IEventReceiver
 {
 	using inherited = IGame_Persistent;
-
-	// ambient particles
-	xr_shared_ptr<CParticlesObject>	ambient_particles; 
-    xr_vector<u32>		ambient_sound_next_time; // max snd channels
-	u32					ambient_effect_next_time;
-	u32					ambient_effect_stop_time;
-
-	float				ambient_effect_wind_start;
-	float				ambient_effect_wind_in_time;
-	float				ambient_effect_wind_end;
-	float				ambient_effect_wind_out_time;
-	bool				ambient_effect_wind_on;
 
 	CDofManager Dof;
 
@@ -77,13 +66,16 @@ public:
 	virtual void		OnGameEnd				() override;
 
 	virtual void	_BCL	OnFrame					() override;
+	void					OnFrameMT				() override;
+	void					OnLevelFlow				(CLevel& level);
+	void					OnWeatherFrame			() { WeathersUpdate(); }
 	virtual void			OnEvent					(EVENT E, u64 P1, u64 P2) override;
 
 	virtual void		UpdateGameType			() override;
 
 	virtual void		destroy_particles		(bool all_particles) override;
 	virtual void		UpdatePlayDestroyParticles() override;
-	virtual void		UpdateParticles			() override;
+	virtual	void		UpdateParticles			(const IGame_Level* owner = nullptr) override;
 
 	virtual void		RegisterModel			(IRenderVisual* V) override;
 	virtual float		MtlTransparent			(u32 mtl_idx) override;

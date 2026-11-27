@@ -33,6 +33,8 @@ ICF bool ILevelGraph::valid_vertex_id	(u32 id) const
 
 ICF	ILevelGraph::CVertex	*ILevelGraph::vertex(const u32 vertex_id) const
 {
+	if (m_nodes == nullptr || !valid_vertex_id(vertex_id))
+		return &EmptyVertex;
 	VERIFY				(valid_vertex_id(vertex_id));
 	return				(m_nodes + vertex_id);
 }
@@ -85,6 +87,8 @@ IC	void ILevelGraph::unpack_xz(const ILevelGraph::CVertex *vertex, T &x, T &z) c
 
 ICF	const Fvector ILevelGraph::vertex_position	(const ILevelGraph::CPosition &source_position) const
 {
+	if (m_row_length == 0)
+		return {};
 	Fvector				dest_position;
 	unpack_xz			(source_position,dest_position.x,dest_position.z);
 	dest_position.y 	= (float(source_position.y())/65535)*header().factor_y() + header().box().min.y;
@@ -98,10 +102,24 @@ ICF	const Fvector &ILevelGraph::vertex_position	(Fvector &dest_position, const I
 
 IC	const ILevelGraph::CPosition &ILevelGraph::vertex_position	(ILevelGraph::CPosition &dest_position, const Fvector &source_position) const
 {
-	VERIFY				(iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f) < (int)m_row_length);
-	int					pxz	= iFloor(((source_position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f);
+	// Entities can legitimately leave the AI-map box (walked off the edge, a
+	// physics shove, an off-box spawn): clamp into the box instead of asserting.
+	// Out-of-bounds is a runtime condition, not a programming error.
+	const int			maxRow = m_row_length != 0 ? int(m_row_length) - 1 : 0;
+	const int			maxCol = m_column_length != 0 ? int(m_column_length) - 1 : 0;
+	const int			px0 = iFloor((source_position.x - header().box().min.x)/header().cell_size() + .5f);
+	const int			pz0 = iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f);
+	int					px = px0;
+	int					pz = pz0;
+	clamp				(px, 0, maxCol);
+	clamp				(pz, 0, maxRow);
+	if ((px != px0 || pz != pz0) && OutOfBoxLogCount++ == 0)
+	{
+		Msg("~ [level_graph] position outside AI-map bounds clamped to the nearest node (%.1f %.1f %.1f)",
+			source_position.x, source_position.y, source_position.z);
+	}
+	int					pxz	= px * int(m_row_length) + pz;
 	int					py	= iFloor(65535.f*(source_position.y - header().box().min.y)/header().factor_y() + EPS_S);
-	VERIFY				(pxz < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ);
 	dest_position.xz	(u32(pxz));
 	clamp				(py,0,65535);
 	dest_position.y		(u16(py));
@@ -110,16 +128,15 @@ IC	const ILevelGraph::CPosition &ILevelGraph::vertex_position	(ILevelGraph::CPos
 
 IC  const Fvector ILevelGraph::vertex_position(u32 vertex_id) const
 {
-	if (vertex_id == u32(-1))
-	{
+	if (!valid_vertex_id(vertex_id))
 		return {};
-	}
-	Fvector t = vertex_position(vertex(vertex_id));
-	return t;
+	return vertex_position(vertex(vertex_id));
 }
 
 IC  const Fvector ILevelGraph::vertex_position(const ILevelGraph::CVertex &vertex) const
 {
+	if (!has_nodes())
+		return {};
 	Fvector				position;
 	vertex_position		(position, vertex.position());
 	return				(position);
@@ -127,6 +144,8 @@ IC  const Fvector ILevelGraph::vertex_position(const ILevelGraph::CVertex &verte
 
 IC  const Fvector ILevelGraph::vertex_position(const ILevelGraph::CVertex *vertex) const
 {
+	if (vertex == nullptr || !has_nodes())
+		return {};
 	return				(vertex_position(*vertex));
 }
 
@@ -160,13 +179,12 @@ IC bool ILevelGraph::inside				(const CVertex *vertex, const Fvector &position) 
 
 IC bool	ILevelGraph::inside				(const u32 vertex_id, const ILevelGraph::CPosition &vertex_position) const
 {
-	return				(inside(vertex(vertex_id),vertex_position));
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),vertex_position);
 }
 
 IC bool ILevelGraph::inside				(const u32 vertex_id, const Fvector &position) const
 {
-	bool				b = inside(vertex(vertex_id),position);
-	return				(b);
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),position);
 }
 
 IC bool	ILevelGraph::inside				(const ILevelGraph::CVertex &vertex, const ILevelGraph::CPosition &_vertex_position, const float epsilon) const
@@ -193,12 +211,12 @@ IC bool ILevelGraph::inside				(const CVertex *vertex, const Fvector &position, 
 
 IC bool	ILevelGraph::inside				(const u32 vertex_id, const ILevelGraph::CPosition &vertex_position, const float epsilon) const
 {
-	return				(inside(vertex(vertex_id),vertex_position,epsilon));
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),vertex_position,epsilon);
 }
 
 IC bool ILevelGraph::inside				(const u32 vertex_id, const Fvector &position, const float epsilon) const
 {
-	return				(inside(vertex(vertex_id),position,epsilon));
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),position,epsilon);
 }
 
 IC bool	ILevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) const
@@ -371,7 +389,7 @@ IC	u32	ILevelGraph::value(const u32 vertex_id, const_iterator &i) const
 
 IC	bool ILevelGraph::is_accessible		(const u32 vertex_id) const
 {
-	return IsEditorNodeEnabled(vertex_id) && m_access_mask[vertex_id];
+	return IsEditorNodeEnabled(vertex_id) && vertex_id < m_access_mask.size() && m_access_mask[vertex_id];
 }
 
 IC	void ILevelGraph::set_invalid_vertex(u32 &vertex_id, CVertex **vertex) const
@@ -384,6 +402,8 @@ IC	void ILevelGraph::set_invalid_vertex(u32 &vertex_id, CVertex **vertex) const
 
 IC	const u32 ILevelGraph::vertex_id(const ILevelGraph::CVertex *vertex) const
 {
+	if (m_nodes == nullptr || vertex == nullptr)
+		return u32(-1);
 	VERIFY				(valid_vertex_id(u32(vertex - m_nodes)));
 	return				(u32(vertex - m_nodes));
 }
@@ -401,6 +421,8 @@ IC  Fvector2 ILevelGraph::v2d(const Fvector &vector3d) const
 template <bool bAssignY, typename T>
 IC	bool	ILevelGraph::create_straight_path	(u32 start_vertex_id, const Fvector2 &start_point, const Fvector2 &finish_point, xr_vector<T> &tpaOutputPoints, const T &example, bool bAddFirstPoint, bool bClearPath) const
 {
+	if (!has_nodes())
+		return false;
 	if (!valid_vertex_position(v3d(finish_point)))
 		return				(false);
 

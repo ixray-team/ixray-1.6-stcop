@@ -14,6 +14,7 @@
 class CSE_Abstract;
 class CCreature;
 class CGameObject;
+class CSpaceRestrictionManager;
 
 template <bool add> struct CRestrictionPredicate;
 
@@ -24,6 +25,7 @@ private:
 
 private:
 	CCreature			*m_object;
+	CSpaceRestrictionManager* RestrictionManager = nullptr;
 	mutable bool			m_applied;
 	mutable bool			m_removed;
 	bool					m_actual;

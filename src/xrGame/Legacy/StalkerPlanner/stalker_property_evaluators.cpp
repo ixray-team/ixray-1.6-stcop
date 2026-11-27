@@ -396,13 +396,17 @@ bool CStalkerPropertyEvaluatorPlayerOnThePath::evaluate	()
 	if (!enemy)
 		return					(false);
 
-	if (!object().is_relation_enemy(Actor()))
+	CActor* playerActor = Actor();
+	if (playerActor == nullptr)
+		return false;
+
+	if (!object().is_relation_enemy(playerActor))
 		return					(false);
 
-	if (!m_object->memory().visual().visible_now(Actor()))
+	if (!m_object->memory().visual().visible_now(playerActor))
 		return					(false);
 
-	return						(object().movement().is_object_on_the_way(Actor(),2.f));
+	return						(object().movement().is_object_on_the_way(playerActor,2.f));
 }
 
 //////////////////////////////////////////////////////////////////////////

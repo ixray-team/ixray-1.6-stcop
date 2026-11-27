@@ -155,6 +155,12 @@ void CControlPathBuilderBase::find_target_point_failed()
 
 void CControlPathBuilderBase::find_node()
 {
+	if (!ai().level_graph().valid_vertex_id(m_object->ai_location().level_vertex_id()))
+	{
+		m_target_found.set_node(u32(-1));
+		m_target_found.set_position(m_object->Position());
+		return;
+	}
 	// нода в прямой видимости?
 	m_man->path_builder().restrictions().add_border		(m_object->Position(), m_target_found.position());
 	m_target_found.set_node	( ai().level_graph().check_position_in_direction(m_object->ai_location().level_vertex_id(),m_object->Position(),m_target_found.position()) );

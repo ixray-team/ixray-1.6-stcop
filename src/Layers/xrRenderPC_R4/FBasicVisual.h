@@ -24,6 +24,7 @@ public:
     virtual shared_str getShaderName() override { return shader_name; }
     virtual shared_str getTextureName() override { return texture_name; }
     virtual shared_str getOrigShaderName() override { return orig_shader_name; }
+    virtual shared_str getCompiledShaderName() override;
     virtual shared_str getOrigTextureName() override { return orig_texture_name; }
     virtual void set_shader(shared_str sh_name) override { shader_name = sh_name; }
     virtual void set_texture(shared_str tex_name) override { texture_name = tex_name; }

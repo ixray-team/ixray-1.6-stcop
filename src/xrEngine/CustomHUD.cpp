@@ -13,7 +13,8 @@ CCustomHUD::CCustomHUD()
 
 CCustomHUD::~CCustomHUD()
 {
-	g_hud = nullptr;
+	if (g_hud == this)
+		g_hud = nullptr;
 	Device.seqResolutionChanged.Remove(this);
 }
 

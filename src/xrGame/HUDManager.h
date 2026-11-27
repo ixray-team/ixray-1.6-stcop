@@ -19,6 +19,7 @@ private:
 	CHUDTarget*				m_pHUDTarget;
 	CUIStatic*				m_pPauseStatic = nullptr;
 	bool					b_online;
+	bool					ReadyForFrame() const;
 public:
 	LevelInspector			world_prims = LevelInspector(false);
 	IC void					draw_prims()
@@ -39,6 +40,7 @@ public:
 
 //.				CUI*		GetUI				(){return pUI;}
 		CUIGameCustom*		GetGameUI			(){return pUIGame;}
+		bool				IsOnline			() const { return b_online; }
 
 				void		HitMarked			(int idx, float power, const Fvector& dir);
 				bool		AddGrenade_ForMark	( CGrenade* grn );

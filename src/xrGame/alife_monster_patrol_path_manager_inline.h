@@ -16,8 +16,8 @@ IC	CALifeMonsterPatrolPathManager::object_type &CALifeMonsterPatrolPathManager::
 
 IC	void CALifeMonsterPatrolPathManager::path					(const CPatrolPath *path)
 {
-	m_actual				= m_actual && (m_path == path);
-	m_path					= path;
+	m_actual				= m_actual && (m_path.get() == path);
+	m_path.reset				(path);
 }
 
 IC	void CALifeMonsterPatrolPathManager::path					(const char* path_name)

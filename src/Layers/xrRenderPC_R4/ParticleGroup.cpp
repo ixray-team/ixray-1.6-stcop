@@ -364,8 +364,29 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particles& P, size_t pID,
 		PG->items[param].StartFreeChild(PE,*eff->m_OnDeadChildName, P, pID);
 }
 
+void CParticleGroup::SItem::SetLevelContext(const SParticleLevelContext& context)
+{
+	LevelContext = context;
+}
+
+void CParticleGroup::SetLevelContext(const SParticleLevelContext& context)
+{
+	LevelContext = context;
+	for (SItem& item : items)
+		item.SetLevelContext(context);
+}
+
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
+	{
+		xrCriticalSectionGuard guard(childs_cs);
+		if (root_effect)
+			root_effect->SetLevelContext(LevelContext);
+		for (CParticleEffect* child : children_related)
+			child->SetLevelContext(LevelContext);
+		for (CParticleEffect* child : children_free)
+			child->SetLevelContext(LevelContext);
+	}
 	// PROF_EVENT(__FUNCTION__);
 	if (CParticleEffect* E = root_effect)
 	{

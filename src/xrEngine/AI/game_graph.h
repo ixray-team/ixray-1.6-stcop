@@ -52,6 +52,7 @@ public:
 				bool	SearchNearestVertex			(u32 start_vertex_id,u8 LevelID,u32&Result) const;
 	
 	IC	const IGameLevelCrossTable	&cross_table			() const;
+	bool has_cross_table() const { return m_current_level_cross_table != nullptr; }
 
 public:
 	IC		const CHeader			&header					() const;

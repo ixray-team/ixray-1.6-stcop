@@ -101,7 +101,8 @@ bool CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 	Msg							("IN          : %s",temp1);
 #endif
 
-	Level().space_restriction_manager().restrict	(monster->ID,temp0,temp1);
+	RestrictionManager = &Level().space_restriction_manager();
+	RestrictionManager->restrict	(monster->ID,temp0,temp1);
 
 	actual						(true);
 	
@@ -110,11 +111,21 @@ bool CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 
 void CRestrictedObject::net_Destroy			()
 {
-	Level().space_restriction_manager().unrestrict	(m_object->ID());
+	if (RestrictionManager != nullptr)
+	{
+		RestrictionManager->unrestrict(m_object->ID());
+		RestrictionManager = nullptr;
+	}
 }
 
 u32	CRestrictedObject::accessible_nearest	(const Fvector &position, Fvector &result) const
 {
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+	{
+		result = position;
+		return u32(-1);
+	}
+
 	PROF_EVENT("Restricted Object/Accessible Nearest");
 	VERIFY2						(
 		!accessible(position),

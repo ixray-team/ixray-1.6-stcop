@@ -199,11 +199,21 @@ CSavedGameWrapper::CSavedGameWrapper			(const char* saved_game_name)
 
 		{
 			CGameGraph			graph(*chunk);
-			m_level_id			= graph.vertex(object->m_tGraphID)->level_id();
-			if (graph.header().level_exist(m_level_id))
-				m_level_name = graph.header().level(m_level_id).name();
+			const CGameGraph::CVertex* vertex = graph.vertex(object->m_tGraphID);
+			if (vertex == nullptr)
+			{
+				Msg("! Saved actor graph vertex %u is unavailable in a graph with %u vertices", object->m_tGraphID, graph.header().vertex_count());
+				m_level_id = _LEVEL_ID(-1);
+				m_level_name = "";
+			}
 			else
-				m_level_name = g_pStringTable->translate("ui_st_error");
+			{
+				m_level_id = vertex->level_id();
+				if (graph.header().level_exist(m_level_id))
+					m_level_name = graph.header().level(m_level_id).name();
+				else
+					m_level_name = g_pStringTable->translate("ui_st_error");
+			}
 		}
 
 		chunk->close			();

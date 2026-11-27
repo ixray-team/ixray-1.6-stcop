@@ -81,24 +81,45 @@ public:
 #pragma pack(pop)
 
 const char* LEVEL_GRAPH_NAME = "level.ai";
+
+static xr_string GetDefaultLevelGraphPath()
+{
+	string_path file_name;
+	FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME);
+	return xr_string(file_name);
+}
+
 CLevelGraph::CLevelGraph()
+	: CLevelGraph(GetDefaultLevelGraphPath().c_str())
+{
+}
+
+CLevelGraph::CLevelGraph(const char* filePath)
 {
 	VERIFY(Device.IsEditorMode() == false);
-	string_path file_name;
 
-#ifndef AI_COMPILER
-	FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME);
-#else
-	strconcat(sizeof(file_name), file_name, filename, LEVEL_GRAPH_NAME);
-#endif
+	m_reader = FS.r_open(filePath);
+	const u32 AIVersion = m_reader ? ((const CHeader*)m_reader->pointer())->version() : 0;
+	// NB: CHECK_SPAWN_VERSION is not wrapped in parens, so never negate it inline.
+	const bool versionSupported = CHECK_SPAWN_VERSION(AIVersion);
 
-	m_reader = FS.r_open(file_name);
+	if (m_reader == nullptr || !versionSupported)
+	{
+		if (m_reader == nullptr)
+			Msg("! CLevelGraph: AI-map '%s' is missing, using empty level graph", filePath);
+		else
+			Msg("! CLevelGraph: unsupported AI-map version %u in '%s', using empty level graph", AIVersion, filePath);
+
+		FS.r_close(m_reader);
+		m_header = &FallbackHeader;
+		m_nodes = nullptr;
+		m_row_length = m_column_length = m_max_x = m_max_z = 0;
+		m_access_mask.clear();
+		return;
+	}
 
 	// m_header & data
 	m_header = (CHeader*)m_reader->pointer();
-	const u32 AIVersion = header().version();
-
-	R_ASSERT2(CHECK_SPAWN_VERSION(AIVersion), "Unsupported AI-Map version!");
 	m_reader->advance(sizeof(CHeader));
 
 	switch (AIVersion)
@@ -189,13 +210,22 @@ CLevelGraph::CLevelGraph()
 
 #ifdef DEBUG
 #	ifndef AI_COMPILER
-	sh_debug->create("debug\\ai_nodes", "$null");
+	if (Device.b_is_Ready)
+		sh_debug->create("debug\\ai_nodes", "$null");
 	m_current_level_id = -1;
 	m_current_actual = false;
 	m_current_center = Fvector().set(flt_max,flt_max,flt_max);
 	m_current_radius = Fvector().set(flt_max,flt_max,flt_max);
 #	endif
 #endif
+}
+
+CLevelGraph::CLevelGraph(EmptyTag)
+{
+	m_header = &FallbackHeader;
+	m_nodes = nullptr;
+	m_row_length = m_column_length = m_max_x = m_max_z = 0;
+	m_access_mask.clear();
 }
 
 CLevelGraph::~CLevelGraph()

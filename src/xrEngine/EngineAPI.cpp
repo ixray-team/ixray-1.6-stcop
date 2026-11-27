@@ -106,7 +106,7 @@ void CEngineAPI::InitializeNotDedicated()
 	hRender = Platform::LoadLibrary(r4_name);
 	if (0 == hRender)
 	{
-		Msg("! Failed to load %s", r4_name);
+		Msg("! Failed to load %s (Win32 error %lu)", r4_name, GetLastError());
 		R_CHK(GetLastError());
 	}
 }

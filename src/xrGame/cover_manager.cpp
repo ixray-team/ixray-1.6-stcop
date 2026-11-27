@@ -83,16 +83,27 @@ IC	bool CCoverManager::critical_cover	(const ILevelGraph& Graph, u32 index) cons
 
 void CCoverManager::compute_static_cover	()
 {
-	compute_static_cover	(ai().level_graph());
+	compute_static_cover(ai().level_graph());
 }
 
-void CCoverManager::compute_static_cover	(const ILevelGraph& Graph)
+void CCoverManager::compute_static_cover(const ILevelGraph& Graph)
 {
-	clear					();
-	xr_delete				(m_covers);
-	m_covers				= new CPointQuadTree(Graph.header().box(),Graph.header().cell_size()*.5f,8*65536,4*65536);
-	m_temp.assign			(Graph.header().vertex_count(), 0);
+	clear(true);
+	if (!Graph.has_nodes())
+	{
+		xr_delete(m_covers);
+		m_temp.clear();
+		if (m_smart_covers_storage == nullptr)
+			m_smart_covers_storage = new smart_cover::storage();
+		for (smart_cover::cover* cover : m_smart_covers)
+			cover->on_level_graph_change();
+		m_smart_covers_actual = false;
+		return;
+	}
 
+	xr_delete(m_covers);
+	m_covers = new CPointQuadTree(Graph.header().box(), Graph.header().cell_size() * .5f, 8 * 65536, 4 * 65536);
+	m_temp.assign(Graph.header().vertex_count(), 0);
 	const u32 LevelVertexCount = Graph.header().vertex_count();
 
 	xr_parallel_for(0u, LevelVertexCount, [&](u32 range)
@@ -120,37 +131,35 @@ void CCoverManager::compute_static_cover	(const ILevelGraph& Graph)
 		if (m_temp[i] && critical_cover(Graph, i))
 			m_covers->insert(new CCoverPoint(Graph.vertex_position(Graph.vertex(i)),i));
 
-	VERIFY					(!m_smart_covers_storage);
-	m_smart_covers_storage	= new smart_cover::storage();
-}
-
-void CCoverManager::TakeStaticCover			(CCoverManager& Source)
-{
-	clear					();
-	xr_delete				(m_covers);
-	VERIFY					(!m_smart_covers_storage);
-	m_covers				= Source.m_covers;
-	m_smart_covers_storage	= Source.m_smart_covers_storage;
-	Source.m_covers			= nullptr;
-	Source.m_smart_covers_storage = nullptr;
-	Source.m_temp.clear		();
-}
-
-void CCoverManager::clear_covers			(PointVector &covers)
-{
-	PointVector::iterator	I = covers.begin();
-	PointVector::iterator	E = covers.end();
-	for ( ; I != E; ++I) {
-		if (!(*I)->m_is_smart_cover) {
-			xr_delete		(*I);
-			continue;
-		}
-
-		smart_cover::cover	*cover = (smart_cover::cover*)*I;
-		xr_delete			(cover);
+	if (m_smart_covers_storage == nullptr)
+		m_smart_covers_storage = new smart_cover::storage();
+	for (smart_cover::cover* cover : m_smart_covers)
+	{
+		cover->on_level_graph_change();
+		m_covers->insert(cover);
 	}
-	
-	covers.clear			();
+	m_smart_covers_actual = false;
+}
+
+void CCoverManager::TakeStaticCover(CCoverManager& Source)
+{
+	clear();
+	xr_delete(m_covers);
+	m_covers = Source.m_covers;
+	m_smart_covers_storage = Source.m_smart_covers_storage;
+	Source.m_covers = nullptr;
+	Source.m_smart_covers_storage = nullptr;
+	Source.m_temp.clear();
+}
+
+void CCoverManager::clear_covers(PointVector& covers, bool)
+{
+	for (CCoverPoint* point : covers)
+	{
+		if (!point->m_is_smart_cover)
+			xr_delete(point);
+	}
+	covers.clear();
 }
 
 void CCoverManager::RefreshStaticCoverForEditor()
@@ -215,21 +224,50 @@ void CCoverManager::RefreshStaticCoverForEditor()
 	m_nearest.clear();
 }
 
-void CCoverManager::clear					()
+void CCoverManager::clear(bool preserveSmartCovers)
 {
-	clear_covers(EditorRetiredCovers);
-	if (!get_covers())
-		return;
-
-	covers().all			(m_nearest);
-	clear_covers			(m_nearest);
-	m_covers->clear			();
-	xr_delete				(m_smart_covers_storage);
-	m_smart_covers.clear	();
-	if (m_covers)
+	clear_covers(EditorRetiredCovers, preserveSmartCovers);
+	if (m_covers != nullptr)
 	{
+		m_covers->all(m_nearest);
+		m_covers->clear();
 		xr_delete(m_covers);
 	}
+	clear_covers(m_nearest, preserveSmartCovers);
+	if (!preserveSmartCovers)
+	{
+		while (!m_smart_covers.empty())
+		{
+			Cover* cover = m_smart_covers.back();
+			m_smart_covers.pop_back();
+			DestroySmartCover(cover);
+		}
+		xr_delete(m_smart_covers_storage);
+	}
+	m_smart_covers_actual = false;
+}
+
+void CCoverManager::DestroySmartCover(Cover* cover)
+{
+	if (cover == nullptr)
+		return;
+	cover->object().OnCoverDestroyed(this);
+	xr_delete(cover);
+}
+
+void CCoverManager::RemoveSmartCover(Cover const* cover)
+{
+	const auto found = std::find(m_smart_covers.begin(), m_smart_covers.end(), cover);
+	if (found == m_smart_covers.end())
+		return;
+	Cover* owned = *found;
+	m_smart_covers.erase(found);
+	m_smart_covers_actual = false;
+	if (m_covers != nullptr && !m_covers->empty())
+		m_covers->remove(owned);
+	EditorRetiredCovers.erase(std::remove(EditorRetiredCovers.begin(), EditorRetiredCovers.end(), owned), EditorRetiredCovers.end());
+	m_nearest.erase(std::remove(m_nearest.begin(), m_nearest.end(), owned), m_nearest.end());
+	DestroySmartCover(owned);
 }
 
 namespace smart_cover {
@@ -282,6 +320,8 @@ void CCoverManager::remove_nearby_covers	(smart_cover::cover const &cover, smart
 
 CCoverManager::Cover const *CCoverManager::add_smart_cover	(const char* table_name, smart_cover::object const &object, bool const &is_combat_cover, bool const &can_fire, luabind::object const &loopholes) const
 {
+	if (m_smart_covers_storage == nullptr)
+		return nullptr;
 	Cover					*smart_cover = 
 		new Cover(
 			object,
@@ -291,9 +331,12 @@ CCoverManager::Cover const *CCoverManager::add_smart_cover	(const char* table_na
 			loopholes
 		);
 
-	remove_nearby_covers	(*smart_cover, object);
-	m_covers->insert		(smart_cover);
-
+	if (m_covers != nullptr)
+	{
+		remove_nearby_covers(*smart_cover, object);
+		m_covers->insert(smart_cover);
+	}
+	object.OnCoverCreated(const_cast<CCoverManager*>(this), smart_cover);
 	m_smart_covers.push_back(smart_cover);
 	m_smart_covers_actual	= false;
 
@@ -341,13 +384,8 @@ CCoverManager::Cover *CCoverManager::smart_cover			(shared_str const &cover_id) 
 										id_predicate_less()
 	);
 
-	VERIFY2					(
-		((found != m_smart_covers.end()) && ((*found)->id()._get() == cover_id._get())),
-		make_string<const char*>(
-			"smart_cover [%s] not found",
-			cover_id.c_str()
-		)
-	);
+	if (found == m_smart_covers.end() || (*found)->id() != cover_id)
+		return nullptr;
 
 	return					(*found);
 }

@@ -128,7 +128,7 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 
 	//только если находимся в режиме single
- 	if(!CurrentGameUI()->TalkMenu) 
+	if(CurrentGameUI() == nullptr || !CurrentGameUI()->TalkMenu)
 		return false;
 
 	if(CurrentGameUI()->TalkMenu->IsShown())
@@ -144,7 +144,7 @@ void CActor::OnDisableInfo(shared_str info_id) const
 {
 	CInventoryOwner::OnDisableInfo(info_id);
 
-	if (!CurrentGameUI()->TalkMenu)
+	if (CurrentGameUI() == nullptr || !CurrentGameUI()->TalkMenu)
 		return;
 
 	//только если находимся в режиме single
@@ -155,7 +155,7 @@ void CActor::OnDisableInfo(shared_str info_id) const
 void  CActor::ReceivePhrase		(DIALOG_SHARED_PTR& phrase_dialog)
 {
 	//только если находимся в режиме single
-	if (!CurrentGameUI()->TalkMenu)
+	if (CurrentGameUI() == nullptr || !CurrentGameUI()->TalkMenu)
 		return;
 
 	if(CurrentGameUI()->TalkMenu->IsShown())
@@ -216,9 +216,7 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner, bool disable_break)
 	if(talk_partner->OfferTalk(this))
 	{
 		if (auto* Receiver = GameUi->TopInputReceiver())
-		{
 			Receiver->HideDialog();
-		}
 		StartTalk(talk_partner);
 		bool disableBreakDialog = EngineExternal().ClearSkyMode() ? disable_break : talk_partner->bDisableBreakDialog;
 		GameUi->StartTalk(disableBreakDialog);
@@ -238,21 +236,24 @@ void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
 	bool b_alive = !!pInvOwner->cast_game_object()->cast_entity_alive()->g_Alive();
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty == egdNovice : true;
-	if (renderHUD)
+	// HUD/PDA are optional (sandbox/viewer sessions run without them).
+	if (renderHUD && CurrentGameUI() != nullptr && CurrentGameUI()->UIMainIngameWnd != nullptr)
 	{
 		CurrentGameUI()->UIMainIngameWnd->AnimateContacts(b_alive);
 	}
 
 	Level().MapManager().AddRelationLocation( pInvOwner );
 
-	CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
+	if (CurrentGameUI() != nullptr && CurrentGameUI()->PdaMenu() != nullptr)
+		CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
 }
 
 void CActor::LostPdaContact		(CInventoryOwner* pInvOwner)
 {
 	Level().MapManager().RemoveRelationLocation(pInvOwner);
 
-	CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
+	if (CurrentGameUI() != nullptr && CurrentGameUI()->PdaMenu() != nullptr)
+		CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
 }
 
 void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)

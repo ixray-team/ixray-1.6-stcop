@@ -12,13 +12,48 @@
 #include "object_factory.h"
 
 #ifndef NO_XR_GAME
+#include "ai_space.h"
+#endif
+
+const CObjectItemScript::SCreators* CObjectItemScript::FindCreators() const
+{
+#ifndef NO_XR_GAME
+	const CScriptEngine* engine = g_pScriptEngine;
+#else
+	const CScriptEngine* engine = nullptr;
+#endif
+	const auto it = Creators.find(engine);
+	return it == Creators.end() ? nullptr : &it->second;
+}
+
+void CObjectItemScript::AddCreators(const CObjectItemScript& other)
+{
+	for (const auto& [engine, creators] : other.Creators)
+		Creators[engine] = creators;
+}
+
+void CObjectItemScript::ReleaseCreators(const CScriptEngine* engine)
+{
+	Creators.erase(engine);
+}
+
+bool CObjectItemScript::HasCreators(const CScriptEngine* engine) const
+{
+	return Creators.find(engine) != Creators.end();
+}
+
+#ifndef NO_XR_GAME
 #	include "attachable_item.h"
 
 ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 {
+	const SCreators* creators = FindCreators();
+	if (creators == nullptr)
+		return nullptr;
+
 	ObjectFactory::CLIENT_SCRIPT_BASE_CLASS	*object;
 	try {
-		object	= luabind::object_cast<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS*>(m_client_creator(),luabind::adopt<0>());
+		object	= luabind::object_cast<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS*>(creators->Client(),luabind::adopt<0>());
 	}
 	catch(...) {
 		return	(0);
@@ -29,13 +64,16 @@ ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 
 const std::type_info* CObjectItemScript::client_type() const
 {
-	lua_State* L = m_client_creator.lua_state();
+	const SCreators* creators = FindCreators();
+	if (creators == nullptr || !creators->Client.is_valid())
+		return nullptr;
+	lua_State* L = creators->Client.lua_state();
 	if (L == nullptr)
 	{
 		return nullptr;
 	}
 
-	m_client_creator.pushvalue();
+	creators->Client.pushvalue();
 	const luabind::detail::class_rep* Class = nullptr;
 	if (lua_getmetatable(L, -1) != 0)
 	{
@@ -62,11 +100,14 @@ ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(const char* 
 	typedef ObjectFactory::SERVER_SCRIPT_BASE_CLASS		SERVER_SCRIPT_BASE_CLASS;
 	typedef ObjectFactory::SERVER_BASE_CLASS			SERVER_BASE_CLASS;
 	SERVER_SCRIPT_BASE_CLASS	*object;
+	const SCreators* creators = FindCreators();
+	if (creators == nullptr)
+		return nullptr;
 
 	try {
 		luabind::object	*instance = 0;
 		try {
-			instance	= new luabind::object((luabind::object)(m_server_creator(section)));
+			instance	= new luabind::object((luabind::object)(creators->Server(section)));
 		}
 		catch(const std::exception& e) {
 			Msg			("Exception [%s] raised while creating server object from section [%s]", e.what(),section);
@@ -105,9 +146,11 @@ CObjectItemScript::CObjectItemScript	(
 	inherited								(clsid,script_clsid)
 {
 #ifndef NO_XR_GAME
-	m_client_creator						= client_creator;
+	Creators[g_pScriptEngine].Client = client_creator;
+	Creators[g_pScriptEngine].Server = server_creator;
+#else
+	Creators[nullptr].Server = server_creator;
 #endif
-	m_server_creator						= server_creator;
 }
 
 #ifndef NO_XR_GAME
@@ -119,7 +162,8 @@ CObjectItemScript::CObjectItemScript	(
 ) : 
 	inherited								(clsid,script_clsid)
 {
-	m_client_creator = m_server_creator		= unknown_creator;
+	Creators[g_pScriptEngine].Client = unknown_creator;
+	Creators[g_pScriptEngine].Server = unknown_creator;
 }
 
 #endif

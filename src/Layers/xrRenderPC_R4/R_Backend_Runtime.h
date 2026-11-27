@@ -118,7 +118,7 @@ ICF void CBackend::set_Shader(Shader* S, u32 pass)
 {
 	if (S == nullptr)
 	{
-		Msg("! Not found shader in library!");
+		ReportNullShader();
 		return;
 	}
 

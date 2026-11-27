@@ -41,6 +41,7 @@ public:
 
 private:
 	TREE						*m_tree;
+	NEAREST_MOVING				m_registered_objects;
 
 private:
 	NEAREST_MOVING				m_nearest_moving;
@@ -94,6 +95,7 @@ public:
 
 public:
 			void				on_level_load			();
+			void				on_level_unload			();
 			void				on_object_move			(moving_object *moving_object);
 
 public:

@@ -1441,6 +1441,7 @@ public:
 };
 
 #include "GamePersistent.h"
+#include "ImUtils/Viewer/ViewerSession.h"
 
 class CCC_MainMenu : public IConsole_Command {
 public:
@@ -1468,6 +1469,7 @@ public:
 			}
 			return;
 		}
+		ImUtils::Viewer::RestoreViewerPrimaryContext();
 		MainMenu()->Activate(bWhatToDo);
 	}
 };

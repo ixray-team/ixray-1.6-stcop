@@ -17,6 +17,8 @@
 #include "../../xrEngine/defines.h"
 #include "../../xrCore/Collision/xr_area.h"
 #include "../../xrCore/FS_internal.h"
+#include "../../xrEngine/LevelResources.h"
+#include "../../xrEngine/LevelServices.h"
 
 #ifdef DEBUG_DRAW
 #	include "debug_output.h"
@@ -27,20 +29,39 @@ CPHWorld *ph_world = nullptr;
 
 IPHWorld* physics_world()
 {
-	return ph_world;
+	SLevelServices* services = CurrentLevelServices();
+	return services != nullptr && services->Physics != nullptr ? services->Physics : ph_world;
 }
 
 void  create_physics_world(bool mt, CObjectSpace* os, CObjectList* lo)
 {
-	ph_world = new CPHWorld(); //&commander
+	CPHWorld* world = new CPHWorld();
+	ph_world = world;
+	if (SLevelServices* services = CurrentLevelServices())
+		services->Physics = world;
 	VERIFY(os);
-	ph_world->Create(mt, os, lo);
+	world->Create(mt, os, lo);
 }
 
 void  destroy_physics_world()
 {
-	ph_world->Destroy();
-	xr_delete(ph_world);
+	CPHWorld* world = static_cast<CPHWorld*>(physics_world());
+	if (world == nullptr)
+		return;
+	world->Destroy();
+	if (SLevelServices* services = CurrentLevelServices(); services != nullptr && services->Physics == world)
+		services->Physics = nullptr;
+	if (ph_world == world)
+		ph_world = nullptr;
+	xr_delete(world);
+}
+
+void CleanupPhysicsGeometryClasses()
+{
+	dCloseODE();
+	dCylinderClassUser = -1;
+	dRayMotionsClassUser = -1;
+	dTriListClass = -1;
 }
 
 CObjectSpace*  create_object_space()
@@ -60,7 +81,7 @@ CObjectSpace* mesh_create_object_space(const XRay::CForm::IFormat& CForm, CDB::b
 	CObjectSpace* os = new CObjectSpace();
 	g_SpatialSpace				= new ISpatial_DB	();
 	g_SpatialSpacePhysic		= new ISpatial_DB	();
-	os->Create( CForm, build_callback);
+	os->Create(CForm, build_callback, nullptr, false);
 	return os;
 }
 
@@ -78,7 +99,6 @@ void CPHMesh ::Create(dSpaceID space, dWorldID world)
 void CPHMesh::Destroy()
 {
 	dGeomDestroy(Geom);
-	dTriListClass = -1;
 }
 
 ///////////CPHWorld/////////////////////////////////////////////////////////
@@ -154,7 +174,12 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 	m_object_space = os;
 	m_level_objects = lo;
 
-	Device.AddSeqFrame(this, mt);
+	// A parallel (viewer sandbox) session's physics world is stepped by its
+	// owner's tick on the primary thread; the global engine sequences belong to
+	// the primary session and would step this world concurrently without the
+	// session's context lent.
+	if (!CurrentLevelIsParallel())
+		Device.AddSeqFrame(this, mt);
 
 #ifndef ODE_SLOW_SOLVER
 	dWorldSetAutoEnableDepthSF1(phWorld, 100000000);
@@ -175,15 +200,18 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 
 	StepNumIterations(phIterations);
 	SetStep(ph_console::ph_step_time);
+	Msg("* [physics] create world %p contact-group %p", this, ContactGroup);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
 void CPHWorld::Destroy()
 {
+	Msg("* [physics] destroy world %p global %p contact-group %p mesh %p ray %p", this, ph_world, ContactGroup, Mesh.GetGeom(), m_motion_ray);
 	r_spatial.clear();
 
 	Mesh.Destroy();
+	Msg("* [physics] mesh destroyed %p", this);
 
 #ifdef DEBUG
 	debug_output().PH_DBG_Clear();
@@ -191,15 +219,16 @@ void CPHWorld::Destroy()
 	dGeomDestroy(m_motion_ray);
 	dJointGroupEmpty(ContactGroup);
 	dJointGroupDestroy(ContactGroup);
+	ContactGroup = nullptr;
+	Msg("* [physics] contacts destroyed %p", this);
 
-	ContactFeedBacks.clear();
+	ContactFeedbacks.clear();
+	Msg("* [physics] feedback cleared %p", this);
 	ContactEffectors.clear();
+	Msg("* [physics] effectors cleared %p", this);
 
-	dCloseODE();
-
-	dCylinderClassUser=-1;
-	dRayMotionsClassUser=-1;
-
+	// Geometry classes are shared by every level's world and are released by
+	// clean_game_globals after all worlds have been destroyed.
 	Device.RemoveSeqFrame( this );
 	b_exist=false;
 }
@@ -371,7 +400,7 @@ void CPHWorld::Step()
 	debug_output().dbg_contacts_num()=ContactGroup->num;
 #endif
 	dJointGroupEmpty(ContactGroup);//this is to be called after PhDataUpdate!!!-the order is critical!!!
-	ContactFeedBacks.empty();
+	ContactFeedbacks.empty();
 	ContactEffectors.empty();
 }
 
@@ -403,7 +432,7 @@ void CPHWorld::StepTouch()
 	}
 
 	dJointGroupEmpty(ContactGroup);
-	ContactFeedBacks.empty();
+	ContactFeedbacks.empty();
 	ContactEffectors.empty();
 }
 
@@ -591,4 +620,4 @@ void CPHWorld::GetState(V_PH_WORLD_STATE& state)
 void CPHWorld::StepNumIterations(int num_it)
 {
 	dWorldSetQuickStepNumIterations(nullptr, num_it);
-}
+}

@@ -276,6 +276,16 @@ void CRender::PrepareSunCascade(u32 Index)
 	PrepareTimer.Start();
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
 
+	// A degenerate/NaN sun direction or camera transform (an unmixed environment
+	// on a procedural level, or a transient bad weather frame) makes the cascade
+	// math below produce NaNs and trips the invert/normalize/frustum asserts. Skip
+	// this cascade instead of crashing the whole render.
+	if (fuckingsun == nullptr)
+		return;
+	if (!_valid(fuckingsun->direction) || fuckingsun->direction.square_magnitude() < 1e-6f)
+		return;
+	if (!_valid(Device.mView) || !_valid(Device.mProject) || !_valid(Device.vCameraPosition))
+		return;
 	Fvector cam_dir = Device.vCameraDirection;
 
 	if (Index == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))

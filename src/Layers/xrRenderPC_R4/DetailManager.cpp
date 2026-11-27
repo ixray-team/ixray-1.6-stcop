@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DetailManager.h"
 #include "xrRender_console.h"
+#include "../../xrEngine/IGame_Level.h"
 
 extern int ps_trample_enabled;
 
@@ -179,6 +180,7 @@ void CDetailManager::Load()
 void CDetailManager::Unload		()
 {
 	Device.DetailsTask.wait();
+	LevelContext = nullptr;
 	hw_Unload();
 
 	for (CDetail* dt : objects)
@@ -196,6 +198,9 @@ void CDetailManager::Render()
 {
 	PROF_EVENT("Render details");
 	const bool EditorMode = Device.IsEditorMode();
+	LevelContext = g_pGameLevel;
+	if (!EditorMode && LevelContext == nullptr)
+		return;
 	bool in_outdoor = true;
 	if (!EditorMode)
 	{

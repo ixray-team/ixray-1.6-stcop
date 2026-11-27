@@ -134,7 +134,7 @@ IClient* xrServer::client_Find_Get(ClientID ID)
 	ip_address tmp_ip_address;
 
 
-	if (!psNET_direct_connect)
+	if (!OwnerLevel->UseDirectConnection())
 	{
 		GetClientAddress(ID, tmp_ip_address, &dwPort);
 	}
@@ -145,7 +145,7 @@ IClient* xrServer::client_Find_Get(ClientID ID)
 
 	IClient* newCL = client_Create();
 	newCL->ID = ID;
-	if (!psNET_direct_connect)
+	if (!OwnerLevel->UseDirectConnection())
 	{
 		newCL->m_cAddress = tmp_ip_address;
 		newCL->m_dwPort = dwPort;
@@ -200,7 +200,7 @@ void xrServer::client_Destroy(IClient* C)
 			}
 		} while (true);
 
-		if (pOwner)
+		if (pOwner != nullptr && game != nullptr)
 		{
 			game->CleanDelayedEventFor(pOwner->ID);
 		}
@@ -238,7 +238,7 @@ int g_sv_SendUpdate = 0;
 
 void xrServer::Update()
 {
-	if (Level().IsDemoPlayStarted() || Level().IsDemoPlayFinished())
+	if (OwnerLevel == nullptr || OwnerLevel->IsDemoPlayStarted() || OwnerLevel->IsDemoPlayFinished())
 	{
 		return; // diabling server when demo is playing
 	}
@@ -722,6 +722,20 @@ u32 xrServer::OnMessageSync(NET_Packet& P, ClientID sender)
 extern float g_fCatchObjectTime;
 u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadcasting with "flags" as returned
 {
+	if (OwnerLevel != nullptr && g_pGameLevel != OwnerLevel)
+	{
+		struct SMessageCall
+		{
+			xrServer* Server;
+			NET_Packet* Packet;
+			ClientID Sender;
+			u32 Result;
+			void Invoke() { Result = Server->OnMessage(*Packet, Sender); }
+		} call{ this, &P, sender, 0 };
+		OwnerLevel->RunInContext(xr_make_delegate(&call, &SMessageCall::Invoke));
+		return call.Result;
+	}
+
 	u16 type;
 	P.r_begin(type);
 #ifdef DEBUG
@@ -740,7 +754,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 		case M_SPAWN:
 		case M_SPAWN_LOCAL:
 		{
-			if (CL && CL->flags.bLocal)
+			if (CL && (CL->flags.bLocal || LocalClients.contains(sender.value())))
 			{
 				Process_spawn(P, sender);
 			}
@@ -1049,24 +1063,103 @@ bool xrServer::CheckAdminRights(const shared_str& user, const shared_str& pass, 
 	return res;
 }
 
-void xrServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+bool xrServer::AcceptLocalClient(CLevel* client, const ClientConnectionOptions& options, ClientID& clientID)
 {
-	if ((SV_Client && SV_Client->ID == ID) || (psNET_direct_connect))
+	if (client == nullptr || game == nullptr)
+		return false;
+	for (const auto& [id, connected] : LocalClients)
 	{
-		// optimize local traffic
-		Level().OnMessage(data, size);
+		if (connected == client && (clientID.value() == 0 || clientID.value() == id))
+		{
+			clientID.set(id);
+			return true;
+		}
+	}
+	SClientConnectData data;
+	data.clientID.set(NextLocalClientId++);
+	xr_strcpy(data.name, options.user_name);
+	xr_strcpy(data.pass, options.server_pass);
+	data.process_id = 1;
+	IClient* handle = new_client(&data);
+	if (handle == nullptr)
+		return false;
+	handle->server = this;
+	handle->flags.bConnected = true;
+	LocalClients[handle->ID.value()] = client;
+	clientID = handle->ID;
+	if (game->Type() == eGameIDSingle)
+	{
+		xrClientData* localClient = static_cast<xrClientData*>(handle);
+		if (localClient->ps == nullptr)
+		{
+			localClient->ps = game->createPlayerState(nullptr);
+			localClient->ps->m_account.set_player_name(options.user_name);
+		}
+		MSYS_CONFIG config;
+		config.sign1 = 0x12071980;
+		config.sign2 = 0x26111975;
+		SendTo_LL(handle->ID, &config, sizeof(config), net_flags(true, true, true, true));
+		Server_Client_Check(handle);
+		SendConnectResult(handle, 1, 0, (char*)"All Ok");
 	}
 	else
 	{
-		IClient* pClient = ID_to_client(ID);
-		VERIFY2(pClient && pClient->flags.bConnected, "trying to send packet to disconnected client");
-		if (!pClient || !pClient->flags.bConnected)
-		{
-			return;
-		}
-
-		IPureServer::SendTo_Buf(ID, data, size, dwFlags, dwTimeout);
+		AttachNewClient(handle);
 	}
+	return true;
+}
+
+void xrServer::AttachLocalHostClient(CLevel* client)
+{
+	if (client == nullptr)
+		return;
+	LocalClients[1] = client;
+	NextLocalClientId = std::max(NextLocalClientId, 2u);
+}
+
+bool xrServer::ReceiveLocalPacket(ClientID sender, const void* data, u32 size)
+{
+	if (!LocalClients.contains(sender.value()))
+		return false;
+	RecievePacket(data, size, sender.value());
+	return true;
+}
+
+void xrServer::DisconnectLocalClient(ClientID clientID)
+{
+	LocalClients.erase(clientID.value());
+	if (IClient* handle = ID_to_client(clientID))
+		OnCL_Disconnected(handle);
+}
+
+void xrServer::_SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+{
+	const auto it = LocalClients.find(ID.value());
+	if (it != LocalClients.end())
+		it->second->ReceiveLocalPacket(data, size);
+}
+
+void xrServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
+{
+	const auto local = LocalClients.find(ID.value());
+	if (local != LocalClients.end())
+	{
+		local->second->ReceiveLocalPacket(data, size);
+		return;
+	}
+	if (OwnerLevel != nullptr && ((SV_Client != nullptr && SV_Client->ID == ID) || OwnerLevel->UseDirectConnection()))
+	{
+		OwnerLevel->OnMessage(data, size);
+		return;
+	}
+
+	IClient* client = ID_to_client(ID);
+	if (client == nullptr || !client->flags.bConnected)
+	{
+		Msg("! xrServer::SendTo_LL: client %u is not connected", ID.value());
+		return;
+	}
+	IPureServer::SendTo_Buf(ID, data, size, dwFlags, dwTimeout);
 }
 void xrServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
 {
@@ -1386,12 +1479,19 @@ shared_str xrServer::level_version(const shared_str& server_options) const
 
 void xrServer::create_direct_client()
 {
+	if (ID_to_client(ClientID(1)) != nullptr)
+		return;
 	SClientConnectData cl_data;
 	cl_data.clientID.set(1);
 	xr_strcpy(cl_data.name, "single_player");
 	cl_data.process_id = Platform::GetCurrentProcessId();
 
-	new_client(&cl_data);
+	xrClientData* client = static_cast<xrClientData*>(new_client(&cl_data));
+	if (client != nullptr && client->ps == nullptr && game != nullptr)
+	{
+		client->ps = game->createPlayerState(nullptr);
+		client->ps->m_account.set_player_name(cl_data.name);
+	}
 }
 
 
@@ -1806,6 +1906,7 @@ void xrServer::Perform_destroy(CSE_Abstract* object, u32 mode)
 
 	auto object_id = object->ID;
 	entity_Destroy(object);
+	LevelSpawnIds.erase(object_id);
 
 	NET_Packet P;
 	P.w_begin(M_EVENT);
@@ -1856,6 +1957,7 @@ void xrServer::SLS_Clear()
 			entities.clear();
 		}
 	}
+	LevelSpawnIds.clear();
 }
 
 void xrServer::PerformSecretKeysSync(xrClientData* xrCL)
@@ -2070,6 +2172,18 @@ void xrServer::SendConnectionData(IClient* _CL)
 
 void xrServer::OnCL_Connected(IClient* _CL)
 {
+	if (OwnerLevel != nullptr && g_pGameLevel != OwnerLevel)
+	{
+		struct SConnectionCall
+		{
+			xrServer* Server;
+			IClient* Client;
+			void Invoke() { Server->OnCL_Connected(Client); }
+		} call{ this, _CL };
+		OwnerLevel->RunInContext(xr_make_delegate(&call, &SConnectionCall::Invoke));
+		return;
+	}
+
 	xrClientData* CL = (xrClientData*)_CL;
 	CL->net_Accepted = true;
 
@@ -2077,14 +2191,17 @@ void xrServer::OnCL_Connected(IClient* _CL)
 	Perform_game_export();
 	SendConnectionData(CL);
 
-	VERIFY2(CL->ps, "Player state not created");
-	if (!CL->ps)
+	const bool remoteSinglePlayer = OwnerLevel != nullptr && OwnerLevel->GetLevelDesc().RemoteTransport;
+	if (game->Type() != eGameIDSingle || remoteSinglePlayer)
 	{
-		Msg("! ERROR: Player state not created - incorect message sequence!");
-		return;
+		VERIFY2(CL->ps, "Player state not created");
+		if (!CL->ps)
+		{
+			Msg("! ERROR: Player state not created - incorect message sequence!");
+			return;
+		}
+		game->OnPlayerConnect(CL->ID);
 	}
-
-	game->OnPlayerConnect(CL->ID);
 }
 
 void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
@@ -2104,7 +2221,7 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
 	{
 		P.w_u8(0);
 	}
-	P.w_stringZ(Level().m_caServerOptions);
+	P.w_stringZ(OwnerLevel->m_caServerOptions);
 
 	SendTo(CL->ID, P);
 
@@ -2284,8 +2401,9 @@ const char* xrServer::get_map_download_url(const char* level_name, const char* l
 	return ret_url;
 }
 
-xrServer::EConnect xrServer::Connect(shared_str& session_name, GameDescriptionData& game_descr)
+xrServer::EConnect xrServer::Connect(shared_str& session_name, GameDescriptionData& game_descr, CLevel* owner)
 {
+	OwnerLevel = owner;
 #ifdef DEBUG
 	Msg("* sv_Connect: %s", *session_name);
 #endif
@@ -2366,7 +2484,7 @@ void xrServer::AttachNewClient(IClient* CL)
 	msgConfig.sign1 = 0x12071980;
 	msgConfig.sign2 = 0x26111975;
 
-	if (psNET_direct_connect) // single_game
+	if (OwnerLevel->UseDirectConnection()) // single_game
 	{
 		SV_Client = CL;
 		CL->flags.bLocal = 1;
@@ -2379,7 +2497,8 @@ void xrServer::AttachNewClient(IClient* CL)
 	}
 
 	// gen message
-	if (!NeedToCheckClient_GameSpy_CDKey(CL))
+	const bool localSinglePlayerTransport = OwnerLevel != nullptr && OwnerLevel->GetLevelDesc().RemoteTransport && game->Type() == eGameIDSingle;
+	if (!localSinglePlayerTransport && !NeedToCheckClient_GameSpy_CDKey(CL))
 	{
 		//-------------------------------------------------------------
 		Check_GameSpy_CDKey_Success(CL);
@@ -2437,6 +2556,14 @@ void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 
 void xrServer::Disconnect()
 {
+	xr_vector<CLevel*> clients;
+	clients.reserve(LocalClients.size());
+	for (const auto& [id, client] : LocalClients)
+		clients.push_back(client);
+	for (CLevel* client : clients)
+		client->OnSessionTerminate("server stopped");
+	LocalClients.clear();
+
 	if (m_file_transfers)
 	{
 		deinitialize_screenshot_proxies();
@@ -2450,8 +2577,75 @@ void xrServer::Disconnect()
 	xr_delete(game);
 }
 
+bool xrServer::LoadSpawnResource()
+{
+	if (OwnerLevel == nullptr || !OwnerLevel->HasLevelResource(ELevelResource::Spawn))
+		return false;
+	if (game_sv_Single* single = game != nullptr ? game->cast_game_sv_single() : nullptr; single != nullptr && single->custom_sls_default())
+	{
+		single->SetSpawnResourceEnabled(true);
+		SLS_Default();
+		return true;
+	}
+	if (game != nullptr && game->custom_sls_default())
+	{
+		SLS_Default();
+		return true;
+	}
+	string_path spawnPath;
+	if (!FS.exist(spawnPath, "$level$", "level.spawn"))
+		return false;
+	SLS_Default();
+	return true;
+}
+
+bool xrServer::UnloadSpawnResource()
+{
+	if (game_sv_Single* single = game != nullptr ? game->cast_game_sv_single() : nullptr; single != nullptr && single->custom_sls_default())
+	{
+		single->SetSpawnResourceEnabled(false);
+		return true;
+	}
+	if (game != nullptr && game->custom_sls_default())
+	{
+		SLS_Clear();
+		return true;
+	}
+	xr_vector<ALife::_OBJECT_ID> roots;
+	xr_vector<ALife::_OBJECT_ID> remaining;
+	for (const ALife::_OBJECT_ID id : LevelSpawnIds)
+	{
+		CSE_Abstract* entity = ID_to_entity(id);
+		if (entity == nullptr)
+			continue;
+		(entity->ID_Parent == ALife::INVALID_OBJECT_ID ? roots : remaining).push_back(id);
+	}
+	for (const ALife::_OBJECT_ID id : roots)
+	{
+		if (CSE_Abstract* entity = ID_to_entity(id))
+			Perform_destroy(entity, net_flags(true, true));
+	}
+	for (const ALife::_OBJECT_ID id : remaining)
+	{
+		CSE_Abstract* entity = ID_to_entity(id);
+		if (entity == nullptr)
+			continue;
+		if (entity->ID_Parent != ALife::INVALID_OBJECT_ID)
+		{
+			if (CSE_Abstract* parent = game->get_entity_from_eid(entity->ID_Parent))
+				Perform_reject(entity, parent, 2 * NET_Latency);
+		}
+		if (entity->ID_Parent == ALife::INVALID_OBJECT_ID)
+			Perform_destroy(entity, net_flags(true, true));
+	}
+	LevelSpawnIds.clear();
+	return true;
+}
+
 void xrServer::SLS_Default()
 {
+	if (OwnerLevel != nullptr && !OwnerLevel->HasLevelResource(ELevelResource::Spawn))
+		return;
 	if (game->custom_sls_default())
 	{
 		game->sls_default();
@@ -2480,10 +2674,9 @@ void xrServer::SLS_Default()
 			ClientID clientID;
 			clientID.set(0);
 
-#ifdef USE_DESIGNER_KEY
-			CSE_Abstract* entity =
-#endif
-				Process_spawn(P, clientID);
+			CSE_Abstract* entity = Process_spawn(P, clientID);
+			if (entity != nullptr)
+				LevelSpawnIds.insert(entity->ID);
 #ifdef USE_DESIGNER_KEY
 			if (_designer)
 			{
@@ -2893,7 +3086,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
 			xrClientData* c_src = e_src->owner; // ������, ��� ���� ����
 
-			if (c_src->owner->ID == id_src)
+			if (c_src != nullptr && c_src->owner != nullptr && c_src->owner->ID == id_src)
 			{
 				// Main unit
 				P.w_begin(M_EVENT);
@@ -2908,7 +3101,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 
 			//////////////////////////////////////////////////////////////////////////
 			//
-			if (game->Type() == eGameIDSingle)
+			if (game->Type() == eGameIDSingle && c_src != nullptr)
 			{
 				P.w_begin(M_EVENT);
 				P.w_u32(timestamp);
@@ -3399,8 +3592,25 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 	return (true);
 }
 
-CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent, CSE_Abstract* tpExistedEntity)
+CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent, CSE_Abstract* tpExistedEntity, bool idReserved)
 {
+	if (OwnerLevel != nullptr && g_pGameLevel != OwnerLevel)
+	{
+		struct SSpawnCall
+		{
+			xrServer* Server;
+			NET_Packet* Packet;
+			ClientID Sender;
+			bool WithParent;
+			CSE_Abstract* Existing;
+			bool IdReserved;
+			CSE_Abstract* Result;
+			void Invoke() { Result = Server->Process_spawn(*Packet, Sender, WithParent, Existing, IdReserved); }
+		} call{ this, &P, sender, bSpawnWithClientsMainEntityAsParent, tpExistedEntity, idReserved, nullptr };
+		OwnerLevel->RunInContext(xr_make_delegate(&call, &SSpawnCall::Invoke));
+		return call.Result;
+	}
+
 	// create server entity
 	xrClientData* CL = ID_to_client(sender);
 	CSE_Abstract* E = tpExistedEntity;
@@ -3470,7 +3680,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		Phantom->s_flags.set(M_SPAWN_OBJECT_PHANTOM, true);
 
 		// Spawn entity
-		E->ID = PerformIDgen(E->ID);
+		if (!idReserved)
+			E->ID = PerformIDgen(E->ID);
 		E->ID_Phantom = Phantom->ID;
 		E->owner = CL;
 		entities.insert(std::make_pair(E->ID, E));
@@ -3480,6 +3691,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		if (E->s_flags.is(M_SPAWN_OBJECT_PHANTOM))
 		{
 			// Clone from Phantom
+			R_ASSERT(!idReserved);
 			E->ID = PerformIDgen(ALife::INVALID_OBJECT_ID);
 			E->owner = CL; //		= SelectBestClientToMigrateTo	(E);
 			E->s_flags.set(M_SPAWN_OBJECT_PHANTOM, false);
@@ -3495,7 +3707,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 				R_ASSERT(P_);
 				E->ID_Parent = P_->ID;
 			}
-			E->ID = PerformIDgen(E->ID);
+			if (!idReserved)
+				E->ID = PerformIDgen(E->ID);
 			E->owner = CL;
 			entities.insert(std::make_pair(E->ID, E));
 		}
@@ -3590,7 +3803,7 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 {
 	xrClientData* CL = ID_to_client(sender);
 	R_ASSERT2(CL, "Process_update client not found");
-	R_ASSERT(CL->flags.bLocal);
+	R_ASSERT(CL->flags.bLocal || LocalClients.contains(sender.value()));
 
 	// while has information
 	while (!P.r_eof())
@@ -3724,11 +3937,9 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			{
 				break;
 			}
-			if (auto Pending = m_pending_delete_id_set.find(elem.second); Pending != m_pending_delete_id_set.end() && Pending->second == elem.first)
+			if (auto pending = m_pending_delete_id_set.find(elem.second); pending != m_pending_delete_id_set.end() && pending->second == elem.first)
 			{
-				// Rarely even after timeout client object still exists, so we cannot free ID yet
-				if (auto ExistingEntity = Level().Objects.net_Find(elem.second); 
-					!IVERIFY_M(!ExistingEntity, "Object with ID [%u] still exists despite free timeout [%u] is over!", elem.second, ID_delete_delay))
+				if (OwnerLevel != nullptr && OwnerLevel->Objects.net_Find(elem.second) != nullptr)
 				{
 					auto PostponedID = elem.second;
 					m_pending_delete_id_queue.pop();

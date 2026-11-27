@@ -355,8 +355,10 @@ bool CBaseMonster::net_Spawn (CSE_Abstract* DC)
 
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 
-	R_ASSERT2(ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),
-		"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+		Msg("! AI: monster '%s' has no AI-map; local navigation is unavailable", cName().c_str());
+	else if (ai().get_cross_table() == nullptr || ai().level_graph().level_id() == u32(-1))
+		Msg("* AI: monster '%s' has no global graph binding; local AI-map movement remains available", cName().c_str());
 
 	monster_squad().register_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 	settings_overrides();

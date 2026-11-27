@@ -75,7 +75,7 @@ struct SHeliMovementState{
 	CHelicopter*					parent;
 	EHeilMovementState				type;
 	//specified path
-	const CPatrolPath*				currPatrolPath;
+	xr_shared_ptr<const CPatrolPath>	currPatrolPath;
 	const CPatrolPath::CVertex*		currPatrolVertex;
 	
 	int								patrol_begin_idx;

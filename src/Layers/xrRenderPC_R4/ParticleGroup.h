@@ -95,6 +95,8 @@ namespace PS
 			xr_vector<CParticleEffect*> children_related;
 			xr_vector<CParticleEffect*> children_free;
 			CParticleEffect* root_effect = nullptr;
+			SParticleLevelContext LevelContext = {};
+			void SetLevelContext(const SParticleLevelContext& context);
 
 			//�������� ��� CS
 			SItem(){};
@@ -123,6 +125,10 @@ namespace PS
 			flRT_DefferedStop	= (1<<1),
 		};
 		Flags8				m_RT_Flags;
+
+		SParticleLevelContext LevelContext = {};
+		void SetLevelContext(const SParticleLevelContext& context) override;
+		const SParticleLevelContext* GetLevelContext() const override { return &LevelContext; }
 
 		CParticleGroup();
 		virtual ~CParticleGroup() override;

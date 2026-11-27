@@ -31,12 +31,16 @@ ICF bool CLevelGraph::valid_vertex_id	(u32 id) const
 
 ICF	CLevelGraph::CVertex	*CLevelGraph::vertex(const u32 vertex_id) const
 {
+	if (m_nodes == nullptr || !valid_vertex_id(vertex_id))
+		return &EmptyVertex;
 	VERIFY				(valid_vertex_id(vertex_id));
 	return				(m_nodes + vertex_id);
 }
 
 ICF	u32	CLevelGraph::vertex	(const CVertex *vertex_p) const
 {
+	if (m_nodes == nullptr)
+		return u32(-1);
 	VERIFY				((vertex_p >= m_nodes) && valid_vertex_id(u32(vertex_p - m_nodes)));
 	return				(u32(vertex_p - m_nodes));
 }
@@ -83,45 +87,32 @@ IC	void CLevelGraph::unpack_xz(const CLevelGraph::CVertex *vertex, T &x, T &z) c
 
 ICF	const Fvector CLevelGraph::vertex_position	(const CLevelGraph::CPosition &source_position) const
 {
-	Fvector				dest_position;
-	unpack_xz			(source_position,dest_position.x,dest_position.z);
-	dest_position.y 	= (float(source_position.y())/65535)*header().factor_y() + header().box().min.y;
-	return				(dest_position);
+	return ILevelGraph::vertex_position(source_position);
 }
 
 ICF	const Fvector &CLevelGraph::vertex_position	(Fvector &dest_position, const CLevelGraph::CPosition &source_position) const
 {
-	return				(dest_position = vertex_position(source_position));
+	return ILevelGraph::vertex_position(dest_position, source_position);
 }
 
 IC	const CLevelGraph::CPosition &CLevelGraph::vertex_position	(CLevelGraph::CPosition &dest_position, const Fvector &source_position) const
 {
-	VERIFY				(iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f) < (int)m_row_length);
-	int					pxz	= iFloor(((source_position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f);
-	int					py	= iFloor(65535.f*(source_position.y - header().box().min.y)/header().factor_y() + EPS_S);
-	VERIFY				(pxz < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ);
-	dest_position.xz	(u32(pxz));
-	clamp				(py,0,65535);
-	dest_position.y		(u16(py));
-	return				(dest_position);
+	return ILevelGraph::vertex_position(dest_position, source_position);
 }
 
 IC  const Fvector CLevelGraph::vertex_position(u32 vertex_id) const
 {
-	Fvector				t = vertex_position(vertex(vertex_id));
-	return				(t);
+	return ILevelGraph::vertex_position(vertex_id);
 }
 
 IC  const Fvector CLevelGraph::vertex_position(const CLevelGraph::CVertex &vertex) const
 {
-	Fvector				position;
-	vertex_position		(position, vertex.position());
-	return				(position);
+	return ILevelGraph::vertex_position(vertex);
 }
 
 IC  const Fvector CLevelGraph::vertex_position(const CLevelGraph::CVertex *vertex) const
 {
-	return				(vertex_position(*vertex));
+	return ILevelGraph::vertex_position(vertex);
 }
 
 IC	const CLevelGraph::CPosition	CLevelGraph::vertex_position	(const Fvector &position) const
@@ -154,13 +145,12 @@ IC bool CLevelGraph::inside				(const CVertex *vertex, const Fvector &position) 
 
 IC bool	CLevelGraph::inside				(const u32 vertex_id, const CLevelGraph::CPosition &vertex_position) const
 {
-	return				(inside(vertex(vertex_id),vertex_position));
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),vertex_position);
 }
 
 IC bool CLevelGraph::inside				(const u32 vertex_id, const Fvector &position) const
 {
-	bool				b = inside(vertex(vertex_id),position);
-	return				(b);
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),position);
 }
 
 IC bool	CLevelGraph::inside				(const CLevelGraph::CVertex &vertex, const CLevelGraph::CPosition &_vertex_position, const float epsilon) const
@@ -187,16 +177,18 @@ IC bool CLevelGraph::inside				(const CVertex *vertex, const Fvector &position, 
 
 IC bool	CLevelGraph::inside				(const u32 vertex_id, const CLevelGraph::CPosition &vertex_position, const float epsilon) const
 {
-	return				(inside(vertex(vertex_id),vertex_position,epsilon));
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),vertex_position,epsilon);
 }
 
 IC bool CLevelGraph::inside				(const u32 vertex_id, const Fvector &position, const float epsilon) const
 {
-	return				(inside(vertex(vertex_id),position,epsilon));
+	return valid_vertex_id(vertex_id) && inside(vertex(vertex_id),position,epsilon);
 }
 
 IC bool	CLevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) const
 {
+	if (!valid_vertex_id(vertex_id))
+		return false;
 	int					pxz	= iFloor(((position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((position.y - header().box().min.z)/header().cell_size() + .5f);
 	VERIFY				(pxz < LevelGraph::NodeUncompressed::UncompressedNodePosition::MAX_XZ));
 	bool				b = vertex(vertex_id)->position().xz() == u32(pxz);
@@ -357,7 +349,7 @@ IC	u32	CLevelGraph::value(const u32 vertex_id, const_iterator &i) const
 
 IC	bool CLevelGraph::is_accessible		(const u32 vertex_id) const
 {
-	return				(valid_vertex_id(vertex_id) && m_access_mask[vertex_id]);
+	return				(valid_vertex_id(vertex_id) && vertex_id < m_access_mask.size() && m_access_mask[vertex_id]);
 }
 
 IC	void CLevelGraph::set_invalid_vertex(u32 &vertex_id, CVertex **vertex) const
@@ -370,6 +362,8 @@ IC	void CLevelGraph::set_invalid_vertex(u32 &vertex_id, CVertex **vertex) const
 
 IC	const u32 CLevelGraph::vertex_id(const CLevelGraph::CVertex *vertex) const
 {
+	if (m_nodes == nullptr)
+		return u32(-1);
 	VERIFY				(valid_vertex_id(u32(vertex - m_nodes)));
 	return				(u32(vertex - m_nodes));
 }

@@ -27,6 +27,7 @@ setfenv(1, this) \
 		";
 
 #include "script_engine.h"
+#include "../xrEngine/IGame_Persistent.h"
 
 #ifndef XRGAME_EXPORTS
 #	define NO_XRGAME_SCRIPT_ENGINE
@@ -42,13 +43,25 @@ CScriptStorage::CScriptStorage() :
 CScriptStorage::~CScriptStorage()
 {
 	if (m_virtual_machine)
+	{
+		if (g_pGamePersistent != nullptr && g_pGamePersistent->FrameworkScriptEngine == this)
+		{
+			g_pGamePersistent->ixr_framework_onframe.reset();
+			g_pGamePersistent->FrameworkScriptEngine = nullptr;
+		}
 		lua_close(m_virtual_machine);
+	}
 }
 
 void CScriptStorage::reinit	()
 {
 	if (m_virtual_machine)
 	{
+		if (g_pGamePersistent != nullptr && g_pGamePersistent->FrameworkScriptEngine == this)
+		{
+			g_pGamePersistent->ixr_framework_onframe.reset();
+			g_pGamePersistent->FrameworkScriptEngine = nullptr;
+		}
 		lua_close(m_virtual_machine);
 	}
 

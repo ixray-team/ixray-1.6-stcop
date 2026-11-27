@@ -19,7 +19,7 @@ class CPatrolPathParams :
 	public IGame_Patrol
 {
 public:
-	const CPatrolPath						*m_path;
+	xr_shared_ptr<const CPatrolPath>		m_path;
 	shared_str								m_path_name;
 	PatrolPathManager::EPatrolStartType		m_tPatrolPathStart;
 	PatrolPathManager::EPatrolRouteType		m_tPatrolPathStop;

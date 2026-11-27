@@ -17,6 +17,7 @@
 #include "../../level_graph.h"
 #include "../../inventory_item.h"
 #include "../../agent_member_manager.h"
+#include "../../agent_manager.h"
 #include "../../memory_manager.h"
 #include "../../enemy_manager.h"
 #include "../../stalker_movement_manager_smart_cover.h"
@@ -242,6 +243,30 @@ const CCoverPoint *CAI_Stalker::best_cover			(const Fvector &position_to_cover_f
 	agent_manager().member().member(this).cover(m_best_cover);
 
 	return								(m_best_cover);
+}
+
+void CAI_Stalker::on_level_graph_change()
+{
+	m_ce_close->ClearSelection();
+	m_ce_far->ClearSelection();
+	m_ce_best->ClearSelection();
+	m_ce_angle->ClearSelection();
+	m_ce_safe->ClearSelection();
+	m_ce_ambush->ClearSelection();
+	const bool hadCover = m_best_cover != nullptr;
+	on_best_cover_changed(nullptr, m_best_cover);
+	m_best_cover = nullptr;
+	m_best_cover_advance_cover = nullptr;
+	m_best_cover_actual = false;
+	m_best_cover_can_try_advance = false;
+	m_best_cover_value = flt_max;
+	CGroupHierarchyHolder& group = Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group());
+	if (hadCover && !group.members().empty())
+	{
+		if (CMemberOrder* member = group.agent_manager().member().get_member(ID()); member != nullptr)
+			member->cover(nullptr);
+	}
+	movement().on_cover_manager_clear();
 }
 
 void CAI_Stalker::on_restrictions_change			()

@@ -11,11 +11,11 @@ void dxThunderboltDescRender::CreateModel(const char* m_name)
 	IReader* F			= nullptr;
 	F					= FS.r_open(_game_meshes_,m_name);
 	R_ASSERT3(F, "Cannot open 'lightning_model' path=[%s].", m_name);
-	l_model				= ::RImplementation.model_CreateDM(F);
+	l_model				= RImplementation.model_CreateDM(F);
 	FS.r_close			(F);
 }
 
 void dxThunderboltDescRender::DestroyModel()
 {
-	::RImplementation.model_Delete(l_model);
+	RImplementation.model_Delete(l_model);
 }

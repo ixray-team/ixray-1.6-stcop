@@ -17,6 +17,7 @@ class CALifeSimulator;
 class CCoverManager;
 class CScriptEngine;
 class CPatrolPathStorage;
+class CStalkerAnimationDataStorage;
 class moving_objects;
 
 namespace doors {
@@ -39,11 +40,25 @@ private:
 	CCoverManager						*m_cover_manager;
 	CPatrolPathStorage					*m_patrol_path_storage;
 	moving_objects						*m_moving_objects;
-	doors::manager						*m_doors_manager;
+	// Lazily created (see doors()): mutable for the const accessor.
+	mutable doors::manager				*m_doors_manager;
+	CScriptEngine*						m_script_engine;
+	xr_shared_ptr<CScriptEngine>		SharedScriptEngine;
+	CStalkerAnimationDataStorage*		AnimationData = nullptr;
+	bool								m_owns_script_engine;
+	bool								m_alife_borrowed = false;
+	bool								m_game_graph_enabled = true;
+	bool								m_cross_table_enabled = true;
+	IGameLevelCrossTable				m_empty_cross_table;
+	xr_unique_ptr<IReader> GameGraphData;
+	xr_vector<u8> GameGraphBytes;
+	mutable xr_unique_ptr<IGameGraph> EmptyGameGraph;
+	mutable CLevelGraph* EmptyLevelGraph = nullptr;
 
 private:
 			void						load					(const char* level_name);
 			void						unload					(bool reload = false);
+			void						unload_level_graph		();
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);
 			void						patrol_path_storage		(CPatrolPathStorage *Storage);
@@ -57,7 +72,16 @@ public:
 			void						StartLevelPreload		(const shared_str& LevelName);
 			void						DropLevelPreload		();
 	virtual								~CAI_Space				();
-			void						init					();
+			void						init					(bool dedicatedScriptEngine = false);
+			void						SetAlifeBorrowed(CALifeSimulator* simulator);
+			void						SetSharedScriptEngine(xr_shared_ptr<CScriptEngine> engine) { SharedScriptEngine = std::move(engine); }
+			xr_shared_ptr<CScriptEngine>	GetSharedScriptEngine() const { return SharedScriptEngine; }
+			bool						LoadGameGraph(IReader& stream);
+			bool						BindCurrentLevel(const char* levelName);
+			void						UnloadGameGraph();
+			void						SetGameGraphEnabled(bool enabled);
+			void						SetCrossTableEnabled(bool enabled) { m_cross_table_enabled = enabled; }
+	IC		CScriptEngine* get_script_engine() const { return m_script_engine; }
 	IC		IGameGraph					&game_graph				() const;
 	IC		IGameGraph					*get_game_graph			() const;
 	IC		ILevelGraph					&level_graph			() const;
@@ -71,7 +95,9 @@ public:
 	IC		const CCoverManager			&cover_manager			() const;
 	IC		CScriptEngine				&script_engine			() const;
 	IC		moving_objects				&moving_objects			() const;
-	IC		doors::manager&				doors					() const;
+	IC		CStalkerAnimationDataStorage&	animation_data		() const;
+	// Out-of-line (ai_space.cpp): lazily created, needs the full type.
+			doors::manager&				doors					() const;
 	IC		CPatrolPathStorage&			patrol_paths_raw		();
 
 #ifdef DEBUG

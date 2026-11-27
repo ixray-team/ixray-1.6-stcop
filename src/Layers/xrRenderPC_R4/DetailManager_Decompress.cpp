@@ -2,6 +2,7 @@
 #include "DetailManager.h"
 
 #include "../../xrEngine/GameMtlLib.h"
+#include "../../xrEngine/IGame_Level.h"
 #include "../../xrCore/Collision/cl_intersect.h"
 
 #include "../../xrEngine/xr_ioc_cmd.h"
@@ -369,6 +370,9 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 
 	// Select polygons: the editor picks its snap objects, the game queries the level collision
 	const bool EditorMode = Device.IsEditorMode();
+	if (!EditorMode && LevelContext == nullptr)
+		return;
+
 	xr_vector<Fvector> pick_verts;
 	xr_vector<CDB::RESULT>* results = nullptr;
 	u32 triCount = 0;
@@ -381,7 +385,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	else
 	{
 		xrc.box_options(CDB::OPT_FULL_TEST);
-		xrc.box_query(g_pGameLevel->ObjectSpace, D.vis.box);
+		xrc.box_query(LevelContext->ObjectSpace, D.vis.box);
 		triCount = xrc.r_count();
 		results = &xrc.r_vec();
 	}

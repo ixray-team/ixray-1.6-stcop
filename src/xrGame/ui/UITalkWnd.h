@@ -8,7 +8,9 @@
 
 
 #include "../PhraseDialogDefs.h"
+#include "../../xrEngine/AI/alife_space.h"
 
+class IGame_Level;
 class CActor;
 class CInventoryOwner;
 class CPhraseDialogManager;
@@ -80,8 +82,13 @@ protected:
 	bool				m_bNeedToUpdateQuestions;
 
 	DIALOG_SHARED_PTR	m_pCurrentDialog;
+	IGame_Level* TalkLevel = nullptr;
+	ALife::_OBJECT_ID ActorId = ALife::INVALID_OBJECT_ID;
+	ALife::_OBJECT_ID PartnerId = ALife::INVALID_OBJECT_ID;
 	bool				TopicMode				();
 	void				ToTopicMode				();
+	bool				ValidateTalkContext() const;
+	void				ClearDialogueReferences();
 
 private:
 	void RestoreTalkEffects();

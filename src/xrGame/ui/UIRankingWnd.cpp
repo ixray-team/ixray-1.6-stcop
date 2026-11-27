@@ -24,6 +24,7 @@
 #include "../Actor.h"
 #include "../ai_space.h"
 #include "../alife_simulator.h"
+#include "../script_binder.h"
 #include "../HudPdaAnimator.h"
 #include "../../xrScripts/script_engine.h"
 #include "../character_community.h"
@@ -505,6 +506,17 @@ void CUIRankingWnd::update_info()
 
 void CUIRankingWnd::update_ranking_heavy()
 {
+	if (!ScriptBinding::HasActor())
+	{
+		if (!m_actor_binding_warning)
+		{
+			Msg("! Ranking UI: waiting for the actor script binding");
+			m_actor_binding_warning = true;
+		}
+		return;
+	}
+	m_actor_binding_warning = false;
+
 	for (const auto& achievement : m_achieves_vec)
 		achievement->Update();
 

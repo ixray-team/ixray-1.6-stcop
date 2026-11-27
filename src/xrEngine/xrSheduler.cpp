@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xrSheduler.h"
 #include "xr_object.h"
+#include "IGame_Level.h"
 
 float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
@@ -64,7 +65,7 @@ void	CSheduler::internal_Registration()
 			// register if non-paired
 			if (!bFoundAndErased)
 			{
-				internal_Register		(R.Object,R.RT);
+				internal_Register		(R.Object,R.RT,R.Owner);
 			}
 		}
 		else		{
@@ -75,31 +76,31 @@ void	CSheduler::internal_Registration()
 	Registration.clear	();
 }
 
-void CSheduler::internal_Register	(ISheduled* O, bool RT)
+void CSheduler::internal_Register	(ISheduled* O, bool RT, IGame_Level* Owner)
 {
-	VERIFY	(!O->shedule.b_locked)	;
+	VERIFY(!O->shedule.b_locked);
+	const u32 now = Owner != nullptr ? Owner->SessionTimeMs() : Device.dwTimeGlobal;
 	if (RT)
 	{
-		// Fill item structure
-		Item						TNext;
-		TNext.dwTimeForExecute		= Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
-		TNext.Object				= O;
-		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= true;
-
-		ItemsRT.push_back			(TNext);
-	} else {
-		// Fill item structure
-		Item						TNext;
-		TNext.dwTimeForExecute		= Device.dwTimeGlobal;
-		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
-		TNext.Object				= O;
-		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= false;
-
-		// Insert into priority Queue
-		Push						(TNext);
+		Item TNext;
+		TNext.dwTimeForExecute = now;
+		TNext.dwTimeOfLastExecute = now;
+		TNext.Object = O;
+		TNext.Owner = Owner;
+		TNext.scheduled_name = O->shedule_Name();
+		O->shedule.b_RT = true;
+		ItemsRT.push_back(TNext);
+	}
+	else
+	{
+		Item TNext;
+		TNext.dwTimeForExecute = now;
+		TNext.dwTimeOfLastExecute = now;
+		TNext.Object = O;
+		TNext.Owner = Owner;
+		TNext.scheduled_name = O->shedule_Name();
+		O->shedule.b_RT = false;
+		Push(TNext);
 	}
 }
 
@@ -213,10 +214,20 @@ void	CSheduler::Register		(ISheduled* A, bool RT				)
 {
 	VERIFY		(!Registered(A));
 
+	// Diagnostic: objects that register with no level owner would be processed
+	// on the GameThread in menu context (g_pGameLevel is null there).
+	if (g_pGameLevel == nullptr)
+	{
+		Msg("! [sheduler] '%s' registered with null level owner", A->shedule_Name().c_str());
+	}
+
 	ItemReg		R;
 	R.OP		= true				;
 	R.RT		= RT				;
 	R.Object	= A					;
+	// Capture the owning level now: by the time the registration queue is
+	// flushed, g_pGameLevel may already point at a different session.
+	R.Owner		= g_pGameLevel		;
 	R.Object->shedule.b_RT	= RT	;
 
 	Registration.push_back	(R);
@@ -224,6 +235,20 @@ void	CSheduler::Register		(ISheduled* A, bool RT				)
 
 void CSheduler::Unregister(ISheduled* A)
 {
+	const bool PendingRegistration = std::any_of(Registration.begin(), Registration.end(), [A](const ItemReg& item)
+	{
+		return item.Object == A && item.OP;
+	});
+	if (PendingRegistration)
+	{
+		internal_Unregister(A, false, false);
+		internal_Unregister(A, true, false);
+		std::erase_if(Registration, [A](const ItemReg& item)
+		{
+			return item.Object == A;
+		});
+		return;
+	}
 #ifdef DEBUG
 	if (!Registered(A))
 	{
@@ -240,6 +265,7 @@ void CSheduler::Unregister(ISheduled* A)
 	R.OP		= false				;
 	R.RT		= A->shedule.b_RT	;
 	R.Object	= A					;
+	R.Owner		= nullptr			;
 
 	Registration.push_back			(R);
 }
@@ -275,18 +301,34 @@ void CSheduler::Pop					()
 void CSheduler::ProcessStep			()
 {
 	// Normal priority
-	u32		dwTime					= Device.dwTimeGlobal;
+	u32		dwTime					= g_pGameLevel != nullptr ? g_pGameLevel->SessionTimeMs() : Device.dwTimeGlobal;
 	CTimer							eTimer;
 	for (int i=0;!Items.empty() && Top().dwTimeForExecute < dwTime; ++i) {
 		u32		delta_ms			= dwTime - Top().dwTimeForExecute;
 
 		// Update
 		Item	T					= Top	();
+
+		// Erase unregistered (null) elements first, regardless of owner.
+		if (nullptr == T.Object)
+		{
+			Pop						();
+			continue;
+		}
+
+		// Foreign owner (e.g. a parallel sandbox session while the menu or
+		// another level owns g_pGameLevel on this thread): requeue untouched.
+		// The owning session pumps its own items with its level context lent.
+		if (T.Owner != g_pGameLevel)
+		{
+			Pop						();
+			ItemsProcessed.push_back(T);
+			continue;
+		}
+
 		u32		Elapsed				= dwTime-T.dwTimeOfLastExecute;
-		bool	condition;
-		
-		condition					= (nullptr==T.Object || !T.Object->shedule_Needed());
-		if (condition) 
+
+		if (!T.Object->shedule_Needed())
 		{
 			// Erase element
 			Pop						();
@@ -337,6 +379,7 @@ void CSheduler::ProcessStep			()
 		TNext.dwTimeForExecute		= dwTime+dwUpdate;
 		TNext.dwTimeOfLastExecute	= dwTime;
 		TNext.Object				= T.Object;
+		TNext.Owner					= T.Owner;
 		TNext.scheduled_name		= T.Object->shedule_Name();
 		ItemsProcessed.push_back	(TNext);
 
@@ -364,6 +407,7 @@ void CSheduler::ProcessStep			()
 void CSheduler::Update()
 {
 	PROF_EVENT("CSheduler: Update")
+	xrCriticalSectionGuard guard(&m_update_lock);
 	R_ASSERT(Device.Statistic);
 	// Initialize
 	Device.Statistic->Sheduler.Begin();
@@ -374,12 +418,14 @@ void CSheduler::Update()
 
 	// Realtime priority
 	m_processing_now = true;
-	u32 dwTime = Device.dwTimeGlobal;
+	u32 dwTime = g_pGameLevel != nullptr ? g_pGameLevel->SessionTimeMs() : Device.dwTimeGlobal;
 	for (u32 it = 0; it < ItemsRT.size(); it++)
 	{
 		Item& T = ItemsRT[it];
 		R_ASSERT(T.Object);
 
+		if (T.Owner != g_pGameLevel)
+			continue;
 		if (!T.Object->shedule_Needed())
 		{
 			T.dwTimeOfLastExecute = dwTime;

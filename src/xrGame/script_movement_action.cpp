@@ -17,7 +17,7 @@
 CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams *tPatrolPathParams, float dist_to_end, MonsterSpace::EScriptMonsterSpeedParam speed_param)
 {																																			
 	m_tMoveAction			= tAct;
-	SetPatrolPath			(tPatrolPathParams->m_path, tPatrolPathParams->m_path_name);															
+	SetPatrolPath(tPatrolPathParams->m_path.get(), tPatrolPathParams->m_path_name);
 	SetPatrolStart			(tPatrolPathParams->m_tPatrolPathStart);																				
 	SetPatrolStop			(tPatrolPathParams->m_tPatrolPathStop);																				
 	SetPatrolRandom			(tPatrolPathParams->m_bRandom);																						
@@ -31,7 +31,7 @@ CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EBodyState tBodySta
 	SetBodyState		(tBodyState);
 	SetMovementType		(tMovementType);
 	SetPathType			(tPathType);
-	SetPatrolPath		(tPatrolPathParams->m_path,tPatrolPathParams->m_path_name);
+	SetPatrolPath		(tPatrolPathParams->m_path.get(),tPatrolPathParams->m_path_name);
 	SetPatrolStart		(tPatrolPathParams->m_tPatrolPathStart);
 	SetPatrolStop		(tPatrolPathParams->m_tPatrolPathStop);
 	SetPatrolRandom		(tPatrolPathParams->m_bRandom);
@@ -99,7 +99,7 @@ CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveA
 {																																			
 	MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
 	m_tMoveAction			= tAct;
-	SetPatrolPath			(tPatrolPathParams->m_path,tPatrolPathParams->m_path_name);															
+	SetPatrolPath(tPatrolPathParams->m_path.get(), tPatrolPathParams->m_path_name);
 	SetPatrolStart			(tPatrolPathParams->m_tPatrolPathStart);																				
 	SetPatrolStop			(tPatrolPathParams->m_tPatrolPathStop);																				
 	SetPatrolRandom			(tPatrolPathParams->m_bRandom);																						

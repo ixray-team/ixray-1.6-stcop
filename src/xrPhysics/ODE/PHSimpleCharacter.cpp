@@ -6,6 +6,7 @@
 #include "../../xrEngine/xr_object_list.h"
 #include "tri-colliderknoopc/__aabb_tri.h"
 #include "PHSimpleCharacter.h"
+#include "PHWorld.h"
 #include "PHContactBodyEffector.h"
 #include "SpaceUtils.h"
 #include "MathUtils.h"
@@ -366,7 +367,7 @@ void CPHSimpleCharacter::Destroy()
 
 	b_exist=false;
 	R_ASSERT2(!ph_world->Processing(),"can not deactivate physics character shell during physics processing!!!");//if(ph_world)
-	R_ASSERT2(!ph_world->IsFreezed(),"can not deactivate physics character when ph world is freezed!!!");
+	PHWorldDetail::CFrozenWorldScope frozenWorld(ph_world);
 	R_ASSERT2(!CPHObject::IsFreezed(),"can not deactivate freezed !!!");
 	m_elevator_state.Deactivate();
 

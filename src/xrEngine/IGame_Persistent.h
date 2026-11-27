@@ -10,8 +10,10 @@
 
 #include "alife_space.h"
 
+class CScriptEngine;
 class IRenderVisual;
 class IMainMenu;
+class IGame_Level;
 extern ENGINE_API bool g_dedicated_server;
 
 class ENGINE_API IGame_Persistent : 
@@ -69,6 +71,7 @@ public:
 	ShaderParamsData ShaderParams;
 	VisorRainDrops VisorRain;
 	luabind::functor<void> ixr_framework_onframe;
+	CScriptEngine* FrameworkScriptEngine = nullptr;
 public:
 	virtual void					PreStart			(const char* op);
 	virtual void					Start				(const char* op);
@@ -83,7 +86,7 @@ public:
 	IMainMenu*						m_pMainMenu;	
 
 	virtual	void					UpdatePlayDestroyParticles() {};
-	virtual	void					UpdateParticles		() {};
+	virtual	void					UpdateParticles		(const IGame_Level* owner = nullptr) {};
 	virtual	void					destroy_particles	(bool all_particles) {};
 
 	virtual bool					OnRenderPPUI_query	() { return false; };	// should return true if we want to have second function called

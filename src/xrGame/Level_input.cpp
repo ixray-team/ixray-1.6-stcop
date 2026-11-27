@@ -29,7 +29,7 @@
 
 //Alundaio
 #include "pch_script.h"
-#include "../../xrScripts/script_engine.h" 
+#include "../../xrScripts/script_engine.h"
 using namespace luabind;
 //-Alundaio
 
@@ -45,8 +45,6 @@ using namespace luabind;
 	extern void restore_actor();
 #endif
 
-bool g_bDisableAllInput = false;
-bool g_bDisableMouseMove = false;
 extern	float	g_fTimeFactor;
 
 #define CURRENT_ENTITY()	(game?((IsGameTypeSingle()) ? CurrentEntity() : CurrentControlEntity()):nullptr)
@@ -98,16 +96,16 @@ static bool UIForwardsInputToActor(int Dik, bool Press)
 
 void CLevel::IR_OnMouseWheel( int direction )
 {
-	if(	g_bDisableAllInput || !bReady	) return;
+	if(	InputDisabled || !bReady	) return;
 
 	/* avo: script callback */
 	if (g_actor) g_actor->callback(GameObject::eMouseWheel)(direction);
 	/* avo: end */
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnMouseWheel(direction)) return;
-	if( Device.Paused()
+	if( IsPausedForInput()
 #ifdef DEBUG
-		&& !psActorFlags.test(AF_NO_CLIP) 
+		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		) return;
 
@@ -118,27 +116,31 @@ void CLevel::IR_OnMouseWheel( int direction )
 	}
 }
 
-static int mouse_button_2_key[] = { MOUSE_1,MOUSE_2,MOUSE_3, MOUSE_4 , MOUSE_5 };
+int CLevel::MouseButtonToKey(int btn) const
+{
+	constexpr int keys[] = { MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_5 };
+	return keys[btn];
+}
 
 void CLevel::IR_OnMousePress(int btn)
-{	IR_OnKeyboardPress(mouse_button_2_key[btn]);}
+{	IR_OnKeyboardPress(MouseButtonToKey(btn));}
 void CLevel::IR_OnMouseRelease(int btn)
-{	IR_OnKeyboardRelease(mouse_button_2_key[btn]);}
+{	IR_OnKeyboardRelease(MouseButtonToKey(btn));}
 void CLevel::IR_OnMouseHold(int btn)
-{	IR_OnKeyboardHold(mouse_button_2_key[btn]);}
+{	IR_OnKeyboardHold(MouseButtonToKey(btn));}
 
 void CLevel::IR_OnMouseMove( int dx, int dy )
 {
-	if((g_bDisableAllInput && g_bDisableMouseMove) || !bReady)							return;
+	if((InputDisabled && MouseMoveDisabled) || !bReady)							return;
 
 	/* avo: script callback */
 	if (g_actor) g_actor->callback(GameObject::eMouseMove)(dx, dy);
 	/* avo: end */
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnMouseMove(dx,dy))		return;
-	if (Device.Paused() && !IsDemoPlay() 
+	if (IsPausedForInput() && !IsDemoPlay()
 #ifdef DEBUG
-		&& !psActorFlags.test(AF_NO_CLIP) 
+		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		)	return;
 	if (CURRENT_ENTITY())		
@@ -150,7 +152,7 @@ void CLevel::IR_OnMouseMove( int dx, int dy )
 
 void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 {
-	if ((g_bDisableAllInput && g_bDisableMouseMove) || !bReady)
+	if ((InputDisabled && MouseMoveDisabled) || !bReady)
 	{
 		return;
 	}
@@ -166,9 +168,9 @@ void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 	{
 		return;
 	}
-	if (Device.Paused() && !IsDemoPlay() 
+	if (IsPausedForInput() && !IsDemoPlay()
 #ifdef DEBUG
-		&& !psActorFlags.test(AF_NO_CLIP) 
+		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		)	return;
 	if (CURRENT_ENTITY())		
@@ -180,7 +182,7 @@ void CLevel::IR_OnGyroscopeMove( Fvector3 value )
 
 void CLevel::IR_OnTouchpadMove( Fvector2 value )
 {
-	if ((g_bDisableAllInput && g_bDisableMouseMove) || !bReady)
+	if ((InputDisabled && MouseMoveDisabled) || !bReady)
 	{
 		return;
 	}
@@ -196,9 +198,9 @@ void CLevel::IR_OnTouchpadMove( Fvector2 value )
 	{
 		return;
 	}
-	if (Device.Paused() && !IsDemoPlay() 
+	if (IsPausedForInput() && !IsDemoPlay()
 #ifdef DEBUG
-		&& !psActorFlags.test(AF_NO_CLIP) 
+		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		)	return;
 	if (CURRENT_ENTITY())		
@@ -238,7 +240,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if (_curr == kPAUSE && !EngineExternal()[EEngineExternalSystem::DisablePause])
 	{
-		if (!g_block_pause && (IsGameTypeSingle() || IsDemoPlay()))
+		if (!g_block_pause && !LevelDesc.Parallel && (IsGameTypeSingle() || IsDemoPlay()))
 		{
 #ifdef DEBUG
 			if(psActorFlags.test(AF_NO_CLIP))
@@ -249,7 +251,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		return;
 	}
-	if (g_bDisableAllInput)
+	if (InputDisabled)
 	{
 		static bool enableMM = EngineExternal()[EEngineExternalGame::EnableMainMenuForDisabledControls];
 		if (enableMM && _curr == kQUIT)
@@ -274,7 +276,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 	}
 
-	if (Hotkeys::LayersEnabled() ? Hotkeys::DispatchLayers(key) : HotkeysScript::Dispatch(key))
+	if (!IsParallel() && (Hotkeys::LayersEnabled() ? Hotkeys::DispatchLayers(key) : HotkeysScript::Dispatch(key)))
 	{
 		return;
 	}
@@ -282,7 +284,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if (g_actor)
 		g_actor->callback(GameObject::eKeyPress)(key);
 
-	switch ( _curr ) 
+	switch ( _curr )
 	{
 
 	case kCONSOLE:
@@ -294,11 +296,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 	break;
 
-	case kQUIT: 
+	case kQUIT:
 		{
 			if(b_ui_exist && CurrentGameUI()->TopInputReceiver() )
 			{
-				if(Device.Paused())
+				if(IsPausedForInput())
 				{
 					// Снимаем паузу, через Esc
 					Device.Pause(false, true, true, "kQUIT");
@@ -364,9 +366,9 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if ( b_ui_exist && CurrentGameUI()->IR_UIOnKeyboardPress(key)) return;
 
-	if ( Device.Paused() && !IsDemoPlay() 
+	if ( IsPausedForInput() && !IsDemoPlay()
 #ifdef DEBUG
-		&& !psActorFlags.test(AF_NO_CLIP) 
+		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		)	return;
 
@@ -455,7 +457,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 #endif //DEBUG
 	case SDL_SCANCODE_KP_5:
 		{
-			if (GameID()!=eGameIDSingle) 
+			if (GameID()!=eGameIDSingle)
 			{
 				Msg("For this game type Demo Record is disabled.");
 ///				return;
@@ -581,7 +583,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 					pActor->inventory().Items_SetCurrentEntityHud(true);
 
 					CHudItem* pHudItem = pActor->inventory().ActiveItem() != nullptr ? pActor->inventory().ActiveItem()->cast_hud_item() : nullptr;
-					if (pHudItem) 
+					if (pHudItem)
 					{
 						pHudItem->OnStateSwitch(pHudItem->GetState());
 					}
@@ -591,7 +593,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		return;
 	}
 	// Lain: added
-	case SDL_SCANCODE_F5: 
+	case SDL_SCANCODE_F5:
 	{
 		if (CBaseMonster* pBM = CurrentEntity() != nullptr ? CurrentEntity()->cast_base_monster() : nullptr)
 		{
@@ -647,7 +649,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		if (obj)
 		{
 			CBaseMonster* monster = obj->cast_base_monster();
-			if (monster) 
+			if (monster)
 			{
 				monster->debug_on_key(key);
 			}
@@ -670,13 +672,12 @@ void CLevel::IR_OnKeyboardRelease(int key)
 		}
 	}
 
-	if (!bReady || g_bDisableAllInput	)								return;
+	if (!bReady || InputDisabled)								return;
 
 	const bool UIForwardsInput = UIForwardsInputToActor(key, false);
-
 	if ( CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardRelease(key)) return;
 	if (game && game->OnKeyboardRelease(get_binded_action(key)) )		return;
-	if (Device.Paused() 
+	if (IsPausedForInput()
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
@@ -705,7 +706,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 		}
 	}
 
-	if (!bReady || g_bDisableAllInput)
+	if (!bReady || InputDisabled)
 	{
 		return;
 	}
@@ -747,7 +748,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 	const bool UIForwardsInput = UIForwardsInputToActor(key, false);
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardHold(key)) return;
-	if (Device.Paused() && !Level().IsDemoPlay() 
+	if (IsPausedForInput() && !Level().IsDemoPlay()
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
@@ -800,10 +801,10 @@ void CLevel::IR_OnActivate()
 
 void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 {
-	if (g_bDisableAllInput)
+	if (InputDisabled)
 		return;
 
-	if (Device.Paused())
+	if (IsPausedForInput())
 		return;
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadUpdateStick(id, value)) return;
@@ -819,9 +820,9 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 void CLevel::IR_GamepadKeyPress(int id)
 {
 	auto _curr = get_binded_action(id, agAny);
-	if (_curr != kNOTBINDED) 
+	if (_curr != kNOTBINDED)
 	{
-		if (is_block_action(static_cast<int>(_curr))) 
+		if (is_block_action(static_cast<int>(_curr)))
 		{
 			return;
 		}
@@ -832,7 +833,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 
 	bool b_ui_exist = (!!CurrentGameUI());
 
-	if (g_bDisableAllInput)
+	if (InputDisabled)
 	{
 		static bool enableMM = EngineExternal()[EEngineExternalGame::EnableMainMenuForDisabledControls];
 		if (enableMM && _curr == kQUIT)
@@ -842,18 +843,18 @@ void CLevel::IR_GamepadKeyPress(int id)
 		return;
 	}
 
-	if (Hotkeys::LayersEnabled() && Hotkeys::DispatchLayers(id))
+	if (!IsParallel() && Hotkeys::LayersEnabled() && Hotkeys::DispatchLayers(id))
 	{
 		return;
 	}
 
-	switch ( _curr ) 
+	switch ( _curr )
 	{
-	case kQUIT: 
+	case kQUIT:
 		{
 			if(b_ui_exist && CurrentGameUI()->TopInputReceiver() )
 			{
-				if(Device.Paused())
+				if(IsPausedForInput())
 				{
 					// Снимаем паузу, через Esc
 					Device.Pause(false, true, true, "kQUIT");
@@ -895,7 +896,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 
 	if (b_ui_exist && CurrentGameUI()->IR_UIOnGamepadKeyPress(id)) return;
 
-	if (Device.Paused())
+	if (IsPausedForInput())
 		return;
 
 	if (CURRENT_ENTITY())		
@@ -916,14 +917,14 @@ void CLevel::IR_GamepadKeyHold(int id)
 		}
 	}
 
-	if (g_bDisableAllInput)
+	if (InputDisabled)
 	{
 		return;
 	}
 
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadKeyHold(id)) return;
 
-	if (Device.Paused() && !Level().IsDemoPlay()
+	if (IsPausedForInput() && !Level().IsDemoPlay()
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
@@ -941,18 +942,18 @@ void CLevel::IR_GamepadKeyHold(int id)
 void CLevel::IR_GamepadKeyRelease(int id)
 {
 	auto bind = get_binded_action(id, agAny);
-	if (bind != kNOTBINDED) 
+	if (bind != kNOTBINDED)
 	{
-		if (is_block_action(static_cast<int>(bind))) 
+		if (is_block_action(static_cast<int>(bind)))
 		{
 			return;
 		}
 	}
 
-	if (!bReady || g_bDisableAllInput	)								return;
+	if (!bReady || InputDisabled	)								return;
 //	if ( CurrentGameUI() && CurrentGameUI()->IR_GamepadKeyRelease(id)) return;
 //	if (game && game->OnKeyboardRelease(get_binded_action(id)) )		return;
-	if (Device.Paused() 
+	if (IsPausedForInput()
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
@@ -961,7 +962,7 @@ void CLevel::IR_GamepadKeyRelease(int id)
 	if (CURRENT_ENTITY())		
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR != nullptr) 
+		if (IR != nullptr)
 		{
 			IR->IR_GamepadKeyRelease(id);
 		}

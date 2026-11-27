@@ -30,6 +30,7 @@ namespace PS
 
     	DestroyCallback		m_DestroyCallback = nullptr;
         CollisionCallback	m_CollisionCallback = nullptr;
+		SParticleLevelContext LevelContext = {};
 
 		enum{
 			flRT_Playing		= (1<<0),
@@ -86,6 +87,9 @@ namespace PS
 		virtual void SetScale(float Scale) override;
 		virtual float GetScale() override;
 		virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
+
+		void SetLevelContext(const SParticleLevelContext& context) override { LevelContext = context; }
+		const SParticleLevelContext* GetLevelContext() const override { return &LevelContext; }
 
 		virtual IParticleCustom* dcast_ParticleCustom() override { return this; }
 	};

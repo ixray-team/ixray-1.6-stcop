@@ -18,12 +18,17 @@ void CRenderTarget::PhaseGammaApply(IRHIRenderTargetView* Destination)
 	gamma = 1.0f / std::max(EPS_S, gamma);
 
 	u_setrt(w, h, Destination ? Destination : RTarget, nullptr, nullptr, nullptr);
+	constexpr float opaqueBlack[4] = { 0.f, 0.f, 0.f, 1.f };
+	GRHI->ClearTarget(Destination ? Destination : RTarget, opaqueBlack);
+	const u32 colorWriteMask = GRHI->StateManager->GetColorWriteEnable();
 
 	DrawPassSQ(s_gamma, 0, [&]
 	{
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RImplementation.rmNormal();
+		RCache.set_ColorWriteEnable(colorWriteMask & ~D3DCOLORWRITEENABLE_ALPHA);
 		RCache.set_c("color_params", contrast, gamma, brightness, 0.0f);
 		RCache.set_c("color_grading", color_grading.r, color_grading.g, color_grading.b, 0.0f);
 	});
+	RCache.set_ColorWriteEnable(colorWriteMask);
 }

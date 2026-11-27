@@ -14,6 +14,7 @@ namespace PAPI
 		Particles particles;		// Actually, num_particles in size
 		OnBirthParticleCB b_cb = nullptr;
 		OnDeadParticleCB d_cb = nullptr;
+		bool* ActionsValid = nullptr;
 		void* owner = nullptr;
 
 		u32 p_count = 0U;				// Number of particles currently existing.
@@ -102,66 +103,88 @@ namespace PAPI
 
 		ICF void LoadActions(IReader& R)
 		{
-			if (R.length())
+			if (R.length() < 4)
+				return;
+			u32 cnt = R.r_u32();
+			if (cnt == 0)
 			{
-				u32 cnt = R.r_u32();
 				m_animators.clear();
-				m_actions.clear(); // without this in SDK effects are broken
-				m_actions.reserve(cnt);
+				m_actions.clear();
+				return;
+			}
+			if (cnt > (R.length() - 4) / 8)
+			{
+				if (ActionsValid != nullptr)
+					*ActionsValid = false;
+				return;
+			}
+			m_animators.clear();
+			m_actions.clear(); // without this in SDK effects are broken
+			m_actions.reserve(cnt);
 
-				for (u32 k = 0; k < cnt; ++k)
+			for (u32 k = 0; k < cnt; ++k)
+			{
+				if (R.elapsed() < 8)
 				{
-					ParticleAction* PA = nullptr;
-					switch ((PActionEnum)R.r_u32())
-					{
-						case PAAvoidID:				PA = new PAAvoid();				break;
-						case PABounceID:    		PA = new PABounce();			break;
-						case PACopyVertexBID:    	PA = new PACopyVertexB();		break;
-						case PADampingID:    		PA = new PADamping();			break;
-						case PAExplosionID:    		PA = new PAExplosion();			break;
-						case PAFollowID:    		PA = new PAFollow();			break;
-						case PAGravitateID:    		PA = new PAGravitate();			break;
-						case PAGravityID:    		PA = new PAGravity();			break;
-						case PAJetID:    			PA = new PAJet();				break;
-						case PAKillOldID:    		PA = new PAKillOld();			break;
-						case PAMatchVelocityID:    	PA = new PAMatchVelocity();		break;
-						case PAMoveID:    			PA = new PAMove();				break;
-						case PAOrbitLineID:    		PA = new PAOrbitLine();			break;
-						case PAOrbitPointID:    	PA = new PAOrbitPoint();		break;
-						case PARandomAccelID:    	PA = new PARandomAccel();		break;
-						case PARandomDisplaceID:    PA = new PARandomDisplace();	break;
-						case PARandomVelocityID:    PA = new PARandomVelocity();	break;
-						case PARestoreID:    		PA = new PARestore();			break;
-						case PASinkID:    			PA = new PASink();				break;
-						case PASinkVelocityID:    	PA = new PASinkVelocity();		break;
-						case PASourceID:    		PA = new PASource();			break;
-						case PASpeedLimitID:    	PA = new PASpeedLimit();		break;
-						case PATargetColorID:    	PA = new PATargetColor();		break;
-						case PATargetSizeID:    	PA = new PATargetSize();		break;
-						case PATargetRotateID:    	PA = new PATargetRotate();		break;
-						case PATargetRotateDID:    	PA = new PATargetRotate();		break;
-						case PATargetVelocityID:    PA = new PATargetVelocity(); 	break;
-						case PATargetVelocityDID:   PA = new PATargetVelocity();	break;
-						case PAVortexID:    		PA = new PAVortex();			break;
-						case PATurbulenceID:		PA = new PATurbulence();		break;
-						case PAScatterID:  			PA = new PAScatter();			break;
-
-						case PABindVelocityValueID: PA = new PABindVelocityValue();	break;
-						case PABindRotationValueID: PA = new PABindRotationValue();	break;
-						case PABindSizeValueID:  	PA = new PABindSizeValue();		break;
-						case PABindColorValueID:  	PA = new PABindColorValue();	break;
-						case PABindColorAlphaID:  	PA = new PABindColorAlpha();	break;
-
-						case PAColorAnimatorID:  	PA = new PAColorAnimator(); m_animators.push_back(PA);		break;
-						case PASizeAnimatorID:  	PA = new PASizeAnimator(); m_animators.push_back(PA);		break;
-						case PAVelocityAnimatorID:  PA = new PAVelocityAnimator(); m_animators.push_back(PA);	break;
-						case PAVelocityRotationAnimatorID: PA = new PAVelocityRotationAnimator(); m_animators.push_back(PA);	break;
-						default: NODEFAULT;
-					}
-					R_ASSERT(PA);
-					PA->Load(R);
-					m_actions.push_back(PA);
+					if (ActionsValid != nullptr)
+						*ActionsValid = false;
+					return;
 				}
+				ParticleAction* PA = nullptr;
+				switch ((PActionEnum)R.r_u32())
+				{
+					case PAAvoidID:				PA = new PAAvoid();				break;
+					case PABounceID:    		PA = new PABounce();			break;
+					case PACopyVertexBID:    	PA = new PACopyVertexB();		break;
+					case PADampingID:    		PA = new PADamping();			break;
+					case PAExplosionID:    		PA = new PAExplosion();			break;
+					case PAFollowID:    		PA = new PAFollow();			break;
+					case PAGravitateID:    		PA = new PAGravitate();			break;
+					case PAGravityID:    		PA = new PAGravity();			break;
+					case PAJetID:    			PA = new PAJet();				break;
+					case PAKillOldID:    		PA = new PAKillOld();			break;
+					case PAMatchVelocityID:    	PA = new PAMatchVelocity();		break;
+					case PAMoveID:    			PA = new PAMove();				break;
+					case PAOrbitLineID:    		PA = new PAOrbitLine();			break;
+					case PAOrbitPointID:    	PA = new PAOrbitPoint();		break;
+					case PARandomAccelID:    	PA = new PARandomAccel();		break;
+					case PARandomDisplaceID:    PA = new PARandomDisplace();	break;
+					case PARandomVelocityID:    PA = new PARandomVelocity();	break;
+					case PARestoreID:    		PA = new PARestore();			break;
+					case PASinkID:    			PA = new PASink();				break;
+					case PASinkVelocityID:    	PA = new PASinkVelocity();		break;
+					case PASourceID:    		PA = new PASource();			break;
+					case PASpeedLimitID:    	PA = new PASpeedLimit();		break;
+					case PATargetColorID:    	PA = new PATargetColor();		break;
+					case PATargetSizeID:    	PA = new PATargetSize();		break;
+					case PATargetRotateID:    	PA = new PATargetRotate();		break;
+					case PATargetRotateDID:    	PA = new PATargetRotate();		break;
+					case PATargetVelocityID:    PA = new PATargetVelocity(); 	break;
+					case PATargetVelocityDID:   PA = new PATargetVelocity();	break;
+					case PAVortexID:    		PA = new PAVortex();			break;
+					case PATurbulenceID:		PA = new PATurbulence();		break;
+					case PAScatterID:  			PA = new PAScatter();			break;
+
+					case PABindVelocityValueID: PA = new PABindVelocityValue();	break;
+					case PABindRotationValueID: PA = new PABindRotationValue();	break;
+					case PABindSizeValueID:  	PA = new PABindSizeValue();		break;
+					case PABindColorValueID:  	PA = new PABindColorValue();	break;
+					case PABindColorAlphaID:  	PA = new PABindColorAlpha();	break;
+
+					case PAColorAnimatorID:  	PA = new PAColorAnimator(); m_animators.push_back(PA);		break;
+					case PASizeAnimatorID:  	PA = new PASizeAnimator(); m_animators.push_back(PA);		break;
+					case PAVelocityAnimatorID:  PA = new PAVelocityAnimator(); m_animators.push_back(PA);	break;
+					case PAVelocityRotationAnimatorID: PA = new PAVelocityRotationAnimator(); m_animators.push_back(PA);	break;
+					default: break;
+				}
+				if (PA == nullptr)
+				{
+					if (ActionsValid != nullptr)
+						*ActionsValid = false;
+					return;
+				}
+				PA->Load(R);
+				m_actions.push_back(PA);
 			}
 		}
 
@@ -170,7 +193,10 @@ namespace PAPI
 			W.w_u32((u32)m_actions.size());
 
 			for (ParticleAction* PA : m_actions)
+			{
+				W.w_u32(PA->type);
 				PA->Save(W);
+			}
 		}
 
 		ICF void SetCallback(OnBirthParticleCB _b, OnDeadParticleCB _d, void* ow, u32 par)

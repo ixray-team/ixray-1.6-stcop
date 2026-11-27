@@ -6,6 +6,7 @@ class CUIStatic;
 class CUISequenceItem;
 class CUIXml;
 class IUISequenceVideoItem;
+class IGame_Level;
 
 class CUISequencer final :
 	public pureFrame,
@@ -13,7 +14,10 @@ class CUISequencer final :
 	public IInputReceiver
 {
 protected:
-	CUIWindow*				m_UIWindow;
+	CUIWindow*				m_UIWindow = nullptr;
+	bool					CleanupStarted = false;
+	bool					Starting = false;
+	bool					DestroyRequested = false;
 	ref_sound				m_global_sound;
 	xr_deque<CUISequenceItem*> m_sequencer_items;
 
@@ -21,11 +25,15 @@ protected:
 	CUISequenceItem*		GetNextItem			();
 	shared_str				m_start_lua_function;
 	shared_str				m_stop_lua_function;
+	IGame_Level*			OwnerLevel = nullptr;
+	u32						LastRenderFrame = u32(-1);
 
 public:
 	IInputReceiver*			m_pStoredInputReceiver;
-							CUISequencer		();
+							CUISequencer		(IGame_Level* ownerLevel = nullptr);
 	void					Start				(const char* tutor_name);
+	bool					UsesGlobalQueues	() const;
+	IGame_Level*			Owner				() const { return OwnerLevel; }
 	void					Stop				();
 	void					Next				();
 
@@ -33,6 +41,7 @@ public:
 
 	virtual void	_BCL	OnFrame				() override;
 	virtual void			OnRender			() override;
+	bool					ShouldRender(bool mainMenuActive) const;
 	CUIWindow*				MainWnd				()				{return m_UIWindow;}
 	bool					IsActive			()				{return !!m_flags.test(etsActive);}
 	bool					Need3DRender		();

@@ -167,14 +167,14 @@ void CRender::add_Occluder(Fbox2& bb_screenspace)
 
 void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* verts, bool UseCameraDirection)
 {
-	if (T.suppress_wm)
+	if (T.suppress_wm || Wallmarks == nullptr)
 	{
 		return;
 	}
 
 	VERIFY2(_valid(P) && _valid(s) && verts && (s > EPS_L), "Invalid static wallmark params");
-	Fvector	N;
-	N.mknormal(verts[0],verts[1],verts[2]);
+	Fvector N;
+	N.mknormal(verts[0], verts[1], verts[2]);
 	Wallmarks->AddStaticWallmark(N, P, &*S, s, Flags8(StaticWallmarkHandle::flTimeToLive), UseCameraDirection);
 }
 

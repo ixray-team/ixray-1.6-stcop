@@ -638,9 +638,10 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 CRT* CResourceManager::_CreateRT(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	R_ASSERT(Name && Name[0] && w && h);
+	const shared_str SceneName = ::Render != nullptr ? ::Render->scene_resource_name(Name) : shared_str(Name);
 
 	// ***** first pass - search already created RT
-	LPSTR N = LPSTR(Name);
+	LPSTR N = LPSTR(SceneName.c_str());
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RT::iterator I = m_rtargets.find	(N);
 	if (I != m_rtargets.end())
@@ -651,8 +652,8 @@ CRT* CResourceManager::_CreateRT(const char* Name, u32 w, u32 h, ERHI_FORMAT f, 
 	{
 		CRT *RT					=	new CRT();
 		RT->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_rtargets.insert		(std::make_pair(RT->set_name(Name),RT));
-		if (Device.b_is_Ready)	RT->create	(Name,w,h,f, SampleCount, CreationFlags);
+		m_rtargets.insert		(std::make_pair(RT->set_name(N),RT));
+		if (Device.b_is_Ready)	RT->create	(N,w,h,f, SampleCount, CreationFlags);
 		return					RT;
 	}
 }
@@ -676,16 +677,17 @@ CRTC* CResourceManager::_CreateRTC(const char* Name, u32 size, ERHI_FORMAT f, CR
 {
 	R_ASSERT(Name && Name[0] && size);
 
+	const shared_str SceneName = ::Render != nullptr ? ::Render->scene_resource_name(Name) : shared_str(Name);
 	// ***** first pass - search already created RTC
-	LPSTR N = LPSTR(Name);
+	LPSTR N = LPSTR(SceneName.c_str());
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RTC::iterator I = m_rtargets_c.find(N);
 	if(I != m_rtargets_c.end())	return I->second;
 	else {
 		CRTC* RT = new CRTC();
 		RT->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-		m_rtargets_c.insert(std::make_pair(RT->set_name(Name), RT));
-		if(Device.b_is_Ready) RT->create(Name, size, f, CreationFlags);
+		m_rtargets_c.insert(std::make_pair(RT->set_name(N), RT));
+		if(Device.b_is_Ready) RT->create(N, size, f, CreationFlags);
 		return RT;
 	}
 }
@@ -780,8 +782,9 @@ ref_texture CResourceManager::_CreateTexture	(const char* _Name)
 	// DBG_VerifyTextures	();
 	if (0==xr_strcmp(_Name,"null"))	return nullptr;
 	R_ASSERT		(_Name && _Name[0]);
+	const shared_str SceneName = ::Render != nullptr ? ::Render->scene_resource_name(_Name) : shared_str(_Name);
 	string_path		Name;
-	xr_strcpy			(Name,_Name); //. andy if (strext(Name)) *strext(Name)=0;
+	xr_strcpy			(Name, SceneName.c_str());
 
 	xrCriticalSectionGuard guard(creationGuard);
 
@@ -823,6 +826,46 @@ CTexture* CResourceManager::_GetPinnedTexture(const char* Name)
 		PinnedTextures.push_back(Texture);
 	}
 	return Texture._get();
+}
+
+CTexture* CResourceManager::_CreateTextureFromMemory(const char* Name, const void* Data, u32 RowPitch, const RHITextureDesc& Desc)
+{
+	if (Data == nullptr || RowPitch == 0 || Desc.Width == 0 || Desc.Height == 0 || Desc.ArraySize == 0)
+		return nullptr;
+	CTexture* texture = _CreateTexture(Name)._get();
+	if (texture == nullptr)
+		return nullptr;
+	if (texture->pSurface == nullptr)
+	{
+		IRHISurface* surface = GRHI->CreateTextureFromMemory(nullptr, 0, Desc);
+		if (surface == nullptr)
+			return nullptr;
+		bool uploaded = true;
+		for (u32 layer = 0; layer < Desc.ArraySize; ++layer)
+		{
+			RHISubResource initial;
+			initial.Data = static_cast<const u8*>(Data) + size_t(layer) * Desc.Height * RowPitch;
+			initial.DataSize = Desc.Height * RowPitch;
+			initial.Width = Desc.Width;
+			initial.Height = Desc.Height;
+			initial.RowPitch = RowPitch;
+			initial.DepthPitch = Desc.Height * RowPitch;
+			initial.TextureFormat = Desc.Format;
+			const RHIBox box = { 0, 0, 0, Desc.Width, Desc.Height, 1 };
+			uploaded &= surface->UpdateData(0, layer, &initial, box);
+		}
+		if (!uploaded)
+		{
+			surface->Release();
+			return nullptr;
+		}
+		texture->surface_set(surface);
+		surface->Release();
+		texture->flags.MemoryUsage = Desc.ArraySize * Desc.Height * RowPitch;
+		texture->PostLoad();
+	}
+	texture->flags.bLoaded = texture->pSurface != nullptr;
+	return texture->pSurface != nullptr ? texture : nullptr;
 }
 
 ref_texture CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 h)

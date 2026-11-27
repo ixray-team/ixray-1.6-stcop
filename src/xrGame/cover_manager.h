@@ -55,9 +55,10 @@ private:
 	template <typename _evaluator_type, typename _restrictor_type>
 	IC		bool					inertia					(Fvector const& position, float radius, _evaluator_type &evaluator, const _restrictor_type &restrictor) const;
 
-	static	void					clear_covers			(PointVector &covers);
+	static	void					clear_covers			(PointVector &covers, bool preserveSmartCovers = false);
 			void					remove_nearby_covers	(smart_cover::cover  const &cover, smart_cover::object const &object) const;
 			void					actualize_smart_covers	() const;
+			void					DestroySmartCover		(Cover* cover);
 
 public:
 									CCoverManager			();
@@ -67,9 +68,9 @@ public:
 			void					TakeStaticCover			(CCoverManager& Source);
 			void RefreshStaticCoverForEditor();
 			IC CPointQuadTree& covers() const;
-			IC CPointQuadTree* get_covers();
+			IC CPointQuadTree* get_covers() const;
 			IC Storage* smart_covers_storage() const;
-			void					clear					();
+			void					clear					(bool preserveSmartCovers = false);
 	template <typename _evaluator_type, typename _restrictor_type>
 	IC		const CCoverPoint		*best_cover				(const Fvector &position, float radius, _evaluator_type &evaluator, const _restrictor_type &restrictor) const;
 	template <typename _evaluator_type>
@@ -78,6 +79,8 @@ public:
 	IC		float					weight					(const CCoverPoint *) const;
 	IC		void					finalize				(const CCoverPoint *) const;
 			Cover const				*add_smart_cover		(const char* table_name, smart_cover::object const &object, bool const &is_combat_cover, bool const &can_fire, luabind::object const &loopholes) const;
+			void					RemoveSmartCover		(Cover const* cover);
+			u32						SmartCoverCount			() const { return u32(m_smart_covers.size()); }
 			Cover					*smart_cover			(shared_str const &cover_id) const;
 };
 

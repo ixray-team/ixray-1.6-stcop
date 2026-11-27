@@ -78,7 +78,8 @@ CUIGameCustom::~CUIGameCustom()
 	delete_data(m_custom_statics);
 	g_b_ClearGameCaptions	= false;
 	delete_data(TalkMenu);
-	g_pGameCustom = nullptr;
+	if (g_pGameCustom == this)
+		g_pGameCustom = nullptr;
 }
 
 bool CUIGameCustom::HasShownDialogs()
@@ -201,6 +202,9 @@ void CUIGameCustom::RemoveCustomMessage		(const char* id)
 
 SDrawStaticStruct* CUIGameCustom::AddCustomStatic(const char* id, bool bSingleInstance, float ttlDefault)
 {
+	if (m_msgs_xml == nullptr)
+		return nullptr;
+
 	xrCriticalSectionGuard guard(ui_lock);
 
 	if(bSingleInstance)
@@ -228,6 +232,9 @@ SDrawStaticStruct * CUIGameCustom::AddHudMessage(const char* text, const char* t
 	VERIFY(text);
 
 	SDrawStaticStruct* HudMessage = AddCustomStatic(id ? id : "hud_message", bSingleInstance);
+	if (HudMessage == nullptr)
+		return nullptr;
+
 	HudMessage->m_endTime = Device.fTimeGlobal + time;
 
 	string1024 str;
@@ -272,9 +279,6 @@ void CUIGameCustom::OnInventoryAction(PIItem item, u16 action_type)
 }
 
 #include "ui/UIGameTutorial.h"
-
-extern CUISequencer* g_tutorial;
-extern CUISequencer* g_tutorial2;
 
 bool CUIGameCustom::ShowActorMenu()
 {

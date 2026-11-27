@@ -51,6 +51,7 @@ public:
 	virtual void				update					(u32 time_delta) override;
 	virtual void				on_frame				(CPHMovementControl *movement_control, Fvector &dest_position) override;
 	virtual void				remove_links			(CObject *object) override;
+			void		on_cover_manager_clear();
 			void		cleanup_after_animation_selector();
 			bool				in_smart_cover			() const;
 	inline	bool				check_can_kill_enemy	() const;

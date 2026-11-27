@@ -144,6 +144,43 @@ void CD3D11Buffer::Unmap()
 	pImmediateContext->Unmap(m_pBuffer, 0);
 }
 
+bool CD3D11Buffer::Read(void* destination, u32 offset, u32 bytes)
+{
+	if (destination == nullptr || bytes == 0 || m_pBuffer == nullptr)
+		return false;
+	D3D11_BUFFER_DESC sourceDesc = {};
+	m_pBuffer->GetDesc(&sourceDesc);
+	if (offset > sourceDesc.ByteWidth || bytes > sourceDesc.ByteWidth - offset)
+		return false;
+
+	ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(GRHI->GetContext());
+	ID3D11Device* device = nullptr;
+	context->GetDevice(&device);
+	D3D11_BUFFER_DESC stagingDesc = {};
+	stagingDesc.ByteWidth = bytes;
+	stagingDesc.Usage = D3D11_USAGE_STAGING;
+	stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	ID3D11Buffer* staging = nullptr;
+	if (device->CreateBuffer(&stagingDesc, nullptr, &staging) != S_OK)
+	{
+		device->Release();
+		return false;
+	}
+
+	const D3D11_BOX source = { offset, 0, 0, offset + bytes, 1, 1 };
+	context->CopySubresourceRegion(staging, 0, 0, 0, 0, m_pBuffer, 0, &source);
+	D3D11_MAPPED_SUBRESOURCE mapped = {};
+	const bool mappedOk = SUCCEEDED(context->Map(staging, 0, D3D11_MAP_READ, 0, &mapped));
+	if (mappedOk)
+	{
+		memcpy(destination, mapped.pData, bytes);
+		context->Unmap(staging, 0);
+	}
+	staging->Release();
+	device->Release();
+	return mappedOk;
+}
+
 void CD3D11Buffer::UpdateSubresource(void* pData, u32 Size)
 {
 	ID3D11DeviceContext* pImmediateContext = static_cast<ID3D11DeviceContext*>(GRHI->GetContext());

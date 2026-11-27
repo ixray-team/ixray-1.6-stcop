@@ -297,6 +297,8 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 
 ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 {
+	if (pVisual == RImplementation.RuntimeTerrainVisual)
+		++RImplementation.RuntimeTerrainDrawCalls;
 	R_dsgraph::_NormalItem I = { ssa, pVisual->vis.sphere.R, pVisual, nullptr, 0, 0, 0, 0 };
 
 	if (MT_NORMAL != pVisual->Type)

@@ -203,6 +203,8 @@ public:
 	IC IWriter*					w_open				(const char* N){return w_open(nullptr,N);}
 	IWriter*					w_open_ex			(const char* initial, const char* N);
 	IC IWriter*					w_open_ex			(const char* N){return w_open_ex(nullptr,N);}
+	IWriter*					w_open_append		(const char* initial, const char* N);
+	IC IWriter*					w_open_append		(const char* N){return w_open_append(nullptr,N);}
 	void						w_close				(IWriter* &S, bool force_register = false);
 	
 	CWriterGuarded wg_open(const char* initial, const char* N);
@@ -230,7 +232,32 @@ public:
 	void 						file_rename			(const char* src, const char* dest,bool bOwerwrite=true);
     int							file_length			(const char* src);
 	void						file_update 		(const char* file);
+	// Registers a folder created at runtime so it appears in file_list_open
+	// (FS_ListFolders) results without a full rescan. Full path, trailing
+	// separator optional.
+	void						RegisterFolder		(const char* fullPath);
 
+	struct SMemoryFileData
+	{
+		const unsigned char* Bytes = nullptr;
+		size_t Size = 0;
+	};
+	struct SMemoryFileRestore
+	{
+		file PreviousFile = {};
+		bool HasPreviousFile = false;
+		SMemoryFileData PreviousData = {};
+		bool HasPreviousData = false;
+	};
+	// Null bytes registers a folder; a non-null pointer permits an empty file.
+	SMemoryFileRestore RegisterMemoryFile(const char* fullPath, const unsigned char* bytes, size_t size);
+	void UnregisterMemoryFile(const char* fullPath, const SMemoryFileRestore& previous);
+
+private:
+	static constexpr u32 MemoryFileVfs = 0xfffffffe;
+	xr_hash_map<xr_string, SMemoryFileData> MemoryFiles;
+
+public:
     time_t 						get_file_age		(const char* nm);
     void 						set_file_age		(const char* nm, time_t age);
 

@@ -10,6 +10,7 @@
 
 #include "movement_manager.h"
 #include "detail_path_manager.h"
+#include "../xrEngine/IGame_Level.h"
 
 class CDetailPathBuilder {
 private:
@@ -38,7 +39,7 @@ public:
 			void			register_to_process	()
 	{
 		m_object->m_wait_for_distributed_computation	= true;
-		Device.seqParallel.push_back	(xr_make_delegate(this,&CDetailPathBuilder::process));
+		SeqParallelPush(xr_make_delegate(this,&CDetailPathBuilder::process));
 	}
 
 			void			process_impl	(bool separate_computing = true)
@@ -72,7 +73,7 @@ public:
 		if (m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation	= false;
 
-		Device.remove_from_seq_parallel	(
+		SeqParallelRemove	(
 			xr_make_delegate(
 				this,
 				&CDetailPathBuilder::process

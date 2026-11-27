@@ -11,10 +11,9 @@ SHeliMovementState::~SHeliMovementState() = default;
 
 void SHeliMovementState::net_Destroy()
 {
-	if(need_to_del_path&&currPatrolPath){
-		CPatrolPath* tmp = const_cast<CPatrolPath*>(currPatrolPath);
-		xr_delete( tmp );
-	}
+	currPatrolPath.reset();
+	currPatrolVertex = nullptr;
+	need_to_del_path = false;
 }
 
 void SHeliMovementState::Load(const char* section)
@@ -194,31 +193,34 @@ void SHeliMovementState::SetDestPosition(Fvector* pos)
 {
 	desiredPoint = *pos;
 	type = eMovToPoint;
-
-	if(need_to_del_path&&currPatrolPath){
-		CPatrolPath* tmp = const_cast<CPatrolPath*>(currPatrolPath);
-		xr_delete( tmp );
-		need_to_del_path = false;
-	}
+	currPatrolPath.reset();
+	currPatrolVertex = nullptr;
+	need_to_del_path = false;
 }
 
 
 void SHeliMovementState::goPatrolByPatrolPath (const char* path_name, int start_idx)
 {
-	if(need_to_del_path&&currPatrolPath){
-		CPatrolPath* tmp = const_cast<CPatrolPath*>(currPatrolPath);
-		xr_delete( tmp );
-	}
-
+	currPatrolPath.reset();
+	currPatrolVertex = nullptr;
 	patrol_begin_idx = start_idx;
 	patrol_path_name = path_name;
 
-	currPatrolPath		= ai().patrol_paths().path(patrol_path_name);
-	need_to_del_path	= false;
-	currPatrolVertex	= currPatrolPath->vertex(patrol_begin_idx);
+	currPatrolPath = ai().patrol_paths().shared_path(patrol_path_name, true);
+	need_to_del_path = false;
+	if (!currPatrolPath)
+	{
+		type = eMovNone;
+		return;
+	}
+	currPatrolVertex = currPatrolPath->vertex(patrol_begin_idx);
+	if (!currPatrolVertex)
+	{
+		type = eMovNone;
+		return;
+	}
 
 	desiredPoint = currPatrolVertex->data().position();
-	
 	type = eMovPatrolPath;
 }
 
@@ -290,9 +292,11 @@ void SHeliMovementState::load(IReader &input_packet)
 	onPointRangeDist	=		input_packet.r_float();
 
 	if(type==eMovPatrolPath){
-		currPatrolPath	= ai().patrol_paths().path(patrol_path_name);
+		currPatrolPath = ai().patrol_paths().shared_path(patrol_path_name, true);
 		int idx = input_packet.r_s32();
-		currPatrolVertex =  currPatrolPath->vertex(idx);
+		currPatrolVertex = currPatrolPath ? currPatrolPath->vertex(idx) : nullptr;
+		if (!currPatrolVertex)
+			type = eMovNone;
 	}
 	if(type==eMovRoundPath){
 		goByRoundPath(round_center, round_radius, !round_reverse);
@@ -315,9 +319,11 @@ void SHeliMovementState::Serialize(ISaveObject& Object)
 				Object << Value;
 			}
 			else {
-				currPatrolPath = ai().patrol_paths().path(patrol_path_name);
+				currPatrolPath = ai().patrol_paths().shared_path(patrol_path_name, true);
 				Object << Value;
-				currPatrolVertex = currPatrolPath->vertex(Value);
+				currPatrolVertex = currPatrolPath ? currPatrolPath->vertex(Value) : nullptr;
+				if (!currPatrolVertex)
+					type = eMovNone;
 			}
 		}
 		if (type == eMovRoundPath) {
@@ -370,13 +376,11 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
 	round_radius	= radius_;
 	round_reverse	= !clockwise_;
 
-	if(need_to_del_path&&currPatrolPath){
-		CPatrolPath* tmp = const_cast<CPatrolPath*>(currPatrolPath);
-		xr_delete( tmp );
-	}
+	currPatrolPath.reset();
+	currPatrolVertex = nullptr;
 	need_to_del_path	= true;
 	u32 pt_idx			= 0;
-	CPatrolPath* pp = new CPatrolPath("heli_round_path");
+	xr_shared_ptr<CPatrolPath> pp = xr_make_shared<CPatrolPath>("heli_round_path");
 
 	float start_h	= 0.0f;
 	float end_h		= PI_MUL_2-EPS;
@@ -393,7 +397,7 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
 	for(;it!=it_e;++it,++pt_idx){
 		string128 pt_name;
 		xr_sprintf(pt_name,"heli_round_path_pt_%d",pt_idx);
-		CPatrolPoint pt = CPatrolPoint((ILevelGraph*)0,(IGameLevelCrossTable*)0,(IGameGraph*)0,pp,(*it).point,u32(-1),0,pt_name);
+		CPatrolPoint pt = CPatrolPoint((ILevelGraph*)0,(IGameLevelCrossTable*)0,(IGameGraph*)0,pp.get(),(*it).point,u32(-1),0,pt_name);
 		pp->add_vertex(pt,pt_idx);
 		if (pt_idx)
 			pp->add_edge(pt_idx-1,pt_idx,1.f);
@@ -401,7 +405,7 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
 	pp->add_edge(pt_idx-1, 0, 1.f);
 
 
-	currPatrolPath = pp;
+	currPatrolPath = std::move(pp);
 
 //find nearest point to start from...
 	u32 start_vertex_id		= 0;
@@ -429,22 +433,20 @@ void SHeliMovementState::goByRoundPath(Fvector center_, float radius_, bool cloc
 
 void SHeliMovementState::SetPointFlags(u32 idx, u32 new_flags)
 {
-	CPatrolPath				*p = const_cast<CPatrolPath*>(currPatrolPath);
-	CPatrolPoint* pt_curr	= &p->vertex(idx)->data();
-	CPatrolPoint* pt_new	= new CPatrolPoint(	
+	CPatrolPath* p = const_cast<CPatrolPath*>(currPatrolPath.get());
+	CPatrolPoint* pt_curr = &p->vertex(idx)->data();
+	CPatrolPoint pt_new(
 		nullptr,
 		nullptr,
 		nullptr,
-		currPatrolPath,
+		currPatrolPath.get(),
 		pt_curr->position(),
 		u32(-1),
 		new_flags,
 		pt_curr->name()
 	);
 
-	p->vertex(idx)->data	(*pt_new);
-//	xr_delete(pt_curr);
-
+	p->vertex(idx)->data(pt_new);
 }
 
 float SHeliMovementState::GetSpeedInDestPoint			()

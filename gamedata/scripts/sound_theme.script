@@ -10,6 +10,14 @@ function id()
 	sounds_base = sounds_base + 1
 	return sounds_base - 1
 end
+
+local function remove_subtitle(static_id)
+	local hud = get_hud()
+	if hud ~= nil then
+		hud:RemoveCustomStatic(static_id)
+	end
+end
+
 --function printf()
 --end
 --'--------------------------------------------------------------------------------------------------------------------
@@ -135,7 +143,7 @@ function npc_sound:callback(npc_id)
 
 --	printf("npc_sound:callback!!!!!!!!")
 
-	get_hud():RemoveCustomStatic("cs_subtitles_npc")
+	remove_subtitle("cs_subtitles_npc")
 
 	local st   = db.storage[npc_id]
 	if st.active_scheme == nil then
@@ -425,7 +433,7 @@ function actor_sound:callback(npc_id)
 	self.snd_obj = nil
 	self.can_play_sound = true
 
-	get_hud():RemoveCustomStatic("cs_subtitles_actor")
+	remove_subtitle("cs_subtitles_actor")
 
 --	printf("actor_sound:callback from [%s]", npc_id)
 	local st   = db.storage[npc_id]
@@ -636,7 +644,7 @@ function object_sound:callback(npc_id)
 	self.can_play_sound = true
 
 --	printf("object_sound:callback for object !!!!!!!!")
-	get_hud():RemoveCustomStatic("cs_subtitles_object")
+	remove_subtitle("cs_subtitles_object")
 
 	local st   = db.storage[npc_id]
 	if st.active_scheme == nil then

@@ -515,8 +515,8 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIPdaWnd::Show(bool status)
 {
-	HotkeyContext.SetActive(status);
-	inherited::Show						(status);
+	HotkeyContext.SetActive(status && (g_pGameLevel == nullptr || !g_pGameLevel->IsParallel()));
+	inherited::Show(status);
 	if(status)
 	{
 		UI().GetUICursor().m_static->SetWidth(UI().GetUICursor().m_width_initial * CHudPdaAnimator::GetPDAScreen_kx());

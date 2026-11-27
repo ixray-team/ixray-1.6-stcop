@@ -96,6 +96,11 @@ void CEngineApp::OnEvent(EVENT E, u64 P1, u64 P2)
 			g_pGamePersistent->PreStart(op_server);
 			//-----------------------------------------------------------
 			g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
+			if (NextLevelDescPending)
+			{
+				g_pGameLevel->SetLevelDesc(NextLevelDesc);
+				NextLevelDescPending = false;
+			}
 			pApp->LoadBegin();
 			g_pGamePersistent->Start(op_server);
 			g_pGameLevel->net_Start(op_server, op_client);
@@ -343,17 +348,12 @@ void CEngineApp::OnFrame()
 
 void CEngineApp::Level_Append(const char* folder)
 {
-	string_path	N1, N2, N3, N4;
-	xr_strconcat(N1, folder, "level");
+	string_path	N2;
 	xr_strconcat(N2, folder, "level.ltx");
-	xr_strconcat(N3, folder, "level.geom");
-	xr_strconcat(N4, folder, "level.cform");
-	if (
-		FS.exist(_game_levels_, N1) &&
-		FS.exist(_game_levels_, N2) &&
-		FS.exist(_game_levels_, N3) &&
-		FS.exist(_game_levels_, N4)
-		)
+	// Only level.ltx is mandatory for listing; every other level file
+	// (geometry, collision, ai-map, ...) is an individually loadable resource
+	// whose absence is tolerated by the load pipeline.
+	if (FS.exist(_game_levels_, N2))
 	{
 		sLevelInfo			LI;
 		LI.folder = xr_strdup(folder);

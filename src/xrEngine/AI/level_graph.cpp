@@ -7,6 +7,12 @@
 ILevelGraph::ILevelGraph(): m_header(nullptr), m_nodes(nullptr), m_level_id(0), m_row_length(0), m_column_length(0),
 							m_max_x(0), m_max_z(0)
 {
+	hdrNODES& raw = FallbackHeader;
+	raw.version = XRAI_CURRENT_VERSION;
+	raw.count = 0;
+	raw.size = 0.7f;
+	raw.size_y = 5.f;
+	raw.aabb.set(Fvector().set(-5120.f, -1000.f, -5120.f), Fvector().set(5120.f, 1000.f, 5120.f));
 }
 
 ILevelGraph::~ILevelGraph()
@@ -185,6 +191,8 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 
 u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition, float Range) const
 {
+	if (!valid_vertex_id(VertexID))
+		return u32(-1);
 	thread_local xr_vector<std::pair<float, u32>> TempPriorityNode;
 	thread_local xr_map<u32, u32> TempCameFrom;
 	thread_local xr_map<u32, float> TempCostSoFar;
@@ -281,6 +289,8 @@ u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition
 
 u32	ILevelGraph::vertex(const Fvector& position) const
 {
+	if (!has_nodes())
+		return u32(-1);
 	ILevelGraph::CPosition	_node_position;
 	vertex_position(_node_position, position);
 	float					min_dist = flt_max;
@@ -304,6 +314,8 @@ u32	ILevelGraph::vertex(const Fvector& position) const
 
 u32 ILevelGraph::vertex(u32 current_node_id, const Fvector& position) const
 {
+	if (!has_nodes())
+		return u32(-1);
 	if (!IsEditorNodeEnabled(current_node_id))
 	{
 		current_node_id = u32(-1);
@@ -458,6 +470,8 @@ u32 ILevelGraph::vertex(u32 current_node_id, const Fvector& position) const
 
 u32	ILevelGraph::vertex_id(const Fvector& position) const
 {
+	if (!has_nodes())
+		return u32(-1);
 	VERIFY2(valid_vertex_position(position),make_string<const char*>("invalid position for ILevelGraph::vertex_id specified: [%f][%f][%f]",	VPUSH(position)));
 
 	CPosition _vertex_position = vertex_position(position);

@@ -342,7 +342,7 @@ CRenderTarget::CRenderTarget()
 		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
 	}
 
-	GImGUIManager->Windows().Subscribe("GraphicDebug", ImGuiPriority::Medium, [this]()
+	GImGUIManager->Windows().Subscribe(("GraphicDebug" + xr_string(RImplementation.scene_resource_prefix())).c_str(), ImGuiPriority::Medium, [this]()
 	{
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
 		{
@@ -617,9 +617,12 @@ CRenderTarget::CRenderTarget()
 	rt_planar_depth.create(r2_RT_planar_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::D16_UNORM);
 	rt_planar_color.create(r2_RT_planar_color, s_dwWidth, s_dwHeight, ERHI_FORMAT::R11G11B10_FLOAT);
 
-	init_fsr();
-	init_dlss();
-	init_xess();
+	if (!RImplementation.IsSecondaryScene)
+	{
+		init_fsr();
+		init_dlss();
+		init_xess();
+	}
 
 	// Scale
 	{
@@ -1109,7 +1112,7 @@ CRenderTarget::~CRenderTarget	()
     {
         t_envmap_0->surface_set(nullptr);
         t_envmap_1->surface_set(nullptr);
-        GImGUIManager->Windows().Unsubscribe("GraphicDebug");
+        GImGUIManager->Windows().Unsubscribe(("GraphicDebug" + xr_string(RImplementation.scene_resource_prefix())).c_str());
         _RELEASE(g_debug_blend_state);
         _RELEASE(FSTriangleVB);
         _RELEASE(FSTriangleIB);
@@ -1179,9 +1182,10 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_accum_mask);
 	xr_delete(b_occq);
 
-	g_Fsr3Wrapper.Destroy();
+	if (!RImplementation.IsSecondaryScene)
+		g_Fsr3Wrapper.Destroy();
 
-	GImGUIManager->Windows().Unsubscribe("GraphicDebug");
+	GImGUIManager->Windows().Unsubscribe(("GraphicDebug" + xr_string(RImplementation.scene_resource_prefix())).c_str());
 
 	if (g_debug_blend_state != nullptr) 
 	{

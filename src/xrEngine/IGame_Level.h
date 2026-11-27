@@ -4,12 +4,23 @@
 #include "xr_object_list.h"
 #include "../xrCore/Collision/xr_area.h"
 #include "IGame_Patrol.h"
+#include "LevelResources.h"
+#include "LevelServices.h"
+#include "../xrSound/Sound.h"
 
 // refs
 class ENGINE_API CCameraManager;
 class ENGINE_API CCursor;
 class ENGINE_API CCustomHUD;
+class CParticlesObject;
 class XRCORE_API ISpatial;
+class ISpatial_DB;
+class CUISequencer;
+class CAI_Space;
+class CEnvironment;
+class CScriptEngine;
+class IPHWorld;
+class IGame_CustomUI;
 namespace Feel { class ENGINE_API Sound; }
 
 class ENGINE_API CServerInfo
@@ -80,12 +91,16 @@ public:
 
 	xr_vector<ScheduledCallbackItem> scheduled_tasks;
 
+	u32 SessionTimeMs() const { return IsParallel() ? Device.TimerAsync_MMT() : Device.dwTimeGlobal; }
+
 	ICF void schedule_callback(void* object_ptr, u32 cb_time, const std::function<void()>& func)
 	{
-		scheduled_tasks.emplace_back(object_ptr, Device.dwTimeGlobal + cb_time, func);
+		scheduled_tasks.emplace_back(object_ptr, SessionTimeMs() + cb_time, func);
 	}
 
-	CObjectList					Objects; 
+	SLevelServices Services;
+
+	CObjectList					Objects;
 	CObjectSpace				ObjectSpace;
 	float StreamingLoadRadius = 250.f;
 	float StreamingUnloadRadius = 300.f;
@@ -93,6 +108,87 @@ public:
 
 	bool						bReady;
 	bool						UseSnowmask = true;
+
+	// Level descriptor: which resources this level instance loads (see LevelResources.h).
+	// Default is "everything" which reproduces the legacy behavior exactly.
+	SLevelDesc					LevelDesc;
+
+	struct SLevelSoundGeometry
+	{
+		CDB::MODEL* Env = nullptr;
+		CDB::MODEL* Som = nullptr;
+		CObjectSpace* Occluder = nullptr;
+		SoundZoneVector Zones;
+	};
+	SLevelSoundGeometry SoundGeometry;
+	void ReleaseSoundGeometry();
+
+	struct SAmbientWeather
+	{
+		xr_shared_ptr<CParticlesObject> Particles;
+		xr_vector<u32> SoundNextTimes = xr_vector<u32>(32);
+		u32 EffectNextTime = 0;
+		u32 EffectStopTime = 0;
+		float WindStart = 0.f;
+		float WindInTime = 0.f;
+		float WindEnd = 0.f;
+		float WindOutTime = 0.f;
+		bool WindOn = false;
+	};
+	SAmbientWeather AmbientWeather;
+
+	struct SLevelFlow
+	{
+		CUISequencer* Intro = nullptr;
+		CUISequencer* Tutorial = nullptr;
+		CUISequencer* RetiringTutorial = nullptr;
+		IInputReceiver* ActiveInput = nullptr;
+		xr_delegate<void()> IntroEvent;
+		bool GameLoadedPending = true;
+
+		IInputReceiver* InputReceiver() const { return ActiveInput; }
+	};
+	SLevelFlow Flow;
+
+	// Per-resource outcome of the last load attempt, indexed by ELevelResource bit number.
+	static constexpr u32		ResourceStateCount = 16;
+	EResourceState				ResourceStates[ResourceStateCount] = {};
+
+	// False when the renderer scene graph was skipped or failed to load; OnRender
+	// then avoids Render->Calculate/Render which require a loaded scene.
+	bool						HasRenderScene = false;
+
+	// Session-local parallel-job queue. Stock code pushes per-frame jobs to the
+	// global Device.seqParallel, which is drained on the GameThread - a thread
+	// where the g_pGameLevel slot is NOT lent to a parallel (sandbox) session.
+	// SeqParallelPush() reroutes those jobs here for parallel sessions, and the
+	// session's own pump drains them on the primary thread with the slot lent.
+	xr_vector<xr_delegate<void()>>	ParallelJobs;
+	xr_delegate<void(const xr_delegate<void()>&)> ContextDispatcher;
+	void RunInContext(const xr_delegate<void()>& work) const
+	{
+		if (ContextDispatcher)
+			ContextDispatcher(work);
+		else
+			work();
+	}
+
+	ICF bool					IsParallel					() const { return LevelDesc.Parallel; }
+
+	void						SetLevelDesc				(const SLevelDesc& desc) { LevelDesc = desc; LevelDesc.Resources = desc.Validate(); }
+	ICF const SLevelDesc&		GetLevelDesc				() const { return LevelDesc; }
+	ICF bool					HasLevelResource			(ELevelResource res) const { return LevelDesc.Has(res); }
+
+	ICF EResourceState			GetResourceState			(ELevelResource res) const { return ResourceStates[ResourceStateIndex(res)]; }
+	void						SetResourceState			(ELevelResource res, EResourceState state);
+
+	static constexpr u32		ResourceStateIndex			(ELevelResource res)
+	{
+		u32 bit = u32(res);
+		u32 index = 0;
+		while (bit > 1u) { bit >>= 1; ++index; }
+		return index;
+	}
 
 	CInifile*					pLevel;
 public:	// deferred sound events
@@ -178,3 +274,9 @@ public:
 };
 
 extern ENGINE_API IGame_Level* g_pGameLevel;
+
+// Routes a per-frame parallel job: to the global Device.seqParallel for the
+// primary session, or to the owning parallel session's local queue (drained by
+// that session's pump on the primary thread, where its level slot is lent).
+ENGINE_API void SeqParallelPush(const xr_delegate<void()>& job);
+ENGINE_API void SeqParallelRemove(const xr_delegate<void()>& job);

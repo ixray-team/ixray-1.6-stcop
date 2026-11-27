@@ -224,7 +224,8 @@ CBulletManager::CBulletManager()
 {
 	m_Bullets.clear();
 	m_Bullets.reserve(100);
-	Device.seqFrame.Add(this, REG_PRIORITY_LOW);
+	if (g_pGameLevel == nullptr || !g_pGameLevel->IsParallel())
+		Device.seqFrame.Add(this, REG_PRIORITY_LOW);
 }
 
 CBulletManager::~CBulletManager()
@@ -1242,10 +1243,9 @@ void CBulletManager::Render()
 {
 	PROF_EVENT("CBulletManager::Render")
 
-	u32 g_bullet_debug_trj_totalLines = 0u;
-	static xr_vector<SBullet*> visible_tracers;
-	visible_tracers.clear();
-	visible_tracers.reserve(m_Bullets.size());
+	u32 debugTrajectoryTotalLines = 0u;
+	VisibleTracers.clear();
+	VisibleTracers.reserve(m_Bullets.size());
 
 	if (!bullet_manager_debug_trajectory)
 	{
@@ -1273,18 +1273,18 @@ void CBulletManager::Render()
 				continue;
 			}
 
-			visible_tracers.push_back(&bullet);
+			VisibleTracers.push_back(&bullet);
 		}
 	}
 	else
 	{
 		for (SBullet& bullet : m_Bullets)
 		{
-			g_bullet_debug_trj_totalLines += (u32)bullet.lines.size();
+			debugTrajectoryTotalLines += (u32)bullet.lines.size();
 		}
 	}
 
-	if (!visible_tracers.empty())
+	if (!VisibleTracers.empty())
 	{
 		UIRender->CacheSetXformWorld(Fidentity);
 
@@ -1308,7 +1308,7 @@ void CBulletManager::Render()
 		constexpr u32 VERTICES_PER_TRACER = 12u;
 		u32 MAX_TRACERS = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertLIT<VERTICES_PER_TRACER>);
 
-		u32 total_tracers = visible_tracers.size();
+		u32 total_tracers = VisibleTracers.size();
 		for (u32 start_idx = 0u; start_idx < total_tracers; start_idx += MAX_TRACERS)
 		{
 			u32 batch_size = std::min(MAX_TRACERS, total_tracers - start_idx);
@@ -1319,7 +1319,7 @@ void CBulletManager::Render()
 			IUIRender::r_vertLIT<VERTICES_PER_TRACER>* buff = *buffer;
 			for (u32 i = 0; i < batch_size; ++i)
 			{
-				SBullet* bullet = visible_tracers[start_idx + i];
+				SBullet* bullet = VisibleTracers[start_idx + i];
 
 				Fvector tracer_last_pos = bullet->tracer_last_pos[bp_render_idx];
 				Fvector tracer_pos = bullet->tracer_pos[bp_render_idx];
@@ -1501,22 +1501,21 @@ void CBulletManager::Render()
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 	}
 
-	if (bullet_manager_debug_trajectory && !m_Bullets.empty() && g_bullet_debug_trj_totalLines > 0u)
+	if (bullet_manager_debug_trajectory && !m_Bullets.empty() && debugTrajectoryTotalLines > 0u)
 	{
 		constexpr u32 DEFAULT_COLOR = color_rgba(100u, 255u, 100u, 255u);
 		UIRender->SetShader(*m_trj_shader);
 
-		static xr_vector<std::pair<Fvector, Fvector>> all_lines;
-		all_lines.clear();
-		all_lines.reserve(g_bullet_debug_trj_totalLines);
+		DebugTrajectoryLines.clear();
+		DebugTrajectoryLines.reserve(debugTrajectoryTotalLines);
 
 		for (SBullet& bullet : m_Bullets)
 		{
-			all_lines.insert(all_lines.end(), bullet.lines.begin(), bullet.lines.end());
+			DebugTrajectoryLines.insert(DebugTrajectoryLines.end(), bullet.lines.begin(), bullet.lines.end());
 		}
 
 		u32 MAX_LINES = UIRender->VBuffMaxSize() / sizeof(IUIRender::r_vertL<2u>);
-		u32 total_lines = (u32)all_lines.size();
+		u32 total_lines = (u32)DebugTrajectoryLines.size();
 
 		for (u32 start_idx = 0u; start_idx < total_lines; start_idx += MAX_LINES)
 		{
@@ -1525,7 +1524,7 @@ void CBulletManager::Render()
 			IUIRender::r_vertL<2u>* buff = *buffer;
 			for (u32 i = 0u; i < batch_size; ++i)
 			{
-				auto& line = all_lines[start_idx + i];
+				auto& line = DebugTrajectoryLines[start_idx + i];
 
 				buff[i] =
 					{

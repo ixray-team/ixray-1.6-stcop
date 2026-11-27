@@ -126,7 +126,11 @@ void CActor::OnFrame()
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
-	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
+	// A parallel (viewer) session's actor must not land on the global engine
+	// sequence: the primary session's frame would tick it without the
+	// sandbox's context. The session ticks its level (and objects) itself.
+	if (g_pGameLevel == nullptr || !g_pGameLevel->IsParallel())
+		Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
 
 	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
 	encyclopedia_registry	= new CEncyclopediaRegistryWrapper();
@@ -184,7 +188,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 
 #ifdef DEBUG
-	Device.seqRender.Add	(this,REG_PRIORITY_LOW);
+	if (g_pGameLevel == nullptr || !g_pGameLevel->IsParallel())
+		Device.seqRender.Add(this, REG_PRIORITY_LOW);
 #endif
 
 	//разрешить использование пояса в inventory
@@ -1512,10 +1517,9 @@ void CActor::Die	(CObject* who)
 	if (IsGameTypeSingle())
 	{
 		if (!fp_die)
-		{
 			cam_Set(eacFreeLook);
-		}
-		CurrentGameUI()->HideShownDialogs();
+		if (CurrentGameUI() != nullptr)
+			CurrentGameUI()->HideShownDialogs();
 		start_tutorial("game_over");
 	}
 	else
@@ -1854,7 +1858,7 @@ void CActor::UpdateCL()
 	PIItem active_item = inventory().ActiveItem();
 	CHudItem* item = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 
-	u32 ct = Device.dwTimeGlobal;
+	u32 ct = Level().SessionTimeMs();
 	u32 dt = 0;
 	if (_last_update_time != 0)
 	{
@@ -2021,7 +2025,10 @@ void CActor::UpdateCL()
 	PickupModeUpdate();
 	PickupModeUpdate_COD();
 	
-	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+	// No HUD (HUD-less session): an empty query drives the same "not looking at
+	// anything" path below instead of dereferencing the missing HUD.
+	collide::rq_result EmptyRQ = {};
+	collide::rq_result& RQ = g_hud ? HUD().GetCurrentRayQuery() : EmptyRQ;
 	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
 	if (!input_external_handler_installed() && RQ.valid() && !RQ.IsStatic() && RQ.GetDynamic()->getVisible() && RQ.range < CHUDTarget::PICKUP_DISTANCE && 
@@ -2224,8 +2231,11 @@ void CActor::UpdateCL()
 
 			if (g_SingleGameDifficulty == egdNovice)
 			{
-				SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("gunsl_messenger", true);
-				s->SetText(g_pStringTable->translate("gunsl_actor_burned").c_str());
+				if (CurrentGameUI() != nullptr)
+				{
+					SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("gunsl_messenger", true);
+					s->SetText(g_pStringTable->translate("gunsl_actor_burned").c_str());
+				}
 			}
 
 
@@ -2284,12 +2294,14 @@ void CActor::UpdateCL()
 			
 			fire_disp_full = m_fdisp_controller.GetCurrentDispertion();
 
-			HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
-			HUD().ShowCrosshair(pWeapon->use_crosshair() && !psHUD_Flags.test(HUD_CROSSHAIR_POINT));
+			if (g_hud)
+			{
+				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
+				HUD().ShowCrosshair(pWeapon->use_crosshair() && !psHUD_Flags.test(HUD_CROSSHAIR_POINT));
 #ifdef DEBUG
-			HUD().SetFirstBulletCrosshairDisp(pWeapon->GetFirstBulletDisp());
+				HUD().SetFirstBulletCrosshairDisp(pWeapon->GetFirstBulletDisp());
 #endif
-			
+			}
 			bool B = ! ((mstate_real & mcLookout) && !IsGameTypeSingleCompatible());
 
 			psHUD_Flags.set( HUD_WEAPON_RT, B );
@@ -2310,8 +2322,11 @@ void CActor::UpdateCL()
 	{
 		if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
 		{
-			HUD().SetCrosshairDisp(0.f);
-			HUD().ShowCrosshair(false);
+			if (g_hud)
+			{
+				HUD().SetCrosshairDisp(0.f);
+				HUD().ShowCrosshair(false);
+			}
 
 			Device.hudViewportData.renderZoomFactor = 1.0f;
 			Device.hudViewportData.renderZoomRotateFactor = 0.0f;
@@ -2868,7 +2883,7 @@ void CActor::shedule_Update	(u32 DT)
 	PROF_EVENT("CActor shedule_Update");
 	setSVU							(OnServer());
 
-	CActorAuraPostEffectsBalancer::update	();
+	Level().AuraEffects().update(*this);
 
 	if (cam_active == eacFirstEye && !psGameFlags.test(rsActorShadow))
 	{
@@ -2957,8 +2972,6 @@ void CActor::renderable_Render()
 	VERIFY(_valid(XFORM()));
 }
 
-extern CUISequencer* g_tutorial;
-
 namespace
 {
 float PdaFontXScale()
@@ -2980,6 +2993,11 @@ void CActor::RenderItemUI()
 	if (pdaAnimator != nullptr && pdaAnimator->IsActive())
 	{
 		CFontScaleScope fontScale(PdaFontXScale());
+
+		if (CurrentGameUI() == nullptr)
+		{
+			return;
+		}
 
 		CUIPdaWnd* PdaMenu = CurrentGameUI()->PdaMenu();
 		CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
@@ -3032,11 +3050,12 @@ void CActor::RenderItemUI()
 		{
 			PdaSpot->Draw();
 		}
-		if (g_tutorial && g_tutorial->Need3DRender())
+		CUISequencer* tutorial = Level().Flow.Tutorial;
+		if (tutorial && tutorial->Need3DRender())
 		{
-			g_tutorial->OnRender();
+			tutorial->OnRender();
 		}
-		if (PdaMenu == TopInputReceiver || (PdaSpot && PdaSpot == TopInputReceiver) || (g_tutorial && g_tutorial->Need3DRender()))
+		if (PdaMenu == TopInputReceiver || (PdaSpot && PdaSpot == TopInputReceiver) || (tutorial && tutorial->Need3DRender()))
 		{
 			GetUICursor().OnRender();
 		}
@@ -3482,7 +3501,7 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 		VERIFY(it != m_ArtefactsOnBelt.end());
 		m_ArtefactsOnBelt.erase(it);
 	}	
-	if (CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() && Level().CurrentViewEntity() == this)
+	if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd && CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() && Level().CurrentViewEntity() == this)
 		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 }
 
@@ -3712,6 +3731,9 @@ void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
 	if (g_dedicated_server)
 		return;
+
+	if (!CurrentGameUI() || !CurrentGameUI()->UIMainIngameWnd)
+		return;	// no game UI (HUD-less session)
 
 	CUIMotionIcon*	motion_icon=CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
@@ -3996,7 +4018,9 @@ void CActor::On_SetEntity()
 	if (!pOutfit)
 	{
 		//g_player_hud->load_default();
-		g_player_hud->m_need_reload = false;
+		// HUD-less (sandbox/viewer) sessions have no global player HUD.
+		if (g_player_hud != nullptr)
+			g_player_hud->m_need_reload = false;
 	}
 	else
 		pOutfit->ApplySkinModel(this, true, true);
@@ -4436,8 +4460,7 @@ void CActor::DoSuicideShot()
 		return;
 	}
 
-	extern bool g_bDisableAllInput;
-	g_bDisableAllInput = true;
+	Level().InputDisabled = true;
 	LastShotDoneTime = Device.dwTimeGlobal;
 	DeathActionStarted = true;
 

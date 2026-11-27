@@ -89,14 +89,20 @@ void CALifeSimulatorBase::reload			(const char* section)
 	m_initialized				= true;
 }
 
-CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration, const char* build)
+CSE_Abstract* CALifeSimulatorBase::spawn_item(const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration, const char* build, const SSpawnIdentity* identity)
 {
-	PROF_EVENT("ALife spawn_item");
-	CSE_Abstract				*abstract = nullptr;
-	{
-		PROF_EVENT("ALife spawn_item: F_entity_Create");
-		abstract				= F_entity_Create(section);
-	}
+	return spawn_item_impl(section, position, level_vertex_id, game_vertex_id, parent_id, registration, build, identity, nullptr);
+}
+
+CSE_Abstract* CALifeSimulatorBase::spawn_item_online(const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ClientID clientID, const SSpawnIdentity* identity)
+{
+	return spawn_item_impl(section, position, level_vertex_id, game_vertex_id, ALife::INVALID_OBJECT_ID, false, nullptr, identity, &clientID);
+}
+
+CSE_Abstract* CALifeSimulatorBase::spawn_item_impl(const char* section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration, const char* build, const SSpawnIdentity* identity, const ClientID* onlineClient)
+{
+	const CSE_ALifeDynamicObject* supplyParent = parent_id != ALife::INVALID_OBJECT_ID ? objects().object(parent_id, true) : nullptr;
+	CSE_Abstract				*abstract = F_entity_Create(section);
 	R_ASSERT3					(abstract,"Cannot find item with section",section);
 
 	abstract->s_name			= section;
@@ -149,64 +155,76 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 			dynamic_object->m_tGraphID	= parent->m_tGraphID;
 		}
 	}
-	dynamic_object->m_tSpawnID	= (ALife::_SPAWN_ID)ALife::INVALID_OBJECT_ID;
-	dynamic_object->m_spawn_build	= build;
-
+	dynamic_object->m_tSpawnID = (ALife::_SPAWN_ID)ALife::INVALID_OBJECT_ID;
+	dynamic_object->m_spawn_build = build;
+	if (identity != nullptr)
 	{
-		PROF_EVENT("ALife spawn_item: register and supplies");
-		if (registration)
-			register_object				(dynamic_object,true);
-
-		dynamic_object->spawn_supplies	();
-		dynamic_object->on_spawn		();
+		dynamic_object->m_story_id = identity->StoryId;
+		dynamic_object->m_script_story_ID = identity->ScriptStoryId;
 	}
+
+	const bool spawnOnlineWithParent = onlineClient == nullptr && registration && supplyParent != nullptr && supplyParent->m_bOnline && supplyParent->owner != nullptr &&
+		server().GetOwnerLevel() != nullptr && server().GetOwnerLevel()->GetLevelDesc().RemoteTransport;
+	if (onlineClient != nullptr || spawnOnlineWithParent)
+	{
+		const ClientID owner = onlineClient != nullptr ? *onlineClient : supplyParent->owner->ID;
+		dynamic_object->m_bOnline = true;
+		register_object(dynamic_object, true);
+		if (onlineClient != nullptr)
+			dynamic_object->s_flags.set(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER, true);
+		NET_Packet packet;
+		abstract = server().Process_spawn(packet, owner, false, abstract, true);
+		if (abstract == nullptr)
+			return nullptr;
+		dynamic_object = abstract->cast_alife_dynamic_object();
+		VERIFY(dynamic_object);
+	}
+	else if (registration)
+	{
+		register_object				(dynamic_object,true);
+	}
+
+	dynamic_object->spawn_supplies	();
+	dynamic_object->on_spawn		();
 
 	return						(dynamic_object);
 }
 
 CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAbstract, CSE_ALifeDynamicObject *j)
 {
-	PROF_EVENT("ALife create group member");
 	const char*					S = pSettings->r_string(tpALifeGroupAbstract->base()->s_name,"monster_section");
-	CSE_Abstract				*l_tpAbstract = nullptr;
-	{
-		PROF_EVENT("ALife create: F_entity_Create");
-		l_tpAbstract			= F_entity_Create(S);
-	}
+	CSE_Abstract				*l_tpAbstract = F_entity_Create(S);
 	R_ASSERT2					(l_tpAbstract,"Can't create entity.");
 	CSE_ALifeDynamicObject* k = l_tpAbstract->cast_alife_dynamic_object();
 	R_ASSERT2					(k,"Non-ALife object in the 'game.spawn'");
 
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 	{
-		PROF_EVENT("ALife create: copy spawn data");
-		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 		{
-			{
-				CSaveObjectSave ObjSave;
-				CSaveObjectLoad ObjLoad;
-				j->Spawn_Serialize(ObjSave, true, true);
-				ObjLoad.TransferSaveData(ObjSave);
-				k->Spawn_Serialize(ObjLoad, true, true);
-			}
-			{
-				CSaveObjectSave ObjSave;
-				CSaveObjectLoad ObjLoad;
-				j->UPDATE_Serialize(ObjSave);
-				ObjLoad.TransferSaveData(ObjSave);
-				k->UPDATE_Serialize(ObjLoad);
-			}
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->Spawn_Serialize(ObjSave, true, true);
+			ObjLoad.TransferSaveData(ObjSave);
+			k->Spawn_Serialize(ObjLoad, true, true);
 		}
-		else
 		{
-			NET_Packet					tNetPacket;
-			j->Spawn_Write				(tNetPacket,true);
-			k->Spawn_Read				(tNetPacket);
-			tNetPacket.w_begin			(M_UPDATE);
-			j->UPDATE_Write				(tNetPacket);
-			u16							id;
-			tNetPacket.r_begin			(id);
-			k->UPDATE_Read				(tNetPacket);
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->UPDATE_Serialize(ObjSave);
+			ObjLoad.TransferSaveData(ObjSave);
+			k->UPDATE_Serialize(ObjLoad);
 		}
+	}
+	else
+	{
+		NET_Packet					tNetPacket;
+		j->Spawn_Write				(tNetPacket,true);
+		k->Spawn_Read				(tNetPacket);
+		tNetPacket.w_begin			(M_UPDATE);
+		j->UPDATE_Write				(tNetPacket);
+		u16							id;
+		tNetPacket.r_begin			(id);
+		k->UPDATE_Read				(tNetPacket);
 	}
 	k->s_name					= S;
 	k->m_tSpawnID				= j->m_tSpawnID;
@@ -226,58 +244,47 @@ CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAb
 	xr_strcat						(s_name_replace,_itoa(k->ID,S1,10));
 	k->set_name_replace			(s_name_replace);
 
-	{
-		PROF_EVENT("ALife create: register and supplies");
-		register_object				(k,true);
-		k->spawn_supplies			();
-		k->on_spawn					();
-	}
+	register_object				(k,true);
+	k->spawn_supplies			();
+	k->on_spawn					();
 	return						(k);
 }
 
 void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObject *j, const _SPAWN_ID &tSpawnID)
 {
-	PROF_EVENT("ALife create");
-	CSE_Abstract				*tpSE_Abstract = nullptr;
-	{
-		PROF_EVENT("ALife create: F_entity_Create");
-		tpSE_Abstract			= F_entity_Create(*j->s_name);
-	}
+	CSE_Abstract				*tpSE_Abstract = F_entity_Create(*j->s_name);
 	R_ASSERT3					(tpSE_Abstract,"Cannot find item with section",*j->s_name);
 	i = tpSE_Abstract->cast_alife_dynamic_object();
 	R_ASSERT2					(i,"Non-ALife object in the 'game.spawn'");
 
 
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 	{
-		PROF_EVENT("ALife create: copy spawn data");
-		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 		{
-			{
-				CSaveObjectSave ObjSave;
-				CSaveObjectLoad ObjLoad;
-				j->Spawn_Serialize(ObjSave, true, true);
-				ObjLoad.TransferSaveData(ObjSave);
-				i->Spawn_Serialize(ObjLoad, true, true);
-			}
-			{
-				CSaveObjectSave ObjSave;
-				CSaveObjectLoad ObjLoad;
-				j->UPDATE_Serialize(ObjSave);
-				ObjLoad.TransferSaveData(ObjSave);
-				i->UPDATE_Serialize(ObjLoad);
-			}
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->Spawn_Serialize(ObjSave, true, true);
+			ObjLoad.TransferSaveData(ObjSave);
+			i->Spawn_Serialize(ObjLoad, true, true);
 		}
-		else
 		{
-			NET_Packet					tNetPacket;
-			j->Spawn_Write				(tNetPacket,true);
-			i->Spawn_Read				(tNetPacket);
-			tNetPacket.w_begin			(M_UPDATE);
-			j->UPDATE_Write				(tNetPacket);
-			u16							id;
-			tNetPacket.r_begin			(id);
-			i->UPDATE_Read				(tNetPacket);
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->UPDATE_Serialize(ObjSave);
+			ObjLoad.TransferSaveData(ObjSave);
+			i->UPDATE_Serialize(ObjLoad);
 		}
+	}
+	else
+	{
+		NET_Packet					tNetPacket;
+		j->Spawn_Write				(tNetPacket,true);
+		i->Spawn_Read				(tNetPacket);
+		tNetPacket.w_begin			(M_UPDATE);
+		j->UPDATE_Write				(tNetPacket);
+		u16							id;
+		tNetPacket.r_begin			(id);
+		i->UPDATE_Read				(tNetPacket);
 	}
 
 	R_ASSERT3					(!(i->used_ai_locations()) || (i->m_tNodeID != u32(-1)),"Invalid vertex for object ",i->name_replace());
@@ -288,33 +295,27 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	else
 		i->ID					= server().PerformIDgen(ALife::INVALID_OBJECT_ID);
 
-	{
-		PROF_EVENT("ALife create: register");
-		register_object				(i,true);
-		i->m_bALifeControl			= true;
-	}
+	register_object				(i,true);
+	i->m_bALifeControl			= true;
 
 	CSE_ALifeMonsterAbstract* monster = i->cast_monster_abstract();
 	if (monster)
 		graph().assign			(monster);
 
-	{
-		PROF_EVENT("ALife create: members, supplies, on_spawn");
-		CSE_ALifeGroupAbstract* group = i->cast_group_abstract();
-		if (group) {
-			group->m_tpMembers.resize(group->m_wCount);
-			OBJECT_IT				I = group->m_tpMembers.begin();
-			OBJECT_IT				E = group->m_tpMembers.end();
-			for ( ; I != E; ++I) {
-				CSE_Abstract		*object = create	(group,j);
-				*I					= object->ID;
-			}
+	CSE_ALifeGroupAbstract* group = i->cast_group_abstract();
+	if (group) {
+		group->m_tpMembers.resize(group->m_wCount);
+		OBJECT_IT				I = group->m_tpMembers.begin();
+		OBJECT_IT				E = group->m_tpMembers.end();
+		for ( ; I != E; ++I) {
+			CSE_Abstract		*object = create	(group,j);
+			*I					= object->ID;
 		}
-		else
-			i->spawn_supplies		();
-
-		i->on_spawn					();
 	}
+	else
+		i->spawn_supplies		();
+
+	i->on_spawn					();
 }
 
 void CALifeSimulatorBase::create(CSE_ALifeObject* object)

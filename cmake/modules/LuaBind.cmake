@@ -8,6 +8,7 @@ FetchContent_Declare(
     luabind
     URL https://github.com/ForserX/luabind-latest/archive/refs/heads/master.tar.gz
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    PATCH_COMMAND "${CMAKE_COMMAND}" "-DLuaSourceDir=${CMAKE_CURRENT_BINARY_DIR}/_deps/luabind-src" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/LuabindVmRegistry.cmake"
 )
 
 set(LUABIND_TESTAPP OFF CACHE BOOL "" FORCE)

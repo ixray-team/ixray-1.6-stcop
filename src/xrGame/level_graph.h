@@ -19,7 +19,7 @@ class CLevelGraph: public ILevelGraph
 private:
 	friend class CRenumbererConverter;
 
-	IReader* m_reader;
+	IReader* m_reader = nullptr;
 	CVertex* OriginalNodes = nullptr;
 	CHeader EditorHeader;
 	xr_vector<CVertex> EditorNodes;
@@ -27,7 +27,14 @@ private:
 public:
 	void ApplyEditorNodes(const hdrNODES& Header, const xr_vector<CVertex>& Nodes, const xr_vector<u8>& Deleted = {});
 	CLevelGraph();
+	// Loads the graph from an arbitrary file path instead of "$level$/level.ai".
+	// A missing/invalid file produces the empty graph (and a log line), never a crash.
+	explicit CLevelGraph(const char* filePath);
+	// Builds the empty graph directly (no file I/O, no logging).
+	struct EmptyTag {};
+	explicit CLevelGraph(EmptyTag);
 	virtual ~CLevelGraph				() override;
+
 
 #ifdef DEBUG
 #	ifndef AI_COMPILER

@@ -441,7 +441,7 @@ static void Snd_RebuildOrder()
 	}
 }
 
-static void Snd_AssignZoneBus(sound_zone_params* Zone)
+void Snd_AssignZoneBus(sound_zone_params* Zone)
 {
 	string256 Name;
 	xr_strcpy(Name, Zone->name.c_str());
@@ -989,8 +989,14 @@ void Snd_ResetZones()
 	Snd_RebuildOrder();
 }
 
+void Snd_SwapZones(SoundZoneVector& Zones)
+{
+	GBuses.Zones.swap(Zones);
+}
+
 u32 Snd_FindZone(const Fvector& Position)
 {
+	xrSRWLockGuard GeometryGuard(::Sound->GetGeometryLock(), true);
 	CDB::MODEL* EnvModel = ::Sound->get_geometry_env();
 	CDB::COLLIDER* Collider = ::Sound->get_geometry_db();
 	if (EnvModel == nullptr || Collider == nullptr)

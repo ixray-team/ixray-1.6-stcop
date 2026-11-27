@@ -57,6 +57,7 @@ public:
 	virtual void RenderFrame() = 0;
 
 	virtual bool IsCapturingInputs() const = 0;
+	virtual void SetCaptureInputs(bool enabled) = 0;
 	virtual bool IsGUIRendering() const = 0;
 
 	CImGuiWindowRegistry& Windows() { return WindowRegistry; }
@@ -80,6 +81,7 @@ public:
 	void RenderFrame() override;
 
 	bool IsCapturingInputs() const override;
+	void SetCaptureInputs(bool enabled) override;
 	bool IsGUIRendering() const override;
 
 private:

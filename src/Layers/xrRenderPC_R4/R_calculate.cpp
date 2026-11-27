@@ -64,8 +64,11 @@ void CRender::Calculate		()
 		vLastCameraPos.set(Device.vCameraPosition);
 	}
 
+	if (Lights.sun_original._get() == nullptr || Lights.sun_adapted._get() == nullptr)
+		Lights.LoadEditor();
+
 	// The unlit editor view (no weather) has no sun
-	if (!Device.IsEditorMode() || EditorIsLit())
+	if (!Device.IsEditorMode() || IsSecondaryScene || EditorIsLit())
 	{
 		Lights.Update();
 	}

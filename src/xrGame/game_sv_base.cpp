@@ -417,21 +417,27 @@ void game_sv_GameState::Create					(shared_str &options)
 	}
 
 	// loading scripts
-	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
-	string_path					S;
-	FS.update_path(S, _game_config_, "script.ltx");
-	CInifile* l_tpIniFile = new CInifile(S);
-	R_ASSERT(l_tpIniFile);
-
-	if (l_tpIniFile->section_exist(type_name()))
+	// Levels without the LevelScripts resource (sandbox/viewer degraded
+	// sessions) must not touch the shared script engine: with a primary game
+	// running, remove/add here would clobber its game script process.
+	if (g_pGameLevel == nullptr || g_pGameLevel->HasLevelResource(ELevelResource::LevelScripts))
 	{
-		if (l_tpIniFile->r_string(type_name(), "script"))
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, new CScriptProcess("game", l_tpIniFile->r_string(type_name(), "script")));
-		else
-			ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, new CScriptProcess("game", ""));
-	}
+		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
+		string_path					S;
+		FS.update_path(S, _game_config_, "script.ltx");
+		CInifile* l_tpIniFile = new CInifile(S);
+		R_ASSERT(l_tpIniFile);
 
-	xr_delete(l_tpIniFile);
+		if (l_tpIniFile->section_exist(type_name()))
+		{
+			if (l_tpIniFile->r_string(type_name(), "script"))
+				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, new CScriptProcess(ai().script_engine(), "game", l_tpIniFile->r_string(type_name(), "script")));
+			else
+				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame, new CScriptProcess(ai().script_engine(), "game", ""));
+		}
+
+		xr_delete(l_tpIniFile);
+	}
 
 	//---------------------------------------------------------------------
 	ConsoleCommands_Create();
@@ -566,7 +572,9 @@ void				game_sv_GameState::SetPointFreezed		(RPoint* rp)
 
 CSE_Abstract*		game_sv_GameState::spawn_begin				(const char* N)
 {
-	CSE_Abstract*	A	=   F_entity_Create(N);	R_ASSERT(A);	// create SE
+	CSE_Abstract*	A	=   F_entity_Create(N);					// create SE
+	if (A == nullptr)
+		return nullptr; // bad/missing section - F_entity_Create logged it
 	A->s_name			=   N;							// ltx-def
 //.	A->s_gameid			=	u8(m_type);							// game-type
 	A->s_RP				=	0xFE;								// use supplied
@@ -667,7 +675,8 @@ game_sv_GameState::~game_sv_GameState()
 	xr_delete(m_event_queue);
 	if (m_alife_simulator)
 	{
-		delete_data(m_alife_simulator);
+		m_alife_simulator->destroy();
+		xr_delete(m_alife_simulator);
 	}
 	SaveMapList();
 
@@ -782,7 +791,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			CL->ps->m_online_time	= Level().timeServer();
 			CL->ps->DeathTime		= Device.dwTimeGlobal;
 			
-			if (psNET_direct_connect)
+			if (m_server->GetOwnerLevel()->UseDirectConnection())
 				break;
 
 			if (Level().IsDemoPlay())

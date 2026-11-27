@@ -2,6 +2,7 @@
 #include "UIDialogWnd.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IGame_UICustom.h"
+#include "../../xrEngine/IGame_Level.h"
 
 CUIDialogWnd:: CUIDialogWnd()
 {
@@ -107,6 +108,9 @@ bool CUIDialogWnd::IR_process()
 
 UI_API CDialogHolder* CurrentDialogHolder()
 {
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel() && g_pGameCustom != nullptr)
+		return g_pGameCustom->GetDialogHolder();
+
 	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
 	{
 		if (CDialogHolder* Holder = g_pGamePersistent->m_pMainMenu->GetDialogHolder())

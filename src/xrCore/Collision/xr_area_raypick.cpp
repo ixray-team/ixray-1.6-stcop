@@ -51,7 +51,7 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 		ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((tgt & rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((tgt & rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
 
 		// traverse object database
-		g_SpatialSpace->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, start, dir, range);
+		SpatialDatabase()->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, start, dir, range);
 
 		// Determine visibility for dynamic part of scene
 		for (u32 o_it = 0; o_it < CObjectSpaceThreadData::r_spatial.size(); o_it++)
@@ -70,7 +70,7 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 		}
 	}
 	// static test
-	if (tgt & rqtStatic) {
+	if ((tgt & rqtStatic) && Static.has_tree()) {
 		// If we get here - test static model
 		if (cache)
 		{
@@ -146,7 +146,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 		collide::ray_defs Q(start, dir, R.range, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, tgt);
 		// traverse object database
 		ESPATIAL_TYPE d_flags = ESPATIAL_TYPE::COLLIDEABLE | ((tgt & rqtObstacle) ? ESPATIAL_TYPE::OBSTACLE : ESPATIAL_TYPE::NONE) | ((tgt & rqtShape) ? ESPATIAL_TYPE::SHAPE : ESPATIAL_TYPE::NONE);
-		g_SpatialSpace->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, start, dir, range);
+		SpatialDatabase()->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, start, dir, range);
 		// Determine visibility for dynamic part of scene
 
 		for (u32 o_it = 0; o_it < CObjectSpaceThreadData::r_spatial.size(); o_it++)
@@ -221,7 +221,7 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 	if (R.tgt & d_mask)
 	{
 		// Traverse object database
-		g_SpatialSpace->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, R.start, R.dir, R.range);
+		SpatialDatabase()->q_ray(CObjectSpaceThreadData::r_spatial, 0, d_flags, R.start, R.dir, R.range);
 
 		for (u32 o_it = 0; o_it < CObjectSpaceThreadData::r_spatial.size(); o_it++)
 		{

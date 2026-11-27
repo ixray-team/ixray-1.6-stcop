@@ -6,6 +6,7 @@
 #include "../xrPhysics/PhysicsShell.h"
 #include "ai_space.h"
 #include "Creature.h" 
+#include "inventory_item.h"
 #include "PhysicObject.h"
 #include "HangingLamp.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -23,6 +24,7 @@
 #include "ai_debug.h"
 #include "../xrEngine/IGame_Level.h"
 #include "Level.h"
+#include "level_debug.h"
 #include "../xrPhysics/MathUtils.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_cl_mp.h"
@@ -101,9 +103,20 @@ void CGameObject::reload	(const char* section)
 	m_script_clsid				= object_factory().script_clsid(CLS_ID);
 }
 
+bool CGameObject::ScriptCallbacksEnabled(CSE_Abstract* spawn) const
+{
+	// Replicated objects already ran authoritative initialization on the server.
+	// Only the linked client's own player binds local gameplay scripts here.
+	if (spawn != nullptr && Level().GetLevelDesc().RemoteTransport && !Level().IsServer() && !spawn->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
+		return false;
+	return ScriptCallbacksEnabled();
+}
+
 void CGameObject::net_Destroy	()
 {
 #ifdef DEBUG
+	if (Level().m_level_debug != nullptr)
+		DBG().on_destroy_object(this);
 	if (psAI_Flags.test(aiDestroy))
 		Msg					("Destroying client object [%d][%s][%x]",ID(),*cName(),this);
 #endif
@@ -228,6 +241,14 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 		{
 			if ( H_Parent() )
 			{
+				if (g_pGameLevel != nullptr && Level().IsWorldTeardown())
+				{
+					if (CInventoryItem* parent = H_Parent()->cast_inventory_item())
+						parent->m_children.erase(ID());
+					H_SetParent(nullptr, true);
+					setDestroy(true);
+					break;
+				}
 				Msg( "! ERROR (GameObject): GE_DESTROY arrived to object[%d][%s], that has parent[%d][%s], frame[%d]",
 					ID(), cNameSect().c_str(),
 					H_Parent()->ID(), H_Parent()->cName().c_str(), Device.dwFrame );
@@ -260,6 +281,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
 	VERIFY							(E);
+	set_client_data_version(E->m_client_data_version);
 
 	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
 	if (visual) {
@@ -372,13 +394,13 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	}
 
 	reload(*cNameSect());
-	if (ScriptCallbacksEnabled())
+	if (ScriptCallbacksEnabled(DC))
 	{
 		CScriptBinder::reload(*cNameSect());
 	}
 	
 	reinit();
-	if (ScriptCallbacksEnabled())
+	if (ScriptCallbacksEnabled(DC))
 	{
 		CScriptBinder::reinit();
 	}
@@ -419,7 +441,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 					ai_location().level_vertex	(l_tpTemporary->m_tNodeID);
 			}
 
-			if (l_tpALifeObject && ai().game_graph().valid_vertex_id(l_tpALifeObject->m_tGraphID))
+			if (l_tpALifeObject && ai().get_game_graph() && ai().game_graph().valid_vertex_id(l_tpALifeObject->m_tGraphID))
 				ai_location().game_vertex		(l_tpALifeObject->m_tGraphID);
 
 			if (!_valid(Position()))
@@ -468,9 +490,9 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	{
 		Msg("CGameObject::net_Spawn obj %s Before CScriptBinder::net_Spawn %f,%f,%f",PH_DBG_ObjectTrackName(),Position().x,Position().y,Position().z);
 	}
-	bool ret = !ScriptCallbacksEnabled() || CScriptBinder::net_Spawn(DC);
+	bool ret = !ScriptCallbacksEnabled(DC) || CScriptBinder::net_Spawn(DC);
 #else
-	return !ScriptCallbacksEnabled() || CScriptBinder::net_Spawn(DC);
+	return !ScriptCallbacksEnabled(DC) || CScriptBinder::net_Spawn(DC);
 #endif
 
 #ifdef DEBUG
@@ -633,7 +655,9 @@ void CGameObject::spawn_supplies()
 				{
 					SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *A);
 				} else {
-					NET_Packet					P;
+					// (was a shadowed inner NET_Packet: the send below used to
+					// transmit the EMPTY outer one - empty-packet assert in
+					// xrServer::OnMessage in Debug, garbage in release)
 					A->Spawn_Write				(P,true);
 				}
 				Level().Send				(P,net_flags(true));
@@ -693,7 +717,10 @@ bool CGameObject::copy_ai_location_from(CGameObject* source)
 u32 CGameObject::new_level_vertex_id			() const
 {
 	Fvector							center;
-	Center							(center);
+	if (renderable.visual)
+		Center						(center);
+	else
+		center						= Position();	// visual may not be loaded yet (async spawn)
 	center.x						= Position().x;
 	center.z						= Position().z;
 	return							(ai().level_graph().vertex(ai_location().level_vertex_id(),center));
@@ -708,7 +735,7 @@ void CGameObject::update_ai_locations			(bool decrement_reference)
 
 	ai_location().level_vertex		(l_dwNewLevelVertexID);
 
-	if (!ai().get_game_graph() && ai().get_cross_table())
+	if (!ai().get_game_graph() || !ai().get_cross_table())
 		return;
 
 	ai_location().game_vertex		(ai().cross_table().vertex(ai_location().level_vertex_id()).game_vertex_id());

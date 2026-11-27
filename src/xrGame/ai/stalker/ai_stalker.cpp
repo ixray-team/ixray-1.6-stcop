@@ -452,19 +452,20 @@ bool CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 	movement().m_head.current.yaw	= movement().m_head.target.yaw = movement().m_body.current.yaw = movement().m_body.target.yaw	= angle_normalize_signed(-tpHuman->o_torso.yaw);
 	movement().m_body.current.pitch	= movement().m_body.target.pitch	= 0;
 
-	if (ai().game_graph().valid_vertex_id(tpHuman->m_tGraphID))
+	if (ai().get_game_graph() && ai().game_graph().valid_vertex_id(tpHuman->m_tGraphID))
 		ai_location().game_vertex		(tpHuman->m_tGraphID);
 
-	if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
+	if (ai().get_game_graph() && ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
 		movement().set_game_dest_vertex	(tpHuman->m_tNextGraphID);
 
-	R_ASSERT2					(
-		ai().get_game_graph() && 
-		ai().get_level_graph() && 
-		ai().get_cross_table() && 
-		(ai().level_graph().level_id() != u8(-1)),
-		"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!"
-	);
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+	{
+		Msg("! AI: stalker '%s' has no AI-map; local navigation is unavailable", cName().c_str());
+	}
+	else if (!(ai().get_game_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u8(-1))))
+	{
+		Msg("* AI: stalker '%s' has no global graph binding; local AI-map movement remains available", cName().c_str());
+	}
 
 	setEnabled						(true);
 
@@ -547,6 +548,17 @@ bool CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 	}
 	else
 		SpatialComponent->type |= ESPATIAL_TYPE::STALKER_DEAD;
+
+	if (NET.empty())
+	{
+		net_update spawn_state = {};
+		spawn_state.dwTimeStamp = Level().timeServer();
+		spawn_state.o_model = movement().m_body.current.yaw;
+		spawn_state.o_torso = movement().m_head.current;
+		spawn_state.p_pos = Position();
+		spawn_state.fHealth = GetfHealth();
+		NET.push_back(spawn_state);
+	}
 
 	return							(true);
 }

@@ -23,6 +23,7 @@ public:
 	virtual shared_str getShaderName() { return shared_str(""); }
 	virtual shared_str getTextureName() { return shared_str(""); }
 	virtual shared_str getOrigShaderName() { return shared_str(""); }
+	virtual shared_str getCompiledShaderName() { return getShaderName(); }
 	virtual shared_str getOrigTextureName() { return shared_str(""); }
 
 	virtual void set_shader(shared_str sh_name) { ; }

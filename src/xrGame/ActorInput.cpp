@@ -104,7 +104,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -318,10 +318,13 @@ void CActor::IR_OnKeyboardPress(int dik)
 			if (itm)
 			{
 				inventory().Eat(itm);
-				SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
-				string1024					str;
-				xr_strconcat(str, g_pStringTable->translate("st_item_used").c_str(), ": ", itm->NameItem());
-				_s->wnd()->TextItemControl()->SetText(str);
+				if (CurrentGameUI() != nullptr)
+				{
+					SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
+					string1024					str;
+					xr_strconcat(str, g_pStringTable->translate("st_item_used").c_str(), ": ", itm->NameItem());
+					_s->wnd()->TextItemControl()->SetText(str);
+				}
 			}
 		}
 	}break;
@@ -347,6 +350,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 	break;
 	case kWPN_RADIAL_MENU:
 	{
+		if (CurrentGameUI() == nullptr) break;
 		CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
 		if (RMW->isInitialized && !RMW->IsShown())
 			RMW->ShowDialog(false);
@@ -505,6 +509,8 @@ void CActor::IR_OnKeyboardRelease(int dik)
 		}
 		break;
 		case kWPN_RADIAL_MENU:
+		{
+			if (CurrentGameUI() == nullptr) break;
 			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
 			if (RMW->isInitialized && RMW->IsShown())
 			{
@@ -512,6 +518,7 @@ void CActor::IR_OnKeyboardRelease(int dik)
 				RMW->HideDialog();
 			}
 			break;
+		}
 		}
 		switch (bindRadial)
 		{
@@ -525,12 +532,13 @@ void CActor::IR_OnKeyboardRelease(int dik)
 
 void CActor::IR_OnKeyboardHold(int dik)
 {
+	auto bind = get_binded_action(dik);
 	if (IsCameraFocusInputLocked())
 	{
 		return;
 	}
 
-	auto bind = get_binded_action(dik);
+
 	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 	{
 		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_RIGHT))
@@ -580,7 +588,7 @@ void CActor::IR_OnKeyboardHold(int dik)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -784,7 +792,7 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -843,7 +851,7 @@ void CActor::IR_OnGyroscopeMove(Fvector3 value)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -899,7 +907,7 @@ void CActor::IR_OnTouchpadMove(Fvector2 value)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -949,7 +957,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -971,7 +979,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	float absValueX = std::abs(value.x);
 	if (id != 2 && fis_zero(value.x) && fis_zero(value.y) || 
 		(CurrentGameUI() && CurrentGameUI()->RadialMenuWeapon()->isInitialized && CurrentGameUI()->RadialMenuWeapon()->IsShown())
-		|| ((HudAnimator() && HudAnimator()->PdaAnimator()) ? HudAnimator()->PdaAnimator()->IsZoomed() : CurrentGameUI()->PdaMenu()->IsShown()))
+		|| ((HudAnimator() && HudAnimator()->PdaAnimator()) ? HudAnimator()->PdaAnimator()->IsZoomed() : (CurrentGameUI() && CurrentGameUI()->PdaMenu() && CurrentGameUI()->PdaMenu()->IsShown())))
 	{
 		if (id == 0)
 		{
@@ -1100,7 +1108,7 @@ void CActor::IR_GamepadKeyPress(int id)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -1204,10 +1212,13 @@ void CActor::IR_GamepadKeyPress(int id)
 				if (itm)
 				{
 					inventory().Eat(itm);
-					SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
-					string1024					str;
-					xr_strconcat(str, g_pStringTable->translate("st_item_used").c_str(), ": ", itm->NameItem());
-					_s->wnd()->TextItemControl()->SetText(str);
+					if (CurrentGameUI() != nullptr)
+					{
+						SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
+						string1024					str;
+						xr_strconcat(str, g_pStringTable->translate("st_item_used").c_str(), ": ", itm->NameItem());
+						_s->wnd()->TextItemControl()->SetText(str);
+					}
 				}
 			}
 		}break;
@@ -1224,6 +1235,7 @@ void CActor::IR_GamepadKeyPress(int id)
 		{
 			if (!IsZoomAimingMode())
 			{
+				if (CurrentGameUI() == nullptr) break;
 				CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
 				if (RMW->isInitialized && !RMW->IsShown())
 					RMW->ShowDialog(false);
@@ -1364,6 +1376,8 @@ void CActor::IR_GamepadKeyRelease(int id)
 			mstate_wishful &= ~mcJump;		
 			break;
 		case kWPN_RADIAL_MENU:
+		{
+			if (CurrentGameUI() == nullptr) break;
 			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
 			if (RMW->isInitialized && RMW->IsShown())
 			{
@@ -1371,6 +1385,7 @@ void CActor::IR_GamepadKeyRelease(int id)
 				RMW->HideDialog();
 			}
 			break;
+		}
 		}
 	}
 }
@@ -1403,7 +1418,7 @@ void CActor::IR_GamepadKeyHold(int id)
 		return;
 	}
 
-	if (load_screen_renderer.IsActive())
+	if (!Level().IsParallel() && load_screen_renderer.IsActive())
 	{
 		return;
 	}
@@ -1489,7 +1504,7 @@ static bool IsActionKeyPressed(const EGameActions& EGameAction)
 
 bool CActor::IsActionKeyPressedInGame(const EGameActions& EGameAction) const
 {
-	return !IsCameraFocusInputLocked() && IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && !load_screen_renderer.IsActive() && !GImGUIManager->IsCapturingInputs();
+	return !IsCameraFocusInputLocked() && IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr && (g_pGameLevel->IsParallel() || (!load_screen_renderer.IsActive() && !GImGUIManager->IsCapturingInputs()));
 }
 
 void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
@@ -1765,7 +1780,10 @@ void CActor::ActorUse()
 		{
 			if (!m_pInvBoxWeLookingAt->closed())
 			{
-				CurrentGameUI()->StartCarBody(this, m_pInvBoxWeLookingAt);
+				if (CurrentGameUI() != nullptr)
+				{
+					CurrentGameUI()->StartCarBody(this, m_pInvBoxWeLookingAt);
+				}
 			}
 		}
 		return;
@@ -2487,7 +2505,7 @@ void CActor::MakeThrowGrenade()
 
 void CActor::UpdatePickupMode()
 {
-	if (g_Alive() && !CurrentGameUI()->TopInputReceiver())
+	if (g_Alive() && (CurrentGameUI() == nullptr || !CurrentGameUI()->TopInputReceiver()))
 	{
 		pPickup->SetPickupMode(true);
 	}
@@ -2629,6 +2647,7 @@ void CActor::NoClipFly(int cmd)
 		}break;
 		case kWPN_RADIAL_MENU:
 		{
+			if (CurrentGameUI() == nullptr) break;
 			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
 			if (RMW->isInitialized && !RMW->IsShown())
 			{
@@ -2770,6 +2789,7 @@ void CActor::NoClipFlyGamepad(int cmd)
 		}
 		case kWPN_RADIAL_MENU:
 		{
+			if (CurrentGameUI() == nullptr) break;
 			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
 			if (RMW->isInitialized && !RMW->IsShown())
 			{
@@ -2831,13 +2851,16 @@ void CActor::ActorQuickSlotUse(int cmd)
 		{
 			IsGameTypeSingle() ? inventory().Eat(best_itm) : inventory().ClientEat(best_itm);
 
-			SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
-			string1024 str = {};
+			if (CurrentGameUI() != nullptr)
+			{
+				SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
+				string1024 str = {};
 
-			xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", best_itm->NameItem());
-			_s->wnd()->TextItemControl()->SetText(str);
+				xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", best_itm->NameItem());
+				_s->wnd()->TextItemControl()->SetText(str);
 
-			CurrentGameUI()->ActorMenu()->m_pQuickSlot->ReloadReferences(this);
+				CurrentGameUI()->ActorMenu()->m_pQuickSlot->ReloadReferences(this);
+			}
 		}
 	}
 }

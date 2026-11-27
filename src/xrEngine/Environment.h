@@ -264,6 +264,7 @@ protected:
 	float					fGameTime;
 public:
 	FactoryPtr<IEnvironmentRender>	m_pRender;
+	bool					SharedRenderer = false;
 	bool					bNeed_re_create_env;
 
 	float					wind_strength_factor;	
@@ -308,7 +309,7 @@ public:
 
 	void					Invalidate			();
 public:
-							CEnvironment		();
+							CEnvironment		(bool SharedRenderer = false);
 
 		~CEnvironment		();
 

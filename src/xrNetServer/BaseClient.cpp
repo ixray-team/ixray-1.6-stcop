@@ -23,10 +23,7 @@ BaseClient::BaseClient(CTimer * timer) : net_Statistic(timer)
 }
 
 // -----------------------------------------------------------------------------
-BaseClient::~BaseClient()
-{
-	psNET_direct_connect = false;
-}
+BaseClient::~BaseClient() = default;
 
 // -----------------------------------------------------------------------------
 #pragma region connect / disconnect
@@ -103,7 +100,7 @@ bool BaseClient::Connect(const char* options)
 
 	net_Disconnected = false;
 
-	if (!psNET_direct_connect)
+	if (!UseDirectConnection())
 	{
 		ClientConnectionOptions connectOpt;
 		ParseConnectionOptions(options, connectOpt);
@@ -119,7 +116,7 @@ bool BaseClient::Connect(const char* options)
 			return false;
 		}
 
-	} //psNET_direct_connect
+	} // direct connection
 
 	// Sync	
 	net_TimeDelta = 0;
@@ -150,6 +147,10 @@ void BaseClient::OnMessage(void * data, u32 size)
 	u16 m_type;
 	P->r_begin(m_type);
 	net_Queue.Unlock();
+}
+void BaseClient::ReceiveLocalPacket(const void* data, u32 size)
+{
+	_Recieve(data, size, 0);
 }
 #pragma endregion
 
@@ -333,7 +334,7 @@ bool BaseClient::net_HasBandwidth()
 	if (psNET_ClientUpdate != 0) dwInterval = 1000 / psNET_ClientUpdate;
 	if (psNET_Flags.test(NETFLAG_MINIMIZEUPDATES))	dwInterval = 1000;	// approx 3 times per second
 
-	if (psNET_direct_connect)
+	if (UseDirectConnection())
 	{
 		if (0 != psNET_ClientUpdate && (dwTime - net_Time_LastUpdate) > dwInterval)
 		{

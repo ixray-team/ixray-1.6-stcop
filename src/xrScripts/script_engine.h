@@ -59,6 +59,7 @@ public:
 	static	void				lua_hook_call				(lua_State *L, lua_Debug *dbg);
 #endif // #ifdef DEBUG
 			void				setup_callbacks				();
+		static CScriptEngine* EngineFromState(lua_State* L);
 			void				load_common_scripts			();
 			bool				load_file					(const char*	caScriptName, const char* namespace_name);
 	IC		CScriptProcess		*script_process				(const EScriptProcessors &process_id) const;

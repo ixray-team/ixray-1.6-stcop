@@ -138,6 +138,7 @@ public:
 
 	// Low level resource creation
 	ref_texture						_CreateTexture		(const char* Name);
+	CTexture*						_CreateTextureFromMemory(const char* Name, const void* Data, u32 RowPitch, const RHITextureDesc& Desc);
 	// For code that keeps only the surface: the texture stays until the manager is destroyed
 	CTexture*						_GetPinnedTexture	(const char* Name);
 	CTexture* GetTexturePlaceholder() const { return TexturePlaceholder._get(); }

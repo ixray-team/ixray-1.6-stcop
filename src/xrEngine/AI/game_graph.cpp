@@ -2,6 +2,11 @@
 #include "game_graph.h"
 IGameGraph::IGameGraph()
 {
+	m_nodes = nullptr;
+	m_edges = nullptr;
+	m_cross_tables = nullptr;
+	m_current_level_cross_table = nullptr;
+	m_current_level_some_vertex_id = _GRAPH_ID(-1);
 }
 IGameGraph::~IGameGraph()
 {
@@ -86,6 +91,8 @@ bool IGameGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>&
 
 	u32 FromID = start_vertex_id;
 	u32 ToID = dest_vertex_id;
+	if (!valid_vertex_id(FromID) || !valid_vertex_id(ToID))
+		return false;
 		
 	if (FromID == ToID)
 	{
@@ -192,6 +199,8 @@ bool IGameGraph::SearchNearestVertex(u32 start_vertex_id, u8 LevelID, u32& Resul
 	TempCostSoFar.clear();
 
 	u32 FromID = start_vertex_id;
+	if (!valid_vertex_id(FromID))
+		return false;
 		
 	TempPriorityNode.push_back({0.f, FromID});
 	TempCameFrom.insert({FromID, FromID});

@@ -15,6 +15,11 @@
 #include "../xrEngine/xr_level_controller.h"
 
 #include "game_cl_base.h"
+#include "FreeMP/ScriptEvents.h"
+#include "UIWorldSpace.h"
+#include "ShellManager.h"
+#include "RemoteSmartZone.h"
+#include "CActorAuraPostEffectsBalancer.h"
 
 // always try to forward declare your script implementations
 class CRandomManager;
@@ -35,6 +40,7 @@ class	CSpaceRestrictionManager;
 class	CSeniorityHierarchyHolder;
 class	CClientSpawnManager;
 class	CGameObject;
+class CActorAuraPostEffectsBalancer;
 class	CAutosaveManager;
 class	CPHCommander;
 class	CLevelDebug;
@@ -50,6 +56,16 @@ class CElectronicsProblemsManager;
 class ENGINE_API CStatGraph;
 class CUIWorldSpaceManager;
 struct SShellManager;
+class CRemoteSmartZone;
+class CSE_ALifeSmartZone;
+class CSE_ALifeTraderAbstract;
+
+struct SLevelStatisticHuman
+{
+	ALife::_OBJECT_ID Id = ALife::INVALID_OBJECT_ID;
+	CSE_ALifeTraderAbstract* Trader = nullptr;
+	bool operator==(const SLevelStatisticHuman& other) const { return Id == other.Id; }
+};
 
 #ifdef DEBUG_DRAW
 	class	CDebugRenderer;
@@ -75,6 +91,15 @@ namespace inventory::upgrade
 namespace file_transfer
 {
 	class client_site;
+};
+
+class CNetworkProcessor : public pureFrame
+{
+	CLevel* Owner = nullptr;
+public:
+	explicit CNetworkProcessor(CLevel* owner) : Owner(owner) {}
+	~CNetworkProcessor();
+	void OnFrame() override;
 };
 
 class CLevel: 
@@ -122,7 +147,7 @@ protected:
 
 	CPHCommander				*m_ph_commander;
 	CPHCommander				*m_ph_commander_scripts;
-	CPHCommander				*m_ph_commander_physics_worldstep;
+	CPHCommander				*m_ph_commander_physics_worldstep = nullptr;
 	CScriptXRConditionsStorage* m_pScriptXRCondition;
 	CScriptXREffectsStorage* m_pScriptXREffects;
 	CScriptXRParser* m_pScriptXRParser;
@@ -172,11 +197,11 @@ public:
 	void						SetNumCrSteps			( u32 NumSteps );
 	bool						In_NetCorrectionPrediction	() {return m_bIn_CrPr;};
 
-	virtual void				OnMessage				(void* data, u32 size) override;
-	virtual void				OnInvalidHost			() override;
-	virtual void				OnInvalidPassword		() override;
-	virtual void				OnSessionFull			() override;
-	virtual void				OnConnectRejected		() override;
+	virtual void				OnMessage				(void* data, u32 size);
+	virtual void				OnInvalidHost			();
+	virtual void				OnInvalidPassword		();
+	virtual void				OnSessionFull			();
+	virtual void				OnConnectRejected		();
 
 	CElectronicsProblemsManager* GetElectronicsProblemsManager() { return m_electronics_problems_manager; }
 
@@ -193,6 +218,22 @@ private:
 			void				SecureSend				(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
 			
 	secure_messaging::key_t		m_secret_key;
+	xrServer* RemoteServer = nullptr;
+	ClientID RemoteClientID = ClientID(0);
+	xr_hash_map<ALife::_OBJECT_ID, xr_unique_ptr<CRemoteSmartZone>> RemoteSmartZones;
+
+	bool CreateConnection(ClientConnectionOptions& options) override;
+	void DestroyConnection() override;
+	void SendTo_LL(void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0) override;
+
+public:
+	void SetRemoteServer(xrServer* server) { RemoteServer = server; }
+	xrServer* RemoteServerEndpoint() const { return RemoteServer != nullptr ? RemoteServer : Server; }
+	ClientID const& GetClientID() { return LevelDesc.RemoteTransport ? RemoteClientID : BaseClient::GetClientID(); }
+	bool HasSessionName() override { return RemoteServerEndpoint() != nullptr && m_game_description.map_name[0] != 0; }
+	void UpdateRemoteServer();
+	CSE_ALifeSmartZone* RemoteSmartZoneProxy(CSE_ALifeSmartZone* object, CLevel* serverLevel);
+
 private:
 	bool						m_bNeed_CrPr;
 	u32							m_dwNumSteps;
@@ -274,12 +315,12 @@ public:
 	void						PrefetchSound (const char* name);
 
 protected:
-	bool						net_start_result_total;
-	bool						connected_to_server;
+	bool						net_start_result_total = false;
+	bool						connected_to_server = false;
 	
-	bool						deny_m_spawn;		//only for debug...
+	bool						deny_m_spawn = false;		//only for debug...
 	
-	bool						sended_request_connection_data;
+	bool						sended_request_connection_data = false;
 		
 	void						MakeReconnect();
 	
@@ -306,6 +347,18 @@ protected:
 	bool				net_start_client5				();
 	bool				net_start_client6				();
 
+protected:
+	// Stage list storage for the parallel pump (see PumpSandboxLoading).
+	xr_vector<xr_delegate<bool()>>	SandboxStages;
+	u32								SandboxStageIndex = 0;
+
+public:
+	// Parallel (viewer-driven) loading: pumps one stage of the stock net_Start
+	// sequence per call (same cadence as the engine's on_idle); a stage
+	// returning false is retried next call. Returns false when done/failed.
+	bool							PumpSandboxLoading();
+	bool							SandboxLoadingDone() const { return SandboxStageIndex >= SandboxStages.size(); }
+
 	void						net_OnChangeSelfName			(NET_Packet* P);
 
 	void						CalculateLevelCrc32		();
@@ -320,23 +373,23 @@ public:
 	shared_str					m_caClientOptions;
 
 	// Starting/Loading
-	virtual bool				net_Start				( const char* op_server, const char* op_client) override;
-	virtual void				net_Save				( const char* name ) override;
-	virtual void				net_Stop				( ) override;
+	virtual bool				net_Start				( const char* op_server, const char* op_client);
+	virtual void				net_Save				( const char* name );
+	virtual void				net_Stop				( );
 	virtual bool				net_Start_client		( const char* name );
-	virtual void				net_Update				( ) override;
+	virtual void				net_Update				( );
 
 
-	virtual bool				Load_GameSpecific_Before( ) override;
-	virtual bool				Load_GameSpecific_After ( ) override;
+	virtual bool				Load_GameSpecific_Before( );
+	virtual bool				Load_GameSpecific_After ( );
 
 	// Events
-	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 ) override;
-	virtual void	_BCL		OnFrame					( void ) override;
-	virtual void				OnRender				( ) override;
+	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 );
+	virtual void	_BCL		OnFrame					( void );
+	virtual void				OnRender				( );
 
-	virtual shared_str			OpenDemoFile			(const char* demo_file_name) override;
-	virtual void				net_StartPlayDemo		() override;
+	virtual	shared_str			OpenDemoFile			(const char* demo_file_name);
+	virtual void				net_StartPlayDemo		();
 
 	void						cl_Process_Event		(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
@@ -357,23 +410,24 @@ public:
 	void						ProcessCompressedUpdate	(NET_Packet& P, u8 const compression_type);
 
 	// Input
-	virtual void				IR_OnKeyboardPress		( int btn ) override;
-	virtual void				IR_OnKeyboardRelease	( int btn ) override;
-	virtual void				IR_OnKeyboardHold		( int btn ) override;
-	virtual void				IR_OnMousePress			( int btn ) override;
-	virtual void				IR_OnMouseRelease		( int btn ) override;
-	virtual void				IR_OnMouseHold			( int btn ) override;
-	virtual void				IR_OnMouseMove			( int, int) override;
-	virtual void				IR_OnMouseStop			( int, int) override;
-	virtual void				IR_OnMouseWheel			( int direction) override;
-	virtual void				IR_OnActivate			(void) override;
-	virtual void				IR_OnGyroscopeMove		( Fvector3) override;
-	virtual void				IR_OnTouchpadMove		( Fvector2) override;
+	bool						IsPausedForInput		() const { return LevelDesc.Parallel ? false : Device.Paused(); }
+	virtual	void				IR_OnKeyboardPress		( int btn );
+	virtual void				IR_OnKeyboardRelease	( int btn );
+	virtual void				IR_OnKeyboardHold		( int btn );
+	virtual void				IR_OnMousePress			( int btn );
+	virtual void				IR_OnMouseRelease		( int btn );
+	virtual void				IR_OnMouseHold			( int btn );
+	virtual void				IR_OnMouseMove			( int, int);
+	virtual void				IR_OnMouseStop			( int, int);
+	virtual void				IR_OnMouseWheel			( int direction);
+	virtual void				IR_OnActivate			(void);
+	virtual void				IR_OnGyroscopeMove		( Fvector3);
+	virtual void				IR_OnTouchpadMove		( Fvector2);
 
-	virtual void				IR_GamepadUpdateStick	(int id, Fvector2 value) override;
-	virtual void				IR_GamepadKeyPress		(int id) override;
-	virtual void				IR_GamepadKeyHold		(int id) override;
-	virtual void				IR_GamepadKeyRelease	(int id) override;
+	virtual void				IR_GamepadUpdateStick	(int id, Fvector2 value);
+	virtual void				IR_GamepadKeyPress		(int id);
+	virtual void				IR_GamepadKeyHold		(int id);
+	virtual void				IR_GamepadKeyRelease	(int id);
 
 			int					get_RPID				(const char* name);
 
@@ -384,7 +438,7 @@ public:
 	void						ClientSend				();
 	void						ClientSendProfileData	();
 	void						ClientSave				();
-	virtual void				Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0) override;
+	virtual	void				Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
 	
 	void						g_cl_Spawn				(const char* name, u8 rp, u16 flags, Fvector pos);	// only ask server
 	void						g_sv_Spawn				(CSE_Abstract* E);					// server reply/command spawning
@@ -408,20 +462,42 @@ public:
 
 	// C/D
 	CLevel();
-	virtual ~CLevel() override;
+	virtual ~CLevel();
+
+	// Outcome of the staged net_Start sequence (valid once all stages ran).
+	bool						NetStartOk				() const { return net_start_result_total; }
+	luabind::functor<void>		FrameworkOnFrame;
+	void						OnFrameworkFrame();
+
+	CActorAuraPostEffectsBalancer& AuraEffects();
 
 	//названияе текущего уровня
 	void						set_name				(const shared_str& level_name) { map_data.m_name = level_name; }
-	virtual shared_str			name					() const override;
+	virtual shared_str			name					() const;
 			shared_str			version					() const { return map_data.m_map_version.c_str(); } //this method can be used ONLY from CCC_ChangeGameType
 
-	virtual void				GetLevelInfo		( CServerInfo* si ) override;
+	virtual void				GetLevelInfo		( CServerInfo* si );
+	bool						UseDirectConnection() const { return Server != nullptr && !LevelDesc.RemoteTransport && strstr(m_caServerOptions.c_str(), "/single") != nullptr; }
+	bool InputDisabled = false;
+	bool MouseMoveDisabled = false;
+	bool DebugEvents = false;
+	CNetworkProcessor NetworkProcessor;
+	float Interpolation = 0.1f;
+	u32 InterpSteps = 0;
+	int DemoSave = 0;
+	int MouseButtonToKey(int btn) const;
+
+	bool						SetResourceLoaded	(ELevelResource resource, bool load);
+	void						OnLevelGraphChanged();
+	bool						InitializePhysicsWorld();
+	bool						LoadGameGraphResource();
+	bool						LoadAuxiliaryResource(ELevelResource resource);
 
 	//gets the time from the game simulation
 	
 	//возвращает время в милисекундах относительно начала игры
 	ALife::_TIME_ID GetStartGameTime();
-	virtual ALife::_TIME_ID GetGameTime() override;
+	virtual ALife::_TIME_ID GetGameTime();
 	//возвращает время для энвайронмента в милисекундах относительно начала игры
     ALife::_TIME_ID GetEnvironmentGameTime() const override;
     static_assert(std::is_same_v<ALife::_TIME_ID, u64>, "Please, change return type of GetEnvironmentGameTime in IGame_Level and CGameLevel accordingly");
@@ -440,9 +516,9 @@ public:
 	float				GetGameDayTimeSec		();
     float               GetEnvironmentGameDayTimeSec() const override;
 
-	virtual float       GetEnvironmentTimeFactor() const override;
-	virtual void        SetEnvironmentTimeFactor(const float fTimeFactor) override;
-	virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
+    virtual float       GetEnvironmentTimeFactor() const override;
+    virtual void        SetEnvironmentTimeFactor(const float fTimeFactor) override;
+    virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
     //virtual u64         GetEnvironmentGameTime() const override;
 
   protected:
@@ -456,6 +532,7 @@ public:
 	IC CGameTaskManager* GameTaskManager() const { return m_game_task_manager; }
 	void					OnAlifeSimulatorLoaded		();
 	void					OnAlifeSimulatorUnLoaded	();
+	void					ReleaseAlifeScriptBindings	();
 protected:
 	CBulletManager* m_pBulletManager;
 	SShellManager* shell_manager;
@@ -466,7 +543,7 @@ public:
 			bool			IsServer					();
 			bool			IsClient					();
 			CSE_Abstract	*spawn_item					(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id, bool return_item = false);
-	virtual void			SpawnItem(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) override;
+	virtual	void			SpawnItem(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) override;
 	virtual IGame_Patrol*	CreatePatrol(const char* patrol) override;
 			
 protected:
@@ -477,11 +554,13 @@ public:
 	virtual	u32				GetRealPing					() { return m_dwRealPing; };
 
 private:
+	xr_unique_ptr<CActorAuraPostEffectsBalancer> Aura;
 	bool WorldTeardown = false;
 public:
 	bool IsWorldTeardown() const { return WorldTeardown; }
+	xr_vector<SLevelStatisticHuman> StatisticHumans;
 			void			remove_objects				();
-	virtual void	OnSessionTerminate		(const char* reason) override;
+			virtual void	OnSessionTerminate		(const char* reason);
 			
 			file_transfer::client_site*					m_file_transfer;
 			
@@ -509,6 +588,7 @@ public:
 };
 
 IC CLevel&				Level()		{ VERIFY(g_pGameLevel); VERIFY2(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread"); return *((CLevel*) g_pGameLevel); }
+IC CLevel*				TryLevel()	{ return ((CLevel*) g_pGameLevel); }
 IC game_cl_GameState&	Game()		{ auto game = Level().game;	VERIFY(game); return *game;	}
 	u32					GameID();
 
@@ -571,9 +651,12 @@ IC bool		OnClient()			{ return Level().IsClient();}
 IC bool		IsGameTypeSingle()	{ return (g_pGamePersistent->GameType() == eGameIDSingle);};
 bool IsGameTypeSingleCompatible();
 
+// Symbolizes and logs the exception stack at catch time (the engine-side
+// crash handler may run too late when the heap is damaged). Level_start.cpp.
+void SandboxLogStackTrace(EXCEPTION_POINTERS* ep);
+
 //class  CPHWorld;
 //extern CPHWorld*				ph_world;
-extern bool						g_bDebugEvents;
 
 namespace SpawnVisuals
 {

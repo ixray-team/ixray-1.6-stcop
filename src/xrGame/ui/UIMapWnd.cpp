@@ -1201,7 +1201,9 @@ CMapLocation* CUIMapWnd::UnderSpot(Fvector RealPosition, CUILevelMap* curr_map)
 	float TargetLocationDistance = 100.0f;
 	CMapLocation* ml = NULL;
 
-	for (auto& elem : Level().MapManager().Locations())
+	CMapManager& manager = Level().MapManager();
+	xrCriticalSectionGuard guard(manager.UpdateCS);
+	for (auto& elem : manager.Locations())
 	{
 		if (elem.location->IsUserDefined())
 		{

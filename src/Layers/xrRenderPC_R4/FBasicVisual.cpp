@@ -11,9 +11,19 @@
 #include "FBasicVisual.h"
 #include "../../xrEngine/Fmesh.h"
 #include "SkeletonX.h"
+#include "Shader.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
+shared_str dxRender_Visual::getCompiledShaderName()
+{
+	if (shader_name.size() != 0)
+		return shader_name;
+	if (shader && shader->src_shader.size() != 0)
+		return shader->src_shader;
+	return orig_shader_name;
+}
 
 IRender_Mesh::~IRender_Mesh()		
 { 
@@ -61,7 +71,7 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 		//if (hdr.shader_id)	shader	= ::Render->getShader	(hdr.shader_id);
 		if (hdr.shader_id)
 		{
-			shader	= ::RImplementation.getShader	(hdr.shader_id);
+			shader	= RImplementation.getShader	(hdr.shader_id);
 		}
 		vis.box.set			(hdr.bb.min,hdr.bb.max	);
 		vis.sphere.set		(hdr.bs.c,	hdr.bs.r	);
@@ -87,7 +97,7 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 		xr_stack_string512 lmap_tex;
 		data->r_stringZ(lmap_tex.data(), lmap_tex.Length);
 		ShaderDescr.append(lmap_tex.c_str());
-		shader = ::RImplementation.getShaderShared(ShaderDescr.c_str());
+		shader = RImplementation.getShaderShared(ShaderDescr.c_str());
 		ShaderDescr[ShaderEndPos] = '\0';
 		
 		shader.create(ShaderDescr.c_str(),ShaderDescr.c_str()+ShaderEndPos+1);
@@ -141,7 +151,7 @@ void dxRender_Visual::restore_shader()
 	{
 		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
 	}
-	shader.create(*orig_shader_name, *texture_name);
+	shader.create(orig_shader_name.size() != 0 ? *orig_shader_name : *shader_name, *texture_name);
 	Engine.External.SetSkinningMode(old_mode);
 	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
 	{
@@ -155,7 +165,7 @@ void dxRender_Visual::restore_texture()
 	{
 		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
 	}
-	shader.create(*shader_name, *orig_texture_name);
+	shader.create(*shader_name, orig_texture_name.size() != 0 ? *orig_texture_name : *texture_name);
 	Engine.External.SetSkinningMode(old_mode);
 	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
 	{

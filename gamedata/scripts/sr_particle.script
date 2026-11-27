@@ -71,12 +71,15 @@ function action_particle:update (delta)
     if self.started == false then
        self.started = true
        if self.st.mode == 1 then
-          printf ("Load path %s", self.st.path)
-          self.particles[1].particle:load_path (self.st.path)
-          self.particles[1].particle:start_path (self.st.looped)
-          self.particles[1].particle:play ()
-          self.particles[1].played = true
-          self.first_played = true
+          local particle = self.particles[1].particle
+          if particle ~= nil then
+             printf ("Load path %s", self.st.path)
+             particle:load_path (self.st.path)
+             particle:start_path (self.st.looped)
+             particle:play ()
+             self.particles[1].played = true
+             self.first_played = true
+          end
        end
        return
     end
@@ -112,19 +115,25 @@ function action_particle:is_end ()
 end
 ------------------------
 function action_particle:update_mode_1 ()
-    if self.particles[1].particle:playing () == false and self.st.looped == true then
-       self.particles[1].particle:play ()
+    local particle = self.particles[1].particle
+    if particle ~= nil and particle:playing () == false and self.st.looped == true then
+       particle:play ()
     end
 end
 ------------------------
 function action_particle:update_mode_2 ()
+    if self.path == nil then
+       self:deactivate ()
+       return
+    end
     local size = #self.particles
     if size == 0 then return end
     local time = time_global ()
     for a = 1, size, 1 do
-        if (time - self.particles[a].time) > self.particles[a].delay and self.particles[a].particle:playing () == false then
+        local particle = self.particles[a].particle
+        if particle ~= nil and (time - self.particles[a].time) > self.particles[a].delay and particle:playing () == false then
            if self.particles[a].played == false then
-              self.particles[a].particle:play_at_pos (self.path:point (a - 1))
+              particle:play_at_pos (self.path:point (a - 1))
               if self.particles[a].snd ~= nil then
                  self.particles[a].snd:play_at_pos (self.object, self.path:point (a - 1), 0)
               end
@@ -132,7 +141,7 @@ function action_particle:update_mode_2 ()
               self.first_played = true
            else
               if self.st.looped == true then
-                 self.particles[a].particle:play_at_pos (self.path:point (a - 1))
+                 particle:play_at_pos (self.path:point (a - 1))
                  if self.particles[a].snd ~= nil then
                     self.particles[a].snd:play_at_pos (self.object, self.path:point (a - 1), 0)
                  end
@@ -145,7 +154,7 @@ end
 function action_particle:deactivate ()
     local size = #self.particles
     for a = 1, size, 1 do
-        if self.particles[a].particle:playing () == true then
+        if self.particles[a].particle ~= nil and self.particles[a].particle:playing () == true then
            self.particles[a].particle:stop ();
         end
         self.particles[a].particle = nil

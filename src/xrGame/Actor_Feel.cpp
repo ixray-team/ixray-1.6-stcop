@@ -135,6 +135,10 @@ void CActor::PickupModeUpdate_COD()
 		return;
 	}
 
+	// No game UI (HUD-less session): pickup feedback has nowhere to go.
+	if (!CurrentGameUI() || !CurrentGameUI()->UIMainIngameWnd)
+		return;
+
 	if (!g_Alive() || eacFreeLook == cam_active)
 	{
 		if (!g_dedicated_server)
@@ -206,7 +210,7 @@ void CActor::PickupModeUpdate_COD()
 		}
 	}
 
-	if (!g_dedicated_server)
+	if (!g_dedicated_server && CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
 	{
 		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 	}
@@ -307,7 +311,7 @@ void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data
 
 void CActor::Feel_Grenade_Update(float rad)
 {
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() || !g_hud)
 	{
 		return;
 	}

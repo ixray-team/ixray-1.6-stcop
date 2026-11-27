@@ -16,11 +16,12 @@ function actor_proxy:init()
 --		printf( "actor_proxy: init" )
 		self.online      = false
 		self.alife       = alife()
-		if self.alife then
-			self.actor_id    = self.alife:actor().id
+		local alife_actor = self.alife and self.alife:actor()
+		if alife_actor then
+			self.actor_id    = alife_actor.id
+			self.actor       = nil
+			self.initialized = true
 		end
-		self.actor       = nil
-		self.initialized = true
 	end
 end
 

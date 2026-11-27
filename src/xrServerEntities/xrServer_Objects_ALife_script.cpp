@@ -57,6 +57,7 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.def_readwrite	("m_level_vertex_id",	&CSE_ALifeObject::m_tNodeID)
 		.def_readwrite	("m_game_vertex_id",	&CSE_ALifeObject::m_tGraphID)
 		.def_readwrite	("m_story_id",			&CSE_ALifeObject::m_story_id)
+		.def			("get_script_story_id",	+[](const CSE_ALifeObject& object) -> const char* { return object.m_script_story_ID.c_str(); })
 	];
 }
 

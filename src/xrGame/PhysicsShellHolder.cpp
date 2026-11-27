@@ -163,6 +163,11 @@ void CPhysicsShellHolder::Hit(SHit* pHDS)
 void CPhysicsShellHolder::create_physic_shell	()
 {
 	VERIFY(!m_pPhysicsShell);
+	// Degraded sessions (sandbox/viewer) may run with no physics world at all:
+	// the object then simply stays shell-less instead of dereferencing a null
+	// ph_world deep inside ODE glue code.
+	if (physics_world() == nullptr)
+		return;
 	IPhysicShellCreator *shell_creator = smart_cast<IPhysicShellCreator*>(this);
 	if (shell_creator)
 		shell_creator->CreatePhysicsShell();
@@ -285,9 +290,16 @@ void CPhysicsShellHolder::setup_physic_shell	()
 {
 	VERIFY						(!m_pPhysicsShell);
 	create_physic_shell			();
+	if (!m_pPhysicsShell)
+		return;	// no shell without a loaded model (degraded content)
+
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());
-	PKinematics(Visual())->CalculateBones_Invalidate	();
-	PKinematics(Visual())->CalculateBones(true);
+	IKinematics* pK = PKinematics(Visual());
+	if (pK)
+	{
+		pK->CalculateBones_Invalidate	();
+		pK->CalculateBones(true);
+	}
 		
 	ApplySpawnIniToPhysicShell(spawn_ini(),PPhysicsShell(),false);
 	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(), m_pPhysicsShell, false);
@@ -632,7 +644,8 @@ ICollisionForm* CPhysicsShellHolder::ObjectCollisionModel()
 
 IKinematics	*CPhysicsShellHolder::ObjectKinematics()
 {
-	VERIFY(Visual());
+	if (!Visual())
+		return nullptr;	// visual may be absent (async load / degraded content)
 	return Visual()->dcast_PKinematics();
 }
 IDamageSource* CPhysicsShellHolder::ObjectCastIDamageSource()

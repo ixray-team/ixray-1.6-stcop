@@ -8,6 +8,8 @@ class game_sv_Single final : public game_sv_GameState
 {
 private:
 	using inherited = game_sv_GameState;
+	xr_vector<ClientID> PendingRemotePlayers;
+	bool SpawnResourceEnabled = true;
 
 public:
 									game_sv_Single			();
@@ -19,6 +21,7 @@ public:
 
 
 	void				OnCreate				(ALife::_OBJECT_ID id_who) override;
+	void				OnPlayerConnect			(ClientID id_who) override;
 	bool				OnTouch					(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced = false) override;
 	void				OnDetach				(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what) override;
 
@@ -45,6 +48,8 @@ public:
 	shared_str			level_name				(const shared_str &server_options) const override;
 	void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src) override;
 				void				restart_simulator		(const char* saved_game_name);
+	CALifeSimulator* GetAlifeSimulator() const { return m_alife_simulator; }
+	void SetSpawnResourceEnabled(bool enabled) { SpawnResourceEnabled = enabled; }
 
 	IC			xrServer			&server					() const
 	{

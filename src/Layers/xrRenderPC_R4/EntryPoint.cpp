@@ -6,7 +6,7 @@
 
 static void RenderEntryLibraryPoint()
 {
-	::Render = &RImplementation;
+	::Render = &PrimaryRender;
 	::RenderFactory = &RenderFactoryImpl;
 	::DU = &DUImpl;
 	UIRender = &UIRenderImpl;

@@ -55,9 +55,7 @@ Fbox		phBoundaries = { 1000.f,1000.f,-1000.f,-1000.f,0.f,0.f };
 dWorldID	phWorld;
 
 /////////////////////////////////////
-dJointGroupID	ContactGroup;
-CBlockAllocator	<dJointFeedback,128>		ContactFeedBacks;
-CBlockAllocator	<CPHContactBodyEffector,128> ContactEffectors;
+
 
 /////////////////////////////////////////////////////////////////////////////
 IC void add_contact_body_effector(dBodyID body,const dContact& c,SGameMtl* material)
@@ -67,7 +65,7 @@ IC void add_contact_body_effector(dBodyID body,const dContact& c,SGameMtl* mater
 		effector->Merge(c,material);
 	else
 	{	
-		effector=ContactEffectors.add();
+		effector=ph_world->ContactEffectors.add();
 		effector->Init(body,c,material);
 		dBodySetData(body,(void*)effector);
 	}
@@ -81,7 +79,7 @@ void SetContactBodyFlotation(dBodyID Body, const dContact& Contact, SGameMtl* Ma
 	CPHContactBodyEffector* Effector = (CPHContactBodyEffector*)dBodyGetData(Body);
 	if (!Effector)
 	{
-		Effector = ContactEffectors.add();
+		Effector = ph_world->ContactEffectors.add();
 		Effector->Init(Body, Contact, Material);
 		dBodySetData(Body, (void*)Effector);
 	}
@@ -293,7 +291,7 @@ void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 	obj2->near_callback(obj1);
 	int MAX_CONTACTS=-1;
 	if(!island1->CanMerge(island2,MAX_CONTACTS)) return;
-	if(CollideIntoGroup(o1,o2,ContactGroup,island1,MAX_CONTACTS)!=0)
+	if(CollideIntoGroup(o1,o2,ph_world->GetContactGroup(),island1,MAX_CONTACTS)!=0)
 	{	
 		obj1->MergeIsland(obj2);
 		if(!obj2->is_active())obj2->EnableObject(obj1);
@@ -304,7 +302,7 @@ void CollideStatic(dGeomID o2,CPHObject* obj2)
 {
 	
 	CPHIsland* island2=obj2->DActiveIsland();
-	CollideIntoGroup(ph_world->GetMeshGeom(),o2,ContactGroup,island2,island2->MaxJoints());
+	CollideIntoGroup(ph_world->GetMeshGeom(),o2,ph_world->GetContactGroup(),island2,island2->MaxJoints());
 }
 
 int CollideSelfGeoms(dGeomID o1,dGeomID o2,CPHObject* obj)
@@ -316,7 +314,7 @@ int CollideSelfGeoms(dGeomID o1,dGeomID o2,CPHObject* obj)
 		return 0;
 	}
 
-	return CollideIntoGroup(o1,o2,ContactGroup,Island,MaxContacts,true);
+	return CollideIntoGroup(o1,o2,ph_world->GetContactGroup(),Island,MaxContacts,true);
 }
 
 //limit for angular accel

@@ -235,6 +235,7 @@ public:
 
 public:
 	virtual	void					on_restrictions_change		();
+			void					on_level_graph_change		();
 
 protected:
 			bool					move_along_path				() const;

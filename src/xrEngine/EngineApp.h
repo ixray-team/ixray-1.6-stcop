@@ -1,5 +1,6 @@
 #pragma once
 #include "../xrCore/EventAPI.h"
+#include "LevelResources.h"
 
 class ILoadingScreen;
 
@@ -22,6 +23,12 @@ private:
 	xr_atomic_s32 load_stage;
 
 	u32 ll_dwReference;
+
+	// Pending descriptor for the next level started via KERNEL:start.
+	// Lets tools (e.g. the ImUtils viewer) control which level resources load
+	// without changing the console command syntax. Consumed on eStart.
+	SLevelDesc NextLevelDesc;
+	bool NextLevelDescPending = false;
 
 	void Level_Append(const char* lname);
 
@@ -49,6 +56,19 @@ public:
 	virtual void SetLoadStageTitle(const char* _ls_title);
 
 	virtual void OnEvent(EVENT E, u64 P1, u64 P2) override;
+
+	// Sets the resource descriptor for the next level start (consumed once).
+	void SetNextLevelDesc(const SLevelDesc& desc) { NextLevelDesc = desc; NextLevelDesc.Resources = desc.Validate(); NextLevelDescPending = true; }
+	bool HasPendingLevelDesc() const { return NextLevelDescPending; }
+	// Hands the pending descriptor to the caller and clears the flag (false when none).
+	bool ConsumeNextLevelDesc(SLevelDesc& out)
+	{
+		if (!NextLevelDescPending)
+			return false;
+		out = NextLevelDesc;
+		NextLevelDescPending = false;
+		return true;
+	}
 
 	// Other
 	CEngineApp();

@@ -166,7 +166,7 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 		case CScriptMovementAction::eGoalTypePatrolPath : 
 			path().set_patrol_path_type							();
 			control().path_builder().set_path_type				(MovementManager::ePathTypePatrolPath);
-			control().path_builder().patrol().set_path			(l_tMovementAction.m_path,l_tMovementAction.m_path_name);
+			control().path_builder().patrol().set_path			(l_tMovementAction.m_path.get(),l_tMovementAction.m_path_name);
 			control().path_builder().patrol().set_start_type	(l_tMovementAction.m_tPatrolPathStart);
 			control().path_builder().patrol().set_route_type	(l_tMovementAction.m_tPatrolPathStop);
 			control().path_builder().patrol().set_random		(l_tMovementAction.m_bRandom);

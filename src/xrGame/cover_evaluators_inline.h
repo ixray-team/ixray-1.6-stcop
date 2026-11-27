@@ -95,6 +95,16 @@ IC	void CCoverEvaluatorBase::invalidate				()
 	m_last_update			= 0;
 }
 
+IC	void CCoverEvaluatorBase::ClearSelection()
+{
+	m_selected = nullptr;
+	m_previous_selected = nullptr;
+	m_loophole = nullptr;
+	m_best_value = flt_max;
+	m_initialized = false;
+	m_last_update = 0;
+}
+
 IC	float CCoverEvaluatorBase::best_value				() const
 {
 	return					(m_best_value);

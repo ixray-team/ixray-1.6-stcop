@@ -127,6 +127,7 @@ private:
 	const char* m_onGetPdaStatById = {};
 
 	bool m_use_3d_icon = false;
+	bool m_actor_binding_warning = false;
 	float m_layout_font_scale = 0.f;
 
 	void LayoutFontDependent();

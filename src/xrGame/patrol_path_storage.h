@@ -21,12 +21,13 @@ private:
 	typedef IPureSerializeObject<IReader,IWriter>		inherited;
 
 public:
-	typedef associative_vector<shared_str,CPatrolPath*>	PATROL_REGISTRY;
+	typedef associative_vector<shared_str,xr_shared_ptr<const CPatrolPath>>	PATROL_REGISTRY;
 	typedef PATROL_REGISTRY::iterator					iterator;
 	typedef PATROL_REGISTRY::const_iterator				const_iterator;
 
 protected:
 	PATROL_REGISTRY					m_registry;
+	u32 RevisionValue = 0;
 
 public:
 	IC								CPatrolPathStorage	();
@@ -34,10 +35,12 @@ public:
 	virtual void					unload				();
 	virtual void					load				(IReader &stream) override;
 	virtual void					save				(IWriter &stream) override;
+	u32 Revision() const { return RevisionValue; }
 
 public:
 			void					load_raw			(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream);
 	IC		const CPatrolPath		*path				(shared_str patrol_name, bool no_assert = false) const;
+	IC		xr_shared_ptr<const CPatrolPath> shared_path	(shared_str patrol_name, bool no_assert = false) const;
 	IC		const PATROL_REGISTRY	&patrol_paths		() const;
 
 	void add_path(shared_str, CPatrolPath*);

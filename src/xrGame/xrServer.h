@@ -5,8 +5,10 @@
 #include "xrServer_updates_compressor.h"
 #include "xrClientsPool.h"
 #include "FreeMP/ScriptEvents.h"
+#include "../xrNetServer/ClientConnectionOptions.h"
 
 class CSE_Abstract;
+class CLevel;
 constexpr u32 NET_Latency = 50; // time in (ms)
 
 // t-defs
@@ -76,7 +78,11 @@ class xrServer :
 	public IPureServer  
 {
 private:
+	CLevel* OwnerLevel = nullptr;
 	xrS_entities				entities;
+	xr_hash_set<ALife::_OBJECT_ID> LevelSpawnIds;
+	xr_hash_map<u32, CLevel*> LocalClients;
+	u32 NextLocalClientId = 1;
 	xr_multiset<svs_respawn>	q_respawn;
 	xr_vector<ALife::_OBJECT_ID> conn_spawned_ids;
 	cheaters_t					m_cheaters;
@@ -206,7 +212,7 @@ public:
 	void					Perform_reject			(CSE_Abstract* what, CSE_Abstract* from, int delta);
 	void					Perform_destroy			(CSE_Abstract* tpSE_Abstract, u32 mode);
 
-	CSE_Abstract*			Process_spawn			(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent=false, CSE_Abstract* tpExistedEntity=0);
+	CSE_Abstract*			Process_spawn			(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent=false, CSE_Abstract* tpExistedEntity=0, bool idReserved=false);
 	void					Process_update			(NET_Packet& P, ClientID sender);
 	void					Process_save			(NET_Packet& P, ClientID sender);
 	void					Process_event			(NET_Packet& P, ClientID sender);
@@ -279,10 +285,18 @@ public:
 	CSE_Abstract*			ID_to_entity		(ALife::_OBJECT_ID ID);
 
 	// main
-	virtual EConnect		Connect				(shared_str& session_name, GameDescriptionData & game_descr);
+	virtual EConnect		Connect				(shared_str& session_name, GameDescriptionData & game_descr, CLevel* owner);
+	CLevel* GetOwnerLevel() const { return OwnerLevel; }
+	bool AcceptLocalClient(CLevel* client, const ClientConnectionOptions& options, ClientID& clientID);
+	void AttachLocalHostClient(CLevel* client);
+	bool ReceiveLocalPacket(ClientID sender, const void* data, u32 size);
+	void DisconnectLocalClient(ClientID clientID);
+	void _SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout) override;
 	virtual void			Disconnect			();
 	virtual void			Update				();
 	void					SLS_Default			();
+	bool					LoadSpawnResource();
+	bool					UnloadSpawnResource();
 	void					SLS_Clear			();
 	void					SLS_Save			(IWriter&	fs);
 	void					SLS_Load			(IReader&	fs);	

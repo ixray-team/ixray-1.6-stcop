@@ -32,6 +32,7 @@ class IPHWorld:
 	virtual  float						FrameTime						()									= 0;
 	virtual  void 						Freeze							()									= 0;
 	virtual  void 						UnFreeze						()									= 0;
+	virtual  bool						IsFreezed						()									= 0;
 	virtual  void						Step							()									= 0;
 	virtual  void						SetStep							( float s )							= 0;
 	virtual  void						StepNumIterations				( int num_it )						= 0;

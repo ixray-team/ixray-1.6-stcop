@@ -314,7 +314,7 @@ bool CAI_Rat::net_Spawn	(CSE_Abstract* DC)
 	if (m_walk_on_way)
 	{
 		m_current_way_point = 0;
-		m_path = ai().patrol_paths().path(m_spawn_ini->r_string("patrol","way"));
+		m_path = ai().patrol_paths().shared_path(m_spawn_ini->r_string("patrol","way"), true);
 	}
 
 	return							(true);

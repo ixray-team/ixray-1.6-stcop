@@ -91,6 +91,11 @@ enum class EditorUI : u8
 	Profiler,
 	Game_WeaponCustomize,
 	Audio_BusGraph,
+	Tools_LevelViewer,
+	Tools_OgfViewer,
+	Tools_ParticleEditor,
+	Tools_AiEditor,
+	Tools_MaterialEditor,
 	Count
 };
 

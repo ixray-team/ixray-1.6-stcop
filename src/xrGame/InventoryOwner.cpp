@@ -241,6 +241,18 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 	return true;
 }
 
+void CInventoryOwner::DetachTalkPartner()
+{
+	CInventoryOwner* partner = m_pTalkPartner;
+	m_pTalkPartner = nullptr;
+	m_bTalking = false;
+	if (partner != nullptr && partner->m_pTalkPartner == this)
+	{
+		partner->m_pTalkPartner = nullptr;
+		partner->m_bTalking = false;
+	}
+}
+
 void CInventoryOwner::net_Destroy()
 {
 	if (CUIGameCustom* ui = CurrentGameUI())
@@ -249,13 +261,8 @@ void CInventoryOwner::net_Destroy()
 			ui->TalkMenu->OnPartnerDestroy(this);
 	}
 
-	if (IsTalking())
-	{
-		CInventoryOwner* partner = GetTalkPartner();
-		StopTalk();
-		if (partner && partner->IsTalking())
-			partner->StopTalk();
-	}
+	DetachTalkPartner();
+	StopTalk();
 
 	CAttachmentOwner::net_Destroy();
 
@@ -344,7 +351,7 @@ void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
 	{
 		//если наш собеседник перестал говорить с нами,
 		//то и нам нечего ждать.
-		if (!m_pTalkPartner->IsTalking())
+		if (m_pTalkPartner == nullptr || !m_pTalkPartner->IsTalking())
 		{
 			StopTalk();
 		}
@@ -434,12 +441,9 @@ void CInventoryOwner::StopTalk()
 	m_pTalkPartner = nullptr;
 	m_bTalking = false;
 
-	if (CUIGameCustom* ui = CurrentGameUI())
+	if (CUIGameCustom* ui = CurrentGameUI(); ui != nullptr && ui->TalkMenu != nullptr && ui->TalkMenu->IsActiveTalkUi())
 	{
-		if (ui->TalkMenu->IsActiveTalkUi())
-		{
-			ui->TalkMenu->Stop();
-		}
+		ui->TalkMenu->Stop();
 	}
 }
 
@@ -692,8 +696,8 @@ void CInventoryOwner::OnItemDrop(CInventoryItem* inventory_item, bool just_befor
 	}
 
 	CGameObject* object = cast_game_object();
-	VERIFY(object);
-	object->callback(GameObject::eOnItemDrop)(inventory_item->object().lua_game_object());
+	if (object != nullptr && !just_before_destroy && object->Ready())
+		object->callback(GameObject::eOnItemDrop)(inventory_item->object().lua_game_object());
 
 	detach(inventory_item);
 }

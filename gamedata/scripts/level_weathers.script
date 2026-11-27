@@ -119,12 +119,15 @@ function WeatherManager:__init()
 	
 	self:CheckAndSwitchToIndoor()
 	
-	local data = parse_weathers_graph()
+	local data = parse_weathers_graph() or { weather_graph = {}, weather_groups = {} }
 	self.weather_graph = data["weather_graph"]
 	self.weather_groups = data["weather_groups"]
 	self.norepeat_cycles_size = 4
 	
 	self.count_weather_groups = ffx_table_utils.get_size(self.weather_groups)
+	if self.count_weather_groups == 0 then
+		self.processing_allowed = false
+	end
 	
 	if self.count_weather_groups <= self.norepeat_cycles_size then
 		self.norepeat_cycles_size = self.count_weather_groups - 1
@@ -254,9 +257,9 @@ function WeatherManager:InstallNextRandWeatherSection()
 end
 
 -- обновление погоды
-function WeatherManager:update() PROF_EVENT_BEGIN("level_weathers.script:257:WeatherManager:update"); do
-	if not db.actor then
-		PROF_EVENT_END(); return
+function WeatherManager:update()
+	if not db.actor or self.count_weather_groups == 0 then
+		return
 	end
 
 	-- первая инициализация 
@@ -315,7 +318,7 @@ function WeatherManager:update() PROF_EVENT_BEGIN("level_weathers.script:257:Wea
 			self:tick()
 		end
 	end
-end; PROF_EVENT_END(); end
+end
 
 
 function WeatherManager:on_wfx_start()

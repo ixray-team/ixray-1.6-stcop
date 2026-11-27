@@ -26,6 +26,11 @@ template <typename T>
 IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T restriction, const Fvector &position, Fvector &result, bool out_restriction)
 {
 #pragma todo("Dima to Dima : _Warning : this place can be optimized in case of a slowdown")
+	if (!ai().level_graph().has_nodes())
+	{
+		result = position;
+		return u32(-1);
+	}
 	VERIFY							(initialized());
 	VERIFY2(!restriction->border().empty(), make_string<const char*>("[%s]: %s has border().empty()", __FUNCTION__, name().c_str()));
 	VERIFY2(!restriction->accessible_neighbour_border(restriction, out_restriction).empty(),

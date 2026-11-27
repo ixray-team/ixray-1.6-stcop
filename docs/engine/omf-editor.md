@@ -47,3 +47,4 @@ The game keeps motion files open while the models that use them are loaded. Befo
 6. Play several motions of a saved file (reload, sprint, shots) right after saving: no corrupted poses or crashes.
 7. Take the PM or PB, play `anm_reload` and `anm_shoot` in the Motion Player, also paused and scrubbed: the motion stays on screen and does not jump back to idle.
 8. On the PM select `anm_idle` and `anm_show`: the weapon motion is `idle` of the weapon model, the Weapon side opens it, and `idle` is not marked "(not played)" in the weapon file list.
+9. Run `viewer_lifecycle_test in_game viewer_original_autosave` with the controlled test save. For each parallel viewer, the check opens the motion selector, selects a real non-additive motion, and clicks **Reset motion** and **Idle**. It must operate on the main game's HUD item, even when editor windows initially overlap; no OMF file is saved by this check.

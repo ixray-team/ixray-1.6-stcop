@@ -1207,11 +1207,11 @@ function spawn_corpse(actor, obj, p)
 	end
 	local ptr = patrol(path_name)
 	local index = p[3] or 0
-
 	local se_obj = alife():create(spawn_sect,
 									ptr:point(index),
 									ptr:level_vertex_id(0),
 									ptr:game_vertex_id(0))
+	SemiLog("spawn_corpse " .. tostring(spawn_sect) .. " result=" .. type(se_obj) .. " " .. tostring(se_obj))
 	se_obj:kill()
 end
 

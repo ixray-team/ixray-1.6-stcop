@@ -5,23 +5,25 @@ Smart terrain binder
 --------------------------------------------------------------------------------------------------------------------]]
 
 function bind( obj )
-    local ini = obj:spawn_ini()
-
-    if not ini then
-        return
-    end
-
-    if ini:section_exist( "gulag1" ) or ini:section_exist( "smart_terrain" ) then
-        if obj:clsid() == clsid.smart_terrain then
-            if alife() then
-                obj:bind_object( smart_terrain_binder( obj ) )
-            else
-                printf( "No simulation! SMART_TERRAIN '%s' disabled.", obj:name() )
-            end
-        else
-            abort( "You must use SMART_TERRAIN instead of SCRIPT_ZONE %s", obj:name() )
+    return PROF_EVENT_CLOSURE("bind", function()
+        local ini = obj:spawn_ini()
+    
+        if not ini then
+            return
         end
-    end
+    
+        if ini:section_exist( "gulag1" ) or ini:section_exist( "smart_terrain" ) then
+            if obj:clsid() == clsid.smart_terrain then
+                if alife() then
+                    obj:bind_object( smart_terrain_binder( obj ) )
+                else
+                    printf( "No simulation! SMART_TERRAIN '%s' disabled.", obj:name() )
+                end
+            else
+                abort( "You must use SMART_TERRAIN instead of SCRIPT_ZONE %s", obj:name() )
+            end
+        end
+    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -32,26 +34,41 @@ function smart_terrain_binder:__init( obj ) super( obj )
 end
 
 function smart_terrain_binder:net_spawn( server_object )
-    -- получить ссылку на настоящий серверный объект
-    self.se_smart_terrain = alife():object( server_object.id )
+	return PROF_EVENT_CLOSURE("net_spawn", function()
+        -- получить ссылку на настоящий серверный объект
+        local simulator = alife()
+        self.se_smart_terrain = simulator ~= nil and simulator:object( server_object.id ) or nil
+        if self.se_smart_terrain == nil then
+			SemiLog("SMART_TERRAIN " .. self.object:name() .. " has no server entity " .. server_object.id .. "; disabling its binder.")
+			return false
+        end
 
-    db.add_zone( self.object )
-    db.add_smart_terrain( self.se_smart_terrain )
-
-    return true
+        db.add_zone( self.object )
+        db.add_smart_terrain( self.se_smart_terrain )
+        return true
+    end)
 end
 
 function smart_terrain_binder:net_destroy()
-    xr_sound.stop_sounds_by_id(self.object:id())
-
-    db.del_zone( self.object )
-    db.del_smart_terrain( self.se_smart_terrain )
+    return PROF_EVENT_CLOSURE("net_destroy", function()
+        xr_sound.stop_sounds_by_id(self.object:id())
+        
+        db.del_zone( self.object )
+        if self.se_smart_terrain ~= nil then
+			db.del_smart_terrain( self.se_smart_terrain )
+        end
+	end)
 end
 
-function smart_terrain_binder:update( delta ) PROF_EVENT_BEGIN("bind_smart_terrain.script:51:smart_terrain_binder:update"); do
-    SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
-    self.se_smart_terrain:update()
-end; PROF_EVENT_END(); end
+function smart_terrain_binder:update( delta )
+    return PROF_EVENT_CLOSURE("update", function()
+        if self.se_smart_terrain == nil then
+			return
+        end
+        SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
+        self.se_smart_terrain:update()
+    end)
+end
 
 function smart_terrain_binder:Serialize(Object)
 end

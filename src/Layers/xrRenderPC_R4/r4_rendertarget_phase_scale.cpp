@@ -2,7 +2,7 @@
 
 void CRenderTarget::phase_scale()
 {
-	DrawSQ(s_scale, rt_Generic, ps_r_scale_mode, []
+	DrawSQ(s_scale, rt_Generic, RImplementation.IsSecondaryScene && ps_r_scale_mode > 1 ? 0 : ps_r_scale_mode, []
 	{
 		RImplementation.rmNormal();
 	});

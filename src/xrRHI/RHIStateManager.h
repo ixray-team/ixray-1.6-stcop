@@ -22,6 +22,7 @@ public:
 	virtual void SetDepthEnable(u32 enable) = 0;
 	virtual void SetDepthFunc(u32 func) = 0;
 	virtual void SetColorWriteEnable(u32 mask) = 0;
+	virtual u32 GetColorWriteEnable() { return 0xF; }
 	virtual void SetCullMode(ERHI_CULLMODE mode) = 0;
 	virtual void UnmapConstants() = 0;
 	virtual void BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback) {};

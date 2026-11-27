@@ -1,6 +1,24 @@
 #pragma once
 #include "xr_collide_defs.h"
 #include "../FormatParsers/LevelCForm/CFormFormat.h"
+#include "../FormatParsers/LevelCForm/CFormIO.h"
+#include "../Kernel/xrSyncronize.h"
+
+class ISpatial_DB;
+XRCORE_API extern ISpatial_DB* g_SpatialSpace;
+XRCORE_API extern ISpatial_DB* g_SpatialSpacePhysic;
+
+class XRCORE_API CSpatialContextGuard
+{
+private:
+	xrCriticalSectionGuard Lock;
+	ISpatial_DB* PreviousSpatial;
+	ISpatial_DB* PreviousPhysic;
+
+public:
+	CSpatialContextGuard(xrCriticalSection& mutex, ISpatial_DB* spatial, ISpatial_DB* physic);
+	~CSpatialContextGuard();
+};
 
 // refs
 class ISpatial;
@@ -30,6 +48,10 @@ private:
 	mutable xrCriticalSection StreamingCS;
 	u64 StreamingRevision = 0;
 	static u64 EncodeTileKey(s32 X, s32 Z);
+	ISpatial_DB* Spatial = nullptr;
+	ISpatial_DB* SpatialPhysic = nullptr;
+	ICF ISpatial_DB* SpatialDatabase() const { return Spatial != nullptr ? Spatial : g_SpatialSpace; }
+	ICF ISpatial_DB* PhysicDatabase() const { return SpatialPhysic != nullptr ? SpatialPhysic : g_SpatialSpacePhysic; }
 public:
 
 #ifdef DEBUG
@@ -37,14 +59,20 @@ public:
 #endif
 
 public:
+	void SetSpatialDatabases(ISpatial_DB* spatial, ISpatial_DB* physic) { Spatial = spatial; SpatialPhysic = physic; }
 										CObjectSpace		( );
 										~CObjectSpace		( );
 
-	void								Load				(  CDB::build_callback build_callback  );
-	void								Load				(  const char* initial, const char* fname, CDB::build_callback build_callback, bool NotFromLevel = false);
+	bool								Load				(  CDB::build_callback build_callback  ) { return Load("$level$", "level", build_callback); }
+	bool								Load				(  const char* initial, const char* fname, CDB::build_callback build_callback, bool NotFromLevel = false, bool InitializeSpatialDB = true);
+	// Initializes the spatial databases without any collision geometry.
+	// Used when the level is loaded without collision data (missing file or masked out).
+	void								CreateEmpty			(bool InitializeSpatialDB = true);
 	//void								Load				(  IReader* R, CDB::build_callback build_callback  );
 	//void								Create				(  Fvector*	verts, CDB::TRI* tris, const hdrCFORM &H, CDB::build_callback build_callback, void* pRW, bool RWMode);
-	void								Create				(  const XRay::CForm::IFormat& Data, CDB::build_callback build_callback);
+	bool								Create				(  const XRay::CForm::IFormat& Data, CDB::build_callback build_callback, void* pRW, bool RWMode, bool InitializeSpatialDB = true);
+	void								SwapStaticGeometry	(CObjectSpace& other);
+	void								ClearStaticGeometry	();
 	
 	// Occluded/No
 	bool								RayTest				( const Fvector &start, const Fvector &dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object);
@@ -56,8 +84,8 @@ public:
 	bool								RayQuery			( collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, void* user_data, collide::test_callback* tb, CObject* ignore_object);
 	bool								RayQuery			( collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
 
-	//ICF xr_vector<CDB::TRI>&			GetStaticTris		() { return Static.get_tris();	}
-	//ICF xr_vector<Fvector>&				GetStaticVerts		() { return Static.get_verts(); }
+	ICF xr_vector<CDB::TRI>&			GetStaticTris		() { return Static.get_tris();	}
+	ICF xr_vector<Fvector>&				GetStaticVerts		() { return Static.get_verts(); }
 	ICF CDB::MODEL*						GetStaticModel		() { return &Static;			}
 
 	// Change residency at frame boundaries, never from a collision callback. Snapshots

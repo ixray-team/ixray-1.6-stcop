@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "ai_space.h"
+
 IC	void CDetailPathManager::make_inactual	()
 {
 	m_actuality				= false;
@@ -54,6 +56,11 @@ IC	const DetailPathManager::STravelPathPoint &CDetailPathManager::curr_travel_po
 	return					(m_path[curr_travel_point_index()]);
 }
 
+IC	bool CDetailPathManager::has_next_travel_point() const
+{
+	return !m_path.empty() && m_current_travel_point < m_path.size() - 1;
+}
+
 IC	u32	 CDetailPathManager::curr_travel_point_index() const
 {
 	VERIFY2					(
@@ -75,6 +82,15 @@ IC	void CDetailPathManager::set_start_direction(const Fvector &start_direction)
 
 IC	void CDetailPathManager::set_dest_position	(const Fvector &dest_position)
 {
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+	{
+		m_actuality = false;
+		m_failed = true;
+		m_dest_position = dest_position;
+		m_corrected_dest_position = dest_position;
+		m_path.clear();
+		return;
+	}
 	THROW2					(!m_restricted_object || m_restricted_object->accessible(dest_position),"Old movement destination is not accessible after changing restrictions!");
 
 	bool					value = !!m_dest_position.similar(dest_position,.1f);

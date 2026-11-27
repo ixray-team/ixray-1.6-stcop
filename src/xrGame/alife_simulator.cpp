@@ -14,6 +14,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrScripts/script_engine.h"
 #include "MainMenu.h"
+#include "Level.h"
 #include "object_factory.h"
 #include "alife_object_registry.h"
 #include "../xrEngine/XR_IOConsole.h"
@@ -34,33 +35,24 @@ void restart_all				()
 		return;
 	}
 
-	if (!g_AppInfo.IsAsyncLoadThread())
-	{
-		PROF_EVENT("restart_all: main menu");
+	const bool parallel = g_pGameLevel != nullptr && g_pGameLevel->IsParallel();
+	if (!parallel && !g_AppInfo.IsAsyncLoadThread())
 		MainMenu()->DestroyInternal	(true);
-	}
 
-	{
-		PROF_EVENT("restart_all: object factory");
-		xr_delete(g_object_factory);
-		object_factory();
-	}
+	Level().ReleaseAlifeScriptBindings();
+	object_factory();
+	if (g_object_factory != nullptr)
+		g_object_factory->release_script_engine(ai().get_script_engine());
 
-	g_pGamePersistent->ixr_framework_onframe.reset();
-	{
-		PROF_EVENT("restart_all: script engine");
-		ai().script_engine().init	();
-	}
-	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", g_pGamePersistent->ixr_framework_onframe);
+	Level().FrameworkOnFrame.reset();
+	ai().script_engine().init	();
+	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", Level().FrameworkOnFrame);
 
 #ifdef DEBUG
 	ai().moving_objects().clear	();
 #endif // DEBUG
 
-	{
-		PROF_EVENT("restart_all: cached ini");
-		ClearCachedIniFiles();
-	}
+	ClearCachedIniFiles();
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :

@@ -165,9 +165,11 @@ struct LevelInspector final
 	bool visible_currents = true;
 	bool hud_mode = false;
 	
-	bool key_toggle_mode;
+	bool key_toggle_mode = false;
+	bool EditorUI = true;
+	bool Streaming = false;
 
-	LevelInspector(bool hm = false);
+	LevelInspector(bool hm = false, bool editorUI = true);
 	~LevelInspector();
 
 	void OnRender();
@@ -199,6 +201,8 @@ struct LevelInspector final
 
 	ICF void append_text2d(float x, float y, shared_str str = "+", u32 color = color_rgba(0, 255, 100, 255), CGameFont::EAligment align = CGameFont::alCenter)
 	{
+		if (dbg_font == nullptr)
+			return;
 		dbg_font->SetAligment(align);
 		dbg_font->SetColor(color);
 		dbg_font->OutSet(x, y);
@@ -210,7 +214,8 @@ struct LevelInspector final
 
 	ICF void append_text_next(shared_str str = "+")
 	{
-		dbg_font->OutNext(*str);
+		if (dbg_font != nullptr)
+			dbg_font->OutNext(*str);
 	}
 
 	ICF void append_line(const Fvector& v1, const Fvector& v2, u32 clr) { swap_color_channels(clr); lines.push_back({ v1, v2, clr}); }
@@ -595,4 +600,10 @@ struct LevelInspector final
 
 	void DrawSkeleton(IKinematics* pKinematics, const Fmatrix& xform, CGameObject* GO = nullptr);
 	void DrawAttachmentSkeletons(CInventoryItem* item, bool hud);
+	void DrawWayPointsStreaming();
+	void DrawGameGraphStreaming();
+	void DrawLevelGraphStreaming();
+	void DrawCFORMStreaming();
+
+	CInifile* GraphConfig = nullptr;
 };

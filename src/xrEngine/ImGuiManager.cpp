@@ -213,15 +213,16 @@ void CImGuiManager::RenderFrame()
 #ifdef DEBUG_DRAW
 	if (DrawUIRender && !psDeviceFlags.test(rsClearBB))
 	{
-		Windows().DrawAll();
-
-		if (!CaptureInputs)
+		for (auto& Window : ImGui::GetCurrentContext()->Windows)
 		{
-			for (auto& Window : ImGui::GetCurrentContext()->Windows) 
-			{
+			if (Window->ParentWindow != nullptr || (Window->Flags & ImGuiWindowFlags_Tooltip) || 0 == xr_strcmp(Window->Name, "Main"))
+				continue;
+			if (CaptureInputs)
+				Window->Flags &= ~ImGuiWindowFlags_NoInputs;
+			else
 				Window->Flags |= ImGuiWindowFlags_NoInputs;
-			}
 		}
+		Windows().DrawAll();
 	}
 	else 
 	{
@@ -288,6 +289,11 @@ void CImGuiManager::UpdateCapture()
 bool CImGuiManager::IsCapturingInputs() const
 {
 	return CaptureInputs;
+}
+
+void CImGuiManager::SetCaptureInputs(bool enabled)
+{
+	CaptureInputs = enabled;
 }
 
 bool CImGuiManager::IsGUIRendering() const

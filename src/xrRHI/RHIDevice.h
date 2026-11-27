@@ -56,7 +56,7 @@ public:
 	// Read pixels from a render target into a contiguous buffer (RGBA8 or 32-bit per pixel layout)
 	// Dst: pointer to destination buffer; DstSize: size of the destination buffer in bytes
 	// OutWidth/OutHeight: returned width/height of the captured region
-	// OutRowPitch: number of bytes per row written into Dst (may be Width*4)
+	// OutRowPitch: number of bytes per row written into Dst (Width*4; source padding is removed)
 	virtual bool ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch) = 0;
 
 	// Render Taget setup

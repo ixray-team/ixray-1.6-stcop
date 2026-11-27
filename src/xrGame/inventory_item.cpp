@@ -1104,7 +1104,14 @@ void CInventoryItem::net_Destroy()
 {
 	if (m_pInventory)
 	{
-		VERIFY(std::find(m_pInventory->m_all.begin(), m_pInventory->m_all.end(), this) == m_pInventory->m_all.end());
+		if (g_pGameLevel != nullptr && Level().IsWorldTeardown())
+		{
+			m_pInventory->DetachItemOnDestroy(this);
+		}
+		else
+		{
+			VERIFY(std::find(m_pInventory->m_all.begin(), m_pInventory->m_all.end(), this) == m_pInventory->m_all.end());
+		}
 	}
 }
 

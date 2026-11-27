@@ -1,8 +1,20 @@
 #include "stdafx.h"
 #include "R_Backend.h"
 #include "dx10FixedConstants.h"
+#include "../../xrCore/StackTrace/StackTrace.h"
 
 CBackend RCache;
+
+void CBackend::ReportNullShader()
+{
+	if (NullShaderLogged)
+		return;
+	NullShaderLogged = true;
+	CONTEXT context = {};
+	RtlCaptureContext(&context);
+	for (const std::string& frame : StackTrace::BuildStackTrace(&context, 24))
+		Msg("! Null shader call: %s", frame.c_str());
+}
 
 // Create Quad-IB
 void CBackend::CreateQuadIB()

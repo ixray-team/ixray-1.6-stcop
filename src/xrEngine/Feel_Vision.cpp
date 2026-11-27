@@ -28,8 +28,11 @@ struct SFeelParam {
 	SFeelParam(Vision* _parent, Vision::feel_visible_Item* _item, float _vis_threshold) :parent(_parent), item(_item), vis(1.f), vis_threshold(_vis_threshold) {}
 };
 
-void	Vision::o_new(CObject* O)
+bool Vision::o_new(CObject* O)
 {
+	if (O == nullptr || O->getDestroy() || O->CFORM() == nullptr)
+		return false;
+
 	feel_visible.push_back(feel_visible_Item());
 	feel_visible_Item& I = feel_visible.back();
 	I.O = O;
@@ -40,6 +43,7 @@ void	Vision::o_new(CObject* O)
 	I.fuzzy = -EPS_S;
 	I.cp_LP = O->get_new_local_point_on_mesh(I.bone_id);
 	I.cp_LAST = O->get_last_local_point_on_mesh(I.cp_LP, I.bone_id);
+	return true;
 }
 void	Vision::o_delete(CObject* O)
 {
@@ -94,7 +98,7 @@ void Vision::feel_vision_query(Fmatrix& mFull)
 	Frustum.CreateFromMatrix(mFull, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 	// Traverse object database
-	g_SpatialSpace->q_frustum
+	(g_pGameLevel != nullptr && g_pGameLevel->Services.Spatial != nullptr ? g_pGameLevel->Services.Spatial : g_SpatialSpace)->q_frustum
 	(
 		r_spatial,
 		0,
@@ -158,7 +162,11 @@ void	Vision::feel_vision_update(Fvector& P, float dt, float vis_threshold)
 					diff.begin());
 				diff.resize(E_ - diff.begin());
 				for (u32 i = 0; i < diff.size(); i++)
-					o_new(diff[i]);
+				{
+					if (!o_new(diff[i]))
+						seen[i] = nullptr;
+				}
+				seen.erase(std::remove(seen.begin(), seen.end(), nullptr), seen.end());
 			}
 		}
 
@@ -186,7 +194,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 	xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
 	for (; I != E; I++) {
 		I->OwnTraceVisible = false;
-		if (0 == I->O->CFORM()) { I->fuzzy = -1; continue; }
+		if (I->O == nullptr || I->O->getDestroy() || I->O->CFORM() == nullptr) { I->fuzzy = -1; continue; }
 
 		// verify relation
 //			if (positive(I->fuzzy) && I->O->Position().similar(I->cp_LR_dst,lr_granularity) && P.similar(I->cp_LR_src,lr_granularity))
@@ -261,7 +269,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 				}
 			}
 			//				Log("Vis",feel_params.vis);
-			g_SpatialSpace->q_ray(r_spatial, 0, ESPATIAL_TYPE::VISIBLEFORAI, P, D, f);
+			(g_pGameLevel != nullptr && g_pGameLevel->Services.Spatial != nullptr ? g_pGameLevel->Services.Spatial : g_SpatialSpace)->q_ray(r_spatial, 0, ESPATIAL_TYPE::VISIBLEFORAI, P, D, f);
 
 			RD.flags = CDB::OPT_ONLYFIRST;
 

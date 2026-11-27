@@ -274,6 +274,7 @@ public:
 	void Create								(void);
 	void Run(void);
 	void Destroy							(void);
+	void ReleasePrecacheLight();
 	void Reset								(bool precache = true);
 
 	void Initialize							(void);
@@ -357,7 +358,6 @@ extern ENGINE_API CRenderDevice* DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
 
-
 #define Device (*DevicePtr)
 #define	RDEVICE	Device
 
@@ -371,6 +371,7 @@ public:
 	void			start				(bool b_user_input);
 	void			stop				();
 	virtual void	OnRender			() override;
+	bool			ShouldRender(bool mainMenuActive) const;
 
 	bool IsActive() const {
 		return b_registered;

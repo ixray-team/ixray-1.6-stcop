@@ -637,6 +637,7 @@ public:
 public:
 	virtual void						on_enemy_change						(const CEntityAlive *enemy) override;
 	virtual void						on_restrictions_change				() override;
+			void						on_level_graph_change();
 			void						on_cover_blocked					(const CCoverPoint *cover);
 			void						on_danger_location_add				(const CDangerLocation &location);
 			void						on_danger_location_remove			(const CDangerLocation &location);

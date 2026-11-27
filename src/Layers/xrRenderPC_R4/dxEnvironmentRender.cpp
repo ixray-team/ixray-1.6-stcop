@@ -2,9 +2,11 @@
 #include "dxEnvironmentRender.h"
 
 #include "dxRenderDeviceRender.h"
+#include "r4.h"
 
 #include "../../xrEngine/Environment.h"
 #include "ResourceManager.h"
+#include "ViewerFallbackTextures.h"
 
 #include "../../xrEngine/xr_efflensflare.h"
 #include "r__types.h"
@@ -132,6 +134,55 @@ void dxEnvironmentRender::Copy(IEnvironmentRender& _in) {
 	*this = *(dxEnvironmentRender*)&_in;
 }
 
+void CRender::set_fallback_sky(CEnvironment& env)
+{
+	if (!IsSecondaryScene || env.CurrentEnv == nullptr || env.CurrentEnv->m_pDescriptorMixer == nullptr)
+		return;
+	auto& mixer = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
+	const auto usableCube = [](const ref_texture& texture)
+	{
+		if (texture == nullptr)
+			return false;
+		IRHISurface* surface = texture->surface_get();
+		const bool usable = surface != nullptr && (surface->GetMiscFlags() & u32(ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE)) != 0;
+		_RELEASE(surface);
+		return usable;
+	};
+	if (mixer.sky_r_textures.size() >= 2 && mixer.sky_r_textures_env.size() >= 2 &&
+		usableCube(mixer.sky_r_textures[0].second) && usableCube(mixer.sky_r_textures[1].second) &&
+		usableCube(mixer.sky_r_textures_env[0].second) && usableCube(mixer.sky_r_textures_env[1].second))
+		return;
+
+	ref_texture texture;
+	constexpr const char* candidates[] =
+	{
+		"sky\\sky_13_cube",
+		"sky\\sky_11_cube",
+		"sky\\sky_9_cube",
+		"sky\\sky_5_cube",
+	};
+	for (const char* candidate : candidates)
+	{
+		string_path path;
+		if (FS.exist(path, _game_textures_, candidate, ".dds"))
+		{
+			texture.create(candidate);
+			break;
+		}
+	}
+	if (texture == nullptr)
+	{
+		texture.create("$memory$viewer_sky");
+		ViewerFallbackTextures::EnsureSkyTexture();
+	}
+	mixer.sky_r_textures.clear();
+	mixer.sky_r_textures.push_back(std::make_pair(0, texture));
+	mixer.sky_r_textures.push_back(std::make_pair(1, texture));
+	mixer.sky_r_textures_env.clear();
+	mixer.sky_r_textures_env.push_back(std::make_pair(0, texture));
+	mixer.sky_r_textures_env.push_back(std::make_pair(1, texture));
+}
+
 particles_systems::library_interface const& dxEnvironmentRender::particles_systems_library() {
 	return	(RImplementation.PSLibrary);
 }
@@ -179,13 +230,23 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorR
 }
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner) {
-	if(owner.sky_texture_name.size())
+	if (owner.sky_texture_name.size())
 		sky_texture.create(owner.sky_texture_name.c_str());
+	else
+	{
+		sky_texture.create("$memory$viewer_sky");
+		ViewerFallbackTextures::EnsureSkyTexture();
+	}
 
-	if(owner.sky_texture_env_name.size())
+	if (owner.sky_texture_env_name.size())
 		sky_texture_env.create(owner.sky_texture_env_name.c_str());
+	else
+	{
+		sky_texture_env.create("$memory$viewer_sky");
+		ViewerFallbackTextures::EnsureSkyTexture();
+	}
 
-	if(owner.clouds_texture_name.size())
+	if (owner.clouds_texture_name.size())
 		clouds_texture.create(owner.clouds_texture_name.c_str());
 }
 
@@ -250,6 +311,9 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 	::Render->rmFar();
 
 	dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
+
+	if (sh_2geom._get() == nullptr || sh_2geom->vb == nullptr || sh_2geom->ib == nullptr || sh_2sky._get() == nullptr)
+		OnDeviceCreate();
 
 	// draw sky box
 	static Fmatrix mSky = Fidentity;

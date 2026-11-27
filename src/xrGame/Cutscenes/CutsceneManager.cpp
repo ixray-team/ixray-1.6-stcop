@@ -119,6 +119,8 @@ void CCutsceneManager::Update()
 
 void CCutsceneManager::Render()
 {
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
+		SeqParallelPush(xr_make_delegate(this, &CCutsceneManager::Update));
 	if (m_pCurrentCutscene) {
 		if (m_bToDelete)
 		{

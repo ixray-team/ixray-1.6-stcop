@@ -150,9 +150,9 @@ void CPHObject::reinit_single()
 		obj->IslandReinit();
 	}
 	result.resize(0);
-	dJointGroupEmpty(ContactGroup);
-	ContactFeedBacks.empty();
-	ContactEffectors.empty();
+	dJointGroupEmpty(ph_world->GetContactGroup());
+	ph_world->ContactFeedbacks.empty();
+	ph_world->ContactEffectors.empty();
 }
 
 void	CPHObject::		step_prediction	(float time)

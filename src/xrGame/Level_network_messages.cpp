@@ -102,12 +102,12 @@ void CLevel::ClientReceive()
 					break;
 				}
 				game_events->insert		(*P);
-				if (g_bDebugEvents)		ProcessGameEvents();
+				if (DebugEvents)		ProcessGameEvents();
 			}
 			break;
 		case M_EVENT:
 			game_events->insert		(*P);
-			if (g_bDebugEvents)		ProcessGameEvents();
+			if (DebugEvents)		ProcessGameEvents();
 			break;
 		case M_EVENT_PACK:
 			{
@@ -119,7 +119,7 @@ void CLevel::ClientReceive()
 					tmpP.timeReceive = P->timeReceive;
 
 					game_events->insert		(tmpP);
-					if (g_bDebugEvents)		ProcessGameEvents();
+					if (DebugEvents)		ProcessGameEvents();
 				}
 			}break;
 		case M_UPDATE:
@@ -194,7 +194,7 @@ void CLevel::ClientReceive()
 		case M_MOVE_PLAYERS:
 			{
 				game_events->insert		(*P);
-				if (g_bDebugEvents)		ProcessGameEvents();
+				if (DebugEvents)		ProcessGameEvents();
 			}break;
 		// [08.11.07] Alexander Maniluk: added new message handler for moving artefacts.
 		case M_MOVE_ARTEFACTS:
@@ -260,7 +260,7 @@ void CLevel::ClientReceive()
 			{
 				if (!game) break;
 				game_events->insert		(*P);
-				if (g_bDebugEvents)		ProcessGameEvents();
+				if (DebugEvents)		ProcessGameEvents();
 			}break;
 		case M_RELOAD_GAME:
 		case M_LOAD_GAME:
@@ -388,7 +388,7 @@ void CLevel::ClientReceive()
 				Msg("--- CL: On Update Request");
 					if (!game) break;
 				game_events->insert		(*P);
-				if (g_bDebugEvents)		ProcessGameEvents();
+				if (DebugEvents)		ProcessGameEvents();
 			}break;
 		case M_STATISTIC_UPDATE_RESPOND: //deprecated, see  xrServer::OnMessage
 			{
@@ -396,7 +396,7 @@ void CLevel::ClientReceive()
 		case M_FILE_TRANSFER:
 			{
 				game_events->insert		(*P);
-				if (g_bDebugEvents)		ProcessGameEvents();
+				if (DebugEvents)		ProcessGameEvents();
 			}break;
 		case M_SECURE_KEY_SYNC:
 			{
@@ -421,12 +421,24 @@ void CLevel::ClientReceive()
 	}	
 	EndProcessQueue();
 
-	if (g_bDebugEvents) ProcessGameSpawns();
+	if (DebugEvents) ProcessGameSpawns();
 }
 
 void CLevel::OnMessage(void* data, u32 size)
-{	
-	IPureClient::OnMessage(data, size);	
+{
+	if (IsParallel() && g_pGameLevel != this)
+	{
+		struct SMessageCall
+		{
+			CLevel* Level;
+			void* Data;
+			u32 Size;
+			void Invoke() { Level->OnMessage(Data, Size); }
+		} call{ this, data, size };
+		RunInContext(xr_make_delegate(&call, &SMessageCall::Invoke));
+		return;
+	}
+	IPureClient::OnMessage(data, size);
 }
 
 

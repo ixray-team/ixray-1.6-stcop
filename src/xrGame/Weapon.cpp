@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Weapon.h"
+#include "Weapons/Components/HudCartridges.h"
 #include "Weapons/WeaponBoneVisibility.h"
 #include "entity_alive.h"
 #include "inventory_item_impl.h"
@@ -747,8 +748,12 @@ void CWeapon::Load		(const char* section)
 
 	if (m_sShellBone)
 	{
-		IKinematics* k = Visual()->dcast_PKinematics();
-		m_mShellBone = k->LL_GetTransform(k->LL_BoneID(*m_sShellBone));
+		if (Visual())
+		{
+			IKinematics* k = Visual()->dcast_PKinematics();
+			if (k)
+				m_mShellBone = k->LL_GetTransform(k->LL_BoneID(*m_sShellBone));
+		}
 	}
 }
 
@@ -1812,9 +1817,11 @@ void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
 
 void CWeapon::ProcessScope()
 {
-	IKinematics* Model = Visual()->dcast_PKinematics();
-	R_ASSERT(Model);
-	WeaponBoneVisibility::VisitScopeBones(m_scopes, IsScopeAttached() && IsScopeAttachable() && m_cur_scope < m_scopes.size() ? m_scopes[m_cur_scope].c_str() : nullptr, m_bScopeHideBones, m_bScopeShowBones,
+	const char* scope = IsScopeAttached() && IsScopeAttachable() && m_cur_scope < m_scopes.size() ? m_scopes[m_cur_scope].c_str() : nullptr;
+	IKinematics* Model = Visual() ? Visual()->dcast_PKinematics() : nullptr;
+	if (!Model)
+		return;
+	WeaponBoneVisibility::VisitScopeBones(m_scopes, scope, m_bScopeHideBones, m_bScopeShowBones,
 		[&](const shared_str& Bone, bool IsVisible, bool IsRecursive)
 		{
 			WeaponBoneVisibility::SetBone(*Model, Bone, IsVisible, IsRecursive);
@@ -3171,8 +3178,9 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	IKinematics* Model = Visual()->dcast_PKinematics();
-	R_ASSERT(Model);
+	IKinematics* Model = Visual() ? Visual()->dcast_PKinematics() : nullptr;
+	if (!Model)
+		return;
 	Model->CalculateBones_Invalidate();
 	if (m_bShowBonesUpgToHide.empty() && m_section_id.size())
 	{

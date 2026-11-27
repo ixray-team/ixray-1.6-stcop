@@ -704,7 +704,7 @@ void CEntityAlive::load	(IReader &input_packet)
 	conditions().load(input_packet);
 	for (float& Coefficient : WeaponModifierCoefficients)
 	{
-		Coefficient = input_packet.r_float();
+		Coefficient = conditions().SaveVersion() >= 1 ? input_packet.r_float() : 1.0f;
 	}
 }
 

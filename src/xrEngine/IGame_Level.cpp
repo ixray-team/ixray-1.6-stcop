@@ -8,21 +8,55 @@
 #include "../xrSound/ai_sounds.h"
 #include "../xrCore/Kernel/EngineExternal.h"
 #include "Render.h"
+#include "../xrSound/New/SoundMixerInternal.h"
 #include "std_classes.h"
 #include "xrLevel.h"
 #include "xr_object.h"
 #include "x_ray.h"
 #include "GameMtlLib.h"
+#include "Engine.h"
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
 extern	bool g_bLoaded;
 
-IGame_Level::IGame_Level	()
+SLevelServices* CurrentLevelServices()
+{
+	return g_pGameLevel != nullptr ? &g_pGameLevel->Services : nullptr;
+}
+
+void SeqParallelPush(const xr_delegate<void()>& job)
+{
+	xrCriticalSectionGuard guard(&Engine.Sheduler.UpdateMutex());
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
+		g_pGameLevel->ParallelJobs.push_back(job);
+	else
+		Device.seqParallel.push_back(job);
+}
+
+void SeqParallelRemove(const xr_delegate<void()>& job)
+{
+	xrCriticalSectionGuard guard(&Engine.Sheduler.UpdateMutex());
+	if (g_pGameLevel != nullptr && g_pGameLevel->IsParallel())
+		std::erase(g_pGameLevel->ParallelJobs, job);
+	else
+		Device.remove_from_seq_parallel(job);
+}
+
+IGame_Level::IGame_Level() : Objects(this)
 {
 	PROF_EVENT("IGame_Level::IGame_Level");
 	m_pCameras					= new CCameraManager(true);
+	// Must stay assigned during construction: member constructors (e.g.
+	// pure_relcase) reach the level through the global. Viewer-driven parallel
+	// sessions save/restore the slot around NEW_INSTANCE instead.
 	g_pGameLevel				= this;
+	// A pending descriptor (set right before NEW_INSTANCE by the start flow or
+	// the viewer) applies to this instance from the very first member init, so
+	// the ctor chain can already see Sandbox/Parallel/resource-mask flags.
+	SLevelDesc pendingDesc;
+	if (pApp != nullptr && pApp->ConsumeNextLevelDesc(pendingDesc))
+		SetLevelDesc(pendingDesc);
 	pLevel						= nullptr;
 	bReady						= false;
 	pCurrentEntity				= nullptr;
@@ -44,10 +78,12 @@ IGame_Level::~IGame_Level() noexcept
 
 	xr_delete(pLevel);
 
-	// Render-level unload
-	Render->level_Unload();
+	// Render-level unload (only when this session actually owns the renderer's
+	// scene: a parallel session without one must not drop the game's scene).
+	if (!LevelDesc.Parallel || HasRenderScene)
+		Render->level_Unload();
 	xr_delete(m_pCameras);
-	// Unregister
+	// Unregister (harmless when the level never registered, e.g. parallel sessions)
 	if (!g_dedicated_server)
 	{
 		Device.seqRender.Remove(this);
@@ -56,19 +92,49 @@ IGame_Level::~IGame_Level() noexcept
 	Device.seqFrame.Remove(this);
 	CCameraManager::ResetPP();
 
-	Sound->set_geometry_occ(nullptr);
-	Sound->set_handler(nullptr);
+	if (!LevelDesc.Parallel)
+	{
+		Sound->set_geometry_occ(nullptr);
+		Sound->set_handler(nullptr);
+	}
+
+	if (g_pGameLevel == this)
+		g_pGameLevel = nullptr;
 
 #ifdef DEBUG
 	if (!Device.IsEditorMode())
 		Device.DumpResourcesMemoryUsage();
 #endif // DEBUG
 
+	ReleaseSoundGeometry();
+
 	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
 	if (Device.m_pRender)
 		Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
 	Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
+}
+
+void IGame_Level::ReleaseSoundGeometry()
+{
+	if (!LevelDesc.Parallel || Sound == nullptr)
+		return;
+
+	if (Sound->get_geometry_env() == SoundGeometry.Env)
+	{
+		SoundZoneVector emptyZones;
+		Sound->swap_geometry_env(nullptr);
+		XRay::Sound::Mixer::SwapZones(emptyZones);
+	}
+	if (Sound->get_geometry_som() == SoundGeometry.Som)
+		Sound->swap_geometry_som(nullptr);
+	if (Sound->get_geometry_occ() == SoundGeometry.Occluder)
+		Sound->swap_geometry_occ(nullptr);
+
+	xr_delete(SoundGeometry.Env);
+	xr_delete(SoundGeometry.Som);
+	SoundGeometry.Occluder = nullptr;
+	SoundGeometry.Zones.clear();
 }
 
 void IGame_Level::net_Stop			()
@@ -80,7 +146,7 @@ void IGame_Level::net_Stop			()
 	Objects.Unload				( );
 	IR_Release					( );
 
-	bReady						= false;	
+	bReady						= false;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -142,58 +208,6 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 	// Msg("* Material remapping ID: [Max:%d, StaticMax:%d]",max_ID,max_static_ID);
 	VERIFY(max_static_ID < 0xFFFF);
 
-	if (!Device.IsEditorMode())
-	{
-		if (static_mtl_count >= 128)
-			std::sort(translator.begin(), translator.end());
-
-		constexpr size_t materialIdCount = size_t(1) << 14;
-		constexpr u32 missingMaterial = u32(1) << 16;
-		xr_vector<u32> remap(materialIdCount, missingMaterial);
-		for (const auto& pair : translator)
-		{
-			if (pair.m_id >= materialIdCount || remap[pair.m_id] != missingMaterial)
-				continue;
-			CDB::TRI mapped{};
-			mapped.material = pair.m_index;
-			const SGameMtl* material = GMLib.GetMaterialByIdx(mapped.material);
-			mapped.suppress_shadows = material->Flags.is(SGameMtl::flSuppressShadows);
-			mapped.suppress_wm = material->Flags.is(SGameMtl::flSuppressWallmarks);
-			remap[pair.m_id] = mapped.dummy;
-		}
-
-		constexpr size_t trianglesPerWorker = 65536;
-		const size_t workerCount = count >= 2 * trianglesPerWorker
-			? std::max(size_t(1), std::min({size_t(4), xr_max_concurrency(), count / trianglesPerWorker}))
-			: size_t(1);
-		xr_vector<size_t> invalidTriangles(workerCount, count);
-		auto remapLambda = [&](size_t worker)
-		{
-			const size_t begin = count / workerCount * worker + std::min(worker, count % workerCount);
-			const size_t end = begin + count / workerCount + (worker < count % workerCount ? 1 : 0);
-			for (size_t index = begin; index < end; ++index)
-			{
-				auto& triangle = tris[index];
-				const u32 mapped = remap[triangle.material];
-				if (mapped == missingMaterial)
-				{
-					invalidTriangles[worker] = index;
-					break;
-				}
-				triangle.dummy = (triangle.dummy & 0xFFFF0000u) | mapped;
-			}
-		};
-		if (workerCount > 1)
-			xr_parallel_for(size_t(0), workerCount, remapLambda);
-		else
-			remapLambda(0);
-
-		const size_t invalid = *std::min_element(invalidTriangles.begin(), invalidTriangles.end());
-		if (invalid != count)
-			Debug.fatal(DEBUG_INFO, "Game material '%d' not found", tris[invalid].material);
-		return;
-	}
-
 	if (static_mtl_count < 128) {
 		CDB::TRI* I = tris;
 		CDB::TRI* E = tris + count;
@@ -231,8 +245,18 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 	}
 }
 
+void IGame_Level::SetResourceState(ELevelResource res, EResourceState state)
+{
+	ResourceStates[ResourceStateIndex(res)] = state;
+	if (state == EResourceState::Missing || state == EResourceState::Failed)
+	{
+		Msg("! Level resource '%s' -> %s (continuing degraded)",
+			LevelResourceName(res).data(), LevelResourceStateName(state).data());
+	}
+}
+
 static xrCriticalSection lloadcs;
-bool IGame_Level::Load			(u32 dwNum) 
+bool IGame_Level::Load			(u32 dwNum)
 {
 	PROF_EVENT("IGame_Level::Load");
 	xrCriticalSectionGuard guard(lloadcs);
@@ -240,100 +264,168 @@ bool IGame_Level::Load			(u32 dwNum)
 	StopCollisionStreaming();
 	FirstStreamingUpdate = true;
 	StreamingStopped = false;
+
+	const bool wantRenderScene = HasLevelResource(ELevelResource::RenderScene);
+	const bool wantCollision   = HasLevelResource(ELevelResource::Collision);
 	// Initialize level data
 	pApp->Level_Set				( dwNum );
 	string_path					temp;
-	if (!FS.exist(temp, "$level$", "level.ltx"))
-		Debug.fatal	(DEBUG_INFO,"Can't find level configuration file '%s'.",temp);
-	pLevel						= new CInifile	( temp );
-	
+	if (!HasLevelResource(ELevelResource::LevelConfig))
+	{
+		static const char emptyIni[] = "; level config not requested\r\n";
+		IReader emptyReader((void*)emptyIni, sizeof(emptyIni) - 1);
+		pLevel = new CInifile(&emptyReader);
+		SetResourceState(ELevelResource::LevelConfig, EResourceState::NotLoaded);
+	}
+	else if (!FS.exist(temp, "$level$", "level.ltx"))
+	{
+		Msg("! IGame_Level::Load: can't find level configuration file '%s', using empty config", temp);
+		static const char emptyIni[] = "; empty level config (missing level.ltx)\r\n";
+		IReader emptyReader((void*)emptyIni, sizeof(emptyIni) - 1);
+		pLevel						= new CInifile(&emptyReader);
+		SetResourceState(ELevelResource::LevelConfig, EResourceState::Missing);
+	}
+	else
+	{
+		pLevel						= new CInifile	( temp );
+		SetResourceState(ELevelResource::LevelConfig, EResourceState::Ready);
+	}
+
 	UseSnowmask = true;
 	if (pLevel->section_exist("weather") && pLevel->line_exist("weather", "snowmask"))
 	{
 		UseSnowmask = !!pLevel->r_bool("weather", "snowmask");
 	}
 
-	// Open
-	g_pGamePersistent->SetLoadStageTitle	("st_opening_stream");
-	g_pGamePersistent->LoadTitle	();
-	IReader* LL_Stream			= FS.r_open	("$level$","level");
-	IReader	&fs					= *LL_Stream;
+	// Open the renderer scene stream only when the render scene is requested
+	IReader* LL_Stream			= nullptr;
+	if (wantRenderScene)
+	{
+		g_pGamePersistent->SetLoadStageTitle	("st_opening_stream");
+		g_pGamePersistent->LoadTitle	();
 
-	// Header
-	hdrLEVEL					H;
-	fs.r_chunk_safe				(fsL_HEADER,&H,sizeof(H));
-	R_ASSERT2					(XRCL_PRODUCTION_VERSION==H.XRLC_version,"Incompatible level version.");
+		LL_Stream					= FS.r_open	("$level$","level");
+		if (LL_Stream == nullptr)
+		{
+			Msg("! IGame_Level::Load: '$level$/level' is missing, continuing without render scene");
+			SetResourceState(ELevelResource::RenderScene, EResourceState::Missing);
+		}
+		else
+		{
+			// Header
+			hdrLEVEL				H;
+			LL_Stream->r_chunk_safe	(fsL_HEADER,&H,sizeof(H));
+			if (XRCL_PRODUCTION_VERSION != H.XRLC_version)
+			{
+				Msg("! IGame_Level::Load: incompatible level version (%d != %d), continuing without render scene",
+					H.XRLC_version, XRCL_PRODUCTION_VERSION);
+				FS.r_close			(LL_Stream);
+				SetResourceState(ELevelResource::RenderScene, EResourceState::Failed);
+			}
+		}
+	}
+	else
+	{
+		SetResourceState(ELevelResource::RenderScene, EResourceState::NotLoaded);
+	}
 
 	// CForms
 	g_pGamePersistent->SetLoadStageTitle("st_loading_cform");
 	g_pGamePersistent->LoadTitle();
 
-	ObjectSpace.Load
-	(
-		[](Fvector * V, size_t Vcnt, CDB::TRI * T, size_t Tcnt, void* params)
-		{
-			g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
-		}
-	);
+	if (wantCollision)
+	{
+		const bool collisionOk = ObjectSpace.Load
+		(
+			[](Fvector * V, size_t Vcnt, CDB::TRI * T, size_t Tcnt, void* params)
+			{
+				g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
+			}
+		);
+		SetResourceState(ELevelResource::Collision, collisionOk ? EResourceState::Ready : EResourceState::Missing);
+	}
+	else
+	{
+		ObjectSpace.CreateEmpty	();
+		SetResourceState(ELevelResource::Collision, EResourceState::NotLoaded);
+	}
 
 	//Sound->set_geometry_occ		( &Static );
-	Sound->set_geometry_occ		(&ObjectSpace);
-	Sound->set_handler			( _sound_event );
+	if (!LevelDesc.Parallel)
+	{
+		Sound->set_geometry_occ(&ObjectSpace);
+		Sound->set_handler(_sound_event);
+	}
+	else
+	{
+		SoundGeometry.Occluder = &ObjectSpace;
+	}
 
 	pApp->LoadSwitch			();
 
 
 	// HUD + Environment
-	if(!g_hud)
+	if (!HasLevelResource(ELevelResource::Hud))
 	{
-		PROF_EVENT("IGame_Level::Load: HUD");
-		g_hud					= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
+		SetResourceState(ELevelResource::Hud, EResourceState::NotLoaded);
+	}
+	else
+	{
+		if (!g_hud)
+			g_hud = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
+		SetResourceState(ELevelResource::Hud, g_hud ? EResourceState::Ready : EResourceState::Missing);
 	}
 
 	// Render-level Load
-	try {
-		Render->level_Unload(); // try to unload old data
-	}
-	catch (...) {
-		Msg("Level data empty: %s", temp);
-	}
+	HasRenderScene				= false;
+	if (LL_Stream != nullptr)
 	{
-		PROF_EVENT("IGame_Level::Load: render");
-		Render->level_Load			(LL_Stream);
+		try {
+			Render->level_Unload(); // try to unload old data
+		}
+		catch (...) {
+			Msg("Level data empty: %s", temp);
+		}
+		try {
+			Render->level_Load		(LL_Stream);
+			HasRenderScene			= Render->HasLevelScene();
+			SetResourceState(ELevelResource::RenderScene, HasRenderScene ? EResourceState::Ready : EResourceState::Missing);
+		}
+		catch (...) {
+			Msg("! IGame_Level::Load: renderer failed to load the scene, continuing without it");
+			SetResourceState(ELevelResource::RenderScene, EResourceState::Failed);
+		}
 	}
 
 	// Objects
-	{
-		PROF_EVENT("IGame_Level::Load: environment mods");
-		g_pGamePersistent->Environment().mods_load	();
-	}
-	{
-		PROF_EVENT("IGame_Level::Load: game specific");
-		R_ASSERT					(Load_GameSpecific_Before());
-	}
-	{
-		PROF_EVENT("IGame_Level::Load: objects");
-		Objects.Load				();
-	}
+	if (!Load_GameSpecific_Before())
+		Msg("! IGame_Level::Load: Load_GameSpecific_Before reported failure, continuing degraded");
+
+	Objects.Load				();
 
 	// Done
 	FS.r_close					( LL_Stream );
 	bReady						= true;
 
-	if (!g_dedicated_server) {
-		IR_Capture();
+	// Parallel sessions are pumped by their owner (viewer); they must not
+	// register into the global frame sequence or capture input.
+	if (!LevelDesc.Parallel)
+	{
+		if (!g_dedicated_server) {
+			IR_Capture();
 
-		Device.seqRender.Add(this);
+			Device.seqRender.Add(this);
+		}
+
+		Device.seqFrame.Add			(this);
 	}
-
-	Device.seqFrame.Add			(this);
-	return true;	
+	return true;
 }
 
 int		psNET_DedicatedSleep	= 5;
-void	IGame_Level::OnRender		( ) 
+void	IGame_Level::OnRender		( )
 {
-	if (!g_dedicated_server) {
+	if (!g_dedicated_server && HasRenderScene) {
 		{
 			PROF_EVENT("IGame_Level::OnRender: Calculate");
 			Render->Calculate();
@@ -359,22 +451,24 @@ void IGame_Level::OnFrame()
 
 	std::erase_if(scheduled_tasks, [&](const ScheduledCallbackItem& item)
 	{
-		if (Device.dwTimeGlobal >= item.execution_time)
+		if (SessionTimeMs() >= item.execution_time)
 		{
 			item.task();
 			return true;
 		}
-		return false; 
+		return false;
 	});
 
 	UpdateCollisionStreaming();
-	Objects.Update(false);
-	g_hud->OnFrame();
+	Objects.Update(LevelDesc.Parallel);
+	CCustomHUD* hud = Services.Hud != nullptr ? Services.Hud : g_hud;
+	if (hud != nullptr)
+		hud->OnFrame();
 
 	// Ambience
-	if (!Sounds_Random.empty() && Device.dwTimeGlobal > Sounds_Random_dwNextTime)
+	if (!Sounds_Random.empty() && SessionTimeMs() > Sounds_Random_dwNextTime)
 	{
-		Sounds_Random_dwNextTime = Device.dwTimeGlobal + Random.randI(10000, 20000);
+		Sounds_Random_dwNextTime = SessionTimeMs() + Random.randI(10000, 20000);
 		Fvector pos;
 		pos.random_dir().normalize().mul(Random.randF(30, 100)).add(Device.vCameraPosition);
 		int id = Random.randI(Sounds_Random.size());
@@ -466,7 +560,7 @@ void IGame_Level::SetEntity( CObject* O  )
 {
 	if (pCurrentEntity)
 		pCurrentEntity->On_LostEntity();
-	
+
 	if (O)
 		O->On_SetEntity();
 
@@ -508,7 +602,9 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 
 	// Monster distance hearing must not be clipped by asset range or occlusion.
 	const float QueryRange = EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? 500.f : range;
-	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { QueryRange,QueryRange,QueryRange });
+	ISpatial_DB* spatial = Services.Spatial != nullptr ? Services.Spatial : g_SpatialSpace;
+	if (spatial != nullptr)
+		spatial->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { QueryRange,QueryRange,QueryRange });
 
 	// Iterate
 	for (auto& spatial : snd_ER)
@@ -560,9 +656,9 @@ void IGame_Level::SoundEvent_Dispatch()
 		{
 			D.dest->feel_sound_new
 			(
-				D.source->g_object, 
-				D.source->g_type, 
-				D.source->g_userdata, 
+				D.source->g_object,
+				D.source->g_type,
+				D.source->g_userdata,
 				D.Position,
 				D.power
 			);

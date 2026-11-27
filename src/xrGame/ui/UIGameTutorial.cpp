@@ -16,6 +16,7 @@
 #include "UIInventoryWnd.h"
 #include "../../xrEngine/string_table.h"
 #include "UIRadialMenuWeapon.h"
+#include "../MainMenu.h"
 
 extern ENGINE_API bool bShowPauseString;
 
@@ -106,98 +107,125 @@ bool CUISequenceItem::Stop(bool bForce)
 	return true;
 }
 
-CUISequencer::CUISequencer()
+CUISequencer::CUISequencer(IGame_Level* ownerLevel) : OwnerLevel(ownerLevel)
 {
+	m_UIWindow = nullptr;
+	m_pStoredInputReceiver = nullptr;
 	m_flags.zero();
 	m_name = "invalid";
 }
 
+bool CUISequencer::UsesGlobalQueues() const
+{
+	return OwnerLevel == nullptr || !OwnerLevel->IsParallel();
+}
+
 void CUISequencer::Start(const char* tutor_name)
 {
-	VERIFY						(m_sequencer_items.size()==0);
-	Device.seqFrame.Add			(this, REG_PRIORITY_LOW-10000);
-	
-	
-	m_name						= tutor_name;
-	m_UIWindow					= new CUIWindow();
+	VERIFY(m_sequencer_items.size() == 0);
+	if (UsesGlobalQueues())
+		Device.seqFrame.Add(this, REG_PRIORITY_LOW - 10000);
+
+	m_name = tutor_name;
+	m_UIWindow = new CUIWindow();
 
 	CUIXml uiXml;
-	uiXml.Load					(CONFIG_PATH, UI_PATH, "game_tutorials.xml");
-	
-	int items_count				= uiXml.GetNodesNum	(tutor_name, 0, "item");	VERIFY(items_count>0);
-	uiXml.SetLocalRoot			(uiXml.NavigateToNode(tutor_name, 0));
+	uiXml.Load(CONFIG_PATH, UI_PATH, "game_tutorials.xml");
+
+	int items_count = uiXml.GetNodesNum(tutor_name, 0, "item");
+	if (items_count <= 0)
+	{
+		Msg("! Tutorial '%s' has no items; skipping it", tutor_name);
+		Destroy();
+		return;
+	}
+	uiXml.SetLocalRoot(uiXml.NavigateToNode(tutor_name, 0));
 
 	m_flags.set(etsPlayEachItem, !!uiXml.ReadInt("play_each_item", 0, 0));
 	m_flags.set(etsPersistent, !!uiXml.Read("persistent", 0, 0));
 	m_flags.set(etsOverMainMenu, !!uiXml.Read("over_main_menu", 0, 0));
-	int render_prio				= uiXml.ReadInt("render_prio", 0, -2);
+	int render_prio = uiXml.ReadInt("render_prio", 0, -2);
 
 	CUIXmlInit xml_init;
-	if(UI().is_widescreen() && uiXml.NavigateToNode("global_wnd_16", 0) )
+	if (UI().is_widescreen() && uiXml.NavigateToNode("global_wnd_16", 0))
 	{
-		xml_init.AssignColor	("tut_gray", color_rgba(255,255,255,255));
-		xml_init.InitWindow		(uiXml, "global_wnd_16", 0, m_UIWindow);
-	}else
+		xml_init.AssignColor("tut_gray", color_rgba(255, 255, 255, 255));
+		xml_init.InitWindow(uiXml, "global_wnd_16", 0, m_UIWindow);
+	}
+	else
 	{
-		xml_init.AssignColor	("tut_gray", color_rgba(100,100,100,255));
-		xml_init.InitWindow		(uiXml, "global_wnd", 0, m_UIWindow);
+		xml_init.AssignColor("tut_gray", color_rgba(100, 100, 100, 255));
+		xml_init.InitWindow(uiXml, "global_wnd", 0, m_UIWindow);
 	}
 
-	
-	XML_NODE* bk				= uiXml.GetLocalRoot();
-	uiXml.SetLocalRoot			(uiXml.NavigateToNode("global_wnd", 0));
-	{	
-		const char* str				= uiXml.Read		("pause_state", 0, "ignore");
-		m_flags.set				(etsNeedPauseOn,	0==_stricmp(str, "on"));
-		m_flags.set				(etsNeedPauseOff,	0==_stricmp(str, "off"));
+	XML_NODE* bk = uiXml.GetLocalRoot();
+	uiXml.SetLocalRoot(uiXml.NavigateToNode("global_wnd", 0));
+	{
+		const char* str = uiXml.Read("pause_state", 0, "ignore");
+		m_flags.set(etsNeedPauseOn, 0 == _stricmp(str, "on"));
+		m_flags.set(etsNeedPauseOff, 0 == _stricmp(str, "off"));
 	}
 
-	const char* snd_name				= uiXml.Read("sound", 0, "");
+	const char* snd_name = uiXml.Read("sound", 0, "");
 	if (snd_name && snd_name[0])
-	{
 		m_global_sound.create(snd_name, st_Effect, sg_Undefined);
-	}
-	m_start_lua_function		= uiXml.Read("function_on_start", 0, "");
-	m_stop_lua_function			= uiXml.Read("function_on_stop", 0, "");
+	m_start_lua_function = uiXml.Read("function_on_start", 0, "");
+	m_stop_lua_function = uiXml.Read("function_on_stop", 0, "");
 
-	uiXml.SetLocalRoot			(bk);
+	uiXml.SetLocalRoot(bk);
 
-	for(int i=0;i<items_count;++i)
+	for (int i = 0; i < items_count; ++i)
 	{
-		const char*	_tp				= uiXml.ReadAttrib("item",i,"type","");
-		bool bVideo				= 0==_stricmp(_tp,"video");
-		CUISequenceItem* pItem	= 0;
-		if (bVideo)	pItem		= new CUISequenceVideoItem(this);
-		else		pItem		= new CUISequenceSimpleItem(this);
-		m_sequencer_items.push_back(pItem);
-		pItem->Load				(&uiXml,i);
+		const char* type = uiXml.ReadAttrib("item", i, "type", "");
+		CUISequenceItem* item;
+		if (0 == _stricmp(type, "video"))
+			item = new CUISequenceVideoItem(this);
+		else
+			item = new CUISequenceSimpleItem(this);
+		m_sequencer_items.push_back(item);
+		item->Load(&uiXml, i);
 	}
 
-	Device.seqRender.Add		(this, render_prio /*-2*/);
-	
-	CUISequenceItem* pCurrItem	= GetNextItem();
-	R_ASSERT3					(pCurrItem, "no item(s) to start", tutor_name);
-	pCurrItem->Start			();
-	m_pStoredInputReceiver		= pInput->CurrentIR();
-	IR_Capture					();
+	if (UsesGlobalQueues())
+		Device.seqRender.Add(this, render_prio);
 
-
-	m_flags.set					(etsActive, true);
-	m_flags.set					(etsStoredPauseState, Device.Paused());
-	
-	if(m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
+	Starting = true;
+	m_pStoredInputReceiver = UsesGlobalQueues() ? pInput->CurrentIR() : nullptr;
+	if (OwnerLevel != nullptr)
+		OwnerLevel->Flow.ActiveInput = this;
+	CUISequenceItem* item = GetNextItem();
+	if (item == nullptr)
 	{
-		Device.Pause			(true, true, true, "tutorial_start");
-		bShowPauseString		= false;
+		Starting = false;
+		Destroy();
+		return;
+	}
+	item->Start();
+	Starting = false;
+	if (DestroyRequested)
+	{
+		Destroy();
+		return;
+	}
+	if (UsesGlobalQueues())
+		IR_Capture();
+
+	m_flags.set(etsActive, true);
+	m_flags.set(etsStoredPauseState, Device.Paused());
+
+	if (UsesGlobalQueues() && m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
+	{
+		Device.Pause(true, true, true, "tutorial_start");
+		bShowPauseString = false;
 	}
 
-	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-		Device.Pause			(false, true, false, "tutorial_start");
+	if (UsesGlobalQueues() && m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
+		Device.Pause(false, true, false, "tutorial_start");
 
 	if (m_global_sound.handle())
 		m_global_sound.play(nullptr, sm_2D);
 
-	if(m_start_lua_function.size())
+	if (m_start_lua_function.size())
 		CallFunction(m_start_lua_function);
 }
 
@@ -233,121 +261,138 @@ CUISequenceItem* CUISequencer::GetNextItem()
 	return result;
 }
 
-extern CUISequencer * g_tutorial;
-extern CUISequencer * g_tutorial2;
-
 void CUISequencer::Destroy()
 {
-	if(m_stop_lua_function.size())
+	if (Starting)
+	{
+		DestroyRequested = true;
+		if (OwnerLevel != nullptr && OwnerLevel->Flow.ActiveInput == this)
+			OwnerLevel->Flow.ActiveInput = nullptr;
+		return;
+	}
+	if (CleanupStarted)
+	{
+		return;
+	}
+	CleanupStarted = true;
+	xr_delegate<void()> onDestroy = m_on_destroy_event;
+	m_on_destroy_event.clear();
+	if (OwnerLevel != nullptr)
+	{
+		if (OwnerLevel->Flow.Intro == this)
+		{
+			OwnerLevel->Flow.Intro = nullptr;
+		}
+		if (OwnerLevel->Flow.Tutorial == this)
+		{
+			OwnerLevel->Flow.Tutorial = nullptr;
+		}
+		if (OwnerLevel->Flow.RetiringTutorial == this)
+		{
+			OwnerLevel->Flow.RetiringTutorial = nullptr;
+		}
+	}
+
+	if (m_stop_lua_function.size())
 		CallFunction(m_stop_lua_function);
 
-	m_global_sound.stop			();
-	Device.seqFrame.Remove		(this);
-	Device.seqRender.Remove		(this);
-	delete_data					(m_sequencer_items);
-	delete_data					(m_UIWindow);
-	IR_Release					();
-	m_flags.set					(etsActive, false);
-	m_pStoredInputReceiver		= nullptr;
-	
-	if(!m_on_destroy_event.empty())
-		m_on_destroy_event		();
-
-	if(g_tutorial==this)
+	m_flags.set(etsActive, false);
+	m_global_sound.stop();
+	if (UsesGlobalQueues())
 	{
-		g_tutorial = nullptr;
+		Device.seqFrame.Remove(this);
+		Device.seqRender.Remove(this);
+		IR_Release();
 	}
-	if(g_tutorial2==this)
+	delete_data(m_sequencer_items);
+	delete_data(m_UIWindow);
+	m_pStoredInputReceiver = nullptr;
+	if (OwnerLevel != nullptr && OwnerLevel->Flow.ActiveInput == this)
+		OwnerLevel->Flow.ActiveInput = nullptr;
+
+	if (onDestroy)
 	{
-		g_tutorial2 = nullptr;
+		onDestroy();
+	}
+	if (OwnerLevel != nullptr)
+	{
+		delete this;
 	}
 }
 
 void CUISequencer::Stop()
 {
-	if(m_sequencer_items.size())
-	{ 
+	if (m_sequencer_items.size())
+	{
 		if (m_flags.test(etsPlayEachItem))
 		{
-			Next				();
+			Next();
 			return;
 		}
-		else
-		{
-			CUISequenceItem* pCurrItem	= m_sequencer_items.front();
-			pCurrItem->Stop				(true);
-		}
+		m_sequencer_items.front()->Stop(true);
 	}
 
-	if (m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
-	{
+	if (UsesGlobalQueues() && m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
 		Device.Pause(false, true, true, "tutorial_stop");
-	}
 
-	if (m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-	{
+	if (UsesGlobalQueues() && m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
 		Device.Pause(true, true, false, "tutorial_stop");
-	}
 
 	if (Need3DRender())
 	{
 		CObject* current_entity = Level().CurrentEntity();
-
-		CActor* pActor = current_entity ? current_entity->cast_actor() : nullptr;
-
-		if (pActor && pActor->HudAnimator()->PdaAnimator() && pActor->HudAnimator()->PdaAnimator()->IsActive())
-		{
+		CActor* actor = current_entity ? current_entity->cast_actor() : nullptr;
+		if (actor && actor->HudAnimator()->PdaAnimator() && actor->HudAnimator()->PdaAnimator()->IsActive())
 			CurrentGameUI()->PdaMenu()->HideDialog();
-		}
 	}
 
-	Destroy			();
+	Destroy();
 }
 
 void CUISequencer::OnFrame()
-{  
-	if(!Device.b_is_Active)		return;
-	if(!IsActive() )			return;
-
-	if(!m_sequencer_items.size())
-	{
-		Stop					();
+{
+	if (!Device.b_is_Active && UsesGlobalQueues())
 		return;
-	}else
-	{
-		CUISequenceItem* pCurrItem	= m_sequencer_items.front();
-		if(!pCurrItem->IsPlaying())	
-			Next();
-	}
+	if (!IsActive())
+		return;
 
-	if(!m_sequencer_items.size())
+	if (!m_sequencer_items.size())
 	{
-		Stop					();
+		Stop();
+		return;
+	}
+	if (!m_sequencer_items.front()->IsPlaying())
+		Next();
+
+	if (!m_sequencer_items.size())
+	{
+		Stop();
 		return;
 	}
 
 	VERIFY(m_sequencer_items.front());
-	m_sequencer_items.front()->Update		();
-	m_UIWindow->Update			();
+	m_sequencer_items.front()->Update();
+	m_UIWindow->Update();
 }
 
-static u32 g_tutorial_render_frame = 0;
-void CUISequencer::OnRender	()
+bool CUISequencer::ShouldRender(bool mainMenuActive) const
 {
-	if (g_tutorial_render_frame == Device.dwFrame)
-	{
-		return;
-	}
+	return !UsesGlobalQueues() || !mainMenuActive || m_flags.test(etsOverMainMenu);
+}
 
-	g_tutorial_render_frame = Device.dwFrame;
+void CUISequencer::OnRender()
+{
+	if (!ShouldRender(MainMenu() != nullptr && MainMenu()->IsActive()))
+		return;
+	if (LastRenderFrame == Device.dwFrame)
+		return;
+	LastRenderFrame = Device.dwFrame;
 
 	if (m_UIWindow->IsShown())
-	{
 		m_UIWindow->Draw();
-	}
 
-	VERIFY(m_sequencer_items.size());
-	m_sequencer_items.front()->OnRender	();
+	if (!m_sequencer_items.empty())
+		m_sequencer_items.front()->OnRender();
 }
 
 void CUISequencer::Next		()

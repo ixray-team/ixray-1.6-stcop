@@ -7,14 +7,14 @@ end
 
 function se_actor:on_register()
 	cse_alife_creature_actor.on_register(self)
-
+	
 	SendScriptCallback("se_actor_on_register", self)
-
-	story_objects.get_story_objects_registry():register(self.id, "actor", true)
+	
+	story_objects.get_story_objects_registry():register(self.id, self:get_script_story_id() or "actor", true)
 	simulation_objects.get_sim_obj_registry():register(self)
-
+	
 	SendScriptCallback("server_entity_on_register", self, "se_actor")
-
+	
 	self.m_registred = true
 	if not self.start_position_filled then
 		sim_board.get_sim_board():fill_start_position()
@@ -33,7 +33,7 @@ end
 --------------------
 function se_actor:STATE_Write(packet)
 	SendScriptCallback("se_actor_on_STATE_Write", self, packet)
-
+	
 	cse_alife_creature_actor.STATE_Write(self, packet)
 
 --	if self.m_registred ~= true then
@@ -47,7 +47,7 @@ end
 --------------------
 function se_actor:STATE_Read(packet, size)
 	SendScriptCallback("se_actor_on_STATE_Read", self, packet, size)
-
+	
 	cse_alife_creature_actor.STATE_Read(self, packet, size)
 	-- под LevelEditor не пытаться читать из пакета ничего
 	if editor() then
@@ -67,7 +67,7 @@ end
 function se_actor:STATE_Serialize(Object)
 	Object:ForChunk("se_actor:STATE", function()
 		cse_alife_creature_actor.STATE_Serialize(self, Object)
-
+		
 		if editor() and not Object:IsSave() then
 			return
 		end
@@ -186,6 +186,8 @@ end
 function se_actor:evaluate_prior(squad)
 	return simulation_objects.evaluate_prior(self, squad)
 end
+
+
 
 
 --run_string xr_effects.teleport_squad(nil,nil,{"pri_a25_base_army_medic","pri_a16_pri_a25_medic_walk"})

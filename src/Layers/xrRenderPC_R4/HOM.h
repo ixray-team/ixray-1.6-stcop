@@ -19,6 +19,9 @@ private:
 	xr_vector<u32> invaltids;
 	xr_vector<occTri> m_pTris;
 	bool bEnabled;
+#ifdef DEBUG_DRAW
+	bool RenderRegistered = false;
+#endif
 	Fmatrix m_xform;
 	Fmatrix m_xform_01;
 #ifdef DEBUG

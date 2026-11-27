@@ -73,5 +73,5 @@ IBlender* IBlender::Create(CLASS_ID cls)
 		}
 	}
 
-	return ::RImplementation.blender_create	(cls);
+	return RImplementation.blender_create	(cls);
 }

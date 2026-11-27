@@ -83,6 +83,7 @@ CSE_Abstract::CSE_Abstract					(const char* caSection)
 	o_Position.set				(0.f,0.f,0.f);
 	m_bALifeControl				= false;
 	m_wVersion					= 0;
+	m_client_data_version		= SPAWN_VERSION;
 	m_script_version			= 0;
 	m_tClassID					= TEXT2CLSID(pSettings->r_string(caSection,"class"));
 
@@ -237,6 +238,8 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 
 
 	//client object custom data serialization SAVE
+	if (g_SpawnWriteVersion >= SPAWN_VERSION_CLIENT_DATA)
+		tNetPacket.w_u16(m_client_data_version);
 	u16 client_data_size		= (u16)client_data.size(); //не может быть больше 256 байт
 	tNetPacket.w_u16			(client_data_size);
 //	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
@@ -283,7 +286,12 @@ enum EGameTypes {
 	GAME_DUMMY							= 255	// temporary game type
 };
 
-bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
+bool CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
+{
+	return Spawn_ReadWithOptions(tNetPacket, true);
+}
+
+bool CSE_Abstract::Spawn_ReadWithOptions(NET_Packet& tNetPacket, bool PromoteRuntimeVersion)
 {
 	u16							dummy16;
 	// generic
@@ -313,7 +321,7 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 		tNetPacket.r_u16(m_wVersion);
 	}
 
-	if (m_wVersion >= SPAWN_VERSION_U32_ID)
+	if (m_wVersion >= SPAWN_VERSION_HEADER_U32_ID)
 	{
 		ID = (tNetPacket.r_u16() << 16)&0xffff0000;
 		ID |= OldType_ID;
@@ -350,6 +358,9 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	// read specific data
 
 	//client object custom data serialization LOAD
+	m_client_data_version = m_wVersion;
+	if (m_wVersion >= SPAWN_VERSION_CLIENT_DATA)
+		tNetPacket.r_u16(m_client_data_version);
 	if (m_wVersion > 70) {
 		u16 client_data_size	= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
 		if (client_data_size > 0) {
@@ -386,18 +397,37 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 		}
 	}
 
+	const u32 sizeOffset = tNetPacket.r_tell();
 	u16							size;
 	tNetPacket.r_u16			(size);	// size
 	bool b1						= (m_tClassID == CLSID_SPECTATOR);
 	bool b2						= size > sizeof(size)|| (tNetPacket.inistream != nullptr);
 	R_ASSERT3					( (b1 || b2),"cannot read object, which is not successfully saved :(",name_replace());
+	const u32 updateOffset = sizeOffset + size;
+	if (updateOffset > tNetPacket.B.data.size())
+	{
+		Msg("! Spawn state is invalid for '%s': size=%u exceeds the packet boundary", s_name.c_str(), size);
+		return false;
+	}
 	STATE_Read					(tNetPacket,size);
+	if (tNetPacket.r_tell() > updateOffset)
+	{
+		Msg("! Spawn state is invalid for '%s': size=%u, consumed=%u", s_name.c_str(), size, tNetPacket.r_tell() - sizeOffset);
+		return false;
+	}
+	if (tNetPacket.r_tell() < updateOffset && updateOffset < tNetPacket.B.data.size())
+		tNetPacket.r_seek(updateOffset);
+
+	// File wrappers may need the legacy version for their adjacent update packet.
+	if (PromoteRuntimeVersion)
+		m_wVersion = SPAWN_VERSION;
 	return						true;
 }
 
 void	CSE_Abstract::load			(NET_Packet	&tNetPacket)
 {
 	CPureServerObject::load		(tNetPacket);
+	m_client_data_version		= SPAWN_VERSION;
 	u16 client_data_size		= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
 	if (client_data_size > 0) {
 #ifdef DEBUG
@@ -493,7 +523,6 @@ bool CSE_Abstract::Spawn_Serialize(ISaveObject& Object, bool bLocal, bool Copyin
 	BEGIN_CHUNK(Object,"CSE_Abstract")
 	{
 		Object << s_name << s_name_replace << s_RP << o_Position << o_Angle << RespawnTime << ID << ID_Parent << ID_Phantom;
-
 #ifdef XRSE_FACTORY_EXPORTS
 		if (ID >= u16(-1) && ID != ALife::INVALID_OBJECT_ID)
 		{

@@ -50,7 +50,15 @@ IC	void CPathManagerTemplate::reinit			(const _Graph *graph)
 template < >
 IC	void CAbstractPathManager<IGameGraph,SGameVertex,u32,u32>::build_path	(const u32 start_vertex_id, const u32 dest_vertex_id)
 {
-	VERIFY					(m_graph && m_evaluator && m_graph->valid_vertex_id(start_vertex_id) && m_graph->valid_vertex_id(dest_vertex_id));
+	if (m_graph == nullptr || m_evaluator == nullptr || !m_graph->valid_vertex_id(start_vertex_id) || !m_graph->valid_vertex_id(dest_vertex_id))
+	{
+		m_failed = true;
+		m_actuality = false;
+		m_current_index = u32(-1);
+		m_intermediate_index = u32(-1);
+		m_path.clear();
+		return;
+	}
 
 	if ((m_failed_start_vertex_id == start_vertex_id) && (m_failed_dest_vertex_id == dest_vertex_id)) {
 		before_search		(start_vertex_id,dest_vertex_id);
@@ -81,6 +89,15 @@ IC	void CAbstractPathManager<IGameGraph,SGameVertex,u32,u32>::build_path	(const 
 template < >
 IC	void CAbstractPathManager<ILevelGraph,SBaseParameters<float,u32,u32>,u32,u32>::build_path	(const u32 start_vertex_id, const u32 dest_vertex_id)
 {
+	if (m_graph == nullptr || m_evaluator == nullptr || !m_graph->has_nodes())
+	{
+		m_failed = true;
+		m_actuality = false;
+		m_current_index = u32(-1);
+		m_intermediate_index = u32(-1);
+		m_path.clear();
+		return;
+	}
 	VERIFY					(m_graph && m_evaluator && m_graph->valid_vertex_id(start_vertex_id) && m_graph->valid_vertex_id(dest_vertex_id));
 
 	if ((m_failed_start_vertex_id == start_vertex_id) && (m_failed_dest_vertex_id == dest_vertex_id)) {
@@ -171,6 +188,13 @@ IC	_vertex_id_type CPathManagerTemplate::dest_vertex_id() const
 TEMPLATE_SPECIALIZATION
 IC	void CPathManagerTemplate::set_dest_vertex(const _vertex_id_type vertex_id)
 {
+	if (m_graph == nullptr)
+	{
+		m_actuality = false;
+		m_failed = true;
+		m_dest_vertex_id = vertex_id;
+		return;
+	}
 	VERIFY					(check_vertex(vertex_id));
 	m_actuality				= m_actuality && (dest_vertex_id() == vertex_id);
 	m_dest_vertex_id		= vertex_id;
@@ -201,7 +225,7 @@ IC	void CPathManagerTemplate::after_search					()
 TEMPLATE_SPECIALIZATION
 IC	bool CPathManagerTemplate::check_vertex					(const _vertex_id_type vertex_id) const
 {
-	return					(m_graph->valid_vertex_id(vertex_id));
+	return					(m_graph != nullptr && m_graph->valid_vertex_id(vertex_id));
 }
 
 TEMPLATE_SPECIALIZATION

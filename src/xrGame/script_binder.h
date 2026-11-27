@@ -15,6 +15,7 @@ class NET_Packet;
 class CScriptBinder {
 protected:
 	CScriptBinderObject			*m_object;
+	u8							m_object_id_size = sizeof(u32);
 
 public:
 								CScriptBinder	();
@@ -25,6 +26,7 @@ public:
 	virtual void				Load			(const char* section);
 	virtual void				reload			(const char* section);
 	virtual bool				net_Spawn		(CSE_Abstract* DC);
+			void				set_client_data_version(u16 version);
 	virtual void				net_Destroy		();
 	virtual void				shedule_Update	(u32 time_delta);
 	virtual void				save			(NET_Packet &output_packet);
@@ -36,4 +38,10 @@ public:
 	IC		CScriptBinderObject	*object			();
 };
 
+namespace ScriptBinding
+{
+	bool HasActor();
+}
+
 #include "script_binder_inline.h"
+

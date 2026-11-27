@@ -13,6 +13,8 @@ public:
 	xr_atomic_bool		m_NeedDestroy = false;
 	u32					dwLastTime = 0U;
 	int					m_iLifeTime = int_max;
+	SParticleLevelContext LevelContext = {};
+	const IGame_Level* GetOwnerLevel() const { return LevelContext.Level; }
 
 						CParticlesObject	(const char* p_name, bool bAutoRemove, bool destroy_on_game_load);
 	virtual ~CParticlesObject	() override;

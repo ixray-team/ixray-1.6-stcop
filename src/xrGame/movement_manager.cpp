@@ -15,6 +15,7 @@
 #include "level_location_selector.h"
 #include "game_path_manager.h"
 #include "level_path_manager.h"
+#include "game_level_cross_table.h"
 #include "detail_path_manager.h"
 #include "patrol_path_manager.h"
 #include "xrMessages.h"
@@ -26,7 +27,6 @@
 
 // Lain: added 
 #include "steering_behaviour.h"
-#include "Actor.h"
 
 using namespace MovementManager;
 
@@ -93,9 +93,12 @@ void CMovementManager::reinit		()
 	m_build_at_once					= false;
 
 	enable_movement					(true);
-	game_selector().reinit			(&ai().game_graph());
+	// Degraded loads may have no game graph: the game-layer path helpers take a
+	// nullable graph pointer; without one there is simply no inter-level pathing.
+	IGameGraph* gameGraph			= ai().get_game_graph();
+	game_selector().reinit			(gameGraph);
 	detail().reinit					();
-	game_path().reinit				(&ai().game_graph());
+	game_path().reinit				(gameGraph);
 	level_path().reinit				(ai().get_level_graph());
 	patrol().reinit					();
 
@@ -138,6 +141,12 @@ GameGraph::_GRAPH_ID CMovementManager::game_dest_vertex_id() const
 
 void CMovementManager::set_level_dest_vertex	(u32 const& level_vertex_id)
 {
+	if (level_vertex_id == u32(-1) || ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+	{
+		m_path_actuality = false;
+		level_path().make_inactual();
+		return;
+	}
 	VERIFY2							(restrictions().accessible(level_vertex_id),*object().cName());
 	level_path().set_dest_vertex	(level_vertex_id);
 	m_path_actuality				= m_path_actuality && level_path().actual();
@@ -159,6 +168,14 @@ const xr_vector<DetailPathManager::STravelPathPoint>	&CMovementManager::path	() 
 void CMovementManager::update_path				()
 {
 	PROF_EVENT("Build Path::update")
+
+	if (m_path_type == ePathTypeLevelPath &&
+		(ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes()))
+	{
+		m_path_state = ePathStateDummy;
+		m_path_actuality = false;
+		return;
+	}
 
 	if (!enabled() || wait_for_distributed_computation() || Level().IsWorldTeardown())
 		return;
@@ -198,15 +215,15 @@ void CMovementManager::update_path				()
 					Msg("! Invalid dest level vertex id in object: %s", *ObjName);
 #endif // !MASTER_GOLD
 
-
-					u32 VertexID = LevelGraph.vertex_id(Actor()->Position());
-
+					const u32 VertexID = LevelGraph.FindNearestVertex(object().Position());
 					if (!LevelGraph.valid_vertex_id(VertexID))
 					{
-#ifndef MASTER_GOLD
-						Msg("! ###DITRYHACK### Set dest vertex for object: %s at 1", *ObjName);
-#endif // !MASTER_GOLD
-						VertexID = 1;
+						level_path().make_inactual();
+						detail().make_inactual();
+						m_path_state = ePathStateDummy;
+						m_path_actuality = false;
+						m_build_at_once = false;
+						return;
 					}
 					level_path().set_dest_vertex(VertexID);
 				}
@@ -239,15 +256,27 @@ void CMovementManager::update_path				()
 
 	switch (m_path_type) {
 		case ePathTypeGamePath : {
-			process_game_path	();
+			// Degraded session (missing game graph / sandbox level): inter-level
+			// pathing is impossible - hold the state instead of dereferencing
+			// empty-graph vertices.
+			IGameGraph* gameGraph = ai().get_game_graph();
+			if (gameGraph != nullptr && gameGraph->header().vertex_count() != 0)
+				process_game_path	();
 			break;
 		}
 		case ePathTypeLevelPath : {
-			process_level_path	();
+			// Degraded session (missing AI-map): without level-graph nodes there
+			// is nowhere to path to.
+			const ILevelGraph* levelGraph = ai().get_level_graph();
+			if (levelGraph != nullptr && levelGraph->has_nodes())
+				process_level_path	();
 			break;
 		}
 		case ePathTypePatrolPath : {
-			process_patrol_path();
+			// Patrol paths need both storage and a level graph to resolve points.
+			const ILevelGraph* levelGraph = ai().get_level_graph();
+			if (levelGraph != nullptr && levelGraph->has_nodes())
+				process_patrol_path();
 			break;
 		}
 		case ePathTypeNoPath : {
@@ -363,6 +392,45 @@ void CMovementManager::on_restrictions_change	()
 	level_path_builder().remove		();
 	detail_path_builder().remove	();
 	level_path().on_restrictions_change	();
+}
+
+void CMovementManager::on_level_graph_change()
+{
+	const u32 destination = level_path().dest_vertex_id();
+	const u32 gameDestination = game_path().dest_vertex_id();
+	const shared_str patrolName = patrol().path_name();
+	on_restrictions_change();
+	const ILevelGraph* LevelGraph = ai().get_level_graph();
+	level_path().reinit(LevelGraph);
+	if (LevelGraph != nullptr && LevelGraph->has_nodes() && !LevelGraph->valid_vertex_id(object().ai_location().level_vertex_id()))
+	{
+		const u32 RecoveredVertex = LevelGraph->FindNearestVertex(object().Position());
+		if (LevelGraph->valid_vertex_id(RecoveredVertex))
+		{
+			object().ai_location().level_vertex(RecoveredVertex);
+			if (const IGameLevelCrossTable* CrossTable = ai().get_cross_table(); CrossTable != nullptr)
+			{
+				const GameGraph::_GRAPH_ID GameVertex = CrossTable->vertex(RecoveredVertex).game_vertex_id();
+				if (ai().game_graph().valid_vertex_id(GameVertex))
+					object().ai_location().game_vertex(GameVertex);
+			}
+		}
+	}
+	if (LevelGraph != nullptr && LevelGraph->has_nodes() && destination != u32(-1))
+		level_path().set_dest_vertex(destination);
+	patrol().reinit();
+	if (patrolName.size() != 0 && ai().get_level_graph() != nullptr)
+		patrol().set_path(ai().patrol_paths().shared_path(patrolName, true), patrolName);
+
+	IGameGraph* graph = ai().get_game_graph();
+	game_selector().reinit(graph);
+	game_path().reinit(graph);
+	if (graph != nullptr && graph->valid_vertex_id(gameDestination))
+		game_path().set_dest_vertex(gameDestination);
+	game_selector().set_dest_path(game_path().m_path);
+	m_path_actuality = false;
+	if (m_path_type == ePathTypeGamePath)
+		m_path_state = ePathStateSelectGameVertex;
 }
 
 bool CMovementManager::can_use_distributed_computations() const

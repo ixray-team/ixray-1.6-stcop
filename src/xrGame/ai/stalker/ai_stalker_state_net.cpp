@@ -160,7 +160,7 @@ void aistalker_state_net::FillState(CAI_Stalker* stalker)
 
 
 	graph_vertex_id = stalker->movement().game_dest_vertex_id();
-	if (ai().game_graph().valid_vertex_id(graph_vertex_id))
+	if (ai().get_game_graph() && ai().game_graph().valid_vertex_id(graph_vertex_id))
 	{
 		distance_lvgraph = stalker->Position().distance_to(ai().game_graph().vertex(graph_vertex_id)->level_point());
 	}

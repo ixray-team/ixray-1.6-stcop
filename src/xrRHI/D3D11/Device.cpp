@@ -604,6 +604,7 @@ bool InternalDevice11::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* D
 	Hr = DX11Device->CreateTexture2D(&DescStaging, nullptr, &Staging);
 	if (FAILED(Hr) || !Staging)
 	{
+		Msg("! RHI readback: staging creation failed 0x%08x (%ux%u, format %u, samples %u)", Hr, Desc.Width, Desc.Height, Desc.Format, Desc.SampleDesc.Count);
 		SrcTex->Release();
 		return false;
 	}
@@ -614,6 +615,7 @@ bool InternalDevice11::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* D
 	Hr = HWRenderContext->Map(Staging, 0, D3D11_MAP_READ, 0, &Mapped);
 	if (FAILED(Hr))
 	{
+		Msg("! RHI readback: Map failed 0x%08x (%ux%u, format %u)", Hr, Desc.Width, Desc.Height, Desc.Format);
 		Staging->Release();
 		SrcTex->Release();
 		return false;
@@ -621,11 +623,12 @@ bool InternalDevice11::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* D
 
 	OutWidth = Desc.Width;
 	OutHeight = Desc.Height;
-	OutRowPitch = Mapped.RowPitch;
+	OutRowPitch = Desc.Width * 4;
 
 	unsigned long long Required = (unsigned long long)OutRowPitch * (unsigned long long)OutHeight;
 	if (Required > DstSize)
 	{
+		Msg("! RHI readback: destination is too small (%u bytes provided, %llu required, pitch %u)", DstSize, Required, OutRowPitch);
 		HWRenderContext->Unmap(Staging, 0);
 		Staging->Release();
 		SrcTex->Release();

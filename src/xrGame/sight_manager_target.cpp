@@ -122,6 +122,8 @@ void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex* tpNode, bool bD
 
 void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex* tpNode, float fMaxHeadTurnAngle, bool bDifferenceLook)
 {
+	if (tpNode == nullptr || tpNode == ai().level_graph().empty_vertex())
+		return;
 	const ILevelGraph& level_graph = ai().level_graph();
 	const auto& detail = m_object->movement().detail();
 	const float body_yaw = object().movement().m_body.target.yaw;
@@ -134,14 +136,15 @@ void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex* tpNode, float f
 	if (bDifferenceLook && !detail.path().empty() && detail.path().size() - 1 > detail.curr_travel_point_index())
 	{
 		const Fvector& next_point = detail.path()[detail.curr_travel_point_index() + 1].position;
-
 		ILevelGraph::const_iterator i, e;
 		level_graph.begin(tpNode, i, e);
 		for (; i != e; ++i)
 		{
 			const u32 node_id = level_graph.value(tpNode, i);
 			if (!level_graph.valid_vertex_id(node_id))
+				continue;
 			{
+
 				continue;
 			}
 
@@ -189,13 +192,14 @@ void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex* tpNode, float f
 
 bool CSightManager::GetDirectionAngles(float& yaw, float& pitch)
 {
-	const auto& path = object().movement().path();
-	const u32 index = m_object->movement().detail().curr_travel_point_index();
-	if (path.empty() || index + 1 >= m_object->movement().detail().path().size())
+	const auto& detail = m_object->movement().detail();
+	const auto& path = detail.path();
+	if (!detail.has_next_travel_point())
 	{
 		return GetDirectionAnglesByPrevPositions(yaw, pitch);
 	}
 
+	const u32 index = detail.curr_travel_point_index();
 	Fvector().sub(path[index + 1].position, path[index].position).getHP(yaw, pitch);
 	return true;
 }

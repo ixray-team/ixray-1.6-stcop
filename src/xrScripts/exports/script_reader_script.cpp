@@ -112,6 +112,7 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_stringZ",		&r_stringZ_semi			)
 			.def("r_elapsed",		&IReader::elapsed		)
 			.def("r_advance",		&IReader::advance		)
+			.def("r_object_id",		&IReaderBase::r_object_id	)
 			.def("r_object_id",		&r_object_id		)
 			.def("r_eof",			&r_eof_semi				),
 

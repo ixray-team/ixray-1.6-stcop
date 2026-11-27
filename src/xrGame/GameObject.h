@@ -123,6 +123,7 @@ protected:
 	u32						m_spawn_time;
 public:
 	virtual bool ScriptCallbacksEnabled() const { return true; }
+	bool ScriptCallbacksEnabled(CSE_Abstract* spawn) const;
 	CGameObject();
 	virtual ~CGameObject() override;
 public:

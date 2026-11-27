@@ -10,6 +10,10 @@
 #include "alife_object_registry.h"
 #include "ai_debug.h"
 #include "../xrEngine/EngineApp.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "relation_registry.h"
+#include "Level.h"
+#include "ScriptsSubsystems/StoryID/StoryIDManager.h"
 
 CALifeObjectRegistry::CALifeObjectRegistry	(const char* section)
 {
@@ -17,11 +21,23 @@ CALifeObjectRegistry::CALifeObjectRegistry	(const char* section)
 
 CALifeObjectRegistry::~CALifeObjectRegistry	()
 {
+	const bool worldTeardown = g_pGameLevel != nullptr && Level().IsWorldTeardown();
 	OBJECT_REGISTRY::iterator const B	= m_objects.begin();
 	OBJECT_REGISTRY::iterator I			= B;
 	OBJECT_REGISTRY::iterator const E	= m_objects.end();
 	for ( ; I != E; ++I)
-		(*I).second->on_unregister	();
+	{
+		CSE_ALifeDynamicObject* object = (*I).second;
+		if (!worldTeardown)
+		{
+			object->on_unregister();
+			continue;
+		}
+		// Other entities may already be gone, so cross-object Lua cleanup is no longer valid.
+		CScriptStoryIDManager::GetInstance().Unregister(object->ID);
+		if (smart_cast<CSE_ALifeMonsterAbstract*>(object) != nullptr)
+			RELATION_REGISTRY().ClearRelations(object->ID);
+	}
 
 	for (I = B; I != E; ++I)
 		xr_delete					((*I).second);
@@ -194,7 +210,7 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	R_ASSERT2				(tpSE_Abstract,"Can't create entity.");
 	CSE_ALifeDynamicObject	*tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
 	R_ASSERT2				(tpALifeDynamicObject,"Non-ALife object in the saved game!");
-	tpALifeDynamicObject->Spawn_Read(tNetPacket);
+	tpALifeDynamicObject->Spawn_ReadWithOptions(tNetPacket, false);
 
 	// Update
 	tNetPacket.B.data.resize(file_stream.r_u16());
@@ -320,12 +336,13 @@ void CALifeObjectRegistry::Serialize(ISaveObject& Object)
 	}
 }
 
+
 void CALifeObjectRegistry::PrepareSpawnIni() const
 {
 	PROF_EVENT("ALife: parse spawn_ini");
-	const xr_vector<CSE_ALifeDynamicObject*> Objects = objects_vec();
-	xr_parallel_for(size_t(0), Objects.size(), [&Objects](size_t Index)
+	const xr_vector<CSE_ALifeDynamicObject*> objects = objects_vec();
+	xr_parallel_for(size_t(0), objects.size(), [&objects](size_t index)
 	{
-		Objects[Index]->spawn_ini();
+		objects[index]->spawn_ini();
 	});
 }

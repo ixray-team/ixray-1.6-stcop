@@ -31,7 +31,7 @@ namespace Feel
 		float AttentionAngle = 0.f, AttentionRadius = 0.f;
 		xrSRWLock					lock_query, lock_visible;
 
-		void						o_new		(CObject* E);
+		bool						o_new		(CObject* E);
 		void						o_delete	(CObject* E);
 		void						o_trace		(Fvector& P, float dt, float vis_threshold);
 	public:

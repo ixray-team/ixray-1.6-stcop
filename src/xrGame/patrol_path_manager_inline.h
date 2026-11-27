@@ -40,7 +40,7 @@ IC	bool CPatrolPathManager::failed					() const
 
 IC	const CPatrolPath *CPatrolPathManager::get_path	() const
 {
-	return					(m_path);
+	return					(m_path.get());
 }
 
 IC	bool CPatrolPathManager::completed				() const
@@ -61,9 +61,9 @@ IC	const Fvector &CPatrolPathManager::destination_position	() const
 
 IC	void CPatrolPathManager::set_path				(const CPatrolPath *path, shared_str path_name)
 {
-	if (m_path == path)
+	if (m_path.get() == path)
 		return;
-	m_path					= path;
+	m_path.reset				(path);
 	m_path_name				= path_name;
 	m_actuality				= false;
 	m_completed				= false;
@@ -95,14 +95,25 @@ IC	void CPatrolPathManager::make_inactual			()
 	m_completed				= false;
 }
 
+IC	void CPatrolPathManager::set_path				(xr_shared_ptr<const CPatrolPath> path, shared_str path_name)
+{
+	if (m_path == path)
+		return;
+	m_path = std::move(path);
+	m_path_name = path_name;
+	m_actuality = false;
+	m_completed = false;
+	reset();
+}
+
 IC	void CPatrolPathManager::set_path				(shared_str path_name)
 {
-	set_path				(ai().patrol_paths().path(path_name), path_name);
+	set_path				(ai().patrol_paths().shared_path(path_name, true), path_name);
 }
 
 IC	void CPatrolPathManager::set_path				(shared_str path_name, const EPatrolStartType patrol_start_type, const EPatrolRouteType patrol_route_type, bool random)
 {
-	set_path				(ai().patrol_paths().path(path_name), path_name);
+	set_path				(ai().patrol_paths().shared_path(path_name), path_name);
 	set_start_type			(patrol_start_type);
 	set_route_type			(patrol_route_type);
 	set_random				(random);

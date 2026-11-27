@@ -17,13 +17,13 @@
 #include "UIGameCustom.h"
 #include "ui/UICDkey.h"
 #include "object_factory.h"
+#include "../xrCore/StackTrace/StackTrace.h"
 
 // lua to cpp
 #include "ScriptsSubsystems/Condlist/script_xr_conditions.h"
 #include "ScriptsSubsystems/Condlist/script_xr_effects.h"
 #include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 
-int		g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
 
 shared_str CLevel::OpenDemoFile(const char* demo_file_name)
@@ -40,10 +40,12 @@ bool CLevel::net_Start	( const char* op_server, const char* op_client )
 {
 	PROF_EVENT("CLevel::net_Start");
 	object_factory();
+	WorldTeardown = false;
 
 	net_start_result_total				= true;
 
-	pApp->LoadBegin				();
+	if (!LevelDesc.Parallel)
+		pApp->LoadBegin				();
 
 	string64	player_name;
 	GetPlayerName_FromRegistry( player_name, sizeof(player_name) );
@@ -84,6 +86,7 @@ bool CLevel::net_Start	( const char* op_server, const char* op_client )
 		};
 	};
 	m_caServerOptions			    = op_server;
+	SetDirectConnection(UseDirectConnection());
 	//---------------------------------------------------------------------
 	if (!IsDemoPlay())
 	{
@@ -91,7 +94,7 @@ bool CLevel::net_Start	( const char* op_server, const char* op_client )
 		bool is_single = m_caServerOptions.size() != 0 ? 
 			(strstr(m_caServerOptions.c_str(), "single") != nullptr) :
 			false;
-		int save_demo = g_cl_save_demo;
+		int save_demo = DemoSave;
 		if (pdemosave != nullptr)
 		{
 			sscanf(pdemosave, "/mpdemosave=%d", &save_demo);
@@ -102,10 +105,31 @@ bool CLevel::net_Start	( const char* op_server, const char* op_client )
 		}
 	}
 	//---------------------------------------------------------------------------
-	if (!loading_save_timer_started) {
+	if (!loading_save_timer_started && !LevelDesc.Parallel) {
 		loading_save_timer.Start();
 		loading_save_timer_started = true;
 		Msg("* Game Loading Timer: Started from net_Start");
+	}
+
+	if (LevelDesc.Parallel)
+	{
+		// Parallel (viewer-driven) session: keep the stock stages, in the stock
+		// order (net_start4's queue surgery inlined), but let the owner pump them.
+		SandboxStages.clear();
+		SandboxStages.reserve(12);
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start1));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start2));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start3));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start_client1));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start_client2));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start_client3));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start_client4));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start_client5));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start_client6));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start5));
+		SandboxStages.push_back(xr_make_delegate(this, &CLevel::net_start6));
+		SandboxStageIndex = 0;
+		return net_start_result_total;
 	}
 
 	g_loading_events.push_back	(LOADING_EVENT(this,&CLevel::net_start1));
@@ -146,6 +170,8 @@ bool CLevel::net_start1				()
 			g_allow_heap_min		= false;
 			Server					= new xrGameSpyServer();
 		}
+		Server->SetDirectConnection(UseDirectConnection());
+		SetDirectConnection(UseDirectConnection());
 
 		if (xr_strcmp(p.m_alife,"alife"))
 		{
@@ -153,7 +179,7 @@ bool CLevel::net_start1				()
 
 			map_data.m_name				= game_sv_GameState::parse_level_name(m_caServerOptions);
 
-			if (!g_dedicated_server)
+			if (!g_dedicated_server && !LevelDesc.Parallel)
 				g_pGamePersistent->LoadTitle(true, map_data.m_name);
 
 			int							id = pApp->Level_ID(map_data.m_name.c_str(), l_ver.c_str(), true);
@@ -177,7 +203,7 @@ void CLevel::ConnectServer()
 {
 	PROF_EVENT("CLevel::ConnectServer");
 	GameDescriptionData game_descr;
-	if ((m_connect_server_err=Server->Connect(m_caServerOptions, game_descr))!=xrServer::ErrNoError)
+	if ((m_connect_server_err = Server->Connect(m_caServerOptions, game_descr, this)) != xrServer::ErrNoError)
 	{
 		net_start_result_total = false;
 		Msg				("! Failed to start server.");
@@ -210,8 +236,21 @@ bool CLevel::net_start2				()
 
 	if (!IsAsyncConnectStarted)
 	{
-		MainMenu()->DestroyInternal(true);
+		if (LevelDesc.Parallel)
+		{
+			GameDescriptionData game_descr;
+			if ((m_connect_server_err = Server->Connect(m_caServerOptions, game_descr, this)) != xrServer::ErrNoError)
+			{
+				net_start_result_total = false;
+				Msg("! Failed to start server.");
+				return true;
+			}
+			Server->SLS_Default();
+			map_data.m_name = Server->level_name(m_caServerOptions);
+			return true;
+		}
 
+		MainMenu()->DestroyInternal(true);
 		IsAsyncConnectDone.store(false, std::memory_order_relaxed);
 		IsAsyncConnectStarted = true;
 		AsyncConnectTask.run([this]()
@@ -310,10 +349,17 @@ bool CLevel::net_start5				()
 	PROF_EVENT("CLevel::net_start5");
 	if (net_start_result_total)
 	{
-		NET_Packet		NP;
-		NP.w_begin		(M_CLIENTREADY);
-		Game().local_player->net_Export(NP, true);
-		Send			(NP,net_flags(true,true));
+		if (game && game->local_player)
+		{
+			NET_Packet		NP;
+			NP.w_begin		(M_CLIENTREADY);
+			game->local_player->net_Export(NP, true);
+			Send			(NP,net_flags(true,true));
+		}
+		else
+		{
+			Msg("! net_start5: no local player state (degraded load), skipping M_CLIENTREADY payload");
+		}
 
 		if (OnClient() && Server)
 		{
@@ -329,7 +375,8 @@ bool CLevel::net_start6				()
 	BulletManager().Clear		();
 	BulletManager().Load		();
 
-	pApp->LoadEnd				();
+	if (!LevelDesc.Parallel)
+		pApp->LoadEnd			();
 
 	if(net_start_result_total){
 		if (strstr(Core.Params,"-$")) {
@@ -342,7 +389,14 @@ bool CLevel::net_start6				()
 	}else{
 		Msg				("! Failed to start client. Check the connection or level existance.");
 
-		if (m_connect_server_err==xrServer::ErrConnect&&!psNET_direct_connect && !g_dedicated_server) 
+		if (LevelDesc.Parallel)
+		{
+			// Parallel sessions are owned by their driver (viewer); never touch
+			// g_pGameLevel or the main menu here.
+			return true;
+		}
+
+		if (m_connect_server_err==xrServer::ErrConnect&&!UseDirectConnection() && !g_dedicated_server)
 		{
 			DEL_INSTANCE	(g_pGameLevel);
 			Console->Execute("main_menu on");
@@ -451,4 +505,45 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	}
 
 	R_ASSERT				(Load_GameSpecific_After ());
+}
+void SandboxLogStackTrace(EXCEPTION_POINTERS* ep)
+{
+	CONTEXT save = *ep->ContextRecord;
+	for (const std::string& frame : StackTrace::BuildStackTrace(ep->ContextRecord, 64))
+		Msg("! [sandbox]   %s", frame.c_str());
+	*ep->ContextRecord = save;
+	xrLogger::FlushLog();
+}
+
+static LONG LogStageCrash(EXCEPTION_POINTERS* ep, u32 stageIndex, u32 stageCount)
+{
+	Msg("! [sandbox] stage %u of %u crashed: code 0x%08lX at %p", stageIndex + 1, stageCount,
+		ep->ExceptionRecord->ExceptionCode, ep->ExceptionRecord->ExceptionAddress);
+	SandboxLogStackTrace(ep);
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+bool CLevel::PumpSandboxLoading()
+{
+	if (SandboxLoadingDone())
+		return false;
+
+	bool stageDone = false;
+	xr_delegate<bool()>& stage = SandboxStages[SandboxStageIndex];
+	const u32 stageIndex = SandboxStageIndex;
+	Msg("* [sandbox] pump stage %u of %u", stageIndex + 1, unsigned(SandboxStages.size()));
+	__try
+	{
+		stageDone = stage();
+	}
+	__except (LogStageCrash(GetExceptionInformation(), stageIndex, u32(SandboxStages.size())))
+	{
+		net_start_result_total = false;
+		SandboxStageIndex = u32(SandboxStages.size());
+		return false;
+	}
+	Msg("* [sandbox] stage %u %s", stageIndex + 1, stageDone ? "done" : "waiting");
+	if (stageDone)
+		++SandboxStageIndex;
+	return !SandboxLoadingDone();
 }

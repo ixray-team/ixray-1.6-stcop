@@ -9,22 +9,60 @@
 #pragma once
 #include "../xrScripts/script_engine.h"
 #include "../xrEngine/IGame_ObjectPool.h"
+#include "level_graph.h"
+
+namespace ai_space_detail
+{
+	class CEmptyGameGraph final : public IGameGraph
+	{
+	public:
+		CEmptyGameGraph()
+		{
+			m_header.m_version = 0;
+			m_header.m_vertex_count = 0;
+			m_header.m_edge_count = 0;
+			m_header.m_death_point_count = 0;
+			m_header.m_levels.clear();
+			m_nodes = nullptr;
+			m_edges = nullptr;
+			m_cross_tables = nullptr;
+			m_current_level_some_vertex_id = _GRAPH_ID(-1);
+			m_enabled.clear();
+			m_emptyCrossTable.m_tpaCrossTable = nullptr;
+			m_emptyCrossTable.m_tCrossTableHeader.dwNodeCount = 0;
+			m_emptyCrossTable.m_tCrossTableHeader.dwGraphPointCount = 0;
+			m_current_level_cross_table = &m_emptyCrossTable;
+		}
+		void set_current_level(u32) override {}
+
+	private:
+		IGameLevelCrossTable m_emptyCrossTable;
+	};
+}
 
 IC	IGameGraph					&CAI_Space::game_graph				() const
 {
-	VERIFY					(m_game_graph);
-	return					(*m_game_graph);
+	if (m_game_graph)
+		return					(*m_game_graph);
+
+	if (!EmptyGameGraph)
+		EmptyGameGraph.reset(new ai_space_detail::CEmptyGameGraph());
+	return *EmptyGameGraph;
 }
 
 IC	IGameGraph					*CAI_Space::get_game_graph			() const
 {
-	return					(m_game_graph);
+	return m_game_graph_enabled ? m_game_graph : nullptr;
 }
 
 IC	ILevelGraph		&CAI_Space::level_graph							() const
 {
-	VERIFY					(m_level_graph);
-	return					(*m_level_graph);
+	if (m_level_graph)
+		return					(*m_level_graph);
+
+	if (!EmptyLevelGraph)
+		EmptyLevelGraph = new CLevelGraph(CLevelGraph::EmptyTag{});
+	return *EmptyLevelGraph;
 }
 
 IC	const ILevelGraph	*CAI_Space::get_level_graph					() const
@@ -57,9 +95,11 @@ IC	const CCoverManager			&CAI_Space::cover_manager			() const
 
 IC	CScriptEngine				&CAI_Space::script_engine			() const
 {
-	VERIFY					(g_pScriptEngine);
 	VERIFY2					(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread");
-	return					(*g_pScriptEngine);
+	if (m_script_engine)
+		return *m_script_engine;
+	VERIFY(g_pScriptEngine);
+	return *g_pScriptEngine;
 }
 
 IC	const CPatrolPathStorage &CAI_Space::patrol_paths				() const
@@ -68,24 +108,28 @@ IC	const CPatrolPathStorage &CAI_Space::patrol_paths				() const
 	return					(*m_patrol_path_storage);
 }
 
+IC	CStalkerAnimationDataStorage& CAI_Space::animation_data() const
+{
+	VERIFY(AnimationData);
+	return *AnimationData;
+}
+
 IC	moving_objects &CAI_Space::moving_objects						() const
 {
 	VERIFY					(m_moving_objects);
 	return					(*m_moving_objects);
 }
 
-IC	doors::manager& CAI_Space::doors								() const
-{
-	VERIFY					(m_doors_manager);
-	return					(*m_doors_manager);
-}
-
 IC	CAI_Space &ai													()
 {
+	if (g_pGameLevel != nullptr && g_pGameLevel->Services.AI != nullptr)
+		return *g_pGameLevel->Services.AI;
 	if (!g_ai_space) {
 		g_ai_space			= new CAI_Space();
 		g_ai_space->init	();
 	}
+	if (g_pGameLevel != nullptr && !g_pGameLevel->IsParallel())
+		g_pGameLevel->Services.AI = g_ai_space;
 	return					(*g_ai_space);
 }
 

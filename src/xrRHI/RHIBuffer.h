@@ -36,6 +36,7 @@ public:
 
 	virtual bool Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresource* pData) = 0;
 	virtual void Unmap() = 0;
+	virtual bool Read(void* destination, u32 offset, u32 bytes) = 0;
 
 	virtual void UpdateSubresource(void* pData, u32 Size) = 0;
 

@@ -9,6 +9,7 @@
 #pragma once
 
 class CScriptThread;
+class CScriptEngine;
 
 class SCRIPTS_API CScriptProcess
 {
@@ -51,12 +52,13 @@ protected:
 
 protected:
 	u32								m_iterator;				// Oles: iterative update
+	CScriptEngine* Owner = nullptr;
 
 protected:
 			void					run_scripts		();
 
 public:
-									CScriptProcess	(shared_str anme, shared_str scripts);
+									CScriptProcess	(CScriptEngine& engine, shared_str anme, shared_str scripts);
 	virtual							~CScriptProcess	();
 			void					update			();
 			void					add_script		(const char*	script_name, bool string, bool reload);

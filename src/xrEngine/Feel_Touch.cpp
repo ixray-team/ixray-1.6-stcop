@@ -31,7 +31,9 @@ void Touch::feel_touch_update(Fvector& C, float R)
 
 	// Find nearest objects
 	q_nearest.reserve(feel_touch.size());
-	g_SpatialSpace->q_sphere(q_nearest, 0, ESPATIAL_TYPE::COLLIDEABLE | ESPATIAL_TYPE::SHAPE, C, R);
+	ISpatial_DB* spatial = g_pGameLevel != nullptr && g_pGameLevel->Services.Spatial != nullptr ? g_pGameLevel->Services.Spatial : g_SpatialSpace;
+	if (spatial != nullptr)
+		spatial->q_sphere(q_nearest, 0, ESPATIAL_TYPE::COLLIDEABLE | ESPATIAL_TYPE::SHAPE, C, R);
 
 	for (ISpatialShared& S : q_nearest)
 	{

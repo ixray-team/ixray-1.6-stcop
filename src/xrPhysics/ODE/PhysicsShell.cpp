@@ -56,6 +56,12 @@ CPhysicsShell*	 P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_stat
 	VERIFY( obj );
 	phys_shell_verify_object_model( *obj );
 	IKinematics* pKinematics	= obj->ObjectKinematics();
+	if (!pKinematics)
+	{
+		// No loaded model: no physics shell (degraded content must not crash).
+		Msg("! P_build_Shell: object '%s' has no kinematics, skipping physics shell", obj->ObjectName());
+		return nullptr;
+	}
 
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
 #ifdef DEBUG
@@ -325,7 +331,7 @@ bool can_create_phys_shell(string1024& reason, IPhysicsShellHolder& O)
 void StaticEnvironmentCB(bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2)
 {
 	dContact& c = contact.Native();
-	dJointID contact_joint = dJointCreateContact(0, ContactGroup, &c);
+	dJointID contact_joint = dJointCreateContact(0, ph_world->GetContactGroup(), &c);
 
 	if (bo1)
 	{
@@ -338,4 +344,4 @@ void StaticEnvironmentCB(bool& do_colide, bool bo1, CPHContact& contact, SGameMt
 		dJointAttach(contact_joint, 0, dGeomGetBody(c.geom.g2));
 	}
 	do_colide = false;
-}
+}

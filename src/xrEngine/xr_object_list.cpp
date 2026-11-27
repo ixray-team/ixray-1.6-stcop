@@ -21,8 +21,8 @@ public:
 	bool debug_destroy = true;
 #endif
 
-CObjectList::CObjectList() :
-	m_owner_thread_id(std::this_thread::get_id())
+CObjectList::CObjectList(IGame_Level* owner) :
+	OwnerLevel(owner), m_owner_thread_id(std::this_thread::get_id())
 {
 	map_NETID.resize(0xffff + 1, nullptr);
 }
@@ -303,10 +303,10 @@ void CObjectList::Update		(bool bForce)
 		}
 
 		// Destroy
-		for (int it = (int)destroy_queue.size()-1; it>=0; it--)
+		while (!destroy_queue.empty())
 		{
-			CObject*		O	= destroy_queue[it];
-//			Msg				("Object [%x]", O);
+			CObject* O = destroy_queue.back();
+			destroy_queue.pop_back();
 #ifdef DEBUG
 			if( debug_destroy )
 				Msg			("Destroying object[%x][%x] [%d][%s] frame[%d]",dynamic_cast<void*>(O), O, O->ID(),*O->cName(), Device.dwFrame);
@@ -314,7 +314,6 @@ void CObjectList::Update		(bool bForce)
 			O->net_Destroy	( );
 			Destroy			(O);
 		}
-		destroy_queue.clear	();
 	}
 }
 
@@ -471,10 +470,25 @@ void CObjectList::Unload	( )
 	}
 }
 
+bool CObjectList::RegisterExternal(CObject& object)
+{
+	if (std::find(objects_sleeping.begin(), objects_sleeping.end(), &object) != objects_sleeping.end() ||
+		std::find(objects_active.begin(), objects_active.end(), &object) != objects_active.end())
+		return false;
+	object.OwnerLevel = OwnerLevel != nullptr ? OwnerLevel : g_pGameLevel;
+	if (object.OwnerLevel != nullptr && object.OwnerLevel->Services.Spatial != nullptr)
+		object.SpatialComponent->space = object.OwnerLevel->Services.Spatial;
+	objects_sleeping.push_back(&object);
+	return true;
+}
+
 CObject*	CObjectList::Create				( const char*	name	)
 {
 	CObject*	O				= g_pGamePersistent->ObjectPool.create(name);
 //	Msg("CObjectList::Create [%x]%s", O, name);
+	O->OwnerLevel = OwnerLevel != nullptr ? OwnerLevel : g_pGameLevel;
+	if (O->OwnerLevel != nullptr && O->OwnerLevel->Services.Spatial != nullptr)
+		O->SpatialComponent->space = O->OwnerLevel->Services.Spatial;
 	objects_sleeping.push_back	(O);
 	return						O;
 }
@@ -482,6 +496,7 @@ CObject*	CObjectList::Create				( const char*	name	)
 void		CObjectList::Destroy			( CObject*	O		)
 {
 	if (0==O)								return;
+	std::erase(destroy_queue, O);
 	net_Unregister							(O);
 
 	if ( !Device.Paused() ) {

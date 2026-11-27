@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "ImUtils.h"
+#include "Viewer/ViewerSession.h"
 #include "../xrEngine/xr_input.h"
 #include "../Weapon.h"
 
@@ -180,6 +181,8 @@ void RegisterImGuiInGame()
 		GImGUIManager->Windows().Subscribe("Demo Record", ImGuiPriority::Medium, RenderDemoRecordEditorWindow);
 		GImGUIManager->Windows().Subscribe("Camera Rig", ImGuiPriority::Medium, RenderCameraRigEditor);
 		GImGUIManager->Windows().Subscribe("Weapon Customize", ImGuiPriority::Medium, RenderWeaponCustomizeWindow);
+		GImGUIManager->Windows().Subscribe("Level Viewer", ImGuiPriority::Medium, ImUtils::Viewer::RenderViewerWindow);
+		ImUtils::Viewer::RegisterViewerConsoleCommand();
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();

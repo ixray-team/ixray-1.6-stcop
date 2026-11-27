@@ -234,7 +234,7 @@ protected:
 
 			if(dJointGetType(joint)==dJointTypeContact)
 			{
-				dJointSetFeedback(joint,ContactFeedBacks.add());
+				dJointSetFeedback(joint,ph_world->ContactFeedbacks.add());
 			}
 		}
 	}

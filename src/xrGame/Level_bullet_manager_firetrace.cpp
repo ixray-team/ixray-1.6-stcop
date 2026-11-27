@@ -260,7 +260,6 @@ void CBulletManager::StaticObjectHit	(CBulletManager::_event& E)
 	FireShotmark(&E.bullet, E.bullet.dir,	E.point, E.R, E.tgt_material, E.normal);
 }
 
-static bool g_clear = false;
 void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
 	PROF_EVENT(__FUNCTION__);
@@ -279,7 +278,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 		return;
 	}
 
-	if (g_clear)
+	if (ClearDynamicObjectHit)
 	{
 		E.Repeated = false;
 	}

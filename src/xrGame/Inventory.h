@@ -46,6 +46,7 @@ public:
 	//if just_before_destroy is true, then activate will be forced (because deactivate message will not deliver)
 	bool DropItem(CGameObject* pObj, bool just_before_destroy, bool dont_create_shell);
 	void Clear();
+	void DetachItemOnDestroy(PIItem item);
 
 	IC u16 FirstSlot() const { return KNIFE_SLOT; }
 	IC u16 LastSlot() const { return m_last_slot; } // not "end"

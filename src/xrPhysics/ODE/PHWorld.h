@@ -1,6 +1,8 @@
 #pragma once
 #include "Physics.h"
 #include "PHUpdateObject.h"
+#include "BlockAllocator.h"
+#include "PHContactBodyEffector.h"
 #include "IPHWorld.h"
 #include "physics_scripted.h"
 #include "../../xrEngine/pure.h"
@@ -9,6 +11,7 @@ struct	SGameMtlPair;
 struct	SPHNetState;
 class	CPHSynchronize;
 typedef  xr_vector<std::pair<CPHSynchronize*,SPHNetState> > V_PH_WORLD_STATE;
+XRPHYSICS_API void CleanupPhysicsGeometryClasses();
 class CPHMesh {
 	dGeomID Geom;
 public:
@@ -49,6 +52,12 @@ class CPHWorld	:	public	pureFrame,
 	PH_UPDATE_OBJECT_STORAGE	m_freezed_update_objects;
 	dGeomID						m_motion_ray;
 
+public:
+	dJointGroupID				ContactGroup = nullptr;
+	CBlockAllocator<dJointFeedback, 128> ContactFeedbacks;
+	CBlockAllocator<CPHContactBodyEffector, 128> ContactEffectors;
+
+private:
 	IPHWorldUpdateCallbck*	m_update_callback;
 	CObjectSpace*			m_object_space;
 	CObjectList*			m_level_objects;
@@ -89,6 +98,7 @@ IC  virtual	float						Gravity							() override {return m_gravity;}
 	void						RemoveUpdateObject				(CPHUpdateObject* i)		;
 	dGeomID						GetMeshGeom						()							{return Mesh.GetGeom();}
 IC	dGeomID						GetMotionRayGeom				()							{return m_motion_ray;}
+	dJointGroupID				GetContactGroup					() const						{ return ContactGroup; }
 	virtual	void						SetStep							( float s ) override;
 	void						Destroy							()							;
 IC	float						FrameTime						(bool frame_mark){return b_frame_mark==frame_mark ? m_frame_time :m_previous_frame_time;}
@@ -131,8 +141,33 @@ private:
 	{ VERIFY( cb ); m_update_callback	= cb; }
 };
 
-extern CPHWorld	*ph_world					;
+namespace PHWorldDetail
+{
+	class CFrozenWorldScope
+	{
+		CPHWorld* World = nullptr;
+		bool WasFrozen = false;
+
+	public:
+		explicit CFrozenWorldScope(CPHWorld* world) : World(world)
+		{
+			if (World != nullptr && World->IsFreezed())
+			{
+				WasFrozen = true;
+				World->UnFreeze();
+			}
+		}
+
+		~CFrozenWorldScope()
+		{
+			if (WasFrozen && World->Exist())
+				World->Freeze();
+		}
+	};
+}
+
+extern XRPHYSICS_API CPHWorld	*ph_world					;
 IC CPHWorld&	inl_ph_world		()
 {
 	return *ph_world;
-}
+}

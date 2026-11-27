@@ -13,6 +13,7 @@
 #include "script_binder.h"
 #include "xrServer_Objects_ALife.h"
 #include "script_binder_object.h"
+#include "../xrEngine/IGame_Level.h"
 #include "script_game_object.h"
 #include "GameObject.h"
 #include "Level.h"
@@ -31,6 +32,22 @@ CScriptBinder::~CScriptBinder		()
 void CScriptBinder::init			()
 {
 	m_object				= 0;
+}
+
+namespace ScriptBinding
+{
+bool HasActor()
+{
+	if (g_pScriptEngine == nullptr)
+		return false;
+
+	const luabind::object db = luabind::get_globals(g_pScriptEngine->lua())["db"];
+	if (!db.is_valid() || db.type() == LUA_TNIL)
+		return false;
+
+	const luabind::object actor = db["actor"];
+	return actor.is_valid() && actor.type() != LUA_TNIL;
+}
 }
 
 void CScriptBinder::clear			()
@@ -66,6 +83,15 @@ void CScriptBinder::reload(const char* section)
 
 	VERIFY(!m_object);
 	if (!pSettings->line_exist(section, "script_binding"))
+	{
+		return;
+	}
+
+	// Levels without the LevelScripts resource (sandbox/viewer degraded
+	// sessions) run scriptless on purpose: attaching a binder would execute
+	// alife-dependent game scripts on the shared Lua state and error out
+	// (or, parallel to a running game, collide with its script globals).
+	if (g_pGameLevel != nullptr && !g_pGameLevel->HasLevelResource(ELevelResource::LevelScripts))
 	{
 		return;
 	}
@@ -110,6 +136,11 @@ void CScriptBinder::reload(const char* section)
 	}
 }
 
+void CScriptBinder::set_client_data_version(u16 version)
+{
+	m_object_id_size = u8(version < SPAWN_VERSION_SCRIPT_U32_ID ? sizeof(u16) : sizeof(u32));
+}
+
 bool CScriptBinder::net_Spawn(CSE_Abstract* DC)
 {
 	PROF_EVENT("CScriptBinder::net_Spawn");
@@ -124,6 +155,8 @@ bool CScriptBinder::net_Spawn(CSE_Abstract* DC)
 		}
 		catch (...)
 		{
+			if (object->s_name == "smart_terrain")
+				Msg("! SMART_TERRAIN native binder threw: id=%u", object->ID);
 			clear();
 		}
 	}
@@ -195,6 +228,7 @@ void CScriptBinder::save			(NET_Packet &output_packet)
 void CScriptBinder::load			(IReader &input_packet)
 {
 	PROF_EVENT("CScriptBinder::load")
+	input_packet.set_script_object_id_size(m_object_id_size);
 	if (m_object) {
 		try {
 			m_object->load	(&input_packet);

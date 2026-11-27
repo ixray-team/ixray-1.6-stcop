@@ -32,7 +32,6 @@ const char*		GameTypeToString		(EGameIDs gt, bool bShort);
 const char*		AddHyphens				(const char* c);
 const char*		DelHyphens				(const char* c);
 
-extern	float	g_cl_lvInterp;
 extern	int		g_cl_InterpolationType; //0 - Linear, 1 - BSpline, 2 - HSpline
 extern	u32		g_cl_InterpolationMaxPoints;
 extern string64	gsCDKey;
@@ -2221,6 +2220,35 @@ public:
 
 
 
+class CCC_NetInterpolation : public IConsole_Command
+{
+public:
+	CCC_NetInterpolation(const char* name) : IConsole_Command(name) {}
+	void Save(IWriter*) override {}
+	void Execute(const char* args) override
+	{
+		float value = 0.f;
+		if (sscanf(args, "%f", &value) != 1 || g_pGameLevel == nullptr)
+		{
+			Msg("! net_cl_interpolation requires an active level and a value in [-1, 1]");
+			return;
+		}
+		clamp(value, -1.f, 1.f);
+		((CLevel*)g_pGameLevel)->Interpolation = value;
+	}
+	void Status(TStatus& status) override
+	{
+		if (g_pGameLevel != nullptr)
+			xr_sprintf(status, "%.3f", ((CLevel*)g_pGameLevel)->Interpolation);
+		else
+			xr_strcpy(status, "0.1");
+	}
+	void Info(TInfo& info) override
+	{
+		xr_strcpy(info, sizeof(info), "interpolation interval for the current level, from -1 to 1");
+	}
+};
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_SpawnOnPosition, "spawn_on_position");
@@ -2234,7 +2262,7 @@ void register_mp_console_commands()
 	CMD1(CCC_Kill,					"g_kill"				);
 
 	// Net Interpolation
-	CMD4(CCC_Float,					"net_cl_interpolation",		&g_cl_lvInterp,				-1,1);
+	CMD1(CCC_NetInterpolation, "net_cl_interpolation");
 	CMD4(CCC_Integer,				"net_cl_icurvetype",		&g_cl_InterpolationType,	0, 2)	;
 	CMD4(CCC_Integer,				"net_cl_icurvesize",		(int*)&g_cl_InterpolationMaxPoints,	0, 2000)	;
 	

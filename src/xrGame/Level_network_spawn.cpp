@@ -17,6 +17,7 @@
 #include "alife_object_registry.h"
 #include "alife_simulator.h"
 #include "GameObject.h"
+#include "RemoteSmartZone.h"
 
 extern ENGINE_API bool g_appLoaded;
 
@@ -145,8 +146,12 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 	R_ASSERT2(E, *s_name);
 
 
-	E->Spawn_Read		(P);
-	if (E->s_flags.is(M_SPAWN_UPDATE))
+	if (!E->Spawn_Read(P))
+	{
+		F_entity_Destroy(E);
+		return;
+	}
+	if (E->s_flags.is(M_SPAWN_UPDATE) && P.r_tell() < P.B.data.size())
 		E->UPDATE_Read	(P);
 
 	if (!E->match_configuration())
@@ -158,13 +163,13 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 //.	Msg ("M_SPAWN - %s[%d][%x] - %d %d", *s_name,  E->ID, E,E->ID_Parent, Device.dwFrame);
 //-------------------------------------------------
 	//force object to be local for server client
-	if (OnServer())		{
+	if (OnServer() || (LevelDesc.RemoteTransport && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))) {
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
 	};
 
 	/*
 	game_spawn_queue.push_back(E);
-	if (g_bDebugEvents)		ProcessGameSpawns();
+	if (DebugEvents)		ProcessGameSpawns();
 	/*/
 	g_sv_Spawn					(E);
 
@@ -204,13 +209,13 @@ void CLevel::local_Process_Spawn(NET_Packet& P)
 	//.	Msg ("M_SPAWN - %s[%d][%x] - %d %d", *s_name,  E->ID, E,E->ID_Parent, Device.dwFrame);
 	//-------------------------------------------------
 	//force object to be local for server client
-	if (OnServer())		{
+	if (OnServer() || (LevelDesc.RemoteTransport && E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))) {
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 	};
 
 	/*
 	game_spawn_queue.push_back(E);
-	if (g_bDebugEvents)		ProcessGameSpawns();
+	if (DebugEvents)		ProcessGameSpawns();
 	/*/
 	g_sv_Spawn					(E);
 
@@ -271,6 +276,28 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	if	(GameID()	== eGameIDSingle)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,true);
 	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,false);
 
+	if (LevelDesc.RemoteTransport && Server == nullptr && E->s_name == "actor")
+	{
+		const xrClientData* localClient = RemoteServerEndpoint() != nullptr ? RemoteServerEndpoint()->ID_to_client(RemoteClientID) : nullptr;
+		const bool isLocalPlayer = localClient != nullptr && localClient->owner != nullptr && localClient->owner->ID == E->ID;
+		E->s_flags.set(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER, isLocalPlayer);
+	}
+
+	// A parallel (viewer) session must never spawn an object outside its own
+	// bounds: the shared in-proc net layer can misroute a foreign (e.g. the
+	// primary session's) spawn event into this level's queue, and spawning it
+	// here would corrupt this session's physics/AI state.
+	if (LevelDesc.Parallel)
+	{
+		Fbox box = ObjectSpace.GetBoundingVolume();
+		box.grow(5.f); // small margin: exact-boundary spawns are legal
+		if (!box.contains(E->o_Position))
+		{
+			Msg("! [sandbox] dropping misrouted spawn '%s' at [%.1f %.1f %.1f] (outside this level's bounds)", *E->s_name, E->o_Position.x, E->o_Position.y, E->o_Position.z);
+			return;
+		}
+	}
+
 	// Client spawn
 //	T.Start		();
 	CObject*	O		= Objects.Create	(*E->s_name);
@@ -286,12 +313,14 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	{
 		if (O)
 		{
+			O->setDestroy(true);
 			O->net_Destroy			( );
 			if(!g_dedicated_server)
 				client_spawn_manager().clear(O->ID());
 			Objects.Destroy			(O);
 		}
 		Msg						("! Failed to spawn entity '%s'",*E->s_name);
+		return;
 	} else {
 		if(!g_dedicated_server)
 			client_spawn_manager().callback(O);
@@ -365,10 +394,29 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	O->net_AfterSpawn(E);
 }
 
+CSE_ALifeSmartZone* CLevel::RemoteSmartZoneProxy(CSE_ALifeSmartZone* object, CLevel* serverLevel)
+{
+	if (object == nullptr || serverLevel == nullptr || serverLevel == this)
+		return object;
+	xr_unique_ptr<CRemoteSmartZone>& proxy = RemoteSmartZones[object->ID];
+	if (proxy == nullptr)
+	{
+		xr_unique_ptr<CRemoteSmartZone> candidate = xr_make_unique<CRemoteSmartZone>();
+		if (!candidate->Initialize(object, serverLevel))
+			return nullptr;
+		proxy = std::move(candidate);
+	}
+	return proxy.get();
+}
+
 CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id, bool return_item)
 {
 	CSE_Abstract			*abstract = F_entity_Create(section);
-	R_ASSERT3				(abstract,"Cannot find item with section",section);
+	if (abstract == nullptr)
+	{
+		Msg("! CLevel::spawn_item: cannot create section '%s'", section != nullptr ? section : "<null>");
+		return nullptr;
+	}
 	CSE_ALifeDynamicObject	*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(abstract);
 	if (dynamic_object && ai().get_level_graph()) {
 		dynamic_object->m_tNodeID	= level_vertex_id;

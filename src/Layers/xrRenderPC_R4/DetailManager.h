@@ -11,6 +11,7 @@
 #include "RenderAPI.h"
 
 class CCustomObject;
+class IGame_Level;
 typedef u32	ObjClassID;
 
 typedef xr_list<CCustomObject*> 		ObjectList;
@@ -120,6 +121,7 @@ public:
 	using DetailIt = xr_vector<CDetail*>::iterator;
 	xr_vector<CDetail*> objects;
 	CDB::COLLIDER xrc;
+	IGame_Level* LevelContext = nullptr;
 
     xr_vector<xr_vector<SlideSlot>> slide_window;
     xr_vector<xr_vector<Slot*>>		cache;

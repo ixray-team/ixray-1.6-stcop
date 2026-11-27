@@ -5,6 +5,8 @@
 #include "SVGTypes.h"
 
 struct SDL_Window;
+class IRHIRenderTargetView;
+class IRHIShaderResourceView;
 
 struct UIIconLighting
 {
@@ -75,6 +77,15 @@ public:
 	virtual void	SetupDefaultTarget() = 0;
 	virtual void InvalidateRenderCache() {}
 	virtual UIIconLighting* GetUIIconLighting() { return nullptr; }
+	// Renders the current frame's final scene color (post-combine, with gamma)
+	// into the given target. Viewer/parallel passes use it to lift their frame
+	// before the primary pass and UI overwrite the backbuffer. It only READS the
+	// pipeline's frame - it never redirects a pipeline target.
+	virtual void	CopyFinalSceneTo(IRHIRenderTargetView* destination) { }
+	// The pure scene texture of the current frame (post-combine, pre-UI), or
+	// null. Viewer/parallel passes sample it read-only - the menu/console UI
+	// renders into the LUT target, not into this texture.
+	virtual IRHIShaderResourceView*	GetFinalSceneTexture() { return nullptr; }
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;

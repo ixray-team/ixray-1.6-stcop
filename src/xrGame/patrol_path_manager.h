@@ -31,7 +31,7 @@ private:
 	typedef CScriptCallbackEx<bool>	CExtrapolateCallback;
 
 private:
-	const CPatrolPath				*m_path;
+	xr_shared_ptr<const CPatrolPath>	m_path;
 	shared_str						m_path_name;
 	EPatrolStartType				m_start_type;
 	EPatrolRouteType				m_route_type;
@@ -61,6 +61,7 @@ public:
 	IC			void				make_inactual			();
 	IC			const CPatrolPath	*get_path				() const;
 	IC			void				set_path				(const CPatrolPath *path, shared_str path_name);
+	IC			void				set_path				(xr_shared_ptr<const CPatrolPath> path, shared_str path_name);
 	IC			void				set_path				(shared_str path_name);
 	IC			void				set_path				(shared_str path_name, const EPatrolStartType patrol_start_type = ePatrolStartTypeNearest, const EPatrolRouteType patrol_route_type = ePatrolRouteTypeContinue, bool random = true);
 	IC			void				set_start_type			(const EPatrolStartType patrol_start_type);

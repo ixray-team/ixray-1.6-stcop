@@ -152,6 +152,9 @@ protected:
 	xrCriticalSection m_Lock;
 
 	BulletVec m_Bullets; // working set, locked
+	xr_vector<SBullet*> VisibleTracers;
+	xr_vector<std::pair<Fvector, Fvector>> DebugTrajectoryLines;
+	bool ClearDynamicObjectHit = false;
 	xr_vector<SBullet*> m_Bullets_Tracers;
 	xr_vector<_event> m_Events;
 

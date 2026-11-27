@@ -24,7 +24,7 @@ extern ENGINE_API float psHUD_FOV;
 bool IsFpsShow = false;
 
 bool g_bLoaded = false;
-ref_light precache_light = 0;
+ENGINE_API ref_light precache_light = 0;
 
 bool CRenderDevice::Begin()
 {
@@ -234,6 +234,8 @@ void CRenderDevice::on_idle		()
 			GActorInterface->UpdatePlayerHud();
 		}
 
+		// The worker callbacks synchronize with each session-loading stage;
+		// the primary game continues its normal threaded update between stages.
 		PreRenderThread.Run();
 		FrameMove();
 	}
@@ -309,8 +311,23 @@ void CRenderDevice::CalculateTransforms()
 		m_pRender->SetCacheXform(mView, mProject);
 	}
 
-	mInvFullTransform.invert44(mFullTransform);
-	mInv3x4FullTransform.invert(mFullTransform);
+	// A degenerate projection or view (e.g. a freshly-spawned entity driving the
+	// camera before its projection is initialized on a procedural level) makes the
+	// full transform singular, and _matrix::invert asserts on that. Skip the inverse
+	// for that frame instead of crashing; the matrices recover on the next valid frame.
+	const float det3 = mFullTransform._11 * (mFullTransform._22 * mFullTransform._33 - mFullTransform._23 * mFullTransform._32)
+		- mFullTransform._12 * (mFullTransform._21 * mFullTransform._33 - mFullTransform._23 * mFullTransform._31)
+		+ mFullTransform._13 * (mFullTransform._21 * mFullTransform._32 - mFullTransform._22 * mFullTransform._31);
+	if (_valid(mFullTransform) && std::abs(det3) > 1e-20f)
+	{
+		mInvFullTransform.invert44(mFullTransform);
+		mInv3x4FullTransform.invert(mFullTransform);
+	}
+	else
+	{
+		mInvFullTransform.identity();
+		mInv3x4FullTransform.identity();
+	}
 
 	mView_hud_old			= mView_hud;
 	mProject_hud_old		= mProject_hud;
@@ -708,7 +725,14 @@ void CLoadScreenRenderer::stop()
 	b_need_user_input				= false;
 }
 
-void CLoadScreenRenderer::OnRender() 
+bool CLoadScreenRenderer::ShouldRender(bool mainMenuActive) const
 {
-	pApp->load_draw_internal();
+	return b_registered && !mainMenuActive;
+}
+
+void CLoadScreenRenderer::OnRender()
+{
+	const bool mainMenuActive = g_pGamePersistent != nullptr && g_pGamePersistent->m_pMainMenu != nullptr && g_pGamePersistent->m_pMainMenu->IsActive();
+	if (ShouldRender(mainMenuActive))
+		pApp->load_draw_internal();
 }

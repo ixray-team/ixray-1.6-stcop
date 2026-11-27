@@ -4,6 +4,7 @@
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "FBasicVisual.h"
+#include "FVisual.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
 
@@ -17,6 +18,7 @@
 #include "SkeletonCustom.h"
 #include "EditorRenderHost.h"
 #include "../../xrEngine/IGame_Actor.h"
+#include "../../xrEngine/IGame_UICustom.h"
 #include "r1_LightPPA.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
@@ -48,11 +50,15 @@ void CRender::render_main	(bool deffered, bool zfill)
 	}
 
 //	Msg						("---begin");
+	if (deffered && phase == PHASE_NORMAL)
+		RuntimeTerrainDrawCalls = 0;
 	marker					++;
 	bool dont_test_sectors = Sectors.size() <= 1;
 
-	// Calculate sector(s) and their objects
-	if (pLastSector)		
+	// A level without a sector structure (procedural/sandbox levels carry no
+	// scene hierarchy) still renders its dynamic objects: run the traversal when
+	// the camera has a sector, or when there are no sectors at all.
+	if (pLastSector || Sectors.empty())
 	{
 		//!!!
 		//!!! BECAUSE OF PARALLEL HOM RENDERING TRY TO DELAY ACCESS TO HOM AS MUCH AS POSSIBLE
@@ -102,7 +108,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		{
 			Fmatrix m_project;
 			m_project.build_projection(
-				deg2rad(Device.fFOV/* *Device.fASPECT*/), 
+				deg2rad(Device.fFOV/* *Device.fASPECT*/),
 				Device.fASPECT, Device.fViewportNear,
 				ps_r2_zfill * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 			mftrans.mul(m_project,Device.mView);
@@ -110,9 +116,9 @@ void CRender::render_main	(bool deffered, bool zfill)
 		else
 			mftrans = Device.mFullTransform;
 		// Traverse sector/portal structure
-		if (!dont_test_sectors)
+		if (pLastSector && !dont_test_sectors)
 		{
-			PortalTraverser.traverse	
+			PortalTraverser.traverse
 				(
 				pLastSector,
 				ViewBase,
@@ -136,9 +142,13 @@ void CRender::render_main	(bool deffered, bool zfill)
 			if (dont_test_sectors)
 			{
 				PROF_EVENT("add_static: non sector")
-				CSector* sector = (CSector*)Sectors[0];
-				set_Frustum(&ViewBase);
-				add_Geometry(sector->root());
+				// A sectorless level (sandbox) has no static hierarchy at all.
+				if (!Sectors.empty())
+				{
+					CSector* sector = (CSector*)Sectors[0];
+					set_Frustum(&ViewBase);
+					add_Geometry(sector->root());
+				}
 			}
 			else
 			{
@@ -158,7 +168,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 						dxRender_Visual* root = sector->root();
 						g_StaticTraversalStats.BeginSector(sector);
 
-						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) 
+						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 						{
 							set_Frustum(&(sector->r_frustums[v_it]));
 							add_Geometry(root);
@@ -176,7 +186,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		SkeletonUpdates.Wait();
 		RenderMainDynamic();
 
-		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
+		if (g_pGameLevel && (!g_pGameLevel->IsParallel() || (g_hud != nullptr && g_pGameLevel->CurrentViewEntity() != nullptr)) && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
 		{
 			PROF_EVENT("Render HUD");
 			g_hud->Render_Last();		// HUD
@@ -185,7 +195,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 	else
 	{
 		set_Object(0);
-		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase == PHASE_NORMAL))
+		if (g_pGameLevel && (!g_pGameLevel->IsParallel() || (g_hud != nullptr && g_pGameLevel->CurrentViewEntity() != nullptr)) && psDeviceFlags.test(rsDrawDynamic) && (phase == PHASE_NORMAL))
 		{
 			PROF_EVENT("Render HUD");
 			g_hud->Render_Last();		// HUD
@@ -328,11 +338,61 @@ void CRender::RenderMainDynamic()
 			Item.Skeleton->CalculateWallmarks();
 		}
 
-		// Rendering
+		if (WireframeObjectId == RenderWireframeStatic || (WireframeMode == 2 && WireframeObjectId == RenderWireframeTerrain))
+			continue;
+
+		const CObject* object = Item.Renderable->dcast_CObject();
+		const bool selected = WireframeObjectId == RenderWireframeAll || (object != nullptr && object->ID() == WireframeObjectId);
+		if (WireframeMode == 2 && !selected)
+			continue;
+
 		set_Object(Item.Renderable);
-		Item.Renderable->renderable_Render();
+		if (WireframeMode == 1 || WireframeObjectId == RenderWireframeAll)
+			Item.Renderable->renderable_Render();
+		if (WireframeMode != 0 && selected && WireframeObjectId != RenderWireframeAll && Item.Renderable->renderable.visual != nullptr)
+		{
+			GRHI->StateManager->OverrideFillMode(true, D3DFILL_WIREFRAME);
+			Models->RenderSingle((dxRender_Visual*)Item.Renderable->renderable.visual, Item.Renderable->renderable.xform, 1.f);
+			GRHI->StateManager->OverrideFillMode(false, D3DFILL_SOLID);
+		}
 		set_Object(0);
 	}
+}
+
+void CRender::RenderSceneGraphWireframe()
+{
+	if (WireframeMode == 0)
+	{
+		r_dsgraph_render_graph(0);
+		return;
+	}
+	if (WireframeObjectId == RenderWireframeTerrain)
+	{
+		if (WireframeMode == 1)
+			r_dsgraph_render_graph(0);
+		if (RuntimeTerrainVisual != nullptr)
+		{
+			GRHI->StateManager->OverrideFillMode(true, D3DFILL_WIREFRAME);
+			Models->RenderSingle(RuntimeTerrainVisual, Fidentity, 1.f);
+			GRHI->StateManager->OverrideFillMode(false, D3DFILL_SOLID);
+		}
+		return;
+	}
+	if (WireframeObjectId != RenderWireframeAll && WireframeObjectId != RenderWireframeStatic)
+	{
+		if (WireframeMode == 1)
+			r_dsgraph_render_graph(0);
+		return;
+	}
+	if (WireframeMode == 2)
+		GRHI->StateManager->OverrideFillMode(true, D3DFILL_WIREFRAME);
+	r_dsgraph_render_graph(0);
+	if (WireframeMode == 1)
+	{
+		GRHI->StateManager->OverrideFillMode(true, D3DFILL_WIREFRAME);
+		r_dsgraph_render_graph(0);
+	}
+	GRHI->StateManager->OverrideFillMode(false, D3DFILL_SOLID);
 }
 
 void CRender::render_menu() {
@@ -452,7 +512,8 @@ void CRender::Render()
 	{
 		bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
-		if (_menu_pp)
+		// A parallel (viewer) session renders its scene, not the menu.
+		if (_menu_pp && !(g_pGameLevel && g_pGameLevel->IsParallel()))
 		{
 			render_menu();
 			return;
@@ -460,7 +521,12 @@ void CRender::Render()
 
 		IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
 		bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
-		bMenu |= !(g_pGameLevel && g_hud);
+
+		// A parallel scene is rendered even when its HUD resource is disabled.
+		if (g_pGameLevel && g_pGameLevel->IsParallel())
+			bMenu = false;
+		else
+			bMenu |= !(g_pGameLevel && g_hud);
 
 		if (bMenu)
 		{
@@ -469,7 +535,12 @@ void CRender::Render()
 		}
 	}
 
-	if(m_bFirstFrameAfterReset)
+	// A scene without a sun light (procedural/sandbox levels) gets the default
+	// down-facing sun: the deferred pipeline dereferences sun_adapted freely.
+	if (RImplementation.Lights.sun_adapted._get() == nullptr)
+		RImplementation.Lights.LoadEditor();
+
+	if (m_bFirstFrameAfterReset)
 	{
 		xrRender_apply_tf();
 		m_bFirstFrameAfterReset = false;
@@ -510,7 +581,7 @@ void CRender::Render()
 		render_reflections();
 	}
 
-	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
+	if(!IsSecondaryScene && (ps_r_scale_mode > 1 || ps_r2_aa_type == 3))
 	{
 		int32_t jitterPhaseCount = ffxFsr3UpscalerGetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr3UpscalerGetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
@@ -574,7 +645,7 @@ void CRender::Render()
 		HOM.Enable();
 		HOM.Render(ViewBase);
 	}
-	
+
 	//******* Z-prefill calc - DEFERRER RENDERER
 	{
 		GPU_EVENT(DEFER_ZPREFILL);
@@ -615,7 +686,7 @@ void CRender::Render()
 	bool	split_the_scene_to_minimize_wait		= false;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
-	if (mapHUDScopeMask.size() > 0) 
+	if (mapHUDScopeMask.size() > 0)
 	{
 		split_the_scene_to_minimize_wait = FALSE;
 	}
@@ -634,19 +705,19 @@ void CRender::Render()
 		r_dsgraph_render_hud					();
 		r_dsgraph_render_scope					();
 		Target->phase_scene_begin				();
-		r_dsgraph_render_graph					(0);
+		RenderSceneGraphWireframe				();
 		r_dsgraph_render_lods					(true,true);
 		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
 		DetailLayers_RenderBrush3D			();
 		Target->phase_scene_end					();
-	} 
-	else 
+	}
+	else
 	{
 		GPU_EVENT(DEFER_PART0_SPLIT);
 		CEditorFillModeScope FillModeScope(EditorMode);
 		// level, SPLIT
 		Target->phase_scene_begin				();
-		r_dsgraph_render_graph					(0);
+		RenderSceneGraphWireframe				();
 		Target->disable_aniso					();
 	}
 
@@ -717,11 +788,11 @@ void CRender::Render()
 	}
 
    //******* Main render :: PART-1 (second)
-	if (split_the_scene_to_minimize_wait)	
+	if (split_the_scene_to_minimize_wait)
 	{
 		GPU_EVENT(DEFER_PART1_SPLIT);
 		CEditorFillModeScope FillModeScope(EditorMode);
-		
+
 		// level
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
@@ -804,10 +875,17 @@ void CRender::Render()
 
 	rmNormal();
 
-	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
+	Fcolor sun_color;
+	{
+		light* adaptedSun = (light*)Lights.sun_adapted._get();
+		if (adaptedSun != nullptr)
+			sun_color = adaptedSun->color;
+		else
+			sun_color.set(0.f, 0.f, 0.f, 0.f); // no sun in the scene (sandbox/viewer level)
+	}
 	bool bSUN = !o.sunstatic && u_diffuse2s(sun_color) > EPS;
 
-	if (bSUN)	
+	if (bSUN)
 	{
 		GPU_EVENT(DEFER_SUN);
 
@@ -826,7 +904,7 @@ void CRender::Render()
 		RCache.set_xform_project(Device.mProject);
 		RCache.set_xform_view(Device.mView);
 
-		// Stencil - write 0x1 at pixel pos - 
+		// Stencil - write 0x1 at pixel pos -
 		RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_ColorWriteEnable();

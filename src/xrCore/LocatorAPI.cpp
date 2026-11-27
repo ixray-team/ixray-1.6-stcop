@@ -67,38 +67,41 @@ bool CLocatorAPI::IsIgnoredPath(const xr_path& Path, bool IsDirectory) const
 
 void CLocatorAPI::FileEventAdd(const char* file)
 {
+	const xr_string VfsFile = Platform::UTF8_to_CP1251(file);
+	const std::filesystem::path Path(Platform::ANSI_TO_TCHAR_U8(file));
 	std::error_code ec;
-	const std::filesystem::path FilePath(Platform::ANSI_TO_TCHAR_U8(file));
-	size_t FileSize = std::filesystem::file_size(FilePath, ec);
-	if (ec == std::errc::no_such_file_or_directory)
-		return;
-
-	if (!IVERIFY_M(!ec, "[File %s] Error retrieving file size: %s", file, ec.message().c_str()))
+	const size_t FileSize = std::filesystem::file_size(Path, ec);
+	if (ec)
 	{
+		if (ec != std::errc::no_such_file_or_directory)
+			Msg("! File watcher: cannot read '%s': %s", VfsFile.c_str(), ec.message().c_str());
 		return;
 	}
-	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(FilePath, ec));
-	if (!IVERIFY_M(!ec, "[File %s] Error retrieving file modif time: %s", file, ec.message().c_str()))
+	const size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(Path, ec));
+	if (ec)
 	{
+		if (ec != std::errc::no_such_file_or_directory)
+			Msg("! File watcher: cannot read modification time for '%s': %s", VfsFile.c_str(), ec.message().c_str());
 		return;
 	}
-	Register(file, 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
+	Register(VfsFile.c_str(), 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
 
-	ProcessTriggers(file, FilewatcherOnAddCS, FilewatcherOnAdd);
+	ProcessTriggers(VfsFile.c_str(), FilewatcherOnAddCS, FilewatcherOnAdd);
 }
 
 void CLocatorAPI::FileEventDel(const char* file)
 {
+	const xr_string VfsFile = Platform::UTF8_to_CP1251(file);
 	{
 		xrSRWLockGuard g(m_files_lock);
-		const files_it I = file_find_it(file);
+		const files_it I = file_find_it(VfsFile.c_str());
 		if (I != m_files.end())
 		{
 			m_files.erase(I);
 		}
 	}
-	
-	ProcessTriggers(file, FilewatcherOnDelCS, FilewatcherOnDel);
+
+	ProcessTriggers(VfsFile.c_str(), FilewatcherOnDelCS, FilewatcherOnDel);
 }
 
 void CLocatorAPI::ProcessTriggers(const char* file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers)
@@ -989,7 +992,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			[this](const std::string& file, const filewatch::Event Event)
 			{
 				const xr_string AnsiFile = Platform::UTF8_to_CP1251(file.c_str());
-				if (IsIgnoredPath(AnsiFile.c_str()))
+				if (IsIgnoredPath(AnsiFile.c_str(), false))
 				{
 					return;
 				}
@@ -1375,7 +1378,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 		IReader		*_src;
 		if (desc.size_real<256*1024)	_src = new CFileReader			(fname);
 		else							_src = new CVirtualFileReader	(fname);
-		IWriter*	_dst	= new CFileWriter			(fname_in_cache,false);
+		IWriter*	_dst	= new CFileWriter			(fname_in_cache, EFileWriterMode::Truncate);
 		_dst->w				(_src->pointer(),_src->length());
 		xr_delete			(_dst);
 		xr_delete			(_src);
@@ -1672,6 +1675,18 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 */
 
 	// OK, analyse
+	if (desc->vfs == MemoryFileVfs)
+	{
+		if constexpr (std::is_same_v<T, IReader>)
+		{
+			xrSRWLockGuard guard(m_files_lock, true);
+			const auto It = MemoryFiles.find(fname);
+			if (It == MemoryFiles.end())
+				return nullptr;
+			return new IReader(const_cast<unsigned char*>(It->second.Bytes), It->second.Size);
+		}
+		return nullptr;
+	}
 	if (0xffffffff == desc->vfs)
 	{
 		file_from_cache(R, fname, sizeof(fname), *desc, source_name);
@@ -1759,7 +1774,7 @@ IWriter* CLocatorAPI::w_open	(const char* path, const char* _fname)
 	xr_strcpy(fname,_fname);
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
-	CFileWriter* W 	= new CFileWriter(fname,false); 
+	CFileWriter* W 	= new CFileWriter(fname, EFileWriterMode::Truncate);
 
 	return W;
 }
@@ -1770,8 +1785,18 @@ IWriter* CLocatorAPI::w_open_ex	(const char* path, const char* _fname)
 	xr_strcpy(fname,_fname);
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
-	CFileWriter* W 	= new CFileWriter(fname,true); 
+	CFileWriter* W 	= new CFileWriter(fname, EFileWriterMode::Exclusive);
 	return W;
+}
+
+IWriter* CLocatorAPI::w_open_append(const char* path, const char* _fname)
+{
+	string_path fname;
+	xr_strcpy(fname, _fname);
+	xr_strlwr(fname);
+	if (path && path[0])
+		update_path(fname, path, fname);
+	return new CFileWriter(fname, EFileWriterMode::Append);
 }
 
 void CLocatorAPI::w_close(IWriter*& S, bool force_register)
@@ -2007,6 +2032,98 @@ int	CLocatorAPI::file_length(const char* src)
 	xrSRWLockGuard g(m_files_lock, true);
 	files_it	I		= file_find_it(src);
 	return (I!=m_files.end())?I->size_real:-1;
+}
+
+void CLocatorAPI::RegisterFolder(const char* fullPath)
+{
+	if (fullPath == nullptr || fullPath[0] == 0)
+		return;
+
+	string_path folderPath;
+	xr_strcpy(folderPath, fullPath);
+	const size_t len = xr_strlen(folderPath);
+	if (folderPath[len - 1] != '\\' && folderPath[len - 1] != '/')
+		xr_strcat(folderPath, "\\");
+
+	Register(folderPath, 0xffffffff, 0, 0, 0, 0, 0);
+}
+
+namespace LocatorMemoryDetail
+{
+	xr_string NormalizePath(const char* fullPath)
+	{
+		xr_string normalized = fullPath != nullptr ? fullPath : "";
+		xr_strlwr(normalized);
+		constexpr char From = Platform::kPreferredSeparator[0] == '\\' ? '/' : '\\';
+		std::replace(normalized.begin(), normalized.end(), From, Platform::kPreferredSeparator[0]);
+		return normalized;
+	}
+}
+
+CLocatorAPI::SMemoryFileRestore CLocatorAPI::RegisterMemoryFile(const char* fullPath, const unsigned char* bytes, size_t size)
+{
+	SMemoryFileRestore previous = {};
+	if (fullPath == nullptr || fullPath[0] == 0 || (bytes == nullptr && size != 0))
+		return previous;
+
+	const xr_string normalized = LocatorMemoryDetail::NormalizePath(fullPath);
+	const bool folder = bytes == nullptr;
+
+	xrSRWLockGuard guard(m_files_lock);
+	file query = {};
+	query.name = normalized.c_str();
+	const files_it it = m_files.find(query);
+	if (it != m_files.end())
+	{
+		previous.HasPreviousFile = true;
+		previous.PreviousFile = *it;
+		m_files.erase(it);
+	}
+	if (const auto old = MemoryFiles.find(normalized); old != MemoryFiles.end())
+	{
+		previous.HasPreviousData = true;
+		previous.PreviousData = old->second;
+	}
+
+	file descriptor = {};
+	descriptor.name = previous.HasPreviousFile ? previous.PreviousFile.name : xr_strdup(normalized.c_str());
+	descriptor.vfs = MemoryFileVfs;
+	descriptor.size_real = u32(size);
+	descriptor.size_compressed = descriptor.size_real;
+	descriptor.modif = 0;
+	m_files.insert(descriptor);
+
+	if (folder)
+		MemoryFiles.erase(normalized);
+	else
+		MemoryFiles[normalized] = { bytes, size };
+	return previous;
+}
+
+void CLocatorAPI::UnregisterMemoryFile(const char* fullPath, const SMemoryFileRestore& previous)
+{
+	const xr_string normalized = LocatorMemoryDetail::NormalizePath(fullPath);
+	xrSRWLockGuard guard(m_files_lock);
+	file query = {};
+	query.name = normalized.c_str();
+	const files_it it = m_files.find(query);
+	if (previous.HasPreviousFile)
+	{
+		if (it != m_files.end())
+			m_files.erase(it);
+		m_files.insert(previous.PreviousFile);
+	}
+	else if (it != m_files.end())
+	{
+		char* name = const_cast<char*>(it->name);
+		m_files.erase(it);
+		xr_free(name);
+	}
+
+	if (previous.HasPreviousData)
+		MemoryFiles[normalized] = previous.PreviousData;
+	else
+		MemoryFiles.erase(normalized);
 }
 
 void CLocatorAPI::file_update(const char* file_name)

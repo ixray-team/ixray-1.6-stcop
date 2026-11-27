@@ -15,13 +15,11 @@
 CPatrolPathParams::CPatrolPathParams(const char* caPatrolPathToGo, const PatrolPathManager::EPatrolStartType tPatrolPathStart, const PatrolPathManager::EPatrolRouteType tPatrolPathStop, bool bRandom, u32 index)
 {
 	m_path_name = caPatrolPathToGo;
-	m_path = ai().patrol_paths().path(m_path_name, true);
+	m_path = ai().patrol_paths().shared_path(m_path_name, true);
 	if (m_path == nullptr)
 	{
 		Msg("! There is no patrol path. m_path is nullptr: [%s]", caPatrolPathToGo);
 	}
-
-	R_ASSERT3(m_path, "There is no patrol path", caPatrolPathToGo);
 
 	m_tPatrolPathStart = tPatrolPathStart;
 	m_tPatrolPathStop = tPatrolPathStop;
@@ -37,7 +35,6 @@ CPatrolPathParams::~CPatrolPathParams	()
 
 u32	CPatrolPathParams::count			() const
 {
-	VERIFY(m_path);
 	if (m_path == nullptr)
 	{
 		return 0;
@@ -47,19 +44,15 @@ u32	CPatrolPathParams::count			() const
 
 const Fvector &CPatrolPathParams::point	(u32 index) const
 {
-	VERIFY(m_path);
-	if (m_path == nullptr)
+	if (m_path == nullptr || m_path->vertices().empty())
 		return m_dummy;
-	VERIFY(!m_path->vertices().empty());
-	if (!m_path->vertex(index)) {
+	const CPatrolPath::CVertex* vertex = m_path->vertex(index);
+	if (vertex == nullptr) {
 		ai().script_engine().script_log(eLuaMessageTypeError,
 			"Can't get information about patrol point number %d in the patrol way %s", index, *m_path_name);
-		index = (*m_path->vertices().begin()).second->vertex_id();
+		vertex = m_path->vertices().begin()->second;
 	}
-	VERIFY(m_path->vertex(index));
-	if (!m_path->vertex(index))
-		return m_dummy;
-	return (m_path->vertex(index)->data().position());
+	return vertex->data().position();
 }
 
 u32	CPatrolPathParams::level_vertex_id	(u32 index) const

@@ -2,6 +2,7 @@
 #include "pch_script.h"
 #include "ai_space.h"
 #include "object_factory.h"
+#include "../xrPhysics/ODE/PHWorld.h"
 #include "ai/monsters/ai_monster_squad_manager.h"
 #include "../xrEngine/string_table.h"
 
@@ -64,11 +65,15 @@ void clean_game_globals()
 {
 	GECSManager->DestroyAll();
 
-	// destroy object factory
+	Msg("* [cleanup] factory %p ai-space %p", g_object_factory, g_ai_space);
 	xr_delete(g_object_factory);
+	Msg("* [cleanup] factory destroyed");
 
-	// destroy ai space
 	xr_delete										(g_ai_space);
+	Msg("* [cleanup] ai-space destroyed");
+
+	CleanupPhysicsGeometryClasses();
+	Msg("* [cleanup] ODE geometry classes destroyed");
 	// destroy monster squad global var
 	xr_delete										(g_monster_squad);
 

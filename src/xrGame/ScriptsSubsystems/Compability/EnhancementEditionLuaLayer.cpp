@@ -10,6 +10,7 @@
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/GamepadService.h"
 #include "../xrScripts/exports/script_ini_file.h"
+#include <limits>
 class CScriptIniFile;
 
 SCRIPTS_API CScriptIniFile* create_ini_file(const char* ini_string);
@@ -66,12 +67,12 @@ void ExportEELayer(lua_State* L)
 	[
 		luabind::def("gg_vertex_level_id", +[](u32 VertexID) 
 		{
-			return ai().game_graph().vertex(VertexID)->level_id();
+			return ai().game_graph().valid_vertex_id(VertexID) ? ai().game_graph().vertex(VertexID)->level_id() : GameGraph::_LEVEL_ID(-1);
 		}),
 
 		luabind::def("gg_level_vertex_id", +[](u32 VertexID) 
 		{
-			return ai().game_graph().vertex(VertexID)->level_vertex_id();
+			return ai().game_graph().valid_vertex_id(VertexID) ? ai().game_graph().vertex(VertexID)->level_vertex_id() : u32(-1);
 		}),
 			
 		luabind::def("gg_levels_count", +[]() 
@@ -82,16 +83,19 @@ void ExportEELayer(lua_State* L)
 		luabind::def("gg_level_id", +[](size_t index)
 		{
 			const auto& Levels = ai().game_graph().header().levels();
-			return Levels.get_key_at(index);
+			return index < Levels.size() ? Levels.get_key_at(index) : GameGraph::_LEVEL_ID(-1);
 		}),
 
 		luabind::def("gg_accessible", +[](u32 VertexID, bool Value)
 		{
-			return ai().game_graph().accessible(VertexID, Value);
+			if (ai().game_graph().valid_vertex_id(VertexID))
+				ai().game_graph().accessible(VertexID, Value);
 		}),
 
 		luabind::def("gg_distance", +[](u32 LeftVertexID, u32 RightVertexID)
 		{
+			if (!ai().game_graph().valid_vertex_id(LeftVertexID) || !ai().game_graph().valid_vertex_id(RightVertexID))
+				return std::numeric_limits<float>::max();
 			auto RightPoint = ai().game_graph().vertex(RightVertexID)->game_point();
 			return ai().game_graph().vertex(LeftVertexID)->game_point().distance_to(RightPoint);
 		})

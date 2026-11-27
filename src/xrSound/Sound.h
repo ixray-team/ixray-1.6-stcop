@@ -315,10 +315,16 @@ public:
 	virtual void					set_geometry_occ		( CObjectSpace* M )																		= 0;
 	virtual void					set_handler				( sound_event* E )																		= 0;
 	
+	virtual xrSRWLock&				GetGeometryLock() = 0;
 	virtual CDB::COLLIDER*			get_geometry_db         ()                                                                                      = 0;
 	virtual CDB::MODEL*				get_geometry_env		()																						= 0;
 	virtual CDB::MODEL*				get_geometry_som		()																						= 0;
 	virtual CObjectSpace*				get_geometry_occ		()																						= 0;
+	virtual CDB::MODEL*				swap_geometry_env		(CDB::MODEL* model)																		= 0;
+	virtual CDB::MODEL*				swap_geometry_som		(CDB::MODEL* model)																		= 0;
+	virtual CObjectSpace*				swap_geometry_occ		(CObjectSpace* model)																	= 0;
+	virtual CDB::MODEL*				create_geometry_env		(IReader* reader, SoundZoneVector& zones)												= 0;
+	virtual CDB::MODEL*				create_geometry_som		(IReader* reader)																		= 0;
 
 	virtual void                    debug_draw              ()                                                                                      = 0;
 	virtual void					update					(const Fvector& P, const Fvector& D, const Fvector& N)				= 0;

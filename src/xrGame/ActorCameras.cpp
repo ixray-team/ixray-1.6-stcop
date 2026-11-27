@@ -29,12 +29,24 @@ ENGINE_API extern float psHUD_FOV_def;
 
 void CActor::cam_Set	(EActorCameras style)
 {
+	if (style < 0 || style >= eacMaxCam || cameras[style] == nullptr)
+	{
+		Msg("! CActor::cam_Set: unsupported camera mode %d; restoring first-person view", int(style));
+		style = eacFirstEye;
+	}
 	if (style != eacFirstEye)
 	{
 		ResetCameraFocus();
 	}
 	CCameraBase* old_cam = cam_Active();
+	if (old_cam == nullptr)
+		old_cam = cameras[eacFirstEye];
 	cam_active = style;
+	if (old_cam == nullptr)
+	{
+		Msg("! CActor::cam_Set: no camera is available");
+		return;
+	}
 	old_cam->OnDeactivate();
 	cam_Active()->OnActivate(old_cam);
 }

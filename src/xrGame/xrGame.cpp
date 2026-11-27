@@ -14,6 +14,7 @@
 #include "../xrEngine/xr_level_controller.h"
 
 #include "ImUtils/ImUtils.h"
+#include "SelfTest/LevelSelfTests.h"
 
 void CCC_RegisterCommands	();
 void RegisterExpressionDelegates();
@@ -106,6 +107,7 @@ extern "C"
 		pGameGlobals = new CInifile(GameGlobals);
 
 		CCC_RegisterCommands();
+		SelfTest::RegisterConsoleCommands();
 		// keyboard binding
 		CCC_RegisterInput();
 		setup_luabind_allocator	();
@@ -118,6 +120,8 @@ extern "C"
 #ifdef DEBUG
 		unit_test_stack_string();
 #endif
+
+		SelfTest::RunStartupTests();
 	}
 
 	DLL_API void __cdecl xrGameShutdown()

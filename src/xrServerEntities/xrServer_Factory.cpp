@@ -11,18 +11,14 @@
 
 CSE_Abstract* F_entity_Create(const char* section)
 {
-	if (DevicePtr != nullptr && Device.IsEditorMode())
+	// A missing section (or one without a server 'class') is a data problem,
+	// not a fatal one: log and skip so a bad spawn request can never take the
+	// game down (viewer/sandbox spawns hit this with arbitrary section names).
+	if (pSettings->section_exist(section) && pSettings->line_exist(section, "class"))
 	{
-		if (pSettings->section_exist(section))
-		{
-			return (object_factory().server_object(pSettings->r_clsid(section, "class"), section));
-		}
-		else
-		{
-			Msg("! Error: not found section %s", section);
-			return nullptr;
-		}
+		return (object_factory().server_object(pSettings->r_clsid(section, "class"), section));
 	}
 
-	return (object_factory().server_object(pSettings->r_clsid(section, "class"), section));
+	Msg("! Error: cannot spawn - section '%s' is missing or has no 'class' line", section);
+	return nullptr;
 }

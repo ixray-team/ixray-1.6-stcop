@@ -6,7 +6,7 @@ class CPatrolPath;
 class CMonsterHome 
 {
 	CBaseMonster		*m_object;
-	const CPatrolPath	*m_path;
+	xr_shared_ptr<const CPatrolPath> m_path;
 	u32					m_level_vertex_id;
 	float				m_radius_min;
 	float				m_radius_max;

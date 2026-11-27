@@ -4,6 +4,7 @@
 #include "RenderAPI.h"
 
 #include "Shader.h"
+#include "../../Include/xrRender/ParticleDefinition.h"
 
 namespace EPALegacy
 {
@@ -57,29 +58,26 @@ namespace PS
 	};
 
 	// Exported per member: the Particle Editor defines the editor-only members (declared under _EDITOR) in its own module.
-	class CPEDef
+	class CPEDef : public IParticleDefinition
 	{
 	public:
-		enum{
-			dfSprite		= (1<<0),
-//			dfObject		= (1<<1),
-
-			dfFramed		= (1<<10),
-			dfAnimated		= (1<<11),
-			dfRandomFrame   = (1<<12),
-			dfRandomPlayback= (1<<13),
-            
-			dfTimeLimit		= (1<<14),
-
-            dfAlignToPath	= (1<<15),
-            dfCollision		= (1<<16),
-            dfCollisionDel	= (1<<17),
-            dfVelocityScale	= (1<<18),
-            dfCollisionDyn	= (1<<19),
-			dfWorldAlign	= (1<<20),
-            dfFaceAlign		= (1<<21),
-            dfCulling		= (1<<22),
-            dfCullCCW		= (1<<23),
+		enum
+		{
+			dfSprite = 1u << 0,
+			dfFramed = 1u << 10,
+			dfAnimated = 1u << 11,
+			dfRandomFrame = 1u << 12,
+			dfRandomPlayback = 1u << 13,
+			dfTimeLimit = 1u << 14,
+			dfAlignToPath = 1u << 15,
+			dfCollision = 1u << 16,
+			dfCollisionDel = 1u << 17,
+			dfVelocityScale = 1u << 18,
+			dfCollisionDyn = 1u << 19,
+			dfWorldAlign = 1u << 20,
+			dfFaceAlign = 1u << 21,
+			dfCulling = 1u << 22,
+			dfCullCCW = 1u << 23,
 		};
 		shared_str		  	m_Name;
 		Flags32				m_Flags;
@@ -113,10 +111,26 @@ namespace PS
         RENDER_API          CPEDef				();
         RENDER_API          ~CPEDef				();
         
-		RENDER_API void		SetName				(const char* name);
-        IC const char*			Name				()const{return *m_Name;}
-        RENDER_API void		CreateShader		();
-        RENDER_API void		DestroyShader		();
+		RENDER_API void		SetName				(const char* name) override;
+        IC const char*			Name				()const override {return *m_Name;}
+        RENDER_API void		CreateShader		() override;
+        RENDER_API void		DestroyShader		() override;
+		int GetMaxParticles() const override { return m_MaxParticles; }
+		void SetMaxParticles(int count) override { m_MaxParticles = count; }
+		float GetTimeLimit() const override { return m_fTimeLimit; }
+		bool HasTimeLimit() const override { return m_Flags.test(dfTimeLimit); }
+		void SetTimeLimit(float seconds) override { m_Flags.set(dfTimeLimit, true); m_fTimeLimit = seconds; }
+		const shared_str& GetShaderName() const override { return m_ShaderName; }
+		const shared_str& GetTextureName() const override { return m_TextureName; }
+		void SetSprite(const char* shader, const char* texture) override
+		{
+			m_ShaderName = shader;
+			m_TextureName = texture;
+			m_Flags.set(dfSprite, shader != nullptr && shader[0] != 0 && texture != nullptr && texture[0] != 0);
+		}
+		u32 GetCompiledActionBytes() const override { return m_Actions.size(); }
+		bool GetSourceRate(float& rate) const override;
+		bool SetSourceRate(float rate) override;
 
 		RENDER_API void 	Save				(IWriter& F);
 		RENDER_API bool 	LoadOriginal		(IReader& F);
@@ -194,34 +208,6 @@ namespace PS
 
 	extern RENDER_API IParticleEditorActions* g_ParticleEditorActions;
 
-	namespace PE
-	{
-		enum class Version: u16
-		{
-			Original = 0x0001,
-			Extended,
-			MAX,
-			Latest = MAX - 1,
-		};
-
-		enum class Chunks: u32
-		{
-			VERSION = 0x0001,
-			NAME = 0x0002,
-			EFFECTDATA = 0x0003,
-			ACTIONLIST = 0x0004,
-			FLAGS = 0x0005,
-			FRAME = 0x0006,
-			SPRITE = 0x0007,
-			TIMELIMIT = 0x0008,
-			TIMELIMIT2 = 0x0009,
-			SOURCETEXT_ = 0x0020, // obsolete
-			COLLISION = 0x0021,
-			VEL_SCALE = 0x0022,
-			EDATA = 0x0024,
-			ALIGN_TO_PATH = 0x0025,
-		};
-	}
 };
 //---------------------------------------------------------------------------
 #endif

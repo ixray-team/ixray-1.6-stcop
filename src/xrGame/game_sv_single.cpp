@@ -33,6 +33,89 @@ void	game_sv_Single::Create			(shared_str& options)
 	switch_Phase						(GAME_PHASE_INPROGRESS);
 }
 
+void game_sv_Single::OnPlayerConnect(ClientID id_who)
+{
+	inherited::OnPlayerConnect(id_who);
+	if (server().GetOwnerLevel() == nullptr || !server().GetOwnerLevel()->GetLevelDesc().RemoteTransport)
+		return;
+
+	xrClientData* client = server().ID_to_client(id_who);
+	if (client == nullptr || client->owner != nullptr)
+		return;
+
+	const bool localHost = client->flags.bLocal || (server().GetServerClient() != nullptr && id_who == server().GetServerClient()->ID);
+	if (localHost)
+	{
+		CSE_ALifeCreatureActor* actor = ai().get_alife() != nullptr ? ai().alife().graph().actor() : nullptr;
+		if (actor == nullptr)
+		{
+			if (PendingRemotePlayers.size() < 64 && std::ranges::find(PendingRemotePlayers, id_who) == PendingRemotePlayers.end())
+				PendingRemotePlayers.push_back(id_who);
+			return;
+		}
+		client->owner = actor;
+		if (client->ps != nullptr)
+			client->ps->SetGameID(actor->ID);
+		return;
+	}
+
+	const CSE_ALifeCreatureActor* referenceActor = ai().get_alife() != nullptr ? ai().alife().graph().actor() : nullptr;
+	const CObject* referenceObject = Level().CurrentEntity();
+	if (referenceActor == nullptr && referenceObject == nullptr)
+	{
+		if (PendingRemotePlayers.size() < 64 && std::ranges::find(PendingRemotePlayers, id_who) == PendingRemotePlayers.end())
+		{
+			PendingRemotePlayers.push_back(id_who);
+			Msg("* Remote single-player client %u is waiting for the server actor", id_who.value());
+		}
+		return;
+	}
+
+	Fvector position = referenceActor != nullptr ? referenceActor->o_Position : referenceObject->Position();
+	u32 levelVertex = referenceActor != nullptr ? referenceActor->m_tNodeID : ai().level_graph().vertex_id(position);
+	GameGraph::_GRAPH_ID gameVertex = referenceActor != nullptr ? referenceActor->m_tGraphID : ai().cross_table().vertex(levelVertex).game_vertex_id();
+	position.x += 2.f;
+	if (ai().level_graph().valid_vertex_position(position))
+		levelVertex = ai().level_graph().vertex_id(position);
+	if (ai().get_cross_table() != nullptr && ai().level_graph().valid_vertex_id(levelVertex))
+		gameVertex = ai().cross_table().vertex(levelVertex).game_vertex_id();
+
+	CALifeSimulatorBase::SSpawnIdentity remoteIdentity;
+	string64 remoteScriptStoryId;
+	xr_sprintf(remoteScriptStoryId, "actor_remote_%u", id_who.value());
+	remoteIdentity.ScriptStoryId = remoteScriptStoryId;
+	CSE_Abstract* entity = ai().get_alife() != nullptr
+		? GetAlifeSimulator()->spawn_item_online("actor", position, levelVertex, gameVertex, id_who, &remoteIdentity)
+		: spawn_begin("actor");
+	if (entity == nullptr)
+	{
+		Msg("! Remote single-player connection: actor spawn rejected for client %u", id_who.value());
+		return;
+	}
+	entity->o_Position = position;
+	if (CSE_ALifeDynamicObject* dynamic = entity->cast_alife_dynamic_object())
+	{
+		dynamic->m_tNodeID = levelVertex;
+		dynamic->m_tGraphID = gameVertex;
+		dynamic->m_script_story_ID = remoteScriptStoryId;
+	}
+	entity->set_name_replace(get_name_id(id_who));
+	if (ai().get_alife() == nullptr)
+	{
+		entity->s_flags.assign(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER);
+		entity = spawn_end(entity, id_who);
+	}
+	if (entity == nullptr)
+	{
+		Msg("! Remote single-player connection: server rejected actor for client %u", id_who.value());
+		return;
+	}
+	client->net_PassUpdates = true;
+	if (client->ps != nullptr)
+		client->ps->SetGameID(entity->ID);
+	Msg("* Remote single-player client %u received actor %u (client %u, owner %u)", id_who.value(), entity->ID, client->ID.value(), client->owner != nullptr ? client->owner->ID : ALife::INVALID_OBJECT_ID);
+}
+
 /**
 CSE_Abstract*		game_sv_Single::get_entity_from_eid		(u16 id)
 {
@@ -89,7 +172,7 @@ bool	game_sv_Single::OnTouch			(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid
 	CSE_Abstract*		e_who	= get_entity_from_eid(eid_who);		VERIFY(e_who	);
 	CSE_Abstract*		e_what	= get_entity_from_eid(eid_what);	VERIFY(e_what	);
 
-	if (ai().get_alife()) {
+	if (ai().get_alife() && ai().alife().graph().has_level()) {
 		CSE_ALifeInventoryItem	*l_tpALifeInventoryItem	= smart_cast<CSE_ALifeInventoryItem*>	(e_what);
 		CSE_ALifeDynamicObject	*l_tpDynamicObject		= smart_cast<CSE_ALifeDynamicObject*>	(e_who);
 		
@@ -113,7 +196,7 @@ bool	game_sv_Single::OnTouch			(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid
 
 void game_sv_Single::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what)
 {
-	if (ai().get_alife()) 
+	if (ai().get_alife() && ai().alife().graph().has_level())
 	{
 		CSE_Abstract*		e_who	= get_entity_from_eid(eid_who);		VERIFY(e_who	);
 		CSE_Abstract*		e_what	= get_entity_from_eid(eid_what);	VERIFY(e_what	);
@@ -159,14 +242,14 @@ void game_sv_Single::OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_w
 
 void	game_sv_Single::Update			()
 {
+	if (!PendingRemotePlayers.empty())
+	{
+		xr_vector<ClientID> pending;
+		pending.swap(PendingRemotePlayers);
+		for (const ClientID id : pending)
+			OnPlayerConnect(id);
+	}
 	inherited::Update	();
-/*	switch(phase) 	{
-		case GAME_PHASE_PENDING : {
-			OnRoundStart();
-			switch_Phase(GAME_PHASE_INPROGRESS);
-			break;
-		}
-	}*/
 }
 
 void game_sv_Single::SetGameTimeFactor		(const float fTimeFactor)
@@ -289,7 +372,8 @@ void game_sv_Single::remove_all_restrictions	(NET_Packet &packet, ALife::_OBJECT
 
 void game_sv_Single::sls_default				()
 {
-	alife().update_switch	();
+	if (SpawnResourceEnabled)
+		alife().update_switch	();
 }
 
 shared_str game_sv_Single::level_name			(const shared_str &server_options) const
@@ -314,7 +398,8 @@ void game_sv_Single::restart_simulator			(const char* saved_game_name)
 	PROF_EVENT("restart_simulator");
 	shared_str				&options = *alife().server_command_line();
 
-	delete_data				(m_alife_simulator);
+	m_alife_simulator->destroy();
+	xr_delete				(m_alife_simulator);
 	server().clear_ids		();
 
 	xr_strcpy					(g_pGamePersistent->m_game_params.m_game_or_spawn,saved_game_name);

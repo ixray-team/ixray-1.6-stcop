@@ -65,6 +65,7 @@ public:
 public:
 	// Main interface
 	dxRender_Visual*					root			()				{ return m_root; }
+	void							SetRoot			(dxRender_Visual* visual) { m_root = visual; }
 	const xr_vector<CPortal*>&		portals			() const		{ return m_portals; }
 	void							traverse		(CFrustum& F,	_scissor& R);
 	void							load			(IReader& fs);

@@ -13,6 +13,27 @@
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 #include "object_item_script.h"
+#include <luabind/detail/class_cache.hpp>
+
+class CSE_Abstract;
+class CSE_ALifeObject;
+class CSE_ALifeDynamicObject;
+class CSE_ALifeSmartZone;
+class CSE_ALifeCreatureActor;
+class CALifeSimulator;
+class CALifeSmartTerrainTask;
+
+namespace ScriptFactoryDetail
+{
+	template <typename T>
+	void ResetClassCache()
+	{
+#ifdef LUABIND_NOT_THREADSAFE
+		luabind::detail::class_cache<T>::state = nullptr;
+		luabind::detail::class_cache<T>::class_ = nullptr;
+#endif
+	}
+}
 
 void CObjectFactory::register_script_class	(const char* client_class, const char* server_class, const char* clsid, const char* script_clsid)
 {
@@ -65,6 +86,22 @@ void CObjectFactory::register_script_classes()
 	ai();
 }
 
+const CObjectItemAbstract* CObjectFactory::FindItem(const CLASS_ID& clsid) const
+{
+	actualize();
+	const auto it = std::find_if(m_clsids.begin(), m_clsids.end(), CObjectItemPredicateCLSID(clsid));
+	return it == m_clsids.end() ? nullptr : *it;
+}
+
+void CObjectFactory::release_script_engine(const CScriptEngine* engine) const
+{
+	for (CObjectItemAbstract* item : m_clsids)
+	{
+		if (CObjectItemScript* scriptItem = dynamic_cast<CObjectItemScript*>(item))
+			scriptItem->ReleaseCreators(engine);
+	}
+}
+
 void CObjectFactory::init_script(const char* str)
 {
 	luabind::functor<void>	result;
@@ -80,6 +117,13 @@ void CObjectFactory::init_script(const char* str)
 
 void CObjectFactory::export_classes(lua_State* L)
 {
+	ScriptFactoryDetail::ResetClassCache<CSE_Abstract>();
+	ScriptFactoryDetail::ResetClassCache<CSE_ALifeObject>();
+	ScriptFactoryDetail::ResetClassCache<CSE_ALifeDynamicObject>();
+	ScriptFactoryDetail::ResetClassCache<CSE_ALifeSmartZone>();
+	ScriptFactoryDetail::ResetClassCache<CSE_ALifeCreatureActor>();
+	ScriptFactoryDetail::ResetClassCache<CALifeSimulator>();
+	ScriptFactoryDetail::ResetClassCache<CALifeSmartTerrainTask>();
 	extern void export_classes(lua_State * L);
 	export_classes(L);
 }
@@ -92,6 +136,7 @@ void CObjectFactory::register_script	() const
 {
 	actualize					();
 
+	ScriptFactoryDetail::ResetClassCache<CInternal>();
 	luabind::class_<CInternal>	instance("clsid");
 	const_iterator I = clsids().begin(), B = I;
 	const_iterator E = clsids().end();

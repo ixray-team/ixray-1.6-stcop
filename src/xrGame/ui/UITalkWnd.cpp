@@ -70,6 +70,14 @@ void CUITalkWnd::InitTalkDialog()
 
 	m_pOurInvOwner = m_pActor->cast_inventory_owner();
 	m_pOthersInvOwner = m_pActor->GetTalkPartner();
+	if (m_pOurInvOwner == nullptr || m_pOthersInvOwner == nullptr)
+	{
+		HideDialog();
+		return;
+	}
+	TalkLevel = g_pGameLevel;
+	ActorId = m_pActor->ID();
+	PartnerId = m_pOthersInvOwner->object_id();
 
 	m_pOurDialogManager = m_pOurInvOwner->cast_phrase_dialog_manager();
 	m_pOthersDialogManager = m_pOthersInvOwner->cast_phrase_dialog_manager();
@@ -219,9 +227,37 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 }
 
 //////////////////////////////////////////////////////////////////////////
+bool CUITalkWnd::ValidateTalkContext() const
+{
+	if (m_pActor == nullptr || m_pOurInvOwner == nullptr || m_pOthersInvOwner == nullptr || TalkLevel == nullptr || TalkLevel != g_pGameLevel)
+		return false;
+	CObject* actorObject = TalkLevel->Objects.net_Find(ActorId);
+	CObject* partnerObject = TalkLevel->Objects.net_Find(PartnerId);
+	return actorObject != nullptr && !actorObject->getDestroy() && actorObject->cast_actor() == m_pActor && actorObject->cast_inventory_owner() == m_pOurInvOwner &&
+		partnerObject != nullptr && !partnerObject->getDestroy() && partnerObject->cast_inventory_owner() == m_pOthersInvOwner;
+}
+
+void CUITalkWnd::ClearDialogueReferences()
+{
+	ToTopicMode();
+	m_pActor = nullptr;
+	m_pOurInvOwner = nullptr;
+	m_pOthersInvOwner = nullptr;
+	m_pOurDialogManager = nullptr;
+	m_pOthersDialogManager = nullptr;
+	TalkLevel = nullptr;
+	ActorId = ALife::INVALID_OBJECT_ID;
+	PartnerId = ALife::INVALID_OBJECT_ID;
+}
+
 void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 {
-	CCameraBase* cam = Actor()->cam_Active();
+	CActor* actor = Actor();
+	if (actor == nullptr || pTo == nullptr || pTo->cast_inventory_owner() == nullptr)
+		return;
+	CCameraBase* cam = actor->cam_Active();
+	if (cam == nullptr)
+		return;
 
 	Fvector target_pos;
 	if (pTo->cast_inventory_owner()->GetFocusingOnNpc())
@@ -248,22 +284,16 @@ void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 
 void CUITalkWnd::Update()
 {
-	//остановить разговор, если нужно
-	if (g_actor && m_pActor && !m_pActor->IsTalking())
+	if (!ValidateTalkContext())
+	{
+		ClearDialogueReferences();
+		HideDialog();
+		return;
+	}
+	if (g_actor && !m_pActor->IsTalking())
 	{
 		StopTalk();
 		return;
-	}
-	else
-	{
-		CGameObject* pOurGO = m_pOurInvOwner != nullptr ? m_pOurInvOwner->cast_game_object() : nullptr;
-		CGameObject* pOtherGO = m_pOthersInvOwner != nullptr ? m_pOthersInvOwner->cast_game_object() : nullptr;
-
-		if (nullptr == pOurGO || nullptr == pOtherGO)
-		{
-			HideDialog();
-			return;
-		}
 	}
 
 	if (m_bNeedToUpdateQuestions)
@@ -326,21 +356,16 @@ void CUITalkWnd::Show(bool status)
 	}
 	else
 	{
+		if (!ValidateTalkContext())
+			ClearDialogueReferences();
 		RestoreTalkEffects();
 		StopSnd();
-		UITalkDialogWnd->Hide();
+		if (UITalkDialogWnd != nullptr)
+			UITalkDialogWnd->Hide();
 
-		if (m_pActor)
-		{
-			ToTopicMode();
-
-			if (m_pActor->IsTalking())
-			{
-				m_pActor->StopTalk();
-			}
-
-			m_pActor = nullptr;
-		}
+		if (m_pActor != nullptr && m_pActor->IsTalking())
+			m_pActor->StopTalk();
+		ClearDialogueReferences();
 	}
 }
 

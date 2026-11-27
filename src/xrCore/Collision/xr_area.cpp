@@ -11,6 +11,21 @@
 
 using namespace	collide;
 
+CSpatialContextGuard::CSpatialContextGuard(xrCriticalSection& mutex, ISpatial_DB* spatial, ISpatial_DB* physic) :
+	Lock(mutex), PreviousSpatial(g_SpatialSpace), PreviousPhysic(g_SpatialSpacePhysic)
+{
+	if (spatial != nullptr)
+		g_SpatialSpace = spatial;
+	if (physic != nullptr)
+		g_SpatialSpacePhysic = physic;
+}
+
+CSpatialContextGuard::~CSpatialContextGuard()
+{
+	g_SpatialSpace = PreviousSpatial;
+	g_SpatialSpacePhysic = PreviousPhysic;
+}
+
 //----------------------------------------------------------------------
 // Class	: CObjectSpace
 // Purpose	: stores space slots
@@ -39,54 +54,91 @@ CObjectSpace::~CObjectSpace() = default;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-void CObjectSpace::Load(CDB::build_callback build_callback)
+void CObjectSpace::CreateEmpty(bool InitializeSpatialDB)
 {
-	
-	Load("$level$", "level", build_callback);
+	m_BoundingVolume.set(Fvector().set(-1024.f, -256.f, -1024.f), Fvector().set(1024.f, 256.f, 1024.f));
+	if (InitializeSpatialDB)
+	{
+		SpatialDatabase()->initialize(m_BoundingVolume);
+		PhysicDatabase()->initialize(m_BoundingVolume);
+	}
 }
 
-void CObjectSpace::Load(const char* initial, const char* fname, CDB::build_callback build_callback, bool NotFromLevel)
+bool CObjectSpace::Load(const char* initial, const char* fname, CDB::build_callback build_callback, bool NotFromLevel, bool InitializeSpatialDB)
 {
 	xr_string Filename;
 	xr_unique_ptr<XRay::CForm::IFormat> CFormData;
 	{
 		PROF_EVENT("CObjectSpace::Load");
 		CFormData = XRay::CForm::Read(initial, fname);
-		if (!I_ASSERT(CFormData))
+		if (!CFormData)
 		{
-			FATAL("Attempt to load level with invalid collision data!");
-			return;
+			Msg("! CObjectSpace::Load: collision data '%s/%s' is missing or invalid, continuing with empty collision", initial, fname);
+			CreateEmpty(InitializeSpatialDB);
+			return false;
 		}
 	}
-		
+
 	PROF_EVENT("CObjectSpace::Create");
-	Create(*CFormData, build_callback);
+	const bool created = Create(*CFormData, build_callback, nullptr, false, InitializeSpatialDB);
+	if (!created)
+		return false;
 	if (CFormData->IsStreamed())
 	{
 		StreamingFormat = std::move(CFormData);
 		StreamingBuildCallback = build_callback;
 	}
+	return true;
 }
 
-void CObjectSpace::Create(const XRay::CForm::IFormat& Data, CDB::build_callback build_callback)
+bool CObjectSpace::Create(const XRay::CForm::IFormat& Data, CDB::build_callback build_callback, void* pRW, bool RWMode, bool InitializeSpatialDB)
 {
+	const auto& header = Data.GetHeader();
 	if (!Data.IsStreamed())
 	{
-		PROF_EVENT("CObjectSpace::Create::Data.ReadData");
-		Data.ReadData(Static, build_callback, nullptr);
+		switch (header.version)
+		{
+		case CFormVersions::Vanilla:
+		case CFormVersions::VanillaChunked:
+		{
+			PROF_EVENT("CObjectSpace::Create::Data.ReadData");
+			xr_vector<Fvector>& vertices = Static.get_verts();
+			xr_vector<CDB::TRI>& triangles = Static.get_tris();
+			Data.GetStaticGeom(vertices, triangles);
+			if (vertices.empty() || triangles.empty())
+			{
+				Msg("! CObjectSpace::Create: collision data has no geometry, continuing with empty collision");
+				CreateEmpty(InitializeSpatialDB);
+				return false;
+			}
+			Static.build(vertices.data(), vertices.size(), triangles.data(), triangles.size(), build_callback, nullptr, pRW, RWMode);
+			break;
+		}
+		default:
+			Msg("! CObjectSpace::Create: unsupported CForm version %u, continuing with empty collision", u32(header.version));
+			CreateEmpty(InitializeSpatialDB);
+			return false;
+		}
 	}
+	m_BoundingVolume.set(header.aabb);
+	if (InitializeSpatialDB)
 	{
-		PROF_EVENT("CObjectSpace::Create::m_BoundingVolume");
-		m_BoundingVolume.set(Data.GetHeader().aabb);
+		SpatialDatabase()->initialize(m_BoundingVolume);
+		PhysicDatabase()->initialize(m_BoundingVolume);
 	}
-	{
-		PROF_EVENT("CObjectSpace::Create::g_SpatialSpace");
-		g_SpatialSpace->initialize(m_BoundingVolume);
-	}
-	{
-		PROF_EVENT("CObjectSpace::Create::g_SpatialSpacePhysic");
-		g_SpatialSpacePhysic->initialize(m_BoundingVolume);
-	}
+	return true;
+}
+
+void CObjectSpace::SwapStaticGeometry(CObjectSpace& other)
+{
+	Static.swap(other.Static);
+	std::swap(m_BoundingVolume, other.m_BoundingVolume);
+}
+
+void CObjectSpace::ClearStaticGeometry()
+{
+	CObjectSpace empty;
+	Static.swap(empty.Static);
 }
 
 u64 CObjectSpace::EncodeTileKey(s32 X, s32 Z)

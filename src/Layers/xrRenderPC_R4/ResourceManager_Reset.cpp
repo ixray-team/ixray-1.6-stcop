@@ -107,6 +107,7 @@ CResourceManager::~CResourceManager		()
 	Dump(false);
 #endif
 
+	xrCriticalSectionGuard guard(creationGuard);
 	m_xmlBlendCache.clear();
 }
 

@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "../../ThreadStackDump.h"
+#include "../../StackTrace/StackTrace.h"
 #include <dbghelp.h>
 #include <tlhelp32.h>
 #include <cstdio>
 #include <cstring>
 #include <thread>
-
-xrCriticalSection g_ThreadStackSymbolLock;
 
 namespace
 {

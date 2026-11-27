@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "monster_aura.h"
+#include "../../Level.h"
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
 #include "../../ActorEffector.h"
@@ -138,7 +139,7 @@ void   monster_aura::remove_pp_effector ()
 {
 	if ( m_pp_effector_name && m_pp_effector_name[0] )
 	{
-		CActorAuraPostEffectsBalancer::UnregisterEffect	(post_effect_type(), m_object->ID(), m_pp_effector_name);
+		Level().AuraEffects().UnregisterEffect	(post_effect_type(), m_object->ID(), m_pp_effector_name);
 
 		m_sound.stop					();
 		m_detect_sound.stop				();
@@ -221,7 +222,7 @@ void   monster_aura::update_schedule ()
 
 	if ( pp_factor > 0.01f )
 	{
-		CActorAuraPostEffectsBalancer::RegisterEffect	(
+		Level().AuraEffects().RegisterEffect	(
 			monster_aura::post_effect_type	(),
 			pp_factor,
 			m_object->ID						(),
@@ -230,7 +231,7 @@ void   monster_aura::update_schedule ()
 	}
 	else
 	{
-		CActorAuraPostEffectsBalancer::UnregisterEffect	(
+		Level().AuraEffects().UnregisterEffect	(
 			monster_aura::post_effect_type	(),
 			m_object->ID						(),
 			m_pp_effector_name					);

@@ -206,6 +206,8 @@ void Fvisual::check_layout()
 
 void Fvisual::Render(float)
 {
+	if (dwPrimitives == 0)
+		return;
 	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && fast_usable())
 	{
 		RCache.set_Geometry(m_fast->rm_geom);

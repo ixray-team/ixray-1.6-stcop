@@ -116,7 +116,13 @@ void CControlDirection::pitch_correction() {
 	}
 
 	// get current plane
+	// Degraded: no AI-map nodes - there is no plane to correct against.
+	const ILevelGraph* levelGraph = ai().get_level_graph();
+	if (levelGraph == nullptr || !levelGraph->has_nodes())
+		return;
 	u32					node = m_object->ai_location().level_vertex_id();
+	if (!levelGraph->valid_vertex_id(node))
+		return;
 	Fplane				P;
 	pvDecompress(P.n, ai().level_graph().vertex(node)->plane());
 	P.d = -P.n.dotproduct(ai().level_graph().vertex_position(node));

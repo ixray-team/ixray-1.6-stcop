@@ -15,6 +15,8 @@
 
 void check_path	(const CBaseMonster *monster, const CPatrolPath *path)
 {
+	if (!path || path->vertices().empty())
+		return;
 	VERIFY2			(
 		ai().game_graph().vertex(
 			path->vertices().begin()->second->data().game_vertex_id()
@@ -53,7 +55,7 @@ void CMonsterHome::load(const char* line)
 	max_move_dist		= u32(10);
 
 	if (m_object->spawn_ini() && m_object->spawn_ini()->section_exist(line)) {
-		m_path			= ai().patrol_paths().path(m_object->spawn_ini()->r_string(line,"path"));
+		m_path			= ai().patrol_paths().shared_path(m_object->spawn_ini()->r_string(line,"path"), true);
 		check_path		(m_object,m_path);
 		if (m_object->spawn_ini()->line_exist(line,"radius_min"))
 			m_radius_min	= m_object->spawn_ini()->r_float(line,"radius_min");
@@ -90,7 +92,7 @@ void CMonsterHome::load(const char* line)
 
 void CMonsterHome::setup(const char* path_name, float min_radius, float max_radius, bool aggressive, float middle_radius)
 {
-	m_path			= ai().patrol_paths().path(path_name);
+	m_path = ai().patrol_paths().shared_path(path_name, true);
 	check_path		(m_object,m_path);
 	m_radius_min	= min_radius;
 	m_radius_max	= max_radius;

@@ -120,6 +120,7 @@ target_link_libraries(xrEngineCore PUBLIC Theora::theora)
 if (WIN32)
     target_link_libraries(xrEngineCore PRIVATE WindowsSDK::WinMM)
     target_link_libraries(xrEngineCore PRIVATE WindowsSDK::VFW32)
+    target_link_libraries(xrEngineCore PRIVATE WindowsSDK::DBGHELP)
 endif()
 
 ixray_split_compile(xrEngineCore)

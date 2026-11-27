@@ -66,6 +66,8 @@ protected:
 
 	INetQueue           net_Queue;
 	IClientStatistic    net_Statistic;
+	bool                DirectConnection = false;
+	bool                DirectConnectionConfigured = false;
 
 public:
 	BaseClient(CTimer* tm);
@@ -94,6 +96,8 @@ protected:
 public:
 	bool                Connect(const char* options);
 	void                Disconnect();
+	void                SetDirectConnection(bool enabled) { DirectConnection = enabled; DirectConnectionConfigured = true; }
+	bool                UseDirectConnection() const { return DirectConnectionConfigured ? DirectConnection : psNET_direct_connect; }
 
 	ClientID const &	GetClientID() { return net_ClientID; };
 
@@ -122,6 +126,7 @@ public:
 	virtual void			  Flush_Send_Buffer();
 
 	virtual void        OnMessage(void* data, u32 size);
+	void                ReceiveLocalPacket(const void* data, u32 size);
 	virtual void        OnInvalidHost() {};
 	virtual void        OnInvalidPassword() {};
 	virtual void        OnSessionFull() {};

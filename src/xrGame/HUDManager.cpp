@@ -13,6 +13,7 @@
 #include "../../xrUI/UICursor.h"
 #include "../xrEngine/string_table.h"
 #include "game_cl_base.h"
+#include "../xrScripts/script_engine.h"
 #ifdef	DEBUG
 #include "PHDebug.h"
 #endif
@@ -24,7 +25,12 @@
 extern CUIGameCustom* CurrentGameUI() { return g_hud ? ((CHUDManager*)g_hud)->GetGameUI() : nullptr; }
 
 //--------------------------------------------------------------------
-CHUDManager::CHUDManager() : pUIGame(nullptr), m_pHUDTarget(new CHUDTarget())
+bool CHUDManager::ReadyForFrame() const
+{
+	return b_online && g_pGameLevel != nullptr && g_pGameLevel->bReady;
+}
+
+CHUDManager::CHUDManager() : pUIGame(nullptr), m_pHUDTarget(new CHUDTarget()), b_online(false)
 { 
 }
 //--------------------------------------------------------------------
@@ -42,7 +48,7 @@ CHUDManager::~CHUDManager()
 //--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
-	if(!b_online)						
+	if(!ReadyForFrame())
 		return;
 
 	PROF_EVENT("CHUDManager::OnFrame");
@@ -57,16 +63,14 @@ void CHUDManager::OnFrame()
 xrCriticalSection ui_lock;
 void CHUDManager::OnFrameMT()
 {
-	if(!b_online)						
+	if(!ReadyForFrame())
 		return;
 	PROF_EVENT("CHUDManager::OnFrameMT");
 
 	CCutsceneManager::GetInstance().Update();
 
-	if (Device.dwPrecacheFrame == 0)
+	if (Device.dwPrecacheFrame == 0 && g_ai_space != nullptr && ai().get_alife() != nullptr)
 		Level().GameTaskManager()->UpdateTasks();
-
-	CCutsceneManager::GetInstance().Update();
 
 	xrCriticalSectionGuard guard(&ui_lock);
 	if (pUIGame) 
@@ -78,6 +82,8 @@ ENGINE_API extern float psHUD_FOV;
 
 void CHUDManager::Render_First()
 {
+	if (!ReadyForFrame())
+		return;
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))
 	{
 		return;
@@ -136,6 +142,8 @@ bool need_render_hud()
 
 void CHUDManager::Render_Last()
 {
+	if (!ReadyForFrame())
+		return;
 	CinemaFilmMaker_Render();
 
 	CObject* O = g_pGameLevel->CurrentViewEntity();
@@ -147,7 +155,9 @@ void CHUDManager::Render_Last()
 	CCutsceneManager::GetInstance().Render();
 
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))return;
-	if (0==pUIGame)					return;
+	// A HUD-less parallel session still renders its hands through g_player_hud;
+	// when a game UI exists it belongs to this level, not the primary session.
+	if (0==pUIGame && !(g_pGameLevel && g_pGameLevel->IsParallel()))	return;
 
 	if(!need_render_hud())			return;
 
@@ -161,6 +171,8 @@ void CHUDManager::Render_Last()
 #include "player_hud.h"
 bool   CHUDManager::RenderActiveItemUIQuery()
 {
+	if (!ReadyForFrame())
+		return false;
 	if (!psHUD_Flags.is(HUD_DRAW_RT2))	
 		return false;
 
@@ -173,6 +185,8 @@ bool   CHUDManager::RenderActiveItemUIQuery()
 
 void   CHUDManager::RenderActiveItemUI()
 {
+	if (!ReadyForFrame())
+		return;
 	if (!psHUD_Flags.is(HUD_DRAW_RT2))	
 		return;
 
@@ -186,7 +200,7 @@ void  CHUDManager::RenderUI()
 	if (!psHUD_Flags.is(HUD_DRAW_RT2))	
 		return;
 
-	if(!b_online)					return;
+	if(!ReadyForFrame())					return;
 	PROF_EVENT("CHUDManager::RenderUI");
 	if (true /*|| psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
 	{
@@ -291,6 +305,7 @@ void CHUDManager::Load()
 	{
 		pUIGame->SetClGame	(&Game());
 	}
+	g_pGameCustom = pUIGame;
 	InitializePauseStatic();
 }
 

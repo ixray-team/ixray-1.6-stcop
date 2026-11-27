@@ -33,9 +33,10 @@ const float MAX_DIST_FACTOR = 0.95f;
 
 //////////////////////////////////////////////////////////////////////////
 // environment
-CEnvironment::CEnvironment	() :
+CEnvironment::CEnvironment	(bool SharedRenderer) :
 	CurrentEnv				(0),
-	m_ambients_config		(0)
+	m_ambients_config		(0),
+	SharedRenderer(SharedRenderer)
 {
 	bNeed_re_create_env = false;
 	bWFX					= false;

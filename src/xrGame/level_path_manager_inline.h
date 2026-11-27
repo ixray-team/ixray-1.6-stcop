@@ -31,6 +31,8 @@ IC	void CLevelManagerTemplate::reinit(const ILevelGraph *graph)
 TEMPLATE_SPECIALIZATION
 IC	bool CLevelManagerTemplate::actual() const
 {
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+		return false;
 	if (GraphRevision != ai().level_graph().EditorRevision)
 	{
 		return false;
@@ -41,6 +43,11 @@ IC	bool CLevelManagerTemplate::actual() const
 TEMPLATE_SPECIALIZATION
 IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
 {
+	if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+	{
+		inherited::build_path(start_vertex_id, dest_vertex_id);
+		return;
+	}
 	if (GraphRevision != ai().level_graph().EditorRevision)
 	{
 		GraphRevision = ai().level_graph().EditorRevision;

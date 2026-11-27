@@ -623,6 +623,8 @@ IC	float ILevelGraph::low_cover_in_direction(float angle, u32 vertex_id) const
 
 IC	u32	 ILevelGraph::check_position_in_direction	(u32 start_vertex_id, const Fvector2 &start_position, const Fvector2 &finish_position) const
 {
+	if (!valid_vertex_id(start_vertex_id))
+		return u32(-1);
 	if (inside(start_vertex_id,finish_position))
 		return				(start_vertex_id);
 	return					(check_position_in_direction_slow(start_vertex_id,start_position,finish_position));

@@ -10,7 +10,6 @@
 
 #include "pch_script.h"
 #include "Level.h"
-#include "UIWorldSpace.h"
 #include "Actor.h"
 #include "script_game_object.h"
 #include "patrol_path_storage.h"
@@ -666,13 +665,10 @@ CEnvDescriptor *current_environment(CEnvironment *self_)
 	return		self_->CurrentEnv;
 }
 
-extern bool g_bDisableAllInput;
-extern bool g_bDisableMouseMove;
-
 void disable_input()
 {
-	g_bDisableAllInput = true;
-	g_bDisableMouseMove = true;
+	Level().InputDisabled = true;
+	Level().MouseMoveDisabled = true;
 #ifdef DEBUG
 	Msg("input disabled");
 #endif // #ifdef DEBUG
@@ -680,8 +676,8 @@ void disable_input()
 
 void enable_input()
 {
-	g_bDisableAllInput = false;
-	g_bDisableMouseMove = false;
+	Level().InputDisabled = false;
+	Level().MouseMoveDisabled = false;
 #ifdef DEBUG
 	Msg("input enabled");
 #endif // #ifdef DEBUG
@@ -689,7 +685,7 @@ void enable_input()
 
 void disable_mouse_move()
 {
-	g_bDisableMouseMove = true;
+	Level().MouseMoveDisabled = true;
 #ifdef DEBUG
 	Msg("mouse move disabled");
 #endif // #ifdef DEBUG
@@ -697,7 +693,7 @@ void disable_mouse_move()
 
 void enable_mouse_move()
 {
-	g_bDisableMouseMove = false;
+	Level().MouseMoveDisabled = false;
 #ifdef DEBUG
 	Msg("mouse move enabled");
 #endif // #ifdef DEBUG
@@ -973,37 +969,34 @@ u32 render_get_dx_level()
 	return ::Render->get_dx_level();
 }
 
-CUISequencer* g_tutorial = nullptr;
-CUISequencer* g_tutorial2 = nullptr;
-
 void start_tutorial(const char* name)
 {
-	if (load_screen_renderer.IsActive()) {
+	if (load_screen_renderer.IsActive() || g_pGameLevel == nullptr)
 		return;
+
+	IGame_Level::SLevelFlow& flow = g_pGameLevel->Flow;
+	if (flow.Tutorial)
+	{
+		VERIFY(!flow.RetiringTutorial);
+		flow.RetiringTutorial = flow.Tutorial;
 	}
 
-	if(g_tutorial){
-		VERIFY				(!g_tutorial2);
-		g_tutorial2			= g_tutorial;
-	};
-
-	g_tutorial							= new CUISequencer();
-	g_tutorial->Start					(name);
-	if(g_tutorial2)
-		g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
-
+	flow.Tutorial = new CUISequencer(g_pGameLevel);
+	flow.Tutorial->Start(name);
+	if (flow.RetiringTutorial)
+		flow.Tutorial->m_pStoredInputReceiver = flow.RetiringTutorial->m_pStoredInputReceiver;
 }
 
 void stop_tutorial()
 {
-	if(g_tutorial)
-		g_tutorial->Stop();	
+	if (g_pGameLevel != nullptr && g_pGameLevel->Flow.Tutorial)
+		g_pGameLevel->Flow.Tutorial->Stop();
 }
 
 const char* tutorial_name()
 {
-	if (g_tutorial)
-		return g_tutorial->m_name;
+	if (g_pGameLevel != nullptr && g_pGameLevel->Flow.Tutorial)
+		return g_pGameLevel->Flow.Tutorial->m_name;
 	return "invalid";
 }
 
@@ -1019,7 +1012,7 @@ const char* current_language()
 
 bool has_active_tutotial()
 {
-	return g_tutorial!=nullptr;
+	return g_pGameLevel != nullptr && g_pGameLevel->Flow.Tutorial != nullptr;
 }
 
 bool valid_vertex_id(u32 level_vertex_id) {

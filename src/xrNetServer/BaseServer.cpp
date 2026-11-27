@@ -41,7 +41,6 @@ BaseServer::~BaseServer()
 	BannedAddresses.clear();
 
 	SV_Client = nullptr;
-	psNET_direct_connect = false;
 
 	xr_delete(pSvNetLog);
 }
@@ -125,17 +124,18 @@ bool BaseServer::CreateConnection(GameDescriptionData& game_descr, ServerConnect
 BaseServer::EConnect BaseServer::Connect(const char* options, GameDescriptionData & game_descr)
 {
 	connect_options = options;
-	psNET_direct_connect = false;
-
-	if (strstr(options, "/single"))
-		psNET_direct_connect = true;
+	if (!DirectConnectionConfigured)
+	{
+		DirectConnection = strstr(options, "/single") != nullptr;
+		DirectConnectionConfigured = true;
+	}
 
 
 	// Parse options
 	ServerConnectionOptions connectOpt;
 	ParseConnectionOptions(options, connectOpt);
 
-	if (!psNET_direct_connect)
+	if (!UseDirectConnection())
 	{
 		bool success = CreateConnection(game_descr, connectOpt);
 		if (!success)
@@ -159,7 +159,7 @@ void BaseServer::Disconnect()
 {
 	DestroyConnection();
 
-	if (!psNET_direct_connect)
+	if (!UseDirectConnection())
 	{
 		BannedList_Save();
 		IpList_Unload();
@@ -554,7 +554,7 @@ bool BaseServer::HasBandwidth(IClient * C)
 	u32	dwTime = TimeGlobal(device_timer);
 	u32	dwInterval = 0;
 
-	if (psNET_direct_connect)
+	if (UseDirectConnection())
 	{
 		UpdateClientStatistic(C);
 		C->dwTime_LastUpdate = dwTime;

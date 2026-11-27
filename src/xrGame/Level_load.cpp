@@ -16,6 +16,8 @@
 #include "ElectronicsProblemsManager.h"
 #include "ParticlesObject.h"
 
+#include <filesystem>
+
 bool CLevel::Load_GameSpecific_Before()
 {
 	// AI space
@@ -23,36 +25,107 @@ bool CLevel::Load_GameSpecific_Before()
 	g_pGamePersistent->LoadTitle();
 	string_path fn_game;
 
-	if (GamePersistent().GameType() != eGameIDSingle && OnClient() && FS.exist(fn_game, "$level$", "alife.spawn")) 
+	if (HasLevelResource(ELevelResource::EnvModifiers))
+		LoadAuxiliaryResource(ELevelResource::EnvModifiers);
+	else
+		SetResourceState(ELevelResource::EnvModifiers, EResourceState::NotLoaded);
+
+	const bool wantGameGraph  = HasLevelResource(ELevelResource::GameGraph);
+	const bool wantPatrol     = HasLevelResource(ELevelResource::PatrolPaths);
+	const bool wantAiMap      = HasLevelResource(ELevelResource::AiMap);
+	const bool wantSpawn      = HasLevelResource(ELevelResource::Spawn);
+
+	if (wantSpawn && GamePersistent().GameType() != eGameIDSingle && OnClient() && FS.exist(fn_game, "$level$", "alife.spawn"))
 	{
 		spawn = FS.r_open(fn_game);
 		
 		IReader* chunk;
 
-		chunk = spawn->open_chunk(3);
-		R_ASSERT2(chunk, "Spawn version mismatch - REBUILD SPAWN!");
-		ai().patrol_path_storage(*chunk);
-		chunk->close();
-
-		m_chunk = spawn->open_chunk(4);
-		R_ASSERT2(m_chunk, "Spawn version mismatch - REBUILD SPAWN!");
-		ai().game_graph(new CGameGraph(*m_chunk));
-	}
-
-	if (!ai().get_alife())
-	{
-		if (FS.exist(fn_game, "$level$", "level.ai") && HasSessionName())
+		if (wantPatrol)
 		{
-			ai().load(net_SessionName());
+			chunk = spawn->open_chunk(3);
+			if (chunk)
+			{
+				ai().patrol_path_storage(*chunk);
+				chunk->close();
+				SetResourceState(ELevelResource::PatrolPaths, EResourceState::Ready);
+			}
+			else
+			{
+				Msg("! Load_GameSpecific_Before: patrol paths chunk is missing in alife.spawn");
+				SetResourceState(ELevelResource::PatrolPaths, EResourceState::Missing);
+			}
 		}
 
-		if (!g_dedicated_server && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
+		if (wantGameGraph)
+		{
+			m_chunk = spawn->open_chunk(4);
+			if (m_chunk)
+			{
+				ai().game_graph(new CGameGraph(*m_chunk));
+				SetResourceState(ELevelResource::GameGraph, EResourceState::Ready);
+			}
+			else
+			{
+				Msg("! Load_GameSpecific_Before: game graph chunk is missing in alife.spawn");
+				SetResourceState(ELevelResource::GameGraph, EResourceState::Missing);
+			}
+		}
+	}
+	else if (GamePersistent().GameType() != eGameIDSingle && OnClient())
+	{
+		if (wantSpawn)
+			SetResourceState(ELevelResource::Spawn, EResourceState::Missing);
+	}
+
+	if (wantGameGraph && LevelDesc.RemoteTransport && RemoteServerEndpoint() != nullptr && ai().get_game_graph() == nullptr)
+	{
+		const bool loaded = LoadGameGraphResource();
+		SetResourceState(ELevelResource::GameGraph, loaded ? EResourceState::Ready : EResourceState::Missing);
+		SetResourceState(ELevelResource::CrossTable, HasLevelResource(ELevelResource::CrossTable) && ai().get_cross_table() != nullptr ? EResourceState::Ready : EResourceState::NotLoaded);
+	}
+
+	if (!ai().get_alife() || LevelDesc.RemoteTransport)
+	{
+		// Parallel (viewer) sessions may not have a session name yet; the level
+		// name is equivalent for the AI-map load (and unused without a game graph).
+		const bool canLoadAiMap = HasSessionName() || GetLevelDesc().Parallel;
+		if (wantAiMap && FS.exist(fn_game, "$level$", "level.ai") && canLoadAiMap)
+		{
+			if (ai().get_level_graph() == nullptr || !ai().level_graph().has_nodes())
+			{
+				if (HasSessionName())
+					ai().load(net_SessionName());
+				else
+					ai().load(name().c_str());
+			}
+			SetResourceState(ELevelResource::AiMap, ai().get_level_graph() && ai().level_graph().has_nodes() ? EResourceState::Ready : EResourceState::Missing);
+		}
+		else
+		{
+			SetResourceState(ELevelResource::AiMap, wantAiMap ? EResourceState::Missing : EResourceState::NotLoaded);
+		}
+
+		// level.game patrol paths need the level graph; a game graph is optional
+		// for the raw loader (CPatrolPoint::load_raw tolerates nulls).
+		const bool canLoadPatrol = ai().get_game_graph() != nullptr || GetLevelDesc().Parallel;
+		if (wantPatrol && !g_dedicated_server && canLoadPatrol && FS.exist(fn_game, "$level$", "level.game"))
 		{
 			IReader* stream = FS.r_open(fn_game);
 			ai().patrol_path_storage_raw(*stream);
 			FS.r_close(stream);
+			SetResourceState(ELevelResource::PatrolPaths, EResourceState::Ready);
+		}
+		else if (wantPatrol && GetResourceState(ELevelResource::PatrolPaths) == EResourceState::NotLoaded)
+		{
+			SetResourceState(ELevelResource::PatrolPaths, EResourceState::Missing);
 		}
 	}
+
+	if ((IsGameTypeSingle() || IsServer()) && m_upgrade_manager == nullptr)
+		m_upgrade_manager = new inventory::upgrade::Manager();
+	if ((IsGameTypeSingle() || IsServer()) && m_electronics_problems_manager == nullptr)
+		m_electronics_problems_manager = new CElectronicsProblemsManager();
 
 	if (!IsGameTypeSingle() && OnClient())
 	{
@@ -69,81 +142,66 @@ bool CLevel::Load_GameSpecific_Before()
 bool CLevel::Load_GameSpecific_After()
 {
 	R_ASSERT(m_StaticParticles.empty());
-	// loading static particles
-	string_path		fn_game;
-	if (FS.exist(fn_game, "$level$", "level.ps_static")) 
-	{
-		IReader *F = FS.r_open	(fn_game);
+	string_path fn_game;
+	if (HasLevelResource(ELevelResource::StaticParticles))
+		LoadAuxiliaryResource(ELevelResource::StaticParticles);
+	else
+		SetResourceState(ELevelResource::StaticParticles, EResourceState::NotLoaded);
 
-		u32				chunk = 0;
-		string256		ref_name;
-		Fmatrix			transform;
-		Fvector			zero_vel_={0.f,0.f,0.f};
-		u32 ver			= 0;
-		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk,OBJ)) 
-		{
-			if(chunk==0)
-			{
-				if(OBJ->length()==sizeof(u32))
-				{
-					ver		= OBJ->r_u32();
-#ifndef MASTER_GOLD
-					Msg		("PS new version, %d", ver);
-#endif // #ifndef MASTER_GOLD
-					continue;
-				}
-			}
-			u16 gametype_usage				= 0;
-			if(ver>0)
-			{
-				gametype_usage				= OBJ->r_u16();
-			}
-			OBJ->r_stringZ					(ref_name,sizeof(ref_name));
-			OBJ->r							(&transform,sizeof(Fmatrix));transform.c.y+=0.01f;
-			
-						
-			if ((g_pGamePersistent->m_game_params.m_e_game_type & EGameIDs(gametype_usage)) || (ver == 0))
-			{
-				auto pStaticParticles = Particles::Details::Create(ref_name,false,false);
-				pStaticParticles->UpdateParent	(transform,zero_vel_);
-				pStaticParticles->Play			(false);
-				m_StaticParticles.push_back		(pStaticParticles);
-			}
-		}
-		FS.r_close		(F);
-	}
-	
 	if	(!g_dedicated_server)
 	{
 		// loading static sounds
-		VERIFY								(m_level_sound_manager);
-		m_level_sound_manager->Load			();
+		if (HasLevelResource(ELevelResource::StaticSounds))
+			LoadAuxiliaryResource(ELevelResource::StaticSounds);
+		else
+			SetResourceState(ELevelResource::StaticSounds, EResourceState::NotLoaded);
 
 		// loading sound environment
-		if ( FS.exist(fn_game, "$level$", "level.snd_env")) {
-			IReader *F				= FS.r_open	(fn_game);
-			::Sound->set_geometry_env(F);
-			FS.r_close				(F);
+		if (HasLevelResource(ELevelResource::SoundEnv))
+		{
+			if (IsParallel())
+			{
+				if (FS.exist(fn_game, "$level$", "level.snd_env"))
+				{
+					IReader* stream = FS.r_open(fn_game);
+					xr_delete(SoundGeometry.Env);
+					SoundGeometry.Env = Sound->create_geometry_env(stream, SoundGeometry.Zones);
+					FS.r_close(stream);
+				}
+				if (FS.exist(fn_game, "$level$", "level.som"))
+				{
+					IReader* stream = FS.r_open(fn_game);
+					xr_delete(SoundGeometry.Som);
+					SoundGeometry.Som = Sound->create_geometry_som(stream);
+					FS.r_close(stream);
+				}
+				SetResourceState(ELevelResource::SoundEnv, SoundGeometry.Env != nullptr || SoundGeometry.Som != nullptr ? EResourceState::Ready : EResourceState::Missing);
+			}
+			else
+			{
+				if ( FS.exist(fn_game, "$level$", "level.snd_env")) {
+					IReader *F				= FS.r_open	(fn_game);
+					::Sound->set_geometry_env(F);
+					FS.r_close				(F);
+				}
+				// loading SOM
+				if (FS.exist(fn_game, "$level$", "level.som")) {
+					IReader *F				= FS.r_open	(fn_game);
+					::Sound->set_geometry_som(F);
+					FS.r_close				(F);
+				}
+			}
 		}
-		// loading SOM
-		if (FS.exist(fn_game, "$level$", "level.som")) {
-			IReader *F				= FS.r_open	(fn_game);
-			::Sound->set_geometry_som(F);
-			FS.r_close				(F);
+		else
+		{
+			SetResourceState(ELevelResource::SoundEnv, EResourceState::NotLoaded);
 		}
 
 		// loading random (around player) sounds
-		if (pSettings->section_exist("sounds_random")){ 
-			CInifile::Sect& S		= pSettings->r_section("sounds_random");
-			Sounds_Random.reserve	(S.Data.size());
-			for (CInifile::SectCIt I=S.Data.begin(); S.Data.end()!=I; ++I) 
-			{
-				Sounds_Random.push_back	(ref_sound());
-				Sound->create			(Sounds_Random.back(),*I->first,st_Effect,sg_SourceType);
-			}
-			Sounds_Random_dwNextTime= Device.TimerAsync	()	+ 50000;
-			Sounds_Random_Enabled	= false;
-		}
+		if (HasLevelResource(ELevelResource::Ambience))
+			LoadAuxiliaryResource(ELevelResource::Ambience);
+		else
+			SetResourceState(ELevelResource::Ambience, EResourceState::NotLoaded);
 
 		if (g_pGamePersistent->pEnvironment) {
 			if (CEffect_Rain* rain = g_pGamePersistent->pEnvironment->eff_Rain) {
@@ -178,14 +236,17 @@ bool CLevel::Load_GameSpecific_After()
 	// loading scripts
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
 
-	if (pLevel->section_exist("level_scripts") && pLevel->line_exist("level_scripts", "script"))
-		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, new CScriptProcess("level", pLevel->r_string("level_scripts", "script")));
+	if (HasLevelResource(ELevelResource::LevelScripts))
+		LoadAuxiliaryResource(ELevelResource::LevelScripts);
 	else
-		ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorLevel, new CScriptProcess("level", ""));
+		SetResourceState(ELevelResource::LevelScripts, EResourceState::NotLoaded);
 		
 	BlockCheatLoad();
 
-	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),game->GetEnvironmentGameTimeFactor());
+	// game may legitimately be absent on degraded loads; fall back to the
+	// persistent environment time factor then.
+	const float timeFactor = game ? game->GetEnvironmentGameTimeFactor() : 1.f;
+	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(), timeFactor);
 
 	return true;
 }

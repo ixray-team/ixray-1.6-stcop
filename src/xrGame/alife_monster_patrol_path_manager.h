@@ -26,7 +26,7 @@ private:
 	object_type						*m_object;
 
 private:
-	const CPatrolPath				*m_path;
+	xr_shared_ptr<const CPatrolPath>	m_path;
 	EPatrolStartType				m_start_type;
 	EPatrolRouteType				m_route_type;
 	bool							m_use_randomness;

@@ -16,12 +16,36 @@
 
 #include "script_callback_ex.h"
 #include <luabind/class_info.hpp>
+#include <luabind/error.hpp>
 
 #ifdef IXRAY_PROFILER_TRACY
-	#include <tracy/TracyLua.hpp>
+	#define TRACY_CALLSTACK 8
+		#include <tracy/TracyLua.hpp>
+	#undef TRACY_CALLSTACK
 #endif
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
+
+namespace ScriptEngineDetail
+{
+	constexpr char RegistryKey[] = "ixray_script_engine";
+
+	CScriptEngine* ResolveEngine(lua_State* L)
+	{
+		if (L == nullptr)
+			return nullptr;
+		lua_pushlightuserdata(L, const_cast<char*>(RegistryKey));
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		CScriptEngine* engine = static_cast<CScriptEngine*>(lua_touserdata(L, -1));
+		lua_pop(L, 1);
+		return engine != nullptr && engine->lua() == L ? engine : nullptr;
+	}
+}
+
+CScriptEngine* CScriptEngine::EngineFromState(lua_State* L)
+{
+	return ScriptEngineDetail::ResolveEngine(L);
+}
 
 void jit_command(lua_State*, const char*);
 
@@ -52,15 +76,35 @@ void CScriptEngine::unload				()
 
 int CScriptEngine::lua_panic			(lua_State *L)
 {
-	g_pScriptEngine->print_stack();
+	if (CScriptEngine* engine = EngineFromState(L))
+		engine->print_stack();
 	print_output	(L,"PANIC",LUA_ERRRUN);
 	return			(0);
 }
 
+void LogScriptError(lua_State* state)
+{
+	const char* message = lua_isstring(state, -1) ? lua_tostring(state, -1) : lua_typename(state, lua_type(state, -1));
+	Msg("! [LUA] protected call failed: %s", message != nullptr ? message : "<non-string error>");
+	const int top = lua_gettop(state);
+	lua_getglobal(state, "debug");
+	if (lua_istable(state, -1))
+	{
+		lua_getfield(state, -1, "traceback");
+		if (lua_isfunction(state, -1))
+		{
+			lua_pushvalue(state, top);
+			lua_pushinteger(state, 2);
+			if (lua_pcall(state, 2, 1, 0) == 0 && lua_isstring(state, -1))
+				Msg("! [LUA] traceback: %s", lua_tostring(state, -1));
+		}
+	}
+	lua_settop(state, top);
+}
+
 void CScriptEngine::lua_error			(lua_State *L)
 {
-	print_output(L, "", LUA_ERRRUN);
-
+	LogScriptError(L);
 	g_pScriptEngine->on_error	(L);
 
 #if !XRAY_EXCEPTIONS
@@ -73,17 +117,9 @@ void CScriptEngine::lua_error			(lua_State *L)
 
 int CScriptEngine::lua_pcall_failed(lua_State* L)
 {
-	g_pScriptEngine->print_stack();
-	print_output(L, "", LUA_ERRRUN);
+	LogScriptError(L);
 	g_pScriptEngine->on_error(L);
-
-#if !XRAY_EXCEPTIONS
-	Debug.fatal(DEBUG_INFO, "LUA error: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
-#endif
-	if (lua_isstring(L, -1))
-		lua_pop(L, 1);
-
-	return (LUA_ERRRUN);
+	return 1;
 }
 
 void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
@@ -97,10 +133,8 @@ void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 int CScriptEngine::lua_pcall_message(lua_State* L)
 {
 	const char* message = lua_isstring(L, 1) ? lua_tostring(L, 1) : "(error object is not a string)";
-
 	if (Core.ParamsData.test(ECoreParams::use_callstack))
 		g_pScriptEngine->print_stack();
-
 	lua_getglobal(L, "debug");
 	if (lua_istable(L, -1))
 	{
@@ -113,7 +147,6 @@ int CScriptEngine::lua_pcall_message(lua_State* L)
 				return 1;
 		}
 	}
-
 	lua_settop(L, 1);
 	if (!lua_isstring(L, 1))
 		lua_pushstring(L, message);
@@ -123,12 +156,14 @@ int CScriptEngine::lua_pcall_message(lua_State* L)
 void CScriptEngine::setup_callbacks()
 {
 	luabind::set_pcall_callback(CScriptEngine::lua_pcall_message);
-
 #ifdef LUABIND_NO_EXCEPTIONS
 	luabind::set_error_callback(CScriptEngine::lua_error);
 	luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
 
+	lua_pushlightuserdata(lua(), const_cast<char*>(ScriptEngineDetail::RegistryKey));
+	lua_pushlightuserdata(lua(), this);
+	lua_rawset(lua(), LUA_REGISTRYINDEX);
 	lua_atpanic(lua(), CScriptEngine::lua_panic);
 }
 
@@ -136,8 +171,12 @@ void CScriptEngine::setup_callbacks()
 #	include "script_thread.h"
 void CScriptEngine::lua_hook_call		(lua_State *L, lua_Debug *dbg)
 {
-	if (g_pScriptEngine->current_thread())
-		g_pScriptEngine->current_thread()->script_hook(L,dbg);
+	CScriptEngine* engine = EngineFromState(L);
+	if (engine == nullptr)
+		return;
+	CScriptThread* thread = engine->current_thread();
+	if (thread != nullptr)
+		thread->script_hook(L, dbg);
 }
 #endif
 
@@ -153,10 +192,11 @@ int auto_load(lua_State* L)
 	}
 
 	xr_string file_name_space = lua_tostring(L, 2);
+	CScriptEngine* engine = static_cast<CScriptEngine*>(lua_touserdata(L, lua_upvalueindex(1)));
 
-	if (g_pScriptEngine->xray_scripts.contains(file_name_space))
+	if (engine != nullptr && engine->xray_scripts.contains(file_name_space))
 	{
-		g_pScriptEngine->process_file_if_exists(file_name_space.c_str(), false);
+		engine->process_file_if_exists(file_name_space.c_str(), false);
 		lua_rawget(L, 1);
 	}
 	else
@@ -171,7 +211,8 @@ void CScriptEngine::setup_auto_load		()
 {
 	luaL_newmetatable					(lua(),"XRAY_AutoLoadMetaTable");
 	lua_pushstring						(lua(),"__index");
-	lua_pushcfunction					(lua(), auto_load);
+	lua_pushlightuserdata				(lua(), this);
+	lua_pushcclosure					(lua(), auto_load, 1);
 	lua_settable						(lua(),-3);
 	lua_pushstring 						(lua(),"_G"); 
 	lua_gettable 						(lua(),LUA_GLOBALSINDEX); 
@@ -208,6 +249,8 @@ void CScriptEngine::setup_auto_load		()
 void CScriptEngine::init()
 {
 	PROF_EVENT("CScriptEngine::init");
+	if (g_object_factory != nullptr)
+		g_object_factory->release_script_engine(this);
 	for (int Iter = ScriptEngine::EScriptProcessors::eScriptProcessorLevel; Iter <= ScriptEngine::EScriptProcessors::eScriptProcessorHelper; Iter++)
 	{
 		if (CScriptProcess* ScriptProces = script_process((ScriptEngine::EScriptProcessors)Iter))
@@ -283,7 +326,7 @@ void CScriptEngine::init()
 
 #endif
 
-	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));
+	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess(*this, "ImHelper", ""));
 }
 
 void CScriptEngine::remove_script_process	(const EScriptProcessors &process_id)

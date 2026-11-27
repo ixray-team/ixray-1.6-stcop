@@ -103,6 +103,7 @@ class CEntityCondition: public CEntityConditionSimple, public CHitImmunity
 private:
 	bool					m_use_limping_state;
 	CEntityAlive			*m_object;
+	u8						ConditionVersion = 0;
 
 	static HitImmunity::HitTypeSVec m_GlobalWoundsFactorsForHitTypes;
 	static HitImmunity::HitTypeSVec m_GlobalBleedingsFactorsForHitTypes;
@@ -120,6 +121,7 @@ public:
 
 	virtual void			save					(NET_Packet &output_packet);
 	virtual void			load					(IReader &input_packet);
+	u8						SaveVersion			() const { return ConditionVersion; }
 	virtual void Serialize(ISaveObject& Object);
 
 	IC float				GetPower				() const			{return m_fPower;}	

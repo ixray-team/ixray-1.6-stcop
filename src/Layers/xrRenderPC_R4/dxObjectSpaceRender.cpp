@@ -16,12 +16,20 @@ dxObjectSpaceRender::~dxObjectSpaceRender()
 
 void dxObjectSpaceRender::Copy (IObjectSpaceRender &_in)
 {
-	*this = *(dxObjectSpaceRender*)&_in;
+	if (&_in == this)
+		return;
+	dxObjectSpaceRender& other = static_cast<dxObjectSpaceRender&>(_in);
+	xrCriticalSectionGuard guard(other.DebugLock);
+	m_shDebug = other.m_shDebug;
+	q_debug = other.q_debug;
+	dbg_S = other.dbg_S;
 }
 
 void dxObjectSpaceRender::dbgAddSphere(const Fsphere &sphere, u32 colour)
 {
-	dbg_S.push_back	(std::make_pair(sphere,colour));
+	xrCriticalSectionGuard guard(DebugLock);
+	if (dbg_S.size() < MaxDebugSpheres)
+		dbg_S.push_back(std::make_pair(sphere, colour));
 }
 
 void dxObjectSpaceRender::dbgRender()
@@ -41,16 +49,19 @@ void dxObjectSpaceRender::dbgRender()
 	}
 	q_debug.boxes.clear();
 
-	for (u32 i=0; i<dbg_S.size(); i++)
+	xr_vector<std::pair<Fsphere, u32>> spheres;
 	{
-		std::pair<Fsphere,u32>& P = dbg_S[i];
-		Fsphere&	S = P.first;
-		Fmatrix		M;
-		M.scale		(S.R,S.R,S.R);
-		M.translate_over(S.P);
-		RCache.dbg_DrawEllipse(M,P.second);
+		xrCriticalSectionGuard guard(DebugLock);
+		spheres.swap(dbg_S);
 	}
-	dbg_S.clear();
+	for (const std::pair<Fsphere, u32>& P : spheres)
+	{
+		const Fsphere& S = P.first;
+		Fmatrix M;
+		M.scale(S.R, S.R, S.R);
+		M.translate_over(S.P);
+		RCache.dbg_DrawEllipse(M, P.second);
+	}
 }
 
 void dxObjectSpaceRender::SetShader()

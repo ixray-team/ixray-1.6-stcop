@@ -105,7 +105,7 @@ bool CArtefact::net_Spawn(CSE_Abstract* DC)
 	bool result						= inherited::net_Spawn(DC);
 
 	m_CarringBoneID					= u16(-1);
-	IKinematicsAnimated	*K			= Visual()->dcast_PKinematicsAnimated();
+	IKinematicsAnimated	*K			= Visual() ? Visual()->dcast_PKinematicsAnimated() : nullptr;
 	if (K)
 		K->PlayCycle("idle");
 	
@@ -311,7 +311,8 @@ void CArtefact::shedule_Update		(u32 dt)
 void CArtefact::create_physic_shell()
 {
 	m_pPhysicsShell=P_build_Shell(this,false);
-	m_pPhysicsShell->Deactivate();
+	if (m_pPhysicsShell)
+		m_pPhysicsShell->Deactivate();
 }
 
 void CArtefact::StartLights()
@@ -700,10 +701,12 @@ void SArtefactDetectorsSupport::UpdateOnFrame()
 
 void SArtefactDetectorsSupport::FollowByPath(const char* path_name, int start_idx, Fvector force)
 {
-	m_currPatrolPath		= ai().patrol_paths().path(path_name,true);
+	m_currPatrolPath = ai().patrol_paths().shared_path(path_name, true);
 	if (m_currPatrolPath)
 	{
-		m_currPatrolVertex		= m_currPatrolPath->vertex(start_idx);
+		m_currPatrolVertex = m_currPatrolPath->vertex(start_idx);
+		if (!m_currPatrolVertex)
+			return;
 		m_destPoint				= m_currPatrolVertex->data().position();
 		m_path_moving_force		= force;
 	}

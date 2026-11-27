@@ -63,6 +63,16 @@ Documentation is part of the change:
 - Every change to such an editor must update its document in the same change: what the tool does, its controls, data sources (ltx/configs), limitations, and the post-build check list. The document is written for people who use the tool (modders), so keep it behaviour-level: no class names, function names or engine internals — those stay in the sources.
 - If the document does not exist yet, create `docs/engine/<tool>.md` and add it to the [docs/engine/README.md](docs/engine/README.md) table, so later work on that tree, on new features, or on new ImGui utilities starts from the written contract.
 
+## Parallel viewers
+
+Viewer sessions in `src/xrGame/ImUtils/Viewer` are created on the first menu/console request, not at DLL initialization. The main level and a viewer run on the primary thread through scoped context lending; worker threads must not observe borrowed global services. Each session owns its level, AI/script, physics, HUD, inspector and R4 scene state, with synchronized shared assets. This is not process isolation.
+
+Lua processes/threads retain their owning engine; debug hooks resolve that engine from the VM registry, not the active viewer. Primary HUD/UI references are captured explicitly for editor context lending. Keep asynchronous primary ALife loading on its worker with its own VM instead of serializing it through the viewer.
+
+Resource masks distinguish ready, not-loaded, missing and failed resources. Missing optional geometry, AI-map, graph, waypoints or HUD degrades the relevant feature without a fatal load. Spawn/client-data versions select object-ID widths; legacy looped-sound data is accepted only after validating its following marker. Sound-geometry swaps synchronize with audio/game queries using the geometry lock and per-thread colliders. NPC path/death recovery uses the entity's own graph position and actor cast, never a foreign player or an absent client owner. Keep upstream asynchronous level loading and AI preload; a viewer pumps equivalent stages under its owner instead of replacing the primary path.
+
+Use `docs/engine/level-viewer.md` for controls, memory/history and checks. Lifecycle/UI probes cover all viewers, save/load and Zaton-Jupiter-Pripyat transitions; R1/R2 and full campaign completion are not guaranteed.
+
 ## Autotest
 
 `xrEngine.exe -autotest … -autotest_cmd <cmds>`. `-autotest_cmd` must be last. Flags, exit code, and the renderer selection and motion-vector shader option: [docs/engine/lifecycle.md](docs/engine/lifecycle.md).

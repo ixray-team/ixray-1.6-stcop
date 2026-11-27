@@ -165,7 +165,7 @@ struct SArtefactDetectorsSupport
 
 	Fvector							m_path_moving_force;
 	u32								m_switchVisTime;
-	const CPatrolPath*				m_currPatrolPath;
+	xr_shared_ptr<const CPatrolPath>	m_currPatrolPath;
 	const CPatrolPath::CVertex*		m_currPatrolVertex;
 	Fvector							m_destPoint;
 

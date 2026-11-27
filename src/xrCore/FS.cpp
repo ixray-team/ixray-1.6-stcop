@@ -538,16 +538,12 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
 
 CVirtualFileReader::~CVirtualFileReader()
 {
-	if (Size == 0)
+	if (Size != 0)
 	{
-		return;
-	}
-
-    Platform::UnmapFile((void*)data, Size);
-
+		Platform::UnmapFile((void*)data, Size);
 #ifdef IXR_WINDOWS
-	CloseHandle(hSrcMap);
+		CloseHandle(hSrcMap);
 #endif
-
-    Platform::CloseFile(hSrcFile);
+	}
+	Platform::CloseFile(hSrcFile);
 }

@@ -86,6 +86,7 @@ void CSoundRender_Core::time_factor(float time_factor)
 
 float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 {
+	xrSRWLockGuard GeometryGuard(GeometryLock, true);
 	float occ_value = 1.f;
 
 	// Calculate RAY params
@@ -155,6 +156,7 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 
 float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion)
 {
+	xrSRWLockGuard GeometryGuard(GeometryLock, true);
 	float occ_value = 1.f;
 
 	if (geom_SOM) {
@@ -277,6 +279,11 @@ void CSoundRender_Core::_restart()
 	env_apply();
 }
 
+xrSRWLock& CSoundRender_Core::GetGeometryLock()
+{
+	return GeometryLock;
+}
+
 CDB::COLLIDER* CSoundRender_Core::get_geometry_db()
 {
 	return &geom_DB;
@@ -304,174 +311,220 @@ void CSoundRender_Core::set_handler(sound_event* E)
 
 void CSoundRender_Core::set_geometry_occ(CObjectSpace* M)
 {
-	geom_MODEL = M;
+	swap_geometry_occ(M);
+}
+
+CDB::MODEL* CSoundRender_Core::swap_geometry_env(CDB::MODEL* model)
+{
+	xrSRWLockGuard RenderGuard(XRay::Sound::Mixer::GetRenderMutex());
+	xrSRWLockGuard GeometryGuard(GeometryLock);
+	CDB::MODEL* previous = geom_ENV;
+	geom_ENV = model;
+	return previous;
+}
+
+CDB::MODEL* CSoundRender_Core::swap_geometry_som(CDB::MODEL* model)
+{
+	xrSRWLockGuard RenderGuard(XRay::Sound::Mixer::GetRenderMutex());
+	xrSRWLockGuard GeometryGuard(GeometryLock);
+	CDB::MODEL* previous = geom_SOM;
+	geom_SOM = model;
+	return previous;
+}
+
+CObjectSpace* CSoundRender_Core::swap_geometry_occ(CObjectSpace* model)
+{
+	xrSRWLockGuard RenderGuard(XRay::Sound::Mixer::GetRenderMutex());
+	xrSRWLockGuard GeometryGuard(GeometryLock);
+	CObjectSpace* previous = geom_MODEL;
+	geom_MODEL = model;
+	return previous;
+}
+
+CDB::MODEL* CSoundRender_Core::create_geometry_som(IReader* reader)
+{
+	if (reader == nullptr || !reader->find_chunk(0) || reader->elapsed() < sizeof(u32) || reader->r_u32() != 0)
+	{
+		Msg("! Sound geometry SOM has an unsupported or truncated header; disabling it");
+		return nullptr;
+	}
+	xr_unique_ptr<IReader> geom(reader->open_chunk(1));
+	if (geom == nullptr)
+		return nullptr;
+	struct SOM_poly
+	{
+		Fvector3 v1;
+		Fvector3 v2;
+		Fvector3 v3;
+		u32 b2sided;
+		float occ;
+	};
+	if (geom->length() % sizeof(SOM_poly) != 0)
+	{
+		Msg("! Sound geometry SOM contains a truncated polygon; disabling it");
+		return nullptr;
+	}
+	CDB::Collector collector;
+	collector.clear();
+	while (!geom->eof())
+	{
+		SOM_poly point;
+		geom->r(&point, sizeof(point));
+		if (!_valid(point.v1) || !_valid(point.v2) || !_valid(point.v3) || !_valid(point.occ))
+		{
+			Msg("! Sound geometry SOM contains an invalid polygon; disabling it");
+			return nullptr;
+		}
+		collector.add_face_packed_D(point.v1, point.v2, point.v3, *(u32*)&point.occ, 0.01f);
+		if (point.b2sided)
+			collector.add_face_packed_D(point.v3, point.v2, point.v1, *(u32*)&point.occ, 0.01f);
+	}
+	if (collector.getVS() < 4 || collector.getTS() < 2)
+	{
+		Msg("! Sound geometry SOM has too little collision data; disabling it");
+		return nullptr;
+	}
+	CDB::MODEL* model = new CDB::MODEL();
+	model->build(collector.getV(), collector.getVS(), collector.getT(), collector.getTS());
+	model->wait_loading();
+	return model;
 }
 
 void CSoundRender_Core::set_geometry_som(IReader* I)
 {
+	CDB::MODEL* previous = swap_geometry_som(create_geometry_som(I));
 #ifdef _EDITOR
-	ETOOLS::destroy_model(geom_SOM);
+	ETOOLS::destroy_model(previous);
 #else
-	xr_delete(geom_SOM);
+	xr_delete(previous);
 #endif
-	if (0 == I)		return;
-
-	// check version
-	R_ASSERT(I->find_chunk(0));
-	u32 version = I->r_u32();
-	VERIFY2(version == 0, "Invalid SOM version");
-	// load geometry	
-	IReader* geom = I->open_chunk(1);
-	VERIFY2(geom, "Corrupted SOM file");
-	// Load tris and merge them
-	struct SOM_poly {
-		Fvector3	v1;
-		Fvector3	v2;
-		Fvector3	v3;
-		u32			b2sided;
-		float		occ;
-	};
-	// Create AABB-tree
-	static CDB::Collector CL; CL.clear();
-	while (!geom->eof()) {
-		SOM_poly				P;
-		geom->r(&P, sizeof(P));
-		CL.add_face_packed_D(P.v1, P.v2, P.v3, *(u32*)&P.occ, 0.01f);
-		if (P.b2sided)
-			CL.add_face_packed_D(P.v3, P.v2, P.v1, *(u32*)&P.occ, 0.01f);
-	}
-
-	geom_SOM = new CDB::MODEL();
-	geom_SOM->verts = CL.verts;
-	geom_SOM->tris = CL.faces;
-	geom_SOM->build_simple();
-
-	geom->close();
 }
 
-void CSoundRender_Core::set_geometry_env(IReader* I)
+CDB::MODEL* CSoundRender_Core::create_geometry_env(IReader* reader, SoundZoneVector& zones)
 {
-	xr_delete(geom_ENV);
+	zones.clear();
+	if (reader == nullptr || s_environment == nullptr)
+		return nullptr;
 
-	// Level change: $level$ sounds resolve to other files under the same names
-	Snd_PurgeIdleSources();
-
-	if (I == nullptr || s_environment == nullptr)
-	{
-		return;
-	}
-
-	// Associate names
 	xr_vector<u16> ids;
-	IReader* names = I->open_chunk(0);
+	xr_unique_ptr<IReader> names(reader->open_chunk(0));
+	if (names == nullptr)
+		return nullptr;
 	while (!names->eof())
 	{
-		string256 n;
-		names->r_stringZ(n, sizeof(n));
-
-		int id = s_environment->GetID(n);
-		R_ASSERT(id >= 0);
-
+		string256 name;
+		names->r_stringZ(name, sizeof(name));
+		const int id = s_environment->GetID(name);
+		if (id < 0)
+		{
+			Msg("! Sound environment '%s' is unavailable; disabling level sound geometry", name);
+			return nullptr;
+		}
 		ids.push_back(u16(id));
 	}
-	names->close();
 
-	// Load geometry
-	IReader* GeomChunk = I->open_chunk(1);
-
-	hdrCFORM H;
-	GeomChunk->r(&H, sizeof(hdrCFORM));
-
-	// The file stores 16-byte vanilla triangles; CDB::TRI is wider, so the chunk is copied into geom_ENV
-	// instead of being cast in place. The reader may also be a read-only mapping of the level file.
-	const size_t GeomBytes = size_t(H.vertcount) * sizeof(Fvector) + size_t(H.facecount) * sizeof(CDB::TRI_Vanilla);
-	if (size_t(GeomChunk->elapsed()) < GeomBytes || H.facecount % 12 != 0)
+	xr_unique_ptr<IReader> geometryChunk(reader->open_chunk(1));
+	if (geometryChunk == nullptr || geometryChunk->length() < sizeof(hdrCFORM))
+		return nullptr;
+	const u8* bytes = static_cast<const u8*>(geometryChunk->pointer());
+	xr_vector<u8> data(bytes, bytes + geometryChunk->length());
+	IReader geometry(data.data(), data.size(), 0);
+	hdrCFORM header;
+	geometry.r(&header, sizeof(header));
+	if (header.vertcount == 0 || header.facecount == 0 || header.facecount % 12 != 0 ||
+		size_t(header.vertcount) * sizeof(Fvector) + size_t(header.facecount) * sizeof(CDB::TRI_Vanilla) > geometry.elapsed())
 	{
-		Msg("! [Sound] level.snd_env: broken geometry chunk (verts: %u, faces: %u), reverb zones are disabled", H.vertcount, H.facecount);
-		GeomChunk->close();
-		return;
+		Msg("! Sound environment geometry has an invalid or truncated layout; disabling it");
+		return nullptr;
+	}
+	xr_vector<Fvector> vertices(header.vertcount);
+	geometry.r(vertices.data(), vertices.size() * sizeof(Fvector));
+	xr_vector<CDB::TRI> triangles(header.facecount);
+	for (CDB::TRI& triangle : triangles)
+	{
+		CDB::TRI_Vanilla packed;
+		geometry.r(&packed, sizeof(packed));
+		std::copy(std::begin(packed.verts), std::end(packed.verts), triangle.verts);
+		triangle.dummy = packed.dummy;
+		triangle.StreamedSectorID = 0;
 	}
 
-	geom_ENV = new CDB::MODEL();
-	xr_vector<Fvector>& verts = geom_ENV->get_verts();
-	xr_vector<CDB::TRI>& tris = geom_ENV->get_tris();
-	verts.resize(H.vertcount);
-	GeomChunk->r(verts.data(), H.vertcount * sizeof(Fvector));
-	tris.resize(H.facecount);
-	for (CDB::TRI& Tri : tris)
-	{
-		CDB::TRI_Vanilla Packed;
-		GeomChunk->r(&Packed, sizeof(Packed));
-		std::copy(std::begin(Packed.verts), std::end(Packed.verts), Tri.verts);
-		Tri.dummy = Packed.dummy;
-		Tri.StreamedSectorID = 0;
-	}
-	GeomChunk->close();
-
-	Mixer::ResetZones();
-
-	// Every zone is a box of 12 triangles; dummy holds the front/back environment ids and is replaced with the zone index
-	for (u32 idx_offset = 0; idx_offset < H.facecount; idx_offset += 12)
+	for (u32 offset = 0; offset < header.facecount; offset += 12)
 	{
 		sound_zone_params params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
-
-		u16 base_id_front = (u16)((tris[idx_offset].dummy & 0x0000ffff) >> 0);
-		u16 base_id_back = (u16)((tris[idx_offset].dummy & 0xffff0000) >> 16);
-		u32 id = base_id_back;
-		R_ASSERT2(id < ids.size(), "level.snd_env: environment id out of range");
-
-		for (u32 i = 0; i < 12; i++)
+		const u16 baseIdFront = u16(triangles[offset].dummy & 0x0000ffff);
+		const u16 baseIdBack = u16((triangles[offset].dummy & 0xffff0000) >> 16);
+		if (baseIdBack >= ids.size())
 		{
-			CDB::TRI& T = tris[idx_offset + i];
-
-			u16 id_front = (u16)((T.dummy & 0x0000ffff) >> 0); //	front face
-			u16 id_back = (u16)((T.dummy & 0xffff0000) >> 16); //	back face
-			R_ASSERT(id_front == base_id_front);
-			R_ASSERT(id_back == base_id_back);
-
-			// T.dummy = u32(ids[id_back] << 16) | u32(ids[id_front]); // old gsc kal
-			T.dummy = (u32)Mixer::GetZones().size();
-
-			for (u32 v = 0; v < 3; v++)
-			{
-				R_ASSERT2(T.verts[v] < H.vertcount, "level.snd_env: vertex index out of range");
-				params.min.min(verts[T.verts[v]]);
-				params.max.max(verts[T.verts[v]]);
-			}
+			Msg("! Sound environment zone index is invalid; disabling it");
+			return nullptr;
 		}
-
-		const CSoundRender_Environment* LocalEnv = s_environment->Get(ids[id]);
-		R_ASSERT(LocalEnv);
-
-		params.version = LocalEnv->version;
-		params.name = LocalEnv->name;
-		params.environment = LocalEnv->Environment;
-		params.settings.room = LocalEnv->Room;
-		params.settings.room_hf = LocalEnv->RoomHF;
-		params.settings.room_rolloff_factor = LocalEnv->RoomRolloffFactor;
-		params.settings.decay_time = LocalEnv->DecayTime;
-		params.settings.decay_hf_ratio = LocalEnv->DecayHFRatio;
-		params.settings.reflections = LocalEnv->Reflections;
-		params.settings.reflections_delay = LocalEnv->ReflectionsDelay;
-		params.settings.reverb = LocalEnv->Reverb;
-		params.settings.reverb_delay = LocalEnv->ReverbDelay;
-		params.settings.environment_size = LocalEnv->EnvironmentSize;
-		params.settings.environment_diffusion = LocalEnv->EnvironmentDiffusion;
-		params.settings.air_absorption_hf = LocalEnv->AirAbsorptionHF;
-
+		for (size_t i = 0; i < 12; ++i)
+		{
+			CDB::TRI* triangle = &triangles[offset + i];
+			const u16 idFront = u16(triangle->dummy & 0x0000ffff);
+			const u16 idBack = u16((triangle->dummy & 0xffff0000) >> 16);
+			if (idFront != baseIdFront || idBack != baseIdBack)
+			{
+				Msg("! Sound environment zone has inconsistent triangles; disabling it");
+				return nullptr;
+			}
+			for (u32 vertex : triangle->verts)
+			{
+				if (vertex >= header.vertcount || !_valid(vertices[vertex]))
+				{
+					Msg("! Sound environment zone has an invalid vertex; disabling it");
+					return nullptr;
+				}
+				params.min.min(vertices[vertex]);
+				params.max.max(vertices[vertex]);
+			}
+			triangle->dummy = zones.size();
+		}
+		const CSoundRender_Environment* localEnvironment = s_environment->Get(ids[baseIdBack]);
+		if (localEnvironment == nullptr)
+			return nullptr;
+		params.version = localEnvironment->version;
+		params.name = localEnvironment->name;
+		params.environment = localEnvironment->Environment;
+		params.settings.room = localEnvironment->Room;
+		params.settings.room_hf = localEnvironment->RoomHF;
+		params.settings.room_rolloff_factor = localEnvironment->RoomRolloffFactor;
+		params.settings.decay_time = localEnvironment->DecayTime;
+		params.settings.decay_hf_ratio = localEnvironment->DecayHFRatio;
+		params.settings.reflections = localEnvironment->Reflections;
+		params.settings.reflections_delay = localEnvironment->ReflectionsDelay;
+		params.settings.reverb = localEnvironment->Reverb;
+		params.settings.reverb_delay = localEnvironment->ReverbDelay;
+		params.settings.environment_size = localEnvironment->EnvironmentSize;
+		params.settings.environment_diffusion = localEnvironment->EnvironmentDiffusion;
+		params.settings.air_absorption_hf = localEnvironment->AirAbsorptionHF;
 		params.center = params.max;
 		params.center.add(params.min);
 		params.center.div(2);
 		params.size = params.max;
 		params.size.sub(params.min);
 		params.size.div(2);
-
-		Mixer::AddZone(params);
+		XRay::Sound::Mixer::PrepareZone(params);
+		zones.push_back(params);
 	}
 
-	geom_ENV->build_simple();
+	CDB::MODEL* model = new CDB::MODEL();
+	model->build(vertices.data(), header.vertcount, triangles.data(), header.facecount);
+	model->wait_loading();
+	return model;
+}
+
+void CSoundRender_Core::set_geometry_env(IReader* I)
+{
+	Snd_PurgeIdleSources();
+	SoundZoneVector zones;
+	CDB::MODEL* model = create_geometry_env(I, zones);
+	if (model != nullptr)
+		Mixer::SwapZones(zones);
+	xr_delete(swap_geometry_env(model));
 }
 
 void CSoundRender_Core::set_master_volume(float f)
@@ -785,6 +838,7 @@ void CSoundRender_Core::refresh_sources()
 
 bool CSoundRender_Core::object_in_audiozone(const Fvector& P)
 {
+	xrSRWLockGuard GeometryGuard(GeometryLock, true);
 	if (geom_ENV)
 	{
 		Fvector dir = {0.0f, -1.0f, 0.0f};

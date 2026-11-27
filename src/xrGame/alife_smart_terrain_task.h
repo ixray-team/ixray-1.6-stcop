@@ -11,16 +11,19 @@
 #include "game_graph_space.h"
 
 class CPatrolPoint;
+class CPatrolPath;
+class CPatrolPathStorage;
 
 XREFLECT(LuaExport)
 class CALifeSmartTerrainTask
 {
 private:
-#ifdef DEBUG
-	shared_str m_patrol_path_name;
-	u32 m_patrol_point_index;
-#endif
-	const CPatrolPoint* m_patrol_point;
+	mutable shared_str m_patrol_path_name;
+	mutable u32 m_patrol_point_index = 0;
+	mutable xr_shared_ptr<const CPatrolPath> m_patrol_path;
+	mutable const CPatrolPathStorage* m_patrol_storage = nullptr;
+	mutable u32 m_patrol_revision = 0;
+	mutable const CPatrolPoint* m_patrol_point = nullptr;
 	GameGraph::_GRAPH_ID m_game_vertex_id;
 	u32 m_level_vertex_id;
 
@@ -30,7 +33,8 @@ private:
 	IC const u32& patrol_point_index() const;
 #endif
 
-	void setup_patrol_point(const shared_str& patrol_path_name, const u32& patrol_point_index);
+	void setup_patrol_point(const shared_str& patrol_path_name, const u32& patrol_point_index) const;
+	void RefreshPatrolPoint() const;
 	IC const CPatrolPoint& patrol_point() const;
 	IC void init(const shared_str& patrol_path_name, const u32& patrol_point_index);
 

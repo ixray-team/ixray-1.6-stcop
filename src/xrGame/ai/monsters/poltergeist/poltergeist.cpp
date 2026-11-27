@@ -156,7 +156,7 @@ bool CPoltergeist::check_work_condition() const
 void CPoltergeist::remove_pp_effector()
 {
 	if (m_detection_pp_effector_name && m_detection_pp_effector_name[0])
-		CActorAuraPostEffectsBalancer::UnregisterEffect(EAuraPostEffectType::Psi, ID(), m_detection_pp_effector_name);
+		Level().AuraEffects().UnregisterEffect(EAuraPostEffectType::Psi, ID(), m_detection_pp_effector_name);
 }
 
 void CPoltergeist::update_detection()
@@ -208,7 +208,7 @@ void CPoltergeist::update_detection()
 
 	if (m_current_detection_level > 0.01f && m_detection_pp_effector_name && m_detection_pp_effector_name[0])
 	{
-		CActorAuraPostEffectsBalancer::RegisterEffect(EAuraPostEffectType::Psi, get_post_process_factor(),
+		Level().AuraEffects().RegisterEffect(EAuraPostEffectType::Psi, get_post_process_factor(),
 													  ID(), get_detection_far_range(), m_detection_pp_effector_name);
 	}
 	else

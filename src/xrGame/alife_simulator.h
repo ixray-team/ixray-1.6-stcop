@@ -26,6 +26,7 @@ public:
 	virtual ~CALifeSimulator	() override;
 	virtual void	destroy				() override;
 	IReader const* get_config			( shared_str config ) const;
+	mutable u32 MissingObjectDiagnosticCount = 0;
 
 private:
 	typedef xr_list< std::pair<shared_str,IReader*> >	configs_type;

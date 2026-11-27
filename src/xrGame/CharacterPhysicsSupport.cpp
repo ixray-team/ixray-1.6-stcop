@@ -212,6 +212,11 @@ bool HACK_TERRIBLE_DONOT_COLLIDE_ON_SPAWN( CEntityAlive &ea )
 
 void CCharacterPhysicsSupport::SpawnInitPhysics( CSE_Abstract* e )
 {
+	// Degraded sessions (sandbox/viewer) may run with no physics world: the
+	// entity then keeps kinematic movement only instead of dereferencing a null
+	// ph_world inside the ODE character glue.
+	if (physics_world() == nullptr)
+		return;
 	if( m_EntityAlife.g_Alive( ) )
 	{
 #ifdef DEBUG

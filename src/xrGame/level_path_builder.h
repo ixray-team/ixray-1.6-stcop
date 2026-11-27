@@ -11,6 +11,7 @@
 #include "movement_manager.h"
 #include "level_path_manager.h"
 #include "detail_path_builder.h"
+#include "../xrEngine/IGame_Level.h"
 
 class CLevelPathBuilder : 
 	public CDetailPathBuilder
@@ -50,21 +51,25 @@ public:
 		m_use_delay_after_fail	= value;
 	}
 
-	IC void setup(const u32& start_vertex_id, const u32& dest_vertex_id, bool extrapolate_path, const Fvector* precise_position)
+	IC bool setup(const u32& start_vertex_id, const u32& dest_vertex_id, bool extrapolate_path, const Fvector* precise_position)
 	{
-		VERIFY				(ai().level_graph().valid_vertex_id(start_vertex_id));
-		m_start_vertex_id	= start_vertex_id;
-		
-		VERIFY				(ai().level_graph().valid_vertex_id(dest_vertex_id));
-		m_dest_vertex_id	= dest_vertex_id;
-
-		m_extrapolate_path		= extrapolate_path;
+		m_start_vertex_id = start_vertex_id;
+		m_dest_vertex_id = dest_vertex_id;
+		m_extrapolate_path = extrapolate_path;
 		if (!precise_position)
-			m_precise_position	= 0;
+			m_precise_position = 0;
 		else {
-			m_temp			= *precise_position;
-			m_precise_position	= &m_temp;
+			m_temp = *precise_position;
+			m_precise_position = &m_temp;
 		}
+
+		const ILevelGraph* Graph = ai().get_level_graph();
+		if (Graph == nullptr || !Graph->has_nodes() || !Graph->valid_vertex_id(start_vertex_id) || !Graph->valid_vertex_id(dest_vertex_id))
+		{
+			m_object->level_path().make_inactual();
+			return false;
+		}
+		return true;
 	}
 
 	void register_to_process()
@@ -73,7 +78,7 @@ public:
 			return;
 
 		m_object->m_wait_for_distributed_computation	= true;
-		Device.seqParallel.push_back(xr_make_delegate(this,&CLevelPathBuilder::process));
+		SeqParallelPush(xr_make_delegate(this,&CLevelPathBuilder::process));
 	}
 
 	void process_impl()
@@ -118,6 +123,6 @@ public:
 		if (m_object->m_wait_for_distributed_computation)
 			m_object->m_wait_for_distributed_computation = false;
 
-		Device.remove_from_seq_parallel(xr_make_delegate(this, &CLevelPathBuilder::process));
+		SeqParallelRemove(xr_make_delegate(this, &CLevelPathBuilder::process));
 	}
 };

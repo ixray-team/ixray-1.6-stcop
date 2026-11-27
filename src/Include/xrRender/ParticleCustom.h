@@ -58,6 +58,16 @@ namespace PAPI
 	struct ParticleAction;
 }
 
+class IGame_Level;
+class ISpatial_DB;
+
+struct SParticleLevelContext
+{
+	IGame_Level* Level = nullptr;
+	ISpatial_DB* Spatial = nullptr;
+	ISpatial_DB* SpatialPhysic = nullptr;
+};
+
 class IParticleCustom
 {
 public:
@@ -88,6 +98,8 @@ public:
 	virtual bool	GetLiveUpdate		()=0;
 
 	virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) = 0;
+	virtual void SetLevelContext(const SParticleLevelContext&) {}
+	virtual const SParticleLevelContext* GetLevelContext() const { return nullptr; }
 
 	virtual IParticleCustom* dcast_ParticleCustom() { return this; }
 };

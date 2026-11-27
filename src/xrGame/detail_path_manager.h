@@ -182,6 +182,7 @@ public:
 			IC bool completed(const Fvector& position, bool bRealCompleted, const u32& travel_point_point_index) const;
 			IC bool completed(const Fvector& position, bool bRealCompleted = true) const;
 			bool	valid						(const Fvector &position) const;
+	IC		bool	has_next_travel_point		() const;
 	IC		u32		curr_travel_point_index		() const;
 
 public:

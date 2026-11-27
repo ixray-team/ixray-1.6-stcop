@@ -17,6 +17,7 @@ class	NET_Packet	;
 
 class CSE_Abstract;
 class CGameObject;
+class ENGINE_API IGame_Level;
 class CActor;
 class CInventoryItem;
 class CEntity;
@@ -305,6 +306,8 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	ICF bool							getReady			()			const	{ return Props.net_Ready;			}
 
 	//---------------------------------------------------------------------
+	IGame_Level* OwnerLevel = nullptr;
+	IGame_Level& OwningLevel() const;
 										CObject				();
 	virtual ~CObject			() override;
 

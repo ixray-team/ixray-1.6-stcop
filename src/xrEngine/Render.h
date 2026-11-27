@@ -5,6 +5,8 @@
 #include "vis_common.h"
 
 #include "WallmarkHandle.h"
+#include "../Include/xrRender/ParticleDefinition.h"
+#include "../Include/xrRender/particles_systems_library_interface.hpp"
 #include "../xrCore/Kernel/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../xrRHI/RHI.h"
@@ -22,7 +24,24 @@ class ENGINE_API	IRenderable;
 class IRenderVisual;
 class IKinematics;
 class CGameFont;
+class IRHIBuffer;
 class IRHISurface;
+class IRHIShaderResourceView;
+
+struct SRuntimeBufferSlice
+{
+	IRHIBuffer* Buffer = nullptr;
+	u32 Offset = u32(-1);
+	bool IsIndex = false;
+};
+
+class IRenderRuntimeBufferAllocator
+{
+public:
+	virtual SRuntimeBufferSlice Allocate(const void* data, u32 bytes, bool isIndex) = 0;
+	virtual void Release(const SRuntimeBufferSlice& slice) = 0;
+};
+class CEnvironment;
 struct RHITextureMetadata;
 
 enum class EModelLoadState : u8
@@ -255,6 +274,22 @@ public:
 
 	virtual	void					level_Load				(IReader*)									{};
 	virtual void					level_Unload			()											{};
+	virtual bool					HasLevelScene			() const									{ return true; }
+
+	// Each scene owns its level hierarchy, frame targets and temporal history.
+	// Sessions activate their scene around loading, simulation and rendering;
+	// the device and immutable asset caches remain shared.
+	virtual IRender_interface* create_scene() { return nullptr; }
+	virtual void destroy_scene() {}
+	virtual void update_scene() {}
+	virtual IRHIShaderResourceView* get_scene_color() const { return nullptr; }
+	virtual IRHIShaderResourceView* get_scene_ui_color() const { return nullptr; }
+	virtual void set_scene_render_target() {}
+	virtual void set_scene_overlay_target() {}
+	virtual IRHIShaderResourceView* get_scene_texture(const char* name) const { return nullptr; }
+	virtual shared_str scene_resource_name(const char* name) const { return shared_str(name); }
+	virtual const char* scene_resource_prefix() const { return ""; }
+	virtual void set_fallback_sky(CEnvironment& env) { (void)env; }
 
 	virtual bool					InIndoor				()											{ return false; }
 	virtual size_t					SectorsCount			()											{ return size_t(0); }
@@ -276,6 +311,7 @@ public:
 	virtual IRender_Sector*			getSector				(int id)									{return 0;};
 	virtual IRenderVisual*			getVisual				(int id)									{return 0;};
 	virtual IRender_Sector*			detectSector			(const Fvector& P)							{return 0;};
+	virtual IRender_Sector*			getSectorActive			()											{return 0;};
 	virtual IRender_Target*			getTarget				()											{return 0;};
 
 	struct SurfaceParams
@@ -322,6 +358,14 @@ public:
 
 	// Models
 	virtual IRenderVisual*			model_CreateParticles	(const char* name)								{return nullptr;}
+	virtual particles_systems::library_interface* particle_library() { return nullptr; }
+	virtual IParticleDefinition* find_particle_definition(const char* name) { return nullptr; }
+	virtual IParticleDefinition* create_particle_definition(IReader& reader) { return nullptr; }
+	virtual bool validate_particle_definition(IReader& reader) { return false; }
+	virtual void destroy_particle_definition(IParticleDefinition*& definition) { xr_delete(definition); }
+	virtual IRenderVisual* model_CreateParticleDefinition(IParticleDefinition* definition) { return nullptr; }
+	virtual float particle_source_rate(IRenderVisual* visual) const { return 1.f; }
+	virtual bool set_particle_source_rate(IRenderVisual* visual, float rate) { return false; }
 	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=nullptr)				{return nullptr;}
 	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return nullptr;}
 	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return nullptr;}
@@ -333,6 +377,14 @@ public:
 	virtual EModelLoadState			model_GetState			(const char* name)							{return EModelLoadState::Ready;}
 	virtual void					models_WaitRequests		()											{}
 	virtual void					models_GetLoaded		(xr_vector<shared_str>& Names)				{}
+
+	virtual IRenderVisual* CreateRuntimeTerrainScene(const Fvector* positions, u32 vertCount, const u32* indices, u32 indexCount, float uvWorldScale, const char* textureName, IRenderRuntimeBufferAllocator* bufferAllocator = nullptr) { return nullptr; }
+	virtual void DestroyRuntimeTerrainScene() {}
+	virtual bool HasRuntimeTerrainScene() const { return false; }
+	virtual void set_wireframe_mode(u32 mode, u16 objectId) { (void)mode; (void)objectId; }
+	static constexpr u16 RenderWireframeAll = u16(-1);
+	static constexpr u16 RenderWireframeTerrain = u16(-2);
+	static constexpr u16 RenderWireframeStatic = u16(-3);
 
 	// Occlusion culling
 	virtual bool					occ_visible				(vis_data&	V)								{return false;};

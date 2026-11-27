@@ -15,7 +15,7 @@
 
 const char* main_function = "console_command_run_string_main_thread_function";
 
-CScriptThread::CScriptThread(const char* caNamespaceName, bool do_string, bool reload)
+CScriptThread::CScriptThread(CScriptEngine& engine, const char* caNamespaceName, bool do_string, bool reload) : Owner(&engine)
 {
 	m_virtual_machine = 0;
 	m_active = false;
@@ -25,34 +25,34 @@ CScriptThread::CScriptThread(const char* caNamespaceName, bool do_string, bool r
 		string4096 S; // Maybe I don't understand something, but 256 symbols in buffer is not enough
 		if (!do_string) {
 			m_script_name = caNamespaceName;
-			g_pScriptEngine->process_file(caNamespaceName, reload);
+			Owner->process_file(caNamespaceName, reload);
 		}
 		else
 		{
 			m_script_name = "console command";
 			xr_sprintf(S, "function %s()\n%s\nend\n", main_function, caNamespaceName);
-			int l_iErrorCode = luaL_loadbuffer(g_pScriptEngine->lua(), S, xr_strlen(S), "@console_command");
+			int l_iErrorCode = luaL_loadbuffer(Owner->lua(), S, xr_strlen(S), "@console_command");
 
 			if (!l_iErrorCode)
 			{
-				l_iErrorCode = lua_pcall(g_pScriptEngine->lua(), 0, 0, 0);
+				l_iErrorCode = lua_pcall(Owner->lua(), 0, 0, 0);
 
 				if (l_iErrorCode) 
 				{
-					g_pScriptEngine->print_output(g_pScriptEngine->lua(), *m_script_name, l_iErrorCode);
-					g_pScriptEngine->on_error(g_pScriptEngine->lua());
+					Owner->print_output(Owner->lua(), *m_script_name, l_iErrorCode);
+					Owner->on_error(Owner->lua());
 					return;
 				}
 			}
 			else
 			{
-				g_pScriptEngine->print_output(g_pScriptEngine->lua(), *m_script_name, l_iErrorCode);
-				g_pScriptEngine->on_error(g_pScriptEngine->lua());
+				Owner->print_output(Owner->lua(), *m_script_name, l_iErrorCode);
+				Owner->on_error(Owner->lua());
 				return;
 			}
 		}
 
-		m_virtual_machine = lua_newthread(g_pScriptEngine->lua());
+		m_virtual_machine = lua_newthread(Owner->lua());
 
 		VERIFY2(lua(), "Cannot create new Lua thread");
 
@@ -65,7 +65,7 @@ CScriptThread::CScriptThread(const char* caNamespaceName, bool do_string, bool r
 		else
 			xr_sprintf(S, "%s()", main_function);
 
-		if (!g_pScriptEngine->load_buffer(lua(), S, xr_strlen(S), "@_thread_main"))
+		if (!Owner->load_buffer(lua(), S, xr_strlen(S), "@_thread_main"))
 			return;
 
 		m_active = true;
@@ -84,7 +84,7 @@ CScriptThread::~CScriptThread()
 	try 
 	{
 #ifndef LUABIND_HAS_BUGS_WITH_LUA_THREADS
-		luaL_unref			(g_pScriptEngine->lua(),LUA_REGISTRYINDEX,m_thread_reference);
+		luaL_unref			(Owner->lua(),LUA_REGISTRYINDEX,m_thread_reference);
 #endif
 	}
 	catch(...) {
@@ -97,14 +97,14 @@ bool CScriptThread::update()
 		R_ASSERT2		(false,"Cannot resume dead Lua thread!");
 
 	try {
-		g_pScriptEngine->current_thread	(this);
+		Owner->current_thread	(this);
 		
 		int					l_iErrorCode = lua_resume(lua(),0);
 		
 		if (l_iErrorCode && (l_iErrorCode != LUA_YIELD))
 		{
-			g_pScriptEngine->print_output(lua(), *script_name(), l_iErrorCode);
-			g_pScriptEngine->on_error(g_pScriptEngine->lua());
+			Owner->print_output(lua(), *script_name(), l_iErrorCode);
+			Owner->on_error(Owner->lua());
 			print_stack(lua());
 			m_active = false;
 		}
@@ -114,22 +114,22 @@ bool CScriptThread::update()
 			{
 				if (m_current_stack_level) 
 				{
-					g_pScriptEngine->print_output	(lua(),*script_name(),l_iErrorCode);
-					g_pScriptEngine->on_error		(g_pScriptEngine->lua());
+					Owner->print_output	(lua(),*script_name(),l_iErrorCode);
+					Owner->on_error		(Owner->lua());
 //					print_stack		(lua());
 				}
 				m_active	= false;
-				g_pScriptEngine->script_log	(ScriptStorage::eLuaMessageTypeInfo,"Script %s is finished!",*m_script_name);
+				Owner->script_log	(ScriptStorage::eLuaMessageTypeInfo,"Script %s is finished!",*m_script_name);
 			}
 			else {
 				VERIFY2		(!lua_gettop(lua()),"Do not pass any value to coroutine.yield()!");
 			}
 		}
 		
-		g_pScriptEngine->current_thread	(0);
+		Owner->current_thread	(0);
 	}
 	catch(...) {
-		g_pScriptEngine->current_thread	(0);
+		Owner->current_thread	(0);
 		m_active		= false;
 	}
 	return				(m_active);

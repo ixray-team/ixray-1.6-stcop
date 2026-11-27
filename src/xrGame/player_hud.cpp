@@ -2017,7 +2017,11 @@ void player_hud::load(const shared_str& player_hud_sect)
 		u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
 		if (l_arm != BI_NONE)
 		{
-			m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
+			// The bone callback receives only the bone; the owning hud instance
+			// travels in the callback param (was: global g_player_hud - crashes
+			// when no primary hud exists, and would drive the wrong instance
+			// for a second/parallel hud).
+			m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) { if (player_hud* self = static_cast<player_hud*>(B->callback_param())) self->LeftArmCallback(B); }, this);
 		}
 
 		auto& _sect = pSettings->r_section(player_hud_sect);
