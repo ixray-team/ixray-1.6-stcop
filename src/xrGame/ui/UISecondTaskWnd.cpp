@@ -209,6 +209,36 @@ void UITaskListWnd::Update()
 //	UpdateCounter();
 }
 
+void UITaskListWnd::Draw()
+{
+	xrCriticalSectionGuard Guard(csUi);
+
+	// Measure titles with the same font scale used to draw them on the PDA screen.
+	bool ListSizeChanged = false;
+	for (CUIWindow* Row : m_list->Items())
+	{
+		if (static_cast<UITaskListWndItem*>(Row)->LayoutTitle())
+		{
+			ListSizeChanged = true;
+		}
+	}
+	if (ListSizeChanged || ScrollPositionToRestore)
+	{
+		const int ScrollPosition = ScrollPositionToRestore.value_or(m_list->GetCurrentScrollPos());
+		m_list->ForceUpdate();
+		if (m_list->NeedShowScrollBar())
+		{
+			m_list->SetScrollPos(ScrollPosition);
+		}
+		else
+		{
+			m_list->ScrollToBegin();
+		}
+		ScrollPositionToRestore.reset();
+	}
+	inherited::Draw();
+}
+
 void UITaskListWnd::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 {
 	if (msg == TAB_CHANGED && m_filter_tabs && pWnd == m_filter_tabs)
@@ -291,7 +321,12 @@ void UITaskListWnd::UpdateStorylineTaskFocus()
 
 void UITaskListWnd::UpdateList()
 {
-	int prev_scroll_pos	= m_list->GetCurrentScrollPos	();
+	xrCriticalSectionGuard Guard(csUi);
+
+	if (!ScrollPositionToRestore)
+	{
+		ScrollPositionToRestore = m_list->GetCurrentScrollPos();
+	}
 
 	m_list->Clear();
 	
@@ -333,13 +368,6 @@ void UITaskListWnd::UpdateList()
 		}
 	}
 	m_list->UpdateChildrenLenght();
-	m_list->ForceUpdate();
-	if (!m_list->NeedShowScrollBar())
-	{
-		m_list->ScrollToBegin();
-		prev_scroll_pos = m_list->GetMinScrollPos();
-	}
-	m_list->SetScrollPos(prev_scroll_pos);
 }
 
 void UITaskListWnd::SetFilterMode(ETaskListFilter mode)
@@ -534,6 +562,7 @@ bool UITaskListWndItem::init_task( CGameTask* task, UITaskListWnd* parent )
 	xml.Load( CONFIG_PATH, UI_PATH, PDA_TASK_XML );
 
 	CUIXmlInit::InitWindow( xml, "second_task_wnd:task_item", 0, this );
+	MinHeight = GetHeight();
 	
 	m_name     = UIHelper::Create3tButton( xml, "second_task_wnd:task_item:name", this );
 
@@ -573,6 +602,18 @@ bool UITaskListWndItem::init_task( CGameTask* task, UITaskListWnd* parent )
 	{
 		m_btn_task_focus->SetMessageTarget(this);
 	}
+
+	const float TitleStart = m_name->GetWndPos().x;
+	float TitleWidth = m_name->GetWidth();
+	const CUIWindow* Buttons[] = {m_bt_view, m_bt_focus, m_btn_task_focus};
+	for (const CUIWindow* Button : Buttons)
+	{
+		if (Button && Button->GetWndPos().x > TitleStart)
+		{
+			TitleWidth = std::min(TitleWidth, Button->GetWndPos().x - TitleStart);
+		}
+	}
+	m_name->SetWidth(TitleWidth);
 
 	m_color_states[stt_activ ] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:activ",  0, (u32)(-1) );
 	m_color_states[stt_unread] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:unread", 0, (u32)(-1) );
@@ -679,23 +720,6 @@ void UITaskListWndItem::update_view()
 	}
 
 	m_name->TextItemControl()->SetTextST( g_pStringTable->ParseStringFromScript(m_task->m_Title).c_str() );
-	m_name->AdjustHeightToText();
-	const float prevHeight = GetHeight();
-	float h1 = m_name->GetWndPos().y + m_name->GetHeight() + 10.0f;
-	h1 = std::max( h1, prevHeight );
-	SetHeight( h1 );
-	if (!fsimilar(prevHeight, h1))
-	{
-		CUIWindow* pad = GetParent();
-		if (pad)
-		{
-			CUIScrollView* scroll = smart_cast<CUIScrollView*>(pad->GetParent());
-			if (scroll)
-			{
-				scroll->ForceUpdate();
-			}
-		}
-	}
 
     const CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
     const CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
@@ -713,6 +737,25 @@ void UITaskListWndItem::update_view()
 		m_name->SetStateTextColor( m_color_states[stt_unread], S_Enabled );
 	}
 
+}
+
+bool UITaskListWndItem::LayoutTitle()
+{
+	if (!fsimilar(LayoutFontScale, g_current_font_scale.x))
+	{
+		LayoutFontScale = g_current_font_scale.x;
+		CUILines* Title = m_name->TextItemControl();
+		Title->m_wndSize.x = m_name->GetWidth();
+		Title->ParseText(true);
+	}
+	m_name->AdjustHeightToText();
+	const float Height = std::max(MinHeight, m_name->GetWndPos().y + m_name->GetHeight() + 10.0f);
+	if (fsimilar(GetHeight(), Height))
+	{
+		return false;
+	}
+	SetHeight(Height);
+	return true;
 }
 
 void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )

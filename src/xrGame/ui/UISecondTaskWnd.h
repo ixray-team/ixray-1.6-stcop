@@ -8,6 +8,7 @@
 #ifndef UI_SECOND_TASK_WND_H_INCLUDED
 #define UI_SECOND_TASK_WND_H_INCLUDED
 
+#include <optional>
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 
@@ -52,6 +53,7 @@ public:
 	virtual void 	OnFocusReceive		();
 	virtual void	OnFocusLost			();
 	virtual void	Update				();
+	void Draw() override;
 	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
 			void	SetFilterMode		(ETaskListFilter mode);
 			void	SetUiSounds			(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
@@ -93,6 +95,7 @@ private: // m_
 	float				m_orig_h;
 	ETaskListFilter		m_filter;
 	CPdaUiSounds*		m_pUiSounds = nullptr;
+	std::optional<int> ScrollPositionToRestore;
 
 }; // class UITaskListWnd
 
@@ -121,6 +124,7 @@ public:
 
 			void	showHint			();
 			void	hide_hint			();
+	bool LayoutTitle();
 private:
 			void	update_view			();
 			void	update_visible_map_spot();
@@ -137,6 +141,8 @@ private: // m_
 	CUIStatic*		m_task_icon;
 	CUI3tButton*	m_bt_focus;
 	CUI3tButton*	m_btn_task_focus;
+	float MinHeight = 0.0f;
+	float LayoutFontScale = 0.0f;
 
 	enum
 	{
