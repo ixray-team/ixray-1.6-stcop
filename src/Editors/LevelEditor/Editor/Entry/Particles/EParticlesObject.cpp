@@ -105,7 +105,7 @@ void EParticlesObject::Render(int priority, bool strictB2F)
         }
 
         if (m_Particles)
-            ::RImplementation.model_Render(smart_cast<IRenderVisual*>(m_Particles), _Transform(), priority, strictB2F, 1.f);
+            RImplementation.model_Render(smart_cast<IRenderVisual*>(m_Particles), _Transform(), priority, strictB2F, 1.f);
     }
 }
 

@@ -23,6 +23,7 @@ namespace
 		void RenderFrame() override {}
 
 		bool IsCapturingInputs() const override { return false; }
+		void SetCaptureInputs(bool) override {}
 		bool IsGUIRendering() const override { return true; }
 	};
 

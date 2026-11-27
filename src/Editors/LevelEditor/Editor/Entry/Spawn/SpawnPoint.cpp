@@ -622,12 +622,12 @@ void CSpawnPoint::SSpawnData::RenderVisuals(bool bSelected, const Fmatrix& paren
 
 	if (m_Visual && m_Visual->visual)
 	{
-		::RImplementation.model_Render(m_Visual->visual, parent, priority, strictB2F, 1.f);
+		RImplementation.model_Render(m_Visual->visual, parent, priority, strictB2F, 1.f);
 	}
 
 	if (IdleParticle && IsIdleParticleInRange())
 	{
-		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
+		RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
 	}
 
 	// Loophole models of smart covers are the cover itself in the viewport: drawn always
@@ -645,7 +645,7 @@ void CSpawnPoint::SSpawnData::RenderVisuals(bool bSelected, const Fmatrix& paren
 		{
 			M.mulB_43(m_VisualHelperRoots[Index]);
 		}
-		::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
+		RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
 	}
 
 	RenderSquadPreviews(parent, priority, strictB2F);
@@ -673,7 +673,7 @@ void CSpawnPoint::SSpawnData::RenderSquadPreviews(const Fmatrix& parent, int pri
 			continue;
 		}
 		M.mul(parent, Preview.Offset);
-		::RImplementation.model_Render(Preview.Visual->visual, M, priority, strictB2F, 1.f);
+		RImplementation.model_Render(Preview.Visual->visual, M, priority, strictB2F, 1.f);
 	}
 }
 
@@ -1017,7 +1017,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 	xrCriticalSectionGuard guard(mLuaEnter);
 
 	if (m_Visual&&m_Visual->visual)
-		::RImplementation.model_Render	(m_Visual->visual,parent,priority,strictB2F,1.f);
+		RImplementation.model_Render	(m_Visual->visual,parent,priority,strictB2F,1.f);
 
 	if (m_Motion&&m_Motion->animator&&bSelected&&(1==priority)&&(false==strictB2F))
 		m_Motion->animator->DrawPath();
@@ -1029,7 +1029,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 	// Simulated in OnFrame: Render runs for every priority of every render pass
 	if (IdleParticle && IsIdleParticleInRange())
 	{
-		::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
+		RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
 	}
 
 	Fmatrix M;
@@ -1046,7 +1046,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		{
 			M.mulB_43(m_VisualHelperRoots[Index]);
 		}
-		::RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
+		RImplementation.model_Render(m_VisualHelpers[Index]->visual, M, priority, strictB2F, 1.f);
 	}
 
 	RenderSquadPreviews(parent, priority, strictB2F);

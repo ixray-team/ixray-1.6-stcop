@@ -59,6 +59,21 @@ With the Visual Studio generator, native MSVC unity builds compile `xrGame` in t
 
 Use the `xrEngine` target to build the Windows game executable, `xrGame.dll`, the R4 renderer, and their dependencies. Separate solution targets such as LevelEditor and xrLevelBuilder are outside this build. Native MSVC Visual Studio projects compile engine DLL sources in object projects while their link dependencies build. The `xrScripts` object project waits for Lua binding generation and uses a precompiled header for C++ sources. In the solution the object project carries the module name and lists its sources, so IntelliSense uses the settings that compile them. The project that links the DLL is shown as `<module>_link` in the `CustomTargets/Link` folder; build it (or `xrEngine`) to get an up-to-date DLL, since building the object project alone only compiles. Executables are not split. Ninja builds skip the object projects, since Ninja already compiles a module while its dependencies link.
 
+For a separate non-unity Debug build that leaves the main build cache unchanged:
+
+```bat
+cmake -S . -B build/x64/Engine-NonUnity -G "Visual Studio 17 2022" -A x64 -DIXRAY_UNITYBUILD=OFF
+cmake --build build/x64/Engine-NonUnity --config Debug --target xrEngine
+```
+
+`IXRAY_EDITORS=ON` adds the standalone `LevelEditor` target, including its `xrECore`, `xrEProps`, `xrSE_Factory`, `xrGame`, and R4 dependencies. The editor batch file uses these explicit commands and does not require a CMake presets file:
+
+```bat
+cmake -S . -B build/x64/Editors-Windows -G "Visual Studio 17 2022" -A x64 -DIXRAY_EDITORS=ON
+cmake --build build/x64/Editors-Windows --config Debug --target LevelEditor
+cmake --build build/x64/Editors-Windows --config RelWithDebInfo --target LevelEditor
+```
+
 Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet, except DLSS 310.9.1: CMake downloads the official NVIDIA release tag archive, verifies SHA-256, and extracts it into `build/dep/DLSS-310.9.1`. Offline builds require the extracted SDK or the cached `build/dep/DLSS-310.9.1.zip` archive. The release DLL and `DLSS-LICENSE.txt` are copied to the output directory. SDL: window and input. Audio playback uses OpenAL.
 
 ## xrLevelBuilder CUDA/OptiX

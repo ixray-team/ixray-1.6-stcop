@@ -127,5 +127,6 @@ public:
 };
 
 extern ENGINE_API IGame_Persistent* g_pGamePersistent;
+ENGINE_API IGame_Persistent* GetGamePersistent();
 
 #include "IGame_Menu.h"

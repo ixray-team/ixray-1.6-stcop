@@ -56,7 +56,9 @@ namespace ImUtils::Viewer
 				Lifecycle.Ui.Active, Lifecycle.Ui.RectangleSeen, Lifecycle.Ui.Pressed, Lifecycle.Ui.Activated, Lifecycle.Ui.Control);
 			FinishLifecycleTest(false, reason);
 		};
-		if (++Lifecycle.CheckWait > 1200)
+		++Lifecycle.CheckWait;
+		const bool checkingMovement = Lifecycle.CheckIndex == 3 && Lifecycle.ExpectedEditor == EViewerEditorKind::LevelSandbox && !ViewerState.SimulationPaused;
+		if (!checkingMovement && Lifecycle.CheckWait > 1200)
 		{
 			fail("editor check timed out");
 			return;
@@ -146,8 +148,16 @@ namespace ImUtils::Viewer
 		}
 		case 3:
 		{
-			if (Lifecycle.ExpectedEditor == EViewerEditorKind::LevelSandbox && !ActorMovementPassed())
-				return;
+			if (Lifecycle.ExpectedEditor == EViewerEditorKind::LevelSandbox)
+			{
+				if (ActorMovementInProgress())
+					return;
+				if (!ActorMovementPassed())
+				{
+					fail("stock actor movement failed");
+					return;
+				}
+			}
 			if (Lifecycle.ExpectedEditor == EViewerEditorKind::OgfPreview)
 			{
 				const auto* editor = dynamic_cast<const CViewerOgfEditor*>(Mode());

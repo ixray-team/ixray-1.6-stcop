@@ -10,6 +10,7 @@
 
 #include "object_factory_space.h"
 #include "object_item_abstract.h"
+#include <luabind/luabind.hpp>
 
 class CScriptEngine;
 

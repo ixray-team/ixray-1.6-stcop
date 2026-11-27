@@ -14,6 +14,11 @@
 
 ENGINE_API IGame_Persistent* g_pGamePersistent = nullptr;
 
+IGame_Persistent* GetGamePersistent()
+{
+	return g_pGamePersistent;
+}
+
 bool IsMainMenuActive() { return  g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 
 IGame_Persistent::IGame_Persistent	()

@@ -2092,6 +2092,7 @@ void CViewerSession::BeginActorMovementTest(bool backwards)
 {
 	ActorMovementSucceeded = false;
 	ActorMovementLastDistance = -1.f;
+	ActorMovementTimeLeft = -1.f;
 	CLevelSlotGuard guard(this, SessionLevel, ViewerState.Primary);
 	RefreshStateSnapshot();
 	if (!IsActive() || SessionActor == nullptr || SessionLevel == nullptr)

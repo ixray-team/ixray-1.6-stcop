@@ -251,7 +251,7 @@ namespace ChoseEvents
     //---------------------------------------------------------------------------
     void FillPE(ChooseItemVec& items, void* param)
     {
-        for(auto& elem : ::RImplementation.PSLibrary.VecPEDs())
+        for(auto& elem : RImplementation.PSLibrary.VecPEDs())
         {
             items.emplace_back(*elem->m_Name, "EFFECT");
         }
@@ -289,11 +289,11 @@ namespace ChoseEvents
     //---------------------------------------------------------------------------
     void FillParticles(ChooseItemVec& items, void* param)
     {
-        for (auto& elem : ::RImplementation.PSLibrary.VecPEDs())
+        for (auto& elem : RImplementation.PSLibrary.VecPEDs())
         {
             items.emplace_back(*elem->m_Name, "EFFECT");
         }
-        for (auto& elem : ::RImplementation.PSLibrary.VecPGDs())
+        for (auto& elem : RImplementation.PSLibrary.VecPGDs())
         {
             items.emplace_back(*elem->m_Name, "GROUP");
         }
@@ -303,7 +303,7 @@ namespace ChoseEvents
     {
         u32 i = 0;
         PHelper().CreateCaption(info_items, "", "used in groups");
-        for (auto def : ::RImplementation.PSLibrary.VecPGDs())
+        for (auto def : RImplementation.PSLibrary.VecPGDs())
         {
             for (auto& elem : def->m_Effects)
             {
@@ -321,7 +321,7 @@ namespace ChoseEvents
     {
         u32 i = 0;
         PHelper().CreateCaption(info_items, "", "using effects");
-        for (const auto def : ::RImplementation.PSLibrary.VecPGDs())
+        for (const auto def : RImplementation.PSLibrary.VecPGDs())
         {
             if (def->m_Name == item->name)
             {

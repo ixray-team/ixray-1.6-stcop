@@ -44,10 +44,11 @@ CScriptStorage::~CScriptStorage()
 {
 	if (m_virtual_machine)
 	{
-		if (g_pGamePersistent != nullptr && g_pGamePersistent->FrameworkScriptEngine == this)
+		IGame_Persistent* Persistent = GetGamePersistent();
+		if (Persistent != nullptr && Persistent->FrameworkScriptEngine == this)
 		{
-			g_pGamePersistent->ixr_framework_onframe.reset();
-			g_pGamePersistent->FrameworkScriptEngine = nullptr;
+			Persistent->ixr_framework_onframe.reset();
+			Persistent->FrameworkScriptEngine = nullptr;
 		}
 		lua_close(m_virtual_machine);
 	}
@@ -57,10 +58,11 @@ void CScriptStorage::reinit	()
 {
 	if (m_virtual_machine)
 	{
-		if (g_pGamePersistent != nullptr && g_pGamePersistent->FrameworkScriptEngine == this)
+		IGame_Persistent* Persistent = GetGamePersistent();
+		if (Persistent != nullptr && Persistent->FrameworkScriptEngine == this)
 		{
-			g_pGamePersistent->ixr_framework_onframe.reset();
-			g_pGamePersistent->FrameworkScriptEngine = nullptr;
+			Persistent->ixr_framework_onframe.reset();
+			Persistent->FrameworkScriptEngine = nullptr;
 		}
 		lua_close(m_virtual_machine);
 	}

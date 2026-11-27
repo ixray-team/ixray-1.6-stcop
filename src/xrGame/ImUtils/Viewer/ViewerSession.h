@@ -34,6 +34,7 @@
 #include "../../Sandbox/EmbeddedLevelResources.h"
 #include "ViewerEditor.h"
 
+class CLevel;
 class CActor;
 extern CActor* g_actor;
 extern CActor* g_actor_single;
@@ -352,7 +353,7 @@ namespace ImUtils::Viewer
 		const CActor* PlayerActor() const { return SessionActor; }
 		float ActorMovementDistance() const { return ActorMovementLastDistance; }
 		bool ActorMovementPassed() const { return ActorMovementSucceeded; }
-		bool ActorMovementInProgress() const { return ActorMovementTimeLeft >= 0.f; }
+		bool ActorMovementInProgress() const { return ActorMovementTimeLeft > -1.f; }
 			IRender_interface* SceneRenderer() const { return SessionRender; }
 			u32 ViewportDimension() const;
 			float ViewportAspect() const { return float(ViewerState.ViewportWidth) / float(std::max(1u, ViewerState.ViewportHeight)); }

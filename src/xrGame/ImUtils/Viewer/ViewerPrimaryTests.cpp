@@ -423,6 +423,8 @@ namespace ViewerLifecycleDetail
 		return PrimaryAvailable(true);
 	}
 
+	bool PrimaryReady();
+
 	bool PreparePrimaryHudItem(u32 Wait)
 	{
 		if (!PrimaryReady() || ImUtils::Viewer::ViewerSessionDetail::Manager == nullptr)

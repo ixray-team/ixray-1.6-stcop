@@ -6,6 +6,7 @@
 #include "../../xrServer.h"
 #include "../../GamePersistent.h"
 #include "../../../xrServerEntities/xrServer_Objects_ALife.h"
+#include "../../../xrServerEntities/clsid_game.h"
 #include "../../../xrEngine/xr_input.h"
 #include "../../../xrEngine/Fmesh.h"
 #include "../../../xrEngine/ImGuiManager.h"

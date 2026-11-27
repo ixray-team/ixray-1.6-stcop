@@ -51,6 +51,7 @@ extern CALifeSimulator* alife();
 #include "../ui/UIGameTutorial.h"
 #include "../RocketLauncher.h"
 #include "../space_restriction_manager.h"
+#include "../InventoryOwner.h"
 
 #include <filesystem>
 #include <cmath>
@@ -1380,9 +1381,17 @@ SELFTEST(sound_pending_emitter_lifetime, true)
 	string_path path;
 	SELFTEST_CHECK(FS.exist(path, _game_sounds_, "weapons\\n_ak74_shot", ".ogg"), "the lifetime test requires the stock weapon sound");
 	ref_sound sound;
+	CObject emitter;
+	if (Core.ParamsData.test(ECoreParams::autotest) || Core.ParamsData.test(ECoreParams::nosound))
+	{
+		sound.create("weapons\\n_ak74_shot", st_Effect, sg_SourceType);
+		SELFTEST_CHECK(sound._p == nullptr, "disabled audio must not allocate sound data");
+		sound.play(&emitter, sm_2D, 0.f);
+		SELFTEST_CHECK(sound.slot() == 0, "disabled audio must not allocate a playback slot");
+		return true;
+	}
 	sound.create("weapons\\n_ak74_shot", st_Effect, sg_SourceType);
 	SELFTEST_CHECK(sound._p != nullptr, "the stock sound must be created");
-	CObject emitter;
 	sound.play(&emitter, sm_2D, 0.f);
 	const u32 cancelledSlot = sound.slot();
 	SELFTEST_CHECK(cancelledSlot != 0, "the test must allocate a playback slot");

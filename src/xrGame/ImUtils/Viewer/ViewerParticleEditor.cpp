@@ -5,6 +5,7 @@
 #include "../../Level.h"
 #include "../../ParticlesObject.h"
 #include "../../GamePersistent.h"
+#include "../../../Include/xrRender/RenderVisual.h"
 
 namespace ImUtils::Viewer
 {

@@ -127,7 +127,7 @@ void CEditorRenderDevice::Initialize()
 	// Startup shaders
 	Create();
 
-    ::RImplementation.Initialize();
+    RImplementation.Initialize();
 	UIRender->CreateUIGeom();
 
 	Resize(EPrefs->start_w, EPrefs->start_h, EPrefs->start_maximized);
@@ -162,7 +162,7 @@ void CEditorRenderDevice::Initialize()
 void CEditorRenderDevice::ShutDown()
 {
 	UIRender->DestroyUIGeom();
-	::RImplementation.ShutDown	();
+	RImplementation.ShutDown	();
 
 	ShaderXRLC.Unload	();
 
@@ -334,7 +334,7 @@ void CEditorRenderDevice::_Create(IReader* F)
     
     RCache.OnDeviceCreate		();
 	DEV->OnDeviceCreate	(F);
-	::RImplementation.OnDeviceCreate	();
+	RImplementation.OnDeviceCreate	();
 
 	// The editor device skips dxRenderDeviceRender::OnDeviceCreate, but DU draws (PIE debug draw) use these shaders
 	dxRenderDeviceRender::Instance().m_WireShader.create("editor\\wire");
@@ -368,12 +368,12 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 	GEditorInstancing.OnDeviceDestroy();
 	GEditorSceneSubmit.Clear();
 
-	::RImplementation.Models->OnDeviceDestroy	();
+	RImplementation.Models->OnDeviceDestroy	();
 
 	DEV->OnDeviceDestroy	(bKeepTextures);
 
 	RCache.OnDeviceDestroy		();
-	::RImplementation.OnDeviceDestroy	();
+	RImplementation.OnDeviceDestroy	();
 }
 
 //---------------------------------------------------------------------------

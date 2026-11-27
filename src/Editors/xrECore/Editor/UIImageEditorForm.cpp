@@ -169,7 +169,7 @@ void UIImageEditorForm::DrawPreview()
 	{
 		u32 mem = 0;
 
-		auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
+		auto* baseTexture = RImplementation.texture_load("ed\\ed_nodata", mem);
 		if (baseTexture)
 		{
 			m_Texture = new CTexture;

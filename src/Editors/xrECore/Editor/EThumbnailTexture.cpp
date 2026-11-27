@@ -206,7 +206,7 @@ void ETextureThumbnail::Update(IRHISurface*& Texture)
 			fn_img = EFS.ChangeFileExt(m_Name.c_str(), ".dds");
 			u32 mem = 0;
 
-			auto* baseTexture = ::RImplementation.texture_load(fn_img.c_str(), mem);
+			auto* baseTexture = RImplementation.texture_load(fn_img.c_str(), mem);
 			if (baseTexture)
 			{
 				Texture = GRHI->CreateTextureFromMemory(baseTexture, 0, {});

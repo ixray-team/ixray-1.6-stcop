@@ -7,11 +7,11 @@ UIParticlesTool::UIParticlesTool()
     m_ParticlesList = new UIItemListForm();
     m_ParticlesList->SetOnItemFocusedEvent({this, &UIParticlesTool::OnItemFocused});
     ListItemsVec items;
-    for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++) {
+    for (PS::PEDIt E = RImplementation.PSLibrary.FirstPED(); E != RImplementation.PSLibrary.LastPED(); E++) {
         ListItem* I = LHelper().CreateItem(items, *(*E)->m_Name, 0, 0, *E);
         I->SetIcon(1);
     }
-    for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++) {
+    for (PS::PGDIt G = RImplementation.PSLibrary.FirstPGD(); G != RImplementation.PSLibrary.LastPGD(); G++) {
         ListItem* I = LHelper().CreateItem(items, *(*G)->m_Name, 0, 0, *G);
         I->SetIcon(2);
     }

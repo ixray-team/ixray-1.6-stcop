@@ -78,5 +78,5 @@ void CFormBuilder::Load(CObjectSpace* To, CDB::build_callback cb)
 {
 	XRay::CForm::CFormatVanilla CForm;
 	CForm.AddStaticGeom(m_Vertex, m_Faces);
-	To->Create(CForm, cb);
+	To->Create(CForm, cb, nullptr, false);
 }

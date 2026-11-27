@@ -11,6 +11,7 @@
 #include "xrServer.h"
 #include "../xrEngine/x_ray.h"
 #include "ui/UILoadingScreen.h"
+#include "Level.h"
 
 game_sv_Single::game_sv_Single			()
 {
