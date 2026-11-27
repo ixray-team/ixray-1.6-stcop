@@ -58,7 +58,7 @@ void CAdvancedDetector::UpdateAf()
 
 	CAfList::ItemsMapIt it_b = m_artefacts.m_ItemInfos.begin();
 	CAfList::ItemsMapIt it_e = m_artefacts.m_ItemInfos.end();
-	CAfList::ItemsMapIt it = it_b;
+	CAfList::ItemsMapIt it = it_e;
 	float min_dist = flt_max;
 
 	Fvector	detector_pos = Position();
@@ -87,18 +87,14 @@ void CAdvancedDetector::UpdateAf()
 		}
 	}
 
-	ITEM_INFO& af_info = it->second;
-	ITEM_TYPE* item_type = af_info.curr_ref;
-	CArtefact* pCurrentAf = it->first;
-
-	if (pCurrentAf->CurrPlace() != eItemPlace::eItemPlaceUndefined)
+	if (it == it_e || it->first->CurrPlace() != eItemPlace::eItemPlaceUndefined)
 	{
 		return;
 	}
 
-	float dist = min_dist;
-	float fRelPow = (dist / AfDetectRadius());
-	clamp(fRelPow, 0.f, 1.f);
+	CArtefact* pCurrentAf = it->first;
+	float RelativeDistance = min_dist / AfDetectRadius();
+	clamp(RelativeDistance, 0.0f, 1.0f);
 
 	//direction
 	Fvector dir_to_artefact;
@@ -109,28 +105,7 @@ void CAdvancedDetector::UpdateAf()
 
 	float _diff = angle_difference_signed(_ang_af, _ang_cam);
 
-	// sounds
-	af_info.cur_period = item_type->freq.x + (item_type->freq.y - item_type->freq.x) * (fRelPow * fRelPow);
-
-	float min_snd_freq = 0.9f;
-	float max_snd_freq = 1.4f;
-
-	float snd_freq = min_snd_freq + (max_snd_freq - min_snd_freq) * (1.0f - fRelPow);
-
-	if (af_info.snd_time > af_info.cur_period)
-	{
-		af_info.snd_time = 0;
-		HUD_SOUND_ITEM::PlaySound(item_type->detect_snds, Fvector().set(0, 0, 0), this, true, false, true);
-		if (item_type->detect_snds.m_activeSnd)
-		{
-			item_type->detect_snds.m_activeSnd->snd.set_frequency(snd_freq);
-		}
-	}
-	else
-	{
-		af_info.snd_time += Device.fTimeDelta;
-	}
-
+	UpdateArtifactSignal(it->second, RelativeDistance);
 	ui().SetValue(_diff, dir_to_artefact);
 }
 

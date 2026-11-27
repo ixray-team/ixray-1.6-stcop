@@ -13,6 +13,9 @@ class CCustomDetector : public CCustomDevice, public IPowerManager
 
 	float m_fAfVisRadius = 0.0f;
 	float m_fAfDetectRadius = 0.0f;
+	HUD_SOUND_ITEM* ActiveSignal = nullptr;
+
+	void StopArtifactSignal();
 protected:
 	CUIArtefactDetectorBase* m_ui = nullptr;
 	CAfList	m_artefacts;
@@ -25,6 +28,8 @@ public:
 	bool IsNeedReloadUI() { return m_bWorking && m_need_refresh; }
 	void Load(const char* section) override;
 	void OnH_B_Independent(bool just_before_destroy) override;
+	void OnStateSwitch(u8 State) override;
+	void on_b_hud_detach() override;
 	void shedule_Update(u32 dt) override;
 	void TurnDetectorInternal(bool b) final override;
 
@@ -39,6 +44,7 @@ public:
 
 protected:
 	void UpdateWork() override;
+	bool UpdateArtifactSignal(ITEM_INFO& Info, float RelativeDistance);
 	virtual void UpdateAf() {};
 	virtual void CreateUI() {};
 };

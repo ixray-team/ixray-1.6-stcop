@@ -5,8 +5,8 @@
 
 CCustomDetector::~CCustomDetector()
 {
-	m_artefacts.destroy();
 	TurnDetectorInternal(false);
+	m_artefacts.destroy();
 	xr_delete(m_ui);
 }
 
@@ -47,7 +47,7 @@ void CCustomDetector::shedule_Update(u32 dt)
 		if (IPowerManager::GetLeftPowerValue() <= 0)
 		{
 			m_need_refresh = true;
-			m_bWorking = false;
+			TurnDetectorInternal(false);
 		}
 		else
 		{
@@ -72,7 +72,7 @@ void CCustomDetector::shedule_Update(u32 dt)
 
 void CCustomDetector::UpdateWork()
 {
-	if (!IsWorking() || !m_ui)
+	if (!IsWorking() || !m_ui || !HudItemData() || GetState() == eHiding)
 	{
 		return;
 	}
@@ -82,20 +82,71 @@ void CCustomDetector::UpdateWork()
 	m_ui->update();
 }
 
+bool CCustomDetector::UpdateArtifactSignal(ITEM_INFO& Info, float RelativeDistance)
+{
+	ITEM_TYPE& Type = *Info.curr_ref;
+	Info.cur_period = Type.freq.x + (Type.freq.y - Type.freq.x) * (RelativeDistance * RelativeDistance);
+	if (Info.snd_time <= Info.cur_period)
+	{
+		Info.snd_time += Device.fTimeDelta;
+		return false;
+	}
+
+	Info.snd_time = 0.0f;
+	if (ActiveSignal != &Type.detect_snds)
+	{
+		StopArtifactSignal();
+		ActiveSignal = &Type.detect_snds;
+	}
+
+	HUD_SOUND_ITEM::PlaySound(*ActiveSignal, zero_vel, this, true);
+	if (ActiveSignal->m_activeSnd)
+	{
+		const float Pitch = 0.9f + (1.4f - 0.9f) * (1.0f - RelativeDistance);
+		ActiveSignal->m_activeSnd->snd.set_frequency(Pitch);
+	}
+
+	return true;
+}
+
+void CCustomDetector::StopArtifactSignal()
+{
+	if (ActiveSignal)
+	{
+		HUD_SOUND_ITEM::StopSound(*ActiveSignal);
+		ActiveSignal = nullptr;
+	}
+}
+
+void CCustomDetector::OnStateSwitch(u8 State)
+{
+	inherited::OnStateSwitch(State);
+	if (State == eHiding || State == eHidden)
+	{
+		StopArtifactSignal();
+	}
+}
+
+void CCustomDetector::on_b_hud_detach()
+{
+	StopArtifactSignal();
+	inherited::on_b_hud_detach();
+}
+
 void CCustomDetector::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
+	StopArtifactSignal();
 
 	m_artefacts.clear();
 }
 
 void CCustomDetector::TurnDetectorInternal(bool b)
 {
-	m_bWorking = b;
-
-	if (IPowerManager::IsAllow() && IPowerManager::GetLeftPowerValue() <= 0)
+	m_bWorking = b && (!IPowerManager::IsAllow() || IPowerManager::GetLeftPowerValue() > 0.0f);
+	if (!m_bWorking)
 	{
-		m_bWorking = false;
+		StopArtifactSignal();
 	}
 
 	if (b && m_ui == nullptr)
