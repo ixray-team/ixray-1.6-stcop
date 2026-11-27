@@ -780,117 +780,72 @@ void CCar::SWheelSteer::SyncJointParams()
 
 void CCar::SWheelSteer::SteerRight()
 {
-	pwheel->wheel_state = wheel_right;
-
-	if (pwheel->car->m_steer_invert && hi_limit - pwheel->car->m_steer_threshold < pwheel->GetSteerAngle())
-	{
-		pwheel->SetSteerLimits(hi_limit, hi_limit);
-		pwheel->ApplySteerAxisVel(0.f);
-		return;
-	}
-	if (!pwheel->car->m_steer_invert && lo_limit + pwheel->car->m_steer_threshold > pwheel->GetSteerAngle())
-	{
-		pwheel->SetSteerLimits(lo_limit, lo_limit);
-		pwheel->ApplySteerAxisVel(0.f);
-		return;
-	}
-
-	float wheel_steer_speed = pwheel->car->m_steering_speed;
-	if (pwheel->car->m_steer_nonlinear)
-	{
-		float time = (Device.fTimeGlobal - pwheel->car->m_steer_start_time) / pwheel->car->m_steering_speed;
-		clamp(time, 0.f, 1.f);
-		float back = 1.f;
-		if (GetSteerAngle() > 0.f && !pwheel->car->m_steer_invert)
-		{
-			time = 1.f;
-			back = 1.5f;
-		}
-		if (GetSteerAngle() < 0.f && pwheel->car->m_steer_invert)
-		{
-			time = 1.f;
-			back = 1.5f;
-		}
-
-		float sliding = 0.85f + pwheel->car->m_current_slip_sliding * 1.5f;
-		clamp(sliding, 1.f, 3.f);
-
-		wheel_steer_speed = sliding * back * (0.05f + 1.15f * sinf(0.5f * PI * powf(time, 0.5f)));
-
-		if ((!pwheel->car->m_steer_invert && pos_right < 0.f) || (pwheel->car->m_steer_invert && pos_right > 0.f))
-			wheel_steer_speed *= pwheel->car->m_steering_speed;
-		else
-			wheel_steer_speed *= pwheel->car->m_steering_speed;
-	}
-
-	limited=true;						//no need to limit wheels when steering
-	if (pwheel->car->m_steer_invert)
-	{
-		pwheel->SetSteerLimits(hi_limit, lo_limit);
-		pwheel->ApplySteerAxisVel(wheel_steer_speed);
-	}
-	else
-	{
-		pwheel->SetSteerLimits(hi_limit, lo_limit);
-		pwheel->ApplySteerAxisVel( -wheel_steer_speed);
-	}
+	Steer(false);
 }
+
 void CCar::SWheelSteer::SteerLeft()
 {
-	pwheel->wheel_state = wheel_left;
+	Steer(true);
+}
 
-	if (!pwheel->car->m_steer_invert && hi_limit - pwheel->car->m_steer_threshold < pwheel->GetSteerAngle())
+void CCar::SWheelSteer::Steer(bool bLeft)
+{
+	pwheel->wheel_state = bLeft ? wheel_left : wheel_right;
+
+	CCar* car = pwheel->car;
+	// Requested steering direction on the joint axis, including steer inversion.
+	const float direction = (bLeft ? 1.f : -1.f) * (car->m_steer_invert ? -1.f : 1.f);
+	const float steer_angle = GetSteerAngle();
+
+	if (direction < 0.f)
+	{
+		if (lo_limit + car->m_steer_threshold > steer_angle)
+		{
+			pwheel->SetSteerLimits(lo_limit, lo_limit);
+			pwheel->ApplySteerAxisVel(0.f);
+			return;
+		}
+	}
+	else if (hi_limit - car->m_steer_threshold < steer_angle)
 	{
 		pwheel->SetSteerLimits(hi_limit, hi_limit);
 		pwheel->ApplySteerAxisVel(0.f);
 		return;
 	}
-	if (pwheel->car->m_steer_invert && lo_limit + pwheel->car->m_steer_threshold > pwheel->GetSteerAngle())
+
+	limited = true; // no need to limit wheels when steering
+	pwheel->SetSteerLimits(hi_limit, lo_limit);
+	pwheel->ApplySteerAxisVel(direction * CalculateSteerSpeed(steer_angle, direction));
+}
+
+float CCar::SWheelSteer::CalculateSteerSpeed(float steer_angle, float direction)
+{
+	CCar* car = pwheel->car;
+	if (!car->m_steer_nonlinear)
 	{
-		pwheel->SetSteerLimits(lo_limit, lo_limit);
-		pwheel->ApplySteerAxisVel(0.f);
-		return;
+		return car->m_steering_speed;
 	}
 
-	float wheel_steer_speed = pwheel->car->m_steering_speed;
-	if (pwheel->car->m_steer_nonlinear)
+	float time = (Device.fTimeGlobal - car->m_steer_start_time) / car->m_steering_speed;
+	clamp(time, 0.f, 1.f);
+
+	float back = 1.f;
+	if (steer_angle * direction < 0.f)
 	{
-		float time = (Device.fTimeGlobal - pwheel->car->m_steer_start_time) / pwheel->car->m_steering_speed;
-		clamp(time, 0.f, 1.f);
-		float back = 1.f;
-		if (GetSteerAngle() < 0.f && !pwheel->car->m_steer_invert)
-		{
-			time = 1.f;
-			back = 1.5f;
-		}
-		if (GetSteerAngle() > 0.f && pwheel->car->m_steer_invert)
-		{
-			time = 1.f;
-			back = 1.5f;
-		}
-
-		float sliding = 0.85f + pwheel->car->m_current_slip_sliding * 1.5f;
-		clamp(sliding, 1.f, 3.f);
-
-		wheel_steer_speed = sliding * back * (0.05f + 1.15f * sinf(0.5f * PI * powf(time, 0.5f)));
-
-		if ((!pwheel->car->m_steer_invert && pos_right < 0.f) || (pwheel->car->m_steer_invert && pos_right > 0.f))
-			wheel_steer_speed *= pwheel->car->m_steering_speed;
-		else
-			wheel_steer_speed *= pwheel->car->m_steering_speed;
-	}
-		
-	limited=true;						//no need to limit wheels when steering
-	if(!pwheel->car->m_steer_invert)
-	{
-		pwheel->SetSteerLimits(hi_limit, lo_limit);
-		pwheel->ApplySteerAxisVel(wheel_steer_speed);
+		time = 1.f;
+		back = 1.5f;
 	}
 	else
 	{
-		pwheel->SetSteerLimits(hi_limit, lo_limit);
-		pwheel->ApplySteerAxisVel( -wheel_steer_speed);
+		float speed_factor = (car->GetSpeedKmH() - 20.f) * 0.01f;
+		clamp(speed_factor, 0.f, 0.6f);
+		clamp(time, 0.f, 1.f - speed_factor);
 	}
+
+	float sliding = 0.85f + car->m_current_slip_sliding * 1.5f;
+	clamp(sliding, 1.f, 3.f);
+
+	return sliding * back * (0.05f + 1.15f * sinf(0.5f * PI * powf(time, 0.5f))) * car->m_steering_speed;
 }
 void CCar::SWheelSteer::SteerIdle()
 {

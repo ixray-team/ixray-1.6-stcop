@@ -683,6 +683,8 @@ virtual void ApplyDamage			(u16 level);
 		void	 SyncJointParams()						;
 		void	 SteerRight	()						;
 		void	 SteerLeft	()						;
+		void	 Steer		(bool bLeft)			;
+		float	 CalculateSteerSpeed(float steer_angle, float direction);
 		void	 SteerIdle	()						;
 		void	 Limit		()						;
 		void	 Load		(LPCSTR /*section*/){}	;
