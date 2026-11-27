@@ -694,6 +694,13 @@ void CCar::SWheelDrive::Init()
 }
 void CCar::SWheelDrive::Drive()
 {
+	// The handbrake holds a braked wheel with a zero motor target. Writing the
+	// drive target here would make the hinge motor accelerate toward it with
+	// the brake torque until the next physics step, so the wheel would twitch
+	// when the player presses gas with the handbrake engaged.
+	if (pwheel->car->brp && pwheel->WheelFlags.test(SWheel::eWheelType::wheel_breaking))
+		return;
+
 	float cur_speed = pwheel->car->RefWheelMaxSpeed() / gear_factor;// *(1.f / DiffSpeed());
 	pwheel->ApplyDriveAxisVel((pos_fvd*cur_speed)* pwheel->wheel_vel_factor);
 }

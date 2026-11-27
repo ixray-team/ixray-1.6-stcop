@@ -4936,8 +4936,10 @@ void CCar::ReleaseBack()
 
 void CCar::ReleaseBreaks()
 {
-	ReleaseHandBreak();
+	// Clear the handbrake flag first: ReleaseHandBreak restores the drive
+	// target, and Drive() must not suppress it anymore.
 	brp=false;
+	ReleaseHandBreak();
 }
 
 void CCar::Transmission(size_t num, ETransmissionStage SwitchRequest)
@@ -5752,20 +5754,54 @@ void CCar::UpdateTransmissionState()
 
 void CCar::UpdateSlipSliding()
 {
-	// TRANS
-	Fvector diff_dir, diff_dir2, normalized_vel, side_dir, side_dir2;
-	normalized_vel = Fvector(GetVelocity());
-	safe_normalize(normalized_vel);
-	side_dir = Fvector(XFORM().i);
-	side_dir2 = Fvector(XFORM().i).invert();
-	diff_dir.sub(side_dir, normalized_vel);
-	diff_dir2.sub(side_dir2, normalized_vel);
-	m_current_slip_sliding = _abs(diff_dir.magnitude() - diff_dir2.magnitude());
-	if (GetVelocity().dotproduct(XFORM().k) < 0.f)
-		m_current_slip_sliding *= 0.75f;
-	if (GetSpeedKmH() < 1.f)
+	// The body sideslip angle is non-zero in any corner: the car rotates around
+	// the turn centre while its velocity follows the trajectory. Sliding is
+	// better measured at the non-steered wheels, which keep rolling along the
+	// car's longitudinal axis until they lose lateral grip.
+	const Fvector Velocity = GetVelocity();
+	const float Speed = sqrtf(Velocity.x * Velocity.x + Velocity.z * Velocity.z);
+	if (Speed < 1.f / 3.6f)
+	{
 		m_current_slip_sliding = 0.f;
-	clamp(m_current_slip_sliding, 0.f, 3.f);
+		return;
+	}
+
+	float LateralSpeed = 0.f;
+	u32 WheelCount = 0;
+	for (auto& WheelEntry : m_wheels_map)
+	{
+		SWheel& Wheel = WheelEntry.second;
+		if (!Wheel.joint || !Wheel.joint->bActive)
+			continue;
+		if (Wheel.WheelFlags.test(SWheel::eWheelType::wheel_steering))
+			continue;
+
+		CPhysicsElement* Element = Wheel.joint->PSecond_element();
+		if (!Element || !Element->isActive())
+			continue;
+
+		Fvector WheelVelocity;
+		Element->get_LinearVel(WheelVelocity);
+		LateralSpeed += WheelVelocity.dotproduct(XFORM().i);
+		++WheelCount;
+	}
+
+	float Slip = 0.f;
+	if (WheelCount > 0)
+	{
+		Slip = fabsf(LateralSpeed / float(WheelCount)) / Speed;
+	}
+	else
+	{
+		// All wheels steer (four-wheel steering): the body slip is the only
+		// available estimate.
+		Slip = fabsf(Velocity.dotproduct(XFORM().i)) / Speed;
+	}
+
+	// Slip is the lateral-speed ratio of the non-steered axle, approximately
+	// sin(slip angle). The threshold is expressed in the same units.
+	clamp(Slip, 0.f, 3.f);
+	m_current_slip_sliding = Slip;
 }
 
 void CCar::UpdateWheelieBoost()
