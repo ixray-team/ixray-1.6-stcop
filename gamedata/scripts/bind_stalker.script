@@ -648,8 +648,8 @@ function actor_binder:load(reader)
         local game_difficulty = reader:r_u8()
         printf("load game_difficulty %s", tostring(game_difficulty))
         get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
-        local stored_input_time = reader:r_u8()
-        if stored_input_time == true then
+        local stored_input_time = reader:r_bool()
+        if stored_input_time then
             self.st.disable_input_time = utils.r_CTime(reader)
         end
         xr_logic.pstor_load_all(self.object, reader)
