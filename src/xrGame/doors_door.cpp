@@ -36,6 +36,11 @@ door::door( CPhysicObject* object ) :
 
 	m_object.get_door_vectors(m_closed_vector, m_open_vector);
 
+	// Some doors are placed with their model origin at the top of the frame.
+	const Fbox Bounds = Fbox().xform(m_object.BoundingBox(), m_object.XFORM());
+	FloorOffset = Bounds.min.y - m_registered_position.y;
+	m_registered_position.y = Bounds.min.y;
+
 	Fmatrix invert;
 	invert.invert				( m_object.XFORM() );
 	invert.transform_dir		( m_open_vector );
@@ -76,13 +81,15 @@ Fvector const& door::position	( ) const
 	return						m_registered_position;
 }
 
-Fmatrix const& door::get_matrix	( ) const
+Fmatrix door::get_matrix() const
 {
 	VERIFY						( valid(m_state) );
 	VERIFY						( valid(m_target_state) );
 	VERIFY						( valid(m_previous_state) );
 
-	return						m_object.XFORM();
+	Fmatrix Matrix = m_object.XFORM();
+	Matrix.c.y += FloorOffset;
+	return Matrix;
 }
 
 Fvector const& door::get_vector	( door_state const state ) const

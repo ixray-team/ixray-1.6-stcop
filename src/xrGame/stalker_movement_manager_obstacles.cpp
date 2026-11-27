@@ -341,15 +341,19 @@ static float get_distance											(
 
 		case LevelGraph::eLineIntersectionIntersect :
 		{
-			float a = (intersection.x - a_first.x)/(a_second.x - a_first.x);
-			float y1 = b_first.y + (b_second.y - b_first.y)*a;
-			float y2 = a_first.y + (a_second.y - a_first.y)*a;
-			float y = std::abs(y1 - y2);
-			if (y > 1.0f)
+			const Fvector2 PathOffset{intersection.x - a_first.x, intersection.y - a_first.z};
+			const Fvector2 PathDirection{a_second.x - a_first.x, a_second.z - a_first.z};
+			const Fvector2 DoorOffset{intersection.x - b_first.x, intersection.y - b_first.z};
+			const Fvector2 DoorDirection{b_second.x - b_first.x, b_second.z - b_first.z};
+			const float PathProgress = std::clamp(PathOffset.dot(PathDirection) / PathDirection.square_magnitude(), 0.f, 1.f);
+			const float DoorProgress = std::clamp(DoorOffset.dot(DoorDirection) / DoorDirection.square_magnitude(), 0.f, 1.f);
+			const float PathHeight = std::lerp(a_first.y, a_second.y, PathProgress);
+			const float DoorHeight = std::lerp(b_first.y, b_second.y, DoorProgress);
+			if (std::abs(PathHeight - DoorHeight) > 1.f)
 			{
 				return -1.f;
 			}
-			return						intersection.distance_to( Fvector2().set(a_first.x, a_first.z) );
+			return PathOffset.magnitude();
 		}
 
 		default :						NODEFAULT;

@@ -32,7 +32,7 @@ public:
 	void				unlock				( );
 
 	Fvector const&		position			( ) const;
-	Fmatrix const&		get_matrix			( ) const;
+	Fmatrix				get_matrix			( ) const;
 	Fvector const&		get_vector			( door_state state ) const;
 	bool				is_locked			( door_state state ) const;
 	bool				is_blocked			( door_state state, CObject* Initiator = nullptr) const;
@@ -53,6 +53,7 @@ private:
 	door_state			m_previous_state;
 	door_state			m_target_state;
 	Fvector				m_registered_position;
+	float				FloorOffset;
 	bool				m_locked;
 }; // class door
 
