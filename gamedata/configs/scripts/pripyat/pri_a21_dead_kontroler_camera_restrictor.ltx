@@ -25,7 +25,7 @@ on_info2 = {+pri_a21_cam_stop} %=stop_sr_cutscene%
 on_info3 = {+pri_a21_cut_actor_hit} %=stop_sr_cutscene +pri_a21_cam_stop +pri_a21_cam_end +pri_a21_fade_in +pri_a21_actor_talk_after_done%
 
 [sr_idle@cutscene_end_postprocess]
-on_game_timer = 10 | sr_idle@autosave %=stop_postprocess(2021) =stop_postprocess(2022) =enable_ui%
+on_game_timer = 10 | sr_idle@autosave %=stop_postprocess(2021) =stop_postprocess(2022) =stop_postprocess(2023) =stop_postprocess(2024) =enable_ui%
 
 [sr_idle@autosave]
 on_info = {-pri_a21_once_autosave_2} %+pri_a21_once_autosave_2 =scenario_autosave(st_save_pri_a21_killed_controller)%

@@ -145,22 +145,28 @@ function action_cutscene:reset_scheme()
 end
 --' функция обновления, вызываемая конвеером
 function action_cutscene:update(delta)
-	local state = self.state
---	if(state~="run") then
---		self:zone_enter()
---	end
+	local signals = self.st.signals
+	local stop_requested = signals["cam_effector_stop"]
+	local ended_on_stop = false
 
-	if(self.motion) then
+	if stop_requested then
+		if self.motion then
+			self.motion:stop_effect()
+			self:cutscene_callback(true)
+			-- Give the scripted stop transition priority over the normal end signal.
+			ended_on_stop = signals["cameff_end"]
+			signals["cameff_end"] = nil
+		end
+	elseif self.motion then
 		self.motion:update()
-	    if(self.st.signals["cam_effector_stop"]~=nil) then
-	        self.motion:stop_effect()
-			self:cutscene_callback()
-			self.st.signals["cam_effector_stop"] = nil
-	    end
 	end
-		--' выполняем архитектурное требование
-	if(xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)) then
-		return
+
+	local switched = xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)
+	if stop_requested then
+		signals["cam_effector_stop"] = nil
+		if not switched and ended_on_stop then
+			signals["cameff_end"] = true
+		end
 	end
 end
 --' тут нужно запустить сцену
@@ -206,10 +212,10 @@ function action_cutscene:select_next_motion()
 	self.motion_id = self.motion_id + 1
 end
 --' Ивент об окончании пролета
-function action_cutscene:cutscene_callback()
+function action_cutscene:cutscene_callback(stopped)
 	if(self.motion.state=="release") then
 		self.motion = nil
-		if(self.motion_id<=#self.st.cam_effector) then
+		if not stopped and self.motion_id <= #self.st.cam_effector then
 			self:select_next_motion()
 			--printf("SELECTING MOTION %s from %s", tostring(self.motion_id), tostring(#self.st.cam_effector))
 		else
