@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "EngineThreading.h"
-#include "CustomHUD.h"
 #include "IGame_Persistent.h"
 #include "IGame_Level.h"
 #include "Rain.h"
@@ -38,13 +37,6 @@ void XRay::Engine::GameThread()
 {
 	Platform::SetThreadName("X-Ray Game Thread");
 	PROF_START_THREAD("X-Ray Game Thread");
-	// we has granted permission to execute
-	{
-		PROF_EVENT("g_hud OnFrameMT");
-		if (g_hud)
-			g_hud->OnFrameMT();
-	}
-
 	{
 		PROF_EVENT("SoundEvent_Dispatch");
 		if (g_pGameLevel && g_pGameLevel->bReady)

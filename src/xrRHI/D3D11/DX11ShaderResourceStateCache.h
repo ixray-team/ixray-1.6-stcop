@@ -20,6 +20,13 @@ public:
 private:
 	ID3D11DeviceContext* RContext = nullptr;
 
+	u32 AppliedPSViewCount = 0;
+	u32 AppliedGSViewCount = 0;
+	u32 AppliedVSViewCount = 0;
+	u32 AppliedHSViewCount = 0;
+	u32 AppliedDSViewCount = 0;
+	u32 AppliedCSViewCount = 0;
+
 	ID3D11ShaderResourceView *m_PSViews[(u32)ERHI_MAX_TEXTURE::PixelShaderTextures];
 	ID3D11ShaderResourceView *m_GSViews[(u32)ERHI_MAX_TEXTURE::GeometryShaderTextures];
 	ID3D11ShaderResourceView *m_VSViews[(u32)ERHI_MAX_TEXTURE::VertexShaderTextures];

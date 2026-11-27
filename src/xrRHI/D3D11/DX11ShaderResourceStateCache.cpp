@@ -9,6 +9,24 @@ DX11ShaderResourceStateCache::DX11ShaderResourceStateCache(ID3D11DeviceContext* 
 
 void DX11ShaderResourceStateCache::ResetDeviceState()
 {
+	// Forgetting the cache alone leaves SRVs bound when a later pass uses them as outputs.
+	static ID3D11ShaderResourceView* const EmptyViews[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT]{};
+	const auto ClearViews = [&](auto SetShaderResources, u32& AppliedViewCount)
+	{
+		if (AppliedViewCount != 0)
+		{
+			(RContext->*SetShaderResources)(0, AppliedViewCount, EmptyViews);
+			AppliedViewCount = 0;
+		}
+	};
+
+	ClearViews(&ID3D11DeviceContext::PSSetShaderResources, AppliedPSViewCount);
+	ClearViews(&ID3D11DeviceContext::GSSetShaderResources, AppliedGSViewCount);
+	ClearViews(&ID3D11DeviceContext::VSSetShaderResources, AppliedVSViewCount);
+	ClearViews(&ID3D11DeviceContext::HSSetShaderResources, AppliedHSViewCount);
+	ClearViews(&ID3D11DeviceContext::DSSetShaderResources, AppliedDSViewCount);
+	ClearViews(&ID3D11DeviceContext::CSSetShaderResources, AppliedCSViewCount);
+
 	ZeroMemory(m_PSViews, sizeof(m_PSViews));
 	ZeroMemory(m_GSViews, sizeof(m_GSViews));
 	ZeroMemory(m_VSViews, sizeof(m_VSViews));
@@ -47,6 +65,7 @@ void DX11ShaderResourceStateCache::Apply()
 	if (m_bUpdatePSViews)
 	{
 		RContext->PSSetShaderResources(m_uiMinPSView, m_uiMaxPSView - m_uiMinPSView + 1, &m_PSViews[m_uiMinPSView]);
+		AppliedPSViewCount = std::max(AppliedPSViewCount, m_uiMaxPSView + 1);
 		m_uiMinPSView = 0xFFFFFFFF;
 		m_uiMaxPSView = 0xFFFFFFFF;
 		m_bUpdatePSViews = false;
@@ -55,6 +74,7 @@ void DX11ShaderResourceStateCache::Apply()
 	if (m_bUpdateGSViews)
 	{
 		RContext->GSSetShaderResources(m_uiMinGSView, m_uiMaxGSView - m_uiMinGSView + 1, &m_GSViews[m_uiMinGSView]);
+		AppliedGSViewCount = std::max(AppliedGSViewCount, m_uiMaxGSView + 1);
 		m_uiMinGSView = 0xFFFFFFFF;
 		m_uiMaxGSView = 0xFFFFFFFF;
 		m_bUpdateGSViews = false;
@@ -63,6 +83,7 @@ void DX11ShaderResourceStateCache::Apply()
 	if (m_bUpdateVSViews)
 	{
 		RContext->VSSetShaderResources(m_uiMinVSView, m_uiMaxVSView - m_uiMinVSView + 1, &m_VSViews[m_uiMinVSView]);
+		AppliedVSViewCount = std::max(AppliedVSViewCount, m_uiMaxVSView + 1);
 		m_uiMinVSView = 0xFFFFFFFF;
 		m_uiMaxVSView = 0xFFFFFFFF;
 		m_bUpdateVSViews = false;
@@ -71,6 +92,7 @@ void DX11ShaderResourceStateCache::Apply()
 	if (m_bUpdateHSViews)
 	{
 		RContext->HSSetShaderResources(m_uiMinHSView, m_uiMaxHSView - m_uiMinHSView + 1, &m_HSViews[m_uiMinHSView]);
+		AppliedHSViewCount = std::max(AppliedHSViewCount, m_uiMaxHSView + 1);
 		m_uiMinHSView = 0xFFFFFFFF;
 		m_uiMaxHSView = 0xFFFFFFFF;
 		m_bUpdateHSViews = false;
@@ -79,6 +101,7 @@ void DX11ShaderResourceStateCache::Apply()
 	if (m_bUpdateDSViews)
 	{
 		RContext->DSSetShaderResources(m_uiMinDSView, m_uiMaxDSView - m_uiMinDSView + 1, &m_DSViews[m_uiMinDSView]);
+		AppliedDSViewCount = std::max(AppliedDSViewCount, m_uiMaxDSView + 1);
 		m_uiMinDSView = 0xFFFFFFFF;
 		m_uiMaxDSView = 0xFFFFFFFF;
 		m_bUpdateDSViews = false;
@@ -87,6 +110,7 @@ void DX11ShaderResourceStateCache::Apply()
 	if (m_bUpdateCSViews)
 	{
 		RContext->CSSetShaderResources(m_uiMinCSView, m_uiMaxCSView - m_uiMinCSView + 1, &m_CSViews[m_uiMinCSView]);
+		AppliedCSViewCount = std::max(AppliedCSViewCount, m_uiMaxCSView + 1);
 		m_uiMinCSView = 0xFFFFFFFF;
 		m_uiMaxCSView = 0xFFFFFFFF;
 		m_bUpdateCSViews = false;

@@ -428,14 +428,6 @@ bool InternalDevice11::CreateD3D11()
 				(ID3D11Device**)&RawDevice, &CurLevel, &HWRenderContext
 			);
 		}
-		FeatureLevel = CurLevel;
-
-		// main anotation
-		if (FeatureLevel == D3D_FEATURE_LEVEL_11_1)
-		{
-			R_CHK(HWRenderContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&g_pAnnotation));
-		}
-
 		if (FAILED(R))
 		{
 			Msg
@@ -447,7 +439,13 @@ bool InternalDevice11::CreateD3D11()
 
 			xrLogger::FlushLog();
 			return false;
-		};
+		}
+
+		FeatureLevel = CurLevel;
+		if (FeatureLevel == D3D_FEATURE_LEVEL_11_1)
+		{
+			R_CHK(HWRenderContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&g_pAnnotation));
+		}
 
 		if (bHasDebugRender)
 		{
@@ -476,6 +474,7 @@ bool InternalDevice11::CreateD3D11()
 				infoQueue->PushStorageFilter(&NewFilter);
 				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
 				infoQueue->SetBreakOnID(D3D11_MESSAGE_ID_DEVICE_DRAW_RENDERTARGETVIEW_NOT_SET, false);
+				infoQueue->Release();
 			}
 		}
 	}

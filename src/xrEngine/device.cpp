@@ -4,6 +4,7 @@
 #include "x_ray.h"
 #include "Render.h"
 #include "EngineThreading.h"
+#include "CustomHUD.h"
 #include "FPSCounter.h"
 #include "IGame_Level.h"
 #include "Autotest.h"
@@ -218,6 +219,13 @@ void CRenderDevice::on_idle		()
 		mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
 
 		CalculateTransforms();
+	}
+
+	// HUD updates can upload UI textures through the immediate render context.
+	if (g_hud != nullptr)
+	{
+		PROF_EVENT("HUD UI update");
+		g_hud->OnFrameMT();
 	}
 
 	secondary_tasks.run(&XRay::Engine::GameThread);
