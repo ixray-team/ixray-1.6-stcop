@@ -204,6 +204,13 @@ target_compile_definitions(ResonanceAudioObj PUBLIC EIGEN_MPL2_ONLY)
 target_link_libraries(ResonanceAudioObj PUBLIC Eigen3::Eigen)
 target_link_libraries(ResonanceAudioObj PUBLIC pffft)
 
+if (COMMAND target_precompile_headers)
+    target_precompile_headers(ResonanceAudioObj PRIVATE
+        "${RA_SOURCE_DIR}/base/misc_math.h"
+        "${RA_SOURCE_DIR}/base/audio_buffer.h"
+    )
+endif()
+
 set(RA_INSTALL_DIR "${INSTALL_DIR}/resonance_audio/")
 install(TARGETS ResonanceAudioStatic #ResonanceAudioShared
         LIBRARY DESTINATION ${RA_INSTALL_DIR}/lib
