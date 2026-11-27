@@ -197,16 +197,17 @@ void ApplySpawnIniToPhysicShell( CInifile const * ini, CPhysicsShell* physics_sh
 {
 		if(!ini)
 			return;
-		if(ini->section_exist("physics_common"))
+		const bool HasSkeleton = physics_shell->PKinematics() != nullptr;
+		const bool Animated = HasSkeleton && ini->section_exist("animated_object");
+		if (HasSkeleton && ini->line_exist("physics_common", "fixed_bones"))
 		{
-			fixed = fixed || (ini->line_exist("physics_common","fixed_bones")) ;
-#pragma todo("not ignore static if non realy fixed! ")
-			fix_bones(ini->r_string("physics_common","fixed_bones"),physics_shell);
+			fixed = true;
+			fix_bones(ini->r_string("physics_common", "fixed_bones"), physics_shell);
 		}
 		if(ini->section_exist("collide"))
 		{
 
-			if((ini->line_exist("collide","ignore_static")&&fixed)||(ini->line_exist("collide","ignore_static")&&ini->section_exist("animated_object")))
+			if ((fixed || Animated) && ini->line_exist("collide", "ignore_static"))
 			{
 				physics_shell->SetIgnoreStatic();
 			}
@@ -234,7 +235,7 @@ void ApplySpawnIniToPhysicShell( CInifile const * ini, CPhysicsShell* physics_sh
 		//If next section is available then given "PhysicShell" is classified
 		//as animated and we read options for his animation
 		
-		if (ini->section_exist("animated_object"))
+		if (Animated)
 		{
 			//Show that given "PhysicShell" animated
 			physics_shell->CreateShellAnimator( ini, "animated_object" );

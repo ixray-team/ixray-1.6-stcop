@@ -470,11 +470,15 @@ void CPhysicsShellHolder::PHLoadState(IReader& P) {
 	VisMask _vm(_low, _high);
 	K->LL_SetBonesVisible(_vm);
 
+	const bool SameElementCount = bones_number == PHGetSyncItemsNumber();
 	for(u16 i=0;i<bones_number;i++)
 	{
 		SPHNetState state;
 		state.net_Load(P,min,max);
-		PHGetSyncItem(i)->set_State(state);
+		if (SameElementCount)
+		{
+			PHGetSyncItem(i)->set_State(state);
+		}
 	}
 }
 

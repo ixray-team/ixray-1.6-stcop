@@ -440,7 +440,7 @@ struct	NearestToPointCallback
 	virtual	bool operator() ( CPhysicsElement* e )	=	0;
 };
 					bool				shape_is_physic					( const SBoneShape& shape );
-					bool				has_physics_collision_shapes	( IKinematics& K );
+XRPHYSICS_API		bool				has_physics_collision_shapes	( IKinematics& K );
 XRPHYSICS_API		void				phys_shell_verify_object_model	( IPhysicsShellHolder& O );
 
 

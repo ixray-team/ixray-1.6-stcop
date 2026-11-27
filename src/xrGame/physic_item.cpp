@@ -93,19 +93,27 @@ void CPhysicItem::CreatePhysicsShell()
 		return;
 	}
 
-	phys_shell_verify_object_model(*owner);
-
-	owner->PPhysicsShell() = P_create_Shell();
-#ifdef DEBUG
-	owner->PPhysicsShell()->dbg_obj = owner;
-#endif
-	owner->m_pPhysicsShell->build_FromKinematics(pKinematics, 0);
-
-	if (owner->m_pPhysicsShell->get_ElementsNumber() == 0)
+	if (has_physics_collision_shapes(*pKinematics))
 	{
-		Msg(" ! Error: world item visual [%s] has no elements!", pKinematics->getDebugName().c_str());
+		phys_shell_verify_object_model(*owner);
+		owner->PPhysicsShell() = P_create_Shell();
+#ifdef DEBUG
+		owner->PPhysicsShell()->dbg_obj = owner;
+#endif
+		owner->PPhysicsShell()->build_FromKinematics(pKinematics, nullptr);
 	}
-	else if (!owner->m_pPhysicsShell->get_ElementByStoreOrder(0)->has_geoms())
+
+	if (!owner->PPhysicsShell() || owner->PPhysicsShell()->get_ElementsNumber() == 0)
+	{
+		Msg("! World item visual [%s] produced no physics elements, using its bounding box",
+			pKinematics->getDebugName().c_str());
+		xr_delete(owner->PPhysicsShell());
+		create_box_physic_shell();
+#ifdef DEBUG
+		owner->PPhysicsShell()->dbg_obj = owner;
+#endif
+	}
+	else if (!owner->PPhysicsShell()->get_ElementByStoreOrder(0)->has_geoms())
 	{
 		Msg(" ! Error: world item visual [%s] has no shape!", pKinematics->getDebugName().c_str());
 	}
@@ -187,7 +195,7 @@ void CPhysicItem::create_box_physic_shell	()
 {
 	// Physics (Box)
 	Fobb obb; 
-	Visual()->getVisData().box.get_CD(obb.m_translate,obb.m_halfsize); 
+	Visual()->getVisData().box.get_CD(obb.m_translate, obb.m_halfsize);
 	obb.m_rotate.identity();
 	
 	// Physics (Elements)
