@@ -2452,6 +2452,32 @@ public:
 	}
 };
 
+#ifdef DEBUG_DRAW
+class CCC_SelfMechanic final : public IConsole_Command
+{
+public:
+	CCC_SelfMechanic(const char* Name) : IConsole_Command(Name)
+	{
+		bEmptyArgsHandled = true;
+	}
+
+	void Execute(const char*) override
+	{
+		if (!g_pGameLevel || !IsGameTypeSingle() || !Actor() || !ai().get_alife() || !Level().m_upgrade_manager || !CurrentGameUI())
+		{
+			Msg("! Self Mechanic requires a loaded single-player game.");
+			return;
+		}
+		if (CurrentGameUI()->TopInputReceiver())
+		{
+			Msg("! Close the current game dialog before opening Self Mechanic.");
+			return;
+		}
+		CurrentGameUI()->StartUpgrade(Actor(), nullptr, true);
+	}
+};
+#endif
+
 void CCC_RegisterCommands()
 {
 	// options
@@ -2461,6 +2487,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ChangeLanguage, "language");
 
 #ifdef DEBUG_DRAW
+	CMD1(CCC_SelfMechanic, "self_mechanic");
 	CMD1(CCC_SetActorPosition, "set_actor_position");
 	CMD1(CCC_SetWeather, "set_weather");
 	CMD1(CCC_SetGameTime, "set_game_time");

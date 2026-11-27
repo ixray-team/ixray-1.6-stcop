@@ -136,7 +136,9 @@ public:
 	bool IsUnreachable(CInventoryItem& item);
 	bool check_scheme_index(const Ivector2& scheme_index) const;
 	void set_highlight(bool value);
-	void run_effects(bool loading);
+	void run_effects(bool loading, bool SelfMechanic = false);
+	bool HasStandardPrecondition() const;
+	bool HasStandardEffect() const;
 
 	void RefreshTranslations();
 

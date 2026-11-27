@@ -28,6 +28,7 @@
 #include "ui/UISleepWnd.h"
 #include "ActorHelmet.h"
 #include "UIUpgradeWnd.h"
+#include "../inventory_upgrade_manager.h"
 
 EGameIDs ParseStringToGameType(const char* str);
 
@@ -422,8 +423,13 @@ void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOt
 	}
 }
 
-void  CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech)
+void  CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech, bool SelfMechanic)
 {
+	if (g_pGameLevel && Level().m_upgrade_manager)
+	{
+		Level().m_upgrade_manager->SetSelfMechanic(SelfMechanic);
+	}
+
 	if (m_ActorMenu)
 	{
 		m_ActorMenu->SetActor(pActorInv);

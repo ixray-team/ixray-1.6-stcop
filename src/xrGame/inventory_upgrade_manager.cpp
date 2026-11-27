@@ -19,6 +19,48 @@ int g_upgrades_log = 0;
 
 using namespace inventory::upgrade;
 
+namespace
+{
+struct SelfMechanicState
+{
+	const Manager* Owner = nullptr;
+	CInventoryItem* Item = nullptr;
+};
+
+SelfMechanicState g_SelfMechanic;
+}
+
+void Manager::SetSelfMechanic(bool Enabled)
+{
+	if (Enabled)
+	{
+		g_SelfMechanic.Owner = this;
+		g_SelfMechanic.Item = nullptr;
+	}
+	else if (g_SelfMechanic.Owner == this)
+	{
+		g_SelfMechanic = {};
+	}
+}
+
+bool Manager::IsSelfMechanic() const
+{
+	return g_SelfMechanic.Owner == this;
+}
+
+void Manager::SetSelfMechanicItem(CInventoryItem* Item)
+{
+	if (IsSelfMechanic())
+	{
+		g_SelfMechanic.Item = Item;
+	}
+}
+
+bool Manager::IsSelfMechanicItem(const CInventoryItem& Item) const
+{
+	return IsSelfMechanic() && g_SelfMechanic.Item == &Item;
+}
+
 Manager::Manager()
 {
 	load_all_properties();
@@ -27,6 +69,7 @@ Manager::Manager()
 
 Manager::~Manager()
 {
+	SetSelfMechanic(false);
 	delete_data(m_roots);
 	delete_data(m_groups);
 	delete_data(m_upgrades);
@@ -298,7 +341,7 @@ bool Manager::upgrade_install(CInventoryItem& item, shared_str const& upgrade_id
 
 		if (item.install_upgrade(upgrade->section()))
 		{
-			upgrade->run_effects(loading);
+			upgrade->run_effects(loading, !loading && IsSelfMechanicItem(item));
 			item.add_upgrade(upgrade_id, loading);
 
 			if (g_upgrades_log == 1)

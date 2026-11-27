@@ -312,7 +312,7 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 
 void UIInvUpgPropertiesWnd::set_upgrade_info(Upgrade_type& upgrade)
 {
-	if (!upgrade.is_known())
+	if (!upgrade.is_known() && !(g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanic()))
 	{
 		SetWndSize(Fvector2().set(0, 0));
 		return;

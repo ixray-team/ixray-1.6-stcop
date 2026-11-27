@@ -20,6 +20,8 @@
 
 #include "inventory_upgrade.h"
 #include "inventory_upgrade_property.h"
+#include "../Level.h"
+#include "../inventory_upgrade_manager.h"
 #include "../../xrUI/UIHelper.h"
 
 
@@ -82,11 +84,20 @@ bool UIInvUpgradeInfo::init_upgrade(Upgrade_type* upgr, CInventoryItem* inv_item
 	m_name->SetText(m_upgrade->name());
 	m_desc->SetText(m_upgrade->description_text());
 
-	if (m_upgrade->is_known())
+	const bool SelfMechanic = g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanicItem(*inv_item);
+	const bool FreeUpgrade = SelfMechanic && m_upgrade->HasStandardPrecondition() && m_upgrade->HasStandardEffect();
+	if (m_upgrade->is_known() || SelfMechanic)
 	{
 		m_prereq->Show(true);
 		m_properties_wnd->Show(true);
-		if (m_cost)
+		if (m_cost && FreeUpgrade)
+		{
+			string128 Cost;
+			xr_sprintf(Cost, "%s: 0", g_pStringTable->translate("st_upgr_cost").c_str());
+			m_cost->SetText(Cost);
+			m_cost->Show(true);
+		}
+		else if (m_cost)
 		{
 			luabind::functor<const char*> cost_func;
 			const char* cost_func_str = "inventory_upgrades.get_upgrade_cost";
@@ -153,7 +164,10 @@ bool UIInvUpgradeInfo::init_upgrade(Upgrade_type* upgr, CInventoryItem* inv_item
 			case inventory::upgrade::result_e_precondition_quest:
 				if (m_legacy_mode)
 				{
-					m_prereq->SetText(m_upgrade->get_prerequisites());
+					if (upg_res != inventory::upgrade::result_ok || !FreeUpgrade)
+					{
+						m_prereq->SetText(m_upgrade->get_prerequisites());
+					}
 					break;
 				}
 
@@ -162,11 +176,14 @@ bool UIInvUpgradeInfo::init_upgrade(Upgrade_type* upgr, CInventoryItem* inv_item
 				[[fallthrough]];
 
 			default:
-				xr_strconcat(str_res, g_pStringTable->translate("st_upgr_disable").c_str(), ":\\n", m_upgrade->get_prerequisites());
+				if (!FreeUpgrade)
+				{
+					xr_strconcat(str_res, g_pStringTable->translate("st_upgr_disable").c_str(), ":\\n", m_upgrade->get_prerequisites());
+				}
 
 				if (upg_res == inventory::upgrade::result_e_parents)
 				{
-					set_result_string("st_upgr_parents", true);
+					set_result_string("st_upgr_parents", !FreeUpgrade);
 				}
 			}
 		}

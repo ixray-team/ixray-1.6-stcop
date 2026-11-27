@@ -13,6 +13,7 @@
 #include "inventory_upgrade_manager.h"
 #include "inventory_upgrade_group.h"
 #include "inventory_upgrade.h"
+#include "Level.h"
 
 extern int g_upgrades_log;
 
@@ -77,7 +78,7 @@ void UpgradeBase::fill_root_container(Root* root)
 
 UpgradeStateResult UpgradeBase::can_install(CInventoryItem& item, bool loading)
 {
-	if (!m_known && !loading)
+	if (!m_known && !loading && !(g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanicItem(item)))
 	{
 		if (g_upgrades_log == 1)
 		{

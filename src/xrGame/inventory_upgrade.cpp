@@ -17,6 +17,7 @@
 #include "inventory_upgrade_group.h"
 #include "inventory_upgrade_root.h"
 #include "inventory_upgrade_property.h"
+#include "Level.h"
 
 using namespace inventory::upgrade;
 
@@ -128,6 +129,12 @@ UpgradeStateResult Upgrade::can_install(CInventoryItem& item, bool loading)
 		return result_ok; // later script check
 	}
 
+	// Self Mechanic bypasses standard Lua requirements but keeps the upgrade graph rules.
+	if (g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanicItem(item) && HasStandardPrecondition() && HasStandardEffect())
+	{
+		return res;
+	}
+
 	static const bool IsLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
 	// A mechanic's refusal takes precedence over missing parent upgrades in the CoP upgrade system.
 	if (res != result_ok && (res != result_e_parents || IsLegacyUpgrade))
@@ -168,9 +175,20 @@ const char* Upgrade::get_prerequisites()
 	return m_prerequisites();
 }
 
-void Upgrade::run_effects(bool loading)
+bool Upgrade::HasStandardPrecondition() const
 {
-	m_effects.parameter3 = loading ? 1 : 0;
+	return xr_strcmp(pSettings->r_string(id(), "precondition_functor"), "inventory_upgrades.precondition_functor_a") == 0;
+}
+
+bool Upgrade::HasStandardEffect() const
+{
+	return xr_strcmp(pSettings->r_string(id(), "effect_functor"), "inventory_upgrades.effect_functor_a") == 0;
+}
+
+void Upgrade::run_effects(bool loading, bool SelfMechanic)
+{
+	// The standard effect charges money only for an interactive installation.
+	m_effects.parameter3 = (loading || (SelfMechanic && HasStandardPrecondition() && HasStandardEffect())) ? 1 : 0;
 	m_effects();
 }
 

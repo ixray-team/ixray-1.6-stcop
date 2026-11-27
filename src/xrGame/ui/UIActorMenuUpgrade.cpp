@@ -18,6 +18,8 @@
 #include "../../xrUI/Widgets/UI3tButton.h"
 
 #include "inventory_upgrade.h"
+#include "../Level.h"
+#include "../inventory_upgrade_manager.h"
 #include "UITalkWnd.h"
 
 void CUIActorMenu::InitUpgradeMode()
@@ -37,6 +39,11 @@ void CUIActorMenu::InitUpgradeMode()
 
 void CUIActorMenu::DeInitUpgradeMode()
 {
+	if (g_pGameLevel && Level().m_upgrade_manager)
+	{
+		Level().m_upgrade_manager->SetSelfMechanic(false);
+	}
+
 	m_PartnerCharacterInfo->Show(false);
 	m_pUpgradeWnd->Show(false);
 	m_pUpgradeWnd->DeInitInventory();

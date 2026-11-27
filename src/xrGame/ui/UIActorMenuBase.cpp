@@ -34,6 +34,8 @@
 #include "../../xrUI/UICursor.h"
 #include "UIInvUpgradeInfo.h"
 #include "UIMessageBoxEx.h"
+#include "../Level.h"
+#include "../inventory_upgrade_manager.h"
 
 void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
 {
@@ -357,6 +359,11 @@ bool CUIActorMenuBase::CanMoveToPartner(PIItem pItem)
 bool CUIActorMenuBase::CanUpgradeItem( PIItem item )
 {
 	VERIFY( item );
+
+	if (g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanicItem(*item))
+	{
+		return true;
+	}
 
 	const char* item_name = item->m_section_id.c_str();
 	const char* partner = GetPartner() ? GetPartner()->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
@@ -2546,6 +2553,10 @@ void CUIActorMenuBase::SetupUpgradeItem()
 
 	bool can_upgrade = false;
 	PIItem item = CurrentIItem();
+	if (g_pGameLevel && Level().m_upgrade_manager)
+	{
+		Level().m_upgrade_manager->SetSelfMechanicItem(item);
+	}
 	if (item)
 	{
 		m_upgrade_selected = CurrentItem();
@@ -2700,6 +2711,13 @@ void CUIActorMenuBase::TryRepairItem(CUIWindow* w, void* d)
 			return;
 		}
 	}
+	if (g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanicItem(*item))
+	{
+		m_repair_mode = 1;
+		CallMessageBoxYesNo(g_pStringTable->translate("ui_inv_repair").c_str());
+		return;
+	}
+
 	const char* partner = GetPartner() ? GetPartner()->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
 
 	luabind::functor<bool> funct;
@@ -2810,9 +2828,12 @@ void CUIActorMenuBase::RepairEffect_CurItem()
 
 	const char* item_name = item->m_section_id.c_str();
 
-	luabind::functor<void> funct;
-	R_ASSERT(ai().script_engine().functor("inventory_upgrades.effect_repair_item", funct));
-	funct(item_name, item->GetCondition());
+	if (!(g_pGameLevel && Level().m_upgrade_manager && Level().m_upgrade_manager->IsSelfMechanicItem(*item)))
+	{
+		luabind::functor<void> funct;
+		R_ASSERT(ai().script_engine().functor("inventory_upgrades.effect_repair_item", funct));
+		funct(item_name, item->GetCondition());
+	}
 
 	item->SetCondition(1.0f);
 	UpdateConditionProgressBars();

@@ -60,6 +60,11 @@ public:
 	bool is_known_upgrade(CInventoryItem& item, shared_str const& upgrade_id);
 	bool is_known_upgrade(shared_str const& upgrade_id);
 
+	void SetSelfMechanic(bool Enabled);
+	bool IsSelfMechanic() const;
+	void SetSelfMechanicItem(CInventoryItem* Item);
+	bool IsSelfMechanicItem(const CInventoryItem& Item) const;
+
 	bool upgrade_install(CInventoryItem& item, shared_str const& upgrade_id, bool loading);
 	void init_install(CInventoryItem& item);
 

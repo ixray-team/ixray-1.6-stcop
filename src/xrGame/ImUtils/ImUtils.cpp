@@ -2,6 +2,8 @@
 
 #include "ImUtils.h"
 #include "../xrEngine/xr_input.h"
+#include "../Actor.h"
+#include "../Level.h"
 
 clsid_manager* g_pClsidManager;
 CImGuiGameSearchManager imgui_search_manager;
@@ -69,6 +71,25 @@ int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::strin
 	return button_id;
 }
 
+void RenderSelfMechanicMenu()
+{
+	if (!ImGui::BeginMainMenuBar())
+	{
+		return;
+	}
+
+	if (ImGui::BeginMenu("Game"))
+	{
+		const bool Available = g_pGameLevel && Actor() && IsGameTypeSingle();
+		if (ImGui::MenuItem("Self Mechanic", nullptr, false, Available))
+		{
+			execute_console_command_deferred(Console, "self_mechanic");
+		}
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
+}
+
 void RegisterImGuiInGame()
 {
 	if (!Device.IsEditorMode())
@@ -89,6 +110,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("3D Icons Adjust", CImGuiManager::ERenderPriority::eMedium, Render3DIconAdjust);
 		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
+		CImGuiManager::Instance().Subscribe("Self Mechanic", CImGuiManager::ERenderPriority::eMedium, RenderSelfMechanicMenu);
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();

@@ -193,7 +193,7 @@ public:
 	
 	void				StartTalk				(bool disable_break);
 	void				StartTrade				(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
-	void				StartUpgrade			(CInventoryOwner* pActorInv, CInventoryOwner* pMech);
+	void				StartUpgrade			(CInventoryOwner* pActorInv, CInventoryOwner* pMech, bool SelfMechanic = false);
 	bool				StartCarBody			(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
 	bool				StartCarBody			(CInventoryOwner* pActorInv, CInventoryBox* pBox);
 

@@ -7,6 +7,7 @@
 #include "UIInventoryUpgradeWnd.h"
 #include "UIInvUpgradeInfo.h"
 #include "../Level.h"
+#include "../inventory_upgrade_manager.h"
 #include "../entity_alive.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIItemInfo.h"
@@ -144,7 +145,14 @@ void CUIUpgradeWnd::StartUpgrade(CInventoryOwner* actor, CInventoryOwner* partne
 	m_partner_inv_owner = partner;
 
 	m_character_info_actor->InitCharacter(m_actor_inv_owner);
-	m_character_info_partner->InitCharacter(m_partner_inv_owner);
+	if (m_partner_inv_owner)
+	{
+		m_character_info_partner->InitCharacter(m_partner_inv_owner);
+	}
+	else
+	{
+		m_character_info_partner->ClearInfo();
+	}
 	
 	InitInventoryContents(m_dragdrop_our);
 	if (m_partner_inv_owner)
@@ -198,6 +206,10 @@ void CUIUpgradeWnd::Show(bool status)
 	}
 	else
 	{
+		if (g_pGameLevel && Level().m_upgrade_manager)
+		{
+			Level().m_upgrade_manager->SetSelfMechanic(false);
+		}
 		m_pUpgradeWnd->DeInitInventory();
 
 		if (m_upgrade_selected)
