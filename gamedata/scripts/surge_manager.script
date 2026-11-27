@@ -66,9 +66,6 @@ function CSurgeManager:initialize()
 	dt:setHMSms(0, 2, 0, 0)	 
 	self.last_surge_time:sub(dt);
 
-	self.count = 0
-	self.covers = {}
-
 	self.condlist = {}
 	self.survive = {}
 
@@ -95,24 +92,26 @@ end
 function CSurgeManager:init_surge_covers()
 	return PROF_EVENT_CLOSURE("init_surge_covers", function()
         local ini = self.ini
+        local covers = {}
         for i = 0, ini:line_count("list")-1 do
-            temp1, id, temp2 = ini:r_line("list", i, "", "")
+            local _, id = ini:r_line("list", i, "", "")
             local zone = db.zone_by_name[id]
             if zone ~= nil then
-                self.count = self.count + 1
-                self.covers[self.count] = zone
-                if(ini:line_exist(id, "condlist")) then
-                    self.covers[self.count].condlist = {}
-                    self.covers[self.count].condlist = xr_logic.parse_condlist(npc, id, "condlist", ini:r_string(id, "condlist"))
+                covers[#covers + 1] = zone
+                if ini:line_exist(id, "condlist") then
+                    zone.condlist = xr_logic.parse_condlist(npc, id, "condlist", ini:r_string(id, "condlist"))
                 end
             end
         end
+        self.covers = covers
+        self.count = #covers
+        self.covers_need_refresh = false
     end)
 end
 
 function CSurgeManager:get_nearest_cover()
 	return PROF_EVENT_CLOSURE("get_nearest_cover", function()
-        if(self.loaded) then
+        if self.covers_need_refresh and device().precache_frame <= 1 then
             self:init_surge_covers()
         end
         local hides = {}
@@ -883,6 +882,8 @@ function CSurgeManager:load(packet)
         end
         self._delta = packet:r_u32()
         self.loaded = true
+        -- Some cover restrictors register after the actor's save data is loaded.
+        self.covers_need_refresh = true
         set_save_marker(packet, "load", true, "SurgeHide")
     end)
 end
