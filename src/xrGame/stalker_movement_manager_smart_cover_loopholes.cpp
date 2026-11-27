@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "Level.h"
 #include "pch_script.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "smart_cover_loophole.h"

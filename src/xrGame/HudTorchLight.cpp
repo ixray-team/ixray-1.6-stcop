@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #include "HudTorchLight.h"
 #include "player_hud.h"
 #include "CustomDevice.h"

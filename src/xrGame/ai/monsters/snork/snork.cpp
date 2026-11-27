@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../../../CustomDevice.h"
+#include "../../../HudAnimatorManager.h"
 #include "snork.h"
 #include "snork_state_manager.h"
 #include "../../../detail_path_manager_space.h"

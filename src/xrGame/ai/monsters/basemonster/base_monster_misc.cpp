@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "../../../Level.h"
 #include "../../../../xrEngine/MonsterLogicTelemetry.h"
 #include "base_monster.h"
 #include "../../../EntityCondition.h"

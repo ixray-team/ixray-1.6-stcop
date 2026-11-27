@@ -6,7 +6,7 @@
 //	Description : Base action inline function
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Level.h"
+#include "../xrEngine/device.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _object_type>
 #define CBaseAction				CActionBase<_object_type>

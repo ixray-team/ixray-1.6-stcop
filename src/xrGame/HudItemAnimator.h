@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HudAnimatorManager.h"
+#include "firedeps.h"
 class CParticlesObject;
 
 class CHudItemAnimator final : public CHudAnimatorBase

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "HudAnimatorManager.h"
 #include "EntityCondition.h"
 #include "InventoryOwner.h"
 #include "CustomOutfit.h"
@@ -202,6 +203,11 @@ void CEntityCondition::reinit	()
 
 	ClearWounds				();
 
+}
+
+bool CEntityCondition::CanBeHarmed() const
+{
+	return OnServer() && m_bCanBeHarmed;
 }
 
 void CEntityCondition::ChangeHealth(const float value)

@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "../../../CustomDevice.h"
+#include "../../../HudAnimatorManager.h"
 #include "../../../../xrEngine/MonsterLogicTelemetry.h"
 #include "pch_script.h"
 #include "base_monster.h"

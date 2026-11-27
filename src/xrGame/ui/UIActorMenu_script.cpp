@@ -6,6 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "../HudAnimatorManager.h"
+#include "../Level.h"
 #include "pch_script.h"
 #include "UIActorMenu.h"
 #include "UIGameCustom.h"

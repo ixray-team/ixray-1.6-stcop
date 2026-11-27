@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../HudAnimatorManager.h"
+#include "../Level.h"
 #include "pch_script.h"
 #include "UIGameTutorial.h"
 #include "../../xrUI/Widgets/UIWindow.h"

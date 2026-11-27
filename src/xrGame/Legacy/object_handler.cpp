@@ -6,6 +6,7 @@
 //	Description : Object handler
 ////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
+#include "../Level.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "pch_script.h"
 #include "object_handler.h"

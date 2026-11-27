@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Artefact.h"
 #include "pch_script.h"
 #include "ActorCondition.h"
 #include "Actor.h"

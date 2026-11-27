@@ -51,6 +51,11 @@
 
 bool g_draw_downloads = false;
 
+bool game_cl_mp::Is_Spectator_TeamCamera_Allowed()
+{
+	return m_bSpectator_TeamCamera && !Level().IsDemoPlay();
+}
+
 game_cl_mp::game_cl_mp()
 {
 	m_bVotingActive = false;

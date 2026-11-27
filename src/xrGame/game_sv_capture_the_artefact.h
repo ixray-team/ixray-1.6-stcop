@@ -2,10 +2,10 @@
 
 #include "game_sv_mp.h"
 #include "actor_mp_server.h"
-#include "xrServer.h"
 #include "xrServer_Object_Base.h"
 #include "AnomalyZone.h"
 
+class xrClientData;
 
 
 class game_sv_CaptureTheArtefact final : public game_sv_mp

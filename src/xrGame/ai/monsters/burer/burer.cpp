@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../../../CustomDevice.h"
+#include "../../../HudAnimatorManager.h"
 #include "burer.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../CharacterPhysicsSupport.h"

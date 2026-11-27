@@ -12,13 +12,13 @@
 #include "first_bullet_controller.h"
 
 #include "CameraRecoil.h"
-#include "Actor.h"
 #include "script_game_object.h"
 #include "Scope.h"
 #include "Descs/WeaponDesc.h"
 
 #include "../xrScripts/script_export_space.h"
 
+class CActor;
 class CEntity;
 class ENGINE_API CMotionDef;
 class CSE_ALifeItemWeapon;
@@ -581,12 +581,14 @@ protected:
 
 	struct SZoomParams
 	{
+		SZoomParams();
+
 		bool			m_bZoomEnabled;			//разрешение режима приближения
 		bool			m_bHideCrosshairInZoom;
 
 		bool			m_bIsZoomModeNow = false;		//когда режим приближения включен
 		bool			m_bIsAltZoomModeNow = false;		//когда режим приближения включен
-		float			m_fCurrentZoomFactor = g_fov;	//текущий фактор приближения
+		float			m_fCurrentZoomFactor;	//текущий фактор приближения
 		float			m_fZoomRotateTime;		//время приближения
 	
 		float			m_fIronSightZoomFactor;	//коэффициент увеличения прицеливания
@@ -646,12 +648,7 @@ public:
 	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
 	CUIStatic*				ZoomTexture			();	
 
-	IC bool ZoomHideCrosshair() {
-		CActor* pA = H_Parent() ? H_Parent()->cast_actor() : NULL;
-		if (pA && pA->active_cam() == eacLookAt && !ZoomTexture())
-			return false;
-		return m_zoom_params.m_bHideCrosshairInZoom || ZoomTexture();
-	}
+	bool ZoomHideCrosshair();
 
 	IC float				GetZoomFactor		() const		{return m_zoom_params.m_fCurrentZoomFactor;}
 	IC float				GetRTZoomFactor		() const		{return m_fRTZoomFactor;}

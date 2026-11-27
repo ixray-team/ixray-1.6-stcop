@@ -1,12 +1,13 @@
 #pragma once
 #include "../xrNetServer/NET_Server.h"
-#include "game_sv_base.h"
+#include "game_base.h"
 #include "secure_messaging.h"
 #include "xrServer_updates_compressor.h"
 #include "xrClientsPool.h"
 #include "FreeMP/ScriptEvents.h"
 
 class CSE_Abstract;
+class game_sv_GameState;
 constexpr u32 NET_Latency = 50; // time in (ms)
 
 // t-defs

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../Level.h"
 #include "DosimeterUI.h"
 
 #include "../../../xrUI/ui_base.h"

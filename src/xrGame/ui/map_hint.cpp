@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../Level.h"
 #include "map_hint.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"

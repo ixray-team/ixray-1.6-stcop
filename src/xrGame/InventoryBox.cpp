@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Actor.h"
 #include "pch_script.h"
 #include "InventoryBox.h"
 #include "Level.h"

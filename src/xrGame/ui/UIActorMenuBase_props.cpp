@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../Level.h"
+#include "../Actor.h"
 #include "UIActorMenuBase.h"
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrEngine/xr_input.h"

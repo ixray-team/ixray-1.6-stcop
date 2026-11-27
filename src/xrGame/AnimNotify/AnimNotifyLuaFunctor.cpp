@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../Level.h"
 #include "AnimNotifyLuaFunctor.h"
 #include "script_game_object.h"
 

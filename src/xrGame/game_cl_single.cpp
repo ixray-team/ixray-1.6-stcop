@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "game_sv_base.h"
+#include "Level.h"
 #include "pch_script.h"
 #include "game_cl_single.h"
 #include "xrServer.h"

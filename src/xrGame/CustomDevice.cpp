@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "HudAnimatorManager.h"
+#include "Level.h"
 #include "CustomDevice.h"
 #include "Inventory.h"
 #include "InventoryWeaponSlotLayout.h"

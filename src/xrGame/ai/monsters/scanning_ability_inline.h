@@ -1,4 +1,6 @@
 #pragma once
+#include "../../../xrSound/ai_sounds.h"
+#include "../../Level.h"
 #include "CharacterPhysicsSupport.h"
 #include "ai_monster_effector.h"
 #include "Actor.h"

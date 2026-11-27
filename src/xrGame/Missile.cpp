@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "CustomDevice.h"
 #include "Missile.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "Actor.h"

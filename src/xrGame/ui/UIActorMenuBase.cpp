@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../Level.h"
+#include "../Actor.h"
 #include "UIActorMenuBase.h"
 
 #include "UICellCustomItems.h"

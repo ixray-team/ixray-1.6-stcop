@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "CustomDevice.h"
 #include "ActorLightPerception.h"
 #include "Actor.h"
 #include "Creature.h"

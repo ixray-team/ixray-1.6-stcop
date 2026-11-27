@@ -1,4 +1,7 @@
 #include "StdAfx.h"
+#include "../../CustomDevice.h"
+#include "../../HudAnimatorManager.h"
+#include "../../Actor.h"
 #include "../../PhysicsShellHolder.h"
 #include "telekinetic_object.h"
 

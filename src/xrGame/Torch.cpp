@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../xrSound/ai_sounds.h"
+#include "Level.h"
 #include "Torch.h"
 #include "Actor.h"
 #include "../xrEngine/LightAnimLibrary.h"

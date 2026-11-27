@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "CustomDevice.h"
 
 #include "WeaponKnife.h"
 #include "Entity.h"

@@ -1,4 +1,5 @@
 ﻿#include "StdAfx.h"
+#include "Level.h"
 #include "FlamethrowerTraceCollision.h"
 #include "Creature.h"
 #include "Flamethrower.h"

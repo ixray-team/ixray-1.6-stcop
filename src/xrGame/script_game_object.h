@@ -14,7 +14,6 @@
 #include "xr_time.h"
 #include "game_graph_space.h"
 #include "game_location_selector.h"
-#include "Artefact.h"
 #include "medkit.h"
 #include "antirad.h"
 #include "CustomOutfit.h"
@@ -23,7 +22,6 @@
 #include "GrenadeLauncher.h"
 #include "InventoryBox.h"
 #include "InventoryOwner.h"
-#include "Actor.h"
 #include "Explosive.h"
 #include "script_zone.h"
 #include "ai/trader/ai_trader.h"
@@ -68,6 +66,7 @@ namespace MemorySpace {
 	struct CNotYetVisibleObject;
 };
 
+class CActor;
 class CGameObject;
 class CScriptHit;
 class CScriptEntityAction;
@@ -89,6 +88,8 @@ class CScriptGameObject;
 class CZoneCampfire;
 class CPhysicObject;
 class CArtefact;
+class CWeaponAmmo;
+struct CameraFocusParams;
 
 #ifdef DEBUG
 	template <typename _object_type>

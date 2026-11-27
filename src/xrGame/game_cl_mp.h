@@ -248,7 +248,7 @@ public:
 	virtual		u8					GetTeamCount			() { return 0; };
 	virtual		s16					ModifyTeam				(s16 Team)	{return Team;};
 
-	virtual		bool				Is_Spectator_TeamCamera_Allowed () {return m_bSpectator_TeamCamera && !Level().IsDemoPlay();};
+	virtual bool Is_Spectator_TeamCamera_Allowed();
 	virtual		bool				Is_Spectator_Camera_Allowed			(CSpectator::EActorCameras Camera);
 	virtual		bool				Is_Rewarding_Allowed			() const { return false; };
 				

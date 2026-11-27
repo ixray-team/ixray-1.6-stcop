@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../Level.h"
 #include "UIMpTradeWnd.h"
 
 #include "UIMpItemsStoreWnd.h"

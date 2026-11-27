@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "Level.h"
 #include "group_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 #include "Entity.h"

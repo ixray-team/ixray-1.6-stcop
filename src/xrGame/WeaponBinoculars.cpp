@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Actor.h"
 #include "WeaponBinoculars.h"
 
 #include "../xrEngine/xr_level_controller.h"

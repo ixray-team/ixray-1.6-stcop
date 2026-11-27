@@ -1,4 +1,7 @@
 #include "StdAfx.h"
+#include "CustomDevice.h"
+#include "HudAnimatorManager.h"
+#include "Level.h"
 #include "player_hud.h"
 #include "PlayerHudUtils.h"
 #include "WatchDevice/WatchDevice.h"

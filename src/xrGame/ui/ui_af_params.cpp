@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../Level.h"
 #include "ui_af_params.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 

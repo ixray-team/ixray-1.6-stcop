@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "player_hud.h"
+#include "HudItem.h"
 #include "HudVertexAssignedPatricles.h"
 #include "Actor.h"
 

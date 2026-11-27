@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #include "inventory_item.h"
 #include "ai_space.h"
 #include "Inventory.h"

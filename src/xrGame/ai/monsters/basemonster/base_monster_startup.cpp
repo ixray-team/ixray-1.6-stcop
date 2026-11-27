@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../../game_sv_base.h"
 #include "base_monster.h"
 #include "../../../../xrCore/Kernel/EngineExternal.h"
 #include "../../../ai_space.h"

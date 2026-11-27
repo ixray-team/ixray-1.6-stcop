@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Actor.h"
 #include "script_game_object.h"
 
 bool CScriptGameObject::ActorFocusPoint(const Fvector& Point, const CameraFocusParams& Params)

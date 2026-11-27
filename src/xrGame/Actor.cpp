@@ -1,4 +1,9 @@
 #include "StdAfx.h"
+#include "Artefact.h"
+#include "CustomDevice.h"
+#include "HudAnimatorManager.h"
+#include "xrServer.h"
+#include "Level.h"
 #include "pch_script.h"
 #include "Actor.h"
 #include "HUDManager.h"
@@ -1506,6 +1511,11 @@ void	CActor::SwitchOutBorder(bool new_border_state)
 		callback(GameObject::eEnterLevelBorder)(lua_game_object());
 	}
 	m_bOutBorder=new_border_state;
+}
+
+bool CActor::g_stateFire()
+{
+	return !((mstate_wishful & mcLookout) && !IsGameTypeSingle());
 }
 
 void CActor::g_Physics			(Fvector& _accel, float jump, float dt)

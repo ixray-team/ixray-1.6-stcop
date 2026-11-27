@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "map_manager.h"
 #include "map_location.h"
@@ -1625,4 +1626,4 @@ void game_cl_CaptureTheArtefact::OnConnected()
 #undef FREE_ARTEFACT_FRIEND
 #undef FRIEND_LOCATION
 #undef ARTEFACT_FRIEND
-#undef ARTEFACT_ENEMY	
+#undef ARTEFACT_ENEMY

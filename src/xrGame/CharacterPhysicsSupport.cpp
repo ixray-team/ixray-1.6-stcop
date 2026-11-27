@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 
 #include "CharacterPhysicsSupport.h"
 #include "alife_space.h"

@@ -13,6 +13,7 @@
 #include "../../AI_PhraseDialogManager.h"
 #include "../../step_manager.h"
 #include "../../../xrScripts/script_export_space.h"
+#include "../../../xrServerEntities/PHNetState.h"
 
 #include "ai_stalker_state_net.h"
 #include "ai_stalker_space.h"

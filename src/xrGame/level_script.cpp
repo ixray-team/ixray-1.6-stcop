@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "patrol_path.h"
+#include "ui/UIWorldSpace.h"
 
 #include "pch_script.h"
 #include "Level.h"

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "Level.h"
 #include "movement_manager.h"
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"

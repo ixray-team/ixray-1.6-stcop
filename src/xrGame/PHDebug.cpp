@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../xrPhysics/PHContact.h"
 
 #ifdef DEBUG_DRAW
 #include "PHDebug.h"

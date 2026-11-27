@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #include "IPowerManager.h"
 #include "Actor.h"
 #include "Inventory.h"

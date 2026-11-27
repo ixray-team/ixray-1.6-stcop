@@ -1,7 +1,10 @@
 #ifndef CDKEY_BAN_LIST_H
 #define CDKEY_BAN_LIST_H
 
-#include "xrServer.h"
+#include "../xrNetServer/NET_Shared.h"
+#include "../xrNetServer/ip_address.h"
+
+class xrClientData;
 
 class cdkey_ban_list
 {

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "game_sv_base.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
 #include "xrServer.h"

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "CustomDevice.h"
 #include "HudItemAnimator.h"
 #include "player_hud.h"
 #include "UIGameCustom.h"

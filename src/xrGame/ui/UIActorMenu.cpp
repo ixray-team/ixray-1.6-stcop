@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../HudAnimatorManager.h"
+#include "../Level.h"
 #include "UIActorMenu.h"
 #include "UIActorStateInfo.h"
 #include "../Actor.h"

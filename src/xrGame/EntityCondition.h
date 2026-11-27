@@ -4,11 +4,11 @@
 class CWound;
 class NET_Packet;
 class CEntityAlive;
-class CLevel;
+class CObject;
+class ISaveObject;
 
 #include "hit_immunity.h"
 #include "Hit.h"
-#include "Level.h"
 enum EBoostParams{
 	eBoostHpRestore = 0,
 	eBoostPowerRestore,
@@ -171,7 +171,7 @@ public:
 	void					ChangeBleedingCustom(float percent, int hit_type_mask = -1);
 
 	IC void 				SetCanBeHarmedState		(bool CanBeHarmed) 			{m_bCanBeHarmed = CanBeHarmed;}
-	IC bool					CanBeHarmed				() const					{return OnServer() && m_bCanBeHarmed;};
+	bool CanBeHarmed() const;
 	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound = true);
 	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect, bool use_sound = true);
 	void					ClearWounds();

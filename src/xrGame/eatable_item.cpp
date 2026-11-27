@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "HudAnimatorManager.h"
 #include "eatable_item.h"
 #include "xrMessages.h"
 #include "physic_item.h"

@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "CustomDevice.h"
+#include "HudAnimatorManager.h"
 
 #include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/CameraBase.h"

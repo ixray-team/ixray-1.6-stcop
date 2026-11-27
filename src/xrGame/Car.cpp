@@ -159,6 +159,11 @@ void CCar::reload(const char* section)
 	CEntity::reload(section);
 }
 
+bool CCar::net_Relevant()
+{
+	return IsMyCar() || OnServer();
+}
+
 bool CCar::IsMyCar() const
 {
 	if (!Actor())

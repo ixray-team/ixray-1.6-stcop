@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../../../HudAnimatorManager.h"
+#include "../../../Level.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../Actor.h"
 #include "../../../../xrEngine/CameraBase.h"

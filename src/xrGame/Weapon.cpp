@@ -55,6 +55,10 @@ extern CUIXml*	pWpnScopeXml;
 ENGINE_API extern float psHUD_FOV_def;
 ENGINE_API extern bool g_3d_scopes;
 
+CWeapon::SZoomParams::SZoomParams() : m_fCurrentZoomFactor(g_fov)
+{
+}
+
 CWeapon::CWeapon()
 {
 	SetDefaults();
@@ -3522,6 +3526,16 @@ void CWeapon::OnZoomOut()
 	{
 		NightVision->SwitchNightVision(false);
 	}
+}
+
+bool CWeapon::ZoomHideCrosshair()
+{
+	CActor* pA = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	if (pA && pA->active_cam() == eacLookAt && !ZoomTexture())
+	{
+		return false;
+	}
+	return m_zoom_params.m_bHideCrosshairInZoom || ZoomTexture();
 }
 
 CUIStatic* CWeapon::ZoomTexture()

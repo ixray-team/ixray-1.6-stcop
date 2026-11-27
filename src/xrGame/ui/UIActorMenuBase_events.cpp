@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "UIActorMenuBase.h"
 #include "../InventoryOwner.h"
+#include "../CustomDevice.h"
 #include "../Level.h"
 #include "UIDragDropReferenceList.h"
 #include "UICellCustomItems.h"

@@ -1,4 +1,5 @@
 ﻿#include "StdAfx.h"
+#include "ShellManager.h"
 
 #include "Shell.h"
 

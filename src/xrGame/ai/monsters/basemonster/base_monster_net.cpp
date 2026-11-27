@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../../Level.h"
 #include "base_monster.h"
 
 #include "../../../ai_object_location.h"

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../HudAnimatorManager.h"
 #include "pch_script.h"
 #include "UIGameSP.h"
 #include "Actor.h"

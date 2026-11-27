@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../xrServer.h"
 #include "game_sv_freemp.h"
 #include "Level.h"
 #include "trade.h"

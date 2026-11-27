@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "../Level.h"
 #include "pch_script.h"
 
 #include "FactionState.h"

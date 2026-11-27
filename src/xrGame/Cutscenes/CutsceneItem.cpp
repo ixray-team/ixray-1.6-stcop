@@ -1,4 +1,5 @@
 ﻿#include "StdAfx.h"
+#include "../Level.h"
 #include "CutsceneItem.h"
 
 #include "ai_space.h"

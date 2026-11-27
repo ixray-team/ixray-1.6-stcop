@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../../game_sv_base.h"
+#include "../../Level.h"
 #include "StdAfx.h"
 #include "ai_stalker.h"
 #include "xrServer.h"
@@ -567,4 +569,4 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 	}
 }
 
- 
+

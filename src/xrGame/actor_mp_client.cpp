@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #include "actor_mp_client.h"
 #include "ActorCondition.h"
 #include "../xrEngine/CameraBase.h"

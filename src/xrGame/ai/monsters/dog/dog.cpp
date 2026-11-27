@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../../Level.h"
 #include "dog.h"
 #include "dog_state_manager.h"
 #include "../monster_velocity_space.h"

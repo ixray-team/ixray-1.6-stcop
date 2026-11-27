@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "../Level.h"
+#include "../xrServer.h"
 #include "game_sv_freemp.h"
 #include "clsid_game.h"
 #include "actor_mp_client.h"

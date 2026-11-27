@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../Level.h"
 #include "UIDragDropReferenceList.h"
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
@@ -9,6 +10,7 @@
 #include "../actor_defs.h"
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/xr_input.h"
+#include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrUI/UICursor.h"
 #include "UICellItemFactory.h"
 

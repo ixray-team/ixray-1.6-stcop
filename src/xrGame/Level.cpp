@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include "game_sv_base.h"
+#include "ShellManager.h"
 #include "pch_script.h"
 #include "FDemoRecord.h"
 #include "FDemoPlay.h"

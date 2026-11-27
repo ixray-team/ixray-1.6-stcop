@@ -496,7 +496,7 @@ public:
 	// Network
 	virtual void			net_Export					(NET_Packet& P) override;				// export to server
 	virtual void			net_Import					(NET_Packet& P) override;				// import from server
-	virtual bool			net_Relevant				() override { return IsMyCar() || OnServer(); };		// relevant for export to server
+	bool net_Relevant() override; // Relevant for export to the server.
 	virtual bool			UsedAI_Locations			() override;
 	virtual void			net_Relcase					(CObject* O ) override;
 	// Input

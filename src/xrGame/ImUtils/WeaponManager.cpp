@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../Level.h"
 #include "../Actor.h"
 #include "../Inventory.h"
 #include "../inventory_item.h"

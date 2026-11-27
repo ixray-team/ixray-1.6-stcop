@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "Level.h"
 #include "doors_actor.h"
 #include "doors_door.h"
 #include "ai/stalker/ai_stalker.h"

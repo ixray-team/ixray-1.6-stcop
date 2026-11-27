@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../Level.h"
 #include "control_animation.h"
 #include "basemonster/base_monster.h"
 #include "control_manager.h"

@@ -18,9 +18,6 @@
 #include "game_cl_base.h"
 #include "FreeMP/ScriptEvents.h"
 
-#include "UIWorldSpace.h"
-#include "ShellManager.h"
-
 // always try to forward declare your script implementations
 class CRandomManager;
 
@@ -53,6 +50,7 @@ class	demo_info;
 class CElectronicsProblemsManager;
 
 class CUIWorldSpaceManager;
+struct SShellManager;
 
 #ifdef DEBUG_DRAW
 	class	CDebugRenderer;

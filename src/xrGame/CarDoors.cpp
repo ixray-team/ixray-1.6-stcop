@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif

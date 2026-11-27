@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../Level.h"
 #include "control_animation_base.h"
 #include "../../../xrCore/Kernel/EngineExternal.h"
 #include "control_direction_base.h"

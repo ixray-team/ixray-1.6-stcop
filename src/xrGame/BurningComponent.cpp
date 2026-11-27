@@ -1,4 +1,5 @@
 ﻿#include "StdAfx.h"
+#include "Level.h"
 #include "BurningComponent.h"
 
 #include <algorithm>

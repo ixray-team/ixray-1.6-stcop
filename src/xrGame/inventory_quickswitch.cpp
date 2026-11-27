@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "Level.h"
 #include "Inventory.h"
 #include "InventoryWeaponSlotLayout.h"
 #include "Weapon.h"

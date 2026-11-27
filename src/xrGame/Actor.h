@@ -18,9 +18,7 @@
 #include "ControllerAutoaim.h"
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
-#include "CustomDevice.h"
 #include "EffectorNightVision.h"
-#include "HudAnimatorManager.h"
 #include "nvg.h"
 #include "CameraFocus.h"
 #include "ActorLightPerception.h"
@@ -655,7 +653,7 @@ public:
 public:
 	virtual void						g_WeaponBones		(u16 &L, u16 &R1, u16 &R2) final;
 	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D) final;
-	bool						g_stateFire			() override {return ! ((mstate_wishful & mcLookout) && !IsGameTypeSingle() );}
+	bool g_stateFire() override;
 
 	virtual bool						g_State				(SEntityState& state) const override;
 	virtual float						GetWeaponAccuracy	() const override;

@@ -2,6 +2,8 @@
 #include "UIGameCustom.h"
 #include "game_graph_space.h"
 
+class CActor;
+
 class CUITradeWnd;			
 class CUITalkWnd;			
 class CInventory;

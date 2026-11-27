@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "cdkey_ban_list.h"
+#include "xrServer.h"
 #include "object_broker.h"
 
 cdkey_ban_list::cdkey_ban_list() = default;

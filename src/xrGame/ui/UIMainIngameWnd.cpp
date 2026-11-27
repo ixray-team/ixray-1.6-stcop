@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../HudAnimatorManager.h"
 
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"

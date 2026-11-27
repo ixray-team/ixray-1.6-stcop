@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "Level.h"
 #include "Weapon.h"
 #include "Entity.h"
 #include "Actor.h"

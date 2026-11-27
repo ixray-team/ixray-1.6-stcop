@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "../../Level.h"
 #include "ai_stalker_state_net.h"
 #include "xrServer.h"
 #include "stalker_movement_manager_smart_cover.h"
@@ -353,4 +354,4 @@ void aistalker_state_net::GetStateCSE(CSE_ALifeHumanStalker* stalker)
 		stalker->m_start_dialog = sta->GetStartDialog();
 	}
 }
- 
+

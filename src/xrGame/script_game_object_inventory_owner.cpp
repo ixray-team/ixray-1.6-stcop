@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "HudAnimatorManager.h"
 #include "pch_script.h"
 #include "script_game_object.h"
 #include "InventoryOwner.h"

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "HudAnimatorManager.h"
 
 #include "Actor.h"
 #include "ai/monsters/basemonster/base_monster.h"
