@@ -184,6 +184,16 @@ void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float
 	m_character->Reinit();
 }
 
+void CPHMovementControl::ResetGroundContact()
+{
+	m_character->ContactWas();
+	m_character->Reinit();
+	gcontact_Was = false;
+	gcontact_Power = 0.f;
+	gcontact_HealthLost = 0.f;
+	fContactSpeed = 0.f;
+}
+
 void CPHMovementControl::UpdateCollisionDamage( )
 {
 //reset old

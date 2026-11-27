@@ -3186,9 +3186,18 @@ void CActor::ForceTransform(const Fmatrix& m)
 	// The position correction steps physics with an activation box at the target.
 	// The actor body is still at the old position and must not collide with it,
 	// otherwise it is thrown up, lands with a fall sound and shifts the target.
-	character_physics_support()->movement()->CollisionEnable(false);
-	character_physics_support()->ForceTransform( m );
-	character_physics_support()->movement()->CollisionEnable(true);
+	auto* Movement = character_physics_support()->movement();
+	Movement->CollisionEnable(false);
+	character_physics_support()->ForceTransform(m);
+	if (g_Alive())
+	{
+		// A contact from before the teleport must not be handled at the destination.
+		Movement->ResetGroundContact();
+		mstate_real &= ~(mcJump | mcFall | mcLanding | mcLanding2);
+		m_fFallTime = s_fFallTime;
+		m_fLandingTime = 0.f;
+	}
+	Movement->CollisionEnable(true);
 	const float block_damage_time_seconds = 2.f;
 	if(!IsGameTypeSingle())
 		character_physics_support()->movement()->BlockDamageSet( u64( block_damage_time_seconds/fixed_step ) );
