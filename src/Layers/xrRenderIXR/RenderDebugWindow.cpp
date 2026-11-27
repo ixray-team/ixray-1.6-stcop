@@ -188,6 +188,20 @@ void IconHeightfield(ImDrawList& List, const ImVec2& At, ImU32 Colour)
 	List.AddCircleFilled(IconPoint(At, 0.2f, 0.24f), 3.5f, Colour, 10);
 }
 
+void IconVelocity(ImDrawList& List, const ImVec2& At, ImU32 Colour)
+{
+	List.AddLine(IconPoint(At, 0.12f, 0.5f), IconPoint(At, 0.66f, 0.5f), Colour, 2.0f);
+	List.AddLine(IconPoint(At, 0.2f, 0.28f), IconPoint(At, 0.5f, 0.28f), Colour, 1.5f);
+	List.AddLine(IconPoint(At, 0.2f, 0.72f), IconPoint(At, 0.5f, 0.72f), Colour, 1.5f);
+	List.AddTriangleFilled(IconPoint(At, 0.88f, 0.5f), IconPoint(At, 0.6f, 0.3f), IconPoint(At, 0.6f, 0.7f), Colour);
+}
+
+void IconMetalness(ImDrawList& List, const ImVec2& At, ImU32 Colour)
+{
+	List.AddNgon(IconPoint(At, 0.5f, 0.5f), 9.0f, Colour, 6, 2.0f);
+	List.AddCircle(IconPoint(At, 0.5f, 0.5f), 3.5f, Colour, 10, 1.5f);
+}
+
 void IconTiles(ImDrawList& List, const ImVec2& At, ImU32 Colour)
 {
 	List.AddRect(IconPoint(At, 0.15f, 0.2f), IconPoint(At, 0.47f, 0.47f), Colour, 0.0f, 0, 1.5f);
@@ -197,7 +211,7 @@ void IconTiles(ImDrawList& List, const ImVec2& At, ImU32 Colour)
 }
 
 // The views past DebugView_None, in their order
-constexpr IconDraw ViewIcons[DebugView_Count - 1] = { IconOverdrawRaster, IconOverdrawShaded, IconClusters, IconTriangles, IconInstances, IconMaterials, IconLights, IconBase, IconNormal, IconRoughness, IconHemi, IconLmap, IconStreaming, IconLit, IconHighlight, IconMirror, IconHeightfield };
+constexpr IconDraw ViewIcons[DebugView_Count - 1] = { IconOverdrawRaster, IconOverdrawShaded, IconClusters, IconTriangles, IconInstances, IconMaterials, IconLights, IconBase, IconNormal, IconRoughness, IconHemi, IconLmap, IconStreaming, IconLit, IconHighlight, IconMirror, IconHeightfield, IconVelocity, IconMetalness };
 
 bool IconButton(const char* Id, IconDraw Draw, bool IsActive, const char* Tooltip)
 {
@@ -335,7 +349,7 @@ void CRenderTarget::DrawDebugWindow()
 	};
 
 	for (const ref_rt& Each : { rt_Generic_0, rt_Thin, rt_Ids, rt_Surface, rt_Velocity, rt_Accumulator, rt_Revealage, rt_Forward, rt_Position, rt_Back_Buffer_AA, rt_Back_Buffer, rt_BackbufferLUT, rt_Generic, rt_Generic_1,
-			 rt_Generic_2, rt_upscaled_depth, rt_sslr, rt_sslr_temp, rt_sslr_data, rt_ssao_temp, rt_ui_pda, rt_Bloom_A, rt_Bloom_A2, rt_LUM_A, rt_LUM_B, rt_LUM_C, rt_LUM_D, rt_Reflection_forward })
+			 rt_Generic_2, rt_upscaled_depth, rt_sslr, rt_sslr_temp, rt_sslr_data, rt_ssao_temp, rt_GtaoCurrent, rt_ui_pda, rt_Bloom_A, rt_Bloom_A2, rt_LUM_A, rt_LUM_B, rt_LUM_C, rt_LUM_D, rt_Reflection_forward })
 	{
 		Show(Each ? Each->pTexture : ref_texture());
 	}

@@ -195,6 +195,19 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     if (IsReflectionFace)
         AddDefine("SURFACE_REFLECTION_FACE", "1");
 
+    // The cube around the eye, marched in the surface's own pixel stage: by glass of a material, blended out of the depth
+    // the reflection passes never see, and without the screen trace (r_reflection_quality low) by every surface of one
+    const bool IsGlass = bABlend && !bZwrite;
+    if (!IsReflectionFace && (iElement == ShaderVariant::NormalHQ || iElement == ShaderVariant::HUD) && IsSurfaceBlender(BT) && (IsGlass || !ForwardReflections()) && RImplementation.HasReflectionCube())
+    {
+        AddDefine("SURFACE_MIRRORS_CUBE", "1");
+        r_dx10Texture("s_mirror_cube", r2_RT_env_fwd);
+        r_dx10Texture("s_mirror_cube_dist", r2_RT_env_temp);
+
+        if (IsGlass)
+            AddDefine("SURFACE_GLASS", "1");
+    }
+
     // The scene's forward draw makes opaque surfaces of the level, and foliage as one, cut by its texture: which
     // materials it draws must not follow a setting, as its bins are made once a level. Its sorted list takes the one
     // pass of a sorted material as it is, so do the HUD and the 3D icons

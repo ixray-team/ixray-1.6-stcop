@@ -59,7 +59,7 @@ static_assert(sizeof(Hlsl::SceneMaterial) == 16 * SCENE_MATERIAL_MAPS);
 static_assert(sizeof(Hlsl::SceneModel) == 192 && SCENE_MODELS <= 1u << SCENE_VISIBLE_MODEL_SHIFT);
 static_assert(SCENE_DYNAMIC_RUNS < 1u << (SCENE_VISIBLE_TILE_SHIFT - SCENE_VISIBLE_MODEL_SHIFT) && SCENE_VIEW_TILES <= 1u << (31 - SCENE_VISIBLE_TILE_SHIFT));
 static_assert(sizeof(Hlsl::SceneGrassBin) == 48);
-static_assert(sizeof(Hlsl::SceneGrassView) == 6768);
+static_assert(sizeof(Hlsl::SceneGrassView) == 6800);
 static_assert(sizeof(Hlsl::SceneGrassWind) == 160);
 static_assert(sizeof(Hlsl::SceneView) == 2832);
 static_assert(sizeof(Hlsl::SceneClusterLod) == 48);
@@ -173,6 +173,7 @@ public:
 		u32 Triangles;
 		const Fvector4* Wave; // wave, wind and both a frame ago: the sway of its wind variant
 		u32 Variant; // 0: stands still, 1 and 2: the wind variants
+		float FarCover; // CDetail::FarCover
 	};
 
 	bool HasDepthBatch() const { return ClusterCount != 0; }
@@ -181,14 +182,18 @@ public:
 	// grass shaders read. False when it cannot: the caller then draws the grass itself.
 	// The forward frame's grass as the blades the slots keep in the scene's buffer (GrassSlotStore): a word a blade,
 	// where it is stored and its bin above SCENE_GRASS_STORE_BITS. The bins then hold no blades of their own
+	// The words come in groups of up to SCENE_GRASS_GROUP blades of neighbouring slots, a group to a thread group of the cull: five
+	// words a group, the sphere around its blades and where they start | (count - 1) << 24
 	struct GrassRuns
 	{
 		const u32* Words;
 		u32 Count;
 		class GrassSlotStore* Store;
+		const u32* Groups;
+		u32 GroupCount;
 	};
 
-	bool DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 BinCount, const CFrustum& Frustum, const DepthDraw& Draw, const GrassRuns* Runs = nullptr);
+	bool DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 BinCount, const CFrustum& Frustum, const DepthDraw& Draw, float Reach, const GrassRuns* Runs = nullptr);
 	// Draws the level's clusters the graph's view sees into a depth target; false when there is no batch. A graph that
 	// collects pass 1 (a lamp's, with r4_translucent_shadows) has the casters of a later priority drawn too
 	bool DrawDepth(GfxCmdList& Cmd, R_dsgraph_structure& Graph, const DepthDraw& Draw);
@@ -298,6 +303,8 @@ public:
 	// The frame draws the level as ids and shades a pixel of it once: high shading and lighting quality, no
 	// multisampling
 	bool IsVisibilityFrame() const;
+	// The grass is drawn into the id pass and resolved after the level's classes (r_rendering_path 2)
+	bool IsGrassById() const;
 	// The surfaces of the level's pixels from their ids, where Depth still holds the triangle an id names: what Light
 	// lights, into Surface, and the word the screen-space passes read, into Thin
 	void Resolve(GfxCmdList& Cmd, IRHISurface* Ids, IRHISurface* Depth, IRHISurface* Surface, IRHISurface* Thin);

@@ -34,6 +34,7 @@
 **************************************************************************************/
 #include "stdafx.h"
 #include "GpuTextures.h"
+#include "Bc1CutOut.h"
 
 #include "NriPass.h"
 
@@ -107,6 +108,7 @@ struct Source
 	const char* Why = ""; // it cannot go into buckets
 	u32 Tail = 0;
 	u32 Head = 0;
+	xr_vector<u8> Fixed; // the levels Data points at, where the file's own were rebuilt
 };
 
 u32 Log2(u32 Value)
@@ -266,6 +268,19 @@ nri::TextureSubresourceUploadDesc Tile(const Source& Item, u32 Level, u32 Size, 
 	Desc.slices = To.data();
 	return Desc;
 }
+
+// The file is told to be a cut-out by the level its tail starts at, which is read anyway: the first one is read
+// only for those that are
+void FixCutOut(Source& Item)
+{
+	const u32 Larger = std::max(Item.Width, Item.Height);
+	const u32 Scan = Larger > TailSize ? std::min(Log2(Larger / TailSize), Item.LastLevel) : 0;
+
+	if ((Item.Format == FormatBC1 || Item.Format == FormatBC1Srgb) && Bc1CutOut::FixMips(Item.Data, Item.Width, Item.Height, Item.LastLevel + 1, Scan, Item.Fixed))
+	{
+		Item.Data = Item.Fixed.data();
+	}
+}
 } // namespace
 
 bool GpuTextures::ReadWhole(const char* Name, xr_vector<xr_vector<u8>>& Levels, u32& Format, u32& Width, u32& Height, u32& BlockBytes)
@@ -319,6 +334,7 @@ bool GpuTextures::ReadHead(const char* Name, u32 Size, u32 Mips, xr_vector<Level
 		return false;
 	}
 
+	FixCutOut(File);
 	Levels.resize(Mips);
 
 	for (u32 Mip = 0; Mip < Mips; ++Mip)
@@ -439,6 +455,7 @@ void GpuTextures::Build(const xr_vector<CTexture*>& Textures, const xr_vector<u8
 	Heads.assign(Textures.size(), Absent);
 
 	xr_vector<Source> Sources;
+	Sources.reserve(Textures.size());
 	u32 HeadCount = 0;
 
 	for (size_t Index = 0; Index < Textures.size(); ++Index)
@@ -483,7 +500,8 @@ void GpuTextures::Build(const xr_vector<CTexture*>& Textures, const xr_vector<u8
 				Refs[Index].Info |= (Item.First << 8) | (u32(Index + 1) << 20);
 			}
 		}
-		Sources.push_back(Item);
+		Sources.push_back(std::move(Item));
+		FixCutOut(Sources.back());
 	}
 
 	for (u32 Slot = 0; Slot < BucketCount; ++Slot)

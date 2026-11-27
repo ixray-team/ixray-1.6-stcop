@@ -34,7 +34,7 @@
 **************************************************************************************/
 #pragma once
 
-// The thread that draws for the game when r_render_thread is on (docs/engine/render-thread-plan.md). It owns the graphics
+// The thread that draws for the game when r_render_thread is on. It owns the graphics
 // device while it runs a job: the thread that hands the job over waits, and takes the device back when it is done
 class RenderThread
 {

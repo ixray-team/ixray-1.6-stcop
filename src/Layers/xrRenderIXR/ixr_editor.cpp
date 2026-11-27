@@ -271,7 +271,7 @@ void CRender::EditorRenderUnlit(GfxCmdList& Cmd)
 		GraphMain.r_dsgraph_render_sorted();
 	}
 
-	Cmd.Constants.Write<CBFrame>().debug_view.set(float(ps_r_debug_view), 0.f, 0.f, 0.f);
+	Cmd.Constants.Write<CBFrame>().debug_view.set(ps_r_debug_view == DebugView_Velocity ? 0.f : float(ps_r_debug_view), 0.f, 0.f, 0.f);
 
 	if (EditorOcclusionCulling)
 	{

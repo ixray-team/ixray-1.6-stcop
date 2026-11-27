@@ -20,16 +20,28 @@
 
 extern ENGINE_API bool g_appLoaded;
 
-void SpawnVisuals::Collect(CSE_Abstract* Entity, xr_vector<shared_str>& Names)
+namespace
 {
-	if (pSettings->section_exist(Entity->s_name))
+	void CollectSection(const char* Section, xr_vector<shared_str>& Names)
 	{
-		if (pSettings->line_exist(Entity->s_name, "visual"))
-			Names.emplace_back(pSettings->r_string(Entity->s_name, "visual"));
+		if (!pSettings->section_exist(Section))
+			return;
 
-		if (pSettings->line_exist(Entity->s_name, "hud"))
+		if (pSettings->line_exist(Section, "visual"))
+			Names.emplace_back(pSettings->r_string(Section, "visual"));
+
+		// hud_visual is loaded only when an attachment is drawn: a missing file must not reach the loader's fatal.
+		if (pSettings->line_exist(Section, "hud_visual"))
 		{
-			const char* Hud = pSettings->r_string(Entity->s_name, "hud");
+			string_path FileName;
+			xr_strconcat(FileName, pSettings->r_string(Section, "hud_visual"), ".ogf");
+			if (FS.exist(_game_meshes_, FileName))
+				Names.emplace_back(pSettings->r_string(Section, "hud_visual"));
+		}
+
+		if (pSettings->line_exist(Section, "hud"))
+		{
+			const char* Hud = pSettings->r_string(Section, "hud");
 			if (pSettings->section_exist(Hud))
 			{
 				if (pSettings->line_exist(Hud, "item_visual"))
@@ -39,6 +51,31 @@ void SpawnVisuals::Collect(CSE_Abstract* Entity, xr_vector<shared_str>& Names)
 			}
 		}
 	}
+
+	void CollectScopeSection(CSE_Abstract* Entity, xr_vector<shared_str>& Names)
+	{
+		const CSE_ALifeItemWeapon* Weapon = smart_cast<CSE_ALifeItemWeapon*>(Entity);
+		const char* Section = Entity->s_name.c_str();
+		if (Weapon == nullptr || !Weapon->m_addon_flags.test(CSE_ALifeItemWeapon::eWeaponAddonScope) || !pSettings->line_exist(Section, "scopes"))
+			return;
+
+		const char* Scopes = pSettings->r_string(Section, "scopes");
+		if (Scopes == nullptr || xr_strcmp(Scopes, "none") == 0 || Weapon->cur_scope >= _GetItemCount(Scopes))
+			return;
+
+		string128 Scope;
+		_GetItem(Scopes, Weapon->cur_scope, Scope);
+		const char* Base = pSettings->line_exist(Section, "parent_section") ? pSettings->r_string(Section, "parent_section") : Section;
+		string256 ScopeSection;
+		xr_strconcat(ScopeSection, Base, "_", Scope);
+		CollectSection(ScopeSection, Names);
+	}
+}
+
+void SpawnVisuals::Collect(CSE_Abstract* Entity, xr_vector<shared_str>& Names)
+{
+	CollectSection(Entity->s_name.c_str(), Names);
+	CollectScopeSection(Entity, Names);
 
 	if (CSE_Visual* Visual = Entity->visual())
 	{

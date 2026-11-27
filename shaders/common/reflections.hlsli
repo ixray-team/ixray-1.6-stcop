@@ -124,11 +124,6 @@ float4 FastViewReflections(float3 Point, float3 Reflect, float LStart, float Noi
 		float CurrentSampleLen = s_env_dist.SampleLevel(smp_nofilter, CurrentSample, 0).x;
 		CurrentSampleLen *= CurrentSampleLen;
 
-		if (CurrentSampleLen < DistanceS)
-		{
-			continue;
-		}
-
 		PrevL = L;
 		L = NextL;
 		SamplePoint = CurrentSample;
@@ -146,10 +141,16 @@ float4 FastViewReflections(float3 Point, float3 Reflect, float LStart, float Noi
 			float HitLen = BinaryRefinement(HitPoint, JReflect);
 			float HitDist = sqrt(HitLen);
 
-			if (HitLen >= DistanceS && abs(length(HitPoint) - HitDist) < 0.25f + 0.02f * HitDist)
+			bool OnSurface = abs(length(HitPoint) - HitDist) < 0.25f + 0.02f * HitDist;
+
+			// Far behind a surface nearer the eye than the origin the ray passes behind an object between them (a pole);
+			// far behind one no nearer it is inside a wall: going on, the ray came out through windows to the sky and
+			// chimneys the eye sees there, and every pane copied them
+			[branch]
+			if (OnSurface || SampleHitPointLen >= DistanceS)
 			{
-				SamplePoint = HitPoint;
-				SampleHitPointLen = HitLen;
+				SamplePoint = OnSurface ? HitPoint : SamplePoint;
+				SampleHitPointLen = OnSurface ? HitLen : SampleHitPointLen;
 				Fade = true;
 				break;
 			}

@@ -822,6 +822,11 @@ void CCharacterPhysicsSupport::AddActiveWeaponCollision()
 	active_weapon_item->UpdateXForm();
 
 	CPhysicsShell* weapon_shell = P_build_Shell(&active_weapon_item->object(), true, (BONE_P_MAP*)(0), true);
+	if (weapon_shell->get_ElementsNumber() == 0 || !weapon_shell->get_ElementByStoreOrder(0)->has_geoms())
+	{
+		destroy_physics_shell(weapon_shell);
+		return;
+	}
 
 	VERIFY(m_pPhysicsShell);
 	CPhysicsElement* weapon_attach_bone = m_pPhysicsShell->get_PhysicsParrentElement(br);

@@ -35,7 +35,9 @@
 #define DebugView_Highlight 15              // The sun's highlight
 #define DebugView_Mirror 16                 // What the surface mirrors of its surroundings
 #define DebugView_Heightfield 17            // The sun the heightfield lets through; blue where it does not answer
-#define DebugView_Count 18
+#define DebugView_Velocity 18             // How far the pixel moved since the frame before, over the finished frame
+#define DebugView_Metalness 19            // What the lighting takes for metal: white is metal, blue a surface shaded without PBR maps
+#define DebugView_Count 20
 
 #define DEBUG_LIGHT_BUDGET 8.0f             // Lights on a pixel that show as red
 #define DEBUG_TAG_SHIFT 16u                 // A cluster's vertices carry a tag above their material while a view is on

@@ -167,8 +167,13 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 
 uint ps_main(PSInputFullscreen I) : SV_Target
 {
-	//Half resolution renders the top-left pixel of every 2x2 quad, gtao_filter upsamples
+	//Half resolution renders one pixel of every 2x2 quad, gtao_filter upsamples. With gtao_history the pixel goes round
+	//the quad frame by frame, else a thin blade that misses the top-left one flickers as the camera moves
 	uint2 pixel = uint2(I.hpos.xy) * GTAO_SCALE;
+#if defined(USE_GTAO_HISTORY) && !defined(USE_GTAO_HQ)
+	uint quad = uint(m_taa_jitter.w) & 3;
+	pixel = min(pixel + uint2(quad & 1, (quad ^ (quad >> 1)) & 1), uint2(pos_decompression_params2.xy) - 1);
+#endif
 	float2 texcoord = (pixel + 0.5) * pos_decompression_params2.zw;
 
 	//Sample depth buffer
@@ -184,12 +189,14 @@ uint ps_main(PSInputFullscreen I) : SV_Target
 	uint order = cell.x + 5 * ((cell.y + 2 * cell.x) % 5);
 	float2 jitter_tex = (float2(order, (order * 7) % 25) + 0.5) / 25.0;
 
-	//Shifted every frame only when TAA or an upscaler accumulates it
+	//Shifted every frame only when something accumulates it: TAA, an upscaler or gtao_history
+#ifndef USE_GTAO_HISTORY
 	if (m_taa_jitter.z >= 0.0f)
+#endif
 		jitter_tex = frac(jitter_tex + float(uint(m_taa_jitter.w) % 64) * float2(0.618034, 0.754878));
 
 	float3 Point = TapPoint(texcoord, GbufferGetViewZ(zbuffer), zbuffer < 0.02f);
-#ifdef USE_SURFACE_OCCLUSION_NORMALS
+#ifdef USE_GTAO_SURFACE_NORMALS
 	//The depth pass has written the surface's own normal: one built from the depth is flat a triangle
 	float3 Normal = thin_unpack(s_thin.Load(int3(pixel, 0))).normal;
 #else

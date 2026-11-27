@@ -74,6 +74,9 @@ struct Output
 	float2 uv : TEXCOORD0;
 	nointerpolation uint alpha_slice : TEXCOORD1;
 #endif
+#ifdef USE_GRASS
+	nointerpolation float2 fade : TEXCOORD2; // GrassEntryFade and GrassPixelOffset of the blade
+#endif
 #ifdef USE_TILES
 	float4 clip : SV_ClipDistance0;
 #endif

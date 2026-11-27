@@ -49,6 +49,11 @@ SamplerComparisonState smp_smap : register(s5);
 #endif
 #include "common\surface_light.hlsli"
 
+// Without the screen trace the cube around the eye is marched from the point (r_reflection_quality low)
+#if defined(USE_OFFSCREEN_REFLECTIONS) && !defined(USE_SURFACE_REFLECTIONS)
+#include "common\mirror_cube.hlsli"
+#endif
+
 // returns the highlight a light of unit colour leaves: GGX by the roughness, or the old power highlight by the gloss
 float3 light_highlight(scene_surface surface, float3 f0, float3 to_eye, float3 to_light)
 {
@@ -57,6 +62,23 @@ float3 light_highlight(scene_surface surface, float3 f0, float3 to_eye, float3 t
     }
 
     return surface_ggx(surface.normal, to_eye, to_light, f0, surface.roughness);
+}
+
+// returns the normal of the surface the depth shows, not the mapped one: each axis takes the neighbour nearer in depth,
+// the other one may lie on another surface across an edge
+float3 seen_normal(uint2 pixel, float depth, float3 position)
+{
+    int2 at = int2(pixel);
+    int2 last = int2(scaled_screen_res.xy) - 1;
+    float left = g_depth[int2(max(at.x - 1, 0), at.y)];
+    float right = g_depth[int2(min(at.x + 1, last.x), at.y)];
+    float up = g_depth[int2(at.x, max(at.y - 1, 0))];
+    float down = g_depth[int2(at.x, min(at.y + 1, last.y))];
+    int2 side = int2(at.x == last.x || (at.x > 0 && abs(left - depth) < abs(right - depth)) ? -1 : 1, at.y == last.y || (at.y > 0 && abs(up - depth) < abs(down - depth)) ? -1 : 1);
+    float3 along_x = scene_surface_position(uint2(at + int2(side.x, 0)), side.x < 0 ? left : right) - position;
+    float3 along_y = scene_surface_position(uint2(at + int2(0, side.y)), side.y < 0 ? up : down) - position;
+    float3 normal = normalize(cross(along_y, along_x));
+    return dot(normal, eye_position - position) < 0.0f ? -normal : normal;
 }
 
 [numthreads(SCENE_SHADE_TILE, SCENE_SHADE_TILE, 1)]
@@ -89,7 +111,12 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
     // ever holds at once, and the filter holds the most. What lets the sun through is tested off its lit side
     scene_surface shadowed = scene_surface_unpack(packed);
     bool is_turned = (shadowed.material_class == SceneClass_Foliage || (shadowed.material_class == SceneClass_Grass && shadowed.metalness < 0.5f)) && dot(shadowed.normal, to_sun) < 0.0f;
-    float2 cascade = surface_sun_shadow(position, is_turned ? -shadowed.normal : shadowed.normal);
+    // The lookup steps off the surface the depth shows, as the forward frame's steps off its vertex normal: off the
+    // mapped normal it crossed the edge of a wall the sun grazes from behind (a lit strip in texel steps), and a gate
+    // on that surface's facing cut a round model's sun off at a face's edge
+    bool lets_through = shadowed.material_class == SceneClass_Foliage || shadowed.material_class == SceneClass_Grass || shadowed.scatter > 0.0f;
+    float3 outward = lets_through ? (is_turned ? -shadowed.normal : shadowed.normal) : seen_normal(pixel, seen_depth, position);
+    float2 cascade = surface_sun_shadow(position, outward);
     sun_reach = lerp(1.0f, cascade.x, cascade.y);
 #ifdef USE_SURFACE_SUNMASK
     sun_colour *= 0.25f + 0.75f * s_sunmask.SampleLevel(smp_linear, mul(m_sunmask, float4(position, 1.0f)).xy, 0.0f).w;
@@ -105,6 +132,9 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
     float sun_share = saturate(facing);
     float3 base = pow(surface.albedo * 2.0f, 2.2f);
     float3 f0 = 0.0f;
+    // The albedo holds what scatters below a full metal (scene_surface_pack): the colour a metal mirrors is told back
+    // by the metalness it was stored with
+    float3 metal_colour = surface.metalness < 1.0f ? base / pow(1.0f - surface.metalness, 2.2f) : base;
 
     if (is_leaf) {
 #ifdef USE_LEGACY_LIGHT
@@ -115,8 +145,8 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
     }
 
     if (!is_gloss) {
-        f0 = lerp(0.04f, base, surface.metalness);
-        base *= pow(1.0f - surface.metalness, 2.2f);
+        f0 = lerp(0.04f, metal_colour, surface.metalness);
+        base = surface.metalness < 1.0f ? base : 0.0f;
     }
 
     // What scatters through the surface: by a soft edge of the lit side through terrain and foliage, through
@@ -226,6 +256,9 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
 #ifdef USE_SURFACE_REFLECTIONS
         float3 sky = traced;
         float sky_reach = 1.0f;
+        float4 around_eye = 0.0f;
+        float around_eye_reach = 1.0f;
+        float around_eye_open = 0.0f;
 #else
         // The sky blurred by the roughness, as far as it reaches the point
         float sky_width, sky_height, sky_levels;
@@ -233,9 +266,20 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
         float3 away = reflect(-to_eye, surface.normal);
         float sky_lod = (sky_levels - 1.0f) * thin.roughness * (1.7f - 0.7f * thin.roughness);
         float3 sky = lerp(g_sky0.SampleLevel(smp_rtlinear, away, sky_lod).rgb, g_sky1.SampleLevel(smp_rtlinear, away, sky_lod).rgb, L_hemi_color.w) * L_sky_color.rgb;
-        float sky_reach = saturate(pow(facing_eye + thin.hemi, exp2(-16.0f * thin.roughness - 1.0f)) - 1.0f + thin.hemi);
+        float4 around_eye = 0.0f;
+        float around_eye_open = 0.0f;
+#ifdef USE_OFFSCREEN_REFLECTIONS
+        // The map along the ray, as from the eye: marched a pixel at a time with nothing to settle it, the camera's sway
+        // flipped its hits along every edge (r_reflection_quality medium; high marches inside the reflection passes)
+        around_eye = mirror_cube_at_eye(away, thin.roughness, around_eye_open);
+#endif
+        // Not the thin word's hemi: its four dithered bits are averaged only by the traced reflections
+        float sky_reach = saturate(pow(facing_eye + surface.hemi, exp2(-16.0f * thin.roughness - 1.0f)) - 1.0f + surface.hemi);
+        float around_eye_reach = 1.0f;
 #ifdef USE_SURFACE_OCCLUSION
         sky_reach *= occluded;
+        // The cube's light by the screen's occlusion alone, as the surfaces take it
+        around_eye_reach = saturate(pow(facing_eye + occluded, exp2(-16.0f * thin.roughness - 1.0f)) - 1.0f + occluded);
 #endif
 #endif
         // How much of it a surface of this roughness mirrors at this angle, by a fit to the integrated GGX response
@@ -250,7 +294,8 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
             mirrored = sqrt(surface.roughness) * 0.5f * pow(facing_eye * facing_eye, 16.0f);
         }
 #endif
-        mirror = sky * pow(mirrored, 1.0f / 2.2f) * sky_reach;
+        // What the cube shows is light the scene already has: the sky's reach dims the sky alone
+        mirror = lerp(sky * lerp(sky_reach, around_eye_reach, around_eye_open), pow(max(around_eye.rgb, 0.0f), 1.0f / 2.2f) * around_eye_reach, around_eye.a) * pow(mirrored, 1.0f / 2.2f);
     }
 
 #ifdef USE_LEGACY_LIGHT
@@ -279,13 +324,16 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
         float3 shown = 0.5f;
 
         if (mode == DebugView_Base) {
-            shown = surface.albedo * 2.0f;
+            // The albedo as its maps made it: stored, it holds only the share that scatters below a full metal
+            shown = surface.albedo * 2.0f / (surface.metalness < 1.0f ? 1.0f - surface.metalness : 1.0f);
         } else if (mode == DebugView_Normal) {
             shown = surface.normal * 0.5f + 0.5f;
         } else if (mode == DebugView_Roughness) {
             shown = thin.roughness;
         } else if (mode == DebugView_Hemi) {
             shown = surface.hemi;
+        } else if (mode == DebugView_Metalness) {
+            shown = is_gloss ? float3(0.05f, 0.1f, 0.4f) : (float3)surface.metalness;
         } else if (mode == DebugView_Lit) {
             shown = pow(lit, 1.0f / 2.2f) * 0.5f;
         } else if (mode == DebugView_Highlight) {

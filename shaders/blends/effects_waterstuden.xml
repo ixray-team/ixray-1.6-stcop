@@ -7,8 +7,8 @@
 			<texture name="sky_s1" src="$user$sky1"/>
 			<texture name="s_position" src="$user$position"/>
 			<texture name="s_frame_before" src="$user$generic"/>
-			<texture name="s_water_env" src="$user$env"/>
-			<texture name="s_water_env_dist" src="$user$env_temp"/>
+			<texture name="s_mirror_cube" src="$user$env_fwd"/>
+			<texture name="s_mirror_cube_dist" src="$user$env_temp"/>
 			<texture name="s_water_foam" src="water\water_foam"/>
 			<texture name="s_water_caustic" src="water\water_caustic"/>
 		</pass>
@@ -29,8 +29,8 @@
 				<texture name="sky_s1" src="$user$sky1"/>
 				<texture name="s_position" src="$user$position"/>
 				<texture name="s_frame_before" src="$user$generic"/>
-				<texture name="s_water_env" src="$user$env"/>
-				<texture name="s_water_env_dist" src="$user$env_temp"/>
+				<texture name="s_mirror_cube" src="$user$env_fwd"/>
+				<texture name="s_mirror_cube_dist" src="$user$env_temp"/>
 				<texture name="s_water_foam" src="water\water_foam"/>
 				<texture name="s_water_caustic" src="water\water_caustic"/>
 				<define name="USE_SURFACE_WBOIT" value="1"/>

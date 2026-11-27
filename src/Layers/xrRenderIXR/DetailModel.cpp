@@ -83,8 +83,9 @@ namespace
 
 	// Moves the faces of the far mesh to the front and returns how many indices they take, 0 when the model has
 	// no cheaper one. The far mesh keeps whole pieces (cards, blades) up to one face in FarShare: the largest
-	// first, and those that face another way than the ones kept before the rest
-	u32 OrderFar(const CDetail::fvfVertexIn* Vertices, u32 VertexCount, u16* Indices, u32 IndexCount)
+	// first, and those that face another way than the ones kept before the rest. Cover: the share of the model's
+	// area it keeps
+	u32 OrderFar(const CDetail::fvfVertexIn* Vertices, u32 VertexCount, u16* Indices, u32 IndexCount, float& Cover)
 	{
 		const u32 Faces = IndexCount / 3;
 		xr_vector<u32> Group(VertexCount);
@@ -186,6 +187,17 @@ namespace
 			return 0;
 		}
 
+		float Area = 0.0f;
+		float KeptArea = 0.0f;
+
+		for (const Piece& Each : Pieces)
+		{
+			Area += Each.Area;
+			KeptArea += Each.IsKept ? Each.Area : 0.0f;
+		}
+
+		Cover = Area > 0.0f ? KeptArea / Area : 1.0f;
+
 		xr_vector<u16> Ordered;
 		Ordered.reserve(IndexCount);
 
@@ -251,7 +263,8 @@ void CDetail::LoadGeom()
 	RImplementation.Geometry.Free(Alloc);
 	const float Height = bv_bb.max.y - bv_bb.min.y;
 	const float Scale = Height > EPS_L ? 2048.0f / Height : 0.0f;
-	FarCount = OrderFar(vertices, number_vertices, indices, number_indices);
+	FarCover = 1.0f;
+	FarCount = OrderFar(vertices, number_vertices, indices, number_indices, FarCover);
 	Alloc = UploadDetailGeom(vertices, number_vertices, indices, number_indices, Scale, hw_Geom);
 }
 

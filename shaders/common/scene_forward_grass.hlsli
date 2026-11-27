@@ -13,7 +13,8 @@
 * copies or substantial portions of this file.
 **************************************************************************************/
 // The grass of a forward frame drawn from the scene's grass cull: a draw a model, indexed by the model's own indices,
-// an instance a visible blade. Included where calc_cyclic and calc_xz_wave are known
+// an instance a visible blade. Included where calc_cyclic and calc_xz_wave are known, and where the blades are read
+// as g_forward_items. GRASS_PULL_ONLY: grass_pull alone, for a pass that has no grass block of its own
 
 #include "common\detail_sway.hlsli"
 
@@ -25,20 +26,21 @@ struct grass_vertex {
     float hemi; // of the blade: its sign says whether the sun reaches the place
     float shade; // of its sway on its light
     float scatter; // 1 for a blade that sways, 0 for what stands still
+    float fade; // GrassEntryFade of its entry
+    float offset; // GrassPixelOffset
+    uint slot; // the blade's place in the list, past SCENE_GRASS_LIST
     uint material;
 };
 
-// vertex_idx: an index of the model's own mesh; slot: the blade among the draw's visible ones
-grass_vertex pull_grass(uint vertex_idx, uint slot)
+// A vertex of a blade: entry of the list, vertex_idx an index of the model's own mesh, waves those of the bin's
+// variant (wave, wind, both a frame ago), shade forward_grass.xy
+grass_vertex grass_pull(SceneGrassBin bin, uint entry, uint vertex_idx, SceneGrassWind wind, float4 waves[4], float2 shade)
 {
     grass_vertex pulled = (grass_vertex)0;
-    SceneGrassBin bin = grass.bins[forward_draw.y];
-    uint entry = g_forward_grass[forward_draw.x + slot];
     pulled.vertex = Decode(LoadPage(bin.vertices >> 24, (bin.vertices & 0xFFFFFFu) + vertex_idx));
     SceneGrassItem item = g_forward_items[entry & (SCENE_GRASS_ITEMS - 1u)];
-    float scale = item.scale * float(entry >> 24) * (1.0f / 127.0f);
-    uint variant = bin.variant;
-    uint wave_idx = (max(variant, 1u) - 1u) * 4u;
+    float scale = item.scale;
+    uint variant = bin.variant & 0xFFFFu;
     float rigidity = DecodeS16x2(pulled.vertex.X).x * (1.0f / 2048.0f);
 
     float3x3 turn = QuaternionToMatrix(float4(item.quat, sqrt(max(0.0f, 1.0f - dot(item.quat, item.quat)))));
@@ -62,15 +64,31 @@ grass_vertex pull_grass(uint vertex_idx, uint slot)
     float3 world = mul(turn, pulled.vertex.P * scale + beside + float3(0.0f, variant == 0u ? 0.01f : 0.0f, 0.0f)) + item.pos;
     float3 position = world;
     float3 position_old = world;
-    DetailSway(grass.wind, grass.waves[wave_idx], grass.waves[wave_idx + 1u], grass.waves[wave_idx + 2u], grass.waves[wave_idx + 3u], variant == 0u, pulled.vertex.P, rigidity, scale, item.pos, item.trample_visual, item.trample_dir, world, position, position_old);
+    DetailSway(wind, waves[0], waves[1], waves[2], waves[3], variant == 0u, pulled.vertex.P, rigidity, scale, item.pos, item.trample_visual, item.trample_dir, world, position, position_old);
 
-    float sway = calc_cyclic(dot(world, grass.waves[wave_idx].xyz) + grass.waves[wave_idx].w);
+    float sway = calc_cyclic(dot(world, waves[0].xyz) + waves[0].w);
     pulled.position_world = position;
     pulled.position_old = position_old;
     pulled.normal = mul(turn, pulled.vertex.N);
     pulled.hemi = item.hemi;
-    pulled.shade = variant == 0u ? 1.0f : forward_grass.y + forward_grass.x * max(0.0f, sway) * rigidity;
+    pulled.shade = variant == 0u ? 1.0f : shade.y + shade.x * max(0.0f, sway) * rigidity;
     pulled.material = bin.material;
     pulled.scatter = variant == 0u ? 0.0f : 1.0f;
+    pulled.fade = GrassEntryFade(entry);
+    pulled.offset = GrassPixelOffset(item.pos, copy);
     return pulled;
 }
+
+#ifndef GRASS_PULL_ONLY
+// slot: the blade among the draw's visible ones; forward_draw.x: the draw, whose place in the list the list's head holds
+grass_vertex pull_grass(uint vertex_idx, uint slot)
+{
+    SceneGrassBin bin = grass.bins[forward_draw.y];
+    uint place = g_forward_grass[forward_draw.x] + slot;
+    uint wave_idx = (max(bin.variant & 0xFFFFu, 1u) - 1u) * 4u;
+    float4 waves[4] = { grass.waves[wave_idx], grass.waves[wave_idx + 1u], grass.waves[wave_idx + 2u], grass.waves[wave_idx + 3u] };
+    grass_vertex pulled = grass_pull(bin, g_forward_grass[SCENE_GRASS_LIST + place], vertex_idx, grass.wind, waves, forward_grass.xy);
+    pulled.slot = place;
+    return pulled;
+}
+#endif

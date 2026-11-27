@@ -75,10 +75,11 @@
 #define SCENE_CLUSTER_MAIN 0x40000000u
 #define SCENE_CLUSTER_DEPTH 0x80000000u
 #define SCENE_TEXTURE_BUCKETS 16u
-// The level's pixels shaded from their ids: the screen in tiles, a list of tiles a class of material and one of every
-// tile that holds an id; the tiles a list has room for
+// The level's pixels shaded from their ids: the screen in tiles, a list of tiles a class of material, one of the
+// grass's (SCENE_SHADE_GRASS) and one of every tile that holds an id; the tiles a list has room for
 #define SCENE_SHADE_TILE 8u
-#define SCENE_SHADE_LISTS 5u
+#define SCENE_SHADE_LISTS 6u
+#define SCENE_SHADE_GRASS 4u
 #define SCENE_SHADE_TILES 0x80000u
 // Textures the buckets have no place for, bound as they are for every forward draw: a map's slot names one as a bucket
 // from SCENE_TEXTURE_BUCKETS on, slice 0
@@ -252,21 +253,25 @@ struct SceneModel
 
 // Grass: the instances of the frame (CDetail::SlotItem), one bin per model and wind variant. A view's cull turns
 // them into entries of a visible list, one per cluster of the instance's mesh, which one indirect draw of
-// scene_depth takes. An entry is two words: the instance with its size from bit 24 (127: as it is), then the
+// scene_depth takes. An entry is two words: the instance with its fade from bit 24 (GrassFadeBits), then the
 // cluster, from bit 24 which of the model's clusters it is and from bit 28 the wind variant.
 #define SCENE_GRASS_BINS 128u
 // A blade of a frame that draws the slots' stored blades: where it is stored, and its bin above these bits
-#define SCENE_GRASS_STORE_BITS 19u
+#define SCENE_GRASS_STORE_BITS 20u
+// The most blades of a group of stored ones, of neighbouring slots: a thread group of the cull, which tests the sphere
+// around them before any of its blades
+#define SCENE_GRASS_GROUP 64u
 // A model's clusters: its far mesh first, then the whole mesh
 #define SCENE_GRASS_RUNS 16u
 #define SCENE_GRASS_ITEMS 0x100000u
-// The id of a grass pixel: SCENE_ID_GRASS, the cluster of the model from bit 20, the instance; then as any id
-// shifted by 7 for the triangle, plus one. Level clusters stay below SCENE_ID_GRASS
-#define SCENE_ID_GRASS 0x1000000u
-// g_Args of the grass cull: the arguments of the draw, then what the cull counted
-#define SCENE_GRASS_KEPT 4u
-#define SCENE_GRASS_FAR 5u
-#define SCENE_GRASS_TRIANGLES 6u
+// The id of a grass pixel (scene_id.hlsli has the level's): the top bit, the blade's place in the frame's forward
+// grass list from SCENE_ID_GRASS_SLOT_SHIFT, the triangle of its model's mesh below. Level clusters stay below
+// SCENE_ID_GRASS, so that no id of theirs reaches the top bit
+#define SCENE_ID_GRASS 0x7FFFFFu
+#define SCENE_ID_GRASS_BIT 0x80000000u
+#define SCENE_ID_GRASS_SLOT_SHIFT 10u
+#define SCENE_ID_GRASS_TRIANGLE_MASK 1023u
+// g_Args of the grass cull: the arguments of the draw, then those of the draws a model
 #define SCENE_GRASS_WORDS 8u
 // The tiles of the screen the main view's blades are counted in, after the arguments of the draws
 #define SCENE_GRASS_TILES 16384u
@@ -275,6 +280,11 @@ struct SceneModel
 // say which
 #define SCENE_GRASS_COPIES 8u
 #define SCENE_GRASS_TILE_BASE (SCENE_GRASS_WORDS + SCENE_GRASS_BINS * 10u)
+// The forward list of a frame's grass: a word a draw, where its blades start after SCENE_GRASS_LIST, then a word a
+// draw the cull counts its blades with; the blades from SCENE_GRASS_LIST on, no more than an id names; at the
+// list's end a word a blade of the cull, what it kept of the blade (scene_grass_cull, GrassMark)
+#define SCENE_GRASS_LIST (SCENE_GRASS_BINS * 4u)
+#define SCENE_GRASS_ID_SLOTS 0x200000u
 
 struct SceneGrassBin
 {
@@ -284,7 +294,7 @@ struct SceneGrassBin
 	uint cluster; // the model's first cluster
 	uint far_clusters; // how many clusters its far mesh takes, 0 without one
 	uint clusters; // and the whole mesh, which follows
-	uint variant; // 0: stands still, 1 and 2: sways with waves[variant - 1]
+	uint variant; // bits 0-15: 0 stands still, 1 and 2 sways with waves[variant - 1]; 16-31: the share of the model's area its far mesh keeps, in 65535ths
 	uint triangles; // of the far mesh, << 16 of the whole one
 	// For the draws a model: where its indices start (the far mesh is the first of them), its vertices as heap
 	// page << 24 | first vertex, its material
@@ -309,6 +319,15 @@ struct SceneGrassWind
 	float4 wind_swirl_dir;
 };
 
+// What the grass's resolve reads of the frame's grass beside its bins (scene_resolve_grass)
+struct SceneGrassShade
+{
+	SceneGrassWind wind;
+	float4 waves[8]; // SceneGrassView::waves
+	float4 shade; // xy: forward_grass of scene_forward.hlsli
+	uint4 counts; // x: the draws of the forward list, two a bin
+};
+
 struct SceneGrassView
 {
 	float4x4 view_projection;
@@ -316,8 +335,10 @@ struct SceneGrassView
 	uint4 counts; // x: instances, y: bins, z: planes, w: entries the visible list holds
 	float4 thin; // xyz: the main view's eye, w: the distance from it where grass starts to thin
 	float4 lod; // x: the distance from that eye around which the far mesh takes over, y: alpha below which a pixel is dropped, zw: the main view's jitter
-	uint4 limits; // x: the vertices an entry is drawn with: the most a cluster of the frame's models has, y: 1 when the list comes thinned and sized already, 2 when the blades are stored ones a list names (g_Runs), z: 1 for a draw a model, see scene_grass_cull, w: 1 when a blade is tested on the main view's depth pyramid
-	float4 budget; // x: the layers of grass a tile of the screen keeps, 0: all of them, y: 1 while the tiles are counted, zw: the tiles across and down
+	float4 reach; // x: the distance from that eye where the grass ends, y: one over the width of the band it dissolves across before that
+	uint4 limits; // x: the vertices an entry is drawn with: the most a cluster of the frame's models has, y: 1 when the list comes thinned and sized already, 2 when the blades are stored ones a list names (g_Runs), z: for a draw a model 1 culls and counts its blades, 2 gives the draws their places, 3 writes the kept ones, see scene_grass_cull, w: 1 when a blade is tested on the main view's depth pyramid
+	float4 budget; // x: the layers of grass a tile of the screen keeps, 0: all of them, y: the half of the tiles this frame counts into, the other holding the frame before's, zw: the tiles across and down
+	uint4 groups; // with stored blades: x the word of g_Runs where the records of their groups start (GpuScene::GrassRuns), y how many; z: thread groups across the dispatch
 	SceneGrassWind wind;
 	float4 waves[8]; // per swaying variant: wave, wind, and both a frame ago
 	SceneGrassBin bins[SCENE_GRASS_BINS];
@@ -338,33 +359,56 @@ struct SceneGrassItem
 
 // Far grass is thinned by the square of the distance past where thinning starts, so the blades to a pixel stop
 // growing, down to one blade in sixteen. Where a blade stands decides whether it stays (Lot against the kept
-// share); those that stay grow to keep the ground covered, and one about to go shrinks first. 0: dropped
-float GrassSize(float3 At, float4 Thin, out float Lot, out float Far)
+// share); one about to go dissolves first. A blade keeps its size. 0: dropped. The share is not cut at one: near
+// the eye it is above every lot, and no blade there is part way gone
+float GrassFade(float3 At, float4 Thin, out float Lot, out float Far)
 {
 	Far = distance(At, Thin.xyz);
-	float Kept = clamp(Thin.w * Thin.w / max(Far * Far, 1e-4f), 1.0f / 16.0f, 1.0f);
+	float Kept = max(Thin.w * Thin.w / max(Far * Far, 1e-4f), 1.0f / 16.0f);
 	Lot = frac(sin(dot(At.xz, float2(12.9898f, 78.233f))) * 43758.5453f);
-	return Lot >= Kept ? 0.0f : saturate((Kept - Lot) / (0.25f * Kept)) * rsqrt(sqrt(Kept));
+	return saturate((Kept - Lot) / (0.25f * Kept));
 }
 
 // The same for blades the details task put in the order of its own lot (GrassLot of GrassThin.h, bit for bit): what
 // it keeps of a slot are the first of them, and this has to drop the same ones
-float GrassSizeStored(float3 At, float4 Thin, out float Lot, out float Far)
+float GrassFadeStored(float3 At, float4 Thin, out float Lot, out float Far)
 {
 	Far = distance(At, Thin.xyz);
-	float Kept = clamp(Thin.w * Thin.w / max(Far * Far, 1e-4f), 1.0f / 16.0f, 1.0f);
+	float Kept = max(Thin.w * Thin.w / max(Far * Far, 1e-4f), 1.0f / 16.0f);
 	uint Bits = (asuint(At.x) * 0x9E3779B1u) ^ (asuint(At.z) * 0x85EBCA77u);
 	Bits ^= Bits >> 15;
 	Bits *= 0x2C1B3C6Du;
 	Bits ^= Bits >> 12;
 	Lot = float(Bits >> 8) * (1.0f / 16777216.0f);
-	return Lot >= Kept ? 0.0f : saturate((Kept - Lot) / (0.25f * Kept)) * rsqrt(sqrt(Kept));
+	return saturate((Kept - Lot) / (0.25f * Kept));
 }
 
-// The size as an entry of the visible list holds it
-uint GrassSizeBits(float Size)
+// The fade as an entry of the visible list holds it, from bit 24. The far mesh's is turned over: it keeps the pixels
+// the whole mesh of the same blade lets go, so a blade between the two is drawn once
+uint GrassFadeBits(float Fade, bool IsTurned)
 {
-	return uint(Size * 127.0f + 0.5f);
+	return (uint(saturate(Fade) * 127.0f + 0.5f) | (IsTurned ? 128u : 0u)) << 24;
+}
+
+float GrassEntryFade(uint Entry)
+{
+	float Fade = float((Entry >> 24) & 127u) * (1.0f / 127.0f);
+	return (Entry & 0x80000000u) != 0u ? -Fade : Fade;
+}
+
+// Whether a pixel of a blade is drawn: its fade (GrassEntryFade) against a pattern of the screen moved by the
+// blade's own offset, so blades that overlap do not open the same holes. Frame moves the pattern for the history
+// of the frame to average
+bool GrassPixelKept(float Fade, float Offset, float2 Pixel, float Frame)
+{
+	float Pattern = frac(52.9829189f * frac(dot(Pixel + 5.588238f * Frame, float2(0.06711056f, 0.00583715f))) + Offset);
+	return Fade >= 0.0f ? Pattern < Fade : 1.0f - Pattern < -Fade;
+}
+
+// A blade's offset of that pattern, per copy of its clump
+float GrassPixelOffset(float3 At, uint Copy)
+{
+	return frac(sin(dot(At.xz, float2(39.3467f, 11.1351f)) + 7.31f * float(Copy)) * 43758.5453f);
 }
 #endif
 

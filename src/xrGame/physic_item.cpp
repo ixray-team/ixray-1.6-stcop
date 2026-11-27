@@ -99,13 +99,11 @@ void CPhysicItem::CreatePhysicsShell()
 #endif
 	owner->m_pPhysicsShell->build_FromKinematics(pKinematics, 0);
 
-	if (owner->m_pPhysicsShell->get_ElementsNumber() == 0)
+	if (owner->m_pPhysicsShell->get_ElementsNumber() == 0 || !owner->m_pPhysicsShell->get_ElementByStoreOrder(0)->has_geoms())
 	{
-		Msg(" ! Error: world item visual [%s] has no elements!", pKinematics->getDebugName().c_str());
-	}
-	else if (!owner->m_pPhysicsShell->get_ElementByStoreOrder(0)->has_geoms())
-	{
-		Msg(" ! Error: world item visual [%s] has no shape!", pKinematics->getDebugName().c_str());
+		Msg(" ! Error: world item visual [%s] has no shape, using its bounding box", pKinematics->getDebugName().c_str());
+		destroy_physics_shell(owner->m_pPhysicsShell);
+		create_box_physic_shell();
 	}
 
 	owner->PPhysicsShell()->set_PhysicsRefObject(owner);

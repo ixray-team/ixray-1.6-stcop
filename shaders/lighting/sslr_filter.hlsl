@@ -236,7 +236,8 @@ void cs_main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI :
 	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;
 
 	float Parallax = Roughness > 0.1f && O.Depth >= 0.02f ? length((PrevSpecularUV.xy - PrevDiffuseUV) * pos_decompression_params2.xy) : 0.0f;
-	Feedback = lerp(0.98f, 0.85f, saturate(Parallax * 0.5f));
+	// The history gives way over 16 pixels of parallax: by 2, a slight turn showed the frame's own few rays, which sparkle
+	Feedback = lerp(0.98f, 0.85f, saturate(Parallax / 16.0f));
 
 	// The HUD stays where it is on the screen while the camera turns, and nothing draws velocity in this frame:
 	// its history gives way by how far the point it mirrors has moved since the frame before
@@ -245,7 +246,7 @@ void cs_main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI :
 	{
 		float4 MirroredNow = mul(m_VP, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
 		float2 MirroredUV = MirroredNow.xy / MirroredNow.w * float2(0.5f, -0.5f) + 0.5f;
-		Feedback = lerp(0.98f, 0.5f, saturate(length((PrevSpecularUV.xy - MirroredUV) * pos_decompression_params2.xy) * 0.5f));
+		Feedback = lerp(0.98f, 0.75f, saturate(length((PrevSpecularUV.xy - MirroredUV) * pos_decompression_params2.xy) / 16.0f));
 	}
 
 	PrevSpecularUV.xy = (Roughness > 0.1f || O.Depth < 0.02f) ? PrevDiffuseUV.xy : PrevSpecularUV.xy;

@@ -66,7 +66,7 @@ void CRenderTarget::CreateSslrTargets()
 void CRenderTarget::PhaseDepthPyramid(GfxCmdList& Cmd)
 {
 	const bool Sslr = SslrActive();
-	const bool Gtao = ps_r_ssao_mode == 2 || ForwardOcclusion();
+	const bool Gtao = ForwardOcclusion();
 
 	if (!Sslr && !Gtao)
 	{
@@ -186,8 +186,13 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 void CRender::begin_reflection_collect()
 {
-	// The cube stands along the axes of the world, so a face drawn in an earlier frame still fits the ones drawn now
-	reflection_cam_pos = RFrame.vCameraPosition;
+	// The cube stands along the axes of the world, so a face drawn in an earlier frame still fits the ones drawn now. It
+	// stays where it stood until the eye is 10 cm away: moved with the eye's sway, its faces drawn in turn from points a
+	// few millimetres apart disagreed, and every edge the mirrors marched flickered
+	if (reflection_cam_pos.distance_to(RFrame.vCameraPosition) > 0.1f)
+	{
+		reflection_cam_pos = RFrame.vCameraPosition;
+	}
 	reflection_cam_dir.set(0.f, 0.f, 1.f);
 	reflection_cam_top.set(0.f, 1.f, 0.f);
 	reflection_cam_right.set(1.f, 0.f, 0.f);
@@ -311,6 +316,15 @@ void CRender::render_reflections(GfxCmdList& Cmd)
 
 	EnvProject.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * 0.4f);
 
+	// The share of the map's history kept: 0.9 with the eye still, none once it moves 10 cm a frame. The cube stands at
+	// the eye and is not reprojected; with the eye bobbing a centimetre a frame the history was dropped every frame
+	static Fvector HistoryEye = { 0.0f, 0.0f, 0.0f };
+	static const void* HistoryTarget = nullptr;
+	const float Moved = HistoryTarget == Target->rt_Reflection_history._get() ? HistoryEye.distance_to(reflection_cam_pos) : 1.0f;
+	const float Keep = 0.9f * std::clamp(1.0f - Moved / 0.1f, 0.0f, 1.0f);
+	HistoryTarget = Target->rt_Reflection_history._get();
+	HistoryEye = reflection_cam_pos;
+
 	const Fvector4 fog_color4 = { ReflectionFog, 0.0f, 0.0f, 0.0f };
 
 	is_render_cubemap = true;
@@ -370,15 +384,41 @@ void CRender::render_reflections(GfxCmdList& Cmd)
 	is_render_cubemap = false;
 	phase = PHASE_NORMAL;
 
-	Target->DrawSQ(Cmd, Target->s_sslr, Target->rt_Reflection_forward, 2, [&]
-	{
-		RImplementation.rmNormal();
-		Cmd.SetCullMode(ERHI_CULLMODE::NONE); 
-	});
-
 	Target->u_setrt(Cmd, DwSize, DwSize, nullptr, nullptr, nullptr, nullptr);
 
-	NriPasses.GenerateMips(Cmd, Target->rt_Reflection_forward->pSurface, 1);
+	// Every level of the map in one dispatch: boxed down a tile of 64 texels to a group at low, prefiltered by GGX a
+	// level to a z of the dispatch from medium, its sharpest level settling over the jittered faces while the eye stays
+	{
+		GPU_EVENT(mirror_ibl);
+
+		const bool IsBoxed = !Target->rt_Reflection_history;
+		SPass& P = *(Target->s_sslr->E[IsBoxed ? 5 : 2]->passes[0]);
+		Cmd.SetStates(P.state);
+		Cmd.SetConstantTable(P.constants);
+		Cmd.SetTextures(P.T);
+
+		Cmd.Constants.Write<CBPost>().mirror_history.set(Keep, 0.0f, 0.0f, 0.0f);
+
+		NriBinding Levels[8];
+		const u32 LevelCount = std::min(u32(Target->rt_Reflection_forward->pMippedUAV.size()), 7u);
+
+		for (u32 MipLevel = 0; MipLevel < LevelCount; ++MipLevel)
+		{
+			Levels[MipLevel] = { MipLevel, Target->rt_Reflection_forward->pSurface, MipLevel };
+		}
+
+		const u32 Size = Target->rt_Reflection_forward->dwWidth;
+
+		if (IsBoxed)
+		{
+			NriPasses.Dispatch(Cmd, P.cs._get(), nullptr, 0, Levels, LevelCount, Size / 64u, Size / 64u, 1);
+		}
+		else
+		{
+			Levels[LevelCount] = { 7, Target->rt_Reflection_history->pSurface };
+			NriPasses.Dispatch(Cmd, P.cs._get(), nullptr, 0, Levels, LevelCount + 1, (Size + 7u) / 8u, (Size + 7u) / 8u, LevelCount);
+		}
+	}
 
 	Device.Statistic->TEST2.End();
 }

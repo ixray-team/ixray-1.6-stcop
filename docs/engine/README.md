@@ -8,7 +8,6 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_IXR` cl
 | --- | --- |
 | [architecture.md](architecture.md) | DLL load, globals, registrators, factory |
 | [lifecycle.md](lifecycle.md) | Load stages, `on_idle`, threads |
-| [render-thread-plan.md](render-thread-plan.md) | Plan: an optional render thread, one frame behind the game |
 | [core.md](core.md) | Memory, `FS`, ltx, console, input, sound |
 | [rendering.md](rendering.md) | R1/R2/R4 selection, APIs, dynamic and static frames |
 | [terrain.md](terrain.md) | Heightmap authoring, mesh export, implicit lighting bake, landscape shading |

@@ -105,14 +105,15 @@ void CRender::ApplyVideoSettings()
 	g_SunShaftsAlternative = Volumetric >= 2;
 	ps_r2_ls_flags.set(R2FLAG_VOLUMETRIC_LIGHTS, Volumetric >= 1);
 
-	ps_r_ssao_mode = On(OcclusionQuality) ? 2 : 0;
+	ps_r_ssao_mode = Get(OcclusionQuality);
 	ps_r2_ls_flags_ext.set(R4FLAG_GTAO_HQ | R4FLAG_SSLR_HQ, On(ScreenSpaceQuality));
-	ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, Get(ReflectionQuality) >= 1);
-	ps_r2_ls_flags_ext.set(R4FLAG_OFFSCREEN_REFLECTIONS, Get(ReflectionQuality) >= 2);
+	ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, Get(ReflectionQuality) >= 2);
+	ps_r2_ls_flags_ext.set(R4FLAG_OFFSCREEN_REFLECTIONS, Get(OffscreenReflectionQuality) >= 1);
+	ps_r_offscreen_reflection_quality = Get(OffscreenReflectionQuality);
 	g_Bloom = On(PostProcessingQuality);
 
 	// The editors keep the density their scene was made with
-	static constexpr float GrassDensity[] = { 0.6f, 0.4f, 0.25f, 0.15f };
+	static constexpr float GrassDensity[] = { 0.6f, 0.4f, 0.25f, 0.15f, 0.15f };
 	ps_r_grass_quality = Get(GrassQuality);
 
 	if (!Device.IsEditorMode() && ps_current_detail_density != GrassDensity[ps_r_grass_quality])

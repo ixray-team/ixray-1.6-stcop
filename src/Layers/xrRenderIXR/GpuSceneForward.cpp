@@ -90,7 +90,7 @@ void ReleaseIdPipelines()
 void ReleaseViewPipelines(SceneBin& Bin)
 {
 	nri::Pipeline** const Made[] = { &Bin.DepthPipelines[0], &Bin.DepthPipelines[1], &Bin.DepthPipelines[2], &Bin.DepthPipelines[3], &Bin.ColourPipeline, &Bin.OverdrawPipelines[0], &Bin.OverdrawPipelines[1],
-		&Bin.SurfacePipeline, &Bin.HudPipeline };
+		&Bin.SurfacePipeline, &Bin.HudPipeline, &Bin.IdPipeline };
 
 	for (nri::Pipeline** Pipeline : Made)
 	{
@@ -104,6 +104,7 @@ void ReleaseViewPipelines(SceneBin& Bin)
 	// Made of the passes' pixel stages as they were: a stage compiled for other settings writes other targets
 	Bin.SurfacePixel = nullptr;
 	Bin.HudPixel = nullptr;
+	Bin.IdPixel = nullptr;
 }
 u32 ForwardStreamFrame = u32(-1);
 // The pixel stage's registers: ranges of the set, in the order of the layout. Structured buffers stand alone
@@ -261,7 +262,7 @@ void ReleaseForward()
 	for (SceneBin& Bin : Bins)
 	{
 		for (nri::Pipeline* Pipeline : { Bin.DepthPipelines[0], Bin.DepthPipelines[1], Bin.DepthPipelines[2], Bin.DepthPipelines[3], Bin.ColourPipeline, Bin.OverdrawPipelines[0], Bin.OverdrawPipelines[1], Bin.FacePipeline,
-				 Bin.SurfacePipeline, Bin.HudPipeline })
+				 Bin.SurfacePipeline, Bin.HudPipeline, Bin.IdPipeline })
 		{
 			if (Pipeline)
 			{
@@ -503,7 +504,7 @@ namespace
 // sorted list, its depth test and colour masks as its state says
 // Vertex, Pixel: the shaders in the place of the pass's own, its states kept
 nri::Pipeline* CreateForwardPipeline(const SPass& Pass, bool IsDepth, bool IsAfterDepth, IRHIRenderTargetView* const* Targets, u32 TargetCount, IRHIDepthStencilView* Depth, u32 Overdraw = 0, bool IsTwoSided = false, bool IsSorted = false,
-	SVS* Vertex = nullptr, SPS* Pixel = nullptr)
+	SVS* Vertex = nullptr, SPS* Pixel = nullptr, bool IsOwnTargets = false)
 {
 	// The id pass has no pixel stage where nothing is cut out: a vertex stage of its own takes the pixel stage given
 	Pixel = Pixel || Vertex ? Pixel : Pass.ps._get();
@@ -548,8 +549,9 @@ nri::Pipeline* CreateForwardPipeline(const SPass& Pass, bool IsDepth, bool IsAft
 		// The colour pass blends as its state says
 		const RHIRenderTargetBlendDesc& Own = Blend.RenderTarget[Blend.IndependentBlendEnable ? Target : 0];
 		Colours[Target].format = nri::nriConvertDXGIFormatToNRI(u32(Targets[Target]->GetSurface()->GetFormat()));
-		// A depth pass leaves its first target, the frame's colour, alone; the grass's one target is its surface
-		Colours[Target].colorWriteMask = IsDepth && !(Pixel && TargetCount == 1) ? DepthMasks[Target] : IsSorted ? nri::ColorWriteBits(Own.RenderTargetWriteMask & 15u) : nri::ColorWriteBits::RGBA;
+		// A depth pass leaves its first target, the frame's colour, alone; the grass's kept targets (its velocity and its
+		// surface) are its own
+		Colours[Target].colorWriteMask = IsDepth && !IsOwnTargets && !(Pixel && TargetCount == 1) ? DepthMasks[Target] : IsSorted ? nri::ColorWriteBits(Own.RenderTargetWriteMask & 15u) : nri::ColorWriteBits::RGBA;
 		Colours[Target].blendEnabled = !IsDepth && Own.BlendEnable;
 		Colours[Target].colorBlend = { Factors[u32(Own.SrcBlend) % std::size(Factors)], Factors[u32(Own.DestBlend) % std::size(Factors)], Ops[u32(Own.BlendOp) % std::size(Ops)] };
 		Colours[Target].alphaBlend = { Factors[u32(Own.SrcBlendAlpha) % std::size(Factors)], Factors[u32(Own.DestBlendAlpha) % std::size(Factors)], Ops[u32(Own.BlendOpAlpha) % std::size(Ops)] };
@@ -661,7 +663,7 @@ void GpuScene::RefreshForward()
 		}
 
 		for (nri::Pipeline** Pipeline : { &Bin.DepthPipelines[0], &Bin.DepthPipelines[1], &Bin.DepthPipelines[2], &Bin.DepthPipelines[3], &Bin.ColourPipeline, &Bin.OverdrawPipelines[0], &Bin.OverdrawPipelines[1], &Bin.FacePipeline,
-				 &Bin.SurfacePipeline, &Bin.HudPipeline })
+				 &Bin.SurfacePipeline, &Bin.HudPipeline, &Bin.IdPipeline })
 		{
 			if (*Pipeline)
 			{
@@ -672,6 +674,7 @@ void GpuScene::RefreshForward()
 
 		Bin.SurfacePixel = nullptr;
 		Bin.HudPixel = nullptr;
+		Bin.IdPixel = nullptr;
 	};
 
 	BoundPasses.clear();
@@ -1088,7 +1091,9 @@ bool GpuScene::DrawForward(GfxCmdList& Cmd, IRHIRenderTargetView* const* Targets
 		}
 	}
 
-	const SPass* GrassDrawn = !IsFace && GrassIndices && GrassForwardFrame == RFrame.dwFrame && (Parts & 6) && !(Parts & (256 | 2048)) && (!(Parts & 1024) || (!IsColour && (Parts & 4))) ? (IsColour ? GrassPass.Colour._get() : GrassPass.Depth._get()) : nullptr;
+	// 4 | 256: the grass alone into the id pass
+	const bool IsGrassIds = (Parts & (4 | 256)) == (4 | 256);
+	const SPass* GrassDrawn = !IsFace && GrassIndices && GrassForwardFrame == RFrame.dwFrame && (Parts & 6) && !(Parts & 2048) && (!(Parts & 256) || IsGrassIds) && (!(Parts & 1024) || (!IsColour && (Parts & 4))) ? (IsColour ? GrassPass.Colour._get() : GrassPass.Depth._get()) : nullptr;
 
 	if (GrassDrawn)
 	{
@@ -1140,10 +1145,8 @@ bool GpuScene::DrawForward(GfxCmdList& Cmd, IRHIRenderTargetView* const* Targets
 		CreateIdShaders();
 	}
 
-	// The terrain keeps its surfaces in its depth pass as the models do, in place of its ids: its layers were half of
-	// what the resolve cost, and drawn they cost the depth pass nothing to speak of. r_rendering_path 1: the whole
-	// level does
-	const auto IsLevelKept = [](const SceneBin& Bin) { return RenderingPath() == 1 || Bin.Order == 1; };
+	// r_rendering_path 1: the level keeps its surfaces in its depth pass as the models do, in place of its ids
+	const auto IsLevelKept = [](const SceneBin&) { return RenderingPath() == 1; };
 
 	for (u32 Index = !IsColour ? 0 : LevelBinCount; Index < ((Parts & 1024) && IsBinned ? Bins.size() : 0); ++Index)
 	{
@@ -1161,6 +1164,11 @@ bool GpuScene::DrawForward(GfxCmdList& Cmd, IRHIRenderTargetView* const* Targets
 		// The surface alone, into the one target the frame gives the grass
 		const ref_ps Kept = DEV->CreatePSWith(*GrassDrawn->ps, "SURFACE_WRITES_SURFACE");
 		GrassPass.SurfacePixel = Kept ? DEV->CreatePSWith(*Kept, "SURFACE_KEEPS_ONLY") : Kept;
+	}
+
+	if (GrassDrawn && IsGrassIds && GrassDrawn->ps && !GrassPass.IdPixel)
+	{
+		GrassPass.IdPixel = DEV->CreatePSWith(*GrassDrawn->ps, "SURFACE_WRITES_ID");
 	}
 
 	nri::CommandBuffer& Commands = *BeginNriCommands(Reads, ReadCount, Targets, TargetCount, Depth);
@@ -1416,13 +1424,13 @@ bool GpuScene::DrawForward(GfxCmdList& Cmd, IRHIRenderTargetView* const* Targets
 		if (GrassDrawn && Step == 3)
 		{
 			// Its depth pass keeps its surfaces for the frame that lights them later (Parts 1024)
-			const bool IsKept = (Parts & 1024) != 0 && GrassDrawn->ps;
-			nri::Pipeline*& Pipeline = IsKept ? GrassPass.SurfacePipeline : Overdraw ? GrassPass.OverdrawPipelines[Overdraw - 1] : IsColour ? GrassPass.ColourPipeline : GrassPass.DepthPipelines[TargetCount];
+			const bool IsKept = ((Parts & 1024) != 0 || IsGrassIds) && GrassDrawn->ps;
+			nri::Pipeline*& Pipeline = IsGrassIds ? GrassPass.IdPipeline : IsKept ? GrassPass.SurfacePipeline : Overdraw ? GrassPass.OverdrawPipelines[Overdraw - 1] : IsColour ? GrassPass.ColourPipeline : GrassPass.DepthPipelines[TargetCount];
 
 			if (!Pipeline)
 			{
 				const bool IsCut = Overdraw == DebugView_OverdrawShaded && GrassPass.Depth && GrassPass.Depth->ps;
-				Pipeline = IsKept ? CreateForwardPipeline(*GrassDrawn, true, false, Targets, TargetCount, Depth, 0, true, false, nullptr, GrassPass.SurfacePixel._get())
+				Pipeline = IsKept ? CreateForwardPipeline(*GrassDrawn, true, false, Targets, TargetCount, Depth, 0, true, false, nullptr, (IsGrassIds ? GrassPass.IdPixel : GrassPass.SurfacePixel)._get(), true)
 					: CreateForwardPipeline(IsCut ? *GrassPass.Depth : *GrassDrawn, !IsColour, !Overdraw && IsColour && GrassPass.Depth, Targets, TargetCount, Depth, Overdraw, true);
 			}
 
@@ -1451,7 +1459,7 @@ bool GpuScene::DrawForward(GfxCmdList& Cmd, IRHIRenderTargetView* const* Targets
 				{
 					for (u32 Far = 0; Far < (GrassForwardBlock.bins[Bin].far_clusters ? 2u : 1u); ++Far)
 					{
-						const u32 Words[2] = { Far ? GrassForwardBlock.counts.x + GrassForwardBlock.bins[Bin].first * SCENE_GRASS_COPIES : GrassForwardBlock.bins[Bin].first, Bin };
+						const u32 Words[2] = { Bin * 2 + Far, Bin };
 						std::memcpy(ForwardBinBlock.data(), Words, sizeof(Words));
 						nri::SetRootDescriptorDesc Root = {};
 						Root.rootDescriptorIndex = ForwardBinRoot;

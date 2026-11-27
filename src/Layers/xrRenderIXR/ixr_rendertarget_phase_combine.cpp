@@ -2,6 +2,7 @@
 #include "UpscaleNri.h"
 #include "dxDebugRender.h"
 #include "ShaderBindings.h"
+#include "../../../shaders/common/debug_view.hlsli"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 
@@ -52,6 +53,16 @@ void CRenderTarget::phase_post(GfxCmdList& Cmd)
 	{
 		phase_depth_upscale(Cmd);
 		phase_mblur(Cmd);
+
+		// r_debug_view velocity: what the history passes have just read, in place of the picture
+		if (ps_r_debug_view == DebugView_Velocity)
+		{
+			GPU_EVENT(debug_velocity);
+			DrawSQ(Cmd, s_taa, rt_Generic_0, 3, [&]
+			{
+				Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+			});
+		}
 	}
 
 	u_setrt(Cmd, get_width(), get_height(), 0, 0, 0, 0);

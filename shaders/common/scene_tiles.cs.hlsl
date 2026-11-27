@@ -27,7 +27,7 @@ RWBuffer<uint> g_tile_counts : register(u0); // a list: its groups along x, then
 RWStructuredBuffer<uint> g_tiles : register(u1); // a list: SCENE_SHADE_TILES places, a tile's x | y << 16
 
 #ifndef TILES_RESET
-// What the screen-space passes read of a blade of grass: its depth pass keeps the surface alone
+// What the screen-space passes read of a blade of grass: its depth pass keeps the surface and its sway alone
 RWTexture2D<uint> g_thin : register(u2);
 #endif
 
@@ -63,7 +63,7 @@ void main(uint3 tile_id : SV_DispatchThreadID)
         uint4 ids = g_ids.GatherRed(smp_nofilter, at);
         // A surface with no id is lit with the rest and resolved by no class
         uint4 kept = g_surface.GatherGreen(smp_nofilter, at);
-        uint4 bits = (ids != 0u ? 1u << (ids & SCENE_ID_CLASS_MASK) : 0u) | (kept != 0u ? 1u << (SCENE_SHADE_LISTS - 1u) : 0u);
+        uint4 bits = (ids != 0u ? 1u << ((ids & SCENE_ID_GRASS_BIT) != 0u ? SCENE_SHADE_GRASS : ids & SCENE_ID_CLASS_MASK) : 0u) | (kept != 0u ? 1u << (SCENE_SHADE_LISTS - 1u) : 0u);
         classes |= bits.x | bits.y | bits.z | bits.w;
 
         // A gather's texels: the lower left one, then counter-clockwise
@@ -72,7 +72,7 @@ void main(uint3 tile_id : SV_DispatchThreadID)
 
             [branch] if (kept[texel_idx] != 0u && blade.material_class == SceneClass_Grass) {
                 uint2 pixel = corner + uint2(texel_idx == 1u || texel_idx == 2u, texel_idx < 2u);
-                g_thin[pixel] = thin_pack(normalize(mul((float3x3)m_V, blade.normal)), 1.0f, 1.0f, 0u, false, false);
+                g_thin[pixel] = thin_pack(normalize(mul((float3x3)m_V, blade.normal)), 1.0f, 1.0f, THIN_ID_MOVING, false, false, 0.5f);
             }
         }
     }

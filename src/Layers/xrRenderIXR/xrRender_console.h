@@ -71,11 +71,14 @@ extern u32 g_ForwardFlagsFrame;
 extern RENDER_API float ps_r_lambert_factor;
 extern RENDER_API u32 ps_r_msaa;
 extern u32 ps_r_reflections_update_rate;
+// r_offscreen_reflection_quality: 0 off, 1 low, 2 medium, 3 high
+extern u32 ps_r_offscreen_reflection_quality;
 extern float ps_r_reflections_cull_reach;
 extern float ps_r_reflections_lod_error;
 extern RENDER_API int ps_r_variable_shading;
 // The forward level frame computes ambient occlusion: its opaque surfaces are drawn depth first
 bool ForwardOcclusion();
+bool ForwardOcclusionHistory();
 // ... with the normals its depth pass writes (high shading quality), and with contact shadows on the HUD, which
 // need those normals
 bool ForwardOcclusionNormals();

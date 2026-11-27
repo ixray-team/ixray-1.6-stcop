@@ -55,10 +55,10 @@ void CRender::SyncShadingQuality()
 	const u32 Passes = u32(ForwardOcclusion()) | u32(ForwardHudShadows()) << 1 | u32(ForwardReflections()) << 2 | u32(GpuScene::IsCoarseAlpha()) << 3 |
 		u32(ForwardVelocityPass()) << 4 | u32(ForwardWboit()) << 5;
 	const u32 Options = u32(o.GtaoHq) | u32(o.SslrHq) << 1 | u32(o.offscreen_reflecitons) << 2 | u32(o.ProceduralRainPuddles) << 3 |
-		u32(g_SunShaftsAlternative) << 4;
+		u32(g_SunShaftsAlternative) << 4 | std::min(ps_r_offscreen_reflection_quality, 3u) << 5;
 	const u32 Key[] = { ps_r_shading_quality, ps_r_lighting_quality, ps_r_shadow_quality, ps_r_msaa, Passes, Options, g_RenderFeatures.Volumetrics ? ps_r_sun_shafts : 0,
 		ps_r2_ls_flags.get() & (R2FLAG_SOFT_WATER | R2FLAG_SOFT_PARTICLES | R2FLAG_STEEP_PARALLAX | R2FLAG_DETAIL_BUMP),
-		ps_r2_ls_flags_ext.get() & (R4FLAG_SSLR_ON_WATER | RFLAG_CLOUD_SHADOWS) };
+		ps_r2_ls_flags_ext.get() & (R4FLAG_SSLR_ON_WATER | RFLAG_CLOUD_SHADOWS), ps_r_ssao_mode };
 
 	u64 Wanted = 14695981039346656037ull;
 
@@ -82,6 +82,7 @@ void CRender::SyncShadingQuality()
 		// The final pass is made by its blender, which the recompile does not reach: low shading quality decodes its
 		// gamma scene in it
 		Target->s_combine.create(Target->b_combine, "r2\\combine");
+		Target->RemakeBlenderPasses();
 		Target->ResetExposure(Imm());
 	}
 }

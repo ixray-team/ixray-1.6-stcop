@@ -448,10 +448,17 @@ void CResourceManager::RecompileShaders()
 void CResourceManager::GetShaders(xr_vector<ref_shader>& Shaders)
 {
 	xrCriticalSectionGuard Guard(creationGuard);
+	xrCriticalSectionGuard Kept(PendingGuard);
 
 	for (Shader* Item : v_shaders)
 	{
 		ref_shader Held;
+
+		// What only the kept list holds is drawn by nothing, and keeps the stages of the setting it was made for
+		if (KeptSet.contains(Item) && Item->dwReference.load(std::memory_order_acquire) == 1)
+		{
+			continue;
+		}
 
 		if (ResourceLifetime::IsAlive(Item) && ResourceLifetime::TryAcquire(Item, Held))
 		{

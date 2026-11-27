@@ -60,7 +60,7 @@ void ps_main(in v2p I, out sky O)
     sky *= L_sky_color.xyz;
 #endif
 
-	O.Color = float4(SceneFromGamma(sky), 0.0f);
+	O.Color = float4(DitherR11G11B10(SceneFromGamma(sky), I.hpos.xy), 0.0f);
 
 #ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;

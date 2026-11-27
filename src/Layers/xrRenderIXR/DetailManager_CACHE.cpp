@@ -132,6 +132,7 @@ void CDetailManager::StoreSlot(Slot& S, float Kept)
 
 	// A slot that found no place is asked again by the next frame that shows it
 	S.StoreKept = S.StoreCount == Count ? Kept : 0.0f;
+	S.StoreWanted = Count;
 
 	if (S.StoreCount)
 	{

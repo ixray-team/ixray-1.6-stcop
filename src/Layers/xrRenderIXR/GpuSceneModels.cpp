@@ -688,23 +688,11 @@ void GpuScene::BuildObjects(R_dsgraph_structure& Graph)
 		Part.Record = RecordIndex(Part.Record);
 	}
 
-	// A rigid part stands where its skeleton is posed once the calls are done. The light apply_object hands the graph's
-	// draw under baked light: a level shader on a moving object takes it too, not its own lightmap
+	// The light apply_object hands the graph's draw under baked light: a level shader on a moving object takes it too,
+	// not its own lightmap. A rigid part is placed by UploadModels
 	for (const ModelFix& Fix : ModelFixes)
 	{
 		Hlsl::SceneModel& Record = ModelRecords[RecordIndex(Fix.Record)];
-
-		if (CSkeletonX* Rigid = Fix.Rigid)
-		{
-			RImplementation.Skinning.Snapshot(*Rigid->Parent, Fix.Matrix);
-			const CBoneInstance& Bone = Rigid->Parent->LL_GetBoneInstance(u16(Rigid->RMS_boneid));
-			Fmatrix World, Old;
-			World.mul_43(Fix.Matrix, Bone.mRenderTransform_tmp);
-			Old.mul_43(Rigid->Parent->mOldWorldMartrix, Bone.mRenderTransform_old);
-			Record.world = World;
-			Record.world_old = Old;
-		}
-
 		IRenderable* Lit = Fix.Object && Fix.Object->renderable_ROS() ? Fix.Object : nullptr;
 
 		if (CROS_impl* Track = Lit ? static_cast<CROS_impl*>(Lit->renderable_ROS()) : RImplementation.ViewerLightTrack())
@@ -741,6 +729,19 @@ void GpuScene::UploadModels(GfxCmdList& Cmd)
 	PROF_EVENT("SceneUploadModels");
 	RImplementation.Skinning.Flush(Cmd);
 	Cmd.RestoreInput();
+
+	// A rigid part stands where its skeleton is posed, with the pose the skinned parts take
+	for (const ModelFix& Fix : ModelFixes)
+	{
+		if (CSkeletonX* Rigid = Fix.Rigid)
+		{
+			Hlsl::SceneModel& Record = ModelRecords[RecordIndex(Fix.Record)];
+			Fmatrix World, Old;
+			RImplementation.Skinning.Rigid(*Rigid->Parent, Fix.Matrix, u16(Rigid->RMS_boneid), World, Old);
+			Record.world = World;
+			Record.world_old = Old;
+		}
+	}
 
 	// A model bin's entries follow the level's in the main view's first part
 	u32 Start = ClusterCount;

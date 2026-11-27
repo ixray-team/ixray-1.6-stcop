@@ -23,6 +23,7 @@ public:
 	ref_geom			hw_Geom;
 	GeometryAlloc		Alloc = {};
 	u32					FarCount = 0; // the indices each mesh starts with that make its far mesh, 0 without one
+	float				FarCover = 1.0f; // the share of the model's area its far mesh keeps
 	u32					SceneCluster = u32(-1); // GpuScene::GrassModel::Cluster
 	shared_str			Texture;
 

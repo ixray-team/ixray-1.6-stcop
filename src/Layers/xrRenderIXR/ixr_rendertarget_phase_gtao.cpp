@@ -35,6 +35,8 @@
 #include "stdafx.h"
 
 #include "ixr_rendertarget.h"
+#include "ShaderBindings.h"
+#include "xrRender_console.h"
 
 void CRenderTarget::phase_gtao(GfxCmdList& Cmd)
 {
@@ -74,10 +76,32 @@ void CRenderTarget::phase_gtao(GfxCmdList& Cmd)
 
 		const u32 GroupsX = (rt_gtao_0->dwWidth + 7u) / 8u;
 		const u32 GroupsY = (rt_gtao_0->dwHeight + 7u) / 8u;
-		const NriBinding Occlusion = { 0, rt_ssao_temp->pSurface };
+		const NriBinding Occlusion = { 0, (ForwardOcclusionHistory() ? rt_GtaoCurrent : rt_ssao_temp)->pSurface };
 
 		RImplementation.NriPasses.Dispatch(Cmd, P.cs._get(), nullptr, 0, &Occlusion, 1, GroupsX, GroupsY, 1);
 	}
+
+	if (!ForwardOcclusionHistory())
+	{
+		return;
+	}
+
+	GPU_EVENT(gtao_history);
+
+	// A frame writes the history of its parity: a gap, a cut or a new target set leaves nothing of this view in the other
+	const bool IsFresh = !GtaoFrame || GtaoFrame + 1 != RFrame.dwFrame || RFrame.IsCameraCut();
+	GtaoFrame = RFrame.dwFrame;
+
+	SPass& P = *(s_gtao->E[3]->passes[0]);
+	Cmd.SetStates(P.state);
+	Cmd.SetConstantTable(P.constants);
+	Cmd.SetTextures(P.T);
+	Cmd.Constants.Write<CBPost>().gtao_history.set(IsFresh ? 0.0f : 0.9f, 0.0f, 0.0f, 0.0f);
+
+	const NriBinding Read[2] = { { ShaderBindings::Texture("t_gtao_current"), rt_GtaoCurrent->pSurface }, { ShaderBindings::Texture("t_gtao_history"), rt_GtaoHistory[(GtaoFrame + 1) & 1]->pSurface } };
+	const NriBinding Written[2] = { { 0, rt_ssao_temp->pSurface }, { 1, rt_GtaoHistory[GtaoFrame & 1]->pSurface } };
+
+	RImplementation.NriPasses.Dispatch(Cmd, P.cs._get(), Read, 2, Written, 2, ((u32)Cmd.GetWidth() + 7u) / 8u, ((u32)Cmd.GetHeight() + 7u) / 8u, 1);
 }
 
 void CRenderTarget::pharse_velocity(GfxCmdList& Cmd)

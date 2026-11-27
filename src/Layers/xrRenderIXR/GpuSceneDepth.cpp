@@ -186,7 +186,9 @@ nri::Pipeline* CreateDepthPipeline(nri::Format Format, bool IsAlpha, bool IsSpot
 	nri::GraphicsPipelineDesc Desc = {};
 	Desc.pipelineLayout = IsMesh ? MeshLayout : DrawLayout;
 	Desc.inputAssembly.topology = nri::Topology::TRIANGLE_LIST;
-	Desc.rasterization.depthBias = { float(Raster.DepthBias), Raster.DepthBiasClamp, Raster.SlopeScaledDepthBias };
+	// A lamp's map is pushed back by its slope: a wall the lamp grazes shadowed itself in stripes a texel of the map
+	// apart, which no lift of the receiver short of tens of centimetres closes
+	Desc.rasterization.depthBias = IsSpot ? nri::DepthBiasDesc{ 0.0f, 0.0f, 2.0f } : nri::DepthBiasDesc{ float(Raster.DepthBias), Raster.DepthBiasClamp, Raster.SlopeScaledDepthBias };
 	// A spot shadow map overrides these two (SetupSpotShadowTarget)
 	Desc.rasterization.cullMode = IsSpot ? nri::CullMode::BACK : Culls[u32(Raster.CullMode)];
 	Desc.rasterization.frontCounterClockwise = Raster.FrontCounterClockwise != 0;

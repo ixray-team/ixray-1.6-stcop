@@ -298,11 +298,11 @@ public:
 	bool							IsHeld						() const { return Device.dwFrame == HeldFrame; }
 	virtual void							CalculateBones_Invalidate	() override;
 	virtual void							Callback					(UpdateCallback C, void* Param) override
-	{	Update_Callback	= C; Update_Callback_Param	= Param;	}
+	{	xrCriticalSectionGuard guard(&UCalc_Mutex); Update_Callback	= C; Update_Callback_Param	= Param;	}
 
-	//	Callback: data manipulation
-	virtual void					SetUpdateCallback(UpdateCallback pCallback) override {Update_Callback = pCallback;}
-	virtual void					SetUpdateCallbackParam(void* pCallbackParam) override {Update_Callback_Param = pCallbackParam;}
+	// The primary thread runs the callback under UCalc_Mutex while the game thread changes it
+	virtual void					SetUpdateCallback(UpdateCallback pCallback) override {xrCriticalSectionGuard guard(&UCalc_Mutex); Update_Callback = pCallback;}
+	virtual void					SetUpdateCallbackParam(void* pCallbackParam) override {xrCriticalSectionGuard guard(&UCalc_Mutex); Update_Callback_Param = pCallbackParam;}
 
 	virtual void LL_SetShader(const char* sh_name) override;
 	virtual void					LL_RestoreShader() override;

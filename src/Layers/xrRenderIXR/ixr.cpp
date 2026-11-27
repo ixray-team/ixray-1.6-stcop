@@ -638,7 +638,9 @@ xr_string CRender::getShaderParamsDebug(const ShaderExternalMap& Defines) const
 // The cube of what is around the eye is drawn and read while the frame traces reflections
 bool CRender::HasReflectionCube() const
 {
-	return o.offscreen_reflecitons && ForwardReflections();
+	// The cube serves the glass and, without the screen trace, every mirror: not the trace, only the frame of high shading
+	// with its occlusion, whose depth pass splits the surfaces it is drawn with
+	return o.offscreen_reflecitons && ForwardOcclusionNormals();
 }
 
 bool CRender::NeedMotionVectors() const

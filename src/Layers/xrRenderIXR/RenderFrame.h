@@ -38,7 +38,7 @@
 // it is calculated. The renderer reads this and never the device's own, which the game goes on writing; what is
 // drawn with a camera of its own (the HUD, an icon, the wallmarks) changes this copy for as long as it draws.
 // The time and the frame counter are copied with it; code that runs in the game's frame or the pre-render stage
-// still reads the device's: docs/engine/render-thread-plan.md, stage 6
+// still reads the device's: the render thread plan's stage 6
 class CEnvDescriptorMixer;
 
 struct RenderFrame

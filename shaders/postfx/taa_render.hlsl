@@ -1,239 +1,184 @@
 /*
-		Simple TAA
+        Simple TAA
 
-		References:
-		- https://gdcvault.com/play/1022970/Temporal-Reprojection-Anti-Aliasing-in
-		- https://research.nvidia.com/labs/rtr/publication/yang2020survey/
-		- https://github.com/iryoku/smaa
-		- https://michaldrobot.com/2014/08/13/hraa-siggraph-2014-slides-available/
-		- https://gpuopen.com/learn/optimized-reversible-tonemapper-for-resolve/
-		- https://research.activision.com/publications/2020-03/dynamic-temporal-antialiasing-and-upsampling-in-call-of-duty
-		- https://dl.acm.org/doi/10.1145/3681758.3697996
+        References:
+        - https://gdcvault.com/play/1022970/Temporal-Reprojection-Anti-Aliasing-in
+        - https://research.nvidia.com/labs/rtr/publication/yang2020survey/
+        - https://github.com/iryoku/smaa
+        - https://michaldrobot.com/2014/08/13/hraa-siggraph-2014-slides-available/
+        - https://gpuopen.com/learn/optimized-reversible-tonemapper-for-resolve/
+        - https://research.activision.com/publications/2020-03/dynamic-temporal-antialiasing-and-upsampling-in-call-of-duty
+        - https://dl.acm.org/doi/10.1145/3681758.3697996
 
-		Author:
-		- LVutner
+        Author:
+        - LVutner
 
-		---IX-Ray Engine---
+        ---IX-Ray Engine---
 */
 
 #include "common\common.hlsli"
 
-Texture2D s_image_prev : register(t25); //Previous rt_generic_0
+Texture2D s_image_prev : register(t25);
 Texture2D s_reactive : register(t26);
 
-//Settings...
-#define TAA_BLEND_WEIGHT 0.9 //Blend weight
-#define TAA_REACTIVE_BLEND_WEIGHT 0.4
+#define TAA_BLEND_WEIGHT 0.9f
+#define TAA_REACTIVE_BLEND_WEIGHT 0.4f
+#define TAA_HUD_DEPTH 0.02f
 
-//don't touch it unless you KNOW what you're doing. 
-float3 Lottes_Tonemap(float3 c)
-{ 
-	return saturate(c * rcp(max(c.x, max(c.y, c.z)) + 1.0));
-}
-
-float3 Lottes_Tonemap_Inverse(float3 c)
-{
-	return c * rcp(1.0 - max(c.x, max(c.y, c.z)));
-}
-
-static const int2 offset_3x3[9] =
-{
-	int2(-1, -1),
-	int2(0, -1),
-	int2(1, -1),
-	int2(-1, 0),
-	int2(0, 0),
-	int2(1, 0),
-	int2(-1, 1),
-	int2(0, 1),
-	int2(1, 1),
-};
-
-// Catmull-Rom history in five bilinear taps, the corners are dropped (Jimenez, Filmic SMAA, SIGGRAPH 2016).
-// A single bilinear tap blurs the history a little more every frame the image moves by a fraction of a pixel
-// The targets may be larger than the view, which is in their corner: a texel of them in their own UV, and their
-// size in texels
+// The targets may be larger than the view, which is in their corner: a texel of them in their own UV, and their size in texels
 #define TAA_TEXEL scaled_screen_res.zw
 #define TAA_TEXELS (1.0f / scaled_screen_res.zw)
 
-float3 history_catmull_rom(float2 texcoord)
+static const int2 offset_3x3[9] = { int2(-1, -1), int2(0, -1), int2(1, -1), int2(-1, 0), int2(0, 0), int2(1, 0), int2(-1, 1), int2(0, 1), int2(1, 1) };
+
+// Baked for the "asphalt" scene
+static const float3 kdop_axes[8] = {
+    float3(0.997167f, -0.054820f, 0.051500f),
+    float3(0.043682f, -0.727663f, 0.684542f),
+    float3(-0.451553f, 0.808335f, -0.377751f),
+    float3(-0.003001f, 0.615645f, -0.788018f),
+    float3(0.130192f, -0.063137f, -0.989476f),
+    float3(0.775079f, -0.584236f, -0.240668f),
+    float3(0.589837f, 0.171644f, -0.789070f),
+    float3(0.898010f, -0.436338f, -0.056459f)
+};
+
+float3 taa_tonemap(float3 c)
 {
-	float2 position = texcoord * TAA_TEXELS;
-	float2 center = floor(position - 0.5) + 0.5;
-	float2 f = position - center;
-
-	float2 w0 = f * (-0.5 + f * (1.0 - 0.5 * f));
-	float2 w1 = 1.0 + f * f * (-2.5 + 1.5 * f);
-	float2 w2 = f * (0.5 + f * (2.0 - 1.5 * f));
-	float2 w3 = f * f * (-0.5 + 0.5 * f);
-	float2 w12 = w1 + w2;
-
-	// No tap leaves the view the frame before had for what lies beside it in the target
-	float2 tc0 = min((center - 1.0) * TAA_TEXEL, view_uv_prev.zw);
-	float2 tc12 = min((center + w2 / w12) * TAA_TEXEL, view_uv_prev.zw);
-	float2 tc3 = min((center + 2.0) * TAA_TEXEL, view_uv_prev.zw);
-
-	float4 color =
-		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc12.x, tc0.y), 0).xyz), 1.0) * (w12.x * w0.y) +
-		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc0.x, tc12.y), 0).xyz), 1.0) * (w0.x * w12.y) +
-		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, tc12, 0).xyz), 1.0) * (w12.x * w12.y) +
-		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc3.x, tc12.y), 0).xyz), 1.0) * (w3.x * w12.y) +
-		float4(Lottes_Tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc12.x, tc3.y), 0).xyz), 1.0) * (w12.x * w3.y);
-
-	return max(color.xyz / color.w, 0.0);
+    return saturate(c * rcp(max(c.x, max(c.y, c.z)) + 1.0f));
 }
 
-//Cheapest way to get 3x3 neighborhood of single channel texture
+float3 taa_tonemap_inverse(float3 c)
+{
+    return c * rcp(1.0f - max(c.x, max(c.y, c.z)));
+}
+
+// Catmull-Rom in five bilinear taps without the corners (Jimenez, Filmic SMAA, SIGGRAPH 2016): one bilinear tap blurs the history more every frame the image moves by a fraction of a pixel
+float3 history_catmull_rom(float2 texcoord)
+{
+    float2 position = texcoord * TAA_TEXELS;
+    float2 center = floor(position - 0.5f) + 0.5f;
+    float2 f = position - center;
+    float2 w0 = f * (-0.5f + f * (1.0f - 0.5f * f));
+    float2 w1 = 1.0f + f * f * (-2.5f + 1.5f * f);
+    float2 w2 = f * (0.5f + f * (2.0f - 1.5f * f));
+    float2 w3 = f * f * (-0.5f + 0.5f * f);
+    float2 w12 = w1 + w2;
+
+    // No tap leaves the view the frame before had for what lies beside it in the target
+    float2 tc0 = min((center - 1.0f) * TAA_TEXEL, view_uv_prev.zw);
+    float2 tc12 = min((center + w2 / w12) * TAA_TEXEL, view_uv_prev.zw);
+    float2 tc3 = min((center + 2.0f) * TAA_TEXEL, view_uv_prev.zw);
+
+    float4 color = float4(taa_tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc12.x, tc0.y), 0).xyz), 1.0f) * (w12.x * w0.y);
+    color += float4(taa_tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc0.x, tc12.y), 0).xyz), 1.0f) * (w0.x * w12.y);
+    color += float4(taa_tonemap(s_image_prev.SampleLevel(smp_rtlinear, tc12, 0).xyz), 1.0f) * (w12.x * w12.y);
+    color += float4(taa_tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc3.x, tc12.y), 0).xyz), 1.0f) * (w3.x * w12.y);
+    color += float4(taa_tonemap(s_image_prev.SampleLevel(smp_rtlinear, float2(tc12.x, tc3.y), 0).xyz), 1.0f) * (w12.x * w3.y);
+    return max(color.xyz / color.w, 0.0f);
+}
+
 void get_3x3_depth(float2 texcoord, float2 gather_texcoord, inout float d_3x3[9])
 {
-	float4 d_gather0 = s_position.Gather(smp_nofilter, gather_texcoord);
-	float4 d_gather1 = s_position.Gather(smp_nofilter, gather_texcoord, int2(-1, -1));
-
-	d_3x3[0] = d_gather1.w;
-	d_3x3[1] = d_gather1.z;
-	d_3x3[2] = s_position.SampleLevel(smp_nofilter, texcoord, 0, int2(1, -1)).x;
-	d_3x3[3] = d_gather1.x;
-	d_3x3[4] = d_gather0.w; //d_gather1.y overlap
-	d_3x3[5] = d_gather0.z;
-	d_3x3[6] = s_position.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 1)).x;
-	d_3x3[7] = d_gather0.x;
-	d_3x3[8] = d_gather0.y;
+    float4 d_gather0 = s_position.Gather(smp_nofilter, gather_texcoord);
+    float4 d_gather1 = s_position.Gather(smp_nofilter, gather_texcoord, int2(-1, -1));
+    d_3x3[0] = d_gather1.w;
+    d_3x3[1] = d_gather1.z;
+    d_3x3[2] = s_position.SampleLevel(smp_nofilter, texcoord, 0, int2(1, -1)).x;
+    d_3x3[3] = d_gather1.x;
+    d_3x3[4] = d_gather0.w;
+    d_3x3[5] = d_gather0.z;
+    d_3x3[6] = s_position.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 1)).x;
+    d_3x3[7] = d_gather0.x;
+    d_3x3[8] = d_gather0.y;
 }
 
 void get_3x3_color(float2 texcoord, float2 gather_texcoord, inout float3 c_3x3[9])
 {
-	float4 c_gather0_r = s_image.GatherRed(smp_nofilter, gather_texcoord);
-	float4 c_gather0_g = s_image.GatherGreen(smp_nofilter, gather_texcoord);
-	float4 c_gather0_b = s_image.GatherBlue(smp_nofilter, gather_texcoord);
-
-	c_3x3[0] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, -1)).xyz;
-	c_3x3[1] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(0, -1)).xyz;
-	c_3x3[2] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(1, -1)).xyz;
-	c_3x3[3] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 0)).xyz;
-	c_3x3[4] = float3(c_gather0_r.w, c_gather0_g.w, c_gather0_b.w);
-	c_3x3[5] = float3(c_gather0_r.z, c_gather0_g.z, c_gather0_b.z);
-	c_3x3[6] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 1)).xyz;
-	c_3x3[7] = float3(c_gather0_r.x, c_gather0_g.x, c_gather0_b.x);
-	c_3x3[8] = float3(c_gather0_r.y, c_gather0_g.y, c_gather0_b.y);
+    float4 c_gather0_r = s_image.GatherRed(smp_nofilter, gather_texcoord);
+    float4 c_gather0_g = s_image.GatherGreen(smp_nofilter, gather_texcoord);
+    float4 c_gather0_b = s_image.GatherBlue(smp_nofilter, gather_texcoord);
+    c_3x3[0] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, -1)).xyz;
+    c_3x3[1] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(0, -1)).xyz;
+    c_3x3[2] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(1, -1)).xyz;
+    c_3x3[3] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 0)).xyz;
+    c_3x3[4] = float3(c_gather0_r.w, c_gather0_g.w, c_gather0_b.w);
+    c_3x3[5] = float3(c_gather0_r.z, c_gather0_g.z, c_gather0_b.z);
+    c_3x3[6] = s_image.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 1)).xyz;
+    c_3x3[7] = float3(c_gather0_r.x, c_gather0_g.x, c_gather0_b.x);
+    c_3x3[8] = float3(c_gather0_r.y, c_gather0_g.y, c_gather0_b.y);
 }
-
-//you feel fancy? bake new coeffs. those are for "asphalt" scene
-static const float3 kdop_axes[8] = 
-{
-	float3(0.997167, -0.054820, 0.051500),
-	float3(0.043682, -0.727663, 0.684542),
-	float3(-0.451553, 0.808335, -0.377751),
-	float3(-0.003001, 0.615645, -0.788018),
-	float3(0.130192, -0.063137, -0.989476),
-	float3(0.775079, -0.584236, -0.240668),
-	float3(0.589837, 0.171644, -0.789070),
-	float3(0.898010, -0.436338, -0.056459)
-};
 
 float3 kdop_clipping(float3 mean, float3 prev_color, float3 colors[9], float gamma)
 {
-	float3 dir = prev_color - mean;
-	
-	float2 near_far = -10000.0;
-	near_far.y = -near_far.x;
+    float3 dir = prev_color - mean;
+    float2 near_far = float2(-10000.0f, 10000.0f);
 
-	[unroll]
-	for(int a = 0; a < 8; a++)
-	{
-		float3 axis = kdop_axes[a];
+    [unroll] for (int axis_idx = 0; axis_idx < 8; axis_idx++) {
+        float3 axis = kdop_axes[axis_idx];
+        float2 moments = 0.0f;
 
-		float2 moments = (0.0).xx;
+        [unroll] for (int color_idx = 0; color_idx < 9; color_idx++) {
+            float t = dot(colors[color_idx], axis);
+            moments += float2(t, t * t);
+        }
 
-		[unroll]
-		for(int n = 0; n < 9; ++n)
-		{
-			float t = dot(colors[n], axis);
-			moments += float2(t, t * t);
-		}
-		moments *= 1.0 / 9.0;
+        moments *= 1.0f / 9.0f;
+        float sigma = max(sqrt(moments.y - moments.x * moments.x), 1e-5f);
+        float proj_pos = dot(mean, axis);
+        float2 extent = float2(min(moments.x - gamma * sigma, proj_pos), max(moments.x + gamma * sigma, proj_pos));
+        float2 t_01 = (extent - proj_pos) * (1.0f / dot(dir, axis));
+        near_far.x = max(near_far.x, min(t_01.x, t_01.y));
+        near_far.y = min(near_far.y, max(t_01.x, t_01.y));
+    }
 
-		float sigma = max(sqrt(moments.y - moments.x * moments.x), 1e-5);
-		float proj_pos = dot(mean, axis);
-		
-		float2 extent;
-		extent.x = min(moments.x - gamma * sigma, proj_pos);
-		extent.y = max(moments.x + gamma * sigma, proj_pos);
+    if (near_far.x <= near_far.y && (near_far.x > 0.0f || near_far.y > 0.0f)) {
+        return mean + saturate(near_far.x > 0.0f ? near_far.x : near_far.y) * dir;
+    }
 
-		float inv_dir = 1.0 / dot(dir, axis);
-		
-		float2 t_01 = (extent.xy - proj_pos) * inv_dir;
-
-		near_far.x = max(near_far.x, min(t_01.x, t_01.y));
-		near_far.y = min(near_far.y, max(t_01.x, t_01.y));
-	}
-
-	if(near_far.x <= near_far.y && (near_far.x > 0.0f || near_far.y > 0.0f))
-	{
-		float t = saturate(near_far.x > 0.0f ? near_far.x : near_far.y);
-		return mean + t * dir;
-	}
-
-	return mean;
+    return mean;
 }
 
 float4 ps_main(PSInputFullscreen I) : SV_Target
 {
-	//https://wojtsterna.blogspot.com/2018/02/directx-11-hlsl-gatherred.html
-	float2 gather_texcoord = I.texcoord.xy + TAA_TEXEL * 0.5;
+    // https://wojtsterna.blogspot.com/2018/02/directx-11-hlsl-gatherred.html
+    float2 gather_texcoord = I.texcoord.xy + TAA_TEXEL * 0.5f;
+    float d_3x3[9];
+    float3 c_3x3[9];
+    get_3x3_depth(I.texcoord.xy, gather_texcoord, d_3x3);
+    get_3x3_color(I.texcoord.xy, gather_texcoord, c_3x3);
 
-	//Fetch 3x3 depth neighborhood
-	float d_3x3[9];	
-	get_3x3_depth(I.texcoord.xy, gather_texcoord, d_3x3);
+    // The nearest neighbour's motion, of the centre's own layer: the HUD is always nearer, and the world beside it took its motion and trailed it
+    bool is_hud = d_3x3[4] < TAA_HUD_DEPTH;
+    float3 mean = 0.0f;
+    int2 depth_offset = 0;
+    float depth_closest = 1.0f;
 
-	//Fetch 3x3 color neighborhood
-	float3 c_3x3[9];
-	get_3x3_color(I.texcoord.xy, gather_texcoord, c_3x3);
-	
-	float3 mean = (float3)0.0;
+    [unroll] for (int sample_idx = 0; sample_idx < 9; sample_idx++) {
+        c_3x3[sample_idx] = taa_tonemap(c_3x3[sample_idx]);
+        mean += c_3x3[sample_idx] * (1.0f / 9.0f);
+        float depth = d_3x3[sample_idx];
 
-	int2 depth_offset = int2(0, 0);
-	float depth_closest = 1.0;
+        if (depth < depth_closest && (depth < TAA_HUD_DEPTH) == is_hud) {
+            depth_closest = depth;
+            depth_offset = offset_3x3[sample_idx];
+        }
+    }
 
-	[unroll]
-	for (int i = 0; i < 9; i++)
-	{
-		c_3x3[i] = Lottes_Tonemap(c_3x3[i]);
-		mean += c_3x3[i] * (1.0 / 9.0);
+    // The motion is a share of the view; the lookup is in the target's UV, in the view the frame before had
+    float2 motion_vector = s_velocity[clamp(I.hpos.xy + depth_offset, 0, scaled_screen_res.xy - 1)].xy * float2(0.5f, -0.5f);
+    float2 reprojected_view = I.texcoord.xy / view_uv.xy - motion_vector;
 
-		float sampled_depth = d_3x3[i];
+    if (any(reprojected_view != saturate(reprojected_view))) {
+        return float4(taa_tonemap_inverse(c_3x3[4]), 0.0f);
+    }
 
-		//Find closest depth. Sign and initial value should be changed for reverse-z
-		if(sampled_depth < depth_closest)
-		{
-			depth_closest = sampled_depth;
-			depth_offset = offset_3x3[i];
-		}
-	}
-	
-	//Fetch motion vectors and reproject
-	float2 motion_vector = s_velocity[clamp(I.hpos.xy + depth_offset, 0, scaled_screen_res.xy - 1)].xy * float2(0.5, -0.5);
-	// The motion is a share of the view; the lookup is in the target's UV, in the view the frame before had
-	float2 reprojected_view = I.texcoord.xy / view_uv.xy - motion_vector;
-	float2 reprojected_tc = reprojected_view * view_uv_prev.xy;
+    float3 history = history_catmull_rom(reprojected_view * view_uv_prev.xy);
+    float reactive = s_reactive[I.hpos.xy].x;
 
-	//Early quit
-	if(any(reprojected_view != saturate(reprojected_view)))
-		return float4(Lottes_Tonemap_Inverse(c_3x3[4]), 0.0);
-
-	//Fetch previous frame
-	float3 p_4 = history_catmull_rom(reprojected_tc);
-
-	float reactive = s_reactive[I.hpos.xy].x;
-
-	//K-DOP clipping; bigger window for static objects
-	float gamma = 1.0 - min(1.0, length(motion_vector * scaled_screen_res.xy * 0.2)) + 0.5;
-	gamma = lerp(gamma, 0.5, reactive);
-
-	p_4 = kdop_clipping(mean, p_4, c_3x3, gamma);
-
-	//because yall still using rgba16, i don't care enough to change blending logic
-	float3 reprojected_color = lerp(c_3x3[4], p_4, lerp(TAA_BLEND_WEIGHT, TAA_REACTIVE_BLEND_WEIGHT, reactive));
-
-	reprojected_color = Lottes_Tonemap_Inverse(reprojected_color);
-	return float4(reprojected_color, 1.0);
+    // A wider window for what stands still
+    float gamma = 1.5f - min(1.0f, length(motion_vector * scaled_screen_res.xy * 0.2f));
+    history = kdop_clipping(mean, history, c_3x3, lerp(gamma, 0.5f, reactive));
+    float3 color = lerp(c_3x3[4], history, lerp(TAA_BLEND_WEIGHT, TAA_REACTIVE_BLEND_WEIGHT, reactive));
+    return float4(DitherR11G11B10(taa_tonemap_inverse(color), I.hpos.xy), 1.0f);
 }

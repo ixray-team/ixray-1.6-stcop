@@ -235,6 +235,15 @@ float Hash(float3 p3)
     return frac((p3.x + p3.y) * p3.z);
 }
 
+// One step of an R11G11B10 target is 1/64 of the value's octave in red and green, 1/32 in blue: a slow gradient such
+// as the sky shows it as bands. The noise rounds each pixel up or down by its distance to the steps, a new pattern
+// each frame for the temporal pass to average
+float3 DitherR11G11B10(float3 color, float2 pixel)
+{
+    float3 step = exp2(floor(log2(max(color, 1.0e-6f))) - float3(6.0f, 6.0f, 5.0f));
+    return color + (Hash(float3(pixel, frac(timers.x) * 1024.0f)) - 0.5f) * step;
+}
+
 float2 Hash22(float2 value)
 {
     return float2

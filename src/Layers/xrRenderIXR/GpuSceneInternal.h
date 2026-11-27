@@ -465,6 +465,7 @@ struct GrassSet
 	Fbox Cells[GrassCells * GrassCells];
 	std::bitset<SCENE_GRASS_BINS> CellBins[GrassCells * GrassCells];
 	u32 CellFrame = u32(-1);
+	u32 TileFrame = u32(-1); // the frame whose tile counts the next one reads
 };
 
 extern GrassSet Grass;
@@ -526,6 +527,9 @@ struct SceneBin
 	ref_ps HudPixel;
 	nri::Pipeline* SurfacePipeline = nullptr;
 	nri::Pipeline* HudPipeline = nullptr;
+	// Of the grass in a frame drawn as ids: its depth pass writes its ids and its sway
+	ref_ps IdPixel;
+	nri::Pipeline* IdPipeline = nullptr;
 };
 
 extern xr_vector<SceneBin> Bins;

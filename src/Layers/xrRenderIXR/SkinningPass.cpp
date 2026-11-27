@@ -214,8 +214,12 @@ void SkinningPass::Mark(CKinematics* Kinematics, const Fmatrix& World)
 	}
 }
 
+// The old pose is the last capture's: the bones' own history steps by the device's frame counter, which the game's
+// next frame advances while this one is drawn
 void SkinningPass::Capture()
 {
+	std::swap(Poses, LastPoses);
+	std::swap(PoseBones, LastBones);
 	Poses.clear();
 	PoseBones.clear();
 	Parents.clear();
@@ -237,13 +241,16 @@ void SkinningPass::Capture()
 		}
 
 		Snapshot(*Kinematics, World);
-		Poses.emplace(Kinematics, Taken{ u32(PoseBones.size()), Kinematics->mOldWorldMartrix });
+		const u16 Count = Kinematics->LL_BoneCount();
+		const auto Last = LastPoses.find(Kinematics);
+		const bool IsLast = Last != LastPoses.end() && Last->second.Count == Count;
+		Poses.emplace(Kinematics, Taken{ u32(PoseBones.size()), IsLast ? Last->second.World : World, World, Count });
 
-		for (u16 Bone = 0; Bone < Kinematics->LL_BoneCount(); ++Bone)
+		for (u16 Bone = 0; Bone < Count; ++Bone)
 		{
-			const CBoneInstance& Instance = Kinematics->LL_GetBoneInstance(Bone);
-			PoseBones.push_back(Instance.mRenderTransform_tmp);
-			PoseBones.push_back(Instance.mRenderTransform_old);
+			const Fmatrix& Now = Kinematics->LL_GetBoneInstance(Bone).mRenderTransform;
+			PoseBones.push_back(Now);
+			PoseBones.push_back(IsLast ? LastBones[Last->second.First + Bone * 2] : Now);
 		}
 	}
 

@@ -30,7 +30,7 @@
 
 cbuffer SceneForwardBlock : register(b8)
 {
-    uint4 forward_draw; // x: where the draw's part of the visible list starts, y: grass: the model's bin
+    uint4 forward_draw; // x: where the draw's part of the visible list starts (grass: the draw, see pull_grass), y: grass: the model's bin
     float4 forward_ambient; // the weather's ambient, as a tree's baked light takes it
     float4 forward_grass; // x: how much a blade's sway adds to its light, y: the light it has at rest
 }
@@ -272,11 +272,20 @@ float4 surface_map(uint tail, uint head, uint info, float2 uv)
 #define SURFACE_ALPHA_GRAD(uv, uv_dx, uv_dy) surface_alpha(uv, uv_dx, uv_dy)
 
 // returns the alpha the depth pass cuts a pixel by: from the alpha array where the material has a slice there, else
-// from its base texture
+// from its base texture. SURFACE_ALPHA_MIP_SCALE: what a mip of the array adds to it, for cuts thinner than a texel
+// of the far mips, which those mips average away
 float surface_alpha(float2 uv, float2 uv_dx, float2 uv_dy)
 {
     [branch] if (surface_material.alpha != SCENE_TEXTURE_ABSENT) {
-        return g_forward_alpha.SampleGrad(smp_base, float3(uv, float(surface_material.alpha)), uv_dx, uv_dy);
+        float alpha = g_forward_alpha.SampleGrad(smp_base, float3(uv, float(surface_material.alpha)), uv_dx, uv_dy);
+#ifdef SURFACE_ALPHA_MIP_SCALE
+        float3 size;
+        g_forward_alpha.GetDimensions(size.x, size.y, size.z);
+        float2 step_x = uv_dx * size.xy;
+        float2 step_y = uv_dy * size.xy;
+        alpha *= 1.0f + max(0.5f * log2(max(dot(step_x, step_x), dot(step_y, step_y))), 0.0f) * SURFACE_ALPHA_MIP_SCALE;
+#endif
+        return alpha;
     }
 
     return sample_map(surface_material.base, surface_material.base_head, surface_material.base_info, uv, uv_dx, uv_dy, 16.0f).a;

@@ -28,9 +28,9 @@ Texture2D s_water_foam : register(t2);
 Texture2D s_water_caustic : register(t3);
 #endif
 
-// What a ray off the water does not find on the screen is looked for in the cube around the eye (s_water_env,
-// s_water_env_dist), where the frame draws one: r4_vslr_enable with the reflections of the world
-#if defined(USE_SSLR_ON_WATER) && defined(USE_OFFSCREEN_REFLECTIONS) && defined(USE_SURFACE_REFLECTIONS) && !defined(WATER_DISTORT)
+// What a ray off the water does not find on the screen is looked for in the cube around the eye (s_mirror_cube,
+// s_mirror_cube_dist, common\mirror_cube.hlsli), where the frame draws one: r_offscreen_reflection_quality low or up
+#if defined(USE_SSLR_ON_WATER) && defined(USE_OFFSCREEN_REFLECTIONS) && !defined(WATER_DISTORT)
 #define WATER_CUBE
 #endif
 
@@ -63,18 +63,11 @@ float3 water_gamma(float3 scene)
 #if defined(USE_SSLR_ON_WATER) && !defined(WATER_DISTORT)
 #define WATER_MIRROR_STEPS 32
 #define WATER_MIRROR_REFINE 4
-#define WATER_CUBE_STEPS 12
-#define WATER_CUBE_GROWTH 1.5f
+
+#include "common\mirror_cube.hlsli"
 
 // What the frame before showed, upscaled, before its bloom and tone curve
 Texture2D s_frame_before : register(t40);
-
-// returns the pixel's share of a step: the same every frame without TAA, a new one each frame with it
-float water_noise(float2 pixel)
-{
-    pixel += m_taa_jitter.z < 0.0f ? 0.0f : 5.588238f * float(uint(m_taa_jitter.w) % 64u);
-    return frac(52.9829189f * frac(dot(pixel, float2(0.06711056f, 0.00583715f))));
-}
 
 // returns where a point in view space is on the screen, .z - how far behind the scene's depth there it lies, .w - one
 // while it is on the screen
@@ -140,87 +133,6 @@ float4 water_mirror(float3 position_world, float3 mirrored_world, float noise)
     return float4(min(s_frame_before.SampleLevel(smp_rtlinear, min(saturate(uv_old) * view_uv_prev.xy, view_uv_prev.zw), 0.0f).rgb, 20.0f), trust);
 }
 
-#ifdef WATER_CUBE
-TextureCube s_water_env : register(t46);
-TextureCube s_water_env_dist : register(t47);
-
-// returns how far the cube around the eye holds a surface in the direction of this point of its space, squared
-float water_cube_reach(float3 point_probe)
-{
-    float reach = s_water_env_dist.SampleLevel(smp_nofilter, point_probe, 0.0f).x;
-    return reach * reach;
-}
-
-// returns what the cube around the eye shows where a ray off the water meets what it holds, .a - how much of the
-// mirror it is, as FastViewReflections of the other frame finds it: the ray is marched against the cube's distances in
-// steps that grow and its crossing is halved four times. The cube's colour is never cleared: where the ray meets
-// nothing, the share falls to the sky by the fog over the farthest distance it passed
-float4 water_cube(float3 position_world, float3 mirrored_world, float noise)
-{
-    float3 origin = mul(m_probe, float4(mul(m_V, float4(position_world, 1.0f)).xyz, 1.0f));
-    float3 along = mul((float3x3)m_probe, mul((float3x3)m_V, mirrored_world));
-    float origin_sq = dot(origin, origin);
-    float range = fog_params.z - sqrt(origin_sq);
-    [branch]
-    if (range <= 0.0f) {
-        return 0.0f;
-    }
-    float scale = range / (pow(WATER_CUBE_GROWTH, float(WATER_CUBE_STEPS)) - 1.0f);
-    float growth = pow(WATER_CUBE_GROWTH, noise);
-    float before = 0.011f;
-    float at = before;
-    float3 found = origin;
-    float found_sq = 0.0f;
-    float farthest = 0.0f;
-    float was = 0.0f;
-    bool is_valid = false;
-    bool is_hit = false;
-    [loop]
-    for (int step_idx = 0; step_idx < WATER_CUBE_STEPS; step_idx++) {
-        float next = 0.011f + scale * (growth - 1.0f);
-        growth *= WATER_CUBE_GROWTH;
-        float3 point_probe = origin + along * next;
-        float reach = water_cube_reach(point_probe);
-        if (reach < origin_sq) {
-            continue;
-        }
-        before = at;
-        at = next;
-        found = point_probe;
-        found_sq = reach;
-        farthest = max(farthest, reach);
-        is_valid = true;
-        float past = dot(found, found) - reach;
-        [branch]
-        if (past > 0.0f && was <= 0.0f) {
-            float3 half_step = along * (at - before) * 0.5f;
-            float3 refined = found - half_step;
-            [unroll]
-            for (int refine_idx = 0; refine_idx < 4; refine_idx++) {
-                float refined_reach = water_cube_reach(refined);
-                half_step *= 0.5f;
-                refined += dot(refined, refined) > refined_reach ? -half_step : half_step;
-            }
-            float refined_sq = water_cube_reach(refined);
-            float refined_dist = sqrt(refined_sq);
-            if (refined_sq >= origin_sq && abs(length(refined) - refined_dist) < 0.25f + 0.02f * refined_dist) {
-                found = refined;
-                found_sq = refined_sq;
-                is_hit = true;
-                break;
-            }
-        }
-        was = past;
-    }
-    [branch]
-    if (!is_valid) {
-        return 0.0f;
-    }
-    float share = is_hit ? 1.0f : 1.0f - saturate(2.5f * sqrt(farthest) * fog_params.w + fog_params.x);
-    float fog = saturate(sqrt(found_sq) * fog_params.w + fog_params.x);
-    return float4(min(s_water_env.SampleLevel(smp_linear, found, 0.0f).rgb, 20.0f), share * (1.0f - fog * fog));
-}
-#endif
 #endif
 
 // returns the vertex riding the wave, laid over the world as the other frame lays water, with the two places it reads
@@ -312,9 +224,10 @@ float4 shade_entry(surface_vertex input, surface_data surface)
     float3 lit = surface.light + water_local(surface.local);
     float3 mirror = surface.mirror;
 #ifdef USE_SSLR_ON_WATER
-    float noise = water_noise(input.position_proj.xy);
+    float noise = mirror_noise(input.position_proj.xy);
 #ifdef WATER_CUBE
-    float4 around = water_cube(input.position_world, surface.reflect, noise);
+    float open;
+    float4 around = mirror_cube(mirror_cube_origin(input.position_world), surface.reflect, noise, 0.0f, open);
     mirror = lerp(mirror, water_gamma(around.rgb), around.a);
 #endif
     float4 seen = water_mirror(input.position_world, surface.reflect, noise);

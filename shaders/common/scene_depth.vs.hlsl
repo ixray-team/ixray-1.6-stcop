@@ -39,7 +39,7 @@ Output main(uint Corner : SV_VertexID, uint Slot : SV_InstanceID)
 
 	SceneVertex V = LoadVertex(C.vertices >> 24, (C.vertices & 0xFFFFFFu) + g_ClusterIndices[C.index_start + Corner]);
 	SceneGrassItem Item = g_Items[Entry.x & (SCENE_GRASS_ITEMS - 1u)];
-	float Scale = Item.scale * float(Entry.x >> 24) * (1.0f / 127.0f);
+	float Scale = Item.scale;
 	uint Variant = Entry.y >> 28;
 	uint Waves = (max(Variant, 1u) - 1u) * 4u;
 
@@ -53,6 +53,7 @@ Output main(uint Corner : SV_VertexID, uint Slot : SV_InstanceID)
 	int2 Q = (asint(uint2(V.UV << 16, V.UV)) >> 16 << 8) | int2((V.TF.xx >> uint2(16, 24)) & 0xFFu);
 	O.uv = float2(Q) * (1.0f / 262144.0f);
 	O.alpha_slice = g_Materials[g_Instances[C.instance].material].alpha;
+	O.fade = float2(GrassEntryFade(Entry.x), GrassPixelOffset(Item.pos, 0u));
 	return O;
 }
 #else

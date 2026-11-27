@@ -42,7 +42,7 @@ class GrassSlotStore
 {
 public:
 	static constexpr u32 Absent = u32(-1);
-	static constexpr u32 Bits = 19; // SCENE_GRASS_STORE_BITS
+	static constexpr u32 Bits = 20; // SCENE_GRASS_STORE_BITS: the most a forward entry names (SCENE_GRASS_ITEMS)
 	static constexpr u32 Capacity = 1u << Bits; // blades
 
 	void Reset()
@@ -55,7 +55,8 @@ public:
 		End = 0;
 	}
 
-	// A place freed by the task before may still be named by the frame that task made: it is free from this one on
+	// A place freed by the task before may still be named by the frame the task before that made, which is drawn
+	// while that task runs: it is free from this one on. A task's own lists never name a place it frees
 	void BeginTask()
 	{
 		for (const Range& Block : Freed)

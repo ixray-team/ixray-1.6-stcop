@@ -89,6 +89,7 @@ void ReserveGrass(GrassSet& Set, u32 Count)
 	const u32 Capacity = std::max(Count, std::max(Set.Capacity * 2, 16384u));
 	ReleaseGrass(Set);
 	Set.Capacity = Capacity;
+	Set.TileFrame = u32(-1);
 
 	RHIBufferDesc Desc = {};
 	Desc.Size = Capacity * GrassItemSize;
@@ -100,7 +101,7 @@ void ReserveGrass(GrassSet& Set, u32 Count)
 	Borrowed.pop_back();
 
 	const nri::BufferUsageBits Storage = nri::BufferUsageBits::SHADER_RESOURCE_STORAGE;
-	Set.Args.Buffer = CreateBuffer(GrassDrawBytes + GrassTileBytes, 0, Storage | nri::BufferUsageBits::ARGUMENT, "Scene grass arguments");
+	Set.Args.Buffer = CreateBuffer(GrassDrawBytes + GrassTileBytes * 2, 0, Storage | nri::BufferUsageBits::ARGUMENT, "Scene grass arguments");
 	Set.Visible.Buffer = CreateBuffer(u64(Capacity) * GrassEntries * 5 * sizeof(u32), 0, Storage | nri::BufferUsageBits::SHADER_RESOURCE, "Scene visible grass");
 
 	nri::BufferViewDesc View = {};
@@ -214,7 +215,7 @@ u32 AddCasterPlanes(Hlsl::float4* Planes, u32 Count, const Fvector& Look)
 }
 } // namespace GpuSceneInternal
 
-bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 BinCount, const CFrustum& Frustum, const DepthDraw& Draw, const GrassRuns* Runs)
+bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 BinCount, const CFrustum& Frustum, const DepthDraw& Draw, float Reach, const GrassRuns* Runs)
 {
 	IRHISurface* Surface = Draw.IsForward ? nullptr : Draw.Target->GetSurface();
 	const u32 Format = Surface ? NriDepthFormat(Surface->GetFormat()) : 0;
@@ -238,7 +239,7 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 		// An entry is as many corners as the largest mesh a view draws: every view draws the whole one of a near blade
 		Most = std::max(Most, std::min(std::max(Item.Triangles, Item.FarTriangles), SCENE_CLUSTER_TRIANGLES));
 
-		Block.bins[Bin] = { Total, Item.Count, Item.Radius, Item.Cluster, (Item.FarTriangles + SCENE_CLUSTER_TRIANGLES - 1) / SCENE_CLUSTER_TRIANGLES, (Item.Triangles + SCENE_CLUSTER_TRIANGLES - 1) / SCENE_CLUSTER_TRIANGLES, Item.Variant, Item.FarTriangles | (Item.Triangles << 16) };
+		Block.bins[Bin] = { Total, Item.Count, Item.Radius, Item.Cluster, (Item.FarTriangles + SCENE_CLUSTER_TRIANGLES - 1) / SCENE_CLUSTER_TRIANGLES, (Item.Triangles + SCENE_CLUSTER_TRIANGLES - 1) / SCENE_CLUSTER_TRIANGLES, Item.Variant | (u32(std::clamp(Item.FarCover, 1.0f / 65535.0f, 1.0f) * 65535.0f) << 16), Item.FarTriangles | (Item.Triangles << 16) };
 		Block.bins[Bin].own_radius = Item.OwnRadius;
 
 		if (const auto Found = GrassDraws.find(Item.Cluster); Found != GrassDraws.end())
@@ -279,7 +280,7 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 			Size *= 2;
 		}
 
-		Block.budget.set(Layers[std::min<u32>(ps_r_culling_quality, 2)], 0.0f, float((HizWidth * 4 + Size - 1) / Size), float((HizHeight * 4 + Size - 1) / Size));
+		Block.budget.set(Layers[std::min<u32>(ps_r_culling_quality, 2)], float(Frame & 1), float((HizWidth * 4 + Size - 1) / Size), float((HizHeight * 4 + Size - 1) / Size));
 	}
 
 
@@ -408,10 +409,12 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 			});
 		}
 
-		if (Runs->Count > GrassRunCapacity)
+		const u32 RunWords = Runs->Count + Runs->GroupCount * 5;
+
+		if (RunWords > GrassRunCapacity)
 		{
 			GRHI->DevicePtr->Flush();
-			GrassRunCapacity = std::max(Runs->Count, std::max(GrassRunCapacity * 2, 65536u));
+			GrassRunCapacity = std::max(RunWords, std::max(GrassRunCapacity * 2, 65536u));
 			GrassRunFrame = u32(-1);
 
 			for (u32 Slot = 0; Slot < FrameCount; ++Slot)
@@ -439,7 +442,9 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 			GrassRunFrame = Frame;
 			GrassRunWords = Runs->Words;
 			const u64 Bytes = u64(Runs->Count) * sizeof(u32);
-			std::memcpy(Api.MapBuffer(*GrassRunBuffers[Frame % FrameCount], 0, Bytes), Runs->Words, Bytes);
+			u8* Mapped = static_cast<u8*>(Api.MapBuffer(*GrassRunBuffers[Frame % FrameCount], 0, u64(RunWords) * sizeof(u32)));
+			std::memcpy(Mapped, Runs->Words, Bytes);
+			std::memcpy(Mapped + Bytes, Runs->Groups, u64(Runs->GroupCount) * 5 * sizeof(u32));
 			Api.UnmapBuffer(*GrassRunBuffers[Frame % FrameCount]);
 		}
 
@@ -470,7 +475,9 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 	Block.counts = { Total, BinCount, Planes, Set.Capacity * GrassEntries };
 	// Every view thins by the main view's eye, so a shadow belongs to a blade that is drawn
 	Block.thin.set(RFrame.vCameraPosition.x, RFrame.vCameraPosition.y, RFrame.vCameraPosition.z, GrassThinStart());
-	Block.lod.set(GrassFarStart(), ps_r2_def_aref_quality / 255.0f, 0.0f, 0.0f);
+	// A shadow map reads a blade at a coarse mip, where a high reference leaves texels at the threshold that flip as it sways
+	Block.lod.set(GrassFarStart(), (Draw.IsForward ? ps_r2_def_aref_quality : std::min(ps_r2_def_aref_quality, 115.0f)) / 255.0f, 0.0f, 0.0f);
+	Block.reach.set(Reach, 1.0f / std::max(Reach * 0.15f, 1.0f), 0.0f, 0.0f);
 	std::memcpy(&Block.wind, &Cmd.Constants.Read<CBDetail>(), sizeof(Block.wind));
 
 	const nri::Format Typed = nri::nriConvertDXGIFormatToNRI(Format);
@@ -488,10 +495,27 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 
 	GRHI->DevicePtr->ReadExternalBuffer(Set.Source);
 
+	// A thread group a group of stored blades, or 64 instances; in rows, past the limit of a dispatch's width
+	const u32 GroupCount = Runs ? Runs->GroupCount : (Total + 63) / 64;
+	const u32 Across = std::clamp(GroupCount, 1u, 4096u);
+	Block.groups = { Runs ? Runs->Count : 0u, Runs ? Runs->GroupCount : 0u, Across, 0u };
+	const nri::DispatchDesc Groups = { Across, (GroupCount + Across - 1) / Across, 1 };
+
 	// One pass: the instances are culled into entries of a visible list, one per cluster, and one draw takes them
 	nri::CommandBuffer& Commands = *BeginNriCommands(nullptr, 0, nullptr, 0, Draw.IsForward ? nullptr : Draw.Target);
 	Move(Commands, Set.Args, nri::AccessBits::COPY_DESTINATION, nri::StageBits::COPY);
-	Api.CmdZeroBuffer(Commands, *Set.Args.Buffer, 0, GrassDrawBytes + GrassTileBytes);
+	// The tiles this frame counts into; both halves when the other is not the frame before's
+	const bool IsBudget = Block.budget.x != 0.0f;
+	const bool IsTileKept = Set.TileFrame + 1 == Frame || Set.TileFrame == Frame;
+	const u64 TileFirst = GrassDrawBytes + (IsTileKept ? (Frame & 1) * GrassTileBytes : 0);
+	Api.CmdZeroBuffer(Commands, *Set.Args.Buffer, 0, GrassDrawBytes);
+
+	if (IsBudget)
+	{
+		Set.TileFrame = Frame;
+		Api.CmdZeroBuffer(Commands, *Set.Args.Buffer, TileFirst, IsTileKept ? GrassTileBytes : GrassTileBytes * 2);
+	}
+
 	Move(Commands, Set.Args, nri::AccessBits::SHADER_RESOURCE_STORAGE, nri::StageBits::COMPUTE_SHADER);
 	Move(Commands, Set.Visible, nri::AccessBits::SHADER_RESOURCE_STORAGE, nri::StageBits::COMPUTE_SHADER);
 
@@ -518,22 +542,28 @@ bool GpuScene::DrawGrass(GfxCmdList& Cmd, u32 Frame, const GrassBin* Bins, u32 B
 	nri::SetDescriptorSetDesc SetDesc = {};
 	SetDesc.descriptorSet = Set.Sets[Frame % FrameCount];
 	Api.CmdSetDescriptorSet(Commands, SetDesc);
-	const nri::DispatchDesc Groups = { ((Runs ? Runs->Count : Total) + 63) / 64, 1, 1 };
 
-	if (Block.budget.x != 0.0f)
+	// The forward list is dense, for an id to name a blade by its place: the blades are culled and counted, the draws
+	// given their places, and the blades the cull marked written
+	for (u32 Pass = Draw.IsForward ? 1 : 3; Pass <= 3; ++Pass)
 	{
-		// The blades of every tile of the screen are counted first: the pass after keeps a tile's share of them
-		Hlsl::SceneGrassView Counting = Block;
-		Counting.budget.y = 1.0f;
-		nri::SetRootDescriptorDesc Count = Root;
-		Count.offset = StreamApi.StreamConstantData(*Streamer, &Counting, sizeof(Counting));
-		Api.CmdSetRootDescriptor(Commands, Count);
-		Api.CmdDispatch(Commands, Groups);
-		Move(Commands, Set.Args, nri::AccessBits::SHADER_RESOURCE_STORAGE, nri::StageBits::COMPUTE_SHADER);
-		Api.CmdSetRootDescriptor(Commands, Root);
-	}
+		if (Draw.IsForward)
+		{
+			Hlsl::SceneGrassView Step = Block;
+			Step.limits.z = Pass;
+			nri::SetRootDescriptorDesc Each = Root;
+			Each.offset = StreamApi.StreamConstantData(*Streamer, &Step, sizeof(Step));
+			Api.CmdSetRootDescriptor(Commands, Each);
+		}
 
-	Api.CmdDispatch(Commands, Groups);
+		Api.CmdDispatch(Commands, Pass == 2 ? nri::DispatchDesc{ 1, 1, 1 } : Groups);
+
+		if (Pass < 3)
+		{
+			Move(Commands, Set.Args, nri::AccessBits::SHADER_RESOURCE_STORAGE, nri::StageBits::COMPUTE_SHADER);
+			Move(Commands, Set.Visible, nri::AccessBits::SHADER_RESOURCE_STORAGE, nri::StageBits::COMPUTE_SHADER);
+		}
+	}
 
 	Move(Commands, Set.Args, nri::AccessBits::ARGUMENT_BUFFER, nri::StageBits::INDIRECT);
 	Move(Commands, Set.Visible, nri::AccessBits::SHADER_RESOURCE, nri::StageBits::VERTEX_SHADER);

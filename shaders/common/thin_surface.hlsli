@@ -34,9 +34,12 @@ struct thin_surface {
     bool grass;
 };
 
-uint thin_pack(float3 normal, float hemi, float roughness, uint id, bool reflects, bool grass)
+// dither: where in its step the normal rounds up, 0.5 to round to the nearest. A flat mirror's normal is one value
+// across it: rounded alike, the whole reflection jumped a step (about two degrees of the mirrored ray) as the eye
+// turned, and a dither per pixel leaves the reflection's neighbours to average it
+uint thin_pack(float3 normal, float hemi, float roughness, uint id, bool reflects, bool grass, float dither)
 {
-    uint2 octahedral = uint2(saturate(NormalEncode(normal) * 0.5f + 0.5f) * 255.0f + 0.5f);
+    uint2 octahedral = uint2(saturate(NormalEncode(normal) * 0.5f + 0.5f) * 255.0f + dither);
     uint packed = octahedral.x | (octahedral.y << 8);
     packed |= uint(saturate(hemi) * 15.0f + 0.5f) << 16;
     packed |= uint(saturate(roughness) * 255.0f + 0.5f) << 20;

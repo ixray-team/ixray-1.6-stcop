@@ -37,17 +37,18 @@
 #include <bit>
 #include "xrRender_console.h"
 
-// r_grass_quality: how far from the eye the grass keeps every blade, and how far it keeps its whole mesh
+// r_grass_quality: how far from the eye the grass keeps every blade, and how far it keeps its whole mesh; extreme
+// both past any r_grass_distance
 inline float GrassThinStart()
 {
-	static constexpr float Starts[] = { 24.0f, 40.0f, 80.0f, 144.0f };
-	return Starts[std::min<u32>(ps_r_grass_quality, 3)];
+	static constexpr float Starts[] = { 24.0f, 40.0f, 80.0f, 144.0f, 4096.0f };
+	return Starts[std::min<u32>(ps_r_grass_quality, 4)];
 }
 
 inline float GrassFarStart()
 {
-	static constexpr float Starts[] = { 20.0f, 32.0f, 56.0f, 80.0f };
-	return Starts[std::min<u32>(ps_r_grass_quality, 3)];
+	static constexpr float Starts[] = { 20.0f, 32.0f, 56.0f, 80.0f, 4096.0f };
+	return Starts[std::min<u32>(ps_r_grass_quality, 4)];
 }
 
 inline float GrassFraction(float Value)
@@ -68,20 +69,6 @@ inline float GrassLot(const Fvector& At)
 inline float GrassKept(float DistanceSqr)
 {
 	return std::clamp(GrassThinStart() * GrassThinStart() / std::max(DistanceSqr, 1e-4f), 1.0f / 16.0f, 1.0f);
-}
-
-// GrassSize of scene_tables.hlsli, with a lot of its own
-inline float GrassThinSize(const Fvector& At, const Fvector& Eye)
-{
-	const float Kept = GrassKept(At.distance_to_sqr(Eye));
-	const float Lot = GrassLot(At);
-
-	if (Lot >= Kept)
-	{
-		return 0.0f;
-	}
-
-	return std::min((Kept - Lot) / (0.25f * Kept), 1.0f) / std::sqrt(std::sqrt(Kept));
 }
 
 // The far mesh rule of scene_grass_cull.cs.hlsl

@@ -129,6 +129,7 @@ static const float PHASE_G1 = 0.8f; // Schlick g (0 isotropic, higher = forward)
 static const float PHASE_G2 = 0.09f; // Schlick g (0 isotropic, higher = forward)
 static const float SCATTER_RATIO = 0.5f; // fraction of extinction that goes to scattering
 static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tinted by fog_color
+static const float EXTINCTION_SCALE = 1.0f / 3.0f; // part of the density that dims light on its way: shafts reach 3x farther, as bright up close
 
  /*
  Made for I-Xray engine by Papa Doenitz, based on original GSC code and Inigo Quilez's article (https://iquilezles.org/articles/fog/).
@@ -194,7 +195,7 @@ static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tint
     float3 sigma_s = sigma_t * SCATTER_RATIO;
     float3 absorbTint = lerp(1.f.xxx, saturate(1.f.xxx - fogTint), ABSORB_TINT_STRENGTH);
     float3 sigma_a = sigma_t * (1.f - SCATTER_RATIO) * absorbTint;
-    float3 sigma_t_rgb = sigma_s + sigma_a;
+    float3 sigma_t_rgb = (sigma_s + sigma_a) * EXTINCTION_SCALE;
 
     float3 sunCol = (Ldynamic_color.rgb); // i wont use gamma here, remove it later
 

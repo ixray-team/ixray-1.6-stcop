@@ -69,11 +69,12 @@ namespace
 		AntiAliasing,
 		Msaa,
 		Upscaler,
-		Dof
+		Dof,
+		Reflection
 	};
 
 	const char* const ReasonNames[] = { "", "st_reason_unavailable", "st_reason_hardware", "st_reason_shading", "st_reason_shadow", "st_reason_occlusion",
-		"st_reason_anti_aliasing", "st_reason_msaa", "st_reason_upscaler", "st_reason_dof" };
+		"st_reason_anti_aliasing", "st_reason_msaa", "st_reason_upscaler", "st_reason_dof", "st_reason_reflection" };
 
 	const char* const ApplyNames[] = { "live", "recompile", "restart", "level" };
 
@@ -82,9 +83,11 @@ namespace
 	xr_token LowHigh[] = { { "low", 0 }, { "high", 1 }, {} };
 	xr_token LowToHigh[] = { { "low", 0 }, { "medium", 1 }, { "high", 2 }, {} };
 	xr_token LowToUltra[] = { { "low", 0 }, { "medium", 1 }, { "high", 2 }, { "ultra", 3 }, {} };
+	xr_token LowToExtreme[] = { { "low", 0 }, { "medium", 1 }, { "high", 2 }, { "ultra", 3 }, { "extreme", 4 }, {} };
 	xr_token OffToUltra[] = { { "off", 0 }, { "low", 1 }, { "medium", 2 }, { "high", 3 }, { "ultra", 4 }, {} };
 	xr_token OffLowHigh[] = { { "off", 0 }, { "low", 1 }, { "high", 2 }, {} };
 	xr_token OffMediumHigh[] = { { "off", 0 }, { "medium", 1 }, { "high", 2 }, {} };
+	xr_token OffToHigh[] = { { "off", 0 }, { "low", 1 }, { "medium", 2 }, { "high", 3 }, {} };
 	xr_token UpscalerTokens[] = { { "linear", 0 }, { "nearest", 1 }, { "dlss", 2 }, { "fsr", 3 }, { "xess", 4 }, {} };
 	xr_token ScaleTokens[] = { { "native", 0 }, { "quality", 1 }, { "balanced", 2 }, { "performance", 3 }, { "ultra_performance", 4 }, {} };
 	xr_token DlssTokens[] = { { "preset_e", 0 }, { "preset_k", 1 }, { "preset_l", 2 }, { "preset_m", 3 }, {} };
@@ -127,16 +130,21 @@ namespace
 		{ "r_shadow_quality", OffToUltra, 3, 0b01111, EApply::Recompile, true },
 		{ "r_pcss", OffOn, 0, All, EApply::Recompile, true },
 		{ "r_volumetric_quality", OffToUltra, 2, All, EApply::Recompile, true },
-		{ "r_occlusion_quality", OffMediumHigh, 1, 0b011, EApply::Recompile, true },
+		{ "r_occlusion_quality", OffToHigh, 2, 0b0111, EApply::Recompile, true },
 		{ "r_screen_space_quality", LowHigh, 0, All, EApply::Restart, true },
-		{ "r_reflection_quality", LowToUltra, 1, 0b0111, EApply::Recompile, true },
+		// low the sky alone; medium the cube around the eye (r_offscreen_reflection_quality); high the screen traced with
+		// the cube behind it; ultra runs as high
+		{ "r_reflection_quality", LowToUltra, 2, 0b0111, EApply::Recompile, true },
+		// The cube around the eye: low 256 pixels a face, its map's levels boxed; medium GGX and a temporal history of
+		// jittered faces; high that at 512
+		{ "r_offscreen_reflection_quality", OffToHigh, 2, All, EApply::Restart, true },
 		{ "r_gi_quality", LowToHigh, 0, 0b001, EApply::Live, true },
 		{ "r_culling_quality", LowHigh, 1, All, EApply::Live, true },
 		{ "r_geometry_quality", LowHigh, 1, 0b10, EApply::Live, true },
 		{ "r_streaming_quality", LowToUltra, 2, All, EApply::Level, true },
 		{ "r_streaming_priority", LowToHigh, 1, 0b010, EApply::Live, true },
 		{ "r_post_processing_quality", OffMediumHigh, 1, 0b011, EApply::Live, true },
-		{ "r_grass_quality", LowToUltra, 2, All, EApply::Live, true },
+		{ "r_grass_quality", LowToExtreme, 2, All, EApply::Live, true },
 		{ "r_distance_quality", LowToUltra, 2, All, EApply::Live, true },
 		{ "r_motion_vectors_quality", LowHigh, 1, All, EApply::Recompile, false },
 		{ "r_wet_surfaces", OffOn, 1, All, EApply::Restart, true },
@@ -150,7 +158,7 @@ namespace
 		{ "r_vignette", OffOn, 0, All, EApply::Live, false },
 		{ "r_aberration", OffOn, 0, All, EApply::Live, false },
 		{ "r_gasmask", OffOn, 0, All, EApply::Live, false },
-		// The renderer's frame on a thread of its own, one frame behind the game: docs/engine/render-thread-plan.md.
+		// The renderer's frame on a thread of its own, one frame behind the game.
 		// Stored and saved; nothing reads it until the plan's stage 6
 		{ "r_render_thread", RenderThreads, 0, All, EApply::Restart, false },
 	};
@@ -363,6 +371,13 @@ namespace
 		if (Get(OcclusionQuality) == 0)
 		{
 			Force(ReflectionQuality, 0, EReason::Occlusion);
+			Force(OffscreenReflectionQuality, 0, EReason::Occlusion);
+		}
+
+		// The cube serves the reflections from medium
+		if (Get(ReflectionQuality) == 0)
+		{
+			Force(OffscreenReflectionQuality, 0, EReason::Reflection);
 		}
 
 		if (Get(ShadowQuality) == 0)
@@ -372,7 +387,7 @@ namespace
 
 		if (Get(ShadingQuality) < 2)
 		{
-			for (const EVideoSetting Setting : { ScreenSpaceQuality, ReflectionQuality, GiQuality, DetailBump })
+			for (const EVideoSetting Setting : { ScreenSpaceQuality, ReflectionQuality, OffscreenReflectionQuality, GiQuality, DetailBump })
 			{
 				Force(Setting, 0, EReason::Shading);
 			}
@@ -474,7 +489,7 @@ namespace
 
 	u64 RestartKey()
 	{
-		u64 Key = Get(ReflectionQuality) >= 2;
+		u64 Key = 0;
 
 		for (u32 Index = 0; Index < SettingCount; ++Index)
 		{

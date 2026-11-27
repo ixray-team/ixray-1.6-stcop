@@ -39,6 +39,8 @@ CBUFFER(CBPost, 7)
 	float4 PostRect;
 	float4 PostUV[3];
 	float4 PostColor[2];
+	float4 gtao_history; // x: the share of the frame before kept, 0 when it holds nothing of this view
+	float4 mirror_history; // x: the share of the cube's history kept, 0 when it holds nothing of where the eye is
 	float gtao_parameters;
 	float puddle_constants;
 	float sharpening_intensity;

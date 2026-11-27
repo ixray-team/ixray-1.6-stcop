@@ -460,11 +460,11 @@ bool GpuScene::MakeCullBlock(R_dsgraph_structure& Graph, const DepthDraw& Draw, 
 	const Fvector& Eye = RFrame.vCameraPosition;
 	Block.detail.set(Eye.x, Eye.y, Eye.z, ps_r_lod_error > 0.0f ? RFrame.mProject._22 * 0.5f * float(DevicePtr->TargetHeight) / ps_r_lod_error : 0.0f);
 
-	// A face of the cube asks for the detail its own 256 pixels show, a quarter turn wide, with r_reflections_lod_error
+	// A face of the cube asks for the detail its own pixels show, a quarter turn wide, with r_reflections_lod_error
 	// times the error the screen is allowed
 	if (Draw.IsFace && ps_r_lod_error > 0.0f)
 	{
-		Block.detail.w = 0.5f * 256.0f / (ps_r_lod_error * ps_r_reflections_lod_error);
+		Block.detail.w = 0.5f * float(RImplementation.Target->rt_Reflection->dwSize) / (ps_r_lod_error * ps_r_reflections_lod_error);
 	}
 
 	if (Draw.HizPart)

@@ -873,10 +873,14 @@ void CRender::RenderForwardLevel(GfxCmdList& Cmd)
 				{
 					return IsIds && Scene.DrawForward(Cmd, Kept, Count + 1, RDepth, false, Part | 1024);
 				};
-				// The grass keeps nothing else: a pixel of it is written many times over
+				// The grass keeps nothing else but its sway: a pixel of it is written many times over. Drawn as ids, its
+				// ids in place of its surfaces
+				const bool IsGrassIds = IsIds && Scene.IsGrassById();
+				IRHIRenderTargetView* const GrassTarget = (IsGrassIds ? Target->rt_Ids : Target->rt_Surface)->pRT;
+				IRHIRenderTargetView* GrassKept[2] = { Count > 2 ? Views[2] : GrassTarget, GrassTarget };
 				const auto DrawGrassKept = [&]
 				{
-					return IsIds && Scene.DrawForward(Cmd, &Target->rt_Surface->pRT, 1, RDepth, false, 4 | 1024);
+					return IsIds && Scene.DrawForward(Cmd, GrassKept, Count > 2 ? 2 : 1, RDepth, false, IsGrassIds ? 4 | 256 : 4 | 1024);
 				};
 				DrawKept(1);
 

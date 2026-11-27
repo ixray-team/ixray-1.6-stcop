@@ -22,8 +22,6 @@
 #define SURFACE_NO_DECALS
 #define SURFACE_NO_DEBUG_VIEW
 #endif
-#include "common\scene_forward.hlsli"
-#include "common\r1_static.hlsli"
 
 // First include of a Surface shader drawn forward. A permutation of it is a FEATURE_SET: what the vertex is, where
 // its baked light comes from and which extras it has. The shader's entries follow, then surface_forward_entry.hlsli
@@ -49,6 +47,14 @@
 #define SurfaceMask_Still 0x400             // A tree that does not sway
 #define SurfaceMask_Bump 0x800              // Normal and material maps: the sun is shaded per pixel by the PBR model
 #define SurfaceMask_Environment 0x1000      // The environment shows where the base texture's alpha is low
+
+// Grass: its blades are thinner than a texel of their far mips, and kept by a cut that grows with the mip
+// (surface_alpha)
+#if SURFACE_VERTEX(FEATURE_SET) == SurfaceVertex_Detail
+#define SURFACE_ALPHA_MIP_SCALE 0.25f
+#endif
+#include "common\scene_forward.hlsli"
+#include "common\r1_static.hlsli"
 
 // The depth pass of a frame that traces reflections or keeps a history writes how its models have moved on the
 // screen
@@ -92,6 +98,9 @@ struct surface_vertex {
 #endif
 #ifdef SURFACE_CLUSTER
     nointerpolation uint material : TEXCOORD12; // of the scene's table; a debug view's tag above DEBUG_TAG_SHIFT
+#if SURFACE_VERTEX(FEATURE_SET) == SurfaceVertex_Detail
+    nointerpolation uint grass_slot : TEXCOORD14; // the blade's place in the forward grass list, for its id
+#endif
 #endif
 #ifdef SURFACE_HUD_RAIN
     float4 drops_basis : TEXCOORD13;        // .xyz - the point on the model as it stands unskinned, .w - how much its normal looks up
@@ -141,7 +150,8 @@ struct surface_data {
     float3 mirrored;                        // the share of light it mirrors: that much less is left to scatter
     float3 f0;                              // reflectance of a PBR surface seen head-on
     float roughness;                        // of a PBR surface
-    float gloss;                            // weight of the highlight of a surface with the old gloss map
+    float metalness;                        // of a PBR surface, -1 for one without its maps
+    float gloss;                           // weight of the highlight of a surface with the old gloss map
     float sky_reach;                        // how much of the sky's light the point has
 };
 
@@ -161,6 +171,10 @@ SamplerComparisonState smp_smap : register(s5);
 #endif
 
 #include "common\surface_light.hlsli"
+
+#ifdef SURFACE_MIRRORS_CUBE
+#include "common\mirror_cube.hlsli"
+#endif
 
 struct light_shading_data {
     float3 color;                           // what reaches the point
@@ -651,7 +665,7 @@ surface_matter default_matter(inout surface_vertex input)
     matter.base = r1_sample_base(input.uv.xy);
 
     [branch] if (surface_material.flags & (SCENE_MATERIAL_VERTEX_LIT | SCENE_MATERIAL_PLACED)) {
-        matter.sky_known = input.tint.g - 1.0f;
+        matter.sky_known = input.tint.g > 0.5f ? max(input.tint.g - 1.0f, 0.0f) : -1.0f;
     } else {
         float4 hemi_map = SURFACE_MAP_AT(s_hemi, smp_rtlinear, input.uv.zw, ddx(input.uv.zw), ddy(input.uv.zw));
 #ifdef USE_SOC_LIGHTING
@@ -670,8 +684,15 @@ surface_matter default_matter(inout surface_vertex input)
     matter.sky_known = 1.0f;
 #else
     matter.base = r1_sample_base(input.uv.xy);
-    // The vertex hands its hemi over where it has one; tint.g is one more than it, so that zero stays "none"
-    matter.sky_known = input.tint.g - 1.0f;
+    // The vertex hands its hemi over where it has one; tint.g is one more than it, so that zero stays "none". The
+    // interpolated one of a hemi of zero falls a bit either side of one, which must not read as "none"
+    matter.sky_known = input.tint.g > 0.5f ? max(input.tint.g - 1.0f, 0.0f) : -1.0f;
+#endif
+#if SURFACE_VERTEX(FEATURE_SET) == SurfaceVertex_Detail && defined(SURFACE_CLUSTER)
+    // HACK: a BC1 blade's holes are black and the filter bleeds them into its edges: the holes' share is divided out
+    [branch] if (surface_material.flags & SCENE_MATERIAL_BASE_BC1) {
+        matter.base.rgb /= max(matter.base.a, 1.0f / 32.0f);
+    }
 #endif
 #if SURFACE_VERTEX(FEATURE_SET) == SurfaceVertex_Detail && defined(USE_SURFACE_HIGH)
     // The rain wets the grass with the ground it stands on, as it wets an old map, by how much of the sky the blade
@@ -718,28 +739,37 @@ surface_matter default_matter(inout surface_vertex input)
     matter.occlusion = occlusion;
 #ifdef SURFACE_WETNESS
     // What the rain reaches is wet before anything lights it or is mirrored in it: darker unless it is a metal,
-    // with the rings and streaks of the rain in its normal. The HUD has its own drops
+    // with the rings and streaks of the rain in its normal
     [branch]
-    if (rain_setup.w > 0.0f && input.position_proj.z >= 0.02f) {
-        // How much of the sky's light the point has: where nothing tells it, the share of the sky's light in the
-        // light of its vertex
-        float sky_reach = matter.sky_known >= 0.0f ? saturate(matter.sky_known) : saturate(dot(input.light.rgb, 1.0f / 3.0f) / max(dot(L_hemi_color.rgb + L_ambient.rgb, 1.0f / 3.0f), 1e-3f));
-        float3 wet_at = surface_world(input.position_world);
-        float rain_reached;
-        float wet = rain_exposure(wet_at, normalize(input.normal), sky_reach, input.position_proj.w, input.position_proj.xy, rain_reached);
+    if (rain_setup.w > 0.0f) {
+        float wet;
         float puddle = 0.0f;
-        matter.wet_normal = normalize(matter.normal + rain_ripples(wet_at, matter.normal) * wet);
+
+        [branch]
+        if (input.position_proj.z < 0.02f) {
+            // The HUD is nowhere in the rain's map: it is as wet as the rain has made the actor's place, on what faces
+            // up. Its rings are its own drops
+            wet = hud_rain.w * saturate(rain_params.x) * saturate(normalize(input.normal).y * 10.0f + 5.5f);
+        } else {
+            // How much of the sky's light the point has: where nothing tells it, the share of the sky's light in the
+            // light of its vertex
+            float sky_reach = matter.sky_known >= 0.0f ? saturate(matter.sky_known) : saturate(dot(input.light.rgb, 1.0f / 3.0f) / max(dot(L_hemi_color.rgb + L_ambient.rgb, 1.0f / 3.0f), 1e-3f));
+            float3 wet_at = surface_world(input.position_world);
+            float rain_reached;
+            wet = rain_exposure(wet_at, normalize(input.normal), sky_reach, input.position_proj.w, input.position_proj.xy, rain_reached);
+            matter.wet_normal = normalize(matter.normal + rain_ripples(wet_at, matter.normal) * wet);
 #ifdef SURFACE_PUDDLES
-        // Water fills the terrain from its low places up as it stays wet, as far as the rain reaches: smooth, dark,
-        // with its own ripples, and no wet ground under it. The layers' weighed heights are in bump.x
-        float3 puddle_normal;
-        float2 puddle_refraction;
-        puddle = GetRainPuddle(wet_at.xz * rain_level.zw - rain_level.xy, mul((float3x3)m_V, input.normal), mul(m_V, float4(wet_at, 1.0f)).xyz, saturate(bump.x), true, puddle_normal, puddle_refraction);
-        puddle *= rain_reached * step(1e-4f, wet);
-        matter.wet_normal = normalize(lerp(matter.wet_normal, mul(puddle_normal, (float3x3)m_V), puddle));
-        matter.base.rgb *= lerp(1.0f, 0.3f * occlusion, puddle);
-        wet *= 1.0f - puddle;
+            // Water fills the terrain from its low places up as it stays wet, as far as the rain reaches: smooth,
+            // dark, with its own ripples, and no wet ground under it. The layers' weighed heights are in bump.x
+            float3 puddle_normal;
+            float2 puddle_refraction;
+            puddle = GetRainPuddle(wet_at.xz * rain_level.zw - rain_level.xy, mul((float3x3)m_V, input.normal), mul(m_V, float4(wet_at, 1.0f)).xyz, saturate(bump.x), true, puddle_normal, puddle_refraction);
+            puddle *= rain_reached * step(1e-4f, wet);
+            matter.wet_normal = normalize(lerp(matter.wet_normal, mul(puddle_normal, (float3x3)m_V), puddle));
+            matter.base.rgb *= lerp(1.0f, 0.3f * occlusion, puddle);
+            wet *= 1.0f - puddle;
 #endif
+        }
 
         if (is_pbr) {
             matter.base.rgb *= lerp(1.0f, lerp(0.66f, 1.0f, metalness), wet);
@@ -812,6 +842,7 @@ surface_data default_lit(surface_vertex input, surface_matter matter)
     surface.mirrored = 0.0f;
     surface.f0 = matter.f0;
     surface.roughness = matter.roughness;
+    surface.metalness = matter.is_pbr ? matter.metalness : -1.0f;
     surface.gloss = matter.gloss;
     surface.sky_reach = 1.0f;
     surface.local = 0.0f;
@@ -1019,6 +1050,9 @@ surface_data default_lit(surface_vertex input, surface_matter matter)
     float facing_eye = saturate(dot(surface.normal, to_eye));
     float narrowing = exp2(-16.0f * mirror_roughness - 1.0f);
     float mirror_occlusion = occlusion;
+    float4 around_eye = 0.0f;
+    float around_eye_reach = 1.0f;
+    float around_eye_open = 0.0f;
 #if defined(USE_SURFACE_REFLECTIONS) && defined(USE_DEPTH_PREPASSED)
     // What the reflection passes traced from the depth pass's word of this pixel: the frame before where the ray
     // hit it, the sky as far as it reaches the point where it did not. The occlusion map of the surface is left
@@ -1030,25 +1064,51 @@ surface_data default_lit(surface_vertex input, surface_matter matter)
     float3 mirrored = reflect(-to_eye, surface.normal);
     float sky_lod = (sky_levels - 1.0f) * mirror_roughness * (1.7f - 0.7f * mirror_roughness);
     float3 sky = lerp(sky_s0.SampleLevel(smp_rtlinear, mirrored, sky_lod).rgb, sky_s1.SampleLevel(smp_rtlinear, mirrored, sky_lod).rgb, L_hemi_color.w) * L_sky_color.rgb;
+#ifdef SURFACE_MIRRORS_CUBE
+    // Glass out of the depth, or any surface where the frame traces no reflections: the reflection passes never trace it.
+    // Glass of the world marches the cube around the eye itself. The HUD, in its own range of depth, stands at the eye: its
+    // clusters keep the world's eye_position, and marched from there its mirror stepped with the texels of the cube's
+    // distances. Any other surface reads the map along its ray, as from the eye: marched a pixel at a time with nothing
+    // to settle it over frames, the camera's sway flipped the march's hits along every edge and the mirrors flickered
+#ifdef SURFACE_GLASS
+    [branch] if (input.position_proj.z >= 0.02f) {
+        around_eye = mirror_cube(mirror_cube_origin(input.position_world), mirrored, mirror_noise(input.position_proj.xy), mirror_roughness * MIRROR_IBL_LAST, around_eye_open);
+    } else
+#endif
+    {
+        around_eye = mirror_cube_at_eye(mirrored, mirror_roughness, around_eye_open);
+    }
+#endif
     sky_reach = saturate(pow(facing_eye + sky_reach, narrowing) - 1.0f + sky_reach) * mirror_occlusion;
 #if defined(USE_SURFACE_OCCLUSION) && defined(USE_DEPTH_PREPASSED)
-    sky_reach *= s_occ.Load(int3(input.position_proj.xy, 0)).x;
+    float occluded = s_occ.Load(int3(input.position_proj.xy, 0)).x;
+    sky_reach *= occluded;
+    // The cube's light is occluded by the screen's occlusion alone, as SpecularOcclusion takes it: what the cube showed
+    // in a corner came in whole. Glass draws no depth and has no occlusion of its own
+    around_eye_reach = saturate(pow(facing_eye + occluded, narrowing) - 1.0f + occluded);
 #endif
 #endif
     // How much of it a surface of this roughness mirrors at this angle, by a fit to the integrated GGX response
     float4 fit = mirror_roughness * float4(-1.0f, -0.0275f, -0.572f, 0.022f) + float4(1.0f, 0.0425f, 1.04f, -0.04f);
     float fit_scale = min(fit.x * fit.x, exp2(-9.28f * saturate(dot(surface.normal, to_eye)))) * fit.x + fit.y;
     float2 response = float2(-1.04f, 1.04f) * fit_scale + fit.zw;
+#ifdef SURFACE_GLASS
+    // Glass mirrors as glass does: by what its maps give it, a sight's lens mirrored half of the sky head-on and hid
+    // what lies behind it
+    mirror_f0 = 0.04f;
+#endif
     // The frame is lit in gamma space, and a share of light is a share of linear light
     surface.mirrored = saturate(mirror_f0 * response.x + response.y);
-#ifdef USE_LEGACY_LIGHT
+#if defined(USE_LEGACY_LIGHT) && !defined(SURFACE_GLASS)
     // A surface with the old gloss map mirrors as the old light model's ambient highlight did: by its gloss, most of
     // it seen head-on and nothing at a graze. The gloss is kept squared
     if (!is_pbr) {
         surface.mirrored = sqrt(surface.gloss) * 0.5f * pow(facing_eye * facing_eye, 16.0f);
     }
 #endif
-    surface.mirror = sky * pow(surface.mirrored, 1.0f / 2.2f) * sky_reach;
+    // What the cube shows is light the scene already has: the sky's reach dims the sky alone
+    // The sky a ray was seen to escape to is dimmed as the cube's light is, by the screen's occlusion alone
+    surface.mirror = lerp(sky * lerp(sky_reach, around_eye_reach, around_eye_open), pow(max(around_eye.rgb, 0.0f), 1.0f / 2.2f) * around_eye_reach, around_eye.a) * pow(surface.mirrored, 1.0f / 2.2f);
     surface.reflect *= 1.0f - surface.sky_reach;
 #endif
 #endif
@@ -1157,6 +1217,14 @@ float4 default_shade(surface_vertex input, surface_data surface)
     float3 color = albedo * lit + surface.specular;
 #ifdef USE_SURFACE_IBL
     color = color * (1.0f - surface.mirrored) + pow(max(surface.mirror, 0.0f), 2.2f);
+#ifdef SURFACE_GLASS
+    // Glass blends by its alpha: what it mirrors lies over what shows through it whole, and only the rest by the alpha.
+    // Blended as one, a lens's mirror came out at a tenth or less of itself
+    float3 mirror_light = pow(max(surface.mirror, 0.0f), 2.2f);
+    float cover = 1.0f - (1.0f - surface.base.a) * (1.0f - dot(surface.mirrored, 1.0f / 3.0f));
+    color = ((color - mirror_light) * surface.base.a + mirror_light) / max(cover, 1e-3f);
+    surface.base.a = cover;
+#endif
 #else
     // With nothing mirrored, a metal shows the light on it instead
     color += surface.reflect * 0.5f * lit;

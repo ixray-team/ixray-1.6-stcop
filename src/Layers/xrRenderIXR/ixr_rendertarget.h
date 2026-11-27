@@ -246,6 +246,7 @@ public:
 	ref_rtc						rt_Reflection;
 	ref_rtc						rt_Reflection_temp;
 	ref_rt						rt_Reflection_forward;
+	ref_rt						rt_Reflection_history;
 	ref_rt						rt_Depth;
 	
 	ref_rt						rt_water_probe_prev;
@@ -316,6 +317,9 @@ public:
 	//GTAO
 	ref_rt						rt_gtao_0;
 	ref_rt						rt_ao_depth;
+	ref_rt						rt_GtaoCurrent;
+	ref_rt						rt_GtaoHistory[2];
+	u32							GtaoFrame = 0;
 
 	//TAA
 	ref_rt					rt_Generic_0_prev; //previous frame for taa
@@ -521,6 +525,8 @@ public:
 	// Levels: how many of the chain; the first alone is what the exposure is measured from
 	void						phase_bloom_downsample(GfxCmdList& Cmd, u32 Levels = 7);
 	void						ResetExposure(GfxCmdList& Cmd);
+	// The passes made by their blenders, which a recompile does not reach, with the settings of now
+	void						RemakeBlenderPasses();
 	void						phase_bloom_upsample(GfxCmdList& Cmd);
 	void						phase_new_luminance(GfxCmdList& Cmd);
 	void CreateDofBlurTargets(GfxCmdList& Cmd);

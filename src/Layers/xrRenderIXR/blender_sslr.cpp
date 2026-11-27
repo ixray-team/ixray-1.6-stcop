@@ -23,7 +23,8 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
-        C.r_dx10Texture("s_env_fwd", r2_RT_env_fwd);
+        C.r_dx10Texture("s_mirror_cube", r2_RT_env_fwd);
+        C.r_dx10Texture("s_mirror_cube_dist", r2_RT_env_temp);
 
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);
@@ -58,15 +59,12 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         break;
     case 2:
-        C.r_Pass("stub_fullscreen_triangle", "combine_vslr", false, false, false);
-
+        // The cube around the eye as the prefiltered octahedral map of what the reflection passes never trace
+        C.r_ComputePass("mirror_ibl");
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);
-
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
-
-
         C.r_End();
         break;
     case 3:
@@ -77,6 +75,16 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         break;
     case 4:
         C.r_ComputePass("sslr_hiz_reduce");
+        C.r_End();
+        break;
+    case 5:
+        // r_offscreen_reflection_quality low: the map's levels boxed down in one pass
+        C.AddDefine("MIRROR_IBL_BOX", "1");
+        C.r_ComputePass("mirror_ibl");
+        C.r_dx10Texture("sky_s0", r2_T_sky0);
+        C.r_dx10Texture("sky_s1", r2_T_sky1);
+        C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
+        C.r_dx10Texture("s_env", r2_RT_env);
         C.r_End();
         break;
     }

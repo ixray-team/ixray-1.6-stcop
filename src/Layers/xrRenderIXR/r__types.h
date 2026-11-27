@@ -39,6 +39,7 @@
 #define		r2_RT_water_probe	"$user$water_probe"
 #define		r2_RT_water_probe_prev	"$user$water_probe_prev"
 #define		r2_RT_env_temp		"$user$env_temp"
+#define		r2_RT_env_history	"$user$env_history"	// the sharpest level of $user$env_fwd, kept between frames
 
 #define		r2_RT_upscaled_depth "$user$upscaled_depth"
 #define r2_RT_dof_scope_mask "$user$dof_scope_mask"
@@ -56,6 +57,9 @@
 #define		r2_RT_sky_behind	"$user$sky_behind"		// the sky and the clouds with nothing in front of them
 #define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
 #define		r2_RT_ao_depth		"$user$ao_depth"		// GTAO view-z with prefiltered MIPs
+#define		r2_RT_gtao_current	"$user$gtao_current"	// GTAO of this frame before its history
+#define		r2_RT_gtao_history0	"$user$gtao_history0"	// GTAO and view-z, written by even frames
+#define		r2_RT_gtao_history1	"$user$gtao_history1"	// the same by odd frames
 #define		r2_RT_sun_contact	"$user$sun_contact"
 
 	#define r2_RT_generic "$user$generic"

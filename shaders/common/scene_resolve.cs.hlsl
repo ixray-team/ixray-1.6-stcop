@@ -292,10 +292,17 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
     float2 at = (float2(pixel) + 0.5f) / size * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f);
     resolve_weights weights = resolve_triangle(clip[0], clip[1], clip[2], at, size);
 
-    // Something drawn after the id pass stands in front: a model, the HUD, the grass. A model has kept its own surface
-    float depth = dot(weights.share, float3(clip[0].z, clip[1].z, clip[2].z)) / dot(weights.share, float3(clip[0].w, clip[1].w, clip[2].w));
+    // Something drawn after the id pass stands in front: a model, the HUD, the grass. A model has kept its own surface.
+    // The rasteriser snaps the corners: where the triangle is seen edge-on its depth differs from this one by a part of
+    // how much it changes a pixel across, far more than the depth's own precision
+    float3 clip_z = float3(clip[0].z, clip[1].z, clip[2].z);
+    float3 clip_w = float3(clip[0].w, clip[1].w, clip[2].w);
+    float3 across = weights.share + weights.share_dx;
+    float3 down = weights.share + weights.share_dy;
+    float depth = dot(weights.share, clip_z) / dot(weights.share, clip_w);
+    float slope = abs(dot(across, clip_z) / dot(across, clip_w) - depth) + abs(dot(down, clip_z) / dot(down, clip_w) - depth);
 
-    if (seen_depth < depth - 2e-6f) {
+    if (seen_depth < depth - 2e-6f - 0.5f * slope) {
         return;
     }
 
@@ -600,7 +607,7 @@ void main(uint3 group_id : SV_GroupID, uint3 inside : SV_GroupThreadID)
 #endif
     // The share of the sky has six bits in the surface and four in the thin target: a pattern settles them
     float pattern = frac(52.9829189f * frac(dot(float2(pixel) + 0.5f, float2(0.06711056f, 0.00583715f))));
-    surface.hemi = hemi + (pattern - 0.5f) / 63.0f;
-    g_surface[pixel] = scene_surface_pack(surface);
-    g_thin[pixel] = thin_pack(normalize(mul((float3x3)m_V, thin_normal)), sky_reach + (pattern - 0.5f) / 15.0f, thin_roughness, 0u, has_bump, false);
+    surface.hemi = hemi;
+    g_surface[pixel] = scene_surface_pack(surface, pattern - 0.5f);
+    g_thin[pixel] = thin_pack(normalize(mul((float3x3)m_V, thin_normal)), sky_reach + (pattern - 0.5f) / 15.0f, thin_roughness, 0u, has_bump, false, pattern);
 }

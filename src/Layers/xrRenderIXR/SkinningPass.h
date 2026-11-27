@@ -94,12 +94,16 @@ private:
 	{
 		u32 First;
 		Fmatrix OldWorld;
+		Fmatrix World;
+		u16 Count;
 	};
 
 	xr_vector<Item> Pending;
 	xr_vector<std::pair<CKinematics*, Fmatrix>> Marked;
 	xr_hash_map<const CKinematics*, Taken> Poses;
 	xr_vector<Fmatrix> PoseBones;
+	xr_hash_map<const CKinematics*, Taken> LastPoses;
+	xr_vector<Fmatrix> LastBones;
 	xr_vector<CKinematics*> Parents;
 	xr_vector<u32> Records;
 	ref_cs Shader;

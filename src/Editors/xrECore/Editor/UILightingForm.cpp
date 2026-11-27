@@ -298,7 +298,7 @@ void UILightingForm::DrawAmbient()
 	const int Mode = Segmented(AmbientOcclusionNames, IM_ARRAYSIZE(AmbientOcclusionNames), Selected);
 	if (Mode >= 0)
 	{
-		VideoSettings::Set(EVideoSetting::OcclusionQuality, u32(Mode));
+		VideoSettings::Set(EVideoSetting::OcclusionQuality, Mode ? 2u : 0u);
 		EContext.UI->RedrawScene();
 	}
 

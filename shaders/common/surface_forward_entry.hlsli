@@ -222,6 +222,8 @@ surface_vertex vs_main(PULL_INPUT)
     output.detail = float4(0.0f, 0.0f, 0.0f, pulled.scatter);
 #endif
     output.material = pulled.material | debug_tag(DrawId, DrawId, VertexId / 3u);
+    output.tint.ba = float2(pulled.offset, pulled.fade);
+    output.grass_slot = pulled.slot;
 #else
     PulledVertex vertex = PullVertex(VertexId);
     detail_instance instance = detail_buffer[DrawId];
@@ -584,6 +586,8 @@ float4 debug_surface(surface_vertex input)
         color = surface.roughness;
     } else if (mode == DebugView_Hemi) {
         color = surface.sky_reach;
+    } else if (mode == DebugView_Metalness) {
+        color = surface.metalness < 0.0f ? float3(0.05f, 0.1f, 0.4f) : (float3)surface.metalness;
     } else if (mode == DebugView_Lmap) {
         color = surface.light * 2.0f;
     } else if (mode == DebugView_Lit) {
@@ -679,10 +683,23 @@ float4 debug_surface(surface_vertex input)
 // mapped where the surface has a normal map, and the roughness. A pass with neither has no pixel stage. The
 // colour is drawn after, where the depth is equal
 struct prepass_output {
-#ifdef SURFACE_KEEPS_ONLY
-    // The grass: its surface is the pass's one target. A pixel of it is written many times over, and each of the
-    // other targets was as many bytes again
+#if defined(SURFACE_KEEPS_ONLY) || defined(SURFACE_WRITES_ID)
+    // The grass: its surface is the pass's one target, or its id where the level is drawn as ids. A pixel of it is
+    // written many times over, and each of the other targets was as many bytes again. Its sway is its own motion,
+    // which the depth cannot tell
+#ifdef SURFACE_WRITES_ID
+#ifdef SURFACE_VELOCITY
+    float2 velocity : SV_Target0;
+    uint id : SV_Target1;
+#else
+    uint id : SV_Target0;
+#endif
+#elif defined(SURFACE_VELOCITY)
+    float2 velocity : SV_Target0;
+    uint2 kept : SV_Target1;
+#else
     uint2 kept : SV_Target0;
+#endif
 #else
 #ifdef SURFACE_CLUSTER
     float4 layer : SV_Target0; // what the shaded overdraw view adds up; the depth pass itself masks the colour out
@@ -705,7 +722,7 @@ struct prepass_output {
 #if defined(USE_R1_ALPHA_TEST) && (!defined(SURFACE_CLUSTER) || defined(USE_COARSE_ALPHA) || defined(SURFACE_CLUSTER_COVERAGE))
     uint coverage : SV_Coverage;
 #endif
-#if !defined(SURFACE_KEEPS_ONLY) && !defined(USE_SURFACE_OCCLUSION_NORMALS) && (!defined(USE_R1_ALPHA_TEST) || defined(SURFACE_CLUSTER))
+#if !defined(SURFACE_KEEPS_ONLY) && !defined(SURFACE_WRITES_ID) && !defined(USE_SURFACE_OCCLUSION_NORMALS) && (!defined(USE_R1_ALPHA_TEST) || defined(SURFACE_CLUSTER))
     uint unused : SV_Target1;
 #endif
 };
@@ -715,16 +732,26 @@ struct prepass_output {
 #if defined(SURFACE_CLUSTER) && !defined(USE_R1_ALPHA_TEST) && !defined(SURFACE_CARD)
 [earlydepthstencil]
 #endif
+#ifdef SURFACE_WRITES_ID
+prepass_output ps_main(surface_vertex input, uint triangle_idx : SV_PrimitiveID)
+#else
 prepass_output ps_main(surface_vertex input)
+#endif
 {
     prepass_output output = (prepass_output)0;
+#if SURFACE_VERTEX(FEATURE_SET) == SurfaceVertex_Detail && defined(SURFACE_CLUSTER) && !defined(USE_DEPTH_PREPASSED)
+    // A blade that thins out, ends or hands over to its far mesh dissolves by a pattern, at the size it has
+    if (!GrassPixelKept(input.tint.a, input.tint.b, input.position_proj.xy, m_taa_jitter.z < 0.0f ? 0.0f : float(uint(m_taa_jitter.w) % 64u))) {
+        discard;
+    }
+#endif
 #ifdef SURFACE_CLUSTER
     surface_material_idx = input.material & DEBUG_MATERIAL_MASK;
-#ifndef SURFACE_KEEPS_ONLY
+#if !defined(SURFACE_KEEPS_ONLY) && !defined(SURFACE_WRITES_ID)
     output.layer = float4(DEBUG_OVERDRAW_STEP, 1.0f);
 #endif
 #endif
-#if defined(SURFACE_VELOCITY) && !defined(SURFACE_KEEPS_ONLY)
+#ifdef SURFACE_VELOCITY
     output.velocity = input.position_now.xy / input.position_now.w - input.position_old.xy / input.position_old.w;
 #endif
 #if defined(USE_R1_ALPHA_TEST) && defined(SURFACE_CLUSTER) && defined(USE_COARSE_ALPHA)
@@ -755,7 +782,9 @@ prepass_output ps_main(surface_vertex input)
         discard;
     }
 #endif
-#ifdef SURFACE_WRITES_SURFACE
+#ifdef SURFACE_WRITES_ID
+    output.id = SCENE_ID_GRASS_BIT | input.grass_slot << SCENE_ID_GRASS_SLOT_SHIFT | triangle_idx;
+#elif defined(SURFACE_WRITES_SURFACE)
     // The frame lights its surfaces in one pass after this one: the pass keeps the surface as its maps and the weather
     // make it, and tells the screen-space passes of it. The HUD keeps none: it is drawn as it was
     float3 flat = input.normal * rsqrt(max(dot(input.normal, input.normal), 1e-8f));
@@ -789,10 +818,9 @@ prepass_output ps_main(surface_vertex input)
 #endif
     // The share of the sky has six bits there: a pattern settles them
     float pattern = frac(52.9829189f * frac(dot(input.position_proj.xy, float2(0.06711056f, 0.00583715f))));
-    kept.hemi += (pattern - 0.5f) / 63.0f;
-    output.kept = input.position_proj.z < 0.02f ? (uint2)0u : scene_surface_pack(kept);
+    output.kept = input.position_proj.z < 0.02f ? (uint2)0u : scene_surface_pack(kept, pattern - 0.5f);
 #if defined(USE_SURFACE_OCCLUSION_NORMALS) && !defined(SURFACE_KEEPS_ONLY)
-    output.thin = thin_pack(normalize(mul((float3x3)m_V, matter.wet_normal)), is_mapped ? sky_reach + (pattern - 0.5f) / 15.0f : 1.0f, thin_roughness, SURFACE_THIN_ID, is_mapped, false);
+    output.thin = thin_pack(normalize(mul((float3x3)m_V, matter.wet_normal)), is_mapped ? sky_reach + (pattern - 0.5f) / 15.0f : 1.0f, thin_roughness, SURFACE_THIN_ID, is_mapped, false, pattern);
 #endif
 #elif defined(USE_SURFACE_OCCLUSION_NORMALS) && ((FEATURE_SET) & SurfaceMask_Bump)
     surface_data surface = fetch_entry(input);
@@ -800,13 +828,13 @@ prepass_output ps_main(surface_vertex input)
 #ifdef USE_SURFACE_IBL
     // The hemi has four bits: a pattern settles them, as the reflection passes average pixels and frames
     float pattern = frac(52.9829189f * frac(dot(input.position_proj.xy, float2(0.06711056f, 0.00583715f))));
-    output.thin = thin_pack(normalize(mul((float3x3)m_V, normal)), surface.sky_reach + (pattern - 0.5f) / 15.0f, surface.roughness, SURFACE_THIN_ID, true, false);
+    output.thin = thin_pack(normalize(mul((float3x3)m_V, normal)), surface.sky_reach + (pattern - 0.5f) / 15.0f, surface.roughness, SURFACE_THIN_ID, true, false, pattern);
 #else
-    output.thin = thin_pack(normalize(mul((float3x3)m_V, normal)), 1.0f, surface.roughness, SURFACE_THIN_ID, false, false);
+    output.thin = thin_pack(normalize(mul((float3x3)m_V, normal)), 1.0f, surface.roughness, SURFACE_THIN_ID, false, false, 0.5f);
 #endif
 #elif defined(USE_SURFACE_OCCLUSION_NORMALS)
     // A surface with no normal map is its vertex normal, and rough
-    output.thin = thin_pack(normalize(mul((float3x3)m_V, input.normal)), 1.0f, 1.0f, SURFACE_THIN_ID, false, false);
+    output.thin = thin_pack(normalize(mul((float3x3)m_V, input.normal)), 1.0f, 1.0f, SURFACE_THIN_ID, false, false, 0.5f);
 #endif
     return output;
 }
@@ -863,6 +891,12 @@ oit_output ps_main(surface_vertex input)
 #endif
 float4 ps_main(surface_vertex input) : SV_Target
 {
+#if SURFACE_VERTEX(FEATURE_SET) == SurfaceVertex_Detail && defined(SURFACE_CLUSTER) && !defined(USE_DEPTH_PREPASSED)
+    // A blade that thins out, ends or hands over to its far mesh dissolves by a pattern, at the size it has
+    if (!GrassPixelKept(input.tint.a, input.tint.b, input.position_proj.xy, m_taa_jitter.z < 0.0f ? 0.0f : float(uint(m_taa_jitter.w) % 64u))) {
+        discard;
+    }
+#endif
 #ifdef SURFACE_HUD_ONLY
     // The frame has lit everything but the HUD from what the depth pass kept of it: the HUD's depth is the nearest
     // fiftieth of the range

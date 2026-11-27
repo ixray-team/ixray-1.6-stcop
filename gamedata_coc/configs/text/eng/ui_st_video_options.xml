@@ -165,6 +165,16 @@
 	<string id="ui_mm_reflection_quality">
 		<text>Reflections</text>
 	</string>
+	<string id="ui_mm_offscreen_reflection_quality">
+		<text>Offscreen reflections</text>
+	</string>
+	<string id="ui_mm_offscreen_reflection_quality_hint">
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) 
+Off - glass and rough surfaces mirror the sky only 
+Low - a cube around the eye, 256 pixels a face 
+Medium - its edges smoothed over frames, blur by roughness as light scatters 
+High - the same, 512 pixels a face</text>
+	</string>
 	<string id="ui_mm_gi_quality">
 		<text>Global illumination</text>
 	</string>
@@ -209,6 +219,9 @@
 	</string>
 	<string id="st_reason_shadow">
 		<text>Needs shadows.</text>
+	</string>
+	<string id="st_reason_reflection">
+		<text>Needs reflections medium or higher.</text>
 	</string>
 	<string id="st_reason_occlusion">
 		<text>Needs ambient occlusion.</text>
@@ -295,13 +308,13 @@
 		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nOff - no sun shafts, no volumetric lamps \nLow - coarse sun shafts, volumetric lamps \nMedium - smoother sun shafts \nHigh - sun shafts scattered in the fog \nUltra - sun shafts in the fog, more samples</text>
 	</string>
 	<string id="ui_mm_occlusion_quality_hint">
-		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nOff - no ambient occlusion \nMedium - darker corners, creases and contact spots \nHigh - not available yet</text>
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nOff - no ambient occlusion \nLow - darker corners, creases and contact spots, may shimmer \nMedium - adds surface detail and smooths the shimmer over frames \nHigh - not available yet</text>
 	</string>
 	<string id="ui_mm_screen_space_quality_hint">
 		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]) \nLow - occlusion and reflections at half size on each axis \nHigh - occlusion and reflections at full resolution</text>
 	</string>
 	<string id="ui_mm_reflection_quality_hint">
-		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nLow - sky and baked surroundings only \nMedium - adds screen-space reflections \nHigh - adds a reflection cube for what is off screen \nUltra - not available yet</text>
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]) \nLow - the sky and baked surroundings \nMedium - adds the reflection cube around the eye (offscreen reflections) \nHigh - adds screen-space reflections, the cube for what leaves the screen</text>
 	</string>
 	<string id="ui_mm_gi_quality_hint">
 		<text>Low - baked lighting only \nMedium - not available yet \nHigh - not available yet</text>
@@ -322,7 +335,7 @@
 		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,110,200,90]low%c[default]) \nOff - no bloom \nMedium - bloom \nHigh - not available yet</text>
 	</string>
 	<string id="ui_mm_grass_quality_hint">
-		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]), CPU (%c[255,230,190,60]medium%c[default]) \nLow - sparse grass, full density up to 24 m \nMedium - denser grass, full density up to 40 m \nHigh - dense grass, full density up to 64 m \nUltra - densest grass, full density up to 96 m</text>
+		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,235,80,60]high%c[default]), CPU (%c[255,230,190,60]medium%c[default]) \nLow - sparse grass, full density up to 24 m \nMedium - denser grass, full density up to 40 m \nHigh - dense grass, full density up to 80 m \nUltra - densest grass, full density up to 144 m \nExtreme - densest grass, full density and full detail to the end of the grass distance</text>
 	</string>
 	<string id="ui_mm_distance_quality_hint">
 		<text>%c[255,150,150,150]Cost:%c[default] GPU (%c[255,230,190,60]medium%c[default]), CPU (%c[255,230,190,60]medium%c[default]) \nLow - 100 m, coarsest distant models \nMedium - 300 m, coarse distant models \nHigh - 500 m, detailed distant models \nUltra - 2000 m, most detailed distant models</text>

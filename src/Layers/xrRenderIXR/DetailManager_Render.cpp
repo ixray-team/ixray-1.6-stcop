@@ -335,7 +335,7 @@ bool CDetailManager::hw_Render_batch(GfxCmdList& Cmd, u32 lod_id, const CFrustum
 			// The model's sphere moved onto its up axis, so that a blade's turn is all the cull needs to place it
 			const Fvector& Middle = Object.bv_sphere.P;
 			const float OwnRadius = Object.bv_sphere.R + std::sqrt(Middle.x * Middle.x + Middle.z * Middle.z) + std::max(-Middle.y, 0.0f);
-			Bins[BinCount++] = { IsStored ? nullptr : Items.data(), Count, std::max(Middle.y, 0.0f) + OwnRadius, OwnRadius, Object.SceneCluster, Object.FarCount / 3, Object.number_indices / 3, Waves[var_id ? var_id - 1 : 1], var_id };
+			Bins[BinCount++] = { IsStored ? nullptr : Items.data(), Count, std::max(Middle.y, 0.0f) + OwnRadius, OwnRadius, Object.SceneCluster, Object.FarCount / 3, Object.number_indices / 3, Waves[var_id ? var_id - 1 : 1], var_id, Object.FarCover };
 		}
 	}
 
@@ -359,8 +359,8 @@ bool CDetailManager::hw_Render_batch(GfxCmdList& Cmd, u32 lod_id, const CFrustum
 		Cmd.Constants.Write<CBDetail>().trample_params.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
 	}
 
-	const GpuScene::GrassRuns Runs = { StoredChunks[render_key].data(), u32(StoredChunks[render_key].size()), &Store };
-	return RImplementation.Scene.DrawGrass(Cmd, RFrame.dwFrame,Bins, BinCount, CullFrustum, Batch, IsStored ? &Runs : nullptr);
+	const GpuScene::GrassRuns Runs = { StoredChunks[render_key].data(), u32(StoredChunks[render_key].size()), &Store, StoredGroups[render_key].data(), u32(StoredGroups[render_key].size() / 5) };
+	return RImplementation.Scene.DrawGrass(Cmd, RFrame.dwFrame, Bins, BinCount, CullFrustum, Batch, Reach, IsStored ? &Runs : nullptr);
 }
 
 void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, const GpuDepthDraw* Batch)

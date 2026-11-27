@@ -42,6 +42,7 @@ surface_data fetch_entry(surface_vertex input)
     surface.f0 = 0.0f;
     surface.roughness = 1.0f;
     surface.gloss = 0.0f;
+    surface.metalness = -1.0f;
     surface.normal = 0.0f;
 #if SURFACE_LIGHT(FEATURE_SET) == SurfaceLight_Environment
     // A card with no side of its own: the sky all around it, the sun as a card turned at random takes it. The frame

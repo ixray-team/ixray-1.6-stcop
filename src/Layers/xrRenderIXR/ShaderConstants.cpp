@@ -37,6 +37,7 @@
 #include "ShaderConstants.h"
 
 #include "xrRender_console.h"
+#include "../../../shaders/common/debug_view.hlsli"
 #include "dxEnvironmentRender.h"
 #include "AmbientCubeLevel.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -200,7 +201,8 @@ void CShaderConstants::UpdateFrame()
 		// its hemi; the forward level frame's hemi is scaled for its own light model
 		const Fvector RainHemi = Env.old_style ? Env.sky_color : Fvector{ Env.hemi_color.x, Env.hemi_color.y, Env.hemi_color.z };
 		const float RainSky = (std::max(RainHemi.x, 0.f) * 0.30f + std::max(RainHemi.y, 0.f) * 0.59f + std::max(RainHemi.z, 0.f) * 0.11f) * ps_r2_sun_lumscale_hemi * 4.f;
-		Frame.hud_rain.set(RFrame.HudRainTime, UseWeaponRainDrops ? RFrame.HudRainAmount : 0.f, RainSky, 0.f);
+		// w: how wet the HUD is, with the drops shown or not
+		Frame.hud_rain.set(RFrame.HudRainTime, UseWeaponRainDrops ? RFrame.HudRainAmount : 0.f, RainSky, RFrame.HudRainAmount);
 	}
 
 	const auto& Hud = RDEVICE.hudViewportData;
@@ -223,7 +225,8 @@ void CShaderConstants::UpdateFrame()
 		RFrame.vCameraDirection.getHP(Heading, Pitch);
 		Frame.m_timearrow2.set(std::sin(PI_MUL_2 * SecFraction), std::cos(PI_MUL_2 * SecFraction), std::sin(Pitch), std::cos(Pitch));
 	}
-	Frame.debug_view.set(float(ps_r_debug_view), 0, 0, 0);
+	// The velocity view is drawn over the frame as it is (phase_post): the surfaces shade as without a view
+	Frame.debug_view.set(ps_r_debug_view == DebugView_Velocity ? 0.0f : float(ps_r_debug_view), 0, 0, 0);
 	Frame.test_exp_to_shaders_2.set(ps_r__test_exp_to_shaders_2, 0, 0, 0);
 	if (g_pGamePersistent)
 	{

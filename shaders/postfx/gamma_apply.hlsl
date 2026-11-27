@@ -16,7 +16,7 @@ float4 ps_main(PSInputFullscreen I) : SV_Target
     }
 
     color = color_params.x * pow(abs(color), color_params.y) + color_params.z;
-    color = saturate(color.xyz * color_grading.xyz);
+    color = saturate(color.xyz * color_grading.xyz + (Hash(float3(I.hpos.xy, frac(timers.x) * 1024.0f)) - 0.5f) / 255.0f);
 
     return float4(color, 1.0f);
 }

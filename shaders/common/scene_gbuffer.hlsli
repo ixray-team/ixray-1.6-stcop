@@ -16,8 +16,9 @@
 // .x: bits 0-23 half the albedo, a gamma value (the base texture times its detail), 24-31 the roughness, or the
 //     gloss of a surface with the old maps
 // .y: bits 0-17 the normal in the world (octahedral, 9 + 9, the first of them plus one: a written pixel is never 0),
-//     18-19 the metalness, 20-25 the share of the sky's light, 26-27 the class, 28-29 SceneSurface_, 30-31 how much of
-//     the sun scatters through the surface
+//     18-21 the metalness in twelfths, dithered, or above 12 how much of the sun scatters through the surface, in
+//     thirds (what scatters is no metal), 22-27 the square root of the share of the sky's light (a linear step rings
+//     in the dark), 28-29 the class, 30-31 SceneSurface_
 #ifndef SCENE_GBUFFER_HLSLI
 #define SCENE_GBUFFER_HLSLI
 
@@ -43,16 +44,21 @@ struct scene_surface {
     float scatter;
 };
 
-uint2 scene_surface_pack(scene_surface surface)
+// dither: the pixel's own offset in -0.5 to 0.5, by which the hemi and the metalness round
+uint2 scene_surface_pack(scene_surface surface, float dither)
 {
     float3 folded = surface.normal / (abs(surface.normal.x) + abs(surface.normal.y) + abs(surface.normal.z));
     float2 wrapped = (1.0f - abs(folded.yx)) * float2(folded.x >= 0.0f ? 1.0f : -1.0f, folded.y >= 0.0f ? 1.0f : -1.0f);
     uint2 code = uint2(saturate((folded.z >= 0.0f ? folded.xy : wrapped) * 0.5f + 0.5f) * 510.0f + 0.5f);
-    uint3 albedo = uint3(saturate(surface.albedo) * 255.0f + 0.5f);
+    uint scatter = uint(saturate(surface.scatter) * 3.0f + 0.5f);
+    uint metal = scatter > 0u ? 0u : min(uint(max(saturate(surface.metalness) * 12.0f + 0.5f + dither, 0.0f)), 12u);
+    // Below a full metal the albedo holds the share that scatters, by the metalness as stored: the colour a metal
+    // mirrors is told back from it exactly
+    uint3 albedo = uint3(saturate(surface.albedo * (metal < 12u ? 1.0f - float(metal) / 12.0f : 1.0f)) * 255.0f + 0.5f);
     uint2 packed;
     packed.x = albedo.x | albedo.y << 8u | albedo.z << 16u | uint(saturate(surface.roughness) * 255.0f + 0.5f) << 24u;
-    packed.y = (code.x + 1u) | code.y << 9u | uint(saturate(surface.metalness) * 3.0f + 0.5f) << 18u | uint(saturate(surface.hemi) * 63.0f + 0.5f) << 20u;
-    packed.y |= surface.material_class << 26u | surface.flags << 28u | uint(saturate(surface.scatter) * 3.0f + 0.5f) << 30u;
+    packed.y = (code.x + 1u) | code.y << 9u | (scatter > 0u ? 12u + scatter : metal) << 18u;
+    packed.y |= uint(saturate(sqrt(saturate(surface.hemi)) + dither / 63.0f) * 63.0f + 0.5f) << 22u | surface.material_class << 28u | surface.flags << 30u;
     return packed;
 }
 
@@ -66,11 +72,13 @@ scene_surface scene_surface_unpack(uint2 packed)
     float under = saturate(-raw.z);
     raw.xy += raw.xy >= 0.0f ? -under : under;
     surface.normal = normalize(raw);
-    surface.metalness = float((packed.y >> 18u) & 3u) * (1.0f / 3.0f);
-    surface.hemi = float((packed.y >> 20u) & 63u) * (1.0f / 63.0f);
-    surface.material_class = (packed.y >> 26u) & 3u;
-    surface.flags = (packed.y >> 28u) & 3u;
-    surface.scatter = float(packed.y >> 30u) * (1.0f / 3.0f);
+    uint metal = (packed.y >> 18u) & 15u;
+    surface.metalness = metal > 12u ? 0.0f : float(metal) * (1.0f / 12.0f);
+    surface.scatter = metal > 12u ? float(metal - 12u) * (1.0f / 3.0f) : 0.0f;
+    surface.hemi = float((packed.y >> 22u) & 63u) * (1.0f / 63.0f);
+    surface.hemi *= surface.hemi;
+    surface.material_class = (packed.y >> 28u) & 3u;
+    surface.flags = packed.y >> 30u;
     return surface;
 }
 

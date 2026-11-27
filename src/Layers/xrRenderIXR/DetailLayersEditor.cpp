@@ -1490,7 +1490,7 @@ static void dv_tab_generic(CDetailManager* D, bool& dirty)
 
 	ImGui::SeparatorText("Detail performance");
 	dgt |= ImGui::SliderFloat("Density", &ps_current_detail_density, 0.15f, 1.0f, "%.2f");
-	ddRadius |= ImGui::SliderInt("Grass radius, m (r_grass_distance)", &ps_r__detail_radius, 50, 500);
+	ddRadius |= ImGui::SliderInt("Grass radius, m (r_grass_distance)", &ps_r__detail_radius, 50, 2000);
 	dgt |= ddRadius;
 
 	if (dgt && D)

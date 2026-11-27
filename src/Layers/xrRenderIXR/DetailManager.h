@@ -78,6 +78,7 @@ public:
 		u32 StoreCount = 0;
 		float StoreKept = 0.0f;
 		u32 StoreShown = 0; // the StoreTask that last showed it
+		u32 StoreWanted = 0; // the blades it last asked the store for
 
 		ICF Slot() : empty(1), type(stReady), DS(nullptr), has_trample(false), trample_tick(0){ vis.clear(); }
 	};
@@ -236,6 +237,7 @@ public:
 	bool							Prepare			();
 	u32								PreparedFrame = u32(-1);
 	bool							IsPrepared = false;
+	float							Reach = 0.0f; // where the frame's grass ends
 	void							hw_Render		(GfxCmdList& Cmd, Fmatrix* CullXform = nullptr, const struct GpuDepthDraw* Batch = nullptr);
 
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
@@ -260,8 +262,20 @@ public:
 	GrassSlotStore					Store;
 	xr_vector<CDetail::SlotItem>	StoreScratch;
 	xr_vector<u32>					StoredChunks[2];
+	xr_vector<u32>					StoredGroups[2]; // GpuScene::GrassRuns::Groups
 	xr_vector<u32>					StoredTotals[2]; // per model and wind variant, the most blades its runs hold
 	xr_vector<u32>					StoreBins;
+	// The slots a task shows, nearest first: whether each keeps its place is settled before any is listed
+	struct ShownSlot
+	{
+		Slot* S;
+		float KeptMost;
+		u32 Wind;
+		u32 Block; // of 4 x 4 slots of the window
+	};
+	xr_vector<ShownSlot>			StoreShownSlots;
+	xr_vector<u32>					StoreBlockSeen;
+	xr_vector<u64>					StoreListOrder;
 	bool							IsStoredResult[2] = {};
 	u32								StoreTask = 0;
 	void							StoreSlot		(Slot& S, float Kept);

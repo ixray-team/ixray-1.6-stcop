@@ -247,7 +247,13 @@ void DrawRecorder::Unlock(u32 Count)
 	}
 
 	VERIFY(Count <= LockCount);
-	Open->Bytes.resize(LockStart + size_t(Count) * VertexStride(LockFormat));
+
+	// A state kept while the lock was open lies past the reserved vertices: shrinking would hand its bytes to the next record
+	if (Open->Bytes.size() == LockStart + size_t(LockCount) * VertexStride(LockFormat))
+	{
+		Open->Bytes.resize(LockStart + size_t(Count) * VertexStride(LockFormat));
+	}
+
 	Open->Commands.push_back({ KindVertices, LockStart, Count, u32(LockFormat), nullptr });
 }
 

@@ -91,6 +91,7 @@ void CDetailManager::cache_Free()
 	for (u32 Key = 0; Key < 2; ++Key)
 	{
 		StoredChunks[Key].clear();
+		StoredGroups[Key].clear();
 		StoredTotals[Key].clear();
 		IsStoredResult[Key] = false;
 	}
@@ -265,12 +266,17 @@ bool CDetailManager::Prepare()
 		// The grass ends where the fog or the far plane hides it when that comes before r_grass_distance: a bound of
 		// what is unpacked and drawn, while the cache keeps the size of the setting
 		const CEnvDescriptorMixer& Env = RFrame.Env();
-		const float Reach = std::min({ dm_fade, Env.fog_distance, EditorMode ? dm_fade : Env.far_plane });
+		Reach = std::min({ dm_fade, Env.fog_distance, EditorMode ? dm_fade : Env.far_plane });
 
+		// The lists are drawn a frame or more after the eye they were made for: wider than the view, so that a turn
+		// does not show the slots they left out
 		Fmatrix mProject, mFullTransform;
-		mProject.build_projection(deg2rad(RFrame.fFOV), RFrame.fASPECT, RFrame.fViewportNear, Reach);
+		mProject.build_projection(deg2rad(std::min(RFrame.fFOV * 1.3f, 150.0f)), RFrame.fASPECT, RFrame.fViewportNear, Reach);
 		mFullTransform.mul(mProject, RFrame.mView);
 		CFrustum View; View.CreateFromMatrix(mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+		// The occlusion buffer's own view: a box past its edge is tested on its border texels, and what stands there hid
+		// the slots a turn brings in
+		CFrustum Seen; Seen.CreateFromMatrix(RFrame.mFullTransform, FRUSTUM_P_LRTB);
 
 		auto UpdateTask = [=, this]()
 			{
@@ -301,7 +307,9 @@ bool CDetailManager::Prepare()
 				const bool IsStored = IsThinned && RImplementation.Scene.HasForwardGrass();
 				xr_vector<u32>& Chunks = StoredChunks[calc_key];
 				xr_vector<u32>& Totals = StoredTotals[calc_key];
+				xr_vector<u32>& Groups = StoredGroups[calc_key];
 				Chunks.clear();
+				Groups.clear();
 				Totals.assign(objects.size() * 3, 0);
 				IsStoredResult[calc_key] = IsStored;
 
@@ -322,6 +330,10 @@ bool CDetailManager::Prepare()
 					float r_ssaCHEAP = 16 * ssa_D;
 
 					bool IsStoreFull = false;
+					u32 Wanted = 0; // the blades of the nearest slot the store had no place for
+					size_t Missed = 0; // its place among the shown
+					xr_vector<ShownSlot>& Shown = StoreShownSlots;
+					Shown.clear();
 
 					// Nearest first: when the store is full, the farthest slots wait
 					for (const u32 index : SlideOrder)
@@ -332,11 +344,20 @@ bool CDetailManager::Prepare()
 						if (MS.empty)
 							continue;
 
+						// The grass around the eye is in the lists whatever the view and the occlusion of the last frame
+						// say: the GPU culls its blades by this frame's
+						constexpr float AllAround = 16.0f;
+						const bool IsAround = cam_pos.distance_to_sqr(MS.vis.sphere.P) < _sqr(MS.vis.sphere.R + AllAround);
+						const auto IsHidden = [&](vis_data& Vis)
+						{
+							u32 SeenMask = 0xff;
+							return !EditorMode && !IsAround && Seen.testSAABB(Vis.sphere.P, Vis.sphere.R, Vis.box.data(), SeenMask) == fcvFully && !HOM.visible(Vis);
+						};
 						u32 mask = 0xff;
-						u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
+						u32 res = IsAround ? u32(fcvFully) : View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
 						if (fcvNone == res)
 							continue;
-						if (!EditorMode && !HOM.visible(MS.vis))
+						if (IsHidden(MS.vis))
 							continue;
 						for (u32 _i = 0; _i < dm_cache_count; _i++)
 						{
@@ -353,7 +374,7 @@ bool CDetailManager::Prepare()
 								if (fcvNone == _res)
 									continue;
 							}
-							if (!EditorMode && !HOM.visible(S->vis))
+							if (IsHidden(S->vis))
 								continue;
 							float dist_sq = cam_pos.distance_to_sqr(S->vis.sphere.P);
 							float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
@@ -377,55 +398,22 @@ bool CDetailManager::Prepare()
 							if (IsStored)
 							{
 								// Stored with room to come nearer; again when it has come nearer than that, or gone far enough to
-								// give most of its place back
+								// give most of its place back. Past a slot the store had no place for, nothing is stored
 								S->StoreShown = StoreTask;
 
-								if (KeptMost > S->StoreKept || KeptMost < S->StoreKept * 0.25f)
+								if (!IsStoreFull && (KeptMost > S->StoreKept || KeptMost < S->StoreKept * 0.25f))
 								{
 									StoreSlot(*S, std::min(KeptMost * 1.5f, 1.0f));
-									IsStoreFull |= S->StoreKept == 0.0f;
-								}
 
-								u32 First = S->StoreFirst;
-
-								for (int sp_id = 0; sp_id < dm_obj_in_slot && S->StoreCount; sp_id++)
-								{
-									const SlotPart& sp = S->G[sp_id];
-
-									for (u32 i = 0; i < 3; ++i)
+									if (S->StoreKept == 0.0f)
 									{
-										const auto& List = sp.items[i];
-										u32 Kept = 0;
-										u32 Stored = 0;
-
-										// In the order of their lot: the blades a slot this far keeps are the first of those it has stored
-										for (; Stored < List.size(); ++Stored)
-										{
-											const float Lot = GrassLot(List[Stored]->pos);
-											if (Lot >= S->StoreKept)
-											{
-												break;
-											}
-
-											Kept += sp.id < objects.size() && Lot < KeptMost;
-										}
-
-										const u32 Key = sp.id * 3 + (ssa_vis_id ? i : 0);
-
-										for (u32 Blade = 0; Blade < Kept; ++Blade)
-										{
-											Chunks.push_back((First + Blade) | (Key << GrassSlotStore::Bits));
-										}
-
-										if (Kept)
-										{
-											Totals[Key] += Kept;
-										}
-
-										First += Stored;
+										IsStoreFull = true;
+										Wanted = S->StoreWanted;
+										Missed = Shown.size();
 									}
 								}
 
+								Shown.push_back({ S, KeptMost, ssa_vis_id, (_mz / 4) * ((dm_slide_window_line + 3) / 4) + _mx / 4 });
 								continue;
 							}
 
@@ -446,17 +434,15 @@ bool CDetailManager::Prepare()
 
 									for (CDetail::SlotItem* Item : items[i])
 									{
-										if (GrassLot(Item->pos) >= KeptMost)
+										const float Lot = GrassLot(Item->pos);
+										if (Lot >= KeptMost)
 										{
 											break;
 										}
 
-										const float Size = IsThinned ? GrassThinSize(Item->pos, cam_pos) : 1.0f;
-
-										if (Size > 0.0f)
+										if (!IsThinned || Lot < GrassKept(Item->pos.distance_to_sqr(cam_pos)))
 										{
 											List.push_back(*Item);
-											List.back().scale *= Size;
 										}
 									}
 								}
@@ -464,7 +450,9 @@ bool CDetailManager::Prepare()
 						}
 					}
 
-					// The slots this task did not show give their place back, and are stored again when shown
+					// The slots this task did not show give their place back, and the farthest it shows as many blades as
+					// the nearest one that found none wants: the store keeps the grass nearest to the eye. Settled before the
+					// slots are listed, so that a frame never names a place given back
 					if (IsStoreFull)
 					{
 						for (Slot& Each : cache_pool)
@@ -474,7 +462,115 @@ bool CDetailManager::Prepare()
 								StoreRelease(Each);
 							}
 						}
+
+						for (size_t Each = Shown.size() - 1; Each > Missed && Wanted; --Each)
+						{
+							Wanted -= std::min(Wanted, Shown[Each].S->StoreCount);
+							StoreRelease(*Shown[Each].S);
+						}
 					}
+
+					Fbox Bounds;
+					Bounds.invalidate();
+					size_t GroupFirst = 0;
+					const auto CloseGroup = [&]()
+					{
+						if (Chunks.size() > GroupFirst)
+						{
+							u32 Record[5];
+							Fsphere Sphere;
+							Bounds.getsphere(Sphere.P, Sphere.R);
+							std::memcpy(Record, &Sphere, sizeof(Sphere));
+							Record[4] = u32(GroupFirst) | (u32(Chunks.size() - GroupFirst - 1) << 24);
+							Groups.insert(Groups.end(), Record, Record + 5);
+						}
+
+						GroupFirst = Chunks.size();
+						Bounds.invalidate();
+					};
+
+					// Listed a block of 4 x 4 slots at a time, where its nearest slot comes: a group of the cull fills with the
+					// blades of neighbouring slots, as far slots have a few each
+					xr_vector<u32>& BlockSeen = StoreBlockSeen;
+					xr_vector<u64>& Order = StoreListOrder;
+					BlockSeen.assign(_sqr((dm_slide_window_line + 3) / 4), u32(-1));
+					Order.clear();
+
+					for (u32 Index = 0; Index < Shown.size(); ++Index)
+					{
+						u32& Seen = BlockSeen[Shown[Index].Block];
+						Seen = std::min(Seen, Index);
+						Order.push_back((u64(Seen) << 32) | Index);
+					}
+
+					std::sort(Order.begin(), Order.end());
+
+					for (size_t Place = 0; Place < Order.size(); ++Place)
+					{
+						const ShownSlot& Each = Shown[u32(Order[Place])];
+
+						if (Place && Order[Place] >> 32 != Order[Place - 1] >> 32)
+						{
+							CloseGroup();
+						}
+
+						Slot* S = Each.S;
+						const float KeptMost = Each.KeptMost;
+						const u32 ssa_vis_id = Each.Wind;
+						u32 First = S->StoreFirst;
+
+						for (int sp_id = 0; sp_id < dm_obj_in_slot && S->StoreCount; sp_id++)
+						{
+							const SlotPart& sp = S->G[sp_id];
+
+							for (u32 i = 0; i < 3; ++i)
+							{
+								const auto& List = sp.items[i];
+								u32 Kept = 0;
+								u32 Stored = 0;
+
+								// In the order of their lot: the blades a slot this far keeps are the first of those it has stored
+								for (; Stored < List.size(); ++Stored)
+								{
+									const float Lot = GrassLot(List[Stored]->pos);
+									if (Lot >= S->StoreKept)
+									{
+										break;
+									}
+
+									Kept += sp.id < objects.size() && Lot < KeptMost;
+								}
+
+								const u32 Key = sp.id * 3 + (ssa_vis_id ? i : 0);
+
+								// The sphere around the root a blade is culled by on the GPU, as GrassBin::Radius
+								const Fsphere& Model = Kept ? objects[sp.id]->bv_sphere : Fsphere{};
+								const float Radius = Model.R + _sqrt(Model.P.x * Model.P.x + Model.P.z * Model.P.z) + std::abs(Model.P.y);
+
+								for (u32 Blade = 0; Blade < Kept; ++Blade)
+								{
+									const CDetail::SlotItem& Item = *List[Blade];
+									Bounds.modify(Fvector(Item.pos).sub(Radius * Item.scale));
+									Bounds.modify(Fvector(Item.pos).add(Radius * Item.scale));
+									Chunks.push_back((First + Blade) | (Key << GrassSlotStore::Bits));
+
+									if (Chunks.size() - GroupFirst == SCENE_GRASS_GROUP)
+									{
+										CloseGroup();
+									}
+								}
+
+								if (Kept)
+								{
+									Totals[Key] += Kept;
+								}
+
+								First += Stored;
+							}
+						}
+					}
+
+					CloseGroup();
 				}
 				if (IsStored)
 				{
@@ -497,16 +593,33 @@ bool CDetailManager::Prepare()
 					}
 
 					size_t Written = 0;
+					size_t Read = 0;
+					size_t GroupsKept = 0;
 
-					for (const u32 Word : Chunks)
+					for (size_t Group = 0; Group < Groups.size(); Group += 5)
 					{
-						if (const u32 Bin = Bins[Word >> GrassSlotStore::Bits]; Bin != GrassSlotStore::Absent)
+						const size_t Start = Written;
+
+						for (const size_t End = Read + (Groups[Group + 4] >> 24) + 1; Read < End; ++Read)
 						{
-							Chunks[Written++] = (Word & (GrassSlotStore::Capacity - 1)) | (Bin << GrassSlotStore::Bits);
+							const u32 Word = Chunks[Read];
+
+							if (const u32 Bin = Bins[Word >> GrassSlotStore::Bits]; Bin != GrassSlotStore::Absent)
+							{
+								Chunks[Written++] = (Word & (GrassSlotStore::Capacity - 1)) | (Bin << GrassSlotStore::Bits);
+							}
+						}
+
+						if (Written > Start)
+						{
+							std::copy_n(Groups.begin() + Group, 4, Groups.begin() + GroupsKept);
+							Groups[GroupsKept + 4] = u32(Start) | (u32(Written - Start - 1) << 24);
+							GroupsKept += 5;
 						}
 					}
 
 					Chunks.resize(Written);
+					Groups.resize(GroupsKept);
 				}
 
 				for (CDetail* D : objects)

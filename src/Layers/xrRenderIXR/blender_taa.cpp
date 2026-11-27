@@ -43,5 +43,12 @@ void CBlender_taa::Compile(CBlender_Compile& C)
             C.r_End();
             break;
         }
+        case 3:
+        {
+            C.r_Pass("stub_fullscreen_triangle", "debug_velocity", false, false, false);
+            C.r_dx10Texture("s_velocity", r2_RT_velocity);
+            C.r_End();
+            break;
+        }
     }
 }

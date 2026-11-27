@@ -55,6 +55,7 @@ enum class EVideoSetting : u32
 	OcclusionQuality,
 	ScreenSpaceQuality,
 	ReflectionQuality,
+	OffscreenReflectionQuality,
 	GiQuality,
 	CullingQuality,
 	GeometryQuality,

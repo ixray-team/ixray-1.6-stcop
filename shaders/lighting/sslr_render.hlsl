@@ -1,9 +1,9 @@
 #include "common\common.hlsli"
 #define IXR_COMPUTE
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	#define USE_VIEW_REFLECTIONS
-#endif
 #include "common\reflections.hlsli"
+#ifdef USE_OFFSCREEN_REFLECTIONS
+#include "common\mirror_cube.hlsli"
+#endif
 #include "common\thin_surface.hlsli"
 #include "common\metalic_roughness_ambient.hlsli"
 #include "common\metalic_roughness_light.hlsli"
@@ -122,14 +122,24 @@ void cs_main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI :
 	// and what reads this target are gamma space
 	Final.xyz = SceneToGamma(Final.xyz);
 	
+	float CubeShare = isHUDRender ? 1.0f : 0.0f;
+	float3 CubeLight = 0.0f;
+	float CubeOpen = 0.0f;
+
 	if(!isHUDRender)
 	{
 #ifdef USE_OFFSCREEN_REFLECTIONS
-		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen
+		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen. It is
+		// marched as the mirrors out of the depth march it (mirror_cube_from), from where the trace left the ray: the
+		// march of its own here ended at every edge it passed behind, read the cube a texel at a time and found its
+		// crossings coarsely, and mirrored edges came out wide, stepped and speckled
 		if(SSLR.w < 1.0f && VslrStart >= 0.0f)
 		{
-			float4 VSLR = FastViewReflections(StartPoint, Reflection.xyz, VslrStart, Jitter.z);
-			Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
+			float CubeHit;
+			float4 Around = mirror_cube_from(mul(m_probe, float4(StartPoint, 1.0f)).xyz, mul((float3x3)m_probe, Reflection), VslrStart, mirror_noise(float2(Pixel)), Roughness * MIRROR_IBL_LAST, CubeOpen, CubeHit);
+			Point.xyz = CubeHit >= 0.0f ? StartPoint + Reflection * CubeHit : Point.xyz;
+			CubeShare = Around.w;
+			CubeLight = Around.xyz;
 		}
 	} 
 	else
@@ -150,7 +160,9 @@ void cs_main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI :
 
 	// The sky irradiance costs four cube taps, only fogged reflections and missed rays without the cube use it
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	bool UseHemi = Fog > 0.0f;
+	bool UseHemi = Fog > 0.0f || (SSLR.w < 1.0f && CubeShare < 1.0f);
+	// The sky the march saw the ray escape to is not dimmed by how much sky the point sees
+	O.Hemi = lerp(O.Hemi, 1.0f, CubeOpen);
 #else
 	bool UseHemi = Fog > 0.0f || SSLR.w < 1.0f;
 #endif
@@ -168,10 +180,13 @@ void cs_main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI :
 		float3 Color = Hemi;
 
 #ifdef USE_OFFSCREEN_REFLECTIONS
+		// The faces hold no sky: a ray the march lost reads, along its own direction, whatever stands near the eye there,
+		// and every window of a far facade copied the same one
 		[branch]
-		if (VslrStart >= 0.0f)
+		if (VslrStart >= 0.0f && CubeShare > 0.0f)
 		{
-			Color = s_env.SampleLevel(smp_linear, mul(m_probe, float4(Point.xyz, 1.0f)), 0.0f);
+			// The cube holds the scene's light, as the frame before does
+			Color = lerp(Hemi, SceneToGamma(CubeLight), CubeShare);
 		}
 #endif
 

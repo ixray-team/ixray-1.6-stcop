@@ -517,7 +517,7 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "ssao_mode", OcclusionMode);
 		GetSafe(*render, "sslr", SSLRWorld);
 		GetSafe(*render, "sslr_water", SSLRWater);
-		VideoSettings::Set(EVideoSetting::OcclusionQuality, OcclusionMode != 0);
+		VideoSettings::Set(EVideoSetting::OcclusionQuality, OcclusionMode ? 2u : 0u);
 		VideoSettings::Set(EVideoSetting::ReflectionQuality, SSLRWorld);
 		VideoSettings::Set(EVideoSetting::WaterReflections, SSLRWater);
 		Hemi = std::clamp(Hemi, 0.f, 1.f);

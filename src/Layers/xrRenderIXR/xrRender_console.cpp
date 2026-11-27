@@ -69,7 +69,7 @@ xr_token qsmapsize_token[] = {
 	{ nullptr, 0   }
 };
 
-u32			ps_r_ssao_mode			=	1;
+u32			ps_r_ssao_mode			=	2;
 
 u32			ps_r_sun_shafts				=	2;
 bool g_SunShaftsAlternative = true;
@@ -100,6 +100,7 @@ u32 ps_r_motion_vectors_quality = 1;
 float ps_r_lambert_factor = 1.0f;
 u32 ps_r_msaa = 0;
 u32 ps_r_reflections_update_rate = 1;
+u32 ps_r_offscreen_reflection_quality = 2;
 float ps_r_reflections_cull_reach = 1.0f;
 float ps_r_reflections_lod_error = 8.0f;
 xr_token reflections_update_rate_token[] = { { "low", 0 }, { "medium", 1 }, { "high", 2 }, { nullptr, 0 } };
@@ -116,10 +117,21 @@ bool ForwardDynamicLight()
 	return ps_r_shading_quality >= 1;
 }
 
-// The old SSAO has no forward version: the forward level frame runs GTAO for either choice
+// r_occlusion_quality: GTAO from low; low takes the normal built from the depth and keeps no history, medium the
+// surfaces' normals at high shading quality and a history of the frames before; high runs as medium
+static u32 OcclusionQuality()
+{
+	return g_ShadingQualityFrame == u32(-1) ? ps_r_ssao_mode : g_OcclusionModeFrame;
+}
+
 bool ForwardOcclusion()
 {
-	return (g_ShadingQualityFrame == u32(-1) ? ps_r_ssao_mode : g_OcclusionModeFrame) != 0;
+	return OcclusionQuality() != 0;
+}
+
+bool ForwardOcclusionHistory()
+{
+	return OcclusionQuality() >= 2;
 }
 
 bool ForwardOcclusionNormals()
@@ -159,7 +171,7 @@ bool ForwardVelocityPass()
 
 u32 ps_r_debug_view = 0;
 xr_token debug_view_token[] = { { "off", 0 }, { "overdraw_raster", 1 }, { "overdraw_shaded", 2 }, { "clusters", 3 }, { "triangles", 4 }, { "instances", 5 }, { "materials", 6 }, { "lights", 7 },
-	{ "base", 8 }, { "normal", 9 }, { "roughness", 10 }, { "hemi", 11 }, { "lmap", 12 }, { "streaming", 13 }, { "lit", 14 }, { "highlight", 15 }, { "mirror", 16 }, { "heightfield", 17 }, { nullptr, 0 } };
+	{ "base", 8 }, { "normal", 9 }, { "roughness", 10 }, { "hemi", 11 }, { "lmap", 12 }, { "streaming", 13 }, { "lit", 14 }, { "highlight", 15 }, { "mirror", 16 }, { "heightfield", 17 }, { "velocity", 18 }, { "metalness", 19 }, { nullptr, 0 } };
 
 u32			ps_r2_aa_type			= 0;			//	=	0;
 
@@ -1074,7 +1086,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
 
 	// IX-Ray
-	CMD4(CCC_DetailRadius, "r_grass_distance", &ps_r__detail_radius, 50, 500);
+	CMD4(CCC_DetailRadius, "r_grass_distance", &ps_r__detail_radius, 50, 2000);
 
 	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_alternative_tree_assets", &ps_r__detail_use_alternative_tree_assets);
 	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_cluster_mix_tree_assets", &ps_r__detail_use_cluster_mix_tree_assets);

@@ -346,8 +346,9 @@ CRenderTarget::CRenderTarget()
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, RDepth->GetSurface()->GetFormat());
 		rt_DofScopeMask.create(r2_RT_dof_scope_mask, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM);
 
-		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), HDR_Format);
-		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), HDR_Format);
+		// Display values from combine_2 on: R11G11B10 keeps five bits of blue there, a step of four 8-bit steps
+		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), ERHI_FORMAT::R10G10B10A2_UNORM);
+		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), ERHI_FORMAT::R10G10B10A2_UNORM);
 
 		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 
@@ -402,6 +403,9 @@ CRenderTarget::CRenderTarget()
 		const u32 GtaoShift = RImplementation.o.GtaoHq ? 0 : 1;
 		rt_gtao_0.create("$user$gtao_0", (s_dwWidth + GtaoShift) >> GtaoShift, (s_dwHeight + GtaoShift) >> GtaoShift, ERHI_FORMAT::R32_UINT); //AO.view-z
 		rt_ao_depth.create(r2_RT_ao_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::R32_FLOAT, 1, CRT::CRTCreationFlags(CRT::USE_UAV_FLAG | CRT::MIPPED_RT_FLAG));
+		rt_GtaoCurrent.create(r2_RT_gtao_current, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM, 1, CRT::USE_UAV_FLAG);
+		rt_GtaoHistory[0].create(r2_RT_gtao_history0, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_FLOAT, 1, CRT::USE_UAV_FLAG);
+		rt_GtaoHistory[1].create(r2_RT_gtao_history1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_FLOAT, 1, CRT::USE_UAV_FLAG);
 	}
 
 	//Puddles
@@ -429,14 +433,22 @@ CRenderTarget::CRenderTarget()
 	{
 		if(RImplementation.o.offscreen_reflecitons)
 		{
-			u32 RefSize = 256;
+			// r_offscreen_reflection_quality high draws the faces at 512
+			u32 RefSize = ps_r_offscreen_reflection_quality >= 3 ? 512 : 256;
 
 			rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R11G11B10_FLOAT); // Color
 			rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16_FLOAT); // Distance2Point
 
 			// Maybe remove rt_Depth? (like LV)
 			rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::D16_UNORM);
-			rt_Reflection_forward.create(r2_RT_env_fwd, RefSize * 2u, RefSize * 2u, ERHI_FORMAT::R8G8B8A8_UNORM_SRGB, 1, CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS);
+			// The cube as the octahedral map the mirrors out of the depth read, a level prefiltered for each roughness
+			rt_Reflection_forward.create(r2_RT_env_fwd, RefSize, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::CRTCreationFlags(CRT::USE_UAV_FLAG | CRT::MIPPED_RT_FLAG));
+
+			// From medium the faces are jittered and the map's sharpest level settles over frames in this
+			if (ps_r_offscreen_reflection_quality >= 2)
+			{
+				rt_Reflection_history.create(r2_RT_env_history, RefSize, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+			}
 
 			rt_water_probe_prev.create(r2_RT_water_probe_prev, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
 			Cmd.ClearTarget(rt_water_probe_prev->pRT);
@@ -455,9 +467,6 @@ CRenderTarget::CRenderTarget()
 				Fvector4 FogPlane = { 2000, 0, 0, 0 };
 				Cmd.ClearTarget(pRT, &FogPlane.x);
 			}
-
-			Fvector4 Reflections = { 0, 0, 0, 0.75f }; // Hack
-			Cmd.ClearTarget(rt_Reflection_forward->pRT, &Reflections.x);
 		}
 
 		CreateEffectSQ<CBlender_sslr>(s_sslr);
@@ -775,7 +784,7 @@ CRenderTarget::CRenderTarget()
 
 	CRT::MarkViewSized = false;
 
-	for (const ref_rt* Fixed : { &rt_LUM_A, &rt_LUM_B, &rt_LUM_C, &rt_LUM_D, &rt_dof_focus, &rt_dof_focus_prev, &rt_Depth, &rt_Reflection_forward })
+	for (const ref_rt* Fixed : { &rt_LUM_A, &rt_LUM_B, &rt_LUM_C, &rt_LUM_D, &rt_dof_focus, &rt_dof_focus_prev, &rt_Depth, &rt_Reflection_forward, &rt_Reflection_history })
 	{
 		if (*Fixed)
 		{
@@ -875,6 +884,17 @@ bool CRenderTarget::need_to_render_sunshafts()
 	}
 
 	return false;
+}
+
+// A camera motion pass left without the models' own velocity gave them the camera's
+void CRenderTarget::RemakeBlenderPasses()
+{
+	CreateEffectSQ<CBlender_gtao>(s_gtao);
+
+	if (s_sslr)
+	{
+		CreateEffectSQ<CBlender_sslr>(s_sslr);
+	}
 }
 
 void CRenderTarget::copy_position()

@@ -100,7 +100,8 @@ nri::Buffer* Tiles = nullptr;
 nri::Descriptor* TileViews[3] = {}; // the counts and the lists as they are written, the lists as they are read
 bool IsTilesNew = true;
 ref_cs TileShaders[2]; // the counts set to none, the tiles listed
-ref_cs ClassShaders[SCENE_SHADE_LISTS - 1];
+ref_cs ClassShaders[SCENE_SHADE_GRASS]; // a class of material each: the lists before the grass's
+ref_cs GrassShader;
 ref_cs LightShader;
 // The sky's colour along each axis (scene_sky_tint), made a frame for the light pass
 ref_cs TintShader;
@@ -110,6 +111,8 @@ bool IsTintNew = true;
 ref_texture Occlusion;
 ref_texture SunMask;
 ref_texture Sky[2];
+// The cube around the eye as the map the mirrors read and its distances, for a frame that traces no reflections
+ref_texture MirrorCube[2];
 
 // A texture by its own view, or by its surface where it has none: one the frame fills
 void ReadTexture(NriBinding* Reads, u32& Count, u32 Slot, CTexture* Texture)
@@ -148,6 +151,8 @@ void CreateResolve()
 		ClassShaders[Class] = DEV->_CreateCS("common\\scene_resolve", Kind);
 	}
 
+	GrassShader = DEV->_CreateCS("common\\scene_resolve_grass");
+
 	LightShader = DEV->_CreateCS("common\\scene_light");
 	TintShader = DEV->_CreateCS("common\\scene_sky_tint");
 	Tint = CreateBuffer(6 * sizeof(Fvector4), sizeof(Fvector4), Usage, "Scene sky tint");
@@ -158,6 +163,8 @@ void CreateResolve()
 	SunMask = DEV->_CreateTexture(r2_sunmask);
 	Sky[0] = DEV->_CreateTexture(r2_T_sky0);
 	Sky[1] = DEV->_CreateTexture(r2_T_sky1);
+	MirrorCube[0] = DEV->_CreateTexture(r2_RT_env_fwd);
+	MirrorCube[1] = DEV->_CreateTexture(r2_RT_env_temp);
 }
 } // namespace
 
@@ -184,7 +191,7 @@ void ReleaseResolve()
 	TileCounts = nullptr;
 	Tiles = nullptr;
 
-	for (ref_cs* Shader : { &TileShaders[0], &TileShaders[1], &ClassShaders[0], &ClassShaders[1], &ClassShaders[2], &ClassShaders[3], &LightShader, &TintShader })
+	for (ref_cs* Shader : { &TileShaders[0], &TileShaders[1], &ClassShaders[0], &ClassShaders[1], &ClassShaders[2], &ClassShaders[3], &GrassShader, &LightShader, &TintShader })
 	{
 		*Shader = nullptr;
 	}
@@ -193,6 +200,8 @@ void ReleaseResolve()
 	SunMask = nullptr;
 	Sky[0] = nullptr;
 	Sky[1] = nullptr;
+	MirrorCube[0] = nullptr;
+	MirrorCube[1] = nullptr;
 }
 } // namespace GpuSceneInternal
 
@@ -203,8 +212,13 @@ bool GpuScene::IsVisibilityFrame() const
 	// only a forward shader has (the lights that reach the pixel, the lightmap, the heightfield): the frame is drawn
 	// forward for them, with the same clusters in the same order
 	const u32 View = ps_r_debug_view;
-	const bool IsShown = View == 0 || (View >= 8 && View <= 11) || (View >= 14 && View <= 16);
+	const bool IsShown = View == 0 || (View >= 8 && View <= 11) || (View >= 14 && View <= 16) || View == DebugView_Velocity || View == DebugView_Metalness;
 	return IsShown && RenderingPath() != 3 && IsForwardBinned() && ForwardOcclusionNormals() && !ps_r_msaa;
+}
+
+bool GpuScene::IsGrassById() const
+{
+	return GrassIndices && RenderingPath() == 2 && IsVisibilityFrame();
 }
 
 void GpuScene::Resolve(GfxCmdList& Cmd, IRHISurface* Ids, IRHISurface* Depth, IRHISurface* Surface, IRHISurface* Thin)
@@ -279,6 +293,37 @@ void GpuScene::Resolve(GfxCmdList& Cmd, IRHISurface* Ids, IRHISurface* Depth, IR
 		CRHIGPUMark Mark(Names[Class], WideNames[Class]);
 		Passes.Dispatch(Cmd, ClassShaders[Class]._get(), Reads, ReadCount, Written, 2, 0, 0, 0, TileCounts, Class * 3 * sizeof(u32));
 	}
+
+	if (!IsGrassById() || GrassForwardFrame != RFrame.dwFrame)
+	{
+		return;
+	}
+
+	// The grass by its ids: the blades and the list of its cull, its bins and its wind as the frame's draws had them
+	Hlsl::SceneGrassShade Shade = {};
+	Shade.wind = GrassForwardBlock.wind;
+	std::copy(GrassForwardBlock.waves, GrassForwardBlock.waves + std::size(Shade.waves), Shade.waves);
+	Shade.shade.set(ps_r__Detail_l_aniso, ps_r__Detail_l_ambient, 0.0f, 0.0f);
+	Shade.counts = { GrassForwardBlock.counts.y * 2, 0, 0, 0 };
+	NriBinding GrassReads[Tables + SCENE_TEXTURE_BUCKETS + 4 + PageSlots];
+	std::copy(Reads, Reads + Tables + SCENE_TEXTURE_BUCKETS, GrassReads);
+	u32 GrassCount = Tables + SCENE_TEXTURE_BUCKETS;
+	GrassReads[GrassCount++] = { 25, nullptr, 0, Grass.Views[0] };
+	GrassReads[GrassCount++] = { 26, nullptr, 0, Grass.Views[3] };
+	GrassReads[GrassCount++] = { 27, nullptr, 0, Passes.StreamRecords(GrassForwardBlock.bins, GrassForwardBlock.counts.y * sizeof(Hlsl::SceneGrassBin), sizeof(Hlsl::SceneGrassBin)) };
+	GrassReads[GrassCount++] = { 28, nullptr, 0, Passes.StreamRecords(&Shade, sizeof(Shade), sizeof(Shade)) };
+
+	// g_Vertices0 is t63, the pages after it count down (vertex.hlsli)
+	for (u32 Page = 0; Page < PageSlots; ++Page)
+	{
+		if (VertexPageViews[Page])
+		{
+			GrassReads[GrassCount++] = { 63 - Page, nullptr, 0, VertexPageViews[Page] };
+		}
+	}
+
+	CRHIGPUMark Mark("ResolveGrass", L"ResolveGrass");
+	Passes.Dispatch(Cmd, GrassShader._get(), GrassReads, GrassCount, Written, 2, 0, 0, 0, TileCounts, SCENE_SHADE_GRASS * 3 * sizeof(u32));
 }
 
 void GpuScene::Light(GfxCmdList& Cmd, IRHISurface* Surface, IRHISurface* Depth, IRHISurface* Thin, IRHISurface* Mirror, IRHISurface* SkyBehind, IRHISurface* Colour)
@@ -287,13 +332,18 @@ void GpuScene::Light(GfxCmdList& Cmd, IRHISurface* Surface, IRHISurface* Depth, 
 	CRenderTarget& Frame = *RImplementation.Target;
 	// The registers of the textures the frame's spots project (surface_light.hlsli)
 	static const u32 ProjectorSlots[8] = { 36, 38, 39, 41, 42, 43, 44, 45 };
-	NriBinding Reads[16 + std::size(ProjectorSlots)] = { { 0, Surface }, { 1, Depth }, { 2, nullptr, 0, TileViews[2] }, { 5, Thin }, { 50, Frame.rt_smap_depth_sun->pSurface }, { 51, Frame.rt_smap_depth_tex },
+	NriBinding Reads[18 + std::size(ProjectorSlots)] = { { 0, Surface }, { 1, Depth }, { 2, nullptr, 0, TileViews[2] }, { 5, Thin }, { 50, Frame.rt_smap_depth_sun->pSurface }, { 51, Frame.rt_smap_depth_tex },
 		{ 56, nullptr, 0, ForwardLightsView() } };
 	u32 ReadCount = 7;
 
 	if (Mirror)
 	{
 		Reads[ReadCount++] = { 8, Mirror };
+	}
+	else if (RImplementation.HasReflectionCube())
+	{
+		ReadTexture(Reads, ReadCount, 46, MirrorCube[0]._get());
+		ReadTexture(Reads, ReadCount, 47, MirrorCube[1]._get());
 	}
 
 	if (Frame.rt_LightTiles)
