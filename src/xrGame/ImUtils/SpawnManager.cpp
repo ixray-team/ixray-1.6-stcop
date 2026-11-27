@@ -304,7 +304,7 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 void SpawnManager_HandleButtonPress(CInifile::Sect* section);
 void SpawnManager_ProcessSections(const Section& sections, size_t& number_imgui);
 Section FilterSectionsWithSearch(const Section& sections, const char* searchBuffer);
-static void RenderBulkSpawn(std::initializer_list<const SectionData*> Groups);
+static void RenderBulkSpawn(const SectionData& Group);
 static void RenderOutfitSections();
 
 void SpawnManagerNotifyHoveredCell(const CUICellItem& Cell)
@@ -727,14 +727,13 @@ void RenderSpawnManagerWindow() {
 		{
 			if (ImGui::BeginTabItem("Inventory Stuff"))
 			{
-				RenderBulkSpawn({&imgui_spawn_manager.ItemsUsedSections, &imgui_spawn_manager.DevicesSections, &imgui_spawn_manager.ItemsSections});
-
 				if (ImGui::BeginTabBar("##TabBarItems_InGameSpawnManager"))
 				{
 					if (ImGui::BeginTabItem("Used"))
 					{
 						size_t number_imgui{};
 						SectionStatistics(imgui_spawn_manager.ItemsUsedSections);
+						RenderBulkSpawn(imgui_spawn_manager.ItemsUsedSections);
 						
 						static string128 searchBuffer = "";
 						ImGui::InputText("Search##Used", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -764,6 +763,7 @@ void RenderSpawnManagerWindow() {
 					{
 						size_t number_imgui{};
 						SectionStatistics(imgui_spawn_manager.DevicesSections);
+						RenderBulkSpawn(imgui_spawn_manager.DevicesSections);
 
 						static string128 searchBuffer = "";
 						ImGui::InputText("Search##Devices", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -793,6 +793,7 @@ void RenderSpawnManagerWindow() {
 					{
 						size_t number_imgui{};
 						SectionStatistics(imgui_spawn_manager.ItemsSections);
+						RenderBulkSpawn(imgui_spawn_manager.ItemsSections);
 
 						static string128 searchBuffer = "";
 						ImGui::InputText("Search##Items", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -925,7 +926,7 @@ void RenderSpawnManagerWindow() {
 
 				ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
 				SectionStatistics(imgui_spawn_manager.WeaponsSections);
-				RenderBulkSpawn({&imgui_spawn_manager.WeaponsSections});
+				RenderBulkSpawn(imgui_spawn_manager.WeaponsSections);
 
 				static string128 weaponSearchBuffer = "";
 				ImGui::InputText("Search##Weapons", weaponSearchBuffer, IM_ARRAYSIZE(weaponSearchBuffer));
@@ -1123,7 +1124,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.AmmoSections);
-				RenderBulkSpawn({&imgui_spawn_manager.AmmoSections});
+				RenderBulkSpawn(imgui_spawn_manager.AmmoSections);
 
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Ammo", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -1153,7 +1154,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.AddonSections);
-				RenderBulkSpawn({&imgui_spawn_manager.AddonSections});
+				RenderBulkSpawn(imgui_spawn_manager.AddonSections);
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Addons", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
@@ -1181,7 +1182,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.ArtefactSections);
-				RenderBulkSpawn({&imgui_spawn_manager.ArtefactSections});
+				RenderBulkSpawn(imgui_spawn_manager.ArtefactSections);
 
 				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Artefacts", searchBuffer, IM_ARRAYSIZE(searchBuffer));
@@ -1411,7 +1412,7 @@ static void RenderOutfitSections()
 {
 	const SectionData& Outfits = imgui_spawn_manager.OutfitSections;
 	SectionStatistics(Outfits);
-	RenderBulkSpawn({&Outfits});
+	RenderBulkSpawn(Outfits);
 
 	static string128 Search = "";
 	ImGui::InputText("Search##Outfits", Search, IM_ARRAYSIZE(Search));
@@ -2100,13 +2101,9 @@ static void ShowSpawnNotification(const char* Message)
 	Player->AddGameNews(News);
 }
 
-static void RenderBulkSpawn(std::initializer_list<const SectionData*> Groups)
+static void RenderBulkSpawn(const SectionData& Group)
 {
-	size_t SectionCount = 0;
-	for (const SectionData* Group : Groups)
-	{
-		SectionCount += Group->BulkSpawn.size();
-	}
+	const size_t SectionCount = Group.BulkSpawn.size();
 
 	string64 Label;
 	xr_sprintf(Label, sizeof(Label), "Spawn all (%zu)", SectionCount);
@@ -2118,12 +2115,9 @@ static void RenderBulkSpawn(std::initializer_list<const SectionData*> Groups)
 	if (Pressed)
 	{
 		const bool OnLevel = SpawnOnLevel();
-		for (const SectionData* Group : Groups)
+		for (CInifile::Sect* Entry : Group.BulkSpawn)
 		{
-			for (CInifile::Sect* Entry : Group->BulkSpawn)
-			{
-				QueueSpawn(*Entry, OnLevel, false, 1);
-			}
+			QueueSpawn(*Entry, OnLevel, false, 1);
 		}
 
 		string64 Message;
