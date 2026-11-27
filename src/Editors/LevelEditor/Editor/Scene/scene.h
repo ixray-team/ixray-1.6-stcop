@@ -94,6 +94,7 @@ protected:
 	SceneToolsMap   m_SceneTools;
 
 	CUndoJournal	UndoJournal;
+	xrCriticalSection UndoLock;
 	u32				ModifyCount = 0;
 
 	TProperties* m_SummaryInfo;

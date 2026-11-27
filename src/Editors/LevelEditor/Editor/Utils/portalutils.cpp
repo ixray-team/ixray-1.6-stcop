@@ -94,6 +94,7 @@ bool CPortalUtils::RemoveDefaultSector()
 {
 	CCustomObject* O=Scene->FindObjectByName(DEFAULT_SECTOR_NAME,OBJCLASS_SECTOR);
 	if (O){
+		LTools->GetProperties()->ClearProperties();
 		Scene->RemoveObject	(O,false,true);
 		xr_delete			(O);
 		Scene->UndoSave		();

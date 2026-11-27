@@ -146,6 +146,7 @@ private:
 
 void EScene::UndoClear()
 {
+	xrCriticalSectionGuard Guard(UndoLock);
 	UndoJournal.Clear();
 }
 
@@ -164,6 +165,7 @@ void EScene::UndoSave()
 		return;
 	}
 
+	xrCriticalSectionGuard Guard(UndoLock);
 	CUndoJournal::State Parts;
 	CaptureUndoState(Parts);
 
@@ -179,6 +181,7 @@ void EScene::UndoSave()
 
 bool EScene::Undo()
 {
+	xrCriticalSectionGuard Guard(UndoLock);
 	CUndoJournal::State Parts;
 	if (!UndoJournal.Undo(Parts))
 	{
@@ -192,6 +195,7 @@ bool EScene::Undo()
 
 bool EScene::Redo()
 {
+	xrCriticalSectionGuard Guard(UndoLock);
 	CUndoJournal::State Parts;
 	if (!UndoJournal.Redo(Parts))
 	{

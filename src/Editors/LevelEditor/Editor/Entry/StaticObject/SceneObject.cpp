@@ -358,18 +358,21 @@ void CSceneObject::OnFrame()
 void CSceneObject::ReferenceChange(PropValue* sender)
 {
 	CSector* OldSector = nullptr;
-	for (auto MeshObJ : m_pReference->m_Meshes)
+	if (m_pReference != nullptr)
 	{
-		OldSector = PortalUtils.FindSector(this, MeshObJ);
+		for (auto MeshObJ : m_pReference->m_Meshes)
+		{
+			OldSector = PortalUtils.FindSector(this, MeshObJ);
 
-		if (OldSector != nullptr)
-			break;
+			if (OldSector != nullptr)
+				break;
+		}
 	}
 
 	Scene->BeforeObjectChange(this);
 	UpdateReference	();
 
-	if (OldSector)
+	if (OldSector != nullptr && m_pReference != nullptr)
 	{
 		for (auto MeshObJ : m_pReference->m_Meshes)
 		{

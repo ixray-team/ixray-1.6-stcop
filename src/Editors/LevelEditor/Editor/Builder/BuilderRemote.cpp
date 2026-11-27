@@ -1128,6 +1128,11 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 		}
 	}
 
+	// Skipped surfaces (occ, breakable, climable) leave unfilled face slots at the tail
+	M.faces.resize(face_it);
+	faces_extra.resize(face_it);
+	M.smgroups.resize(face_it);
+
 	b_mu_collision& Slot = l_mu_collsions.emplace_back();
 	auto& CollisionVerts = Slot.verts;
 	auto& CollisionTris = Slot.faces;
@@ -1136,16 +1141,26 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 		for (auto [face, face_extra] : std::views::zip(M.faces, faces_extra))
 		{
 			str_c cshader_name = nullptr;
-			bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
+			bool IsShared = (bool)(face.flags & b_face_flags::UseSharedMaterial);
 			if (IsShared)
 			{
 				auto MatName = l_materials_shared[face.dwMaterial].Name;
 				cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
-			} else
+			}
+			else
 			{
 				cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
 			}
+
 			Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
+
+			R_ASSERT2(c_sh != nullptr, make_string<const char*>("Compile shader '%s' not found in '%s'", cshader_name, O->m_LibName.c_str()));
+
+			if (c_sh == nullptr)
+			{
+				return -1;
+			}
+
 			if (!c_sh->flags.bCollision)
 			{
 				continue;
