@@ -831,7 +831,7 @@ void RenderSpawnManagerWindow() {
 				{
 					imgui_spawn_manager.SpawnWithLooseAddons = false;
 				}
-				ImGui::SetItemTooltip("Installs the first compatible scope, silencer and grenade launcher on each spawned weapon.");
+				ImGui::SetItemTooltip("Installs the first compatible addon of each type. If the launcher and silencer conflict, installs the launcher.");
 
 				if (ImGui::Checkbox("Spawn with loose addons in inventory", &imgui_spawn_manager.SpawnWithLooseAddons) && imgui_spawn_manager.SpawnWithLooseAddons)
 				{
@@ -1971,6 +1971,14 @@ static SpawnManagerWeaponAddons ReadSpawnManagerWeaponAddons(const char* Section
 	if (LauncherStatus == ALife::eAddonAttachable)
 	{
 		Add(Launcher, Weapon::eWeaponAddonGrenadeLauncher, g_pClsidManager->addon_glaun, g_pClsidManager->mp_addon_glaun);
+	}
+
+	constexpr u8 ConflictingAddons = Weapon::eWeaponAddonSilencer | Weapon::eWeaponAddonGrenadeLauncher;
+	if ((Result.Equipped.Flags & ConflictingAddons) == ConflictingAddons
+		&& READ_IF_EXISTS(pSettings, r_bool, SectionName, "restricted_gl_and_sil", false))
+	{
+		// Attaching a launcher after a silencer replaces the silencer.
+		Result.Equipped.Flags &= ~Weapon::eWeaponAddonSilencer;
 	}
 	return Result;
 }
