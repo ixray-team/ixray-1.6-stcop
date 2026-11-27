@@ -5,6 +5,7 @@ struct vf
 {
     float2 tc0 : TEXCOORD0; // base
     float4 c0 : COLOR0; // color
+    float3 tctexgen : TEXCOORD1; // View-space position for particle passes.
     float4 hpos : SV_POSITION;
     float fog : FOG;
 };
@@ -17,7 +18,8 @@ vf _main(v_model v)
     o.tc0 = v.tc.xy; // copy tc
 
     // calculate fade
-    float3 dir_v = normalize(mul(m_WV, v.P));
+    o.tctexgen = mul(m_WV, v.P).xyz;
+    float3 dir_v = normalize(o.tctexgen);
     float3 norm_v = normalize(mul((float3x3)m_WV, v.N.xyz));
     float fade = 0.9 * abs(dot(dir_v, norm_v));
     o.c0 = fade;

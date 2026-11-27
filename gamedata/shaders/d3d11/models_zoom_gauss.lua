@@ -2,7 +2,7 @@ local tex_env0	= "$user$sky0"
 local tex_env1	= "$user$sky1"
 
 function normal   (shader, t_base, t_second, t_detail)
-	  shader:begin	("model_distort","model_scope_gauss")
+	  shader:begin	("model_scope_lense","model_scope_gauss")
 	  :scope_postprocess(true)
       : fog			(true)
       : zb			(true,false)
