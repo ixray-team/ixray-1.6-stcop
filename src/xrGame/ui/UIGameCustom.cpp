@@ -31,11 +31,6 @@
 
 EGameIDs ParseStringToGameType(const char* str);
 
-bool predicate_sort_stat(const SDrawStaticStruct* s1, const SDrawStaticStruct* s2) 
-{
-	return ( s1->IsActual() > s2->IsActual() );
-}
-
 struct predicate_find_stat 
 {
 	const char*	m_id;
@@ -92,18 +87,20 @@ void CUIGameCustom::OnFrame()
 	xrCriticalSectionGuard guard(ui_lock);
 
 	{
-		st_vec_it it = m_custom_statics.begin();
-		st_vec_it it_e = m_custom_statics.end();
-		for (; it != it_e; ++it)
-			(*it)->Update();
-
-		std::sort(it, it_e, predicate_sort_stat);
-
-
-		while (!m_custom_statics.empty() && !m_custom_statics.back()->IsActual())
+		std::erase_if(m_custom_statics, [](SDrawStaticStruct* Static)
 		{
-			delete_data(m_custom_statics.back());
-			m_custom_statics.pop_back();
+			if (Static->IsActual())
+			{
+				return false;
+			}
+
+			delete_data(Static);
+			return true;
+		});
+
+		for (SDrawStaticStruct* Static : m_custom_statics)
+		{
+			Static->Update();
 		}
 
 		if (g_b_ClearGameCaptions)

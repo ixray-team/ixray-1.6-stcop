@@ -131,7 +131,6 @@ protected:
 	CUICaption*			m_pgameCaptions;
 	CUIXml*				m_msgs_xml;
 	typedef xr_vector<SDrawStaticStruct*>	st_vec;
-	typedef st_vec::iterator				st_vec_it;
 	st_vec									m_custom_statics;
 
 	CUIActorMenu*		m_ActorMenu;
