@@ -47,6 +47,11 @@ public:
 		return Bones.empty();
 	}
 
+	float GearDelay() const
+	{
+		return GearLever.Delay;
+	}
+
 private:
 	enum class EGauge : u8
 	{
@@ -165,9 +170,14 @@ private:
 		float MiddleAngle = 0.f;
 		float RightAngle = -10.f;
 		float Speed = 1.f;
+		// Delay before the gear lever starts moving after a gear change, seconds.
+		float Delay = 0.f;
 		bool Manual = false;
 		float CurrentAngleX = 0.f;
 		float CurrentAngleZ = 0.f;
+		float ChangeTime = -1.f;
+		size_t LastGear = static_cast<size_t>(-1);
+		bool WasSwitching = false;
 	};
 
 	struct SClock

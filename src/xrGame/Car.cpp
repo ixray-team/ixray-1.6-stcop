@@ -231,6 +231,7 @@ CCar::CCar()
 
 	m_transmission_switch_rpm = 0.f;
 	m_transmission_stage = ETransmissionStage::Drive;
+	m_gear_switch_reverse = false;
 	m_transmission_switch_delay = 0.4f;
 	m_transmission_switch_power_factor = 0.5f;
 	m_transmission_switch_volume = 1.f;
@@ -2096,6 +2097,14 @@ void CCar::UpdateDriverHands()
 	Params.CarXform = XFORM();
 	Params.SeatXform.mul_43(XFORM(), m_sits_transforms);
 	Params.SteerAngle = m_steer_angle;
+
+	const float EffectiveSwitchDelay = m_transmission_switch_delay * (m_nitro_engage ? m_nitro_switch_boost : 1.f);
+	Params.TransmissionSwitching = IsTransmissionSwitching();
+	Params.ReverseSwitching = m_gear_switch_reverse;
+	// Keep the hand on the lever through the instrument's start delay as well,
+	// otherwise a gear_delay longer than the switch would release the hand
+	// before the lever has even started moving.
+	Params.TransmissionSwitchEnd = m_transmission_switch_time + EffectiveSwitchDelay + Dashboard.GearDelay();
 	DriverHands.Update(Params);
 }
 
@@ -4857,13 +4866,15 @@ void CCar::PressBreaks()
 void CCar::DriveBack()
 {
 	Clutch();
-	Transmission(0);
+	// Forward to reverse is a normal shift: keep the switch delay so the gear
+	// lever travels through neutral instead of snapping to the reverse gate.
+	Transmission(0, ETransmissionStage::SwitchDown);
 	Drive();
 }
 void CCar::DriveForward()
 {
 	Clutch();
-	if (0 == CurrentTransmission()) Transmission(1);
+	if (0 == CurrentTransmission()) Transmission(1, ETransmissionStage::SwitchUp);
 	Drive();
 }
 void CCar::ReleaseRight()
@@ -4891,7 +4902,7 @@ void CCar::ReleaseForward()
 	if(bkp)
 	{
 		Clutch();
-		Transmission(0);
+		Transmission(0, ETransmissionStage::SwitchDown);
 		Drive();
 	}
 	else
@@ -4911,7 +4922,7 @@ void CCar::ReleaseBack()
 	if(fwp)
 	{
 		Clutch();
-		if (0 == CurrentTransmission()) Transmission(1);
+		if (0 == CurrentTransmission()) Transmission(1, ETransmissionStage::SwitchUp);
 		Drive();
 	}
 	else
@@ -4936,6 +4947,8 @@ void CCar::Transmission(size_t num, ETransmissionStage SwitchRequest)
 	{
 		if (CurrentTransmission() != num)
 		{
+			const bool WasReverse = (CurrentTransmission() == 0);
+			const bool IsReverse = (num == 0);
 
 			m_transmission_sound_played = false;
 			m_transmission_switch_time = Device.fTimeGlobal;
@@ -4955,6 +4968,7 @@ void CCar::Transmission(size_t num, ETransmissionStage SwitchRequest)
 			}
 
 			m_current_transmission_num = num;
+			m_gear_switch_reverse = (WasReverse != IsReverse);
 			m_current_gear_ratio = m_gear_ratious[num][0];
 			Drive();
 

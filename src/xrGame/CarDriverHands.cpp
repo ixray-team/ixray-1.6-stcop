@@ -38,13 +38,15 @@ namespace
 		return Phase;
 	}
 
-	// Finger bend keys accept either the legacy single grip angle or the
-	// "grip, air" pair. The air angle is used while the hand is off the wheel
-	// during a regrip; negative values unbend the finger past the bind pose.
-	void ReadDriverFingerAngles(const CInifile& Ini, const char* Section, const char* Key, float DefaultGrip, float& Grip, float& Air)
+	// Finger bend keys accept the legacy single grip angle, the "grip, air"
+	// pair, or the "grip, air, gear" triple. The gear angle is used by the
+	// right hand on the gear lever; if it is omitted, the grip angle is used.
+	// Negative values unbend the finger past the bind pose.
+	void ReadDriverFingerAngles(const CInifile& Ini, const char* Section, const char* Key, float DefaultGrip, float& Grip, float& Air, float& Gear)
 	{
 		Grip = DefaultGrip;
 		Air = 0.f;
+		Gear = DefaultGrip;
 
 		const char* Value = Ini.read_if_exists<str_c>(Section, Key, nullptr);
 		if (Value == nullptr || Value[0] == '\0')
@@ -54,15 +56,48 @@ namespace
 
 		float ParsedGrip = DefaultGrip;
 		float ParsedAir = 0.f;
-		const int Count = sscanf(Value, "%f , %f", &ParsedGrip, &ParsedAir);
+		float ParsedGear = DefaultGrip;
+		const int Count = sscanf(Value, "%f , %f , %f", &ParsedGrip, &ParsedAir, &ParsedGear);
 		if (Count >= 1)
 		{
 			Grip = ParsedGrip;
+			Gear = ParsedGrip;
 		}
 		if (Count >= 2)
 		{
 			Air = ParsedAir;
 		}
+		if (Count >= 3)
+		{
+			Gear = ParsedGear;
+		}
+	}
+
+	// A hand target is a rigid transform, so the gear transition interpolates
+	// its position and orientation separately. The slerp keeps the wrist from
+	// rolling through an arbitrary intermediate rotation.
+	void BlendHandTargets(const Fmatrix& From, const Fmatrix& To, float T, Fmatrix& Result)
+	{
+		if (T <= 0.f)
+		{
+			Result = From;
+			return;
+		}
+		if (T >= 1.f)
+		{
+			Result = To;
+			return;
+		}
+
+		Fquaternion FromRotation;
+		Fquaternion ToRotation;
+		Fquaternion BlendRotation;
+		FromRotation.set(From);
+		ToRotation.set(To);
+		BlendRotation.slerp(FromRotation, ToRotation, T);
+
+		Result.rotation(BlendRotation);
+		Result.c.lerp(From.c, To.c, T);
 	}
 }
 
@@ -210,6 +245,22 @@ void CCarDriverHands::Load(const SLoadParams& Params, const shared_str& HandsSec
 	SteerBone = WheelBone;
 	ReadConfig(Section);
 
+	GearBone = BI_NONE;
+	if (GearBoneName.size() != 0)
+	{
+		GearBone = CarKinematics->LL_BoneID(GearBoneName.c_str());
+		if (GearBone == BI_NONE || GearBone >= CarKinematics->LL_BoneCount())
+		{
+			// The default bone name is inherited by every car, including models
+			// without a gear lever. Only report explicitly configured names.
+			if (GearDebug || xr_strcmp(GearBoneName.c_str(), "gear") != 0)
+			{
+				Msg("! [%s] driver hands: gear bone not found: %s", Section, GearBoneName.c_str());
+			}
+			GearBone = BI_NONE;
+		}
+	}
+
 	LeftClavicle = HandsKinematics->LL_BoneID("l_clavicle");
 	RightClavicle = HandsKinematics->LL_BoneID("r_clavicle");
 	LeftIK[0] = HandsKinematics->LL_BoneID("l_upperarm");
@@ -274,14 +325,35 @@ void CCarDriverHands::Load(const SLoadParams& Params, const shared_str& HandsSec
 			SteerTwistStart,
 			SteerFactor,
 			SteerFactored ? "" : " (unfactored)");
-		Msg("* [%s] driver hands fingers: thumb=%.1f/%.1f index=%.1f/%.1f middle=%.1f/%.1f ring=%.1f/%.1f pinky=%.1f/%.1f speed=%.1f",
+		Msg("* [%s] driver hands fingers: thumb=%.1f/%.1f/%.1f index=%.1f/%.1f/%.1f middle=%.1f/%.1f/%.1f ring=%.1f/%.1f/%.1f pinky=%.1f/%.1f/%.1f speed=%.1f",
 			Section,
-			FingerAngles[0], FingerAirAngles[0],
-			FingerAngles[1], FingerAirAngles[1],
-			FingerAngles[2], FingerAirAngles[2],
-			FingerAngles[3], FingerAirAngles[3],
-			FingerAngles[4], FingerAirAngles[4],
+			FingerAngles[0], FingerAirAngles[0], FingerGearAngles[0],
+			FingerAngles[1], FingerAirAngles[1], FingerGearAngles[1],
+			FingerAngles[2], FingerAirAngles[2], FingerGearAngles[2],
+			FingerAngles[3], FingerAirAngles[3], FingerGearAngles[3],
+			FingerAngles[4], FingerAirAngles[4], FingerGearAngles[4],
 			FingerSpeed);
+	}
+
+	if (GearDebug)
+	{
+		if (GearBone != BI_NONE)
+		{
+			Msg("* [%s] driver hands gear: bone=%s hand=%s auto=%d offset=(%.3f, %.3f, %.3f) wrist=(%.1f, %.1f, %.1f) speed=%.2f path=(%.3f, %.3f, %.3f) hold=%.2f",
+				Section,
+				GearBoneName.c_str(),
+				GearLeftHand ? "left" : "right",
+				GearAuto ? 1 : 0,
+				GearOffset.x, GearOffset.y, GearOffset.z,
+				GearRotation.x, GearRotation.y, GearRotation.z,
+				GearSpeed,
+				GearPath.x, GearPath.y, GearPath.z,
+				GearHoldExtra);
+		}
+		else
+		{
+			Msg("* [%s] driver hands gear: disabled", Section);
+		}
 	}
 }
 
@@ -297,6 +369,32 @@ void CCarDriverHands::ReadConfig(const char* Section)
 	RightHandRotationExplicit = pSettings->line_exist(Section, "driver_hands_right_hand_rotation");
 	LeftElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_left_elbow", Fvector().set(-0.15f, -0.35f, -0.10f));
 	RightElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_right_elbow", Fvector().set(0.15f, -0.35f, -0.10f));
+
+	// Optional gear shift. The bone belongs to the car visual; the offset
+	// positions the wrist in that bone's local space. GearRotation is a wrist
+	// offset in the selected gear hand's local frame. GearLeftHand selects the
+	// side; GearAuto limits the hand to forward <-> reverse shifts.
+	GearLeftHand = pSettings->read_if_exists<bool>(Section, "driver_hands_gear_left_hand", false);
+	GearAuto = pSettings->read_if_exists<bool>(Section, "driver_hands_gear_auto", false);
+	GearBoneName = pSettings->read_if_exists<str_c>(Section, "driver_hands_gear_bone", "");
+	GearOffset = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_gear_offset", Fvector().set(0.f, 0.f, 0.f));
+	GearRotation = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_gear_rotation", Fvector().set(0.f, 0.f, 0.f));
+	if (GearLeftHand)
+	{
+		GearElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_gear_left_elbow", LeftElbow);
+	}
+	else
+	{
+		// driver_hands_gear_elbow is the legacy right-hand name.
+		const Fvector3 LegacyElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_gear_elbow", RightElbow);
+		GearElbow = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_gear_right_elbow", LegacyElbow);
+	}
+	GearSpeed = pSettings->read_if_exists<float>(Section, "driver_hands_gear_speed", 8.f);
+	clamp(GearSpeed, 0.1f, 20.f);
+	GearPath = pSettings->read_if_exists<Fvector3>(Section, "driver_hands_gear_path", Fvector().set(0.f, 0.05f, 0.f));
+	GearHoldExtra = pSettings->read_if_exists<float>(Section, "driver_hands_gear_hold_extra", 0.f);
+	clamp(GearHoldExtra, 0.f, 2.f);
+	GearDebug = pSettings->read_if_exists<bool>(Section, "driver_hands_gear_debug", false);
 	Scale = pSettings->read_if_exists<float>(Section, "driver_hands_scale", 1.f);
 	clamp(Scale, 0.05f, 10.f);
 	ShoulderWidth = pSettings->read_if_exists<float>(Section, "driver_hands_shoulder_width", -1.f);
@@ -348,16 +446,17 @@ void CCarDriverHands::ReadConfig(const char* Section)
 	RightSteerTwistAxis.normalize();
 
 	const float FingerOthers = pSettings->read_if_exists<float>(Section, "driver_hands_finger_others", 35.f);
-	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_thumb", 30.f, FingerAngles[0], FingerAirAngles[0]);
-	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_index", 40.f, FingerAngles[1], FingerAirAngles[1]);
-	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_middle", 35.f, FingerAngles[2], FingerAirAngles[2]);
-	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_ring", FingerOthers, FingerAngles[3], FingerAirAngles[3]);
-	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_pinky", FingerOthers, FingerAngles[4], FingerAirAngles[4]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_thumb", 30.f, FingerAngles[0], FingerAirAngles[0], FingerGearAngles[0]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_index", 40.f, FingerAngles[1], FingerAirAngles[1], FingerGearAngles[1]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_middle", 35.f, FingerAngles[2], FingerAirAngles[2], FingerGearAngles[2]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_ring", FingerOthers, FingerAngles[3], FingerAirAngles[3], FingerGearAngles[3]);
+	ReadDriverFingerAngles(*pSettings, Section, "driver_hands_finger_pinky", FingerOthers, FingerAngles[4], FingerAirAngles[4], FingerGearAngles[4]);
 
 	for (u8 Group = 0; Group < FingerGroupCount; ++Group)
 	{
 		clamp(FingerAngles[Group], -90.f, 90.f);
 		clamp(FingerAirAngles[Group], -90.f, 90.f);
+		clamp(FingerGearAngles[Group], -90.f, 90.f);
 	}
 
 	FingerSpeed = pSettings->read_if_exists<float>(Section, "driver_hands_finger_speed", 12.f);
@@ -447,6 +546,13 @@ void CCarDriverHands::ResetStates()
 	ActiveSign = 0;
 	DebugHand = HandNone;
 	Progress = 0.f;
+	GearActive = false;
+	GearReturning = false;
+	GearStartPending = false;
+	GearBlend = 0.f;
+	GearStartLocal.identity();
+	LastGearLocal.identity();
+	HasLastGearLocal = false;
 
 	for (auto& Hand : FingerState)
 	{
@@ -472,6 +578,8 @@ void CCarDriverHands::Destroy()
 	BindRenderPose.clear();
 	FingerBoneAxis.clear();
 	SteerBone = BI_NONE;
+	GearBone = BI_NONE;
+	GearBoneName = shared_str();
 	LeftClavicle = BI_NONE;
 	RightClavicle = BI_NONE;
 	for (u16& Bone : LeftIK)
@@ -501,16 +609,21 @@ void CCarDriverHands::Hide()
 void CCarDriverHands::UpdateFingerStates(float Dt)
 {
 	const float Alpha = (FingerSpeed > 0.f) ? (1.f - expf(-FingerSpeed * Dt)) : 1.f;
+	const u8 GearHandIndex = GearLeftHand ? u8(HandLeft - 1) : u8(HandRight - 1);
 	for (u8 Hand = 0; Hand < 2; ++Hand)
 	{
 		const bool Active = (ActiveHand == u8(Hand + 1));
-		// On the rim the finger uses its grip angle; while the regripping hand
-		// is off the wheel it uses the second (air) angle from the config.
+		// The selected gear hand uses its dedicated gear angle. The grip angle
+		// is used on the rim, the air angle while the regripping hand is off
+		// the wheel.
+		const bool GearHand = (Hand == GearHandIndex) && GearActive &&
+			(!GearReturning || GearBlend > 0.5f);
 		const bool InAir = Active && Progress > EPS_L && Progress < 1.f - EPS_L;
 		for (u8 Group = 0; Group < FingerGroupCount; ++Group)
 		{
 			SFingerBend& State = FingerState[Hand][Group];
-			const float Target = deg2rad(InAir ? FingerAirAngles[Group] : FingerAngles[Group]);
+			const float TargetDeg = GearHand ? FingerGearAngles[Group] : (InAir ? FingerAirAngles[Group] : FingerAngles[Group]);
+			const float Target = deg2rad(TargetDeg);
 			State.Angle += (Target - State.Angle) * Alpha;
 			if (fabsf(State.Angle) < 1e-5f)
 			{
@@ -929,6 +1042,17 @@ void CCarDriverHands::CalibrateHandOffsets(const Fmatrix& WheelNeutralWorld, con
 	Temp4.mul_43(Mirror, Temp);                  // Temp * M
 	RightConfigRot.mul_43(RightInv, Temp4);      // Temp4 * B_right^-1
 
+	// The gear lever keeps the selected hand's authored local orientation
+	// instead of taking the lever bone's arbitrary axes. This is the same
+	// local rotation the hand has on the wheel at its neutral position.
+	LeftNeutralLocalRot = Kinematics->LL_GetTransform(LeftIK[2]);
+	LeftNeutralLocalRot.c.set(0.f, 0.f, 0.f);
+	LeftNeutralLocalRot.mulB_43(LeftConfigRot);
+
+	RightNeutralLocalRot = Kinematics->LL_GetTransform(RightIK[2]);
+	RightNeutralLocalRot.c.set(0.f, 0.f, 0.f);
+	RightNeutralLocalRot.mulB_43(RightConfigRot);
+
 	// The twist axis is applied in the wheel's local space, where the left
 	// and right axes are mirror images: only the local X component changes
 	// sign. Do not convert it through the hand bones; that produced a wrong
@@ -1052,11 +1176,54 @@ void CCarDriverHands::UpdateRegrip(float WheelAngle, const char* CarSection)
 		TargetProgress = 0.f;
 	}
 
+	// The gear lever has priority over the gear hand's regrip while the hand is
+	// actually on the lever. A hand that was already moving is released
+	// immediately, and the gear blend takes over from its last solved pose. An
+	// already active other-hand regrip may finish its path.
+	const u8 GearHand = GearLeftHand ? HandLeft : HandRight;
+	const u8 OtherHand = GearLeftHand ? HandRight : HandLeft;
+	const bool GearHold = GearActive && !GearReturning;
+	if (GearHold)
+	{
+		if (ActiveHand == GearHand)
+		{
+			ActiveHand = HandNone;
+			ActiveSign = 0;
+			Progress = 0.f;
+		}
+
+		if (ActiveHand != OtherHand)
+		{
+			TargetProgress = 0.f;
+		}
+	}
+
+	// On the way back from the lever the hand should land on the grip it would
+	// have on the turned wheel, not on its home grip followed by a second
+	// regrip. If the gear hand is the lower hand, select it and snap its phase
+	// to the wheel-angle target for the return blend.
+	bool SnapGearReturn = false;
+	if (GearActive && GearReturning &&
+		(ActiveHand == HandNone || ActiveHand == GearHand) &&
+		LowerHand == GearHand && WheelSign != 0 && TargetProgress > 0.f)
+	{
+		ActiveHand = GearHand;
+		ActiveSign = WheelSign;
+		SnapGearReturn = true;
+	}
+
 	// The phase lag drives the hand-over-hand move. The active hand is built
 	// from a phase wheel transform below, so its grip points stay fixed in
 	// world space even when the real wheel keeps turning under the hand.
 	const float Dt = std::clamp(Device.fTimeDelta, 0.f, 0.1f);
-	Progress = SmoothHandReleasePhase(Progress, TargetProgress, RegripLag, Dt);
+	if (SnapGearReturn)
+	{
+		Progress = TargetProgress;
+	}
+	else
+	{
+		Progress = SmoothHandReleasePhase(Progress, TargetProgress, RegripLag, Dt);
+	}
 
 	if (Progress <= 0.f)
 	{
@@ -1077,7 +1244,81 @@ void CCarDriverHands::UpdateRegrip(float WheelAngle, const char* CarSection)
 	}
 }
 
-void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, const Fmatrix& HandsInverse)
+void CCarDriverHands::UpdateGearState(const char* CarSection, bool Switching, bool ReverseSwitching, float SwitchEnd, float Dt)
+{
+	if (GearBone == BI_NONE)
+	{
+		GearActive = false;
+		GearReturning = false;
+		GearStartPending = false;
+		GearBlend = 0.f;
+		return;
+	}
+
+	// In an automatic gearbox the hand only takes part in forward <-> reverse
+	// changes; ordinary automatic up/down shifts keep it on the wheel.
+	const bool GearSwitching = Switching && (!GearAuto || ReverseSwitching);
+
+	// GearSwitching is the start/hold trigger: it is lowered by the car after
+	// transmission_switch_delay. The reported switch end already includes the
+	// gear lever's start delay; GearHoldExtra adds the tail after the lever has
+	// started.
+	const bool ExtraHold =
+		!GearSwitching &&
+		GearActive &&
+		!GearReturning &&
+		SwitchEnd > 0.f &&
+		Device.fTimeGlobal < SwitchEnd + GearHoldExtra;
+	const bool Hold = GearSwitching || ExtraHold;
+
+	if (Hold)
+	{
+		if (!GearActive)
+		{
+			GearActive = true;
+			GearReturning = false;
+			GearStartPending = true;
+			GearBlend = 0.f;
+			if (GearDebug)
+			{
+				Msg("* [%s] driver hands gear: start (%s)", CarSection, GearBoneName.c_str());
+			}
+			return;
+		}
+		else if (GearReturning && GearSwitching)
+		{
+			// A new shift interrupted the return. Start again from the pose
+			// the hand has at this moment, without snapping back to the wheel.
+			GearReturning = false;
+			GearStartPending = true;
+			GearBlend = 0.f;
+			if (GearDebug)
+			{
+				Msg("* [%s] driver hands gear: restart", CarSection);
+			}
+			return;
+		}
+	}
+	else if (GearActive && !GearReturning)
+	{
+		GearReturning = true;
+		if (GearDebug)
+		{
+			Msg("* [%s] driver hands gear: return", CarSection);
+		}
+		return;
+	}
+
+	if (!GearActive)
+	{
+		return;
+	}
+
+	const float Direction = GearReturning ? -1.f : 1.f;
+	GearBlend = std::clamp(GearBlend + Direction * GearSpeed * Dt, 0.f, 1.f);
+}
+
+void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, const Fmatrix& GearWorld, float WheelAngle, const Fmatrix& HandsInverse)
 {
 	const float AbsWheelAngle = fabsf(WheelAngle);
 	const float TriggerRad = deg2rad(RegripTrigger);
@@ -1200,6 +1441,46 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 	BuildTarget(LeftWheel, LeftState, LeftLocal, LeftTwist, LeftSteerTwistAxis, LeftHandOffset, ActiveHand == HandLeft ? PathLift : 0.f, LeftTarget);
 	BuildTarget(RightWheel, RightState, RightLocal, RightTwist, RightSteerTwistAxis, RightHandOffset, ActiveHand == HandRight ? PathLift : 0.f, RightTarget);
 
+	if (GearActive)
+	{
+		// The selected hand keeps its authored local orientation on the lever.
+		// The lever bone supplies only the grip position, so its local axes
+		// cannot twist the palm; GearRotation is the wrist offset in the hand's
+		// local frame.
+		Fmatrix GearTargetLocal = GearLeftHand ? LeftNeutralLocalRot : RightNeutralLocalRot;
+		Fmatrix WristRot;
+		WristRot.setXYZ(deg2rad(GearRotation.x), deg2rad(GearRotation.y), deg2rad(GearRotation.z));
+		GearTargetLocal.mulB_43(WristRot);
+
+		Fvector GearWorldPos;
+		GearWorld.transform_tiny(GearWorldPos, GearOffset);
+		HandsInverse.transform_tiny(GearTargetLocal.c, GearWorldPos);
+
+		Fmatrix& GearWheelTarget = GearLeftHand ? LeftTarget : RightTarget;
+
+		// Blend in hands-local space. The seat and the lever move with the car,
+		// so a world-space start pose would lag behind while the car moves.
+		Fmatrix GearWheelTargetLocal;
+		GearWheelTargetLocal.mul_43(HandsInverse, GearWheelTarget);
+
+		if (GearStartPending)
+		{
+			GearStartLocal = HasLastGearLocal ? LastGearLocal : GearWheelTargetLocal;
+			GearStartPending = false;
+		}
+
+		const float T = std::clamp(GearBlend, 0.f, 1.f);
+		const Fmatrix& Source = GearReturning ? GearWheelTargetLocal : GearStartLocal;
+		Fmatrix FinalGearLocal;
+		BlendHandTargets(Source, GearTargetLocal, T, FinalGearLocal);
+
+		Fvector Arc;
+		Arc.mul(GearPath, sinf(PI * T));
+		FinalGearLocal.c.add(Arc);
+
+		GearWheelTarget.mul_43(Xform, FinalGearLocal);
+	}
+
 	const auto Solve = [this, &HandsInverse](const u16* Chain, u16 Clavicle, const Fmatrix& TargetWorld, const Fvector& Elbow)
 	{
 		Fmatrix Target;
@@ -1245,8 +1526,29 @@ void CCarDriverHands::SolveArms(const Fmatrix& WheelWorld, float WheelAngle, con
 		CCameraRig::SolveLimb(Kinematics, Chain, Target, 1.f, Elbow);
 	};
 
-	Solve(LeftIK, LeftClavicle, LeftTarget, LeftElbow);
-	Solve(RightIK, RightClavicle, RightTarget, RightElbow);
+	Fvector LeftPole = LeftElbow;
+	Fvector RightPole = RightElbow;
+	if (GearActive)
+	{
+		const float T = std::clamp(GearBlend, 0.f, 1.f);
+		if (GearLeftHand)
+		{
+			LeftPole.lerp(LeftElbow, GearElbow, T);
+		}
+		else
+		{
+			RightPole.lerp(RightElbow, GearElbow, T);
+		}
+	}
+
+	Solve(LeftIK, LeftClavicle, LeftTarget, LeftPole);
+	Solve(RightIK, RightClavicle, RightTarget, RightPole);
+
+	// Store the selected hand's actual solved transform, not only the requested
+	// target: if the arm could not reach the target, the next gear blend must
+	// start from where the hand really is.
+	LastGearLocal = Kinematics->LL_GetTransform(GearLeftHand ? LeftIK[2] : RightIK[2]);
+	HasLastGearLocal = true;
 }
 
 void CCarDriverHands::Update(const SFrameParams& Params)
@@ -1267,10 +1569,10 @@ void CCarDriverHands::Update(const SFrameParams& Params)
 	Setup.c.set(Position);
 	Xform.mul_43(Params.SeatXform, Setup);
 
-	UpdateFingerStates(std::clamp(Device.fTimeDelta, 0.f, 0.1f));
 	ApplyBindPose();
-	ApplyFingerBend();
 	ApplyShoulderWidth();
+
+	const float Dt = std::clamp(Device.fTimeDelta, 0.f, 0.1f);
 
 	IKinematics* CarKinematics = Params.CarKinematics;
 	if (CarKinematics == nullptr || SteerBone >= CarKinematics->LL_BoneCount())
@@ -1289,6 +1591,16 @@ void CCarDriverHands::Update(const SFrameParams& Params)
 	Fmatrix WheelWorld;
 	CarKinematics->LL_GetBoneWorldTransform(SteerBone, Params.CarXform, WheelWorld);
 
+	Fmatrix GearWorld = WheelWorld;
+	if (GearBone != BI_NONE && GearBone < CarKinematics->LL_BoneCount())
+	{
+		CarKinematics->LL_GetBoneWorldTransform(GearBone, Params.CarXform, GearWorld);
+	}
+	else if (GearBone != BI_NONE)
+	{
+		GearBone = BI_NONE;
+	}
+
 	Fmatrix HandsInverse = Xform;
 	HandsInverse.invert();
 
@@ -1306,8 +1618,22 @@ void CCarDriverHands::Update(const SFrameParams& Params)
 	}
 
 	const float WheelAngle = Params.SteerAngle * (SteerFactored ? SteerFactor * rs_car_steer_factor : 1.f);
+	UpdateGearState(Params.CarSection, Params.TransmissionSwitching, Params.ReverseSwitching, Params.TransmissionSwitchEnd, Dt);
 	UpdateRegrip(WheelAngle, Params.CarSection);
-	SolveArms(WheelWorld, WheelAngle, HandsInverse);
+	UpdateFingerStates(Dt);
+	ApplyFingerBend();
+	SolveArms(WheelWorld, GearWorld, WheelAngle, HandsInverse);
+
+	if (GearActive && GearReturning && GearBlend <= 0.f)
+	{
+		GearActive = false;
+		GearReturning = false;
+		GearStartPending = false;
+		if (GearDebug)
+		{
+			Msg("* [%s] driver hands gear: done", Params.CarSection);
+		}
+	}
 
 	Ready = true;
 }

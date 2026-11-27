@@ -123,6 +123,8 @@ void CCarDashboard::ReadConfig(EGauge Type, CInifile& Ini, const char* Section)
 		case EGauge::Gear:
 			Read("gear_manual", GearLever.Manual);
 			Read("gear_speed", GearLever.Speed);
+			Read("gear_delay", GearLever.Delay);
+			clamp(GearLever.Delay, 0.f, 2.f);
 			Read("gear_park_angle_x", GearLever.ParkAngleX);
 			Read("gear_drive_angle_x", GearLever.DriveAngleX);
 			Read("gear_reverse_angle_x", GearLever.ReverseAngleX);
@@ -585,6 +587,23 @@ bool CCarDashboard::UpdateGear(CBoneInstance& Bone, Fmatrix& Result)
 	if (Telemetry.HasDriver)
 	{
 		const size_t Gear = Telemetry.Gear;
+
+		// The lever starts moving GearDelay seconds after the gear change.
+		// The hand code moves to the lever immediately; the lever itself
+		// stays still during this window.
+		if (GearLever.LastGear != static_cast<size_t>(-1) &&
+			(GearLever.LastGear != Gear || (Telemetry.TransmissionSwitching && !GearLever.WasSwitching)))
+		{
+			GearLever.ChangeTime = Device.fTimeGlobal;
+		}
+		GearLever.LastGear = Gear;
+		GearLever.WasSwitching = Telemetry.TransmissionSwitching;
+
+		const bool WaitDelay =
+			GearLever.Delay > 0.f &&
+			GearLever.ChangeTime >= 0.f &&
+			Device.fTimeGlobal < GearLever.ChangeTime + GearLever.Delay;
+
 		if (!GearLever.Manual)
 		{
 			if (Telemetry.EngineOn || Telemetry.SpeedKmh > 1.f)
@@ -594,67 +613,88 @@ bool CCarDashboard::UpdateGear(CBoneInstance& Bone, Fmatrix& Result)
 		}
 		else
 		{
-			if (Telemetry.TransmissionSwitching)
+			float FinalAngleX;
+			if (Gear == 0)
 			{
-				AngleX = GearLever.ParkAngleX;
-			}
-			else if (Gear == 0)
-			{
-				AngleX = GearLever.ReverseAngleX;
+				FinalAngleX = GearLever.ReverseAngleX;
 			}
 			else
 			{
-				AngleX = (Gear % 2 == 1) ? GearLever.DriveAngleX : GearLever.ReverseAngleX;
+				FinalAngleX = (Gear % 2 == 1) ? GearLever.DriveAngleX : GearLever.ReverseAngleX;
 			}
 
+			float FinalAngleZ;
 			if (Gear == 0 || Gear > 4)
 			{
-				AngleZ = GearLever.RightAngle;
+				FinalAngleZ = GearLever.RightAngle;
 			}
 			else if (Gear < 3)
 			{
-				AngleZ = GearLever.LeftAngle;
+				FinalAngleZ = GearLever.LeftAngle;
 			}
 			else
 			{
-				AngleZ = GearLever.MiddleAngle;
+				FinalAngleZ = GearLever.MiddleAngle;
+			}
+
+			if (Telemetry.TransmissionSwitching)
+			{
+				// Out of the current gate, through the neutral center, then into
+				// the target gate. A same-gate shift keeps its side.
+				AngleX = GearLever.ParkAngleX;
+				AngleZ = (fabsf(GearLever.CurrentAngleZ - FinalAngleZ) > 0.01f)
+					? GearLever.MiddleAngle
+					: FinalAngleZ;
+			}
+			else
+			{
+				AngleX = FinalAngleX;
+				AngleZ = FinalAngleZ;
 			}
 		}
 
-		float Delay = Telemetry.TransmissionSwitchDelay;
-		if (Delay > 0.f)
+		if (WaitDelay)
 		{
-			// The lever first travels along X (out of the gate), then along Z.
-			clamp(Delay, 0.f, 1.f);
-			const float Speed = (50.f + 150.f * (1.f - Delay)) * GearLever.Speed * Device.fTimeDelta;
-			if (GearLever.CurrentAngleX != AngleX)
+			AngleX = GearLever.CurrentAngleX;
+			AngleZ = GearLever.CurrentAngleZ;
+		}
+		else
+		{
+			float Delay = Telemetry.TransmissionSwitchDelay;
+			if (Delay > 0.f)
 			{
-				if (GearLever.CurrentAngleX > AngleX)
+				// The lever first travels along X (out of the gate), then along Z.
+				clamp(Delay, 0.f, 1.f);
+				const float Speed = (50.f + 150.f * (1.f - Delay)) * GearLever.Speed * Device.fTimeDelta;
+				if (GearLever.CurrentAngleX != AngleX)
 				{
-					GearLever.CurrentAngleX -= Speed;
-					clamp(GearLever.CurrentAngleX, AngleX, GearLever.CurrentAngleX);
+					if (GearLever.CurrentAngleX > AngleX)
+					{
+						GearLever.CurrentAngleX -= Speed;
+						clamp(GearLever.CurrentAngleX, AngleX, GearLever.CurrentAngleX);
+					}
+					else
+					{
+						GearLever.CurrentAngleX += Speed;
+						clamp(GearLever.CurrentAngleX, GearLever.CurrentAngleX, AngleX);
+					}
 				}
 				else
 				{
-					GearLever.CurrentAngleX += Speed;
-					clamp(GearLever.CurrentAngleX, GearLever.CurrentAngleX, AngleX);
+					if (GearLever.CurrentAngleZ > AngleZ)
+					{
+						GearLever.CurrentAngleZ -= Speed * 0.5f;
+						clamp(GearLever.CurrentAngleZ, AngleZ, GearLever.CurrentAngleZ);
+					}
+					if (GearLever.CurrentAngleZ < AngleZ)
+					{
+						GearLever.CurrentAngleZ += Speed * 0.5f;
+						clamp(GearLever.CurrentAngleZ, GearLever.CurrentAngleZ, AngleZ);
+					}
 				}
+				AngleX = GearLever.CurrentAngleX;
+				AngleZ = GearLever.CurrentAngleZ;
 			}
-			else
-			{
-				if (GearLever.CurrentAngleZ > AngleZ)
-				{
-					GearLever.CurrentAngleZ -= Speed * 0.5f;
-					clamp(GearLever.CurrentAngleZ, AngleZ, GearLever.CurrentAngleZ);
-				}
-				if (GearLever.CurrentAngleZ < AngleZ)
-				{
-					GearLever.CurrentAngleZ += Speed * 0.5f;
-					clamp(GearLever.CurrentAngleZ, GearLever.CurrentAngleZ, AngleZ);
-				}
-			}
-			AngleX = GearLever.CurrentAngleX;
-			AngleZ = GearLever.CurrentAngleZ;
 		}
 	}
 

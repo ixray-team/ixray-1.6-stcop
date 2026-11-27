@@ -1096,6 +1096,7 @@ private:
 		SwitchDown
 	};
 	ETransmissionStage		m_transmission_stage;
+	bool					m_gear_switch_reverse;
 	float					m_transmission_switch_delay;
 	float					m_transmission_switch_power_factor;
 	float					m_transmission_switch_volume;

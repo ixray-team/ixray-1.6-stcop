@@ -24,6 +24,12 @@ public:
 		Fmatrix CarXform;
 		Fmatrix SeatXform;
 		float SteerAngle = 0.f;
+		// True while the car is inside transmission_switch_delay.
+		bool TransmissionSwitching = false;
+		// True when the switch is between a forward gear and reverse.
+		bool ReverseSwitching = false;
+		// Device.fTimeGlobal at which the switch ends, including nitro.
+		float TransmissionSwitchEnd = 0.f;
 	};
 
 	CCarDriverHands();
@@ -85,12 +91,13 @@ private:
 	void BuildFingerAxes();
 	void ResetStates();
 	void UpdateFingerStates(float Dt);
+	void UpdateGearState(const char* CarSection, bool Switching, bool ReverseSwitching, float SwitchEnd, float Dt);
 	void ApplyBindPose();
 	void ApplyFingerBend();
 	void ApplyShoulderWidth();
 	void CalibrateHandOffsets(const Fmatrix& WheelNeutralWorld, const Fmatrix& HandsInverse, const char* CarSection);
 	void UpdateRegrip(float WheelAngle, const char* CarSection);
-	void SolveArms(const Fmatrix& WheelWorld, float WheelAngle, const Fmatrix& HandsInverse);
+	void SolveArms(const Fmatrix& WheelWorld, const Fmatrix& GearWorld, float WheelAngle, const Fmatrix& HandsInverse);
 
 	IRenderVisual* Visual = nullptr;
 	IKinematics* Kinematics = nullptr;
@@ -100,6 +107,8 @@ private:
 	Fmatrix Xform = Fidentity;
 	Fmatrix LeftHandOffset = Fidentity;
 	Fmatrix RightHandOffset = Fidentity;
+	Fmatrix LeftNeutralLocalRot = Fidentity;
+	Fmatrix RightNeutralLocalRot = Fidentity;
 
 	// Config, see driver_hands_* in the car section.
 	Fvector Position = {0.f, 0.f, 0.f};
@@ -112,6 +121,18 @@ private:
 	bool RightHandRotationExplicit = false;
 	Fvector LeftElbow = {0.f, 0.f, 0.f};
 	Fvector RightElbow = {0.f, 0.f, 0.f};
+	Fvector GearOffset = {0.f, 0.f, 0.f};
+	// Wrist rotation on the gear lever, in the gear hand's local frame.
+	Fvector GearRotation = {0.f, 0.f, 0.f};
+	// Elbow pole of the selected gear hand.
+	Fvector GearElbow = {0.f, 0.f, 0.f};
+	Fvector GearPath = {0.f, 0.05f, 0.f};
+	float GearSpeed = 8.f;
+	float GearHoldExtra = 0.f;
+	shared_str GearBoneName;
+	bool GearLeftHand = false;
+	bool GearAuto = false;
+	bool GearDebug = false;
 	float Scale = 1.f;
 	float ShoulderWidth = -1.f;
 	float RegripTrigger = 15.f;
@@ -132,12 +153,16 @@ private:
 	bool RegripDebug = false;
 	u16 LeftThumbRoot = BI_NONE;
 	u16 RightThumbRoot = BI_NONE;
+	// Finger bend angles: on the wheel, off the wheel during a regrip, and on
+	// the gear lever. The gear angle defaults to the grip angle when omitted.
 	float FingerAngles[FingerGroupCount] = {};
 	float FingerAirAngles[FingerGroupCount] = {};
+	float FingerGearAngles[FingerGroupCount] = {};
 	float FingerSpeed = 12.f;
 
 	// Bones.
 	u16 SteerBone = BI_NONE;
+	u16 GearBone = BI_NONE;
 	u16 LeftClavicle = BI_NONE;
 	u16 RightClavicle = BI_NONE;
 	u16 LeftIK[3] = {BI_NONE, BI_NONE, BI_NONE};
@@ -146,6 +171,13 @@ private:
 	u8 ActiveHand = HandNone;
 	s8 ActiveSign = 0;
 	u8 DebugHand = HandNone;
+	bool GearActive = false;
+	bool GearReturning = false;
+	bool GearStartPending = false;
+	float GearBlend = 0.f;
+	Fmatrix GearStartLocal = Fidentity;
+	Fmatrix LastGearLocal = Fidentity;
+	bool HasLastGearLocal = false;
 	bool IKReady = false;
 	bool IKInitialized = false;
 	bool Ready = false;
