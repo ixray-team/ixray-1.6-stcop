@@ -791,10 +791,16 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
 
 			CObject* O = Level().Objects.net_Find(id); if (!O || O->getDestroy()) break;
 			CMissile* missile = O->cast_missile(); if (!missile) break;
-			missile->H_SetParent(nullptr,!P.r_eof() && P.r_u8());
+			const bool JustBeforeDestroy = !P.r_eof() && P.r_u8();
+			missile->H_SetParent(nullptr, JustBeforeDestroy);
 			missile->SetCanTake(false);
-			if (IsFakeMissile && OnClient()) 
+
+			// Start the grenade fuse and contact delay when it leaves the thrower.
+			const bool ArmedGrenade = missile->cast_grenade() && missile->destroy_time() != u32(-1);
+			if (IsFakeMissile && (OnClient() || (!JustBeforeDestroy && ArmedGrenade)))
+			{
 				missile->set_destroy_time(m_dwDestroyTimeMax);
+			}
 			break;
 		}
 	}
@@ -967,7 +973,7 @@ void CMissile::activate_physic_shell()
 //	m_pPhysicsShell->AddTracedGeom		();
 	m_pPhysicsShell->SetAllGeomTraced	();
 	m_pPhysicsShell->add_ObjectContactCallback		(ExitContactCallback);
-	m_pPhysicsShell->set_CallbackData	(H_Root()->cast_game_object());
+	m_pPhysicsShell->set_CallbackData	(H_Root()->cast_physics_shell_holder());
 //	m_pPhysicsShell->remove_ObjectContactCallback	(ExitContactCallback);
 	m_pPhysicsShell->SetAirResistance	(0.f,0.f);
 	m_pPhysicsShell->set_DynamicScales	(1.f,1.f);
@@ -1072,12 +1078,9 @@ void CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl
 	if (do_colide)
 	{
 		const Fvector ContactPosition = Fvector().set(c.geom.pos[0], c.geom.pos[1], c.geom.pos[2]);
-		ExitContactCallback_Patch(c.geom.g2, ContactPosition);
-		ExitContactCallback_Patch(c.geom.g1, ContactPosition);
+		ExitContactCallback_Patch(bo1 ? c.geom.g1 : c.geom.g2, ContactPosition);
 	}
 }
-
-#include "Grenade.h"
 
 void CMissile::ExitContactCallback_Patch(dGeomID dxGeom, const Fvector& ContactPosition)
 {
@@ -1090,12 +1093,12 @@ void CMissile::ExitContactCallback_Patch(dGeomID dxGeom, const Fvector& ContactP
 
 	CGrenade* grenade = smart_cast<CGrenade*>(geom_data->ph_ref_object);
 
-	if (grenade == nullptr)
+	if (!grenade || grenade->H_Parent() || grenade->getDestroy())
 	{
 		return;
 	}
 
-	auto& contact_params = grenade->ContactParams();
+	const auto& contact_params = grenade->ContactParams();
 
 	u32 destroy_time = grenade->destroy_time();
 	u32 now = Device.dwTimeGlobal;
@@ -1105,52 +1108,39 @@ void CMissile::ExitContactCallback_Patch(dGeomID dxGeom, const Fvector& ContactP
 		return;
 	}
 
-	u32 time_from_throw = grenade->destroy_time_max() - (destroy_time - now);
+	const u32 RemainingTime = destroy_time - now;
+	const u32 MaxTime = grenade->destroy_time_max();
+	const u32 TimeFromThrow = MaxTime - std::min(MaxTime, RemainingTime);
 
-	u32 safe_time = contact_params.SafeTime;
-	u32 delay_time = contact_params.DelayTime;
+	if (TimeFromThrow < contact_params.SafeTime)
+	{
+		grenade->set_destroy_time_now(u32(-1));
+		return;
+	}
 
-	if (safe_time != 0 && safe_time > time_from_throw)
+	if (contact_params.ExplosionOnKick && TimeFromThrow >= contact_params.DelayTime)
 	{
-		grenade->set_destroy_time_now(0xffffffff);
-	}
-	else if (delay_time != 0 && delay_time > time_from_throw)
-	{
-		// Просто пропускаем контакт
-	}
-	else if (contact_params.ExplosionOnKick)
-	{
-		u32 new_destroy_time = now;
-		float min_speed = contact_params.MinExplosionSpeed;
-		if (min_speed > 0.0f)
+		Fvector Velocity = zero_vel;
+		if (contact_params.MinExplosionSpeed > 0.0f)
 		{
-			CPhysicsShellHolder* cpsh = grenade->cast_physics_shell_holder();
-			if (cpsh)
-			{
-				Fvector linear_vel = zero_vel;
-				cpsh->m_pPhysicsShell->get_LinearVel(linear_vel);
-				float speed = linear_vel.magnitude();
-				if (speed < min_speed)
-				{
-					if (contact_params.DeactivateOnLowSpeedContact)
-					{
-						new_destroy_time = 0xffffffff;
-					}
-					else
-					{
-						new_destroy_time = destroy_time;
-					}
-				}
-			}
+			grenade->PPhysicsShell()->get_LinearVel(Velocity);
 		}
-		grenade->set_destroy_time_now(0xffffffff);
-		grenade->Destroy();
+
+		if (Velocity.magnitude() >= contact_params.MinExplosionSpeed)
+		{
+			grenade->set_destroy_time_now(u32(-1));
+			grenade->Destroy();
+			return;
+		}
+
+		if (contact_params.DeactivateOnLowSpeedContact)
+		{
+			grenade->set_destroy_time_now(u32(-1));
+			return;
+		}
 	}
 
-	if (grenade->destroy_time() != u32(-1))
-	{
-		grenade->OnImpact(ContactPosition);
-	}
+	grenade->OnImpact(ContactPosition);
 }
 
 bool CMissile::GetBriefInfo( II_BriefInfo& info )
