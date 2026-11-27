@@ -55,7 +55,9 @@ void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 		res.set(1.0f, 1.0f);
 		return;
 	}
-	res.set(float(T->get_Width()),float(T->get_Height()));
+	const u32 Width = T->get_Width();
+	const u32 Height = T->get_Height();
+	res.set(Width ? float(Width) : 1.0f, Height ? float(Height) : 1.0f);
 }
 
 const char* dxUIRender::UpdateShaderName(const char* tex_name, const char* sh_name)

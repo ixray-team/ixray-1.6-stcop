@@ -52,12 +52,20 @@ public:
 	IC u32 get_Width()
 	{
 		WaitForLoad();
-		return pSurface->GetWidth();
+		if (pSurface)
+			return pSurface->GetWidth();
+		if (!seqDATA.empty() && seqDATA.front())
+			return seqDATA.front()->GetWidth();
+		return 0;
 	}
 	IC u32 get_Height()
 	{
 		WaitForLoad();
-		return pSurface->GetHeight();
+		if (pSurface)
+			return pSurface->GetHeight();
+		if (!seqDATA.empty() && seqDATA.front())
+			return seqDATA.front()->GetHeight();
+		return 0;
 	}
 	IC ERHI_FORMAT get_Format()
 	{
