@@ -361,6 +361,12 @@ public:
 	bool	b_event_drag_activated;
 	bool	b_awd;
 	bool	m_firsteye_panel;
+	// Hide the actor model in the first-person car view. Third-person views
+	// always show it.
+	bool	m_hide_driver_first_person = true;
+	// Hide the head and arms of a visible first-person driver model. The neck
+	// and shoulders stay visible.
+	bool	m_hide_driver_head_arms_first_person = false;
 	bool	m_allow_inventory_control;
 	bool	m_allow_mutant_bite_in_car;
 	bool	m_poltergeist_can_lift;
@@ -1397,6 +1403,7 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 			bool WheelHit								(float P,s16 element,ALife::EHitType hit_type);
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:
+	void					ApplyDriverModelVisibility	(bool FirstPerson);
 	void					HitFrom						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					HitFromCreature				(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					ApplyPush					(const Fvector& dir, float speed, const Fvector& world_point);

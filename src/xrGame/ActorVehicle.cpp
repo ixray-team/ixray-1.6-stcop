@@ -156,6 +156,10 @@ void CActor::ReapplyVehicleVisual()
 	m_current_jump_blend = nullptr;
 
 	m_holderID = car->ID();
+
+	// OnChangeVisual() builds a fresh skeleton, so the first-person body
+	// parts have to be hidden again.
+	car->ApplyDriverModelVisibility(car->HasFirstCam());
 }
 
 void CActor::detach_Vehicle()

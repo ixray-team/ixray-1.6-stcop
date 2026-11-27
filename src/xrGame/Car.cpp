@@ -3432,7 +3432,7 @@ void CCar::detach_Actor()
 	// to the world origin.
 	RecalculateExitPosition();
 
-	Owner()->setVisible(1);
+	ApplyDriverModelVisibility(false);
 	DestroyDriverHands();
 	ResetCabinSound();
 	if (OwnerActor())
@@ -3760,6 +3760,8 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_wheels_spin_factor_stop = pSettings->read_if_exists<float>(cNameSect_str(), "wheels_spin_factor_stop", m_wheels_spin_factor_stop);
 	m_wheels_sound_delay = pSettings->read_if_exists<float>(cNameSect_str(), "wheels_sound_delay", m_wheels_sound_delay);
 	m_firsteye_panel = pSettings->read_if_exists<bool>(cNameSect_str(), "firsteye_panel", m_firsteye_panel);
+	m_hide_driver_first_person = pSettings->read_if_exists<bool>(cNameSect_str(), "hide_driver_first_person", m_hide_driver_first_person);
+	m_hide_driver_head_arms_first_person = pSettings->read_if_exists<bool>(cNameSect_str(), "hide_driver_head_arms_first_person", m_hide_driver_head_arms_first_person);
 	m_allow_inventory_control = pSettings->read_if_exists<bool>(cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
 	m_allow_mutant_bite_in_car = pSettings->read_if_exists<bool>(cNameSect_str(), "allow_mutant_bite_in_car", m_allow_mutant_bite_in_car);
 	m_poltergeist_can_lift = pSettings->read_if_exists<bool>(cNameSect_str(), "poltergeist_can_lift", m_poltergeist_can_lift);

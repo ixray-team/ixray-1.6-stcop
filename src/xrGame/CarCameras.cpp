@@ -19,6 +19,48 @@
 #include "../xrEngine/CameraManager.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/GameMtlLib.h"
+
+namespace
+{
+	void SetDriverBonesVisible(CActor* Driver, bool Visible)
+	{
+		if (Driver == nullptr || Driver->Visual() == nullptr)
+			return;
+
+		IKinematics* Kinematics = smart_cast<IKinematics*>(Driver->Visual());
+		if (Kinematics == nullptr)
+			return;
+
+		// Keep the neck and clavicles: they cover the torso openings. Only the
+		// head and the arms from the shoulder joints are hidden.
+		static const char* BoneNames[] = {"bip01_head", "bip01_l_upperarm", "bip01_r_upperarm"};
+		for (const char* Name : BoneNames)
+		{
+			const u16 Bone = Kinematics->LL_BoneID(Name);
+			if (Bone != BI_NONE)
+				Kinematics->LL_SetBoneVisible(Bone, Visible, true);
+		}
+	}
+}
+
+void CCar::ApplyDriverModelVisibility(bool FirstPerson)
+{
+	if (Owner() == nullptr)
+		return;
+
+	const bool HideWholeModel = FirstPerson && m_hide_driver_first_person;
+	Owner()->setVisible(!HideWholeModel);
+
+	CActor* Driver = OwnerActor();
+	if (Driver == nullptr)
+		return;
+
+	// The vehicle can keep the body visible and hide only the parts that the
+	// first-person HUD hands replace.
+	const bool HideBones = FirstPerson && !m_hide_driver_first_person && m_hide_driver_head_arms_first_person;
+	SetDriverBonesVisible(Driver, !HideBones);
+}
+
 bool CCar::HUDView() const		
 {
 	return active_camera->tag==EctFirstCam;
@@ -397,7 +439,7 @@ void CCar::OnCameraChange(int type)
 
 		m_dwAttachTime = Device.dwTimeGlobal;
 
-		Owner()->setVisible(type != EctFirstCam);
+		ApplyDriverModelVisibility(type == EctFirstCam);
 		UpdateInteriorSoundFactor(type == EctFirstCam);
 
 		// IKinematics*	pKinematics = smart_cast<IKinematics*>(Owner()->Visual());
