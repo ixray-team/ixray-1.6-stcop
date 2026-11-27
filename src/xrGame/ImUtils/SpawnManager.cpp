@@ -1,9 +1,12 @@
 #include "StdAfx.h"
 #include "../Level.h"
+#include "../xrServer.h"
 #include "../GamePersistent.h"
 #include "../game_cl_single.h"
 #include "../alife_simulator.h"
 #include "../alife_time_manager.h"
+#include "../ai_object_location.h"
+#include "../HUDManager.h"
 #include "../ui/UIInventoryUtilities.h"
 #include "../ui/UICellItem.h"
 #include "../ui/UIDragDropListEx.h"
@@ -250,6 +253,8 @@ struct
 	bool weapon_sort_by_min_hit_power{};
 	bool weapon_sort_by_min_fire_distance{};
 	bool spawn_on_level{};
+	bool SpawnEquipped = false;
+	bool SpawnWithLooseAddons = false;
 	bool render_as_table{ true };
 	bool Use3DIcons = false;
 	bool IconSettingsInitialized = false;
@@ -339,6 +344,12 @@ static bool IsFakeInventorySection(CInifile::Sect& Section)
 		&& Section.line_exist("inv_grid_height") && pSettings->r_u32(Name, "inv_grid_height") == 0;
 }
 
+static bool IsSpawnableInventorySection(CInifile::Sect& Item)
+{
+	return Item.line_exist("cost") && Item.line_exist("inv_weight") && Item.line_exist("inv_name")
+		&& Item.line_exist("inv_name_short") && Item.line_exist("immunities_sect") && !IsFakeInventorySection(Item);
+}
+
 static void InitBulkSpawnSections(SectionData& Group)
 {
 	Group.BulkSpawn.clear();
@@ -347,8 +358,7 @@ static void InitBulkSpawnSections(SectionData& Group)
 		for (const auto& Entry : *List)
 		{
 			auto* Item = Entry.second;
-			if (Item->line_exist("cost") && Item->line_exist("inv_weight") && Item->line_exist("inv_name")
-				&& Item->line_exist("inv_name_short") && Item->line_exist("immunities_sect") && !IsFakeInventorySection(*Item))
+			if (IsSpawnableInventorySection(*Item))
 			{
 				Group.BulkSpawn.push_back(Item);
 			}
@@ -817,6 +827,18 @@ void RenderSpawnManagerWindow() {
 
 			if (ImGui::BeginTabItem("Weapons"))
 			{
+				if (ImGui::Checkbox("Spawn with addons equipped", &imgui_spawn_manager.SpawnEquipped) && imgui_spawn_manager.SpawnEquipped)
+				{
+					imgui_spawn_manager.SpawnWithLooseAddons = false;
+				}
+				ImGui::SetItemTooltip("Installs the first compatible scope, silencer and grenade launcher on each spawned weapon.");
+
+				if (ImGui::Checkbox("Spawn with loose addons in inventory", &imgui_spawn_manager.SpawnWithLooseAddons) && imgui_spawn_manager.SpawnWithLooseAddons)
+				{
+					imgui_spawn_manager.SpawnEquipped = false;
+				}
+				ImGui::SetItemTooltip("Spawns the weapon and one of each compatible addon as separate items in the inventory.");
+
 				auto translate_difficulty = [](ESingleGameDifficulty value) -> const char* {
 					switch (value)
 					{
@@ -1790,10 +1812,10 @@ static bool SpawnOnLevel()
 	return imgui_spawn_manager.spawn_on_level != Invert;
 }
 
-static void QueueSpawn(const CInifile::Sect& Section, bool OnLevel, bool IsSquad, int Count)
+static void QueueSpawnCommand(const char* SectionName, bool OnLevel, bool IsSquad, int Count)
 {
 	xr_string Command = IsSquad ? "g_spawn_squad " : OnLevel ? "g_spawn " : "g_spawn_inv ";
-	Command += Section.Name.c_str();
+	Command += SectionName;
 	if (Count > 0)
 	{
 		Command += " ";
@@ -1801,6 +1823,242 @@ static void QueueSpawn(const CInifile::Sect& Section, bool OnLevel, bool IsSquad
 	}
 
 	execute_console_command_deferred(Console, Command.c_str());
+}
+
+struct SpawnManagerWeaponAddons
+{
+	WeaponSpawnAddons Equipped;
+	xr_vector<shared_str> Loose;
+};
+
+static SpawnManagerWeaponAddons ReadSpawnManagerWeaponAddons(const char* SectionName)
+{
+	using Weapon = CSE_ALifeItemWeapon;
+	using WeaponBoneVisibility::ReadString;
+
+	const auto ReadStatus = [](const char* Section, const char* Field)
+	{
+		return READ_IF_EXISTS(pSettings, r_u32, Section, Field, ALife::eAddonDisabled);
+	};
+
+	u32 ScopeStatus = ReadStatus(SectionName, "scope_status");
+	u32 SilencerStatus = ReadStatus(SectionName, "silencer_status");
+	u32 LauncherStatus = ReadStatus(SectionName, "grenade_launcher_status");
+	const char* Silencer = ReadString(SectionName, "silencer_name");
+	const char* Launcher = ReadString(SectionName, "grenade_launcher_name");
+
+	xr_vector<shared_str> Scopes;
+	bool AlternateScopes = false;
+	const auto AppendScopes = [&](const char* List, bool IsUpgrade)
+	{
+		for (int Index = 0, Count = _GetItemCount(List); Index < Count; ++Index)
+		{
+			string128 Scope;
+			_GetItem(List, Index, Scope);
+			if (IsUpgrade && xr_strcmp(Scope, "none") == 0)
+			{
+				AlternateScopes = false;
+			}
+			else
+			{
+				Scopes.emplace_back(Scope);
+			}
+		}
+	};
+	const auto AppendLegacyScopes = [&](const char* Section)
+	{
+		if (pSettings->line_exist(Section, "scopes_sect"))
+		{
+			AppendScopes(ReadString(Section, "scopes_sect"), false);
+		}
+		else
+		{
+			Scopes.emplace_back(Section);
+		}
+	};
+
+	if (ScopeStatus == ALife::eAddonAttachable)
+	{
+		const char* List = ReadString(SectionName, "scopes");
+		AlternateScopes = *List && xr_strcmp(List, "none") != 0;
+		if (AlternateScopes)
+		{
+			AppendScopes(List, false);
+		}
+		else
+		{
+			AppendLegacyScopes(SectionName);
+		}
+	}
+
+	if (IsGameTypeSingle())
+	{
+		for (const auto& Upgrade : WeaponBoneVisibility::GetDefaultUpgradeSections(SectionName))
+		{
+			if (pSettings->line_exist(Upgrade, "scope_status"))
+			{
+				ScopeStatus = ReadStatus(Upgrade.c_str(), "scope_status");
+				if (ScopeStatus != ALife::eAddonDisabled)
+				{
+					AlternateScopes = pSettings->line_exist(Upgrade, "scopes");
+					if (AlternateScopes)
+					{
+						AppendScopes(ReadString(Upgrade.c_str(), "scopes"), true);
+					}
+					else if (ScopeStatus == ALife::eAddonAttachable)
+					{
+						AppendLegacyScopes(Upgrade.c_str());
+					}
+					else
+					{
+						Scopes.push_back(Upgrade);
+					}
+				}
+			}
+
+			if (pSettings->line_exist(Upgrade, "silencer_status"))
+			{
+				SilencerStatus = ReadStatus(Upgrade.c_str(), "silencer_status");
+				Silencer = ReadString(Upgrade.c_str(), "silencer_name");
+			}
+			if (pSettings->line_exist(Upgrade, "grenade_launcher_status"))
+			{
+				LauncherStatus = ReadStatus(Upgrade.c_str(), "grenade_launcher_status");
+				Launcher = ReadString(Upgrade.c_str(), "grenade_launcher_name");
+			}
+		}
+	}
+
+	SpawnManagerWeaponAddons Result;
+	const auto Add = [&](const char* Name, u8 Flag, CLASS_ID SingleClass, CLASS_ID MultiplayerClass)
+	{
+		if (!Name || !*Name || !pSettings->line_exist(Name, "class"))
+		{
+			return false;
+		}
+
+		const auto Class = pSettings->r_clsid(Name, "class");
+		if ((Class != SingleClass && Class != MultiplayerClass) || !IsSpawnableInventorySection(pSettings->r_section(Name)))
+		{
+			return false;
+		}
+
+		if (std::ranges::none_of(Result.Loose, [&](const shared_str& Entry) { return xr_strcmp(Entry.c_str(), Name) == 0; }))
+		{
+			Result.Loose.emplace_back(Name);
+		}
+
+		Result.Equipped.Flags |= Flag;
+		return true;
+	};
+
+	if (ScopeStatus == ALife::eAddonAttachable)
+	{
+		for (size_t Index = 0; Index < Scopes.size() && Index <= std::numeric_limits<u8>::max(); ++Index)
+		{
+			const char* Name = AlternateScopes ? Scopes[Index].c_str() : ReadString(Scopes[Index].c_str(), "scope_name");
+			const bool IsFirst = !(Result.Equipped.Flags & Weapon::eWeaponAddonScope);
+			if (Add(Name, Weapon::eWeaponAddonScope, g_pClsidManager->addon_scope, g_pClsidManager->mp_addon_scope) && IsFirst)
+			{
+				Result.Equipped.ScopeIndex = static_cast<u8>(Index);
+			}
+		}
+	}
+	if (SilencerStatus == ALife::eAddonAttachable)
+	{
+		Add(Silencer, Weapon::eWeaponAddonSilencer, g_pClsidManager->addon_silen, g_pClsidManager->mp_addon_silen);
+	}
+	if (LauncherStatus == ALife::eAddonAttachable)
+	{
+		Add(Launcher, Weapon::eWeaponAddonGrenadeLauncher, g_pClsidManager->addon_glaun, g_pClsidManager->mp_addon_glaun);
+	}
+	return Result;
+}
+
+extern CSE_Abstract* reprocess_spawn(CALifeSimulator* Simulator, CSE_Abstract* Object);
+
+static void QueueWeaponWithAddons(const shared_str& Section, bool OnLevel, int Count, WeaponSpawnAddons Equipped, xr_vector<shared_str> Loose = {})
+{
+	const auto* SpawnLevel = g_pGameLevel;
+	Device.callback(0, [Section, OnLevel, Count, Equipped, Loose = std::move(Loose), SpawnLevel]()
+	{
+		if (!g_pGameLevel || g_pGameLevel != SpawnLevel || !Level().Server || !Level().Server->game || !ai().get_alife())
+		{
+			return;
+		}
+
+		auto* Player = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : nullptr;
+		if (!Player || !pSettings->section_exist(Section.c_str()))
+		{
+			return;
+		}
+
+		const auto& Location = Player->ai_location();
+		auto& Simulator = Level().Server->game->alife();
+		if (OnLevel)
+		{
+			Fvector Position;
+			Position.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+			for (int Index = 0; Index < Count; ++Index)
+			{
+				auto* Item = Simulator.spawn_item(Section.c_str(), Position, 0, Location.game_vertex_id(), u16(-1), true, Equipped);
+				Item->cast_alife_object()->use_ai_locations(false);
+			}
+		}
+		else
+		{
+			const auto SpawnInInventory = [&](const shared_str& Name, WeaponSpawnAddons Addons = {})
+			{
+				auto* Item = Simulator.spawn_item(Name.c_str(), Player->Position(), Location.level_vertex_id(), Location.game_vertex_id(), Player->ID(), false, Addons);
+				return reprocess_spawn(&Simulator, Item);
+			};
+
+			for (int Index = 0; Index < Count; ++Index)
+			{
+				if (!SpawnInInventory(Section, Equipped))
+				{
+					break;
+				}
+
+				for (const auto& Addon : Loose)
+				{
+					if (pSettings->section_exist(Addon.c_str()))
+					{
+						SpawnInInventory(Addon);
+					}
+				}
+			}
+		}
+	});
+}
+
+static void QueueSpawn(CInifile::Sect& Section, bool OnLevel, bool IsSquad, int Count)
+{
+	const char* Name = Section.Name.c_str();
+	const bool UseAddonMode = (imgui_spawn_manager.SpawnEquipped || imgui_spawn_manager.SpawnWithLooseAddons)
+		&& !IsSquad && IsGameTypeSingleCompatible() && Section.line_exist("class")
+		&& g_pClsidManager->is_weapon(pSettings->r_clsid(Name, "class"));
+
+	if (UseAddonMode)
+	{
+		auto Addons = ReadSpawnManagerWeaponAddons(Name);
+		if (imgui_spawn_manager.SpawnWithLooseAddons)
+		{
+			OnLevel = false;
+			if (!Addons.Loose.empty())
+			{
+				QueueWeaponWithAddons(Section.Name, OnLevel, Count, {}, std::move(Addons.Loose));
+				return;
+			}
+		}
+		else if (Addons.Equipped.Flags)
+		{
+			QueueWeaponWithAddons(Section.Name, OnLevel, Count, Addons.Equipped);
+			return;
+		}
+	}
+
+	QueueSpawnCommand(Name, OnLevel, IsSquad, Count);
 }
 
 static void ShowSpawnNotification(const char* Message)
@@ -1854,7 +2112,7 @@ static void RenderBulkSpawn(std::initializer_list<const SectionData*> Groups)
 		const bool OnLevel = SpawnOnLevel();
 		for (const SectionData* Group : Groups)
 		{
-			for (const CInifile::Sect* Entry : Group->BulkSpawn)
+			for (CInifile::Sect* Entry : Group->BulkSpawn)
 			{
 				QueueSpawn(*Entry, OnLevel, false, 1);
 			}

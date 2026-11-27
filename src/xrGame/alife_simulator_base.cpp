@@ -88,7 +88,7 @@ void CALifeSimulatorBase::reload			(const char* section)
 	m_initialized				= true;
 }
 
-CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration)
+CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration, WeaponSpawnAddons Addons)
 {
 	CSE_Abstract				*abstract = F_entity_Create(section);
 	R_ASSERT3					(abstract,"Cannot find item with section",section);
@@ -118,8 +118,18 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 
 	//оружие спавним с полным магазинои
 	CSE_ALifeItemWeapon* weapon = dynamic_object->cast_item_weapon();
-	if(weapon)
-		weapon->a_elapsed.MagazineElapsed		= weapon->get_ammo_magsize();
+	if (weapon)
+	{
+		weapon->a_elapsed.MagazineElapsed = weapon->get_ammo_magsize();
+		if (Addons.Flags)
+		{
+			weapon->m_addon_flags.set(Addons.Flags, true);
+			if (Addons.Flags & CSE_ALifeItemWeapon::eWeaponAddonScope)
+			{
+				weapon->cur_scope = Addons.ScopeIndex;
+			}
+		}
+	}
 
 	dynamic_object->m_tNodeID	= level_vertex_id;
 	dynamic_object->m_tGraphID	= game_vertex_id;
