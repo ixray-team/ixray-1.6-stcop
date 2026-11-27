@@ -375,81 +375,86 @@ extern "C" bool  SetCrashHandlerFilter ( PFNCHFILTFN pFn );
 static UnhandledExceptionFilterType	*previous_filter = nullptr;
 
 #ifdef USE_OWN_MINI_DUMP
-typedef bool (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
-										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
-										 CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
-										 CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam
-										 );
-
-// TODO: windows specific stuff, Linux would require debugging tools and APIs like `libunwind`, `libbfd`, and `gdb`...
-void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
+namespace
 {
-	const char* szResult = nullptr;
-	string_path	szDumpPath;
-	string_path	szScratch;
-	string64	t_stemp;
+	void LogMiniDumpError(const char* Operation, const char* Path, DWORD Error)
+	{
+		if (shared_str_initialized)
+		{
+			Msg("! MiniDump: %s failed for '%s' (0x%08lX)", Operation, Path, Error);
+		}
+	}
 
-	timestamp	(t_stemp);
-	xr_strcpy		( szDumpPath, Core.ApplicationName);
-	xr_strcat		( szDumpPath, "_"					);
-	xr_strcat		( szDumpPath, Core.UserName			);
-	xr_strcat		( szDumpPath, "_"					);
-	xr_strcat		( szDumpPath, t_stemp				);
-	xr_strcat		( szDumpPath, ".mdmp"				);
+	bool WriteMiniDump(const char* DumpPath, EXCEPTION_POINTERS* ExceptionPointers)
+	{
+		const DWORD ProcessId = GetCurrentProcessId();
+		const DWORD ThreadId = GetCurrentThreadId();
+		char TempPath[sizeof(string_path) + 32];
+		xr_sprintf(TempPath, "%s.%lu.%lu.tmp", DumpPath, ProcessId, ThreadId);
 
-	__try {
+		const HANDLE File = CreateFileA(TempPath, GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+		if (File == INVALID_HANDLE_VALUE)
+		{
+			LogMiniDumpError("CreateFile", DumpPath, GetLastError());
+			return false;
+		}
+
+		MINIDUMP_EXCEPTION_INFORMATION ExceptionInfo = {ThreadId, ExceptionPointers, FALSE};
+		const BOOL Written = MiniDumpWriteDump(GetCurrentProcess(), ProcessId, File, MiniDumpWithThreadInfo, &ExceptionInfo, nullptr, nullptr);
+		const DWORD WriteError = Written ? ERROR_SUCCESS : GetLastError();
+		CloseHandle(File);
+		if (!Written)
+		{
+			DeleteFileA(TempPath);
+			LogMiniDumpError("MiniDumpWriteDump", DumpPath, WriteError);
+			return false;
+		}
+
+		// Publish the dump only after DbgHelp has finished writing it.
+		if (!MoveFileExA(TempPath, DumpPath, MOVEFILE_REPLACE_EXISTING))
+		{
+			const DWORD MoveError = GetLastError();
+			DeleteFileA(TempPath);
+			LogMiniDumpError("MoveFileEx", DumpPath, MoveError);
+			return false;
+		}
+
+		if (shared_str_initialized)
+		{
+			Msg("* Saved dump file to '%s'", DumpPath);
+		}
+		return true;
+	}
+}
+
+void save_mini_dump(EXCEPTION_POINTERS* ExceptionPointers)
+{
+	string64 Timestamp;
+	timestamp(Timestamp);
+	string_path FileName;
+	xr_sprintf(FileName, "%s_%s_%s.mdmp", Core.ApplicationName, Core.UserName, Timestamp);
+
+	string_path DumpPath;
+	xr_strcpy(DumpPath, FileName);
+	__try
+	{
 		if (FS.path_exist("$logs$"))
-			FS.update_path	(szDumpPath,"$logs$",szDumpPath);
-	}
-	__except( EXCEPTION_EXECUTE_HANDLER ) {
-		string_path	temp;
-		xr_strcpy		(temp,szDumpPath);
-		xr_strcpy		(szDumpPath,"logs/");
-		xr_strcat		(szDumpPath,temp);
-	}
-
-	// create the file
-	HANDLE hFile = ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
-	if (INVALID_HANDLE_VALUE==hFile)	
-	{
-		// try to place into current directory
-		const char* filename = strrchr(szDumpPath, '\\');
-		const char* slash = strrchr(szDumpPath, '/');
-		if (slash && (!filename || slash > filename))
-			filename = slash;
-		if (filename)
-			MoveMemory(szDumpPath, filename + 1, strlen(filename + 1) + 1);
-		hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
-	}
-	if (hFile != INVALID_HANDLE_VALUE)
-	{
-		_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
-			
-		ExInfo.ThreadId = ::GetCurrentThreadId();
-		ExInfo.ExceptionPointers = pExceptionInfo;
-		ExInfo.ClientPointers = false;
-
-		// write the dump
-		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo | MiniDumpWithPrivateReadWriteMemory);
-
-		bool bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
-		if (bOK)
 		{
-			xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
-			szResult = szScratch;
-//			retval = EXCEPTION_EXECUTE_HANDLER;
+			FS.update_path(DumpPath, "$logs$", FileName);
 		}
-		else
-		{
-			xr_sprintf( szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
-			szResult = szScratch;
-		}
-		::CloseHandle(hFile);
 	}
-	else
+	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
-		xr_sprintf( szScratch, "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
-		szResult = szScratch;
+		xr_sprintf(DumpPath, "logs/%s", FileName);
+	}
+
+	if (!WriteMiniDump(DumpPath, ExceptionPointers) && strcmp(DumpPath, FileName) != 0)
+	{
+		WriteMiniDump(FileName, ExceptionPointers);
+	}
+	if (shared_str_initialized)
+	{
+		xrLogger::FlushLog();
 	}
 }
 #endif // USE_OWN_MINI_DUMP
