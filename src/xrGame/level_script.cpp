@@ -296,6 +296,32 @@ void set_weather	(const char* weather_name, bool forced)
 		g_pGamePersistent->Environment().SetWeather(weather_name,forced);
 }
 
+static const char* GetWeatherKeyframeCycle(bool Next)
+{
+	const auto& Environment = g_pGamePersistent->Environment();
+	const auto* Keyframe = Environment.Current[Next];
+	if (Environment.bWFX || !Keyframe)
+	{
+		return nullptr;
+	}
+
+	for (const auto& [Cycle, Keyframes] : Environment.WeatherCycles)
+	{
+		if (std::find(Keyframes.begin(), Keyframes.end(), Keyframe) != Keyframes.end())
+		{
+			return Cycle.c_str();
+		}
+	}
+
+	return nullptr;
+}
+
+static bool RestoreWeatherCycle(const char* Cycle, const char* PastCycle, const char* PastSection,
+	const char* NextCycle, const char* NextSection)
+{
+	return g_pGamePersistent->Environment().RestoreWeatherCycle(Cycle, PastCycle, PastSection, NextCycle, NextSection);
+}
+
 bool set_weather_fx	(const char* weather_name)
 {
 		return		(g_pGamePersistent->Environment().SetWeatherFX(weather_name));
@@ -1954,6 +1980,8 @@ void CLevel::script_register(lua_State *L)
 		def("set_weather_fx",					set_weather_fx),
 		def("set_past_weather", set_past_wdesc),
 		def("set_next_weather", set_next_wdesc),
+		def("get_weather_keyframe_cycle", GetWeatherKeyframeCycle),
+		def("restore_weather_cycle", RestoreWeatherCycle),
 		def("get_weather_game_time", get_weather_game_time),
 		def("get_past_wdesc_execution_time", get_past_wdesc_execution_time),
 		def("get_next_wdesc_execution_time", get_next_wdesc_execution_time),

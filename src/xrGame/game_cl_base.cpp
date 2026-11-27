@@ -63,8 +63,11 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	if (OldTime > GameEnvironmentTime)
+	// ALife supplies the environment clock in single player independently of the packet timestamp.
+	if (OldTime > Level().GetEnvironmentGameTime())
+	{
 		GamePersistent().Environment().Invalidate();
+	}
 }
 
 struct not_exsiting_clients_deleter

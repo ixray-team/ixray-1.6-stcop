@@ -253,6 +253,8 @@ private:
 	void					calculate_dynamic_sun_dir();
 public:
 	void SetEnvDesc(const char* weather_section, CEnvDescriptor*& e);
+	bool RestoreWeatherCycle(shared_str Cycle, shared_str PastCycle, shared_str PastSection,
+		shared_str NextCycle, shared_str NextSection);
 
 	static bool sort_env_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
 	{	return x->exec_time < y->exec_time;	}

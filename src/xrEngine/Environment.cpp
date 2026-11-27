@@ -338,6 +338,47 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
     }
 }
 
+bool CEnvironment::RestoreWeatherCycle(shared_str Cycle, shared_str PastCycle, shared_str PastSection,
+	shared_str NextCycle, shared_str NextSection)
+{
+	if (!Cycle.size() || !PastCycle.size() || !PastSection.size() || !NextCycle.size() || !NextSection.size() ||
+		!WeatherCycles.contains(Cycle))
+	{
+		return false;
+	}
+
+	const auto FindKeyframe = [this](const shared_str& CycleName, const shared_str& Section) -> CEnvDescriptor*
+	{
+		const auto Weather = WeatherCycles.find(CycleName);
+		if (Weather == WeatherCycles.end())
+		{
+			return nullptr;
+		}
+
+		const auto& Keyframes = Weather->second;
+		const auto Keyframe = std::find_if(Keyframes.begin(), Keyframes.end(), [&Section](const CEnvDescriptor* Descriptor)
+		{
+			return Descriptor->m_identifier == Section;
+		});
+		return Keyframe != Keyframes.end() ? *Keyframe : nullptr;
+	};
+
+	auto* Past = FindKeyframe(PastCycle, PastSection);
+	auto* Next = FindKeyframe(NextCycle, NextSection);
+	if (!Past || !Next)
+	{
+		return false;
+	}
+
+	Invalidate();
+	SetWeather(Cycle);
+	Current[0] = Past;
+	Current[1] = Next;
+	Past->on_device_create();
+	Next->on_device_create();
+	return true;
+}
+
 bool CEnvironment::SetWeatherFX(shared_str name)
 {
 	if (bWFX)				return false;

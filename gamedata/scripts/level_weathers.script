@@ -117,8 +117,6 @@ function WeatherManager:__init()
 	self.processing_allowed = true
 	self.force_switch_weather_once = false
 	
-	self:CheckAndSwitchToIndoor()
-	
 	local data = parse_weathers_graph()
 	self.weather_graph = data["weather_graph"]
 	self.weather_groups = data["weather_groups"]
@@ -277,19 +275,21 @@ function WeatherManager:update()
 		)
 
 		-- в загруженных данных нет секции погоды пробуем сделать тик обдейта тобы сгенерировать случайную на следующем кадре
-		if not self.storage.w_section then
+		self.processing_allowed = true
+		self:CheckAndSwitchToIndoor()
+		if self.processing_allowed and not self.storage.w_section then
 			self:tick()
 			IXRLog("ON NEW GAME RESEED WEATHER SECTION")
 		end
 
-		-- применяем секцию погоды с последнего сохранения если есть
-		if not self.processing_allowed then
-			self:CheckAndSwitchToIndoor()
-		elseif self.storage.w_section then
-			IXRLog("Use saved weather section: "..self.storage.w_section)
-			self:play_weather(self.storage.w_section, true)
-		else
-			IXRLog("Saved weather section not exists")
+		if self.processing_allowed then
+			local saved = self.storage.weather_cycle
+			local restored = saved and level.restore_weather_cycle and level.restore_weather_cycle(
+				saved.cycle, saved.past_cycle, saved.past_section, saved.next_cycle, saved.next_section)
+			if not restored and self.storage.w_section then
+				IXRLog("Use saved weather section: "..self.storage.w_section)
+				self:play_weather(self.storage.w_section, true)
+			end
 		end
 
 		self.storage.is_wfx_initialized = false
@@ -425,16 +425,38 @@ function WeatherManager:forced_weather_change() -- выброс стоп
 end
 
 function WeatherManager:load(F)
+	self.loaded = false
+	self.force_switch_weather_once = false
 end
 
 function WeatherManager:load_state(m_data)
 end
 
 function WeatherManager:save(F)
-	SetStorageVar(STORAGE_KEY, self.storage)
+	self:save_state()
 end
 
 function WeatherManager:save_state(m_data)
+	if not self.loaded then
+		return
+	end
+
+	self.storage.weather_cycle = nil
+	if self.processing_allowed and level.get_weather_keyframe_cycle then
+		local past_cycle = level.get_weather_keyframe_cycle(false)
+		local next_cycle = level.get_weather_keyframe_cycle(true)
+		if past_cycle and next_cycle then
+			self.storage.wfx_section = nil
+			self.storage.wfx_left_time = 0
+			self.storage.weather_cycle = {
+				cycle = level.get_weather(),
+				past_cycle = past_cycle,
+				past_section = level.get_past_weather(),
+				next_cycle = next_cycle,
+				next_section = level.get_next_weather(),
+			}
+		end
+	end
 	SetStorageVar(STORAGE_KEY, self.storage)
 end
 
