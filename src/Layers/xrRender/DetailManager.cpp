@@ -69,30 +69,126 @@ void CDetailManager::Load()
 		return;
 	}
 
+	// CHECK_OR_EXIT can return when engine error dialogs are suppressed.
+	// Clean up and return as well, so invalid input never reaches dereferences.
+	auto rejectFile = [this](const char* reason)
+	{
+		Msg("! [DETAILS] %s", reason);
+		for (CDetail& detail : objects)
+			detail.Unload();
+		objects.clear();
+		dtSlotsOwned.clear();
+		dtSlots = nullptr;
+		if (dtFS)
+			FS.r_close(dtFS);
+		CHECK_OR_EXIT(false, reason);
+	};
+
 	string_path fn;
 	FS.update_path(fn,"$level$","level.details");
 	dtFS = FS.r_open(fn);
+	if (!dtFS)
+	{
+		rejectFile("Unable to open level.details");
+		return;
+	}
 
-	// Header
-	dtFS->r_chunk_safe(0,&dtH,sizeof(dtH));
-	R_ASSERT(dtH.version == DETAIL_VERSION);
+	// Never perform I/O only inside R_ASSERT2: Shipping builds omit it.
+	const bool headerLoaded = dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
+	if (!headerLoaded)
+	{
+		rejectFile("Invalid level.details header");
+		return;
+	}
+	if (dtH.version != DETAIL_VERSION &&
+		dtH.version != static_cast<u32>(ixray::detail_format::Version::V4))
+	{
+		rejectFile("Unsupported level.details detail version");
+		return;
+	}
+	if (dtH.version == static_cast<u32>(ixray::detail_format::Version::V4) &&
+		dtH.object_count > ixray::detail_format::MaxModelsV4)
+	{
+		rejectFile("Too many detail models for v4");
+		return;
+	}
 	u32 m_count = dtH.object_count;
 
 	// Models
 	IReader* m_fs = dtFS->open_chunk(1);
+	if (!m_fs)
+	{
+		rejectFile("Missing level.details model chunk");
+		return;
+	}
 	for (u32 m_id = 0; m_id < m_count; m_id++)
 	{
 		IReader* S = m_fs->open_chunk(m_id);
-		CDetail& dt	= objects.emplace_back();
+		if (!S)
+		{
+			m_fs->close();
+			rejectFile("Missing detail model subchunk");
+			return;
+		}
+		CDetail& dt = objects.emplace_back();
 		dt.Load(S);
 		S->close();
 	}
 	m_fs->close();
 
-	// Get pointer to database (slots)
+	// Always decode v3/v4 slots into a wide-ID game-only runtime structure.
+	// In particular, a 20-byte v4 disk record must NEVER be cast to DetailSlot*.
 	IReader* m_slots = dtFS->open_chunk(2);
-	dtSlots = (DetailSlot*)m_slots->pointer();
+	if (!m_slots)
+	{
+		rejectFile("Missing level.details slot chunk");
+		return;
+	}
+	const ixray::detail_format::Header shape{
+		dtH.version, dtH.object_count, dtH.offs_x, dtH.offs_z, dtH.size_x, dtH.size_z};
+	std::vector<ixray::detail_format::Slot> decoded;
+	const auto decode_status = ixray::detail_format::decodeSlots(
+		static_cast<ixray::detail_format::Version>(dtH.version), shape,
+		static_cast<const std::uint8_t*>(m_slots->pointer()), static_cast<std::size_t>(m_slots->length()), decoded);
 	m_slots->close();
+	if (decode_status != ixray::detail_format::Status::Ok)
+	{
+		rejectFile(ixray::detail_format::statusMessage(decode_status));
+		return;
+	}
+
+	// Log actual decoded references (not just the declared model count).
+	std::size_t references = 0;
+	std::size_t highReferences = 0;
+	std::uint16_t maxReferencedId = 0;
+	bool hasReferences = false;
+	for (const auto& slot : decoded)
+	{
+		for (const std::uint16_t id : slot.ids)
+		{
+			if (id == ixray::detail_format::EmptyId)
+				continue;
+			hasReferences = true;
+			++references;
+			if (id >= 1024)
+				++highReferences;
+			if (id > maxReferencedId)
+				maxReferencedId = id;
+		}
+	}
+	if (hasReferences)
+		Msg("* [DETAILS] level.details v%u: %u models, %zu slots, "
+			"max referenced ID=%u, references ID>=1024=%zu, occupied references=%zu",
+			dtH.version, m_count, decoded.size(), static_cast<u32>(maxReferencedId),
+			highReferences, references);
+	else
+		Msg("* [DETAILS] level.details v%u: %u models, %zu slots, no model references",
+			dtH.version, m_count, decoded.size());
+
+	dtSlotsOwned.resize(decoded.size());
+	for (std::size_t i = 0; i < decoded.size(); ++i)
+		dtSlotsOwned[i] = ixray::detail_format::toRuntimeSlot(decoded[i]);
+	dtSlots = dtSlotsOwned.empty() ? nullptr : dtSlotsOwned.data();
 
 	// Initialize 'vis' and 'cache'
 	cache_ReInitialize();
@@ -131,7 +227,10 @@ void CDetailManager::Unload		()
 	}
 #endif
 	objects.clear();
-
+#ifndef _EDITOR
+	dtSlotsOwned.clear();
+#endif
+	dtSlots = nullptr;
 	FS.r_close(dtFS);
 }
 

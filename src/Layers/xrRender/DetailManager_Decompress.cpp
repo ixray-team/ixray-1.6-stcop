@@ -54,7 +54,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	if (D.empty)
 		return;
 
-	DetailSlot& DS = *D.DS;
+	RuntimeDetailSlot& DS = *D.DS;
 
 #ifdef _EDITOR
 	extern ECORE_API CDB::COLLIDER XRC;
@@ -119,10 +119,10 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			// Iterpolate and dither palette
 			FixedVector<int, dm_obj_in_slot>selected;
 
-			if ((DS.id0!=DetailSlot::ID_Empty)) selected.push_back(0);
-			if ((DS.id1!=DetailSlot::ID_Empty)) selected.push_back(1);
-			if ((DS.id2!=DetailSlot::ID_Empty)) selected.push_back(2);
-			if ((DS.id3!=DetailSlot::ID_Empty)) selected.push_back(3);
+			if ((DS.id0!=RuntimeDetailSlot::ID_Empty)) selected.push_back(0);
+			if ((DS.id1!=RuntimeDetailSlot::ID_Empty)) selected.push_back(1);
+			if ((DS.id2!=RuntimeDetailSlot::ID_Empty)) selected.push_back(2);
+			if ((DS.id3!=RuntimeDetailSlot::ID_Empty)) selected.push_back(3);
 			
 			// Select
 			if (selected.empty()) continue;
@@ -203,9 +203,11 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			Item_P.y = y;
 
 			empty_slot = false;
-			u8 obj_id = DS.r_id(index);
+			const u32 obj_id = DS.r_id(index);
 
-			if (obj_id == DetailSlot::ID_Empty) continue;
+			// The model count was validated while loading level.details.
+			// Keep this guard for defensive safety in both game and editor.
+			if (obj_id == RuntimeDetailSlot::ID_Empty || obj_id >= objects.size()) continue;
 #ifndef _EDITOR 
 			const CDetail& Dobj = objects[obj_id];
 #else
