@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "xrMessages.h"
 #include "xrGameSpyServer.h"
+#include "game_sv_base.h"
 #include "../xrEngine/IGame_Persistent.h"
 
 #include "gamespy/GameSpy_Base_Defs.h"

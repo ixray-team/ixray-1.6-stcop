@@ -14,6 +14,7 @@
 #include "script_sound.h"
 #include "../../xrCore/xr_ini.h"
 #include "../../xrUI/Widgets/UI3dStatic.h"
+#include "../../Include/xrRender/RenderVisual.h"
 #include "../Weapons/WeaponBoneVisibility.h"
 
 struct SpawnManagerIconImage
