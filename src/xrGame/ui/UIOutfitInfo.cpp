@@ -121,7 +121,14 @@ void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
 		m_progress->SetTwoPos(cur, comp);
 
 	string32 buf;
-	xr_sprintf(buf, "%.0f", cur);
+	if (cur > 0.0f && cur < 1.0f && m_unit_str.size() == 1 && m_unit_str.c_str()[0] == '%')
+	{
+		xr_strcpy(buf, "<1");
+	}
+	else
+	{
+		xr_sprintf(buf, "%.0f", cur);
+	}
 
 	string256 str;
 	if (m_unit_str.size())
