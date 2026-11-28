@@ -1,6 +1,6 @@
 # Self Mechanic
 
-In a Debug or RelWithDebInfo single-player game, open **Game → Self Mechanic** in ImGui, then press Alt to return input to the game. The `self_mechanic` console command opens the same window. Close other game dialogs first.
+In a Debug or RelWithDebInfo single-player game, open **Game → Self Mechanic** in ImGui, then press Alt to return input to the game. The `self_mechanic` console command opens the same window. If the inventory is open, Self Mechanic replaces it with the upgrade window. Close any other game dialogs first.
 
 The tool uses the normal upgrade window and the upgrade manager's graph from the loaded configuration, including inherited and addon changes. It makes the selected item eligible without a technician's item list. Unknown upgrades are visible for this session only. Parent requirements, mutually exclusive groups, already installed upgrades, and the item's `legacy_upgrade_mode` remain in effect. Closing the upgrade window clears the session state.
 

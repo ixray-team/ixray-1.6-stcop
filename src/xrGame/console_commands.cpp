@@ -2463,17 +2463,24 @@ public:
 
 	void Execute(const char*) override
 	{
-		if (!g_pGameLevel || !IsGameTypeSingle() || !Actor() || !ai().get_alife() || !Level().m_upgrade_manager || !CurrentGameUI())
+		const bool InGame = g_pGameLevel && IsGameTypeSingle() && Actor() && ai().get_alife() && Level().m_upgrade_manager;
+		CUIGameCustom* GameUI = InGame ? CurrentGameUI() : nullptr;
+		if (!GameUI)
 		{
 			Msg("! Self Mechanic requires a loaded single-player game.");
 			return;
 		}
-		if (CurrentGameUI()->TopInputReceiver())
+		CUIActorMenuBase* Inventory = GameUI->GetActiveInventoryWindow();
+		if (Inventory && Inventory->GetMenuMode() == mmInventory && GameUI->TopInputReceiver() == Inventory)
+		{
+			Inventory->HideDialog();
+		}
+		if (GameUI->TopInputReceiver())
 		{
 			Msg("! Close the current game dialog before opening Self Mechanic.");
 			return;
 		}
-		CurrentGameUI()->StartUpgrade(Actor(), nullptr, true);
+		GameUI->StartUpgrade(Actor(), nullptr, true);
 	}
 };
 #endif
