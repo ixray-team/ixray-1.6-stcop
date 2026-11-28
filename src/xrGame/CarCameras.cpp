@@ -12,6 +12,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "Car.h"
 #include "Actor.h"
+#include "../xrEngine/bone.h"
 #include "ActorEffector.h"
 #include "cameralook.h"
 #include "CameraFirstEye.h"
@@ -22,6 +23,74 @@
 
 namespace
 {
+	// The first-person driver model is shown only after the vehicle idle has
+	// replaced the standing pose. Hiding the head and arms earlier makes the
+	// skeleton stretch from the hidden bones for a frame.
+	constexpr u32 DriverVisibilityDelayMs = 300;
+
+	Fvector GetDriverBoneHidePosition(IKinematics* Kinematics, u16 Bone, bool UseParentPosition)
+	{
+		const CBoneData& Data = Kinematics->LL_GetData(Bone);
+		const u16 Parent = Data.GetParentID();
+
+		// The head collapses at the neck. For the arms use the current shoulder
+		// joint: the visible parent transform plus the bone's bind offset. The
+		// hidden upper arm's own transform is not updated by the animation.
+		if (Parent != BI_NONE)
+		{
+			const CBoneInstance& ParentInstance = Kinematics->LL_GetBoneInstance(Parent);
+			if (UseParentPosition)
+			{
+				if (ParentInstance.mTransform.c.square_magnitude() > EPS_L * EPS_L)
+					return ParentInstance.mTransform.c;
+			}
+			else
+			{
+				Fmatrix Shoulder;
+				Shoulder.mul_43(ParentInstance.mTransform, Data.bind_transform);
+				if (Shoulder.c.square_magnitude() > EPS_L * EPS_L)
+					return Shoulder.c;
+			}
+		}
+
+		const Fvector& Position = Kinematics->LL_GetBoneInstance(Bone).mTransform.c;
+		if (Position.square_magnitude() > EPS_L * EPS_L)
+			return Position;
+
+		// A freshly rebuilt or not yet calculated skeleton can keep the bone
+		// at the model origin. Fall back to its bind position.
+		Fmatrix BindModel;
+		BindModel.invert(Data.m2b_transform);
+		return BindModel.c;
+	}
+
+	void SetDriverBoneHidePositions(IKinematics* Kinematics, u16 Bone, const Fvector& Position)
+	{
+		if (Bone == BI_NONE || Bone >= Kinematics->LL_BoneCount())
+			return;
+
+		CBoneData& Data = Kinematics->LL_GetData(Bone);
+		CBoneInstance& Instance = Kinematics->LL_GetBoneInstance(Bone);
+
+		// Collapse the whole hidden subtree at the neck/shoulder. Its own
+		// transforms can be stale (identity or a previous hidden pose), which
+		// would stretch the vertices toward the actor's root/seat.
+		Instance.mTransform.c = Position;
+		if (Instance.mHiddenTransformValid)
+			Instance.mTransformHidden.c = Position;
+		Instance.mRenderTransform.mul_43(Instance.mTransform, Data.m2b_transform);
+
+		for (CBoneData* Child : Data.children)
+			SetDriverBoneHidePositions(Kinematics, Child->GetSelfID(), Position);
+	}
+
+	bool IsLocalDriver(CActor* Driver)
+	{
+		// Only the local view entity may hide its first-person body. In
+		// multiplayer, viewers and NPC-driven cars keep the driver visible.
+		return Driver != nullptr && (Driver == g_actor || Driver->IsMyCamera());
+	}
+
 	void SetDriverBonesVisible(CActor* Driver, bool Visible)
 	{
 		if (Driver == nullptr || Driver->Visual() == nullptr)
@@ -34,12 +103,33 @@ namespace
 		// Keep the neck and clavicles: they cover the torso openings. Only the
 		// head and the arms from the shoulder joints are hidden.
 		static const char* BoneNames[] = {"bip01_head", "bip01_l_upperarm", "bip01_r_upperarm"};
+
+		// Evaluate the visible parent bones (neck/clavicles) before using
+		// their positions for the hidden subtree.
+		Kinematics->CalculateBones_Invalidate();
+		Kinematics->CalculateBones(true);
+
 		for (const char* Name : BoneNames)
 		{
 			const u16 Bone = Kinematics->LL_BoneID(Name);
-			if (Bone != BI_NONE)
-				Kinematics->LL_SetBoneVisible(Bone, Visible, true);
+			if (Bone == BI_NONE)
+				continue;
+
+			if (!Visible)
+			{
+				const bool UseParentPosition = xr_strcmp(Name, "bip01_head") == 0;
+				const Fvector Position = GetDriverBoneHidePosition(Kinematics, Bone, UseParentPosition);
+				SetDriverBoneHidePositions(Kinematics, Bone, Position);
+			}
+
+			Kinematics->LL_SetBoneVisible(Bone, Visible, true);
 		}
+
+		// Apply the visibility mask and the hidden-bone matrices in this
+		// frame. Otherwise CalculateBones() may defer submesh culling, and the
+		// hole appears to grow over the next few frames.
+		Kinematics->CalculateBones_Invalidate();
+		Kinematics->CalculateBones(true);
 	}
 }
 
@@ -48,10 +138,45 @@ void CCar::ApplyDriverModelVisibility(bool FirstPerson)
 	if (Owner() == nullptr)
 		return;
 
+	if (FirstPerson && !IsLocalDriver(OwnerActor()))
+		FirstPerson = false;
+
+	// Re-selecting the first-person camera must not restart the transition.
+	if (!m_driver_visibility_pending && FirstPerson && m_driver_visibility_first_person_applied)
+		return;
+
+	// A visible first-person driver must wait for the vehicle idle before the
+	// head/arms are hidden or the pose is frozen. Keep the whole model hidden
+	// during the transition: showing it with the standing pose and the
+	// head/arms already hidden causes the stretch on entry.
+	const bool DelayVisibility = FirstPerson && !m_hide_driver_first_person &&
+		(m_hide_driver_head_arms_first_person || !m_driver_first_person_animations);
+	m_driver_visibility_pending = DelayVisibility;
+	if (DelayVisibility)
+	{
+		m_driver_visibility_first_person_applied = false;
+		m_driver_visibility_time = Device.dwTimeGlobal;
+		Owner()->setVisible(false);
+		return;
+	}
+
+	ApplyDriverModelVisibilityNow(FirstPerson);
+}
+
+void CCar::ApplyDriverModelVisibilityNow(bool FirstPerson)
+{
+	if (Owner() == nullptr)
+		return;
+
+	CActor* Driver = OwnerActor();
+	if (FirstPerson && !IsLocalDriver(Driver))
+		FirstPerson = false;
+
+	m_driver_visibility_first_person_applied = FirstPerson;
+
 	const bool HideWholeModel = FirstPerson && m_hide_driver_first_person;
 	Owner()->setVisible(!HideWholeModel);
 
-	CActor* Driver = OwnerActor();
 	if (Driver == nullptr)
 		return;
 
@@ -59,6 +184,97 @@ void CCar::ApplyDriverModelVisibility(bool FirstPerson)
 	// first-person HUD hands replace.
 	const bool HideBones = FirstPerson && !m_hide_driver_first_person && m_hide_driver_head_arms_first_person;
 	SetDriverBonesVisible(Driver, !HideBones);
+
+	// Keep the first-person body visible but freeze its animation tracks.
+	const bool FreezeAnimations = FirstPerson && !m_hide_driver_first_person && !m_driver_first_person_animations;
+	Driver->SetVehicleAnimationsEnabled(!FreezeAnimations);
+}
+
+void CCar::UpdateDriverBoneHidePositions()
+{
+	if (!HasFirstCam() || m_hide_driver_first_person || !m_hide_driver_head_arms_first_person)
+		return;
+
+	if (m_driver_visibility_pending)
+		return;
+
+	CActor* Driver = OwnerActor();
+	if (!IsLocalDriver(Driver) || Driver->Visual() == nullptr)
+		return;
+
+	IKinematics* Kinematics = smart_cast<IKinematics*>(Driver->Visual());
+	if (Kinematics == nullptr)
+		return;
+
+	// Keep the collapsed head/arms points on the current neck/shoulder while
+	// the idle is still settling. Otherwise the visible body moves during the
+	// freeze delay and the fixed points appear pulled inside.
+	struct SBoneTarget
+	{
+		u16 Bone = BI_NONE;
+		Fvector Position = {};
+	};
+
+	static const char* BoneNames[] = {"bip01_head", "bip01_l_upperarm", "bip01_r_upperarm"};
+	SBoneTarget Targets[3];
+	u8 HiddenCount = 0;
+
+	for (u8 Index = 0; Index < 3; ++Index)
+	{
+		const u16 Bone = Kinematics->LL_BoneID(BoneNames[Index]);
+		if (Bone == BI_NONE || Kinematics->LL_GetBoneVisible(Bone))
+			continue;
+
+		const bool UseParentPosition = xr_strcmp(BoneNames[Index], "bip01_head") == 0;
+		Targets[HiddenCount].Bone = Bone;
+		Targets[HiddenCount].Position = GetDriverBoneHidePosition(Kinematics, Bone, UseParentPosition);
+		++HiddenCount;
+	}
+
+	if (HiddenCount == 0)
+		return;
+
+	// While the animation is frozen the targets no longer move. Skip the
+	// matrix updates unless a mask or another system moved the hidden points.
+	if (Driver->m_vehicle_anim_pause.Paused)
+	{
+		bool Unchanged = true;
+		for (u8 Index = 0; Index < HiddenCount; ++Index)
+		{
+			const Fvector& Current = Kinematics->LL_GetBoneInstance(Targets[Index].Bone).mTransform.c;
+			if ((Current - Targets[Index].Position).square_magnitude() > EPS_L * EPS_L)
+			{
+				Unchanged = false;
+				break;
+			}
+		}
+		if (Unchanged)
+			return;
+	}
+
+	for (u8 Index = 0; Index < HiddenCount; ++Index)
+		SetDriverBoneHidePositions(Kinematics, Targets[Index].Bone, Targets[Index].Position);
+}
+
+void CCar::UpdateDriverModelVisibility()
+{
+	if (!m_driver_visibility_pending)
+		return;
+
+	// An invisible model is not rendered, so its animation tracks would not
+	// advance and the idle would not replace the entry pose. Drive the
+	// skeleton manually until the delay elapses.
+	if (CActor* Driver = OwnerActor())
+	{
+		if (IKinematics* Kinematics = PKinematics(Driver->Visual()))
+			Kinematics->CalculateBones();
+	}
+
+	if (Device.dwTimeGlobal - m_driver_visibility_time < DriverVisibilityDelayMs)
+		return;
+
+	m_driver_visibility_pending = false;
+	ApplyDriverModelVisibilityNow(HasFirstCam());
 }
 
 bool CCar::HUDView() const		

@@ -502,26 +502,41 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 
 	visimask.set(bone_id, val);
 
-	// Keep hidden bones at their original origin. Moving them to the parent's
-	// transform center makes zero-scaled car-light vertices collapse at the
-	// door/trunk hinge instead of disappearing inside the lamp housing.
-	const Fvector last_pos = bone_instances[bone_id].mTransform.c;
-	if(!visimask.is(bone_id))
+	// Keep hidden bones at their original origin. Zero-scaling at the model
+	// origin stretches skinned vertices toward the actor's root/seat; moving
+	// them to the parent's center collapses car-light vertices at the
+	// door/trunk hinge instead of inside the lamp housing.
+	CBoneInstance& BI = bone_instances[bone_id];
+	const Fvector last_pos = BI.mHiddenTransformValid ? BI.mTransformHidden.c : BI.mTransform.c;
+	if(!val)
 	{
-        bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
+		if(!BI.mHiddenTransformValid)
+		{
+			BI.mTransformHidden = BI.mTransform;
+			BI.mHiddenTransformValid = true;
+		}
+        BI.mTransform.scale(0.f,0.f,0.f);
+		BI.mTransform.c = last_pos;
 	}
 	else
 	{
+		// Restore the exact pose that was hidden. The animation update will
+		// overwrite animated bones, while bones without keys (jaw) keep their
+		// last valid transform instead of a zero-scaled matrix.
+		if(BI.mHiddenTransformValid)
+		{
+			BI.mTransform = BI.mTransformHidden;
+			BI.mHiddenTransformValid = false;
+		}
 		CalculateBones_Invalidate();
 	}
 
-	bone_instances[bone_id].mRenderTransform.mul_43(bone_instances[bone_id].mTransform,(*bones)[bone_id]->m2b_transform);
+	BI.mRenderTransform.mul_43(BI.mTransform,(*bones)[bone_id]->m2b_transform);
 	if(bRecursive)
 	{
 		for(CBoneData* BD : (*bones)[bone_id]->children)
 			LL_SetBoneVisible(BD->GetSelfID(), val, bRecursive);
 	}
-	bone_instances[bone_id].mTransform.c = last_pos;
 	Visibility_Invalidate();
 }
 
@@ -530,12 +545,25 @@ void CKinematics::LL_SetBonesVisible(VisMask mask)
 	visimask.zero();
 	for(u32 b = 0; b < bones->size(); b++)
 	{
+		CBoneInstance& BI = bone_instances[b];
 		if(mask.is(b))
+		{
 			visimask.set(b, true);
+			if(BI.mHiddenTransformValid)
+			{
+				BI.mTransform = BI.mTransformHidden;
+				BI.mHiddenTransformValid = false;
+			}
+		}
 		else
 		{
-	    	Fmatrix& A		= bone_instances[b].mTransform;
-	    	Fmatrix& B		= bone_instances[b].mRenderTransform;
+			if(!BI.mHiddenTransformValid)
+			{
+				BI.mTransformHidden = BI.mTransform;
+				BI.mHiddenTransformValid = true;
+			}
+	    	Fmatrix& A		= BI.mTransform;
+	    	Fmatrix& B		= BI.mRenderTransform;
         	A.scale			(0.f,0.f,0.f);
 	        B.mul_43		(A,(*bones)[b]->m2b_transform);
         }

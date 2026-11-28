@@ -1743,6 +1743,18 @@ void CCar::BindSuspension(const char* Section, u16 BoneId, IKinematics* K, CInif
 
 void	CCar::net_Destroy()
 {
+	if (CActor* Driver = OwnerActor(); Driver != nullptr && Driver == g_actor && !Driver->getDestroy())
+	{
+		// Destroying the local player's car must restore the hidden or frozen
+		// driver state. Leave through the normal detach path while the car is
+		// still intact, but only when the game UI is available: detach_Actor()
+		// touches the car panel and is also called during level teardown.
+		ApplyDriverModelVisibility(false);
+		Driver->SetVehicleAnimationsEnabled(true);
+		if (CurrentGameUI() != nullptr)
+			Driver->detach_Vehicle();
+	}
+
 	SyncServerRuntimeState();
 #ifdef DEBUG
 	DBgClearPlots();
@@ -2192,6 +2204,8 @@ void CCar::RemoveGrassSpheres()
 void CCar::UpdateCL()
 {
 	UpdateDashboardTelemetry();
+	UpdateDriverModelVisibility();
+	UpdateDriverBoneHidePositions();
 
 	if (m_has_saved_runtime_state)
 	{
@@ -3465,6 +3479,10 @@ bool CCar::attach_Actor(CGameObject* actor)
 	if(CPHDestroyable::Destroyed()) return false;
 	CHolderCustom::attach_Actor(actor);
 	Owner()->setVisible(0);
+	// The new attachment starts from an unknown visibility state: the model
+	// is hidden above and the saved camera decides how it is restored.
+	m_driver_visibility_pending = false;
+	m_driver_visibility_first_person_applied = false;
 	actor->XFORM().mul_43	(XFORM(),m_sits_transforms);
 	OnCameraChange(saved_camera);
 	PPhysicsShell()->Enable();
@@ -3753,6 +3771,8 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_firsteye_panel = pSettings->read_if_exists<bool>(cNameSect_str(), "firsteye_panel", m_firsteye_panel);
 	m_hide_driver_first_person = pSettings->read_if_exists<bool>(cNameSect_str(), "hide_driver_first_person", m_hide_driver_first_person);
 	m_hide_driver_head_arms_first_person = pSettings->read_if_exists<bool>(cNameSect_str(), "hide_driver_head_arms_first_person", m_hide_driver_head_arms_first_person);
+	m_driver_first_person_animations = pSettings->read_if_exists<bool>(cNameSect_str(), "driver_first_person_animations", m_driver_first_person_animations);
+	m_driver_car_animation = pSettings->read_if_exists<str_c>(cNameSect_str(), "driver_car_animation", "");
 	m_allow_inventory_control = pSettings->read_if_exists<bool>(cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
 	m_allow_mutant_bite_in_car = pSettings->read_if_exists<bool>(cNameSect_str(), "allow_mutant_bite_in_car", m_allow_mutant_bite_in_car);
 	m_poltergeist_can_lift = pSettings->read_if_exists<bool>(cNameSect_str(), "poltergeist_can_lift", m_poltergeist_can_lift);

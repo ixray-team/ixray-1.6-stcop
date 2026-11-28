@@ -55,6 +55,49 @@ struct SActorVehicleAnims;
 class  CActorCondition;
 class CActorFollowerMngr;
 
+// Freezes the actor's animation tracks without removing the current pose.
+// Used when the first-person driver model is visible but its animations are
+// disabled by the car config.
+class CVehicleAnimPause final : public IUpdateTracksCallback
+{
+public:
+	bool					Paused = false;
+	float					PendingTime = 0.f;
+	float					PendingDelay = 0.f;
+	IUpdateTracksCallback*	Previous = nullptr;
+
+	bool operator()(float dt, IKinematicsAnimated& K) override
+	{
+		if (Paused)
+			return true;
+
+		if (dt > 0.066f)
+			dt = 0.066f;
+
+		bool Result = true;
+		if (Previous != nullptr)
+			Result = (*Previous)(dt, K);
+		else
+			K.LL_UpdateTracks(dt, false, false);
+
+		// Let the freshly started idle blend in before freezing. Steering
+		// animations are suppressed while PendingDelay is active, so the
+		// frozen pose is always the idle pose.
+		if (PendingDelay > 0.f)
+		{
+			PendingTime += dt;
+			if (PendingTime >= PendingDelay)
+			{
+				Paused = true;
+				PendingDelay = 0.f;
+				PendingTime = 0.f;
+			}
+		}
+
+		return Result;
+	}
+};
+
 struct CameraRecoil;
 class CCameraShotEffector;
 class CActorInputHandler;
@@ -437,6 +480,8 @@ public:
 	void					steer_Vehicle			(float angle);
 	void					attach_Vehicle			(CHolderCustom* vehicle);
 	void					ReapplyVehicleVisual	();
+	void					SetVehicleAnimationsEnabled(bool Enabled);
+	void					LoadVehicleAnimationSet(LPCSTR Path);
 	bool					use_HolderEx			(CHolderCustom* object, bool bForce);
 
 	virtual bool			can_attach				(const CInventoryItem *inventory_item) const override;
@@ -471,6 +516,8 @@ protected:
 public:
 	SActorMotions*			m_anims;
 	SActorVehicleAnims*		m_vehicle_anims;
+	CVehicleAnimPause		m_vehicle_anim_pause;
+	float					m_vehicle_steer_angle = 0.f;
 
 	CBlend*					m_current_legs_blend;
 	CBlend*					m_current_torso_blend;

@@ -91,6 +91,8 @@ void  CActor::HeadCallback(CBoneInstance* B)
 void  CActor::VehicleHeadCallback(CBoneInstance* B)
 {
 	CActor*	A			= static_cast<CActor*>(B->callback_param());	VERIFY	(A);
+	if (A->m_vehicle_anim_pause.Paused)
+		return;
 	Fmatrix				spin;
 	float				bone_yaw	= angle_normalize_signed(A->r_torso.yaw)*0.75f;
 	float				bone_pitch	= angle_normalize_signed(A->r_torso.pitch)*0.75f;
@@ -306,16 +308,22 @@ void SVehicleAnimCollection::Create(IKinematicsAnimated* V,u16 num,bool old)
 
 	if (!old)
 	{
-		// New set: partial torso/legs cycles. The actor plays both idle
-		// layers, so the legs and torso are composed from separate motions.
-		idle_layers = 2;
+		// New set: partial torso/legs cycles. The actor plays all idle layers,
+		// so the legs and torso are composed from separate motions. The face
+		// bones live in the head partition and are not covered by either
+		// cycle; without a head idle they have no active blend and collapse
+		// to the head origin.
+		idle_layers = 3;
 		steer_left = V->ID_Cycle_Safe("steering_torso_ls");
 		steer_right = V->ID_Cycle_Safe("steering_torso_rs");
 		idles[0] = V->ID_Cycle_Safe("steering_torso_idle");
 		idles[1] = V->ID_Cycle_Safe("steering_legs_idle");
+		idles[2] = V->ID_Cycle_Safe("head_idle_0");
 		if (idles[0].valid())
 			++idles_num;
 		if (idles[1].valid())
+			++idles_num;
+		if (idles[2].valid())
 			++idles_num;
 		return;
 	}
@@ -363,6 +371,13 @@ void SVehicleAnimCollection::PlayIdles(IKinematicsAnimated* K,bool mix_in) const
 
 void CActor::steer_Vehicle(float angle)	
 {
+	m_vehicle_steer_angle = angle;
+
+	if (m_vehicle_anim_pause.Paused || m_vehicle_anim_pause.PendingDelay > 0.f)
+	{
+		return;
+	}
+
 	CHolderCustom* holder = m_holder;
 	if (holder == nullptr)
 	{

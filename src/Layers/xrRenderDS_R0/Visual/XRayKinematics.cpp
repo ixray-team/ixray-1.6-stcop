@@ -548,14 +548,27 @@ void CDS0_Kinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 	//VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
 	visimask.set(bone_id, !!val);
 
+	CBoneInstance& BI = bone_instances[bone_id];
+	const Fvector last_pos = BI.mHiddenTransformValid ? BI.mTransformHidden.c : BI.mTransform.c;
 	if (!visimask.is(bone_id)) {
-		bone_instances[bone_id].mTransform.scale(0.f, 0.f, 0.f);
+		if (!BI.mHiddenTransformValid) {
+			BI.mTransformHidden = BI.mTransform;
+			BI.mHiddenTransformValid = true;
+		}
+		BI.mTransform.scale(0.f, 0.f, 0.f);
+		// Collapse the hidden geometry at the bone's own position instead of
+		// the model origin, otherwise skinned vertices stretch to the root.
+		BI.mTransform.c = last_pos;
 	}
 	else {
+		if (BI.mHiddenTransformValid) {
+			BI.mTransform = BI.mTransformHidden;
+			BI.mHiddenTransformValid = false;
+		}
 		CalculateBones_Invalidate();
 	}
 
-	bone_instances[bone_id].mRenderTransform.mul_43(bone_instances[bone_id].mTransform, (*bones)[bone_id]->m2b_transform);
+	BI.mRenderTransform.mul_43(BI.mTransform, (*bones)[bone_id]->m2b_transform);
 	if (bRecursive) 
 	{
 		for (xr_vector<CBoneData*>::iterator C = (*bones)[bone_id]->children.begin(); C != (*bones)[bone_id]->children.end(); C++) 
@@ -570,12 +583,21 @@ void CDS0_Kinematics::LL_SetBonesVisible(VisMask mask)
 {
 	visimask.zero();
 	for (u32 b = 0; b < bones->size(); b++) {
+		CBoneInstance& BI = bone_instances[b];
 		if (mask.is(b)) {
 			visimask.set(b, true);
+			if (BI.mHiddenTransformValid) {
+				BI.mTransform = BI.mTransformHidden;
+				BI.mHiddenTransformValid = false;
+			}
 		}
 		else {
-			Fmatrix& A = bone_instances[b].mTransform;
-			Fmatrix& B = bone_instances[b].mRenderTransform;
+			if (!BI.mHiddenTransformValid) {
+				BI.mTransformHidden = BI.mTransform;
+				BI.mHiddenTransformValid = true;
+			}
+			Fmatrix& A = BI.mTransform;
+			Fmatrix& B = BI.mRenderTransform;
 			A.scale(0.f, 0.f, 0.f);
 			B.mul_43(A, (*bones)[b]->m2b_transform);
 		}

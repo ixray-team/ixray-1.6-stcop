@@ -24,6 +24,12 @@ class ENGINE_API		CBoneInstance
 public:
 	// data
 	Fmatrix				mTransform;							// final x-form matrix (local to model)
+	// Local transform saved while the bone is hidden. LL_SetBoneVisible()
+	// zero-scales the bone to hide its geometry, and restoring the exact
+	// previous matrix is required for bones that are not driven by the
+	// current animation (e.g. jaw) and for the collision skeleton.
+	Fmatrix				mTransformHidden;
+	bool				mHiddenTransformValid = false;
 	Fmatrix				mRenderTransform;					// final x-form matrix (model_base -> bone -> model)
 
 	Fmatrix				mRenderTransform_old;				// final x-form matrix (model_base -> bone -> model) old

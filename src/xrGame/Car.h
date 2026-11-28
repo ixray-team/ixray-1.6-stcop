@@ -367,6 +367,16 @@ public:
 	// Hide the head and arms of a visible first-person driver model. The neck
 	// and shoulders stay visible.
 	bool	m_hide_driver_head_arms_first_person = false;
+	// Keep the first-person driver model visible but freeze its animations.
+	bool	m_driver_first_person_animations = true;
+	// Delayed first-person visibility: the whole model stays hidden until the
+	// vehicle idle has settled, then the configured parts are hidden.
+	bool	m_driver_visibility_pending = false;
+	bool	m_driver_visibility_first_person_applied = false;
+	u32		m_driver_visibility_time = 0;
+	// Additional OMF with car-specific driver animations. Empty means use the
+	// model's standard animation set only.
+	shared_str	m_driver_car_animation;
 	bool	m_allow_inventory_control;
 	bool	m_allow_mutant_bite_in_car;
 	bool	m_poltergeist_can_lift;
@@ -1399,6 +1409,9 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:
 	void					ApplyDriverModelVisibility	(bool FirstPerson);
+	void					ApplyDriverModelVisibilityNow	(bool FirstPerson);
+	void					UpdateDriverModelVisibility	();
+	void					UpdateDriverBoneHidePositions	();
 	void					HitFrom						(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					HitFromCreature				(CObject* who, float value, float impulse, const Fvector& dir, ALife::EHitType hit_type);
 	void					ApplyPush					(const Fvector& dir, float speed, const Fvector& world_point);
@@ -1462,6 +1475,7 @@ public:
 	bool					AreRecursiveDoorsClosed		() const;
 	void					UpdateRecursiveDoors		();
 	bool					HasFirstCam(){return active_camera->tag == EctFirstCam;}
+	LPCSTR					DriverCarAnimation() const { return m_driver_car_animation.c_str(); }
 	bool					AllowInventoryControl() const { return m_allow_inventory_control; }
 	bool					AllowMutantBiteInCar() const { return m_allow_mutant_bite_in_car; }
 

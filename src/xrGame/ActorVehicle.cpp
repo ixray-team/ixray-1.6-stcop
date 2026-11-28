@@ -30,6 +30,80 @@ extern bool need_restore_detector;
 #include "script_game_object.h"
 #include "../xrScripts/script_callback_ex.h"
 
+namespace
+{
+	bool HasOmfExtension(const char* Path)
+	{
+		const size_t Length = xr_strlen(Path);
+		return Length >= 4 && _stricmp(Path + Length - 4, ".omf") == 0;
+	}
+
+	void StripOmfExtension(char* Path)
+	{
+		const size_t Length = xr_strlen(Path);
+		if (Length >= 4 && _stricmp(Path + Length - 4, ".omf") == 0)
+			Path[Length - 4] = 0;
+	}
+}
+
+void CActor::LoadVehicleAnimationSet(LPCSTR Path)
+{
+	if (Path == nullptr || Path[0] == 0)
+		return;
+
+	IKinematicsAnimated* V = Visual() != nullptr ? Visual()->dcast_PKinematicsAnimated() : nullptr;
+	if (V == nullptr)
+		return;
+
+	string_path FullPath = {};
+	const size_t PathLength = xr_strlen(Path);
+	if (PathLength + 4 >= sizeof(FullPath))
+	{
+		Msg("! [CarAnim] path is too long: '%s'", Path);
+		return;
+	}
+
+	xr_strcpy(FullPath, Path);
+	if (!HasOmfExtension(FullPath))
+		xr_strcat(FullPath, ".omf");
+
+	string_path OmfPath = {};
+	xr_strcpy(OmfPath, FullPath);
+	StripOmfExtension(OmfPath);
+
+	if (!FS.exist(_game_meshes_, FullPath) && !FS.exist("$level$", FullPath))
+	{
+		Msg("! [CarAnim] '%s' not found, using standard driver animations", FullPath);
+		return;
+	}
+
+	for (u16 Slot = 0; Slot < V->LL_MotionsSlotCount(); ++Slot)
+	{
+		const char* SlotId = V->LL_MotionsSlot(Slot).id().c_str();
+		if (SlotId == nullptr || xr_strlen(SlotId) >= sizeof(string_path))
+			continue;
+
+		string_path SlotPath = {};
+		xr_strcpy(SlotPath, SlotId);
+		StripOmfExtension(SlotPath);
+		if (_stricmp(SlotPath, OmfPath) == 0)
+			return;
+	}
+
+	const u16 OldCount = V->LL_MotionsSlotCount();
+	V->append_motion_from_path(cNameSect().c_str(), OmfPath);
+	if (V->LL_MotionsSlotCount() == OldCount)
+	{
+		Msg("! [CarAnim] failed to load '%s', using standard driver animations", FullPath);
+		return;
+	}
+
+	if (m_vehicle_anims != nullptr)
+		m_vehicle_anims->Create(V);
+
+	Msg("* [CarAnim] loaded '%s'", FullPath);
+}
+
 void CActor::attach_Vehicle(CHolderCustom* vehicle)
 {
 	if (vehicle == nullptr)
@@ -63,10 +137,14 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 		return;
 	}
 
+	// Add the optional car-specific OMF before any vehicle animation is played.
+	LoadVehicleAnimationSet(car->DriverCarAnimation());
+
 	// temp play animation
 	u16 anim_type = car->DriverAnimationType();
 	SVehicleAnimCollection& anims = m_vehicle_anims->GetCollection(anim_type, car->UseOldDriverAnimations());
 	anims.PlayIdles(V, false);
+	m_vehicle_steer_angle = 0.f;
 
 	ResetCallbacks();
 	u16 head_bone = pK->LL_BoneID("bip01_head");
@@ -96,6 +174,8 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	}
 
 	CStepManager::on_animation_start(MotionID(), 0);
+
+	car->ApplyDriverModelVisibility(car->HasFirstCam());
 
 	this->callback(GameObject::eAttachVehicle)(car->lua_game_object());
 }
@@ -132,6 +212,8 @@ void CActor::ReapplyVehicleVisual()
 		pK->LL_GetBoneInstance(HeadBone).set_callback(bctPhysics, VehicleHeadCallback, this);
 	}
 
+	LoadVehicleAnimationSet(car->DriverCarAnimation());
+
 	SVehicleAnimCollection& Anims = m_vehicle_anims->GetCollection(car->DriverAnimationType(), car->UseOldDriverAnimations());
 	switch (car->e_state_steer)
 	{
@@ -158,8 +240,66 @@ void CActor::ReapplyVehicleVisual()
 	m_holderID = car->ID();
 
 	// OnChangeVisual() builds a fresh skeleton, so the first-person body
-	// parts have to be hidden again.
-	car->ApplyDriverModelVisibility(car->HasFirstCam());
+	// parts have to be hidden again. No entry transition is needed here: the
+	// actor is already sitting in the car.
+	car->ApplyDriverModelVisibilityNow(car->HasFirstCam());
+}
+
+void CActor::SetVehicleAnimationsEnabled(bool Enabled)
+{
+	IKinematicsAnimated* K = Visual() != nullptr ? Visual()->dcast_PKinematicsAnimated() : nullptr;
+	if (K == nullptr)
+	{
+		return;
+	}
+
+	if (!Enabled)
+	{
+		// Keep the current pose: the callback skips LL_UpdateTracks while
+		// paused, so the skeleton stays exactly where it was.
+		if (K->GetUpdateTracksCalback() != &m_vehicle_anim_pause)
+		{
+			m_vehicle_anim_pause.Previous = K->GetUpdateTracksCalback();
+			K->SetUpdateTracksCalback(&m_vehicle_anim_pause);
+		}
+
+		// Switching from a steering animation must freeze in the idle pose,
+		// not in the turn pose. Start the idle and let it blend in for a short
+		// time before pausing. Steering changes are ignored while pending.
+		const float CurrentSteer = m_vehicle_steer_angle;
+		m_vehicle_anim_pause.Paused = false;
+		m_vehicle_anim_pause.PendingTime = 0.f;
+		m_vehicle_anim_pause.PendingDelay = 0.f;
+		CCar* Car = m_holder != nullptr ? m_holder->cast_car() : nullptr;
+		// Restart the idle only when the driver is actually steering. On entry
+		// the idle is already playing; restarting it would blend from a random
+		// phase and move the body around the hidden head and arms.
+		if (Car != nullptr && (CurrentSteer != 0.f || Car->e_state_steer != CCar::idle))
+		{
+			steer_Vehicle(0.f);
+			m_vehicle_steer_angle = CurrentSteer;
+		}
+		m_vehicle_anim_pause.PendingDelay = 0.25f;
+		return;
+	}
+
+	const bool WasPaused = m_vehicle_anim_pause.Paused || m_vehicle_anim_pause.PendingDelay > 0.f;
+	m_vehicle_anim_pause.Paused = false;
+	m_vehicle_anim_pause.PendingDelay = 0.f;
+	m_vehicle_anim_pause.PendingTime = 0.f;
+	if (K->GetUpdateTracksCalback() == &m_vehicle_anim_pause)
+	{
+		K->SetUpdateTracksCalback(m_vehicle_anim_pause.Previous);
+	}
+	m_vehicle_anim_pause.Previous = nullptr;
+
+	// Pick the animation up from the current steering state instead of the
+	// pose that was frozen several seconds ago. Do not restart an animation
+	// that was already running.
+	if (WasPaused && m_holder != nullptr && m_holder->cast_car() != nullptr)
+	{
+		steer_Vehicle(m_vehicle_steer_angle);
+	}
 }
 
 void CActor::detach_Vehicle()
@@ -198,6 +338,7 @@ void CActor::detach_Vehicle()
 	r_torso.yaw = r_model_yaw;
 	r_model_yaw_dest = r_model_yaw;
 	m_holder = nullptr;
+	SetVehicleAnimationsEnabled(true);
 	SetCallbacks();
 	cam_Set(eacFirstEye);
 
