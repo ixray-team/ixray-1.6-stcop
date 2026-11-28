@@ -28,6 +28,7 @@ public:
 	};
 
 	void SetState(float state);
+	void SetGradientPosition(float Position);
 	void SetPortion(int current, int max);
 	float GetState() const { return _value; }
 	EPercentFormat GetPercentFormat() const { return _percentFormat; }

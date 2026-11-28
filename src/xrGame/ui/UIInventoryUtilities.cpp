@@ -743,7 +743,6 @@ InventoryUtilities::ConditionDisplayParams InventoryUtilities::GetConditionDispl
 	result.portionCurrent = 0;
 	result.portionMax = 0;
 	result.hideBackground = false;
-	result.disableGradient = false;
 
 	if (item == nullptr)
 	{
@@ -769,6 +768,11 @@ InventoryUtilities::ConditionDisplayParams InventoryUtilities::GetConditionDispl
 			result.portionCurrent = static_cast<int>(remainingUses);
 			result.portionMax = static_cast<int>(maxUses);
 
+			// Map the last portion to the minimum color and a full pack to the maximum.
+			result.GradientPosition = maxUses > 1
+				? static_cast<float>(std::max(0, remainingUses - 1)) / static_cast<float>(maxUses - 1)
+				: static_cast<float>(remainingUses);
+
 			if (maxUses < 8)
 			{
 				result.hideBackground = true;
@@ -786,8 +790,6 @@ InventoryUtilities::ConditionDisplayParams InventoryUtilities::GetConditionDispl
 			{
 				condition = (static_cast<float>(remainingUses) * 0.125f) - 0.0625f;
 			}
-
-			result.disableGradient = true;
 		}
 	}
 

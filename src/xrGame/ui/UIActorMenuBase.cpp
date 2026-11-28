@@ -534,8 +534,8 @@ void CUIActorMenuBase::UpdateConditionProgressBars()
 
 		if (hasLegacy)
 		{
+			m_pInvSlotProgressLegacy[i]->SetGradientPosition(display.GradientPosition);
 			m_pInvSlotProgressLegacy[i]->SetProgressPos(display.state);
-			m_pInvSlotProgressLegacy[i]->m_bUseGradient = !display.disableGradient;
 			m_pInvSlotProgressLegacy[i]->ShowBackground(!display.hideBackground);
 			m_pInvSlotProgressLegacy[i]->Show(true);
 		}
@@ -543,6 +543,7 @@ void CUIActorMenuBase::UpdateConditionProgressBars()
 		if (hasPercent)
 		{
 			CUIItemStateDisplay* stateDisplay = m_pInvSlotProgressPercent[i];
+			stateDisplay->SetGradientPosition(display.GradientPosition);
 			stateDisplay->Show(true);
 
 			CEatableItem* eatableItem = itm->cast_eatable_item();

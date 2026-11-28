@@ -787,14 +787,13 @@ void CUICellItem::UpdateConditionProgressBar()
 		m_pConditionState->SetWndPos(Fvector2().set(x, y));
 	}
 
-	m_pConditionState->m_bUseGradient = !display.disableGradient;
-
 	if (display.hideBackground)
 	{
 		m_pConditionState->ShowBackground(false);
 	}
 
 	CEatableItem* eatableItem = itm->cast_eatable_item();
+	m_pConditionState->SetGradientPosition(display.GradientPosition);
 	if (m_pConditionState->GetPercentFormat() == CUIItemStateDisplay::EPercentFormat::Portion &&
 		eatableItem != nullptr &&
 		display.usePortion &&

@@ -52,6 +52,14 @@ void CUIItemStateDisplay::SetState(float state)
 	}
 }
 
+void CUIItemStateDisplay::SetGradientPosition(float Position)
+{
+	if (_progressBar)
+	{
+		_progressBar->SetGradientPosition(Position);
+	}
+}
+
 void CUIItemStateDisplay::SetPortion(int current, int max)
 {
 	_portionCurrent = current;

@@ -95,7 +95,7 @@ struct ConditionDisplayParams
 	int portionCurrent;
 	int portionMax;
 	bool hideBackground;
-	bool disableGradient;
+	float GradientPosition = -1.0f;
 };
 
 const shared_str GetGameDateAsString(EDatePrecision datePrec, char dateSeparator = ',');

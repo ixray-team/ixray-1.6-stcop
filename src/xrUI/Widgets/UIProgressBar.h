@@ -24,6 +24,7 @@ protected:
 	float				m_MaxPos;
 
 	float				m_CurrentLength;
+	float GradientPosition = -1.0f;
 	
 	bool				m_bBackgroundPresent;
 	Fvector2			m_BackgroundOffset;
@@ -56,6 +57,8 @@ public:
 	float				GetRange_max				() 							{ return  m_MaxPos; }
 
 	void				SetProgressPos				(float _Pos);
+	// A negative position uses the current fill for the gradient.
+	void SetGradientPosition(float Position);
 	float				GetProgressPos				()							{ return m_ProgressPos.y; }
 
 	void				ShowBackground				(bool status)				{ m_bBackgroundPresent = status; }

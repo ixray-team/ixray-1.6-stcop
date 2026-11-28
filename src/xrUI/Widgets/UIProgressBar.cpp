@@ -59,11 +59,12 @@ void CUIProgressBar::UpdateProgressBar()
 	{
 		if (m_bUseGradient)
 		{
+			const float ColorPosition = GradientPosition >= 0.0f ? GradientPosition : fCurrentLength;
 			Fcolor curr;
 			if (m_bUseMidColor)
-				curr.lerp(m_minColor, m_middleColor, m_maxColor, fCurrentLength);
+				curr.lerp(m_minColor, m_middleColor, m_maxColor, ColorPosition);
 			else
-				curr.lerp(m_minColor, m_maxColor, fCurrentLength);
+				curr.lerp(m_minColor, m_maxColor, ColorPosition);
 			m_UIProgressItem.SetTextureColor	(curr.get());
 		}
 		else
@@ -81,6 +82,16 @@ void CUIProgressBar::SetProgressPos(float _Pos)
 	m_ProgressPos.y		= _Pos; 
 	clamp(m_ProgressPos.y,m_MinPos,m_MaxPos);
 	UpdateProgressBar	();
+}
+
+void CUIProgressBar::SetGradientPosition(float Position)
+{
+	Position = std::min(Position, 1.0f);
+	if (GradientPosition != Position)
+	{
+		GradientPosition = Position;
+		UpdateProgressBar();
+	}
 }
 
 float _sign(const float& v)
