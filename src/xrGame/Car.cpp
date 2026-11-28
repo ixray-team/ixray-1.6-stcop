@@ -245,7 +245,6 @@ CCar::CCar()
 	m_engine_valve = 0;
 	m_engine_valve_switch = true;
 	m_turbo_scale = 0.f;
-	m_turbo_sound_scale = 1.f;
 	m_turbo_volume_scale = 1.f;
 	m_turbo_scale_min = 0.2f;
 	m_turbo_scale_max = 1.f;
@@ -271,8 +270,6 @@ CCar::CCar()
 	m_engine_sound_scale_max = 1.5f;
 	m_engine_sound_scale_min = 0.5f;
 	m_engine_sound_scale_factor = 1.0f;
-	m_engine_sound_stop_dt = 0.f;
-	m_engine_decel_sound_stop_dt = 0.f;
 	m_engine_volume_scale = 1.0f;
 	m_sound_state_change_up = 3.f;
 	m_sound_state_change_down = 2.5f;
@@ -289,7 +286,6 @@ CCar::CCar()
 	m_sound = false;
 	m_gas_volume_scale = 0.f;
 	m_engine_drive = 0.f;
-	m_engine_drive_noswitch = 0.f;
 	m_engine_drive_time = 0.f;
 	m_engine_idle_time = 0.f;
 	m_engine_heavy = 0.f;
@@ -357,7 +353,6 @@ CCar::CCar()
 	m_break_abs_power = 1.f;
 	m_break_abs_individual = true;
 	m_break_abs_threshold = 0.85f;
-	m_enhanced_sound = true;
 	b_burnout = false;
 	m_steer_nonlinear = true;
 	m_steer_invert = false;
@@ -2582,11 +2577,7 @@ void CCar::DrawCarInfo()
 		m_engine_drive = 0.f;
 		m_valve_time = Device.fTimeGlobal;
 	}
-	if (e_state_drive == drive)
-	{
-		m_engine_drive_noswitch = 1.f;
-	}
-	else
+	if (e_state_drive != drive)
 	{
 		if (!m_engine_valve_switch)
 		{
@@ -2594,14 +2585,14 @@ void CCar::DrawCarInfo()
 				m_car_sound->Valve();
 			m_engine_valve = 0;
 		}
-		m_engine_drive_noswitch = 0.f;
 		m_engine_drive_time = Device.fTimeGlobal;
 	}
 
 	float car_rpm = m_current_rpm;
 	if (car_rpm < m_min_rpm)
 		car_rpm = m_min_rpm;
-	m_engine_rpm_scale = 1.f - (m_max_rpm - car_rpm) / (m_max_rpm - m_min_rpm); // 0-1 rpm
+	const float RpmRange = m_max_rpm - m_min_rpm;
+	m_engine_rpm_scale = RpmRange > EPS ? 1.f - (m_max_rpm - car_rpm) / RpmRange : 0.f; // 0-1 rpm
 	clamp(m_engine_rpm_scale, 0.f, 1.f);
 
 	if (Device.fTimeGlobal > m_transmission_switch_time + 0.4f * m_transmission_switch_delay && !m_transmission_sound_played)
@@ -3942,6 +3933,10 @@ void CCar::LoadTransmissionDefinitions(CInifile* ini)
 	m_transmission_switch_power_factor = ini->read_if_exists<float>("car_definition", "transmission_switch_power_factor", m_transmission_switch_power_factor);
 	clamp(m_transmission_switch_power_factor, 0.f, 1.f);
 	m_transmission_switch_volume = ini->read_if_exists<float>("car_definition", "transmission_switch_volume", m_transmission_switch_volume);
+	if (!std::isfinite(m_transmission_switch_volume))
+		m_transmission_switch_volume = 1.f;
+	else
+		clamp(m_transmission_switch_volume, 0.f, 4.f);
 	b_transmission_switch_drive = ini->read_if_exists<bool>("car_definition", "transmission_switch_drive", b_transmission_switch_drive);
 
 	InitParabola();
@@ -5749,7 +5744,7 @@ void CCar::UpdateTransmissionState()
 		m_car_sound->Gas();
 		if (e_state_drive == drive && m_sound_state_after_switch && Device.fTimeGlobal - m_engine_drive_time > 1.1f * delay)
 		{
-			clamp(m_engine_state_scale_last, m_sound_state_after_switch, m_engine_state_scale_last);
+			m_engine_state_scale_last = std::max(m_engine_state_scale_last, m_sound_state_after_switch);
 		}
 	}
 }

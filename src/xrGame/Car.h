@@ -907,7 +907,6 @@ virtual void ApplyDamage(u16 level);
 		} eCarSound;
 		void	Update				()							;
 		void	UpdateStarting		()							;
-		void	UpdateStoping		()							;
 		void	UpdateStalling		()							;
 		void	UpdateDrive			()							;
 		void	SwitchState			(ESoundState new_state)		;
@@ -921,6 +920,7 @@ virtual void ApplyDamage(u16 level);
 		void	Start				()							;
 		void	Stop				()							;
 		void	Stall				()							;
+		void	StopSounds			(ESoundState new_state)		;
 		void	Drive				()							;
 		void	TransmissionSwitch	()							;
 		void	Gas					()							;
@@ -1121,7 +1121,6 @@ private:
 	u32						m_engine_valve;
 	bool					m_engine_valve_switch;
 	float					m_turbo_scale;
-	float					m_turbo_sound_scale;
 	float					m_turbo_volume_scale;
 	float					m_turbo_scale_min;
 	float					m_turbo_scale_max;
@@ -1161,8 +1160,6 @@ private:
 	float					m_engine_sound_scale_max;
 	float					m_engine_sound_scale_min;
 	float					m_engine_sound_scale_factor;
-	float					m_engine_sound_stop_dt;
-	float					m_engine_decel_sound_stop_dt;
 	float					m_engine_volume_scale;
 	//float					m_engine_exhaust_volume_scale;
 	float					m_engine_decel_volume_scale;
@@ -1171,7 +1168,6 @@ private:
 	bool					m_sound;
 	//bool					m_exhaust_sound;
 	float					m_engine_drive;
-	float					m_engine_drive_noswitch;
 	float					m_engine_drive_time;
 	float					m_engine_idle_time;
 	float					m_engine_heavy;
@@ -1225,7 +1221,6 @@ private:
 	float					m_break_abs_power;
 	bool					m_break_abs_individual;
 	float					m_break_abs_threshold;
-	bool					m_enhanced_sound;
 	bool					b_burnout;
 	bool					m_steer_invert;
 	bool					m_steer_nonlinear;

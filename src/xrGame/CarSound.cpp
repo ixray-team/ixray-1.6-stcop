@@ -19,9 +19,12 @@ constexpr float MaxEngineStartDelayMs = 10000.f;
 
 CCar::SCarSound::SCarSound(CCar* car)
 {
-	volume                 =1.f;
-	pcar=car;
-	relative_pos.set(0.f,0.5f,-1.f);
+	volume = 1.f;
+	engine_start_delay = 0;
+	time_state_start = 0;
+	eCarSound = sndOff;
+	pcar = car;
+	relative_pos.set(0.f, 0.5f, -1.f);
 	relative_engine_pos.set(0.f, 0.5f, -1.f);
 	//relative_engine_exhaust_pos.set(0.f, 0.5f, -1.f);
 }
@@ -32,11 +35,23 @@ CCar::SCarSound::~SCarSound()
 }
 void CCar::SCarSound::Init()
 {
-	CInifile* ini = smart_cast<IKinematics*>(pcar->Visual())->LL_UserData();
+	IKinematics* Kinematics = pcar->Visual() ? smart_cast<IKinematics*>(pcar->Visual()) : nullptr;
+	if (Kinematics == nullptr)
+	{
+		eCarSound = sndOff;
+		return;
+	}
+
+	CInifile* ini = Kinematics->LL_UserData();
 	if (ini && ini->section_exist("car_sound"))
 	{
 		if (ini->line_exist("car_sound", "snd_volume"))
+		{
 			volume = ini->r_float("car_sound", "snd_volume");
+			if (!std::isfinite(volume))
+				volume = 1.f;
+			clamp(volume, 0.f, 1.f);
+		}
 
 		if (!snd_engine._p && ini->line_exist("car_sound", "snd_name"))
 		{
@@ -315,14 +330,6 @@ void CCar::SCarSound::UpdateStarting()
 	if(snd_engine_start._p && !snd_engine_start.is_playing())Drive();
 }
 
-void CCar::SCarSound::UpdateStoping()
-{
-	VERIFY(!physics_world()->Processing());
-	SetEngineSoundPosition(snd_engine_stop);
-	if (snd_engine_start._p && snd_engine_start.is_playing())
-		snd_engine_start.stop_deffered(CarDeferredStopFade);
-	if(!snd_engine_stop._p || !snd_engine_stop.is_playing())SwitchOff();
-}
 void CCar::SCarSound::UpdateStalling()
 {
 	VERIFY(!physics_world()->Processing());
@@ -364,6 +371,8 @@ void CCar::SCarSound::UpdateDrive()
 			sound_torque = pcar->m_sound_rpm;
 		else
 			sound_torque = pcar->m_torque_rpm;
+		if (!std::isfinite(sound_torque) || sound_torque <= EPS)
+			sound_torque = 1.f;
 
 		float state_change_up = pcar->m_sound_state_change_up;//3.2f;
 		float state_change_down = pcar->m_sound_state_change_down;// 2.5f;
@@ -512,7 +521,7 @@ void CCar::SCarSound::UpdateDrive()
 			float y = 1.f + trans * pcar->m_sound_switch_effect_power * 0.01f * Random.randF(0.8f, 1.2f) * (pcar->m_sound_effect - pcar->m_sound_switch_effect_duration) * sinf(pcar->m_sound_effect);
 			sound_rpm *= y;
 			pcar->m_sound_effect += pcar->m_sound_switch_effect_speed * boost * 25.f * Device.fTimeDelta;
-			clamp(pcar->m_sound_effect, pcar->m_sound_effect, pcar->m_sound_switch_effect_duration);
+			clamp(pcar->m_sound_effect, 0.f, pcar->m_sound_switch_effect_duration);
 			//Msg("sound_effect %f", y);
 		}
 
@@ -534,35 +543,31 @@ void CCar::SCarSound::UpdateDrive()
 		}
 
 		pcar->m_engine_sound_scale_absolute = (pcar->m_engine_sound_scale_min + (0.5f * sound_rpm) / sound_torque) * pcar->m_engine_sound_scale_factor;
+		if (!std::isfinite(pcar->m_engine_sound_scale_absolute))
+			pcar->m_engine_sound_scale_absolute = pcar->m_engine_sound_scale_min;
 		clamp(pcar->m_engine_sound_scale_absolute, pcar->m_engine_sound_scale_min, pcar->m_engine_sound_scale_max);
 		pcar->m_engine_sound_scale = pcar->m_engine_sound_scale_absolute * state_freq * idle_freq;
-		pcar->m_engine_volume_scale = state_vol * idle_vol * engine_lim_vol * heavy; 
+		if (!std::isfinite(pcar->m_engine_sound_scale))
+			pcar->m_engine_sound_scale = pcar->m_engine_sound_scale_min;
+		pcar->m_engine_volume_scale = state_vol * idle_vol * engine_lim_vol * heavy;
+		if (!std::isfinite(pcar->m_engine_volume_scale))
+			pcar->m_engine_volume_scale = 0.f;
+		clamp(pcar->m_engine_volume_scale, 0.f, 1.f);
 
 		if (snd_engine._p)
 		{
 			const bool engine_can_play = pcar->m_engine_volume_scale > 0.f && (time_state_start + engine_start_delay < Device.dwTimeGlobal || eCarSound != sndStarting);
 
-			if (engine_can_play)
-			{
-				if (!snd_engine.is_playing())
-					snd_engine.play(pcar, sm_Looped | sm_NoOCC);
-			}
-			else
-			{
-				// Keep the loop alive at idle. Calling stop_deffered here made the
-				// mixer fade the slot, so pressing gas again restored volume only
-				// after the fade had finished.
-				if (snd_engine.is_playing())
-					snd_engine.set_volume(0.f);
-			}
+			if (engine_can_play && !snd_engine.is_playing())
+				snd_engine.play(pcar, sm_Looped | sm_NoOCC);
 
+			// Keep the loop alive at idle; stopping it makes the mixer fade the
+			// slot, so pressing gas again restores volume only after the fade.
 			if (snd_engine.is_playing())
 			{
 				snd_engine.set_frequency(pcar->m_engine_sound_scale * boost);
 				snd_engine.set_volume(engine_can_play ? pcar->m_engine_volume_scale * vol : 0.f);
 				SetEngineSoundPosition(snd_engine);
-				//Msg("freq %f", pcar->m_engine_sound_scale * pcar->m_engine_gas_sound_scale);
-				//Msg("engine vol %f", pcar->m_engine_volume_scale);
 			}
 		}
 
@@ -575,7 +580,7 @@ void CCar::SCarSound::UpdateDrive()
 			}
 			else
 			{
-				if (snd_engine_heavy.is_playing() && pcar->m_engine_sound_stop_dt + 0.5f < Device.fTimeGlobal)
+				if (snd_engine_heavy.is_playing())
 					snd_engine_heavy.stop_deffered(CarDeferredStopFade);
 			}
 
@@ -596,7 +601,6 @@ void CCar::SCarSound::UpdateDrive()
 			{
 				if (!snd_engine_decel.is_playing())
 					snd_engine_decel.play(pcar, sm_Looped | sm_NoOCC);
-				//pcar->m_engine_decel_sound_stop_dt = Device.fTimeGlobal;
 			}
 			else
 			{
@@ -630,7 +634,6 @@ void CCar::SCarSound::UpdateDrive()
 			//Msg("turbo scale %f", pcar->m_turbo_scale);
 
 			pcar->m_turbo_volume_scale = 0.4f + 0.5f * pcar->m_engine_state_scale + 0.3f * pcar->m_turbo_scale;
-			clamp(pcar->m_turbo_sound_scale, pcar->m_turbo_scale_min, pcar->m_turbo_scale_max);
 
 			snd_turbo.set_frequency((0.5f * pcar->m_turbo_scale + 0.5f * pcar->m_turbo_scale * pcar->m_engine_rpm_scale) * boost);
 			snd_turbo.set_volume(pcar->m_turbo_volume_scale * volume);
@@ -648,24 +651,29 @@ void CCar::SCarSound::UpdateDrive()
 			float scale = 1.f;
 			if (pcar->m_blower_sound_forward)
 			{
-				float dist_sq;
 				Fvector	dir;
 				dir.sub(Device.vCameraPosition, pcar->Position());
-				dist_sq = dir.square_magnitude();
-				if (pcar->Direction().square_magnitude() > EPS) {
+				const float dist_sq = dir.square_magnitude();
+				if (dist_sq > EPS && pcar->Direction().square_magnitude() > EPS)
+				{
 					dir.div(_sqrt(dist_sq));
 					scale = dir.dotproduct(pcar->Direction());
 				}
 				clamp(scale, 0.f, 1.f);
 				blower_vol *= (1.f - pcar->m_blower_sound_forward) + (scale * pcar->m_blower_sound_forward);
-				//Msg("blower %f", blower_vol);
 			}
+			if (!std::isfinite(blower_vol))
+				blower_vol = 0.f;
+			clamp(blower_vol, 0.f, 1.f);
 			if (pcar->m_blower_rpm_current < pcar->m_engine_rpm_scale)
 				pcar->m_blower_rpm_current = pcar->m_engine_rpm_scale;
 			else
 				pcar->m_blower_rpm_current = pcar->m_blower_rpm_current - pcar->m_blower_inertia * (pcar->m_blower_rpm_current - pcar->m_engine_rpm_scale);
 
 			float blower_freq = (pcar->m_blower_scale_min + pcar->m_blower_rpm_scale * pcar->m_blower_rpm_current + 0.1f * pcar->m_engine_state_scale + 0.05f * scale) * boost;
+			if (!std::isfinite(blower_freq) || blower_freq <= 0.f)
+				blower_freq = 0.01f;
+			clamp(blower_freq, 0.01f, 8.f);
 			snd_blower.set_frequency(blower_freq);
 			snd_blower.set_volume(blower_vol * vol);
 			SetEngineSoundPosition(snd_blower);
@@ -780,6 +788,7 @@ void CCar::SCarSound::Destroy()
 	snd_nitro_stop.destroy();
 	snd_pop.destroy();
 	snd_whine.destroy();
+	snd_horn.destroy();
 	snd_fire.destroy();
 }
 
@@ -808,11 +817,13 @@ void CCar::SCarSound::Start()
 	SetEngineSoundPosition(snd_engine_start);
 }
 
-void CCar::SCarSound::Stall()
+void CCar::SCarSound::StopSounds(ESoundState new_state)
 {
 	VERIFY(!physics_world()->Processing());
-	if(eCarSound==sndOff)return;
-	SwitchState(sndStalling);
+	if (eCarSound == sndOff)
+		return;
+
+	SwitchState(new_state);
 	if (snd_engine._p)
 		snd_engine.stop_deffered(CarDeferredStopFade);
 	if (snd_turbo._p)
@@ -829,15 +840,6 @@ void CCar::SCarSound::Stall()
 		snd_engine_heavy.stop_deffered(CarDeferredStopFade);
 	if (snd_blower._p)
 		snd_blower.stop_deffered(CarDeferredStopFade);
-
-	//if (snd_engine_exhaust._p)
-	//	snd_engine_exhaust.stop_deffered();
-	//if (snd_engine_decel_exhaust._p)
-	//	snd_engine_decel_exhaust.stop_deffered();
-	//if (snd_limiter_exhaust._p)
-	//	snd_limiter_exhaust.stop_deffered();
-	//if (snd_idle_exhaust._p)
-	//	snd_idle_exhaust.stop_deffered();
 
 	if (snd_engine_stop._p)
 	{
@@ -849,41 +851,12 @@ void CCar::SCarSound::Stall()
 
 void CCar::SCarSound::Stop()
 {
-	VERIFY(!physics_world()->Processing());
-	if(eCarSound==sndOff)return;
-	SwitchState(sndStoping);
-	if (snd_engine._p)
-		snd_engine.stop_deffered(CarDeferredStopFade);
-	if (snd_turbo._p)
-		snd_turbo.stop_deffered(CarDeferredStopFade);
-	if (snd_nitro._p)
-		snd_nitro.stop_deffered(CarDeferredStopFade);
-	if (snd_limiter._p)
-		snd_limiter.stop_deffered(CarDeferredStopFade);
-	if (snd_idle._p)
-		snd_idle.stop_deffered(CarDeferredStopFade);
-	if (snd_engine_decel._p)
-		snd_engine_decel.stop_deffered(CarDeferredStopFade);
-	if (snd_engine_heavy._p)
-		snd_engine_heavy.stop_deffered(CarDeferredStopFade);
-	if (snd_blower._p)
-		snd_blower.stop_deffered(CarDeferredStopFade);
+	StopSounds(sndStoping);
+}
 
-	//if (snd_engine_exhaust._p)
-	//	snd_engine_exhaust.stop_deffered();
-	//if (snd_engine_decel_exhaust._p)
-	//	snd_engine_decel_exhaust.stop_deffered();
-	//if (snd_limiter_exhaust._p)
-	//	snd_limiter_exhaust.stop_deffered();
-	//if (snd_idle_exhaust._p)
-	//	snd_idle_exhaust.stop_deffered();
-
-	if (snd_engine_stop._p)
-	{
-		snd_engine_stop.play(pcar, sm_NoOCC);
-		snd_engine_stop.set_volume(volume);
-	}
-	SetEngineSoundPosition(snd_engine_stop);
+void CCar::SCarSound::Stall()
+{
+	StopSounds(sndStalling);
 }
 
 void CCar::SCarSound::Drive()
@@ -924,8 +897,24 @@ void CCar::SCarSound::Valve()
 		//clamp(pcar->m_valve_time, 0.f, 1.f);
 		float rpm_scale = (pcar->m_engine_rpm_scale - 0.15f) / 0.79f;
 		clamp(rpm_scale, 0.f, 1.f);
-		//Msg("rpm_scale %f", rpm_scale);
-		pcar->m_valve_volume_scale =  rpm_scale * ((pcar->m_turbo_scale - 0.5f * (pcar->m_turbo_scale - pcar->m_turbo_scale_min) - pcar->m_turbo_scale_min) / (pcar->m_turbo_scale_max - 0.5f * (pcar->m_turbo_scale - pcar->m_turbo_scale_min) - pcar->m_turbo_scale_min));
+
+		const float TurboSpan = pcar->m_turbo_scale_max - pcar->m_turbo_scale_min;
+		if (TurboSpan > EPS)
+		{
+			const float TurboMid = 0.5f * (pcar->m_turbo_scale - pcar->m_turbo_scale_min);
+			pcar->m_valve_volume_scale = rpm_scale *
+				((pcar->m_turbo_scale - TurboMid - pcar->m_turbo_scale_min) /
+					(pcar->m_turbo_scale_max - TurboMid - pcar->m_turbo_scale_min));
+		}
+		else
+		{
+			pcar->m_valve_volume_scale = 0.f;
+		}
+
+		if (!std::isfinite(pcar->m_valve_volume_scale))
+			pcar->m_valve_volume_scale = 0.f;
+		clamp(pcar->m_valve_volume_scale, 0.f, 1.f);
+
 		snd_valve.play(pcar, sm_NoOCC);
 		pcar->m_engine_valve = 0;
 		float switch_vol = 1.f;
@@ -935,15 +924,15 @@ void CCar::SCarSound::Valve()
 		clamp(time, 0.f, 1.f);
 		//time = powf(time, 2.f);
 		pcar->m_valve_time = Device.fTimeGlobal;
-		//Msg("time valve %f", time);
-		//Msg("valve %f", pcar->m_valve_volume_scale);
 
-		snd_valve.set_volume(pcar->m_valve_volume_scale * switch_vol * time);
+		float Volume = pcar->m_valve_volume_scale * switch_vol * time;
+		if (!std::isfinite(Volume))
+			Volume = 0.f;
+		clamp(Volume, 0.f, 1.f);
+
+		snd_valve.set_volume(Volume);
 		snd_valve.set_frequency((0.6f + 0.4f * pcar->m_valve_volume_scale) * Random.randF(0.95f, 1.05f));
-		//pcar->m_turbo_scale *= 0.9f;
 		SetEngineSoundPosition(snd_valve);
-		//Msg("valve scale%f", pcar->m_valve_volume_scale);
-		//Msg("turbo scale %f", pcar->m_turbo_scale);
 	}
 }
 
@@ -968,7 +957,11 @@ void CCar::SCarSound::BrakeRelease()
 	VERIFY(!physics_world()->Processing());
 	if (snd_brake_release._p)
 	{
-		float brake_vol = (Device.fTimeGlobal - pcar->m_break_start) / pcar->m_break_time;
+		float brake_vol = 1.f;
+		if (pcar->m_break_time > EPS)
+			brake_vol = (Device.fTimeGlobal - pcar->m_break_start) / pcar->m_break_time;
+		if (!std::isfinite(brake_vol))
+			brake_vol = 0.f;
 		clamp(brake_vol, 0.f, 1.f);
 		brake_vol = powf(brake_vol, 1.4f);
 		snd_brake_release.play(pcar, sm_NoOCC);
@@ -1016,57 +1009,81 @@ void CCar::SCarSound::PopSound()
 void CCar::SCarSound::Whine()
 {
 	VERIFY(!physics_world()->Processing());
-	if (snd_whine._p)
+	if (!snd_whine._p)
+		return;
+
+	if (pcar->m_driving_wheels.empty() || pcar->m_whine_speed <= EPS)
 	{
-		xr_vector<SWheelDrive>::iterator i, e;
-		i = pcar->m_driving_wheels.begin();
-		e = pcar->m_driving_wheels.end();
-		float avg_speed = 0.f;
-		for (; i != e; ++i)
-			avg_speed += _abs(i->ASpeed()) * i->pwheel->radius;
-		avg_speed -= 1.f;
-		avg_speed = 2.f * sqrtf(((avg_speed * 3.6f) / pcar->m_driving_wheels.size()) / pcar->m_whine_speed);
-		clamp(avg_speed, 0.f, 2.f);
-		float boost = 1.f;
-		if (pcar->m_nitro_engage)
-			boost = 1.04f;
-		pcar->m_whine_sound_scale = (1.f - 2.5f * Device.fTimeDelta) * pcar->m_whine_sound_scale + 2.5f * avg_speed * Device.fTimeDelta;
-
-		float vol = 1.f;
-		vol = avg_speed * 0.45f + 0.55f * pcar->m_engine_state_scale;
-		
-		if (pcar->IsTransmissionSwitching() && pcar->e_state_drive == drive)
-			vol *= pcar->m_transmission_switch_volume;
-		//pcar->m_whine_sound_scale = pcar->m_whine_sound_scale * (0.99f + 0.01f * vol);
-		//Msg("whine %f", pcar->m_whine_sound_scale);
-		//Msg("avg %f", avg_speed);
-		if ((avg_speed > 0.2f || pcar->GetSpeedKmH() > 1.f || pcar->e_state_drive == drive) && ((pcar->CurrentTransmission() == 0 && pcar->m_whine_reverse) || !pcar->m_whine_reverse))
-		{
-			//Msg("GO");
-			if (!snd_whine.is_playing())
-				snd_whine.play(pcar, sm_Looped | sm_NoCarFactor | sm_NoOCC);
-
-			if (snd_whine.is_playing())
-			{
-				if (ECarCamType(pcar->active_camera->tag) != EctFirstCam || !pcar->Owner())
-				{
-					vol *= pcar->m_whine_exterior_volume;
-					//Msg("ext");
-				}
-				//Msg("vol1 %f", vol);
-				//vol *= pcar->m_engine_gas_sound_scale;
-				//Msg("vol2 %f", vol);
-				snd_whine.set_volume(vol * volume);
-				snd_whine.set_frequency(pcar->m_whine_sound_scale * boost);
-				//Msg("freq %f", pcar->m_whine_sound_scale);
-				SetSoundPosition(snd_whine);
-			}
-		}
-		else
-		{
 		if (snd_whine.is_playing())
 			snd_whine.stop_deffered(CarDeferredStopFade);
+		return;
+	}
+
+	float avg_speed = 0.f;
+	for (SWheelDrive& Drive : pcar->m_driving_wheels)
+		avg_speed += _abs(Drive.ASpeed()) * Drive.pwheel->radius;
+
+	if (!std::isfinite(avg_speed))
+	{
+		pcar->m_whine_sound_scale = 0.f;
+		if (snd_whine.is_playing())
+			snd_whine.stop_deffered(CarDeferredStopFade);
+		return;
+	}
+
+	avg_speed = std::max(avg_speed - 1.f, 0.f);
+	avg_speed = 2.f * sqrtf(((avg_speed * 3.6f) / float(pcar->m_driving_wheels.size())) / pcar->m_whine_speed);
+	if (!std::isfinite(avg_speed))
+		avg_speed = 0.f;
+	clamp(avg_speed, 0.f, 2.f);
+
+	const float Dt = std::clamp(Device.fTimeDelta, 0.f, 0.1f);
+	float boost = 1.f;
+	if (pcar->m_nitro_engage)
+		boost = 1.04f;
+
+	pcar->m_whine_sound_scale = (1.f - 2.5f * Dt) * pcar->m_whine_sound_scale + 2.5f * avg_speed * Dt;
+	if (!std::isfinite(pcar->m_whine_sound_scale))
+		pcar->m_whine_sound_scale = 0.f;
+	clamp(pcar->m_whine_sound_scale, 0.f, 4.f);
+
+	float vol = avg_speed * 0.45f + 0.55f * pcar->m_engine_state_scale;
+	if (pcar->IsTransmissionSwitching() && pcar->e_state_drive == drive)
+		vol *= pcar->m_transmission_switch_volume;
+
+	if ((avg_speed > 0.2f || pcar->GetSpeedKmH() > 1.f) && ((pcar->CurrentTransmission() == 0 && pcar->m_whine_reverse) || !pcar->m_whine_reverse))
+	{
+		if (!snd_whine.is_playing())
+			snd_whine.play(pcar, sm_Looped | sm_NoCarFactor | sm_NoOCC);
+
+		if (snd_whine.is_playing())
+		{
+			if (pcar->active_camera == nullptr || pcar->active_camera->tag != EctFirstCam || !pcar->Owner())
+				vol *= pcar->m_whine_exterior_volume;
+
+			if (!std::isfinite(vol))
+				vol = 0.f;
+			clamp(vol, 0.f, 1.f);
+
+			if (vol <= EPS)
+			{
+				snd_whine.stop_deffered(CarDeferredStopFade);
+				return;
+			}
+
+			float Frequency = pcar->m_whine_sound_scale * boost;
+			if (!std::isfinite(Frequency) || Frequency <= 0.f)
+				Frequency = 0.01f;
+			clamp(Frequency, 0.01f, 8.f);
+
+			snd_whine.set_volume(vol * volume);
+			snd_whine.set_frequency(Frequency);
+			SetSoundPosition(snd_whine);
 		}
+	}
+	else if (snd_whine.is_playing())
+	{
+		snd_whine.stop_deffered(CarDeferredStopFade);
 	}
 }
 
@@ -1346,7 +1363,42 @@ void CCar::LoadSoundDefinitions(CInifile* ini)
 	m_whine_speed = ini->read_if_exists<float>("car_sound", "whine_speed", m_whine_speed);
 	m_whine_exterior_volume = ini->read_if_exists<float>("car_sound", "whine_exterior_volume", m_whine_exterior_volume);
 	m_whine_reverse = ini->read_if_exists<bool>("car_sound", "whine_reverse", m_whine_reverse);
-	m_enhanced_sound = ini->read_if_exists<bool>("car_sound", "enhanced_sound", m_enhanced_sound);
+
+	auto ClampFinite = [](float& Value, float Low, float High, float Fallback)
+	{
+		if (!std::isfinite(Value))
+			Value = Fallback;
+		clamp(Value, Low, High);
+	};
+
+	ClampFinite(m_engine_sound_scale_min, 0.01f, 10.f, 0.5f);
+	ClampFinite(m_engine_sound_scale_max, m_engine_sound_scale_min, 20.f, 1.5f);
+	ClampFinite(m_engine_sound_scale_factor, 0.01f, 10.f, 1.f);
+	ClampFinite(m_engine_idle_volume, 0.f, 1.f, 0.8f);
+	ClampFinite(m_sound_state_change_up, 0.f, 100.f, 3.f);
+	ClampFinite(m_sound_state_change_down, 0.f, 100.f, 2.5f);
+	ClampFinite(m_sound_idle_change_up, 0.f, 100.f, 25.f);
+	ClampFinite(m_sound_idle_change_down, 0.f, 100.f, 0.6f);
+	ClampFinite(m_sound_state_switch_factor, 0.f, 10.f, 3.f);
+	ClampFinite(m_sound_state_after_switch, 0.f, 1.f, 0.f);
+	ClampFinite(m_sound_switch_effect_power, -100.f, 100.f, 1.f);
+	ClampFinite(m_sound_switch_effect_speed, 0.f, 100.f, 1.f);
+	ClampFinite(m_sound_switch_effect_duration, 0.f, 100.f, 20.f);
+	ClampFinite(m_turbo_scale_min, 0.01f, 10.f, 0.2f);
+	ClampFinite(m_turbo_scale_max, m_turbo_scale_min, 20.f, 1.f);
+	ClampFinite(m_turbo_scale_speed, 0.f, 10.f, 1.5f);
+	ClampFinite(m_valve_switch_volume, 0.f, 1.f, 0.8f);
+	ClampFinite(m_blower_scale_min, 0.f, 10.f, 0.3f);
+	ClampFinite(m_blower_rpm_scale, 0.f, 10.f, 0.9f);
+	ClampFinite(m_blower_volume_min, 0.f, 1.f, 0.3f);
+	ClampFinite(m_blower_inertia, 0.f, 1.f, 0.1f);
+	ClampFinite(m_blower_sound_forward, 0.f, 1.f, 0.5f);
+	ClampFinite(m_engine_state_scale_min, 0.f, 1.f, 0.8f);
+	ClampFinite(m_engine_heavy_constant, -100.f, 100.f, 0.2f);
+	ClampFinite(m_engine_heavy_rpm, -100.f, 100.f, 0.2f);
+	ClampFinite(m_engine_heavy_switch, -100.f, 100.f, 0.f);
+	ClampFinite(m_whine_speed, 0.01f, 1000.f, 50.f);
+	ClampFinite(m_whine_exterior_volume, 0.f, 1.f, 1.f);
 }
 
 ref_sound* CCar::GetTireSound(u16 m1_id, u16 m2_id)
