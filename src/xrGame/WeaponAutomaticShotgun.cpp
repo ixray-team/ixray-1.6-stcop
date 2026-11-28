@@ -9,6 +9,7 @@
 #include "script_game_object.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
+#include "Weapons/Components/HudCartridges.h"
 
 CWeaponAutomaticShotgun::CWeaponAutomaticShotgun()
 {
@@ -211,6 +212,8 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
 	}
 
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, type_to_update);
+
 	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
 	{
 		MagAmmoBones->UpdateMagAmmoBones(this, type_to_update);
@@ -235,6 +238,8 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 
 	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
 	{
@@ -265,6 +270,8 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 	{
 		AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 	}
+
+	THudCartridges::Update(this, AmmoElapsed.MagazineElapsed, GetTargetAmmoType());
 
 	if (TMagAmmoBones* MagAmmoBones = GetComponent<TMagAmmoBones>())
 	{
@@ -472,6 +479,8 @@ void CWeaponAutomaticShotgun::OnMotionMark(u8 state, const motion_marks& mark)
 		{
 			AmmoBones->UpdateAmmoBones(this, current_configuration, GetTargetAmmoType());
 		}
+
+		THudCartridges::Update(this, current_configuration, GetTargetAmmoType());
 
 		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
 		{
