@@ -66,6 +66,16 @@ end
 function action_animpoint:initialize()
 	action_base.initialize(self)
 	self.st.animpoint:start()
+
+	local Action = self.st.animpoint:get_action()
+	local State = Action and state_lib.states[Action]
+	if State and State.movement == move.stand and State.direction == CSightParams.eSightTypeAnimationDirection then
+		-- The positioned animation owns movement and facing after the approach.
+		self.object:set_desired_position()
+		self.object:set_desired_direction()
+		self.object:set_movement_type(move.stand)
+		self.object:set_sight(CSightParams.eSightTypeAnimationDirection, false, false)
+	end
 end
 function action_animpoint:execute()
 	action_base.execute(self)
