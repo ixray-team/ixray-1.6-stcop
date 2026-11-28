@@ -6,6 +6,8 @@
 #include "Actor.h"
 #include "ElectronicsProblemsManager.h"
 
+static bool NeedPermanentSwitch = false;
+
 CFlashlight::~CFlashlight()
 {
 	m_bFlashlightStatus = false;
@@ -35,6 +37,12 @@ void CFlashlight::UpdateCL()
 	if (LightTorch == nullptr)
 	{
 		return;
+	}
+
+	if (NeedPermanentSwitch)
+	{
+		NeedPermanentSwitch = false;
+		m_bFlashlightStatus = !m_bFlashlightStatus;
 	}
 
 	bool status = m_bFlashlightStatus;
@@ -133,4 +141,15 @@ void CFlashlight::OnMoveToRuck(const SInvItemPlace& prev)
 
 	LightTorch->SwitchTorchlight(false);
 	LightTorch->UpdateTorchFromObject();
+}
+
+void CFlashlight::OnStateSwitch(u8 state)
+{
+	const u8 OldState = GetState();
+	inherited::OnStateSwitch(state);
+
+	if ((state == eSprintStart || state == eSprintEnd) && (OldState == eShowing && !m_bFlashlightStatus || OldState == eHiding && m_bFlashlightStatus))
+	{
+		NeedPermanentSwitch = true;
+	}
 }

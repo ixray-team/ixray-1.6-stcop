@@ -18,6 +18,7 @@ public:
 	void OnH_B_Independent(bool just_before_destroy) override;
 	void OnHiddenItem() override;
 	void OnMoveToRuck(const SInvItemPlace& prev) override;
+	void OnStateSwitch(u8) override;
 
 	CCustomDevice* cast_custom_device() override { return this; }
 };
