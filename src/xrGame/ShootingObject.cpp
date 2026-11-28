@@ -262,7 +262,7 @@ void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared
 	}
 
 	Fmatrix xform_shell_point = get_ParticlesXFORM();
-	xform_shell_point.c.set(get_CurrentShellPoint());
+	xform_shell_point.c.set(GetShellEjectionPoint());
 
 	Fvector eject_dir;
 	xform_shell_point.transform_dir(eject_dir, m_vShellDir);

@@ -101,7 +101,7 @@ void CShell::Eject()
 					SPHNetState state;
 					p_sync_obj->get_State(state);
 
-					Fvector shell_point = weapon->get_CurrentShellPoint(true);
+					Fvector shell_point = weapon->GetShellEjectionPoint(true);
 					state.position = shell_point;
 					state.previous_position = shell_point;
 

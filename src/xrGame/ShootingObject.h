@@ -153,6 +153,10 @@ public:
 	virtual const Fvector&	get_CurrentFirePoint(bool need_invalidate = false)	{ return zero_vel; };
 	virtual const Fvector&	get_CurrentFirePoint2(bool need_invalidate = false) { return get_CurrentFirePoint(need_invalidate); };
 	virtual const Fvector&	get_CurrentShellPoint(bool need_invalidate = false)	{ return get_CurrentFirePoint(need_invalidate); };
+	virtual Fvector GetShellEjectionPoint(bool Invalidate = false)
+	{
+		return get_CurrentShellPoint(Invalidate);
+	}
 	virtual const Fmatrix&	get_ParticlesXFORM(bool need_invalidate = false)	{ return Fidentity; };
 
 			void			StartFlameParticle();

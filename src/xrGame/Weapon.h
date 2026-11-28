@@ -685,6 +685,16 @@ public:
 		return get_LastSP(need_invalidate);
 	}
 
+	Fvector GetShellEjectionPoint(bool Invalidate = false) override
+	{
+		Fvector Point = get_CurrentShellPoint(Invalidate);
+		if (GetHUDmode() && HudItemData())
+		{
+			Device.transform_hud2world(Point);
+		}
+		return Point;
+	}
+
 	virtual const Fmatrix& get_ParticlesXFORM(bool need_invalidate = false) override
 	{
 		UpdateFireDependencies(need_invalidate);
